@@ -125,6 +125,7 @@ function getAssociationDocumentFieldLabels(t: Translator): Record<string, string
     title:            t("membres.activiteView.actualiteFields.title"),
     visibleToMembers: t("associationDocuments.visibleToMembers"),
     content:          t("membres.activiteView.actualiteFields.content"),
+    fileName:         t("associationDocuments.form.fileLabel"),
   }
 }
 

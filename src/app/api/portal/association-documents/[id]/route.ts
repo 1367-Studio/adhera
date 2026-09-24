@@ -10,7 +10,7 @@ export const GET = withPortalAuth<{ id: string }>(async (_req, ctx, { id }) => {
   // published document is readable here too: a member must never see less than a stranger.
   const document = await prisma.associationDocument.findFirst({
     where:  { id, associationId, deletedAt: null, OR: [{ visibleToMembers: true }, { visibleToPublic: true }] },
-    select: { id: true, title: true, content: true, updatedAt: true },
+    select: { id: true, title: true, content: true, fileUrl: true, fileName: true, updatedAt: true },
   })
 
   if (!document) return NextResponse.json({ error: "Introuvable" }, { status: 404 })

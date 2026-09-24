@@ -1,15 +1,18 @@
 import { NextResponse } from "next/server"
 import { withAdminAuth } from "@/lib/api-wrapper"
 import { prisma } from "@/lib/prisma/client"
-import { associationDocumentUpdateSchema } from "@/lib/schemas"
+import { associationDocumentUpdateSchema, hasContentOrFile, CONTENT_OR_FILE_REQUIRED } from "@/lib/schemas"
 import { writeActivityLog, computeDiff } from "@/lib/activity-log"
 import { syncDocumentRevision } from "@/lib/legal/revisions"
 import { MANAGER_ROLES } from "@/lib/roles"
+import { isAssociationDocumentFileUrl } from "@/lib/legal/document-file"
 
 const DOCUMENT_SELECT = {
-  id:               true,
-  title:            true,
-  content:          true,
+  id:                 true,
+  title:              true,
+  content:            true,
+  fileUrl:            true,
+  fileName:           true,
   visibleToMembers:   true,
   visibleToPublic:    true,
   requiresAcceptance: true,
@@ -19,8 +22,9 @@ const DOCUMENT_SELECT = {
 
 // `content` is deliberately left out of the diff — its HTML can run to 200 000 characters,
 // so storing old + new in the log metadata would bloat every entry. A content edit is
-// recorded as a bare marker instead, same as ACTUALITE_UPDATED.
-const ASSOCIATION_DOCUMENT_FIELDS = ["title", "visibleToMembers", "visibleToPublic", "requiresAcceptance"] as const
+// recorded as a bare marker instead, same as ACTUALITE_UPDATED. The PDF is logged by its
+// display name (`fileName`), not its URL — the URL is a random key nobody can read.
+const ASSOCIATION_DOCUMENT_FIELDS = ["title", "fileName", "visibleToMembers", "visibleToPublic", "requiresAcceptance"] as const
 
 export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
   const { associationId } = ctx
@@ -46,7 +50,32 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
     return NextResponse.json({ error: parsed.error.issues }, { status: 422 })
   }
 
-  const { title, content, visibleToMembers, requiresAcceptance } = parsed.data
+  const { title, content, fileUrl, visibleToMembers, requiresAcceptance } = parsed.data
+
+  // The schema only checks the URL's shape; this checks it is a PDF /api/upload stored for
+  // legal documents, not an arbitrary link. `null` removes the file.
+  if (typeof fileUrl === "string" && !isAssociationDocumentFileUrl(fileUrl)) {
+    return NextResponse.json({ error: "Fichier PDF invalide" }, { status: 422 })
+  }
+
+  // Judged on the document as it will stand after this PATCH, since the request may carry only
+  // one side (e.g. removing the PDF of a document whose text is already empty).
+  const nextContent = content !== undefined ? content : existing.content
+  const nextFileUrl = fileUrl !== undefined ? fileUrl : existing.fileUrl
+  if (!hasContentOrFile({ content: nextContent, fileUrl: nextFileUrl })) {
+    return NextResponse.json({ error: CONTENT_OR_FILE_REQUIRED }, { status: 422 })
+  }
+
+  // A name without a file would describe nothing, and a new file sent without a name must not
+  // inherit the previous file's name. Only written when it actually changes, so a PATCH that
+  // touches nothing still takes the no-op path below.
+  const fileUrlReplaced = fileUrl !== undefined && fileUrl !== existing.fileUrl
+  const nextFileName =
+    nextFileUrl === null                 ? null
+    : parsed.data.fileName !== undefined ? parsed.data.fileName
+    : fileUrlReplaced                    ? null
+    :                                      existing.fileName
+  const fileName = nextFileName !== existing.fileName ? nextFileName : undefined
 
   // Whatever this PATCH leaves untouched keeps its stored value — a document that still
   // requires acceptance stays public even if this request asked to unpublish it, otherwise the
@@ -57,6 +86,8 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   const data = {
     ...(title              !== undefined ? { title }              : {}),
     ...(content            !== undefined ? { content }            : {}),
+    ...(fileUrl            !== undefined ? { fileUrl }            : {}),
+    ...(fileName           !== undefined ? { fileName }           : {}),
     ...(visibleToMembers   !== undefined ? { visibleToMembers }   : {}),
     ...(visibleToPublic    !== undefined ? { visibleToPublic }    : {}),
     ...(requiresAcceptance !== undefined ? { requiresAcceptance } : {}),
@@ -88,6 +119,11 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
     ASSOCIATION_DOCUMENT_FIELDS,
   )
   if (document.content !== existing.content) changes.content = { old: null, new: null }
+  // Replacing a PDF with one of the same name leaves no `fileName` diff, yet the text in force
+  // changed — record it anyway so the log shows the swap.
+  if (document.fileUrl !== existing.fileUrl && !changes.fileName) {
+    changes.fileName = { old: existing.fileName, new: document.fileName }
+  }
 
   if (Object.keys(changes).length > 0) {
     await writeActivityLog({ associationId, actorId: userId, action: "ASSOCIATION_DOCUMENT_UPDATED", entity: "AssociationDocument", entityId: id, label: document.title, metadata: { changes } })

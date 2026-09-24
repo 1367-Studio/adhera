@@ -381,7 +381,9 @@
     "viewDocument": "View document",
     "remove": "Remove",
     "uploading": "Uploading…",
-    "attach": "Attach an image or PDF (max 4 MB)"
+    "attach": "Attach an image or PDF (max 4 MB)",
+    "attachPdf": "Upload a PDF (max 4 MB)",
+    "pdfOnly": "Only PDF files are accepted"
   },
   "factures": {
     "form": {
@@ -5162,7 +5164,10 @@
       "contentLabel": "Content",
       "contentPlaceholder": "Write the document content…",
       "titleRequired": "Title is required.",
-      "contentRequired": "Content is required."
+      "contentRequired": "Write some content or upload a PDF file.",
+      "fileLabel": "PDF file",
+      "fileHint": "Upload the official version of the document (signed bylaws, scanned rules…). It is offered for download and shown alongside the content.",
+      "contentOptionalHint": "Optional when a PDF is attached: the text is shown below the file."
     },
     "leaveWarning": {
       "title": "Unsaved changes",
@@ -5171,7 +5176,8 @@
       "saveAndLeave": "Save and leave"
     },
     "notFound": "This document could not be found.",
-    "backToList": "Back to documents"
+    "backToList": "Back to documents",
+    "pdfShort": "PDF"
   },
   "legalConsent": {
     "agreeLabel": "{count, plural, one {I accept the following document:} other {I accept the following documents:}}",
@@ -5192,7 +5198,10 @@
     "updatedAt": "Updated {date}",
     "backToList": "All documents",
     "associationNotFound": "This association could not be found.",
-    "notFound": "This document is no longer available."
+    "notFound": "This document is no longer available.",
+    "openPdf": "Open the PDF",
+    "opensNewTab": "(opens in a new tab)",
+    "pdfShort": "PDF"
   },
   "portalMembre": {
     "associationDocuments": {
@@ -5202,7 +5211,10 @@
       "empty": "No documents available yet.",
       "loadError": "Unable to load documents.",
       "notFound": "This document could not be found or is no longer available.",
-      "backToList": "Back to documents"
+      "backToList": "Back to documents",
+      "openPdf": "Open the PDF",
+      "opensNewTab": "(opens in a new tab)",
+      "pdfShort": "PDF"
     },
     "sondages": {
       "title": "Surveys",
