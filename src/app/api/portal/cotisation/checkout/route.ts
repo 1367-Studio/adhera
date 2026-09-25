@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server"
-import { stripe, connectAccountChargesEnabled, PLATFORM_FEE } from "@/lib/stripe"
+import { stripe, connectAccountChargesEnabled, platformFeeRate } from "@/lib/stripe"
 import { prisma } from "@/lib/prisma/client"
 import { APP_URL } from "@/lib/env"
 import { withPortalAuth } from "@/lib/api-wrapper"
@@ -12,7 +12,7 @@ export const POST = withPortalAuth(async (req, ctx) => {
   const cotisation = await prisma.cotisation.findFirst({
     where:   { id: cotisationId, membreId: ctx.membreId!, status: { in: ["EN_ATTENTE", "PARTIELLEMENT_PAYEE", "EN_RETARD"] } },
     include: {
-      association:  { select: { stripeConnectId: true, name: true, slug: true } },
+      association:  { select: { stripeConnectId: true, name: true, slug: true, subscriptionStatus: true, subscriptionAmountCents: true } },
       installments: { orderBy: { dueDate: "asc" }, select: { amount: true, dueDate: true, order: true } },
     },
   })
@@ -64,7 +64,7 @@ export const POST = withPortalAuth(async (req, ctx) => {
     : amountPaid > 0
       ? `${cotisation.association.name} — Cotisation ${cotisation.year} (solde restant)`
       : `${cotisation.association.name} — Cotisation ${cotisation.year}`
-  const applicationFee = Math.round(amountCents * PLATFORM_FEE)
+  const applicationFee = Math.round(amountCents * platformFeeRate(cotisation.association))
 
   const checkoutSession = await stripe.checkout.sessions.create({
     mode: "payment",
