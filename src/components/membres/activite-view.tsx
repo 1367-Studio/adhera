@@ -188,6 +188,7 @@ function getActionConfig(t: Translator): Record<string, { label: string; color: 
     MEMBRE_DELETED:           { label: t("membres.activiteView.actions.membreDeleted"),      color: DEL    },
     MEMBRE_PORTAL_REGISTERED: { label: t("membres.activiteView.actions.membrePortalRegistered"),   color: SKY    },
     MEMBRE_INSCRIPTION_REQUESTED: { label: t("membres.activiteView.actions.membreInscriptionRequested"), color: SKY },
+    MEMBRE_ADHESION_COMPLETED: { label: t("membres.activiteView.actions.membreAdhesionCompleted"), color: EME },
     MEMBRE_ROLE_CHANGED:      { label: t("membres.activiteView.actions.membreRoleChanged"),        color: BLUE   },
     MEMBRE_ACCESS_CREATED:    { label: t("membres.activiteView.actions.membreAccessCreated"),          color: BLUE_L },
     MEMBRE_CARD_TOKEN_ROTATED: { label: t("membres.activiteView.actions.membreCardTokenRotated"),       color: SLA    },

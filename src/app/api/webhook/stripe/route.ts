@@ -30,6 +30,7 @@ import {
 import { createEvenementDonation, parseEvenementDonations } from "@/lib/webhook/evenement-addons"
 import { createEvenementProductPurchase } from "@/lib/webhook/evenement-products"
 import { handleMembershipOneOffCheckout } from "@/lib/webhook/membership-forms"
+import { handleAdhesionCompletion } from "@/lib/webhook/adhesion-completion"
 import { handleMembershipMultiCheckout } from "@/lib/webhook/membership-multi"
 import { notifyMembershipSignup } from "@/lib/webhook/membership-notify"
 import { grantMembrePortalAccess } from "@/lib/membre-access"
@@ -86,6 +87,16 @@ export async function POST(req: Request) {
       // Don, there's no pre-created row to flip paidAt on below.
       if (sess.mode === "payment" && sess.metadata?.kind === "membership-oneoff") {
         await handleMembershipOneOffCheckout(sess)
+        break
+      }
+
+      // The one-off "complete your adhésion" link (src/app/[slug]/completar-adesao/[token])
+      // — a self-registered Membre with no real Cotisation finishing/paying their adhésion.
+      // Unlike every branch above, the Membre already exists and is updated, not created —
+      // see src/lib/webhook/adhesion-completion.ts's header comment for why this is a
+      // deliberately separate, isolated module instead of another case of the branch above.
+      if (sess.mode === "payment" && sess.metadata?.kind === "adhesion-completion") {
+        await handleAdhesionCompletion(sess)
         break
       }
 
