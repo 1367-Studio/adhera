@@ -139,15 +139,7 @@ export default function CompletarAdesaoPage() {
     : null
 
   async function handleSubmit() {
-    if (!data) return
-    // A disabled <button> fires no click event at all — without this, there was no way to
-    // reveal which field is missing short of reading the page source (same reasoning as
-    // membership-form-public-form.tsx's blockingReason). The button stays clickable even
-    // when invalid specifically so this attempt can mark every field touched.
-    const allTouched: Record<string, boolean> = { phone: true, mobile: true, birthDate: true, sexe: true, spokenLanguage: true, photoUrl: true, address: true }
-    for (const field of data.customFields) allTouched[`custom-${field.id}`] = true
-    setTouched(allTouched)
-    if (!canSubmit) return
+    if (!data || !canSubmit) return
 
     setSubmitting(true)
     try {
@@ -312,7 +304,7 @@ export default function CompletarAdesaoPage() {
           ))}
 
           <div className="space-y-2">
-            <Button loading={submitting} onClick={handleSubmit} className="w-full">
+            <Button loading={submitting} disabled={!canSubmit} onClick={handleSubmit} className="w-full">
               {selectedTier ? `Payer et finaliser (${selectedTier.freeAmount ? amount : selectedTier.amount}€)` : "Choisissez un tarif"}
             </Button>
             {blockingReason && (
