@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
 import { z } from "zod"
-import { stripe, connectAccountChargesEnabled, PLATFORM_FEE } from "@/lib/stripe"
+import { stripe, connectAccountChargesEnabled, platformFeeRate } from "@/lib/stripe"
 import { prisma } from "@/lib/prisma/client"
 import { parseModules } from "@/lib/modules"
 import { APP_URL } from "@/lib/env"
@@ -59,7 +59,7 @@ export async function POST(
 
   const assoc = await prisma.association.findUnique({
     where:  { slug },
-    select: { id: true, name: true, modules: true, stripeConnectId: true },
+    select: { id: true, name: true, modules: true, stripeConnectId: true, subscriptionStatus: true, subscriptionAmountCents: true },
   })
   if (!assoc) return NextResponse.json({ error: "Association introuvable" }, { status: 404 })
 
@@ -187,7 +187,7 @@ export async function POST(
     },
   })
 
-  const applicationFee = Math.round(commande.totalAmount * PLATFORM_FEE)
+  const applicationFee = Math.round(commande.totalAmount * platformFeeRate(assoc))
 
   let checkoutSession: Awaited<ReturnType<typeof stripe.checkout.sessions.create>>
   try {

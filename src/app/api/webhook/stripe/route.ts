@@ -1249,6 +1249,11 @@ export async function POST(req: Request) {
       const priceId    = sub.items.data[0]?.price.id
       const newTier    = priceId ? tierForPriceId(priceId) : null
       const newPlan    = newTier ? (newTier === "pro" ? "PRO" as const : "ESSENTIAL" as const) : null
+      // Read regardless of whether the price matches a known PLAN_PRICES tier — a
+      // PricingOffer's custom Stripe price (see src/lib/pricing-offers.ts) never resolves
+      // via tierForPriceId, but platformFeeRate() (src/lib/stripe.ts) still needs its
+      // amount to tell a 0€-forever offer phase apart from a genuinely paying subscription.
+      const newAmountCents = sub.items.data[0]?.price.unit_amount ?? null
 
       // A card-free trial Stripe just cancelled for lack of a payment method (see
       // src/lib/webhook/platform-trial.ts). Normally arrives as customer.subscription.
@@ -1260,6 +1265,7 @@ export async function POST(req: Request) {
         where: { id: assoc.id },
         data:  {
           subscriptionStatus: newStatus,
+          subscriptionAmountCents: newAmountCents,
           ...(newPlan ? { plan: newPlan } : {}),
           suspendedAt:
             newStatus === "SUSPENDED"

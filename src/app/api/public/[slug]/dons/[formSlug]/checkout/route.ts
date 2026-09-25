@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server"
 import { z } from "zod"
 import type Stripe from "stripe"
-import { stripe, connectAccountChargesEnabled, stripeRecurringInterval, PLATFORM_FEE } from "@/lib/stripe"
+import { stripe, connectAccountChargesEnabled, stripeRecurringInterval, platformFeeRate } from "@/lib/stripe"
 import { prisma } from "@/lib/prisma/client"
 import { parseModules } from "@/lib/modules"
 import { APP_URL } from "@/lib/env"
@@ -83,7 +83,7 @@ export async function POST(
 
   const assoc = await prisma.association.findUnique({
     where:  { slug },
-    select: { id: true, name: true, modules: true, stripeConnectId: true, plan: true, customBrandingEnabled: true, logoUrl: true },
+    select: { id: true, name: true, modules: true, stripeConnectId: true, plan: true, customBrandingEnabled: true, logoUrl: true, subscriptionStatus: true, subscriptionAmountCents: true },
   })
   if (!assoc) return NextResponse.json({ error: "Association introuvable" }, { status: 404 })
 
@@ -351,7 +351,7 @@ export async function POST(
           // Non-null: the `else` branch above already returned if this were unset — but that
           // narrowing doesn't survive past the offline branch's own early return in between.
           transfer_data:           { destination: assoc.stripeConnectId! },
-          application_fee_percent: PLATFORM_FEE * 100,
+          application_fee_percent: platformFeeRate(assoc) * 100,
           metadata:                subscriptionMeta,
         },
         metadata:       subscriptionMeta,
@@ -402,7 +402,7 @@ export async function POST(
     label: `${firstName} ${lastName} — ${amount}€ (${form.title})`,
   })
 
-  const applicationFee = Math.round(amountCents * PLATFORM_FEE)
+  const applicationFee = Math.round(amountCents * platformFeeRate(assoc))
 
   let checkoutSession: Stripe.Checkout.Session
   try {

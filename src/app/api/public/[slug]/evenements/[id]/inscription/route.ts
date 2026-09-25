@@ -6,7 +6,7 @@ import { evenementRefWhere } from "@/lib/slug"
 import { isEvenementOver } from "@/lib/evenement-timing"
 import { ADDRESS_MAX_LENGTHS, addressColumns, addressColumnsPatch, addressIsFilled, type AddressInput } from "@/lib/address"
 import { parseModules } from "@/lib/modules"
-import { stripe, connectAccountChargesEnabled, PLATFORM_FEE } from "@/lib/stripe"
+import { stripe, connectAccountChargesEnabled, platformFeeRate } from "@/lib/stripe"
 import { APP_URL } from "@/lib/env"
 import { rateLimit, requestIp } from "@/lib/rate-limit"
 import { consentIp } from "@/lib/consent"
@@ -173,6 +173,8 @@ export async function POST(
     select: {
       id: true, name: true, slug: true, sitePublished: true, modules: true, stripeConnectId: true,
       plan: true, customBrandingEnabled: true, logoUrl: true, canIssueTaxReceipts: true,
+      subscriptionStatus: true,
+      subscriptionAmountCents: true,
     },
   })
   if (!assoc || !assoc.sitePublished) return NextResponse.json({ error: "Association introuvable" }, { status: 404 })
@@ -667,7 +669,7 @@ export async function POST(
     const totalCents = amountCents
       + resolvedDonations.reduce((sum, d) => sum + Math.round(d.amount * 100), 0)
       + resolvedProducts.reduce((sum, p) => sum + p.unitPriceCents * p.quantity, 0)
-    const applicationFee = Math.round(totalCents * PLATFORM_FEE)
+    const applicationFee = Math.round(totalCents * platformFeeRate(assoc))
 
     const checkoutSession = await stripe.checkout.sessions.create({
       mode: "payment",
@@ -909,7 +911,7 @@ export async function POST(
     quantity: g.quantity,
   }))
   const totalCents    = lineItems.reduce((sum, li) => sum + li.price_data.unit_amount * li.quantity, 0)
-  const applicationFee = Math.round(totalCents * PLATFORM_FEE)
+  const applicationFee = Math.round(totalCents * platformFeeRate(assoc))
 
   const checkoutSession = await stripe.checkout.sessions.create({
     mode: "payment",
