@@ -767,6 +767,14 @@ model Membre {
   // auto-créée à l'approbation.
   pendingTierId String?
 
+  // One-off "complete your adhésion" link for a member who self-registered via the portal
+  // (see /api/portal/register) with no real Cotisation — src/app/[slug]/completar-adesao/
+  // [token]. Not a reusable admin feature: minted by a throwaway script per member, points at
+  // one specific MembershipForm, and is cleared once consumed (single-use, same spirit as
+  // Cotisation.paymentToken). Both null outside that one-off flow.
+  adhesionCompletionToken  String? @unique
+  adhesionCompletionFormId String?
+
   // Carte de membre numérique — the public token encoded in the card's QR code, so whoever
   // scans it (a partner shop, a door volunteer) can check the card without an account. Same
   // no-login convention as Participation.cancelToken, but minted lazily on the first view
@@ -804,6 +812,7 @@ model Membre {
   user                     User?                     @relation(fields: [userId], references: [id])
   type                     MembreType?               @relation(fields: [typeId], references: [id])
   pendingTier              MembershipTier?           @relation(fields: [pendingTierId], references: [id], onDelete: SetNull)
+  adhesionCompletionForm   MembershipForm?           @relation("MembreAdhesionCompletionForm", fields: [adhesionCompletionFormId], references: [id], onDelete: SetNull)
   responsable              Membre?                   @relation("MembreResponsable", fields: [responsableId], references: [id], onDelete: SetNull)
   dependants               Membre[]                  @relation("MembreResponsable")
   cotisations              Cotisation[]
@@ -1600,13 +1609,14 @@ model MembershipForm {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  association    Association               @relation(fields: [associationId], references: [id], onDelete: Cascade)
-  tiers          MembershipTier[]
-  products       MembershipFormProduct[]
-  customFields   MembershipFormField[]
-  cotisations    Cotisation[]
-  subscriptions  CotisationSubscription[]
-  checkoutDrafts MembershipCheckoutDraft[]
+  association               Association               @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  tiers                     MembershipTier[]
+  products                  MembershipFormProduct[]
+  customFields              MembershipFormField[]
+  cotisations               Cotisation[]
+  subscriptions             CotisationSubscription[]
+  checkoutDrafts            MembershipCheckoutDraft[]
+  adhesionCompletionMembres Membre[]                  @relation("MembreAdhesionCompletionForm")
 
   @@unique([associationId, slug])
   @@index([associationId, status])
