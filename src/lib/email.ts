@@ -1316,6 +1316,60 @@ export function membershipPaymentLinkEmail(p: {
   }
 }
 
+// One-off "complete your adhésion" link (src/app/[slug]/complete-adhesion/[token]) for a
+// member who already self-registered via the portal but was never actually billed — unlike
+// membershipPaymentLinkEmail above, this person already has a portal account/password, so
+// there is no "you'll get your login once you pay" line, and the link leads to a small form
+// (profile fields + tarif choice) before payment, not straight to checkout.
+export function adhesionCompletionInviteEmail(p: {
+  firstName:       string
+  email:           string
+  associationName: string
+  completeUrl:     string
+  branding?:       EmailBranding
+}) {
+  const content = `
+    <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">Complétez votre adhésion à ${p.associationName}</h2>
+    <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
+      Bonjour ${p.firstName},<br>il manque encore quelques informations et le règlement de
+      votre cotisation pour finaliser votre adhésion à ${p.associationName}. Cela ne prend
+      que quelques minutes — vos identifiants de connexion restent les mêmes.
+    </p>
+    ${btn("Compléter mon adhésion", p.completeUrl)}`
+  return {
+    to:       p.email,
+    subject:  `Complétez votre adhésion à ${p.associationName}`,
+    fromName: p.associationName,
+    html:     layout(p.associationName, content, p.branding),
+  }
+}
+
+// Confirmation once the completion above has been paid (sent by the webhook handler,
+// src/lib/webhook/adhesion-completion.ts) — deliberately not membershipWelcomeEmail: that one
+// assumes a brand-new account and talks about login credentials, which this person already has.
+export function adhesionCompletionConfirmationEmail(p: {
+  firstName:       string
+  email:           string
+  associationName: string
+  amount:          number
+  branding?:       EmailBranding
+}) {
+  const amountStr = p.amount.toLocaleString("fr-FR", { style: "currency", currency: "EUR" })
+  const content = `
+    <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">Merci, votre adhésion est finalisée</h2>
+    <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
+      Bonjour ${p.firstName},<br>votre cotisation de ${amountStr} a bien été réglée. Votre
+      adhésion à ${p.associationName} est désormais complète — aucune autre action n'est
+      nécessaire.
+    </p>`
+  return {
+    to:       p.email,
+    subject:  `Votre adhésion à ${p.associationName} est finalisée`,
+    fromName: p.associationName,
+    html:     layout(p.associationName, content, p.branding),
+  }
+}
+
 // Sent to MembershipForm.adminNotificationEmail (opt-in, per formulaire — see
 // notifyMembershipSignup) each time someone joins through that specific form. Distinct from
 // the in-app Notification every ADMIN/PRESIDENT/TRESORIER already gets regardless of this
