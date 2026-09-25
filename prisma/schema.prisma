@@ -768,7 +768,7 @@ model Membre {
   pendingTierId String?
 
   // One-off "complete your adhésion" link for a member who self-registered via the portal
-  // (see /api/portal/register) with no real Cotisation — src/app/[slug]/completar-adesao/
+  // (see /api/portal/register) with no real Cotisation — src/app/[slug]/complete-adhesion/
   // [token]. Not a reusable admin feature: minted by a throwaway script per member, points at
   // one specific MembershipForm, and is cleared once consumed (single-use, same spirit as
   // Cotisation.paymentToken). Both null outside that one-off flow.

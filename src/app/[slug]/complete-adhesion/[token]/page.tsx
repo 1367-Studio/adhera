@@ -44,7 +44,7 @@ type CompletionData = {
 }
 
 // One-off "finish your adhésion" page for a member who self-registered via the portal but
-// was never actually billed — see src/app/api/public/completar-adesao/[token]/route.ts's
+// was never actually billed — see src/app/api/public/complete-adhesion/[token]/route.ts's
 // header comment for the full context. Deliberately its own small component rather than a
 // mode of membership-form-public-form.tsx: that component covers multi-registrant/
 // installments/addons/products/offline-payment, none of which apply here, and this is a
@@ -79,7 +79,7 @@ export default function CompletarAdesaoPage() {
     // processes the payment (single-use, see adhesion-completion.ts), so re-fetching here
     // would legitimately 404 on a link that just worked — nothing left to render a form for.
     if (outcome === "success") { setLoading(false); return }
-    fetch(`/api/public/completar-adesao/${token}`)
+    fetch(`/api/public/complete-adhesion/${token}`)
       .then(r => { if (!r.ok) throw new Error(); return r.json() })
       .then((d: CompletionData) => {
         setData(d)
@@ -127,7 +127,7 @@ export default function CompletarAdesaoPage() {
 
     setSubmitting(true)
     try {
-      const res = await fetch(`/api/public/completar-adesao/${token}/checkout`, {
+      const res = await fetch(`/api/public/complete-adhesion/${token}/checkout`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
