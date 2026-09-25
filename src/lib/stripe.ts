@@ -1,4 +1,5 @@
 import Stripe from "stripe"
+import type { SubscriptionStatus } from "@prisma/client"
 
 export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2026-05-27.dahlia" as never,
@@ -18,6 +19,22 @@ export const TRIAL_DAYS           = 15
 // Platform commission on Connect destination charges (cotisations, dons, tickets,
 // boutique, adhésion) — single source so every checkout route computes the same fee.
 export const PLATFORM_FEE = 0.01
+
+// The fee only applies to associations not current on their own Formwise subscription
+// (ESSENTIAL/PRO mensalidade) — TRIAL always pays 0%, PAST_DUE/SUSPENDED/CANCELLED always
+// pay PLATFORM_FEE. ACTIVE pays 0% only when actually billing something: a PricingOffer
+// whose current phase is 0€ forever (see src/lib/pricing-offers.ts) also reports ACTIVE on
+// Stripe, but isn't "paying" in the sense this rule cares about, so it pays the fee like a
+// delinquent association would. subscriptionAmountCents is synced from Stripe on every
+// customer.subscription.created/updated event (src/app/api/webhook/stripe/route.ts) —
+// null there (no subscription synced yet) defaults to exempt, same as a normal paying
+// ACTIVE association, rather than assuming the worst about a state that shouldn't occur.
+// Checked against the association's status at checkout time.
+export function platformFeeRate(association: { subscriptionStatus: SubscriptionStatus; subscriptionAmountCents: number | null }): number {
+  if (association.subscriptionStatus === "TRIAL") return 0
+  if (association.subscriptionStatus !== "ACTIVE") return PLATFORM_FEE
+  return association.subscriptionAmountCents === 0 ? PLATFORM_FEE : 0
+}
 
 export type PlanTier   = "essential" | "pro"
 export type BillingCycle = "monthly" | "yearly"
