@@ -90,7 +90,7 @@ export async function POST(req: Request) {
         break
       }
 
-      // The one-off "complete your adhésion" link (src/app/[slug]/completar-adesao/[token])
+      // The one-off "complete your adhésion" link (src/app/[slug]/complete-adhesion/[token])
       // — a self-registered Membre with no real Cotisation finishing/paying their adhésion.
       // Unlike every branch above, the Membre already exists and is updated, not created —
       // see src/lib/webhook/adhesion-completion.ts's header comment for why this is a

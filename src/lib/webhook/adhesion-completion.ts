@@ -45,8 +45,8 @@ async function notifyManagersOfFailedCompletion(associationId: string, membreLab
 
 // ─── checkout.session.completed (mode: "payment", kind: "adhesion-completion") ─────
 //
-// The one-off "finish your adhésion" flow (src/app/[slug]/completar-adesao/[token] +
-// src/app/api/public/completar-adesao/[token]/checkout) — see that checkout route's header
+// The one-off "finish your adhésion" flow (src/app/[slug]/complete-adhesion/[token] +
+// src/app/api/public/complete-adhesion/[token]/checkout) — see that checkout route's header
 // comment for why this lives in its own isolated module instead of extending
 // handleMembershipOneOffCheckout (membership-forms.ts). Same "identity rides through Stripe
 // metadata" reasoning as that handler, except here the Membre already exists (self-
@@ -189,6 +189,6 @@ export async function handleAdhesionCompletion(session: Stripe.Checkout.Session)
     entity:        "Membre",
     entityId:      membre.id,
     label:         `${membre.firstName} ${membre.lastName} — ${amount}€`,
-    metadata:      { stripeCheckoutSessionId: session.id, via: "completar-adesao" },
+    metadata:      { stripeCheckoutSessionId: session.id, via: "complete-adhesion" },
   })
 }

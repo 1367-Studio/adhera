@@ -120,7 +120,7 @@ export async function POST(
   })
 
   const slug = membre.association.slug
-  const returnUrl = `${APP_URL}/${slug}/completar-adesao/${token}`
+  const returnUrl = `${APP_URL}/${slug}/complete-adhesion/${token}`
   const amountCents = Math.round(amount * 100)
   const applicationFee = Math.round(amountCents * PLATFORM_FEE)
 
