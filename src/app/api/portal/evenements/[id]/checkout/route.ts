@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server"
 import { randomUUID, randomBytes } from "crypto"
 import { Prisma } from "@prisma/client"
-import { stripe, connectAccountChargesEnabled, PLATFORM_FEE } from "@/lib/stripe"
+import { stripe, connectAccountChargesEnabled, platformFeeRate } from "@/lib/stripe"
 import { prisma } from "@/lib/prisma/client"
 import { z } from "zod"
 import { APP_URL } from "@/lib/env"
@@ -43,7 +43,7 @@ export const POST = withPortalAuth<Params>(async (req, ctx, { id: evenementId })
 
   const evenement = await prisma.evenement.findFirst({
     where:   { id: evenementId, associationId: ctx.associationId, status: "PUBLISHED" },
-    include: { association: { select: { stripeConnectId: true, name: true, slug: true } }, ticketTypes: true },
+    include: { association: { select: { stripeConnectId: true, name: true, slug: true, subscriptionStatus: true, subscriptionAmountCents: true } }, ticketTypes: true },
   })
   if (!evenement) return NextResponse.json({ error: "Événement introuvable" }, { status: 404 })
   if (isEvenementOver(evenement))
@@ -333,7 +333,7 @@ export const POST = withPortalAuth<Params>(async (req, ctx, { id: evenementId })
         },
       ]
 
-  const applicationFee = Math.round(totalCents * PLATFORM_FEE)
+  const applicationFee = Math.round(totalCents * platformFeeRate(evenement.association))
 
   const checkoutSession = await stripe.checkout.sessions.create({
     mode: "payment",

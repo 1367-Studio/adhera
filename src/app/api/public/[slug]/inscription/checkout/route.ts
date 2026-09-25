@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server"
 import bcrypt from "bcryptjs"
 import { z } from "zod"
-import { stripe, connectAccountChargesEnabled, PLATFORM_FEE } from "@/lib/stripe"
+import { stripe, connectAccountChargesEnabled, platformFeeRate } from "@/lib/stripe"
 import { prisma } from "@/lib/prisma/client"
 import { parseModules } from "@/lib/modules"
 import { rateLimit, requestIp } from "@/lib/rate-limit"
@@ -41,6 +41,8 @@ export async function POST(
     select: {
       id: true, name: true, sitePublished: true, modules: true,
       publicMembershipPaymentEnabled: true, cotisationDefaultAmount: true, stripeConnectId: true,
+      subscriptionStatus: true,
+      subscriptionAmountCents: true,
     },
   })
   if (!assoc || !assoc.sitePublished || !parseModules(assoc.modules).site) {
@@ -116,7 +118,7 @@ export async function POST(
       ],
       subscription_data: {
         transfer_data:           { destination: assoc.stripeConnectId },
-        application_fee_percent: PLATFORM_FEE * 100,
+        application_fee_percent: platformFeeRate(assoc) * 100,
         metadata:                subscriptionMeta,
       },
       metadata:       subscriptionMeta,

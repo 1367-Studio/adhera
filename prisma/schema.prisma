@@ -509,6 +509,15 @@ model Association {
   // the plan default, true force-enables it for an Essentiel association.
   customBrandingEnabled          Boolean?
   subscriptionStatus             SubscriptionStatus  @default(TRIAL)
+  // Current recurring price of Association.stripeSubscriptionId, in cents — synced by the
+  // same customer.subscription.created/updated webhook handler that syncs subscriptionStatus
+  // and plan (src/app/api/webhook/stripe/route.ts), read off sub.items.data[0].price.unit_amount.
+  // Exists to tell a genuinely-paying subscription (ACTIVE, > 0) apart from a PricingOffer
+  // whose current phase bills 0€ forever (see src/lib/pricing-offers.ts) — both land on
+  // subscriptionStatus ACTIVE, but only the former should be exempt from platformFeeRate()
+  // in src/lib/stripe.ts. Null before the first sync (e.g. still on TRIAL with no Stripe
+  // subscription at all yet).
+  subscriptionAmountCents        Int?
   trialEndsAt                    DateTime?
   // Stamped by the Stripe webhook when a card-free trial (see /api/register) reached its
   // end with still no payment method on file and Stripe cancelled the subscription — as

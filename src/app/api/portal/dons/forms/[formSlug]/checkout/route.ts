@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server"
 import { z } from "zod"
 import type Stripe from "stripe"
-import { stripe, connectAccountChargesEnabled, stripeRecurringInterval, PLATFORM_FEE } from "@/lib/stripe"
+import { stripe, connectAccountChargesEnabled, stripeRecurringInterval, platformFeeRate } from "@/lib/stripe"
 import { prisma } from "@/lib/prisma/client"
 import { APP_URL } from "@/lib/env"
 import { isValidSiret } from "@/lib/siret"
@@ -55,7 +55,7 @@ export const POST = withPortalAuth<{ formSlug: string }>(async (req, ctx, { form
   const [assoc, membre] = await Promise.all([
     prisma.association.findUnique({
       where:  { id: ctx.associationId },
-      select: { id: true, name: true, slug: true, stripeConnectId: true, plan: true, customBrandingEnabled: true, logoUrl: true },
+      select: { id: true, name: true, slug: true, stripeConnectId: true, plan: true, customBrandingEnabled: true, logoUrl: true, subscriptionStatus: true, subscriptionAmountCents: true },
     }),
     prisma.membre.findUnique({
       where:  { id: ctx.membreId! },
@@ -269,7 +269,7 @@ export const POST = withPortalAuth<{ formSlug: string }>(async (req, ctx, { form
         ],
         subscription_data: {
           transfer_data:           { destination: assoc.stripeConnectId! },
-          application_fee_percent: PLATFORM_FEE * 100,
+          application_fee_percent: platformFeeRate(assoc) * 100,
           metadata:                subscriptionMeta,
         },
         metadata:       subscriptionMeta,
@@ -318,7 +318,7 @@ export const POST = withPortalAuth<{ formSlug: string }>(async (req, ctx, { form
     label: `${firstName} ${lastName} — ${amount}€ (${form.title})`,
   })
 
-  const applicationFee = Math.round(amountCents * PLATFORM_FEE)
+  const applicationFee = Math.round(amountCents * platformFeeRate(assoc))
 
   let checkoutSession: Stripe.Checkout.Session
   try {
