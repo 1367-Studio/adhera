@@ -1,0 +1,301 @@
+"use client"
+
+import { useState, useEffect } from "react"
+import { useParams } from "next/navigation"
+import { toast } from "sonner"
+import { InfoIcon, CheckCircleIcon } from "@phosphor-icons/react/dist/ssr"
+import { Button } from "@/components/ui/button"
+import { FormField } from "@/components/ui/form-field"
+import { DateField } from "@/components/ui/date-field"
+import { SelectField } from "@/components/ui/select-field"
+import { AddressFields } from "@/components/ui/address-fields"
+import { CurrencyField } from "@/components/ui/currency-field"
+import { ImageUpload } from "@/components/ui/image-upload"
+import { MembershipFormFieldInput, type MembershipFormFieldInputField } from "@/components/adhesions/membership-form-field-input"
+import { EMPTY_ADDRESS_FORM_VALUES, type AddressFormValues } from "@/lib/address"
+import { spokenLanguageOptions } from "@/lib/languages"
+
+type FieldRequirement = "HIDDEN" | "OPTIONAL" | "REQUIRED"
+
+type Tier = { id: string; label: string; freeAmount: boolean; amount: string | null }
+
+type CompletionData = {
+  associationName: string
+  slug:            string
+  formSlug:        string
+  formTitle:       string
+  online:          boolean
+  fieldAddress:    FieldRequirement
+  fieldBirthDate:  FieldRequirement
+  fieldPhone:      FieldRequirement
+  fieldMobile:     FieldRequirement
+  fieldGender:     FieldRequirement
+  fieldPhoto:      FieldRequirement
+  fieldLanguage:   FieldRequirement
+  tiers:           Tier[]
+  customFields:    MembershipFormFieldInputField[]
+  prefill: {
+    firstName: string; lastName: string; email: string
+    phone: string; mobile: string
+    addressStreet: string; addressComplement: string; postalCode: string; city: string; country: string
+    birthDate: string; sexe: string; spokenLanguage: string; photoUrl: string
+    answers: Record<string, string>
+  }
+}
+
+// One-off "finish your adhésion" page for a member who self-registered via the portal but
+// was never actually billed — see src/app/api/public/completar-adesao/[token]/route.ts's
+// header comment for the full context. Deliberately its own small component rather than a
+// mode of membership-form-public-form.tsx: that component covers multi-registrant/
+// installments/addons/products/offline-payment, none of which apply here, and this is a
+// one-off tool, not a permanent feature worth threading through its complexity.
+export default function CompletarAdesaoPage() {
+  const { token } = useParams<{ token: string }>()
+
+  const [data, setData]       = useState<CompletionData | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [notFound, setNotFound] = useState(false)
+  const [submitting, setSubmitting] = useState(false)
+  const [outcome] = useState<"success" | "cancelled" | null>(() => {
+    if (typeof window === "undefined") return null
+    const payment = new URLSearchParams(window.location.search).get("payment")
+    return payment === "success" || payment === "cancelled" ? payment : null
+  })
+
+  const [tierId, setTierId]   = useState("")
+  const [amount, setAmount]   = useState(0)
+  const [phone, setPhone]     = useState("")
+  const [mobile, setMobile]   = useState("")
+  const [addressValues, setAddressValues] = useState<AddressFormValues>({ ...EMPTY_ADDRESS_FORM_VALUES })
+  const [birthDate, setBirthDate] = useState("")
+  const [sexe, setSexe]       = useState<"" | "HOMME" | "FEMME">("")
+  const [spokenLanguage, setSpokenLanguage] = useState("")
+  const [photoUrl, setPhotoUrl] = useState("")
+  const [answers, setAnswers] = useState<Record<string, string>>({})
+  const [touched, setTouched] = useState<Record<string, boolean>>({})
+
+  useEffect(() => {
+    // Skipped once payment already succeeded: the webhook clears the token the moment it
+    // processes the payment (single-use, see adhesion-completion.ts), so re-fetching here
+    // would legitimately 404 on a link that just worked — nothing left to render a form for.
+    if (outcome === "success") { setLoading(false); return }
+    fetch(`/api/public/completar-adesao/${token}`)
+      .then(r => { if (!r.ok) throw new Error(); return r.json() })
+      .then((d: CompletionData) => {
+        setData(d)
+        setPhone(d.prefill.phone)
+        setMobile(d.prefill.mobile)
+        setAddressValues({
+          addressStreet: d.prefill.addressStreet, addressComplement: d.prefill.addressComplement,
+          postalCode: d.prefill.postalCode, city: d.prefill.city, country: d.prefill.country,
+        })
+        setBirthDate(d.prefill.birthDate)
+        setSexe(d.prefill.sexe === "HOMME" || d.prefill.sexe === "FEMME" ? d.prefill.sexe : "")
+        setSpokenLanguage(d.prefill.spokenLanguage)
+        setPhotoUrl(d.prefill.photoUrl)
+        setAnswers(d.prefill.answers)
+        if (d.tiers.length === 1) setTierId(d.tiers[0].id)
+      })
+      .catch(() => setNotFound(true))
+      .finally(() => setLoading(false))
+  }, [token])
+
+  function touch(field: string) { setTouched(t => ({ ...t, [field]: true })) }
+  function requiredError(field: string, value: string, required: boolean) {
+    return required && touched[field] && !value.trim() ? "Ce champ est requis." : undefined
+  }
+
+  const selectedTier = data?.tiers.find(t => t.id === tierId)
+  const addressRequired = data?.fieldAddress === "REQUIRED"
+  const addressFilled = !!addressValues.addressStreet.trim() && !!addressValues.postalCode.trim() && !!addressValues.city.trim()
+
+  const canSubmit = !!data && !!selectedTier
+    && (!selectedTier.freeAmount || amount > 0)
+    && (data.fieldPhone !== "REQUIRED" || !!phone.trim())
+    && (data.fieldMobile !== "REQUIRED" || !!mobile.trim())
+    && (data.fieldBirthDate !== "REQUIRED" || !!birthDate.trim())
+    && (data.fieldGender !== "REQUIRED" || !!sexe)
+    && (data.fieldLanguage !== "REQUIRED" || !!spokenLanguage)
+    && (data.fieldPhoto !== "REQUIRED" || !!photoUrl.trim())
+    && (!addressRequired || addressFilled)
+    && data.customFields.every(f => !f.required || !!answers[f.id]?.trim())
+
+  async function handleSubmit() {
+    if (!data) return
+    setTouched({ phone: true, mobile: true, birthDate: true, sexe: true, spokenLanguage: true, photoUrl: true, address: true })
+    if (!canSubmit) return
+
+    setSubmitting(true)
+    try {
+      const res = await fetch(`/api/public/completar-adesao/${token}/checkout`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          tierId, amount: selectedTier?.freeAmount ? amount : undefined,
+          phone, mobile, ...addressValues, birthDate, sexe: sexe || undefined,
+          spokenLanguage: spokenLanguage || undefined, photoUrl: photoUrl || undefined, answers,
+        }),
+      })
+      const result = await res.json()
+      if (!res.ok) { toast.error(result.error ?? "Erreur"); return }
+      window.location.href = result.url
+    } catch {
+      toast.error("Erreur réseau")
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="size-6 rounded-full border-2 border-primary border-t-transparent animate-spin" />
+      </div>
+    )
+  }
+
+  if (outcome === "success") {
+    return (
+      <div className="min-h-screen flex items-center justify-center text-center px-4">
+        <div className="flex flex-col items-center gap-2 max-w-sm">
+          <CheckCircleIcon className="size-6 text-primary" />
+          <p className="font-medium">Merci, votre adhésion est finalisée.</p>
+          <p className="text-sm text-muted-foreground">Vous allez recevoir la confirmation par email — aucune autre action n&apos;est nécessaire.</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (notFound || !data) {
+    return (
+      <div className="min-h-screen flex items-center justify-center text-center px-4">
+        <p className="text-muted-foreground">Ce lien est invalide ou a déjà été utilisé.</p>
+      </div>
+    )
+  }
+
+  return (
+    <div className="min-h-screen bg-background py-10 px-4">
+      <div className="mx-auto w-full max-w-xl space-y-8">
+        <div className="space-y-1">
+          <h1 className="text-xl font-semibold tracking-tight">{data.formTitle} — {data.associationName}</h1>
+          <p className="text-sm text-muted-foreground">
+            {data.prefill.firstName} {data.prefill.lastName} · {data.prefill.email}
+          </p>
+        </div>
+
+        {outcome === "cancelled" && (
+          <p className="text-sm text-muted-foreground">Paiement annulé — vous pouvez réessayer quand vous voulez.</p>
+        )}
+
+        <div className="space-y-6">
+          <div className="flex items-start gap-2 rounded-md border bg-muted/30 px-3 py-2.5 text-sm text-muted-foreground">
+            <InfoIcon className="size-4 mt-0.5 shrink-0" />
+            <span>Votre mot de passe d&apos;accès à l&apos;espace membre reste le même — inutile d&apos;en créer un nouveau.</span>
+          </div>
+
+          <div className="space-y-2">
+            <span className="text-sm font-medium">Tarif d&apos;adhésion</span>
+            <div className="grid gap-2 sm:grid-cols-2">
+              {data.tiers.map(tier => (
+                <button
+                  key={tier.id}
+                  type="button"
+                  onClick={() => setTierId(tier.id)}
+                  className={`rounded-md border px-4 py-3 text-left text-sm transition-colors ${
+                    tierId === tier.id ? "border-primary bg-primary/5" : "border-input hover:bg-muted/40"
+                  }`}
+                >
+                  <div className="font-medium">{tier.label}</div>
+                  <div className="text-muted-foreground">
+                    {tier.freeAmount ? `À partir de ${tier.amount ?? "0"}€` : `${tier.amount}€`}
+                  </div>
+                </button>
+              ))}
+            </div>
+            {selectedTier?.freeAmount && (
+              <CurrencyField label="Montant" required value={amount} onChange={setAmount} />
+            )}
+          </div>
+
+          {data.fieldPhone !== "HIDDEN" && (
+            <FormField
+              label="Téléphone" required={data.fieldPhone === "REQUIRED"}
+              value={phone} onChange={e => setPhone(e.target.value)} onBlur={() => touch("phone")}
+              error={requiredError("phone", phone, data.fieldPhone === "REQUIRED")}
+            />
+          )}
+          {data.fieldMobile !== "HIDDEN" && (
+            <FormField
+              label="Mobile" required={data.fieldMobile === "REQUIRED"}
+              value={mobile} onChange={e => setMobile(e.target.value)} onBlur={() => touch("mobile")}
+              error={requiredError("mobile", mobile, data.fieldMobile === "REQUIRED")}
+            />
+          )}
+          {data.fieldAddress !== "HIDDEN" && (
+            <AddressFields
+              value={addressValues} onChange={patch => setAddressValues(v => ({ ...v, ...patch }))}
+              required={addressRequired} errors={touched.address && addressRequired && !addressFilled ? { addressStreet: "Requis" } : undefined}
+            />
+          )}
+          {data.fieldBirthDate !== "HIDDEN" && (
+            <DateField
+              label="Date de naissance" required={data.fieldBirthDate === "REQUIRED"}
+              value={birthDate} onChange={v => { setBirthDate(v); touch("birthDate") }}
+              error={requiredError("birthDate", birthDate, data.fieldBirthDate === "REQUIRED")}
+            />
+          )}
+          {data.fieldGender !== "HIDDEN" && (
+            <SelectField
+              label="Genre" required={data.fieldGender === "REQUIRED"}
+              options={[
+                ...(data.fieldGender === "REQUIRED" ? [] : [{ value: "", label: "Préférer ne pas préciser" }]),
+                { value: "HOMME", label: "Homme" }, { value: "FEMME", label: "Femme" },
+              ]}
+              value={sexe} onValueChange={v => { setSexe(v as "" | "HOMME" | "FEMME"); touch("sexe") }}
+              error={requiredError("sexe", sexe, data.fieldGender === "REQUIRED")}
+            />
+          )}
+          {data.fieldLanguage !== "HIDDEN" && (
+            <SelectField
+              label="Langue parlée" required={data.fieldLanguage === "REQUIRED"}
+              options={data.fieldLanguage === "REQUIRED"
+                ? spokenLanguageOptions()
+                : [{ value: "", label: "Non précisé" }, ...spokenLanguageOptions()]}
+              value={spokenLanguage} onValueChange={v => { setSpokenLanguage(v); touch("spokenLanguage") }}
+              error={requiredError("spokenLanguage", spokenLanguage, data.fieldLanguage === "REQUIRED")}
+            />
+          )}
+          {data.fieldPhoto !== "HIDDEN" && (
+            <div className="space-y-1.5">
+              <span className="text-sm font-medium">Photo{data.fieldPhoto === "REQUIRED" ? " *" : ""}</span>
+              <ImageUpload
+                value={photoUrl} onChange={setPhotoUrl}
+                uploadUrl={`/api/public/${data.slug}/adhesion/${data.formSlug}/photo`}
+                invalid={data.fieldPhoto === "REQUIRED" && touched.photoUrl && !photoUrl}
+                aspectRatio="square"
+              />
+            </div>
+          )}
+
+          {data.customFields.map(field => (
+            <MembershipFormFieldInput
+              key={field.id} field={field} value={answers[field.id] ?? ""}
+              onChange={v => setAnswers(a => ({ ...a, [field.id]: v }))}
+              onBlur={() => touch(`custom-${field.id}`)}
+              error={touched[`custom-${field.id}`] && field.required && !answers[field.id]?.trim() ? "Ce champ est requis." : undefined}
+            />
+          ))}
+
+          {!data.online && (
+            <p className="text-sm text-muted-foreground">Le paiement en ligne n&apos;est pas disponible pour le moment. Contactez l&apos;association.</p>
+          )}
+
+          <Button loading={submitting} disabled={!canSubmit || !data.online} onClick={handleSubmit} className="w-full">
+            {selectedTier ? `Payer et finaliser (${selectedTier.freeAmount ? amount : selectedTier.amount}€)` : "Choisissez un tarif"}
+          </Button>
+        </div>
+      </div>
+    </div>
+  )
+}
