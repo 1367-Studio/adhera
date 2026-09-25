@@ -29,5 +29,6 @@ export function getRouteLabels(t: ReturnType<typeof useTranslations>): Record<st
     sondages:     t("layout.appSidebar.sondages"),
     suporte:      t("layout.appSidebar.suporte"),
     "documents-association": t("layout.appSidebar.associationDocuments"),
+    "fiches-papier":         t("paperFormTemplates.title"),
   }
 }

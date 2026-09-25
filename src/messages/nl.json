@@ -3801,7 +3801,7 @@
       "exonereConfirmTitle": "Deze bijdrage vrijstellen?",
       "exonereConfirmDescription": "Betalingen die al zijn geboekt, worden verwijderd. Deze actie kan niet ongedaan worden gemaakt.",
       "installments": {
-        "title": "Deadlines (parcelamento)",
+        "title": "Deadlines",
         "none": "Geen vervaldatum — de bijdrage gebruikt de bovenstaande vervaldatum.",
         "count": "Aantal looptijden",
         "generate": "Genereer deadlines",

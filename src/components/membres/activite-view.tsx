@@ -64,6 +64,9 @@ function getFieldLabels(t: Translator): Record<string, string> {
     phone: t("membres.activityLog.fields.phone"), address: t("membres.activityLog.fields.address"),
     birthDate: t("membres.activityLog.fields.birthDate"),
     status: t("membres.activityLog.fields.status"), typeId: t("membres.activityLog.fields.typeId"), role: t("membres.activityLog.fields.role"),
+    notes: t("membres.activityLog.fields.notes"), imageRightsConsent: t("membres.activityLog.fields.imageRightsConsent"),
+    guardianName: t("membres.activityLog.fields.guardianName"), guardianPhone: t("membres.activityLog.fields.guardianPhone"),
+    secondGuardianName: t("membres.activityLog.fields.secondGuardianName"), secondGuardianPhone: t("membres.activityLog.fields.secondGuardianPhone"),
   }
 }
 
@@ -127,6 +130,19 @@ function getAssociationDocumentFieldLabels(t: Translator): Record<string, string
     content:          t("membres.activiteView.actualiteFields.content"),
     fileName:         t("associationDocuments.form.fileLabel"),
   }
+}
+
+function getPaperFormTemplateFieldLabels(t: Translator): Record<string, string> {
+  return {
+    name:         t("paperFormTemplates.activity.fields.name"),
+    pagesPerForm: t("paperFormTemplates.activity.fields.pagesPerForm"),
+    fields:       t("paperFormTemplates.activity.fields.fields"),
+    identificationText: t("paperFormTemplates.activity.fields.identificationText"),
+  }
+}
+
+function formatPaperFormTemplateValue(_field: string, value: string | null): string {
+  return value ?? "—"
 }
 
 function formatAssociationDocumentValue(field: string, value: string | null, t: Translator): string {
@@ -270,6 +286,10 @@ function getActionConfig(t: Translator): Record<string, { label: string; color: 
     TYPE_CREATED:             { label: t("membres.activiteView.actions.typeCreated"),           color: SLA    },
     TYPE_UPDATED:             { label: t("membres.activiteView.actions.typeUpdated"),        color: SLA_L  },
     TYPE_DELETED:             { label: t("membres.activiteView.actions.typeDeleted"),       color: DEL    },
+    // Modèles de fiches papier (slate, like the other member settings)
+    PAPER_FORM_TEMPLATE_CREATED: { label: t("membres.activiteView.actions.paperFormTemplateCreated"), color: SLA   },
+    PAPER_FORM_TEMPLATE_UPDATED: { label: t("membres.activiteView.actions.paperFormTemplateUpdated"), color: SLA_L },
+    PAPER_FORM_TEMPLATE_DELETED: { label: t("membres.activiteView.actions.paperFormTemplateDeleted"), color: DEL   },
     // Réunions (sky)
     MEETING_CREATED:           { label: t("membres.activiteView.actions.meetingCreated"),              color: SKY   },
     MEETING_UPDATED:           { label: t("membres.activiteView.actions.meetingUpdated"),           color: SKY_L },
@@ -343,6 +363,7 @@ function getEntityLabels(t: Translator): Record<string, string> {
     FinanceCategory:  t("membres.activiteView.entities.financeCategory"),
     Payment:          t("membres.activiteView.entities.payment"),
     AssociationDocument: t("membres.activiteView.entities.associationDocument"),
+    PaperFormTemplate:   t("membres.activiteView.entities.paperFormTemplate"),
   }
 }
 
@@ -387,6 +408,7 @@ function getEntityOptions(t: Translator): { value: string; label: string }[] {
     { value: "Expense",          label: entities.Expense          },
     { value: "FinanceCategory",  label: entities.FinanceCategory  },
     { value: "AssociationDocument", label: entities.AssociationDocument },
+    { value: "PaperFormTemplate",   label: entities.PaperFormTemplate },
   ]
 }
 
@@ -407,6 +429,7 @@ function formatDiffValue(field: string, value: string | null, statusLabels: Reco
   if (field === "status") return statusLabels[value] ?? value
   if (field === "type")   return value === "ENTREE" ? t("membres.activiteView.entrySortie.entree") : t("membres.activiteView.entrySortie.sortie")
   if (field === "role")   return roleLabels[value] ?? value
+  if (field === "imageRightsConsent") return value === "true" ? t("common.yes") : value === "false" ? t("common.no") : value
   return value
 }
 
@@ -436,7 +459,9 @@ function GenericDiff({ changes, fieldLabels, t }: {
 
 // Diff for records whose `content` is rich HTML: the log only stores a { old: null, new: null }
 // marker for it (the HTML itself is too large to keep), so it renders as "modifié" instead
-// of an old → new pair. Shared by ACTUALITE_UPDATED and ASSOCIATION_DOCUMENT_UPDATED.
+// of an old → new pair. Shared by ACTUALITE_UPDATED, ASSOCIATION_DOCUMENT_UPDATED and
+// PAPER_FORM_TEMPLATE_UPDATED (whose `fields` list is logged with the same null/null marker —
+// a real change never has both sides null, so any such entry reads as "modifié").
 function RichContentDiff({ changes, fieldLabels, formatValue, t }: {
   changes:     Record<string, FieldDiff>
   fieldLabels: Record<string, string>
@@ -451,7 +476,7 @@ function RichContentDiff({ changes, fieldLabels, formatValue, t }: {
         <p key={field} className="text-xs text-muted-foreground">
           <span className="font-medium text-foreground/80">{fieldLabels[field] ?? field}</span>
           {" "}
-          {field === "content" ? (
+          {field === "content" || (diff.old === null && diff.new === null) ? (
             <span className="italic">{t("membres.activiteView.actualiteValues.contentChanged")}</span>
           ) : (
             <>
@@ -472,6 +497,10 @@ function Details({ log, t }: { log: LogEntry; t: Translator }) {
 
   if (log.action === "ACTUALITE_UPDATED" && m.changes) {
     return <RichContentDiff changes={m.changes} fieldLabels={getActualiteFieldLabels(t)} formatValue={formatActualiteValue} t={t} />
+  }
+
+  if (log.action === "PAPER_FORM_TEMPLATE_UPDATED" && m.changes) {
+    return <RichContentDiff changes={m.changes} fieldLabels={getPaperFormTemplateFieldLabels(t)} formatValue={formatPaperFormTemplateValue} t={t} />
   }
 
   if (log.action === "ASSOCIATION_DOCUMENT_UPDATED" && m.changes) {

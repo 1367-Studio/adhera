@@ -172,8 +172,9 @@ export function MembreDetailView() {
   // handleCreateCotisation) — this page has no other "edit cotisation" entry point, so it's
   // opened here rather than sending the admin off to the main Cotisations list to find it.
   const [editCotisationTarget, setEditCotisationTarget] = useState<FetchedCotisation | null>(null)
-  // Ce que le modal d'encaissement a besoin de connaître — le reste de la ligne ne l'intéresse pas.
-  const [paymentTarget, setPaymentTarget] = useState<{ id: string; amount: string; amountPaid: string } | null>(null)
+  // Le modal d'encaissement recharge lui-même solde et échéancier (la fiche ne porte pas les
+  // échéances) — l'identifiant suffit.
+  const [paymentTarget, setPaymentTarget] = useState<{ id: string } | null>(null)
 
   const { data: membre, isLoading, isError } = useMembre(id)
 
@@ -402,6 +403,12 @@ export function MembreDetailView() {
     ...membre.membershipAddonPurchases.map(p => ({ id: p.id, label: p.label, amount: p.amount, date: p.purchasedAt })),
     ...membre.dons.map(d => ({ id: d.id, label: d.membershipAddonTier?.label ?? t("membres.detail.donationFallbackLabel"), amount: d.amount, date: d.paidAt })),
   ].sort((a, b) => purchaseSortKey(b.date) - purchaseSortKey(a.date))
+  // Legal guardians written on this record (paper-form import or manual entry); a pair with
+  // neither a name nor a phone is left out.
+  const guardianRows = [
+    { key: "first",  name: membre.guardianName,       phone: membre.guardianPhone },
+    { key: "second", name: membre.secondGuardianName, phone: membre.secondGuardianPhone },
+  ].filter((guardian) => guardian.name || guardian.phone)
   const TAB_PAGE_SIZE         = 50
 
   return (
@@ -618,6 +625,18 @@ export function MembreDetailView() {
           {membre.customFieldAnswers.map((a, i) => (
             <p key={i} className="text-muted-foreground">{a.label} : {a.value}</p>
           ))}
+          {/* Always shown, « Non renseigné » included: an unanswered consent must not read as a
+              refusal — nor as an agreement — by being left out. */}
+          <p className="text-muted-foreground">
+            {t("membres.detail.imageRightsColon", {
+              value: membre.imageRightsConsent === null
+                ? t("membres.form.imageRights.unknown")
+                : membre.imageRightsConsent ? t("membres.form.imageRights.granted") : t("membres.form.imageRights.refused"),
+            })}
+            {membre.imageRightsConsent !== null && membre.imageRightsConsentAt && (
+              <> {t("membres.detail.imageRightsDate", { date: format(new Date(membre.imageRightsConsentAt), "dd/MM/yyyy", { locale: fr }) })}</>
+            )}
+          </p>
           {!membre.civilite && !membre.sexe && !membre.birthDate && !membre.groupeSanguin && !membre.allergies
             && membre.possedeTshirt === null && !membre.tailleTshirt && !membre.responsable && !membre.spokenLanguage
             && membre.customFieldAnswers.length === 0 && (
@@ -657,6 +676,32 @@ export function MembreDetailView() {
           )}
         </div>
       </div>
+
+      {guardianRows.length > 0 && (
+        <section className="space-y-1.5 text-sm">
+          <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{t("membres.detail.guardians")}</h3>
+          <ul className="space-y-1">
+            {guardianRows.map((guardian) => (
+              <li key={guardian.key}>
+                {guardian.name}
+                {guardian.name && guardian.phone && <span className="text-muted-foreground"> · </span>}
+                {guardian.phone && (
+                  <a href={`tel:${guardian.phone.replace(/[^\d+]/g, "")}`} className="text-muted-foreground underline-offset-2 hover:text-foreground hover:underline">
+                    {guardian.phone}
+                  </a>
+                )}
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      {membre.notes && (
+        <section className="space-y-1.5 text-sm">
+          <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{t("membres.detail.notes")}</h3>
+          <p className="whitespace-pre-wrap break-words">{membre.notes}</p>
+        </section>
+      )}
 
       {membre.cotisationSubscription && (
         <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border bg-card px-4 py-3 text-sm">
@@ -987,6 +1032,12 @@ export function MembreDetailView() {
             city:              membre.city              ?? "",
             country:           membre.country           ?? "",
             adherentOverride: membre.adherentOverride === null ? "" : String(membre.adherentOverride) as "true" | "false",
+            notes:              membre.notes ?? "",
+            imageRightsConsent: membre.imageRightsConsent === null ? "" : String(membre.imageRightsConsent) as "true" | "false",
+            guardianName:        membre.guardianName        ?? "",
+            guardianPhone:       membre.guardianPhone       ?? "",
+            secondGuardianName:  membre.secondGuardianName  ?? "",
+            secondGuardianPhone: membre.secondGuardianPhone ?? "",
           }}
           onSubmit={handleUpdate}
           onCancel={() => setEditOpen(false)}
@@ -1053,7 +1104,7 @@ export function MembreDetailView() {
       <Modal open={createCotisationOpen} onOpenChange={setCreateCotisationOpen} title={t("membres.detail.addCotisationTitle")} size="lg" dismissable={false}>
         <CotisationForm
           membres={[]}
-          editMode
+          hideMemberSelect
           defaultValues={{ membreId: id, year: new Date().getFullYear(), status: null }}
           onSubmit={handleCreateCotisation}
           onCancel={() => setCreateCotisationOpen(false)}
@@ -1071,7 +1122,6 @@ export function MembreDetailView() {
       {paymentTarget && (
         <CotisationPaymentModal
           cotisationId={paymentTarget.id}
-          remaining={Number(paymentTarget.amount) - Number(paymentTarget.amountPaid)}
           open={!!paymentTarget}
           onOpenChange={(open) => !open && setPaymentTarget(null)}
         />

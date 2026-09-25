@@ -3801,7 +3801,7 @@
       "exonereConfirmTitle": "Izuzimanje ovog doprinosa?",
       "exonereConfirmDescription": "Uplate koje su već uplaćene bit će izbrisane. Ova radnja se ne može poništiti.",
       "installments": {
-        "title": "Rokovi (parcelamento)",
+        "title": "Rokovi",
         "none": "Nema roka dospijeća — doprinos koristi gore navedeni rok.",
         "count": "Broj dospijeća",
         "generate": "Generirajte rokove",

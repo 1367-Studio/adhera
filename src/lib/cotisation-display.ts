@@ -17,19 +17,30 @@ export function installmentCoverage<T extends DisplayInstallment>(installments: 
   })
 }
 
-// How much is owed right now to catch up through the next unpaid échéance — mirrors
-// nextAmountDue in src/lib/cotisation-status.ts. Used client-side only to suggest a sensible
-// default amount (e.g. pre-filling "record a payment"); the server always recomputes and
-// enforces the real figure independently.
-export function clientNextAmountDue(amount: number, amountPaid: number, installments: DisplayInstallment[]): number {
-  const remaining = amount - amountPaid
-  if (remaining <= EPSILON) return 0
-  if (installments.length === 0) return remaining
-  const withCoverage = installmentCoverage(installments, amountPaid)
-  const firstUncovered = withCoverage.find(i => !i.covered)
-  if (!firstUncovered) return remaining
-  const cumulativeThroughIt = withCoverage
-    .slice(0, withCoverage.indexOf(firstUncovered) + 1)
-    .reduce((sum, i) => sum + i.amount, 0)
-  return Math.min(remaining, cumulativeThroughIt - amountPaid)
+// Where each échéance stands under the waterfall, in due-date order — what the "record a
+// payment" modal needs to let a manager pick the échéance being paid now rather than typing
+// the figure by hand. `remainingAmount` is what's still owed on that échéance alone (less than
+// its amount when a previous payment only partly covered it); `amountToClear` is what has to be
+// paid now to settle it, i.e. every earlier unpaid échéance too, since payments aren't linked
+// to a specific échéance and always cover the oldest ones first.
+export type InstallmentBalance<T extends DisplayInstallment> = T & {
+  covered:         boolean
+  position:        number
+  remainingAmount: number
+  amountToClear:   number
+}
+
+export function installmentBalances<T extends DisplayInstallment>(installments: T[], amountPaid: number): InstallmentBalance<T>[] {
+  let cumulativeDue = 0
+  return installmentCoverage(installments, amountPaid).map((installment, index) => {
+    cumulativeDue += installment.amount
+    const amountToClear   = Math.max(0, cumulativeDue - amountPaid)
+    const remainingAmount = Math.min(installment.amount, amountToClear)
+    return {
+      ...installment,
+      position:        index + 1,
+      remainingAmount: installment.covered ? 0 : remainingAmount,
+      amountToClear:   installment.covered ? 0 : amountToClear,
+    }
+  })
 }

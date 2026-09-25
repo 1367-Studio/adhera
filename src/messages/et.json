@@ -3801,7 +3801,7 @@
       "exonereConfirmTitle": "Kas see panus on vabastatud?",
       "exonereConfirmDescription": "Juba postitatud maksed kustutatakse. Seda toimingut ei saa tagasi võtta.",
       "installments": {
-        "title": "Tähtajad (parcelamento)",
+        "title": "Tähtajad",
         "none": "Tähtaega ei ole — sissemakse kasutab ülaltoodud tähtaega.",
         "count": "Tähtaegade arv",
         "generate": "Loo tähtajad",

@@ -34,6 +34,17 @@ export type MembreDetail = {
   pendingTier:   { id: string; label: string; free: boolean } | null
   adherentOverride: boolean | null
   isAdherent:       boolean
+  // Free-form manager notes (fed among others by the paper-form import).
+  notes:                string | null
+  // Legal guardians kept as plain text on the member's own record (name as written + phone);
+  // unrelated to responsableId, which links another member.
+  guardianName:         string | null
+  guardianPhone:        string | null
+  secondGuardianName:   string | null
+  secondGuardianPhone:  string | null
+  // Tri-state like adherentOverride: null = never asked. The date is when the answer was given.
+  imageRightsConsent:   boolean | null
+  imageRightsConsentAt: string | null
   typeId:        string | null
   responsableId: string | null
   associationId: string | null

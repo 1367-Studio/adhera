@@ -67,6 +67,14 @@ type Membre = {
   status:        "PENDING" | "ACTIF" | "INACTIF" | "SUSPENDU"
   adherentOverride: boolean | null
   isAdherent:       boolean
+  // Scalar columns GET /api/membres already returns — needed so that editing from the list
+  // posts them back instead of an empty input that would erase them.
+  notes:               string | null
+  imageRightsConsent:  boolean | null
+  guardianName:        string | null
+  guardianPhone:       string | null
+  secondGuardianName:  string | null
+  secondGuardianPhone: string | null
   typeId:        string | null
   type:          MembreTypeRef | null
   responsableId: string | null
@@ -501,6 +509,17 @@ export function MembresView() {
                   <DropdownMenuItem onClick={() => router.push("/dashboard/membres/import")}>
                     {t("membres.importWizard.title")}
                   </DropdownMenuItem>
+                  {/* Reading handwriting needs the IA module (and the association's own key). */}
+                  {modules.ia && (
+                    <>
+                      <DropdownMenuItem onClick={() => router.push("/dashboard/membres/import-fiches")}>
+                        {t("paperFormScan.menuItem")}
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => router.push("/dashboard/membres/fiches-papier")}>
+                        {t("paperFormScan.manageTemplatesMenuItem")}
+                      </DropdownMenuItem>
+                    </>
+                  )}
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
                 <DropdownMenuGroup>
@@ -743,6 +762,12 @@ export function MembresView() {
             tailleTshirt:  editTarget.tailleTshirt  ?? "",
             responsableId: editTarget.responsableId ?? "",
             adherentOverride: editTarget.adherentOverride === null ? "" : String(editTarget.adherentOverride) as "true" | "false",
+            notes:               editTarget.notes               ?? "",
+            imageRightsConsent:  editTarget.imageRightsConsent === null || editTarget.imageRightsConsent === undefined ? "" : String(editTarget.imageRightsConsent) as "true" | "false",
+            guardianName:        editTarget.guardianName        ?? "",
+            guardianPhone:       editTarget.guardianPhone       ?? "",
+            secondGuardianName:  editTarget.secondGuardianName  ?? "",
+            secondGuardianPhone: editTarget.secondGuardianPhone ?? "",
           } : undefined}
           onSubmit={handleUpdate}
           onCancel={() => setEditTarget(null)}

@@ -3801,7 +3801,7 @@
       "exonereConfirmTitle": "Undtage dette bidrag?",
       "exonereConfirmDescription": "Betalinger, der allerede er blevet indsendt, vil blive slettet. Denne handling kan ikke gøres om.",
       "installments": {
-        "title": "Deadlines (parcelamento)",
+        "title": "Deadlines",
         "none": "Ingen forfaldsdato — bidraget bruger forfaldsdatoen ovenfor.",
         "count": "Antal løbetider",
         "generate": "Lav deadlines",
