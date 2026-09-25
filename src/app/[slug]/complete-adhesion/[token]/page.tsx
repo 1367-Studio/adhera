@@ -120,9 +120,33 @@ export default function CompletarAdesaoPage() {
     && (!addressRequired || addressFilled)
     && data.customFields.every(f => !f.required || !!answers[f.id]?.trim())
 
+  // Mirrors membership-form-public-form.tsx's own blockingReason — surfaces *why* the
+  // button won't proceed instead of leaving the visitor to guess, on top of the inline
+  // per-field errors a click attempt now reveals (see handleSubmit).
+  const blockingReason: string | null = !data ? null
+    : !selectedTier ? "Choisissez un tarif."
+    : selectedTier.freeAmount && amount <= 0 ? "Indiquez un montant."
+    : !data.online ? "Le paiement en ligne n'est pas disponible pour le moment. Contactez l'association."
+    : (data.fieldPhone === "REQUIRED" && !phone.trim())
+      || (data.fieldMobile === "REQUIRED" && !mobile.trim())
+      || (data.fieldBirthDate === "REQUIRED" && !birthDate.trim())
+      || (data.fieldGender === "REQUIRED" && !sexe)
+      || (data.fieldLanguage === "REQUIRED" && !spokenLanguage)
+      || (data.fieldPhoto === "REQUIRED" && !photoUrl.trim())
+      || (addressRequired && !addressFilled)
+      || !data.customFields.every(f => !f.required || !!answers[f.id]?.trim())
+    ? "Complétez les champs requis ci-dessus."
+    : null
+
   async function handleSubmit() {
     if (!data) return
-    setTouched({ phone: true, mobile: true, birthDate: true, sexe: true, spokenLanguage: true, photoUrl: true, address: true })
+    // A disabled <button> fires no click event at all — without this, there was no way to
+    // reveal which field is missing short of reading the page source (same reasoning as
+    // membership-form-public-form.tsx's blockingReason). The button stays clickable even
+    // when invalid specifically so this attempt can mark every field touched.
+    const allTouched: Record<string, boolean> = { phone: true, mobile: true, birthDate: true, sexe: true, spokenLanguage: true, photoUrl: true, address: true }
+    for (const field of data.customFields) allTouched[`custom-${field.id}`] = true
+    setTouched(allTouched)
     if (!canSubmit) return
 
     setSubmitting(true)
@@ -287,13 +311,14 @@ export default function CompletarAdesaoPage() {
             />
           ))}
 
-          {!data.online && (
-            <p className="text-sm text-muted-foreground">Le paiement en ligne n&apos;est pas disponible pour le moment. Contactez l&apos;association.</p>
-          )}
-
-          <Button loading={submitting} disabled={!canSubmit || !data.online} onClick={handleSubmit} className="w-full">
-            {selectedTier ? `Payer et finaliser (${selectedTier.freeAmount ? amount : selectedTier.amount}€)` : "Choisissez un tarif"}
-          </Button>
+          <div className="space-y-2">
+            <Button loading={submitting} onClick={handleSubmit} className="w-full">
+              {selectedTier ? `Payer et finaliser (${selectedTier.freeAmount ? amount : selectedTier.amount}€)` : "Choisissez un tarif"}
+            </Button>
+            {blockingReason && (
+              <p className="text-sm text-center text-muted-foreground">{blockingReason}</p>
+            )}
+          </div>
         </div>
       </div>
     </div>
