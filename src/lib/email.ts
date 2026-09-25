@@ -1316,7 +1316,7 @@ export function membershipPaymentLinkEmail(p: {
   }
 }
 
-// One-off "complete your adhésion" link (src/app/[slug]/completar-adesao/[token]) for a
+// One-off "complete your adhésion" link (src/app/[slug]/complete-adhesion/[token]) for a
 // member who already self-registered via the portal but was never actually billed — unlike
 // membershipPaymentLinkEmail above, this person already has a portal account/password, so
 // there is no "you'll get your login once you pay" line, and the link leads to a small form
