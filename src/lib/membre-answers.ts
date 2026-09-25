@@ -8,15 +8,22 @@ export function readMobileAnswer(answers: unknown): string | null {
   return typeof value === "string" && value.trim() ? value : null
 }
 
-// Patche le mobile dans answers sans jamais remplacer l'objet : les réponses aux champs
-// personnalisés du formulaire d'adhésion vivent dans le même Json, et un admin qui corrige un
-// numéro depuis la fiche ne doit pas les effacer au passage. Un mobile vidé retire la clé
-// plutôt que d'y laisser une chaîne vide, pour que readMobileAnswer et l'export restent
-// d'accord sur ce que « pas de mobile » veut dire.
-export function answersWithMobile(existingAnswers: unknown, mobile: string | null | undefined): Record<string, string> {
+// Patche une ou plusieurs clés dans answers sans jamais remplacer l'objet : le mobile et les
+// réponses aux champs personnalisés du formulaire d'adhésion vivent dans le même Json, et
+// corriger l'un depuis la fiche ne doit pas effacer les autres au passage. Une valeur vidée
+// retire sa clé plutôt que d'y laisser une chaîne vide, pour que readMobileAnswer (et tout
+// lecteur équivalent pour un champ personnalisé) reste d'accord avec l'export sur ce que
+// « pas de réponse » veut dire.
+export function mergeAnswers(existingAnswers: unknown, updates: Record<string, string | null | undefined>): Record<string, string> {
   const answers = { ...(existingAnswers as Record<string, string> | null ?? {}) }
-  const trimmedMobile = mobile?.trim()
-  if (trimmedMobile) answers[MOBILE_ANSWER_KEY] = trimmedMobile
-  else delete answers[MOBILE_ANSWER_KEY]
+  for (const [key, rawValue] of Object.entries(updates)) {
+    const trimmedValue = rawValue?.trim()
+    if (trimmedValue) answers[key] = trimmedValue
+    else delete answers[key]
+  }
   return answers
+}
+
+export function answersWithMobile(existingAnswers: unknown, mobile: string | null | undefined): Record<string, string> {
+  return mergeAnswers(existingAnswers, { [MOBILE_ANSWER_KEY]: mobile })
 }

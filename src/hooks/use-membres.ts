@@ -34,6 +34,17 @@ export type MembreDetail = {
   pendingTier:   { id: string; label: string; free: boolean } | null
   adherentOverride: boolean | null
   isAdherent:       boolean
+  // Free-form manager notes (fed among others by the paper-form import).
+  notes:                string | null
+  // Legal guardians kept as plain text on the member's own record (name as written + phone);
+  // unrelated to responsableId, which links another member.
+  guardianName:         string | null
+  guardianPhone:        string | null
+  secondGuardianName:   string | null
+  secondGuardianPhone:  string | null
+  // Tri-state like adherentOverride: null = never asked. The date is when the answer was given.
+  imageRightsConsent:   boolean | null
+  imageRightsConsentAt: string | null
   typeId:        string | null
   responsableId: string | null
   associationId: string | null
@@ -49,6 +60,19 @@ export type MembreDetail = {
   // MembershipForm's "mobile" standard field and its custom MembershipFormField questions.
   mobile:             string | null
   customFieldAnswers: { label: string; value: string }[]
+  // Full field set of the MembershipForm this member joined through (see
+  // resolveMembreMembershipFormId), each with its current raw answer — feeds "Editar membro"'s
+  // custom-fields section. Empty for a member with no traceable form.
+  editableCustomFields: {
+    field: {
+      id:       string
+      type:     "TEXT" | "NUMBER" | "SELECT"
+      label:    string
+      required: boolean
+      options:  string[] | null
+    }
+    value: string
+  }[]
   cotisations: {
     id:     string
     year:   number
@@ -63,6 +87,10 @@ export type MembreDetail = {
     // the status column itself never reflects this expiring (cotisation-status-sweep
     // deliberately never touches a PAYE/EXONERE row), so the UI checks this directly.
     periodEnd: string | null
+    // Snapshot of the MembershipTier that produced this cotisation (see
+    // Cotisation.tierId) — null for cotisations created outside a MembershipForm
+    // (admin manual add, legacy /inscription flow).
+    tier: { label: string } | null
   }[]
 
   participations: {

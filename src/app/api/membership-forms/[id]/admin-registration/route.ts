@@ -15,6 +15,7 @@ import { writeActivityLog } from "@/lib/activity-log"
 import { SPOKEN_LANGUAGE_CODES } from "@/lib/languages"
 import { ADDRESS_MAX_LENGTHS, addressColumns, addressIsFilled } from "@/lib/address"
 import { SUPPORTED_LOCALES } from "@/i18n/locales"
+import { findInvalidMembershipFormAnswer } from "@/lib/membership-form-answers-validation"
 
 // Same role set as POST /api/membres — whoever can create a member can register one
 // through a form on their behalf.
@@ -112,15 +113,12 @@ export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
       return NextResponse.json({ error: `Le champ « ${label} » est requis.` }, { status: 422 })
   }
   const knownFieldIds = new Set(form.customFields.map(f => f.id))
-  for (const field of form.customFields) {
-    const value = parsed.data.answers[field.id]
-    if (field.required && (value == null || value.trim() === ""))
-      return NextResponse.json({ error: `Le champ « ${field.label} » est requis.` }, { status: 422 })
-    if (field.type === "SELECT" && value != null && value !== "") {
-      const options = Array.isArray(field.options) ? field.options as string[] : []
-      if (!options.includes(value))
-        return NextResponse.json({ error: `Le champ « ${field.label} » est invalide.` }, { status: 422 })
-    }
+  const invalidAnswer = findInvalidMembershipFormAnswer(form.customFields, parsed.data.answers)
+  if (invalidAnswer) {
+    const message = invalidAnswer.kind === "required"
+      ? `Le champ « ${invalidAnswer.field.label} » est requis.`
+      : `Le champ « ${invalidAnswer.field.label} » est invalide.`
+    return NextResponse.json({ error: message }, { status: 422 })
   }
   // Même convention que le checkout public : seul "mobile" (pas de colonne dédiée) et les
   // réponses aux champs du formulaire vont dans Membre.answers.

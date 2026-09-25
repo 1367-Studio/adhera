@@ -41,6 +41,12 @@ function getFieldLabels(t: Translator): Record<string, string> {
     typeId:    t("membres.activityLog.fields.typeId"),
     role:      t("membres.activityLog.fields.role"),
     adherentOverride: t("membres.activityLog.fields.adherentOverride"),
+    notes:              t("membres.activityLog.fields.notes"),
+    imageRightsConsent: t("membres.activityLog.fields.imageRightsConsent"),
+    guardianName:        t("membres.activityLog.fields.guardianName"),
+    guardianPhone:       t("membres.activityLog.fields.guardianPhone"),
+    secondGuardianName:  t("membres.activityLog.fields.secondGuardianName"),
+    secondGuardianPhone: t("membres.activityLog.fields.secondGuardianPhone"),
   }
 }
 
@@ -96,11 +102,12 @@ function getActionConfig(t: Translator): Record<string, { label: string; icon: R
   }
 }
 
-function formatFieldValue(value: string | null, statusLabels: Record<string, string>, roleLabels: Record<string, string>, adherentOverrideLabels: Record<string, string>, field: string): string {
+function formatFieldValue(value: string | null, statusLabels: Record<string, string>, roleLabels: Record<string, string>, adherentOverrideLabels: Record<string, string>, field: string, imageRightsLabels: Record<string, string> = {}): string {
   if (value === null || value === "") return "—"
   if (field === "status") return statusLabels[value] ?? value
   if (field === "role")   return roleLabels[value] ?? value
   if (field === "adherentOverride") return adherentOverrideLabels[value] ?? value
+  if (field === "imageRightsConsent") return imageRightsLabels[value] ?? value
   return value
 }
 
@@ -111,15 +118,19 @@ function ChangeDiff({ changes, t }: { changes: Record<string, FieldDiff>; t: Tra
   const statusLabels = getStatusLabels(t)
   const roleLabels = getRoleLabels(t)
   const adherentOverrideLabels = getAdherentOverrideLabels(t)
+  const imageRightsLabels: Record<string, string> = {
+    true:  t("membres.form.imageRights.granted"),
+    false: t("membres.form.imageRights.refused"),
+  }
   return (
     <div className="mt-1.5 space-y-0.5">
       {entries.map(([field, diff]) => (
         <p key={field} className="text-xs text-muted-foreground">
           <span className="font-medium text-foreground">{fieldLabels[field] ?? field}</span>
           {" : "}
-          <span className="line-through opacity-60">{formatFieldValue(diff.old, statusLabels, roleLabels, adherentOverrideLabels, field)}</span>
+          <span className="line-through opacity-60">{formatFieldValue(diff.old, statusLabels, roleLabels, adherentOverrideLabels, field, imageRightsLabels)}</span>
           {" → "}
-          <span>{formatFieldValue(diff.new, statusLabels, roleLabels, adherentOverrideLabels, field)}</span>
+          <span>{formatFieldValue(diff.new, statusLabels, roleLabels, adherentOverrideLabels, field, imageRightsLabels)}</span>
         </p>
       ))}
     </div>

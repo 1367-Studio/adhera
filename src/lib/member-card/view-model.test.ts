@@ -28,6 +28,7 @@ function buildLoadedCard(eligibility: MemberCardEligibility): MemberCardData {
       lastName:  "Martin",
       photoUrl:  "https://example.test/photo.jpg",
       type:      { name: "Adhérent bénévole", color: "#023D9D" },
+      tier:      "Adulte",
     },
     association: {
       name:    "Les Amis du Parc",
@@ -56,6 +57,7 @@ describe("buildMemberCardViewModel", () => {
       logoUrl:         "https://example.test/logo.png",
       memberName:      "Camille Martin",
       category:        "Adhérent bénévole",
+      tier:            "Adulte",
       validFrom:       START_OF_2026_PARIS,
       validUntil:      END_OF_2026_PARIS,
       state:           "valid",
@@ -73,7 +75,7 @@ describe("buildMemberCardViewModel", () => {
   // stopped covering has to land in the single date field the view model carries.
   it("uses the expiry date as validUntil for an expired card", () => {
     const viewModel = buildMemberCardViewModel(
-      buildLoadedCard({ state: "expired", expiredOn: END_OF_2025_PARIS }),
+      buildLoadedCard({ state: "expired", expiredOn: END_OF_2025_PARIS, cotisationId: "cotisation-2025" }),
       VERIFICATION_URL,
     )
     expect(viewModel).toMatchObject({

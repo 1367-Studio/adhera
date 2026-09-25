@@ -1718,6 +1718,7 @@
       "notFound": "Händelse ej hittad",
       "titleLabel": "Evenemangets titel",
       "duplicateButton": "Duplicat",
+      "avaliacoesButton": "Recensioner",
       "deleteButton": "Radera",
       "publishButton": "Publicera",
       "unpublishButton": "Ej publicera",
@@ -3275,7 +3276,9 @@
         "montantCotisation": "Montant cotis.",
         "titreEvenement": "Evenemangets titel",
         "dateEvenement": "Evenemangsdatum",
-        "lieuEvenement": "Evenemangsplats"
+        "lieuEvenement": "Evenemangsplats",
+        "dateExpiration": "Utgångsdatum",
+        "lienRenouvellement": "Förnyelselänk"
       },
       "emailBody": "Meddelandetext (e-post)",
       "emailBodyPlaceholder": "Hej '{{prenom}}',…",
@@ -3316,7 +3319,8 @@
         "rsvpConfirmed": "OSA bekräftat",
         "memberCreated": "Ny medlem",
         "memberBirthday": "Födelsedag",
-        "eventAdherentLapsed": "Icke förnyat medlemskap"
+        "eventAdherentLapsed": "Icke förnyat medlemskap",
+        "membershipExpiring": "Medlemskap går ut"
       },
       "statusLabels": {
         "active": "Aktiv",
@@ -3368,7 +3372,9 @@
         "reminderDays": "{days}j före varje gren",
         "rsvpConfirmed": "Utlöst vid RSVP-bekräftelse",
         "memberCreated": "Utlöst vid medlemsskapande",
-        "memberBirthday": "Varje medlems födelsedag"
+        "memberBirthday": "Varje medlems födelsedag",
+        "membershipExpiring": "{days} dagar innan medlemskapet går ut",
+        "membershipExpiringToday": "Dagen medlemskapet går ut"
       }
     },
     "ruleModal": {
@@ -3386,7 +3392,8 @@
         "rsvpConfirmed": "Bekräftelse av deltagande (RSVP)",
         "memberCreated": "Ny registrerad medlem",
         "memberBirthday": "Medlemmens födelsedag",
-        "eventAdherentLapsed": "Icke förnyat medlemskap"
+        "eventAdherentLapsed": "Icke förnyat medlemskap",
+        "membershipExpiring": "Medlemskap går ut"
       },
       "sendDate": "Datum för skickat",
       "time": "Tid",
@@ -3420,6 +3427,9 @@
       "daysBeforeEvent": "Dagar före evenemanget",
       "daysBeforeEventHint": "Exempel: 1 = dagen innan, 3 = 3 dagar innan",
       "adherentLapsedHint": "Skickar ett meddelande till aktiva medlemmar som var medlemmar förra året (betalda/undantagna avgifter) men ännu inte har någon medlemsavgift i gott skick för innevarande år. En medlem vars medlemskapsstatus har tvingats fram manuellt påverkas aldrig.",
+      "membershipExpiringHint": "Skickar en påminnelse till medlemmar vars medlemskap (betald avgift) snart går ut, N dagar före utgångsdatumet. Skickas aldrig om medlemskapet redan har förnyats.",
+      "daysBeforeExpiration": "Dagar före utgång",
+      "daysBeforeExpirationHint": "T.ex.: 30 = en månad innan, 7 = en vecka innan, 0 = samma dag",
       "birthdayHint": "Skickar automatiskt ett meddelande på varje aktiv medlems födelsedag (dag och månad, oavsett födelseår). Endast en sändning per medlem per år.",
       "birthdayNoDateWarningType": "Inga av de aktiva medlemmarna av denna typ ({count}) har inget födelsedatum angett — denna regel skickar inget förrän ett datum läggs till på deras kort.",
       "birthdayNoDateWarningAll": "Inga av dina aktiva medlemmar ({count}) har inget födelsedatum angett — denna regel skickar inget förrän ett datum läggs till på deras kort.",
@@ -3791,7 +3801,7 @@
       "exonereConfirmTitle": "Undanta detta bidrag?",
       "exonereConfirmDescription": "Betalningar som redan har bokförts kommer att raderas. Denna åtgärd kan inte göras otagna.",
       "installments": {
-        "title": "Deadlines (parcelamento)",
+        "title": "Deadlines",
         "none": "Inget förfallodatum — bidraget använder förfallodatumet ovan.",
         "count": "Antal löptider",
         "generate": "Skapa deadlines",
@@ -3990,7 +4000,8 @@
       "noType": "Ingen typ",
       "noResponsable": "Inga",
       "noAdultResponsable": "Inga vuxna medlemmar tillgängliga",
-      "preview": "Översikt:"
+      "preview": "Översikt:",
+      "customFieldsSectionTitle": "Svar från medlemsformuläret"
     },
     "actions": {
       "add": "Lägg till en medlem",
@@ -4106,6 +4117,7 @@
       "noContactInfo": "Ingen kontaktinformation",
       "memberSinceColon": "Medlem sedan dess: {date}",
       "typeColon": "Typ: {name}",
+      "tierColon": "Tariff: {name}",
       "personalInfo": "Personlig information",
       "civiliteColon": "Titel: {value}",
       "sexeColon": "Kön: {value}",
@@ -4795,11 +4807,13 @@
       "showPhoto": "Medlemmens foto",
       "showPhotoHint": "Initialer visas om inget foto är registrerat.",
       "showCategory": "Kategori",
+      "showTier": "Tariff",
       "showPhone": "Föreningens telefonnummer",
       "showEmail": "Föreningens e-post",
       "preview": "Förhandsvisning",
       "sampleName": "Camille Martin",
       "sampleCategory": "Aktiv frivilligmedlem",
+      "sampleTier": "Vuxen",
       "noLogo": "Lägg till en logotyp under Varumärke för att visa den på kortet.",
       "noPhone": "Lägg till ett telefonnummer under Juridisk identitet & Donationer för att visa det på kortet.",
       "noEmail": "Lägg till en kontakt-e-post under Föreningsinformation för att visa den på kortet.",

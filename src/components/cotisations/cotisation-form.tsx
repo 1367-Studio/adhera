@@ -61,6 +61,10 @@ interface CotisationFormProps {
   onCancel:      () => void
   loading?:      boolean
   editMode?:     boolean
+  /** Hides the member picker when the member is already known (the member's own page) — kept
+   *  separate from editMode, which switches to the update schema: that one drops membreId/year,
+   *  so a creation opened from the member page used to reach POST without its member. */
+  hideMemberSelect?: boolean
   /** Amount already paid on this cotisation (0 for a new one) — used to warn before exempting
    *  (which deletes recorded payments) and to block editing installments once money has moved. */
   amountPaid?:   number
@@ -70,7 +74,7 @@ interface CotisationFormProps {
   currentStatus?: RawCotisationStatus
 }
 
-export function CotisationForm({ membres, defaultValues, onSubmit, onCancel, loading, editMode, amountPaid = 0, currentStatus }: CotisationFormProps) {
+export function CotisationForm({ membres, defaultValues, onSubmit, onCancel, loading, editMode, hideMemberSelect, amountPaid = 0, currentStatus }: CotisationFormProps) {
   const t = useTranslations()
   const [confirmExonereOpen, setConfirmExonereOpen] = useState(false)
 
@@ -147,7 +151,7 @@ export function CotisationForm({ membres, defaultValues, onSubmit, onCancel, loa
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
-      {!editMode && (
+      {!editMode && !hideMemberSelect && (
         <Controller
           name="membreId"
           control={control}

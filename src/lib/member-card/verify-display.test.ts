@@ -26,6 +26,7 @@ function buildCard(eligibility: MemberCardEligibility): MemberCardData {
       lastName:  "Martin",
       photoUrl:  "https://example.test/photo.jpg",
       type:      { name: "Adhérent bénévole", color: "#023D9D" },
+      tier:      "Adulte",
     },
     association: {
       name:         "Les Amis du Parc",
@@ -56,7 +57,7 @@ describe("memberCardVerifyDisplay — what a stranger may see", () => {
   })
 
   it("keeps the member visible for an expired card, so staff can ask them to renew", () => {
-    const display = memberCardVerifyDisplay(buildCard({ state: "expired", expiredOn: END_OF_2025_PARIS }))
+    const display = memberCardVerifyDisplay(buildCard({ state: "expired", expiredOn: END_OF_2025_PARIS, cotisationId: "cotisation-2025" }))
     expect(display).toMatchObject({
       state:     "expired",
       expiredOn: END_OF_2025_PARIS,

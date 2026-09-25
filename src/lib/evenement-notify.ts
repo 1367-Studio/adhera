@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma/client"
 import { sendEmail } from "@/lib/mail"
-import { evenementRegistrationAdminNotificationEmail } from "@/lib/email"
+import { evenementRegistrationAdminNotificationEmail, evenementReviewAdminNotificationEmail } from "@/lib/email"
 import { resolveDocumentBranding } from "@/lib/plan-limits"
 import { pusherServer } from "@/lib/pusher-server"
 import { APP_URL } from "@/lib/env"
@@ -82,6 +82,69 @@ export async function notifyEventRegistration(params: {
     associationId: params.associationId,
     membreId:      params.membreId,
     source:        "EVENT_REGISTRATION_ADMIN_ALERT",
+    sourceId:      params.evenementId,
+  }).catch(() => {})
+}
+
+// Called once per submitted EvenementAvis — public review link or the member portal, the
+// only two places that create one (see src/app/api/public/review/[token]/route.ts and
+// src/app/api/portal/evenements/[id]/avaliacao/route.ts). Before this existed, a submitted
+// review sat silently in the database: no in-app notification, no email, nothing telling an
+// organizer that feedback had come in. Same two-channel shape as notifyEventRegistration.
+export async function notifyEventReviewSubmitted(params: {
+  associationId:  string
+  evenementId:    string
+  eventTitle:     string
+  eventDate:      Date
+  reviewerName:   string
+  rating:         number
+  comment?:       string | null
+  adminNotificationEmail?: string | null
+}): Promise<void> {
+  const admins = await prisma.user.findMany({
+    where:  { associationId: params.associationId, role: { in: ["ADMIN", "PRESIDENT", "TRESORIER"] }, active: true },
+    select: { id: true },
+  })
+
+  const stars = "★".repeat(params.rating) + "☆".repeat(5 - params.rating)
+  const title = "Nouvel avis"
+  const body  = `${params.reviewerName} a laissé un avis ${stars} sur « ${params.eventTitle} »${params.comment ? ` : « ${params.comment} »` : "."}`
+
+  if (admins.length) {
+    await prisma.notification.createMany({
+      data: admins.map(a => ({
+        userId: a.id,
+        title,
+        body,
+        link:   `/dashboard/evenements/${params.evenementId}/avaliacoes`,
+        scope:  "GESTION",
+      })),
+      skipDuplicates: true,
+    })
+    await pusherServer.trigger(`private-association-${params.associationId}`, "new-notification", {}).catch(() => {})
+  }
+
+  if (!params.adminNotificationEmail) return
+
+  const assoc = await prisma.association.findUnique({
+    where:  { id: params.associationId },
+    select: { name: true, plan: true, customBrandingEnabled: true, logoUrl: true },
+  })
+  if (!assoc) return
+
+  sendEmail(evenementReviewAdminNotificationEmail({
+    email:           params.adminNotificationEmail,
+    associationName: assoc.name,
+    eventTitle:      params.eventTitle,
+    eventDate:       params.eventDate,
+    reviewerName:    params.reviewerName,
+    rating:          params.rating,
+    comment:         params.comment,
+    dashboardUrl:    `${APP_URL}/dashboard/evenements/${params.evenementId}/avaliacoes`,
+    branding:        resolveDocumentBranding(assoc),
+  }), {
+    associationId: params.associationId,
+    source:        "EVENT_REVIEW_ADMIN_ALERT",
     sourceId:      params.evenementId,
   }).catch(() => {})
 }

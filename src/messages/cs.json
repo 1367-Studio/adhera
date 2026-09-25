@@ -1718,6 +1718,7 @@
       "notFound": "Událost nenalezena",
       "titleLabel": "Název akce",
       "duplicateButton": "Duplikát",
+      "avaliacoesButton": "Recenze",
       "deleteButton": "Smazat",
       "publishButton": "Publikovat",
       "unpublishButton": "Zrušit publikaci",
@@ -3275,7 +3276,9 @@
         "montantCotisation": "Montantní coti.",
         "titreEvenement": "Název akce",
         "dateEvenement": "Datum akce",
-        "lieuEvenement": "Místo konání"
+        "lieuEvenement": "Místo konání",
+        "dateExpiration": "Datum vypršení",
+        "lienRenouvellement": "Odkaz na obnovení"
       },
       "emailBody": "Tělo zprávy (e-mail)",
       "emailBodyPlaceholder": "Ahoj '{{prenom}}',…",
@@ -3316,7 +3319,8 @@
         "rsvpConfirmed": "Potvrzení účasti",
         "memberCreated": "Nový člen",
         "memberBirthday": "Narozeniny",
-        "eventAdherentLapsed": "Neobnovené členství"
+        "eventAdherentLapsed": "Neobnovené členství",
+        "membershipExpiring": "Členství brzy vyprší"
       },
       "statusLabels": {
         "active": "Aktivní",
@@ -3368,7 +3372,9 @@
         "reminderDays": "{days}j před každou událostí",
         "rsvpConfirmed": "Spuštěno po potvrzení RSVP",
         "memberCreated": "Spuštěno při vytvoření člena",
-        "memberBirthday": "Narozeniny každého člena"
+        "memberBirthday": "Narozeniny každého člena",
+        "membershipExpiring": "{days} dní před vypršením členství",
+        "membershipExpiringToday": "V den vypršení členství"
       }
     },
     "ruleModal": {
@@ -3386,7 +3392,8 @@
         "rsvpConfirmed": "Potvrzení účasti (RSVP)",
         "memberCreated": "Nový registrovaný člen",
         "memberBirthday": "Narozeniny člena",
-        "eventAdherentLapsed": "Neobnovené členství"
+        "eventAdherentLapsed": "Neobnovené členství",
+        "membershipExpiring": "Členství brzy vyprší"
       },
       "sendDate": "Datum odeslání",
       "time": "Čas",
@@ -3420,6 +3427,9 @@
       "daysBeforeEvent": "Dny před akcí",
       "daysBeforeEventHint": "Např.: 1 = den předem, 3 = 3 dny před",
       "adherentLapsedHint": "Posílá zprávu aktivním členům, kteří byli členy loni (placení/osvobození od příspěvků), ale zatím nemají platný členský poplatek za aktuální rok. Člen, jehož členský status byl ručně vynucen, není nikdy ovlivněn.",
+      "membershipExpiringHint": "Odešle připomenutí členům, jejichž členství (zaplacený příspěvek) brzy vyprší, N dní před datem vypršení. Nikdy se neodesílá, pokud bylo členství již obnoveno.",
+      "daysBeforeExpiration": "Dní před vypršením",
+      "daysBeforeExpirationHint": "Např.: 30 = měsíc předem, 7 = týden předem, 0 = v daný den",
       "birthdayHint": "Automaticky odešle zprávu na narozeniny každého aktivního člena (den a měsíc, bez ohledu na rok narození). Pouze jeden příspěvek na člena za rok.",
       "birthdayNoDateWarningType": "Žádný z aktivních členů tohoto typu ({count}) nemá zadané datum narození — toto pravidlo neodešle nic, dokud není na jejich kartě přidáno datum.",
       "birthdayNoDateWarningAll": "Žádný z vašich aktivních členů ({count}) nemá zadané datum narození — toto pravidlo neodešle nic, dokud není na jejich kartě přidáno datum.",
@@ -3791,7 +3801,7 @@
       "exonereConfirmTitle": "Osvobodit tento příspěvek?",
       "exonereConfirmDescription": "Platby, které již byly zaúčtovány, budou smazány. Tento krok nelze vzít zpět.",
       "installments": {
-        "title": "Termíny (parcelamento)",
+        "title": "Termíny",
         "none": "Žádný termín splatnosti — příspěvek používá výše uvedený termín.",
         "count": "Počet splatností",
         "generate": "Generujte termíny",
@@ -3990,7 +4000,8 @@
       "noType": "Žádný typ",
       "noResponsable": "Žádné",
       "noAdultResponsable": "Žádní dospělí členové nejsou k dispozici",
-      "preview": "Přehled:"
+      "preview": "Přehled:",
+      "customFieldsSectionTitle": "Odpovědi z členské přihlášky"
     },
     "actions": {
       "add": "Přidejte člena",
@@ -4106,6 +4117,7 @@
       "noContactInfo": "Žádné kontaktní údaje",
       "memberSinceColon": "Člen od té doby: {date}",
       "typeColon": "Typ: {name}",
+      "tierColon": "Sazba: {name}",
       "personalInfo": "Osobní informace",
       "civiliteColon": "Název: {value}",
       "sexeColon": "Pohlaví: {value}",
@@ -4795,11 +4807,13 @@
       "showPhoto": "Fotografie člena",
       "showPhotoHint": "Pokud není uložena žádná fotografie, zobrazí se iniciály.",
       "showCategory": "Kategorie",
+      "showTier": "Sazba",
       "showPhone": "Telefon spolku",
       "showEmail": "E-mail spolku",
       "preview": "Náhled",
       "sampleName": "Camille Martin",
       "sampleCategory": "Aktivní dobrovolný člen",
+      "sampleTier": "Dospělý",
       "noLogo": "Přidejte logo v sekci Branding, abyste jej zobrazili na kartě.",
       "noPhone": "Přidejte telefon v sekci Právní identita a dary, abyste jej zobrazili na kartě.",
       "noEmail": "Přidejte kontaktní e-mail v sekci Informace o spolku, abyste jej zobrazili na kartě.",

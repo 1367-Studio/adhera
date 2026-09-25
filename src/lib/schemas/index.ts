@@ -50,4 +50,5 @@ export * from "./meeting"
 export * from "./membre"
 export * from "./membre-import"
 export * from "./membre-type"
+export * from "./paper-form"
 

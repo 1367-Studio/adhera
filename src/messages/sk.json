@@ -1718,6 +1718,7 @@
       "notFound": "Udalosť nenájdená",
       "titleLabel": "Názov podujatia",
       "duplicateButton": "Duplikát",
+      "avaliacoesButton": "Recenzie",
       "deleteButton": "Vymazať",
       "publishButton": "Publikovať",
       "unpublishButton": "Zrušiť publikovanie",
@@ -3275,7 +3276,9 @@
         "montantCotisation": "Montant cotis.",
         "titreEvenement": "Názov podujatia",
         "dateEvenement": "Dátum podujatia",
-        "lieuEvenement": "Miesto konania podujatia"
+        "lieuEvenement": "Miesto konania podujatia",
+        "dateExpiration": "Dátum vypršania",
+        "lienRenouvellement": "Odkaz na obnovenie"
       },
       "emailBody": "Telo správy (e-mail)",
       "emailBodyPlaceholder": "Ahoj '{{prenom}}',…",
@@ -3316,7 +3319,8 @@
         "rsvpConfirmed": "RSVP potvrdený",
         "memberCreated": "Nový člen",
         "memberBirthday": "Narodeniny",
-        "eventAdherentLapsed": "Neobnovené členstvo"
+        "eventAdherentLapsed": "Neobnovené členstvo",
+        "membershipExpiring": "Členstvo čoskoro vyprší"
       },
       "statusLabels": {
         "active": "Aktívne",
@@ -3368,7 +3372,9 @@
         "reminderDays": "{days}j pred každým podujatím",
         "rsvpConfirmed": "Spustené po potvrdení RSVP",
         "memberCreated": "Spustené pri vytváraní člena",
-        "memberBirthday": "Narodeniny každého člena"
+        "memberBirthday": "Narodeniny každého člena",
+        "membershipExpiring": "{days} dní pred vypršaním členstva",
+        "membershipExpiringToday": "V deň vypršania členstva"
       }
     },
     "ruleModal": {
@@ -3386,7 +3392,8 @@
         "rsvpConfirmed": "Potvrdenie účasti (RSVP)",
         "memberCreated": "Nový registrovaný člen",
         "memberBirthday": "Narodeniny člena",
-        "eventAdherentLapsed": "Neobnovené členstvo"
+        "eventAdherentLapsed": "Neobnovené členstvo",
+        "membershipExpiring": "Členstvo čoskoro vyprší"
       },
       "sendDate": "Dátum odoslania",
       "time": "Čas",
@@ -3420,6 +3427,9 @@
       "daysBeforeEvent": "Dni pred udalosťou",
       "daysBeforeEventHint": "Napríklad: 1 = deň predtým, 3 = 3 dni pred",
       "adherentLapsedHint": "Posiela správu aktívnym členom, ktorí boli členmi minulý rok (zaplatené/oslobodené členské príspevky), ale ešte nemajú platný členský poplatok za aktuálny rok. Člen, ktorého členský status bol manuálne vynútený, nie je nikdy ovplyvnený.",
+      "membershipExpiringHint": "Odošle pripomienku členom, ktorých členstvo (zaplatený príspevok) čoskoro vyprší, N dní pred dátumom vypršania. Nikdy sa neodošle, ak bolo členstvo už obnovené.",
+      "daysBeforeExpiration": "Dní pred vypršaním",
+      "daysBeforeExpirationHint": "Napr.: 30 = mesiac vopred, 7 = týždeň vopred, 0 = v daný deň",
       "birthdayHint": "Automaticky posiela správu na narodeniny každého aktívneho člena (deň a mesiac, bez ohľadu na rok narodenia). Len jedno odoslanie na člena za rok.",
       "birthdayNoDateWarningType": "Žiadny z aktívnych členov tohto typu ({count}) nemá zadaný dátum narodenia — toto pravidlo neodosiela nič, kým nie je dátum pridaný na kartu.",
       "birthdayNoDateWarningAll": "Žiadny z vašich aktívnych členov ({count}) nemá zadaný dátum narodenia — toto pravidlo neodosiela nič, kým nie je dátum pridaný na kartu.",
@@ -3791,7 +3801,7 @@
       "exonereConfirmTitle": "Oslobodiť tento príspevok?",
       "exonereConfirmDescription": "Platby, ktoré už boli zaúčtované, budú vymazané. Tento krok sa nedá vrátiť späť.",
       "installments": {
-        "title": "Termíny (parcelamento)",
+        "title": "Termíny",
         "none": "Žiadny termín splatnosti — príspevok používa uvedený dátum splatnosti.",
         "count": "Počet splatností",
         "generate": "Generujte termíny",
@@ -3990,7 +4000,8 @@
       "noType": "Žiadny typ",
       "noResponsable": "Žiadna",
       "noAdultResponsable": "Nie sú k dispozícii žiadni dospelí členovia",
-      "preview": "Prehľad:"
+      "preview": "Prehľad:",
+      "customFieldsSectionTitle": "Odpovede z prihlášky za člena"
     },
     "actions": {
       "add": "Pridať člena",
@@ -4106,6 +4117,7 @@
       "noContactInfo": "Žiadne kontaktné informácie",
       "memberSinceColon": "Člen od: {date}",
       "typeColon": "Typ: {name}",
+      "tierColon": "Tarifa: {name}",
       "personalInfo": "Osobné informácie",
       "civiliteColon": "Názov: {value}",
       "sexeColon": "Pohlavie: {value}",
@@ -4795,11 +4807,13 @@
       "showPhoto": "Fotografia člena",
       "showPhotoHint": "Ak nie je uložená žiadna fotografia, zobrazia sa iniciály.",
       "showCategory": "Kategória",
+      "showTier": "Tarifa",
       "showPhone": "Telefón združenia",
       "showEmail": "E-mail združenia",
       "preview": "Náhľad",
       "sampleName": "Camille Martin",
       "sampleCategory": "Aktívny dobrovoľný člen",
+      "sampleTier": "Dospelý",
       "noLogo": "Pridajte logo v sekcii Branding, aby sa zobrazilo na karte.",
       "noPhone": "Pridajte telefón v sekcii Právna identita a dary, aby sa zobrazil na karte.",
       "noEmail": "Pridajte kontaktný e-mail v sekcii Informácie o združení, aby sa zobrazil na karte.",

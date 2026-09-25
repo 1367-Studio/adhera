@@ -1718,6 +1718,7 @@
       "notFound": "Įvykis nerastas",
       "titleLabel": "Renginio pavadinimas",
       "duplicateButton": "Dublikatas",
+      "avaliacoesButton": "Atsiliepimai",
       "deleteButton": "Ištrinti",
       "publishButton": "Publikuoti",
       "unpublishButton": "Atšaukti publikavimą",
@@ -3275,7 +3276,9 @@
         "montantCotisation": "Montant cotis.",
         "titreEvenement": "Renginio pavadinimas",
         "dateEvenement": "Renginio data",
-        "lieuEvenement": "Renginio vieta"
+        "lieuEvenement": "Renginio vieta",
+        "dateExpiration": "Galiojimo pabaigos data",
+        "lienRenouvellement": "Atnaujinimo nuoroda"
       },
       "emailBody": "Žinutės turinys (el. paštas)",
       "emailBodyPlaceholder": "Labas '{{prenom}}',…",
@@ -3316,7 +3319,8 @@
         "rsvpConfirmed": "RSVP patvirtintas",
         "memberCreated": "Naujas narys",
         "memberBirthday": "Gimtadienis",
-        "eventAdherentLapsed": "Neatnaujinta narystė"
+        "eventAdherentLapsed": "Neatnaujinta narystė",
+        "membershipExpiring": "Baigiasi narystė"
       },
       "statusLabels": {
         "active": "Aktyvus",
@@ -3368,7 +3372,9 @@
         "reminderDays": "{days}j prieš kiekvieną renginį",
         "rsvpConfirmed": "Suaktyvinta patvirtinus RSVP",
         "memberCreated": "Suaktyvinta sukūrus narį",
-        "memberBirthday": "Kiekvieno nario gimtadienis"
+        "memberBirthday": "Kiekvieno nario gimtadienis",
+        "membershipExpiring": "Liko {days} d. iki narystės pabaigos",
+        "membershipExpiringToday": "Narystės pabaigos dieną"
       }
     },
     "ruleModal": {
@@ -3386,7 +3392,8 @@
         "rsvpConfirmed": "Dalyvavimo patvirtinimas (RSVP)",
         "memberCreated": "Naujas registruotas narys",
         "memberBirthday": "Nario gimtadienis",
-        "eventAdherentLapsed": "Neatnaujinta narystė"
+        "eventAdherentLapsed": "Neatnaujinta narystė",
+        "membershipExpiring": "Baigiasi narystė"
       },
       "sendDate": "Siuntimo data",
       "time": "Laikas",
@@ -3420,6 +3427,9 @@
       "daysBeforeEvent": "Dienos prieš renginį",
       "daysBeforeEventHint": "Pvz.: 1 = diena prieš, 3 = 3 dienos prieš",
       "adherentLapsedHint": "Siunčia žinutę aktyviems nariams, kurie buvo nariais praėjusiais metais (sumokėti/atleisti nario mokesčiai), bet dar neturi tinkamo narystės mokesčio už einamuosius metus. Narys, kurio narystės statusas buvo rankiniu būdu priverstas, niekada nėra paveiktas.",
+      "membershipExpiringHint": "Siunčia priminimą nariams, kurių narystė (apmokėtas mokestis) netrukus baigiasi, N dienų prieš galiojimo pabaigos datą. Niekada nesiunčiama, jei narystė jau atnaujinta.",
+      "daysBeforeExpiration": "Dienų iki galiojimo pabaigos",
+      "daysBeforeExpirationHint": "Pvz.: 30 = likus mėnesiui, 7 = likus savaitei, 0 = tą pačią dieną",
       "birthdayHint": "Automatiškai siunčia žinutę kiekvieno aktyvaus nario gimimo dieną (dieną ir mėnesį, nepriklausomai nuo gimimo metų). Per metus kiekvienam nariui siunčiama tik po vieną žinutę.",
       "birthdayNoDateWarningType": "Nė vienas iš aktyvių šio tipo narių ({count}) neįveda gimimo datos — ši taisyklė nieko nesiunčia, kol kortelėje nebus pridėta data.",
       "birthdayNoDateWarningAll": "Nė vienas iš jūsų aktyvių narių ({count}) neįveda gimimo datos — ši taisyklė nieko nesiunčia, kol kortelėje nebus pridėta data.",
@@ -3791,7 +3801,7 @@
       "exonereConfirmTitle": "Atleisti šį įnašą?",
       "exonereConfirmDescription": "Jau atlikti mokėjimai bus ištrinti. Šio veiksmo atšaukti negalima.",
       "installments": {
-        "title": "Terminai (parcelamento)",
+        "title": "Terminai",
         "none": "Nėra termino – įnašas naudoja aukščiau nurodytą terminą.",
         "count": "Brandų skaičius",
         "generate": "Generuoti terminus",
@@ -3990,7 +4000,8 @@
       "noType": "Nėra tipo",
       "noResponsable": "Nėra",
       "noAdultResponsable": "Suaugusiųjų narių nėra.",
-      "preview": "Apžvalga:"
+      "preview": "Apžvalga:",
+      "customFieldsSectionTitle": "Narystės formos atsakymai"
     },
     "actions": {
       "add": "Pridėti narį",
@@ -4106,6 +4117,7 @@
       "noContactInfo": "Nėra kontaktinės informacijos",
       "memberSinceColon": "Narys nuo: {date}",
       "typeColon": "Tipas : {name}",
+      "tierColon": "Tarifas : {name}",
       "personalInfo": "Asmeninė informacija",
       "civiliteColon": "Pavadinimas: {value}",
       "sexeColon": "Lytis: {value}",
@@ -4795,11 +4807,13 @@
       "showPhoto": "Nario nuotrauka",
       "showPhotoHint": "Jei nuotrauka neįrašyta, rodomi inicialai.",
       "showCategory": "Kategorija",
+      "showTier": "Tarifas",
       "showPhone": "Asociacijos telefonas",
       "showEmail": "Asociacijos el. paštas",
       "preview": "Peržiūra",
       "sampleName": "Camille Martin",
       "sampleCategory": "Aktyvus savanoris narys",
+      "sampleTier": "Suaugęs",
       "noLogo": "Pridėkite logotipą skyriuje Prekės ženklas, kad jis būtų rodomas kortelėje.",
       "noPhone": "Pridėkite telefoną skyriuje Teisinis identitetas ir aukos, kad jis būtų rodomas kortelėje.",
       "noEmail": "Pridėkite kontaktinį el. paštą skyriuje Informacija apie asociaciją, kad jis būtų rodomas kortelėje.",

@@ -1,3 +1,4 @@
+import { format } from "date-fns"
 import { prisma } from "@/lib/prisma/client"
 import { APP_TIME_ZONE } from "@/lib/date-format"
 import { sendEmailBatch } from "@/lib/mail"
@@ -6,10 +7,11 @@ import { eventReminderEmail, customEmail } from "@/lib/email"
 import { substituteVars, buildVars, parseRecipients, computeNextRunAt, isBirthdayToday } from "@/lib/automation"
 import { translateEmailContent } from "@/lib/i18n/translate"
 import { DEFAULT_LOCALE, type Locale } from "@/i18n/locales"
+import { getDateFnsLocale } from "@/lib/date-fns-locale"
 import { parseModules } from "@/lib/modules"
 import { writeActivityLog } from "@/lib/activity-log"
 import { resolveDocumentBranding } from "@/lib/plan-limits"
-import { currentCotisationYear, isMembreAdherent, membreAdherentResponsableSelect } from "@/lib/membre-adherent"
+import { currentCotisationYear, endOfCotisationYear, parisDayBounds, isMembreAdherent, membreAdherentResponsableSelect } from "@/lib/membre-adherent"
 import { nextAmountDue } from "@/lib/cotisation-status"
 import type { TriggerType, MessageChannel } from "@prisma/client"
 import { APP_URL } from "@/lib/env"
@@ -113,6 +115,12 @@ export async function processRule(rule: RuleWithRelations, now: Date): Promise<n
 
   if (triggerType === "EVENT_ADHERENT_LAPSED") {
     const sent = await processAdherentLapsed(rule, config, now, { emailEnabled, smsEnabled })
+    await updateRuleNextRun(rule.id, triggerType, config, now)
+    return sent
+  }
+
+  if (triggerType === "MEMBERSHIP_EXPIRING") {
+    const sent = await processMembershipExpiring(rule, config, now, { emailEnabled, smsEnabled })
     await updateRuleNextRun(rule.id, triggerType, config, now)
     return sent
   }
@@ -526,6 +534,234 @@ async function processAdherentLapsed(
         sent += succeeded.length
       }
     }
+  }
+
+  return sent
+}
+
+// ── MEMBERSHIP_EXPIRING processor ────────────────────────────────────────────
+
+// A Cotisation's own expiration instant — periodEnd when set (custom-duration
+// MembershipTier), otherwise the last instant of its calendar year. Mirrors exactly the rule
+// cotisationCoversInYear (src/lib/membre-adherent.ts) uses to decide Adhérent coverage, so a
+// reminder fires precisely when the member's status is about to lapse.
+function cotisationExpiresAt(cotisation: { year: number; periodEnd: Date | null }): Date {
+  return cotisation.periodEnd ?? endOfCotisationYear(cotisation.year)
+}
+
+// Who actually gets the reminder for a given Cotisation — the member themselves when they
+// have their own email/phone, otherwise their responsable's (a dependent created through a
+// multi-registrant adhésion — see the checkout route's responsableId wiring — always has
+// email: null of their own; without this fallback their membership silently expires with
+// nobody, including the responsable who's actually paying for and managing them, ever
+// finding out). The email content still greets the dependent by their own name (`vars` below
+// is built from the Cotisation's own membre, not this), so the message reads as being about
+// them even though it lands in the responsable's inbox.
+type ContactSource = { email: string | null; phone: string | null; preferredLocale: string | null }
+function resolveContact(membre: ContactSource, responsable: ContactSource | null): ContactSource {
+  if (membre.email || membre.phone) return membre
+  return responsable ?? membre
+}
+
+async function processMembershipExpiring(
+  rule: RuleWithRelations,
+  config: Record<string, unknown>,
+  now: Date,
+  opts: { emailEnabled: boolean; smsEnabled: boolean },
+): Promise<number> {
+  const { mode, typeId } = parseRecipients(rule.recipients)
+  const daysBefore = (config.daysBefore as number | undefined) ?? 30
+  const target     = new Date(now.getTime() + daysBefore * 86_400_000)
+  // Paris-precise, not server-local (server runs in UTC) — has to agree exactly with
+  // endOfCotisationYear()'s own Paris-precise instant below, or a calendar-year Cotisation
+  // could be judged as expiring on the wrong side of midnight near a DST change.
+  const { dayStart, dayEnd } = parisDayBounds(target)
+
+  // Only PAYE/EXONERE rows can expire in a way that matters — an unpaid one was never
+  // covering the member to begin with (see ADHERENT_STATUSES). adherentOverride: null
+  // excludes anyone an admin has manually forced either way, same reasoning as
+  // processAdherentLapsed above: their status isn't tied to renewal, so nagging them about a
+  // Cotisation that doesn't even determine it would be a non-sequitur. The subscriptionId
+  // exclusion below skips a row backed by a still-ACTIVE CotisationSubscription: Stripe is
+  // going to auto-charge and produce next period's Cotisation on its own, so a "renew now"
+  // email with a fresh-checkout link would be actively wrong for these — they need a
+  // different message (or none), not this one. The OR below is a broad net (periodEnd
+  // in-window, or a plain calendar-year row from this or last year) narrowed exactly by
+  // cotisationExpiresAt() in JS afterwards, since a periodEnd-less row's real expiration
+  // depends on `year` through endOfCotisationYear — not something Prisma's query language can
+  // express directly.
+  const candidates = await prisma.cotisation.findMany({
+    where: {
+      associationId: rule.associationId,
+      status:        { in: ["PAYE", "EXONERE"] },
+      membre:        { status: "ACTIF", deletedAt: null, adherentOverride: null, ...(mode === "TYPE" && typeId ? { typeId } : {}) },
+      NOT: { AND: [{ subscriptionId: { not: null } }, { subscription: { status: "ACTIVE" } }] },
+      OR: [
+        { periodEnd: { gte: dayStart, lte: dayEnd } },
+        { periodEnd: null, year: { in: [target.getFullYear() - 1, target.getFullYear()] } },
+      ],
+    },
+    select: {
+      id: true, membreId: true, year: true, periodEnd: true,
+      membre: {
+        select: {
+          firstName: true, lastName: true, email: true, phone: true, preferredLocale: true,
+          responsable: { select: { email: true, phone: true, preferredLocale: true } },
+        },
+      },
+    },
+  })
+
+  const expiring = candidates.filter(c => {
+    const expiresAt = cotisationExpiresAt(c)
+    return expiresAt >= dayStart && expiresAt <= dayEnd
+  })
+
+  if (expiring.length === 0) return 0
+
+  // "Already renewed" — the member holds another PAYE/EXONERE Cotisation whose own
+  // expiration is later than this one's, regardless of year bookkeeping (works the same way
+  // for the calendar-year and custom-duration cases). Fetched separately from `candidates`
+  // above, which only looked at rows expiring in this exact window.
+  const membreIds      = [...new Set(expiring.map(c => c.membreId))]
+  const allCotisations = await prisma.cotisation.findMany({
+    where:  { membreId: { in: membreIds }, status: { in: ["PAYE", "EXONERE"] } },
+    select: { id: true, membreId: true, year: true, periodEnd: true },
+  })
+  const byMembre = new Map<string, typeof allCotisations>()
+  for (const c of allCotisations) {
+    if (!byMembre.has(c.membreId)) byMembre.set(c.membreId, [])
+    byMembre.get(c.membreId)!.push(c)
+  }
+
+  const notRenewed = expiring.filter(c => {
+    const expiresAt = cotisationExpiresAt(c)
+    return !byMembre.get(c.membreId)!.some(other => other.id !== c.id && cotisationExpiresAt(other) > expiresAt)
+  })
+
+  if (notRenewed.length === 0) return 0
+
+  // Keyed by cotisationId (not membreId) so a member's next-year/next-period reminder isn't
+  // silently swallowed by a log row left over from a previous membership period — same
+  // reasoning as participationId on the EVENT_REMINDER processor above.
+  const recentLogs = await prisma.automationLog.findMany({
+    where:  { ruleId: rule.id, cotisationId: { in: notRenewed.map(c => c.id) } },
+    select: { cotisationId: true },
+  })
+  const notifiedIds = new Set(recentLogs.map(l => l.cotisationId))
+  const targets = notRenewed.filter(c => !notifiedIds.has(c.id))
+
+  if (targets.length === 0) return 0
+
+  const jobs = targets.map(cotisation => {
+    const expiresAt = cotisationExpiresAt(cotisation)
+    const contact   = resolveContact(cotisation.membre, cotisation.membre.responsable)
+    const locale    = (contact.preferredLocale as Locale | null) ?? DEFAULT_LOCALE
+    return {
+      cotisationId: cotisation.id,
+      membreId:     cotisation.membreId,
+      membre:       contact,
+      vars: buildVars({
+        prenom:             cotisation.membre.firstName,
+        nom:                cotisation.membre.lastName,
+        email:              contact.email ?? "",
+        association:        rule.association.name,
+        slug:               rule.association.slug,
+        // Formatted per the recipient's own preferredLocale, not the association's language —
+        // otherwise a translated subject/body (see localizeTemplateContent below) would still
+        // carry a French-formatted date in the middle of it.
+        dateExpiration:     format(expiresAt, "d MMMM yyyy", { locale: getDateFnsLocale(locale) }),
+        // The member portal, always — NOT the public adhésion form: that form's checkout
+        // route unconditionally rejects any email that already belongs to an existing Membre
+        // in the association ("Cette adresse email est déjà utilisée", 409), which is exactly
+        // every real recipient of this reminder. There is currently no self-service flow
+        // anywhere in the app for an existing member to start paying for their *next*
+        // membership period — the portal's own cotisation page can only pay a Cotisation that
+        // already exists (see /api/portal/cotisation/checkout) — so this link can't yet offer
+        // a one-click renewal; it's the least-wrong place to send someone today, and the
+        // association still needs a way to actually collect the renewal (mention it in the
+        // template body, or handle it manually) until a real renewal flow exists.
+        lienRenouvellement: `${APP_URL}/portal/${rule.association.slug}`,
+      }),
+    }
+  })
+
+  let sent = 0
+
+  if (opts.emailEnabled) {
+    const branding      = resolveDocumentBranding(rule.association)
+    const emailTargets  = jobs.filter(j => j.membre.email)
+    const translations  = await localizeTemplateContent(rule.associationId, rule.template.subject, rule.template.body, emailTargets)
+    const emailJobs = emailTargets
+      .map(j => {
+        const content = (j.membre.preferredLocale && translations.get(j.membre.preferredLocale)) || { subject: rule.template.subject, body: rule.template.body }
+        return {
+          cotisationId: j.cotisationId,
+          membreId:     j.membreId,
+          payload: {
+            ...customEmail({
+              associationName: rule.association.name,
+              subject:         substituteVars(content.subject, j.vars),
+              bodyHtml:        substituteVars(content.body, j.vars),
+              recipientEmail:  j.membre.email!,
+              branding,
+            }),
+            context: { associationId: rule.associationId, membreId: j.membreId, source: "AUTOMATION", sourceId: rule.id },
+          },
+        }
+      })
+
+    for (let i = 0; i < emailJobs.length; i += BATCH_SIZE) {
+      const chunk     = emailJobs.slice(i, i + BATCH_SIZE)
+      const results   = await sendEmailBatch(chunk.map(j => j.payload))
+      const succeeded = chunk.filter((_, idx) => results[idx].ok)
+      if (succeeded.length > 0) {
+        await prisma.automationLog.createMany({
+          data: succeeded.map(j => ({ ruleId: rule.id, membreId: j.membreId, cotisationId: j.cotisationId, subject: j.payload.subject })),
+        })
+        sent += succeeded.length
+      }
+    }
+  }
+
+  if (opts.smsEnabled && rule.template.smsBody) {
+    const smsJobs = jobs
+      .filter(j => j.membre.phone)
+      .map(j => ({ cotisationId: j.cotisationId, membreId: j.membreId, to: j.membre.phone!, body: substituteVars(rule.template.smsBody!, j.vars) }))
+
+    for (let i = 0; i < smsJobs.length; i += BATCH_SIZE) {
+      const chunk   = smsJobs.slice(i, i + BATCH_SIZE)
+      const results = await sendSmsBatch(
+        chunk.map(j => ({ to: j.to, body: j.body, membreId: j.membreId })),
+        rule.associationId,
+        { source: "AUTOMATION", sourceId: rule.id },
+      )
+      const succeeded = chunk.filter((_, idx) => results[idx].ok)
+      if (succeeded.length > 0) {
+        await prisma.automationLog.createMany({
+          data: succeeded.map(j => ({ ruleId: rule.id, membreId: j.membreId, cotisationId: j.cotisationId })),
+        })
+        sent += succeeded.length
+      }
+    }
+  }
+
+  // Targets reachable by neither enabled channel never get logged by the send loops above,
+  // so without this the admin has no way to tell "0 sent" apart from "nobody's expiring" —
+  // same visibility processBirthday already gives its own silent-skip case.
+  const smsUsable = opts.smsEnabled && !!rule.template.smsBody
+  const skippedNoContact = jobs.filter(j =>
+    !(opts.emailEnabled && j.membre.email) && !(smsUsable && j.membre.phone),
+  ).length
+  if (skippedNoContact > 0) {
+    await writeActivityLog({
+      associationId: rule.associationId,
+      action:        "AUTOMATION_SKIPPED_NO_CONTACT",
+      entity:        "AutomationRule",
+      entityId:      rule.id,
+      label:         rule.name,
+      metadata:      { skippedNoContact, expiringCount: targets.length },
+    })
   }
 
   return sent

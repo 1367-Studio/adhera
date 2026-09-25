@@ -3,7 +3,11 @@ import { z } from "zod"
 import { Prisma } from "@prisma/client"
 import { prisma } from "@/lib/prisma/client"
 import { parsePagination } from "@/lib/pagination"
-import { computeNextRunAt, birthdayRecipientsConflict, isBirthdayConflictError, BIRTHDAY_CONFLICT_MESSAGE } from "@/lib/automation"
+import {
+  computeNextRunAt,
+  birthdayRecipientsConflict, isBirthdayConflictError, BIRTHDAY_CONFLICT_MESSAGE,
+  membershipExpiringConflict, isMembershipExpiringConflictError, MEMBERSHIP_EXPIRING_CONFLICT_MESSAGE,
+} from "@/lib/automation"
 import { writeActivityLog } from "@/lib/activity-log"
 import { withAdminAuth } from "@/lib/api-wrapper"
 
@@ -12,7 +16,7 @@ const ALLOWED_ROLES = ["ADMIN", "PRESIDENT", "SECRETAIRE"]
 const schema = z.object({
   name:          z.string().min(1).max(100),
   templateId:    z.string().min(1),
-  triggerType:   z.enum(["SCHEDULED_ONCE", "SCHEDULED_RECURRING", "EVENT_COTISATION_DUE", "EVENT_PAYMENT_OVERDUE", "EVENT_REMINDER", "RSVP_CONFIRMED", "MEMBER_CREATED", "MEMBER_BIRTHDAY", "EVENT_ADHERENT_LAPSED"]),
+  triggerType:   z.enum(["SCHEDULED_ONCE", "SCHEDULED_RECURRING", "EVENT_COTISATION_DUE", "EVENT_PAYMENT_OVERDUE", "EVENT_REMINDER", "RSVP_CONFIRMED", "MEMBER_CREATED", "MEMBER_BIRTHDAY", "EVENT_ADHERENT_LAPSED", "MEMBERSHIP_EXPIRING"]),
   triggerConfig: z.record(z.string(), z.unknown()),
   recipients:    z.string().default("ALL"),
   channel:       z.enum(["EMAIL", "SMS", "BOTH"]).default("EMAIL"),
@@ -64,7 +68,31 @@ export const POST = withAdminAuth(async (req, ctx) => {
   }
 
   let rule
-  if (parsed.data.triggerType === "MEMBER_BIRTHDAY") {
+  if (parsed.data.triggerType === "MEMBERSHIP_EXPIRING") {
+    // Two active rules with the same daysBefore and overlapping recipients would double-send
+    // the same reminder to the same member on the same day — same guard as MEMBER_BIRTHDAY
+    // below, narrowed first to rules with a matching daysBefore since (unlike birthdays)
+    // different intervals are meant to coexist (a 30-day and a 7-day rule are not a conflict).
+    const daysBefore = (parsed.data.triggerConfig as Record<string, unknown>).daysBefore
+    try {
+      rule = await prisma.$transaction(async tx => {
+        const others = await tx.automationRule.findMany({
+          where:  { associationId, triggerType: "MEMBERSHIP_EXPIRING", status: "ACTIVE" },
+          select: { recipients: true, triggerConfig: true },
+        })
+        const sameInterval = others.filter(o => (o.triggerConfig as Record<string, unknown>).daysBefore === daysBefore)
+        if (membershipExpiringConflict(parsed.data.recipients, sameInterval.map(o => o.recipients))) {
+          throw new Error(MEMBERSHIP_EXPIRING_CONFLICT_MESSAGE)
+        }
+        return tx.automationRule.create({ data: createData, include })
+      }, { isolationLevel: Prisma.TransactionIsolationLevel.Serializable })
+    } catch (err) {
+      if (isMembershipExpiringConflictError(err)) {
+        return NextResponse.json({ error: "Une règle Adhésion expirante active existe déjà avec le même délai et des destinataires qui se chevauchent." }, { status: 409 })
+      }
+      throw err
+    }
+  } else if (parsed.data.triggerType === "MEMBER_BIRTHDAY") {
     // MEMBER_BIRTHDAY has no per-instance config, so an "ALL" rule and a "TYPE:x" rule
     // both active would double-send to every member of that type every year. The check
     // and the insert run in one serializable transaction so two concurrent requests

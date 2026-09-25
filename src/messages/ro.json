@@ -1718,6 +1718,7 @@
       "notFound": "Eveniment negăsit",
       "titleLabel": "Titlul evenimentului",
       "duplicateButton": "Duplicat",
+      "avaliacoesButton": "Recenzii",
       "deleteButton": "Șterge",
       "publishButton": "Publică",
       "unpublishButton": "Dezpublicare",
@@ -3275,7 +3276,9 @@
         "montantCotisation": "Montant cotis.",
         "titreEvenement": "Titlul evenimentului",
         "dateEvenement": "Data evenimentului",
-        "lieuEvenement": "Locația evenimentelor"
+        "lieuEvenement": "Locația evenimentelor",
+        "dateExpiration": "Data expirării",
+        "lienRenouvellement": "Link de reînnoire"
       },
       "emailBody": "Corpul mesajului (email)",
       "emailBodyPlaceholder": "Bună '{{prenom}}',…",
@@ -3316,7 +3319,8 @@
         "rsvpConfirmed": "RSVP confirmat",
         "memberCreated": "Membru Nou",
         "memberBirthday": "Ziua de naștere",
-        "eventAdherentLapsed": "Calitatea de membru nereînnoită"
+        "eventAdherentLapsed": "Calitatea de membru nereînnoită",
+        "membershipExpiring": "Abonament expirând"
       },
       "statusLabels": {
         "active": "Activitate",
@@ -3368,7 +3372,9 @@
         "reminderDays": "{days}j înainte de fiecare eveniment",
         "rsvpConfirmed": "Declanșat la confirmarea RSVP",
         "memberCreated": "Declanșat la crearea membrilor",
-        "memberBirthday": "Ziua fiecărui membru"
+        "memberBirthday": "Ziua fiecărui membru",
+        "membershipExpiring": "{days} zile înainte de expirarea calității de membru",
+        "membershipExpiringToday": "În ziua expirării calității de membru"
       }
     },
     "ruleModal": {
@@ -3386,7 +3392,8 @@
         "rsvpConfirmed": "Confirmarea participării (RSVP)",
         "memberCreated": "Nou membru înregistrat",
         "memberBirthday": "Ziua de naștere a membrului",
-        "eventAdherentLapsed": "Calitatea de membru nereînnoită"
+        "eventAdherentLapsed": "Calitatea de membru nereînnoită",
+        "membershipExpiring": "Abonament expirând"
       },
       "sendDate": "Data trimiterii",
       "time": "Timp",
@@ -3420,6 +3427,9 @@
       "daysBeforeEvent": "Cu zile înainte de eveniment",
       "daysBeforeEventHint": "Ex: 1 = ziua dinainte, 3 = 3 zile înainte",
       "adherentLapsedHint": "Transmite un mesaj membrilor activi care au fost membri anul trecut (cotizații plătite/scutite), dar care încă nu au o taxă de membru valabilă pentru anul curent. Un membru al cărui statut de membru a fost forțat manual nu este niciodată afectat.",
+      "membershipExpiringHint": "Trimite un memento membrilor a căror calitate de membru (cotizație plătită) urmează să expire, cu N zile înainte de data expirării. Nu se trimite niciodată dacă calitatea de membru a fost deja reînnoită.",
+      "daysBeforeExpiration": "Zile înainte de expirare",
+      "daysBeforeExpirationHint": "Ex.: 30 = cu o lună înainte, 7 = cu o săptămână înainte, 0 = chiar în ziua respectivă",
       "birthdayHint": "Trimite automat un mesaj la ziua fiecărui membru activ (zi și lună, indiferent de anul nașterii). Trimite un singur mesaj per membru pe an.",
       "birthdayNoDateWarningType": "Niciunul dintre membrii activi ai acestui tip ({count}) nu are dată de naștere introdusă — această regulă nu va trimite nimic până când o dată nu este adăugată pe cardul lor.",
       "birthdayNoDateWarningAll": "Niciunul dintre membrii tăi activi ({count}) nu are dată de naștere introdusă — această regulă nu va trimite nimic până când o dată nu este adăugată pe cardul lor.",
@@ -3791,7 +3801,7 @@
       "exonereConfirmTitle": "Să scutesc această contribuție?",
       "exonereConfirmDescription": "Plățile care au fost deja înregistrate vor fi șterse. Această acțiune nu poate fi anulată.",
       "installments": {
-        "title": "Termene limită (parcelamento)",
+        "title": "Termene limită",
         "none": "Fără termen limită — contribuția folosește data scadentă de mai sus.",
         "count": "Numărul de maturități",
         "generate": "Generează termene limită",
@@ -3990,7 +4000,8 @@
       "noType": "Fără tip",
       "noResponsable": "Niciuna",
       "noAdultResponsable": "Nu există membri adulți disponibili",
-      "preview": "Prezentare generală:"
+      "preview": "Prezentare generală:",
+      "customFieldsSectionTitle": "Răspunsuri din formularul de adeziune"
     },
     "actions": {
       "add": "Adaugă un membru",
@@ -4106,6 +4117,7 @@
       "noContactInfo": "Fără informații de contact",
       "memberSinceColon": "Membru de la: {date}",
       "typeColon": "Tip: {name}",
+      "tierColon": "Tarif: {name}",
       "personalInfo": "Informații personale",
       "civiliteColon": "Titlu: {value}",
       "sexeColon": "Gen: {value}",
@@ -4795,11 +4807,13 @@
       "showPhoto": "Fotografia membrului",
       "showPhotoHint": "Inițialele sunt afișate dacă nu este înregistrată nicio fotografie.",
       "showCategory": "Categorie",
+      "showTier": "Tarif",
       "showPhone": "Telefonul asociației",
       "showEmail": "E-mailul asociației",
       "preview": "Previzualizare",
       "sampleName": "Camille Martin",
       "sampleCategory": "Membru voluntar activ",
+      "sampleTier": "Adult",
       "noLogo": "Adăugați un logo în secțiunea Branding pentru a-l afișa pe card.",
       "noPhone": "Adăugați un telefon în secțiunea Identitate legală și Donații pentru a-l afișa pe card.",
       "noEmail": "Adăugați un e-mail de contact în secțiunea Informații despre asociație pentru a-l afișa pe card.",

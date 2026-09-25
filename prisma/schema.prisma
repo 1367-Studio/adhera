@@ -104,6 +104,7 @@ enum TriggerType {
   MEMBER_CREATED
   MEMBER_BIRTHDAY
   EVENT_ADHERENT_LAPSED
+  MEMBERSHIP_EXPIRING
 }
 
 enum MessageChannel {
@@ -565,6 +566,7 @@ model Association {
   factures                   Facture[]
   facturesRecues             FactureRecue[]
   associationDocuments       AssociationDocument[]
+  paperFormTemplates         PaperFormTemplate[]
   legalAcceptances           LegalAcceptance[]
   emailMessages              EmailMessage[]
   smsMessages                SmsMessage[]
@@ -768,6 +770,26 @@ model Membre {
   // token is replaced, so an already-printed or screenshotted QR stops resolving. Null means
   // the current token is still the first one ever issued.
   cardTokenRotatedAt DateTime?
+
+  // Notes libres du gestionnaire sur ce membre. Alimentées notamment par l'import de fiches
+  // papier (cours choisis, réponses sans colonne dédiée — voir
+  // PaperFormTemplate), mais pas réservées à cet usage : c'est un simple bloc-notes.
+  notes String?
+
+  // Consentement au droit à l'image. Tri-state comme adherentOverride : null = jamais
+  // demandé (aucune supposition), true/false = réponse explicite. imageRightsConsentAt date
+  // cette réponse (date de la fiche papier ou de la saisie), null tant qu'elle n'existe pas.
+  imageRightsConsent   Boolean?
+  imageRightsConsentAt DateTime?
+
+  // Responsables légaux saisis en texte (nom tel qu'écrit + téléphone), typiquement les
+  // parents d'un élève mineur relevés sur une fiche papier. Distinct de responsableId, qui
+  // lie un autre Membre : ici le parent n'est pas membre de l'association, on garde juste de
+  // quoi le joindre. Null = non renseigné.
+  guardianName        String?
+  guardianPhone       String?
+  secondGuardianName  String?
+  secondGuardianPhone String?
 
   association              Association               @relation(fields: [associationId], references: [id])
   user                     User?                     @relation(fields: [userId], references: [id])
@@ -2107,6 +2129,11 @@ model AutomationLog {
   membreId        String?
   participationId String? // dedup key for EVENT_REMINDER targets that have no Membre (guests) — membreId alone can't identify them
   eventId         String?
+  // Dedup key for MEMBERSHIP_EXPIRING — a member can hold several Cotisation rows over time,
+  // each with its own expiration date, so membreId alone can't tell "already reminded for
+  // this specific membership period" from "already reminded for a prior one" — same reasoning
+  // as participationId above for EVENT_REMINDER.
+  cotisationId    String?
   subject         String?
   sentAt          DateTime @default(now())
 
@@ -2116,6 +2143,7 @@ model AutomationLog {
 
   @@index([ruleId, sentAt])
   @@index([ruleId, eventId])
+  @@index([ruleId, cotisationId])
 }
 
 model ActivityLog {
@@ -2932,6 +2960,38 @@ model AssociationDocument {
   @@index([associationId, visibleToMembers])
   @@index([associationId, visibleToPublic])
   @@index([associationId, requiresAcceptance])
+}
+
+// « Import de fiches papier » — describes an association's OWN printed registration form
+// (not the platform's fiche vierge) so scans of filled copies can be read by a vision model.
+// Set up once by a manager from the blank form: the AI proposes a field mapping from the
+// blank pages, the manager corrects and saves it here. Filled scans are never stored — the
+// browser renders each page to JPEG and sends it for extraction, one page at a time.
+//
+// `fields` is an array validated by paperFormFieldSchema (src/lib/schemas/paper-form.ts):
+// each entry maps one printed box/checkbox (key, label as printed, page) to where its value
+// lands on a Membre (target), or to an AssociationDocument acceptance (legalDocumentId).
+// Json rather than a child table: the list is always read and rewritten as a whole, and
+// the zod schema is the only writer.
+model PaperFormTemplate {
+  id                 String    @id @default(cuid())
+  associationId      String
+  name               String
+  // Pages printed per person (the DAC Academy form is 2: identity, then payment/commitments).
+  pagesPerForm       Int       @default(1)
+  fields             Json
+  // What makes this exact form recognizable (printed title, year, association, address…).
+  // When set, the extract route runs in strict mode: a page the vision model does not
+  // recognize as this form is refused (FORM_MISMATCH) and nothing is read from it. null =
+  // lenient mode, any page is read against the fields.
+  identificationText String?
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+  deletedAt          DateTime?
+
+  association Association @relation(fields: [associationId], references: [id], onDelete: Cascade)
+
+  @@index([associationId, deletedAt])
 }
 
 // An immutable snapshot of one document's wording, written on every title/content change.

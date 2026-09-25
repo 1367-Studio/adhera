@@ -1718,6 +1718,7 @@
       "notFound": "Gebeurtenis niet gevonden",
       "titleLabel": "Evenementtitel",
       "duplicateButton": "Duplicate",
+      "avaliacoesButton": "Recensies",
       "deleteButton": "Verwijderen",
       "publishButton": "Publiceren",
       "unpublishButton": "Ongepubliceerd",
@@ -3275,7 +3276,9 @@
         "montantCotisation": "Montant cotis.",
         "titreEvenement": "Evenementtitel",
         "dateEvenement": "Datum van het evenement",
-        "lieuEvenement": "Evenementenlocatie"
+        "lieuEvenement": "Evenementenlocatie",
+        "dateExpiration": "Vervaldatum",
+        "lienRenouvellement": "Vernieuwingslink"
       },
       "emailBody": "Bericht (e-mail)",
       "emailBodyPlaceholder": "Hallo '{{prenom}}',…",
@@ -3316,7 +3319,8 @@
         "rsvpConfirmed": "RSVP bevestigd",
         "memberCreated": "Nieuw Lid",
         "memberBirthday": "Verjaardag",
-        "eventAdherentLapsed": "Niet-verlengd lidmaatschap"
+        "eventAdherentLapsed": "Niet-verlengd lidmaatschap",
+        "membershipExpiring": "Lidmaatschap verloopt"
       },
       "statusLabels": {
         "active": "Actief",
@@ -3368,7 +3372,9 @@
         "reminderDays": "{days}j voor elk onderdeel",
         "rsvpConfirmed": "Getriggerd bij RSVP-bevestiging",
         "memberCreated": "Geactiveerd bij het aanmaken van leden",
-        "memberBirthday": "De verjaardag van elk lid"
+        "memberBirthday": "De verjaardag van elk lid",
+        "membershipExpiring": "{days}d vóór het verlopen van het lidmaatschap",
+        "membershipExpiringToday": "Op de dag dat het lidmaatschap verloopt"
       }
     },
     "ruleModal": {
@@ -3386,7 +3392,8 @@
         "rsvpConfirmed": "Bevestiging van deelname (RSVP)",
         "memberCreated": "Nieuw geregistreerd lid",
         "memberBirthday": "Verjaardag van het lid",
-        "eventAdherentLapsed": "Niet-verlengd lidmaatschap"
+        "eventAdherentLapsed": "Niet-verlengd lidmaatschap",
+        "membershipExpiring": "Lidmaatschap verloopt"
       },
       "sendDate": "Verzonden datum",
       "time": "Tijd",
@@ -3420,6 +3427,9 @@
       "daysBeforeEvent": "Dagen voor het evenement",
       "daysBeforeEventHint": "Bijvoorbeeld: 1 = de dag ervoor, 3 = 3 dagen ervoor",
       "adherentLapsedHint": "Stuurt een bericht naar actieve leden die vorig jaar lid waren (betaalde/vrijgestelde contributie) maar nog geen lidmaatschapsbijdrage in goede staat hebben voor het huidige jaar. Een lid wiens lidmaatschapsstatus handmatig is afgedwongen, wordt nooit getroffen.",
+      "membershipExpiringHint": "Stuurt een herinnering naar leden van wie het lidmaatschap (betaalde bijdrage) binnenkort verloopt, N dagen vóór de vervaldatum. Wordt nooit verzonden als het lidmaatschap al is verlengd.",
+      "daysBeforeExpiration": "Dagen vóór verlopen",
+      "daysBeforeExpirationHint": "Bijv.: 30 = een maand van tevoren, 7 = een week van tevoren, 0 = op de dag zelf",
       "birthdayHint": "Stuurt automatisch een bericht op de verjaardag van elk actief lid (dag en maand, ongeacht geboortejaar). Slechts één verzending per lid per jaar.",
       "birthdayNoDateWarningType": "Geen van de actieve leden van dit type ({count}) heeft geen geboortedatum ingevoerd — deze regel stuurt niets totdat er een datum aan hun kaart is toegevoegd.",
       "birthdayNoDateWarningAll": "Geen van je actieve leden ({count}) heeft geen geboortedatum ingevoerd — deze regel stuurt niets totdat er een datum aan hun kaart is toegevoegd.",
@@ -3791,7 +3801,7 @@
       "exonereConfirmTitle": "Deze bijdrage vrijstellen?",
       "exonereConfirmDescription": "Betalingen die al zijn geboekt, worden verwijderd. Deze actie kan niet ongedaan worden gemaakt.",
       "installments": {
-        "title": "Deadlines (parcelamento)",
+        "title": "Deadlines",
         "none": "Geen vervaldatum — de bijdrage gebruikt de bovenstaande vervaldatum.",
         "count": "Aantal looptijden",
         "generate": "Genereer deadlines",
@@ -3990,7 +4000,8 @@
       "noType": "Geen type",
       "noResponsable": "Geen enkele",
       "noAdultResponsable": "Geen volwassen leden beschikbaar",
-      "preview": "Overzicht:"
+      "preview": "Overzicht:",
+      "customFieldsSectionTitle": "Antwoorden op het lidmaatschapsformulier"
     },
     "actions": {
       "add": "Voeg een lid toe",
@@ -4106,6 +4117,7 @@
       "noContactInfo": "Geen contactgegevens",
       "memberSinceColon": "Lid sinds: {date}",
       "typeColon": "Type : {name}",
+      "tierColon": "Tarief : {name}",
       "personalInfo": "Persoonlijke informatie",
       "civiliteColon": "Titel: {value}",
       "sexeColon": "Geslacht: {value}",
@@ -4795,11 +4807,13 @@
       "showPhoto": "Foto van het lid",
       "showPhotoHint": "Initialen worden getoond als er geen foto is geregistreerd.",
       "showCategory": "Categorie",
+      "showTier": "Tarief",
       "showPhone": "Telefoonnummer van de vereniging",
       "showEmail": "E-mail van de vereniging",
       "preview": "Voorbeeld",
       "sampleName": "Camille Martin",
       "sampleCategory": "Actief vrijwillig lid",
+      "sampleTier": "Volwassene",
       "noLogo": "Voeg een logo toe bij Huisstijl om het op de kaart te tonen.",
       "noPhone": "Voeg een telefoonnummer toe bij Juridische identiteit & Donaties om het op de kaart te tonen.",
       "noEmail": "Voeg een contact-e-mail toe bij Verenigingsgegevens om deze op de kaart te tonen.",

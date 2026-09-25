@@ -1718,6 +1718,7 @@
       "notFound": "Događaj nije pronađen",
       "titleLabel": "Naslov događaja",
       "duplicateButton": "Duplikat",
+      "avaliacoesButton": "Recenzije",
       "deleteButton": "Obriši",
       "publishButton": "Objavi",
       "unpublishButton": "Unpublish",
@@ -3275,7 +3276,9 @@
         "montantCotisation": "Montant cotis.",
         "titreEvenement": "Naslov događaja",
         "dateEvenement": "Datum događaja",
-        "lieuEvenement": "Mjesto održavanja događaja"
+        "lieuEvenement": "Mjesto održavanja događaja",
+        "dateExpiration": "Datum isteka",
+        "lienRenouvellement": "Poveznica za obnovu"
       },
       "emailBody": "Tijelo poruke (email)",
       "emailBodyPlaceholder": "Bok '{{prenom}}',…",
@@ -3316,7 +3319,8 @@
         "rsvpConfirmed": "RSVP potvrđen",
         "memberCreated": "Novi član",
         "memberBirthday": "Rođendan",
-        "eventAdherentLapsed": "Neobnovljeno članstvo"
+        "eventAdherentLapsed": "Neobnovljeno članstvo",
+        "membershipExpiring": "Članstvo istječe"
       },
       "statusLabels": {
         "active": "Aktivno",
@@ -3368,7 +3372,9 @@
         "reminderDays": "{days}j prije svakog događaja",
         "rsvpConfirmed": "Aktivirano potvrdom RSVP-a",
         "memberCreated": "Pokreće se prilikom stvaranja člana",
-        "memberBirthday": "Rođendan svakog člana"
+        "memberBirthday": "Rođendan svakog člana",
+        "membershipExpiring": "{days} dana prije isteka članstva",
+        "membershipExpiringToday": "Na dan isteka članstva"
       }
     },
     "ruleModal": {
@@ -3386,7 +3392,8 @@
         "rsvpConfirmed": "Potvrda sudjelovanja (RSVP)",
         "memberCreated": "Novi registrirani član",
         "memberBirthday": "Rođendan člana",
-        "eventAdherentLapsed": "Neobnovljeno članstvo"
+        "eventAdherentLapsed": "Neobnovljeno članstvo",
+        "membershipExpiring": "Članstvo istječe"
       },
       "sendDate": "Datum slanja",
       "time": "Vrijeme",
@@ -3420,6 +3427,9 @@
       "daysBeforeEvent": "Dani prije događaja",
       "daysBeforeEventHint": "Primjer: 1 = dan prije, 3 = 3 dana prije",
       "adherentLapsedHint": "Šalje poruku aktivnim članovima koji su bili članovi prošle godine (plaćene/oslobođene članarine), ali još nemaju članarinu u dobrom statusu za tekuću godinu. Član čiji je status članstva ručno nametnut nikada nije pogođen.",
+      "membershipExpiringHint": "Šalje podsjetnik članovima čije članstvo (plaćena članarina) uskoro istječe, N dana prije datuma isteka. Nikada se ne šalje ako je članstvo već obnovljeno.",
+      "daysBeforeExpiration": "Dana prije isteka",
+      "daysBeforeExpirationHint": "Npr.: 30 = mjesec dana prije, 7 = tjedan dana prije, 0 = na sam dan",
       "birthdayHint": "Automatski šalje poruku na rođendan svakog aktivnog člana (dan i mjesec, bez obzira na godinu rođenja). Samo jedna poruka po članu godišnje.",
       "birthdayNoDateWarningType": "Nijedan od aktivnih članova ovog tipa ({count}) nema unesen datum rođenja — ovo pravilo neće poslati ništa dok im se datum ne doda na karticu.",
       "birthdayNoDateWarningAll": "Nitko od vaših aktivnih članova ({count}) nema unesen datum rođenja — ovo pravilo neće poslati ništa dok im se datum ne doda na karticu.",
@@ -3791,7 +3801,7 @@
       "exonereConfirmTitle": "Izuzimanje ovog doprinosa?",
       "exonereConfirmDescription": "Uplate koje su već uplaćene bit će izbrisane. Ova radnja se ne može poništiti.",
       "installments": {
-        "title": "Rokovi (parcelamento)",
+        "title": "Rokovi",
         "none": "Nema roka dospijeća — doprinos koristi gore navedeni rok.",
         "count": "Broj dospijeća",
         "generate": "Generirajte rokove",
@@ -3990,7 +4000,8 @@
       "noType": "Bez tipa",
       "noResponsable": "Nema",
       "noAdultResponsable": "Nema dostupnih punoljetnih članova",
-      "preview": "Pregled:"
+      "preview": "Pregled:",
+      "customFieldsSectionTitle": "Odgovori s obrasca za članstvo"
     },
     "actions": {
       "add": "Dodajte člana",
@@ -4106,6 +4117,7 @@
       "noContactInfo": "Nema kontakt informacija",
       "memberSinceColon": "Član od: {date}",
       "typeColon": "Tip: {name}",
+      "tierColon": "Tarifa: {name}",
       "personalInfo": "Osobni podaci",
       "civiliteColon": "Naslov: {value}",
       "sexeColon": "Spol: {value}",
@@ -4795,11 +4807,13 @@
       "showPhoto": "Fotografija člana",
       "showPhotoHint": "Ako fotografija nije spremljena, prikazuju se inicijali.",
       "showCategory": "Kategorija",
+      "showTier": "Tarifa",
       "showPhone": "Telefon udruge",
       "showEmail": "E-pošta udruge",
       "preview": "Pregled",
       "sampleName": "Camille Martin",
       "sampleCategory": "Aktivan volonterski član",
+      "sampleTier": "Odrasla osoba",
       "noLogo": "Dodajte logotip u odjeljku Brend kako biste ga prikazali na iskaznici.",
       "noPhone": "Dodajte telefon u odjeljku Pravni identitet i donacije kako biste ga prikazali na iskaznici.",
       "noEmail": "Dodajte kontakt e-poštu u odjeljku Podaci o udruzi kako biste je prikazali na iskaznici.",

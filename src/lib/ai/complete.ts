@@ -1,3 +1,4 @@
+import type Anthropic from "@anthropic-ai/sdk"
 import type { ResolvedAnyAiConfig } from "@/lib/ai/client"
 import { stripCodeFences } from "@/lib/ai/normalize-html"
 
@@ -23,6 +24,16 @@ export type CompleteTextOptions = {
   timeoutMs?: number
 }
 
+// A page image sent inline (base64, no "data:" prefix). JPEG and PNG are the two formats
+// every vision provider behind supportsVision (src/lib/ai/client.ts) accepts.
+export type CompletionImage = { base64: string; mediaType: "image/jpeg" | "image/png" }
+
+// Same options as a text completion, minus the conversation history: an image completion is
+// always a single-shot read of the images against the instructions in `user`.
+export type CompleteWithImagesOptions = Omit<CompleteTextOptions, "history"> & {
+  images: CompletionImage[]
+}
+
 export type CompletionUsage  = { inputTokens: number; cachedInputTokens: number; outputTokens: number }
 export type CompletionResult = { text: string; usage: CompletionUsage }
 
@@ -46,14 +57,40 @@ export async function completeChat(aiConfig: ResolvedAnyAiConfig, options: Compl
     : completeWithOpenAiCompatible(aiConfig, options)
 }
 
-async function completeWithOpenAiCompatible(aiConfig: OpenAiCompatibleConfig, options: CompleteTextOptions): Promise<CompletionResult> {
+// Vision variant of completeText — the images go in the same user turn as the text, before
+// it. Callers must check supportsVision(aiConfig) first: the platform's Groq model is
+// text-only, and sending it images fails with a provider error rather than a clear message.
+export async function completeWithImages(aiConfig: ResolvedAnyAiConfig, options: CompleteWithImagesOptions): Promise<string> {
+  const result = aiConfig.kind === "anthropic"
+    ? await completeWithAnthropic(aiConfig, options, options.images)
+    : await completeWithOpenAiCompatible(aiConfig, options, options.images)
+  return result.text
+}
+
+async function completeWithOpenAiCompatible(
+  aiConfig: OpenAiCompatibleConfig,
+  options:  CompleteTextOptions,
+  images:   CompletionImage[] = [],
+): Promise<CompletionResult> {
+  // Content parts with a data URL are the one image shape OpenAI and Mistral both accept on
+  // their chat-completions endpoint; a text-only turn stays a plain string as before.
+  const userContent = images.length === 0
+    ? options.user
+    : [
+        ...images.map((image) => ({
+          type:      "image_url" as const,
+          image_url: { url: `data:${image.mediaType};base64,${image.base64}` },
+        })),
+        { type: "text" as const, text: options.user },
+      ]
+
   const completion = await aiConfig.client.chat.completions.create(
     {
       model:    aiConfig.model,
       messages: [
         { role: "system", content: options.system },
         ...(options.history ?? []).map((turn) => ({ role: turn.role, content: turn.content })),
-        { role: "user",   content: options.user },
+        { role: "user",   content: userContent },
       ],
       temperature:     options.temperature,
       max_tokens:      options.maxTokens,
@@ -72,8 +109,23 @@ async function completeWithOpenAiCompatible(aiConfig: OpenAiCompatibleConfig, op
   }
 }
 
-async function completeWithAnthropic(aiConfig: AnthropicConfig, options: CompleteTextOptions): Promise<CompletionResult> {
+async function completeWithAnthropic(
+  aiConfig: AnthropicConfig,
+  options:  CompleteTextOptions,
+  images:   CompletionImage[] = [],
+): Promise<CompletionResult> {
   const system = options.json ? `${options.system}\n\n${JSON_ONLY_INSTRUCTION}` : options.system
+
+  // Images first, then the instructions — the order Anthropic recommends for vision prompts.
+  const userContent: Anthropic.MessageParam["content"] = images.length === 0
+    ? options.user
+    : [
+        ...images.map((image) => ({
+          type:   "image" as const,
+          source: { type: "base64" as const, media_type: image.mediaType, data: image.base64 },
+        })),
+        { type: "text" as const, text: options.user },
+      ]
 
   // No temperature on purpose (see CompleteTextOptions); thinking stays adaptive, at low effort.
   const message = await aiConfig.client.messages.create(
@@ -83,7 +135,7 @@ async function completeWithAnthropic(aiConfig: AnthropicConfig, options: Complet
       system,
       messages: [
         ...(options.history ?? []).map((turn) => ({ role: turn.role, content: turn.content })),
-        { role: "user", content: options.user },
+        { role: "user", content: userContent },
       ],
       output_config: { effort: "low" },
     },

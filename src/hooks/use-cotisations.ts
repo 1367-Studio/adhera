@@ -72,6 +72,33 @@ export function useCotisationsPaginated(page: number, limit = 20, filters: Filte
   })
 }
 
+// Just the fields the payment modal reads off GET /api/cotisations/[id] — amounts come back as
+// Prisma Decimal strings.
+export type CotisationPaymentSchedule = {
+  id:           string
+  amount:       string
+  amountPaid:   string
+  installments: { amount: string; dueDate: string }[]
+}
+
+async function fetchCotisationPaymentSchedule(id: string) {
+  const res = await fetch(`/api/cotisations/${id}`)
+  if (!res.ok) throw new Error(await apiErrorMessage(res, "Erreur lors du chargement de la cotisation"))
+  return res.json() as Promise<CotisationPaymentSchedule>
+}
+
+// For surfaces whose own payload doesn't carry the échéancier (the member page, the member
+// card) — the payment modal loads it itself only when its caller couldn't hand it over.
+// staleTime 0 like the list: a balance must never be read from a cached, pre-payment copy.
+export function useCotisationPaymentSchedule(id: string, enabled: boolean) {
+  return useQuery({
+    queryKey:  [...QK, "detail", id],
+    queryFn:   () => fetchCotisationPaymentSchedule(id),
+    enabled,
+    staleTime: 0,
+  })
+}
+
 function invalidateAll(qc: ReturnType<typeof useQueryClient>) {
   return Promise.all([
     qc.invalidateQueries({ queryKey: QK }),

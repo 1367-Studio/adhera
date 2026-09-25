@@ -1,27 +1,29 @@
 "use client"
 
-import { useEffect } from "react"
-import { useForm, useWatch, Controller, type Resolver } from "react-hook-form"
+import { MembershipFormFieldInput, type MembershipFormFieldInputField } from "@/components/adhesions/membership-form-field-input"
+import { AddressFields } from "@/components/ui/address-fields"
+import { Button } from "@/components/ui/button"
+import { CheckboxField } from "@/components/ui/checkbox-field"
+import { DateField, todayValue } from "@/components/ui/date-field"
+import { FormField } from "@/components/ui/form-field"
+import { MembreTypeBadge } from "@/components/ui/membre-type-badge"
+import { SelectField } from "@/components/ui/select-field"
+import { TextareaField } from "@/components/ui/textarea-field"
+import { useRequiredLegalDocuments } from "@/hooks/use-legal-documents"
+import { useMembershipTierOptions } from "@/hooks/use-membership-tier-options"
+import { useMembreTypes } from "@/hooks/use-membre-types"
+import { useResponsableOptions } from "@/hooks/use-membres"
+import { LOCALE_LABELS, SUPPORTED_LOCALES } from "@/i18n/locales"
+import { addressFormValues, addressWasMigratedFromLegacy, type AddressFormValues } from "@/lib/address"
+import { spokenLanguageOptions } from "@/lib/languages"
+import { membreCreateSchema, membreSchema, type MembreCreateInput } from "@/lib/schemas"
+import { useModules } from "@/lib/user-context"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useTranslations } from "next-intl"
-import { membreSchema, membreCreateSchema, type MembreInput, type MembreCreateInput } from "@/lib/schemas"
-import { CheckboxField } from "@/components/ui/checkbox-field"
-import { AddressFields } from "@/components/ui/address-fields"
-import { addressFormValues, addressWasMigratedFromLegacy, type AddressFormValues } from "@/lib/address"
-import { useRequiredLegalDocuments } from "@/hooks/use-legal-documents"
-import { useMembreTypes } from "@/hooks/use-membre-types"
-import { useMembershipTierOptions } from "@/hooks/use-membership-tier-options"
-import { useResponsableOptions } from "@/hooks/use-membres"
-import { useModules } from "@/lib/user-context"
-import { FormField } from "@/components/ui/form-field"
-import { DateField, todayValue } from "@/components/ui/date-field"
-import { TextareaField } from "@/components/ui/textarea-field"
-import { SelectField } from "@/components/ui/select-field"
-import { MembreTypeBadge } from "@/components/ui/membre-type-badge"
-import { Button } from "@/components/ui/button"
+import { useEffect, useState } from "react"
+import { Controller, useForm, useWatch, type Resolver } from "react-hook-form"
+import { z } from "zod"
 import { ImageUpload } from "../ui/image-upload"
-import { SUPPORTED_LOCALES, LOCALE_LABELS } from "@/i18n/locales"
-import { spokenLanguageOptions } from "@/lib/languages"
 
 // Same role set as the PATCH /api/membres/[id] server-side check and cotisation-defaults'
 // FINANCE roles — forcing a member's adhérent status is a financial call equivalent to
@@ -37,6 +39,9 @@ const GROUPE_SANGUIN_LABELS: Record<(typeof GROUPE_SANGUIN_VALUES)[number], stri
 
 const TAILLE_TSHIRT_VALUES = ["XS", "S", "M", "L", "XL", "XXL", "XXXL"] as const
 
+export type MembreFormValues = z.infer<typeof membreSchema>
+type MembreCreateFormValues  = z.infer<typeof membreCreateSchema>
+
 // Même seuil que /api/membres/stats/route.ts et /api/membres/route.ts (adultsOnly).
 const ADULT_AGE_YEARS = 18
 
@@ -47,17 +52,22 @@ function isConfirmedAdult(birthDateStr: string): boolean {
 }
 
 interface MembreFormProps {
-  defaultValues?: Partial<MembreInput>
-  onSubmit: (data: MembreCreateInput) => Promise<void>
+  defaultValues?: Partial<MembreFormValues>
+  onSubmit: (data: MembreCreateInput & Pick<MembreFormValues, "notes" | "imageRightsConsent"> & { answers?: Record<string, string> }) => Promise<void>
   onCancel: () => void
   loading?: boolean
   isCreate?: boolean
   actorRole?: string
   isSelf?: boolean
   membreId?: string
+  // Custom fields of the MembershipForm this member actually joined through (see
+  // resolveMembreMembershipFormId), pre-filled with their current answers — absent for a
+  // member with no traceable form (manual creation), and always absent on create: there is no
+  // member yet to have joined through anything.
+  editableCustomFields?: { field: MembershipFormFieldInputField; value: string }[]
 }
 
-export function MembreForm({ defaultValues, onSubmit, onCancel, loading, isCreate, actorRole, isSelf, membreId }: MembreFormProps) {
+export function MembreForm({ defaultValues, onSubmit, onCancel, loading, isCreate, actorRole, isSelf, membreId, editableCustomFields = [] }: MembreFormProps) {
   const t = useTranslations()
     const { data: types = [] } = useMembreTypes()
   const { data: responsableCandidates = [] } = useResponsableOptions(membreId)
@@ -121,6 +131,12 @@ export function MembreForm({ defaultValues, onSubmit, onCancel, loading, isCreat
     { value: "false", label: t("common.no")  },
   ]
 
+  const imageRightsOptions = [
+    { value: "",      label: t("membres.form.imageRights.unknown") },
+    { value: "true",  label: t("membres.form.imageRights.granted") },
+    { value: "false", label: t("membres.form.imageRights.refused") },
+  ]
+
   const tailleTshirtOptions = [
     { value: "", label: t("membres.form.tailleTshirtNone") },
     ...TAILLE_TSHIRT_VALUES.map(value => ({ value, label: value })),
@@ -128,13 +144,34 @@ export function MembreForm({ defaultValues, onSubmit, onCancel, loading, isCreat
 
   const { data: requiredLegalDocuments = [] } = useRequiredLegalDocuments()
 
-  const { register, control, handleSubmit, reset, setValue, formState: { errors } } = useForm<MembreCreateInput>({
-    resolver: zodResolver(isCreate ? membreCreateSchema : membreSchema) as unknown as Resolver<MembreCreateInput>,
+  const { register, control, handleSubmit, reset, setValue, formState: { errors } } = useForm<MembreCreateFormValues>({
+    resolver: zodResolver(isCreate ? membreCreateSchema : membreSchema) as unknown as Resolver<MembreCreateFormValues>,
     defaultValues: { status: "ACTIF", role: "MEMBRE", ...defaultValues, ...addressFormValues(defaultValues) },
     mode: "onSubmit",
   })
 
   useEffect(() => { reset({ status: "ACTIF", role: "MEMBRE", ...defaultValues, ...addressFormValues(defaultValues) }) }, [defaultValues, reset])
+
+  // Kept outside react-hook-form: the fields (and their ids) vary per member's own
+  // MembershipForm, so there is no fixed zod shape to resolve them against like every other
+  // field above. Re-seeded whenever the modal opens on a different member.
+  const [customAnswers, setCustomAnswers] = useState<Record<string, string>>(
+    () => Object.fromEntries(editableCustomFields.map(({ field, value }) => [field.id, value])),
+  )
+  useEffect(() => {
+    setCustomAnswers(Object.fromEntries(editableCustomFields.map(({ field, value }) => [field.id, value])))
+  }, [editableCustomFields])
+  // Same touched/showAll pattern as the public adhésion form (membership-form-public-form.tsx):
+  // a required field only turns red once it's been left, or once a submit was attempted —
+  // never on first render, and never merely because another required field failed.
+  const [touchedCustomFields, setTouchedCustomFields] = useState<Set<string>>(new Set())
+  const [showAllCustomFieldErrors, setShowAllCustomFieldErrors] = useState(false)
+  function customFieldError(fieldId: string, required: boolean): string | undefined {
+    if (!required || (customAnswers[fieldId] ?? "").trim()) return undefined
+    return (showAllCustomFieldErrors || touchedCustomFields.has(fieldId))
+      ? t("membershipForms.public.fieldRequired")
+      : undefined
+  }
 
   const [addressStreetValue, addressComplementValue, postalCodeValue, cityValue, countryValue] = useWatch({
     control,
@@ -179,11 +216,33 @@ export function MembreForm({ defaultValues, onSubmit, onCancel, loading, isCreat
       ]
     : [{ value: "", label: t("membres.form.noAdultResponsable") }]
 
+  async function submit(data: MembreCreateInput) {
+    // Only the answers actually changed in this session — never the whole set. A required
+    // field the member never answered (added to the form after they joined, say) must not
+    // block an edit that has nothing to do with it: sending it unchanged would fail the
+    // server's required-field check on every single save until someone fills it in.
+    const initialCustomAnswers = Object.fromEntries(editableCustomFields.map(({ field, value }) => [field.id, value]))
+    const changedCustomAnswers = Object.fromEntries(
+      Object.entries(customAnswers).filter(([fieldId, value]) => value !== (initialCustomAnswers[fieldId] ?? "")),
+    )
+    // Only a *changed* required field is checked here, for the same reason it's the only one
+    // sent to the server above — a pre-existing blank on an untouched field is not this save's
+    // problem to fix.
+    const hasInvalidChangedField = editableCustomFields.some(
+      ({ field }) => field.id in changedCustomAnswers && field.required && !(customAnswers[field.id] ?? "").trim(),
+    )
+    if (hasInvalidChangedField) {
+      setShowAllCustomFieldErrors(true)
+      return
+    }
+    await onSubmit(Object.keys(changedCustomAnswers).length > 0 ? { ...data, answers: changedCustomAnswers } : data)
+  }
+
   return (
     // PILOTE espacement (voir la discussion sur la densité des formulaires) : 20px entre
     // champs au lieu de 16, pour que l'écart entre deux champs se distingue nettement des
     // 6px qui séparent un label de son propre contrôle. À généraliser si validé.
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-5" noValidate>
+    <form onSubmit={handleSubmit(submit)} className="space-y-5" noValidate>
       <Controller
         name="photoUrl"
         control={control}
@@ -502,6 +561,23 @@ export function MembreForm({ defaultValues, onSubmit, onCancel, loading, isCreat
         {...register("allergies")}
       />
 
+      <div className="grid grid-cols-2 gap-x-4 gap-y-5">
+        <Controller
+          name="imageRightsConsent"
+          control={control}
+          render={({ field }) => (
+            <SelectField
+              id="membre-image-rights"
+              label={t("membres.form.fields.imageRights")}
+              options={imageRightsOptions}
+              value={field.value ?? ""}
+              onValueChange={field.onChange}
+              error={errors.imageRightsConsent?.message}
+            />
+          )}
+        />
+      </div>
+
       <AddressFields
         value={addressValue}
         onChange={patch => {
@@ -518,6 +594,66 @@ export function MembreForm({ defaultValues, onSubmit, onCancel, loading, isCreat
           country:           errors.country?.message,
         }}
       />
+
+      {/* Parents written on the member's own record (name + phone), independent from the
+          « Responsable » link above, which points at another member. */}
+      <fieldset className="space-y-3">
+        <legend className="text-sm font-medium">{t("membres.form.fields.guardians")}</legend>
+        <div className="grid gap-x-4 gap-y-5 sm:grid-cols-2">
+          <FormField
+            label={t("membres.form.fields.guardianName", { number: 1 })}
+            error={errors.guardianName?.message}
+            {...register("guardianName")}
+          />
+          <FormField
+            label={t("membres.form.fields.guardianPhone", { number: 1 })}
+            type="tel"
+            error={errors.guardianPhone?.message}
+            {...register("guardianPhone")}
+          />
+          <FormField
+            label={t("membres.form.fields.guardianName", { number: 2 })}
+            error={errors.secondGuardianName?.message}
+            {...register("secondGuardianName")}
+          />
+          <FormField
+            label={t("membres.form.fields.guardianPhone", { number: 2 })}
+            type="tel"
+            error={errors.secondGuardianPhone?.message}
+            {...register("secondGuardianPhone")}
+          />
+        </div>
+      </fieldset>
+
+      <TextareaField
+        label={t("membres.form.fields.notes")}
+        placeholder={t("membres.form.fields.notesPlaceholder")}
+        rows={4}
+        maxLength={5000}
+        error={errors.notes?.message}
+        {...register("notes")}
+      />
+
+      {/* Réponses au formulaire d'adhésion réellement utilisé par ce membre (voir
+          resolveMembreMembershipFormId) — jamais l'ancien formulaire figé d'origine. Absent
+          pour un membre créé manuellement, faute de formulaire à qui rattacher des réponses. */}
+      {editableCustomFields.length > 0 && (
+        <div className="space-y-5 border-t pt-5">
+          <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+            {t("membres.form.customFieldsSectionTitle")}
+          </p>
+          {editableCustomFields.map(({ field }) => (
+            <MembershipFormFieldInput
+              key={field.id}
+              field={field}
+              value={customAnswers[field.id] ?? ""}
+              onChange={value => setCustomAnswers(prev => ({ ...prev, [field.id]: value }))}
+              onBlur={() => setTouchedCustomFields(prev => new Set(prev).add(field.id))}
+              error={customFieldError(field.id, field.required)}
+            />
+          ))}
+        </div>
+      )}
 
       {/* Création par un gestionnaire : la personne n'est pas là pour accepter elle-même. Le
           gestionnaire atteste avoir recueilli son accord, et c'est cette affirmation qui est

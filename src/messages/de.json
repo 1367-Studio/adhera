@@ -1718,6 +1718,7 @@
       "notFound": "Ereignis nicht gefunden",
       "titleLabel": "Veranstaltungstitel",
       "duplicateButton": "Duplikat",
+      "avaliacoesButton": "Rezensionen",
       "deleteButton": "Löschen",
       "publishButton": "Veröffentlichen",
       "unpublishButton": "Unveröffentlicht",
@@ -3275,7 +3276,9 @@
         "montantCotisation": "Montant cotis.",
         "titreEvenement": "Veranstaltungstitel",
         "dateEvenement": "Veranstaltungsdatum",
-        "lieuEvenement": "Veranstaltungsort"
+        "lieuEvenement": "Veranstaltungsort",
+        "dateExpiration": "Ablaufdatum",
+        "lienRenouvellement": "Verlängerungslink"
       },
       "emailBody": "Nachrichtentext (E-Mail)",
       "emailBodyPlaceholder": "Hallo '{{prenom}}',…",
@@ -3316,7 +3319,8 @@
         "rsvpConfirmed": "Die Zustimmung bestätigt",
         "memberCreated": "Neues Mitglied",
         "memberBirthday": "Geburtstag",
-        "eventAdherentLapsed": "Nicht verlängerte Mitgliedschaft"
+        "eventAdherentLapsed": "Nicht verlängerte Mitgliedschaft",
+        "membershipExpiring": "Mitgliedschaft läuft ab"
       },
       "statusLabels": {
         "active": "Aktiv",
@@ -3368,7 +3372,9 @@
         "reminderDays": "{days}j vor jedem Event",
         "rsvpConfirmed": "Ausgelöst bei der RSVP-Bestätigung",
         "memberCreated": "Ausgelöst bei der Mitgliedererstellung",
-        "memberBirthday": "Der Geburtstag jedes Mitglieds"
+        "memberBirthday": "Der Geburtstag jedes Mitglieds",
+        "membershipExpiring": "{days} Tage vor Ablauf der Mitgliedschaft",
+        "membershipExpiringToday": "Am Tag des Ablaufs der Mitgliedschaft"
       }
     },
     "ruleModal": {
@@ -3386,7 +3392,8 @@
         "rsvpConfirmed": "Bestätigung der Teilnahme (RSVP)",
         "memberCreated": "Neues registriertes Mitglied",
         "memberBirthday": "Geburtstag des Mitglieds",
-        "eventAdherentLapsed": "Nicht verlängerte Mitgliedschaft"
+        "eventAdherentLapsed": "Nicht verlängerte Mitgliedschaft",
+        "membershipExpiring": "Mitgliedschaft läuft ab"
       },
       "sendDate": "Gesendetes Datum",
       "time": "Zeit",
@@ -3420,6 +3427,9 @@
       "daysBeforeEvent": "Tage vor dem Ereignis",
       "daysBeforeEventHint": "Beispiel: 1 = der Tag davor, 3 = 3 Tage davor",
       "adherentLapsedHint": "Sendet eine Nachricht an aktive Mitglieder, die im letzten Jahr Mitglieder waren (bezahlte/befreite Beiträge), aber noch keine Mitgliedsgebühr in gutem Zustand für das laufende Jahr haben. Ein Mitglied, dessen Mitgliedschaftsstatus manuell erzwungen wurde, ist nie betroffen.",
+      "membershipExpiringHint": "Sendet Mitgliedern, deren Mitgliedschaft (bezahlter Beitrag) bald abläuft, N Tage vor dem Ablaufdatum eine Erinnerung. Wird nie gesendet, wenn die Mitgliedschaft bereits verlängert wurde.",
+      "daysBeforeExpiration": "Tage vor Ablauf",
+      "daysBeforeExpirationHint": "Z. B.: 30 = einen Monat vorher, 7 = eine Woche vorher, 0 = am Tag selbst",
       "birthdayHint": "Sendet automatisch eine Nachricht am Geburtstag jedes aktiven Mitglieds (Tag und Monat, unabhängig vom Geburtsjahr). Nur ein Senden pro Mitglied pro Jahr pro Jahr.",
       "birthdayNoDateWarningType": "Keines der aktiven Mitglieder dieses Typs ({count}) hat kein Geburtsdatum eingegeben – diese Regel sendet nichts, bis ein Datum auf die Karte gesetzt wurde.",
       "birthdayNoDateWarningAll": "Keines deiner aktiven Mitglieder :({count}) hat kein Geburtsdatum eingegeben – diese Regel sendet nichts, bis ein Datum auf die Karte gesetzt wurde.",
@@ -3791,7 +3801,7 @@
       "exonereConfirmTitle": "Diesen Beitrag befreien?",
       "exonereConfirmDescription": "Bereits gepostete Zahlungen werden gelöscht. Diese Maßnahme kann nicht rückgängig gemacht werden.",
       "installments": {
-        "title": "Fristen (parcelamento)",
+        "title": "Fristen",
         "none": "Kein Fälligkeitsdatum – der Beitrag verwendet das oben genannte Fälligkeitsdatum.",
         "count": "Anzahl der Laufzeiten",
         "generate": "Deadlines erstellen",
@@ -3990,7 +4000,8 @@
       "noType": "Kein Typ",
       "noResponsable": "Keine",
       "noAdultResponsable": "Keine erwachsenen Mitglieder verfügbar",
-      "preview": "Überblick:"
+      "preview": "Überblick:",
+      "customFieldsSectionTitle": "Antworten aus dem Mitgliedsformular"
     },
     "actions": {
       "add": "Mitglied hinzufügen",
@@ -4106,6 +4117,7 @@
       "noContactInfo": "Keine Kontaktinformationen",
       "memberSinceColon": "Mitglied seitdem: {date}",
       "typeColon": "Typ: {name}",
+      "tierColon": "Tarif: {name}",
       "personalInfo": "Persönliche Informationen",
       "civiliteColon": "Titel: {value}",
       "sexeColon": "Geschlecht: {value}",
@@ -4795,11 +4807,13 @@
       "showPhoto": "Foto des Mitglieds",
       "showPhotoHint": "Initialen werden angezeigt, wenn kein Foto hinterlegt ist.",
       "showCategory": "Kategorie",
+      "showTier": "Tarif",
       "showPhone": "Telefonnummer des Vereins",
       "showEmail": "E-Mail des Vereins",
       "preview": "Vorschau",
       "sampleName": "Camille Martin",
       "sampleCategory": "Aktives ehrenamtliches Mitglied",
+      "sampleTier": "Erwachsener",
       "noLogo": "Fügen Sie unter Markendesign ein Logo hinzu, um es auf dem Ausweis anzuzeigen.",
       "noPhone": "Fügen Sie unter Rechtliche Identität & Spenden eine Telefonnummer hinzu, um sie auf dem Ausweis anzuzeigen.",
       "noEmail": "Fügen Sie unter Vereinsinformationen eine Kontakt-E-Mail hinzu, um sie auf dem Ausweis anzuzeigen.",

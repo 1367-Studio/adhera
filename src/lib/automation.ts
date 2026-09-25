@@ -65,6 +65,7 @@ function nextRecurring(config: Record<string, unknown>, from: Date): Date {
 export const KNOWN_TEMPLATE_VARS = [
   "prenom", "nom", "nom_complet", "email", "association", "lien_portal",
   "annee_cotisation", "montant_cotisation", "titre_evenement", "date_evenement", "lieu_evenement",
+  "date_expiration", "lien_renouvellement",
 ] as const
 
 export function findUnknownVars(text: string): string[] {
@@ -91,19 +92,23 @@ export function buildVars(params: {
   titreEvenement?:     string
   dateEvenement?:      string
   lieuEvenement?:      string
+  dateExpiration?:     string
+  lienRenouvellement?: string
 }): Record<string, string> {
   return {
-    prenom:             params.prenom,
-    nom:                params.nom,
-    nom_complet:        `${params.prenom} ${params.nom}`.trim(),
-    email:              params.email,
-    association:        params.association,
-    lien_portal:        `${APP_URL}/portal/${params.slug}`,
-    annee_cotisation:   params.anneeCotisation?.toString() ?? "",
-    montant_cotisation: params.montantCotisation ?? "",
-    titre_evenement:    params.titreEvenement  ?? "",
-    date_evenement:     params.dateEvenement   ?? "",
-    lieu_evenement:     params.lieuEvenement   ?? "",
+    prenom:              params.prenom,
+    nom:                 params.nom,
+    nom_complet:         `${params.prenom} ${params.nom}`.trim(),
+    email:               params.email,
+    association:         params.association,
+    lien_portal:         `${APP_URL}/portal/${params.slug}`,
+    annee_cotisation:    params.anneeCotisation?.toString() ?? "",
+    montant_cotisation:  params.montantCotisation ?? "",
+    titre_evenement:     params.titreEvenement  ?? "",
+    date_evenement:      params.dateEvenement   ?? "",
+    lieu_evenement:      params.lieuEvenement   ?? "",
+    date_expiration:     params.dateExpiration     ?? "",
+    lien_renouvellement: params.lienRenouvellement ?? "",
   }
 }
 
@@ -129,11 +134,20 @@ export function isBirthdayToday(birthDate: Date, now: Date): boolean {
   return bMonth === 1 && bDate === 29 && !isLeapYear(now.getFullYear()) && now.getMonth() === 1 && now.getDate() === 28
 }
 
-// "ALL" always overlaps every other recipient scope (it includes their members too), so
-// it conflicts with any other active birthday rule regardless of that rule's recipients.
-export function birthdayRecipientsConflict(recipients: string, otherActiveRecipients: string[]): boolean {
+// "ALL" always overlaps every other recipient scope (it includes their members too), so it
+// conflicts with any other active rule of the same kind regardless of that rule's recipients.
+// Shared by every trigger type below that needs a "don't let two active rules double-send to
+// the same member" guard — MEMBER_BIRTHDAY has no other axis two rules could differ on, so
+// this alone is its whole conflict check; a trigger with its own extra axis (e.g.
+// MEMBERSHIP_EXPIRING's daysBefore) filters candidates down to that axis first, then calls
+// this the same way.
+function recipientsOverlap(recipients: string, otherActiveRecipients: string[]): boolean {
   if (recipients === "ALL") return otherActiveRecipients.length > 0
   return otherActiveRecipients.some(r => r === "ALL" || r === recipients)
+}
+
+export function birthdayRecipientsConflict(recipients: string, otherActiveRecipients: string[]): boolean {
+  return recipientsOverlap(recipients, otherActiveRecipients)
 }
 
 export const BIRTHDAY_CONFLICT_MESSAGE = "BIRTHDAY_CONFLICT"
@@ -143,6 +157,21 @@ export const BIRTHDAY_CONFLICT_MESSAGE = "BIRTHDAY_CONFLICT"
 // request — treat it the same as the in-app conflict thrown inside that transaction.
 export function isBirthdayConflictError(err: unknown): boolean {
   if (err instanceof Error && err.message === BIRTHDAY_CONFLICT_MESSAGE) return true
+  return err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2034"
+}
+
+// Two active MEMBERSHIP_EXPIRING rules with the same daysBefore and overlapping recipients
+// would double-send the same reminder to the same member on the same day — the caller is
+// responsible for narrowing otherActiveRecipients down to rules whose triggerConfig.daysBefore
+// already matches before calling this (unlike birthdays, which have no such extra axis).
+export function membershipExpiringConflict(recipients: string, otherActiveRecipients: string[]): boolean {
+  return recipientsOverlap(recipients, otherActiveRecipients)
+}
+
+export const MEMBERSHIP_EXPIRING_CONFLICT_MESSAGE = "MEMBERSHIP_EXPIRING_CONFLICT"
+
+export function isMembershipExpiringConflictError(err: unknown): boolean {
+  if (err instanceof Error && err.message === MEMBERSHIP_EXPIRING_CONFLICT_MESSAGE) return true
   return err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2034"
 }
 

@@ -3,21 +3,23 @@ import { SPOKEN_LANGUAGE_CODES } from "@/lib/languages"
 import { SUPPORTED_LOCALES } from "@/i18n/locales"
 import { ADDRESS_MAX_LENGTHS } from "@/lib/address"
 
-const phoneRegex = /^[+\d][\d\s.\-()]{5,19}$/
+// Exporté pour l'import de fiches papier (src/lib/schemas/paper-form.ts), qui valide ses numéros
+// selon la même règle que la saisie manuelle.
+export const MEMBRE_PHONE_REGEX = /^[+\d][\d\s.\-()]{5,19}$/
 
 export const membreSchema = z.object({
   firstName: z.string().trim().min(1, "Prénom requis"),
   lastName:  z.string().trim().min(1, "Nom requis"),
   email:     z.string().trim().email("Email invalide").optional().or(z.literal("")),
   phone:     z.string().trim().optional().or(z.literal("")).refine(
-    v => !v || phoneRegex.test(v),
+    v => !v || MEMBRE_PHONE_REGEX.test(v),
     "Numéro de téléphone invalide",
   ),
   // Pas de colonne dédiée sur Membre : il est rangé dans Membre.answers sous la clé "mobile"
   // (voir src/lib/membre-answers.ts). Même validation que le fixe ci-dessus, pour que les deux
   // numéros ne puissent pas être acceptés selon des règles différentes.
   mobile:    z.string().trim().optional().or(z.literal("")).refine(
-    v => !v || phoneRegex.test(v),
+    v => !v || MEMBRE_PHONE_REGEX.test(v),
     "Numéro de mobile invalide",
   ),
   birthDate: z.string().optional().or(z.literal("")).refine(
@@ -51,6 +53,22 @@ export const membreSchema = z.object({
   typeId:    z.string().optional().or(z.literal("")),
   responsableId: z.string().optional().or(z.literal("")),
   adherentOverride: z.enum(["true", "false"]).optional().or(z.literal("")),
+  // Bloc-notes libre du gestionnaire (Membre.notes) — "" efface.
+  notes:              z.string().trim().max(5000, "Notes trop longues (max 5000 caractères)").optional().or(z.literal("")),
+  // Droit à l'image, encodé comme possedeTshirt : "" = jamais demandé (null), "true"/"false".
+  imageRightsConsent: z.enum(["true", "false"]).optional().or(z.literal("")),
+  // Responsables légaux saisis en texte (voir Membre.guardianName) — "" efface. Les numéros
+  // suivent la même règle que le téléphone du membre.
+  guardianName:        z.string().trim().max(200, "Nom du responsable trop long (max 200 caractères)").optional().or(z.literal("")),
+  guardianPhone:       z.string().trim().optional().or(z.literal("")).refine(
+    v => !v || MEMBRE_PHONE_REGEX.test(v),
+    "Numéro du responsable invalide",
+  ),
+  secondGuardianName:  z.string().trim().max(200, "Nom du second responsable trop long (max 200 caractères)").optional().or(z.literal("")),
+  secondGuardianPhone: z.string().trim().optional().or(z.literal("")).refine(
+    v => !v || MEMBRE_PHONE_REGEX.test(v),
+    "Numéro du second responsable invalide",
+  ),
 })
 
 export const membreCreateSchema = membreSchema.extend({
@@ -66,7 +84,13 @@ export const membreCreateSchema = membreSchema.extend({
   legalOfflineAttestation: z.boolean().optional(),
 })
 
-export const membreUpdateSchema = membreSchema.partial()
+export const membreUpdateSchema = membreSchema.partial().extend({
+  // Réponses aux champs personnalisés (MembershipFormField) du formulaire d'adhésion réellement
+  // utilisé par ce membre — keyed par fieldId, comme Membre.answers. Absent du schéma de
+  // création : un membre créé manuellement n'a pas encore de formulaire à qui rattacher des
+  // réponses (voir resolveMembreMembershipFormId dans src/lib/membre-membership-form.ts).
+  answers: z.record(z.string(), z.string().max(500)).optional(),
+})
 
 export type MembreInput       = z.infer<typeof membreSchema>
 export type MembreCreateInput = z.infer<typeof membreCreateSchema>

@@ -1718,6 +1718,7 @@
       "notFound": "Zdarzenie nie znalezione",
       "titleLabel": "Tytuł wydarzenia",
       "duplicateButton": "Duplikat",
+      "avaliacoesButton": "Recenzje",
       "deleteButton": "Usuń",
       "publishButton": "Publikuj",
       "unpublishButton": "Wycofać publikację",
@@ -3275,7 +3276,9 @@
         "montantCotisation": "Montant cotis.",
         "titreEvenement": "Tytuł wydarzenia",
         "dateEvenement": "Data wydarzenia",
-        "lieuEvenement": "Miejsce wydarzenia"
+        "lieuEvenement": "Miejsce wydarzenia",
+        "dateExpiration": "Data wygaśnięcia",
+        "lienRenouvellement": "Link do odnowienia"
       },
       "emailBody": "Treść wiadomości (e-mail)",
       "emailBodyPlaceholder": "Cześć '{{prenom}}',…",
@@ -3316,7 +3319,8 @@
         "rsvpConfirmed": "Potwierdzenie przyłączenia",
         "memberCreated": "Nowy członek",
         "memberBirthday": "Urodziny",
-        "eventAdherentLapsed": "Członkostwo nieodnowione"
+        "eventAdherentLapsed": "Członkostwo nieodnowione",
+        "membershipExpiring": "Wygasające członkostwo"
       },
       "statusLabels": {
         "active": "Aktywny",
@@ -3368,7 +3372,9 @@
         "reminderDays": "{days}j przed każdym wydarzeniem",
         "rsvpConfirmed": "Wyzwalane po potwierdzeniu RSVP",
         "memberCreated": "Wyzwalane podczas tworzenia członka",
-        "memberBirthday": "Urodziny każdego członka"
+        "memberBirthday": "Urodziny każdego członka",
+        "membershipExpiring": "{days} dni przed wygaśnięciem członkostwa",
+        "membershipExpiringToday": "W dniu wygaśnięcia członkostwa"
       }
     },
     "ruleModal": {
@@ -3386,7 +3392,8 @@
         "rsvpConfirmed": "Potwierdzenie udziału (RSVP)",
         "memberCreated": "Nowy zarejestrowany członek",
         "memberBirthday": "Urodziny członka",
-        "eventAdherentLapsed": "Członkostwo nieodnowione"
+        "eventAdherentLapsed": "Członkostwo nieodnowione",
+        "membershipExpiring": "Wygasające członkostwo"
       },
       "sendDate": "Data wysłania",
       "time": "Czas",
@@ -3420,6 +3427,9 @@
       "daysBeforeEvent": "Kilka dni przed wydarzeniem",
       "daysBeforeEventHint": "Np.: 1 = dzień wcześniej, 3 = 3 dni przed",
       "adherentLapsedHint": "Wysyła wiadomość do aktywnych członków, którzy byli członkami w zeszłym roku (opłacone/zwolnione składki), ale nie mają jeszcze składki członkowskiej w stanie obowiązującym za bieżący rok. Członek, którego status członkowski został ręcznie wymuszony, nigdy nie jest objęty niczym problemem.",
+      "membershipExpiringHint": "Wysyła przypomnienie do członków, których członkostwo (opłacona składka) wkrótce wygaśnie, N dni przed datą wygaśnięcia. Nigdy nie jest wysyłane, jeśli członkostwo zostało już odnowione.",
+      "daysBeforeExpiration": "Dni przed wygaśnięciem",
+      "daysBeforeExpirationHint": "Np.: 30 = miesiąc wcześniej, 7 = tydzień wcześniej, 0 = tego samego dnia",
       "birthdayHint": "Wysyła wiadomość automatycznie w dniu urodzin każdego aktywnego członka (dzień i miesiąc, niezależnie od roku urodzenia). Tylko jedna wiadomość na każdego członka w roku.",
       "birthdayNoDateWarningType": "Żaden z aktywnych członków tego typu ({count}) nie wpisuje daty urodzenia — ta zasada nie wysyła niczego, dopóki data nie zostanie dodana do karty.",
       "birthdayNoDateWarningAll": "Żaden z twoich aktywnych członków ({count}) nie wpisuje daty urodzenia — ta zasada nie wysyła niczego, dopóki data nie zostanie dodana do karty.",
@@ -3791,7 +3801,7 @@
       "exonereConfirmTitle": "Zwolnić z tego składu?",
       "exonereConfirmDescription": "Płatności, które już zostały zaksięgowane, zostaną usunięte. Tego działania nie da się cofnąć.",
       "installments": {
-        "title": "Terminy (parcelamento)",
+        "title": "Terminy",
         "none": "Brak terminu płatności — wpłata wykorzystuje powyższy termin.",
         "count": "Liczba terminów wykupu",
         "generate": "Generuj terminy",
@@ -3990,7 +4000,8 @@
       "noType": "Brak typu",
       "noResponsable": "Brak",
       "noAdultResponsable": "Brak dostępnych dorosłych członków",
-      "preview": "Przegląd:"
+      "preview": "Przegląd:",
+      "customFieldsSectionTitle": "Odpowiedzi z formularza członkowskiego"
     },
     "actions": {
       "add": "Dodaj członka",
@@ -4106,6 +4117,7 @@
       "noContactInfo": "Brak danych kontaktowych",
       "memberSinceColon": "Członek od następującego czasu: {date}",
       "typeColon": "Typ: {name}",
+      "tierColon": "Taryfa: {name}",
       "personalInfo": "Dane osobowe",
       "civiliteColon": "Tytuł: {value}",
       "sexeColon": "Płeć: {value}",
@@ -4795,11 +4807,13 @@
       "showPhoto": "Zdjęcie członka",
       "showPhotoHint": "Jeśli nie zapisano zdjęcia, wyświetlane są inicjały.",
       "showCategory": "Kategoria",
+      "showTier": "Taryfa",
       "showPhone": "Telefon stowarzyszenia",
       "showEmail": "E-mail stowarzyszenia",
       "preview": "Podgląd",
       "sampleName": "Camille Martin",
       "sampleCategory": "Aktywny członek wolontariusz",
+      "sampleTier": "Dorosły",
       "noLogo": "Dodaj logo w sekcji Marka, aby wyświetlić je na karcie.",
       "noPhone": "Dodaj numer telefonu w sekcji Tożsamość prawna i darowizny, aby wyświetlić go na karcie.",
       "noEmail": "Dodaj e-mail kontaktowy w sekcji Informacje o stowarzyszeniu, aby wyświetlić go na karcie.",

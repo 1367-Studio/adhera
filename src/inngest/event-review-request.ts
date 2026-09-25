@@ -38,7 +38,7 @@ export const eventReviewRequest = inngest.createFunction(
         const jobs = targets.map(p => {
           const reviewToken = p.reviewToken ?? randomBytes(20).toString("hex")
           const reviewUrl   = `${APP_URL}/avis/${reviewToken}`
-          const { subject, html } = eventReviewRequestEmail({
+          const { subject, html, fromName } = eventReviewRequestEmail({
             firstName:       p.firstName,
             email:           p.email!,
             associationName: event.association.name,
@@ -51,7 +51,7 @@ export const eventReviewRequest = inngest.createFunction(
             participationId: p.id,
             reviewToken,
             payload: {
-              to: p.email!, subject, html,
+              to: p.email!, subject, html, fromName,
               context: { associationId: event.associationId, membreId: p.membreId ?? undefined, source: "EVENT_REVIEW_REQUEST", sourceId: p.id },
             },
           }
