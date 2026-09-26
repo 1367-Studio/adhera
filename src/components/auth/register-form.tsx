@@ -463,7 +463,7 @@ function RegisterFormInner({ pricing, header, footer }: RegisterFormProps) {
   const router        = useRouter()
   const searchParams  = useSearchParams()
   const [step,         setStep]         = useState<Step>("info")
-  const [tier,         setTier]         = useState<PlanTier>("essential")
+  const [tier,         setTier]         = useState<PlanTier>("starter")
   const [plan,         setPlan]         = useState<Plan>("monthly")
   const [info,         setInfo]         = useState<Info | null>(null)
   const [customerId,   setCustomerId]   = useState("")

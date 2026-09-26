@@ -33,9 +33,12 @@ export function MemberSummary({ totalCount, activeCount }: Props) {
   const t = useTranslations("dashboard")
 
   // Own query (see /api/dashboard/member-usage): a Stripe hiccup only hides the bar.
+  // staleTime: the limit only moves on a plan change, not worth refetching on every
+  // dashboard remount.
   const { data: usage } = useQuery<MemberUsage>({
-    queryKey: ["dashboard", "member-usage"],
-    queryFn:  async () => {
+    queryKey:  ["dashboard", "member-usage"],
+    staleTime: 5 * 60 * 1000,
+    queryFn:   async () => {
       const response = await fetch("/api/dashboard/member-usage")
       if (!response.ok) throw new Error("member-usage")
       return response.json()
