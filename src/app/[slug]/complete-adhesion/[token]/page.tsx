@@ -22,7 +22,7 @@ import { spokenLanguageOptions } from "@/lib/languages"
 
 type FieldRequirement = "HIDDEN" | "OPTIONAL" | "REQUIRED"
 
-type Tier = { id: string; label: string; freeAmount: boolean; amount: string | null }
+type Tier = { id: string; label: string; freeAmount: boolean; amount: string | null; durationMonths: number | null; fixedPeriodEnd: string | null }
 
 type CompletionData = {
   associationName: string
@@ -117,6 +117,15 @@ export default function CompletarAdesaoPage() {
   function touch(field: string) { setTouched(t => ({ ...t, [field]: true })) }
   function requiredError(field: string, value: string, required: boolean) {
     return required && touched[field] && !value.trim() ? "Ce champ est requis." : undefined
+  }
+
+  // Mirrors membership-form-public-form.tsx's oneOffDurationSuffix — every tier here is a
+  // ONE_OFF tarif (see the route's `where`), so a custom duration still needs surfacing:
+  // a single payment doesn't obviously mean "valid all year" to the visitor otherwise.
+  function tierDurationLabel(tier: Tier): string | null {
+    if (tier.fixedPeriodEnd) return `valable jusqu'au ${new Date(tier.fixedPeriodEnd).toLocaleDateString("fr-FR")}`
+    if (tier.durationMonths) return `valable ${tier.durationMonths} mois`
+    return null
   }
 
   const selectedTier = data?.tiers.find(t => t.id === tierId)
@@ -248,7 +257,7 @@ export default function CompletarAdesaoPage() {
             <p className="text-sm text-muted-foreground">Paiement annulé — vous pouvez réessayer quand vous voulez.</p>
           )}
 
-          <div className="space-y-6">
+          <div className="rounded-lg border bg-card p-4 space-y-4">
           <div className="flex items-start gap-2 rounded-md border bg-muted/30 px-3 py-2.5 text-sm text-muted-foreground">
             <InfoIcon className="size-4 mt-0.5 shrink-0" />
             <span>Votre mot de passe d&apos;accès à l&apos;espace membre reste le même — inutile d&apos;en créer un nouveau.</span>
@@ -270,6 +279,9 @@ export default function CompletarAdesaoPage() {
                   <div className="text-muted-foreground">
                     {tier.freeAmount ? `À partir de ${tier.amount ?? "0"}€` : `${tier.amount}€`}
                   </div>
+                  {tierDurationLabel(tier) && (
+                    <div className="text-xs text-muted-foreground">{tierDurationLabel(tier)}</div>
+                  )}
                 </button>
               ))}
             </div>
