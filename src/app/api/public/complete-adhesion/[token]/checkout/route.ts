@@ -29,6 +29,7 @@ const schema = z.object({
   spokenLanguage: z.enum(SPOKEN_LANGUAGE_CODES).optional(),
   photoUrl:  z.string().url().max(500).optional(),
   answers:   z.record(z.string(), z.string().max(500)).optional().default({}),
+  conditionsAgreed: z.boolean().optional().default(false),
 })
 
 const MIN_ITEM_AMOUNT = 1
@@ -54,7 +55,7 @@ export async function POST(
       association: { select: { name: true, slug: true, stripeConnectId: true } },
       adhesionCompletionForm: {
         select: {
-          id: true, status: true,
+          id: true, status: true, requireCguvSignature: true,
           fieldAddress: true, fieldBirthDate: true, fieldPhone: true, fieldMobile: true,
           fieldGender: true, fieldPhoto: true, fieldLanguage: true,
           tiers:        { where: { itemType: "MEMBERSHIP", kind: "ONE_OFF", free: false }, select: { id: true, label: true, freeAmount: true, amount: true } },
@@ -70,6 +71,9 @@ export async function POST(
 
   if (!membre.association.stripeConnectId || !(await connectAccountChargesEnabled(membre.association.stripeConnectId)))
     return NextResponse.json({ error: "Paiement en ligne non disponible pour le moment." }, { status: 400 })
+
+  if (form.requireCguvSignature && !parsed.data.conditionsAgreed)
+    return NextResponse.json({ error: "Vous devez accepter les conditions générales pour adhérer." }, { status: 422 })
 
   const tier = form.tiers.find(t => t.id === parsed.data.tierId)
   if (!tier) return NextResponse.json({ error: "Tarif invalide" }, { status: 422 })
