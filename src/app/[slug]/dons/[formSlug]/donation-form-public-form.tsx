@@ -5,7 +5,7 @@ import { DateField } from "@/components/ui/date-field"
 import { useSearchParams, useRouter, usePathname } from "next/navigation"
 import { toast } from "sonner"
 import { useTranslations, useLocale } from "next-intl"
-import { HandHeartIcon, FileIcon } from "@phosphor-icons/react/dist/ssr";
+import { HandHeartIcon } from "@phosphor-icons/react/dist/ssr";
 import { Button } from "@/components/ui/button"
 import { FormField } from "@/components/ui/form-field"
 import { AddressFields } from "@/components/ui/address-fields"
@@ -15,7 +15,8 @@ import { CheckboxField } from "@/components/ui/checkbox-field"
 import { CurrencyField } from "@/components/ui/currency-field"
 import { LocaleSwitcher } from "@/components/layout/locale-switcher"
 import { RichTextView } from "@/components/ui/rich-text-view"
-import { TermsModal } from "@/components/public/terms-modal"
+import { FormTermsSection } from "@/components/public/form-terms-section"
+import { publicFormTerms } from "@/lib/form-terms"
 import { LegalConsent, type RequiredLegalDocument } from "@/components/public/legal-consent"
 import { PublicFormSkeleton } from "@/components/public/public-form-skeleton"
 import { InAppBrowserBanner } from "@/components/ui/in-app-browser-banner"
@@ -114,6 +115,12 @@ function DonationFormPublicFormInner({ slug, formSlug, legalDocuments }: Props) 
   const [message, setMessage]       = useState("")
   const [anonymous, setAnonymous]   = useState(false)
   const [conditionsAgreed, setConditionsAgreed] = useState(false)
+  // Empty editor markup or a "required" flag with nothing to accept must not block the visitor.
+  const requiresTermsAcceptance = !!form && publicFormTerms({
+    conditions:           form.conditions,
+    attachments:          form.attachments,
+    requireCguvSignature: form.requireCguvSignature,
+  }).requiresTermsAcceptance
   // Agreement to the association's own legal documents, separate from this form's free-text
   // conditions above: those are per-form wording, these are the association-wide documents
   // recorded against the revision the visitor was shown.
@@ -220,7 +227,7 @@ function DonationFormPublicFormInner({ slug, formSlug, legalDocuments }: Props) 
     (form.fieldPhone     !== "REQUIRED" || phone.trim()) &&
     (form.fieldMobile    !== "REQUIRED" || mobile.trim()) &&
     (form.fieldGender    !== "REQUIRED" || gender.trim()) &&
-    (!form.requireCguvSignature || conditionsAgreed) &&
+    (!requiresTermsAcceptance || conditionsAgreed) &&
     (legalDocuments.length === 0 || legalAccepted) &&
     form.customFields.every(f => {
       if (!f.required) return true
@@ -564,29 +571,18 @@ function DonationFormPublicFormInner({ slug, formSlug, legalDocuments }: Props) 
 
               <CheckboxField label={t("anonymousLabel")} checked={anonymous} onChange={e => setAnonymous(e.target.checked)} />
 
-              {form.conditions && (
-                <TermsModal content={form.conditions} triggerLabel={t("viewConditionsLabel")} title={t("conditionsModalTitle")} />
-              )}
-              {!!form.attachments?.length && (
-                <ul className="space-y-1">
-                  {form.attachments.map(a => (
-                    <li key={a.url}>
-                      <a
-                        href={a.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1.5 text-xs text-muted-foreground underline underline-offset-2 hover:text-foreground"
-                      >
-                        <FileIcon className="size-3.5 shrink-0" />
-                        {a.filename}
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              )}
-              {form.requireCguvSignature && (
-                <CheckboxField label={t("conditionsAgreeLabel")} checked={conditionsAgreed} onChange={e => setConditionsAgreed(e.target.checked)} />
-              )}
+              <FormTermsSection
+                conditions={form.conditions}
+                attachments={form.attachments}
+                requireCguvSignature={form.requireCguvSignature}
+                accepted={conditionsAgreed}
+                onAcceptedChange={setConditionsAgreed}
+                labels={{
+                  viewConditions:   t("viewConditionsLabel"),
+                  conditionsTitle:  t("conditionsModalTitle"),
+                  acceptConditions: t("conditionsAgreeLabel"),
+                }}
+              />
 
               {/* Documents imposés par l'association — distincts des conditions propres au
                   formulaire juste au-dessus, et affichés dès le premier rendu (la liste vient

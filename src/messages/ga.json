@@ -5556,5 +5556,8 @@
       "closed": "Dúnadh an t-iarratas",
       "reopened": "Feidhmchlár athoscailte"
     }
+  },
+  "formTermsEditor": {
+    "contentRequired": "Ní mór duit an réimse “{conditionsLabel}” a líonadh nó doiciméad a uaslódáil."
   }
 }

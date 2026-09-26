@@ -6325,5 +6325,8 @@
       "description": "The imported pages and their reading will be discarded.",
       "confirm": "Start over"
     }
+  },
+  "formTermsEditor": {
+    "contentRequired": "You must fill in the “{conditionsLabel}” field or upload a document."
   }
 }

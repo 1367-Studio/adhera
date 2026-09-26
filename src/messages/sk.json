@@ -5556,5 +5556,8 @@
       "closed": "Žiadosť uzavretá",
       "reopened": "Žiadosť bola znovu otvorená"
     }
+  },
+  "formTermsEditor": {
+    "contentRequired": "Musíte vyplniť pole „{conditionsLabel}“ alebo nahrať dokument."
   }
 }

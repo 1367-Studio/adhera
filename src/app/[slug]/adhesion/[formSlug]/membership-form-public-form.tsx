@@ -5,7 +5,7 @@ import { DateField } from "@/components/ui/date-field"
 import { useSearchParams, useRouter, usePathname } from "next/navigation"
 import { toast } from "sonner"
 import { useTranslations, useLocale } from "next-intl"
-import { IdentificationCardIcon, PlusIcon, MinusIcon, TrashIcon, FileIcon } from "@phosphor-icons/react/dist/ssr";
+import { IdentificationCardIcon, PlusIcon, MinusIcon, TrashIcon } from "@phosphor-icons/react/dist/ssr";
 import { Button } from "@/components/ui/button"
 import { FormField } from "@/components/ui/form-field"
 import { AddressFields } from "@/components/ui/address-fields"
@@ -18,7 +18,8 @@ import { ImageUpload } from "@/components/ui/image-upload"
 import { ImageThumbnail } from "@/components/ui/image-thumbnail"
 import { LocaleSwitcher } from "@/components/layout/locale-switcher"
 import { RichTextView } from "@/components/ui/rich-text-view"
-import { TermsModal } from "@/components/public/terms-modal"
+import { FormTermsSection } from "@/components/public/form-terms-section"
+import { publicFormTerms } from "@/lib/form-terms"
 import { LegalConsent, type RequiredLegalDocument } from "@/components/public/legal-consent"
 import { PublicFormSkeleton } from "@/components/public/public-form-skeleton"
 import { spokenLanguageOptions } from "@/lib/languages"
@@ -209,6 +210,12 @@ function MembershipFormPublicFormInner({ slug, formSlug, legalDocuments }: Props
   const [spokenLanguage, setSpokenLanguage] = useState("")
   const languageOptions = spokenLanguageOptions()
   const [conditionsAgreed, setConditionsAgreed] = useState(false)
+  // Empty editor markup or a "required" flag with nothing to accept must not block the visitor.
+  const requiresTermsAcceptance = !!form && publicFormTerms({
+    conditions:           form.conditions,
+    attachments:          form.attachments,
+    requireCguvSignature: form.requireCguvSignature,
+  }).requiresTermsAcceptance
   // Agreement to the association's own legal documents, separate from this form's free-text
   // conditions above: those are per-form wording, these are the association-wide documents
   // recorded against the revision the visitor was shown.
@@ -574,7 +581,7 @@ function MembershipFormPublicFormInner({ slug, formSlug, legalDocuments }: Props
     (form.fieldGender    !== "REQUIRED" || sexe) &&
     (form.fieldLanguage  !== "REQUIRED" || !!spokenLanguage) &&
     (form.fieldPhoto     !== "REQUIRED" || photoUrl) &&
-    (!form.requireCguvSignature || isAdminFill || conditionsAgreed) &&
+    (!requiresTermsAcceptance || isAdminFill || conditionsAgreed) &&
     (legalDocuments.length === 0 || isAdminFill || legalAccepted) &&
     form.customFields.every(f => !f.required || (answers[f.id] ?? "").trim() !== "")
 
@@ -600,7 +607,7 @@ function MembershipFormPublicFormInner({ slug, formSlug, legalDocuments }: Props
     : !firstName.trim() || !lastName.trim() ? t("blockedMissingIdentity")
     : !emailValid(email) ? t("blockedInvalidEmail")
     : willBeImmediate && !isAdminFill && password.length < PASSWORD_MIN_LENGTH ? t("blockedPasswordTooShort")
-    : form.requireCguvSignature && !isAdminFill && !conditionsAgreed ? t("blockedConditionsNotAccepted")
+    : requiresTermsAcceptance && !isAdminFill && !conditionsAgreed ? t("blockedConditionsNotAccepted")
     : legalDocuments.length > 0 && !isAdminFill && !legalAccepted ? tLegal("required")
     : (form.fieldAddress   === "REQUIRED" && !addressIsComplete(addressValues))
       || (form.fieldBirthDate === "REQUIRED" && !birthDate.trim())
@@ -1258,29 +1265,20 @@ function MembershipFormPublicFormInner({ slug, formSlug, legalDocuments }: Props
                   </div>
                 )}
 
-                {form.conditions && (
-                  <TermsModal content={form.conditions} triggerLabel={t("viewConditionsLabel")} title={t("conditionsModalTitle")} />
-                )}
-                {!!form.attachments?.length && (
-                  <ul className="space-y-1">
-                    {form.attachments.map(a => (
-                      <li key={a.url}>
-                        <a
-                          href={a.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1.5 text-xs text-muted-foreground underline underline-offset-2 hover:text-foreground"
-                        >
-                          <FileIcon className="size-3.5 shrink-0" />
-                          {a.filename}
-                        </a>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-                {form.requireCguvSignature && !isAdminFill && (
-                  <CheckboxField label={t("conditionsAgreeLabel")} checked={conditionsAgreed} onChange={e => setConditionsAgreed(e.target.checked)} />
-                )}
+                {/* Hidden in admin mode, like LegalConsent below: a manager cannot accept in the
+                    member's place. The text and documents stay visible. */}
+                <FormTermsSection
+                  conditions={form.conditions}
+                  attachments={form.attachments}
+                  requireCguvSignature={form.requireCguvSignature && !isAdminFill}
+                  accepted={conditionsAgreed}
+                  onAcceptedChange={setConditionsAgreed}
+                  labels={{
+                    viewConditions:   t("viewConditionsLabel"),
+                    conditionsTitle:  t("conditionsModalTitle"),
+                    acceptConditions: t("conditionsAgreeLabel"),
+                  }}
+                />
 
                 {/* Association-wide documents. Hidden in admin mode: a manager filling the form
                     for someone else cannot agree in their place — that case is recorded as an

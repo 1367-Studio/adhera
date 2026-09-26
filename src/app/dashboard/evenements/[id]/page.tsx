@@ -5,6 +5,7 @@ import { EvenementTicketTypesEditor, type EvenementTicketTypesEditorHandle, type
 import { EvenementDiscountCodesEditor, type EvenementDiscountCodesEditorHandle } from "@/components/evenements/evenement-discount-codes-editor"
 import { EvenementProductsEditor, type EvenementProductsEditorHandle } from "@/components/evenements/evenement-products-editor"
 import { RegistrationsClosedNotice, RegistrationsToggleButton } from "@/components/evenements/registrations-toggle-button"
+import { FormTermsEditor, revealFormTermsError, useTermsContentRequiredMessage } from "@/components/forms/form-terms-editor"
 import { Accordion, AccordionItem, AccordionPanel, AccordionTrigger } from "@/components/ui/accordion"
 import { BackLink } from "@/components/ui/back-link"
 import { Badge } from "@/components/ui/badge"
@@ -14,7 +15,6 @@ import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 import { CurrencyField } from "@/components/ui/currency-field"
 import { DetailLoadingSkeleton } from "@/components/ui/detail-loading-skeleton"
 import { DetailNotFound } from "@/components/ui/detail-not-found"
-import { DocumentUpload } from "@/components/ui/document-upload"
 import { FormField } from "@/components/ui/form-field"
 import { ImageUpload } from "@/components/ui/image-upload"
 import { Input } from "@/components/ui/input"
@@ -26,6 +26,7 @@ import { RichTextEditor } from "@/components/ui/rich-text-editor"
 import { SelectField } from "@/components/ui/select-field"
 import { useParticipations, useEvenementTicketTypes } from "@/hooks/use-evenements"
 import { BASE_PATH } from "@/lib/env"
+import { isTermsConfigurationValid, TERMS_CONTENT_REQUIRED_CODE } from "@/lib/form-terms"
 import { cn } from "@/lib/utils"
 import { useCurrentUser } from "@/lib/user-context"
 import {
@@ -128,6 +129,8 @@ export default function EvenementDetailPage() {
   const t       = useTranslations("evenements")
   const tForm   = useTranslations("evenements.form")
   const tSteps  = useTranslations("evenements.detail.steps")
+  // Also the translation of the save/publish routes' { code: "TERMS_CONTENT_REQUIRED" }.
+  const termsContentRequiredMessage = useTermsContentRequiredMessage("evenements.form")
   const tCommon = useTranslations("common")
   const user    = useCurrentUser()
 
@@ -267,7 +270,10 @@ export default function EvenementDetailPage() {
         headers: { "Content-Type": "application/json" },
         body:    JSON.stringify(data),
       })
-      if (!res.ok) throw new Error((await res.json()).error ?? t("detail.toasts.saveError"))
+      if (!res.ok) {
+        const errorBody = await res.json()
+        throw new Error(errorBody.code === TERMS_CONTENT_REQUIRED_CODE ? termsContentRequiredMessage : errorBody.error ?? t("detail.toasts.saveError"))
+      }
       return res.json() as Promise<Evenement>
     },
     onSuccess: (updated) => {
@@ -278,9 +284,23 @@ export default function EvenementDetailPage() {
     onError: (err) => toast.error(err instanceof Error ? err.message : t("detail.toasts.saveError")),
   })
 
+  // Requiring acceptance with neither text nor document is refused before any request (and
+  // before the lazy uploads, so a refused save never leaves an orphaned file in R2): the
+  // step opens and the checkbox whose inline error explains why is brought into view.
+  const termsConfigurationValid = isTermsConfigurationValid({ conditions, attachments, requireCguvSignature: requireCguv })
+  function refuseInvalidTerms() {
+    setOpenSteps(previousSteps => Array.from(new Set<StepKey>([...previousSteps, "info"])))
+    toast.error(termsContentRequiredMessage)
+    revealFormTermsError()
+  }
+
   async function infoPayload(): Promise<SaveableFields | null> {
     if (!title.trim()) {
       toast.error(t("detail.titleRequired"))
+      return null
+    }
+    if (!termsConfigurationValid) {
+      refuseInvalidTerms()
       return null
     }
     if (!date) return null
@@ -370,7 +390,10 @@ export default function EvenementDetailPage() {
         headers: { "Content-Type": "application/json" },
         body:    JSON.stringify({ action }),
       })
-      if (!res.ok) throw new Error((await res.json()).error ?? tCommon("error"))
+      if (!res.ok) {
+        const errorBody = await res.json()
+        throw new Error(errorBody.code === TERMS_CONTENT_REQUIRED_CODE ? termsContentRequiredMessage : errorBody.error ?? tCommon("error"))
+      }
       return res.json() as Promise<Evenement>
     },
     onSuccess: (result, action) => {
@@ -494,6 +517,10 @@ export default function EvenementDetailPage() {
   }
 
   function handlePublish() {
+    if (!termsConfigurationValid) {
+      refuseInvalidTerms()
+      return
+    }
     const blocked = STEP_KEYS.filter(k => stepIssue(k) !== null)
     if (blocked.length === 0) {
       publishMutation.mutate("publish")
@@ -709,29 +736,16 @@ export default function EvenementDetailPage() {
                 onChange={setDescription}
                 placeholder={tForm("descriptionPlaceholder")}
               />
-              <RichTextEditor
-                label={tForm("conditionsLabel")}
-                value={conditions}
-                onChange={setConditions}
-                placeholder={tForm("conditionsPlaceholder")}
-              />
-              <div className="space-y-1.5">
-                <Label>{tForm("conditionsPdfLabel")}</Label>
-                <DocumentUpload
-                  value={attachments[0]?.url ?? ""}
-                  onChange={(url) => { if (url === "") { setPendingPdf(null); setAttachments([]) } }}
-                  prefix="adhera/evenements"
-                  lazy
-                  onFilePending={(blobUrl, file) => {
-                    setPendingPdf({ blobUrl, file })
-                    setAttachments([{ url: blobUrl, filename: file.name, size: file.size }])
-                  }}
-                />
-              </div>
-              <CheckboxField
-                label={tForm("requireCguvLabel")}
-                checked={requireCguv}
-                onChange={(e) => setRequireCguv(e.target.checked)}
+              <FormTermsEditor
+                translationNamespace="evenements.form"
+                uploadPrefix="adhera/evenements"
+                conditions={conditions}
+                onConditionsChange={setConditions}
+                attachments={attachments}
+                onAttachmentsChange={setAttachments}
+                onPendingDocumentChange={setPendingPdf}
+                requireAcceptance={requireCguv}
+                onRequireAcceptanceChange={setRequireCguv}
               />
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <FormField

@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server"
 import { getLocale } from "next-intl/server"
+import { publicFormTerms } from "@/lib/form-terms"
+import { storedTermsAttachments } from "@/lib/form-terms-response"
 import { prisma } from "@/lib/prisma/client"
 import { translateFields } from "@/lib/i18n/translate"
 import type { Locale } from "@/i18n/locales"
@@ -68,15 +70,23 @@ export const GET = withPortalAuth<{ formSlug: string }>(async (_req, ctx, { form
   const tiers        = await translateFields(form.tiers, ["label"], locale, ctx.associationId)
   const customFields = await translateFields(form.customFields, ["label"], locale, ctx.associationId)
 
+  // Only what actually exists reaches the page: empty editor markup is no text, and a form
+  // "required" with nothing to accept (saved before the rule) shows no checkbox.
+  const terms = publicFormTerms({
+    conditions:           form.conditions,
+    attachments:          storedTermsAttachments(form.attachments),
+    requireCguvSignature: form.requireCguvSignature,
+  })
+
   return NextResponse.json({
     associationName:     assoc.name,
     id:                  form.id,
     title:               content.title,
     imageUrl:            form.imageUrl,
     description:         content.description,
-    conditions:          content.conditions,
-    attachments:          form.attachments ?? [],
-    requireCguvSignature: form.requireCguvSignature,
+    conditions:          terms.conditions === null ? null : content.conditions,
+    attachments:          terms.attachments,
+    requireCguvSignature: terms.requiresTermsAcceptance,
     contactEmail:        form.contactEmail,
     contactPhone:        form.contactPhone,
     fieldAddress:        form.fieldAddress,

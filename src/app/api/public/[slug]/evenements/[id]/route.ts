@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server"
 import { getLocale } from "next-intl/server"
+import { publicFormTerms } from "@/lib/form-terms"
+import { storedTermsAttachments } from "@/lib/form-terms-response"
 import { prisma } from "@/lib/prisma/client"
 import { parseModules } from "@/lib/modules"
 import { connectAccountChargesEnabled } from "@/lib/stripe"
@@ -134,6 +136,14 @@ export async function GET(
     ? Math.max(0, evenement.capacity - evenement._count.participations)
     : null
 
+  // Only what actually exists reaches the page: empty editor markup is no text, and an event
+  // "required" with nothing to accept (saved before the rule) shows no checkbox.
+  const terms = publicFormTerms({
+    conditions:           evenement.conditions,
+    attachments:          storedTermsAttachments(evenement.attachments),
+    requireCguvSignature: evenement.requireCguvSignature,
+  })
+
   return NextResponse.json({
     associationName: assoc.name,
     id:          evenement.id,
@@ -166,9 +176,9 @@ export async function GET(
     allowTransfer:          evenement.allowTransfer,
     offlineInstructions:    evenement.offlineInstructions,
     confirmationMessage:    evenement.confirmationMessage,
-    conditions:             translated.conditions,
-    attachments:            evenement.attachments ?? [],
-    requireCguvSignature:   evenement.requireCguvSignature,
+    conditions:             terms.conditions === null ? null : translated.conditions,
+    attachments:            terms.attachments,
+    requireCguvSignature:   terms.requiresTermsAcceptance,
     customFields,
     ticketTypes: ticketTypes.map(tt => {
       const remaining = tt.capacity != null ? Math.max(0, tt.capacity - (occupiedMap.get(tt.id) ?? 0)) : null

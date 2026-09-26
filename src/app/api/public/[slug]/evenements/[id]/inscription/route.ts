@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import { randomUUID, randomBytes } from "crypto"
 import { z } from "zod"
+import { storedRowRequiresTermsAcceptance } from "@/lib/form-terms-response"
 import { prisma } from "@/lib/prisma/client"
 import { evenementRefWhere } from "@/lib/slug"
 import { isEvenementOver } from "@/lib/evenement-timing"
@@ -205,7 +206,7 @@ export async function POST(
   // l'exige — revalidé ici pour ne jamais dépendre uniquement d'un contrôle contournable côté
   // client. Une seule signature par soumission (pas par participant), même convention que
   // Don/MembershipForm.conditionsAgreed.
-  if (evenement.requireCguvSignature && (!conditionsAgreed || !signedName?.trim()))
+  if (storedRowRequiresTermsAcceptance(evenement) && (!conditionsAgreed || !signedName?.trim()))
     return NextResponse.json({ error: "Vous devez accepter les conditions et signer pour vous inscrire." }, { status: 422 })
   const cguvAgreedAt = conditionsAgreed ? now : null
   const cleanSignedName = signedName?.trim() || null

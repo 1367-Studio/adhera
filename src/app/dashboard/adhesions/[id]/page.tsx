@@ -4,6 +4,7 @@ import { MembershipFormFieldsEditor, type MembershipFormFieldsEditorHandle } fro
 import { DateTimeField } from "@/components/ui/date-time-field"
 import { MembershipProductsEditor, type MembershipProductsEditorHandle } from "@/components/adhesions/membership-products-editor"
 import { MembershipTiersEditor, type MembershipTiersEditorHandle } from "@/components/adhesions/membership-tiers-editor"
+import { FormTermsEditor, revealFormTermsError, useTermsContentRequiredMessage } from "@/components/forms/form-terms-editor"
 import { Accordion, AccordionItem, AccordionPanel, AccordionTrigger } from "@/components/ui/accordion"
 import { BackLink } from "@/components/ui/back-link"
 import { Badge } from "@/components/ui/badge"
@@ -12,7 +13,6 @@ import { CheckboxField } from "@/components/ui/checkbox-field"
 import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 import { DetailLoadingSkeleton } from "@/components/ui/detail-loading-skeleton"
 import { DetailNotFound } from "@/components/ui/detail-not-found"
-import { DocumentUpload } from "@/components/ui/document-upload"
 import { FormField } from "@/components/ui/form-field"
 import { ImageUpload } from "@/components/ui/image-upload"
 import { Input } from "@/components/ui/input"
@@ -26,6 +26,7 @@ import { SECTION_LABELS } from "@/types/site-config"
 import { useMembreTypes } from "@/hooks/use-membre-types"
 import { useSiteConfig, useSaveSiteConfig } from "@/hooks/use-site-config"
 import { BASE_PATH } from "@/lib/env"
+import { isTermsConfigurationValid, TERMS_CONTENT_REQUIRED_CODE } from "@/lib/form-terms"
 import { cn } from "@/lib/utils"
 import { useCurrentUser } from "@/lib/user-context"
 import {
@@ -118,6 +119,8 @@ export default function MembershipFormDetailPage() {
   const qc      = useQueryClient()
   const t       = useTranslations("membershipForms")
   const tSteps  = useTranslations("membershipForms.detail.steps")
+  // Also the translation of the save/publish routes' { code: "TERMS_CONTENT_REQUIRED" }.
+  const termsContentRequiredMessage = useTermsContentRequiredMessage("membershipForms.detail.steps.info")
   const tCommon = useTranslations("common")
   // Same key the site editor itself uses as the default title for a newly added "membership"
   // section — reused here so a section created from this picker looks identical to one
@@ -277,7 +280,10 @@ export default function MembershipFormDetailPage() {
         headers: { "Content-Type": "application/json" },
         body:    JSON.stringify(data),
       })
-      if (!res.ok) throw new Error((await res.json()).error ?? t("detail.toasts.saveError"))
+      if (!res.ok) {
+        const errorBody = await res.json()
+        throw new Error(errorBody.code === TERMS_CONTENT_REQUIRED_CODE ? termsContentRequiredMessage : errorBody.error ?? t("detail.toasts.saveError"))
+      }
       return res.json() as Promise<MembershipForm>
     },
     onSuccess: (updated) => {
@@ -294,9 +300,23 @@ export default function MembershipFormDetailPage() {
   // Uploads the pending image / conditions PDF first (same lazy pattern as
   // evenement-form.tsx's handleFormSubmit, so a cancelled edit never leaves an orphaned file
   // in R2) and returns null when a step cannot be saved — the reason has already been toasted.
+  // Requiring acceptance with neither text nor document is refused before any request (and
+  // before the lazy uploads, so a refused save never leaves an orphaned file in R2): the
+  // step opens and the checkbox whose inline error explains why is brought into view.
+  const termsConfigurationValid = isTermsConfigurationValid({ conditions, attachments, requireCguvSignature: requireCguv })
+  function refuseInvalidTerms() {
+    setOpenSteps(previousSteps => Array.from(new Set<StepKey>([...previousSteps, "info"])))
+    toast.error(termsContentRequiredMessage)
+    revealFormTermsError()
+  }
+
   async function infoPayload(): Promise<SaveableFields | null> {
     if (!title.trim()) {
       toast.error(t("detail.titleRequired"))
+      return null
+    }
+    if (!termsConfigurationValid) {
+      refuseInvalidTerms()
       return null
     }
     let resolvedImageUrl = imageUrl || null
@@ -381,7 +401,10 @@ export default function MembershipFormDetailPage() {
         headers: { "Content-Type": "application/json" },
         body:    JSON.stringify({ action }),
       })
-      if (!res.ok) throw new Error((await res.json()).error ?? t("formsView.toasts.statusError"))
+      if (!res.ok) {
+        const errorBody = await res.json()
+        throw new Error(errorBody.code === TERMS_CONTENT_REQUIRED_CODE ? termsContentRequiredMessage : errorBody.error ?? t("formsView.toasts.statusError"))
+      }
       return res.json() as Promise<MembershipForm>
     },
     onSuccess: (result, action) => {
@@ -526,6 +549,10 @@ export default function MembershipFormDetailPage() {
   // button, so it is easy to leave one behind) or while no tier is saved. The offending steps
   // are expanded, tinted and named in the toast; the first one is scrolled into view.
   function handlePublish() {
+    if (!termsConfigurationValid) {
+      refuseInvalidTerms()
+      return
+    }
     const blocked = STEP_KEYS.filter(k => stepIssue(k) !== null)
     if (blocked.length === 0) {
       publishMutation.mutate("publish")
@@ -702,29 +729,16 @@ export default function MembershipFormDetailPage() {
                 onChange={setDescription}
                 placeholder={tSteps("info.descriptionPlaceholder")}
               />
-              <RichTextEditor
-                label={tSteps("info.conditionsLabel")}
-                value={conditions}
-                onChange={setConditions}
-                placeholder={tSteps("info.conditionsPlaceholder")}
-              />
-              <div className="space-y-1.5">
-                <Label>{tSteps("info.conditionsPdfLabel")}</Label>
-                <DocumentUpload
-                  value={attachments[0]?.url ?? ""}
-                  onChange={(url) => { if (url === "") { setPendingPdf(null); setAttachments([]) } }}
-                  prefix="adhera/adhesions"
-                  lazy
-                  onFilePending={(blobUrl, file) => {
-                    setPendingPdf({ blobUrl, file })
-                    setAttachments([{ url: blobUrl, filename: file.name, size: file.size }])
-                  }}
-                />
-              </div>
-              <CheckboxField
-                label={tSteps("info.requireCguvLabel")}
-                checked={requireCguv}
-                onChange={(e) => setRequireCguv(e.target.checked)}
+              <FormTermsEditor
+                translationNamespace="membershipForms.detail.steps.info"
+                uploadPrefix="adhera/adhesions"
+                conditions={conditions}
+                onConditionsChange={setConditions}
+                attachments={attachments}
+                onAttachmentsChange={setAttachments}
+                onPendingDocumentChange={setPendingPdf}
+                requireAcceptance={requireCguv}
+                onRequireAcceptanceChange={setRequireCguv}
               />
               <div className="space-y-3">
                 <p className="flex items-center gap-1.5 text-sm font-semibold text-primary">

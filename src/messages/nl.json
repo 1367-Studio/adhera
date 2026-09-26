@@ -5622,5 +5622,8 @@
       "closed": "Verzoek gesloten",
       "reopened": "De aanvraag is heropend"
     }
+  },
+  "formTermsEditor": {
+    "contentRequired": "U moet het veld ‘{conditionsLabel}’ invullen of een document uploaden."
   }
 }

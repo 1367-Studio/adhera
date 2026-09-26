@@ -2,6 +2,7 @@ import { NextResponse } from "next/server"
 import { z } from "zod"
 import type Stripe from "stripe"
 import { stripe, connectAccountChargesEnabled, stripeRecurringInterval, platformFeeRate } from "@/lib/stripe"
+import { storedRowRequiresTermsAcceptance } from "@/lib/form-terms-response"
 import { prisma } from "@/lib/prisma/client"
 import { APP_URL } from "@/lib/env"
 import { isValidSiret } from "@/lib/siret"
@@ -80,7 +81,7 @@ export const POST = withPortalAuth<{ formSlug: string }>(async (req, ctx, { form
   if (form.opensAt && form.opensAt > now) return NextResponse.json({ error: "Ce formulaire n'est pas encore ouvert." }, { status: 422 })
   if (form.closesAt && form.closesAt < now) return NextResponse.json({ error: "Ce formulaire est fermé." }, { status: 422 })
 
-  if (form.requireCguvSignature && !parsed.data.conditionsAgreed)
+  if (storedRowRequiresTermsAcceptance(form) && !parsed.data.conditionsAgreed)
     return NextResponse.json({ error: "Vous devez accepter les conditions générales pour faire un don." }, { status: 422 })
   const cguvAgreedAt = parsed.data.conditionsAgreed ? now : null
 

@@ -5556,5 +5556,8 @@
       "closed": "Talba magħluqa",
       "reopened": "L-applikazzjoni reġgħet infetħet"
     }
+  },
+  "formTermsEditor": {
+    "contentRequired": "Trid timla l-qasam “{conditionsLabel}” jew ittella’ dokument."
   }
 }

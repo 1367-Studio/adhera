@@ -5556,5 +5556,8 @@
       "closed": "Wniosek zamknięty",
       "reopened": "Wniosek ponownie otwarty"
     }
+  },
+  "formTermsEditor": {
+    "contentRequired": "Musisz wypełnić pole „{conditionsLabel}” lub przesłać dokument."
   }
 }

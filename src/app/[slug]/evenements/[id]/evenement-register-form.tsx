@@ -13,11 +13,12 @@ import { RichTextView } from "@/components/ui/rich-text-view"
 import { InAppBrowserBanner } from "@/components/ui/in-app-browser-banner"
 import { useInAppBrowserEscape } from "@/hooks/use-in-app-browser-escape"
 import { SelectField } from "@/components/ui/select-field"
-import { CheckboxField } from "@/components/ui/checkbox-field"
+import { FormField } from "@/components/ui/form-field"
 import { AddressFields } from "@/components/ui/address-fields"
 import { QuantityStepper } from "@/components/ui/quantity-stepper"
 import { EventDonationPrompt } from "@/components/public/event-donation-prompt"
-import { TermsModal } from "@/components/public/terms-modal"
+import { FormTermsSection } from "@/components/public/form-terms-section"
+import { publicFormTerms } from "@/lib/form-terms"
 import { LegalConsent, type RequiredLegalDocument } from "@/components/public/legal-consent"
 import { EMPTY_ADDRESS_FORM_VALUES } from "@/lib/address"
 import { cheapestAvailableTicketTypePrice } from "@/lib/ticket-types"
@@ -531,6 +532,12 @@ function EvenementRegisterFormInner({ slug, id, legalDocuments }: Props) {
   const [productQuantities, setProductQuantities] = useState<Record<string, number>>({})
   const [conditionsAgreed, setConditionsAgreed] = useState(false)
   const [signedName, setSignedName]             = useState("")
+  // Empty editor markup or a "required" flag with nothing to accept must not block the visitor.
+  const requiresTermsAcceptance = !!event && publicFormTerms({
+    conditions:           event.conditions,
+    attachments:          event.attachments,
+    requireCguvSignature: event.requireCguvSignature,
+  }).requiresTermsAcceptance
   // Accord sur les documents de l'association, distinct des conditions propres à l'événement
   // juste au-dessus : celles-ci sont la formulation de l'organisateur pour cet événement, ceux-là
   // sont les documents de l'association, enregistrés contre la révision affichée au visiteur.
@@ -780,7 +787,7 @@ function EvenementRegisterFormInner({ slug, id, legalDocuments }: Props) {
       }),
     ) &&
     selectedDonations.every(d => (donationAmounts[d.id] ?? Number(d.minAmount)) >= Number(d.minAmount)) &&
-    (!event.requireCguvSignature || (conditionsAgreed && signedName.trim() !== "")) &&
+    (!requiresTermsAcceptance || (conditionsAgreed && signedName.trim() !== "")) &&
     // Les documents de l'association sont obligatoires dès qu'elle en impose, indépendamment de
     // requireCguvSignature qui ne porte que sur les conditions propres à l'événement.
     (legalDocuments.length === 0 || legalAccepted)
@@ -829,8 +836,8 @@ function EvenementRegisterFormInner({ slug, id, legalDocuments }: Props) {
           products: Object.entries(productQuantities)
             .filter(([, q]) => q > 0)
             .map(([varianteId, quantity]) => ({ varianteId, quantity })),
-          conditionsAgreed: event.requireCguvSignature ? conditionsAgreed : undefined,
-          signedName:       event.requireCguvSignature ? signedName.trim() : undefined,
+          conditionsAgreed: requiresTermsAcceptance ? conditionsAgreed : undefined,
+          signedName:       requiresTermsAcceptance ? signedName.trim() : undefined,
           acceptedLegalRevisionIds,
           discountCode:     appliedDiscount && attendeeCount === 1 ? appliedDiscount.code : undefined,
         }),
@@ -1250,38 +1257,26 @@ function EvenementRegisterFormInner({ slug, id, legalDocuments }: Props) {
                       </p>
                     )}
 
-                    {event.conditions && (
-                      <TermsModal content={event.conditions} triggerLabel={t("viewConditionsLabel")} title={t("conditionsModalTitle")} />
-                    )}
-                    {!!event.attachments?.length && (
-                      <ul className="space-y-1">
-                        {event.attachments.map(a => (
-                          <li key={a.url}>
-                            <a
-                              href={a.url}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="inline-flex items-center gap-1.5 text-xs text-muted-foreground underline underline-offset-2 hover:text-foreground"
-                            >
-                              <FileIcon className="size-3.5 shrink-0" />
-                              {a.filename}
-                            </a>
-                          </li>
-                        ))}
-                      </ul>
-                    )}
-                    {event.requireCguvSignature && (
-                      <div className="space-y-2">
-                        <CheckboxField label={t("conditionsAgreeLabel")} checked={conditionsAgreed} onChange={e => setConditionsAgreed(e.target.checked)} />
-                        <div className="space-y-1.5">
-                          <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{t("signedNameLabel")}</label>
-                          <input
-                            type="text" value={signedName} onChange={e => setSignedName(e.target.value)}
-                            className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm outline-none focus:ring-1 focus:ring-ring"
-                          />
-                        </div>
-                      </div>
-                    )}
+                    <FormTermsSection
+                      conditions={event.conditions}
+                      attachments={event.attachments}
+                      requireCguvSignature={event.requireCguvSignature}
+                      accepted={conditionsAgreed}
+                      onAcceptedChange={setConditionsAgreed}
+                      labels={{
+                        viewConditions:   t("viewConditionsLabel"),
+                        conditionsTitle:  t("conditionsModalTitle"),
+                        acceptConditions: t("conditionsAgreeLabel"),
+                      }}
+                      acceptanceExtra={
+                        <FormField
+                          label={t("signedNameLabel")}
+                          required
+                          value={signedName}
+                          onChange={event => setSignedName(event.target.value)}
+                        />
+                      }
+                    />
 
                     {/* Documents de l'association — affichés quel que soit requireCguvSignature, qui
                         ne concerne que les conditions propres à l'événement ci-dessus. Ne rend rien

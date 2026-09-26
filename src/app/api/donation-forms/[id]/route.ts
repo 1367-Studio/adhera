@@ -4,6 +4,8 @@ import type { Prisma } from "@prisma/client"
 import { prisma } from "@/lib/prisma/client"
 import { writeActivityLog } from "@/lib/activity-log"
 import { withAdminAuth } from "@/lib/api-wrapper"
+import { isTermsConfigurationValid, normalizeConditions } from "@/lib/form-terms"
+import { storedTermsAttachments, termsContentRequiredResponse } from "@/lib/form-terms-response"
 import { revalidatePublicSiteFor } from "@/lib/association/revalidate-site"
 import { displaceDonationFormsFromSiteSection } from "@/lib/dons/site-section-binding"
 
@@ -63,7 +65,7 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
 
   const form = await prisma.donationForm.findFirst({
     where:  { id, associationId: ctx.associationId },
-    select: { id: true, title: true, status: true, visibility: true, siteSectionId: true, opensAt: true, closesAt: true },
+    select: { id: true, title: true, status: true, visibility: true, siteSectionId: true, opensAt: true, closesAt: true, conditions: true, attachments: true, requireCguvSignature: true },
   })
   if (!form) return NextResponse.json({ error: "Introuvable" }, { status: 404 })
 
@@ -73,6 +75,16 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
     return NextResponse.json({ error: parsed.error.issues }, { status: 422 })
 
   const data = parsed.data
+
+  // Checked against the resulting state (patch merged over the stored row): requiring
+  // acceptance is only allowed when there is text or a document to accept. A null
+  // `attachments` in the patch leaves the stored value untouched (see updateData).
+  const finalTerms = {
+    conditions:           data.conditions           !== undefined ? data.conditions                  : form.conditions,
+    attachments:          data.attachments                        ?? storedTermsAttachments(form.attachments),
+    requireCguvSignature: data.requireCguvSignature !== undefined ? data.requireCguvSignature        : form.requireCguvSignature,
+  }
+  if (!isTermsConfigurationValid(finalTerms)) return termsContentRequiredResponse()
 
   // Compare against the final merged state, not just whichever of the two fields this
   // particular request happens to touch — the wizard always sends both together, but a
@@ -91,7 +103,7 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
     ...(data.title                !== undefined ? { title: data.title }                                 : {}),
     ...(data.imageUrl             !== undefined ? { imageUrl: data.imageUrl }                            : {}),
     ...(data.description          !== undefined ? { description: data.description }                     : {}),
-    ...(data.conditions           !== undefined ? { conditions: data.conditions }                        : {}),
+    ...(data.conditions           !== undefined ? { conditions: normalizeConditions(data.conditions) }   : {}),
     ...(data.attachments          !== undefined ? { attachments: data.attachments ?? undefined }         : {}),
     ...(data.requireCguvSignature !== undefined ? { requireCguvSignature: data.requireCguvSignature }    : {}),
     ...(data.contactEmail         !== undefined ? { contactEmail: data.contactEmail }                    : {}),

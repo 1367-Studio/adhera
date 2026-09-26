@@ -1,4 +1,6 @@
 import { NextResponse } from "next/server"
+import { publicFormTerms } from "@/lib/form-terms"
+import { storedTermsAttachments } from "@/lib/form-terms-response"
 import { prisma } from "@/lib/prisma/client"
 import { rateLimit, requestIp } from "@/lib/rate-limit"
 import { addressFormValues } from "@/lib/address"
@@ -23,7 +25,7 @@ async function findByToken(token: string) {
       adhesionCompletionForm: {
         select: {
           id: true, slug: true, title: true, status: true, description: true, conditions: true,
-          requireCguvSignature: true,
+          attachments: true, requireCguvSignature: true,
           fieldAddress: true, fieldBirthDate: true, fieldPhone: true, fieldMobile: true,
           fieldGender: true, fieldPhoto: true, fieldLanguage: true,
           tiers: {
@@ -61,6 +63,14 @@ export async function GET(
   const answers = (membre.answers as Record<string, string> | null) ?? {}
   const legalDocuments = await requiredDocuments(membre.association.id)
 
+  // Only what actually exists reaches the page: empty editor markup is no text, and a form
+  // "required" with nothing to accept (saved before the rule) shows no checkbox.
+  const terms = publicFormTerms({
+    conditions:           form.conditions,
+    attachments:          storedTermsAttachments(form.attachments),
+    requireCguvSignature: form.requireCguvSignature,
+  })
+
   return NextResponse.json({
     associationName: membre.association.name,
     slug:            membre.association.slug,
@@ -69,8 +79,9 @@ export async function GET(
     formSlug:        form.slug,
     formTitle:       form.title,
     description:     form.description,
-    conditions:      form.conditions,
-    requireCguvSignature: form.requireCguvSignature,
+    conditions:      terms.conditions,
+    attachments:     terms.attachments,
+    requireCguvSignature: terms.requiresTermsAcceptance,
     online:          !!membre.association.stripeConnectId,
     fieldAddress:    form.fieldAddress,
     fieldBirthDate:  form.fieldBirthDate,

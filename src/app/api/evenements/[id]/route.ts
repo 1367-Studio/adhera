@@ -3,6 +3,8 @@ import { prisma } from "@/lib/prisma/client"
 import { evenementUpdateSchema } from "@/lib/schemas"
 import { writeActivityLog, computeDiff } from "@/lib/activity-log"
 import { withAdminAuth } from "@/lib/api-wrapper"
+import { isTermsConfigurationValid, normalizeConditions } from "@/lib/form-terms"
+import { storedTermsAttachments, termsContentRequiredResponse } from "@/lib/form-terms-response"
 import { revalidatePublicSiteFor } from "@/lib/association/revalidate-site"
 
 const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
@@ -44,6 +46,16 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
     opensAt, closesAt, offlineInstructions, confirmationMessage, conditions, attachments, ...rest
   } = parsed.data
 
+  // Checked against the resulting state (patch merged over the stored row): requiring
+  // acceptance is only allowed when there is text or a document to accept. A null
+  // `attachments` in the patch leaves the stored value untouched (see the update below).
+  const finalTerms = {
+    conditions:           conditions               !== undefined ? conditions               : existing.conditions,
+    attachments:          attachments                            ?? storedTermsAttachments(existing.attachments),
+    requireCguvSignature: rest.requireCguvSignature !== undefined ? rest.requireCguvSignature : existing.requireCguvSignature,
+  }
+  if (!isTermsConfigurationValid(finalTerms)) return termsContentRequiredResponse()
+
   if (capacity != null) {
     const reserved = await prisma.participation.count({
       where: { evenementId: id, OR: [{ ticketPaidAt: { not: null } }, { rsvp: "CONFIRME" }] },
@@ -76,7 +88,7 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
       ...(closesAt !== undefined ? { closesAt: closesAt ? new Date(closesAt) : null } : {}),
       ...(offlineInstructions !== undefined ? { offlineInstructions: offlineInstructions || null } : {}),
       ...(confirmationMessage !== undefined ? { confirmationMessage: confirmationMessage || null } : {}),
-      ...(conditions  !== undefined ? { conditions:  conditions || null } : {}),
+      ...(conditions  !== undefined ? { conditions:  normalizeConditions(conditions) } : {}),
       ...(attachments !== undefined ? { attachments: attachments ?? undefined } : {}),
     },
   })

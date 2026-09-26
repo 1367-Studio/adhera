@@ -5556,5 +5556,8 @@
       "closed": "Το αίτημα έκλεισε",
       "reopened": "Η εφαρμογή άνοιξε ξανά"
     }
+  },
+  "formTermsEditor": {
+    "contentRequired": "Πρέπει να συμπληρώσετε το πεδίο «{conditionsLabel}» ή να ανεβάσετε ένα έγγραφο."
   }
 }

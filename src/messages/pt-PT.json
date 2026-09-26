@@ -5622,5 +5622,8 @@
       "closed": "Pedido fechado",
       "reopened": "Pedido reaberto"
     }
+  },
+  "formTermsEditor": {
+    "contentRequired": "Tem de preencher o campo «{conditionsLabel}» ou carregar um documento."
   }
 }

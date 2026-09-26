@@ -5556,5 +5556,8 @@
       "closed": "Zahtjev zatvoren",
       "reopened": "Prijava ponovno otvorena"
     }
+  },
+  "formTermsEditor": {
+    "contentRequired": "Morate ispuniti polje „{conditionsLabel}” ili prenijeti dokument."
   }
 }

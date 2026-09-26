@@ -5556,5 +5556,8 @@
       "closed": "Prašymas uždarytas",
       "reopened": "Paraiška vėl atidaryta"
     }
+  },
+  "formTermsEditor": {
+    "contentRequired": "Turite užpildyti lauką „{conditionsLabel}“ arba įkelti dokumentą."
   }
 }

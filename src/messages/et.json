@@ -5556,5 +5556,8 @@
       "closed": "Taotlus suletud",
       "reopened": "Taotlus avati uuesti"
     }
+  },
+  "formTermsEditor": {
+    "contentRequired": "Peate täitma välja „{conditionsLabel}“ või üles laadima dokumendi."
   }
 }

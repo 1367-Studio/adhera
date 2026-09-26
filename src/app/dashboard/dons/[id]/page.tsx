@@ -3,6 +3,7 @@
 import { DonationFormFieldsEditor, type DonationFormFieldsEditorHandle } from "@/components/dons/donation-form-fields-editor"
 import { DateTimeField } from "@/components/ui/date-time-field"
 import { DonationTiersEditor, type DonationTiersEditorHandle } from "@/components/dons/donation-tiers-editor"
+import { FormTermsEditor, revealFormTermsError, useTermsContentRequiredMessage } from "@/components/forms/form-terms-editor"
 import { Accordion, AccordionItem, AccordionPanel, AccordionTrigger } from "@/components/ui/accordion"
 import { BackLink } from "@/components/ui/back-link"
 import { Badge } from "@/components/ui/badge"
@@ -11,7 +12,6 @@ import { CheckboxField } from "@/components/ui/checkbox-field"
 import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 import { DetailLoadingSkeleton } from "@/components/ui/detail-loading-skeleton"
 import { DetailNotFound } from "@/components/ui/detail-not-found"
-import { DocumentUpload } from "@/components/ui/document-upload"
 import { FormField } from "@/components/ui/form-field"
 import { ImageUpload } from "@/components/ui/image-upload"
 import { Input } from "@/components/ui/input"
@@ -22,6 +22,7 @@ import { RichTextEditor } from "@/components/ui/rich-text-editor"
 import { SelectField } from "@/components/ui/select-field"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { BASE_PATH } from "@/lib/env"
+import { isTermsConfigurationValid, TERMS_CONTENT_REQUIRED_CODE } from "@/lib/form-terms"
 import { cn } from "@/lib/utils"
 import { useCurrentUser, useModules } from "@/lib/user-context"
 import { useDonationForms } from "@/hooks/use-donation-forms"
@@ -113,6 +114,8 @@ export default function DonationFormDetailPage() {
   const qc      = useQueryClient()
   const t       = useTranslations("donationForms")
   const tSteps  = useTranslations("donationForms.detail.steps")
+  // Also the translation of the save/publish routes' { code: "TERMS_CONTENT_REQUIRED" }.
+  const termsContentRequiredMessage = useTermsContentRequiredMessage("donationForms.detail.steps.info")
   const tCommon = useTranslations("common")
   const tSiteDefaults = useTranslations("site.defaultTitles")
   const user    = useCurrentUser()
@@ -261,7 +264,10 @@ export default function DonationFormDetailPage() {
         headers: { "Content-Type": "application/json" },
         body:    JSON.stringify(data),
       })
-      if (!res.ok) throw new Error((await res.json()).error ?? t("detail.toasts.saveError"))
+      if (!res.ok) {
+        const errorBody = await res.json()
+        throw new Error(errorBody.code === TERMS_CONTENT_REQUIRED_CODE ? termsContentRequiredMessage : errorBody.error ?? t("detail.toasts.saveError"))
+      }
       return res.json() as Promise<DonationForm>
     },
     onSuccess: (updated) => {
@@ -301,9 +307,23 @@ export default function DonationFormDetailPage() {
   // Uploads the pending image / conditions PDF first (same lazy pattern as
   // evenement-form.tsx's handleFormSubmit, so a cancelled edit never leaves an orphaned file
   // in R2) and returns null when a step cannot be saved — the reason has already been toasted.
+  // Requiring acceptance with neither text nor document is refused before any request (and
+  // before the lazy uploads, so a refused save never leaves an orphaned file in R2): the
+  // step opens and the checkbox whose inline error explains why is brought into view.
+  const termsConfigurationValid = isTermsConfigurationValid({ conditions, attachments, requireCguvSignature: requireCguv })
+  function refuseInvalidTerms() {
+    setOpenSteps(previousSteps => Array.from(new Set<StepKey>([...previousSteps, "info"])))
+    toast.error(termsContentRequiredMessage)
+    revealFormTermsError()
+  }
+
   async function infoPayload(): Promise<SaveableFields | null> {
     if (!title.trim()) {
       toast.error(t("detail.titleRequired"))
+      return null
+    }
+    if (!termsConfigurationValid) {
+      refuseInvalidTerms()
       return null
     }
     let resolvedImageUrl = imageUrl || null
@@ -364,7 +384,10 @@ export default function DonationFormDetailPage() {
         headers: { "Content-Type": "application/json" },
         body:    JSON.stringify({ action }),
       })
-      if (!res.ok) throw new Error((await res.json()).error ?? t("formsView.toasts.statusError"))
+      if (!res.ok) {
+        const errorBody = await res.json()
+        throw new Error(errorBody.code === TERMS_CONTENT_REQUIRED_CODE ? termsContentRequiredMessage : errorBody.error ?? t("formsView.toasts.statusError"))
+      }
       return res.json() as Promise<DonationForm>
     },
     onSuccess: (result, action) => {
@@ -539,6 +562,10 @@ export default function DonationFormDetailPage() {
   // are expanded, tinted and named in the toast; the first one is scrolled into view. Only a
   // publish that passes this check goes on to the confirmation dialog.
   function handlePublish() {
+    if (!termsConfigurationValid) {
+      refuseInvalidTerms()
+      return
+    }
     const blockedSteps = STEP_KEYS.filter(stepKey => stepIssue(stepKey) !== null)
     if (blockedSteps.length === 0) {
       setPublishConfirm("publish")
@@ -718,29 +745,16 @@ export default function DonationFormDetailPage() {
                 onChange={setDescription}
                 placeholder={tSteps("info.descriptionPlaceholder")}
               />
-              <RichTextEditor
-                label={tSteps("info.conditionsLabel")}
-                value={conditions}
-                onChange={setConditions}
-                placeholder={tSteps("info.conditionsPlaceholder")}
-              />
-              <div className="space-y-1.5">
-                <Label>{tSteps("info.conditionsPdfLabel")}</Label>
-                <DocumentUpload
-                  value={attachments[0]?.url ?? ""}
-                  onChange={(url) => { if (url === "") { setPendingPdf(null); setAttachments([]) } }}
-                  prefix="adhera/dons"
-                  lazy
-                  onFilePending={(blobUrl, file) => {
-                    setPendingPdf({ blobUrl, file })
-                    setAttachments([{ url: blobUrl, filename: file.name, size: file.size }])
-                  }}
-                />
-              </div>
-              <CheckboxField
-                label={tSteps("info.requireCguvLabel")}
-                checked={requireCguv}
-                onChange={(e) => setRequireCguv(e.target.checked)}
+              <FormTermsEditor
+                translationNamespace="donationForms.detail.steps.info"
+                uploadPrefix="adhera/dons"
+                conditions={conditions}
+                onConditionsChange={setConditions}
+                attachments={attachments}
+                onAttachmentsChange={setAttachments}
+                onPendingDocumentChange={setPendingPdf}
+                requireAcceptance={requireCguv}
+                onRequireAcceptanceChange={setRequireCguv}
               />
               <div className="space-y-3">
                 <p className="flex items-center gap-1.5 text-sm font-semibold">

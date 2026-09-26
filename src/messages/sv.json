@@ -5556,5 +5556,8 @@
       "closed": "Begäran avslutad",
       "reopened": "Ansökan öppnades på nytt"
     }
+  },
+  "formTermsEditor": {
+    "contentRequired": "Du måste fylla i fältet ”{conditionsLabel}” eller ladda upp ett dokument."
   }
 }
