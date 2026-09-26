@@ -714,6 +714,18 @@
       "uncategorized": "Nicht kategorisiert",
       "trendTitle": "Einkommen vs. Ausgaben – Letzte 6 Monate",
       "categoryTitle": "Einnahmen nach Kategorie — {year}"
+    },
+    "memberSummary": {
+      "total": "{count, plural, one {# Mitglied} other {# Mitglieder}}",
+      "active": "{count, plural, one {# aktiv} other {# aktiv}}",
+      "inactive": "{count, plural, one {# inaktiv} other {# inaktiv}}"
+    },
+    "memberUsage": {
+      "label": "{active} / {limit} aktive Mitglieder",
+      "ariaLabel": "Nutzung des Mitgliederlimits Ihres Tarifs",
+      "nearLimit": "Limit bald erreicht",
+      "almostReached": "Limit fast erreicht",
+      "limitReached": "Limit erreicht"
     }
   },
   "notifications": {
@@ -3654,6 +3666,7 @@
       "title": "Abonnement",
       "subtitle": "Verwalten Sie Ihr Plattform-Abonnement und Ihre Zahlungsmethoden.",
       "tier": {
+        "starter": "Starter",
         "essential": "Wesentlich",
         "pro": "Für"
       },

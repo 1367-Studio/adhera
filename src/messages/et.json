@@ -714,6 +714,18 @@
       "uncategorized": "Kategoriseerimata",
       "trendTitle": "Tulu vs. kulutus — viimased 6 kuud",
       "categoryTitle": "Kviitungid kategooriate kaupa — {year}"
+    },
+    "memberSummary": {
+      "total": "{count, plural, one {# liige} other {# liiget}}",
+      "active": "{count, plural, one {# aktiivne} other {# aktiivset}}",
+      "inactive": "{count, plural, one {# mitteaktiivne} other {# mitteaktiivset}}"
+    },
+    "memberUsage": {
+      "label": "{active} / {limit} aktiivset liiget",
+      "ariaLabel": "Teie paketi liikmete limiidi kasutus",
+      "nearLimit": "Limiit läheneb",
+      "almostReached": "Limiit peaaegu täis",
+      "limitReached": "Limiit täis"
     }
   },
   "notifications": {
@@ -3654,6 +3666,7 @@
       "title": "Tellimus",
       "subtitle": "Halda oma platvormi tellimust ja makseviise.",
       "tier": {
+        "starter": "Starter",
         "essential": "Oluline",
         "pro": "Sest"
       },

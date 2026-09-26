@@ -1,11 +1,11 @@
-import type { Metadata } from "next"
-import Link from "next/link"
+import { ContactSupportTrigger } from "@/components/auth/contact-support-trigger";
+import { ForgotPasswordForm } from "@/components/auth/forgot-password-form";
+import { LogoMark } from "@/components/layout/logo-mark";
+import { APP_NAME } from "@/config/brand";
 import { ArrowLeftIcon } from "@phosphor-icons/react/dist/ssr";
-import { getTranslations } from "next-intl/server"
-import { ForgotPasswordForm } from "@/components/auth/forgot-password-form"
-import { APP_NAME } from "@/config/brand"
-import { LogoMark } from "@/components/layout/logo-mark"
-import { ContactSupportTrigger } from "@/components/auth/contact-support-trigger"
+import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
+import Link from "next/link";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("auth.forgotPassword")
@@ -28,8 +28,8 @@ export default async function ForgotPasswordPage({
         <span className="text-base font-semibold">{APP_NAME}</span>
       </div>
 
-      <div className="rounded-lg border bg-card p-8 space-y-6">
-        <div className="space-y-1.5">
+      <div className="space-y-6">
+        <div className="space-y-3.5">
           <h1 className="text-xl font-semibold tracking-tight">{t("heading")}</h1>
           <p className="text-sm text-muted-foreground">
             {t("subtitle")}

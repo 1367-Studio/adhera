@@ -714,6 +714,18 @@
       "uncategorized": "Ukategoriseret",
       "trendTitle": "Indkomst vs. udgifter — De sidste 6 måneder",
       "categoryTitle": "Indtægter efter kategori — {year}"
+    },
+    "memberSummary": {
+      "total": "{count, plural, one {# medlem} other {# medlemmer}}",
+      "active": "{count, plural, one {# aktiv} other {# aktive}}",
+      "inactive": "{count, plural, one {# inaktiv} other {# inaktive}}"
+    },
+    "memberUsage": {
+      "label": "{active} / {limit} aktive medlemmer",
+      "ariaLabel": "Forbrug af medlemsgrænsen i dit abonnement",
+      "nearLimit": "Grænsen nærmer sig",
+      "almostReached": "Grænsen er næsten nået",
+      "limitReached": "Grænsen er nået"
     }
   },
   "notifications": {
@@ -3654,6 +3666,7 @@
       "title": "Abonnement",
       "subtitle": "Administrer dit platformabonnement og dine betalingsmetoder.",
       "tier": {
+        "starter": "Starter",
         "essential": "Essentielt",
         "pro": "For"
       },

@@ -35,6 +35,7 @@ import {
   DoorPaymentFields, doorPaymentDraftIsComplete, initialDoorPaymentDraft, toDoorPaymentInput, type DoorPaymentDraft,
 } from "@/components/evenements/door-payment-fields"
 import { managerOnSitePaymentMethods } from "@/lib/evenement-payment-methods"
+import type { AssociationPlan } from "@prisma/client"
 
 type PresenceRow = {
   membreId:        string | null
@@ -182,7 +183,7 @@ export default function PresencesPage() {
   // les devis/factures, voir canUseCustomBranding() dans src/lib/plan-limits.ts.
   const { data: assoc } = useQuery<{
     name: string
-    plan: "ESSENTIAL" | "PRO"
+    plan: AssociationPlan
     customBrandingEnabled: boolean | null
     logoUrl: string | null
   }>({

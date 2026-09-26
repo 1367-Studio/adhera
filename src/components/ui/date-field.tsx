@@ -143,8 +143,8 @@ export function DateField({
             // as a form control, so it must line up with every Input beside it — same h-9,
             // same radius, same border, same focus ring, same disabled and invalid states.
             className={cn(
-              "flex h-9 w-full min-w-0 items-center gap-2 rounded-md border border-input bg-transparent px-3 py-1 text-left text-base transition-colors outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:cursor-not-allowed disabled:bg-input/50 disabled:opacity-50 md:text-sm dark:bg-input/30 dark:disabled:bg-input/80",
-              error && "border-destructive focus-visible:ring-destructive/30",
+              "flex h-9 w-full min-w-0 items-center gap-2 rounded-md border border-input bg-transparent px-3 py-1 text-left text-base transition-colors outline-none disabled:pointer-events-none disabled:cursor-not-allowed disabled:bg-input/50 disabled:opacity-50 md:text-sm dark:bg-input/30 dark:disabled:bg-input/80",
+              error && "border-destructive",
               showClear && "pr-9",
               className,
             )}

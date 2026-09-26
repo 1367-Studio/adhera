@@ -14,6 +14,8 @@ import { CURRENT_TERMS_VERSION, consentIp } from "@/lib/consent"
 import { writeActivityLog } from "@/lib/activity-log"
 import { SUPPORTED_LOCALES } from "@/i18n/locales"
 import { reportError } from "@/lib/monitoring"
+import { planFromTier } from "@/lib/plan-tier"
+import type { AssociationPlan } from "@prisma/client"
 
 const schema = z.object({
   associationName: z.string().min(2),
@@ -33,7 +35,7 @@ const schema = z.object({
   // Standard signup picks a catalog plan; a custom-pricing link (see
   // src/lib/pricing-offers.ts) supplies offerToken instead — never both.
   plan:            z.enum(["monthly", "yearly"]).optional(),
-  tier:            z.enum(["essential", "pro"]).optional(),
+  tier:            z.enum(["starter", "essential", "pro"]).optional(),
   offerToken:      z.string().optional(),
   locale:          z.enum(SUPPORTED_LOCALES).optional(),
 }).refine(
@@ -59,7 +61,7 @@ export async function POST(req: Request) {
   // touches Stripe or the DB, so two people opening the same link — or a retry — can't
   // both redeem it. Reverted back to PENDING in the catch block below if account creation
   // fails past this point, so a transient error doesn't permanently burn an unused link.
-  let offer: { id: string; planTier: "ESSENTIAL" | "PRO"; phases: OfferPhase[]; stripeProductId: string } | null = null
+  let offer: { id: string; planTier: AssociationPlan; phases: OfferPhase[]; stripeProductId: string } | null = null
   if (offerToken) {
     // Read before the atomic claim below so a missing payment method on a paid offer can be
     // rejected without burning the link's one-time use — only a genuinely free offer (every
@@ -196,7 +198,7 @@ export async function POST(req: Request) {
           stripeCustomerId:     customerId,
           stripeSubscriptionId: subscriptionId,
           stripeSubscriptionScheduleId: scheduleId,
-          plan:                offer ? offer.planTier : (tier === "pro" ? "PRO" : "ESSENTIAL"),
+          plan:                offer ? offer.planTier : planFromTier(tier!),
           // A custom-pricing offer's first phase is already a paid, discounted deal — it
           // replaces the standard trial rather than stacking on top of it.
           subscriptionStatus:  offer ? "ACTIVE" : "TRIAL",

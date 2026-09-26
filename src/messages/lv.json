@@ -714,6 +714,18 @@
       "uncategorized": "Nekategorizēts",
       "trendTitle": "Ienākumi pret izdevumiem — pēdējie 6 mēneši",
       "categoryTitle": "Ieņēmumi pēc kategorijām — {year}"
+    },
+    "memberSummary": {
+      "total": "{count, plural, one {# biedrs} other {# biedri}}",
+      "active": "{count, plural, one {# aktīvs} other {# aktīvi}}",
+      "inactive": "{count, plural, one {# neaktīvs} other {# neaktīvi}}"
+    },
+    "memberUsage": {
+      "label": "{active} / {limit} aktīvi biedri",
+      "ariaLabel": "Jūsu plāna biedru limita izmantojums",
+      "nearLimit": "Limits tuvojas",
+      "almostReached": "Limits gandrīz sasniegts",
+      "limitReached": "Limits sasniegts"
     }
   },
   "notifications": {
@@ -3654,6 +3666,7 @@
       "title": "Abonements",
       "subtitle": "Pārvaldiet savas platformas abonementu un maksājumu metodes.",
       "tier": {
+        "starter": "Starter",
         "essential": "Būtiski",
         "pro": "Par"
       },

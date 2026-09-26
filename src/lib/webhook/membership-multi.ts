@@ -388,7 +388,7 @@ export async function consumeMembershipCheckoutDraft(draftId: string, paymentInt
   if (assoc) {
     const [pricing, activeCount] = await Promise.all([
       getPricingInfo(),
-      prisma.membre.count({ where: { associationId: draft.associationId, status: "ACTIF" } }),
+      prisma.membre.count({ where: { associationId: draft.associationId, status: "ACTIF", deletedAt: null } }),
     ])
     const limit = effectiveMemberLimit(assoc, pricing)
     if (activeCount > limit) {

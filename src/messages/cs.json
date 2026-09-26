@@ -714,6 +714,18 @@
       "uncategorized": "Nezařazeno",
       "trendTitle": "Příjem vs. výdaj — posledních 6 měsíců",
       "categoryTitle": "Účtenky podle kategorií — {year}"
+    },
+    "memberSummary": {
+      "total": "{count, plural, one {# člen} other {# členů}}",
+      "active": "{count, plural, one {# aktivní} other {# aktivních}}",
+      "inactive": "{count, plural, one {# neaktivní} other {# neaktivních}}"
+    },
+    "memberUsage": {
+      "label": "{active} / {limit} aktivních členů",
+      "ariaLabel": "Využití limitu členů vašeho tarifu",
+      "nearLimit": "Limit se blíží",
+      "almostReached": "Limit téměř dosažen",
+      "limitReached": "Limit dosažen"
     }
   },
   "notifications": {
@@ -3654,6 +3666,7 @@
       "title": "Předplatné",
       "subtitle": "Spravujte své předplatné platformy a platební metody.",
       "tier": {
+        "starter": "Starter",
         "essential": "Nezbytné",
         "pro": "Pro"
       },

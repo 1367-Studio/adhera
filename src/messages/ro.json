@@ -714,6 +714,18 @@
       "uncategorized": "Necategorizat",
       "trendTitle": "Venit vs. cheltuieli — Ultimele 6 luni",
       "categoryTitle": "Chitanțe pe categorii — {year}"
+    },
+    "memberSummary": {
+      "total": "{count, plural, one {# membru} other {# membri}}",
+      "active": "{count, plural, one {# activ} other {# activi}}",
+      "inactive": "{count, plural, one {# inactiv} other {# inactivi}}"
+    },
+    "memberUsage": {
+      "label": "{active} / {limit} membri activi",
+      "ariaLabel": "Utilizarea limitei de membri a planului dvs.",
+      "nearLimit": "Limită aproape atinsă",
+      "almostReached": "Limită aproape epuizată",
+      "limitReached": "Limită atinsă"
     }
   },
   "notifications": {
@@ -3654,6 +3666,7 @@
       "title": "Abonament",
       "subtitle": "Gestionează-ți abonamentele și metodele de plată ale platformei.",
       "tier": {
+        "starter": "Starter",
         "essential": "Esențial",
         "pro": "Pentru"
       },

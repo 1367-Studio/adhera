@@ -714,6 +714,18 @@
       "uncategorized": "Некатегоризирано",
       "trendTitle": "Доходи срещу разходи — Последните 6 месеца",
       "categoryTitle": "Приходи по категории — {year}"
+    },
+    "memberSummary": {
+      "total": "{count, plural, one {# член} other {# членове}}",
+      "active": "{count, plural, one {# активен} other {# активни}}",
+      "inactive": "{count, plural, one {# неактивен} other {# неактивни}}"
+    },
+    "memberUsage": {
+      "label": "{active} / {limit} активни членове",
+      "ariaLabel": "Използване на лимита за членове на вашия план",
+      "nearLimit": "Лимитът наближава",
+      "almostReached": "Лимитът е почти достигнат",
+      "limitReached": "Лимитът е достигнат"
     }
   },
   "notifications": {
@@ -3654,6 +3666,7 @@
       "title": "Абонамент",
       "subtitle": "Управлявайте абонамента за платформата и методите на плащане.",
       "tier": {
+        "starter": "Starter",
         "essential": "Съществено",
         "pro": "За"
       },

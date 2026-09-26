@@ -729,6 +729,18 @@
       "uncategorized": "Uncategorized",
       "trendTitle": "Income vs expenses — last 6 months",
       "categoryTitle": "Income by category — {year}"
+    },
+    "memberSummary": {
+      "total": "{count, plural, one {# member} other {# members}}",
+      "active": "{count, plural, one {# active} other {# active}}",
+      "inactive": "{count, plural, one {# inactive} other {# inactive}}"
+    },
+    "memberUsage": {
+      "label": "{active} / {limit} active members",
+      "ariaLabel": "Usage of your plan's member limit",
+      "nearLimit": "Approaching limit",
+      "almostReached": "Limit almost reached",
+      "limitReached": "Limit reached"
     }
   },
   "notifications": {
@@ -3758,6 +3770,7 @@
       "title": "Subscription",
       "subtitle": "Manage your platform subscription and payment methods.",
       "tier": {
+        "starter": "Starter",
         "essential": "Essential",
         "pro": "Pro"
       },

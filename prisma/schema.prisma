@@ -66,6 +66,7 @@ enum CustomDomainStatus {
 // ESSENTIAL/PRO here based on their member count (see scripts/migrate-existing-
 // associations-to-tier.ts) so limits/features behave consistently for everyone.
 enum AssociationPlan {
+  STARTER
   ESSENTIAL
   PRO
 }
