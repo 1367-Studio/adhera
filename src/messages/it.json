@@ -5374,7 +5374,10 @@
       "send": "Invia",
       "commentPlaceholder": "Un commento? (facoltativo)",
       "ticketPurchaseSuccessToast": "Biglietto acquistato con successo!",
-      "paymentCancelledToast": "Pagamento annullato. Il tuo posto è ancora prenotato — paga più tardi o annulla la prenotazione dalla scheda dell'evento."
+      "paymentCancelledToast": "Pagamento annullato. Il tuo posto è ancora prenotato — paga più tardi o annulla la prenotazione dalla scheda dell'evento.",
+      "viewEvent": "Vedi l'evento",
+      "backToList": "Tutti gli eventi",
+      "notFound": "Questo evento non è più disponibile."
     }
   },
   "ai": {

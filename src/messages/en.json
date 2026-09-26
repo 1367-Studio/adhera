@@ -5745,7 +5745,10 @@
       "commentPlaceholder": "A comment? (optional)",
       "ticketPurchaseSuccessToast": "Ticket purchased successfully!",
       "paymentCancelledToast": "Payment cancelled. Your seat is still booked — pay later or cancel the booking from the event card.",
-      "registrationsClosed": "Registrations are closed."
+      "registrationsClosed": "Registrations are closed.",
+      "viewEvent": "View event",
+      "backToList": "All events",
+      "notFound": "This event is no longer available."
     }
   },
   "ai": {

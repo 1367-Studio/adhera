@@ -5307,6 +5307,11 @@
         "description": "Tista' żżid waħda ġdida fi kwalunkwe ħin.",
         "confirm": "Neħħi"
       }
+    },
+    "evenements": {
+      "viewEvent": "Ara l-avveniment",
+      "backToList": "L-avvenimenti kollha",
+      "notFound": "Dan l-avveniment m'għadux disponibbli."
     }
   },
   "ai": {

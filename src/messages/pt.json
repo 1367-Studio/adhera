@@ -5442,7 +5442,10 @@
       "send": "Enviar",
       "commentPlaceholder": "Algum comentário? (opcional)",
       "ticketPurchaseSuccessToast": "Ingresso comprado com sucesso!",
-      "paymentCancelledToast": "Pagamento cancelado. Sua vaga continua reservada — pague depois ou cancele a reserva no card do evento."
+      "paymentCancelledToast": "Pagamento cancelado. Sua vaga continua reservada — pague depois ou cancele a reserva no card do evento.",
+      "viewEvent": "Ver o evento",
+      "backToList": "Todos os eventos",
+      "notFound": "Este evento já não está disponível."
     }
   },
   "ai": {

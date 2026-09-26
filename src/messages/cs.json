@@ -5307,6 +5307,11 @@
         "description": "Novou můžete přidat kdykoliv.",
         "confirm": "Odstranit"
       }
+    },
+    "evenements": {
+      "viewEvent": "Zobrazit událost",
+      "backToList": "Všechny události",
+      "notFound": "Tato událost již není k dispozici."
     }
   },
   "ai": {
