@@ -1,24 +1,20 @@
-import type { Metadata } from "next"
-import Link from "next/link"
+import { ContactSupportTrigger } from "@/components/auth/contact-support-trigger";
+import { ForgotPasswordForm } from "@/components/auth/forgot-password-form";
+import { LogoMark } from "@/components/layout/logo-mark";
+import { APP_NAME } from "@/config/brand";
 import { ArrowLeftIcon } from "@phosphor-icons/react/dist/ssr";
-import { getTranslations } from "next-intl/server"
-import { ForgotPasswordForm } from "@/components/auth/forgot-password-form"
-import { APP_NAME } from "@/config/brand"
-import { LogoMark } from "@/components/layout/logo-mark"
-import { ContactSupportTrigger } from "@/components/auth/contact-support-trigger"
+import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
+import Link from "next/link";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("auth.forgotPassword")
   return { title: t("pageTitle") }
 }
 
-export default async function ForgotPasswordPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ callbackUrl?: string }>
-}) {
-  const { callbackUrl } = await searchParams
-  const backHref = callbackUrl ?? "/login"
+// Everyone — staff or a member coming from an association's portal — signs back in on the
+// shared /login, so there is no per-origin return address here.
+export default async function ForgotPasswordPage() {
   const t = await getTranslations("auth.forgotPassword")
 
   return (
@@ -28,27 +24,29 @@ export default async function ForgotPasswordPage({
         <span className="text-base font-semibold">{APP_NAME}</span>
       </div>
 
-      <div className="rounded-lg border bg-card p-8 space-y-6">
-        <div className="space-y-1.5">
-          <h1 className="text-xl font-semibold tracking-tight">{t("heading")}</h1>
-          <p className="text-sm text-muted-foreground">
-            {t("subtitle")}
-          </p>
-        </div>
-
-        <ForgotPasswordForm />
-
-        <div className="space-y-2">
-          <Link
-            href={backHref}
-            className="flex items-center justify-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
-          >
-            <ArrowLeftIcon className="size-3.5" />
-            {t("backToLogin")}
-          </Link>
-          <ContactSupportTrigger />
-        </div>
-      </div>
+      {/* Header and footer go through the form so its "email sent" screen can hide them. */}
+      <ForgotPasswordForm
+        header={
+          <div className="space-y-3.5">
+            <h1 className="text-xl font-semibold tracking-tight">{t("heading")}</h1>
+            <p className="text-sm text-muted-foreground">
+              {t("subtitle")}
+            </p>
+          </div>
+        }
+        footer={
+          <div className="space-y-2">
+            <Link
+              href="/login"
+              className="flex items-center justify-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
+              <ArrowLeftIcon className="size-3.5" />
+              {t("backToLogin")}
+            </Link>
+            <ContactSupportTrigger />
+          </div>
+        }
+      />
     </div>
   )
 }

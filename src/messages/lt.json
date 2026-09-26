@@ -714,6 +714,18 @@
       "uncategorized": "Nekategorizuota",
       "trendTitle": "Pajamos prieš išlaidas — paskutiniai 6 mėnesiai",
       "categoryTitle": "Kvitos pagal kategorijas — {year}"
+    },
+    "memberSummary": {
+      "total": "{count, plural, one {# narys} other {# nariai}}",
+      "active": "{count, plural, one {# aktyvus} other {# aktyvūs}}",
+      "inactive": "{count, plural, one {# neaktyvus} other {# neaktyvūs}}"
+    },
+    "memberUsage": {
+      "label": "{active} / {limit} aktyvūs nariai",
+      "ariaLabel": "Jūsų plano narių limito naudojimas",
+      "nearLimit": "Limitas artėja",
+      "almostReached": "Limitas beveik pasiektas",
+      "limitReached": "Limitas pasiektas"
     }
   },
   "notifications": {
@@ -3654,6 +3666,7 @@
       "title": "Prenumerata",
       "subtitle": "Valdykite savo platformos prenumeratą ir mokėjimo būdus.",
       "tier": {
+        "starter": "Starter",
         "essential": "Būtina",
         "pro": "Dėl"
       },

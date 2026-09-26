@@ -727,6 +727,18 @@
       "uncategorized": "Não categorizado",
       "trendTitle": "Receitas vs despesas — últimos 6 meses",
       "categoryTitle": "Receitas por categoria — {year}"
+    },
+    "memberSummary": {
+      "total": "{count, plural, one {# membro} other {# membros}}",
+      "active": "{count, plural, one {# ativo} other {# ativos}}",
+      "inactive": "{count, plural, one {# inativo} other {# inativos}}"
+    },
+    "memberUsage": {
+      "label": "{active} / {limit} membros ativos",
+      "ariaLabel": "Uso do limite de membros do seu plano",
+      "nearLimit": "Limite próximo",
+      "almostReached": "Limite quase atingido",
+      "limitReached": "Limite atingido"
     }
   },
   "notifications": {
@@ -3716,6 +3728,7 @@
       "title": "Assinatura",
       "subtitle": "Gerencie sua assinatura da plataforma e seus meios de pagamento.",
       "tier": {
+        "starter": "Starter",
         "essential": "Essencial",
         "pro": "Pro"
       },

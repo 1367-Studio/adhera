@@ -23,6 +23,7 @@ import { BASE_PATH } from "@/lib/env"
 import { SendEmailModal } from "@/components/ui/send-email-modal"
 
 import { loadLogoForPdf } from "@/lib/pdf/branded-header-client"
+import type { AssociationPlan } from "@prisma/client"
 
 type MeetingParticipant = {
   id:     string
@@ -111,7 +112,7 @@ export default function ReunionDetailPage() {
   // Pro-only que les devis/factures, voir canUseCustomBranding() dans src/lib/plan-limits.ts.
   const { data: assoc } = useQuery<{
     name: string
-    plan: "ESSENTIAL" | "PRO"
+    plan: AssociationPlan
     customBrandingEnabled: boolean | null
     logoUrl: string | null
   }>({

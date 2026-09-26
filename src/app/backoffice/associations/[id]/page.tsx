@@ -13,12 +13,11 @@ import { TwoFactorAdminReset } from "@/components/backoffice/two-factor-admin-re
 import { parseModules }     from "@/lib/modules"
 import { getPricingInfo }   from "@/lib/stripe"
 import { memberLimitForPlan } from "@/lib/plan-limits"
+import { planLabel } from "@/lib/plan-tier"
 import { UsersIcon } from "@phosphor-icons/react/dist/ssr";
 import { buttonVariants } from "@/components/ui/button"
 import { BackLink } from "@/components/ui/back-link"
 import { APP_NAME } from "@/config/brand"
-
-const planLabel: Record<string, string> = { ESSENTIAL: "Essentiel", PRO: "Pro" }
 
 const subLabel: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {
   TRIAL:     { label: "Essai",      variant: "secondary"   },
@@ -163,7 +162,7 @@ export default async function AssociationDetailPage({ params }: { params: Promis
               <Badge variant={sub.variant}>{sub.label}</Badge>
             </CardHeader>
             <CardContent className="space-y-2 text-sm">
-              <Row label="Formule" value={`${planLabel[assoc.plan] ?? assoc.plan}${assoc.customMemberLimit ? " (sur mesure)" : ""}`} />
+              <Row label="Formule" value={`${planLabel(assoc.plan)}${assoc.customMemberLimit ? " (sur mesure)" : ""}`} />
               {assoc.trialEndsAt && (
                 <Row label="Essai jusqu'au" value={new Date(assoc.trialEndsAt).toLocaleDateString("fr-FR")} />
               )}

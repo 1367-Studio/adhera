@@ -714,6 +714,18 @@
       "uncategorized": "Nekategorizirano",
       "trendTitle": "Prihod naspram rashoda — posljednjih 6 mjeseci",
       "categoryTitle": "Računi po kategorijama — {year}"
+    },
+    "memberSummary": {
+      "total": "{count, plural, one {# član} other {# članova}}",
+      "active": "{count, plural, one {# aktivan} other {# aktivnih}}",
+      "inactive": "{count, plural, one {# neaktivan} other {# neaktivnih}}"
+    },
+    "memberUsage": {
+      "label": "{active} / {limit} aktivnih članova",
+      "ariaLabel": "Iskorištenost ograničenja članova vašeg paketa",
+      "nearLimit": "Ograničenje se bliži",
+      "almostReached": "Ograničenje gotovo dosegnuto",
+      "limitReached": "Ograničenje dosegnuto"
     }
   },
   "notifications": {
@@ -3654,6 +3666,7 @@
       "title": "Pretplata",
       "subtitle": "Upravljajte svojom platformom i načinima plaćanja.",
       "tier": {
+        "starter": "Starter",
         "essential": "Neophodno",
         "pro": "Za"
       },

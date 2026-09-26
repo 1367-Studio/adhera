@@ -7,13 +7,14 @@ import { withAdminAuth } from "@/lib/api-wrapper"
 import { writeActivityLog } from "@/lib/activity-log"
 import { memberLimitForPlan } from "@/lib/plan-limits"
 import { reportError } from "@/lib/monitoring"
+import { planFromTier, planLabel } from "@/lib/plan-tier"
 
 const ADMINS = ["ADMIN", "PRESIDENT"]
 
 const schema = z.object({
   paymentMethodId: z.string(),
   plan:            z.enum(["monthly", "yearly"]),
-  tier:            z.enum(["essential", "pro"]),
+  tier:            z.enum(["starter", "essential", "pro"]),
 })
 
 // The standby screen's "Se réabonner" action, reached only once the subscription has
@@ -42,12 +43,13 @@ export const POST = withAdminAuth(async (req, ctx) => {
   // warned at the moment of choice.
   const [pricing, activeCount] = await Promise.all([
     getPricingInfo(),
-    prisma.membre.count({ where: { associationId: ctx.associationId, status: "ACTIF" } }),
+    prisma.membre.count({ where: { associationId: ctx.associationId, status: "ACTIF", deletedAt: null } }),
   ])
-  const limit = memberLimitForPlan(tier === "pro" ? "PRO" : "ESSENTIAL", pricing)
+  const targetPlan = planFromTier(tier)
+  const limit = memberLimitForPlan(targetPlan, pricing)
   if (activeCount > limit) {
     return NextResponse.json({
-      error: `Cette association compte ${activeCount} membres actifs, au-delà de la limite de ${limit} de la formule ${tier === "pro" ? "Pro" : "Essentiel"}. Choisissez une formule supérieure.`,
+      error: `Cette association compte ${activeCount} membres actifs, au-delà de la limite de ${limit} de la formule ${planLabel(targetPlan)}. Choisissez une formule supérieure.`,
     }, { status: 422 })
   }
 
@@ -100,7 +102,7 @@ export const POST = withAdminAuth(async (req, ctx) => {
     where: { id: ctx.associationId },
     data: {
       stripeSubscriptionId: subscription.id,
-      plan:                 tier === "pro" ? "PRO" : "ESSENTIAL",
+      plan:                 targetPlan,
       subscriptionStatus:   toSubscriptionStatus(subscription.status),
       suspendedAt:          null,
       trialExpiredAt:       null,

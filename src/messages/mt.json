@@ -714,6 +714,18 @@
       "uncategorized": "Mhux ikkategorizzat",
       "trendTitle": "Dħul kontra Spejjeż — L-aħħar 6 xhur",
       "categoryTitle": "Irċevuti skont il-kategorija — {year}"
+    },
+    "memberSummary": {
+      "total": "{count, plural, one {# membru} other {# membri}}",
+      "active": "{count, plural, one {# attiv} other {# attivi}}",
+      "inactive": "{count, plural, one {# inattiv} other {# inattivi}}"
+    },
+    "memberUsage": {
+      "label": "{active} / {limit} membri attivi",
+      "ariaLabel": "Użu tal-limitu ta' membri tal-pjan tiegħek",
+      "nearLimit": "Il-limitu qed joqrob",
+      "almostReached": "Il-limitu kważi milħuq",
+      "limitReached": "Il-limitu milħuq"
     }
   },
   "notifications": {
@@ -3654,6 +3666,7 @@
       "title": "Abbonament",
       "subtitle": "Immaniġġja l-abbonament u l-metodi ta' ħlas tal-pjattaforma tiegħek.",
       "tier": {
+        "starter": "Starter",
         "essential": "Essenzjali",
         "pro": "Għal"
       },

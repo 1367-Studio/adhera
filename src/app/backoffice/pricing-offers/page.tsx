@@ -3,6 +3,7 @@ import { APP_NAME } from "@/config/brand"
 import { prisma } from "@/lib/prisma/client"
 import { Badge } from "@/components/ui/badge"
 import { NewPricingOfferButton, PricingOfferRowActions } from "@/components/backoffice/pricing-offer-client"
+import { planLabel } from "@/lib/plan-tier"
 
 export const metadata: Metadata = {
   title: `Offres tarifaires · Backoffice ${APP_NAME}`,
@@ -62,7 +63,7 @@ export default async function PricingOffersPage() {
                 <tr key={offer.id} className="hover:bg-muted/30 transition-colors">
                   <td className="px-4 py-3 font-medium">{offer.label}</td>
                   <td className="px-4 py-3 text-muted-foreground hidden md:table-cell">
-                    {offer.planTier === "PRO" ? "Pro" : "Essentiel"}
+                    {planLabel(offer.planTier)}
                   </td>
                   <td className="px-4 py-3 text-muted-foreground hidden md:table-cell">
                     {offer.association?.name ?? "—"}

@@ -19,7 +19,7 @@ import { Elements, PaymentElement, useElements, useStripe } from "@stripe/react-
 import { useTranslations, useLocale } from "next-intl"
 import Link from "next/link"
 import { unstable_rethrow, useRouter, useSearchParams } from "next/navigation"
-import { Suspense, useEffect, useState } from "react"
+import { Suspense, useEffect, useState, type ReactNode } from "react"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 
@@ -193,7 +193,7 @@ function StepInfo({
     : [t("perkTrialDays", { days: pricing.trialDays }), t("perkNoCard"), t("perkNoCommitment")]
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6" noValidate>
       <FormField
         label={t("associationNameLabel")}
         placeholder={t("associationNamePlaceholder")}
@@ -434,23 +434,36 @@ type Step = "info" | "payment" | "done"
 
 const GOOGLE_PREFILL_KEY = "adhera-google-prefill"
 
-export function RegisterForm({ pricing }: { pricing: PricingInfo }) {
+// `header` / `footer` are the page's title and "already have an account" links: rendered
+// here rather than by the page so the success screen can drop them — the page (a server
+// component) never learns that the sign-up went through.
+type RegisterFormProps = { pricing: PricingInfo; header?: ReactNode; footer?: ReactNode }
+
+export function RegisterForm({ pricing, header, footer }: RegisterFormProps) {
   return (
-    <Suspense fallback={null}>
-      <RegisterFormInner pricing={pricing} />
+    <Suspense fallback={<div className="space-y-6">{header}{footer}</div>}>
+      <RegisterFormInner pricing={pricing} header={header} footer={footer} />
     </Suspense>
   )
 }
 
 // useSearchParams() (for the Google prefill) requires a Suspense boundary above it, or
 // `next build` fails prerendering this page — the wrapper above provides that.
-function RegisterFormInner({ pricing }: { pricing: PricingInfo }) {
+function RegisterFormInner({ pricing, header, footer }: RegisterFormProps) {
+  const withPageChrome = (content: ReactNode) => (
+    <div className="space-y-6">
+      {header}
+      {content}
+      {footer}
+    </div>
+  )
+
   const t             = useTranslations("auth.register.done")
   const tOffer         = useTranslations("auth.register.offer")
   const router        = useRouter()
   const searchParams  = useSearchParams()
   const [step,         setStep]         = useState<Step>("info")
-  const [tier,         setTier]         = useState<PlanTier>("essential")
+  const [tier,         setTier]         = useState<PlanTier>("starter")
   const [plan,         setPlan]         = useState<Plan>("monthly")
   const [info,         setInfo]         = useState<Info | null>(null)
   const [customerId,   setCustomerId]   = useState("")
@@ -576,7 +589,7 @@ function RegisterFormInner({ pricing }: { pricing: PricingInfo }) {
   }
 
   if (offerLoading) {
-    return (
+    return withPageChrome(
       <div className="flex justify-center py-10">
         <CircleNotchIcon className="size-5 animate-spin text-muted-foreground" />
       </div>
@@ -584,7 +597,7 @@ function RegisterFormInner({ pricing }: { pricing: PricingInfo }) {
   }
 
   if (offer === "invalid") {
-    return (
+    return withPageChrome(
       <div className="space-y-3 text-center py-6">
         <p className="font-semibold">{tOffer("invalidTitle")}</p>
         <p className="text-sm text-muted-foreground">{tOffer("invalidBody")}</p>
@@ -595,7 +608,7 @@ function RegisterFormInner({ pricing }: { pricing: PricingInfo }) {
     )
   }
 
-  return (
+  return withPageChrome(
     <div className="space-y-6">
       {offer
         ? (isFreeOffer ? null : <StepIndicator current={step as "info" | "payment"} />)

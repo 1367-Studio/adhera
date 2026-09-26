@@ -714,6 +714,18 @@
       "uncategorized": "Niet gecategoriseerd",
       "trendTitle": "Inkomsten versus uitgaven — Laatste 6 maanden",
       "categoryTitle": "Ontvangsten per categorie — {year}"
+    },
+    "memberSummary": {
+      "total": "{count, plural, one {# lid} other {# leden}}",
+      "active": "{count, plural, one {# actief} other {# actief}}",
+      "inactive": "{count, plural, one {# inactief} other {# inactief}}"
+    },
+    "memberUsage": {
+      "label": "{active} / {limit} actieve leden",
+      "ariaLabel": "Gebruik van de ledenlimiet van uw abonnement",
+      "nearLimit": "Limiet bijna bereikt",
+      "almostReached": "Limiet vrijwel bereikt",
+      "limitReached": "Limiet bereikt"
     }
   },
   "notifications": {
@@ -3654,6 +3666,7 @@
       "title": "Abonnement",
       "subtitle": "Beheer je platformabonnement en betaalmethoden.",
       "tier": {
+        "starter": "Starter",
         "essential": "Essentieel",
         "pro": "Voor"
       },

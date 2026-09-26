@@ -3,10 +3,12 @@
 import { useState, useTransition } from "react"
 import { Button } from "@/components/ui/button"
 import { toast }  from "sonner"
+import type { AssociationPlan } from "@prisma/client"
+import { planLabel } from "@/lib/plan-tier"
 
 interface Props {
   associationId: string
-  plan:          "ESSENTIAL" | "PRO"
+  plan:          AssociationPlan
   initialValue:  boolean | null
 }
 
@@ -44,7 +46,7 @@ export function CustomBrandingEditor({ associationId, plan, initialValue }: Prop
       <p className="text-xs text-muted-foreground">
         Par défaut, le logo et les couleurs personnalisés (dashboard, devis/factures,
         feuille de présence) sont réservés à la formule Pro (formule actuelle :{" "}
-        {plan === "PRO" ? "Pro" : "Essentiel"}). Forcer permet de l&apos;activer ou
+        {planLabel(plan)}). Forcer permet de l&apos;activer ou
         désactiver pour cette association précisément, sans changer sa formule.
       </p>
       <div className="flex items-center gap-2">

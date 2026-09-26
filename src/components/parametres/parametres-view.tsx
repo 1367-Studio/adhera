@@ -29,6 +29,7 @@ import { BrandingSettings } from "@/components/parametres/branding-settings"
 import { MemberCardSettings } from "@/components/parametres/member-card-settings"
 import { BankSettings } from "@/components/parametres/bank-settings"
 import { CotisationDefaultsSettings } from "@/components/parametres/cotisation-defaults-settings"
+import type { AssociationPlan } from "@prisma/client"
 type Association = {
   id:      string
   name:    string
@@ -40,7 +41,7 @@ type Association = {
   website: string | null
   iban:    string | null
   bic:     string | null
-  plan:    "ESSENTIAL" | "PRO"
+  plan:    AssociationPlan
   customBrandingEnabled: boolean | null
   logoUrl: string | null
   cotisationDefaultAmount: string | number | null

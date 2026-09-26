@@ -1,18 +1,18 @@
 "use client"
 
-import { useState } from "react"
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { toast } from "sonner"
-import { useTranslations } from "next-intl"
-import Link from "next/link"
-import { authenticate, signInWithGooglePortal } from "@/lib/auth/actions"
-import { loginSchema, type LoginInput } from "@/lib/schemas"
-import { Button } from "@/components/ui/button"
-import { FormField } from "@/components/ui/form-field"
 import { GoogleIcon } from "@/components/icons/google-icon"
 import { TwoFactorChallengeForm } from "@/components/layout/two-factor-challenge-form"
-import { CircleNotchIcon } from "@phosphor-icons/react/dist/ssr";
+import { Button } from "@/components/ui/button"
+import { FormField } from "@/components/ui/form-field"
+import { authenticate, signInWithGooglePortal } from "@/lib/auth/actions"
+import { loginSchema, type LoginInput } from "@/lib/schemas"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { CircleNotchIcon } from "@phosphor-icons/react/dist/ssr"
+import { useTranslations } from "next-intl"
+import Link from "next/link"
+import { useState } from "react"
+import { useForm } from "react-hook-form"
+import { toast } from "sonner"
 export function PortalLoginForm({ slug, callbackUrl }: { slug: string; callbackUrl?: string }) {
   const t = useTranslations("portal.login")
   const [googleLoading, setGoogleLoading] = useState(false)
@@ -84,7 +84,7 @@ export function PortalLoginForm({ slug, callbackUrl }: { slug: string; callbackU
 
       <div className="flex flex-col gap-2 pt-1">
         <Link
-          href={`/forgot-password?callbackUrl=/portal/${slug}/login`}
+          href="/forgot-password"
           className="text-center text-sm text-muted-foreground hover:text-foreground hover:underline transition-colors"
         >
           {t("forgotPassword")}

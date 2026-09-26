@@ -714,6 +714,18 @@
       "uncategorized": "Nincs kategorizálva",
       "trendTitle": "Jövedelem vs. kiadás — Az utolsó 6 hónap",
       "categoryTitle": "Bevételek kategóriák szerint — {year}"
+    },
+    "memberSummary": {
+      "total": "{count, plural, one {# tag} other {# tag}}",
+      "active": "{count, plural, one {# aktív} other {# aktív}}",
+      "inactive": "{count, plural, one {# inaktív} other {# inaktív}}"
+    },
+    "memberUsage": {
+      "label": "{active} / {limit} aktív tag",
+      "ariaLabel": "A csomagja taglimitjének kihasználtsága",
+      "nearLimit": "Hamarosan eléri a limitet",
+      "almostReached": "A limit majdnem elérve",
+      "limitReached": "Limit elérve"
     }
   },
   "notifications": {
@@ -3654,6 +3666,7 @@
       "title": "Előfizetés",
       "subtitle": "Kezeld a platformodat és a fizetési módjaidat.",
       "tier": {
+        "starter": "Starter",
         "essential": "Elengedhetetlen",
         "pro": "Mert"
       },

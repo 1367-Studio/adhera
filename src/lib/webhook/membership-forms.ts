@@ -322,7 +322,7 @@ export async function handleMembershipOneOffCheckout(session: Stripe.Checkout.Se
   if (assoc) {
     const [pricing, activeCount] = await Promise.all([
       getPricingInfo(),
-      prisma.membre.count({ where: { associationId: meta.associationId, status: "ACTIF" } }),
+      prisma.membre.count({ where: { associationId: meta.associationId, status: "ACTIF", deletedAt: null } }),
     ])
     const limit = effectiveMemberLimit(assoc, pricing)
     if (activeCount > limit) {

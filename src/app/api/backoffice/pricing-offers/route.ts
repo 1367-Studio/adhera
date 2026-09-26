@@ -12,7 +12,7 @@ const phaseSchema = z.object({
 
 const postSchema = z.object({
   label:     z.string().min(1).max(120),
-  planTier:  z.enum(["ESSENTIAL", "PRO"]),
+  planTier:  z.enum(["STARTER", "ESSENTIAL", "PRO"]),
   phases:    z.array(phaseSchema).min(1),
   expiresAt: z.string().datetime().optional(),
 })
