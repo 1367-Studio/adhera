@@ -31,7 +31,7 @@ async function findByToken(token: string) {
           tiers: {
             where:   { itemType: "MEMBERSHIP", kind: "ONE_OFF", free: false },
             orderBy: { order: "asc" },
-            select:  { id: true, label: true, freeAmount: true, amount: true, receiptMode: true, ineligibleAmount: true, membreTypeId: true },
+            select:  { id: true, label: true, freeAmount: true, amount: true, receiptMode: true, ineligibleAmount: true, membreTypeId: true, durationMonths: true, fixedPeriodEnd: true },
           },
           customFields: {
             orderBy: { order: "asc" },
@@ -92,6 +92,7 @@ export async function GET(
     fieldLanguage:   form.fieldLanguage,
     tiers: form.tiers.map(t => ({
       id: t.id, label: t.label, freeAmount: t.freeAmount, amount: t.amount?.toString() ?? null,
+      durationMonths: t.durationMonths, fixedPeriodEnd: t.fixedPeriodEnd?.toISOString() ?? null,
     })),
     customFields: form.customFields.map(f => ({ id: f.id, type: f.type, label: f.label, required: f.required, options: f.options })),
     prefill: {
