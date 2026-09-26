@@ -14,6 +14,7 @@ import { ImageUpload } from "@/components/ui/image-upload"
 import { CheckboxField } from "@/components/ui/checkbox-field"
 import { RichTextView } from "@/components/ui/rich-text-view"
 import { TermsModal } from "@/components/public/terms-modal"
+import { LegalConsent, type RequiredLegalDocument } from "@/components/public/legal-consent"
 import { MembershipFormFieldInput, type MembershipFormFieldInputField } from "@/components/adhesions/membership-form-field-input"
 import { EMPTY_ADDRESS_FORM_VALUES, type AddressFormValues } from "@/lib/address"
 import { spokenLanguageOptions } from "@/lib/languages"
@@ -39,6 +40,7 @@ type CompletionData = {
   fieldPhoto:      FieldRequirement
   fieldLanguage:   FieldRequirement
   tiers:           Tier[]
+  legalDocuments:  RequiredLegalDocument[]
   customFields:    MembershipFormFieldInputField[]
   prefill: {
     firstName: string; lastName: string; email: string
@@ -79,6 +81,7 @@ export default function CompletarAdesaoPage() {
   const [photoUrl, setPhotoUrl] = useState("")
   const [answers, setAnswers] = useState<Record<string, string>>({})
   const [conditionsAgreed, setConditionsAgreed] = useState(false)
+  const [legalAccepted, setLegalAccepted] = useState(false)
   const [touched, setTouched] = useState<Record<string, boolean>>({})
 
   useEffect(() => {
@@ -127,6 +130,7 @@ export default function CompletarAdesaoPage() {
     && (!addressRequired || addressFilled)
     && data.customFields.every(f => !f.required || !!answers[f.id]?.trim())
     && (!data.requireCguvSignature || conditionsAgreed)
+    && (data.legalDocuments.length === 0 || legalAccepted)
 
   // Mirrors membership-form-public-form.tsx's own blockingReason — surfaces *why* the
   // button won't proceed instead of leaving the visitor to guess, on top of the inline
@@ -145,6 +149,7 @@ export default function CompletarAdesaoPage() {
       || !data.customFields.every(f => !f.required || !!answers[f.id]?.trim())
     ? "Complétez les champs requis ci-dessus."
     : data.requireCguvSignature && !conditionsAgreed ? "Vous devez accepter les conditions générales pour adhérer."
+    : data.legalDocuments.length > 0 && !legalAccepted ? "Vous devez accepter les documents de l'association pour continuer."
     : null
 
   async function handleSubmit() {
@@ -160,6 +165,7 @@ export default function CompletarAdesaoPage() {
           phone, mobile, ...addressValues, birthDate, sexe: sexe || undefined,
           spokenLanguage: spokenLanguage || undefined, photoUrl: photoUrl || undefined, answers,
           conditionsAgreed,
+          acceptedLegalRevisionIds: legalAccepted ? data.legalDocuments.map(d => d.revisionId) : [],
         }),
       })
       const result = await res.json()
@@ -340,6 +346,12 @@ export default function CompletarAdesaoPage() {
               onChange={e => setConditionsAgreed(e.target.checked)}
             />
           )}
+          <LegalConsent
+            slug={data.slug}
+            documents={data.legalDocuments}
+            checked={legalAccepted}
+            onChange={setLegalAccepted}
+          />
 
           <div className="space-y-2">
             <Button loading={submitting} disabled={!canSubmit} onClick={handleSubmit} className="w-full">

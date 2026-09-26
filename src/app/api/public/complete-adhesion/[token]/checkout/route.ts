@@ -7,6 +7,8 @@ import { rateLimit, requestIp } from "@/lib/rate-limit"
 import { SPOKEN_LANGUAGE_CODES } from "@/lib/languages"
 import { ADDRESS_MAX_LENGTHS, addressColumns, addressIsFilled } from "@/lib/address"
 import { findInvalidMembershipFormAnswer } from "@/lib/membership-form-answers-validation"
+import { acceptLegalDocuments, LegalConsentError } from "@/lib/legal/acceptance"
+import { consentIp } from "@/lib/consent"
 
 // Sibling of the GET at ../route.ts — see that file's header comment for why this is a
 // deliberately separate, isolated pair of routes instead of another branch inside the real
@@ -30,6 +32,7 @@ const schema = z.object({
   photoUrl:  z.string().url().max(500).optional(),
   answers:   z.record(z.string(), z.string().max(500)).optional().default({}),
   conditionsAgreed: z.boolean().optional().default(false),
+  acceptedLegalRevisionIds: z.array(z.string().min(1)).max(20).optional(),
 })
 
 const MIN_ITEM_AMOUNT = 1
@@ -74,6 +77,24 @@ export async function POST(
 
   if (form.requireCguvSignature && !parsed.data.conditionsAgreed)
     return NextResponse.json({ error: "Vous devez accepter les conditions générales pour adhérer." }, { status: 422 })
+
+  // Documents que l'association impose d'accepter — distincts des conditions propres à ce
+  // formulaire vérifiées ci-dessus. Cette personne a déjà un compte/Membre (auto-inscription
+  // portail), donc identifiée par membreId plutôt que par email invité comme dans le vrai
+  // checkout public. Enregistré avant le paiement, même logique que là-bas : l'acceptation
+  // vaut à cet instant, que la carte passe ensuite ou non.
+  try {
+    await acceptLegalDocuments({
+      associationId:        membre.associationId,
+      submittedRevisionIds: parsed.data.acceptedLegalRevisionIds,
+      identity:             { membreId: membre.id },
+      context:              "ADHESION",
+      ip:                   consentIp(req),
+    })
+  } catch (error) {
+    if (error instanceof LegalConsentError) return NextResponse.json({ error: error.message }, { status: 422 })
+    throw error
+  }
 
   const tier = form.tiers.find(t => t.id === parsed.data.tierId)
   if (!tier) return NextResponse.json({ error: "Tarif invalide" }, { status: 422 })
