@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import { useParams } from "next/navigation"
 import { toast } from "sonner"
-import { InfoIcon, CheckCircleIcon } from "@phosphor-icons/react/dist/ssr"
+import { InfoIcon, CheckCircleIcon, IdentificationCardIcon } from "@phosphor-icons/react/dist/ssr"
 import { Button } from "@/components/ui/button"
 import { FormField } from "@/components/ui/form-field"
 import { DateField } from "@/components/ui/date-field"
@@ -11,6 +11,9 @@ import { SelectField } from "@/components/ui/select-field"
 import { AddressFields } from "@/components/ui/address-fields"
 import { CurrencyField } from "@/components/ui/currency-field"
 import { ImageUpload } from "@/components/ui/image-upload"
+import { CheckboxField } from "@/components/ui/checkbox-field"
+import { RichTextView } from "@/components/ui/rich-text-view"
+import { TermsModal } from "@/components/public/terms-modal"
 import { MembershipFormFieldInput, type MembershipFormFieldInputField } from "@/components/adhesions/membership-form-field-input"
 import { EMPTY_ADDRESS_FORM_VALUES, type AddressFormValues } from "@/lib/address"
 import { spokenLanguageOptions } from "@/lib/languages"
@@ -24,6 +27,9 @@ type CompletionData = {
   slug:            string
   formSlug:        string
   formTitle:       string
+  description:     string | null
+  conditions:      string | null
+  requireCguvSignature: boolean
   online:          boolean
   fieldAddress:    FieldRequirement
   fieldBirthDate:  FieldRequirement
@@ -72,6 +78,7 @@ export default function CompletarAdesaoPage() {
   const [spokenLanguage, setSpokenLanguage] = useState("")
   const [photoUrl, setPhotoUrl] = useState("")
   const [answers, setAnswers] = useState<Record<string, string>>({})
+  const [conditionsAgreed, setConditionsAgreed] = useState(false)
   const [touched, setTouched] = useState<Record<string, boolean>>({})
 
   useEffect(() => {
@@ -119,6 +126,7 @@ export default function CompletarAdesaoPage() {
     && (data.fieldPhoto !== "REQUIRED" || !!photoUrl.trim())
     && (!addressRequired || addressFilled)
     && data.customFields.every(f => !f.required || !!answers[f.id]?.trim())
+    && (!data.requireCguvSignature || conditionsAgreed)
 
   // Mirrors membership-form-public-form.tsx's own blockingReason — surfaces *why* the
   // button won't proceed instead of leaving the visitor to guess, on top of the inline
@@ -136,6 +144,7 @@ export default function CompletarAdesaoPage() {
       || (addressRequired && !addressFilled)
       || !data.customFields.every(f => !f.required || !!answers[f.id]?.trim())
     ? "Complétez les champs requis ci-dessus."
+    : data.requireCguvSignature && !conditionsAgreed ? "Vous devez accepter les conditions générales pour adhérer."
     : null
 
   async function handleSubmit() {
@@ -150,6 +159,7 @@ export default function CompletarAdesaoPage() {
           tierId, amount: selectedTier?.freeAmount ? amount : undefined,
           phone, mobile, ...addressValues, birthDate, sexe: sexe || undefined,
           spokenLanguage: spokenLanguage || undefined, photoUrl: photoUrl || undefined, answers,
+          conditionsAgreed,
         }),
       })
       const result = await res.json()
@@ -164,7 +174,7 @@ export default function CompletarAdesaoPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="dashboard-canvas public-canvas min-h-screen flex items-center justify-center">
         <div className="size-6 rounded-full border-2 border-primary border-t-transparent animate-spin" />
       </div>
     )
@@ -172,7 +182,7 @@ export default function CompletarAdesaoPage() {
 
   if (outcome === "success") {
     return (
-      <div className="min-h-screen flex items-center justify-center text-center px-4">
+      <div className="dashboard-canvas public-canvas min-h-screen flex items-center justify-center text-center px-4">
         <div className="flex flex-col items-center gap-2 max-w-sm">
           <CheckCircleIcon className="size-6 text-primary" />
           <p className="font-medium">Merci, votre adhésion est finalisée.</p>
@@ -184,27 +194,38 @@ export default function CompletarAdesaoPage() {
 
   if (notFound || !data) {
     return (
-      <div className="min-h-screen flex items-center justify-center text-center px-4">
+      <div className="dashboard-canvas public-canvas min-h-screen flex items-center justify-center text-center px-4">
         <p className="text-muted-foreground">Ce lien est invalide ou a déjà été utilisé.</p>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-background py-10 px-4">
-      <div className="mx-auto w-full max-w-xl space-y-8">
-        <div className="space-y-1">
-          <h1 className="text-xl font-semibold tracking-tight">{data.formTitle} — {data.associationName}</h1>
-          <p className="text-sm text-muted-foreground">
-            {data.prefill.firstName} {data.prefill.lastName} · {data.prefill.email}
-          </p>
-        </div>
+    <div className="dashboard-canvas public-canvas min-h-screen p-3">
+      <div className="mx-auto flex min-h-screen items-start justify-center py-8">
+        <div className="w-full max-w-md space-y-6">
+          <div className="text-center space-y-2">
+            <div className="inline-flex items-center justify-center size-12 rounded-full bg-primary/10 dark:bg-primary/20 mb-2">
+              <IdentificationCardIcon className="size-6 text-primary" />
+            </div>
+            <h1 className="text-2xl font-bold tracking-tight">{data.formTitle}</h1>
+            <p className="text-muted-foreground text-sm">{data.associationName}</p>
+            <p className="text-muted-foreground text-sm">
+              {data.prefill.firstName} {data.prefill.lastName} · {data.prefill.email}
+            </p>
+          </div>
 
-        {outcome === "cancelled" && (
-          <p className="text-sm text-muted-foreground">Paiement annulé — vous pouvez réessayer quand vous voulez.</p>
-        )}
+          {data.description && (
+            <div className="rounded-lg border bg-card p-4 text-sm">
+              <RichTextView content={data.description} className="text-foreground/90" />
+            </div>
+          )}
 
-        <div className="space-y-6">
+          {outcome === "cancelled" && (
+            <p className="text-sm text-muted-foreground">Paiement annulé — vous pouvez réessayer quand vous voulez.</p>
+          )}
+
+          <div className="space-y-6">
           <div className="flex items-start gap-2 rounded-md border bg-muted/30 px-3 py-2.5 text-sm text-muted-foreground">
             <InfoIcon className="size-4 mt-0.5 shrink-0" />
             <span>Votre mot de passe d&apos;accès à l&apos;espace membre reste le même — inutile d&apos;en créer un nouveau.</span>
@@ -303,6 +324,17 @@ export default function CompletarAdesaoPage() {
             />
           ))}
 
+          {data.conditions && (
+            <TermsModal content={data.conditions} triggerLabel="Voir les conditions générales" title="Conditions générales" />
+          )}
+          {data.requireCguvSignature && (
+            <CheckboxField
+              label="J'accepte les conditions générales de l'adhésion"
+              checked={conditionsAgreed}
+              onChange={e => setConditionsAgreed(e.target.checked)}
+            />
+          )}
+
           <div className="space-y-2">
             <Button loading={submitting} disabled={!canSubmit} onClick={handleSubmit} className="w-full">
               {selectedTier ? `Payer et finaliser (${selectedTier.freeAmount ? amount : selectedTier.amount}€)` : "Choisissez un tarif"}
@@ -310,6 +342,7 @@ export default function CompletarAdesaoPage() {
             {blockingReason && (
               <p className="text-sm text-center text-muted-foreground">{blockingReason}</p>
             )}
+          </div>
           </div>
         </div>
       </div>
