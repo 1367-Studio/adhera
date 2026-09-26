@@ -5556,5 +5556,8 @@
       "closed": "Cerere închisă",
       "reopened": "Cererea a fost redeschisă"
     }
+  },
+  "formTermsEditor": {
+    "contentRequired": "Trebuie să completați câmpul „{conditionsLabel}” sau să încărcați un document."
   }
 }

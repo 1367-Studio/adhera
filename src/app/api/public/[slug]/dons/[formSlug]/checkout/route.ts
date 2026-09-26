@@ -2,6 +2,7 @@ import { NextResponse } from "next/server"
 import { z } from "zod"
 import type Stripe from "stripe"
 import { stripe, connectAccountChargesEnabled, stripeRecurringInterval, platformFeeRate } from "@/lib/stripe"
+import { storedRowRequiresTermsAcceptance } from "@/lib/form-terms-response"
 import { prisma } from "@/lib/prisma/client"
 import { parseModules } from "@/lib/modules"
 import { APP_URL } from "@/lib/env"
@@ -103,7 +104,7 @@ export async function POST(
 
   // Le client refuse déjà de soumettre sans cette case cochée quand le formulaire l'exige —
   // revalidé ici pour ne jamais dépendre uniquement d'un contrôle contournable côté client.
-  if (form.requireCguvSignature && !parsed.data.conditionsAgreed)
+  if (storedRowRequiresTermsAcceptance(form) && !parsed.data.conditionsAgreed)
     return NextResponse.json({ error: "Vous devez accepter les conditions générales pour faire un don." }, { status: 422 })
   const cguvAgreedAt = parsed.data.conditionsAgreed ? now : null
 

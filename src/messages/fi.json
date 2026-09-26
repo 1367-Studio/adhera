@@ -5556,5 +5556,8 @@
       "closed": "Pyyntö suljettu",
       "reopened": "Hakemus avattiin uudelleen"
     }
+  },
+  "formTermsEditor": {
+    "contentRequired": "Sinun on täytettävä kenttä ”{conditionsLabel}” tai ladattava asiakirja."
   }
 }

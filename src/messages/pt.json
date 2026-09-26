@@ -5723,5 +5723,8 @@
       "closed": "Chamado fechado",
       "reopened": "Chamado reaberto"
     }
+  },
+  "formTermsEditor": {
+    "contentRequired": "Você deve preencher o campo “{conditionsLabel}” ou enviar um documento."
   }
 }

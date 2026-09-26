@@ -5556,5 +5556,8 @@
       "closed": "Anmodning lukket",
       "reopened": "Ansøgningen genåbnet"
     }
+  },
+  "formTermsEditor": {
+    "contentRequired": "Du skal udfylde feltet “{conditionsLabel}” eller uploade et dokument."
   }
 }

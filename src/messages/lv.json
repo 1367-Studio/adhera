@@ -5556,5 +5556,8 @@
       "closed": "Pieprasījums slēgts",
       "reopened": "Pieteikšanās atkal atvērta"
     }
+  },
+  "formTermsEditor": {
+    "contentRequired": "Jums jāaizpilda lauks “{conditionsLabel}” vai jāaugšupielādē dokuments."
   }
 }

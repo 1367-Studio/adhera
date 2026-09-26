@@ -5622,5 +5622,8 @@
       "closed": "Solicitud cerrada",
       "reopened": "Solicitud reabierta"
     }
+  },
+  "formTermsEditor": {
+    "contentRequired": "Debe rellenar el campo «{conditionsLabel}» o subir un documento."
   }
 }

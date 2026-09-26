@@ -5,6 +5,7 @@ import { SPOKEN_LANGUAGE_CODES } from "@/lib/languages"
 import { Prisma } from "@prisma/client"
 import type Stripe from "stripe"
 import { stripe, connectAccountChargesEnabled, platformFeeRate } from "@/lib/stripe"
+import { storedRowRequiresTermsAcceptance } from "@/lib/form-terms-response"
 import { prisma } from "@/lib/prisma/client"
 import { parseModules } from "@/lib/modules"
 import { APP_URL } from "@/lib/env"
@@ -273,7 +274,7 @@ export async function POST(
 
   // Le client refuse déjà de soumettre sans cette case cochée quand le formulaire l'exige —
   // revalidé ici pour ne jamais dépendre uniquement d'un contrôle contournable côté client.
-  if (form.requireCguvSignature && !parsed.data.conditionsAgreed)
+  if (storedRowRequiresTermsAcceptance(form) && !parsed.data.conditionsAgreed)
     return NextResponse.json({ error: "Vous devez accepter les conditions générales pour adhérer." }, { status: 422 })
 
   const tier = form.tiers.find(t => t.id === parsed.data.tierId && t.itemType === "MEMBERSHIP")
@@ -976,7 +977,7 @@ async function handleMultiRegistrantCheckout(
 
   if (form.opensAt && form.opensAt > now) return NextResponse.json({ error: "Ce formulaire n'est pas encore ouvert." }, { status: 422 })
   if (form.closesAt && form.closesAt < now) return NextResponse.json({ error: "Ce formulaire est fermé." }, { status: 422 })
-  if (form.requireCguvSignature && !data.conditionsAgreed)
+  if (storedRowRequiresTermsAcceptance(form) && !data.conditionsAgreed)
     return NextResponse.json({ error: "Vous devez accepter les conditions générales pour adhérer." }, { status: 422 })
 
   // Toujours attribué en entier à registrants[0] une fois consommé (voir

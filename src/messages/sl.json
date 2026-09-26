@@ -5556,5 +5556,8 @@
       "closed": "Zahteva zaključena",
       "reopened": "Vloga ponovno odprta"
     }
+  },
+  "formTermsEditor": {
+    "contentRequired": "Izpolniti morate polje »{conditionsLabel}« ali naložiti dokument."
   }
 }

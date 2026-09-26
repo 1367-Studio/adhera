@@ -5,7 +5,7 @@ import { useParams, useRouter, usePathname, useSearchParams } from "next/navigat
 import Link from "next/link"
 import { toast } from "sonner"
 import { useTranslations, useLocale } from "next-intl"
-import { ArrowLeftIcon, HandHeartIcon, FileIcon, InfoIcon, WarningCircleIcon } from "@phosphor-icons/react/dist/ssr";
+import { ArrowLeftIcon, HandHeartIcon, InfoIcon, WarningCircleIcon } from "@phosphor-icons/react/dist/ssr";
 import { DateField } from "@/components/ui/date-field"
 import { Button } from "@/components/ui/button"
 import { FormField } from "@/components/ui/form-field"
@@ -15,7 +15,8 @@ import { SelectField } from "@/components/ui/select-field"
 import { CheckboxField } from "@/components/ui/checkbox-field"
 import { CurrencyField } from "@/components/ui/currency-field"
 import { RichTextView } from "@/components/ui/rich-text-view"
-import { TermsModal } from "@/components/public/terms-modal"
+import { FormTermsSection } from "@/components/public/form-terms-section"
+import { publicFormTerms } from "@/lib/form-terms"
 import { PublicFormSkeleton } from "@/components/public/public-form-skeleton"
 import { EMPTY_ADDRESS_FORM_VALUES, addressFormValues, addressWasMigratedFromLegacy, formatAddress, type AddressFormValues } from "@/lib/address"
 import { cn } from "@/lib/utils"
@@ -107,6 +108,12 @@ function PortalDonationFormInner() {
   const [message, setMessage]       = useState("")
   const [anonymous, setAnonymous]   = useState(false)
   const [conditionsAgreed, setConditionsAgreed] = useState(false)
+  // Empty editor markup or a "required" flag with nothing to accept must not block the member.
+  const requiresTermsAcceptance = !!form && publicFormTerms({
+    conditions:           form.conditions,
+    attachments:          form.attachments,
+    requireCguvSignature: form.requireCguvSignature,
+  }).requiresTermsAcceptance
   const [answers, setAnswers]       = useState<Record<string, AnswerValue>>({})
 
   // Ré-utilisé après un échec de soumission (voir handleSubmit) — la campagne a pu être
@@ -189,7 +196,7 @@ function PortalDonationFormInner() {
     (form.fieldPhone     !== "REQUIRED" || phone.trim()) &&
     (form.fieldMobile    !== "REQUIRED" || mobile.trim()) &&
     (form.fieldGender    !== "REQUIRED" || gender.trim()) &&
-    (!form.requireCguvSignature || conditionsAgreed) &&
+    (!requiresTermsAcceptance || conditionsAgreed) &&
     form.customFields.every(f => {
       if (!f.required) return true
       const v = answers[f.id]
@@ -547,29 +554,18 @@ function PortalDonationFormInner() {
 
           <CheckboxField label={t("anonymousLabel")} checked={anonymous} onChange={e => setAnonymous(e.target.checked)} />
 
-          {form.conditions && (
-            <TermsModal content={form.conditions} triggerLabel={t("viewConditionsLabel")} title={t("conditionsModalTitle")} />
-          )}
-          {!!form.attachments?.length && (
-            <ul className="space-y-1">
-              {form.attachments.map(a => (
-                <li key={a.url}>
-                  <a
-                    href={a.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 text-xs text-muted-foreground underline underline-offset-2 hover:text-foreground"
-                  >
-                    <FileIcon className="size-3.5 shrink-0" />
-                    {a.filename}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          )}
-          {form.requireCguvSignature && (
-            <CheckboxField label={t("conditionsAgreeLabel")} checked={conditionsAgreed} onChange={e => setConditionsAgreed(e.target.checked)} />
-          )}
+          <FormTermsSection
+            conditions={form.conditions}
+            attachments={form.attachments}
+            requireCguvSignature={form.requireCguvSignature}
+            accepted={conditionsAgreed}
+            onAcceptedChange={setConditionsAgreed}
+            labels={{
+              viewConditions:   t("viewConditionsLabel"),
+              conditionsTitle:  t("conditionsModalTitle"),
+              acceptConditions: t("conditionsAgreeLabel"),
+            }}
+          />
 
           <Button type="submit" className="w-full" disabled={!canSubmit} loading={loading}>
             {amount > 0

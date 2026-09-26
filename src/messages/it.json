@@ -5622,5 +5622,8 @@
       "closed": "Richiesta chiusa",
       "reopened": "Domanda riaperta"
     }
+  },
+  "formTermsEditor": {
+    "contentRequired": "Devi compilare il campo «{conditionsLabel}» o caricare un documento."
   }
 }

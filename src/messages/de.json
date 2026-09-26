@@ -5622,5 +5622,8 @@
       "closed": "Anfrage geschlossen",
       "reopened": "Der Antrag wurde erneut eröffnet"
     }
+  },
+  "formTermsEditor": {
+    "contentRequired": "Sie müssen das Feld „{conditionsLabel}“ ausfüllen oder ein Dokument hochladen."
   }
 }

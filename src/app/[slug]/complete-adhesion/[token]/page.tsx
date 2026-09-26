@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { useParams } from "next/navigation"
+import { useTranslations } from "next-intl"
 import { toast } from "sonner"
 import { InfoIcon, CheckCircleIcon, IdentificationCardIcon } from "@phosphor-icons/react/dist/ssr"
 import { Button } from "@/components/ui/button"
@@ -11,9 +12,9 @@ import { SelectField } from "@/components/ui/select-field"
 import { AddressFields } from "@/components/ui/address-fields"
 import { CurrencyField } from "@/components/ui/currency-field"
 import { ImageUpload } from "@/components/ui/image-upload"
-import { CheckboxField } from "@/components/ui/checkbox-field"
 import { RichTextView } from "@/components/ui/rich-text-view"
-import { TermsModal } from "@/components/public/terms-modal"
+import { FormTermsSection } from "@/components/public/form-terms-section"
+import { publicFormTerms, type FormTermsAttachment } from "@/lib/form-terms"
 import { LegalConsent, type RequiredLegalDocument } from "@/components/public/legal-consent"
 import { MembershipFormFieldInput, type MembershipFormFieldInputField } from "@/components/adhesions/membership-form-field-input"
 import { EMPTY_ADDRESS_FORM_VALUES, type AddressFormValues } from "@/lib/address"
@@ -30,6 +31,7 @@ type CompletionData = {
   formTitle:       string
   description:     string | null
   conditions:      string | null
+  attachments?:    FormTermsAttachment[] | null
   requireCguvSignature: boolean
   online:          boolean
   fieldAddress:    FieldRequirement
@@ -59,6 +61,8 @@ type CompletionData = {
 // one-off tool, not a permanent feature worth threading through its complexity.
 export default function CompletarAdesaoPage() {
   const { token } = useParams<{ token: string }>()
+  // Same terms wording as the membership public form (the rest of this page is still hardcoded French).
+  const tMembership = useTranslations("membershipForms.public")
 
   const [data, setData]       = useState<CompletionData | null>(null)
   const [loading, setLoading] = useState(true)
@@ -119,6 +123,13 @@ export default function CompletarAdesaoPage() {
   const addressRequired = data?.fieldAddress === "REQUIRED"
   const addressFilled = !!addressValues.addressStreet.trim() && !!addressValues.postalCode.trim() && !!addressValues.city.trim()
 
+  // Empty editor markup or a "required" flag with nothing to accept must not block the visitor.
+  const requiresTermsAcceptance = !!data && publicFormTerms({
+    conditions:           data.conditions,
+    attachments:          data.attachments,
+    requireCguvSignature: data.requireCguvSignature,
+  }).requiresTermsAcceptance
+
   const canSubmit = !!data && !!selectedTier
     && (!selectedTier.freeAmount || amount > 0)
     && (data.fieldPhone !== "REQUIRED" || !!phone.trim())
@@ -129,7 +140,7 @@ export default function CompletarAdesaoPage() {
     && (data.fieldPhoto !== "REQUIRED" || !!photoUrl.trim())
     && (!addressRequired || addressFilled)
     && data.customFields.every(f => !f.required || !!answers[f.id]?.trim())
-    && (!data.requireCguvSignature || conditionsAgreed)
+    && (!requiresTermsAcceptance || conditionsAgreed)
     && (data.legalDocuments.length === 0 || legalAccepted)
 
   // Mirrors membership-form-public-form.tsx's own blockingReason — surfaces *why* the
@@ -148,7 +159,7 @@ export default function CompletarAdesaoPage() {
       || (addressRequired && !addressFilled)
       || !data.customFields.every(f => !f.required || !!answers[f.id]?.trim())
     ? "Complétez les champs requis ci-dessus."
-    : data.requireCguvSignature && !conditionsAgreed ? "Vous devez accepter les conditions générales pour adhérer."
+    : requiresTermsAcceptance && !conditionsAgreed ? "Vous devez accepter les conditions générales pour adhérer."
     : data.legalDocuments.length > 0 && !legalAccepted ? "Vous devez accepter les documents de l'association pour continuer."
     : null
 
@@ -336,16 +347,18 @@ export default function CompletarAdesaoPage() {
             />
           ))}
 
-          {data.conditions && (
-            <TermsModal content={data.conditions} triggerLabel="Voir les conditions générales" title="Conditions générales" />
-          )}
-          {data.requireCguvSignature && (
-            <CheckboxField
-              label="J'accepte les conditions générales de l'adhésion"
-              checked={conditionsAgreed}
-              onChange={e => setConditionsAgreed(e.target.checked)}
-            />
-          )}
+          <FormTermsSection
+            conditions={data.conditions}
+            attachments={data.attachments}
+            requireCguvSignature={data.requireCguvSignature}
+            accepted={conditionsAgreed}
+            onAcceptedChange={setConditionsAgreed}
+            labels={{
+              viewConditions:   tMembership("viewConditionsLabel"),
+              conditionsTitle:  tMembership("conditionsModalTitle"),
+              acceptConditions: tMembership("conditionsAgreeLabel"),
+            }}
+          />
           <LegalConsent
             slug={data.slug}
             documents={data.legalDocuments}

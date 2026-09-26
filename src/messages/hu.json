@@ -5556,5 +5556,8 @@
       "closed": "Kérelem lezárva",
       "reopened": "Újra megnyitották a jelentkezést"
     }
+  },
+  "formTermsEditor": {
+    "contentRequired": "Ki kell töltenie a(z) „{conditionsLabel}” mezőt, vagy fel kell töltenie egy dokumentumot."
   }
 }

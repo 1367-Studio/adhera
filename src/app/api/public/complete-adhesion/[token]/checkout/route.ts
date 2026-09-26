@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server"
 import { z } from "zod"
+import { storedRowRequiresTermsAcceptance } from "@/lib/form-terms-response"
 import { prisma } from "@/lib/prisma/client"
 import { stripe, connectAccountChargesEnabled, PLATFORM_FEE } from "@/lib/stripe"
 import { APP_URL } from "@/lib/env"
@@ -58,7 +59,7 @@ export async function POST(
       association: { select: { name: true, slug: true, stripeConnectId: true } },
       adhesionCompletionForm: {
         select: {
-          id: true, status: true, requireCguvSignature: true,
+          id: true, status: true, conditions: true, attachments: true, requireCguvSignature: true,
           fieldAddress: true, fieldBirthDate: true, fieldPhone: true, fieldMobile: true,
           fieldGender: true, fieldPhoto: true, fieldLanguage: true,
           tiers:        { where: { itemType: "MEMBERSHIP", kind: "ONE_OFF", free: false }, select: { id: true, label: true, freeAmount: true, amount: true } },
@@ -75,7 +76,7 @@ export async function POST(
   if (!membre.association.stripeConnectId || !(await connectAccountChargesEnabled(membre.association.stripeConnectId)))
     return NextResponse.json({ error: "Paiement en ligne non disponible pour le moment." }, { status: 400 })
 
-  if (form.requireCguvSignature && !parsed.data.conditionsAgreed)
+  if (storedRowRequiresTermsAcceptance(form) && !parsed.data.conditionsAgreed)
     return NextResponse.json({ error: "Vous devez accepter les conditions générales pour adhérer." }, { status: 422 })
 
   // Documents que l'association impose d'accepter — distincts des conditions propres à ce

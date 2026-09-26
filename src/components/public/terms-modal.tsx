@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { ArticleIcon } from "@phosphor-icons/react/dist/ssr"
 import { Modal } from "@/components/ui/modal"
 import { RichTextView } from "@/components/ui/rich-text-view"
 
@@ -18,8 +19,9 @@ export function TermsModal({ content, triggerLabel, title }: Props) {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="text-xs text-muted-foreground underline underline-offset-2 hover:text-foreground"
+        className="inline-flex items-center gap-1.5 text-xs text-muted-foreground underline underline-offset-2 hover:text-foreground"
       >
+        <ArticleIcon className="size-3.5 shrink-0" />
         {triggerLabel}
       </button>
       <Modal open={open} onOpenChange={setOpen} title={title} size="lg">

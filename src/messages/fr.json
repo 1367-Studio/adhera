@@ -6333,5 +6333,8 @@
       "description": "Les pages importées et leur lecture seront abandonnées.",
       "confirm": "Recommencer"
     }
+  },
+  "formTermsEditor": {
+    "contentRequired": "Vous devez remplir le champ « {conditionsLabel} » ou importer un document."
   }
 }

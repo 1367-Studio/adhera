@@ -4,6 +4,8 @@ import { getTranslations } from "next-intl/server"
 import { prisma } from "@/lib/prisma/client"
 import { writeActivityLog } from "@/lib/activity-log"
 import { withAdminAuth } from "@/lib/api-wrapper"
+import { isTermsConfigurationValid } from "@/lib/form-terms"
+import { storedTermsAttachments, termsContentRequiredResponse } from "@/lib/form-terms-response"
 import { toSlug } from "@/lib/slug"
 import { revalidatePublicSiteFor } from "@/lib/association/revalidate-site"
 import { displaceDonationFormsFromSiteSection } from "@/lib/dons/site-section-binding"
@@ -40,6 +42,15 @@ export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
     return NextResponse.json({ error: parsed.error.issues }, { status: 422 })
 
   const { action } = parsed.data
+
+  // Never put online a form that demands acceptance of nothing (saved before the rule, or
+  // through a direct API call).
+  if (action === "publish" && !isTermsConfigurationValid({
+    conditions:           form.conditions,
+    attachments:          storedTermsAttachments(form.attachments),
+    requireCguvSignature: form.requireCguvSignature,
+  }))
+    return termsContentRequiredResponse()
 
   // A published form with no tiers renders a public page with an empty amount grid and a
   // permanently-disabled submit button — no error, no explanation, just a dead end for the
