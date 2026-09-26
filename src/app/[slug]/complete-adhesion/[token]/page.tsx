@@ -132,7 +132,7 @@ export default function CompletarAdesaoPage() {
   // button won't proceed instead of leaving the visitor to guess, on top of the inline
   // per-field errors a click attempt now reveals (see handleSubmit).
   const blockingReason: string | null = !data ? null
-    : !selectedTier ? "Choisissez un tarif."
+    : !selectedTier ? null // le sélecteur de tarif montre déjà lui-même qu'aucun choix n'est fait
     : selectedTier.freeAmount && amount <= 0 ? "Indiquez un montant."
     : !data.online ? "Le paiement en ligne n'est pas disponible pour le moment. Contactez l'association."
     : (data.fieldPhone === "REQUIRED" && !phone.trim())
@@ -174,19 +174,23 @@ export default function CompletarAdesaoPage() {
 
   if (loading) {
     return (
-      <div className="dashboard-canvas public-canvas min-h-screen flex items-center justify-center">
-        <div className="size-6 rounded-full border-2 border-primary border-t-transparent animate-spin" />
+      <div className="dashboard-canvas public-canvas min-h-screen p-3">
+        <div className="min-h-[calc(100vh-1.5rem)] rounded-[10px] bg-public-panel flex items-center justify-center">
+          <div className="size-6 rounded-full border-2 border-primary border-t-transparent animate-spin" />
+        </div>
       </div>
     )
   }
 
   if (outcome === "success") {
     return (
-      <div className="dashboard-canvas public-canvas min-h-screen flex items-center justify-center text-center px-4">
-        <div className="flex flex-col items-center gap-2 max-w-sm">
-          <CheckCircleIcon className="size-6 text-primary" />
-          <p className="font-medium">Merci, votre adhésion est finalisée.</p>
-          <p className="text-sm text-muted-foreground">Vous allez recevoir la confirmation par email — aucune autre action n&apos;est nécessaire.</p>
+      <div className="dashboard-canvas public-canvas min-h-screen p-3">
+        <div className="min-h-[calc(100vh-1.5rem)] rounded-[10px] bg-public-panel flex items-center justify-center text-center px-4">
+          <div className="flex flex-col items-center gap-2 max-w-sm">
+            <CheckCircleIcon className="size-6 text-primary" />
+            <p className="font-medium">Merci, votre adhésion est finalisée.</p>
+            <p className="text-sm text-muted-foreground">Vous allez recevoir la confirmation par email — aucune autre action n&apos;est nécessaire.</p>
+          </div>
         </div>
       </div>
     )
@@ -194,15 +198,17 @@ export default function CompletarAdesaoPage() {
 
   if (notFound || !data) {
     return (
-      <div className="dashboard-canvas public-canvas min-h-screen flex items-center justify-center text-center px-4">
-        <p className="text-muted-foreground">Ce lien est invalide ou a déjà été utilisé.</p>
+      <div className="dashboard-canvas public-canvas min-h-screen p-3">
+        <div className="min-h-[calc(100vh-1.5rem)] rounded-[10px] bg-public-panel flex items-center justify-center text-center px-4">
+          <p className="text-muted-foreground">Ce lien est invalide ou a déjà été utilisé.</p>
+        </div>
       </div>
     )
   }
 
   return (
     <div className="dashboard-canvas public-canvas min-h-screen p-3">
-      <div className="mx-auto flex min-h-screen items-start justify-center py-8">
+      <div className="min-h-[calc(100vh-1.5rem)] rounded-[10px] bg-public-panel flex items-start justify-center py-12 px-4">
         <div className="w-full max-w-md space-y-6">
           <div className="text-center space-y-2">
             <div className="inline-flex items-center justify-center size-12 rounded-full bg-primary/10 dark:bg-primary/20 mb-2">
@@ -337,7 +343,7 @@ export default function CompletarAdesaoPage() {
 
           <div className="space-y-2">
             <Button loading={submitting} disabled={!canSubmit} onClick={handleSubmit} className="w-full">
-              {selectedTier ? `Payer et finaliser (${selectedTier.freeAmount ? amount : selectedTier.amount}€)` : "Choisissez un tarif"}
+              Payer et finaliser ({selectedTier ? (selectedTier.freeAmount ? amount : selectedTier.amount) : 0}€)
             </Button>
             {blockingReason && (
               <p className="text-sm text-center text-muted-foreground">{blockingReason}</p>
