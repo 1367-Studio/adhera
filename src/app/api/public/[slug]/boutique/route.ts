@@ -2,6 +2,7 @@ import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma/client"
 import { parseModules } from "@/lib/modules"
 import { connectAccountChargesEnabled } from "@/lib/stripe"
+import { reportError } from "@/lib/monitoring"
 
 export async function GET(
   req: Request,
@@ -38,7 +39,7 @@ export async function GET(
     try {
       paymentEnabled = await connectAccountChargesEnabled(assoc.stripeConnectId)
     } catch (err) {
-      console.error(`[public-boutique] failed to check payment availability for ${slug}:`, err)
+      reportError(err, { area: "stripe", action: "public.boutique.payment-availability", extra: { associationId: assoc.id } })
     }
   }
 

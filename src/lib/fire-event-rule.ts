@@ -6,6 +6,7 @@ import { parseModules } from "@/lib/modules"
 import { resolveDocumentBranding } from "@/lib/plan-limits"
 import { substituteVars, buildVars } from "@/lib/automation"
 import type { AssociationPlan, MessageChannel, TriggerType } from "@prisma/client"
+import { reportError } from "@/lib/monitoring"
 
 type EventTrigger = Extract<TriggerType, "RSVP_CONFIRMED" | "MEMBER_CREATED">
 
@@ -63,7 +64,7 @@ export async function fireEventRule(params: FireParams): Promise<boolean> {
         }),
         context: { associationId, membreId: membre.id, source: "AUTOMATION", sourceId: rule.id },
       },
-    }).catch(() => {})
+    }).catch((error: unknown) => reportError(error, { area: "email", action: "automation.event-rule-email-dispatch", extra: { associationId, ruleId: rule.id, membreId: membre.id } }))
     dispatched = true
   }
 
@@ -76,7 +77,7 @@ export async function fireEventRule(params: FireParams): Promise<boolean> {
         associationId,
         context:       { membreId: membre.id, source: "AUTOMATION", sourceId: rule.id },
       },
-    }).catch(() => {})
+    }).catch((error: unknown) => reportError(error, { area: "api", action: "automation.event-rule-sms-dispatch", extra: { associationId, ruleId: rule.id, membreId: membre.id } }))
     dispatched = true
   }
 

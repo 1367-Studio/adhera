@@ -13,6 +13,7 @@ import { writeActivityLog } from "@/lib/activity-log"
 import { resolveDocumentBranding } from "@/lib/plan-limits"
 import { resolveExerciceForDate } from "@/lib/finance/exercice"
 import { APP_URL } from "@/lib/env"
+import { reportError } from "@/lib/monitoring"
 
 // ─── Discrimination ────────────────────────────────────────────────────────────
 //
@@ -119,7 +120,8 @@ export async function handleDonationSubscriptionCheckout(session: Stripe.Checkou
       interval:        created.interval,
       cancelUrl:       `${APP_URL}/dons/annulation/${created.cancelToken}`,
       branding:        resolveDocumentBranding(created.association),
-    }), { associationId: meta.associationId, source: "TRANSACTION", sourceId: created.id }).catch(() => {})
+    }), { associationId: meta.associationId, source: "TRANSACTION", sourceId: created.id })
+      .catch(error => reportError(error, { area: "email", action: "webhook.donation-subscription-started-email", extra: { associationId: meta.associationId, donationSubscriptionId: created.id } }))
   }
 
   await writeActivityLog({
@@ -241,7 +243,7 @@ export async function handleDonationInvoicePaid(invoice: Stripe.Invoice) {
         const pdf = await generateRecuFiscalForDon(don, assoc)
         pdfAttachment = { filename: `recu-fiscal-${don.receiptNumber ?? don.id}.pdf`, content: pdf }
       } catch (err) {
-        console.error(`[recu-fiscal] failed to generate for recurring don ${don.id}:`, err)
+        reportError(err, { area: "webhook", action: "webhook.donation-subscription-recu-fiscal", extra: { associationId: donationSub.associationId, donationSubscriptionId: donationSub.id, donId: don.id } })
       }
     }
 
@@ -261,7 +263,8 @@ export async function handleDonationInvoicePaid(invoice: Stripe.Invoice) {
         branding:            resolveDocumentBranding(assoc),
       }),
       attachments: pdfAttachment ? [pdfAttachment] : undefined,
-    }, { associationId: donationSub.associationId, source: "TRANSACTION", sourceId: don.id }).catch(() => {})
+    }, { associationId: donationSub.associationId, source: "TRANSACTION", sourceId: don.id })
+      .catch(error => reportError(error, { area: "email", action: "webhook.donation-subscription-confirmation-email", extra: { associationId: donationSub.associationId, donationSubscriptionId: donationSub.id, donId: don.id } }))
   }
 
   await writeActivityLog({
@@ -322,7 +325,8 @@ export async function tryHandleDonationInvoicePaymentFailed(invoice: Stripe.Invo
       amount:          invoice.amount_due / 100,
       nextAttemptAt,
       cancelUrl:       `${APP_URL}/dons/annulation/${donationSub.cancelToken}`,
-    }), { associationId: donationSub.associationId, source: "TRANSACTION", sourceId: donationSub.id }).catch(() => {})
+    }), { associationId: donationSub.associationId, source: "TRANSACTION", sourceId: donationSub.id })
+      .catch(error => reportError(error, { area: "email", action: "webhook.donation-subscription-payment-failed-email", extra: { associationId: donationSub.associationId, donationSubscriptionId: donationSub.id, stripeEventId: eventId } }))
   }
 
   return true

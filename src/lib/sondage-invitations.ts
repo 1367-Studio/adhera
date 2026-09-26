@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma/client"
 import { pusherServer } from "@/lib/pusher-server"
 import { inngest } from "@/lib/inngest"
 import { resolveDocumentBranding } from "@/lib/plan-limits"
+import { reportError } from "@/lib/monitoring"
 
 export type SondageInviteResult = {
   jobId:           string | null
@@ -51,7 +52,7 @@ export async function sendSondageInvitations(params: {
     })),
     skipDuplicates: true,
   })
-  await pusherServer.trigger(`private-association-${associationId}`, "new-notification", {}).catch(() => {})
+  await pusherServer.trigger(`private-association-${associationId}`, "new-notification", {}).catch((error: unknown) => reportError(error, { area: "api", action: "sondage.invitations-pusher", extra: { associationId, sondageId } }))
 
   const recipients      = membres.filter(m => m.email)
   const skippedNoEmail  = membres.length - recipients.length

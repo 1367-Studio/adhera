@@ -12,6 +12,7 @@ import { withPortalAuth } from "@/lib/api-wrapper"
 import { isEvenementOver } from "@/lib/evenement-timing"
 import { resolveDocumentBranding } from "@/lib/plan-limits"
 import { APP_URL } from "@/lib/env"
+import { reportError } from "@/lib/monitoring"
 
 type Params = { id: string }
 
@@ -218,7 +219,7 @@ export const PATCH = withPortalAuth<Params>(async (req, ctx, { id: evenementId }
       amount: 0,
       adminNotificationEmail: evenement.adminNotificationEmail,
       membreId: membre.id,
-    }).catch(() => {})
+    }).catch(error => reportError(error, { area: "portal", action: "portal.evenement.rsvp.notify-admins", extra: { associationId: ctx.associationId, evenementId, membreId: membre.id } }))
 
     const assoc = await prisma.association.findUnique({ where: { id: ctx.associationId }, select: { name: true, slug: true, plan: true, customBrandingEnabled: true, logoUrl: true } })
     if (assoc) {
@@ -235,7 +236,7 @@ export const PATCH = withPortalAuth<Params>(async (req, ctx, { id: evenementId }
         eventLocation:   evenement.location,
         portalUrl,
         branding: resolveDocumentBranding(assoc),
-      }), { associationId: ctx.associationId, membreId: membre.id, source: "TRANSACTION", sourceId: evenementId }).catch(() => {})))
+      }), { associationId: ctx.associationId, membreId: membre.id, source: "TRANSACTION", sourceId: evenementId }).catch(error => reportError(error, { area: "email", action: "portal.evenement.rsvp.waitlist-email", extra: { associationId: ctx.associationId, evenementId, membreId: membre.id } }))))
     }
 
     await writeActivityLog({
@@ -257,7 +258,7 @@ export const PATCH = withPortalAuth<Params>(async (req, ctx, { id: evenementId }
       amount: 0,
       adminNotificationEmail: evenement.adminNotificationEmail,
       membreId: membre.id,
-    }).catch(() => {})
+    }).catch(error => reportError(error, { area: "portal", action: "portal.evenement.rsvp.notify-admins", extra: { associationId: ctx.associationId, evenementId, membreId: membre.id } }))
 
     const assoc = await prisma.association.findUnique({
       where:  { id: ctx.associationId },
@@ -283,9 +284,10 @@ export const PATCH = withPortalAuth<Params>(async (req, ctx, { id: evenementId }
             eventLocation:   evenement.location,
             portalUrl,
             branding,
-          }), { associationId: ctx.associationId, membreId: membre.id, source: "TRANSACTION", sourceId: evenementId }).catch(() => {})
+          }), { associationId: ctx.associationId, membreId: membre.id, source: "TRANSACTION", sourceId: evenementId }).catch(error => reportError(error, { area: "email", action: "portal.evenement.rsvp.confirmation-email", extra: { associationId: ctx.associationId, evenementId, membreId: membre.id } }))
         }
-      }).catch(() => {
+      }).catch(error => {
+        reportError(error, { area: "portal", action: "portal.evenement.rsvp.event-rule", extra: { associationId: ctx.associationId, evenementId, membreId: membre.id } })
         if (membre.email) {
           sendEmail(rsvpConfirmationEmail({
             firstName:       membre.firstName,
@@ -296,7 +298,7 @@ export const PATCH = withPortalAuth<Params>(async (req, ctx, { id: evenementId }
             eventLocation:   evenement.location,
             portalUrl,
             branding,
-          }), { associationId: ctx.associationId, membreId: membre.id, source: "TRANSACTION", sourceId: evenementId }).catch(() => {})
+          }), { associationId: ctx.associationId, membreId: membre.id, source: "TRANSACTION", sourceId: evenementId }).catch(error => reportError(error, { area: "email", action: "portal.evenement.rsvp.confirmation-email", extra: { associationId: ctx.associationId, evenementId, membreId: membre.id } }))
         }
       })
     }

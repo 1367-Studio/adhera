@@ -3,6 +3,7 @@ import { EgressClient, RoomServiceClient } from "livekit-server-sdk"
 import { prisma } from "@/lib/prisma/client"
 import { writeActivityLog } from "@/lib/activity-log"
 import { withAdminAuth } from "@/lib/api-wrapper"
+import { reportError } from "@/lib/monitoring"
 import { getLiveKitConfigForMeeting, LiveKitConfigError } from "@/lib/livekit/config"
 
 const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
@@ -31,8 +32,13 @@ export const POST = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
         where: { id: { in: openRecordings.map(r => r.id) } },
         data:  { endedAt: new Date() },
       })
-    } catch {
+    } catch (error) {
       // Egress may have already stopped
+      reportError(error, {
+        area:   "ai",
+        action: "meetings.end.close-recordings",
+        extra:  { associationId, meetingId: id, openRecordings: openRecordings.length },
+      })
     }
   }
 

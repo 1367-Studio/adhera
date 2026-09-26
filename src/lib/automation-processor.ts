@@ -15,6 +15,7 @@ import { currentCotisationYear, endOfCotisationYear, parisDayBounds, isMembreAdh
 import { nextAmountDue } from "@/lib/cotisation-status"
 import type { TriggerType, MessageChannel } from "@prisma/client"
 import { APP_URL } from "@/lib/env"
+import { reportError } from "@/lib/monitoring"
 
 const BATCH_SIZE = 100
 
@@ -72,8 +73,8 @@ export async function claimDueAutomationRules(now: Date): Promise<RuleWithRelati
         data:  { nextRunAt: new Date(now.getTime() + 86_400_000) },
       })
       if (result.count > 0) claimed.push(rule)
-    } catch (err) {
-      console.error(`[automation] Failed to claim rule ${rule.id}:`, err)
+    } catch (error) {
+      reportError(error, { area: "cron", action: "automation.claim-rule", extra: { ruleId: rule.id, associationId: rule.associationId } })
     }
   }
   return claimed

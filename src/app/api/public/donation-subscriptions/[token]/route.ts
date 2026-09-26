@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma/client"
 import { stripe } from "@/lib/stripe"
 import { writeActivityLog } from "@/lib/activity-log"
 import { rateLimit, requestIp } from "@/lib/rate-limit"
+import { reportError } from "@/lib/monitoring"
 
 // Self-service cancellation for recurring donations — accessed via the unguessable
 // cancelToken emailed at subscription start, not a login (donors have no portal
@@ -65,7 +66,7 @@ export async function POST(
   try {
     await stripe.subscriptions.cancel(sub.stripeSubscriptionId)
   } catch (err) {
-    console.error(`[cancel-donation-subscription] Stripe cancel failed for ${sub.id}:`, err)
+    reportError(err, { area: "stripe", action: "donation-subscriptions.cancel", extra: { associationId: sub.associationId, donationSubscriptionId: sub.id, stripeSubscriptionId: sub.stripeSubscriptionId } })
     return NextResponse.json({ error: "L'arrêt a échoué. Réessayez dans quelques instants ou contactez l'association." }, { status: 502 })
   }
 

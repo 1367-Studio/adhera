@@ -5,6 +5,7 @@ import { r2 } from "@/lib/r2"
 import { makeGroqClient, platformClient } from "@/lib/ai/client"
 import { writeActivityLog } from "@/lib/activity-log"
 import { withAdminAuth } from "@/lib/api-wrapper"
+import { reportError } from "@/lib/monitoring"
 import { rateLimit, rateLimitPeek, consumeQuota } from "@/lib/rate-limit"
 import type OpenAI from "openai"
 import type { MeetingRecording } from "@prisma/client"
@@ -223,6 +224,15 @@ export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
         )
       }
 
+      settled.forEach((result, index) => {
+        if (result.status !== "rejected") return
+        reportError(result.reason, {
+          area:   "ai",
+          action: "meetings.transcribe.recording",
+          extra:  { associationId, meetingId: id, recordingId: recordings[index].id, ownKey: !!ownGroqKey },
+        })
+      })
+
       transcript = formatTranscript(lines)
     }
 
@@ -242,6 +252,11 @@ export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
 
     return NextResponse.json({ transcript })
   } catch (err) {
+    reportError(err, {
+      area:   "ai",
+      action: "meetings.transcribe",
+      extra:  { associationId, meetingId: id, ownKey: !!ownGroqKey },
+    })
     const msg = err instanceof Error ? err.message : "Erreur transcription"
     return NextResponse.json({ error: msg }, { status: 502 })
   }

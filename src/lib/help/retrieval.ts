@@ -3,6 +3,7 @@ import { isHelpModuleKey, type HelpModuleKey } from "@/lib/help/modules"
 import { sanityFetchUncached } from "@/sanity/fetch"
 import { HELP_SEARCH_KEYWORD_QUERY, HELP_SEARCH_QUERY } from "@/sanity/queries"
 import type { HelpRetrievalHit, HelpSearchHit, HelpSource } from "@/sanity/types"
+import { reportError } from "@/lib/monitoring"
 
 const MAX_HITS               = 20
 const SNIPPET_LENGTH         = 160
@@ -133,7 +134,7 @@ export async function retrieveHelpContextOrEmpty(
   try {
     return await retrieveHelpContext(options)
   } catch (error) {
-    console.error(`${logPrefix} retrieval failed, answering without documentation:`, error)
+    reportError(error, { area: "ai", action: "help.retrieval", extra: { logPrefix } })
     return []
   }
 }

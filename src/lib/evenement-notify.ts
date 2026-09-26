@@ -4,6 +4,7 @@ import { evenementRegistrationAdminNotificationEmail, evenementReviewAdminNotifi
 import { resolveDocumentBranding } from "@/lib/plan-limits"
 import { pusherServer } from "@/lib/pusher-server"
 import { APP_URL } from "@/lib/env"
+import { reportError } from "@/lib/monitoring"
 
 // Called once per confirmed registration on an event — public form, member portal RSVP, or
 // a Stripe payment clearing. The one place this fires, so every path stays in sync instead
@@ -58,7 +59,7 @@ export async function notifyEventRegistration(params: {
       })),
       skipDuplicates: true,
     })
-    await pusherServer.trigger(`private-association-${params.associationId}`, "new-notification", {}).catch(() => {})
+    await pusherServer.trigger(`private-association-${params.associationId}`, "new-notification", {}).catch((error: unknown) => reportError(error, { area: "api", action: "evenement-notify.registration-pusher", extra: { associationId: params.associationId, evenementId: params.evenementId } }))
   }
 
   if (!params.adminNotificationEmail) return
@@ -83,7 +84,7 @@ export async function notifyEventRegistration(params: {
     membreId:      params.membreId,
     source:        "EVENT_REGISTRATION_ADMIN_ALERT",
     sourceId:      params.evenementId,
-  }).catch(() => {})
+  }).catch((error: unknown) => reportError(error, { area: "email", action: "evenement-notify.registration-email", extra: { associationId: params.associationId, evenementId: params.evenementId } }))
 }
 
 // Called once per submitted EvenementAvis — public review link or the member portal, the
@@ -121,7 +122,7 @@ export async function notifyEventReviewSubmitted(params: {
       })),
       skipDuplicates: true,
     })
-    await pusherServer.trigger(`private-association-${params.associationId}`, "new-notification", {}).catch(() => {})
+    await pusherServer.trigger(`private-association-${params.associationId}`, "new-notification", {}).catch((error: unknown) => reportError(error, { area: "api", action: "evenement-notify.review-pusher", extra: { associationId: params.associationId, evenementId: params.evenementId } }))
   }
 
   if (!params.adminNotificationEmail) return
@@ -146,5 +147,5 @@ export async function notifyEventReviewSubmitted(params: {
     associationId: params.associationId,
     source:        "EVENT_REVIEW_ADMIN_ALERT",
     sourceId:      params.evenementId,
-  }).catch(() => {})
+  }).catch((error: unknown) => reportError(error, { area: "email", action: "evenement-notify.review-email", extra: { associationId: params.associationId, evenementId: params.evenementId } }))
 }

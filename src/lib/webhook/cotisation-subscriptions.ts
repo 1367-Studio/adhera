@@ -22,6 +22,7 @@ import { notifyMissingCotisation } from "@/lib/cotisation-alerts"
 import { createMembershipAddonPurchases } from "@/lib/webhook/membership-addons"
 import { notifyMembershipSignup } from "@/lib/webhook/membership-notify"
 import { addressColumns } from "@/lib/address"
+import { reportError } from "@/lib/monitoring"
 
 // ─── Discrimination ────────────────────────────────────────────────────────────
 //
@@ -259,7 +260,7 @@ export async function handleCotisationSubscriptionCheckout(session: Stripe.Check
     // the association's directors so a human reconciles the account manually — same
     // "can't auto-recover, so make sure a person finds out" reasoning as the recu-fiscal
     // generation failure in the main webhook route.
-    console.error(`[cotisation-subscription] failed to create account for subscription ${subscriptionId} (association ${meta.associationId}, email ${meta.email}):`, err)
+    reportError(err, { area: "webhook", action: "webhook.cotisation-subscription-create-account", extra: { associationId: meta.associationId, stripeSubscriptionId: subscriptionId, checkoutSessionId: session.id } })
     const isDuplicateEmail = err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2002"
     const admins = await prisma.user.findMany({
       where:  { associationId: meta.associationId, role: { in: ["ADMIN", "PRESIDENT"] }, active: true },
@@ -290,8 +291,8 @@ export async function handleCotisationSubscriptionCheckout(session: Stripe.Check
   // (normal) case where invoice.paid already succeeded before checkout.session.completed did.
   const latestInvoice = sub.latest_invoice
   if (latestInvoice && typeof latestInvoice !== "string" && latestInvoice.status === "paid") {
-    await handleCotisationInvoicePaid(latestInvoice).catch(err =>
-      console.error(`[cotisation-subscription] self-heal invoice.paid replay failed for subscription ${subscriptionId}:`, err))
+    await handleCotisationInvoicePaid(latestInvoice).catch(error =>
+      reportError(error, { area: "webhook", action: "webhook.cotisation-subscription-self-heal-invoice", extra: { associationId: meta.associationId, stripeSubscriptionId: subscriptionId, invoiceId: latestInvoice.id } }))
   }
 
   if (assoc?.slug) {
@@ -306,7 +307,8 @@ export async function handleCotisationSubscriptionCheckout(session: Stripe.Check
       canIssueTaxReceipts: assoc.canIssueTaxReceipts,
       receiptMode:         (meta.receiptMode as "NONE" | "FULL" | "PARTIAL" | undefined) || "NONE",
       deductibleAmount:    meta.deductibleAmount ? Number(meta.deductibleAmount) : undefined,
-    }), { associationId: meta.associationId, membreId: created.membre.id, source: "TRANSACTION", sourceId: created.cotisationSubscription.id }).catch(() => {})
+    }), { associationId: meta.associationId, membreId: created.membre.id, source: "TRANSACTION", sourceId: created.cotisationSubscription.id })
+      .catch(error => reportError(error, { area: "email", action: "webhook.cotisation-subscription-started-email", extra: { associationId: meta.associationId, membreId: created.membre.id, cotisationSubscriptionId: created.cotisationSubscription.id } }))
 
     // Not fired before this session's own edge-case review — a recurring MembershipForm
     // signup (like the one-off/free/offline paths in checkout/route.ts) is still a real new
@@ -316,14 +318,14 @@ export async function handleCotisationSubscriptionCheckout(session: Stripe.Check
       associationId: meta.associationId,
       association: { name: assoc.name, slug: assoc.slug, modules: assoc.modules, plan: assoc.plan, customBrandingEnabled: assoc.customBrandingEnabled, logoUrl: assoc.logoUrl },
       membre: { id: created.membre.id, firstName: created.membre.firstName, lastName: created.membre.lastName, email: created.membre.email, phone: created.membre.phone },
-    }).catch(() => {})
+    }).catch(error => reportError(error, { area: "webhook", action: "webhook.cotisation-subscription-fire-event-rule", extra: { associationId: meta.associationId, membreId: created.membre.id } }))
   }
 
   if (form) {
     notifyMembershipSignup({
       associationId: meta.associationId, formTitle: form.title, adminNotificationEmail: form.adminNotificationEmail,
       memberNames: [`${created.membre.firstName} ${created.membre.lastName}`], amount, primaryMembreId: created.membre.id,
-    }).catch(() => {})
+    }).catch(error => reportError(error, { area: "webhook", action: "webhook.cotisation-subscription-notify-signup", extra: { associationId: meta.associationId, membreId: created.membre.id } }))
   }
 
   await writeActivityLog({
@@ -557,7 +559,8 @@ export async function tryHandleCotisationInvoicePaymentFailed(invoice: Stripe.In
       amount,
       nextAttemptAt,
       cancelUrl:       `${APP_URL}/adhesion/annulation/${cotisationSub.cancelToken}`,
-    }), { associationId: cotisationSub.associationId, source: "TRANSACTION", sourceId: cotisationSub.id }).catch(() => {})
+    }), { associationId: cotisationSub.associationId, source: "TRANSACTION", sourceId: cotisationSub.id })
+      .catch(error => reportError(error, { area: "email", action: "webhook.cotisation-subscription-payment-failed-email", extra: { associationId: cotisationSub.associationId, cotisationSubscriptionId: cotisationSub.id, stripeEventId: eventId } }))
   }
 
   // The member email alone leaves the association finding out only if the member happens
@@ -590,7 +593,7 @@ export async function tryHandleCotisationInvoicePaymentFailed(invoice: Stripe.In
         amount,
         dashboardUrl,
       }), { associationId: cotisationSub.associationId, source: "TRANSACTION", sourceId: cotisationSub.id })
-        .catch(err => console.error(`[cotisation-subscription] failed to email admin ${admin.email}:`, err))
+        .catch(error => reportError(error, { area: "email", action: "webhook.cotisation-subscription-payment-failed-admin-email", extra: { associationId: cotisationSub.associationId, cotisationSubscriptionId: cotisationSub.id, stripeEventId: eventId } }))
     }
   }
 
@@ -629,7 +632,7 @@ export async function cancelActiveCotisationSubscriptionForMembre(
     // an admin looking for a problem that doesn't exist. A real outage (connection/API/auth/
     // rate-limit error) falls through to the generic failure path below.
     if (!(err instanceof Stripe.errors.StripeInvalidRequestError)) {
-      console.error(`[cotisation-subscription] failed to cancel subscription ${sub.id} for membre ${membreId}:`, err)
+      reportError(err, { area: "stripe", action: "cotisation-subscriptions.cancel-for-membre", extra: { associationId: sub.associationId, membreId, cotisationSubscriptionId: sub.id, stripeSubscriptionId: sub.stripeSubscriptionId } })
       return false
     }
   }

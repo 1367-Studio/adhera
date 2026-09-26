@@ -6,6 +6,7 @@ import { checkInReceiptEmail } from "@/lib/email"
 import { withPortalAuth } from "@/lib/api-wrapper"
 import { resolveDocumentBranding } from "@/lib/plan-limits"
 import { writeActivityLog } from "@/lib/activity-log"
+import { reportError } from "@/lib/monitoring"
 
 export const GET = withPortalAuth<{ token: string }>(async (_req, ctx, { token }) => {
   const { associationId, membreId } = ctx
@@ -137,8 +138,8 @@ export const POST = withPortalAuth<{ token: string }>(async (_req, ctx, { token 
         firstName: memberFirst, email: memberEmail,
         associationName: assoc.name, eventTitle, eventDate,
         branding: resolveDocumentBranding(assoc),
-      }), { associationId: associationIdForEmail, membreId: membre.id, source: "TRANSACTION", sourceId: evenement.id }).catch((err: unknown) => {
-        console.error("[check-in] failed to send check-in receipt email:", err)
+      }), { associationId: associationIdForEmail, membreId: membre.id, source: "TRANSACTION", sourceId: evenement.id }).catch((error: unknown) => {
+        reportError(error, { area: "email", action: "portal.check-in.receipt-email", extra: { associationId: associationIdForEmail, evenementId: evenement.id, membreId: membre.id } })
       })
     })
   }

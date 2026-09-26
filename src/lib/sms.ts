@@ -1,6 +1,7 @@
 import twilio from "twilio"
 import { prisma } from "@/lib/prisma/client"
 import { APP_URL } from "@/lib/env"
+import { reportError } from "@/lib/monitoring"
 
 export class SmsSendError extends Error {
   constructor(message: string) {
@@ -80,8 +81,8 @@ async function logSmsMessage(
         sentAt:       new Date(),
       },
     })
-  } catch (err: unknown) {
-    console.error("[sms] failed to log SmsMessage:", err)
+  } catch (error: unknown) {
+    reportError(error, { area: "api", action: "sms.log-message", extra: { associationId, source: context.source, sourceId: context.sourceId } })
   }
 }
 
@@ -167,7 +168,7 @@ export async function sendSmsBatch(
         associationId, membreId: j.membreId, source: context.source, sourceId: context.sourceId,
         to: j.to, body: j.body, status: "FAILED" as const, errorMessage: reason, sentAt: new Date(),
       })),
-    }).catch((err: unknown) => console.error("[sms] failed to log SmsMessage batch:", err))
+    }).catch((error: unknown) => reportError(error, { area: "api", action: "sms.log-message-batch", extra: { associationId, source: context.source, sourceId: context.sourceId, count: jobs.length } }))
     return jobs.map(j => ({ to: j.to, ok: false, reason }))
   }
 

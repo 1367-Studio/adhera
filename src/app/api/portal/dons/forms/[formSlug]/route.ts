@@ -6,6 +6,7 @@ import type { Locale } from "@/i18n/locales"
 import { connectAccountChargesEnabled } from "@/lib/stripe"
 import { eligibleReceiptAmount } from "@/lib/receipt-eligibility"
 import { withPortalAuth } from "@/lib/api-wrapper"
+import { reportError } from "@/lib/monitoring"
 
 // Same shape as /api/public/[slug]/dons/[formSlug], minus the `visibility: { not: "PRIVATE" }`
 // filter — see the sibling list route's comment for why PRIVATE is portal-visible here.
@@ -47,7 +48,7 @@ export const GET = withPortalAuth<{ formSlug: string }>(async (_req, ctx, { form
     try {
       paymentEnabled = await connectAccountChargesEnabled(assoc.stripeConnectId)
     } catch (err) {
-      console.error(`[portal-donation-form] failed to check payment availability for ${ctx.associationId}/${formSlug}:`, err)
+      reportError(err, { area: "stripe", action: "portal.don.form-payment-availability", extra: { associationId: ctx.associationId, formSlug } })
     }
   }
 

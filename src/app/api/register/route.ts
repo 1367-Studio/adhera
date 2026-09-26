@@ -13,6 +13,7 @@ import { APP_URL } from "@/lib/env"
 import { CURRENT_TERMS_VERSION, consentIp } from "@/lib/consent"
 import { writeActivityLog } from "@/lib/activity-log"
 import { SUPPORTED_LOCALES } from "@/i18n/locales"
+import { reportError } from "@/lib/monitoring"
 
 const schema = z.object({
   associationName: z.string().min(2),
@@ -166,14 +167,18 @@ export async function POST(req: Request) {
       subscriptionId = subscription.id
     }
   } catch (err) {
-    if (offer) await prisma.pricingOffer.update({ where: { id: offer.id }, data: { status: "PENDING" } }).catch(() => {})
+    if (offer) {
+      const offerId = offer.id
+      await prisma.pricingOffer.update({ where: { id: offerId }, data: { status: "PENDING" } }).catch(error =>
+        reportError(error, { area: "api", action: "register.revert-pricing-offer", extra: { pricingOfferId: offerId } }))
+    }
     if (createdCustomerId) {
-      try { await stripe.customers.del(createdCustomerId) } catch (delErr) { console.error(`[register] failed to delete orphaned customer ${createdCustomerId}:`, delErr) }
+      try { await stripe.customers.del(createdCustomerId) } catch (error) { reportError(error, { area: "stripe", action: "register.delete-orphaned-customer", extra: { stripeCustomerId: createdCustomerId } }) }
     }
     // With a card in play the likely cause is the card itself (declined, 3DS abandoned…);
     // without one there's nothing the person can "check" — it's Stripe or us.
     if (hasPaymentMethod) return NextResponse.json({ error: "Erreur de paiement. Vérifiez vos informations." }, { status: 402 })
-    console.error("[register] failed to create card-free trial subscription:", err)
+    reportError(err, { area: "stripe", action: "register.create-trial-subscription", extra: { stripeCustomerId: createdCustomerId } })
     return NextResponse.json({ error: "Erreur lors de la création du compte. Réessayez dans un instant." }, { status: 502 })
   }
 
@@ -239,19 +244,24 @@ export async function POST(req: Request) {
     const loginUrl = `${APP_URL}/login`
     // Awaited (not fire-and-forget) — see forgot-password/route.ts for why an un-awaited
     // promise here silently never sends on Vercel's serverless runtime.
-    await sendEmail(adminWelcomeEmail({ firstName, email: email.toLowerCase(), associationName, loginUrl, trialDays: offer ? 0 : TRIAL_DAYS, hasPaymentMethod })).catch((err: unknown) => {
-      console.error("[register] failed to send welcome email:", err)
+    await sendEmail(adminWelcomeEmail({ firstName, email: email.toLowerCase(), associationName, loginUrl, trialDays: offer ? 0 : TRIAL_DAYS, hasPaymentMethod })).catch((error: unknown) => {
+      reportError(error, { area: "email", action: "register.welcome-email", extra: { associationId: association.id } })
     })
 
     return NextResponse.json({ ok: true })
-  } catch {
+  } catch (error) {
+    reportError(error, { area: "api", action: "register.create-account", extra: { stripeCustomerId: customerId } })
     if (scheduleId) {
-      try { await stripe.subscriptionSchedules.cancel(scheduleId) } catch (err) { console.error(`[register] failed to cancel orphaned schedule ${scheduleId}:`, err) }
+      try { await stripe.subscriptionSchedules.cancel(scheduleId) } catch (cancelError) { reportError(cancelError, { area: "stripe", action: "register.cancel-orphaned-schedule", extra: { stripeSubscriptionScheduleId: scheduleId } }) }
     } else {
-      try { await stripe.subscriptions.cancel(subscriptionId) } catch (err) { console.error(`[register] failed to cancel orphaned subscription ${subscriptionId}:`, err) }
+      try { await stripe.subscriptions.cancel(subscriptionId) } catch (cancelError) { reportError(cancelError, { area: "stripe", action: "register.cancel-orphaned-subscription", extra: { stripeSubscriptionId: subscriptionId } }) }
     }
-    try { await stripe.customers.del(customerId) } catch (err) { console.error(`[register] failed to delete orphaned customer ${customerId}:`, err) }
-    if (offer) await prisma.pricingOffer.update({ where: { id: offer.id }, data: { status: "PENDING" } }).catch(() => {})
+    try { await stripe.customers.del(customerId) } catch (deleteError) { reportError(deleteError, { area: "stripe", action: "register.delete-orphaned-customer", extra: { stripeCustomerId: customerId } }) }
+    if (offer) {
+      const offerId = offer.id
+      await prisma.pricingOffer.update({ where: { id: offerId }, data: { status: "PENDING" } }).catch(error =>
+        reportError(error, { area: "api", action: "register.revert-pricing-offer", extra: { pricingOfferId: offerId } }))
+    }
     return NextResponse.json({ error: "Erreur lors de la création du compte" }, { status: 500 })
   }
 }

@@ -3,6 +3,7 @@ import { z } from "zod"
 import { prisma } from "@/lib/prisma/client"
 import { withPortalAuth } from "@/lib/api-wrapper"
 import { notifyEventReviewSubmitted } from "@/lib/evenement-notify"
+import { reportError } from "@/lib/monitoring"
 
 type Params = { id: string }
 
@@ -66,7 +67,7 @@ export const POST = withPortalAuth<Params>(async (req, ctx, { id: evenementId })
     rating,
     comment,
     adminNotificationEmail: participation.evenement.adminNotificationEmail,
-  }).catch(() => {})
+  }).catch(error => reportError(error, { area: "portal", action: "portal.evenement.review.notify-admins", extra: { associationId: participation.evenement.associationId, evenementId } }))
 
   return NextResponse.json({ ok: true })
 })

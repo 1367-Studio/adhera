@@ -9,6 +9,7 @@ import { pusherServer } from "@/lib/pusher-server"
 import { APP_URL } from "@/lib/env"
 import { deliveryFieldsSchema, validateDeliveryFields } from "@/lib/boutique/delivery-schema"
 import { resolveShippingCost, ShippingUnavailableError } from "@/lib/boutique/resolve-shipping-cost"
+import { reportError } from "@/lib/monitoring"
 
 const itemSchema = z.object({
   produitId:  z.string(),
@@ -179,7 +180,7 @@ export const POST = withPortalAuth(async (req, ctx) => {
           totalAmount:     commande.totalAmount,
           dashboardUrl,
         }), { associationId: ctx.associationId, source: "BOUTIQUE_ADMIN_ALERT", sourceId: commande.id })
-          .catch(err => console.error(`[boutique-admin-alert] failed to email admin ${admin.email} for commande ${commande.id}:`, err))
+          .catch(error => reportError(error, { area: "email", action: "boutique.admin-new-order-email", extra: { associationId: ctx.associationId, commandeId: commande.id } }))
       }
     }
   }

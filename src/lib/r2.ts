@@ -1,6 +1,7 @@
 import { S3Client, PutObjectCommand, DeleteObjectCommand, HeadObjectCommand, GetObjectCommand, type S3ClientConfig } from "@aws-sdk/client-s3"
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner"
 import { randomBytes } from "crypto"
+import { reportError } from "@/lib/monitoring"
 
 const R2_CLIENT_CONFIG: S3ClientConfig = {
   region: "auto",
@@ -108,7 +109,8 @@ export async function deleteFromR2(url: string): Promise<void> {
     const { pathname } = new URL(url)
     const key = pathname.slice(1)
     await r2.send(new DeleteObjectCommand({ Bucket: process.env.R2_BUCKET_NAME!, Key: key }))
-  } catch {
+  } catch (error) {
     // ignore if already deleted
+    if (!isR2NotFound(error)) reportError(error, { area: "storage", action: "r2.delete" })
   }
 }

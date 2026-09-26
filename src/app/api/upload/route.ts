@@ -3,6 +3,7 @@ import { uploadToR2 } from "@/lib/r2"
 import { sniffFileType } from "@/lib/file-sniff"
 import { withAdminAuth } from "@/lib/api-wrapper"
 import { MAX_FUNCTION_UPLOAD_BYTES } from "@/lib/upload-limits"
+import { reportError } from "@/lib/monitoring"
 
 const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
 // Shares MAX_FUNCTION_UPLOAD_BYTES with the client-side checks (document-upload.tsx,
@@ -10,7 +11,7 @@ const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
 // server then silently rejects.
 const MAX_SIZE = MAX_FUNCTION_UPLOAD_BYTES
 
-export const POST = withAdminAuth(async (req) => {
+export const POST = withAdminAuth(async (req, ctx) => {
   const formData = await req.formData()
   const file     = formData.get("file")   as File   | null
   const prefix   = (formData.get("prefix") as string) || "adhera"
@@ -27,8 +28,8 @@ export const POST = withAdminAuth(async (req) => {
   try {
     const url = await uploadToR2(buffer, prefix, contentType)
     return NextResponse.json({ url })
-  } catch (err) {
-    console.error("Upload error:", err)
+  } catch (error) {
+    reportError(error, { area: "storage", action: "upload.r2", extra: { associationId: ctx.associationId } })
     return NextResponse.json({ error: "Erreur lors de l'upload" }, { status: 500 })
   }
 }, { roles: MANAGERS })

@@ -5,6 +5,7 @@ import { parseModules } from "@/lib/modules"
 import { uploadToR2 } from "@/lib/r2"
 import { rateLimit, requestIp } from "@/lib/rate-limit"
 import { MAX_FUNCTION_UPLOAD_BYTES } from "@/lib/upload-limits"
+import { reportError } from "@/lib/monitoring"
 
 // Same limit as the admin's own DocumentUpload route (src/app/api/upload/route.ts) — this one
 // is more restricted in scope (see the FILE-field gate below), not in size.
@@ -72,8 +73,8 @@ export async function POST(
   try {
     const url = await uploadToR2(buffer, "evenements", contentType)
     return NextResponse.json({ url })
-  } catch (err) {
-    console.error("Upload error:", err)
+  } catch (error) {
+    reportError(error, { area: "storage", action: "public.evenement.upload", extra: { associationId: assoc.id, slug, evenementRef: id } })
     return NextResponse.json({ error: "Erreur lors de l'upload" }, { status: 500 })
   }
 }

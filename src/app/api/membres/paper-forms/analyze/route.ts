@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server"
 import { withAdminAuth } from "@/lib/api-wrapper"
+import { reportError } from "@/lib/monitoring"
 import { prisma } from "@/lib/prisma/client"
 import { completeWithImages } from "@/lib/ai/complete"
 import { paperFormAnalyzeRequestSchema, type PaperFormAnalyzeResponse } from "@/lib/schemas"
@@ -88,6 +89,7 @@ export const POST = withAdminAuth(async (req, ctx) => {
   })
 
   let rawProposal: unknown
+  let rawLength: number | undefined
   try {
     const content = await completeWithImages(vision.aiConfig, {
       system:      SYSTEM_PROMPT,
@@ -98,13 +100,24 @@ export const POST = withAdminAuth(async (req, ctx) => {
       json:        true,
       timeoutMs:   50_000,
     })
+    rawLength = content.length
     rawProposal = parseModelJson(content)
   } catch (error) {
+    reportError(error, {
+      area:   "ai",
+      action: "paper-form.analyze",
+      extra:  { associationId, pageCount: pagesPerForm, provider: vision.aiConfig.provider, model: vision.aiConfig.model },
+    })
     const message = error instanceof Error ? error.message : "Erreur lors de l'analyse IA du formulaire"
     return NextResponse.json({ error: message }, { status: 502 })
   }
 
   if (rawProposal === null) {
+    reportError(new Error("Vision model returned invalid JSON"), {
+      area:   "ai",
+      action: "paper-form.analyze.parse",
+      extra:  { associationId, pageCount: pagesPerForm, provider: vision.aiConfig.provider, model: vision.aiConfig.model, rawLength },
+    })
     return NextResponse.json({ error: "Réponse illisible du fournisseur IA, réessayez." }, { status: 502 })
   }
 

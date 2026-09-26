@@ -7,6 +7,7 @@ import { writeActivityLog } from "@/lib/activity-log"
 import { withPortalAuth } from "@/lib/api-wrapper"
 import { deliveryFieldsSchema, validateDeliveryFields } from "@/lib/boutique/delivery-schema"
 import { resolveShippingCost, ShippingUnavailableError } from "@/lib/boutique/resolve-shipping-cost"
+import { reportError } from "@/lib/monitoring"
 
 const itemSchema = z.object({
   produitId:  z.string(),
@@ -159,7 +160,8 @@ export const POST = withPortalAuth(async (req, ctx) => {
       // window (the minimum Stripe allows) so an abandoned cart doesn't lock stock all day.
       expires_at:  Math.floor(Date.now() / 1000) + 30 * 60,
     })
-  } catch {
+  } catch (error) {
+    reportError(error, { area: "stripe", action: "portal.boutique.checkout-session", extra: { associationId: assoc.id, commandeId: commande.id } })
     // Stripe failed — cancel commande and restore stock
     await prisma.$transaction([
       prisma.boutiqueCommande.update({ where: { id: commande.id }, data: { status: "CANCELLED" } }),

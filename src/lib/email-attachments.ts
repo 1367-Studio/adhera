@@ -2,6 +2,7 @@ import { randomBytes } from "crypto"
 import { EXT_BY_CONTENT_TYPE, getR2ObjectSize, readR2ObjectFirstBytes } from "@/lib/r2"
 import { FILE_SNIFF_HEADER_BYTES, sniffFileType, type SniffedFileType } from "@/lib/file-sniff"
 import { MAX_FUNCTION_UPLOAD_BYTES } from "@/lib/upload-limits"
+import { reportError } from "@/lib/monitoring"
 
 // Bulk member email attachments ("Envoyer un email"): the browser uploads each file straight
 // to R2 through a presigned URL (src/app/api/membres/email/attachments/route.ts), then the
@@ -145,7 +146,7 @@ export async function verifyEmailAttachments(associationId: string, references: 
       return { reference, size, firstBytes }
     }))
   } catch (error: unknown) {
-    console.error("[email-attachments] R2 verification failed:", error)
+    reportError(error, { area: "storage", action: "email-attachments.verify", extra: { associationId, count: references.length } })
     return { ok: false, error: EMAIL_ATTACHMENT_ERRORS.unavailable, status: 500 }
   }
 

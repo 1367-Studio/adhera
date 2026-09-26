@@ -11,6 +11,7 @@ import { resolveDocumentBranding } from "@/lib/plan-limits"
 import { sendEmail } from "@/lib/mail"
 import { boutiqueRefundEmail } from "@/lib/email"
 import { pusherServer } from "@/lib/pusher-server"
+import { reportError } from "@/lib/monitoring"
 
 // Narrower than boutique/commandes/[id]/route.ts's MANAGERS (which includes SECRETAIRE) —
 // refunding money is a step up from managing orders, same role set as dons/[id]/encaisser.
@@ -237,7 +238,7 @@ export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
       }, { idempotencyKey })
     } catch (err) {
       await rollback()
-      console.error(`[boutique-refund] Stripe refund failed for commande ${id}:`, err)
+      reportError(err, { area: "stripe", action: "boutique.refund", extra: { associationId: ctx.associationId, commandeId: id, paymentIntentId } })
       const message = err instanceof Stripe.errors.StripeError
         ? err.message
         : "Le remboursement a échoué. Réessayez dans quelques instants ou contactez le support."
@@ -295,7 +296,7 @@ export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
         branding: association ? resolveDocumentBranding(association) : undefined,
       }),
     }, { associationId: ctx.associationId, membreId: exists.membreId ?? undefined, source: "TRANSACTION", sourceId: id })
-      .catch(err => console.error(`[boutique-refund] failed to email buyer for commande ${id}:`, err))
+      .catch(error => reportError(error, { area: "email", action: "boutique.refund-email", extra: { associationId: ctx.associationId, commandeId: id } }))
   }
 
   const updated = await prisma.boutiqueCommande.findUnique({

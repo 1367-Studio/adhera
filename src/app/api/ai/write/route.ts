@@ -4,6 +4,7 @@ import { resolveAiConfig } from "@/lib/ai/client"
 import { completeText } from "@/lib/ai/complete"
 import { normalizeAiHtml } from "@/lib/ai/normalize-html"
 import { withAdminAuth } from "@/lib/api-wrapper"
+import { reportError } from "@/lib/monitoring"
 import { rateLimit } from "@/lib/rate-limit"
 
 const schema = z.object({
@@ -71,6 +72,11 @@ export const POST = withAdminAuth(async (req, ctx) => {
     const text = normalizeAiHtml(raw)
     return NextResponse.json({ text })
   } catch (err: unknown) {
+    reportError(err, {
+      area:   "ai",
+      action: `write.${action}`,
+      extra:  { associationId: ctx.associationId, provider: aiConfig.provider, model: aiConfig.model },
+    })
     const msg = err instanceof Error ? err.message : "Erreur IA"
     return NextResponse.json({ error: msg }, { status: 502 })
   }

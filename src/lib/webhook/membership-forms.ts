@@ -18,6 +18,7 @@ import { createMembershipFormProductPurchase } from "@/lib/webhook/membership-fo
 import { notifyMembershipSignup } from "@/lib/webhook/membership-notify"
 import { isMemberCardAvailable } from "@/lib/member-card/availability"
 import { addressColumns } from "@/lib/address"
+import { reportError } from "@/lib/monitoring"
 
 // ─── checkout.session.completed (mode: "payment", kind: "membership-oneoff") ───────
 //
@@ -177,7 +178,7 @@ export async function handleMembershipOneOffCheckout(session: Stripe.Checkout.Se
   } catch (err) {
     // The person has already paid at this point — same "can't auto-recover, so make sure a
     // human finds out" reasoning as handleCotisationSubscriptionCheckout's own catch block.
-    console.error(`[membership-oneoff] failed to create account for checkout session ${session.id} (association ${meta.associationId}, email ${meta.email}):`, err)
+    reportError(err, { area: "webhook", action: "webhook.membership-oneoff-create-account", extra: { associationId: meta.associationId, checkoutSessionId: session.id } })
     const isDuplicateEmail = err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2002"
     const admins = await prisma.user.findMany({
       where:  { associationId: meta.associationId, role: { in: ["ADMIN", "PRESIDENT"] }, active: true },
@@ -206,8 +207,8 @@ export async function handleMembershipOneOffCheckout(session: Stripe.Checkout.Se
   // in now (Stripe merges metadata updates, it doesn't replace) is what lets a later refund
   // flip this Cotisation back off PAYE automatically instead of silently going stale.
   if (paymentIntentId) {
-    await stripe.paymentIntents.update(paymentIntentId, { metadata: { cotisationId: created.cotisation.id } }).catch(err => {
-      console.error(`[membership-oneoff] failed to backfill paymentIntent metadata for refund reconciliation (session ${session.id}):`, err)
+    await stripe.paymentIntents.update(paymentIntentId, { metadata: { cotisationId: created.cotisation.id } }).catch(error => {
+      reportError(error, { area: "stripe", action: "webhook.membership-oneoff-backfill-metadata", extra: { associationId: meta.associationId, cotisationId: created.cotisation.id, paymentIntentId, checkoutSessionId: session.id } })
     })
   }
 
@@ -247,7 +248,7 @@ export async function handleMembershipOneOffCheckout(session: Stripe.Checkout.Se
       }
     }
   } catch (err) {
-    console.error(`[membership-oneoff] failed to record boutique product purchase for checkout session ${session.id} (association ${meta.associationId}):`, err)
+    reportError(err, { area: "webhook", action: "webhook.membership-oneoff-products", extra: { associationId: meta.associationId, checkoutSessionId: session.id } })
     const admins = await prisma.user.findMany({
       where:  { associationId: meta.associationId, role: { in: ["ADMIN", "PRESIDENT"] }, active: true },
       select: { id: true },
@@ -287,21 +288,22 @@ export async function handleMembershipOneOffCheckout(session: Stripe.Checkout.Se
       deductibleAmount:    meta.deductibleAmount ? Number(meta.deductibleAmount) : undefined,
       products:            purchasedProducts.length ? purchasedProducts : undefined,
       addons:              parseAddons(meta.addons).map(a => ({ label: a.label, amount: a.amount })),
-    }), { associationId: meta.associationId, membreId: created.membre.id, source: "TRANSACTION", sourceId: created.cotisation.id }).catch(() => {})
+    }), { associationId: meta.associationId, membreId: created.membre.id, source: "TRANSACTION", sourceId: created.cotisation.id })
+      .catch(error => reportError(error, { area: "email", action: "webhook.membership-oneoff-confirmation-email", extra: { associationId: meta.associationId, membreId: created.membre.id, cotisationId: created.cotisation.id } }))
 
     fireEventRule({
       triggerType: "MEMBER_CREATED",
       associationId: meta.associationId,
       association: { name: assoc.name, slug: assoc.slug, modules: assoc.modules, plan: assoc.plan, customBrandingEnabled: assoc.customBrandingEnabled, logoUrl: assoc.logoUrl },
       membre: { id: created.membre.id, firstName: created.membre.firstName, lastName: created.membre.lastName, email: created.membre.email, phone: created.membre.phone },
-    }).catch(() => {})
+    }).catch(error => reportError(error, { area: "webhook", action: "webhook.membership-oneoff-fire-event-rule", extra: { associationId: meta.associationId, membreId: created.membre.id } }))
   }
 
   if (form) {
     notifyMembershipSignup({
       associationId: meta.associationId, formTitle: form.title, adminNotificationEmail: form.adminNotificationEmail,
       memberNames: [`${created.membre.firstName} ${created.membre.lastName}`], amount: totalAmount, primaryMembreId: created.membre.id,
-    }).catch(() => {})
+    }).catch(error => reportError(error, { area: "webhook", action: "webhook.membership-oneoff-notify-signup", extra: { associationId: meta.associationId, membreId: created.membre.id } }))
   }
 
   await writeActivityLog({

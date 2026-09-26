@@ -6,6 +6,7 @@ import { resolveDocumentBranding } from "@/lib/plan-limits"
 import { deriveCotisationStatus } from "@/lib/cotisation-status"
 import { isMemberCardAvailable } from "@/lib/member-card/availability"
 import { APP_URL } from "@/lib/env"
+import { reportError } from "@/lib/monitoring"
 
 type TxClient = Prisma.TransactionClient
 
@@ -171,7 +172,7 @@ export async function sendCotisationPaymentConfirmation(
     paidAt:          cotisation.paidAt ?? new Date(),
     branding:        resolveDocumentBranding(association),
     memberCardUrl:   memberCardAvailable ? `${APP_URL}/portal/${association.slug}/carte` : undefined,
-  }), { associationId: cotisation.associationId, membreId: cotisation.membre.id, source: "TRANSACTION", sourceId: cotisation.id }).catch(() => {})
+  }), { associationId: cotisation.associationId, membreId: cotisation.membre.id, source: "TRANSACTION", sourceId: cotisation.id }).catch((error: unknown) => reportError(error, { area: "email", action: "cotisation.payment-confirmation-email", extra: { associationId: cotisation.associationId, membreId: cotisation.membre.id, cotisationId: cotisation.id } }))
 }
 
 // Deletes a single payment and its linked Income (see releaseLinkedIncomes), then recomputes

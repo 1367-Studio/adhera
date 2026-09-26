@@ -7,6 +7,7 @@ import { sendEmailBulk } from "@/lib/mail"
 import { ticketQrDeliveryEmail } from "@/lib/email"
 import { resolveDocumentBranding } from "@/lib/plan-limits"
 import { APP_URL } from "@/lib/env"
+import { reportError } from "@/lib/monitoring"
 
 const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
 
@@ -81,7 +82,8 @@ export const POST = withAdminAuth<{ id: string }>(async (_req, ctx, { id: evenem
     await prisma.participation.updateMany({
       where: { id: { in: failedIds } },
       data:  { ticketToken: null },
-    }).catch(() => {})
+    }).catch(error =>
+      reportError(error, { area: "api", action: "evenements.send-tickets-reset-failed-tokens", extra: { associationId, evenementId } }))
   }
 
   await writeActivityLog({

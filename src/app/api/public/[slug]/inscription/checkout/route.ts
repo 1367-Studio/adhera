@@ -8,6 +8,7 @@ import { rateLimit, requestIp } from "@/lib/rate-limit"
 import { assertMemberLimit, MemberLimitReachedError, MEMBER_LIMIT_VISITOR_MESSAGE } from "@/lib/plan-limits"
 import { CURRENT_TERMS_VERSION, consentIp } from "@/lib/consent"
 import { APP_URL } from "@/lib/env"
+import { reportError } from "@/lib/monitoring"
 
 const schema = z.object({
   firstName:     z.string().min(1).max(80),
@@ -127,7 +128,7 @@ export async function POST(
       cancel_url:     cancelUrl,
     })
   } catch (err) {
-    console.error(`[inscription-checkout] Stripe session creation failed for association ${assoc.id}:`, err)
+    reportError(err, { area: "stripe", action: "inscription.checkout-session", extra: { associationId: assoc.id } })
     return NextResponse.json({ error: "Erreur lors de la création du paiement" }, { status: 500 })
   }
 

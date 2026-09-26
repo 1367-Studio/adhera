@@ -14,6 +14,7 @@ import { InsufficientStockError } from "@/lib/boutique/insufficient-stock-error"
 import { deliveryFieldsSchema, validateDeliveryFields } from "@/lib/boutique/delivery-schema"
 import { resolveShippingCost, ShippingUnavailableError } from "@/lib/boutique/resolve-shipping-cost"
 import { randomBytes } from "crypto"
+import { reportError } from "@/lib/monitoring"
 
 const itemSchema = z.object({
   produitId:  z.string(),
@@ -195,7 +196,7 @@ export async function POST(
     })),
     trackingUrl: `${APP_URL}/${slug}/boutique/pedido/${commande.trackingToken}`,
   }), { associationId: assoc.id, source: "TRANSACTION", sourceId: commande.id })
-    .catch(err => console.error(`[boutique-pending-order] failed to email guest ${email} for commande ${commande.id}:`, err))
+    .catch(error => reportError(error, { area: "email", action: "boutique.pending-order-email", extra: { associationId: assoc.id, commandeId: commande.id } }))
 
   // Same reasoning as the portal MANUAL flow: this commits the visitor to picking up and
   // paying in person, so admins should know right away — not just once it's encaissé.
@@ -226,7 +227,7 @@ export async function POST(
         totalAmount:     commande.totalAmount,
         dashboardUrl,
       }), { associationId: assoc.id, source: "BOUTIQUE_ADMIN_ALERT", sourceId: commande.id })
-        .catch(err => console.error(`[boutique-admin-alert] failed to email admin ${admin.email} for commande ${commande.id}:`, err))
+        .catch(error => reportError(error, { area: "email", action: "boutique.admin-new-order-email", extra: { associationId: assoc.id, commandeId: commande.id } }))
     }
   }
 

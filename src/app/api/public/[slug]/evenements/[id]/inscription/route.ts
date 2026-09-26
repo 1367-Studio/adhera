@@ -18,6 +18,7 @@ import { notifyEventRegistration } from "@/lib/evenement-notify"
 import { resolveDocumentBranding } from "@/lib/plan-limits"
 import { createEvenementDonation } from "@/lib/webhook/evenement-addons"
 import { ON_SITE_PAYMENT_METHODS, isOnSitePaymentMethodAccepted } from "@/lib/evenement-payment-methods"
+import { reportError } from "@/lib/monitoring"
 
 const MAX_NUMBER_FIELD_VALUE = 999_999
 const MAX_QUANTITY = 10
@@ -603,12 +604,12 @@ export async function POST(
         portalUrl:       `${APP_URL}/${slug}/evenements/${evenementRef}`,
         cancelUrl:       `${APP_URL}/annulation/${cancelToken}`,
         branding:        resolveDocumentBranding(assoc),
-      }), { associationId: assoc.id, source: "PUBLIC_EVENT_INSCRIPTION", sourceId: participationId }).catch(() => {})
+      }), { associationId: assoc.id, source: "PUBLIC_EVENT_INSCRIPTION", sourceId: participationId }).catch(error => reportError(error, { area: "email", action: "public.evenement.inscription.waitlist-email", extra: { associationId: assoc.id, slug, evenementId: evenement.id, participationId } }))
       await notifyEventRegistration({
         associationId: assoc.id, evenementId: evenement.id, eventTitle: evenement.title, eventDate: evenement.date,
         attendeeNames: [`${firstName} ${lastName}`], amount: 0,
         adminNotificationEmail: evenement.adminNotificationEmail,
-      }).catch(() => {})
+      }).catch(error => reportError(error, { area: "public", action: "public.evenement.inscription.notify-admins", extra: { associationId: assoc.id, slug, evenementId: evenement.id, participationId } }))
       return NextResponse.json({ ok: true, waitlisted: true })
     }
 
@@ -626,7 +627,7 @@ export async function POST(
           pageUrl:  `${APP_URL}/billet/${ticketToken}`,
         },
         branding:        resolveDocumentBranding(assoc),
-      }), { associationId: assoc.id, source: "PUBLIC_EVENT_INSCRIPTION", sourceId: participationId }).catch(() => {})
+      }), { associationId: assoc.id, source: "PUBLIC_EVENT_INSCRIPTION", sourceId: participationId }).catch(error => reportError(error, { area: "email", action: "public.evenement.inscription.confirmation-email", extra: { associationId: assoc.id, slug, evenementId: evenement.id, participationId } }))
       // Awaited like the confirmation above it: this route runs serverless, and an execution
       // frozen right after the response would drop a fire-and-forget notification. An offline
       // choice still owes money (unlike the free path above it) — the admin confirms receipt
@@ -636,7 +637,7 @@ export async function POST(
         associationId: assoc.id, evenementId: evenement.id, eventTitle: evenement.title, eventDate: evenement.date,
         attendeeNames: [`${firstName} ${lastName}`], amount: isOffline ? discountedSeatPrice(attendee) : 0,
         adminNotificationEmail: evenement.adminNotificationEmail,
-      }).catch(() => {})
+      }).catch(error => reportError(error, { area: "public", action: "public.evenement.inscription.notify-admins", extra: { associationId: assoc.id, slug, evenementId: evenement.id, participationId } }))
       return NextResponse.json({ ok: true })
     }
 
@@ -856,12 +857,12 @@ export async function POST(
       portalUrl:       `${APP_URL}/${slug}/evenements/${evenementRef}`,
       cancelUrl:       `${APP_URL}/annulation/${cancelTokens[i]}`,
       branding:        resolveDocumentBranding(assoc),
-    }), { associationId: assoc.id, source: "PUBLIC_EVENT_INSCRIPTION", sourceId: participationIds[i] }).catch(() => {})))
+    }), { associationId: assoc.id, source: "PUBLIC_EVENT_INSCRIPTION", sourceId: participationIds[i] }).catch(error => reportError(error, { area: "email", action: "public.evenement.inscription.waitlist-email", extra: { associationId: assoc.id, slug, evenementId: evenement.id, participationId: participationIds[i] } }))))
     await notifyEventRegistration({
       associationId: assoc.id, evenementId: evenement.id, eventTitle: evenement.title, eventDate: evenement.date,
       attendeeNames: newAttendees.map(a => `${a.firstName} ${a.lastName}`), amount: 0,
       adminNotificationEmail: evenement.adminNotificationEmail,
-    }).catch(() => {})
+    }).catch(error => reportError(error, { area: "public", action: "public.evenement.inscription.notify-admins", extra: { associationId: assoc.id, slug, evenementId: evenement.id, orderId } }))
     return NextResponse.json({ ok: true, waitlisted: true, skippedEmails })
   }
 
@@ -880,14 +881,14 @@ export async function POST(
         pageUrl:  `${APP_URL}/billet/${ticketTokens[i]}`,
       },
       branding:        resolveDocumentBranding(assoc),
-    }), { associationId: assoc.id, source: "PUBLIC_EVENT_INSCRIPTION", sourceId: participationIds[i] }).catch(() => {})))
+    }), { associationId: assoc.id, source: "PUBLIC_EVENT_INSCRIPTION", sourceId: participationIds[i] }).catch(error => reportError(error, { area: "email", action: "public.evenement.inscription.confirmation-email", extra: { associationId: assoc.id, slug, evenementId: evenement.id, participationId: participationIds[i] } }))))
     // One notification for the whole order, not one per seat — a family booking four places
     // is a single thing that happened, and four identical bells would read as four bookings.
     await notifyEventRegistration({
       associationId: assoc.id, evenementId: evenement.id, eventTitle: evenement.title, eventDate: evenement.date,
       attendeeNames: newAttendees.map(a => `${a.firstName} ${a.lastName}`), amount: 0,
       adminNotificationEmail: evenement.adminNotificationEmail,
-    }).catch(() => {})
+    }).catch(error => reportError(error, { area: "public", action: "public.evenement.inscription.notify-admins", extra: { associationId: assoc.id, slug, evenementId: evenement.id, orderId } }))
     return NextResponse.json({ ok: true, skippedEmails })
   }
 

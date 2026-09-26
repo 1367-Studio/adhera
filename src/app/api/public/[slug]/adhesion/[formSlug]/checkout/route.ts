@@ -26,6 +26,7 @@ import { isMemberCardAvailable } from "@/lib/member-card/availability"
 import { findInvalidMembershipFormAnswer } from "@/lib/membership-form-answers-validation"
 import { ADDRESS_MAX_LENGTHS, addressColumns, addressIsFilled } from "@/lib/address"
 import { SUPPORTED_LOCALES } from "@/i18n/locales"
+import { reportError } from "@/lib/monitoring"
 
 // Mirrors the public form's own MIN_AMOUNT floor — the client already refuses to submit
 // below this for any montant-libre option, this is just the server not trusting that alone.
@@ -439,12 +440,12 @@ export async function POST(
       sendEmail(membershipPendingValidationEmail({
         firstName, email, associationName: assoc.name, formTitle: form.title,
         branding: resolveDocumentBranding(assoc),
-      }), { associationId: assoc.id, membreId: membre.id, source: "TRANSACTION" }).catch(() => {})
+      }), { associationId: assoc.id, membreId: membre.id, source: "TRANSACTION" }).catch(error => reportError(error, { area: "email", action: "adhesion.pending-email", extra: { associationId: assoc.id, membershipFormId: form.id, membreId: membre.id } }))
 
       notifyMembershipSignup({
         associationId: assoc.id, formTitle: form.title, adminNotificationEmail: form.adminNotificationEmail,
         memberNames: [`${firstName} ${lastName}`], amount: 0, primaryMembreId: membre.id, pendingValidation: true,
-      }).catch(() => {})
+      }).catch(error => reportError(error, { area: "payments", action: "adhesion.notify-signup", extra: { associationId: assoc.id, membershipFormId: form.id, membreId: membre.id } }))
 
       return NextResponse.json({ pending: true })
     }
@@ -509,7 +510,7 @@ export async function POST(
       memberCardUrl: memberCardAvailable ? `${APP_URL}/portal/${slug}/carte` : undefined,
       canIssueTaxReceipts: assoc.canIssueTaxReceipts, receiptMode: tier.receiptMode,
       deductibleAmount: eligibleReceiptAmount(0, tier.receiptMode, tier.ineligibleAmount != null ? Number(tier.ineligibleAmount) : null) ?? undefined,
-    }), { associationId: assoc.id, membreId: membre.id, source: "TRANSACTION", sourceId: user.id }).catch(() => {})
+    }), { associationId: assoc.id, membreId: membre.id, source: "TRANSACTION", sourceId: user.id }).catch(error => reportError(error, { area: "email", action: "adhesion.confirmation-email", extra: { associationId: assoc.id, membershipFormId: form.id, membreId: membre.id } }))
 
     await writeActivityLog({
       associationId: assoc.id, action: "MEMBRE_CREATED", entity: "Membre", entityId: membre.id,
@@ -521,12 +522,12 @@ export async function POST(
       associationId: assoc.id,
       association: { name: assoc.name, slug, modules: assoc.modules, plan: assoc.plan, customBrandingEnabled: assoc.customBrandingEnabled, logoUrl: assoc.logoUrl },
       membre: { id: membre.id, firstName: membre.firstName, lastName: membre.lastName, email: membre.email, phone: membre.phone },
-    }).catch(() => {})
+    }).catch(error => reportError(error, { area: "payments", action: "adhesion.fire-event-rule", extra: { associationId: assoc.id, membershipFormId: form.id, membreId: membre.id } }))
 
     notifyMembershipSignup({
       associationId: assoc.id, formTitle: form.title, adminNotificationEmail: form.adminNotificationEmail,
       memberNames: [`${firstName} ${lastName}`], amount: 0, primaryMembreId: membre.id,
-    }).catch(() => {})
+    }).catch(error => reportError(error, { area: "payments", action: "adhesion.notify-signup", extra: { associationId: assoc.id, membershipFormId: form.id, membreId: membre.id } }))
 
     return NextResponse.json({ immediate: true })
   }
@@ -670,7 +671,7 @@ export async function POST(
       canIssueTaxReceipts: assoc.canIssueTaxReceipts, receiptMode: tier.receiptMode,
       deductibleAmount: eligibleReceiptAmount(membershipAmount ?? 0, tier.receiptMode, tier.ineligibleAmount != null ? Number(tier.ineligibleAmount) : null) ?? undefined,
       addons: resolvedAddons.length ? resolvedAddons.map(a => ({ label: a.label, amount: a.amount })) : undefined,
-    }), { associationId: assoc.id, membreId: membre.id, source: "TRANSACTION", sourceId: user.id }).catch(() => {})
+    }), { associationId: assoc.id, membreId: membre.id, source: "TRANSACTION", sourceId: user.id }).catch(error => reportError(error, { area: "email", action: "adhesion.offline-confirmation-email", extra: { associationId: assoc.id, membershipFormId: form.id, membreId: membre.id } }))
 
     await writeActivityLog({
       associationId: assoc.id, action: "MEMBRE_CREATED", entity: "Membre", entityId: membre.id,
@@ -682,12 +683,12 @@ export async function POST(
       associationId: assoc.id,
       association: { name: assoc.name, slug, modules: assoc.modules, plan: assoc.plan, customBrandingEnabled: assoc.customBrandingEnabled, logoUrl: assoc.logoUrl },
       membre: { id: membre.id, firstName: membre.firstName, lastName: membre.lastName, email: membre.email, phone: membre.phone },
-    }).catch(() => {})
+    }).catch(error => reportError(error, { area: "payments", action: "adhesion.fire-event-rule", extra: { associationId: assoc.id, membershipFormId: form.id, membreId: membre.id } }))
 
     notifyMembershipSignup({
       associationId: assoc.id, formTitle: form.title, adminNotificationEmail: form.adminNotificationEmail,
       memberNames: [`${firstName} ${lastName}`], amount, primaryMembreId: membre.id,
-    }).catch(() => {})
+    }).catch(error => reportError(error, { area: "payments", action: "adhesion.notify-signup", extra: { associationId: assoc.id, membershipFormId: form.id, membreId: membre.id } }))
 
     return NextResponse.json({ offline: true })
   }
@@ -825,7 +826,7 @@ export async function POST(
         cancel_url:     cancelUrl,
       })
     } catch (err) {
-      console.error(`[membership-checkout] Stripe session creation failed for form ${form.id}:`, err)
+      reportError(err, { area: "stripe", action: "adhesion.checkout-installments", extra: { associationId: assoc.id, membershipFormId: form.id } })
       return NextResponse.json({ error: "Erreur lors de la création du paiement" }, { status: 500 })
     }
 
@@ -874,7 +875,7 @@ export async function POST(
         cancel_url:     cancelUrl,
       })
     } catch (err) {
-      console.error(`[membership-checkout] Stripe session creation failed for form ${form.id}:`, err)
+      reportError(err, { area: "stripe", action: "adhesion.checkout-one-off", extra: { associationId: assoc.id, membershipFormId: form.id } })
       return NextResponse.json({ error: "Erreur lors de la création du paiement" }, { status: 500 })
     }
 
@@ -928,7 +929,7 @@ export async function POST(
       cancel_url:     cancelUrl,
     })
   } catch (err) {
-    console.error(`[membership-checkout] Stripe session creation failed for form ${form.id}:`, err)
+    reportError(err, { area: "stripe", action: "adhesion.checkout-recurring", extra: { associationId: assoc.id, membershipFormId: form.id } })
     return NextResponse.json({ error: "Erreur lors de la création du paiement" }, { status: 500 })
   }
 
@@ -1159,12 +1160,12 @@ async function handleMultiRegistrantCheckout(
     sendEmail(membershipPendingValidationEmail({
       firstName: resolved[0].r.firstName, email: data.email, associationName: assoc.name, formTitle: form.title,
       branding: resolveDocumentBranding(assoc), otherRegistrants: allNames.slice(1),
-    }), { associationId: assoc.id, membreId: firstMembreId, source: "TRANSACTION" }).catch(() => {})
+    }), { associationId: assoc.id, membreId: firstMembreId, source: "TRANSACTION" }).catch(error => reportError(error, { area: "email", action: "adhesion.multi-pending-email", extra: { associationId: assoc.id, membershipFormId: form.id, membreId: firstMembreId } }))
 
     notifyMembershipSignup({
       associationId: assoc.id, formTitle: form.title, adminNotificationEmail: form.adminNotificationEmail,
       memberNames: allNames, amount: 0, primaryMembreId: firstMembreId, pendingValidation: true,
-    }).catch(() => {})
+    }).catch(error => reportError(error, { area: "payments", action: "adhesion.notify-signup", extra: { associationId: assoc.id, membershipFormId: form.id, membreId: firstMembreId } }))
 
     return NextResponse.json({ pending: true })
   }
@@ -1299,7 +1300,7 @@ async function handleMultiRegistrantCheckout(
       cancel_url:     cancelUrl,
     })
   } catch (err) {
-    console.error(`[membership-multi-checkout] Stripe session creation failed for form ${form.id}:`, err)
+    reportError(err, { area: "stripe", action: "adhesion.checkout-multi", extra: { associationId: assoc.id, membershipFormId: form.id } })
     return NextResponse.json({ error: "Erreur lors de la création du paiement" }, { status: 500 })
   }
 

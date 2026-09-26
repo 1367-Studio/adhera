@@ -5,6 +5,7 @@ import { pusherServer } from "@/lib/pusher-server"
 import { stripHtml } from "@/lib/utils"
 import { writeActivityLog } from "@/lib/activity-log"
 import { withAdminAuth } from "@/lib/api-wrapper"
+import { reportError } from "@/lib/monitoring"
 
 const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
 
@@ -94,7 +95,8 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
       skipDuplicates: true,
     })
     if (pusherReady) {
-      await pusherServer.trigger(`private-association-${associationId}`, "new-notification", {}).catch(() => {})
+      await pusherServer.trigger(`private-association-${associationId}`, "new-notification", {}).catch(error =>
+        reportError(error, { area: "api", action: "actualites.notify-pusher", extra: { associationId, actualiteId: id } }))
     }
   }
 

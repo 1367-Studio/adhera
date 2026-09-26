@@ -5,6 +5,7 @@ import { uploadToR2 } from "@/lib/r2"
 import { rateLimit, requestIp } from "@/lib/rate-limit"
 import { canPreviewForm } from "@/lib/form-preview"
 import { MAX_FUNCTION_UPLOAD_BYTES } from "@/lib/upload-limits"
+import { reportError } from "@/lib/monitoring"
 
 // Same cap as the admin and portal upload routes (MAX_FUNCTION_UPLOAD_BYTES) even though this
 // one is reachable without any authentication at all — Vercel's request-body limit already
@@ -79,8 +80,8 @@ export async function POST(
     // Membre.photoUrl exactly like one uploaded later from the portal.
     const url = await uploadToR2(buffer, "membres", contentType)
     return NextResponse.json({ url })
-  } catch (err) {
-    console.error("Upload error:", err)
+  } catch (error) {
+    reportError(error, { area: "storage", action: "public.adhesion.photo-upload", extra: { associationId: assoc.id, slug, formSlug } })
     return NextResponse.json({ error: t("photoUploadError") }, { status: 500 })
   }
 }

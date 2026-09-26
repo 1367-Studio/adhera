@@ -15,6 +15,7 @@ import { eligibleReceiptAmount } from "@/lib/receipt-eligibility"
 import { sendEmail } from "@/lib/mail"
 import { donPendingEmail } from "@/lib/email"
 import { resolveDocumentBranding } from "@/lib/plan-limits"
+import { reportError } from "@/lib/monitoring"
 
 // Stripe refuses to charge below ~0,50 € on EUR cards. 1 € is a round number safely above
 // that floor for every payment method (SEPA debit, cards, etc.) — enforced both here and
@@ -293,7 +294,7 @@ export async function POST(
         branding: resolveDocumentBranding(assoc),
       }),
       { associationId: assoc.id, source: "TRANSACTION", sourceId: don.id },
-    ).catch(() => {})
+    ).catch(error => reportError(error, { area: "email", action: "public.don.pending-email", extra: { associationId: assoc.id, donId: don.id } }))
 
     return NextResponse.json({ offline: true })
   }
@@ -363,7 +364,7 @@ export async function POST(
       // No DB row to clean up here (see the comment above) — but an uncaught throw would
       // otherwise surface as an opaque 500 whose JSON body the client can't parse, showing
       // "errorNetwork" instead of a real reason (e.g. amount below Stripe's floor).
-      console.error(`[donation-checkout] Stripe session creation failed for form ${form.id}:`, err)
+      reportError(err, { area: "stripe", action: "public.don.checkout-subscription", extra: { associationId: assoc.id, donationFormId: form.id } })
       return NextResponse.json({ error: "Erreur lors de la création du paiement" }, { status: 500 })
     }
 
@@ -432,7 +433,7 @@ export async function POST(
     // metadata — an uncaught throw here (e.g. amount below Stripe's floor, Connect account
     // restricted) must not leave it behind forever with no stripeSessionId and no way to
     // ever get paidAt set.
-    console.error(`[donation-checkout] Stripe session creation failed for don ${don.id}:`, err)
+    reportError(err, { area: "stripe", action: "public.don.checkout-session", extra: { associationId: assoc.id, donationFormId: form.id, donId: don.id } })
     await prisma.don.delete({ where: { id: don.id } }).catch(() => {})
     return NextResponse.json({ error: "Erreur lors de la création du paiement" }, { status: 500 })
   }

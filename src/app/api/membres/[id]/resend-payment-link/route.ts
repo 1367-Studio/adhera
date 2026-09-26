@@ -7,6 +7,7 @@ import { APP_URL } from "@/lib/env"
 import { resolveDocumentBranding } from "@/lib/plan-limits"
 import { nextAmountDue } from "@/lib/cotisation-status"
 import { writeActivityLog } from "@/lib/activity-log"
+import { reportError } from "@/lib/monitoring"
 
 const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
 
@@ -63,7 +64,8 @@ export const POST = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
     year:            cotisation.year,
     payUrl:          `${APP_URL}/cotisation/${cotisation.paymentToken}`,
     branding:        resolveDocumentBranding(assoc),
-  }), { associationId, membreId: membre.id, source: "TRANSACTION" }).catch(() => {})
+  }), { associationId, membreId: membre.id, source: "TRANSACTION" }).catch(error =>
+    reportError(error, { area: "email", action: "membres.resend-payment-link-email", extra: { associationId, membreId: membre.id, cotisationId: cotisation.id } }))
 
   await writeActivityLog({
     associationId,

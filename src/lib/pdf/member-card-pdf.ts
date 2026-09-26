@@ -56,6 +56,7 @@ import {
 } from "@/lib/member-card/layout"
 import { toSlug } from "@/lib/slug"
 import type { MemberCardViewModel } from "@/lib/member-card/view-model"
+import { reportError } from "@/lib/monitoring"
 
 // ── The printable member card ─────────────────────────────────────────────────────────────
 //
@@ -301,7 +302,8 @@ async function toPrintableImage(originalBytes: Buffer, maxDrawnSizeMillimetres: 
     return hasAlpha
       ? { bytes: await resized.png({ compressionLevel: 9 }).toBuffer(), isPng: true }
       : { bytes: await resized.jpeg({ quality: 85 }).toBuffer(),        isPng: false }
-  } catch {
+  } catch (error) {
+    reportError(error, { area: "api", action: "member-card-pdf.resize-image" })
     return null
   }
 }
@@ -350,7 +352,8 @@ async function embedRemoteImage(
     if (fileType === "image/png")  return await pdfDocument.embedPng(originalBytes)
     if (fileType === "image/jpeg") return await pdfDocument.embedJpg(originalBytes)
     return null
-  } catch {
+  } catch (error) {
+    reportError(error, { area: "storage", action: "member-card-pdf.embed-image" })
     return null
   }
 }

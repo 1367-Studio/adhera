@@ -14,6 +14,7 @@ import {
   TicketPaymentError, applyDoorPayment, assertSeatAvailable, doorPaymentSchema, evenementHasFee,
   evenementTicketPaymentSelect,
 } from "@/lib/evenement-ticket-payment"
+import { reportError } from "@/lib/monitoring"
 
 const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
 
@@ -131,7 +132,8 @@ export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id: eveneme
         cancelUrl,
         ticketQr,
         branding: resolveDocumentBranding(assoc),
-      }), { associationId, source: "EVENT_GUEST_ADDED", sourceId: participation.id }).catch(() => {})
+      }), { associationId, source: "EVENT_GUEST_ADDED", sourceId: participation.id }).catch(error =>
+        reportError(error, { area: "email", action: "evenements.guest-confirmation-email", extra: { associationId, evenementId, participationId: participation.id } }))
     }
   }
 

@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma/client"
 import { sendEmail } from "@/lib/mail"
 import { passwordResetEmail } from "@/lib/email"
 import { APP_URL } from "@/lib/env"
+import { reportError } from "@/lib/monitoring"
 
 const TOKEN_TTL_MS = 60 * 60 * 1000  // 1 hour
 const COOLDOWN_MS  = 2 * 60 * 1000   // 2 minutes
@@ -53,8 +54,8 @@ export async function POST(req: Request) {
     // can be torn down the moment the response is sent, before the Resend call ever fires.
     // That previously made this email silently never send in deployed environments while
     // working fine locally (a long-lived process has no such cutoff) — see incident 2026-09-03.
-    await sendEmail(passwordResetEmail({ email, resetUrl, accountLabel })).catch((err: unknown) => {
-      console.error("[forgot-password] failed to send reset email:", err)
+    await sendEmail(passwordResetEmail({ email, resetUrl, accountLabel })).catch((error: unknown) => {
+      reportError(error, { area: "email", action: "auth.forgot-password-email", extra: { userId: user.id } })
     })
   }
 

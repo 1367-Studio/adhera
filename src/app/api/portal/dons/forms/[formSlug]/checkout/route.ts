@@ -12,6 +12,7 @@ import { withPortalAuth } from "@/lib/api-wrapper"
 import { sendEmail } from "@/lib/mail"
 import { donPendingEmail } from "@/lib/email"
 import { resolveDocumentBranding } from "@/lib/plan-limits"
+import { reportError } from "@/lib/monitoring"
 
 // Mirrors MIN_DONATION_AMOUNT in /api/public/[slug]/dons/[formSlug]/checkout/route.ts.
 const MIN_DONATION_AMOUNT = 1
@@ -218,7 +219,7 @@ export const POST = withPortalAuth<{ formSlug: string }>(async (req, ctx, { form
         branding: resolveDocumentBranding(assoc),
       }),
       { associationId: assoc.id, source: "TRANSACTION", sourceId: don.id },
-    ).catch(() => {})
+    ).catch(error => reportError(error, { area: "email", action: "portal.don.pending-email", extra: { associationId: assoc.id, donId: don.id } }))
 
     return NextResponse.json({ offline: true })
   }
@@ -278,7 +279,7 @@ export const POST = withPortalAuth<{ formSlug: string }>(async (req, ctx, { form
         cancel_url:     cancelUrl,
       })
     } catch (err) {
-      console.error(`[portal-donation-checkout] Stripe session creation failed for form ${form.id}:`, err)
+      reportError(err, { area: "stripe", action: "portal.don.checkout-subscription", extra: { associationId: assoc.id, donationFormId: form.id } })
       return NextResponse.json({ error: "Erreur lors de la création du paiement" }, { status: 500 })
     }
 
@@ -344,7 +345,7 @@ export const POST = withPortalAuth<{ formSlug: string }>(async (req, ctx, { form
       cancel_url:  cancelUrl,
     })
   } catch (err) {
-    console.error(`[portal-donation-checkout] Stripe session creation failed for don ${don.id}:`, err)
+    reportError(err, { area: "stripe", action: "portal.don.checkout-session", extra: { associationId: assoc.id, donationFormId: form.id, donId: don.id } })
     await prisma.don.delete({ where: { id: don.id } }).catch(() => {})
     return NextResponse.json({ error: "Erreur lors de la création du paiement" }, { status: 500 })
   }

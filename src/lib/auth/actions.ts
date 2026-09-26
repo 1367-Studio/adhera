@@ -6,6 +6,7 @@ import { signIn, signOut, resolveCredentialsUser, OAUTH_PORTAL_SLUG_COOKIE } fro
 import { setPendingLogin, setVerifiedLogin } from "@/lib/auth/two-factor-store"
 import { AuthError } from "next-auth"
 import { BASE_PATH } from "@/lib/env"
+import { reportError } from "@/lib/monitoring"
 
 type LoginState = { error?: string; requires2FA?: true; pendingToken?: string } | undefined
 
@@ -56,7 +57,7 @@ export async function authenticate(prevState: LoginState, formData: FormData): P
       // error, or NextAuth's own config/callback failures) — all surfaced identically to
       // the user by design, but logging the real cause/type here means a report like
       // "I didn't change my password" is diagnosable from server logs instead of a guess.
-      console.error("[auth] signIn failed:", error.type, error.cause ?? error)
+      reportError(error, { area: "api", action: "auth.sign-in", extra: { userId: user.id, authErrorType: error.type } })
       return { error: "Identifiants incorrects. Veuillez réessayer." }
     }
     throw error

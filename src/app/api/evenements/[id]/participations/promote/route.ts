@@ -6,6 +6,7 @@ import { sendEmail } from "@/lib/mail"
 import { rsvpConfirmationEmail } from "@/lib/email"
 import { APP_URL } from "@/lib/env"
 import { resolveDocumentBranding } from "@/lib/plan-limits"
+import { reportError } from "@/lib/monitoring"
 
 const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
 
@@ -112,7 +113,8 @@ export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id: eveneme
           pageUrl:  `${APP_URL}/billet/${participation.ticketToken}`,
         } : undefined,
         branding: resolveDocumentBranding(assoc),
-      }), { associationId, source: "PUBLIC_EVENT_INSCRIPTION", sourceId: participation.id }).catch(() => {})
+      }), { associationId, source: "PUBLIC_EVENT_INSCRIPTION", sourceId: participation.id }).catch(error =>
+        reportError(error, { area: "email", action: "evenements.promote-confirmation-email", extra: { associationId, evenementId, participationId: participation.id } }))
     }
   }
 

@@ -19,6 +19,7 @@ import { notifyMembershipSignup } from "@/lib/webhook/membership-notify"
 import { shouldRetryUntilCheckoutProcessed } from "@/lib/webhook/cotisation-subscriptions"
 import { isMemberCardAvailable } from "@/lib/member-card/availability"
 import { addressColumns } from "@/lib/address"
+import { reportError } from "@/lib/monitoring"
 
 // ─── Discrimination ────────────────────────────────────────────────────────────
 //
@@ -165,7 +166,7 @@ export async function handleMembershipInstallmentCheckout(session: Stripe.Checko
     // The person has already paid the first installment at this point — same "can't
     // auto-recover, so make sure a person finds out" reasoning as handleCotisationSubscription
     // Checkout's own catch block.
-    console.error(`[membership-installments] failed to create account for subscription ${subscriptionId} (association ${meta.associationId}, email ${meta.email}):`, err)
+    reportError(err, { area: "webhook", action: "webhook.membership-installments-create-account", extra: { associationId: meta.associationId, stripeSubscriptionId: subscriptionId, checkoutSessionId: session.id } })
     const isDuplicateEmail = err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2002"
     const admins = await prisma.user.findMany({
       where:  { associationId: meta.associationId, role: { in: ["ADMIN", "PRESIDENT"] }, active: true },
@@ -196,7 +197,7 @@ export async function handleMembershipInstallmentCheckout(session: Stripe.Checko
   await stripe.subscriptions.update(subscriptionId, {
     cancel_at: Math.floor(addMonths(startedAt, installmentsCount).getTime() / 1000),
   }).catch(async err => {
-    console.error(`[membership-installments] failed to cap subscription ${subscriptionId} at ${installmentsCount} cycles:`, err)
+    reportError(err, { area: "stripe", action: "webhook.membership-installments-cap-subscription", extra: { associationId: meta.associationId, stripeSubscriptionId: subscriptionId, installmentsCount } })
     const admins = await prisma.user.findMany({
       where:  { associationId: meta.associationId, role: { in: ["ADMIN", "PRESIDENT", "TRESORIER"] }, active: true },
       select: { id: true },
@@ -235,21 +236,22 @@ export async function handleMembershipInstallmentCheckout(session: Stripe.Checko
       canIssueTaxReceipts: assoc.canIssueTaxReceipts,
       receiptMode:         meta.receiptMode as "NONE" | "FULL" | "PARTIAL",
       deductibleAmount:    meta.deductibleAmount ? Number(meta.deductibleAmount) : undefined,
-    }), { associationId: meta.associationId, membreId: created.membre.id, source: "TRANSACTION", sourceId: created.cotisation.id }).catch(() => {})
+    }), { associationId: meta.associationId, membreId: created.membre.id, source: "TRANSACTION", sourceId: created.cotisation.id })
+      .catch(error => reportError(error, { area: "email", action: "webhook.membership-installments-confirmation-email", extra: { associationId: meta.associationId, membreId: created.membre.id, cotisationId: created.cotisation.id } }))
 
     fireEventRule({
       triggerType: "MEMBER_CREATED",
       associationId: meta.associationId,
       association: { name: assoc.name, slug: assoc.slug, modules: assoc.modules, plan: assoc.plan, customBrandingEnabled: assoc.customBrandingEnabled, logoUrl: assoc.logoUrl },
       membre: { id: created.membre.id, firstName: created.membre.firstName, lastName: created.membre.lastName, email: created.membre.email, phone: created.membre.phone },
-    }).catch(() => {})
+    }).catch(error => reportError(error, { area: "webhook", action: "webhook.membership-installments-fire-event-rule", extra: { associationId: meta.associationId, membreId: created.membre.id } }))
   }
 
   if (form) {
     notifyMembershipSignup({
       associationId: meta.associationId, formTitle: form.title, adminNotificationEmail: form.adminNotificationEmail,
       memberNames: [`${created.membre.firstName} ${created.membre.lastName}`], amount: totalAmount, primaryMembreId: created.membre.id,
-    }).catch(() => {})
+    }).catch(error => reportError(error, { area: "webhook", action: "webhook.membership-installments-notify-signup", extra: { associationId: meta.associationId, membreId: created.membre.id } }))
   }
 
   await writeActivityLog({
@@ -408,7 +410,8 @@ export async function tryHandleInstallmentInvoicePaymentFailed(invoice: Stripe.I
       installmentNumber, installmentsCount: plan.installmentsCount,
       cancelUrl: `${APP_URL}/adhesion/annulation-echeancier/${plan.cancelToken}`,
       branding:  assoc ? resolveDocumentBranding(assoc) : undefined,
-    }), { associationId: plan.associationId, membreId: plan.cotisation.membreId, source: "TRANSACTION", sourceId: plan.id }).catch(() => {})
+    }), { associationId: plan.associationId, membreId: plan.cotisation.membreId, source: "TRANSACTION", sourceId: plan.id })
+      .catch(error => reportError(error, { area: "email", action: "webhook.membership-installments-payment-failed-email", extra: { associationId: plan.associationId, installmentPlanId: plan.id, stripeEventId: eventId } }))
   }
 
   const admins = await prisma.user.findMany({
@@ -437,7 +440,7 @@ export async function tryHandleInstallmentInvoicePaymentFailed(invoice: Stripe.I
         memberName, amount, installmentNumber, installmentsCount: plan.installmentsCount,
         dashboardUrl,
       }), { associationId: plan.associationId, source: "TRANSACTION", sourceId: plan.id })
-        .catch(err => console.error(`[membership-installments] failed to email admin ${admin.email}:`, err))
+        .catch(error => reportError(error, { area: "email", action: "webhook.membership-installments-payment-failed-admin-email", extra: { associationId: plan.associationId, installmentPlanId: plan.id, stripeEventId: eventId } }))
     }
   }
 
@@ -476,7 +479,7 @@ export async function cancelActiveInstallmentPlanForMembre(
     // Same reasoning as cancelActiveCotisationSubscriptionForMembre's identical guard — an
     // invalid-request error means Stripe already has nothing left to cancel.
     if (!(err instanceof Stripe.errors.StripeInvalidRequestError)) {
-      console.error(`[membership-installments] failed to cancel subscription ${plan.stripeSubscriptionId} for membre ${membreId}:`, err)
+      reportError(err, { area: "stripe", action: "membership-installments.cancel-for-membre", extra: { associationId: plan.associationId, membreId, installmentPlanId: plan.id, stripeSubscriptionId: plan.stripeSubscriptionId } })
       return false
     }
   }
@@ -519,7 +522,7 @@ export async function cancelInstallmentPlanByToken(token: string): Promise<
     await stripe.subscriptions.cancel(plan.stripeSubscriptionId)
   } catch (err) {
     if (!(err instanceof Stripe.errors.StripeInvalidRequestError)) {
-      console.error(`[membership-installments] self-service cancel failed for plan ${plan.id}:`, err)
+      reportError(err, { area: "stripe", action: "membership-installments.cancel-by-token", extra: { associationId: plan.associationId, installmentPlanId: plan.id, stripeSubscriptionId: plan.stripeSubscriptionId } })
       return { status: "error" }
     }
   }

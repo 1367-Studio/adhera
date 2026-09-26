@@ -7,6 +7,7 @@ import {
   recordOfflineAcceptances,
   type MembreCreationAssociation,
 } from "@/lib/membres/create-membre"
+import { reportError } from "@/lib/monitoring"
 import type { PaperFormCommitResult, ParsedPaperFormCommitForm } from "@/lib/schemas"
 
 // Documents ticked on a sheet → the revision to record acceptance against, or null when the
@@ -57,7 +58,11 @@ export async function commitPaperForm(form: ParsedPaperFormCommitForm, context: 
   try {
     createdStudent = await prisma.$transaction((tx) => createSheetStudent(tx, form, { associationId, actorId, association, revisionIds }))
   } catch (error) {
-    console.error(`[membres/scan/commit] failed to create sheet ${form.ref}:`, error)
+    reportError(error, {
+      area:   "ai",
+      action: "scan.commit",
+      extra:  { associationId, sheetRef: form.ref },
+    })
     return { ref: form.ref, status: "error", error: "Erreur lors de la création de cette fiche" }
   }
 

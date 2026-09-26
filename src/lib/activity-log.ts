@@ -1,5 +1,6 @@
 import { Prisma } from "@prisma/client"
 import { prisma } from "@/lib/prisma/client"
+import { reportError } from "@/lib/monitoring"
 
 interface WriteActivityLogOptions {
   associationId: string
@@ -24,8 +25,9 @@ export async function writeActivityLog(opts: WriteActivityLogOptions): Promise<v
         metadata:      opts.metadata ?? Prisma.DbNull,
       },
     })
-  } catch {
+  } catch (error) {
     // Never throws — logging failure must not break main flow
+    reportError(error, { area: "api", action: "activity-log.write", extra: { associationId: opts.associationId, logAction: opts.action, entity: opts.entity, entityId: opts.entityId } })
   }
 }
 

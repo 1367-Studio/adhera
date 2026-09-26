@@ -5,6 +5,7 @@ import { writeActivityLog } from "@/lib/activity-log"
 import { pusherServer } from "@/lib/pusher-server"
 import { getLiveKitConfigForRoom } from "@/lib/livekit/config"
 import { startParticipantAudioEgress } from "@/lib/livekit/egress"
+import { reportError } from "@/lib/monitoring"
 
 export const dynamic = "force-dynamic"
 
@@ -149,7 +150,7 @@ async function recordLateJoiner(event: WebhookEvent, roomName: string) {
   } catch (err) {
     // Never fail the webhook over this: the meeting itself is unaffected, this participant
     // is just missing from the transcript.
-    console.error(`LiveKit webhook: couldn't start egress for late joiner "${identity}" in room "${roomName}"`, err)
+    reportError(err, { area: "webhook", action: "livekit.late-joiner-egress", extra: { associationId: meeting.associationId, meetingId: meeting.id } })
   }
 }
 

@@ -4,6 +4,7 @@ import { resolveAiConfig } from "@/lib/ai/client"
 import { completeText } from "@/lib/ai/complete"
 import { writeActivityLog } from "@/lib/activity-log"
 import { withAdminAuth } from "@/lib/api-wrapper"
+import { reportError } from "@/lib/monitoring"
 import { rateLimit } from "@/lib/rate-limit"
 
 const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
@@ -62,7 +63,14 @@ export const POST = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
       temperature: 0.4,
       maxTokens:   1500,
     })
-    if (!summary.trim()) return NextResponse.json({ error: "Le résumé généré est vide, réessayez." }, { status: 502 })
+    if (!summary.trim()) {
+      reportError(new Error("Meeting summary came back empty"), {
+        area:   "ai",
+        action: "meetings.summarize",
+        extra:  { associationId, meetingId: id, provider: aiConfig.provider, model: aiConfig.model, rawLength: summary.length },
+      })
+      return NextResponse.json({ error: "Le résumé généré est vide, réessayez." }, { status: 502 })
+    }
 
     const updated = await prisma.meeting.update({
       where: { id },
@@ -80,6 +88,11 @@ export const POST = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
 
     return NextResponse.json({ summary: updated.summary })
   } catch (err) {
+    reportError(err, {
+      area:   "ai",
+      action: "meetings.summarize",
+      extra:  { associationId, meetingId: id, provider: aiConfig.provider, model: aiConfig.model },
+    })
     const msg = err instanceof Error ? err.message : "Erreur IA"
     return NextResponse.json({ error: msg }, { status: 502 })
   }

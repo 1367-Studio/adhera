@@ -7,6 +7,7 @@ import { parseModules } from "@/lib/modules"
 import { connectAccountChargesEnabled } from "@/lib/stripe"
 import { canPreviewForm } from "@/lib/form-preview"
 import { eligibleReceiptAmount } from "@/lib/receipt-eligibility"
+import { reportError } from "@/lib/monitoring"
 
 export async function GET(
   req: Request,
@@ -57,8 +58,8 @@ export async function GET(
   if (assoc.stripeConnectId) {
     try {
       paymentEnabled = await connectAccountChargesEnabled(assoc.stripeConnectId)
-    } catch (err) {
-      console.error(`[public-membership-form] failed to check payment availability for ${slug}/${formSlug}:`, err)
+    } catch (error) {
+      reportError(error, { area: "stripe", action: "public.adhesion.payment-availability", extra: { associationId: assoc.id, slug, formSlug } })
     }
   }
 

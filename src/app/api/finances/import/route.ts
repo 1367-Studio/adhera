@@ -5,6 +5,7 @@ import { writeActivityLog } from "@/lib/activity-log"
 import { Prisma } from "@prisma/client"
 import { withAdminAuth } from "@/lib/api-wrapper"
 import { findExerciceForDate, type ExerciceLookup } from "@/lib/finance/exercice"
+import { reportError } from "@/lib/monitoring"
 
 const FINANCE = ["ADMIN", "PRESIDENT", "TRESORIER"]
 
@@ -79,6 +80,7 @@ export const POST = withAdminAuth(async (req, ctx) => {
         duplicates++
       } else {
         // Any other error (connection, type, FK) is a real failure
+        reportError(err, { area: "payments", action: "finances.import-transaction", extra: { associationId, bankAccountId: mapping.bankAccountId } })
         errors++
       }
     }

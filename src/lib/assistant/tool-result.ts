@@ -1,3 +1,5 @@
+import { reportError } from "@/lib/monitoring"
+
 // Every tool returns a JSON string to the model. A thrown error (Prisma, Sanity, a bad id)
 // becomes `{ error }` text rather than an exception, so the model can tell the user what
 // failed and carry on instead of the whole run aborting.
@@ -6,7 +8,7 @@ export async function runToolSafely(toolName: string, produce: () => Promise<unk
     return JSON.stringify(await produce())
   } catch (error) {
     const message = error instanceof Error ? error.message : "Erreur inattendue"
-    console.error(`[assistant] tool ${toolName} failed:`, error)
+    reportError(error, { area: "ai", action: "assistant.tool", extra: { tool: toolName } })
     return JSON.stringify({ error: message })
   }
 }

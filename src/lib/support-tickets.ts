@@ -3,6 +3,7 @@ import { pusherServer } from "@/lib/pusher-server"
 import { sendEmail } from "@/lib/mail"
 import { supportTicketStaffEmail, supportTicketReplyEmail } from "@/lib/email"
 import { APP_URL } from "@/lib/env"
+import { reportError } from "@/lib/monitoring"
 
 type UnreadSide = "STAFF" | "ASSOCIATION"
 
@@ -59,13 +60,13 @@ export async function notifySupportMessage(p: NotifyParams) {
 
   // The association's own private channel always gets pinged — it's how a second open tab
   // on that side (not just the "other" side) learns to refetch, regardless of direction.
-  await pusherServer.trigger(`private-association-${p.ticket.associationId}`, "support-ticket-message", { ticketId: p.ticket.id }).catch(() => {})
+  await pusherServer.trigger(`private-association-${p.ticket.associationId}`, "support-ticket-message", { ticketId: p.ticket.id }).catch((error: unknown) => reportError(error, { area: "api", action: "support-ticket.association-pusher", extra: { associationId: p.ticket.associationId, ticketId: p.ticket.id } }))
 
   if (p.direction === "TO_STAFF") {
     // Not tied to one association — every SUPER_ADMIN subscribes to this one fixed channel
     // (see src/app/api/pusher/auth/route.ts) so the backoffice inbox live-updates across
     // every association, not just whichever one happens to be open.
-    await pusherServer.trigger("private-support-staff", "support-ticket-message", { ticketId: p.ticket.id }).catch(() => {})
+    await pusherServer.trigger("private-support-staff", "support-ticket-message", { ticketId: p.ticket.id }).catch((error: unknown) => reportError(error, { area: "api", action: "support-ticket.staff-pusher", extra: { associationId: p.ticket.associationId, ticketId: p.ticket.id } }))
 
     const supportEmail = process.env.SUPPORT_TEAM_EMAIL
     if (!supportEmail) {
@@ -80,7 +81,7 @@ export async function notifySupportMessage(p: NotifyParams) {
       body:            p.body,
       ticketUrl:       backofficeUrl,
       isNewTicket:     !!p.isNewTicket,
-    }), { associationId: p.ticket.associationId, source: "SUPPORT_TICKET_STAFF", sourceId: p.ticket.id }).catch(() => {})
+    }), { associationId: p.ticket.associationId, source: "SUPPORT_TICKET_STAFF", sourceId: p.ticket.id }).catch((error: unknown) => reportError(error, { area: "email", action: "support-ticket.staff-email", extra: { associationId: p.ticket.associationId, ticketId: p.ticket.id } }))
     return
   }
 
@@ -96,8 +97,8 @@ export async function notifySupportMessage(p: NotifyParams) {
       link:   `/dashboard/suporte/${p.ticket.id}`,
       scope:  "GESTION",
     },
-  }).catch(() => {})
-  await pusherServer.trigger(`private-association-${p.ticket.associationId}`, "new-notification", {}).catch(() => {})
+  }).catch((error: unknown) => reportError(error, { area: "api", action: "support-ticket.reply-notification", extra: { associationId: p.ticket.associationId, ticketId: p.ticket.id } }))
+  await pusherServer.trigger(`private-association-${p.ticket.associationId}`, "new-notification", {}).catch((error: unknown) => reportError(error, { area: "api", action: "support-ticket.reply-pusher", extra: { associationId: p.ticket.associationId, ticketId: p.ticket.id } }))
 
   await sendEmail(supportTicketReplyEmail({
     to:      p.ticket.author.email,
@@ -105,5 +106,5 @@ export async function notifySupportMessage(p: NotifyParams) {
     subject: p.ticket.subject,
     body:    p.body,
     dashboardUrl,
-  }), { associationId: p.ticket.associationId, source: "SUPPORT_TICKET_REPLY", sourceId: p.ticket.id }).catch(() => {})
+  }), { associationId: p.ticket.associationId, source: "SUPPORT_TICKET_REPLY", sourceId: p.ticket.id }).catch((error: unknown) => reportError(error, { area: "email", action: "support-ticket.reply-email", extra: { associationId: p.ticket.associationId, ticketId: p.ticket.id } }))
 }
