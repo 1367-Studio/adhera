@@ -1,10 +1,15 @@
 import { NextResponse } from "next/server"
+import { randomBytes } from "crypto"
 import { z } from "zod"
 import { prisma } from "@/lib/prisma/client"
 import { writeActivityLog } from "@/lib/activity-log"
 import { withAdminAuth } from "@/lib/api-wrapper"
 import { isEvenementOver } from "@/lib/evenement-timing"
 import { resolveExerciceForDate, closedExerciceGuard } from "@/lib/finance/exercice"
+import { sendEmail } from "@/lib/mail"
+import { rsvpConfirmationEmail } from "@/lib/email"
+import { resolveDocumentBranding } from "@/lib/plan-limits"
+import { APP_URL } from "@/lib/env"
 import {
   TicketPaymentError, applyDoorPayment, assertSeatAvailable, doorPaymentSchema, evenementHasFee,
   evenementTicketPaymentSelect,
@@ -31,7 +36,7 @@ export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id: eveneme
 
   const evenement = await prisma.evenement.findFirst({
     where:  { id: evenementId, associationId },
-    select: { ...evenementTicketPaymentSelect, date: true, endDate: true, capacity: true },
+    select: { ...evenementTicketPaymentSelect, date: true, endDate: true, capacity: true, location: true, slug: true },
   })
   if (!evenement) return NextResponse.json({ error: "Événement introuvable" }, { status: 404 })
   if (isEvenementOver(evenement))
@@ -92,6 +97,42 @@ export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id: eveneme
       label:    evenement.title,
       metadata: { memberName: `${firstName} ${lastName}`, guest: true, paymentMethod: participation.paymentMethod },
     })
+  }
+
+  // A walk-in guest never went through RSVP/checkout, so without this they'd get no email
+  // at all — unlike every other way a Participation can be created. Only when a real seat
+  // state exists (paid, or reserved via "later") does it carry an entry QR + cancel link,
+  // same eligibility rule as the "Envoyer les QR manquants" backfill (see occupiedSeatWhere) —
+  // a free event added with no payment choice has no such state to hand out a token for.
+  if (email) {
+    const assoc = await prisma.association.findUnique({
+      where:  { id: associationId },
+      select: { name: true, slug: true, plan: true, customBrandingEnabled: true, logoUrl: true },
+    })
+    if (assoc) {
+      const hasConfirmedSeat = participation.ticketPaidAt != null || participation.rsvp === "CONFIRME"
+      let ticketQr:  { imageUrl: string; pageUrl: string } | undefined
+      let cancelUrl: string | undefined
+      if (hasConfirmedSeat) {
+        const ticketToken = randomBytes(20).toString("hex")
+        const cancelToken  = randomBytes(20).toString("hex")
+        await prisma.participation.update({ where: { id: participation.id }, data: { ticketToken, cancelToken } })
+        ticketQr  = { imageUrl: `${APP_URL}/api/public/billet/${ticketToken}/qr`, pageUrl: `${APP_URL}/billet/${ticketToken}` }
+        cancelUrl = `${APP_URL}/annulation/${cancelToken}`
+      }
+      await sendEmail(rsvpConfirmationEmail({
+        firstName,
+        email,
+        associationName: assoc.name,
+        eventTitle:      evenement.title,
+        eventDate:       evenement.date,
+        eventLocation:   evenement.location,
+        portalUrl:       `${APP_URL}/${assoc.slug}/evenements/${evenement.slug ?? evenementId}`,
+        cancelUrl,
+        ticketQr,
+        branding: resolveDocumentBranding(assoc),
+      }), { associationId, source: "EVENT_GUEST_ADDED", sourceId: participation.id }).catch(() => {})
+    }
   }
 
   return NextResponse.json(participation, { status: 201 })
