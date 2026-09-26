@@ -21,7 +21,8 @@ async function findByToken(token: string) {
       association: { select: { name: true, slug: true, stripeConnectId: true } },
       adhesionCompletionForm: {
         select: {
-          id: true, slug: true, title: true, status: true,
+          id: true, slug: true, title: true, status: true, description: true, conditions: true,
+          requireCguvSignature: true,
           fieldAddress: true, fieldBirthDate: true, fieldPhone: true, fieldMobile: true,
           fieldGender: true, fieldPhoto: true, fieldLanguage: true,
           tiers: {
@@ -64,6 +65,9 @@ export async function GET(
     formId:          form.id,
     formSlug:        form.slug,
     formTitle:       form.title,
+    description:     form.description,
+    conditions:      form.conditions,
+    requireCguvSignature: form.requireCguvSignature,
     online:          !!membre.association.stripeConnectId,
     fieldAddress:    form.fieldAddress,
     fieldBirthDate:  form.fieldBirthDate,
