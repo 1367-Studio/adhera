@@ -39,6 +39,7 @@ export const GET = withAdminAuth(async (req, ctx) => {
 
   const [
     membresActifs,
+    membresTotal,
     evenementsMois,
     cotisationsEnAttente,
     cotisationsPayees,
@@ -53,6 +54,9 @@ export const GET = withAdminAuth(async (req, ctx) => {
     donsEnAttente,
   ] = await Promise.all([
     prisma.membre.count({ where: { associationId, status: "ACTIF", deletedAt: null } }),
+    // Every status counts as a member (PENDING/INACTIF/SUSPENDU included) — the header
+    // summary shows it as total, with inactive = total - actifs.
+    prisma.membre.count({ where: { associationId, deletedAt: null } }),
     prisma.evenement.count({ where: { associationId, date: { gte: startMonth, lte: endMonth } } }),
     // A partially-paid or already-late cotisation still owes something — counts as pending
     // here too (EN_RETARD is exactly "still pending, past due", not a separate bucket).
@@ -218,6 +222,7 @@ export const GET = withAdminAuth(async (req, ctx) => {
 
   return NextResponse.json({
     membresActifs,
+    membresTotal,
     evenementsMois,
     cotisationsEnAttente,
     cotisationsEncaissees,

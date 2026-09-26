@@ -1,9 +1,9 @@
 import { PortalRegisterForm } from "@/components/auth/portal-register-form";
-import { prisma } from "@/lib/prisma/client";
-import { requiredDocuments } from "@/lib/legal/acceptance";
 import { LocaleSwitcher } from "@/components/layout/locale-switcher";
 import { LogoMark } from "@/components/layout/logo-mark";
 import { APP_NAME } from "@/config/brand";
+import { requiredDocuments } from "@/lib/legal/acceptance";
+import { prisma } from "@/lib/prisma/client";
 import { ArrowLeftIcon } from "@phosphor-icons/react/dist/ssr";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
@@ -38,7 +38,7 @@ export default async function PortalRegisterPage({
           <LocaleSwitcher />
         </div>
 
-        <div className="rounded-lg border bg-card p-8 space-y-6">
+        <div className="">
           <div className="space-y-1.5">
             <h1 className="text-xl font-semibold tracking-tight">{t("title")}</h1>
             <p className="text-sm text-muted-foreground">

@@ -21,15 +21,19 @@ export default async function AuthLayout({
     { Icon: BankIcon, label: t("featureTreasury") },
   ];
 
+  const logoFormwise = "https://cdn.sanity.io/media-libraries/mllo1PEUbcwG/images/containers/3JrryUcTjssUznMppZMzfPelJ0y/formwise-white.svg"
+  const sideAuthImage= "https://cdn.sanity.io/media-libraries/mllo1PEUbcwG/images/containers/3JrsrmzMKCjEEtnTNWwJKyQcWXe/auth-image.jpg"
+
   return (
     <div className="grid min-h-screen lg:grid-cols-2">
       {/* Left panel */}
       <div className="relative hidden lg:flex flex-col justify-between bg-zinc-950 p-12 overflow-hidden">
         <Image
-          src="/app/authimage.avif"
+          src={sideAuthImage}
           alt={t("imageAlt")}
           fill
           priority
+          unoptimized
           sizes="(min-width: 1024px) 400px, 100vw"
           className="object-cover"
         />
@@ -40,19 +44,19 @@ export default async function AuthLayout({
         <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/75 to-black/95" />
 
         {/* Variante blanche du lockup : le logo de marque est bleu #023D9D, illisible sur le
-            zinc-950 assombri de ce panneau. width/height décrivent la taille de rendu (ratio
-            natif 13621x2048 conservé), pas les dimensions du fichier — sinon next/image
-            génère un srcset en 1920/3840px pour un logo affiché à 213px de large. */}
+            zinc-950 assombri de ce panneau. SVG servi par le CDN Sanity : unoptimized, car
+            l'optimiseur next/image refuse les SVG et n'a pas cdn.sanity.io dans ses domaines. */}
         <div
           className="relative animate-in fade-in slide-in-from-left-4 duration-700"
           style={{ animationFillMode: "both" }}
         >
           <Image
-            src="/app/formwise-logo-white.png"
+            src={logoFormwise}
             alt={APP_NAME}
             width={213}
             height={32}
             priority
+            unoptimized
             className="h-8 w-auto"
           />
         </div>

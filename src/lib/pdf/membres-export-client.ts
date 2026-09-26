@@ -3,10 +3,11 @@ import { toast } from "sonner"
 import { format } from "date-fns"
 import { BASE_PATH } from "@/lib/env"
 import { loadLogoForPdf } from "@/lib/pdf/branded-header-client"
+import type { AssociationPlan } from "@prisma/client"
 
 type AssociationBranding = {
   name: string
-  plan: "ESSENTIAL" | "PRO"
+  plan: AssociationPlan
   customBrandingEnabled: boolean | null
   logoUrl: string | null
 }

@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma/client"
 import { getPricingInfo } from "@/lib/stripe"
 import type { AssociationPlan } from "@prisma/client"
+import { tierFromPlan } from "@/lib/plan-tier"
 import { MEMBER_LIMIT_ERROR_CODE } from "@/lib/api-error-codes"
 
 // Message assumes an admin reading it in the dashboard, with a plan to upgrade — wrong
@@ -23,14 +24,15 @@ export class MemberLimitReachedError extends Error {
 export const MEMBER_LIMIT_VISITOR_MESSAGE =
   "Les inscriptions sont temporairement limitées pour cette association. Contactez-la directement pour plus d'informations."
 
-// AssociationPlan is ESSENTIAL/PRO only — PricingInfo.plans is keyed by the lowercase
-// PlanTier ("essential"/"pro") used everywhere else in the billing code. Exported for
+// PricingInfo.plans is keyed by the lowercase PlanTier (see src/lib/plan-tier.ts for the
+// AssociationPlan ↔ PlanTier mapping). Starter shares Essentiel's features, only its
+// member limit differs. Exported for
 // src/app/api/billing/reactivate/route.ts, which needs to check a *prospective* plan
 // (the tier being reactivated into) against the current member count before it's committed
 // to Stripe/the DB. Doesn't account for customMemberLimit on purpose — self-service
-// reactivation only ever offers the two standard tiers, never a negotiated one.
+// reactivation only ever offers the standard tiers, never a negotiated one.
 export function memberLimitForPlan(plan: AssociationPlan, pricing: Awaited<ReturnType<typeof getPricingInfo>>): number {
-  return plan === "PRO" ? pricing.plans.pro.memberLimit : pricing.plans.essential.memberLimit
+  return pricing.plans[tierFromPlan(plan)].memberLimit
 }
 
 // The limit actually enforced for a given association: its staff-set override (see
@@ -78,7 +80,7 @@ export async function assertMemberLimit(associationId: string, count = 1): Promi
 
   const [pricing, activeCount] = await Promise.all([
     getPricingInfo(),
-    prisma.membre.count({ where: { associationId, status: "ACTIF" } }),
+    prisma.membre.count({ where: { associationId, status: "ACTIF", deletedAt: null } }),
   ])
 
   const limit = effectiveMemberLimit(association, pricing)

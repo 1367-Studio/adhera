@@ -68,7 +68,7 @@ function annualMonthsFree(p: { monthlyAmountCents: number; yearlyAmountCents: nu
   return Math.round((p.monthlyAmountCents * 12 - p.yearlyAmountCents) / p.monthlyAmountCents)
 }
 
-// Combines tier (Essentiel/Pro) and billing cycle (monthly/yearly) into one compact
+// Combines tier (Starter/Essentiel/Pro) and billing cycle (monthly/yearly) into one compact
 // control instead of two stacked grids — a shared cycle toggle up top (same pattern as
 // form-wise-app's landing-page BillingSelector) drives the price shown on 2 tier cards
 // below, so picking one of the 4 (tier × cycle) combinations only ever takes 2 taps.
@@ -81,14 +81,14 @@ export function PlanPicker({
   plan: Plan; onPlanChange: (p: Plan) => void
   pricing: PricingInfo
 }) {
-  // Essentiel and Pro discount the annual price by the same number of months today, but
-  // nothing guarantees that stays true — only show the specific "−N mois" claim on the
-  // shared toggle when it's actually accurate for both, otherwise fall back to a plain
-  // label rather than overstate one tier's discount.
-  const essentialMonthsFree = annualMonthsFree(pricing.plans.essential)
-  const proMonthsFree       = annualMonthsFree(pricing.plans.pro)
-  const annualBadge = essentialMonthsFree > 0 && essentialMonthsFree === proMonthsFree
-    ? `${essentialMonthsFree} mois offerts`
+  // Nothing guarantees every tier discounts the annual price by the same number of
+  // months — only show the specific "N mois offerts" claim on the shared toggle when it's
+  // accurate for all of them, otherwise fall back to a plain label rather than overstate
+  // one tier's discount.
+  const monthsFreeByTier = (Object.keys(pricing.plans) as PlanTier[]).map(tierId => annualMonthsFree(pricing.plans[tierId]))
+  const sharedMonthsFree = monthsFreeByTier[0] ?? 0
+  const annualBadge = sharedMonthsFree > 0 && monthsFreeByTier.every(monthsFree => monthsFree === sharedMonthsFree)
+    ? `${sharedMonthsFree} mois offerts`
     : null
 
   const cycles: { id: Plan; label: string }[] = [
@@ -97,6 +97,7 @@ export function PlanPicker({
   ]
 
   const tiers: { id: PlanTier; label: string; limit: number; highlighted?: boolean }[] = [
+    { id: "starter",   label: "Starter",   limit: pricing.plans.starter.memberLimit },
     { id: "essential", label: "Essentiel", limit: pricing.plans.essential.memberLimit },
     { id: "pro",       label: "Pro",       limit: pricing.plans.pro.memberLimit, highlighted: true },
   ]
@@ -127,7 +128,7 @@ export function PlanPicker({
         ))}
       </div>
 
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
         {tiers.map(t => {
           const tierPricing = pricing.plans[t.id]
           const price = plan === "yearly"

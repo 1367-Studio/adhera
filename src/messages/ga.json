@@ -714,6 +714,18 @@
       "uncategorized": "Neamhchatagóirithe",
       "trendTitle": "Ioncam vs. Caiteachas — 6 mhí dheireanacha",
       "categoryTitle": "Fáltais de réir catagóir— {year}"
+    },
+    "memberSummary": {
+      "total": "{count, plural, one {# comhalta} other {# comhaltaí}}",
+      "active": "{count, plural, one {# gníomhach} other {# gníomhach}}",
+      "inactive": "{count, plural, one {# neamhghníomhach} other {# neamhghníomhach}}"
+    },
+    "memberUsage": {
+      "label": "{active} / {limit} comhaltaí gníomhacha",
+      "ariaLabel": "Úsáid theorainn chomhaltaí do phlean",
+      "nearLimit": "Teorainn ag druidim",
+      "almostReached": "Teorainn beagnach bainte amach",
+      "limitReached": "Teorainn bainte amach"
     }
   },
   "notifications": {
@@ -3654,6 +3666,7 @@
       "title": "Síntiús",
       "subtitle": "Bainistigh do shíntiús ardáin agus modhanna íocaíochta.",
       "tier": {
+        "starter": "Starter",
         "essential": "Riachtanach",
         "pro": "Le haghaidh"
       },

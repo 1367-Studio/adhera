@@ -20,6 +20,7 @@ import { APP_NAME } from "@/config/brand"
 type PhaseInput = { amount: number; months: string }
 
 const PLAN_OPTIONS = [
+  { value: "STARTER",   label: "Starter" },
   { value: "ESSENTIAL", label: "Essentiel" },
   { value: "PRO",       label: "Pro" },
 ]

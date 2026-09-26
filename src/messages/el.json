@@ -714,6 +714,18 @@
       "uncategorized": "Χωρίς κατηγορία",
       "trendTitle": "Έσοδα έναντι εξόδων — Τελευταίοι 6 μήνες",
       "categoryTitle": "Παραλαβές ανά κατηγορία — {year}"
+    },
+    "memberSummary": {
+      "total": "{count, plural, one {# μέλος} other {# μέλη}}",
+      "active": "{count, plural, one {# ενεργό} other {# ενεργά}}",
+      "inactive": "{count, plural, one {# ανενεργό} other {# ανενεργά}}"
+    },
+    "memberUsage": {
+      "label": "{active} / {limit} ενεργά μέλη",
+      "ariaLabel": "Χρήση του ορίου μελών του προγράμματός σας",
+      "nearLimit": "Το όριο πλησιάζει",
+      "almostReached": "Το όριο σχεδόν συμπληρώθηκε",
+      "limitReached": "Το όριο συμπληρώθηκε"
     }
   },
   "notifications": {
@@ -3654,6 +3666,7 @@
       "title": "Συνδρομή",
       "subtitle": "Διαχειριστείτε τη συνδρομή σας στην πλατφόρμα και τους τρόπους πληρωμής.",
       "tier": {
+        "starter": "Starter",
         "essential": "Ουσιώδης",
         "pro": "Για"
       },

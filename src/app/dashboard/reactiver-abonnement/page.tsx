@@ -2,6 +2,7 @@ import { redirect } from "next/navigation"
 import { auth } from "@/lib/auth/config"
 import { prisma } from "@/lib/prisma/client"
 import { getPricingInfo } from "@/lib/stripe"
+import { tierFromPlan } from "@/lib/plan-tier"
 import { ReactivateSubscriptionView } from "@/components/parametres/reactivate-subscription-view"
 
 export default async function ReactiverAbonnementPage() {
@@ -24,7 +25,7 @@ export default async function ReactiverAbonnementPage() {
   return (
     <ReactivateSubscriptionView
       pricing={pricing}
-      initialTier={assoc.plan === "PRO" ? "pro" : "essential"}
+      initialTier={tierFromPlan(assoc.plan)}
       trialExpired={!!assoc.trialExpiredAt}
     />
   )

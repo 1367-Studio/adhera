@@ -10,7 +10,8 @@ import { buildDocumentPdf } from "@/lib/pdf/document-pdf"
 import { nextBoutiqueReceiptNumber } from "@/lib/document-numbering"
 import { pusherServer } from "@/lib/pusher-server"
 import { writeActivityLog } from "@/lib/activity-log"
-import { resolveDocumentBranding } from "@/lib/plan-limits"
+import { resolveDocumentBranding, memberLimitForPlan } from "@/lib/plan-limits"
+import { planFromTier, planLabel } from "@/lib/plan-tier"
 import { recordCotisationPayment, sendCotisationPaymentConfirmation, CotisationOverpaymentError, removeRefundedCotisationPaymentsByReference } from "@/lib/cotisation-payments"
 import { deriveCotisationStatus } from "@/lib/cotisation-status"
 // Imported as a value, not `import type`: the charge.refunded branch below needs
@@ -1264,14 +1265,14 @@ export async function POST(req: Request) {
       })
       if (!assoc) break
 
-      // An admin switching Essentiel↔Pro from the Stripe Customer Portal lands here as a
+      // An admin switching Starter/Essentiel/Pro from the Stripe Customer Portal lands here as a
       // price change on the existing subscription item — this is what syncs Association.plan
       // back so the member limit and IA gating (src/lib/plan-limits.ts, src/lib/modules.ts)
       // reflect the new tier. Prices outside PLAN_PRICES (the legacy single-product price)
       // resolve to null and leave `plan` untouched.
       const priceId    = sub.items.data[0]?.price.id
       const newTier    = priceId ? tierForPriceId(priceId) : null
-      const newPlan    = newTier ? (newTier === "pro" ? "PRO" as const : "ESSENTIAL" as const) : null
+      const newPlan    = newTier ? planFromTier(newTier) : null
       // Read regardless of whether the price matches a known PLAN_PRICES tier — a
       // PricingOffer's custom Stripe price (see src/lib/pricing-offers.ts) never resolves
       // via tierForPriceId, but platformFeeRate() (src/lib/stripe.ts) still needs its
@@ -1315,9 +1316,9 @@ export async function POST(req: Request) {
       if (newPlan && newPlan !== assoc.plan) {
         const [pricing, activeCount] = await Promise.all([
           getPricingInfo(),
-          prisma.membre.count({ where: { associationId: assoc.id, status: "ACTIF" } }),
+          prisma.membre.count({ where: { associationId: assoc.id, status: "ACTIF", deletedAt: null } }),
         ])
-        const newLimit = newPlan === "PRO" ? pricing.plans.pro.memberLimit : pricing.plans.essential.memberLimit
+        const newLimit = memberLimitForPlan(newPlan, pricing)
         if (activeCount > newLimit) {
           // Stripe can redeliver this same event; skipDuplicates on the notification insert
           // below wouldn't actually catch that (Notification has no unique constraint to
@@ -1339,7 +1340,7 @@ export async function POST(req: Request) {
               select: { id: true },
             })
             if (admins.length) {
-              const tierLabel = newPlan === "PRO" ? "Pro" : "Essentiel"
+              const tierLabel = planLabel(newPlan)
               await prisma.notification.createMany({
                 data: admins.map(a => ({
                   userId: a.id,

@@ -29,6 +29,8 @@
   --color-border: var(--border);
   --color-destructive: var(--destructive);
   --color-destructive-foreground: var(--destructive-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
   --color-accent-foreground: var(--accent-foreground);
   --color-accent: var(--accent);
   --color-muted-foreground: var(--muted-foreground);
@@ -72,6 +74,8 @@
   --accent-foreground: #002160;
   --destructive: #ef4444;
   --destructive-foreground: #ffffff;
+  --warning: #ea580c;
+  --warning-foreground: #ffffff;
   --border: #e2e8f0;
   --input: #e2e8f0;
   --ring: #023D9D;
@@ -112,6 +116,8 @@
   --accent-foreground: #c1d8ff;
   --destructive: #f87171;
   --destructive-foreground: #450a0a;
+  --warning: #fb923c;
+  --warning-foreground: #431407;
   --border: #262626;
   --input: #262626;
   --ring: #6fa2fb;
@@ -140,6 +146,16 @@
   }
   html {
     @apply font-sans;
+  }
+
+  /* Chrome paints autofilled fields light blue; background-color can't override it, so an
+     inset shadow in the page background covers it (the transition delays Safari's yellow). */
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus {
+    -webkit-box-shadow: 0 0 0 1000px var(--background) inset;
+    -webkit-text-fill-color: var(--foreground);
+    transition: background-color 9999s ease-out 0s;
   }
 
   button:not(:disabled),

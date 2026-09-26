@@ -4,6 +4,7 @@ import { withAdminAuth } from "@/lib/api-wrapper"
 import { getPricingInfo, customerHasPaymentMethod } from "@/lib/stripe"
 import { effectiveMemberLimit } from "@/lib/plan-limits"
 import { reportError } from "@/lib/monitoring"
+import { tierFromPlan } from "@/lib/plan-tier"
 
 export const GET = withAdminAuth(async (_req, ctx) => {
   const [assoc, pricing, memberCount] = await Promise.all([
@@ -15,11 +16,11 @@ export const GET = withAdminAuth(async (_req, ctx) => {
       },
     }),
     getPricingInfo(),
-    prisma.membre.count({ where: { associationId: ctx.associationId, status: "ACTIF" } }),
+    prisma.membre.count({ where: { associationId: ctx.associationId, status: "ACTIF", deletedAt: null } }),
   ])
   if (!assoc) return NextResponse.json({ error: "Association introuvable" }, { status: 404 })
 
-  const tier = assoc.plan === "PRO" ? "pro" as const : "essential" as const
+  const tier = tierFromPlan(assoc.plan)
 
   // Only asked of Stripe while trialing — the one state where "is there a card to charge
   // at the end?" changes what the settings tab tells the admin (a card-free trial is

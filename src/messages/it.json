@@ -714,6 +714,18 @@
       "uncategorized": "Non categorizzato",
       "trendTitle": "Reddito vs. Spesa — Ultimi 6 mesi",
       "categoryTitle": "Ricevute per categoria — {year}"
+    },
+    "memberSummary": {
+      "total": "{count, plural, one {# membro} other {# membri}}",
+      "active": "{count, plural, one {# attivo} other {# attivi}}",
+      "inactive": "{count, plural, one {# inattivo} other {# inattivi}}"
+    },
+    "memberUsage": {
+      "label": "{active} / {limit} membri attivi",
+      "ariaLabel": "Utilizzo del limite di membri del tuo piano",
+      "nearLimit": "Limite quasi raggiunto",
+      "almostReached": "Limite quasi esaurito",
+      "limitReached": "Limite raggiunto"
     }
   },
   "notifications": {
@@ -3654,6 +3666,7 @@
       "title": "Abbonamento",
       "subtitle": "Gestisci l'abbonamento e i metodi di pagamento della tua piattaforma.",
       "tier": {
+        "starter": "Starter",
         "essential": "Essenziale",
         "pro": "Per"
       },
