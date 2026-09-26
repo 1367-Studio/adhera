@@ -42,6 +42,13 @@ export default withSentryConfig(withNextIntl(nextConfig), {
   // Upload a larger set of source maps for prettier stack traces (increases build time)
   widenClientFileUpload: true,
 
+  // On by default in @sentry/nextjs 11: runs a JS loader over every server .js file,
+  // node_modules included, for automatic library *tracing* (not error capture). It took the
+  // build's peak memory from 3.7 GB to 7.8 GB — past what Vercel's 8 GB build machine can
+  // hold, so the build stalled in "Creating an optimized production build" for 35+ minutes.
+  // Off: 4.9 GB, errors still reported exactly the same.
+  buildTimeInstrumentation: false,
+
   // Route browser requests to Sentry through a Next.js rewrite to circumvent ad-blockers.
   // This can increase your server load as well as your hosting bill.
   // Note: Check that the configured route will not match with your Next.js middleware, otherwise reporting of client-
