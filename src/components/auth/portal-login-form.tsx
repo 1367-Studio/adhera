@@ -84,7 +84,7 @@ export function PortalLoginForm({ slug, callbackUrl }: { slug: string; callbackU
 
       <div className="flex flex-col gap-2 pt-1">
         <Link
-          href={`/forgot-password?callbackUrl=/portal/${slug}/login`}
+          href="/forgot-password"
           className="text-center text-sm text-muted-foreground hover:text-foreground hover:underline transition-colors"
         >
           {t("forgotPassword")}

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, type ReactNode } from "react"
 import Link from "next/link"
 import { useTranslations } from "next-intl"
 import { Button } from "@/components/ui/button"
@@ -10,7 +10,11 @@ import { toast } from "sonner"
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
-export function ForgotPasswordForm() {
+// `header` / `footer` are the page's title and back/support links, rendered here so the
+// "email sent" screen can drop them (it has its own back link).
+type ForgotPasswordFormProps = { header?: ReactNode; footer?: ReactNode }
+
+export function ForgotPasswordForm({ header, footer }: ForgotPasswordFormProps) {
   const t = useTranslations("auth.forgotPassword")
   const [email,      setEmail]      = useState("")
   const [loading,    setLoading]    = useState(false)
@@ -44,7 +48,7 @@ export function ForgotPasswordForm() {
 
   if (submitted) {
     return (
-      <div className="rounded-lg border bg-card p-6 space-y-4 text-center">
+      <div className="flex flex-col items-center gap-4 py-10 text-center">
         <div className="mx-auto size-12 rounded-full bg-primary/10 dark:bg-primary/20 flex items-center justify-center">
           <EnvelopeSimpleIcon className="size-6 text-primary" />
         </div>
@@ -70,23 +74,27 @@ export function ForgotPasswordForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6" noValidate>
-      <FormField
-        label={t("form.emailLabel")}
-        type="email"
-        placeholder={t("form.emailPlaceholder")}
-        autoComplete="email"
-        autoFocus
-        leadingIcon={<EnvelopeSimpleIcon />}
-        value={email}
-        onChange={(e) => { setEmail(e.target.value); setEmailError("") }}
-        error={emailError}
-      />
+    <div className="space-y-6">
+      {header}
+      <form onSubmit={handleSubmit} className="space-y-6" noValidate>
+        <FormField
+          label={t("form.emailLabel")}
+          type="email"
+          placeholder={t("form.emailPlaceholder")}
+          autoComplete="email"
+          autoFocus
+          leadingIcon={<EnvelopeSimpleIcon />}
+          value={email}
+          onChange={(e) => { setEmail(e.target.value); setEmailError("") }}
+          error={emailError}
+        />
 
-      <Button type="submit" className="w-full" disabled={loading}>
-        {loading && <CircleNotchIcon className="mr-2 size-4 animate-spin" />}
-        {t("form.submit")}
-      </Button>
-    </form>
+        <Button type="submit" className="w-full" disabled={loading}>
+          {loading && <CircleNotchIcon className="mr-2 size-4 animate-spin" />}
+          {t("form.submit")}
+        </Button>
+      </form>
+      {footer}
+    </div>
   )
 }
