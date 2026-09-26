@@ -1,10 +1,12 @@
 import { NextResponse } from "next/server"
+import Stripe from "stripe"
 import { z } from "zod"
 import { stripe, toSubscriptionStatus, subscriptionPeriodEnd, priceIdFor, getPricingInfo } from "@/lib/stripe"
 import { prisma } from "@/lib/prisma/client"
 import { withAdminAuth } from "@/lib/api-wrapper"
 import { writeActivityLog } from "@/lib/activity-log"
 import { memberLimitForPlan } from "@/lib/plan-limits"
+import { reportError } from "@/lib/monitoring"
 
 const ADMINS = ["ADMIN", "PRESIDENT"]
 
@@ -81,7 +83,10 @@ export const POST = withAdminAuth(async (req, ctx) => {
       // claim succeeded but before Stripe's response came back.
       idempotencyKey: `reactivate-sub-${ctx.associationId}-${priceId}`,
     })
-  } catch {
+  } catch (error) {
+    if (!(error instanceof Stripe.errors.StripeCardError)) {
+      reportError(error, { area: "stripe", action: "billing.reactivate", extra: { associationId: ctx.associationId } })
+    }
     // Release the claim — a failed payment must not leave the account sitting on the
     // free-access TRIAL status it was just provisionally flipped to.
     await prisma.association.update({ where: { id: ctx.associationId }, data: { subscriptionStatus: "CANCELLED" } })

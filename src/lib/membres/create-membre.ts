@@ -6,6 +6,7 @@ import { addressColumns } from "@/lib/address"
 import { answersWithMobile } from "@/lib/membre-answers"
 import { writeActivityLog } from "@/lib/activity-log"
 import type { MembreCreateInput } from "@/lib/schemas"
+import { reportError } from "@/lib/monitoring"
 
 // What a manager-side creation of a Membre shares, whatever the entry point: the manual add
 // (POST /api/membres) and the paper form import (POST /api/membres/scan/commit). Only the
@@ -121,7 +122,7 @@ export async function announceMembreCreated(input: {
       associationId,
       association:   { name: association.name, slug: association.slug, modules: association.modules, plan: association.plan, customBrandingEnabled: association.customBrandingEnabled, logoUrl: association.logoUrl },
       membre:        { id: membre.id, firstName: membre.firstName, lastName: membre.lastName, email: membre.email, phone: membre.phone },
-    }).catch(() => {})
+    }).catch((error: unknown) => reportError(error, { area: "api", action: "automation.member-created-rule", extra: { associationId, membreId: membre.id } }))
   }
 
   await writeActivityLog({ associationId, actorId, action: "MEMBRE_CREATED", entity: "Membre", entityId: membre.id, label: `${membre.firstName} ${membre.lastName}`, metadata })

@@ -6,6 +6,7 @@ import { HELP_MODULE_KEYS } from "@/lib/help/modules"
 import { sanityFetch } from "@/sanity/fetch"
 import { HELP_MODULE_CONTENT_QUERY } from "@/sanity/queries"
 import type { HelpModuleContent } from "@/sanity/types"
+import { reportError } from "@/lib/monitoring"
 
 const querySchema = z.object({
   module: z.enum(HELP_MODULE_KEYS).default("general"),
@@ -29,7 +30,7 @@ export const GET = withAdminAuth(async (req) => {
     })
     return NextResponse.json(content)
   } catch (error) {
-    console.error("[help] articles fetch failed:", error)
+    reportError(error, { area: "api", action: "help.articles-fetch" })
     return NextResponse.json({ error: "Centre d'aide indisponible, réessayez plus tard." }, { status: 502 })
   }
 }, { allowWhenLocked: true })

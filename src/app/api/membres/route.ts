@@ -18,6 +18,7 @@ import { parseModules } from "@/lib/modules"
 import { addMonths } from "date-fns"
 import { pusherServer } from "@/lib/pusher-server"
 import { announceMembreCreated, findMembreCreationAssociation, membreColumns, recordOfflineAcceptances } from "@/lib/membres/create-membre"
+import { reportError } from "@/lib/monitoring"
 
 const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
 
@@ -300,7 +301,8 @@ export const POST = withAdminAuth(async (req, ctx) => {
         // the admin fills everything in here, the member only has to pay on their side.
         payUrl: notifyCotisation.paymentToken ? `${APP_URL}/cotisation/${notifyCotisation.paymentToken}` : undefined,
       } : undefined,
-    }), { associationId, membreId: membre.id, source: "MEMBER_INVITE" }).catch(() => {})
+    }), { associationId, membreId: membre.id, source: "MEMBER_INVITE" }).catch(error =>
+      reportError(error, { area: "email", action: "membres.invitation-email", extra: { associationId, membreId: membre.id } }))
 
     // Same in-app notification pattern as new events/actualités/sondages — otherwise this
     // sits silently on the member's Cotisation tab until they think to check it themselves.
@@ -314,7 +316,7 @@ export const POST = withAdminAuth(async (req, ctx) => {
         },
       })
         .then(() => pusherServer.trigger(`private-association-${associationId}`, "new-notification", {}))
-        .catch(() => {})
+        .catch(error => reportError(error, { area: "api", action: "membres.cotisation-notification", extra: { associationId, membreId: membre.id } }))
     }
   }
 

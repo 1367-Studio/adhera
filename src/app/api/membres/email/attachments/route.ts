@@ -9,6 +9,7 @@ import {
   MAX_EMAIL_ATTACHMENTS_TOTAL_BYTES,
   buildEmailAttachmentKey,
 } from "@/lib/email-attachments"
+import { reportError } from "@/lib/monitoring"
 
 // Same roles as the send route itself (../route.ts) — only someone who can send the email
 // has any reason to upload its attachments.
@@ -51,7 +52,7 @@ export const POST = withAdminAuth(async (req, ctx) => {
     })
     return NextResponse.json({ uploadUrl, key })
   } catch (error: unknown) {
-    console.error("[membres/email/attachments] presign error:", error)
+    reportError(error, { area: "storage", action: "membres.email-attachment-presign", extra: { associationId: ctx.associationId } })
     return NextResponse.json({ error: "Erreur lors de la préparation de l'envoi du fichier" }, { status: 500 })
   }
 }, { module: "messages" })

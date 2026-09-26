@@ -6,6 +6,7 @@ import { writeActivityLog } from "@/lib/activity-log"
 import { withPortalAuth } from "@/lib/api-wrapper"
 import { startOfTodayUTC } from "@/lib/date-boundaries"
 import { pusherServer } from "@/lib/pusher-server"
+import { reportError } from "@/lib/monitoring"
 
 const SONDAGE_MANAGERS = ["ADMIN", "PRESIDENT", "SECRETAIRE"] as const
 
@@ -184,7 +185,7 @@ export const POST = withPortalAuth<Params>(async (req, ctx, { id }) => {
   // answer being saved, and a retry would just hit the "already answered" 409). Still
   // awaited (not fire-and-forget) so it isn't cut short if the platform tears the
   // function down right after the response is sent.
-  await notifyAdminsOfResponse(ctx, sondage, id).catch(() => {})
+  await notifyAdminsOfResponse(ctx, sondage, id).catch(error => reportError(error, { area: "portal", action: "portal.sondage.response.notify-admins", extra: { associationId: ctx.associationId, sondageId: id, membreId: ctx.membreId } }))
 
   return NextResponse.json({ ok: true, reponseId: reponse.id }, { status: 201 })
 }, { module: "sondages" })

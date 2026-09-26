@@ -8,6 +8,7 @@ import { sendEmail } from "@/lib/mail"
 import { cancellationConfirmationEmail } from "@/lib/email"
 import { resolveDocumentBranding } from "@/lib/plan-limits"
 import { isEvenementOver } from "@/lib/evenement-timing"
+import { reportError } from "@/lib/monitoring"
 
 // Self-service cancellation for public/guest event registrations (no portal account, so
 // the authenticated flow at src/app/api/portal/evenements/[id]/cancel-ticket/route.ts
@@ -98,7 +99,7 @@ export async function POST(
         eventTitle:      participation.evenement.title,
         refunded:        false,
         branding:        resolveDocumentBranding(participation.evenement.association),
-      }), { associationId, source: "PUBLIC_EVENT_CANCELLATION", sourceId: participation.id }).catch(() => {})
+      }), { associationId, source: "PUBLIC_EVENT_CANCELLATION", sourceId: participation.id }).catch(error => reportError(error, { area: "email", action: "public.cancel-ticket.confirmation-email", extra: { associationId, participationId: participation.id } }))
     }
     return NextResponse.json({ ok: true, refunded: false })
   }
@@ -151,13 +152,13 @@ export async function POST(
         // refund instead of creating a second one.
         idempotencyKey: `public-ticket-refund-${participation.id}`,
       })
-    } catch (err) {
+    } catch (error) {
       // The claim above already committed — undo it so the seat doesn't sit "cancelled" in
       // the DB when no money actually moved.
       await prisma.participation.update({ where: { id: participation.id }, data: savedState })
-      console.error(`[cancel-ticket] Stripe refund failed for participation ${participation.id}:`, err)
-      const message = err instanceof Stripe.errors.StripeError
-        ? err.message
+      reportError(error, { area: "stripe", action: "public.cancel-ticket.refund", extra: { associationId, participationId: participation.id } })
+      const message = error instanceof Stripe.errors.StripeError
+        ? error.message
         : "Le remboursement a échoué. Réessayez dans quelques instants ou contactez l'association."
       return NextResponse.json({ error: message }, { status: 502 })
     }
@@ -200,7 +201,7 @@ export async function POST(
       refunded,
       amount:          refunded ? refundAmountCents / 100 : undefined,
       branding:        resolveDocumentBranding(participation.evenement.association),
-    }), { associationId, source: "PUBLIC_EVENT_CANCELLATION", sourceId: participation.id }).catch(() => {})
+    }), { associationId, source: "PUBLIC_EVENT_CANCELLATION", sourceId: participation.id }).catch(error => reportError(error, { area: "email", action: "public.cancel-ticket.confirmation-email", extra: { associationId, participationId: participation.id } }))
   }
 
   return NextResponse.json({ ok: true, refunded })

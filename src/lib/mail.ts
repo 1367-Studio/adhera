@@ -2,6 +2,7 @@ import { createHash } from "crypto"
 import { Resend, type CreateEmailOptions, type ErrorResponse } from "resend"
 import { APP_NAME } from "@/config/brand"
 import { prisma } from "@/lib/prisma/client"
+import { reportError } from "@/lib/monitoring"
 
 export const resend = new Resend(process.env.RESEND_API_KEY)
 
@@ -64,8 +65,8 @@ async function getAssociationContactEmail(associationId: string): Promise<string
   try {
     const association = await prisma.association.findUnique({ where: { id: associationId }, select: { contactEmail: true } })
     value = association?.contactEmail ?? undefined
-  } catch (err: unknown) {
-    console.error("[mail] failed to resolve association contactEmail:", err)
+  } catch (error: unknown) {
+    reportError(error, { area: "email", action: "mail.resolve-contact-email", extra: { associationId } })
     value = undefined
   }
   contactEmailCache.set(associationId, { value, expiresAt: Date.now() + CONTACT_EMAIL_CACHE_TTL_MS })
@@ -119,8 +120,8 @@ async function logEmailMessage(
         sentAt:        new Date(),
       },
     })
-  } catch (err: unknown) {
-    console.error("[mail] failed to log EmailMessage:", err)
+  } catch (error: unknown) {
+    reportError(error, { area: "email", action: "mail.log-message", extra: { associationId: context.associationId, source: context.source, sourceId: context.sourceId } })
   }
 }
 
@@ -138,8 +139,22 @@ export async function sendEmail(payload: EmailPayload, context?: EmailContext): 
     attachments: payload.attachments,
   })
 
-  if (error) console.error("[mail] Resend error:", error)
+  if (error) {
+    // 422 = a bad recipient address (member data), not a sending outage — logged only.
+    if (error.statusCode === 422) console.error("[mail] Resend validation error:", error)
+    else reportResendError(error, "mail.resend-send", context?.associationId)
+  }
   if (context) await logEmailMessage(payload, context, data?.id ?? null, error ?? null)
+}
+
+// Resend returns failures instead of throwing, so Sentry never sees them on its own: a bad
+// API key, a rate limit or an outage silently leaves members without their email.
+function reportResendError(error: ErrorResponse, action: string, associationId: string | undefined) {
+  reportError(new Error(`Resend ${error.name}: ${error.message}`), {
+    area:   "email",
+    action,
+    extra:  { associationId, statusCode: error.statusCode },
+  })
 }
 
 type BulkResult = { sent: number; failed: number; failedRecipients: string[] }
@@ -234,7 +249,7 @@ export async function sendEmailBatch(payloads: BatchPayload[]): Promise<BatchIte
       const retried = await sendIndividually(missing.map(i => payloads[i]), isDev, replyToMap)
       missing.forEach((i, k) => { items[i] = retried[k] })
     } else {
-      console.error("[mail] Resend batch error:", error)
+      reportResendError(error, "mail.resend-batch", payloads[0]?.context?.associationId)
       missing.forEach(i => { items[i] = { error: { message: error.message } } })
     }
   }
@@ -271,7 +286,7 @@ async function logEmailMessageBatch(payloads: BatchPayload[], items: (SendItem |
       errorMessage:   item?.id ? undefined : (item?.error?.message ?? "Envoi échoué"),
       sentAt:         new Date(),
     })),
-  }).catch((err: unknown) => console.error("[mail] failed to log EmailMessage batch:", err))
+  }).catch((error: unknown) => reportError(error, { area: "email", action: "mail.log-message-batch", extra: { associationId: rowsToLog[0]?.payload.context?.associationId, count: rowsToLog.length } }))
 }
 
 // Splits into chunks of BATCH_SIZE and sends sequentially, tallying per-recipient outcomes

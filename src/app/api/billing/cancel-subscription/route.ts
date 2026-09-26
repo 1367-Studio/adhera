@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma/client"
 import { withAdminAuth } from "@/lib/api-wrapper"
 import { writeActivityLog } from "@/lib/activity-log"
 import { cancelSubscriptionSchema as schema } from "@/lib/schemas"
+import { reportError } from "@/lib/monitoring"
 
 const ADMINS = ["ADMIN", "PRESIDENT"]
 
@@ -38,7 +39,7 @@ export const POST = withAdminAuth(async (req, ctx) => {
     await stripe.subscriptions.update(assoc.stripeSubscriptionId, { cancel_at_period_end: true })
   } catch (err) {
     if (!isStaleStripeResourceError(err)) {
-      console.error("[billing] failed to schedule cancellation for association", ctx.associationId, err)
+      reportError(err, { area: "stripe", action: "billing.schedule-cancellation", extra: { associationId: ctx.associationId } })
       return NextResponse.json({ error: "Impossible d'annuler l'abonnement Stripe. Contactez le support." }, { status: 502 })
     }
   }

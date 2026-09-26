@@ -7,6 +7,7 @@ import { resolveAiConfig, type ResolvedAnyAiConfig } from "@/lib/ai/client"
 import { completeChat } from "@/lib/ai/complete"
 import { normalizeAiHtml } from "@/lib/ai/normalize-html"
 import { withAdminAuth } from "@/lib/api-wrapper"
+import { reportError } from "@/lib/monitoring"
 import { runAssistant } from "@/lib/assistant/run-assistant"
 import type { AssistantMessage, AssistantReply, ToolContext } from "@/lib/assistant/types"
 import { resolveHelpLocale } from "@/lib/help/locale"
@@ -112,7 +113,7 @@ async function answerFromDocs(input: {
 
 // Provider errors are mapped by the SDKs' typed classes, never by message matching. An
 // invalid key is a configuration state (503 + code), not a transient failure.
-function providerErrorResponse(error: unknown): NextResponse {
+function providerErrorResponse(error: unknown, aiConfig: ResolvedAnyAiConfig, associationId: string): NextResponse {
   // The agent loop aborted on its own time budget (run-assistant.ts): a real answer, not a
   // provider fault — the tokens already spent are the association's, so say what happened.
   if (error instanceof Anthropic.APIUserAbortError) {
@@ -134,13 +135,21 @@ function providerErrorResponse(error: unknown): NextResponse {
     )
   }
   if (error instanceof Anthropic.APIError || error instanceof OpenAI.APIError) {
-    console.error("[assistant] provider error:", error.status, error.message)
+    reportError(error, {
+      area:   "ai",
+      action: "assistant.provider",
+      extra:  { associationId, provider: aiConfig.provider, model: aiConfig.model, status: error.status },
+    })
     return NextResponse.json(
       { error: "Le fournisseur IA n'a pas pu répondre, réessayez plus tard.", code: "AI_PROVIDER_ERROR" },
       { status: 502 },
     )
   }
-  console.error("[assistant] unexpected error:", error)
+  reportError(error, {
+    area:   "ai",
+    action: "assistant.run",
+    extra:  { associationId, provider: aiConfig.provider, model: aiConfig.model },
+  })
   return NextResponse.json({ error: "Erreur de l'assistant, réessayez plus tard.", code: "AI_UNEXPECTED" }, { status: 500 })
 }
 
@@ -200,6 +209,6 @@ export const POST = withAdminAuth(async (req, ctx) => {
     )
     return NextResponse.json(reply)
   } catch (error) {
-    return providerErrorResponse(error)
+    return providerErrorResponse(error, aiConfig, associationId)
   }
 }, { roles: MANAGER_ROLES })

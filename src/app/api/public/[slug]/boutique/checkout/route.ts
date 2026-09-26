@@ -12,6 +12,7 @@ import { InsufficientStockError } from "@/lib/boutique/insufficient-stock-error"
 import { deliveryFieldsSchema, validateDeliveryFields } from "@/lib/boutique/delivery-schema"
 import { resolveShippingCost, ShippingUnavailableError } from "@/lib/boutique/resolve-shipping-cost"
 import { randomBytes } from "crypto"
+import { reportError } from "@/lib/monitoring"
 
 const itemSchema = z.object({
   produitId:  z.string(),
@@ -227,7 +228,7 @@ export async function POST(
     })
   } catch (err) {
     // Stripe failed — cancel commande and restore stock
-    console.error(`[boutique-storefront-checkout] Stripe session creation failed for commande ${commande.id}:`, err)
+    reportError(err, { area: "stripe", action: "public.boutique.checkout-session", extra: { associationId: assoc.id, commandeId: commande.id } })
     await prisma.$transaction([
       prisma.boutiqueCommande.update({ where: { id: commande.id }, data: { status: "CANCELLED" } }),
       ...commandeItems.map(item =>

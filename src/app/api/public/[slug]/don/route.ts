@@ -8,6 +8,7 @@ import { rateLimit, requestIp } from "@/lib/rate-limit"
 import { isValidSiret } from "@/lib/siret"
 import { ADDRESS_MAX_LENGTHS, addressColumns } from "@/lib/address"
 import { writeActivityLog } from "@/lib/activity-log"
+import { reportError } from "@/lib/monitoring"
 
 export async function GET(
   _req: Request,
@@ -33,11 +34,11 @@ export async function GET(
   if (assoc.stripeConnectId) {
     try {
       paymentEnabled = await connectAccountChargesEnabled(assoc.stripeConnectId)
-    } catch (err) {
+    } catch (error) {
       // This is just informational (drives whether the form renders enabled) — a
       // transient Stripe error here shouldn't 500 the whole public donation page.
       // The POST route re-checks for real before any money moves.
-      console.error(`[public-don] failed to check payment availability for ${slug}:`, err)
+      reportError(error, { area: "stripe", action: "public.don.payment-availability", extra: { slug } })
     }
   }
 

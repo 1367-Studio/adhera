@@ -53,3 +53,6 @@ seed-full-demo.ts
 
 # Sanity TypeGen output (regenerate with `npm run sanity:typegen`; the app uses hand-written DTOs in src/sanity/types.ts)
 src/sanity/sanity.types.ts
+
+# Sentry Config File
+.env.sentry-build-plugin

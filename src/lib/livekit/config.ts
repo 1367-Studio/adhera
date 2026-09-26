@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma/client"
+import { reportError } from "@/lib/monitoring"
 
 export class LiveKitConfigError extends Error {
   constructor(message: string) {
@@ -83,9 +84,10 @@ export async function getLiveKitConfigForMeeting(meeting: MeetingLiveKitFields):
   await prisma.meeting.update({
     where: { id: meeting.id },
     data:  { livekitUrl: resolved.url, livekitApiKey: resolved.apiKey, livekitApiSecret: resolved.apiSecret },
-  }).catch(() => {
+  }).catch((error: unknown) => {
     // Best-effort: if the pin write fails, this call still gets a valid config: worst case
     // the next call re-resolves live and tries to pin again.
+    reportError(error, { area: "api", action: "livekit.pin-meeting-config", extra: { associationId: meeting.associationId, meetingId: meeting.id } })
   })
 
   return resolved

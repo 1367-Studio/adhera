@@ -4,6 +4,7 @@ import { withAdminAuth } from "@/lib/api-wrapper"
 import { resolveHelpLocale } from "@/lib/help/locale"
 import { searchHelp } from "@/lib/help/retrieval"
 import { rateLimit } from "@/lib/rate-limit"
+import { reportError } from "@/lib/monitoring"
 
 const querySchema = z.object({
   q: z.string().trim().min(3).max(200),
@@ -25,7 +26,7 @@ export const GET = withAdminAuth(async (req, ctx) => {
     const hits = await searchHelp({ query: parsed.data.q, locale, limit: 10 })
     return NextResponse.json(hits)
   } catch (error) {
-    console.error("[help] search failed:", error)
+    reportError(error, { area: "api", action: "help.search" })
     return NextResponse.json({ error: "Recherche indisponible, réessayez plus tard." }, { status: 502 })
   }
 }, { allowWhenLocked: true })

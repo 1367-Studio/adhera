@@ -8,6 +8,7 @@ import { deleteFromR2 } from "@/lib/r2"
 import { factureRecueExpenseDescription } from "@/lib/facture-recue"
 import { resolveExerciceForDate, closedExerciceGuard } from "@/lib/finance/exercice"
 import type { ExerciceStatus } from "@prisma/client"
+import { reportError } from "@/lib/monitoring"
 
 const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
 const FINANCE  = ["ADMIN", "PRESIDENT", "TRESORIER"]
@@ -161,7 +162,8 @@ let newExercice: { id: string; status: ExerciceStatus } | null = null
   // A replaced document's old file is orphaned in R2 once the row points elsewhere —
   // clean it up the same way expense/boutique image replacement does.
   if (fileUrl !== undefined && fileUrl !== existing.fileUrl) {
-    deleteFromR2(existing.fileUrl).catch(() => {})
+    deleteFromR2(existing.fileUrl)
+      .catch(error => reportError(error, { area: "storage", action: "factures-recues.delete-replaced-file", extra: { associationId, factureRecueId: id } }))
   }
 
   const changes = computeDiff(
@@ -213,7 +215,8 @@ export const DELETE = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) =>
   // No view or endpoint ever surfaces a soft-deleted FactureRecue again, so the file it
   // points to would otherwise sit orphaned in R2 forever — clean it up the same way a
   // fileUrl replacement does on PATCH.
-  deleteFromR2(existing.fileUrl).catch(() => {})
+  deleteFromR2(existing.fileUrl)
+    .catch(error => reportError(error, { area: "storage", action: "factures-recues.delete-file", extra: { associationId, factureRecueId: id } }))
 
   await writeActivityLog({ associationId, actorId: userId, action: "FACTURE_RECUE_DELETED", entity: "FactureRecue", entityId: id, label: existing.number ?? existing.type })
 

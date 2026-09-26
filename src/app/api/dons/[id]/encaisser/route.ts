@@ -7,6 +7,7 @@ import { resolveDocumentBranding } from "@/lib/plan-limits"
 import { generateRecuFiscalForDon } from "@/lib/pdf/recu-fiscal"
 import { sendEmail } from "@/lib/mail"
 import { donConfirmationEmail } from "@/lib/email"
+import { reportError } from "@/lib/monitoring"
 
 const FINANCE = ["ADMIN", "PRESIDENT", "TRESORIER"]
 
@@ -66,7 +67,7 @@ export const POST = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
           pdfAttachment = { filename: `recu-fiscal-${updatedDon.receiptNumber ?? id}.pdf`, content: pdf }
         }
       } catch (err) {
-        console.error(`[recu-fiscal] failed to generate for don ${id}:`, err)
+        reportError(err, { area: "payments", action: "dons.generate-recu-fiscal", extra: { associationId: don.associationId, donId: id } })
       }
     }
 
@@ -86,7 +87,8 @@ export const POST = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
         branding:            resolveDocumentBranding(assoc),
       }),
       attachments: pdfAttachment ? [pdfAttachment] : undefined,
-    }, { associationId: don.associationId, membreId: don.membreId ?? undefined, source: "TRANSACTION", sourceId: id }).catch(() => {})
+    }, { associationId: don.associationId, membreId: don.membreId ?? undefined, source: "TRANSACTION", sourceId: id })
+      .catch(error => reportError(error, { area: "email", action: "dons.encaisser-confirmation-email", extra: { associationId: don.associationId, donId: id } }))
   }
 
   await writeActivityLog({

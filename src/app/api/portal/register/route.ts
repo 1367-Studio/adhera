@@ -11,6 +11,7 @@ import { CURRENT_TERMS_VERSION, consentIp } from "@/lib/consent"
 import { requiredDocuments, resolveAcceptedRevisions, recordAcceptances, LegalConsentError } from "@/lib/legal/acceptance"
 import { maybeCreateDefaultCotisation, findPendingCotisation } from "@/lib/cotisation-defaults"
 import { pusherServer } from "@/lib/pusher-server"
+import { reportError } from "@/lib/monitoring"
 
 function generatePassword(): string {
   const chars = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789"
@@ -153,7 +154,7 @@ export async function POST(req: Request) {
       },
     })
       .then(() => pusherServer.trigger(`private-association-${association.id}`, "new-notification", {}))
-      .catch(() => {})
+      .catch(error => reportError(error, { area: "portal", action: "portal.register.cotisation-notification", extra: { associationId: association.id, membreId } }))
   }
 
   const loginUrl = `${APP_URL}/portal/${slug}/login`
@@ -165,7 +166,7 @@ export async function POST(req: Request) {
     loginUrl,
     branding: resolveDocumentBranding(association),
     cotisation: cotisation ? { amount: Number(cotisation.amount), year: cotisation.year } : undefined,
-  }), { associationId: association.id, membreId: membreId ?? undefined, source: "MEMBER_INVITE" }).catch(() => {})
+  }), { associationId: association.id, membreId: membreId ?? undefined, source: "MEMBER_INVITE" }).catch(error => reportError(error, { area: "email", action: "portal.register.welcome-email", extra: { associationId: association.id, membreId } }))
 
   return NextResponse.json({ ok: true }, { status: 201 })
 }

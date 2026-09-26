@@ -4,6 +4,7 @@ import { aiExtractedRowSchema } from "@/lib/schemas"
 import { resolveAiConfig } from "@/lib/ai/client"
 import { completeText } from "@/lib/ai/complete"
 import { withAdminAuth } from "@/lib/api-wrapper"
+import { reportError } from "@/lib/monitoring"
 import { guardModule } from "@/lib/auth/require-module"
 import { rateLimit } from "@/lib/rate-limit"
 import { MAX_FUNCTION_UPLOAD_BYTES } from "@/lib/upload-limits"
@@ -93,7 +94,8 @@ export const POST = withAdminAuth(async (req, ctx) => {
     )
   }
 
-  let raw: unknown
+  let raw:       unknown
+  let rawLength: number | undefined
   try {
     const content = await completeText(aiConfig, {
       system:      SYSTEM_PROMPT,
@@ -102,8 +104,14 @@ export const POST = withAdminAuth(async (req, ctx) => {
       maxTokens:   4000,
       json:        true,
     })
+    rawLength = content.length
     raw = JSON.parse(content || "{}")
   } catch (err) {
+    reportError(err, {
+      area:   "ai",
+      action: "pdf-import.extract",
+      extra:  { associationId, provider: aiConfig.provider, model: aiConfig.model, rawLength },
+    })
     const msg = err instanceof Error ? err.message : "Erreur lors de l'analyse IA du relevé"
     return NextResponse.json({ error: msg }, { status: 502 })
   }

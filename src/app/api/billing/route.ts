@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma/client"
 import { withAdminAuth } from "@/lib/api-wrapper"
 import { getPricingInfo, customerHasPaymentMethod } from "@/lib/stripe"
 import { effectiveMemberLimit } from "@/lib/plan-limits"
+import { reportError } from "@/lib/monitoring"
 
 export const GET = withAdminAuth(async (_req, ctx) => {
   const [assoc, pricing, memberCount] = await Promise.all([
@@ -27,7 +28,7 @@ export const GET = withAdminAuth(async (_req, ctx) => {
   // missing card.
   const hasPaymentMethod = assoc.subscriptionStatus === "TRIAL" && assoc.stripeCustomerId
     ? await customerHasPaymentMethod(assoc.stripeCustomerId, assoc.stripeSubscriptionId).catch((err: unknown) => {
-        console.error("[billing] failed to check payment method for association", ctx.associationId, err)
+        reportError(err, { area: "stripe", action: "billing.check-payment-method", extra: { associationId: ctx.associationId } })
         return null
       })
     : null

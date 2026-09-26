@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma/client"
 import { amountToFrenchWords } from "@/lib/pdf/french-numbers"
 import { APP_TIME_ZONE } from "@/lib/date-format"
 import { formatAddress } from "@/lib/address"
+import { reportError } from "@/lib/monitoring"
 
 type DonForReceipt = {
   id:           string
@@ -287,7 +288,7 @@ export async function generateRecuFiscalEntreprise(
     } catch (err) {
       // Erreur attendue si le champ n'existe pas ou depasse sa longueur max (ex: b6
       // limite a 9 caracteres pour le SIREN) - ne jamais avaler l'erreur en silence.
-      console.error(`[recu-fiscal] failed to set field "${name}":`, err)
+      reportError(err, { area: "payments", action: "recu-fiscal.set-field", extra: { associationId: association.id, donId: don.id, field: name } })
     }
   }
 

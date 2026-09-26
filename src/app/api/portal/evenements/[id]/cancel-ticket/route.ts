@@ -6,6 +6,7 @@ import { stripe } from "@/lib/stripe"
 import { writeActivityLog } from "@/lib/activity-log"
 import { withPortalAuth } from "@/lib/api-wrapper"
 import { isEvenementOver } from "@/lib/evenement-timing"
+import { reportError } from "@/lib/monitoring"
 
 const bodySchema = z.object({ participationId: z.string().optional() })
 
@@ -108,7 +109,7 @@ export const POST = withPortalAuth<{ id: string }>(async (req, ctx, { id: evenem
         // original refund instead of creating a second one.
         idempotencyKey: `ticket-refund-${targetIds.slice().sort().join("-")}`,
       })
-    } catch (err) {
+    } catch (error) {
       // The claim above already committed — undo it so the seat doesn't sit "cancelled"
       // in the DB when no money actually moved. rsvp was never touched by the claim, so
       // there's nothing to restore for it here.
@@ -118,9 +119,9 @@ export const POST = withPortalAuth<{ id: string }>(async (req, ctx, { id: evenem
           data:  { ticketPaidAt: t.ticketPaidAt, stripeSessionId: t.stripeSessionId, amount: t.amount },
         }))
       )
-      console.error(`[cancel-ticket] Stripe refund failed for seats ${targetIds.join(",")}:`, err)
-      const message = err instanceof Stripe.errors.StripeError
-        ? err.message
+      reportError(error, { area: "stripe", action: "portal.cancel-ticket.refund", extra: { associationId, evenementId, membreId, participationIds: targetIds.join(",") } })
+      const message = error instanceof Stripe.errors.StripeError
+        ? error.message
         : "Le remboursement a échoué. Réessayez dans quelques instants ou contactez l'association."
       return NextResponse.json({ error: message }, { status: 502 })
     }

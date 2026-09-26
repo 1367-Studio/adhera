@@ -19,6 +19,7 @@ import { recordCotisationPayment } from "@/lib/cotisation-payments"
 import { resolveExerciceForDate } from "@/lib/finance/exercice"
 import { isMemberCardAvailable } from "@/lib/member-card/availability"
 import { addressColumns } from "@/lib/address"
+import { reportError } from "@/lib/monitoring"
 
 // Mirrors exactly what checkout/route.ts serializes into MembershipCheckoutDraft.registrants —
 // one entry per "Adhérent" block on the public form.
@@ -236,7 +237,7 @@ export async function consumeMembershipCheckoutDraft(draftId: string, paymentInt
     // Same "money (if any) already moved, a human must reconcile" reasoning as
     // handleMembershipOneOffCheckout's own catch block — a redelivered event or a genuine
     // race can throw here (e.g. draft.email now collides with a Membre created in between).
-    console.error(`[membership-multi] failed to consume checkout draft ${draftId} (association ${draft.associationId}):`, err)
+    reportError(err, { area: "webhook", action: "webhook.membership-multi-consume-draft", extra: { associationId: draft.associationId, draftId, paymentIntentId } })
     const isDuplicateEmail = err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2002"
     const admins = await prisma.user.findMany({
       where:  { associationId: draft.associationId, role: { in: ["ADMIN", "PRESIDENT"] }, active: true },
@@ -293,7 +294,7 @@ export async function consumeMembershipCheckoutDraft(draftId: string, paymentInt
         }
       }
     } catch (err) {
-      console.error(`[membership-multi] failed to record boutique product purchase for draft ${draftId} (association ${draft.associationId}):`, err)
+      reportError(err, { area: "webhook", action: "webhook.membership-multi-products", extra: { associationId: draft.associationId, draftId } })
       const admins = await prisma.user.findMany({
         where:  { associationId: draft.associationId, role: { in: ["ADMIN", "PRESIDENT"] }, active: true },
         select: { id: true },
@@ -351,7 +352,8 @@ export async function consumeMembershipCheckoutDraft(draftId: string, paymentInt
       otherRegistrants: registrants.slice(1).map(r => `${r.firstName} ${r.lastName}`),
       products:            purchasedProducts.length ? purchasedProducts : undefined,
       addons:              parseAddons(draft.addons ? JSON.stringify(draft.addons) : undefined).map(a => ({ label: a.label, amount: a.amount })),
-    }), { associationId: draft.associationId, membreId: membreIds[0], source: "TRANSACTION", sourceId: draftId }).catch(() => {})
+    }), { associationId: draft.associationId, membreId: membreIds[0], source: "TRANSACTION", sourceId: draftId })
+      .catch(error => reportError(error, { area: "email", action: "webhook.membership-multi-confirmation-email", extra: { associationId: draft.associationId, draftId } }))
 
     for (let i = 0; i < registrants.length; i++) {
       fireEventRule({
@@ -359,7 +361,7 @@ export async function consumeMembershipCheckoutDraft(draftId: string, paymentInt
         associationId: draft.associationId,
         association: { name: assoc.name, slug: assoc.slug, modules: assoc.modules, plan: assoc.plan, customBrandingEnabled: assoc.customBrandingEnabled, logoUrl: assoc.logoUrl },
         membre: { id: membreIds[i], firstName: registrants[i].firstName, lastName: registrants[i].lastName, email: i === 0 ? draft.email : null, phone: registrants[i].phone ?? null },
-      }).catch(() => {})
+      }).catch(error => reportError(error, { area: "webhook", action: "webhook.membership-multi-fire-event-rule", extra: { associationId: draft.associationId, draftId, membreId: membreIds[i] } }))
     }
   }
 
@@ -369,7 +371,7 @@ export async function consumeMembershipCheckoutDraft(draftId: string, paymentInt
     // Le groupe entier passe au crible, pas seulement le registrant 0 : c'est justement
     // l'enfant ou le conjoint ajouté en second qui existe déjà souvent en base.
     membreIds,
-  }).catch(() => {})
+  }).catch(error => reportError(error, { area: "webhook", action: "webhook.membership-multi-notify-signup", extra: { associationId: draft.associationId, draftId } }))
 
   await writeActivityLog({
     associationId: draft.associationId,

@@ -11,6 +11,7 @@ import { isEvenementOver } from "@/lib/evenement-timing"
 import { sendEmail } from "@/lib/mail"
 import { waitlistConfirmationEmail } from "@/lib/email"
 import { resolveDocumentBranding } from "@/lib/plan-limits"
+import { reportError } from "@/lib/monitoring"
 
 const MAX_QUANTITY  = 10
 
@@ -258,7 +259,8 @@ export const POST = withPortalAuth<Params>(async (req, ctx, { id: evenementId })
         eventLocation:   evenement.location,
         portalUrl,
         branding: resolveDocumentBranding(assoc),
-      }), { associationId: ctx.associationId, source: "PUBLIC_EVENT_INSCRIPTION", sourceId: result.ids[0] }).catch(() => {})))
+      }), { associationId: ctx.associationId, source: "PUBLIC_EVENT_INSCRIPTION", sourceId: result.ids[0] })
+        .catch(error => reportError(error, { area: "email", action: "portal.evenement.waitlist-email", extra: { associationId: ctx.associationId, evenementId } }))))
     }
     return NextResponse.json({ waitlisted: true })
   }

@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma/client"
 import { stripe } from "@/lib/stripe"
 import { writeActivityLog } from "@/lib/activity-log"
 import { rateLimit, requestIp } from "@/lib/rate-limit"
+import { reportError } from "@/lib/monitoring"
 
 // Self-service cancellation for recurring membership payments — accessed via the
 // unguessable cancelToken emailed at subscription start and on payment failure, not a
@@ -68,7 +69,7 @@ export async function POST(
     // and the webhook hasn't caught up to our DB yet) — nothing left to do, so let this
     // succeed instead of showing the member a scary error for something that's already true.
     if (!(err instanceof Stripe.errors.StripeInvalidRequestError)) {
-      console.error(`[cancel-cotisation-subscription] Stripe cancel failed for ${sub.id}:`, err)
+      reportError(err, { area: "stripe", action: "cotisation-subscriptions.cancel", extra: { associationId: sub.associationId, cotisationSubscriptionId: sub.id, stripeSubscriptionId: sub.stripeSubscriptionId } })
       return NextResponse.json({ error: "L'arrêt a échoué. Réessayez dans quelques instants ou contactez l'association." }, { status: 502 })
     }
   }

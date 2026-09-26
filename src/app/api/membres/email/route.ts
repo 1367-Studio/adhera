@@ -7,6 +7,7 @@ import { inngest } from "@/lib/inngest"
 import { resolveDocumentBranding } from "@/lib/plan-limits"
 import { EMAIL_ATTACHMENT_ERRORS, MAX_EMAIL_ATTACHMENTS_COUNT, verifyEmailAttachments } from "@/lib/email-attachments"
 import { SUPPORTED_LOCALES } from "@/i18n/locales"
+import { reportError } from "@/lib/monitoring"
 
 const MANAGERS = ["ADMIN", "PRESIDENT", "SECRETAIRE"]
 
@@ -127,7 +128,7 @@ export const POST = withAdminAuth(async (req, ctx) => {
       },
     })
   } catch (error: unknown) {
-    console.error("[membres/email] failed to queue bulk send:", error)
+    reportError(error, { area: "email", action: "membres.send-email-queue", extra: { associationId: ctx.associationId, jobId } })
     return NextResponse.json({ error: "Impossible de lancer l'envoi pour le moment. Veuillez réessayer." }, { status: 503 })
   }
 

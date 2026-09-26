@@ -3,6 +3,7 @@ import { stripe, isStaleStripeResourceError } from "@/lib/stripe"
 import { prisma } from "@/lib/prisma/client"
 import { withAdminAuth } from "@/lib/api-wrapper"
 import { writeActivityLog } from "@/lib/activity-log"
+import { reportError } from "@/lib/monitoring"
 
 const ADMINS = ["ADMIN", "PRESIDENT"]
 
@@ -24,7 +25,7 @@ export const POST = withAdminAuth(async (_req, ctx) => {
     await stripe.subscriptions.update(assoc.stripeSubscriptionId, { cancel_at_period_end: false })
   } catch (err) {
     if (!isStaleStripeResourceError(err)) {
-      console.error("[billing] failed to resume subscription for association", ctx.associationId, err)
+      reportError(err, { area: "stripe", action: "billing.resume-subscription", extra: { associationId: ctx.associationId } })
       return NextResponse.json({ error: "Impossible d'annuler la résiliation programmée. Contactez le support." }, { status: 502 })
     }
   }

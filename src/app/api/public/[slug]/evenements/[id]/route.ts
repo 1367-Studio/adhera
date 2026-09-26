@@ -8,6 +8,7 @@ import { canPreviewForm } from "@/lib/form-preview"
 import { evenementRefWhere } from "@/lib/slug"
 import { isEvenementOver } from "@/lib/evenement-timing"
 import type { Locale } from "@/i18n/locales"
+import { reportError } from "@/lib/monitoring"
 
 export async function GET(
   req: Request,
@@ -110,8 +111,8 @@ export async function GET(
   if (isPaid && assoc.stripeConnectId) {
     try {
       paymentEnabled = await connectAccountChargesEnabled(assoc.stripeConnectId)
-    } catch (err) {
-      console.error(`[public-evenement] failed to check payment availability for ${slug}/${id}:`, err)
+    } catch (error) {
+      reportError(error, { area: "stripe", action: "public.evenement.payment-availability", extra: { associationId: assoc.id, slug, evenementId: evenement.id } })
     }
   }
 
@@ -122,8 +123,8 @@ export async function GET(
   if (mods.dons && assoc.stripeConnectId) {
     try {
       donationsEnabled = await connectAccountChargesEnabled(assoc.stripeConnectId)
-    } catch (err) {
-      console.error(`[public-evenement] failed to check donation availability for ${slug}/${id}:`, err)
+    } catch (error) {
+      reportError(error, { area: "stripe", action: "public.evenement.donation-availability", extra: { associationId: assoc.id, slug, evenementId: evenement.id } })
     }
   }
 

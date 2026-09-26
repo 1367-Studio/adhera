@@ -7,6 +7,7 @@ import { invitationEmail } from "@/lib/email"
 import { writeActivityLog } from "@/lib/activity-log"
 import { APP_URL } from "@/lib/env"
 import { resolveDocumentBranding } from "@/lib/plan-limits"
+import { reportError } from "@/lib/monitoring"
 
 export type GrantAccessResult =
   | { ok: true }
@@ -70,7 +71,7 @@ export async function grantMembrePortalAccess(params: {
     role:            "MEMBRE",
     loginUrl:        `${APP_URL}/portal/${association.slug}/login`,
     branding:        resolveDocumentBranding(association),
-  }), { associationId, membreId: membre.id, source: "MEMBER_INVITE" }).catch(() => {})
+  }), { associationId, membreId: membre.id, source: "MEMBER_INVITE" }).catch((error: unknown) => reportError(error, { area: "email", action: "membre-access.invitation-email", extra: { associationId, membreId: membre.id } }))
 
   await writeActivityLog({
     associationId,

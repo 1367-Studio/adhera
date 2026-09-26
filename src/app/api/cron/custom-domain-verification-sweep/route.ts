@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma/client"
 import { checkAndUpdateCustomDomainStatus } from "@/lib/vercel-domains"
+import { reportError } from "@/lib/monitoring"
 
 // Re-checks every association stuck on PENDING against the Vercel Domains API, so
 // "Ativo" shows up in Paramètres a few minutes after the admin's DNS propagates without
@@ -28,9 +29,9 @@ export async function POST(req: Request) {
     try {
       await checkAndUpdateCustomDomainStatus(association.id)
       checked++
-    } catch (err) {
+    } catch (error) {
       failed++
-      console.error(`[cron/custom-domain-verification-sweep] failed for association ${association.id}:`, err)
+      reportError(error, { area: "cron", action: "cron.custom-domain-verification-sweep", extra: { associationId: association.id } })
     }
   }
 

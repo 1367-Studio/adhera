@@ -1,6 +1,7 @@
 import type { UserRole } from "@prisma/client"
 import { prisma } from "@/lib/prisma/client"
 import { pusherServer } from "@/lib/pusher-server"
+import { reportError } from "@/lib/monitoring"
 
 // Mêmes rôles que les autres alertes financières (voir le webhook Stripe) : encaisser sans
 // enregistrer est un problème de trésorerie, pas d'animation de l'association. Typé UserRole[]
@@ -41,12 +42,12 @@ export async function notifyMissingCotisation(params: {
       data: managers.map(manager => ({ userId: manager.id, groupKey, title, body, link, scope: "GESTION" as const })),
       skipDuplicates: true,
     })
-    await pusherServer.trigger(`private-association-${associationId}`, "new-notification", {}).catch(() => {})
+    await pusherServer.trigger(`private-association-${associationId}`, "new-notification", {}).catch((error: unknown) => reportError(error, { area: "api", action: "cotisation-alerts.pusher", extra: { associationId, groupKey } }))
     return true
   } catch (error) {
     // Jamais bloquant : cette alerte accompagne un paiement déjà encaissé, elle ne doit pas
     // faire échouer le webhook qui la déclenche ni la tâche qui la balaie.
-    console.error(`[cotisation-alerts] notification "${groupKey}" impossible à créer:`, error)
+    reportError(error, { area: "payments", action: "cotisation-alerts.notify-missing", extra: { associationId, groupKey } })
     return false
   }
 }

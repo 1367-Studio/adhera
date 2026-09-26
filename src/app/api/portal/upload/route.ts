@@ -2,6 +2,7 @@ import { NextResponse } from "next/server"
 import { uploadToR2 } from "@/lib/r2"
 import { withPortalAuth } from "@/lib/api-wrapper"
 import { MAX_FUNCTION_UPLOAD_BYTES } from "@/lib/upload-limits"
+import { reportError } from "@/lib/monitoring"
 
 // Same cap as the admin route (src/app/api/upload/route.ts) — both share
 // MAX_FUNCTION_UPLOAD_BYTES, bounded by Vercel's request-body limit.
@@ -18,7 +19,7 @@ function sniffFileType(buffer: Buffer): string | null {
   return null
 }
 
-export const POST = withPortalAuth(async (req) => {
+export const POST = withPortalAuth(async (req, ctx) => {
   const formData = await req.formData()
   const file = formData.get("file") as File | null
 
@@ -38,8 +39,8 @@ export const POST = withPortalAuth(async (req) => {
     // other folders in the same bucket.
     const url = await uploadToR2(buffer, "membres", contentType)
     return NextResponse.json({ url })
-  } catch (err) {
-    console.error("Upload error:", err)
+  } catch (error) {
+    reportError(error, { area: "storage", action: "portal.upload", extra: { associationId: ctx.associationId, membreId: ctx.membreId } })
     return NextResponse.json({ error: "Erreur lors de l'upload" }, { status: 500 })
   }
 })

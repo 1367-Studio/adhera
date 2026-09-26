@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import { z } from "zod"
 import { withAdminAuth } from "@/lib/api-wrapper"
+import { reportError } from "@/lib/monitoring"
 import { prisma } from "@/lib/prisma/client"
 import { completeWithImages } from "@/lib/ai/complete"
 import { paperFormExtractRequestSchema, type PaperFormField, type PaperFormTemplateResponse } from "@/lib/schemas"
@@ -139,6 +140,7 @@ export const POST = withAdminAuth(async (req, ctx) => {
   // Nothing here is persisted or logged: the page (a minor's identity, parents' phones…)
   // lives only for the duration of this request.
   let rawAnswer: unknown
+  let rawLength: number | undefined
   try {
     const content = await completeWithImages(vision.aiConfig, {
       system:      isStrict ? `${SYSTEM_PROMPT}\n\n${STRICT_MODE_PROMPT}` : SYSTEM_PROMPT,
@@ -149,13 +151,24 @@ export const POST = withAdminAuth(async (req, ctx) => {
       json:        true,
       timeoutMs:   40_000,
     })
+    rawLength = content.length
     rawAnswer = parseModelJson(content)
   } catch (error) {
+    reportError(error, {
+      area:   "ai",
+      action: "scan.extract",
+      extra:  { associationId, templateId: template.id, provider: vision.aiConfig.provider, model: vision.aiConfig.model },
+    })
     const message = error instanceof Error ? error.message : "Erreur lors de la lecture IA de la page"
     return NextResponse.json({ error: message }, { status: 502 })
   }
 
   if (rawAnswer === null) {
+    reportError(new Error("Vision model returned invalid JSON"), {
+      area:   "ai",
+      action: "scan.extract.parse",
+      extra:  { associationId, templateId: template.id, provider: vision.aiConfig.provider, model: vision.aiConfig.model, rawLength },
+    })
     return NextResponse.json({ error: "Réponse illisible du fournisseur IA, réessayez." }, { status: 502 })
   }
 

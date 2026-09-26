@@ -7,6 +7,7 @@ import { parseModules } from "@/lib/modules"
 import { connectAccountChargesEnabled } from "@/lib/stripe"
 import { canPreviewForm } from "@/lib/form-preview"
 import { eligibleReceiptAmount } from "@/lib/receipt-eligibility"
+import { reportError } from "@/lib/monitoring"
 
 export async function GET(
   req: Request,
@@ -48,7 +49,7 @@ export async function GET(
       // Informational only (drives whether the form renders payable) — the checkout
       // route re-checks for real before any money moves, same convention as the
       // standalone /api/public/[slug]/don route.
-      console.error(`[public-donation-form] failed to check payment availability for ${slug}/${formSlug}:`, err)
+      reportError(err, { area: "stripe", action: "public.don.form-payment-availability", extra: { associationId: assoc.id, donationFormId: form.id } })
     }
   }
 

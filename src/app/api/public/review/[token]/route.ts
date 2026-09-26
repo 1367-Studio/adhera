@@ -3,6 +3,7 @@ import { z } from "zod"
 import { prisma } from "@/lib/prisma/client"
 import { rateLimit, requestIp } from "@/lib/rate-limit"
 import { notifyEventReviewSubmitted } from "@/lib/evenement-notify"
+import { reportError } from "@/lib/monitoring"
 
 // Public, no-login page for leaving a post-event review — reached via the unguessable
 // reviewToken emailed after the event (see src/inngest/event-review-request.ts), same
@@ -89,7 +90,7 @@ export async function POST(
     rating,
     comment,
     adminNotificationEmail: participation.evenement.adminNotificationEmail,
-  }).catch(() => {})
+  }).catch(error => reportError(error, { area: "public", action: "public.evenement.review.notify-admins", extra: { associationId: participation.evenement.associationId, evenementId: participation.evenementId, participationId: participation.id } }))
 
   return NextResponse.json({ ok: true })
 }

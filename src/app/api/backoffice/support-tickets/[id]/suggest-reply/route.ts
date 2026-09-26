@@ -4,6 +4,7 @@ import { GROQ_MODEL, platformClient, type ResolvedAnyAiConfig } from "@/lib/ai/c
 import { completeText } from "@/lib/ai/complete"
 import { stripCodeFences } from "@/lib/ai/normalize-html"
 import { withSuperAdminAuth } from "@/lib/api-wrapper"
+import { reportError } from "@/lib/monitoring"
 import { formatHelpDocumentation, helpSourcesFrom, retrieveHelpContextOrEmpty } from "@/lib/help/retrieval"
 import { rateLimit } from "@/lib/rate-limit"
 import { DEFAULT_LOCALE, LOCALE_LABELS, isSupportedLocale } from "@/i18n/locales"
@@ -135,10 +136,22 @@ export const POST = withSuperAdminAuth<{ id: string }>(async (_req, ctx, { id })
     })
 
     const suggestion = toPlainText(raw)
-    if (!suggestion) return NextResponse.json({ error: "Aucune suggestion générée." }, { status: 502 })
+    if (!suggestion) {
+      reportError(new Error("Support reply suggestion came back empty"), {
+        area:   "ai",
+        action: "support.suggest-reply",
+        extra:  { ticketId: id, model: aiConfig.model, rawLength: raw.length },
+      })
+      return NextResponse.json({ error: "Aucune suggestion générée." }, { status: 502 })
+    }
 
     return NextResponse.json({ suggestion, sources: helpSourcesFrom(hits) })
   } catch (error) {
+    reportError(error, {
+      area:   "ai",
+      action: "support.suggest-reply",
+      extra:  { ticketId: id, provider: aiConfig.provider, model: aiConfig.model },
+    })
     const message = error instanceof Error ? error.message : "Erreur IA"
     return NextResponse.json({ error: message }, { status: 502 })
   }

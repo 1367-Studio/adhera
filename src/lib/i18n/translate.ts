@@ -4,6 +4,7 @@ import { resolveAiConfig, type ResolvedAnyAiConfig } from "@/lib/ai/client"
 import { completeText } from "@/lib/ai/complete"
 import { rateLimit } from "@/lib/rate-limit"
 import { writeActivityLog } from "@/lib/activity-log"
+import { reportError } from "@/lib/monitoring"
 import { DEFAULT_LOCALE, type Locale } from "@/i18n/locales"
 
 // These public routes are anonymous and uncached-on-first-hit, unlike the other 3 AI
@@ -163,7 +164,11 @@ async function batchTranslate(
         try {
           translated = await aiTranslate(missTexts, locale, aiConfig)
         } catch (err) {
-          console.error("[translate] AI translation failed, falling back to Azure:", err)
+          reportError(err, {
+            area:   "ai",
+            action: "translate.ai-fallback",
+            extra:  { associationId, locale, provider: aiConfig.provider, model: aiConfig.model, textCount: missTexts.length },
+          })
           // Surfaces a genuine failure (bad model, dead key, malformed output) to the admin —
           // at most once a day per association, so a persistently broken key doesn't spam
           // the activity log on every single public page view.
@@ -184,7 +189,15 @@ async function batchTranslate(
         // Azure supports up to 1000 strings per request — all misses in one call.
         translated = await azureTranslate(missTexts, azureTag(locale))
       } catch (err) {
-        console.error("[translate] Azure call failed, falling back to original text:", err)
+        // Failures aren't cached, so an Azure outage retries on every public page view —
+        // one report per association per hour is enough to see it without burning the quota.
+        if (await rateLimit(`translate-azure-fail-report:${associationId}`, 1, 60 * 60_000)) {
+          reportError(err, {
+            area:   "ai",
+            action: "translate.azure",
+            extra:  { associationId, locale, textCount: missTexts.length },
+          })
+        }
       }
     }
 

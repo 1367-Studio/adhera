@@ -5,6 +5,7 @@ import { resolveDocumentBranding } from "@/lib/plan-limits"
 import { pusherServer } from "@/lib/pusher-server"
 import { APP_URL } from "@/lib/env"
 import { findPossibleDuplicates } from "@/lib/membre-duplicates"
+import { reportError } from "@/lib/monitoring"
 
 // Called once per successful MembershipForm signup (every kind: free/offline/ONE_OFF/
 // RECURRING, single or multi-registrant) — the one place this fires, so every checkout path
@@ -80,7 +81,7 @@ export async function notifyMembershipSignup(params: {
         await pusherServer.trigger(`private-association-${params.associationId}`, "new-notification", {}).catch(() => {})
       }
     } catch (err) {
-      console.error(`[membership-notify] duplicate sweep failed for association ${params.associationId}:`, err)
+      reportError(err, { area: "payments", action: "membership-notify.duplicate-sweep", extra: { associationId: params.associationId } })
     }
   }
 
@@ -104,5 +105,6 @@ export async function notifyMembershipSignup(params: {
     dashboardUrl:    `${APP_URL}/dashboard/membres`,
     branding:        resolveDocumentBranding(assoc),
     pendingValidation: params.pendingValidation,
-  }), { associationId: params.associationId, membreId: params.primaryMembreId, source: "TRANSACTION" }).catch(() => {})
+  }), { associationId: params.associationId, membreId: params.primaryMembreId, source: "TRANSACTION" })
+    .catch(error => reportError(error, { area: "email", action: "membership-notify.admin-email", extra: { associationId: params.associationId, membreId: params.primaryMembreId } }))
 }

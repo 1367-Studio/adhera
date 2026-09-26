@@ -4,6 +4,7 @@ import { resolveHelpLocale } from "@/lib/help/locale"
 import { sanityFetch } from "@/sanity/fetch"
 import { HELP_CHANGELOG_QUERY } from "@/sanity/queries"
 import type { ChangelogEntry } from "@/sanity/types"
+import { reportError } from "@/lib/monitoring"
 
 export const GET = withAdminAuth(async () => {
   const locale = await resolveHelpLocale()
@@ -16,7 +17,7 @@ export const GET = withAdminAuth(async () => {
     })
     return NextResponse.json(entries)
   } catch (error) {
-    console.error("[help] changelog fetch failed:", error)
+    reportError(error, { area: "api", action: "help.changelog-fetch" })
     return NextResponse.json({ error: "Centre d'aide indisponible, réessayez plus tard." }, { status: 502 })
   }
 }, { allowWhenLocked: true })

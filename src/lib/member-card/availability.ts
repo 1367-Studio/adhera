@@ -1,4 +1,5 @@
 import { loadMemberCardEligibility } from "@/lib/member-card/loader"
+import { reportError } from "@/lib/monitoring"
 
 // True only when the member's card actually exists right now: the association turned the card
 // on, the member is active, and a PAYE/EXONERE cotisation covers today (full precedence in
@@ -17,7 +18,7 @@ export async function isMemberCardAvailable(associationId: string, membreId: str
     const memberCard = await loadMemberCardEligibility(associationId, membreId)
     return memberCard?.eligibility.state === "valid"
   } catch (error) {
-    console.error(`[member-card] eligibility lookup failed for membre ${membreId} (association ${associationId}):`, error)
+    reportError(error, { area: "api", action: "member-card.eligibility-lookup", extra: { associationId, membreId } })
     return false
   }
 }

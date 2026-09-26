@@ -3,6 +3,7 @@ import { stripe, isStaleStripeResourceError } from "@/lib/stripe"
 import { prisma } from "@/lib/prisma/client"
 import { APP_URL } from "@/lib/env"
 import { withAdminAuth } from "@/lib/api-wrapper"
+import { reportError } from "@/lib/monitoring"
 
 const ADMINS = ["ADMIN", "PRESIDENT"]
 
@@ -32,7 +33,7 @@ export const POST = withAdminAuth(async (req, ctx) => {
     return NextResponse.json({ url: session.url })
   } catch (err) {
     if (isStaleStripeResourceError(err)) {
-      console.error("[billing] stale/inaccessible Stripe customer for association", ctx.associationId, err)
+      reportError(err, { area: "stripe", action: "billing.portal-stale-customer", extra: { associationId: ctx.associationId } })
       return NextResponse.json(
         { error: "Le compte de facturation Stripe n'est plus accessible. Contactez le support." },
         { status: 502 },
@@ -40,7 +41,7 @@ export const POST = withAdminAuth(async (req, ctx) => {
     }
     // Cause la plus probable la première fois : le Customer Portal n'a pas encore
     // été configuré côté Stripe (Réglages → Facturation → Customer portal).
-    console.error("[billing] failed to create billing portal session for association", ctx.associationId, err)
+    reportError(err, { area: "stripe", action: "billing.portal-session", extra: { associationId: ctx.associationId } })
     return NextResponse.json(
       { error: "Impossible d'ouvrir l'espace de gestion Stripe. Vérifiez que le Customer Portal est activé dans le Dashboard Stripe (Réglages → Facturation)." },
       { status: 502 },

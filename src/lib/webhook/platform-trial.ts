@@ -6,6 +6,7 @@ import { pusherServer } from "@/lib/pusher-server"
 import { writeActivityLog } from "@/lib/activity-log"
 import { customerHasPaymentMethod } from "@/lib/stripe"
 import { APP_URL } from "@/lib/env"
+import { reportError } from "@/lib/monitoring"
 
 // The platform subscription of an association that signed up without a card (see
 // /api/register): Stripe runs the trial with no payment method on file and, if none gets
@@ -59,7 +60,10 @@ export async function handleTrialWillEnd(sub: Stripe.Subscription, stripeEventId
 
   // Stripe unreachable → assume there is a card rather than send a "you have no card"
   // email that may well be wrong.
-  const hasCard = await customerHasPaymentMethod(assoc.stripeCustomerId, sub.id).catch(() => true)
+  const hasCard = await customerHasPaymentMethod(assoc.stripeCustomerId, sub.id).catch(error => {
+    reportError(error, { area: "stripe", action: "webhook.trial-will-end-check-payment-method", extra: { associationId: assoc.id, stripeSubscriptionId: sub.id, stripeEventId } })
+    return true
+  })
   if (hasCard) return
 
   // Stripe can redeliver the event — one nudge per delivery, same guard as
@@ -95,7 +99,8 @@ export async function handleTrialWillEnd(sub: Stripe.Subscription, stripeEventId
       associationName: assoc.name,
       trialEndsAt,
       billingUrl,
-    })).catch(() => {})
+    }))
+      .catch(error => reportError(error, { area: "email", action: "webhook.trial-ending-email", extra: { associationId: assoc.id, stripeEventId } }))
   }
   await notifyAdmins(assoc.id, admins, {
     title: "Votre essai gratuit se termine bientôt",
@@ -143,7 +148,8 @@ export async function handleTrialExpired(p: {
       email:           admin.email,
       associationName: p.associationName,
       subscribeUrl,
-    })).catch(() => {})
+    }))
+      .catch(error => reportError(error, { area: "email", action: "webhook.trial-expired-email", extra: { associationId: p.associationId, stripeEventId: p.stripeEventId } }))
   }
   await notifyAdmins(p.associationId, admins, {
     title: "Votre essai gratuit est terminé",

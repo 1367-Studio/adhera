@@ -14,6 +14,7 @@ import {
   getPendingLogin, clearPendingLogin, setVerifiedLogin,
   type PendingLogin,
 } from "@/lib/auth/two-factor-store"
+import { reportError } from "@/lib/monitoring"
 
 type SessionUser = { id?: string; role?: string; associationId?: string | null }
 type Result<T = object> = ({ ok: true } & T) | { ok: false; error: string }
@@ -281,7 +282,7 @@ export async function verifyTwoFactorLogin(
     })
   } catch (error) {
     if (error instanceof AuthError) {
-      console.error("[2fa] signIn failed:", error.type, error.cause ?? error)
+      reportError(error, { area: "api", action: "auth.two-factor-sign-in", extra: { userId: pending.userId, authErrorType: error.type } })
       return { ok: false, error: "Erreur lors de la connexion." }
     }
     throw error

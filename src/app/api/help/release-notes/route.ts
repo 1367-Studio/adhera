@@ -4,6 +4,7 @@ import { resolveHelpLocale } from "@/lib/help/locale"
 import { sanityFetch } from "@/sanity/fetch"
 import { HELP_RELEASE_NOTES_QUERY } from "@/sanity/queries"
 import type { ReleaseNote } from "@/sanity/types"
+import { reportError } from "@/lib/monitoring"
 
 // Older entries never pop up, even if a user has not seen them yet.
 const RELEASE_NOTES_MAX_AGE_DAYS = 90
@@ -23,7 +24,7 @@ export const GET = withAdminAuth(async () => {
     })
     return NextResponse.json(releaseNotes)
   } catch (error) {
-    console.error("[help] release notes fetch failed:", error)
+    reportError(error, { area: "api", action: "help.release-notes-fetch" })
     return NextResponse.json({ error: "Centre d'aide indisponible, réessayez plus tard." }, { status: 502 })
   }
 }, { allowWhenLocked: true })

@@ -16,6 +16,7 @@ import { SPOKEN_LANGUAGE_CODES } from "@/lib/languages"
 import { ADDRESS_MAX_LENGTHS, addressColumns, addressIsFilled } from "@/lib/address"
 import { SUPPORTED_LOCALES } from "@/i18n/locales"
 import { findInvalidMembershipFormAnswer } from "@/lib/membership-form-answers-validation"
+import { reportError } from "@/lib/monitoring"
 
 // Same role set as POST /api/membres — whoever can create a member can register one
 // through a form on their behalf.
@@ -208,7 +209,8 @@ export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
     year:            cotisation.year,
     payUrl:          `${APP_URL}/cotisation/${cotisation.paymentToken}`,
     branding:        resolveDocumentBranding(assoc),
-  }), { associationId, membreId: membre.id, source: "TRANSACTION" }).catch(() => {})
+  }), { associationId, membreId: membre.id, source: "TRANSACTION" }).catch(error =>
+    reportError(error, { area: "email", action: "membership-forms.admin-registration-payment-link-email", extra: { associationId, membreId: membre.id, cotisationId: cotisation.id } }))
 
   await writeActivityLog({
     associationId,

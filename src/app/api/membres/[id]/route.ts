@@ -11,6 +11,7 @@ import { cancelActiveCotisationSubscriptionForMembre } from "@/lib/webhook/cotis
 import { grantMembrePortalAccess } from "@/lib/membre-access"
 import { resolveMembreMembershipFormId } from "@/lib/membre-membership-form"
 import { findInvalidMembershipFormAnswer } from "@/lib/membership-form-answers-validation"
+import { reportError } from "@/lib/monitoring"
 
 const RESPONSABLE_SELECT = {
   select: {
@@ -319,8 +320,8 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
       select: { name: true, slug: true, plan: true, customBrandingEnabled: true, logoUrl: true },
     })
     if (association) {
-      await grantMembrePortalAccess({ membre, associationId, actorId: userId, association }).catch(err => {
-        console.error(`[membres/approve] failed to grant portal access to ${membre.id} after approval:`, err)
+      await grantMembrePortalAccess({ membre, associationId, actorId: userId, association }).catch(error => {
+        reportError(error, { area: "email", action: "membres.approve-grant-portal-access", extra: { associationId, membreId: membre.id } })
       })
     }
   }

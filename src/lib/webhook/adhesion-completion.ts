@@ -12,6 +12,7 @@ import { isSpokenLanguage } from "@/lib/languages"
 import { addressColumns } from "@/lib/address"
 import { eligibleReceiptAmount } from "@/lib/receipt-eligibility"
 import { pusherServer } from "@/lib/pusher-server"
+import { reportError } from "@/lib/monitoring"
 
 const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"] as const
 
@@ -165,14 +166,15 @@ export async function handleAdhesionCompletion(session: Stripe.Checkout.Session)
     // Anything else: the member has already paid, so this can't just fail silently — see
     // notifyManagersOfFailedCompletion's own comment for why this mirrors
     // handleMembershipOneOffCheckout's catch block.
-    console.error(`[adhesion-completion] failed to record payment for checkout session ${session.id} (membre ${membre.id}):`, err)
-    await notifyManagersOfFailedCompletion(membre.associationId, `${membre.firstName} ${membre.lastName}`, amount).catch(() => {})
+    reportError(err, { area: "webhook", action: "webhook.adhesion-completion-record-payment", extra: { associationId: membre.associationId, membreId: membre.id, checkoutSessionId: session.id } })
+    await notifyManagersOfFailedCompletion(membre.associationId, `${membre.firstName} ${membre.lastName}`, amount)
+      .catch(error => reportError(error, { area: "webhook", action: "webhook.adhesion-completion-notify-managers", extra: { associationId: membre.associationId, membreId: membre.id, checkoutSessionId: session.id } }))
     return
   }
 
   if (paymentIntentId) {
-    await stripe.paymentIntents.update(paymentIntentId, { metadata: { cotisationId: cotisation.id } }).catch(err => {
-      console.error(`[adhesion-completion] failed to backfill paymentIntent metadata for refund reconciliation (session ${session.id}):`, err)
+    await stripe.paymentIntents.update(paymentIntentId, { metadata: { cotisationId: cotisation.id } }).catch(error => {
+      reportError(error, { area: "stripe", action: "webhook.adhesion-completion-backfill-metadata", extra: { associationId: membre.associationId, cotisationId: cotisation.id, paymentIntentId, checkoutSessionId: session.id } })
     })
   }
 
@@ -180,7 +182,8 @@ export async function handleAdhesionCompletion(session: Stripe.Checkout.Session)
     sendEmail(adhesionCompletionConfirmationEmail({
       firstName: membre.firstName, email: membre.email, associationName: membre.association.name,
       amount, branding: resolveDocumentBranding(membre.association),
-    }), { associationId: membre.associationId, membreId: membre.id, source: "TRANSACTION", sourceId: cotisation.id }).catch(() => {})
+    }), { associationId: membre.associationId, membreId: membre.id, source: "TRANSACTION", sourceId: cotisation.id })
+      .catch(error => reportError(error, { area: "email", action: "webhook.adhesion-completion-email", extra: { associationId: membre.associationId, membreId: membre.id, cotisationId: cotisation.id } }))
   }
 
   await writeActivityLog({

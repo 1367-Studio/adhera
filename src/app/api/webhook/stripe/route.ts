@@ -39,6 +39,7 @@ import {
   isMembershipInstallmentEvent, handleMembershipInstallmentCheckout, handleInstallmentInvoicePaid,
   tryHandleInstallmentInvoicePaymentFailed, handleMembershipInstallmentDeleted,
 } from "@/lib/webhook/membership-installments"
+import { reportError } from "@/lib/monitoring"
 
 export const dynamic = "force-dynamic"
 
@@ -281,7 +282,7 @@ export async function POST(req: Request) {
               })
               pdfAttachment = { filename: `recu-${receiptNumber}.pdf`, content: pdf }
             } catch (err) {
-              console.error(`[boutique-pdf] failed to generate for commande ${commande.id}:`, err)
+              reportError(err, { area: "webhook", action: "webhook.boutique-receipt-pdf", extra: { associationId: commande.associationId, commandeId: commande.id, stripeEventId: event.id } })
             }
 
             sendEmail({
@@ -300,7 +301,8 @@ export async function POST(req: Request) {
                 branding: resolveDocumentBranding(commande.association),
               }),
               attachments: pdfAttachment ? [pdfAttachment] : undefined,
-            }, { associationId: commande.associationId, membreId: commande.membreId ?? undefined, source: "TRANSACTION", sourceId: commande.id }).catch(() => {})
+            }, { associationId: commande.associationId, membreId: commande.membreId ?? undefined, source: "TRANSACTION", sourceId: commande.id })
+              .catch(error => reportError(error, { area: "email", action: "webhook.boutique-confirmation-email", extra: { associationId: commande.associationId, commandeId: commande.id, stripeEventId: event.id } }))
           }
 
           // Push notification + email to association admins
@@ -335,7 +337,7 @@ export async function POST(req: Request) {
                 totalAmount:     commande.totalAmount,
                 dashboardUrl,
               }), { associationId: commande.associationId, source: "BOUTIQUE_ADMIN_ALERT", sourceId: commande.id })
-                .catch(err => console.error(`[boutique-admin-alert] failed to email admin ${admin.email} for commande ${commande.id}:`, err))
+                .catch(error => reportError(error, { area: "email", action: "webhook.boutique-admin-alert-email", extra: { associationId: commande.associationId, commandeId: commande.id, stripeEventId: event.id } }))
             }
           }
         }
@@ -406,14 +408,17 @@ export async function POST(req: Request) {
               membre:         { select: { id: true, firstName: true, lastName: true, email: true, userId: true } },
               association:    { select: { name: true, slug: true, plan: true, customBrandingEnabled: true, logoUrl: true } },
             },
-          }).catch(() => null)
+          }).catch(error => {
+            reportError(error, { area: "webhook", action: "webhook.cotisation-paid-lookup", extra: { associationId: existingCotisation.associationId, cotisationId, stripeEventId: event.id } })
+            return null
+          })
           if (paidCot && paidCot.membre.email && !paidCot.membre.userId) {
             await grantMembrePortalAccess({
               membre:        paidCot.membre,
               associationId: existingCotisation.associationId,
               actorId:       null,
               association:   paidCot.association,
-            }).catch(() => {})
+            }).catch(error => reportError(error, { area: "webhook", action: "webhook.cotisation-grant-portal-access", extra: { associationId: existingCotisation.associationId, cotisationId, stripeEventId: event.id } }))
             if (paidCot.membershipForm) {
               await notifyMembershipSignup({
                 associationId:          existingCotisation.associationId,
@@ -422,7 +427,7 @@ export async function POST(req: Request) {
                 memberNames:            [`${paidCot.membre.firstName} ${paidCot.membre.lastName}`],
                 amount:                 chargedAmount,
                 primaryMembreId:        paidCot.membre.id,
-              }).catch(() => {})
+              }).catch(error => reportError(error, { area: "webhook", action: "webhook.cotisation-notify-signup", extra: { associationId: existingCotisation.associationId, cotisationId, stripeEventId: event.id } }))
             }
           }
         } catch (err) {
@@ -595,7 +600,7 @@ export async function POST(req: Request) {
               }
             }
           } catch (err) {
-            console.error(`[evenement-products] failed to record boutique product purchase for checkout session ${sess.id} (association ${evenement.associationId}):`, err)
+            reportError(err, { area: "webhook", action: "webhook.evenement-products", extra: { associationId: evenement.associationId, orderId, checkoutSessionId: sess.id, stripeEventId: event.id } })
             const admins = await prisma.user.findMany({
               where:  { associationId: evenement.associationId, role: { in: ["ADMIN", "PRESIDENT"] }, active: true },
               select: { id: true },
@@ -676,7 +681,8 @@ export async function POST(req: Request) {
                 cancelUrl:       t.cancelToken ? `${APP_URL}/annulation/${t.cancelToken}` : undefined,
                 ticketQrs:       ticketQrFor(t) ? [ticketQrFor(t)!] : undefined,
                 branding:        resolveDocumentBranding(assoc),
-              }), { associationId: evenement.associationId, source: "TRANSACTION", sourceId: orderId }).catch(() => {})))
+              }), { associationId: evenement.associationId, source: "TRANSACTION", sourceId: orderId })
+                .catch(error => reportError(error, { area: "email", action: "webhook.ticket-purchase-email", extra: { associationId: evenement.associationId, orderId, stripeEventId: event.id } }))))
             } else if (buyerTicket.email) {
               // The buyer's single combined email carries every seat's QR (theirs + their
               // guests') — guests may have no email of their own, and the party typically
@@ -696,7 +702,8 @@ export async function POST(req: Request) {
                 cancelUrl:       undefined,
                 ticketQrs:       allQrs.length ? allQrs : undefined,
                 branding:        resolveDocumentBranding(assoc),
-              }), { associationId: evenement.associationId, membreId: buyerTicket.membreId ?? undefined, source: "TRANSACTION", sourceId: orderId }).catch(() => {})
+              }), { associationId: evenement.associationId, membreId: buyerTicket.membreId ?? undefined, source: "TRANSACTION", sourceId: orderId })
+                .catch(error => reportError(error, { area: "email", action: "webhook.ticket-purchase-email", extra: { associationId: evenement.associationId, orderId, stripeEventId: event.id } }))
             }
           }
 
@@ -714,7 +721,7 @@ export async function POST(req: Request) {
             amount:         totalAmount,
             adminNotificationEmail: evenement.adminNotificationEmail,
             membreId:       buyerTicket.membreId ?? undefined,
-          }).catch(() => {})
+          }).catch(error => reportError(error, { area: "webhook", action: "webhook.ticket-notify-registration", extra: { associationId: evenement.associationId, orderId, stripeEventId: event.id } }))
         }
       } else if (donId) {
         const paidAt = new Date()
@@ -781,7 +788,7 @@ export async function POST(req: Request) {
                 // instead; they (or the donor, via the portal download route) can
                 // regenerate later — it reuses the receiptNumber already assigned above,
                 // so retrying doesn't burn a second sequential number.
-                console.error(`[recu-fiscal] failed to generate for don ${donId}:`, err)
+                reportError(err, { area: "webhook", action: "webhook.don-recu-fiscal", extra: { associationId: don.associationId, donId, stripeEventId: event.id } })
                 const admins = await prisma.user.findMany({
                   where:  { associationId: don.associationId, role: { in: ["ADMIN", "PRESIDENT", "TRESORIER"] }, active: true },
                   select: { id: true },
@@ -820,7 +827,8 @@ export async function POST(req: Request) {
               branding:            resolveDocumentBranding(assoc),
             }),
             attachments: pdfAttachment ? [pdfAttachment] : undefined,
-          }, { associationId: don.associationId, membreId: don.membreId ?? undefined, source: "TRANSACTION", sourceId: donId }).catch(() => {})
+          }, { associationId: don.associationId, membreId: don.membreId ?? undefined, source: "TRANSACTION", sourceId: donId })
+            .catch(error => reportError(error, { area: "email", action: "webhook.don-confirmation-email", extra: { associationId: don.associationId, donId, stripeEventId: event.id } }))
         }
 
         await writeActivityLog({
@@ -959,7 +967,11 @@ export async function POST(req: Request) {
           // below, which is the whole point of this branch.
           let skipLedgerAdjustment = false
           if (commandeId) {
-            const recentRefunds = await stripe.refunds.list({ payment_intent: paymentIntentId, limit: 1 }).catch(() => null)
+            const recentRefunds = await stripe.refunds.list({ payment_intent: paymentIntentId, limit: 1 })
+              .catch(error => {
+                reportError(error, { area: "stripe", action: "webhook.charge-refunded-list-refunds", extra: { associationId, commandeId, paymentIntentId, stripeEventId: event.id } })
+                return null
+              })
             skipLedgerAdjustment = recentRefunds?.data[0]?.metadata?.source === "boutique-refund-route"
           }
 
@@ -1496,7 +1508,8 @@ export async function POST(req: Request) {
           attemptCount,
           nextAttemptAt,
           billingUrl,
-        })).catch(() => {})
+        }))
+          .catch(error => reportError(error, { area: "email", action: "webhook.subscription-payment-failed-email", extra: { associationId: assoc.id, stripeEventId: event.id } }))
       }
 
       await prisma.notification.createMany({

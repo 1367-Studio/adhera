@@ -4,6 +4,7 @@ import { resolveAiConfig } from "@/lib/ai/client"
 import { completeText } from "@/lib/ai/complete"
 import { normalizeAiHtml } from "@/lib/ai/normalize-html"
 import { withAdminAuth } from "@/lib/api-wrapper"
+import { reportError } from "@/lib/monitoring"
 import { rateLimit } from "@/lib/rate-limit"
 import { fetchModules } from "@/lib/auth/require-module"
 import { SITE_FONT_KEYS } from "@/lib/site-fonts"
@@ -218,7 +219,11 @@ export const POST = withAdminAuth(async (req, ctx) => {
     try {
       parsedJson = JSON.parse(raw)
     } catch (err) {
-      console.error(`[ai-site-assistant:${scope}] JSON.parse failed:`, err, "raw:", raw)
+      reportError(err, {
+        area:   "ai",
+        action: "site-assistant.parse",
+        extra:  { associationId: ctx.associationId, scope, provider: aiConfig.provider, model: aiConfig.model, rawLength: raw.length },
+      })
       return NextResponse.json({ error: "L'IA a renvoyé une réponse invalide, réessayez." }, { status: 502 })
     }
 
@@ -229,7 +234,11 @@ export const POST = withAdminAuth(async (req, ctx) => {
         : sectionResponseSchema
       const result = schema.safeParse(parsedJson)
       if (!result.success) {
-        console.error(`[ai-site-assistant:${scope}] schema validation failed:`, result.error.issues, "raw:", raw)
+        reportError(new Error(`Site assistant response failed schema validation: ${result.error.issues.map(issue => issue.path.join(".")).join(", ")}`), {
+          area:   "ai",
+          action: "site-assistant.validate",
+          extra:  { associationId: ctx.associationId, scope, provider: aiConfig.provider, model: aiConfig.model, rawLength: raw.length },
+        })
         return NextResponse.json({ error: "L'IA a renvoyé une réponse invalide, réessayez." }, { status: 502 })
       }
       if (scope === "footer") {
@@ -254,7 +263,11 @@ export const POST = withAdminAuth(async (req, ctx) => {
 
     const result = fullResponseSchema.safeParse(parsedJson)
     if (!result.success) {
-      console.error("[ai-site-assistant:full] schema validation failed:", result.error.issues, "raw:", raw)
+      reportError(new Error(`Site assistant response failed schema validation: ${result.error.issues.map(issue => issue.path.join(".")).join(", ")}`), {
+        area:   "ai",
+        action: "site-assistant.validate",
+        extra:  { associationId: ctx.associationId, scope, provider: aiConfig.provider, model: aiConfig.model, rawLength: raw.length },
+      })
       return NextResponse.json({ error: "L'IA a renvoyé une réponse invalide, réessayez." }, { status: 502 })
     }
 
@@ -286,12 +299,21 @@ export const POST = withAdminAuth(async (req, ctx) => {
     // silently "successful" draft with nothing in it, which reads as broken rather than as
     // the error it actually is.
     if (sections.length === 0) {
-      console.error("[ai-site-assistant:full] all sections filtered out, raw:", raw)
+      reportError(new Error("Site assistant draft had no section of an allowed type"), {
+        area:   "ai",
+        action: "site-assistant.sections-filtered",
+        extra:  { associationId: ctx.associationId, scope, provider: aiConfig.provider, model: aiConfig.model, rawLength: raw.length },
+      })
       return NextResponse.json({ error: "L'IA a renvoyé une réponse invalide, réessayez." }, { status: 502 })
     }
 
     return NextResponse.json({ ...draft, footerText: stripTags(draft.footerText), sections })
   } catch (err: unknown) {
+    reportError(err, {
+      area:   "ai",
+      action: `site-assistant.${scope}`,
+      extra:  { associationId: ctx.associationId, provider: aiConfig.provider, model: aiConfig.model },
+    })
     const msg = err instanceof Error ? err.message : "Erreur IA"
     return NextResponse.json({ error: msg }, { status: 502 })
   }

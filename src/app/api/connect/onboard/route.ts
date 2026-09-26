@@ -4,6 +4,7 @@ import { stripe, isStaleStripeResourceError } from "@/lib/stripe"
 import { prisma } from "@/lib/prisma/client"
 import { APP_URL } from "@/lib/env"
 import { withAdminAuth } from "@/lib/api-wrapper"
+import { reportError } from "@/lib/monitoring"
 
 const ADMINS = ["ADMIN", "PRESIDENT"]
 
@@ -93,7 +94,7 @@ export const POST = withAdminAuth(async (req, ctx) => {
     })
     currentlyDue = updated.requirements?.currently_due ?? []
   } catch (err) {
-    console.error("[stripe-connect] failed to request mb_way_payments capability for", connectId, err)
+    reportError(err, { area: "stripe", action: "connect.request-mb-way", extra: { associationId, connectId } })
   }
 
   // Stripe rejects `account_update` type Account Links ("Valid types for this account are

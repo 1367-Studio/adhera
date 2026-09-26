@@ -1,4 +1,5 @@
 // Real-time shipping quotes for Boutique home delivery — resells actual carrier tariffs
+import { reportError } from "@/lib/monitoring"
 // (Colissimo, Mondial Relay, etc.) through a single platform-wide Sendcloud account. There
 // is no per-association Sendcloud account: an association only configures its own shipping
 // origin address (Association.shipping*), which is passed as `from_address` on every quote
@@ -91,7 +92,7 @@ export async function getShippingRates(input: ShippingQuoteInput): Promise<Shipp
       console.error(`[boutique-shipping-rate] Sendcloud returned ${res.status} for ${cacheKey}`)
     }
   } catch (err) {
-    console.error(`[boutique-shipping-rate] Sendcloud call failed for ${cacheKey}:`, err)
+    reportError(err, { area: "payments", action: "boutique.shipping-rate-sendcloud" })
   }
 
   cache.set(cacheKey, { options, expires: Date.now() + CACHE_TTL_MS })

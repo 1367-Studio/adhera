@@ -1,4 +1,5 @@
 import { Redis } from "@upstash/redis"
+import { reportError } from "@/lib/monitoring"
 
 const UPSTASH_URL   = process.env.UPSTASH_REDIS_REST_URL
 const UPSTASH_TOKEN = process.env.UPSTASH_REDIS_REST_TOKEN
@@ -100,14 +101,14 @@ export async function setPendingSetup(userId: string, secret: string): Promise<v
 export async function getPendingSetup(userId: string): Promise<string | null> {
   try {
     return await stateStore.get<string>(`${KEY_PREFIX}setup:${userId}`)
-  } catch (err) {
-    console.error("[two-factor-store] Redis read failed (pending setup), treating as expired:", err)
+  } catch (error) {
+    reportError(error, { area: "api", action: "two-factor-store.read-pending-setup", extra: { userId } })
     return null
   }
 }
 
 export async function clearPendingSetup(userId: string): Promise<void> {
-  await stateStore.delete(`${KEY_PREFIX}setup:${userId}`).catch(() => {})
+  await stateStore.delete(`${KEY_PREFIX}setup:${userId}`).catch((error: unknown) => reportError(error, { area: "api", action: "two-factor-store.clear-pending-setup", extra: { userId } }))
 }
 
 // ── Pending login (password validated, waiting on the second factor) ─────────────
@@ -119,14 +120,14 @@ export async function setPendingLogin(token: string, data: PendingLogin): Promis
 export async function getPendingLogin(token: string): Promise<PendingLogin | null> {
   try {
     return await stateStore.get<PendingLogin>(`${KEY_PREFIX}pending:${token}`)
-  } catch (err) {
-    console.error("[two-factor-store] Redis read failed (pending login), treating as expired:", err)
+  } catch (error) {
+    reportError(error, { area: "api", action: "two-factor-store.read-pending-login" })
     return null
   }
 }
 
 export async function clearPendingLogin(token: string): Promise<void> {
-  await stateStore.delete(`${KEY_PREFIX}pending:${token}`).catch(() => {})
+  await stateStore.delete(`${KEY_PREFIX}pending:${token}`).catch((error: unknown) => reportError(error, { area: "api", action: "two-factor-store.clear-pending-login" }))
 }
 
 // ── Verified login (credentials + second factor, if any, already checked — the only
@@ -147,12 +148,12 @@ export async function setVerifiedLogin(token: string, data: PendingLogin): Promi
 export async function getVerifiedLogin(token: string): Promise<PendingLogin | null> {
   try {
     return await stateStore.get<PendingLogin>(`${KEY_PREFIX}verified:${token}`)
-  } catch (err) {
-    console.error("[two-factor-store] Redis read failed (verified login), treating as expired:", err)
+  } catch (error) {
+    reportError(error, { area: "api", action: "two-factor-store.read-verified-login" })
     return null
   }
 }
 
 export async function clearVerifiedLogin(token: string): Promise<void> {
-  await stateStore.delete(`${KEY_PREFIX}verified:${token}`).catch(() => {})
+  await stateStore.delete(`${KEY_PREFIX}verified:${token}`).catch((error: unknown) => reportError(error, { area: "api", action: "two-factor-store.clear-verified-login" }))
 }

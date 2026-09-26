@@ -4,6 +4,7 @@ import { z }             from "zod"
 import { withSuperAdminAuth } from "@/lib/api-wrapper"
 import { writeActivityLog, computeAssociationDiff } from "@/lib/activity-log"
 import { revalidatePublicSiteFor } from "@/lib/association/revalidate-site"
+import { reportError } from "@/lib/monitoring"
 
 const patchSchema = z.object({
   internalNotes: z.string().optional(),
@@ -78,7 +79,8 @@ export const PATCH = withSuperAdminAuth<{ id: string }>(async (req, ctx, { id })
     }
 
     return NextResponse.json({ ok: true })
-  } catch {
+  } catch (error) {
+    reportError(error, { area: "api", action: "backoffice.association-update", extra: { associationId: id } })
     return NextResponse.json({ error: "Erreur interne" }, { status: 500 })
   }
 })
