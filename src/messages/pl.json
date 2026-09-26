@@ -714,6 +714,18 @@
       "uncategorized": "Nieskategoryzowane",
       "trendTitle": "Dochód vs. wydatki — Ostatnie 6 miesięcy",
       "categoryTitle": "Paragony według kategorii — {year}"
+    },
+    "memberSummary": {
+      "total": "{count, plural, one {# członek} other {# członków}}",
+      "active": "{count, plural, one {# aktywny} other {# aktywnych}}",
+      "inactive": "{count, plural, one {# nieaktywny} other {# nieaktywnych}}"
+    },
+    "memberUsage": {
+      "label": "{active} / {limit} aktywnych członków",
+      "ariaLabel": "Wykorzystanie limitu członków w Twoim planie",
+      "nearLimit": "Limit wkrótce osiągnięty",
+      "almostReached": "Limit prawie osiągnięty",
+      "limitReached": "Limit osiągnięty"
     }
   },
   "notifications": {
@@ -3654,6 +3666,7 @@
       "title": "Subskrypcja",
       "subtitle": "Zarządzaj subskrypcją platformy i metodami płatności.",
       "tier": {
+        "starter": "Starter",
         "essential": "Niezbędne",
         "pro": "Dla"
       },

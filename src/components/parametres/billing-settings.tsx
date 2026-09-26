@@ -11,6 +11,7 @@ import { useTranslations } from "next-intl"
 import { useSearchParams } from "next/navigation"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
+import type { PlanTier } from "@/lib/stripe"
 
 type BillingStatus = {
   subscriptionStatus:  "TRIAL" | "ACTIVE" | "PAST_DUE" | "SUSPENDED" | "CANCELLED" | null
@@ -20,7 +21,7 @@ type BillingStatus = {
   cancelAtPeriodEnd:   boolean
   currentPeriodEndsAt: string | null
   hasBilling:          boolean
-  plan:                "essential" | "pro"
+  plan:                PlanTier
   memberCount:         number
   memberLimit:         number
 }
@@ -39,7 +40,7 @@ function useStatusConfig() {
 export function BillingSettings({ canEdit }: { canEdit: boolean }) {
   const t             = useTranslations("parametres.billing")
   const tCommon       = useTranslations("common")
-  const tierLabels: Record<BillingStatus["plan"], string> = { essential: t("tier.essential"), pro: t("tier.pro") }
+  const tierLabels: Record<BillingStatus["plan"], string> = { starter: t("tier.starter"), essential: t("tier.essential"), pro: t("tier.pro") }
   const statusConfig  = useStatusConfig()
   const qc           = useQueryClient()
   const searchParams = useSearchParams()

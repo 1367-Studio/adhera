@@ -1,5 +1,5 @@
-import Stripe from "stripe"
 import type { SubscriptionStatus } from "@prisma/client"
+import Stripe from "stripe"
 
 export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: "2026-05-27.dahlia" as never,
@@ -36,10 +36,14 @@ export function platformFeeRate(association: { subscriptionStatus: SubscriptionS
   return association.subscriptionAmountCents === 0 ? PLATFORM_FEE : 0
 }
 
-export type PlanTier   = "essential" | "pro"
+export type PlanTier   = "starter" | "essential" | "pro"
 export type BillingCycle = "monthly" | "yearly"
 
 export const PLAN_PRICES: Record<PlanTier, Record<BillingCycle, string>> = {
+  starter: {
+    monthly: process.env.STRIPE_PRICE_STARTER_MONTHLY!,
+    yearly:  process.env.STRIPE_PRICE_STARTER_YEARLY!,
+  },
   essential: {
     monthly: process.env.STRIPE_PRICE_ESSENTIAL_MONTHLY!,
     yearly:  process.env.STRIPE_PRICE_ESSENTIAL_YEARLY!,
@@ -140,7 +144,9 @@ function toPlanPricing(monthly: Stripe.Price, yearly: Stripe.Price): PlanPricing
 export async function getPricingInfo(): Promise<PricingInfo> {
   if (pricingCache && pricingCache.expiresAt > Date.now()) return pricingCache.data
 
-  const [essentialMonthly, essentialYearly, proMonthly, proYearly] = await Promise.all([
+  const [starterMonthly,starterYearly,essentialMonthly, essentialYearly, proMonthly, proYearly] = await Promise.all([
+    stripe.prices.retrieve(PLAN_PRICES.starter.monthly),
+    stripe.prices.retrieve(PLAN_PRICES.starter.yearly),
     stripe.prices.retrieve(PLAN_PRICES.essential.monthly),
     stripe.prices.retrieve(PLAN_PRICES.essential.yearly),
     stripe.prices.retrieve(PLAN_PRICES.pro.monthly),
@@ -150,6 +156,7 @@ export async function getPricingInfo(): Promise<PricingInfo> {
   const data: PricingInfo = {
     trialDays: TRIAL_DAYS,
     plans: {
+      starter: toPlanPricing(starterMonthly, starterYearly),
       essential: toPlanPricing(essentialMonthly, essentialYearly),
       pro:       toPlanPricing(proMonthly, proYearly),
     },

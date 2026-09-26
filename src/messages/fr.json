@@ -729,6 +729,18 @@
       "uncategorized": "Non catégorisé",
       "trendTitle": "Recettes vs dépenses — 6 derniers mois",
       "categoryTitle": "Recettes par catégorie — {year}"
+    },
+    "memberSummary": {
+      "total": "{count, plural, one {# membre} other {# membres}}",
+      "active": "{count, plural, one {# actif} other {# actifs}}",
+      "inactive": "{count, plural, one {# inactif} other {# inactifs}}"
+    },
+    "memberUsage": {
+      "label": "{active} / {limit} membres actifs",
+      "ariaLabel": "Utilisation de la limite de membres de votre formule",
+      "nearLimit": "Limite bientôt atteinte",
+      "almostReached": "Limite presque atteinte",
+      "limitReached": "Limite atteinte"
     }
   },
   "notifications": {
@@ -3766,6 +3778,7 @@
       "title": "Abonnement",
       "subtitle": "Gérez votre abonnement à la plateforme et vos moyens de paiement.",
       "tier": {
+        "starter": "Starter",
         "essential": "Essentiel",
         "pro": "Pro"
       },

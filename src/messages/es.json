@@ -714,6 +714,18 @@
       "uncategorized": "Sin categorizar",
       "trendTitle": "Ingresos vs gastos — últimos 6 meses",
       "categoryTitle": "Ingresos por categoría — {year}"
+    },
+    "memberSummary": {
+      "total": "{count, plural, one {# miembro} other {# miembros}}",
+      "active": "{count, plural, one {# activo} other {# activos}}",
+      "inactive": "{count, plural, one {# inactivo} other {# inactivos}}"
+    },
+    "memberUsage": {
+      "label": "{active} / {limit} miembros activos",
+      "ariaLabel": "Uso del límite de miembros de su plan",
+      "nearLimit": "Límite próximo",
+      "almostReached": "Límite casi alcanzado",
+      "limitReached": "Límite alcanzado"
     }
   },
   "notifications": {
@@ -3654,6 +3666,7 @@
       "title": "Suscripción",
       "subtitle": "Gestione su suscripción a la plataforma y sus medios de pago.",
       "tier": {
+        "starter": "Starter",
         "essential": "Esencial",
         "pro": "Pro"
       },

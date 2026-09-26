@@ -27,6 +27,7 @@ import { CotisationsSummaryCard } from "@/components/dashboard/widgets/cotisatio
 import { RecentOrdersCard } from "@/components/dashboard/widgets/recent-orders-card"
 import { RecentDonationsCard } from "@/components/dashboard/widgets/recent-donations-card"
 import { LoanedMaterialCard } from "@/components/dashboard/widgets/loaned-material-card"
+import { MemberSummary } from "@/components/dashboard/member-summary"
 import { setDashboardLayout, resetDashboardLayout } from "@/lib/dashboard/actions"
 import {
   defaultDashboardLayout, isDashboardWidgetVisible,
@@ -35,6 +36,8 @@ import {
 
 type DashboardData = {
   membresActifs:         number
+  // Every member regardless of status — inactive = membresTotal - membresActifs.
+  membresTotal:          number
   evenementsMois:        number
   cotisationsEnAttente:  number
   cotisationsEncaissees: number
@@ -296,6 +299,11 @@ export function TableauDeBord({ initialLayout }: Props) {
           </Button>
         </div>
       </div>
+
+      <MemberSummary
+        totalCount={data?.membresTotal ?? null}
+        activeCount={data?.membresActifs ?? null}
+      />
 
       <DndContext
         sensors={sensors}

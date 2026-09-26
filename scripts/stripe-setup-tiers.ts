@@ -36,8 +36,9 @@ type TierDef = {
 }
 
 const TIERS: TierDef[] = [
-  { lookupPrefix: "adhera_essential", productName: "Adhera — Essentiel", memberLimit: 150, monthly: 39.9, yearly: 399 },
-  { lookupPrefix: "adhera_pro",       productName: "Adhera — Pro",       memberLimit: 600, monthly: 69.9, yearly: 699 },
+  { lookupPrefix: "adhera_starter",   productName: "Formwise - Starter", memberLimit: 30, monthly: 14.9, yearly: 149.9 },
+  { lookupPrefix: "adhera_essential", productName: "Formwise — Essentiel", memberLimit: 150, monthly: 39.9, yearly: 399 },
+  { lookupPrefix: "adhera_pro",       productName: "Formwise — Pro",       memberLimit: 600, monthly: 69.9, yearly: 699 },
 ]
 
 async function findOrCreateProduct(name: string): Promise<Stripe.Product> {
@@ -51,8 +52,11 @@ async function findOrCreateProduct(name: string): Promise<Stripe.Product> {
   return product
 }
 
+// The product is only resolved when a price actually has to be created: products.search is
+// eventually consistent, so resolving it up front created a duplicate empty product on every
+// re-run even though the prices (found by lookup_key) already existed.
 async function findOrCreatePrice(
-  product: Stripe.Product,
+  resolveProduct: () => Promise<Stripe.Product>,
   lookupKey: string,
   amountEuros: number,
   interval: "month" | "year",
@@ -63,6 +67,7 @@ async function findOrCreatePrice(
     console.log(`Price "${lookupKey}" already exists (${existing.data[0].id}), reusing.`)
     return existing.data[0]
   }
+  const product = await resolveProduct()
   const price = await stripe.prices.create({
     product:     product.id,
     currency:    "eur",
@@ -80,15 +85,18 @@ async function main() {
   const portalProducts: { product: string; prices: string[] }[] = []
 
   for (const tier of TIERS) {
-    const product = await findOrCreateProduct(tier.productName)
-    const monthly = await findOrCreatePrice(product, `${tier.lookupPrefix}_monthly`, tier.monthly, "month", tier.memberLimit)
-    const yearly  = await findOrCreatePrice(product, `${tier.lookupPrefix}_yearly`,  tier.yearly,  "year",  tier.memberLimit)
+    let productPromise: Promise<Stripe.Product> | null = null
+    const resolveProduct = () => (productPromise ??= findOrCreateProduct(tier.productName))
+    const monthly = await findOrCreatePrice(resolveProduct, `${tier.lookupPrefix}_monthly`, tier.monthly, "month", tier.memberLimit)
+    const yearly  = await findOrCreatePrice(resolveProduct, `${tier.lookupPrefix}_yearly`,  tier.yearly,  "year",  tier.memberLimit)
 
     const envPrefix = tier.lookupPrefix.toUpperCase() // ADHERA_ESSENTIAL / ADHERA_PRO
     envLines.push(`STRIPE_PRICE_${envPrefix.replace("ADHERA_", "")}_MONTHLY="${monthly.id}"`)
     envLines.push(`STRIPE_PRICE_${envPrefix.replace("ADHERA_", "")}_YEARLY="${yearly.id}"`)
 
-    portalProducts.push({ product: product.id, prices: [monthly.id, yearly.id] })
+    // The billing portal rejects a price listed under any product but its own.
+    const pricesProductId = typeof monthly.product === "string" ? monthly.product : monthly.product.id
+    portalProducts.push({ product: pricesProductId, prices: [monthly.id, yearly.id] })
   }
 
   // Billing Portal: enable self-service plan switching between the tiers above. This is

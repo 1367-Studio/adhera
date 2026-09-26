@@ -714,6 +714,18 @@
       "uncategorized": "Nekategorizirano",
       "trendTitle": "Dohodek proti izdatkom — zadnjih 6 mesecev",
       "categoryTitle": "Prihodki po kategorijah — {year}"
+    },
+    "memberSummary": {
+      "total": "{count, plural, one {# član} other {# članov}}",
+      "active": "{count, plural, one {# aktiven} other {# aktivnih}}",
+      "inactive": "{count, plural, one {# neaktiven} other {# neaktivnih}}"
+    },
+    "memberUsage": {
+      "label": "{active} / {limit} aktivnih članov",
+      "ariaLabel": "Poraba omejitve članov vašega paketa",
+      "nearLimit": "Omejitev se bliža",
+      "almostReached": "Omejitev skoraj dosežena",
+      "limitReached": "Omejitev dosežena"
     }
   },
   "notifications": {
@@ -3654,6 +3666,7 @@
       "title": "Naročnina",
       "subtitle": "Upravljajte svojo naročnino na platformo in načine plačila.",
       "tier": {
+        "starter": "Starter",
         "essential": "Bistveno",
         "pro": "Za"
       },

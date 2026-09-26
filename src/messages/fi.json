@@ -714,6 +714,18 @@
       "uncategorized": "Luokittelematon",
       "trendTitle": "Tulot vs. menot — viimeiset 6 kuukautta",
       "categoryTitle": "Tulot kategorioittain — {year}"
+    },
+    "memberSummary": {
+      "total": "{count, plural, one {# jäsen} other {# jäsentä}}",
+      "active": "{count, plural, one {# aktiivinen} other {# aktiivista}}",
+      "inactive": "{count, plural, one {# passiivinen} other {# passiivista}}"
+    },
+    "memberUsage": {
+      "label": "{active} / {limit} aktiivista jäsentä",
+      "ariaLabel": "Tilauksesi jäsenrajan käyttö",
+      "nearLimit": "Raja lähestyy",
+      "almostReached": "Raja lähes täynnä",
+      "limitReached": "Raja täynnä"
     }
   },
   "notifications": {
@@ -3654,6 +3666,7 @@
       "title": "Tilaus",
       "subtitle": "Hallinnoi alustan tilausta ja maksutapoja.",
       "tier": {
+        "starter": "Starter",
         "essential": "Välttämätön",
         "pro": "Kuvaaja"
       },

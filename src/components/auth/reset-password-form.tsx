@@ -59,7 +59,7 @@ export function ResetPasswordForm({ token }: Props) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4" noValidate>
+    <form onSubmit={handleSubmit} className="space-y-6" noValidate>
       <FormField
         label={t("newPasswordLabel")}
         type="password"

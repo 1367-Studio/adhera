@@ -714,6 +714,18 @@
       "uncategorized": "Okategoriserad",
       "trendTitle": "Inkomst vs. utgifter — Senaste 6 månader",
       "categoryTitle": "Intäkter per kategori — {year}"
+    },
+    "memberSummary": {
+      "total": "{count, plural, one {# medlem} other {# medlemmar}}",
+      "active": "{count, plural, one {# aktiv} other {# aktiva}}",
+      "inactive": "{count, plural, one {# inaktiv} other {# inaktiva}}"
+    },
+    "memberUsage": {
+      "label": "{active} / {limit} aktiva medlemmar",
+      "ariaLabel": "Användning av medlemsgränsen i din plan",
+      "nearLimit": "Gränsen närmar sig",
+      "almostReached": "Gränsen nästan nådd",
+      "limitReached": "Gränsen nådd"
     }
   },
   "notifications": {
@@ -3654,6 +3666,7 @@
       "title": "Prenumeration",
       "subtitle": "Hantera din plattforms prenumeration och betalningsmetoder.",
       "tier": {
+        "starter": "Starter",
         "essential": "Väsentligt",
         "pro": "För"
       },

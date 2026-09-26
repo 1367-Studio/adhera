@@ -1,11 +1,11 @@
-import type { Metadata } from "next"
-import Link from "next/link"
-import { getTranslations } from "next-intl/server"
-import { RegisterForm } from "@/components/auth/register-form"
-import { getPricingInfo } from "@/lib/stripe"
-import { APP_NAME } from "@/config/brand"
-import { LogoMark } from "@/components/layout/logo-mark"
 import { ContactSupportTrigger } from "@/components/auth/contact-support-trigger"
+import { RegisterForm } from "@/components/auth/register-form"
+import { LogoMark } from "@/components/layout/logo-mark"
+import { APP_NAME } from "@/config/brand"
+import { getPricingInfo } from "@/lib/stripe"
+import type { Metadata } from "next"
+import { getTranslations } from "next-intl/server"
+import Link from "next/link"
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("auth.register")
@@ -32,26 +32,29 @@ export default async function RegisterPage({
         <span className="text-base font-semibold">{APP_NAME}</span>
       </div>
 
-      <div className="rounded-lg border bg-card p-8 space-y-6">
-        <div className="space-y-1.5">
-          <h1 className="text-xl font-semibold tracking-tight">{t("heading")}</h1>
-          <p className="text-sm text-muted-foreground">
-            {hasOffer ? t("subtitleOffer") : t("subtitle", { trialDays: pricing.trialDays })}
-          </p>
-        </div>
-
-        <RegisterForm pricing={pricing} />
-
-        <div className="space-y-2">
-          <p className="text-center text-sm text-muted-foreground">
-            {t("alreadyAccount")}{" "}
-            <Link href="/login" className="font-medium text-foreground underline underline-offset-4 hover:text-foreground/80 transition-colors">
-              {t("signIn")}
-            </Link>
-          </p>
-          <ContactSupportTrigger />
-        </div>
-      </div>
+      {/* Header and footer go through RegisterForm so its success screen can hide them. */}
+      <RegisterForm
+        pricing={pricing}
+        header={
+          <div className="space-y-3.5">
+            <h1 className="text-xl font-semibold tracking-tight">{t("heading")}</h1>
+            <p className="text-sm text-muted-foreground">
+              {hasOffer ? t("subtitleOffer") : t("subtitle", { trialDays: pricing.trialDays })}
+            </p>
+          </div>
+        }
+        footer={
+          <div className="space-y-2">
+            <p className="text-center text-sm text-muted-foreground">
+              {t("alreadyAccount")}{" "}
+              <Link href="/login" className="font-medium text-foreground underline underline-offset-4 hover:text-foreground/80 transition-colors">
+                {t("signIn")}
+              </Link>
+            </p>
+            <ContactSupportTrigger />
+          </div>
+        }
+      />
     </div>
   )
 }
