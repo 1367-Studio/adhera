@@ -2,6 +2,7 @@ import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma/client"
 import { rateLimit, requestIp } from "@/lib/rate-limit"
 import { addressFormValues } from "@/lib/address"
+import { requiredDocuments } from "@/lib/legal/acceptance"
 
 // One-off "finish your adhésion" link for a member who self-registered via the portal
 // (/api/portal/register) with no real Cotisation — never gained a User/password at
@@ -18,7 +19,7 @@ async function findByToken(token: string) {
       firstName: true, lastName: true, email: true, phone: true,
       addressStreet: true, addressComplement: true, postalCode: true, city: true, country: true, address: true,
       birthDate: true, sexe: true, spokenLanguage: true, photoUrl: true, answers: true,
-      association: { select: { name: true, slug: true, stripeConnectId: true } },
+      association: { select: { id: true, name: true, slug: true, stripeConnectId: true } },
       adhesionCompletionForm: {
         select: {
           id: true, slug: true, title: true, status: true, description: true, conditions: true,
@@ -58,10 +59,12 @@ export async function GET(
   }
 
   const answers = (membre.answers as Record<string, string> | null) ?? {}
+  const legalDocuments = await requiredDocuments(membre.association.id)
 
   return NextResponse.json({
     associationName: membre.association.name,
     slug:            membre.association.slug,
+    legalDocuments:  legalDocuments.map(d => ({ documentId: d.documentId, revisionId: d.revisionId, version: d.version, title: d.title })),
     formId:          form.id,
     formSlug:        form.slug,
     formTitle:       form.title,
