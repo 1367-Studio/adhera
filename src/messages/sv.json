@@ -5307,6 +5307,11 @@
         "description": "Du kan lägga till en ny när som helst.",
         "confirm": "Ta bort"
       }
+    },
+    "evenements": {
+      "viewEvent": "Visa evenemanget",
+      "backToList": "Alla evenemang",
+      "notFound": "Det här evenemanget är inte längre tillgängligt."
     }
   },
   "ai": {

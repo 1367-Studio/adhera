@@ -5374,7 +5374,10 @@
       "send": "Verzenden",
       "commentPlaceholder": "Een opmerking? (optioneel)",
       "ticketPurchaseSuccessToast": "Ticket succesvol gekocht!",
-      "paymentCancelledToast": "Betaling geannuleerd. Je plek is nog steeds gereserveerd — betaal later of annuleer de boeking via de evenementkaart."
+      "paymentCancelledToast": "Betaling geannuleerd. Je plek is nog steeds gereserveerd — betaal later of annuleer de boeking via de evenementkaart.",
+      "viewEvent": "Evenement bekijken",
+      "backToList": "Alle evenementen",
+      "notFound": "Dit evenement is niet meer beschikbaar."
     }
   },
   "ai": {

@@ -5753,7 +5753,10 @@
       "commentPlaceholder": "Un commentaire ? (facultatif)",
       "ticketPurchaseSuccessToast": "Billet acheté avec succès !",
       "paymentCancelledToast": "Paiement annulé. Votre place est toujours réservée — payez plus tard ou annulez la réservation sur la carte de l'événement.",
-      "registrationsClosed": "Les inscriptions sont closes."
+      "registrationsClosed": "Les inscriptions sont closes.",
+      "viewEvent": "Voir l'événement",
+      "backToList": "Tous les événements",
+      "notFound": "Cet événement n'est plus disponible."
     }
   },
   "ai": {

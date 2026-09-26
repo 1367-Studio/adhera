@@ -8,13 +8,20 @@ export function stripCodeFences(raw: string): string {
   return (fenced ? fenced[1] : raw).trim()
 }
 
+// Whitespace touching a block tag (with its attributes). Inline tags (<strong>, <em>, <a>…)
+// are left alone: the space in "<strong>Date :</strong> 15 avril" is real content.
+const WHITESPACE_AROUND_BLOCK_TAG = /\s*(<\/?(?:p|h[1-6]|ul|ol|li|blockquote|hr|br)\b[^>]*>)\s*/gi
+
 // Normalises an AI answer that should be simple HTML: fences stripped, and bare text (a model
 // that ignored the HTML instruction) wrapped in paragraphs — the result goes straight into
 // the Tiptap editor or a sanitised preview (RichTextView).
 export function normalizeAiHtml(raw: string): string {
   const text = stripCodeFences(raw)
 
-  if (/<[a-z][\s\S]*>/i.test(text)) return text
+  // Models answer with pretty-printed HTML (newlines + indentation between tags). Tiptap's
+  // insertContent parses with preserveWhitespace: "full", so each of those gaps became an
+  // empty paragraph — or an empty bullet inside a list.
+  if (/<[a-z][\s\S]*>/i.test(text)) return text.replace(WHITESPACE_AROUND_BLOCK_TAG, "$1")
 
   return text
     .split(/\n\s*\n/)

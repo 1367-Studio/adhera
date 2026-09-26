@@ -5374,7 +5374,10 @@
       "send": "Senden",
       "commentPlaceholder": "Ein Kommentar? (optional)",
       "ticketPurchaseSuccessToast": "Ticket erfolgreich gekauft!",
-      "paymentCancelledToast": "Zahlung abgebrochen. Ihr Platz ist weiterhin reserviert — zahlen Sie später oder stornieren Sie die Buchung über die Veranstaltungskarte."
+      "paymentCancelledToast": "Zahlung abgebrochen. Ihr Platz ist weiterhin reserviert — zahlen Sie später oder stornieren Sie die Buchung über die Veranstaltungskarte.",
+      "viewEvent": "Veranstaltung ansehen",
+      "backToList": "Alle Veranstaltungen",
+      "notFound": "Diese Veranstaltung ist nicht mehr verfügbar."
     }
   },
   "ai": {

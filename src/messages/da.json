@@ -5307,6 +5307,11 @@
         "description": "Du kan tilføje en ny når som helst.",
         "confirm": "Fjern"
       }
+    },
+    "evenements": {
+      "viewEvent": "Se arrangementet",
+      "backToList": "Alle arrangementer",
+      "notFound": "Dette arrangement er ikke længere tilgængeligt."
     }
   },
   "ai": {
