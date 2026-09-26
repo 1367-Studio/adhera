@@ -27,12 +27,11 @@ export default async function ResetPasswordPage({
         <span className="text-base font-semibold">{APP_NAME}</span>
       </div>
 
-      <div className="space-y-6">
-        <div className="space-y-3.5">
+      <div className="">
+        <div className="space-y-1.5">
           <h1 className="text-xl font-semibold tracking-tight">{t("heading")}</h1>
           <p className="text-sm text-muted-foreground">{t("subtitle")}</p>
         </div>
-
         {token ? (
           <ResetPasswordForm token={token} />
         ) : (

@@ -156,7 +156,7 @@ export function PlanPicker({
               <p className="text-sm font-semibold">{t.label}</p>
               <p className="mt-1 text-xl font-bold tracking-tight">
                 {price}
-                <span className="text-xs font-normal text-muted-foreground">/mois</span>
+                <span className="text-xs font-normal text-muted-foreground">/ mois</span>
               </p>
               {/* Disclosed here, not only on the payment step below — the annual plan isn't
                   a cheaper monthly draft, it's a single yearly charge. */}
