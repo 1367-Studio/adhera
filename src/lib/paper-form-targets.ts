@@ -33,7 +33,8 @@ export const PAPER_FORM_TARGETS = [
   // Anything worth keeping with no column of its own (courses, forfait, remarks) — appended
   // to Membre.notes as "label : valeur".
   "notes",
-  // Printed on the form but deliberately not imported (payment grid, signature, …).
+  // Printed on the form but deliberately not imported (frame reserved for the office, price
+  // table, …). What the person fills in — payment choice, signing date — goes to notes.
   "ignore",
 ] as const
 
