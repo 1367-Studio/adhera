@@ -106,6 +106,9 @@ export const paperFormAnalyzeRequestSchema = z.object({
 export const paperFormExtractRequestSchema = z.object({
   templateId: z.string().min(1, "Modèle requis"),
   page:       paperFormPageImageSchema,
+  // Phone capture: the page of the form the manager says this photo is (1-based). The route
+  // ignores it beyond the template's page count.
+  expectedPageNumber: z.number().int().min(1).optional(),
 })
 
 export type PaperFormPageImage         = z.infer<typeof paperFormPageImageSchema>

@@ -20,6 +20,13 @@ import { EMPTY_ADDRESS_FORM_VALUES, type AddressFormValues } from "@/lib/address
 // is never grouped into a form, so nothing can be created from it.
 export type ScanPageStatus = "pending" | "reading" | "done" | "error" | "refused"
 
+// Where the manager said a phone photo belongs: « fiche 3, page 2 » (both 1-based). Given at
+// capture time, so it outranks whatever page number the model could (or could not) read.
+export type CapturedSlot = {
+  formNumber: number
+  pageNumber: number
+}
+
 export type ScanPage = {
   pageId:      string
   // Position in upload order — the fallback order when the sheet shows no page number.
@@ -36,6 +43,9 @@ export type ScanPage = {
   result:      PaperFormExtractResponse | null
   // Title read on a refused page ("Autorisation de sortie"…), null when none was readable.
   detectedTitle: string | null
+  // Slot the manager tagged a phone photo with; null for a page of an uploaded file, which
+  // is placed by its printed page number and upload order instead.
+  capturedSlot: CapturedSlot | null
 }
 
 export function isRefusedPage(page: ScanPage): boolean {
@@ -73,6 +83,18 @@ export type LowConfidenceKey = keyof ReviewDraft | keyof AddressFormValues | `le
 
 export type DuplicateMatch = PaperFormDuplicateMatch
 
+// One acceptance box of the sheet linked to a legal document, as it will read in the member's
+// notes (« Règlement Intérieur : Oui » / « … : Non »). Offline acceptances only surface in the
+// per-document CSV export, not on the member file, so the notes keep the sheet's answer where
+// the manager looks. Both wordings are resolved when the form is built (same labels as every
+// other notes line); which one applies is decided at commit time from the final checkboxes,
+// so a box the manager ticks or unticks in review can never leave a contradicting line.
+export type LegalDocumentNoteLine = {
+  legalDocumentId: string
+  acceptedLine:    string
+  declinedLine:    string
+}
+
 // A duplicate check result is only meaningful for the name it was run on: once the manager
 // edits the name, the stored matches are stale and hidden until the next check.
 export type DuplicateCheck = {
@@ -91,11 +113,22 @@ export type ScanForm = {
   membreId:         string | null
   skippedLegalDocumentIds: string[]
   studentDuplicates: DuplicateCheck | null
+  // Linked acceptance boxes whose page was read, in template order (see toCommitForm).
+  legalDocumentNoteLines: LegalDocumentNoteLine[]
 }
 
 export function hasMissingPage(form: ScanForm): boolean {
   return form.pageSlots.some((pageId) => pageId === null)
 }
+
+// 1-based numbers of the pages the form lacks, for « Page 2 absente ».
+export function missingPageNumbers(form: ScanForm): number[] {
+  return form.pageSlots.flatMap((pageId, slotIndex) => (pageId === null ? [slotIndex + 1] : []))
+}
+
+// Something to double-check rather than an error (low-confidence reading, missing page): the
+// same amber the shared Badge `warning` variant uses, shared by the review list and editor.
+export const LOW_CONFIDENCE_TEXT_CLASS = "text-xs text-amber-700 dark:text-amber-400"
 
 // ─── Grouping ────────────────────────────────────────────────────────────────────────────
 
@@ -103,9 +136,22 @@ export function hasMissingPage(form: ScanForm): boolean {
 // starts a new person, a number whose slot is already taken too (the previous form is over).
 // Without a number the page simply takes the next slot, and a full form starts a new one.
 // Refused pages are skipped altogether: they neither start a person nor fill a missing page,
-// so a form whose other page was refused keeps an empty slot and cannot be validated.
+// so a form whose other page was refused keeps an empty slot (shown as a missing page).
+//
+// Captured pages (phone photos tagged « fiche N, page P ») bypass all of that: the manager's
+// tag is authoritative, the printed number is ignored. Each captured fiche number gets its own
+// form, created where its first photo appears in upload order, with the photo in slot P. When
+// two photos claim the same slot of the same fiche, the later one starts a NEW form in that
+// slot rather than replacing the earlier one — no page is ever silently dropped, and the
+// manager sees two forms to reconcile. Further photos of that fiche go to the newest form.
+// Uploaded pages never land in a captured form: their "current form" is only ever one they
+// started themselves, so with no captured page the output is exactly the upload-only one.
 export function groupPagesIntoForms(pages: ScanPage[], pagesPerForm: number): (string | null)[][] {
   const groupedSlots: (string | null)[][] = []
+  // Current form of each flow: the last one the uploaded pages started, and per captured
+  // fiche number the form its photos currently fill.
+  let uploadedFormSlots: (string | null)[] | null = null
+  const capturedFormSlotsByNumber = new Map<number, (string | null)[]>()
 
   const startForm = (): (string | null)[] => {
     const emptySlots: (string | null)[] = Array.from({ length: pagesPerForm }, () => null)
@@ -113,23 +159,42 @@ export function groupPagesIntoForms(pages: ScanPage[], pagesPerForm: number): (s
     return emptySlots
   }
 
+  const startUploadedForm = (): (string | null)[] => {
+    uploadedFormSlots = startForm()
+    return uploadedFormSlots
+  }
+
   const groupablePages = pages.filter((page) => !isRefusedPage(page))
   for (const page of groupablePages.sort((first, second) => first.uploadIndex - second.uploadIndex)) {
+    // A tag outside the template's pages (template switched after capture) is not trusted:
+    // the page is then placed like an uploaded one.
+    const capturedSlot = page.capturedSlot
+    if (capturedSlot && capturedSlot.pageNumber >= 1 && capturedSlot.pageNumber <= pagesPerForm) {
+      const capturedSlotIndex = capturedSlot.pageNumber - 1
+      let capturedSlots = capturedFormSlotsByNumber.get(capturedSlot.formNumber)
+      if (!capturedSlots || capturedSlots[capturedSlotIndex] !== null) {
+        capturedSlots = startForm()
+        capturedFormSlotsByNumber.set(capturedSlot.formNumber, capturedSlots)
+      }
+      capturedSlots[capturedSlotIndex] = page.pageId
+      continue
+    }
+
     const printedNumber = page.result?.pageNumber ?? null
     const knownNumber   = printedNumber !== null && printedNumber >= 1 && printedNumber <= pagesPerForm ? printedNumber : null
 
-    let slots: (string | null)[] = groupedSlots.at(-1) ?? startForm()
+    let slots: (string | null)[] = uploadedFormSlots ?? startUploadedForm()
     let slotIndex: number
 
     if (knownNumber !== null) {
       slotIndex = knownNumber - 1
-      if (knownNumber === 1 && slots.some((pageId) => pageId !== null)) slots = startForm()
-      else if (slots[slotIndex] !== null) slots = startForm()
+      if (knownNumber === 1 && slots.some((pageId) => pageId !== null)) slots = startUploadedForm()
+      else if (slots[slotIndex] !== null) slots = startUploadedForm()
     } else {
       const lastFilledIndex = slots.reduce((lastIndex, pageId, index) => (pageId !== null ? index : lastIndex), -1)
       slotIndex = lastFilledIndex + 1
       if (slotIndex >= pagesPerForm) {
-        slots = startForm()
+        slots = startUploadedForm()
         slotIndex = 0
       }
     }
@@ -201,10 +266,11 @@ export function buildDraft(
   fields: PaperFormField[],
   mergedValues: Record<string, PaperFormExtractedValue>,
   labels: DraftBuildLabels,
-): { draft: ReviewDraft; lowConfidence: LowConfidenceKey[] } {
+): { draft: ReviewDraft; lowConfidence: LowConfidenceKey[]; legalDocumentNoteLines: LegalDocumentNoteLine[] } {
   const draft: ReviewDraft = { ...EMPTY_DRAFT, address: { ...EMPTY_ADDRESS_FORM_VALUES }, acceptedLegalDocumentIds: [] }
   const lowConfidence = new Set<LowConfidenceKey>()
   const noteLines: string[] = []
+  const legalDocumentNoteLines: LegalDocumentNoteLine[] = []
 
   // Held in one object: TypeScript does not follow assignments made inside the switch below
   // and would narrow a standalone `let … = null` variable to `never` after the loop.
@@ -297,6 +363,15 @@ export function buildDraft(
           draft.acceptedLegalDocumentIds.push(field.legalDocumentId)
         }
         if (field.legalDocumentId && isLow) lowConfidence.add(`legal:${field.legalDocumentId}`)
+        // Reaching here means the box's page was read (a missing page leaves no value at
+        // all), so the answer belongs in the notes — even unticked or unreadable.
+        if (field.legalDocumentId && !legalDocumentNoteLines.some((noteLine) => noteLine.legalDocumentId === field.legalDocumentId)) {
+          legalDocumentNoteLines.push({
+            legalDocumentId: field.legalDocumentId,
+            acceptedLine:    `${field.label} : ${labels.booleans.yes}`,
+            declinedLine:    `${field.label} : ${labels.booleans.no}`,
+          })
+        }
         break
       case "notes":
         if (isFilled(extracted)) {
@@ -316,7 +391,7 @@ export function buildDraft(
   }
 
   draft.notes = noteLines.join("\n")
-  return { draft, lowConfidence: [...lowConfidence] }
+  return { draft, lowConfidence: [...lowConfidence], legalDocumentNoteLines }
 }
 
 export function buildForms(
@@ -331,7 +406,7 @@ export function buildForms(
       const page = pageId ? pagesById.get(pageId) : undefined
       return page ? [page] : []
     })
-    const { draft, lowConfidence } = buildDraft(template.fields, mergePageValues(pagesInOrder), labels)
+    const { draft, lowConfidence, legalDocumentNoteLines } = buildDraft(template.fields, mergePageValues(pagesInOrder), labels)
     return {
       formId: `form-${formIndex + 1}`,
       pageSlots,
@@ -342,6 +417,7 @@ export function buildForms(
       membreId: null,
       skippedLegalDocumentIds: [],
       studentDuplicates: null,
+      legalDocumentNoteLines,
     }
   })
 }
@@ -371,13 +447,13 @@ export function hasGuardianInput(draft: ReviewDraft): boolean {
 
 // Draft field → message, from the same zod schema the commit route applies: one invalid
 // email in a batch would otherwise refuse the whole request, so every form is checked here
-// before it can be validated. `form` holds what has no field of its own (missing page).
-export type DraftErrors = Partial<Record<keyof ReviewDraft | keyof AddressFormValues | "form", string>>
+// before it can be validated. A missing page is not an error: a phone photo of page 2 may
+// simply not have been taken, and the manager decides with the warning (hasMissingPage).
+export type DraftErrors = Partial<Record<keyof ReviewDraft | keyof AddressFormValues, string>>
 
 export type ValidationMessages = {
   firstNameRequired: string
   lastNameRequired:  string
-  missingPage:       string
 }
 
 const STUDENT_PATH_TO_DRAFT_KEY: Record<string, keyof ReviewDraft | keyof AddressFormValues> = {
@@ -400,7 +476,6 @@ export function validateForm(form: ScanForm, messages: ValidationMessages): Draf
 
   if (!draft.firstName.trim()) errors.firstName = messages.firstNameRequired
   if (!draft.lastName.trim())  errors.lastName  = messages.lastNameRequired
-  if (hasMissingPage(form))    errors.form      = messages.missingPage
 
   const parsed = paperFormCommitFormSchema.safeParse(toCommitForm(form))
   if (!parsed.success) {
@@ -441,6 +516,16 @@ function toCommitGuardian(name: string, phone: string): CommitGuardian {
   return { name: trimmedName || null, phone: trimmedPhone || null }
 }
 
+// The manager's notes, then one line per linked acceptance box read on the sheet, worded
+// from the final checkbox — the same state the acceptances are recorded from.
+function composeCommitNotes(form: ScanForm): string | null {
+  const { draft } = form
+  const legalLines = form.legalDocumentNoteLines.map((noteLine) =>
+    draft.acceptedLegalDocumentIds.includes(noteLine.legalDocumentId) ? noteLine.acceptedLine : noteLine.declinedLine,
+  )
+  return optionalText([draft.notes.trim(), ...legalLines].filter((line) => line !== "").join("\n")) ?? null
+}
+
 export function toCommitForm(form: ScanForm): CommitForm {
   const { draft } = form
   const student: CommitStudent = {
@@ -463,7 +548,7 @@ export function toCommitForm(form: ScanForm): CommitForm {
     student,
     guardian:                 toCommitGuardian(draft.guardianName, draft.guardianPhone),
     secondGuardian:           toCommitGuardian(draft.secondGuardianName, draft.secondGuardianPhone),
-    notes:                    optionalText(draft.notes) ?? null,
+    notes:                    composeCommitNotes(form),
     imageRights:              draft.imageRights === "unknown" ? null : draft.imageRights === "yes",
     acceptedLegalDocumentIds: draft.acceptedLegalDocumentIds,
   }

@@ -33,18 +33,24 @@ async function readErrorMessage(response: Response, fallback: string): Promise<s
   return error.message
 }
 
+// expectedPageNumber: the page a phone photo was tagged with at capture (1-based). Sent only
+// when set, so an uploaded file's page is read exactly as before.
 export async function extractPage(
   templateId: string,
-  page: { base64: string; mediaType: "image/jpeg" | "image/png" },
+  page: { base64: string; mediaType: "image/jpeg" | "image/png"; expectedPageNumber?: number },
   signal: AbortSignal,
   fallbackMessage: string,
 ): Promise<ExtractOutcome> {
+  const { base64, mediaType, expectedPageNumber } = page
+  const requestBody = expectedPageNumber === undefined
+    ? { templateId, page: { base64, mediaType } }
+    : { templateId, page: { base64, mediaType }, expectedPageNumber }
   let response: Response
   try {
     response = await fetch("/api/membres/scan/extract", {
       method:  "POST",
       headers: { "Content-Type": "application/json" },
-      body:    JSON.stringify({ templateId, page }),
+      body:    JSON.stringify(requestBody),
       signal,
     })
   } catch (error) {

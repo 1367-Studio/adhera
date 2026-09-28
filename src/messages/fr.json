@@ -6204,6 +6204,7 @@
       "templateSummary": "{pages, plural, one {# page} other {# pages}} par fiche · {fields, plural, one {# champ} other {# champs}}.",
       "manageTemplates": "Gérer les modèles",
       "dropTitle": "Déposez le PDF scanné ou les photos des fiches",
+      "galleryTitle": "Choisir des photos ou un PDF",
       "dropSubtitle": "PDF, JPEG ou PNG — plusieurs fichiers possibles, lus dans l'ordre de leur nom",
       "privacyNote": "Les pages restent dans votre navigateur : seules les images sont envoyées une à une pour être lues, rien n'est conservé.",
       "pageCount": "{count, plural, one {# page} other {# pages}}",
@@ -6214,11 +6215,30 @@
       "start": "Lancer la lecture",
       "renderFailed": "{name} : {error}",
       "strictTemplateNotice": "Seules les pages de « {name} » seront acceptées.",
-      "takePhoto": "Prendre une photo",
-      "nextPhoto": "Photo suivante",
-      "capturedPhotoCount": "{count, plural, one {# photo prise} other {# photos prises}}",
-      "cameraFramingHint": "Cadrez la page entière, titre et numéro de page (1/2, 2/2) visibles.",
-      "photoFileName": "Photo {number}.{extension}"
+      "capturedListLabel": "Fiches photographiées",
+      "capturedForm": "Fiche {form}",
+      "capturedPages": "{count, plural, one {Page {list}} other {Pages {list}}}",
+      "capturedMissing": "{count, plural, one {page {list} absente} other {pages {list} absentes}}",
+      "capturedInProgress": "en cours",
+      "removeCapturedForm": "Retirer la fiche {form}",
+      "capturedSummary": "{forms, plural, one {# fiche} other {# fiches}} · {pages, plural, one {# page} other {# pages}}",
+      "camera": {
+        "title": "Photographier les fiches",
+        "needsTemplate": "Choisissez d'abord un modèle : l'application vous indiquera quelle page photographier.",
+        "prompt": "Fiche {form} — page {page} sur {pages}",
+        "promptSinglePage": "Fiche {form}",
+        "capturePage": "Photographier la page {page}",
+        "captureForm": "Photographier la fiche",
+        "skipToNextForm": "Passer à la fiche {form}",
+        "lastShot": "Fiche {form} · page {page}",
+        "lastShotSinglePage": "Fiche {form}",
+        "lastShotAlt": "Photo de la fiche {form}, page {page}",
+        "preparing": "Préparation…",
+        "retake": "Reprendre",
+        "retakeLabel": "Reprendre la photo de la fiche {form}, page {page}",
+        "framingHint": "Posez la feuille à plat, bien éclairée, et cadrez la page entière avec ses quatre bords.",
+        "photoFileName": "Fiche {form} page {page}.{extension}"
+      }
     },
     "reading": {
       "progress": "{read} / {total} pages lues",
@@ -6256,7 +6276,7 @@
       "zoomIn": "Agrandir",
       "pageUnread": "Page non lue : {error}",
       "pageAlt": "Page {number} de la fiche ({file})",
-      "missingPageBody": "La page {number} de cette fiche n'a pas été trouvée dans les fichiers importés."
+      "missingPageBody": "La page {number} de cette fiche n'a pas été importée."
     },
     "editor": {
       "lowConfidence": "Lecture incertaine, à vérifier",
@@ -6284,6 +6304,7 @@
       "legalDocuments": "Documents acceptés",
       "notes": "Notes",
       "notesHint": "Reprend les champs sans colonne dédiée, au format « libellé : valeur ».",
+      "notesHintWithLegalDocuments": "Reprend les champs sans colonne dédiée, au format « libellé : valeur ». Les engagements ci-dessus y seront ajoutés (Oui / Non) à la création.",
       "notesLowConfidence": "Certaines valeurs ont été lues avec incertitude, à vérifier."
     },
     "review": {
@@ -6293,11 +6314,11 @@
       "create": "{count, plural, =0 {Créer les membres} one {Créer # membre} other {Créer # membres}}",
       "formsList": "Fiches",
       "untitledForm": "Fiche {number}",
-      "missingPage": "Page manquante",
+      "missingPages": "{count, plural, one {Page {list} absente} other {Pages {list} absentes}}",
       "formPosition": "Fiche {number} sur {total}",
       "previous": "Fiche précédente",
       "next": "Fiche suivante",
-      "missingPageExplanation": "Page manquante : cette fiche ne peut pas être validée. Retrouvez la page, ajoutez-la à un nouvel import ou ignorez la fiche.",
+      "missingPagesNotice": "{count, plural, one {Page {list} absente} other {Pages {list} absentes}} : les champs de cette page restent vides. Vous pouvez valider la fiche et compléter le membre plus tard.",
       "commitError": "La création a échoué : {error}",
       "createdNotice": "Membre créé.",
       "openMember": "Ouvrir la fiche",
@@ -6333,8 +6354,7 @@
     },
     "validation": {
       "firstNameRequired": "Prénom requis",
-      "lastNameRequired": "Nom requis",
-      "missingPage": "Page manquante"
+      "lastNameRequired": "Nom requis"
     },
     "leaveWarning": {
       "title": "Quitter l'import ?",

@@ -6196,6 +6196,7 @@
       "templateSummary": "{pages, plural, one {# page} other {# pages}} per form · {fields, plural, one {# field} other {# fields}}.",
       "manageTemplates": "Manage templates",
       "dropTitle": "Drop the scanned PDF or the photos of the forms",
+      "galleryTitle": "Choose photos or a PDF",
       "dropSubtitle": "PDF, JPEG or PNG — several files allowed, read in file name order",
       "privacyNote": "Pages stay in your browser: only the images are sent, one at a time, to be read, and nothing is kept.",
       "pageCount": "{count, plural, one {# page} other {# pages}}",
@@ -6206,11 +6207,30 @@
       "start": "Start reading",
       "renderFailed": "{name}: {error}",
       "strictTemplateNotice": "Only pages of “{name}” will be accepted.",
-      "takePhoto": "Take a photo",
-      "nextPhoto": "Next photo",
-      "capturedPhotoCount": "{count, plural, one {# photo taken} other {# photos taken}}",
-      "cameraFramingHint": "Frame the whole page, with the title and page number (1/2, 2/2) visible.",
-      "photoFileName": "Photo {number}.{extension}"
+      "capturedListLabel": "Photographed forms",
+      "capturedForm": "Form {form}",
+      "capturedPages": "{count, plural, one {Page {list}} other {Pages {list}}}",
+      "capturedMissing": "{count, plural, one {page {list} missing} other {pages {list} missing}}",
+      "capturedInProgress": "in progress",
+      "removeCapturedForm": "Remove form {form}",
+      "capturedSummary": "{forms, plural, one {# form} other {# forms}} · {pages, plural, one {# page} other {# pages}}",
+      "camera": {
+        "title": "Photograph the forms",
+        "needsTemplate": "Choose a template first: the app will tell you which page to photograph.",
+        "prompt": "Form {form} — page {page} of {pages}",
+        "promptSinglePage": "Form {form}",
+        "capturePage": "Photograph page {page}",
+        "captureForm": "Photograph the form",
+        "skipToNextForm": "Go to form {form}",
+        "lastShot": "Form {form} · page {page}",
+        "lastShotSinglePage": "Form {form}",
+        "lastShotAlt": "Photo of form {form}, page {page}",
+        "preparing": "Preparing…",
+        "retake": "Retake",
+        "retakeLabel": "Retake the photo of form {form}, page {page}",
+        "framingHint": "Lay the sheet flat in good light and frame the whole page, all four edges visible.",
+        "photoFileName": "Form {form} page {page}.{extension}"
+      }
     },
     "reading": {
       "progress": "{read} / {total} pages read",
@@ -6248,7 +6268,7 @@
       "zoomIn": "Zoom in",
       "pageUnread": "Page not read: {error}",
       "pageAlt": "Page {number} of the form ({file})",
-      "missingPageBody": "Page {number} of this form was not found in the imported files."
+      "missingPageBody": "Page {number} of this form was not imported."
     },
     "editor": {
       "lowConfidence": "Uncertain reading, please check",
@@ -6276,6 +6296,7 @@
       "legalDocuments": "Accepted documents",
       "notes": "Notes",
       "notesHint": "Holds the fields with no dedicated column, as “label: value”.",
+      "notesHintWithLegalDocuments": "Holds the fields with no dedicated column, as “label: value”. The commitments above are added to it (Yes / No) on creation.",
       "notesLowConfidence": "Some values were read with uncertainty, please check."
     },
     "review": {
@@ -6285,11 +6306,11 @@
       "create": "{count, plural, =0 {Create members} one {Create # member} other {Create # members}}",
       "formsList": "Forms",
       "untitledForm": "Form {number}",
-      "missingPage": "Missing page",
+      "missingPages": "{count, plural, one {Page {list} missing} other {Pages {list} missing}}",
       "formPosition": "Form {number} of {total}",
       "previous": "Previous form",
       "next": "Next form",
-      "missingPageExplanation": "Missing page: this form cannot be validated. Find the page, add it to a new import, or ignore the form.",
+      "missingPagesNotice": "{count, plural, one {Page {list} missing} other {Pages {list} missing}}: the fields on that page stay empty. You can validate the form and complete the member later.",
       "commitError": "Creation failed: {error}",
       "createdNotice": "Member created.",
       "openMember": "Open profile",
@@ -6325,8 +6346,7 @@
     },
     "validation": {
       "firstNameRequired": "First name required",
-      "lastNameRequired": "Last name required",
-      "missingPage": "Missing page"
+      "lastNameRequired": "Last name required"
     },
     "leaveWarning": {
       "title": "Leave the import?",
