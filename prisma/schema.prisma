@@ -713,9 +713,9 @@ model Membre {
   allergies         String?
   photoUrl          String?
   // Not defaulted to "fr" the way User.locale is — null means "never asked", not "assumed
-  // French". Set explicitly by an admin/the member themselves, or auto-captured from the
-  // page's own locale on a public signup form (the visitor already picked it via
-  // LocaleSwitcher there, so there's no separate input for it — see checkout/route.ts).
+  // French". Set explicitly by an admin/the member themselves, by an explicit answer on a
+  // MembershipForm when fieldPreferredLocale exposes it, or (fallback) auto-captured from the
+  // page's own locale on a public signup form with no such field (see checkout/route.ts).
   // Not yet read by any email-sending code; captured now for that future use.
   preferredLocale   String?
   // Langue parlée (code ISO 639-1, liste dans src/lib/languages.ts) — distinct de
@@ -1580,6 +1580,10 @@ model MembershipForm {
   fieldGender    MembershipFieldRequirement @default(HIDDEN)
   fieldPhoto     MembershipFieldRequirement @default(HIDDEN)
   fieldLanguage  MembershipFieldRequirement @default(HIDDEN)
+  // Distinct from fieldLanguage/spokenLanguage (langue parlée) — this drives Membre.preferredLocale,
+  // the language used for future member-facing email/communication localization. See the comment
+  // on Membre.preferredLocale below.
+  fieldPreferredLocale MembershipFieldRequirement @default(HIDDEN)
 
   // Étape 4 — Paiement. Pas de champ "allowOnline" (contrairement à DonationForm) : un tier
   // payant passe toujours par Stripe, ces 3 flags n'activent que le règlement hors-ligne des

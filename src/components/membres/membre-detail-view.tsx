@@ -15,6 +15,7 @@ import {
 } from "@phosphor-icons/react/dist/ssr";
 import { useMembre, useUpdateMembre, useDeleteMembre, useCreateAccess, useCancelCotisationSubscription, useCancelCotisationInstallmentPlan } from "@/hooks/use-membres"
 import { spokenLanguageLabel } from "@/lib/languages"
+import { LOCALE_LABELS, isSupportedLocale } from "@/i18n/locales"
 import { formatAddress } from "@/lib/address"
 import { useCreateCotisation, useUpdateCotisation } from "@/hooks/use-cotisations"
 import type { MembreInput, CotisationInput } from "@/lib/schemas"
@@ -580,6 +581,13 @@ export function MembreDetailView() {
           {membre.spokenLanguage && (
             <p className="text-muted-foreground">{t("membres.detail.spokenLanguageColon", { value: spokenLanguageLabel(membre.spokenLanguage) })}</p>
           )}
+          {membre.preferredLocale && (
+            <p className="text-muted-foreground">
+              {t("membres.detail.preferredLocaleColon", {
+                value: isSupportedLocale(membre.preferredLocale) ? LOCALE_LABELS[membre.preferredLocale] : membre.preferredLocale,
+              })}
+            </p>
+          )}
           {membre.responsable && (
             <p className="text-muted-foreground">
               {t("membres.detail.legalGuardianColon")}{" "}
@@ -607,7 +615,7 @@ export function MembreDetailView() {
               <> {t("membres.detail.imageRightsDate", { date: format(new Date(membre.imageRightsConsentAt), "dd/MM/yyyy", { locale: fr }) })}</>
             )}
           </p>
-          {!membre.civilite && !membre.sexe && !membre.birthDate && !membre.responsable && !membre.spokenLanguage
+          {!membre.civilite && !membre.sexe && !membre.birthDate && !membre.responsable && !membre.spokenLanguage && !membre.preferredLocale
             && membre.customFieldAnswers.length === 0 && (
             <p className="text-muted-foreground">{t("membres.detail.noInfo")}</p>
           )}

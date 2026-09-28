@@ -23,6 +23,7 @@ import { publicFormTerms } from "@/lib/form-terms"
 import { LegalConsent, type RequiredLegalDocument } from "@/components/public/legal-consent"
 import { PublicFormSkeleton } from "@/components/public/public-form-skeleton"
 import { spokenLanguageOptions } from "@/lib/languages"
+import { SUPPORTED_LOCALES, LOCALE_LABELS } from "@/i18n/locales"
 import { EMPTY_ADDRESS_FORM_VALUES, type AddressFormValues } from "@/lib/address"
 import { InAppBrowserBanner } from "@/components/ui/in-app-browser-banner"
 import { useInAppBrowserEscape } from "@/hooks/use-in-app-browser-escape"
@@ -83,6 +84,7 @@ type FormInfo = {
   fieldGender: FieldRequirement
   fieldPhoto: FieldRequirement
   fieldLanguage: FieldRequirement
+  fieldPreferredLocale: FieldRequirement
   confirmationMessage: string | null
   offlineInstructions: string | null
   allowCash: boolean
@@ -121,6 +123,7 @@ type RegistrantDraft = {
   mobile:    string
   sexe:      "" | "HOMME" | "FEMME"
   spokenLanguage: string
+  preferredLocale: string
   // Les cinq champs structurés de l'adresse (voir AddressFields), et non plus l'unique champ
   // en texte libre — chaque bloc « Adhérent » a les siens.
   addressValues: AddressFormValues
@@ -209,6 +212,13 @@ function MembershipFormPublicFormInner({ slug, formSlug, legalDocuments }: Props
   const [sexe, setSexe]             = useState<"" | "HOMME" | "FEMME">("")
   const [spokenLanguage, setSpokenLanguage] = useState("")
   const languageOptions = spokenLanguageOptions()
+  const [preferredLocale, setPreferredLocale] = useState("")
+  // Sorted by label (endonym), not SUPPORTED_LOCALES' own fr/en/pt-first-then-alphabetical
+  // order — a visitor scanning 25 languages for their own should find it alphabetically, not
+  // wherever the app happened to add support for it.
+  const preferredLocaleOptions = SUPPORTED_LOCALES
+    .map(value => ({ value, label: LOCALE_LABELS[value] }))
+    .sort((a, b) => a.label.localeCompare(b.label))
   const [conditionsAgreed, setConditionsAgreed] = useState(false)
   // Empty editor markup or a "required" flag with nothing to accept must not block the visitor.
   const requiresTermsAcceptance = !!form && publicFormTerms({
@@ -483,7 +493,7 @@ function MembershipFormPublicFormInner({ slug, formSlug, legalDocuments }: Props
     // second adhérent faisait disparaître le don sans rien dire.
     setExtraRegistrants(prev => [...prev, {
       key: `reg-${nextRegistrantId++}`, tierId: defaultTier?.id ?? "", freeAmount: 0,
-      firstName: "", lastName: "", birthDate: "", phone: "", mobile: "", sexe: "", spokenLanguage: "",
+      firstName: "", lastName: "", birthDate: "", phone: "", mobile: "", sexe: "", spokenLanguage: "", preferredLocale: "",
       addressValues: { ...EMPTY_ADDRESS_FORM_VALUES }, photoUrl: "", answers: {},
     }])
   }
@@ -558,6 +568,7 @@ function MembershipFormPublicFormInner({ slug, formSlug, legalDocuments }: Props
       (form.fieldGender    !== "REQUIRED" || !!r.sexe) &&
       (form.fieldLanguage  !== "REQUIRED" || !!r.spokenLanguage) &&
       (form.fieldPhoto     !== "REQUIRED" || r.photoUrl) &&
+      (form.fieldPreferredLocale !== "REQUIRED" || !!r.preferredLocale) &&
       form.customFields.every(f => !f.required || (r.answers[f.id] ?? "").trim() !== "")
   }
   const canSubmit =
@@ -581,6 +592,7 @@ function MembershipFormPublicFormInner({ slug, formSlug, legalDocuments }: Props
     (form.fieldGender    !== "REQUIRED" || sexe) &&
     (form.fieldLanguage  !== "REQUIRED" || !!spokenLanguage) &&
     (form.fieldPhoto     !== "REQUIRED" || photoUrl) &&
+    (form.fieldPreferredLocale !== "REQUIRED" || !!preferredLocale) &&
     (!requiresTermsAcceptance || isAdminFill || conditionsAgreed) &&
     (legalDocuments.length === 0 || isAdminFill || legalAccepted) &&
     form.customFields.every(f => !f.required || (answers[f.id] ?? "").trim() !== "")
@@ -616,6 +628,7 @@ function MembershipFormPublicFormInner({ slug, formSlug, legalDocuments }: Props
       || (form.fieldGender    === "REQUIRED" && !sexe)
       || (form.fieldLanguage  === "REQUIRED" && !spokenLanguage)
       || (form.fieldPhoto     === "REQUIRED" && !photoUrl)
+      || (form.fieldPreferredLocale === "REQUIRED" && !preferredLocale)
       || !form.customFields.every(f => !f.required || (answers[f.id] ?? "").trim() !== "")
     ? t("blockedMissingRequiredField")
     : null
@@ -646,6 +659,7 @@ function MembershipFormPublicFormInner({ slug, formSlug, legalDocuments }: Props
             spokenLanguage: spokenLanguage || undefined,
             photoUrl:  photoUrl || undefined,
             locale:    loc,
+            preferredLocale: preferredLocale || undefined,
             answers,
           }),
         })
@@ -663,7 +677,7 @@ function MembershipFormPublicFormInner({ slug, formSlug, legalDocuments }: Props
                 amount: !selectedTier.free && selectedTier.freeAmount ? membershipAmount : undefined,
                 firstName: firstName.trim(), lastName: lastName.trim(),
                 birthDate: birthDate.trim() || undefined, phone: phone.trim() || undefined, mobile: mobile.trim() || undefined,
-                sexe: sexe || undefined, spokenLanguage: spokenLanguage || undefined, ...addressPayload(addressValues), photoUrl: photoUrl || undefined, answers,
+                sexe: sexe || undefined, spokenLanguage: spokenLanguage || undefined, preferredLocale: preferredLocale || undefined, ...addressPayload(addressValues), photoUrl: photoUrl || undefined, answers,
               },
               ...extraRegistrants.map(r => {
                 const rt = registrantTier(r)
@@ -672,7 +686,7 @@ function MembershipFormPublicFormInner({ slug, formSlug, legalDocuments }: Props
                   amount: rt && !rt.free && rt.freeAmount ? r.freeAmount : undefined,
                   firstName: r.firstName.trim(), lastName: r.lastName.trim(),
                   birthDate: r.birthDate.trim() || undefined, phone: r.phone.trim() || undefined, mobile: r.mobile.trim() || undefined,
-                  sexe: r.sexe || undefined, spokenLanguage: r.spokenLanguage || undefined, ...addressPayload(r.addressValues),
+                  sexe: r.sexe || undefined, spokenLanguage: r.spokenLanguage || undefined, preferredLocale: r.preferredLocale || undefined, ...addressPayload(r.addressValues),
                   photoUrl: r.photoUrl || undefined, answers: r.answers,
                 }
               }),
@@ -711,6 +725,7 @@ function MembershipFormPublicFormInner({ slug, formSlug, legalDocuments }: Props
             mobile:    mobile.trim() || undefined,
             sexe:      sexe || undefined,
             spokenLanguage: spokenLanguage || undefined,
+            preferredLocale: preferredLocale || undefined,
             photoUrl:  photoUrl || undefined,
             answers,
             website,
@@ -1096,6 +1111,23 @@ function MembershipFormPublicFormInner({ slug, formSlug, legalDocuments }: Props
                       error={requiredError("spokenLanguage", spokenLanguage, form.fieldLanguage === "REQUIRED")}
                     />
                   )}
+                  {form.fieldPreferredLocale !== "HIDDEN" && (
+                    <>
+                      <SelectField
+                        label={t("preferredLocaleLabel")}
+                        required={form.fieldPreferredLocale === "REQUIRED"}
+                        options={form.fieldPreferredLocale === "REQUIRED"
+                          ? preferredLocaleOptions
+                          : [{ value: "", label: t("preferredLocaleNone") }, ...preferredLocaleOptions]}
+                        value={preferredLocale}
+                        onValueChange={setPreferredLocale}
+                        error={requiredError("preferredLocale", preferredLocale, form.fieldPreferredLocale === "REQUIRED")}
+                      />
+                      <p className="sm:col-span-2 -mt-1 text-xs text-muted-foreground">
+                        {isAdminFill ? t("preferredLocaleHintAdmin") : t("preferredLocaleHintMember")}
+                      </p>
+                    </>
+                  )}
                   {form.fieldPhone !== "HIDDEN" && (
                     <FormField label={t("phoneLabel")} placeholder={t("phonePlaceholder")} required={form.fieldPhone === "REQUIRED"} value={phone} onChange={e => setPhone(e.target.value)} onBlur={() => touch("phone")} error={requiredError("phone", phone, form.fieldPhone === "REQUIRED")} />
                   )}
@@ -1232,6 +1264,20 @@ function MembershipFormPublicFormInner({ slug, formSlug, legalDocuments }: Props
                                   : [{ value: "", label: t("languageNone") }, ...languageOptions]}
                                 value={r.spokenLanguage}
                                 onValueChange={v => updateRegistrant(r.key, { spokenLanguage: v })}
+                              />
+                            )}
+                            {form.fieldPreferredLocale !== "HIDDEN" && (
+                              // No repeated hint paragraph per card here — the explanation
+                              // already appears once, above, next to registrant 0's own
+                              // identical field (see the non-multi block).
+                              <SelectField
+                                label={t("preferredLocaleLabel")}
+                                required={form.fieldPreferredLocale === "REQUIRED"}
+                                options={form.fieldPreferredLocale === "REQUIRED"
+                                  ? preferredLocaleOptions
+                                  : [{ value: "", label: t("preferredLocaleNone") }, ...preferredLocaleOptions]}
+                                value={r.preferredLocale}
+                                onValueChange={v => updateRegistrant(r.key, { preferredLocale: v })}
                               />
                             )}
                             {form.fieldPhone !== "HIDDEN" && (

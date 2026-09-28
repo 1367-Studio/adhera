@@ -389,7 +389,7 @@ export default function ProfilPage() {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="__none__">{t("contact.notProvided")}</SelectItem>
-                      {SUPPORTED_LOCALES.map(code => (
+                      {[...SUPPORTED_LOCALES].sort((a, b) => LOCALE_LABELS[a].localeCompare(LOCALE_LABELS[b])).map(code => (
                         <SelectItem key={code} value={code}>{LOCALE_LABELS[code]}</SelectItem>
                       ))}
                     </SelectContent>

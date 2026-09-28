@@ -105,7 +105,8 @@ export function MembreForm({ defaultValues, onSubmit, onCancel, loading, isCreat
 
   const preferredLocaleOptions = [
     { value: "", label: t("membres.form.preferredLocaleNone") },
-    ...SUPPORTED_LOCALES.map(value => ({ value, label: LOCALE_LABELS[value] })),
+    // Sorted by label — same reasoning as spokenLanguageOptions() below.
+    ...SUPPORTED_LOCALES.map(value => ({ value, label: LOCALE_LABELS[value] })).sort((a, b) => a.label.localeCompare(b.label)),
   ]
   const spokenLanguageSelectOptions = [
     { value: "", label: t("membres.form.spokenLanguageNone") },
@@ -517,6 +518,7 @@ export function MembreForm({ defaultValues, onSubmit, onCancel, loading, isCreat
             )}
           />
         </div>
+        <p className="-mt-2 text-xs text-muted-foreground">{t("membres.form.preferredLocaleHint")}</p>
 
         {types.length > 0 && (
           <Controller

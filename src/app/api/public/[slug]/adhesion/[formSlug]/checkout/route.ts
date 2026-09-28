@@ -113,9 +113,12 @@ const schema = z.object({
   photoUrl:    z.string().url().max(500).optional(),
   payInInstallments: z.boolean().optional().default(false),
   // The page's own locale (LocaleSwitcher, next-intl) — the visitor already picked it to view
-  // the form, so it's captured here rather than asking again. Not yet used to localize any
-  // outbound email — see Membre.preferredLocale in schema.prisma.
+  // the form, so it's captured here rather than asking again. Falls back for preferredLocale
+  // below when the form has no explicit fieldPreferredLocale answer.
   locale:      z.enum(SUPPORTED_LOCALES).optional(),
+  // Explicit answer to fieldPreferredLocale, distinct from the ambient `locale` above — see
+  // Membre.preferredLocale in schema.prisma.
+  preferredLocale: z.enum(SUPPORTED_LOCALES).optional(),
   answers:     z.record(z.string(), z.string().max(500)).optional().default({}),
   addons:      z.array(z.object({
     tierId: z.string().min(1),
@@ -151,6 +154,7 @@ const registrantSchema = z.object({
   mobile:    z.string().trim().max(30).optional(),
   sexe:      z.enum(["HOMME", "FEMME"]).optional(),
   spokenLanguage: z.enum(SPOKEN_LANGUAGE_CODES).optional(),
+  preferredLocale: z.enum(SUPPORTED_LOCALES).optional(),
   // Même couple hérité/structuré que le parcours à un seul adhérent ci-dessus.
   address:   z.string().trim().max(300).optional(),
   addressStreet:     z.string().trim().max(ADDRESS_MAX_LENGTHS.street).optional(),
@@ -320,7 +324,7 @@ export async function POST(
   // La matrice de champs standards (étape 3 de l'assistant) rend certains champs
   // obligatoires — validée ici plutôt que par un schéma zod statique puisqu'elle est
   // configurée par formulaire, même raisonnement que les DonationFormField.
-  const { birthDate, phone, mobile, sexe, spokenLanguage, photoUrl: photoUrlValue } = parsed.data
+  const { birthDate, phone, mobile, sexe, spokenLanguage, photoUrl: photoUrlValue, preferredLocale } = parsed.data
   // L'adresse est vérifiée à part : elle tient désormais sur cinq champs, et la forme héritée
   // en texte libre reste acceptée (voir addressIsFilled).
   if (form.fieldAddress === "REQUIRED" && !addressIsFilled(parsed.data))
@@ -332,6 +336,7 @@ export async function POST(
     [form.fieldGender,    sexe,      "Genre"],
     [form.fieldLanguage,  spokenLanguage, "Langue parlée"],
     [form.fieldPhoto,     photoUrlValue, "Photo"],
+    [form.fieldPreferredLocale, preferredLocale, "Langue préférée"],
   ]
   for (const [requirement, value, label] of standardChecks) {
     if (requirement === "REQUIRED" && (!value || !value.trim()))
@@ -419,7 +424,7 @@ export async function POST(
           sexe:          sexe || null,
           spokenLanguage: spokenLanguage || null,
           photoUrl:      photoUrl || null,
-          preferredLocale: locale || null,
+          preferredLocale: preferredLocale || locale || null,
           status:        "PENDING",
           associationId: assoc.id,
           typeId:        tier.membreTypeId,
@@ -471,7 +476,7 @@ export async function POST(
             sexe:          sexe || null,
             spokenLanguage: spokenLanguage || null,
             photoUrl:      photoUrl || null,
-            preferredLocale: locale || null,
+            preferredLocale: preferredLocale || locale || null,
             status:        "ACTIF",
             associationId: assoc.id,
             typeId:        tier.membreTypeId,
@@ -612,7 +617,7 @@ export async function POST(
             sexe:          sexe || null,
             spokenLanguage: spokenLanguage || null,
             photoUrl:      photoUrl || null,
-            preferredLocale: locale || null,
+            preferredLocale: preferredLocale || locale || null,
             status:        "ACTIF",
             associationId: assoc.id,
             typeId:        tier.membreTypeId,
@@ -727,6 +732,7 @@ export async function POST(
     spokenLanguage:   spokenLanguage || "",
     photoUrl:         photoUrl || "",
     locale:           locale || "",
+    preferredLocale:  preferredLocale || "",
     answers:          JSON.stringify(answers),
     termsAcceptedIp:  acceptedIp ?? "",
     termsVersion:     CURRENT_TERMS_VERSION,
@@ -1026,6 +1032,7 @@ async function handleMultiRegistrantCheckout(
       [form.fieldGender,    r.sexe,      "Genre"],
       [form.fieldLanguage,  r.spokenLanguage, "Langue parlée"],
       [form.fieldPhoto,     r.photoUrl,  "Photo"],
+      [form.fieldPreferredLocale, r.preferredLocale, "Langue préférée"],
     ]
     for (const [requirement, value, label] of standardChecks) {
       if (requirement === "REQUIRED" && (!value || !value.trim()))
@@ -1131,9 +1138,10 @@ async function handleMultiRegistrantCheckout(
             sexe:          r.sexe === "HOMME" || r.sexe === "FEMME" ? r.sexe : null,
             spokenLanguage: r.spokenLanguage || null,
             photoUrl:      r.photoUrl || null,
-            // Same page, same session for every registrant in this submission — unlike
-            // email (person-specific login identity), the locale applies to the whole group.
-            preferredLocale: data.locale || null,
+            // The explicit per-registrant answer (fieldPreferredLocale) takes priority; absent
+            // that, falls back to the group's shared page locale — unlike email (person-specific
+            // login identity), that ambient value applies to the whole group.
+            preferredLocale: r.preferredLocale || data.locale || null,
             status:        "PENDING",
             associationId: assoc.id,
             typeId:        tier.membreTypeId,
@@ -1194,7 +1202,7 @@ async function handleMultiRegistrantCheckout(
       registrants: resolved.map(({ tier, r, answers }) => ({
         tierId: tier.id, amount: r.amount,
         firstName: r.firstName, lastName: r.lastName,
-        birthDate: r.birthDate, sexe: r.sexe, spokenLanguage: r.spokenLanguage, phone: r.phone, mobile: r.mobile,
+        birthDate: r.birthDate, sexe: r.sexe, spokenLanguage: r.spokenLanguage, preferredLocale: r.preferredLocale, phone: r.phone, mobile: r.mobile,
         // L'adresse voyage structurée dans le brouillon, colonne héritée comprise : c'est
         // consumeMembershipCheckoutDraft qui crée le Membre, parfois plusieurs minutes plus
         // tard, et sans ces cinq champs ici l'adresse serait perdue sur toute inscription

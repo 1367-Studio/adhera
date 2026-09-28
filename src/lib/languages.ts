@@ -17,5 +17,9 @@ export function spokenLanguageLabel(code: string): string {
 }
 
 export function spokenLanguageOptions(): { value: SpokenLanguage; label: string }[] {
-  return SUPPORTED_LOCALES.map(value => ({ value, label: LOCALE_LABELS[value] }))
+  // Sorted by label (endonym) rather than SUPPORTED_LOCALES' own order — a visitor scanning
+  // 25 languages for their own should find it alphabetically.
+  return SUPPORTED_LOCALES
+    .map(value => ({ value, label: LOCALE_LABELS[value] }))
+    .sort((a, b) => a.label.localeCompare(b.label))
 }

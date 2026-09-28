@@ -117,7 +117,7 @@ export async function handleMembershipOneOffCheckout(session: Stripe.Checkout.Se
           sexe:          meta.sexe === "HOMME" || meta.sexe === "FEMME" ? meta.sexe : null,
           spokenLanguage: isSpokenLanguage(meta.spokenLanguage) ? meta.spokenLanguage : null,
           photoUrl:      meta.photoUrl || null,
-          preferredLocale: meta.locale || null,
+          preferredLocale: meta.preferredLocale || meta.locale || null,
           status:        "ACTIF",
           associationId: meta.associationId,
           typeId:        meta.typeId || null,
