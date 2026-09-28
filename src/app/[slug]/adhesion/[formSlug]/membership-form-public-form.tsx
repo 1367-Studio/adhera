@@ -1099,35 +1099,45 @@ function MembershipFormPublicFormInner({ slug, formSlug, legalDocuments }: Props
                       error={requiredError("sexe", sexe, form.fieldGender === "REQUIRED")}
                     />
                   )}
-                  {form.fieldLanguage !== "HIDDEN" && (
-                    <SelectField
-                      label={t("languageLabel")}
-                      required={form.fieldLanguage === "REQUIRED"}
-                      options={form.fieldLanguage === "REQUIRED"
-                        ? languageOptions
-                        : [{ value: "", label: t("languageNone") }, ...languageOptions]}
-                      value={spokenLanguage}
-                      onValueChange={setSpokenLanguage}
-                      error={requiredError("spokenLanguage", spokenLanguage, form.fieldLanguage === "REQUIRED")}
-                    />
-                  )}
-                  {form.fieldPreferredLocale !== "HIDDEN" && (
-                    <>
+                </div>
+                {/* Empilés plutôt que côte à côte : « Langue de communication » est plus long que
+                    « Langue parlée » et passe sur deux lignes dans une colonne étroite (mobile,
+                    ou simplement selon la langue de l'interface), ce qui désalignait les deux
+                    champs l'un à côté de l'autre. */}
+                {(form.fieldLanguage !== "HIDDEN" || form.fieldPreferredLocale !== "HIDDEN") && (
+                  <div className="space-y-3">
+                    {form.fieldLanguage !== "HIDDEN" && (
                       <SelectField
-                        label={t("preferredLocaleLabel")}
-                        required={form.fieldPreferredLocale === "REQUIRED"}
-                        options={form.fieldPreferredLocale === "REQUIRED"
-                          ? preferredLocaleOptions
-                          : [{ value: "", label: t("preferredLocaleNone") }, ...preferredLocaleOptions]}
-                        value={preferredLocale}
-                        onValueChange={setPreferredLocale}
-                        error={requiredError("preferredLocale", preferredLocale, form.fieldPreferredLocale === "REQUIRED")}
+                        label={t("languageLabel")}
+                        required={form.fieldLanguage === "REQUIRED"}
+                        options={form.fieldLanguage === "REQUIRED"
+                          ? languageOptions
+                          : [{ value: "", label: t("languageNone") }, ...languageOptions]}
+                        value={spokenLanguage}
+                        onValueChange={setSpokenLanguage}
+                        error={requiredError("spokenLanguage", spokenLanguage, form.fieldLanguage === "REQUIRED")}
                       />
-                      <p className="sm:col-span-2 -mt-1 text-xs text-muted-foreground">
-                        {isAdminFill ? t("preferredLocaleHintAdmin") : t("preferredLocaleHintMember")}
-                      </p>
-                    </>
-                  )}
+                    )}
+                    {form.fieldPreferredLocale !== "HIDDEN" && (
+                      <div className="space-y-1.5">
+                        <SelectField
+                          label={t("preferredLocaleLabel")}
+                          required={form.fieldPreferredLocale === "REQUIRED"}
+                          options={form.fieldPreferredLocale === "REQUIRED"
+                            ? preferredLocaleOptions
+                            : [{ value: "", label: t("preferredLocaleNone") }, ...preferredLocaleOptions]}
+                          value={preferredLocale}
+                          onValueChange={setPreferredLocale}
+                          error={requiredError("preferredLocale", preferredLocale, form.fieldPreferredLocale === "REQUIRED")}
+                        />
+                        <p className="text-xs text-muted-foreground">
+                          {isAdminFill ? t("preferredLocaleHintAdmin") : t("preferredLocaleHintMember")}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                )}
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                   {form.fieldPhone !== "HIDDEN" && (
                     <FormField label={t("phoneLabel")} placeholder={t("phonePlaceholder")} required={form.fieldPhone === "REQUIRED"} value={phone} onChange={e => setPhone(e.target.value)} onBlur={() => touch("phone")} error={requiredError("phone", phone, form.fieldPhone === "REQUIRED")} />
                   )}
@@ -1255,31 +1265,40 @@ function MembershipFormPublicFormInner({ slug, formSlug, legalDocuments }: Props
                                 onValueChange={v => updateRegistrant(r.key, { sexe: v as "" | "HOMME" | "FEMME" })}
                               />
                             )}
-                            {form.fieldLanguage !== "HIDDEN" && (
-                              <SelectField
-                                label={t("languageLabel")}
-                                required={form.fieldLanguage === "REQUIRED"}
-                                options={form.fieldLanguage === "REQUIRED"
-                                  ? languageOptions
-                                  : [{ value: "", label: t("languageNone") }, ...languageOptions]}
-                                value={r.spokenLanguage}
-                                onValueChange={v => updateRegistrant(r.key, { spokenLanguage: v })}
-                              />
-                            )}
-                            {form.fieldPreferredLocale !== "HIDDEN" && (
-                              // No repeated hint paragraph per card here — the explanation
-                              // already appears once, above, next to registrant 0's own
-                              // identical field (see the non-multi block).
-                              <SelectField
-                                label={t("preferredLocaleLabel")}
-                                required={form.fieldPreferredLocale === "REQUIRED"}
-                                options={form.fieldPreferredLocale === "REQUIRED"
-                                  ? preferredLocaleOptions
-                                  : [{ value: "", label: t("preferredLocaleNone") }, ...preferredLocaleOptions]}
-                                value={r.preferredLocale}
-                                onValueChange={v => updateRegistrant(r.key, { preferredLocale: v })}
-                              />
-                            )}
+                          </div>
+                          {/* Empilés, pas côte à côte : même raison que pour l'adhérent principal
+                              ci-dessus, « Langue de communication » passe sur deux lignes dans une
+                              colonne étroite et désaligne les deux champs l'un à côté de l'autre. */}
+                          {(form.fieldLanguage !== "HIDDEN" || form.fieldPreferredLocale !== "HIDDEN") && (
+                            <div className="space-y-3">
+                              {form.fieldLanguage !== "HIDDEN" && (
+                                <SelectField
+                                  label={t("languageLabel")}
+                                  required={form.fieldLanguage === "REQUIRED"}
+                                  options={form.fieldLanguage === "REQUIRED"
+                                    ? languageOptions
+                                    : [{ value: "", label: t("languageNone") }, ...languageOptions]}
+                                  value={r.spokenLanguage}
+                                  onValueChange={v => updateRegistrant(r.key, { spokenLanguage: v })}
+                                />
+                              )}
+                              {form.fieldPreferredLocale !== "HIDDEN" && (
+                                // No repeated hint paragraph per card here — the explanation
+                                // already appears once, above, next to registrant 0's own
+                                // identical field (see the non-multi block).
+                                <SelectField
+                                  label={t("preferredLocaleLabel")}
+                                  required={form.fieldPreferredLocale === "REQUIRED"}
+                                  options={form.fieldPreferredLocale === "REQUIRED"
+                                    ? preferredLocaleOptions
+                                    : [{ value: "", label: t("preferredLocaleNone") }, ...preferredLocaleOptions]}
+                                  value={r.preferredLocale}
+                                  onValueChange={v => updateRegistrant(r.key, { preferredLocale: v })}
+                                />
+                              )}
+                            </div>
+                          )}
+                          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                             {form.fieldPhone !== "HIDDEN" && (
                               <FormField label={t("phoneLabel")} placeholder={t("phonePlaceholder")} required={form.fieldPhone === "REQUIRED"} value={r.phone} onChange={e => updateRegistrant(r.key, { phone: e.target.value })} onBlur={() => touch(`${r.key}.phone`)} error={requiredError(`${r.key}.phone`, r.phone, form.fieldPhone === "REQUIRED")} />
                             )}

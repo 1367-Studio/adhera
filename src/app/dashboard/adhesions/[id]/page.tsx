@@ -818,11 +818,18 @@ export default function MembershipFormDetailPage() {
                   <SelectField label={tSteps("fields.mobileLabel")} options={requirementOptions} value={fieldMobile} onValueChange={v => setFieldMobile(v as FieldRequirement)} />
                   <SelectField label={tSteps("fields.genderLabel")} options={requirementOptions} value={fieldGender} onValueChange={v => setFieldGender(v as FieldRequirement)} />
                   <SelectField label={tSteps("fields.photoLabel")} options={requirementOptions} value={fieldPhoto} onValueChange={v => setFieldPhoto(v as FieldRequirement)} />
+                </div>
+                {/* Empilés plutôt que côte à côte : « Langue de communication » est plus long que
+                    « Langue parlée » et passe sur deux lignes dans la largeur d'une colonne, ce qui
+                    désalignait les deux champs l'un à côté de l'autre. */}
+                <div className="mt-3 space-y-3">
                   <SelectField label={tSteps("fields.languageLabel")} options={requirementOptions} value={fieldLanguage} onValueChange={v => setFieldLanguage(v as FieldRequirement)} />
-                  <SelectField label={tSteps("fields.preferredLocaleLabel")} options={requirementOptions} value={fieldPreferredLocale} onValueChange={v => setFieldPreferredLocale(v as FieldRequirement)} />
-                  {fieldPreferredLocale !== "HIDDEN" && (
-                    <p className="sm:col-span-2 -mt-1 text-xs text-muted-foreground">{tSteps("fields.preferredLocaleHint")}</p>
-                  )}
+                  <div className="space-y-1.5">
+                    <SelectField label={tSteps("fields.preferredLocaleLabel")} options={requirementOptions} value={fieldPreferredLocale} onValueChange={v => setFieldPreferredLocale(v as FieldRequirement)} />
+                    {fieldPreferredLocale !== "HIDDEN" && (
+                      <p className="text-xs text-muted-foreground">{tSteps("fields.preferredLocaleHint")}</p>
+                    )}
+                  </div>
                 </div>
                 <div className="flex justify-end mt-3">
                   <Button
