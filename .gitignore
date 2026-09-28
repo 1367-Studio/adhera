@@ -56,3 +56,7 @@ src/sanity/sanity.types.ts
 
 # Sentry Config File
 .env.sentry-build-plugin
+
+# local-only scripts
+/_bf.sh
+/scripts/send-adhesion-completion-invites.ts

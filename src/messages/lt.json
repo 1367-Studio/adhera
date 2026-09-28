@@ -4003,7 +4003,12 @@
         "type": "Narių tipas",
         "preferredLocale": "Pageidaujama kalba",
         "spokenLanguage": "Vartojama kalba",
-        "cotisationTier": "Narystės mokestis"
+        "cotisationTier": "Narystės mokestis",
+        "guardianName": "Teisėtas atstovas {number} — vardas",
+        "guardianPhone": "Teisėtas atstovas {number} — telefonas",
+        "imageRights": "Teisė į atvaizdą",
+        "notes": "Pastabos",
+        "notesPlaceholder": "Naudinga informacija apie šį narį (užsiėmimai, pastabos…)"
       },
       "invitationNotice": "Kvietimo el. laiškas su identifikatoriais bus išsiųstas į šį adresą.",
       "tierNone": "Nėra kainodaros (numatytoji elgsena)",
@@ -4014,7 +4019,22 @@
       "noResponsable": "Nėra",
       "noAdultResponsable": "Suaugusiųjų narių nėra.",
       "preview": "Apžvalga:",
-      "customFieldsSectionTitle": "Narystės formos atsakymai"
+      "customFieldsSectionTitle": "Narystės formos informacija",
+      "sections": {
+        "personalInfo": "Asmeninė informacija",
+        "address": "Adresas",
+        "memberInfo": "Nario informacija",
+        "legalGuardian": "Teisėtas atstovas",
+        "additionalInfo": "Papildoma informacija",
+        "management": "Nario valdymas"
+      },
+      "invalidFormToast": "Nepavyko išsaugoti. Jei problema tęsiasi, susisiekite su pagalba.",
+      "customFieldsLoading": "Įkeliami narystės formos atsakymai…",
+      "imageRights": {
+        "unknown": "Nenurodyta",
+        "granted": "Taip",
+        "refused": "Ne"
+      }
     },
     "actions": {
       "add": "Pridėti narį",

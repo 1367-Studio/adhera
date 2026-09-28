@@ -4003,7 +4003,12 @@
         "type": "Mitgliedertyp",
         "preferredLocale": "Bevorzugte Sprache",
         "spokenLanguage": "Gesprochene Sprache",
-        "cotisationTier": "Mitgliedsbeitrag"
+        "cotisationTier": "Mitgliedsbeitrag",
+        "guardianName": "Erziehungsberechtigter {number} — Name",
+        "guardianPhone": "Erziehungsberechtigter {number} — Telefon",
+        "imageRights": "Bildrechte",
+        "notes": "Notizen",
+        "notesPlaceholder": "Nützliche Informationen zu diesem Mitglied (Kurse, Anmerkungen…)"
       },
       "invitationNotice": "Eine Einladungs-E-Mail mit den Kennungen wird an diese Adresse gesendet.",
       "tierNone": "Keine Preisgestaltung (Standardverhalten)",
@@ -4014,7 +4019,22 @@
       "noResponsable": "Keine",
       "noAdultResponsable": "Keine erwachsenen Mitglieder verfügbar",
       "preview": "Überblick:",
-      "customFieldsSectionTitle": "Antworten aus dem Mitgliedsformular"
+      "customFieldsSectionTitle": "Informationen zum Anmeldeformular",
+      "sections": {
+        "personalInfo": "Persönliche Informationen",
+        "address": "Adresse",
+        "memberInfo": "Mitgliederinformationen",
+        "legalGuardian": "Erziehungsberechtigter",
+        "additionalInfo": "Zusätzliche Informationen",
+        "management": "Mitgliederverwaltung"
+      },
+      "invalidFormToast": "Speichern nicht möglich. Wenden Sie sich an den Support, falls das Problem weiterhin besteht.",
+      "customFieldsLoading": "Antworten des Anmeldeformulars werden geladen…",
+      "imageRights": {
+        "unknown": "Nicht angegeben",
+        "granted": "Ja",
+        "refused": "Nein"
+      }
     },
     "actions": {
       "add": "Mitglied hinzufügen",

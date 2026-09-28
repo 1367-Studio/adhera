@@ -4003,7 +4003,12 @@
         "type": "Cineál Ball",
         "preferredLocale": "An teanga is fearr leat",
         "spokenLanguage": "Teanga a labhraítear",
-        "cotisationTier": "Táille ballraíochta"
+        "cotisationTier": "Táille ballraíochta",
+        "guardianName": "Caomhnóir dlíthiúil {number} — ainm",
+        "guardianPhone": "Caomhnóir dlíthiúil {number} — fón",
+        "imageRights": "Cearta íomhá",
+        "notes": "Nótaí",
+        "notesPlaceholder": "Faisnéis úsáideach faoin mball seo (ranganna, nótaí…)"
       },
       "invitationNotice": "Seolfar ríomhphost cuireadh leis na haitheantóirí chuig an seoladh seo.",
       "tierNone": "Gan praghsáil (iompar réamhshocraithe)",
@@ -4014,7 +4019,22 @@
       "noResponsable": "Níl aon cheann",
       "noAdultResponsable": "Níl aon bhaill fásta ar fáil",
       "preview": "Forbhreathnú:",
-      "customFieldsSectionTitle": "Freagraí ar an bhfoirm bhallraíochta"
+      "customFieldsSectionTitle": "Faisnéis ón bhfoirm bhallraíochta",
+      "sections": {
+        "personalInfo": "Faisnéis Phearsanta",
+        "address": "Seoladh",
+        "memberInfo": "Faisnéis bhaill",
+        "legalGuardian": "Caomhnóir dlíthiúil",
+        "additionalInfo": "Faisnéis bhreise",
+        "management": "Bainistíocht bhaill"
+      },
+      "invalidFormToast": "Níorbh fhéidir sábháil. Déan teagmháil leis an tacaíocht mura réitítear an fhadhb.",
+      "customFieldsLoading": "Freagraí na foirme ballraíochta á lódáil…",
+      "imageRights": {
+        "unknown": "Gan sonrú",
+        "granted": "Tá",
+        "refused": "Níl"
+      }
     },
     "actions": {
       "add": "Cuir ball leis",

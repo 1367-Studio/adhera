@@ -23,7 +23,7 @@ import { SearchInput } from "@/components/ui/search-input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { useMembreTypes } from "@/hooks/use-membre-types"
-import { useChangeRole, useCreateAccess, useCreateMembre, useDeleteMembre, useMembresPaginated, useResendPaymentLink, useUpdateMembre, membresFilterParams, type MembresFilters } from "@/hooks/use-membres"
+import { useChangeRole, useCreateAccess, useCreateMembre, useDeleteMembre, useMembre, useMembresPaginated, useResendPaymentLink, useUpdateMembre, membresFilterParams, type MembresFilters } from "@/hooks/use-membres"
 import { ApiError } from "@/lib/api-error"
 import { MEMBER_LIMIT_ERROR_CODE } from "@/lib/api-error-codes"
 import { BASE_PATH } from "@/lib/env"
@@ -58,12 +58,17 @@ type Membre = {
   birthDate:     string | null
   civilite:      "MME" | "MLLE" | "M" | null
   sexe:          "HOMME" | "FEMME" | null
+  // Ces quatre champs n'apparaissent plus nulle part dans cet écran — ils alimentent seulement
+  // les hidden inputs de MembreForm (voir CLAUDE.md field-removal) pour que sauvegarder depuis
+  // la liste ne réécrive pas la valeur existante avec du vide. Ne pas les retirer d'ici, même
+  // s'ils semblent morts : GET /api/membres doit continuer à les renvoyer (actuellement via un
+  // `include` sans `select` restrictif — voir la route).
   groupeSanguin: "A_POSITIF" | "A_NEGATIF" | "B_POSITIF" | "B_NEGATIF" | "AB_POSITIF" | "AB_NEGATIF" | "O_POSITIF" | "O_NEGATIF" | null
   allergies:     string | null
-  preferredLocale: string | null
-  spokenLanguage: string | null
   possedeTshirt: boolean | null
   tailleTshirt:  "XS" | "S" | "M" | "L" | "XL" | "XXL" | "XXXL" | null
+  preferredLocale: string | null
+  spokenLanguage: string | null
   status:        "PENDING" | "ACTIF" | "INACTIF" | "SUSPENDU"
   adherentOverride: boolean | null
   isAdherent:       boolean
@@ -271,6 +276,11 @@ export function MembresView() {
 
   const createMutation      = useCreateMembre()
   const updateMutation      = useUpdateMembre(editTarget?.id ?? "")
+  // La listagem não traz os campos personalizados do formulário de adesão (voir MembreDetail
+  // vs le type Membre local ci-dessus) — cette requête additionnelle, déclenchée seulement à
+  // l'ouverture du modal, les récupère pour que "Éditer" depuis la liste se comporte comme
+  // "Éditer" depuis la fiche détail.
+  const { data: editTargetDetail, isLoading: editTargetDetailLoading } = useMembre(editTarget?.id ?? "")
   const deleteMutation      = useDeleteMembre()
   const createAccessMutation = useCreateAccess()
   const resendPaymentLinkMutation = useResendPaymentLink()
@@ -775,6 +785,8 @@ export function MembresView() {
           actorRole={currentUser.role}
           isSelf={editTarget?.userId === currentUser.id}
           membreId={editTarget?.id}
+          editableCustomFields={editTargetDetail?.editableCustomFields ?? []}
+          customFieldsLoading={editTargetDetailLoading}
         />
       </Modal>
 

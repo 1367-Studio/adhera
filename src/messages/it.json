@@ -4003,7 +4003,12 @@
         "type": "Tipo di membro",
         "preferredLocale": "Lingua preferita",
         "spokenLanguage": "Lingua parlata",
-        "cotisationTier": "Quota associativa"
+        "cotisationTier": "Quota associativa",
+        "guardianName": "Tutore legale {number} — nome",
+        "guardianPhone": "Tutore legale {number} — telefono",
+        "imageRights": "Diritto all'immagine",
+        "notes": "Note",
+        "notesPlaceholder": "Informazioni utili su questo socio (corsi, osservazioni…)"
       },
       "invitationNotice": "Un'email di invito con gli identificatori sarà inviata a questo indirizzo.",
       "tierNone": "Nessun prezzo (comportamento predefinito)",
@@ -4014,7 +4019,22 @@
       "noResponsable": "Nessuna",
       "noAdultResponsable": "Nessun membro adulto disponibile",
       "preview": "Panoramica:",
-      "customFieldsSectionTitle": "Risposte al modulo di adesione"
+      "customFieldsSectionTitle": "Informazioni del modulo di adesione",
+      "sections": {
+        "personalInfo": "Informazioni personali",
+        "address": "Indirizzo",
+        "memberInfo": "Informazioni sul socio",
+        "legalGuardian": "Tutore legale",
+        "additionalInfo": "Informazioni aggiuntive",
+        "management": "Gestione del socio"
+      },
+      "invalidFormToast": "Impossibile salvare. Contatta l'assistenza se il problema persiste.",
+      "customFieldsLoading": "Caricamento delle risposte al modulo di adesione…",
+      "imageRights": {
+        "unknown": "Non indicato",
+        "granted": "Sì",
+        "refused": "No"
+      }
     },
     "actions": {
       "add": "Aggiungi un membro",

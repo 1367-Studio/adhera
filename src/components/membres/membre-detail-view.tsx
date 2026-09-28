@@ -69,21 +69,6 @@ function getSexeLabels(t: Translator): Record<string, string> {
   }
 }
 
-const GROUPE_SANGUIN_LABELS: Record<string, string> = {
-  A_POSITIF:  "A+",
-  A_NEGATIF:  "A-",
-  B_POSITIF:  "B+",
-  B_NEGATIF:  "B-",
-  AB_POSITIF: "AB+",
-  AB_NEGATIF: "AB-",
-  O_POSITIF:  "O+",
-  O_NEGATIF:  "O-",
-}
-
-const TAILLE_TSHIRT_LABELS: Record<string, string> = {
-  XS: "XS", S: "S", M: "M", L: "L", XL: "XL", XXL: "XXL", XXXL: "XXXL",
-}
-
 function getStatusBadge(t: Translator): Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> {
   return {
     PENDING:  { label: t("membres.form.status.pending"),  variant: "outline"     },
@@ -592,23 +577,8 @@ export function MembreDetailView() {
           {membre.birthDate && (
             <p className="text-muted-foreground">{t("membres.detail.birthColon", { date: format(new Date(membre.birthDate), "dd/MM/yyyy", { locale: fr }) })}</p>
           )}
-          {membre.groupeSanguin && (
-            <p className="text-muted-foreground">{t("membres.detail.groupeSanguinColon", { value: GROUPE_SANGUIN_LABELS[membre.groupeSanguin] ?? membre.groupeSanguin })}</p>
-          )}
-          {membre.possedeTshirt !== null && (
-            <p className="text-muted-foreground">{t("membres.detail.hasTshirtColon", { value: membre.possedeTshirt ? t("common.yes") : t("common.no") })}</p>
-          )}
-          {membre.tailleTshirt && (
-            <p className="text-muted-foreground">{t("membres.detail.tshirtSizeColon", { value: TAILLE_TSHIRT_LABELS[membre.tailleTshirt] ?? membre.tailleTshirt })}</p>
-          )}
           {membre.spokenLanguage && (
             <p className="text-muted-foreground">{t("membres.detail.spokenLanguageColon", { value: spokenLanguageLabel(membre.spokenLanguage) })}</p>
-          )}
-          {membre.allergies && (
-            <p className="flex items-start gap-1.5 text-muted-foreground">
-              <WarningIcon className="size-3.5 mt-0.5 shrink-0" />
-              <span>{t("membres.detail.allergiesColon", { value: membre.allergies })}</span>
-            </p>
           )}
           {membre.responsable && (
             <p className="text-muted-foreground">
@@ -637,8 +607,7 @@ export function MembreDetailView() {
               <> {t("membres.detail.imageRightsDate", { date: format(new Date(membre.imageRightsConsentAt), "dd/MM/yyyy", { locale: fr }) })}</>
             )}
           </p>
-          {!membre.civilite && !membre.sexe && !membre.birthDate && !membre.groupeSanguin && !membre.allergies
-            && membre.possedeTshirt === null && !membre.tailleTshirt && !membre.responsable && !membre.spokenLanguage
+          {!membre.civilite && !membre.sexe && !membre.birthDate && !membre.responsable && !membre.spokenLanguage
             && membre.customFieldAnswers.length === 0 && (
             <p className="text-muted-foreground">{t("membres.detail.noInfo")}</p>
           )}

@@ -4003,7 +4003,12 @@
         "type": "Tipo de miembro",
         "preferredLocale": "Idioma preferido",
         "spokenLanguage": "Idioma hablado",
-        "cotisationTier": "Cuota — tarifa de afiliación"
+        "cotisationTier": "Cuota — tarifa de afiliación",
+        "guardianName": "Responsable legal {number} — nombre",
+        "guardianPhone": "Responsable legal {number} — teléfono",
+        "imageRights": "Derecho de imagen",
+        "notes": "Notas",
+        "notesPlaceholder": "Información útil sobre este miembro (cursos, observaciones…)"
       },
       "invitationNotice": "Se enviará un correo de invitación con los datos de acceso a esta dirección.",
       "tierNone": "Sin tarifa (comportamiento por defecto)",
@@ -4014,7 +4019,22 @@
       "noResponsable": "Ninguno",
       "noAdultResponsable": "Ningún miembro adulto disponible",
       "preview": "Vista previa:",
-      "customFieldsSectionTitle": "Respuestas del formulario de afiliación"
+      "customFieldsSectionTitle": "Información del formulario de inscripción",
+      "sections": {
+        "personalInfo": "Información personal",
+        "address": "Dirección",
+        "memberInfo": "Información del miembro",
+        "legalGuardian": "Responsable legal",
+        "additionalInfo": "Información complementaria",
+        "management": "Gestión del miembro"
+      },
+      "invalidFormToast": "No se pudo guardar. Contacte con soporte si el problema persiste.",
+      "customFieldsLoading": "Cargando las respuestas del formulario de inscripción…",
+      "imageRights": {
+        "unknown": "No indicado",
+        "granted": "Sí",
+        "refused": "No"
+      }
     },
     "actions": {
       "add": "Añadir miembro",

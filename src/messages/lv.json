@@ -4003,7 +4003,12 @@
         "type": "Locekļa tips",
         "preferredLocale": "Vēlamā valoda",
         "spokenLanguage": "Runātā valoda",
-        "cotisationTier": "Dalības maksa"
+        "cotisationTier": "Dalības maksa",
+        "guardianName": "Likumiskais pārstāvis {number} — vārds",
+        "guardianPhone": "Likumiskais pārstāvis {number} — tālrunis",
+        "imageRights": "Tiesības uz attēlu",
+        "notes": "Piezīmes",
+        "notesPlaceholder": "Noderīga informācija par šo biedru (nodarbības, piezīmes…)"
       },
       "invitationNotice": "Uz šo adresi tiks nosūtīts ielūguma e-pasts ar identifikatoriem.",
       "tierNone": "Nav cenu (noklusējuma uzvedība)",
@@ -4014,7 +4019,22 @@
       "noResponsable": "Nav",
       "noAdultResponsable": "Pieaugušo biedru nav pieejami",
       "preview": "Pārskats:",
-      "customFieldsSectionTitle": "Biedra pieteikuma anketas atbildes"
+      "customFieldsSectionTitle": "Pieteikuma veidlapas informācija",
+      "sections": {
+        "personalInfo": "Personīgā informācija",
+        "address": "Adrese",
+        "memberInfo": "Biedra informācija",
+        "legalGuardian": "Likumiskais pārstāvis",
+        "additionalInfo": "Papildu informācija",
+        "management": "Biedra pārvaldība"
+      },
+      "invalidFormToast": "Neizdevās saglabāt. Ja problēma turpinās, sazinieties ar atbalstu.",
+      "customFieldsLoading": "Notiek pieteikuma veidlapas atbilžu ielāde…",
+      "imageRights": {
+        "unknown": "Nav norādīts",
+        "granted": "Jā",
+        "refused": "Nē"
+      }
     },
     "actions": {
       "add": "Pievienot biedru",

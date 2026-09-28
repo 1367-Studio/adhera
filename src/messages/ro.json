@@ -4003,7 +4003,12 @@
         "type": "Tip de membru",
         "preferredLocale": "Limba preferată",
         "spokenLanguage": "Limba vorbită",
-        "cotisationTier": "Taxa de membru"
+        "cotisationTier": "Taxa de membru",
+        "guardianName": "Reprezentant legal {number} — nume",
+        "guardianPhone": "Reprezentant legal {number} — telefon",
+        "imageRights": "Drept de imagine",
+        "notes": "Note",
+        "notesPlaceholder": "Informații utile despre acest membru (cursuri, observații…)"
       },
       "invitationNotice": "Un e-mail de invitație cu identificatorii va fi trimis la această adresă.",
       "tierNone": "Fără preț (comportament implicit)",
@@ -4014,7 +4019,22 @@
       "noResponsable": "Niciuna",
       "noAdultResponsable": "Nu există membri adulți disponibili",
       "preview": "Prezentare generală:",
-      "customFieldsSectionTitle": "Răspunsuri din formularul de adeziune"
+      "customFieldsSectionTitle": "Informații din formularul de aderare",
+      "sections": {
+        "personalInfo": "Informații personale",
+        "address": "Adresă",
+        "memberInfo": "Informații despre membru",
+        "legalGuardian": "Reprezentant legal",
+        "additionalInfo": "Informații suplimentare",
+        "management": "Gestionarea membrului"
+      },
+      "invalidFormToast": "Salvarea a eșuat. Contactați asistența dacă problema persistă.",
+      "customFieldsLoading": "Se încarcă răspunsurile din formularul de aderare…",
+      "imageRights": {
+        "unknown": "Nespecificat",
+        "granted": "Da",
+        "refused": "Nu"
+      }
     },
     "actions": {
       "add": "Adaugă un membru",

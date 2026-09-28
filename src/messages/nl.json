@@ -4003,7 +4003,12 @@
         "type": "Lidtype",
         "preferredLocale": "Voorkeurstaal",
         "spokenLanguage": "Gesproken taal",
-        "cotisationTier": "Lidmaatschapsbijdrage"
+        "cotisationTier": "Lidmaatschapsbijdrage",
+        "guardianName": "Wettelijke voogd {number} — naam",
+        "guardianPhone": "Wettelijke voogd {number} — telefoon",
+        "imageRights": "Beeldrecht",
+        "notes": "Notities",
+        "notesPlaceholder": "Nuttige informatie over dit lid (cursussen, opmerkingen…)"
       },
       "invitationNotice": "Een uitnodigingsmail met de identificaties wordt naar dit adres gestuurd.",
       "tierNone": "Geen prijsstelling (standaardgedrag)",
@@ -4014,7 +4019,22 @@
       "noResponsable": "Geen enkele",
       "noAdultResponsable": "Geen volwassen leden beschikbaar",
       "preview": "Overzicht:",
-      "customFieldsSectionTitle": "Antwoorden op het lidmaatschapsformulier"
+      "customFieldsSectionTitle": "Informatie van het aanmeldformulier",
+      "sections": {
+        "personalInfo": "Persoonlijke informatie",
+        "address": "Adres",
+        "memberInfo": "Ledeninformatie",
+        "legalGuardian": "Wettelijke voogd",
+        "additionalInfo": "Aanvullende informatie",
+        "management": "Ledenbeheer"
+      },
+      "invalidFormToast": "Opslaan mislukt. Neem contact op met support als het probleem aanhoudt.",
+      "customFieldsLoading": "Antwoorden van het aanmeldformulier laden…",
+      "imageRights": {
+        "unknown": "Niet opgegeven",
+        "granted": "Ja",
+        "refused": "Nee"
+      }
     },
     "actions": {
       "add": "Voeg een lid toe",
