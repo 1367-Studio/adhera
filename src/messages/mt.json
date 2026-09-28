@@ -4003,7 +4003,12 @@
         "type": "Tip ta' Membru",
         "preferredLocale": "Lingwa preferuta",
         "spokenLanguage": "Lingwa mitkellma",
-        "cotisationTier": "Miżata tal-Membri"
+        "cotisationTier": "Miżata tal-Membri",
+        "guardianName": "Kustodju legali {number} — isem",
+        "guardianPhone": "Kustodju legali {number} — telefon",
+        "imageRights": "Dritt tal-immaġni",
+        "notes": "Noti",
+        "notesPlaceholder": "Informazzjoni utli dwar dan il-membru (korsijiet, noti…)"
       },
       "invitationNotice": "Email ta' stedina bl-identifikaturi se jintbagħat f'dan l-indirizz.",
       "tierNone": "L-ebda prezz (imġiba default)",
@@ -4014,7 +4019,22 @@
       "noResponsable": "Xejn",
       "noAdultResponsable": "L-ebda membri adulti disponibbli",
       "preview": "Ħarsa Ġenerali:",
-      "customFieldsSectionTitle": "Tweġibiet tal-formola tas-sħubija"
+      "customFieldsSectionTitle": "Informazzjoni tal-formola ta' sħubija",
+      "sections": {
+        "personalInfo": "Informazzjoni Personali",
+        "address": "Indirizz",
+        "memberInfo": "Informazzjoni dwar il-membru",
+        "legalGuardian": "Kustodju legali",
+        "additionalInfo": "Informazzjoni addizzjonali",
+        "management": "Ġestjoni tal-membru"
+      },
+      "invalidFormToast": "Ma stax jiġi sejvjat. Ikkuntattja s-support jekk il-problema tippersisti.",
+      "customFieldsLoading": "Qed jitgħabbew it-tweġibiet tal-formola ta' sħubija…",
+      "imageRights": {
+        "unknown": "Mhux indikat",
+        "granted": "Iva",
+        "refused": "Le"
+      }
     },
     "actions": {
       "add": "Żid membru",

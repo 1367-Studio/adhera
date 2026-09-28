@@ -4003,7 +4003,12 @@
         "type": "Medlemstyp",
         "preferredLocale": "Föredraget språk",
         "spokenLanguage": "Talat språk",
-        "cotisationTier": "Medlemsavgift"
+        "cotisationTier": "Medlemsavgift",
+        "guardianName": "Vårdnadshavare {number} — namn",
+        "guardianPhone": "Vårdnadshavare {number} — telefon",
+        "imageRights": "Bildrättigheter",
+        "notes": "Anteckningar",
+        "notesPlaceholder": "Användbar information om denna medlem (kurser, anmärkningar…)"
       },
       "invitationNotice": "Ett inbjudningsmail med identifierarna kommer att skickas till denna adress.",
       "tierNone": "Ingen prissättning (standardbeteende)",
@@ -4014,7 +4019,22 @@
       "noResponsable": "Inga",
       "noAdultResponsable": "Inga vuxna medlemmar tillgängliga",
       "preview": "Översikt:",
-      "customFieldsSectionTitle": "Svar från medlemsformuläret"
+      "customFieldsSectionTitle": "Information från anslutningsformuläret",
+      "sections": {
+        "personalInfo": "Personlig information",
+        "address": "Adress",
+        "memberInfo": "Medlemsinformation",
+        "legalGuardian": "Vårdnadshavare",
+        "additionalInfo": "Ytterligare information",
+        "management": "Medlemshantering"
+      },
+      "invalidFormToast": "Det gick inte att spara. Kontakta supporten om problemet kvarstår.",
+      "customFieldsLoading": "Läser in svar från anslutningsformuläret…",
+      "imageRights": {
+        "unknown": "Ej angivet",
+        "granted": "Ja",
+        "refused": "Nej"
+      }
     },
     "actions": {
       "add": "Lägg till en medlem",

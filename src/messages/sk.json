@@ -4003,7 +4003,12 @@
         "type": "Typ člena",
         "preferredLocale": "Preferovaný jazyk",
         "spokenLanguage": "Hovorený jazyk",
-        "cotisationTier": "Členský poplatok"
+        "cotisationTier": "Členský poplatok",
+        "guardianName": "Zákonný zástupca {number} — meno",
+        "guardianPhone": "Zákonný zástupca {number} — telefón",
+        "imageRights": "Právo na obraz",
+        "notes": "Poznámky",
+        "notesPlaceholder": "Užitočné informácie o tomto členovi (kurzy, poznámky…)"
       },
       "invitationNotice": "Na túto adresu bude zaslaný pozývací e-mail s identifikátormi.",
       "tierNone": "Žiadne ceny (predvolené správanie)",
@@ -4014,7 +4019,22 @@
       "noResponsable": "Žiadna",
       "noAdultResponsable": "Nie sú k dispozícii žiadni dospelí členovia",
       "preview": "Prehľad:",
-      "customFieldsSectionTitle": "Odpovede z prihlášky za člena"
+      "customFieldsSectionTitle": "Informácie z prihlasovacieho formulára",
+      "sections": {
+        "personalInfo": "Osobné informácie",
+        "address": "Adresa",
+        "memberInfo": "Informácie o členovi",
+        "legalGuardian": "Zákonný zástupca",
+        "additionalInfo": "Doplňujúce informácie",
+        "management": "Správa člena"
+      },
+      "invalidFormToast": "Uloženie sa nepodarilo. Ak problém pretrváva, kontaktujte podporu.",
+      "customFieldsLoading": "Načítavanie odpovedí z prihlasovacieho formulára…",
+      "imageRights": {
+        "unknown": "Neuvedené",
+        "granted": "Áno",
+        "refused": "Nie"
+      }
     },
     "actions": {
       "add": "Pridať člena",

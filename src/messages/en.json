@@ -4138,7 +4138,17 @@
       "noResponsable": "None",
       "noAdultResponsable": "No eligible adult member available",
       "preview": "Preview:",
-      "customFieldsSectionTitle": "Membership form answers"
+      "customFieldsSectionTitle": "Membership form information",
+      "sections": {
+        "personalInfo": "Personal information",
+        "address": "Address",
+        "memberInfo": "Member information",
+        "legalGuardian": "Legal guardian",
+        "additionalInfo": "Additional information",
+        "management": "Member management"
+      },
+      "invalidFormToast": "Couldn't save. Contact support if the problem persists.",
+      "customFieldsLoading": "Loading membership form answers…"
     },
     "actions": {
       "add": "Add a member",

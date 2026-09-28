@@ -4003,7 +4003,12 @@
         "type": "Tagtípus",
         "preferredLocale": "Preferált nyelv",
         "spokenLanguage": "Beszélt nyelv",
-        "cotisationTier": "Tagsági díj"
+        "cotisationTier": "Tagsági díj",
+        "guardianName": "Törvényes képviselő {number} — név",
+        "guardianPhone": "Törvényes képviselő {number} — telefon",
+        "imageRights": "Képmáshoz való jog",
+        "notes": "Megjegyzések",
+        "notesPlaceholder": "Hasznos információk erről a tagról (foglalkozások, megjegyzések…)"
       },
       "invitationNotice": "Meghívó e-mailt küldenek az azonosítókkal erre a címre.",
       "tierNone": "Nincs árképzés (alapértelmezett viselkedés)",
@@ -4014,7 +4019,22 @@
       "noResponsable": "Nincs",
       "noAdultResponsable": "Felnőtt tagok nem elérhetők",
       "preview": "Áttekintés:",
-      "customFieldsSectionTitle": "Tagfelvételi űrlap válaszai"
+      "customFieldsSectionTitle": "A belépési űrlap adatai",
+      "sections": {
+        "personalInfo": "Személyes adatok",
+        "address": "Cím",
+        "memberInfo": "Tagsági információk",
+        "legalGuardian": "Törvényes képviselő",
+        "additionalInfo": "Kiegészítő információk",
+        "management": "Tag kezelése"
+      },
+      "invalidFormToast": "A mentés nem sikerült. Ha a probléma továbbra is fennáll, forduljon az ügyfélszolgálathoz.",
+      "customFieldsLoading": "A belépési űrlap válaszainak betöltése…",
+      "imageRights": {
+        "unknown": "Nincs megadva",
+        "granted": "Igen",
+        "refused": "Nem"
+      }
     },
     "actions": {
       "add": "Tag hozzáadása",

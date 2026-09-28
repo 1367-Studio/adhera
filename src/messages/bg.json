@@ -4003,7 +4003,12 @@
         "type": "Тип член",
         "preferredLocale": "Предпочитан език",
         "spokenLanguage": "Говорен език",
-        "cotisationTier": "Членски внос"
+        "cotisationTier": "Членски внос",
+        "guardianName": "Законен настойник {number} — име",
+        "guardianPhone": "Законен настойник {number} — телефон",
+        "imageRights": "Право на изображение",
+        "notes": "Бележки",
+        "notesPlaceholder": "Полезна информация за този член (курсове, бележки…)"
       },
       "invitationNotice": "Покана по имейл с идентификаторите ще бъде изпратена на този адрес.",
       "tierNone": "Няма ценообразуване (стандартно поведение)",
@@ -4014,7 +4019,22 @@
       "noResponsable": "Няма",
       "noAdultResponsable": "Няма налични възрастни членове",
       "preview": "Общ преглед:",
-      "customFieldsSectionTitle": "Отговори от формуляра за членство"
+      "customFieldsSectionTitle": "Информация от формуляра за членство",
+      "sections": {
+        "personalInfo": "Лична информация",
+        "address": "Адрес",
+        "memberInfo": "Информация за члена",
+        "legalGuardian": "Законен настойник",
+        "additionalInfo": "Допълнителна информация",
+        "management": "Управление на члена"
+      },
+      "invalidFormToast": "Запазването не бе успешно. Свържете се с поддръжката, ако проблемът продължава.",
+      "customFieldsLoading": "Зареждане на отговорите от формуляра за членство…",
+      "imageRights": {
+        "unknown": "Не е посочено",
+        "granted": "Да",
+        "refused": "Не"
+      }
     },
     "actions": {
       "add": "Добавете член",

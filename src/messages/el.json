@@ -4003,7 +4003,12 @@
         "type": "Τύπος μέλους",
         "preferredLocale": "Προτιμώμενη γλώσσα",
         "spokenLanguage": "Γλώσσα που μιλάς",
-        "cotisationTier": "Συνδρομή μέλους"
+        "cotisationTier": "Συνδρομή μέλους",
+        "guardianName": "Κηδεμόνας {number} — όνομα",
+        "guardianPhone": "Κηδεμόνας {number} — τηλέφωνο",
+        "imageRights": "Δικαίωμα εικόνας",
+        "notes": "Σημειώσεις",
+        "notesPlaceholder": "Χρήσιμες πληροφορίες για αυτό το μέλος (μαθήματα, παρατηρήσεις…)"
       },
       "invitationNotice": "Ένα email πρόσκλησης με τα αναγνωριστικά θα σταλεί σε αυτήν τη διεύθυνση.",
       "tierNone": "Χωρίς τιμολόγηση (προεπιλεγμένη συμπεριφορά)",
@@ -4014,7 +4019,22 @@
       "noResponsable": "Κανένας",
       "noAdultResponsable": "Δεν υπάρχουν διαθέσιμα ενήλικα μέλη",
       "preview": "Επισκόπηση:",
-      "customFieldsSectionTitle": "Απαντήσεις φόρμας εγγραφής μέλους"
+      "customFieldsSectionTitle": "Πληροφορίες φόρμας εγγραφής",
+      "sections": {
+        "personalInfo": "Προσωπικές πληροφορίες",
+        "address": "Διεύθυνση",
+        "memberInfo": "Πληροφορίες μέλους",
+        "legalGuardian": "Κηδεμόνας",
+        "additionalInfo": "Πρόσθετες πληροφορίες",
+        "management": "Διαχείριση μέλους"
+      },
+      "invalidFormToast": "Δεν ήταν δυνατή η αποθήκευση. Επικοινωνήστε με την υποστήριξη αν το πρόβλημα παραμένει.",
+      "customFieldsLoading": "Φόρτωση απαντήσεων φόρμας εγγραφής…",
+      "imageRights": {
+        "unknown": "Δεν έχει δηλωθεί",
+        "granted": "Ναι",
+        "refused": "Όχι"
+      }
     },
     "actions": {
       "add": "Προσθήκη μέλους",

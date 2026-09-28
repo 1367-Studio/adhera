@@ -4003,7 +4003,12 @@
         "type": "Liikmetüüp",
         "preferredLocale": "Eelistatud keel",
         "spokenLanguage": "Räägitav keel",
-        "cotisationTier": "Liikmemaks"
+        "cotisationTier": "Liikmemaks",
+        "guardianName": "Seaduslik eestkostja {number} — nimi",
+        "guardianPhone": "Seaduslik eestkostja {number} — telefon",
+        "imageRights": "Pildiõigus",
+        "notes": "Märkmed",
+        "notesPlaceholder": "Kasulik teave selle liikme kohta (tunnid, märkused…)"
       },
       "invitationNotice": "Kutse e-kiri koos identifikaatoritega saadetakse sellele aadressile.",
       "tierNone": "Hinnastamist ei tohi (vaikimisi käitumine)",
@@ -4014,7 +4019,22 @@
       "noResponsable": "Puudub",
       "noAdultResponsable": "Täiskasvanud liikmeid pole saadaval",
       "preview": "Ülevaade:",
-      "customFieldsSectionTitle": "Liikmevormi vastused"
+      "customFieldsSectionTitle": "Liitumisvormi teave",
+      "sections": {
+        "personalInfo": "Isikuandmed",
+        "address": "Aadress",
+        "memberInfo": "Liikme teave",
+        "legalGuardian": "Seaduslik eestkostja",
+        "additionalInfo": "Lisateave",
+        "management": "Liikme haldamine"
+      },
+      "invalidFormToast": "Salvestamine ebaõnnestus. Kui probleem püsib, võtke ühendust toega.",
+      "customFieldsLoading": "Liitumisvormi vastuste laadimine…",
+      "imageRights": {
+        "unknown": "Pole määratud",
+        "granted": "Jah",
+        "refused": "Ei"
+      }
     },
     "actions": {
       "add": "Lisa liige",

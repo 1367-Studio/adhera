@@ -4003,7 +4003,12 @@
         "type": "Typ członka",
         "preferredLocale": "Preferowany język",
         "spokenLanguage": "Język używany",
-        "cotisationTier": "Składka członkowska"
+        "cotisationTier": "Składka członkowska",
+        "guardianName": "Opiekun prawny {number} — imię i nazwisko",
+        "guardianPhone": "Opiekun prawny {number} — telefon",
+        "imageRights": "Prawo do wizerunku",
+        "notes": "Notatki",
+        "notesPlaceholder": "Przydatne informacje o tym członku (zajęcia, uwagi…)"
       },
       "invitationNotice": "Na ten adres zostanie wysłany e-mail z zaproszeniem z identyfikatorami.",
       "tierNone": "Brak wyceny (domyślne zachowanie)",
@@ -4014,7 +4019,22 @@
       "noResponsable": "Brak",
       "noAdultResponsable": "Brak dostępnych dorosłych członków",
       "preview": "Przegląd:",
-      "customFieldsSectionTitle": "Odpowiedzi z formularza członkowskiego"
+      "customFieldsSectionTitle": "Informacje z formularza członkowskiego",
+      "sections": {
+        "personalInfo": "Dane osobowe",
+        "address": "Adres",
+        "memberInfo": "Informacje o członku",
+        "legalGuardian": "Opiekun prawny",
+        "additionalInfo": "Informacje dodatkowe",
+        "management": "Zarządzanie członkiem"
+      },
+      "invalidFormToast": "Nie udało się zapisać. Skontaktuj się z pomocą techniczną, jeśli problem się powtarza.",
+      "customFieldsLoading": "Wczytywanie odpowiedzi z formularza członkowskiego…",
+      "imageRights": {
+        "unknown": "Nie podano",
+        "granted": "Tak",
+        "refused": "Nie"
+      }
     },
     "actions": {
       "add": "Dodaj członka",

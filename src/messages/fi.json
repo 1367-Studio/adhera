@@ -4003,7 +4003,12 @@
         "type": "Jäsentyyppi",
         "preferredLocale": "Suosittu kieli",
         "spokenLanguage": "Puhuttu kieli",
-        "cotisationTier": "Jäsenmaksu"
+        "cotisationTier": "Jäsenmaksu",
+        "guardianName": "Huoltaja {number} — nimi",
+        "guardianPhone": "Huoltaja {number} — puhelin",
+        "imageRights": "Kuvausoikeudet",
+        "notes": "Muistiinpanot",
+        "notesPlaceholder": "Hyödyllistä tietoa tästä jäsenestä (kurssit, huomautukset…)"
       },
       "invitationNotice": "Kutsusähköposti tunnisteineen lähetetään tähän osoitteeseen.",
       "tierNone": "Ei hinnoittelua (oletuskäyttäytyminen)",
@@ -4014,7 +4019,22 @@
       "noResponsable": "Ei mitään",
       "noAdultResponsable": "Aikuisjäseniä ei ole saatavilla",
       "preview": "Yleiskatsaus:",
-      "customFieldsSectionTitle": "Jäsenlomakkeen vastaukset"
+      "customFieldsSectionTitle": "Liittymislomakkeen tiedot",
+      "sections": {
+        "personalInfo": "Henkilökohtaiset tiedot",
+        "address": "Osoite",
+        "memberInfo": "Jäsentiedot",
+        "legalGuardian": "Huoltaja",
+        "additionalInfo": "Lisätiedot",
+        "management": "Jäsenhallinta"
+      },
+      "invalidFormToast": "Tallennus epäonnistui. Ota yhteyttä tukeen, jos ongelma jatkuu.",
+      "customFieldsLoading": "Ladataan liittymislomakkeen vastauksia…",
+      "imageRights": {
+        "unknown": "Ei ilmoitettu",
+        "granted": "Kyllä",
+        "refused": "Ei"
+      }
     },
     "actions": {
       "add": "Lisää jäsen",

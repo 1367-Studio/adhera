@@ -4003,7 +4003,12 @@
         "type": "Tip člana",
         "preferredLocale": "Preferirani jezik",
         "spokenLanguage": "Govoreni jezik",
-        "cotisationTier": "Članarina"
+        "cotisationTier": "Članarina",
+        "guardianName": "Zakonski skrbnik {number} — ime",
+        "guardianPhone": "Zakonski skrbnik {number} — telefon",
+        "imageRights": "Pravo na sliku",
+        "notes": "Bilješke",
+        "notesPlaceholder": "Korisne informacije o ovom članu (tečajevi, napomene…)"
       },
       "invitationNotice": "Pozivni e-mail s identifikatorima bit će poslan na ovu adresu.",
       "tierNone": "Nema određivanja cijena (zadano ponašanje)",
@@ -4014,7 +4019,22 @@
       "noResponsable": "Nema",
       "noAdultResponsable": "Nema dostupnih punoljetnih članova",
       "preview": "Pregled:",
-      "customFieldsSectionTitle": "Odgovori s obrasca za članstvo"
+      "customFieldsSectionTitle": "Podaci iz pristupnice",
+      "sections": {
+        "personalInfo": "Osobni podaci",
+        "address": "Adresa",
+        "memberInfo": "Podaci o članu",
+        "legalGuardian": "Zakonski skrbnik",
+        "additionalInfo": "Dodatne informacije",
+        "management": "Upravljanje članom"
+      },
+      "invalidFormToast": "Spremanje nije uspjelo. Ako se problem nastavi, obratite se podršci.",
+      "customFieldsLoading": "Učitavanje odgovora iz pristupnice…",
+      "imageRights": {
+        "unknown": "Nije navedeno",
+        "granted": "Da",
+        "refused": "Ne"
+      }
     },
     "actions": {
       "add": "Dodajte člana",

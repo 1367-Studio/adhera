@@ -4146,7 +4146,17 @@
       "noResponsable": "Aucun",
       "noAdultResponsable": "Aucun membre majeur disponible",
       "preview": "Aperçu :",
-      "customFieldsSectionTitle": "Réponses au formulaire d'adhésion"
+      "customFieldsSectionTitle": "Informations du formulaire d'adhésion",
+      "sections": {
+        "personalInfo": "Informations personnelles",
+        "address": "Adresse",
+        "memberInfo": "Informations du membre",
+        "legalGuardian": "Responsable légal",
+        "additionalInfo": "Informations complémentaires",
+        "management": "Gestion du membre"
+      },
+      "invalidFormToast": "Impossible d'enregistrer. Contactez le support si le problème persiste.",
+      "customFieldsLoading": "Chargement des réponses au formulaire d'adhésion…"
     },
     "actions": {
       "add": "Ajouter un membre",

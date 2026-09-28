@@ -4003,7 +4003,12 @@
         "type": "Medlemstype",
         "preferredLocale": "Foretrukket sprog",
         "spokenLanguage": "Sprog, der tales",
-        "cotisationTier": "Medlemskontingent"
+        "cotisationTier": "Medlemskontingent",
+        "guardianName": "Værge {number} — navn",
+        "guardianPhone": "Værge {number} — telefon",
+        "imageRights": "Billedrettigheder",
+        "notes": "Noter",
+        "notesPlaceholder": "Nyttige oplysninger om dette medlem (kurser, bemærkninger…)"
       },
       "invitationNotice": "En invitationsmail med identifikatorerne vil blive sendt til denne adresse.",
       "tierNone": "Ingen prissætning (standardadfærd)",
@@ -4014,7 +4019,22 @@
       "noResponsable": "Ingen",
       "noAdultResponsable": "Ingen voksne medlemmer tilgængelige",
       "preview": "Oversigt:",
-      "customFieldsSectionTitle": "Svar fra indmeldelsesformularen"
+      "customFieldsSectionTitle": "Oplysninger fra optagelsesformularen",
+      "sections": {
+        "personalInfo": "Personlige oplysninger",
+        "address": "Adresse",
+        "memberInfo": "Medlemsoplysninger",
+        "legalGuardian": "Værge",
+        "additionalInfo": "Yderligere oplysninger",
+        "management": "Medlemsadministration"
+      },
+      "invalidFormToast": "Kunne ikke gemme. Kontakt support, hvis problemet fortsætter.",
+      "customFieldsLoading": "Indlæser svar fra optagelsesformularen…",
+      "imageRights": {
+        "unknown": "Ikke angivet",
+        "granted": "Ja",
+        "refused": "Nej"
+      }
     },
     "actions": {
       "add": "Tilføj et medlem",
