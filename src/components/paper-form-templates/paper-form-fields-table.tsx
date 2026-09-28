@@ -50,10 +50,10 @@ export function PaperFormFieldsTable({ fields, pagesPerForm, legalDocuments, err
           <TableRow className="hover:bg-transparent dark:hover:bg-transparent">
             <TableHead className="w-8 text-right text-muted-foreground">#</TableHead>
             <TableHead>{t("columns.label")}</TableHead>
-            <TableHead className="w-20">{t("columns.page")}</TableHead>
-            <TableHead className="w-56">{t("columns.target")}</TableHead>
-            <TableHead className="w-52">{t("columns.legalDocument")}</TableHead>
-            <TableHead className="w-56">{t("columns.hint")}</TableHead>
+            <TableHead className="w-16">{t("columns.page")}</TableHead>
+            <TableHead className="w-52">{t("columns.target")}</TableHead>
+            <TableHead className="w-44">{t("columns.legalDocument")}</TableHead>
+            <TableHead className="w-48">{t("columns.hint")}</TableHead>
             <TableHead className="w-11"><span className="sr-only">{t("columns.actions")}</span></TableHead>
           </TableRow>
         </TableHeader>
@@ -69,6 +69,8 @@ export function PaperFormFieldsTable({ fields, pagesPerForm, legalDocuments, err
                 <TableCell>
                   <Input
                     value={field.label}
+                    title={field.label}
+                    className="min-w-56"
                     onChange={event => onFieldChange(rowIndex, { label: event.target.value })}
                     placeholder={t("labelPlaceholder")}
                     aria-label={t("rowLabelAria", { row: rowNumber })}
