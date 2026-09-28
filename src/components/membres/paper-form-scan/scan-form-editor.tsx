@@ -10,10 +10,12 @@ import { SegmentedControl } from "@/components/ui/segmented-control"
 import { SelectField } from "@/components/ui/select-field"
 import { TextareaField } from "@/components/ui/textarea-field"
 import type { AddressFormValues } from "@/lib/address"
+import { cn } from "@/lib/utils"
 import {
   ageFromBirthDate,
   fullNameOf,
   hasGuardianInput,
+  isPagePresent,
   LOW_CONFIDENCE_TEXT_CLASS,
   type DraftErrors,
   type DuplicateCheck,
@@ -22,6 +24,7 @@ import {
   type LowConfidenceKey,
   type ReviewDraft,
   type ScanForm,
+  type SheetField,
 } from "./scan-model"
 
 // Low-confidence reading: the same amber the shared Badge `warning` variant uses, on the
@@ -54,6 +57,22 @@ function currentMatches(check: DuplicateCheck | null, firstName: string, lastNam
 function describeMatch(match: DuplicateMatch): string {
   const contact = match.email ?? match.phone
   return contact ? `${fullNameOf(match.firstName, match.lastName)} (${contact})` : fullNameOf(match.firstName, match.lastName)
+}
+
+// Consecutive boxes of a page are stacked together; a text field stands on its own.
+type SheetFieldRun =
+  | { kind: "checkboxes"; fields: SheetField[] }
+  | { kind: "text"; field: SheetField }
+
+function splitIntoRuns(fields: SheetField[]): SheetFieldRun[] {
+  const runs: SheetFieldRun[] = []
+  for (const field of fields) {
+    const lastRun = runs.at(-1)
+    if (field.kind !== "checkbox") runs.push({ kind: "text", field })
+    else if (lastRun?.kind === "checkboxes") lastRun.fields.push(field)
+    else runs.push({ kind: "checkboxes", fields: [field] })
+  }
+  return runs
 }
 
 export function ScanFormEditor({ form, errors, legalDocuments, readOnly, onDraftChange, onNameBlur }: ScanFormEditorProps) {
@@ -96,6 +115,78 @@ export function ScanFormEditor({ form, errors, legalDocuments, readOnly, onDraft
   ]
 
   const addressIsLow = (["addressStreet", "addressComplement", "postalCode", "city", "country"] as const).some(isLow)
+
+  // ─── Réponses de la fiche ───
+  const hasSheetAnswers = form.sheetFields.length > 0
+  const sheetPageNumbers = [...new Set(form.sheetFields.map((sheetField) => sheetField.page))].sort((first, second) => first - second)
+  // A one-page template needs no page heading: the group is labelled by the section title.
+  const showSheetPageTitles = form.pageSlots.length > 1
+
+  function sheetFieldId(sheetField: SheetField): string {
+    return `${idPrefix}-sheet-${sheetField.key}`
+  }
+
+  function renderSheetCheckbox(sheetField: SheetField) {
+    const fieldId = sheetFieldId(sheetField)
+    const legalDocumentId = sheetField.legalDocumentId
+    const isUnread = isLow(`unread:${sheetField.key}`)
+    const isUncertain = legalDocumentId ? isLow(`legal:${legalDocumentId}`) : isLow(`sheet:${sheetField.key}`)
+    const statusText = isUnread ? t("checkboxUnread") : isUncertain ? lowConfidenceHint : null
+    const statusId = `${fieldId}-status`
+
+    const linkedTitle = legalDocumentId
+      ? legalDocuments.find((legalDocument) => legalDocument.id === legalDocumentId)?.title ?? sheetField.label
+      : null
+
+    return (
+      <div key={sheetField.key} className="space-y-1">
+        <CheckboxField
+          id={fieldId}
+          label={sheetField.label}
+          description={linkedTitle ? t("linkedDocument", { title: linkedTitle }) : undefined}
+          checked={legalDocumentId ? draft.acceptedLegalDocumentIds.includes(legalDocumentId) : draft.sheetAnswers[sheetField.key] === true}
+          disabled={readOnly}
+          aria-describedby={statusText ? statusId : undefined}
+          onChange={(event) => {
+            const isChecked = event.target.checked
+            if (legalDocumentId) {
+              const otherIds = draft.acceptedLegalDocumentIds.filter((documentId) => documentId !== legalDocumentId)
+              onDraftChange(
+                { acceptedLegalDocumentIds: isChecked ? [...otherIds, legalDocumentId] : otherIds },
+                [`legal:${legalDocumentId}`, `unread:${sheetField.key}`],
+              )
+            } else {
+              onDraftChange(
+                { sheetAnswers: { ...draft.sheetAnswers, [sheetField.key]: isChecked } },
+                [`sheet:${sheetField.key}`, `unread:${sheetField.key}`],
+              )
+            }
+          }}
+        />
+        {statusText && <p id={statusId} className={cn(LOW_CONFIDENCE_TEXT_CLASS, "pl-6")}>{statusText}</p>}
+      </div>
+    )
+  }
+
+  function renderSheetText(sheetField: SheetField) {
+    const answer = draft.sheetAnswers[sheetField.key]
+    const isUncertain = isLow(`sheet:${sheetField.key}`)
+    const sharedProps = {
+      id:        sheetFieldId(sheetField),
+      label:     sheetField.label,
+      value:     typeof answer === "string" ? answer : "",
+      disabled:  readOnly,
+      hint:      isUncertain ? lowConfidenceHint : undefined,
+      className: isUncertain ? LOW_CONFIDENCE_INPUT_CLASS : undefined,
+    }
+    const handleChange = (value: string) => onDraftChange(
+      { sheetAnswers: { ...draft.sheetAnswers, [sheetField.key]: value } },
+      [`sheet:${sheetField.key}`],
+    )
+    return sheetField.kind === "longText"
+      ? <TextareaField key={sheetField.key} rows={2} {...sharedProps} onChange={(event) => handleChange(event.target.value)} />
+      : <FormField key={sheetField.key} {...sharedProps} onChange={(event) => handleChange(event.target.value)} />
+  }
   const addressErrors: Partial<Record<keyof AddressFormValues, string>> = {
     addressStreet: errors.addressStreet, addressComplement: errors.addressComplement,
     postalCode: errors.postalCode, city: errors.city, country: errors.country,
@@ -215,33 +306,44 @@ export function ScanFormEditor({ form, errors, legalDocuments, readOnly, onDraft
           </div>
           {isLow("imageRights") && <p className={LOW_CONFIDENCE_TEXT_CLASS}>{lowConfidenceHint}</p>}
         </div>
+      </section>
 
-        {legalDocuments.length > 0 && (
-          <div className="space-y-2" role="group" aria-labelledby={`${idPrefix}-legal-documents-label`}>
-            <Label id={`${idPrefix}-legal-documents-label`}>{t("legalDocuments")}</Label>
-            {legalDocuments.map((legalDocument) => {
-              const legalKey = `legal:${legalDocument.id}` as const
+      {/* ─── Réponses de la fiche ─── */}
+      {hasSheetAnswers && (
+        <section className="space-y-4" aria-labelledby={`${idPrefix}-sheet-title`}>
+          <div className="space-y-1">
+            <h3 id={`${idPrefix}-sheet-title`} className={SECTION_TITLE_CLASS}>{t("sheetAnswers")}</h3>
+            <p className="text-xs text-muted-foreground">{t("sheetAnswersHint")}</p>
+          </div>
+          <div className="space-y-6">
+            {sheetPageNumbers.map((pageNumber) => {
+              const pageTitleId = `${idPrefix}-sheet-page-${pageNumber}`
+              const pageFields = form.sheetFields.filter((sheetField) => sheetField.page === pageNumber)
               return (
-                <CheckboxField
-                  key={legalDocument.id}
-                  id={`${idPrefix}-legal-${legalDocument.id}`}
-                  label={legalDocument.title}
-                  description={isLow(legalKey) ? lowConfidenceHint : undefined}
-                  checked={draft.acceptedLegalDocumentIds.includes(legalDocument.id)}
-                  disabled={readOnly}
-                  onChange={(event) => {
-                    const otherIds = draft.acceptedLegalDocumentIds.filter((documentId) => documentId !== legalDocument.id)
-                    onDraftChange(
-                      { acceptedLegalDocumentIds: event.target.checked ? [...otherIds, legalDocument.id] : otherIds },
-                      [legalKey],
-                    )
-                  }}
-                />
+                <div
+                  key={pageNumber}
+                  role="group"
+                  aria-labelledby={showSheetPageTitles ? pageTitleId : `${idPrefix}-sheet-title`}
+                  className="space-y-3"
+                >
+                  {showSheetPageTitles && (
+                    <h4 id={pageTitleId} className="text-xs font-medium text-muted-foreground">{t("sheetPage", { page: pageNumber })}</h4>
+                  )}
+                  {isPagePresent(form.pageSlots, pageNumber) ? (
+                    splitIntoRuns(pageFields).map((run) => run.kind === "checkboxes" ? (
+                      <div key={run.fields[0].key} className="space-y-2.5">
+                        {run.fields.map(renderSheetCheckbox)}
+                      </div>
+                    ) : renderSheetText(run.field))
+                  ) : (
+                    <p className="text-sm text-muted-foreground">{t("sheetPageMissing")}</p>
+                  )}
+                </div>
               )
             })}
           </div>
-        )}
-      </section>
+        </section>
+      )}
 
       {/* ─── Notes ─── */}
       <section>
@@ -252,7 +354,7 @@ export function ScanFormEditor({ form, errors, legalDocuments, readOnly, onDraft
           value={draft.notes}
           disabled={readOnly}
           error={errors.notes}
-          hint={isLow("notes") ? t("notesLowConfidence") : form.legalDocumentNoteLines.length > 0 ? t("notesHintWithLegalDocuments") : t("notesHint")}
+          hint={hasSheetAnswers ? t("notesOwnHint") : undefined}
           onChange={(event) => onDraftChange({ notes: event.target.value }, ["notes"])}
         />
       </section>

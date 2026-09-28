@@ -6293,11 +6293,14 @@
       "imageRightsYes": "Yes",
       "imageRightsNo": "No",
       "imageRightsUnknown": "Not stated",
-      "legalDocuments": "Accepted documents",
+      "sheetAnswers": "Form answers",
+      "sheetAnswersHint": "Fields with no dedicated column: they are added to the member's notes on creation.",
+      "sheetPage": "Page {page}",
+      "sheetPageMissing": "Page missing: no answers read.",
+      "checkboxUnread": "Box not read, check it on the form",
+      "linkedDocument": "Records acceptance of “{title}”",
       "notes": "Notes",
-      "notesHint": "Holds the fields with no dedicated column, as “label: value”.",
-      "notesHintWithLegalDocuments": "Holds the fields with no dedicated column, as “label: value”. The commitments above are added to it (Yes / No) on creation.",
-      "notesLowConfidence": "Some values were read with uncertainty, please check."
+      "notesOwnHint": "Your own notes. The form answers are added to them on creation, as “label: value”."
     },
     "review": {
       "summary": "{total, plural, one {# form} other {# forms}} · {toReview} to review · {validated} validated · {ignored} ignored · {created} created",

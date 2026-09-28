@@ -6301,11 +6301,14 @@
       "imageRightsYes": "Oui",
       "imageRightsNo": "Non",
       "imageRightsUnknown": "Non renseigné",
-      "legalDocuments": "Documents acceptés",
+      "sheetAnswers": "Réponses de la fiche",
+      "sheetAnswersHint": "Champs sans colonne dédiée : ils seront ajoutés aux notes du membre à la création.",
+      "sheetPage": "Page {page}",
+      "sheetPageMissing": "Page absente : aucune réponse lue.",
+      "checkboxUnread": "Case non lue, à vérifier sur la fiche",
+      "linkedDocument": "Enregistre l'acceptation de « {title} »",
       "notes": "Notes",
-      "notesHint": "Reprend les champs sans colonne dédiée, au format « libellé : valeur ».",
-      "notesHintWithLegalDocuments": "Reprend les champs sans colonne dédiée, au format « libellé : valeur ». Les engagements ci-dessus y seront ajoutés (Oui / Non) à la création.",
-      "notesLowConfidence": "Certaines valeurs ont été lues avec incertitude, à vérifier."
+      "notesOwnHint": "Vos propres notes. Les réponses de la fiche y seront ajoutées à la création, au format « libellé : valeur »."
     },
     "review": {
       "summary": "{total, plural, one {# fiche} other {# fiches}} · {toReview} à revoir · {validated, plural, one {# validée} other {# validées}} · {ignored, plural, one {# ignorée} other {# ignorées}} · {created, plural, one {# créée} other {# créées}}",

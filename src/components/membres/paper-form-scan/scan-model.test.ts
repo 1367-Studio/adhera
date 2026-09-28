@@ -5,6 +5,7 @@ import {
   EMPTY_DRAFT,
   buildDraft,
   buildForms,
+  buildSheetFields,
   groupPagesIntoForms,
   hasMissingPage,
   toCommitForm,
@@ -176,7 +177,8 @@ describe("validateForm — missing page", () => {
       membreId:                null,
       skippedLegalDocumentIds: [],
       studentDuplicates:       null,
-      legalDocumentNoteLines:  [],
+      sheetFields:             [],
+      booleanLabels:           { yes: "Oui", no: "Non" },
     }
   }
 
@@ -236,14 +238,16 @@ describe("normalizeExtraction — page number", () => {
   })
 })
 
-describe("legal document boxes — notes on the member file", () => {
+describe("sheet answers — fields without a member column", () => {
   const draftLabels = { booleans: { yes: "Oui", no: "Non" } }
   const fields: PaperFormField[] = [
-    { key: "nom_prenom",          label: "Nom - Prénom",         page: 1, target: "fullName" },
-    { key: "forfait",             label: "Forfait",              page: 1, target: "notes" },
+    { key: "nom_prenom",           label: "Nom - Prénom",         page: 1, target: "fullName" },
+    { key: "forfait",              label: "Forfait",              page: 1, target: "notes" },
+    { key: "paiement",             label: "Paiement",             page: 1, target: "notes" },
     { key: "engagement_financier", label: "Engagement Financier", page: 2, target: "legalDocument", legalDocumentId: "document-financier" },
     { key: "reglement_interieur",  label: "Règlement Intérieur",  page: 2, target: "legalDocument", legalDocumentId: "document-reglement" },
-    { key: "mediation",           label: "Médiation",            page: 2, target: "notes" },
+    { key: "mediation",            label: "Médiation",            page: 2, target: "notes" },
+    { key: "cours",                label: "Cours",                page: 2, target: "notes" },
   ]
   const template: PaperFormTemplateResponse = {
     id: "template-1", name: "Fiche", pagesPerForm: PAGES_PER_FORM, fields, identificationText: null,
@@ -258,53 +262,98 @@ describe("legal document boxes — notes on the member file", () => {
   const pageOne = buildReadPage(1, 1, {
     nom_prenom: { value: "MARTIN Jeanne", firstName: "Jeanne", lastName: "Martin", confidence: "high" },
     forfait:    { value: "2 Cours", confidence: "high" },
+    paiement:   { value: "", confidence: "high" },
   })
   const pageTwo = buildReadPage(2, 2, {
     engagement_financier: { value: true,  confidence: "high" },
     reglement_interieur:  { value: false, confidence: "low" },
     mediation:            { value: "Oui", confidence: "high" },
+    cours:                { value: "Lundi 18h ; Mercredi 14h", confidence: "low" },
   })
 
-  it("records a ticked box as an acceptance only, and keeps the draft notes free of legal lines", () => {
-    const { draft, lowConfidence, legalDocumentNoteLines } = buildDraft(fields, {
-      engagement_financier: { value: true,  confidence: "high" },
-      reglement_interieur:  { value: false, confidence: "low" },
-    }, draftLabels)
-    expect(draft.acceptedLegalDocumentIds).toEqual(["document-financier"])
-    expect(draft.notes).toBe("")
-    expect(lowConfidence).toEqual(["legal:document-reglement"])
-    expect(legalDocumentNoteLines).toEqual([
-      { legalDocumentId: "document-financier", acceptedLine: "Engagement Financier : Oui", declinedLine: "Engagement Financier : Non" },
-      { legalDocumentId: "document-reglement", acceptedLine: "Règlement Intérieur : Oui",  declinedLine: "Règlement Intérieur : Non" },
+  it("infers each field's kind once for the whole batch", () => {
+    const sheetFields = buildSheetFields(fields, [
+      { mediation: { value: "Oui", confidence: "high" }, forfait: { value: "2 Cours", confidence: "high" } },
+      { mediation: { value: false, confidence: "high" }, cours: { value: "Lundi ; Mercredi", confidence: "high" } },
+      { mediation: { value: null,  confidence: "low"  } },
+    ])
+    expect(sheetFields.map((sheetField) => [sheetField.key, sheetField.kind])).toEqual([
+      ["forfait",              "text"],
+      ["paiement",             "text"],
+      ["engagement_financier", "checkbox"],
+      ["reglement_interieur",  "checkbox"],
+      ["mediation",            "checkbox"],
+      ["cours",                "longText"],
     ])
   })
 
-  it("adds one line per linked box read on the sheet to the committed notes, ticked or not", () => {
-    const [form] = buildForms([pageOne, pageTwo], template, draftLabels)
-    expect(toCommitForm(form).notes).toBe(
-      "Forfait : 2 Cours\nMédiation : Oui\nEngagement Financier : Oui\nRèglement Intérieur : Non",
-    )
-    expect(toCommitForm(form).acceptedLegalDocumentIds).toEqual(["document-financier"])
+  it("keeps one checkbox per legal document, the first box standing for it", () => {
+    const sheetFields = buildSheetFields([
+      ...fields,
+      { key: "reglement_bis", label: "Règlement (bis)", page: 2, target: "legalDocument", legalDocumentId: "document-reglement" },
+    ], [])
+    expect(sheetFields.filter((sheetField) => sheetField.legalDocumentId === "document-reglement").map((sheetField) => sheetField.key))
+      .toEqual(["reglement_interieur"])
   })
 
-  it("words the line from the reviewed checkbox, so a box changed in review never contradicts it", () => {
+  it("no longer flattens the answers into the draft notes", () => {
     const [form] = buildForms([pageOne, pageTwo], template, draftLabels)
-    const reviewedForm: ScanForm = { ...form, draft: { ...form.draft, acceptedLegalDocumentIds: ["document-reglement"] } }
-    expect(toCommitForm(reviewedForm).notes).toBe(
-      "Forfait : 2 Cours\nMédiation : Oui\nEngagement Financier : Non\nRèglement Intérieur : Oui",
-    )
+    expect(form.draft.notes).toBe("")
+    expect(form.draft.sheetAnswers).toEqual({ forfait: "2 Cours", paiement: "", mediation: true, cours: "Lundi 18h ; Mercredi 14h" })
+    expect(form.draft.acceptedLegalDocumentIds).toEqual(["document-financier"])
+    expect(form.lowConfidence).toEqual(expect.arrayContaining(["legal:document-reglement", "sheet:cours"]))
+    expect(form.lowConfidence).not.toContain("notes")
   })
 
-  it("adds no line for the boxes of a missing page", () => {
+  it("marks a box whose page was read but whose state was not as unread, shown unticked", () => {
+    const sheetFields = buildSheetFields(fields, [{ mediation: { value: "Non", confidence: "high" } }])
+    const { draft, lowConfidence } = buildDraft(fields, {
+      mediation:            { value: null, confidence: "low" },
+      engagement_financier: { value: true, confidence: "high" },
+    }, { labels: draftLabels, sheetFields, pageSlots: ["page-1", "page-2"] })
+    expect(draft.sheetAnswers.mediation).toBe(false)
+    expect(lowConfidence).toEqual(expect.arrayContaining(["unread:mediation", "sheet:mediation", "unread:reglement_interieur"]))
+    expect(lowConfidence).not.toContain("unread:engagement_financier")
+  })
+
+  it("reads no answer and sets no key for the fields of a missing page", () => {
     const [form] = buildForms([pageOne], template, draftLabels)
-    expect(form.legalDocumentNoteLines).toEqual([])
+    expect(form.draft.sheetAnswers).toEqual({ forfait: "2 Cours", paiement: "" })
+    expect(form.lowConfidence.filter((key) => key.startsWith("unread:") || key.startsWith("sheet:"))).toEqual([])
     expect(toCommitForm(form).notes).toBe("Forfait : 2 Cours")
   })
 
-  it("keeps the legal lines when the manager cleared the notes", () => {
+  it("writes the manager's notes, then one line per answer in template order", () => {
     const [form] = buildForms([pageOne, pageTwo], template, draftLabels)
-    const clearedForm: ScanForm = { ...form, draft: { ...form.draft, notes: "  " } }
-    expect(toCommitForm(clearedForm).notes).toBe("Engagement Financier : Oui\nRèglement Intérieur : Non")
+    const reviewedForm: ScanForm = { ...form, draft: { ...form.draft, notes: "  Rappeler la mère  " } }
+    expect(toCommitForm(reviewedForm).notes).toBe(
+      "Rappeler la mère\nForfait : 2 Cours\nEngagement Financier : Oui\nRèglement Intérieur : Non\nMédiation : Oui\nCours : Lundi 18h ; Mercredi 14h",
+    )
+    expect(toCommitForm(reviewedForm).acceptedLegalDocumentIds).toEqual(["document-financier"])
+  })
+
+  it("words a linked box from the reviewed checkbox, so it never contradicts the acceptance", () => {
+    const [form] = buildForms([pageOne, pageTwo], template, draftLabels)
+    const reviewedForm: ScanForm = {
+      ...form,
+      draft: { ...form.draft, acceptedLegalDocumentIds: ["document-reglement"], sheetAnswers: { ...form.draft.sheetAnswers, mediation: false } },
+    }
+    expect(toCommitForm(reviewedForm).notes).toBe(
+      "Forfait : 2 Cours\nEngagement Financier : Non\nRèglement Intérieur : Oui\nMédiation : Non\nCours : Lundi 18h ; Mercredi 14h",
+    )
+  })
+
+  it("leaves out an unread box the manager never touched, and writes it once confirmed", () => {
+    const [form] = buildForms([pageOne, buildReadPage(2, 2, { mediation: { value: "Non", confidence: "high" } })], template, draftLabels)
+    expect(form.lowConfidence).toEqual(expect.arrayContaining(["unread:engagement_financier", "unread:reglement_interieur"]))
+    expect(toCommitForm(form).notes).toBe("Forfait : 2 Cours\nMédiation : Non")
+
+    const confirmedForm: ScanForm = {
+      ...form,
+      draft:         { ...form.draft, acceptedLegalDocumentIds: ["document-financier"] },
+      lowConfidence: form.lowConfidence.filter((key) => key !== "unread:engagement_financier"),
+    }
+    expect(toCommitForm(confirmedForm).notes).toBe("Forfait : 2 Cours\nEngagement Financier : Oui\nMédiation : Non")
   })
 
   it("sends null notes when there is nothing to record", () => {
