@@ -292,14 +292,14 @@ export default function CompletarAdesaoPage() {
 
           {data.fieldPhone !== "HIDDEN" && (
             <FormField
-              label="Téléphone" required={data.fieldPhone === "REQUIRED"}
+              label="Téléphone fixe" required={data.fieldPhone === "REQUIRED"}
               value={phone} onChange={e => setPhone(e.target.value)} onBlur={() => touch("phone")}
               error={requiredError("phone", phone, data.fieldPhone === "REQUIRED")}
             />
           )}
           {data.fieldMobile !== "HIDDEN" && (
             <FormField
-              label="Mobile" required={data.fieldMobile === "REQUIRED"}
+              label="Téléphone portable" required={data.fieldMobile === "REQUIRED"}
               value={mobile} onChange={e => setMobile(e.target.value)} onBlur={() => touch("mobile")}
               error={requiredError("mobile", mobile, data.fieldMobile === "REQUIRED")}
             />
