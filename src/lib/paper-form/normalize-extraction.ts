@@ -45,9 +45,15 @@ function uniqueKey(baseKey: string, usedKeys: Set<string>): string {
   return candidateKey
 }
 
+// Reading help for a checkbox kept in the notes (a commitment box with no matching legal
+// document): a text « Oui » / « Non » rather than a boolean, which a notes field cannot hold.
+// The review screen shows such a field as a box again (scan-model.ts inferNotesFieldKind).
+export const CHECKBOX_NOTES_HINT = "Case à cocher : réponds « Oui » si elle est cochée, « Non » si elle est vide."
+
 // Turns the model's proposal into fields that pass paperFormFieldSchema, dropping the ones
 // that cannot be repaired. A commitment checkbox pointing at a document the association
-// does not have is kept, but downgraded to "ignore" — the manager picks the document.
+// does not have (or at none) is kept as a « Oui » / « Non » notes field, so its answer is
+// still read; the manager can link it to a document in the editor.
 export function normalizeProposedFields(
   rawProposal: unknown,
   pagesPerForm: number,
@@ -75,13 +81,16 @@ export function normalizeProposedFields(
     let target = rawField.target
     let legalDocumentId: string | undefined =
       typeof rawField.legalDocumentId === "string" ? rawField.legalDocumentId : undefined
+    // The model's hint for an acceptance box asks for a ticked state, which a notes field
+    // would lose: the degraded box gets the « Oui » / « Non » hint instead.
+    let hint = cleanText(rawField.hint)?.slice(0, 300)
     if (target === "legalDocument" && (!legalDocumentId || !legalDocumentIds.has(legalDocumentId))) {
-      target          = "ignore"
+      target          = "notes"
       legalDocumentId = undefined
+      hint            = CHECKBOX_NOTES_HINT
     }
     if (target !== "legalDocument") legalDocumentId = undefined
 
-    const hint = cleanText(rawField.hint)?.slice(0, 300)
 
     const candidateField = {
       key:   baseKey,

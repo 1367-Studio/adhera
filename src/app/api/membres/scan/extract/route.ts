@@ -23,7 +23,9 @@ const SYSTEM_PROMPT =
   '{"pageNumber":1,"values":{"<key>":{"value":…,"confidence":"high"|"low"}}}. ' +
   "Règles : pageNumber est le numéro de page imprimé sur la feuille (ex. « Page 1/2 » → 1), ou null " +
   "s'il n'est pas visible. Dans values, ne mets que les clés de <champs> présentes sur CETTE page ; " +
-  "une case présente mais vide vaut null. Recopie le texte tel qu'écrit, sans le corriger ni le " +
+  "une ligne à remplir présente mais vide vaut null ; une case à cocher présente mais non cochée " +
+  "vaut false (ou « Non » si le hint le demande), jamais null — null seulement si la case est " +
+  "illisible. Recopie le texte tel qu'écrit, sans le corriger ni le " +
   "compléter ; n'invente rien. Types attendus selon le type du champ : " +
   "case → true (cochée) ou false (non cochée) ; date → \"YYYY-MM-DD\" ; email → l'adresse en " +
   "minuscules, sans espaces ; civilite → \"M\", \"MME\" ou \"MLLE\" ; sexe → \"HOMME\" ou \"FEMME\" ; " +

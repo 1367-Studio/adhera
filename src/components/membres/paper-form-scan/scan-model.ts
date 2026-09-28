@@ -75,25 +75,42 @@ export type ReviewDraft = {
   secondGuardianPhone:      string
   imageRights:              ImageRightsChoice
   acceptedLegalDocumentIds: string[]
+  // Answers of the sheet fields without a member column (see SheetField), by field key:
+  // a boolean for a checkbox, the text for a text field. Linked acceptance boxes are not
+  // here: acceptedLegalDocumentIds is their single source of truth.
+  sheetAnswers:             Record<string, boolean | string>
+  // The manager's own notes only — the sheet answers are appended at commit time.
   notes:                    string
 }
 
-// Draft keys read with low confidence, plus `legal:<documentId>` for acceptance boxes.
-export type LowConfidenceKey = keyof ReviewDraft | keyof AddressFormValues | `legal:${string}`
+// Draft keys read with low confidence, plus `legal:<documentId>` for acceptance boxes,
+// `sheet:<fieldKey>` for a sheet answer read with low confidence and `unread:<fieldKey>` for
+// a sheet box whose page was read but whose state could not be (shown unticked, to check).
+export type LowConfidenceKey =
+  | keyof ReviewDraft
+  | keyof AddressFormValues
+  | `legal:${string}`
+  | `sheet:${string}`
+  | `unread:${string}`
 
 export type DuplicateMatch = PaperFormDuplicateMatch
 
-// One acceptance box of the sheet linked to a legal document, as it will read in the member's
-// notes (« Règlement Intérieur : Oui » / « … : Non »). Offline acceptances only surface in the
-// per-document CSV export, not on the member file, so the notes keep the sheet's answer where
-// the manager looks. Both wordings are resolved when the form is built (same labels as every
-// other notes line); which one applies is decided at commit time from the final checkboxes,
-// so a box the manager ticks or unticks in review can never leave a contradicting line.
-export type LegalDocumentNoteLine = {
-  legalDocumentId: string
-  acceptedLine:    string
-  declinedLine:    string
+// A template field with no member column (target `notes`, or `legalDocument`), shown in the
+// review as it is on the sheet — a box or a text — and written to the member's notes at
+// creation (« libellé : valeur »). Offline acceptances only surface in the per-document CSV
+// export, so the notes also keep the linked boxes' answer where the manager looks.
+export type SheetFieldKind = "checkbox" | "text" | "longText"
+
+export type SheetField = {
+  key:              string
+  label:            string
+  page:             number
+  kind:             SheetFieldKind
+  // Set on an acceptance box linked to a legal document (always a checkbox).
+  legalDocumentId?: string
 }
+
+export type BooleanLabels = { yes: string; no: string }
 
 // A duplicate check result is only meaningful for the name it was run on: once the manager
 // edits the name, the stored matches are stale and hidden until the next check.
@@ -113,8 +130,16 @@ export type ScanForm = {
   membreId:         string | null
   skippedLegalDocumentIds: string[]
   studentDuplicates: DuplicateCheck | null
-  // Linked acceptance boxes whose page was read, in template order (see toCommitForm).
-  legalDocumentNoteLines: LegalDocumentNoteLine[]
+  // Same list for every form of the batch, in template order (see buildSheetFields).
+  sheetFields:      SheetField[]
+  // « Oui » / « Non » as written in the notes, resolved once when the forms are built.
+  booleanLabels:    BooleanLabels
+}
+
+// A page counts as present when a page of the batch fills its slot; its sheet answers are
+// then shown and written to the notes. A missing page has no answer at all.
+export function isPagePresent(pageSlots: (string | null)[], pageNumber: number): boolean {
+  return (pageSlots[pageNumber - 1] ?? null) !== null
 }
 
 export function hasMissingPage(form: ScanForm): boolean {
@@ -232,7 +257,7 @@ export const EMPTY_DRAFT: ReviewDraft = {
   firstName: "", lastName: "", email: "", phone: "", birthDate: "", civilite: "", sexe: "",
   address: { ...EMPTY_ADDRESS_FORM_VALUES },
   guardianName: "", guardianPhone: "", secondGuardianName: "", secondGuardianPhone: "",
-  imageRights: "unknown", acceptedLegalDocumentIds: [], notes: "",
+  imageRights: "unknown", acceptedLegalDocumentIds: [], sheetAnswers: {}, notes: "",
 }
 
 type PersonName = { firstName: string; lastName: string; lowConfidence: boolean }
@@ -251,26 +276,72 @@ function splitName(extracted: PaperFormExtractedValue | undefined): PersonName |
   return { firstName, lastName, lowConfidence: extracted.confidence === "low" }
 }
 
-export type BooleanLabels = { yes: string; no: string }
-
-function describeForNotes(extracted: PaperFormExtractedValue, booleanLabels: BooleanLabels): string {
-  if (typeof extracted.value === "boolean") return extracted.value ? booleanLabels.yes : booleanLabels.no
-  return (extracted.value ?? "").trim()
-}
-
 export type DraftBuildLabels = {
   booleans: BooleanLabels
+}
+
+// ─── Sheet fields ────────────────────────────────────────────────────────────────────────
+
+const YES_NO_PATTERN = /^\s*(oui|non|yes|no)\s*$/i
+const YES_PATTERN    = /^\s*(oui|yes)\s*$/i
+// A text answer longer than this (or a list separated by « ; ») gets a textarea.
+const LONG_TEXT_MIN_LENGTH = 60
+
+// A box answer: a boolean reading, or a text reading « Oui » / « Non ». Null otherwise.
+function yesNoOf(extracted: PaperFormExtractedValue | undefined): boolean | null {
+  if (!extracted || extracted.value === null) return null
+  if (typeof extracted.value === "boolean") return extracted.value
+  return YES_NO_PATTERN.test(extracted.value) ? YES_PATTERN.test(extracted.value) : null
+}
+
+// Decided once for the whole batch, so a field looks the same on every form: a box when
+// every filled reading is a yes/no (at least one), a textarea when a reading is long or a
+// list, else a one-line input. Unread or empty readings do not count against a box.
+function inferNotesFieldKind(readings: (PaperFormExtractedValue | undefined)[]): SheetFieldKind {
+  const filledReadings = readings.filter(isFilled)
+  if (filledReadings.length === 0) return "text"
+  if (filledReadings.every((reading) => yesNoOf(reading) !== null)) return "checkbox"
+  const hasLongReading = filledReadings.some((reading) =>
+    typeof reading.value === "string" && (reading.value.trim().length > LONG_TEXT_MIN_LENGTH || reading.value.includes(";")),
+  )
+  return hasLongReading ? "longText" : "text"
+}
+
+// Every `notes` and `legalDocument` field of the template, in template order. Several boxes
+// may point at one legal document: the first one stands for it (one checkbox per document).
+export function buildSheetFields(
+  fields: PaperFormField[],
+  mergedValuesPerForm: Record<string, PaperFormExtractedValue>[],
+): SheetField[] {
+  const sheetFields: SheetField[] = []
+  for (const field of fields) {
+    if (field.target === "legalDocument") {
+      const legalDocumentId = field.legalDocumentId
+      if (!legalDocumentId || sheetFields.some((sheetField) => sheetField.legalDocumentId === legalDocumentId)) continue
+      sheetFields.push({ key: field.key, label: field.label, page: field.page, kind: "checkbox", legalDocumentId })
+    } else if (field.target === "notes") {
+      const readings = mergedValuesPerForm.map((mergedValues) => mergedValues[field.key])
+      sheetFields.push({ key: field.key, label: field.label, page: field.page, kind: inferNotesFieldKind(readings) })
+    }
+  }
+  return sheetFields
+}
+
+// ─── Draft ───────────────────────────────────────────────────────────────────────────────
+
+export type DraftBuildContext = {
+  labels:      DraftBuildLabels
+  sheetFields: SheetField[]
+  pageSlots:   (string | null)[]
 }
 
 export function buildDraft(
   fields: PaperFormField[],
   mergedValues: Record<string, PaperFormExtractedValue>,
-  labels: DraftBuildLabels,
-): { draft: ReviewDraft; lowConfidence: LowConfidenceKey[]; legalDocumentNoteLines: LegalDocumentNoteLine[] } {
-  const draft: ReviewDraft = { ...EMPTY_DRAFT, address: { ...EMPTY_ADDRESS_FORM_VALUES }, acceptedLegalDocumentIds: [] }
+  context: DraftBuildContext,
+): { draft: ReviewDraft; lowConfidence: LowConfidenceKey[] } {
+  const draft: ReviewDraft = { ...EMPTY_DRAFT, address: { ...EMPTY_ADDRESS_FORM_VALUES }, acceptedLegalDocumentIds: [], sheetAnswers: {} }
   const lowConfidence = new Set<LowConfidenceKey>()
-  const noteLines: string[] = []
-  const legalDocumentNoteLines: LegalDocumentNoteLine[] = []
 
   // Held in one object: TypeScript does not follow assignments made inside the switch below
   // and would narrow a standalone `let … = null` variable to `never` after the loop.
@@ -363,22 +434,9 @@ export function buildDraft(
           draft.acceptedLegalDocumentIds.push(field.legalDocumentId)
         }
         if (field.legalDocumentId && isLow) lowConfidence.add(`legal:${field.legalDocumentId}`)
-        // Reaching here means the box's page was read (a missing page leaves no value at
-        // all), so the answer belongs in the notes — even unticked or unreadable.
-        if (field.legalDocumentId && !legalDocumentNoteLines.some((noteLine) => noteLine.legalDocumentId === field.legalDocumentId)) {
-          legalDocumentNoteLines.push({
-            legalDocumentId: field.legalDocumentId,
-            acceptedLine:    `${field.label} : ${labels.booleans.yes}`,
-            declinedLine:    `${field.label} : ${labels.booleans.no}`,
-          })
-        }
         break
+      // Sheet answers, handled below from the sheet fields.
       case "notes":
-        if (isFilled(extracted)) {
-          noteLines.push(`${field.label} : ${describeForNotes(extracted, labels.booleans)}`)
-          if (isLow) lowConfidence.add("notes")
-        }
-        break
       case "ignore":
         break
     }
@@ -390,8 +448,40 @@ export function buildDraft(
     if (names.student.lowConfidence) { lowConfidence.add("firstName"); lowConfidence.add("lastName") }
   }
 
-  draft.notes = noteLines.join("\n")
-  return { draft, lowConfidence: [...lowConfidence], legalDocumentNoteLines }
+  // Sheet answers of the pages present. The notes textarea starts empty: it holds the
+  // manager's own notes, the answers are appended at commit time (composeCommitNotes).
+  const { booleans } = context.labels
+  for (const sheetField of context.sheetFields) {
+    if (!isPagePresent(context.pageSlots, sheetField.page)) continue
+
+    const legalDocumentId = sheetField.legalDocumentId
+    if (legalDocumentId) {
+      // Ticked state already in acceptedLegalDocumentIds; unread when no box of the
+      // document gave a state.
+      const hasReadBox = fields.some((field) =>
+        field.target === "legalDocument" && field.legalDocumentId === legalDocumentId && typeof mergedValues[field.key]?.value === "boolean",
+      )
+      if (!hasReadBox) lowConfidence.add(`unread:${sheetField.key}`)
+      continue
+    }
+
+    const extracted = mergedValues[sheetField.key]
+    const isLow = extracted?.confidence === "low"
+    if (sheetField.kind === "checkbox") {
+      const answer = yesNoOf(extracted)
+      draft.sheetAnswers[sheetField.key] = answer ?? false
+      if (answer === null) lowConfidence.add(`unread:${sheetField.key}`)
+      if (isLow) lowConfidence.add(`sheet:${sheetField.key}`)
+    } else {
+      const answerText = typeof extracted?.value === "boolean"
+        ? (extracted.value ? booleans.yes : booleans.no)
+        : textOf(extracted)
+      draft.sheetAnswers[sheetField.key] = answerText
+      if (isLow && answerText !== "") lowConfidence.add(`sheet:${sheetField.key}`)
+    }
+  }
+
+  return { draft, lowConfidence: [...lowConfidence] }
 }
 
 export function buildForms(
@@ -401,12 +491,17 @@ export function buildForms(
 ): ScanForm[] {
   const groupablePages = pages.filter((page) => !isRefusedPage(page))
   const pagesById = new Map(groupablePages.map((page) => [page.pageId, page]))
-  return groupPagesIntoForms(groupablePages, template.pagesPerForm).map((pageSlots, formIndex) => {
+  const groupedForms = groupPagesIntoForms(groupablePages, template.pagesPerForm).map((pageSlots) => {
     const pagesInOrder = pageSlots.flatMap((pageId) => {
       const page = pageId ? pagesById.get(pageId) : undefined
       return page ? [page] : []
     })
-    const { draft, lowConfidence, legalDocumentNoteLines } = buildDraft(template.fields, mergePageValues(pagesInOrder), labels)
+    return { pageSlots, mergedValues: mergePageValues(pagesInOrder) }
+  })
+  const sheetFields = buildSheetFields(template.fields, groupedForms.map((groupedForm) => groupedForm.mergedValues))
+
+  return groupedForms.map(({ pageSlots, mergedValues }, formIndex) => {
+    const { draft, lowConfidence } = buildDraft(template.fields, mergedValues, { labels, sheetFields, pageSlots })
     return {
       formId: `form-${formIndex + 1}`,
       pageSlots,
@@ -417,7 +512,8 @@ export function buildForms(
       membreId: null,
       skippedLegalDocumentIds: [],
       studentDuplicates: null,
-      legalDocumentNoteLines,
+      sheetFields,
+      booleanLabels: labels.booleans,
     }
   })
 }
@@ -516,14 +612,31 @@ function toCommitGuardian(name: string, phone: string): CommitGuardian {
   return { name: trimmedName || null, phone: trimmedPhone || null }
 }
 
-// The manager's notes, then one line per linked acceptance box read on the sheet, worded
-// from the final checkbox — the same state the acceptances are recorded from.
-function composeCommitNotes(form: ScanForm): string | null {
+// The value a sheet field leaves in the notes, null for no line: a missing page, an empty
+// text, or a box still unread (never confirmed by the manager). Boxes are worded from the
+// final checkbox — for a linked one, the same state the acceptance is recorded from — so a
+// box ticked or unticked in review can never leave a contradicting line.
+function sheetAnswerForNotes(form: ScanForm, sheetField: SheetField): string | null {
   const { draft } = form
-  const legalLines = form.legalDocumentNoteLines.map((noteLine) =>
-    draft.acceptedLegalDocumentIds.includes(noteLine.legalDocumentId) ? noteLine.acceptedLine : noteLine.declinedLine,
-  )
-  return optionalText([draft.notes.trim(), ...legalLines].filter((line) => line !== "").join("\n")) ?? null
+  if (!isPagePresent(form.pageSlots, sheetField.page)) return null
+  if (sheetField.kind === "checkbox") {
+    if (form.lowConfidence.includes(`unread:${sheetField.key}`)) return null
+    const isTicked = sheetField.legalDocumentId
+      ? draft.acceptedLegalDocumentIds.includes(sheetField.legalDocumentId)
+      : draft.sheetAnswers[sheetField.key] === true
+    return isTicked ? form.booleanLabels.yes : form.booleanLabels.no
+  }
+  const answer = draft.sheetAnswers[sheetField.key]
+  return typeof answer === "string" && answer.trim() !== "" ? answer.trim() : null
+}
+
+// The manager's notes, then one « libellé : valeur » line per sheet answer, template order.
+export function composeCommitNotes(form: ScanForm): string | null {
+  const answerLines = form.sheetFields.flatMap((sheetField) => {
+    const answer = sheetAnswerForNotes(form, sheetField)
+    return answer === null ? [] : [`${sheetField.label} : ${answer}`]
+  })
+  return optionalText([form.draft.notes.trim(), ...answerLines].filter((line) => line !== "").join("\n")) ?? null
 }
 
 export function toCommitForm(form: ScanForm): CommitForm {
