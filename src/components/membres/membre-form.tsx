@@ -8,6 +8,7 @@ import { DateField, todayValue } from "@/components/ui/date-field"
 import { FormField } from "@/components/ui/form-field"
 import { MembreTypeBadge } from "@/components/ui/membre-type-badge"
 import { SelectField } from "@/components/ui/select-field"
+import { Separator } from "@/components/ui/separator"
 import { TextareaField } from "@/components/ui/textarea-field"
 import { useRequiredLegalDocuments } from "@/hooks/use-legal-documents"
 import { useMembershipTierOptions } from "@/hooks/use-membership-tier-options"
@@ -467,8 +468,9 @@ export function MembreForm({ defaultValues, onSubmit, onCancel, loading, isCreat
 
       {isCreate && gestaoMembroSection}
 
-      <fieldset className="space-y-5">
-        <legend className="text-sm font-medium">{t("membres.form.sections.address")}</legend>
+      <Separator />
+
+      <div className="space-y-5">
         <AddressFields
           value={addressValue}
           onChange={patch => {
@@ -485,25 +487,15 @@ export function MembreForm({ defaultValues, onSubmit, onCancel, loading, isCreat
             country:           errors.country?.message,
           }}
         />
-      </fieldset>
+      </div>
 
       <fieldset className="space-y-5">
         <legend className="text-sm font-medium">{t("membres.form.sections.memberInfo")}</legend>
 
-        <div className="grid grid-cols-2 gap-x-4 gap-y-5">
-          <Controller
-            name="preferredLocale"
-            control={control}
-            render={({ field }) => (
-              <SelectField
-                label={t("membres.form.fields.preferredLocale")}
-                options={preferredLocaleOptions}
-                value={field.value ?? ""}
-                onValueChange={field.onChange}
-                error={errors.preferredLocale?.message}
-              />
-            )}
-          />
+        {/* Empilés plutôt que côte à côte : « Langue de communication » est plus long que
+            « Langue parlée » et passe sur deux lignes dans la largeur d'une colonne de modale,
+            ce qui désalignait les deux champs l'un à côté de l'autre. */}
+        <div className="space-y-3">
           <Controller
             name="spokenLanguage"
             control={control}
@@ -517,8 +509,23 @@ export function MembreForm({ defaultValues, onSubmit, onCancel, loading, isCreat
               />
             )}
           />
+          <div className="space-y-1.5">
+            <Controller
+              name="preferredLocale"
+              control={control}
+              render={({ field }) => (
+                <SelectField
+                  label={t("membres.form.fields.preferredLocale")}
+                  options={preferredLocaleOptions}
+                  value={field.value ?? ""}
+                  onValueChange={field.onChange}
+                  error={errors.preferredLocale?.message}
+                />
+              )}
+            />
+            <p className="text-xs text-muted-foreground">{t("membres.form.preferredLocaleHint")}</p>
+          </div>
         </div>
-        <p className="-mt-2 text-xs text-muted-foreground">{t("membres.form.preferredLocaleHint")}</p>
 
         {types.length > 0 && (
           <Controller
@@ -555,50 +562,51 @@ export function MembreForm({ defaultValues, onSubmit, onCancel, loading, isCreat
           renseigné — voir showGuardianFields — pour ne pas infliger quatre champs vides à la
           quasi-totalité des fiches. */}
       {showGuardianFields && (
-        <fieldset className="space-y-5">
-          <legend className="text-sm font-medium">{t("membres.form.sections.legalGuardian")}</legend>
+        <>
+          <Separator />
+          <div className="space-y-5">
+            {showResponsableField && (
+              <Controller
+                name="responsableId"
+                control={control}
+                render={({ field }) => (
+                  <SelectField
+                    label={t("membres.form.fields.responsable")}
+                    options={responsableOptions}
+                    value={field.value ?? ""}
+                    onValueChange={field.onChange}
+                    error={errors.responsableId?.message}
+                  />
+                )}
+              />
+            )}
 
-          {showResponsableField && (
-            <Controller
-              name="responsableId"
-              control={control}
-              render={({ field }) => (
-                <SelectField
-                  label={t("membres.form.fields.responsable")}
-                  options={responsableOptions}
-                  value={field.value ?? ""}
-                  onValueChange={field.onChange}
-                  error={errors.responsableId?.message}
-                />
-              )}
-            />
-          )}
-
-          <div className="grid gap-x-4 gap-y-5 sm:grid-cols-2">
-            <FormField
-              label={t("membres.form.fields.guardianName", { number: 1 })}
-              error={errors.guardianName?.message}
-              {...register("guardianName")}
-            />
-            <FormField
-              label={t("membres.form.fields.guardianPhone", { number: 1 })}
-              type="tel"
-              error={errors.guardianPhone?.message}
-              {...register("guardianPhone")}
-            />
-            <FormField
-              label={t("membres.form.fields.guardianName", { number: 2 })}
-              error={errors.secondGuardianName?.message}
-              {...register("secondGuardianName")}
-            />
-            <FormField
-              label={t("membres.form.fields.guardianPhone", { number: 2 })}
-              type="tel"
-              error={errors.secondGuardianPhone?.message}
-              {...register("secondGuardianPhone")}
-            />
+            <div className="grid gap-x-4 gap-y-5 sm:grid-cols-2">
+              <FormField
+                label={t("membres.form.fields.guardianName", { number: 1 })}
+                error={errors.guardianName?.message}
+                {...register("guardianName")}
+              />
+              <FormField
+                label={t("membres.form.fields.guardianPhone", { number: 1 })}
+                type="tel"
+                error={errors.guardianPhone?.message}
+                {...register("guardianPhone")}
+              />
+              <FormField
+                label={t("membres.form.fields.guardianName", { number: 2 })}
+                error={errors.secondGuardianName?.message}
+                {...register("secondGuardianName")}
+              />
+              <FormField
+                label={t("membres.form.fields.guardianPhone", { number: 2 })}
+                type="tel"
+                error={errors.secondGuardianPhone?.message}
+                {...register("secondGuardianPhone")}
+              />
+            </div>
           </div>
-        </fieldset>
+        </>
       )}
 
       <fieldset className="space-y-5">
