@@ -9,7 +9,8 @@ import type { ScanPageStatus } from "./scan-model"
 // provider's own per-minute limits on the association's key.
 const READ_CONCURRENCY = 3
 
-export type PagePayload = { base64: string; mediaType: "image/jpeg" | "image/png" }
+// expectedPageNumber: set for a tagged phone photo only (see CapturedSlot in scan-model).
+export type PagePayload = { base64: string; mediaType: "image/jpeg" | "image/png"; expectedPageNumber?: number }
 
 export type PageReadUpdate = {
   status: ScanPageStatus

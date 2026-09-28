@@ -16,7 +16,9 @@ export const DAC_ACADEMY_IDENTIFICATION_TEXT =
 
 // The five commitment checkboxes of page 2. Each becomes an acceptance of the matching
 // AssociationDocument when one is found (titleKeywords, compared without case or accents),
-// otherwise a plain "Oui"/"Non" kept in the member's notes.
+// otherwise a plain "Oui"/"Non" kept in the member's notes. A linked box is written to the
+// notes as well, from the reviewed checkbox (see toCommitForm), so every answer of the sheet
+// shows on the member file.
 export const DAC_ACADEMY_ENGAGEMENTS = [
   { key: "engagement_financier",     label: "Engagement Financier",         titleKeywords: ["engagement financier"] },
   { key: "sante_aptitude",           label: "Santé & Aptitude",             titleKeywords: ["sante", "aptitude"] },
@@ -103,6 +105,11 @@ const CLOSING_FIELDS: PaperFormField[] = [
   {
     key: "date_signature", label: "Fait à Séné, le", page: 2, target: "notes",
     hint: "La date écrite après « Fait à Séné, le », recopiée telle quelle. La signature n'est pas à lire.",
+  },
+  // Only whether the sheet is signed — the signature itself is never transcribed.
+  {
+    key: "signature", label: "Signature", page: 2, target: "notes",
+    hint: "Cadre « Signature » : réponds « Oui » s'il contient une signature manuscrite (ou « Lu et approuvé »), « Non » s'il est vide. Ne recopie jamais la signature.",
   },
 ]
 

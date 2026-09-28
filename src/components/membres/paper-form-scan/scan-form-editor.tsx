@@ -14,6 +14,7 @@ import {
   ageFromBirthDate,
   fullNameOf,
   hasGuardianInput,
+  LOW_CONFIDENCE_TEXT_CLASS,
   type DraftErrors,
   type DuplicateCheck,
   type DuplicateMatch,
@@ -26,7 +27,6 @@ import {
 // Low-confidence reading: the same amber the shared Badge `warning` variant uses, on the
 // border only — enough to catch the eye without turning the form into a traffic light.
 const LOW_CONFIDENCE_INPUT_CLASS = "border-amber-500/60 dark:border-amber-400/50"
-const LOW_CONFIDENCE_TEXT_CLASS  = "text-xs text-amber-700 dark:text-amber-400"
 const SECTION_TITLE_CLASS        = "text-sm font-medium"
 
 const ADULT_AGE = 18
@@ -252,7 +252,7 @@ export function ScanFormEditor({ form, errors, legalDocuments, readOnly, onDraft
           value={draft.notes}
           disabled={readOnly}
           error={errors.notes}
-          hint={isLow("notes") ? t("notesLowConfidence") : t("notesHint")}
+          hint={isLow("notes") ? t("notesLowConfidence") : form.legalDocumentNoteLines.length > 0 ? t("notesHintWithLegalDocuments") : t("notesHint")}
           onChange={(event) => onDraftChange({ notes: event.target.value }, ["notes"])}
         />
       </section>

@@ -223,16 +223,20 @@ function normalizeValue(field: PaperFormField, rawEntry: unknown): PaperFormExtr
 
 // Only keys of the template come out, and only the ones the model actually answered. When
 // the sheet shows its page number, fields printed on another page are dropped too, so a
-// null answered for a page-2 box can never erase what page 2 itself said.
+// null answered for a page-2 box can never erase what page 2 itself said. A page number the
+// manager gave at capture time (expectedPageNumber, within the form) outranks the printed one.
 export function normalizeExtraction(
   rawAnswer: unknown,
   fields: PaperFormField[],
   pagesPerForm: number,
+  expectedPageNumber?: number,
 ): PaperFormExtractResponse {
   const answer = isPlainObject(rawAnswer) ? rawAnswer : {}
 
+  const isExpectedPageInForm = expectedPageNumber !== undefined && Number.isInteger(expectedPageNumber) && expectedPageNumber >= 1 && expectedPageNumber <= pagesPerForm
   const statedPage = typeof answer.pageNumber === "number" ? Math.trunc(answer.pageNumber) : null
-  const pageNumber = statedPage !== null && statedPage >= 1 && statedPage <= pagesPerForm ? statedPage : null
+  const printedPageNumber = statedPage !== null && statedPage >= 1 && statedPage <= pagesPerForm ? statedPage : null
+  const pageNumber = isExpectedPageInForm ? expectedPageNumber : printedPageNumber
 
   const rawValues = isPlainObject(answer.values) ? answer.values : {}
   const values: Record<string, PaperFormExtractedValue> = {}

@@ -22,6 +22,7 @@ import {
   toCommitForm,
   validateForm,
   type DraftBuildLabels,
+  type CapturedSlot,
   type DuplicateCheck,
   type LowConfidenceKey,
   type ReviewDraft,
@@ -116,7 +117,10 @@ export function PaperFormScanWizard() {
 
   // ─── Upload ────────────────────────────────────────────────────────────────────────────
 
-  async function renderFiles(selectedFiles: File[]) {
+  // capturedSlot: set for a phone photo taken from the capture screen, tagged with the fiche
+  // and page it belongs to — every page rendered from it carries the tag, and the tagged page
+  // number is sent to the extract route. Uploaded files pass none and behave as before.
+  async function renderFiles(selectedFiles: File[], capturedSlot: CapturedSlot | null = null) {
     // Phone photos are named in shooting order (IMG_0001…): a numeric-aware name sort keeps
     // the pages of one person together whatever order the picker handed them over in.
     const sortedFiles = [...selectedFiles].sort((first, second) => first.name.localeCompare(second.name, undefined, { numeric: true }))
@@ -141,11 +145,16 @@ export function PaperFormScanWizard() {
             error:        null,
             result:       null,
             detectedTitle: null,
+            capturedSlot,
           }
         })
-        reader.addPayloads(newPages.map((page, pageIndex) => [page.pageId, { base64: renderedPages[pageIndex].base64, mediaType: renderedPages[pageIndex].mediaType }]))
+        reader.addPayloads(newPages.map((page, pageIndex) => [page.pageId, {
+          base64:    renderedPages[pageIndex].base64,
+          mediaType: renderedPages[pageIndex].mediaType,
+          ...(capturedSlot ? { expectedPageNumber: capturedSlot.pageNumber } : {}),
+        }]))
         setPages((currentPages) => [...currentPages, ...newPages])
-        setFiles((currentFiles) => [...currentFiles, { fileId, name: file.name, pageCount: newPages.length }])
+        setFiles((currentFiles) => [...currentFiles, { fileId, name: file.name, pageCount: newPages.length, capturedSlot }])
       } catch (error) {
         if (error instanceof PageRenderError && error.code === "aborted") return
         toast.error(t("upload.renderFailed", { name: file.name, error: error instanceof Error ? error.message : "" }))
@@ -157,6 +166,15 @@ export function PaperFormScanWizard() {
   function handleAddFiles(selectedFiles: File[]) {
     // Chained so two drops in a row render one after the other, in drop order.
     renderChainRef.current = renderChainRef.current.then(() => renderFiles(selectedFiles))
+  }
+
+  // Capture screen: one photo for one slot. Same render chain as dropped files, so photos
+  // taken in a row are rendered (and numbered) in shooting order. Retaking a page is
+  // handleRemovePage on the old one, then this again with the same slot. Resolves once this
+  // photo is rendered (or failed, with the usual toast), so the capture screen knows.
+  function handleAddCapturedPhoto(file: File, capturedSlot: CapturedSlot): Promise<void> {
+    renderChainRef.current = renderChainRef.current.then(() => renderFiles([file], capturedSlot))
+    return renderChainRef.current
   }
 
   function releasePages(pagesToRelease: ScanPage[]) {
@@ -172,6 +190,7 @@ export function PaperFormScanWizard() {
   }
 
   // Reading step: drops a page a strict template refused. Its file keeps the other pages.
+  // Capture screen: drops a captured photo (its file then has no page left and goes too).
   function handleRemovePage(pageId: string) {
     const removedPage = pages.find((page) => page.pageId === pageId)
     if (!removedPage) return
@@ -212,7 +231,6 @@ export function PaperFormScanWizard() {
   const validationMessages: ValidationMessages = {
     firstNameRequired: t("validation.firstNameRequired"),
     lastNameRequired:  t("validation.lastNameRequired"),
-    missingPage:       t("validation.missingPage"),
   }
 
   // Only the student is checked: legal guardians are stored on the student's record.
@@ -443,6 +461,9 @@ export function PaperFormScanWizard() {
               preparingFileName={preparingFileName}
               onAddFiles={handleAddFiles}
               onRemoveFile={handleRemoveFile}
+              pages={pages}
+              onAddCapturedPhoto={handleAddCapturedPhoto}
+              onRemovePage={handleRemovePage}
               onStart={handleStartReading}
             />
           )}

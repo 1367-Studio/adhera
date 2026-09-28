@@ -10,7 +10,8 @@ import { ScanFormEditor, type LegalDocumentOption } from "./scan-form-editor"
 import { ScanPageViewer } from "./scan-page-viewer"
 import {
   fullNameOf,
-  hasMissingPage,
+  LOW_CONFIDENCE_TEXT_CLASS,
+  missingPageNumbers,
   type DraftErrors,
   type LowConfidenceKey,
   type ReviewDraft,
@@ -63,6 +64,15 @@ export function ScanReviewStep({
 
   const formLabel = (form: ScanForm, formIndex: number) =>
     fullNameOf(form.draft.firstName, form.draft.lastName) || t("untitledForm", { number: formIndex + 1 })
+  // A missing page is a warning, not an error: the form can still be validated. Once it is
+  // created or set aside, the reminder has nothing left to act on.
+  const missingPagesMessage = (form: ScanForm, messageKey: "missingPages" | "missingPagesNotice"): string | null => {
+    if (form.status === "created" || form.status === "ignored") return null
+    const missingNumbers = missingPageNumbers(form)
+    if (missingNumbers.length === 0) return null
+    return t(messageKey, { count: missingNumbers.length, list: missingNumbers.join(", ") })
+  }
+  const currentMissingPagesNotice = missingPagesMessage(currentForm, "missingPagesNotice")
   const slotPages = currentForm.pageSlots.map((pageId) => (pageId ? pagesById.get(pageId) ?? null : null))
   const isCreated = currentForm.status === "created"
 
@@ -94,25 +104,28 @@ export function ScanReviewStep({
         {/* ─── Forms list ─── */}
         <nav aria-label={t("formsList")} className="lg:col-span-3 xl:col-span-2">
           <ul className="max-h-60 divide-y lg:max-h-[70vh] overflow-y-auto rounded-lg border text-sm">
-            {forms.map((form, formIndex) => (
-              <li key={form.formId}>
-                <button
-                  type="button"
-                  onClick={() => onSelectForm(form.formId)}
-                  aria-current={form.formId === currentForm.formId ? "true" : undefined}
-                  className={cn(
-                    "flex w-full items-center justify-between gap-2 px-3 py-2 text-left outline-none transition-colors hover:bg-muted/50 focus-visible:ring-3 focus-visible:ring-inset focus-visible:ring-ring/50",
-                    form.formId === currentForm.formId && "bg-muted",
-                  )}
-                >
-                  <span className="min-w-0">
-                    <span className="block truncate">{formLabel(form, formIndex)}</span>
-                    {hasMissingPage(form) && <span className="block text-xs text-destructive">{t("missingPage")}</span>}
-                  </span>
-                  <Badge variant={STATUS_BADGE_VARIANT[form.status]}>{tStatus(form.status)}</Badge>
-                </button>
-              </li>
-            ))}
+            {forms.map((form, formIndex) => {
+              const missingPagesLine = missingPagesMessage(form, "missingPages")
+              return (
+                <li key={form.formId}>
+                  <button
+                    type="button"
+                    onClick={() => onSelectForm(form.formId)}
+                    aria-current={form.formId === currentForm.formId ? "true" : undefined}
+                    className={cn(
+                      "flex w-full items-center justify-between gap-2 px-3 py-2 text-left outline-none transition-colors hover:bg-muted/50 focus-visible:ring-3 focus-visible:ring-inset focus-visible:ring-ring/50",
+                      form.formId === currentForm.formId && "bg-muted",
+                    )}
+                  >
+                    <span className="min-w-0">
+                      <span className="block truncate">{formLabel(form, formIndex)}</span>
+                      {missingPagesLine && <span className={cn("block", LOW_CONFIDENCE_TEXT_CLASS)}>{missingPagesLine}</span>}
+                    </span>
+                    <Badge variant={STATUS_BADGE_VARIANT[form.status]}>{tStatus(form.status)}</Badge>
+                  </button>
+                </li>
+              )
+            })}
           </ul>
         </nav>
 
@@ -138,8 +151,8 @@ export function ScanReviewStep({
             </div>
           </div>
 
-          {hasMissingPage(currentForm) && (
-            <p className="text-sm text-destructive">{t("missingPageExplanation")}</p>
+          {currentMissingPagesNotice && (
+            <p className={cn(LOW_CONFIDENCE_TEXT_CLASS, "text-sm")}>{currentMissingPagesNotice}</p>
           )}
           {currentForm.status === "error" && currentForm.errorMessage && (
             <p className="text-sm text-destructive">{t("commitError", { error: currentForm.errorMessage })}</p>
