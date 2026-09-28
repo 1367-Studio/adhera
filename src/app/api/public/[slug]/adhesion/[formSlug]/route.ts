@@ -114,6 +114,7 @@ export async function GET(
     fieldGender:          form.fieldGender,
     fieldPhoto:           form.fieldPhoto,
     fieldLanguage:        form.fieldLanguage,
+    fieldPreferredLocale: form.fieldPreferredLocale,
     confirmationMessage:  content.confirmationMessage,
     offlineInstructions:  content.offlineInstructions,
     allowCash:            form.allowCash,

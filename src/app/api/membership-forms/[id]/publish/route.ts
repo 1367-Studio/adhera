@@ -95,6 +95,7 @@ export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
         fieldGender:           form.fieldGender,
         fieldPhoto:            form.fieldPhoto,
         fieldLanguage:         form.fieldLanguage,
+        fieldPreferredLocale:  form.fieldPreferredLocale,
         allowCash:             form.allowCash,
         allowCheque:           form.allowCheque,
         allowTransfer:         form.allowTransfer,
