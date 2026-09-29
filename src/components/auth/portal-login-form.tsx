@@ -109,13 +109,6 @@ export function PortalLoginForm({ slug, callbackUrl }: { slug: string; callbackU
           }
           {t("continueWithGoogle")}
         </Button>
-
-        <Link
-          href={`/portal/${slug}/register`}
-          className="flex items-center justify-center gap-1.5 rounded-lg border border-dashed px-4 py-2.5 text-sm font-medium text-muted-foreground hover:text-foreground hover:border-border hover:bg-muted/30 transition-all"
-        >
-          {t("noAccount")}
-        </Link>
       </div>
     </form>
   )
