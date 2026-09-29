@@ -84,11 +84,16 @@ async function suggestSupportReply(ticketId: string): Promise<SupportReplySugges
 }
 
 // Every article and FAQ entry, whatever the current page — the panel does the grouping.
+// Refetched each time the panel (or a tab of it) mounts, so an article just pinned or
+// published in the Studio shows on the next open instead of after the stale window. Cheap:
+// the route answers from Next's data cache, purged by the Sanity webhook on publish, and the
+// cached list stays on screen while the refetch runs.
 export function useHelpContent() {
   return useQuery({
-    queryKey:  [...QK, "content"],
-    queryFn:   fetchHelpContent,
-    staleTime: HELP_CONTENT_STALE_TIME,
+    queryKey:       [...QK, "content"],
+    queryFn:        fetchHelpContent,
+    staleTime:      HELP_CONTENT_STALE_TIME,
+    refetchOnMount: "always",
   })
 }
 
