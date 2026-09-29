@@ -1,10 +1,9 @@
 "use client"
 
-import { GoogleIcon } from "@/components/icons/google-icon"
 import { TwoFactorChallengeForm } from "@/components/layout/two-factor-challenge-form"
 import { Button } from "@/components/ui/button"
 import { FormField } from "@/components/ui/form-field"
-import { authenticate, signInWithGooglePortal } from "@/lib/auth/actions"
+import { authenticate } from "@/lib/auth/actions"
 import { loginSchema, type LoginInput } from "@/lib/schemas"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { CircleNotchIcon } from "@phosphor-icons/react/dist/ssr"
@@ -15,7 +14,6 @@ import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 export function PortalLoginForm({ slug, callbackUrl }: { slug: string; callbackUrl?: string }) {
   const t = useTranslations("portal.login")
-  const [googleLoading, setGoogleLoading] = useState(false)
   const [pendingToken, setPendingToken] = useState<string | null>(null)
   const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<LoginInput>({
     resolver: zodResolver(loginSchema),
@@ -39,15 +37,6 @@ export function PortalLoginForm({ slug, callbackUrl }: { slug: string; callbackU
       return
     }
     if (result?.error) toast.error(result.error)
-  }
-
-  async function handleGoogle() {
-    setGoogleLoading(true)
-    try {
-      await signInWithGooglePortal(slug, callbackUrl)
-    } finally {
-      setGoogleLoading(false)
-    }
   }
 
   if (pendingToken) {
@@ -89,26 +78,6 @@ export function PortalLoginForm({ slug, callbackUrl }: { slug: string; callbackU
         >
           {t("forgotPassword")}
         </Link>
-
-        <div className="relative flex items-center gap-2 py-1">
-          <div className="flex-1 h-px bg-border" />
-          <span className="text-xs text-muted-foreground/60 shrink-0">{t("or")}</span>
-          <div className="flex-1 h-px bg-border" />
-        </div>
-
-        <Button
-          type="button"
-          variant="outline"
-          className="w-full"
-          disabled={googleLoading}
-          onClick={handleGoogle}
-        >
-          {googleLoading
-            ? <CircleNotchIcon className="mr-2 size-4 animate-spin" />
-            : <GoogleIcon className="mr-2 size-4" />
-          }
-          {t("continueWithGoogle")}
-        </Button>
       </div>
     </form>
   )
