@@ -47,13 +47,15 @@ export const HELP_ARTICLE_BY_SLUG_QUERY = defineQuery(`*[_type == "helpArticle" 
   "updatedAt": _updatedAt
 }`)
 
-// Latest 20 entries, newest first. $locale.
+// Pinned entries first (so an old pinned one is never cut by the slice), then the latest,
+// newest first — 20 in all. $locale.
 export const HELP_CHANGELOG_QUERY = defineQuery(`*[_type == "changelogEntry" && defined(publishedAt)]
-  | order(publishedAt desc, _createdAt desc) [0...20] {
+  | order(coalesce(pinned, false) desc, publishedAt desc, _createdAt desc) [0...20] {
     "id": _id,
     "title": ${LOCALIZED_TITLE},
     publishedAt,
     kind,
+    "pinned": coalesce(pinned, false),
     "modules": coalesce(modules, []),
     "body": ${LOCALIZED_BODY}
   }`)

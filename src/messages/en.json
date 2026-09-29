@@ -6079,6 +6079,7 @@
     "searchResultsCount": "{count, plural, one {# result} other {# results}}",
     "searchNoResults": "No results for \"{query}\".",
     "searchError": "Search is unavailable right now.",
+    "newBadge": "New",
     "pinnedSection": "Pinned",
     "articlesSection": "Articles",
     "articlesOtherSection": "Other articles",

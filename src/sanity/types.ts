@@ -45,6 +45,7 @@ export type ChangelogEntry = {
   title:       string
   publishedAt: string
   kind:        ChangelogKind
+  pinned:      boolean
   modules:     HelpModuleKey[]
   body:        PortableTextBlock[] | null
 }
@@ -56,7 +57,7 @@ export type ReleaseNoteImage = {
   height: number
 }
 
-export type ReleaseNote = Omit<ChangelogEntry, "modules"> & {
+export type ReleaseNote = Omit<ChangelogEntry, "modules" | "pinned"> & {
   image: ReleaseNoteImage | null
 }
 

@@ -118,11 +118,13 @@ export function useHelpSearch(query: string) {
   })
 }
 
+// Refetched on every mount for the same reason as useHelpContent (a new pin shows on open).
 export function useHelpChangelog() {
   return useQuery({
-    queryKey:  [...QK, "changelog"],
-    queryFn:   fetchHelpChangelog,
-    staleTime: HELP_CONTENT_STALE_TIME,
+    queryKey:       [...QK, "changelog"],
+    queryFn:        fetchHelpChangelog,
+    staleTime:      HELP_CONTENT_STALE_TIME,
+    refetchOnMount: "always",
   })
 }
 

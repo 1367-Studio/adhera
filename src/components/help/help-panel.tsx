@@ -1,15 +1,11 @@
 "use client"
 
-import { useEffect, useMemo, useRef, useState } from "react"
-import Link from "next/link"
-import { usePathname } from "next/navigation"
-import { useLocale, useTranslations } from "next-intl"
-import { format, parseISO } from "date-fns"
 import { HelpArticleView } from "@/components/help/help-article-view"
 import { HelpAssistant } from "@/components/help/help-assistant"
 import { canAccessDashboardRoute } from "@/components/layout/app-sidebar"
 import { Accordion, AccordionItem, AccordionPanel, AccordionTrigger } from "@/components/ui/accordion"
 import { BackLink } from "@/components/ui/back-link"
+import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { SearchInput } from "@/components/ui/search-input"
 import {
@@ -21,7 +17,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import {
   HELP_ERROR_CODES, HELP_SEARCH_MIN_LENGTH,
   useHelpArticle, useHelpChangelog, useHelpContent, useHelpSearch,
-  type FaqEntry, type HelpArticleSummary, type HelpSearchHit,
+  type ChangelogEntry, type FaqEntry, type HelpArticleSummary, type HelpSearchHit,
 } from "@/hooks/use-help"
 import type { Locale } from "@/i18n/locales"
 import { ApiError } from "@/lib/api-error"
@@ -29,6 +25,12 @@ import { getDateFnsLocale } from "@/lib/date-fns-locale"
 import { helpModuleFromPathname, type HelpModuleKey } from "@/lib/help/modules"
 import { getRouteLabels } from "@/lib/route-labels"
 import { useCurrentUser } from "@/lib/user-context"
+import { cn } from "@/lib/utils"
+import { format, parseISO } from "date-fns"
+import { useLocale, useTranslations } from "next-intl"
+import Link from "next/link"
+import { usePathname } from "next/navigation"
+import { useEffect, useMemo, useRef, useState } from "react"
 
 const SEARCH_DEBOUNCE_MS  = 300
 // Same cap as the /api/help/search validation, so a long paste is trimmed instead of rejected.
@@ -103,7 +105,6 @@ export function HelpPanel({ open, onOpenChange, onStartTour, onCloseComplete }: 
     setDebouncedSearchQuery("")
   }
 
-  // From the assistant's sources or a pinned article in Nouveautés: articles are read in Aide.
   function openArticleFromAssistant(slug: string) {
     setActiveTab("guide")
     setGuideView({ kind: "article", slug })
@@ -161,7 +162,7 @@ export function HelpPanel({ open, onOpenChange, onStartTour, onCloseComplete }: 
           </TabsContent>
 
           <TabsContent value="changelog" className="min-h-0 flex-1 overflow-y-auto">
-            <HelpChangelogTab onOpenArticle={openArticleFromAssistant} />
+            <HelpChangelogTab />
           </TabsContent>
 
           <SheetFooter className="shrink-0 flex-row items-center justify-between border-t px-4 py-2">
@@ -291,12 +292,14 @@ function HelpGuideTab({
     )
   }
 
-  // The listing carries every article: the current page's come first, every other module's
-  // after. Each group keeps the query's order. (Pinned ones are featured in Nouveautés.)
+  // The listing carries every article: pinned ones come first on every page (and only there),
+  // then the current page's, every other module's after. Each group keeps the query's order.
+  const pinnedArticles: HelpArticleSummary[]  = []
   const currentArticles: HelpArticleSummary[] = []
   const otherArticles: HelpArticleSummary[]   = []
   for (const article of helpContent.data?.articles ?? []) {
-    if (article.module === module) currentArticles.push(article)
+    if (article.pinned) pinnedArticles.push(article)
+    else if (article.module === module) currentArticles.push(article)
     else otherArticles.push(article)
   }
 
@@ -370,6 +373,15 @@ function HelpGuideTab({
         <p className="px-4 py-6 text-sm text-muted-foreground">{t("noContent")}</p>
       ) : (
         <>
+          {pinnedArticles.length > 0 && (
+            <div>
+              <p className="px-4 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                {t("pinnedSection")}
+              </p>
+              <HelpArticleList articles={pinnedArticles} onOpenArticle={openArticle} isPinned />
+            </div>
+          )}
+
           {currentArticles.length > 0 && (
             <div>
               <p className="px-4 text-xs font-medium uppercase tracking-wide text-muted-foreground">
@@ -440,23 +452,34 @@ function HelpGuideTab({
 interface HelpArticleListProps {
   articles:      HelpArticleSummary[]
   onOpenArticle: (slug: string) => void
+  /** Merged onto the list, after its defaults — so it can override the top margin or dividers. */
+  className?:    string
   /** Outside the current page's group, the module tells the reader where the article applies. */
   showModule?:   boolean
+  /** Pinned articles: tinted rows and a "Nouveau" badge after the title — same as pinned news. */
+  isPinned?:     boolean
 }
 
-function HelpArticleList({ articles, onOpenArticle, showModule = false }: HelpArticleListProps) {
+function HelpArticleList({ className, articles, onOpenArticle, showModule = false, isPinned = false }: HelpArticleListProps) {
+  const t           = useTranslations("help")
   const moduleLabel = useHelpModuleLabel()
   return (
-    <ul className="mt-1 divide-y divide-border/60">
+    <ul className={cn("mt-1 divide-y divide-border/60", className)}>
       {articles.map(article => (
         <li key={article.id}>
           <button
             type="button"
             onClick={() => onOpenArticle(article.slug)}
-            className="flex w-full flex-col items-start gap-0.5 px-4 py-3 text-left transition-colors hover:bg-muted/40 focus-visible:outline-1 focus-visible:outline-ring"
+            className={cn(
+              "flex w-full flex-col items-start gap-0.5 px-4 py-3 text-left transition-colors hover:bg-muted/40 focus-visible:outline-1 focus-visible:outline-ring",
+              isPinned && "bg-muted/40 hover:bg-muted/70",
+            )}
           >
             <span className="flex w-full items-baseline justify-between gap-3">
-              <span className="min-w-0 text-sm font-medium text-foreground">{article.title}</span>
+              <span className="flex min-w-0 items-center gap-2">
+                <span className="min-w-0 text-sm font-medium text-foreground">{article.title}</span>
+                {isPinned && <Badge>{t("newBadge")}</Badge>}
+              </span>
               {showModule && (
                 <span className="shrink-0 text-xs text-muted-foreground">{moduleLabel(article.module)}</span>
               )}
@@ -473,36 +496,8 @@ function HelpArticleList({ articles, onOpenArticle, showModule = false }: HelpAr
 
 /* ------------------------------------------------------- Nouveautés tab */
 
-function HelpChangelogTab({ onOpenArticle }: { onOpenArticle: (slug: string) => void }) {
+function HelpChangelogTab() {
   const t = useTranslations("help")
-
-  // Same cache entry as the Aide tab — pinned articles cost no extra request.
-  const helpContent    = useHelpContent()
-  const pinnedArticles = (helpContent.data?.articles ?? []).filter(article => article.pinned)
-
-  if (pinnedArticles.length === 0) return <HelpChangelogList />
-
-  return (
-    <div className="flex flex-col gap-5 py-4">
-      <div>
-        <p className="px-4 text-xs font-medium uppercase tracking-wide text-muted-foreground">
-          {t("pinnedSection")}
-        </p>
-        <HelpArticleList articles={pinnedArticles} onOpenArticle={onOpenArticle} />
-      </div>
-      <div>
-        <p className="px-4 text-xs font-medium uppercase tracking-wide text-muted-foreground">
-          {t("changelog.latestSection")}
-        </p>
-        <HelpChangelogList />
-      </div>
-    </div>
-  )
-}
-
-function HelpChangelogList() {
-  const t      = useTranslations("help")
-  const locale = useLocale() as Locale
 
   const changelogQuery = useHelpChangelog()
 
@@ -533,15 +528,55 @@ function HelpChangelogList() {
     return <p className="px-4 py-6 text-sm text-muted-foreground">{t("changelog.empty")}</p>
   }
 
+  // Pinned entries lead (the query already sorts them first); without any, the tab is the
+  // plain list with no section labels.
+  const pinnedEntries = entries.filter(entry => entry.pinned)
+  const latestEntries = entries.filter(entry => !entry.pinned)
+  if (pinnedEntries.length === 0) return <HelpChangelogAccordion entries={latestEntries} />
+
   return (
-    <Accordion multiple variant="plain">
+    <div className="flex flex-col gap-5 py-4">
+      <div>
+        <p className="px-4 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+          {t("pinnedSection")}
+        </p>
+        <HelpChangelogAccordion entries={pinnedEntries} isPinned className="mt-1" />
+      </div>
+      {latestEntries.length > 0 && (
+        <div>
+          <p className="px-4 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+            {t("changelog.latestSection")}
+          </p>
+          <HelpChangelogAccordion entries={latestEntries} className="mt-1" />
+        </div>
+      )}
+    </div>
+  )
+}
+
+interface HelpChangelogAccordionProps {
+  entries:    ChangelogEntry[]
+  /** Pinned entries: tinted rows and a "Nouveau" badge after the title. */
+  isPinned?:  boolean
+  className?: string
+}
+
+function HelpChangelogAccordion({ entries, isPinned = false, className }: HelpChangelogAccordionProps) {
+  const t      = useTranslations("help")
+  const locale = useLocale() as Locale
+
+  return (
+    <Accordion multiple variant="plain" className={className}>
       {entries.map(entry => {
         const hasBody = !!entry.body && entry.body.length > 0
         return (
-          <AccordionItem key={entry.id} value={entry.id}>
+          <AccordionItem key={entry.id} value={entry.id} className={isPinned ? "bg-muted/40" : undefined}>
             {/* An entry with no body cannot expand: the caret would promise a panel that
                 never opens, so it is hidden and the trigger disabled. */}
-            <AccordionTrigger disabled={!hasBody} className={hasBody ? undefined : "[&>svg]:hidden"}>
+            <AccordionTrigger
+              disabled={!hasBody}
+              className={cn(!hasBody && "[&>svg]:hidden", isPinned && "hover:bg-muted/70")}
+            >
               <span className="flex min-w-0 flex-1 flex-col gap-1">
                 {/* `publishedAt` is a date-only value: parseISO keeps it on the editor's calendar
                     day instead of shifting it through UTC midnight for viewers west of UTC. */}
@@ -552,7 +587,10 @@ function HelpChangelogList() {
                   <span aria-hidden>·</span>
                   <span>{t(`changelog.kind.${entry.kind}`)}</span>
                 </span>
-                <span className="text-sm font-medium text-foreground">{entry.title}</span>
+                <span className="flex min-w-0 items-center gap-2">
+                  <span className="min-w-0 text-sm font-medium text-foreground">{entry.title}</span>
+                  {isPinned && <Badge>{t("newBadge")}</Badge>}
+                </span>
               </span>
             </AccordionTrigger>
             {hasBody && (

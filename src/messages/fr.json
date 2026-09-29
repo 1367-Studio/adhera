@@ -6087,6 +6087,7 @@
     "searchResultsCount": "{count, plural, one {# résultat} other {# résultats}}",
     "searchNoResults": "Aucun résultat pour « {query} ».",
     "searchError": "La recherche est indisponible pour le moment.",
+    "newBadge": "Nouveau",
     "pinnedSection": "Épinglés",
     "articlesSection": "Articles",
     "articlesOtherSection": "Autres articles",
