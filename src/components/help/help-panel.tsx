@@ -20,8 +20,8 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import {
   HELP_ERROR_CODES, HELP_SEARCH_MIN_LENGTH,
-  useHelpArticle, useHelpArticles, useHelpChangelog, useHelpSearch,
-  type FaqEntry, type HelpSearchHit,
+  useHelpArticle, useHelpChangelog, useHelpContent, useHelpSearch,
+  type FaqEntry, type HelpArticleSummary, type HelpSearchHit,
 } from "@/hooks/use-help"
 import type { Locale } from "@/i18n/locales"
 import { ApiError } from "@/lib/api-error"
@@ -41,7 +41,7 @@ type HelpTabKey = "guide" | "assistant" | "changelog"
 type HelpGuideView =
   | { kind: "browse" }
   | { kind: "article"; slug: string }
-  | { kind: "faq";     id: string; module: HelpModuleKey }
+  | { kind: "faq";     id: string }
 
 // Module labels are the same route labels the header breadcrumbs use (src/lib/route-labels.ts);
 // only the catch-all "general" needs a help-specific label.
@@ -206,14 +206,11 @@ function HelpGuideTab({
   const pathname    = usePathname()
   const moduleLabel = useHelpModuleLabel()
 
-  // FAQ entries have no detail endpoint — they are resolved through the module listing they
-  // came from (which carries every FAQ entry). Same key as the browse query whenever the FAQ
-  // hit belongs to the current module, so that costs no extra request.
-  const faqModule        = guideView.kind === "faq" ? guideView.module : module
-  const moduleContent    = useHelpArticles(module)
-  const faqModuleContent = useHelpArticles(faqModule)
-  const articleQuery     = useHelpArticle(guideView.kind === "article" ? guideView.slug : null)
-  const searchResults    = useHelpSearch(debouncedSearchQuery)
+  // FAQ entries have no detail endpoint — they are resolved through the content listing,
+  // which carries every FAQ entry.
+  const helpContent   = useHelpContent()
+  const articleQuery  = useHelpArticle(guideView.kind === "article" ? guideView.slug : null)
+  const searchResults = useHelpSearch(debouncedSearchQuery)
 
   const isResultsMode = debouncedSearchQuery.trim().length >= HELP_SEARCH_MIN_LENGTH
 
@@ -223,12 +220,16 @@ function HelpGuideTab({
     onGuideViewChange({ kind: "browse" })
   }
 
+  function openArticle(slug: string) {
+    onGuideViewChange({ kind: "article", slug })
+  }
+
   function openSearchHit(hit: HelpSearchHit) {
     if (hit.type === "helpArticle" && hit.slug) {
       onGuideViewChange({ kind: "article", slug: hit.slug })
       return
     }
-    onGuideViewChange({ kind: "faq", id: hit.id, module: hit.module ?? "general" })
+    onGuideViewChange({ kind: "faq", id: hit.id })
   }
 
   if (guideView.kind === "article") {
@@ -266,9 +267,9 @@ function HelpGuideTab({
   }
 
   if (guideView.kind === "faq") {
-    if (faqModuleContent.isPending) return <HelpArticleDetailSkeleton />
+    if (helpContent.isPending) return <HelpArticleDetailSkeleton />
 
-    const faqEntry = faqModuleContent.data?.faq.find(entry => entry.id === guideView.id)
+    const faqEntry = helpContent.data?.faq.find(entry => entry.id === guideView.id)
     return (
       <div className="px-4 py-4">
         <BackLink href={pathname} onClick={backToList}>{t("back")}</BackLink>
@@ -277,10 +278,10 @@ function HelpGuideTab({
             <h2 className="mt-3 text-lg font-semibold leading-snug">{faqEntry.question}</h2>
             <HelpArticleView value={faqEntry.answer} className="mt-4" />
           </>
-        ) : faqModuleContent.isError ? (
+        ) : helpContent.isError ? (
           <div className="mt-3 flex flex-col items-start gap-2">
             <p className="text-sm text-destructive">{t("loadError")}</p>
-            <Button variant="ghost" size="sm" onClick={() => faqModuleContent.refetch()}>{t("retry")}</Button>
+            <Button variant="ghost" size="sm" onClick={() => helpContent.refetch()}>{t("retry")}</Button>
           </div>
         ) : (
           <p className="mt-3 text-sm text-muted-foreground">{t("articleNotFound")}</p>
@@ -289,12 +290,22 @@ function HelpGuideTab({
     )
   }
 
-  // The listing carries the whole FAQ: the current page's entries (plus the ones with no
-  // module or "general", which belong everywhere) come first, every other module's after.
-  // Each group keeps the query's order.
+  // The listing carries every article: pinned ones come first on every page (and only there),
+  // then the current page's, every other module's after. Each group keeps the query's order.
+  const pinnedArticles: HelpArticleSummary[]  = []
+  const currentArticles: HelpArticleSummary[] = []
+  const otherArticles: HelpArticleSummary[]   = []
+  for (const article of helpContent.data?.articles ?? []) {
+    if (article.pinned) pinnedArticles.push(article)
+    else if (article.module === module) currentArticles.push(article)
+    else otherArticles.push(article)
+  }
+
+  // Same for the whole FAQ: the current page's entries (plus the ones with no module or
+  // "general", which belong everywhere) come first, every other module's after.
   const currentFaqEntries: FaqEntry[] = []
   const otherFaqEntries: FaqEntry[]   = []
-  for (const entry of moduleContent.data?.faq ?? []) {
+  for (const entry of helpContent.data?.faq ?? []) {
     const isCurrentPageEntry = !entry.module || entry.module === "general" || entry.module === module
     if (isCurrentPageEntry) currentFaqEntries.push(entry)
     else otherFaqEntries.push(entry)
@@ -349,42 +360,34 @@ function HelpGuideTab({
             </ul>
           </div>
         )
-      ) : moduleContent.isPending ? (
+      ) : helpContent.isPending ? (
         <HelpListSkeleton rows={4} />
-      ) : moduleContent.isError ? (
+      ) : helpContent.isError ? (
         <div className="flex flex-col items-start gap-2 px-4 py-6">
           <p className="text-sm text-destructive">{t("loadError")}</p>
-          <Button variant="ghost" size="sm" onClick={() => moduleContent.refetch()}>{t("retry")}</Button>
+          <Button variant="ghost" size="sm" onClick={() => helpContent.refetch()}>{t("retry")}</Button>
         </div>
-      ) : moduleContent.data.articles.length === 0 && moduleContent.data.faq.length === 0 ? (
+      ) : helpContent.data.articles.length === 0 && helpContent.data.faq.length === 0 ? (
         <p className="px-4 py-6 text-sm text-muted-foreground">{t("noContent")}</p>
       ) : (
         <>
-          <div>
-            <p className="px-4 text-xs font-medium uppercase tracking-wide text-muted-foreground">
-              {t("articlesSection")}
-            </p>
-            {moduleContent.data.articles.length === 0 ? (
-              <p className="mt-1 px-4 text-sm text-muted-foreground">{t("noArticles")}</p>
-            ) : (
-              <ul className="mt-1 divide-y divide-border/60">
-                {moduleContent.data.articles.map(article => (
-                  <li key={article.id}>
-                    <button
-                      type="button"
-                      onClick={() => onGuideViewChange({ kind: "article", slug: article.slug })}
-                      className="flex w-full flex-col items-start gap-0.5 px-4 py-3 text-left transition-colors hover:bg-muted/40 focus-visible:outline-1 focus-visible:outline-ring"
-                    >
-                      <span className="text-sm font-medium text-foreground">{article.title}</span>
-                      {article.summary && (
-                        <span className="text-xs text-muted-foreground line-clamp-2">{article.summary}</span>
-                      )}
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
+          {pinnedArticles.length > 0 && (
+            <div>
+              <p className="px-4 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                {t("pinnedSection")}
+              </p>
+              <HelpArticleList articles={pinnedArticles} onOpenArticle={openArticle} />
+            </div>
+          )}
+
+          {currentArticles.length > 0 && (
+            <div>
+              <p className="px-4 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                {t("articlesSection")}
+              </p>
+              <HelpArticleList articles={currentArticles} onOpenArticle={openArticle} />
+            </div>
+          )}
 
           {currentFaqEntries.length > 0 && (
             <div>
@@ -401,6 +404,16 @@ function HelpGuideTab({
                   </AccordionItem>
                 ))}
               </Accordion>
+            </div>
+          )}
+
+          {otherArticles.length > 0 && (
+            <div>
+              {/* Same rule as the FAQ below: "Autres articles" only reads under a first group. */}
+              <p className="px-4 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                {currentArticles.length > 0 ? t("articlesOtherSection") : t("articlesSection")}
+              </p>
+              <HelpArticleList articles={otherArticles} onOpenArticle={openArticle} showModule />
             </div>
           )}
 
@@ -431,6 +444,40 @@ function HelpGuideTab({
         </>
       )}
     </div>
+  )
+}
+
+interface HelpArticleListProps {
+  articles:      HelpArticleSummary[]
+  onOpenArticle: (slug: string) => void
+  /** Outside the current page's group, the module tells the reader where the article applies. */
+  showModule?:   boolean
+}
+
+function HelpArticleList({ articles, onOpenArticle, showModule = false }: HelpArticleListProps) {
+  const moduleLabel = useHelpModuleLabel()
+  return (
+    <ul className="mt-1 divide-y divide-border/60">
+      {articles.map(article => (
+        <li key={article.id}>
+          <button
+            type="button"
+            onClick={() => onOpenArticle(article.slug)}
+            className="flex w-full flex-col items-start gap-0.5 px-4 py-3 text-left transition-colors hover:bg-muted/40 focus-visible:outline-1 focus-visible:outline-ring"
+          >
+            <span className="flex w-full items-baseline justify-between gap-3">
+              <span className="min-w-0 text-sm font-medium text-foreground">{article.title}</span>
+              {showModule && (
+                <span className="shrink-0 text-xs text-muted-foreground">{moduleLabel(article.module)}</span>
+              )}
+            </span>
+            {article.summary && (
+              <span className="text-xs text-muted-foreground line-clamp-2">{article.summary}</span>
+            )}
+          </button>
+        </li>
+      ))}
+    </ul>
   )
 }
 

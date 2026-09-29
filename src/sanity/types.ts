@@ -15,6 +15,7 @@ export type HelpArticleSummary = {
   summary: string | null
   module:  HelpModuleKey
   order:   number
+  pinned:  boolean
 }
 
 export type HelpArticle = {
@@ -34,7 +35,7 @@ export type FaqEntry = {
   module:   HelpModuleKey | null
 }
 
-export type HelpModuleContent = {
+export type HelpContent = {
   articles: HelpArticleSummary[]
   faq:      FaqEntry[]
 }
