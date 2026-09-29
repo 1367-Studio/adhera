@@ -234,6 +234,7 @@
       "title": "Espace membre",
       "subtitle": "Connectez-vous pour accéder à votre espace.",
       "suspendedNotice": "L'abonnement de cette association est suspendu. Contactez l'administrateur pour régulariser la situation.",
+      "selfRegisterDisabledNotice": "La création de compte en libre-service n'est plus disponible. Contactez un administrateur de votre association pour obtenir un accès.",
       "emailLabel": "Adresse email",
       "emailPlaceholder": "contact@association.fr",
       "passwordLabel": "Mot de passe",

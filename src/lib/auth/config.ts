@@ -180,10 +180,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         // PortalRegisterForm/src/app/api/portal/register/route.ts), which needs an actual
         // form + checkbox, not a silent callback. Route to that form instead, prefilled;
         // nothing is written to the database until it's submitted.
-        if (!dbUser) {
-          const params = new URLSearchParams({ g_name: `${firstName} ${lastName}`.trim(), g_email: email })
-          return `/portal/${slug}/register?${params.toString()}`
-        }
+        // Self-registration is disabled portal-wide (see PortalLoginForm) — a Google
+        // sign-in with no matching member can't create one either.
+        if (!dbUser) return `/portal/${slug}/login?selfRegisterDisabled=1`
 
         if (!dbUser.active) return `/portal/${slug}/login?error=inactive`
 

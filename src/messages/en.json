@@ -234,6 +234,7 @@
       "title": "Member area",
       "subtitle": "Sign in to access your area.",
       "suspendedNotice": "This association's subscription is suspended. Contact the administrator to resolve the situation.",
+      "selfRegisterDisabledNotice": "Self-service account creation is no longer available. Contact an administrator of your association to get access.",
       "emailLabel": "Email address",
       "emailPlaceholder": "contact@association.org",
       "passwordLabel": "Password",

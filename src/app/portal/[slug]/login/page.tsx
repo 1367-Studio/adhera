@@ -15,10 +15,10 @@ export default async function PortalLoginPage({
   searchParams,
 }: {
   params:       Promise<{ slug: string }>
-  searchParams: Promise<{ callbackUrl?: string; suspended?: string }>
+  searchParams: Promise<{ callbackUrl?: string; suspended?: string; selfRegisterDisabled?: string }>
 }) {
-  const { slug }                    = await params
-  const { callbackUrl, suspended }  = await searchParams
+  const { slug }                                         = await params
+  const { callbackUrl, suspended, selfRegisterDisabled }  = await searchParams
   const t = await getTranslations("portal.login")
 
   return (
@@ -43,6 +43,12 @@ export default async function PortalLoginPage({
           {suspended && (
             <p className="rounded-lg border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
               {t("suspendedNotice")}
+            </p>
+          )}
+
+          {selfRegisterDisabled && !suspended && (
+            <p className="rounded-lg border border-border bg-muted/30 px-3 py-2 text-sm text-muted-foreground">
+              {t("selfRegisterDisabledNotice")}
             </p>
           )}
 
