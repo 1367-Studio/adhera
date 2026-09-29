@@ -1,62 +1,20 @@
-import { PortalRegisterForm } from "@/components/auth/portal-register-form";
-import { LocaleSwitcher } from "@/components/layout/locale-switcher";
-import { LogoMark } from "@/components/layout/logo-mark";
-import { APP_NAME } from "@/config/brand";
-import { requiredDocuments } from "@/lib/legal/acceptance";
-import { prisma } from "@/lib/prisma/client";
-import { ArrowLeftIcon } from "@phosphor-icons/react/dist/ssr";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
-import Link from "next/link";
+import { redirect } from "next/navigation";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("portal.register")
   return { title: t("pageTitle") }
 }
 
+// Self-registration is disabled portal-wide (see PortalLoginForm, which no longer links
+// here) — new members always go through an admin-created invite or a membership form.
+// Kept as a redirect, not a 404, so old bookmarks/emails still land somewhere useful.
 export default async function PortalRegisterPage({
   params,
 }: {
   params: Promise<{ slug: string }>
 }) {
   const { slug } = await params
-  const t = await getTranslations("portal.register")
-
-  // Read here, not fetched by the form: the consent box is part of the first render, so a
-  // failed request can never produce a registration form without it.
-  const association = await prisma.association.findUnique({ where: { slug }, select: { id: true } })
-  const legalDocuments = association ? await requiredDocuments(association.id) : []
-
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-background p-8">
-      <div className="w-full max-w-sm space-y-6">
-        <div className="flex items-center justify-between gap-2">
-          <div className="flex items-center gap-2">
-            <LogoMark className="size-6" />
-            <span className="text-base font-semibold">{APP_NAME}</span>
-          </div>
-          <LocaleSwitcher />
-        </div>
-
-        <div className="">
-          <div className="space-y-1.5">
-            <h1 className="text-xl font-semibold tracking-tight">{t("title")}</h1>
-            <p className="text-sm text-muted-foreground">
-              {t("subtitle")}
-            </p>
-          </div>
-
-          <PortalRegisterForm slug={slug} legalDocuments={legalDocuments} />
-
-          <Link
-            href={`/portal/${slug}/login`}
-            className="flex items-center justify-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
-          >
-            <ArrowLeftIcon className="size-3.5" />
-            {t("alreadyAccount")}
-          </Link>
-        </div>
-      </div>
-    </div>
-  )
+  redirect(`/portal/${slug}/login`)
 }
