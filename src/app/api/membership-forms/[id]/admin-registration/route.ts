@@ -52,6 +52,7 @@ const schema = z.object({
   spokenLanguage: z.enum(SPOKEN_LANGUAGE_CODES).optional(),
   photoUrl:    z.string().url().max(500).optional(),
   locale:      z.enum(SUPPORTED_LOCALES).optional(),
+  preferredLocale: z.enum(SUPPORTED_LOCALES).optional(),
   answers:     z.record(z.string(), z.string().max(500)).optional().default({}),
 })
 
@@ -95,7 +96,7 @@ export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
 
   // Same field-matrix validation as the public checkout — the manager fills the same form,
   // the same fields stay required.
-  const { birthDate, phone, mobile, sexe, spokenLanguage, photoUrl } = parsed.data
+  const { birthDate, phone, mobile, sexe, spokenLanguage, photoUrl, preferredLocale } = parsed.data
   // L'adresse est vérifiée à part : elle tient désormais sur cinq champs, et la forme héritée
   // en texte libre reste acceptée — même règle que le checkout public (voir addressIsFilled
   // dans src/lib/address.ts).
@@ -108,6 +109,7 @@ export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
     [form.fieldGender,    sexe,      "Genre"],
     [form.fieldLanguage,  spokenLanguage, "Langue parlée"],
     [form.fieldPhoto,     photoUrl,  "Photo"],
+    [form.fieldPreferredLocale, preferredLocale, "Langue préférée"],
   ]
   for (const [requirement, value, label] of standardChecks) {
     if (requirement === "REQUIRED" && (!value || !value.trim()))
@@ -170,7 +172,10 @@ export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
           sexe:           sexe || null,
           spokenLanguage: spokenLanguage || null,
           photoUrl:       photoUrl || null,
-          preferredLocale: locale || null,
+          // The explicit form answer takes priority when fieldPreferredLocale exposes it —
+          // otherwise fall back to the ambient `locale` (the manager's own page locale, not
+          // the member's), same as every other signup route without that field.
+          preferredLocale: preferredLocale || locale || null,
           status:         "ACTIF",
           associationId,
           typeId:         tier.membreTypeId,

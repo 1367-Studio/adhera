@@ -3044,6 +3044,8 @@
           "genderLabel": "Geslacht",
           "photoLabel": "Foto",
           "languageLabel": "Gesproken taal",
+          "preferredLocaleLabel": "Communicatietaal",
+          "preferredLocaleHint": "De geselecteerde taal maakt het mogelijk om dit lid e-mails en communicatie in zijn of haar voorkeurstaal te sturen.",
           "requirement": {
             "hidden": "Gemaskerd",
             "optional": "Optioneel",
@@ -3179,6 +3181,10 @@
       "genderFemme": "Vrouwelijk",
       "languageLabel": "Gesproken taal",
       "languageNone": "Niet gespecificeerd",
+      "preferredLocaleLabel": "Communicatietaal",
+      "preferredLocaleNone": "Niet gespecificeerd",
+      "preferredLocaleHintAdmin": "De geselecteerde taal maakt het mogelijk om dit lid e-mails en communicatie in zijn of haar voorkeurstaal te sturen.",
+      "preferredLocaleHintMember": "De hier opgegeven taal maakt het mogelijk om u e-mails en communicatie in uw voorkeurstaal te sturen.",
       "viewConditionsLabel": "Bekijk de algemene voorwaarden",
       "conditionsModalTitle": "Algemene voorwaarden",
       "conditionsAgreeLabel": "Ik accepteer de voorwaarden",
@@ -3973,6 +3979,7 @@
       "groupeSanguinNone": "Niet gespecificeerd",
       "tailleTshirtNone": "Niet gespecificeerd",
       "preferredLocaleNone": "Niet gespecificeerd",
+      "preferredLocaleHint": "De geselecteerde taal maakt het mogelijk om dit lid e-mails en communicatie in zijn of haar voorkeurstaal te sturen.",
       "spokenLanguageNone": "Niet gespecificeerd",
       "adherentOverride": {
         "auto": "Automatisch (afhankelijk van de bijdrage)",
@@ -4001,9 +4008,14 @@
         "allergies": "Bekende allergieën",
         "allergiesPlaceholder": "Arachides, stuifmeel...",
         "type": "Lidtype",
-        "preferredLocale": "Voorkeurstaal",
+        "preferredLocale": "Communicatietaal",
         "spokenLanguage": "Gesproken taal",
-        "cotisationTier": "Lidmaatschapsbijdrage"
+        "cotisationTier": "Lidmaatschapsbijdrage",
+        "guardianName": "Wettelijke voogd {number} — naam",
+        "guardianPhone": "Wettelijke voogd {number} — telefoon",
+        "imageRights": "Beeldrecht",
+        "notes": "Notities",
+        "notesPlaceholder": "Nuttige informatie over dit lid (cursussen, opmerkingen…)"
       },
       "invitationNotice": "Een uitnodigingsmail met de identificaties wordt naar dit adres gestuurd.",
       "tierNone": "Geen prijsstelling (standaardgedrag)",
@@ -4014,7 +4026,22 @@
       "noResponsable": "Geen enkele",
       "noAdultResponsable": "Geen volwassen leden beschikbaar",
       "preview": "Overzicht:",
-      "customFieldsSectionTitle": "Antwoorden op het lidmaatschapsformulier"
+      "customFieldsSectionTitle": "Informatie van het aanmeldformulier",
+      "sections": {
+        "personalInfo": "Persoonlijke informatie",
+        "address": "Adres",
+        "memberInfo": "Ledeninformatie",
+        "legalGuardian": "Wettelijke voogd",
+        "additionalInfo": "Aanvullende informatie",
+        "management": "Ledenbeheer"
+      },
+      "invalidFormToast": "Opslaan mislukt. Neem contact op met support als het probleem aanhoudt.",
+      "customFieldsLoading": "Antwoorden van het aanmeldformulier laden…",
+      "imageRights": {
+        "unknown": "Niet opgegeven",
+        "granted": "Ja",
+        "refused": "Nee"
+      }
     },
     "actions": {
       "add": "Voeg een lid toe",
@@ -4139,6 +4166,7 @@
       "hasTshirtColon": "Heeft een T-shirt: {value}",
       "tshirtSizeColon": "T-shirtmaat: {value}",
       "spokenLanguageColon": "Gesproken taal: {value}",
+      "preferredLocaleColon": "Communicatietaal: {value}",
       "allergiesColon": "Allergieën: {value}",
       "mobileColon": "Mobiel: {value}",
       "legalGuardianColon": "Wettelijke voogd:",
@@ -5286,7 +5314,7 @@
         "tailleTshirt": "T-shirtmaat",
         "allergies": "Bekende allergieën",
         "allergiesPlaceholder": "Arachides, stuifmeel...",
-        "preferredLocale": "Voorkeurstaal",
+        "preferredLocale": "Communicatietaal",
         "spokenLanguage": "Gesproken taal",
         "notProvided": "Niet gespecificeerd",
         "yes": "Ja",

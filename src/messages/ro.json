@@ -3044,6 +3044,8 @@
           "genderLabel": "Gen",
           "photoLabel": "Fotografie",
           "languageLabel": "Limba vorbită",
+          "preferredLocaleLabel": "Limba de comunicare",
+          "preferredLocaleHint": "Limba selectată va permite trimiterea către acest membru a e-mailurilor și comunicărilor în limba sa preferată.",
           "requirement": {
             "hidden": "Mască",
             "optional": "Opțional",
@@ -3179,6 +3181,10 @@
       "genderFemme": "Feminin",
       "languageLabel": "Limba vorbită",
       "languageNone": "Nespecificat",
+      "preferredLocaleLabel": "Limba de comunicare",
+      "preferredLocaleNone": "Nespecificat",
+      "preferredLocaleHintAdmin": "Limba selectată va permite trimiterea către acest membru a e-mailurilor și comunicărilor în limba sa preferată.",
+      "preferredLocaleHintMember": "Limba indicată aici vă va permite să primiți e-mailuri și comunicări în limba dumneavoastră preferată.",
       "viewConditionsLabel": "Vezi Termeni și Condiții",
       "conditionsModalTitle": "Termeni și condiții",
       "conditionsAgreeLabel": "Accept termenii și condițiile",
@@ -3973,6 +3979,7 @@
       "groupeSanguinNone": "Nespecificat",
       "tailleTshirtNone": "Nespecificat",
       "preferredLocaleNone": "Nespecificat",
+      "preferredLocaleHint": "Limba selectată va permite trimiterea către acest membru a e-mailurilor și comunicărilor în limba sa preferată.",
       "spokenLanguageNone": "Nespecificat",
       "adherentOverride": {
         "auto": "Automat (în funcție de contribuție)",
@@ -4001,9 +4008,14 @@
         "allergies": "Alergii cunoscute",
         "allergiesPlaceholder": "Arahide, polen...",
         "type": "Tip de membru",
-        "preferredLocale": "Limba preferată",
+        "preferredLocale": "Limba de comunicare",
         "spokenLanguage": "Limba vorbită",
-        "cotisationTier": "Taxa de membru"
+        "cotisationTier": "Taxa de membru",
+        "guardianName": "Reprezentant legal {number} — nume",
+        "guardianPhone": "Reprezentant legal {number} — telefon",
+        "imageRights": "Drept de imagine",
+        "notes": "Note",
+        "notesPlaceholder": "Informații utile despre acest membru (cursuri, observații…)"
       },
       "invitationNotice": "Un e-mail de invitație cu identificatorii va fi trimis la această adresă.",
       "tierNone": "Fără preț (comportament implicit)",
@@ -4014,7 +4026,22 @@
       "noResponsable": "Niciuna",
       "noAdultResponsable": "Nu există membri adulți disponibili",
       "preview": "Prezentare generală:",
-      "customFieldsSectionTitle": "Răspunsuri din formularul de adeziune"
+      "customFieldsSectionTitle": "Informații din formularul de aderare",
+      "sections": {
+        "personalInfo": "Informații personale",
+        "address": "Adresă",
+        "memberInfo": "Informații despre membru",
+        "legalGuardian": "Reprezentant legal",
+        "additionalInfo": "Informații suplimentare",
+        "management": "Gestionarea membrului"
+      },
+      "invalidFormToast": "Salvarea a eșuat. Contactați asistența dacă problema persistă.",
+      "customFieldsLoading": "Se încarcă răspunsurile din formularul de aderare…",
+      "imageRights": {
+        "unknown": "Nespecificat",
+        "granted": "Da",
+        "refused": "Nu"
+      }
     },
     "actions": {
       "add": "Adaugă un membru",
@@ -4139,6 +4166,7 @@
       "hasTshirtColon": "Are un tricou: {value}",
       "tshirtSizeColon": "Mărimea tricou-ului: {value}",
       "spokenLanguageColon": "Limbă vorbită: {value}",
+      "preferredLocaleColon": "Limba de comunicare: {value}",
       "allergiesColon": "Alergii: {value}",
       "mobileColon": "Mobil : {value}",
       "legalGuardianColon": "Tutore legal:",
@@ -5286,7 +5314,7 @@
         "tailleTshirt": "Mărimea tricoului",
         "allergies": "Alergii cunoscute",
         "allergiesPlaceholder": "Arahide, polen...",
-        "preferredLocale": "Limba preferată",
+        "preferredLocale": "Limba de comunicare",
         "spokenLanguage": "Limba vorbită",
         "notProvided": "Nespecificat",
         "yes": "Da",

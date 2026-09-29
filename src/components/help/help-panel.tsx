@@ -1,15 +1,11 @@
 "use client"
 
-import { useEffect, useMemo, useRef, useState } from "react"
-import Link from "next/link"
-import { usePathname } from "next/navigation"
-import { useLocale, useTranslations } from "next-intl"
-import { format, parseISO } from "date-fns"
 import { HelpArticleView } from "@/components/help/help-article-view"
 import { HelpAssistant } from "@/components/help/help-assistant"
 import { canAccessDashboardRoute } from "@/components/layout/app-sidebar"
 import { Accordion, AccordionItem, AccordionPanel, AccordionTrigger } from "@/components/ui/accordion"
 import { BackLink } from "@/components/ui/back-link"
+import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { SearchInput } from "@/components/ui/search-input"
 import {
@@ -20,8 +16,8 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import {
   HELP_ERROR_CODES, HELP_SEARCH_MIN_LENGTH,
-  useHelpArticle, useHelpArticles, useHelpChangelog, useHelpSearch,
-  type FaqEntry, type HelpSearchHit,
+  useHelpArticle, useHelpChangelog, useHelpContent, useHelpSearch,
+  type ChangelogEntry, type FaqEntry, type HelpArticleSummary, type HelpSearchHit,
 } from "@/hooks/use-help"
 import type { Locale } from "@/i18n/locales"
 import { ApiError } from "@/lib/api-error"
@@ -29,6 +25,12 @@ import { getDateFnsLocale } from "@/lib/date-fns-locale"
 import { helpModuleFromPathname, type HelpModuleKey } from "@/lib/help/modules"
 import { getRouteLabels } from "@/lib/route-labels"
 import { useCurrentUser } from "@/lib/user-context"
+import { cn } from "@/lib/utils"
+import { format, parseISO } from "date-fns"
+import { useLocale, useTranslations } from "next-intl"
+import Link from "next/link"
+import { usePathname } from "next/navigation"
+import { useEffect, useMemo, useRef, useState } from "react"
 
 const SEARCH_DEBOUNCE_MS  = 300
 // Same cap as the /api/help/search validation, so a long paste is trimmed instead of rejected.
@@ -41,7 +43,7 @@ type HelpTabKey = "guide" | "assistant" | "changelog"
 type HelpGuideView =
   | { kind: "browse" }
   | { kind: "article"; slug: string }
-  | { kind: "faq";     id: string; module: HelpModuleKey }
+  | { kind: "faq";     id: string }
 
 // Module labels are the same route labels the header breadcrumbs use (src/lib/route-labels.ts);
 // only the catch-all "general" needs a help-specific label.
@@ -206,14 +208,11 @@ function HelpGuideTab({
   const pathname    = usePathname()
   const moduleLabel = useHelpModuleLabel()
 
-  // FAQ entries have no detail endpoint — they are resolved through the module listing they
-  // came from (which carries every FAQ entry). Same key as the browse query whenever the FAQ
-  // hit belongs to the current module, so that costs no extra request.
-  const faqModule        = guideView.kind === "faq" ? guideView.module : module
-  const moduleContent    = useHelpArticles(module)
-  const faqModuleContent = useHelpArticles(faqModule)
-  const articleQuery     = useHelpArticle(guideView.kind === "article" ? guideView.slug : null)
-  const searchResults    = useHelpSearch(debouncedSearchQuery)
+  // FAQ entries have no detail endpoint — they are resolved through the content listing,
+  // which carries every FAQ entry.
+  const helpContent   = useHelpContent()
+  const articleQuery  = useHelpArticle(guideView.kind === "article" ? guideView.slug : null)
+  const searchResults = useHelpSearch(debouncedSearchQuery)
 
   const isResultsMode = debouncedSearchQuery.trim().length >= HELP_SEARCH_MIN_LENGTH
 
@@ -223,12 +222,16 @@ function HelpGuideTab({
     onGuideViewChange({ kind: "browse" })
   }
 
+  function openArticle(slug: string) {
+    onGuideViewChange({ kind: "article", slug })
+  }
+
   function openSearchHit(hit: HelpSearchHit) {
     if (hit.type === "helpArticle" && hit.slug) {
       onGuideViewChange({ kind: "article", slug: hit.slug })
       return
     }
-    onGuideViewChange({ kind: "faq", id: hit.id, module: hit.module ?? "general" })
+    onGuideViewChange({ kind: "faq", id: hit.id })
   }
 
   if (guideView.kind === "article") {
@@ -266,9 +269,9 @@ function HelpGuideTab({
   }
 
   if (guideView.kind === "faq") {
-    if (faqModuleContent.isPending) return <HelpArticleDetailSkeleton />
+    if (helpContent.isPending) return <HelpArticleDetailSkeleton />
 
-    const faqEntry = faqModuleContent.data?.faq.find(entry => entry.id === guideView.id)
+    const faqEntry = helpContent.data?.faq.find(entry => entry.id === guideView.id)
     return (
       <div className="px-4 py-4">
         <BackLink href={pathname} onClick={backToList}>{t("back")}</BackLink>
@@ -277,10 +280,10 @@ function HelpGuideTab({
             <h2 className="mt-3 text-lg font-semibold leading-snug">{faqEntry.question}</h2>
             <HelpArticleView value={faqEntry.answer} className="mt-4" />
           </>
-        ) : faqModuleContent.isError ? (
+        ) : helpContent.isError ? (
           <div className="mt-3 flex flex-col items-start gap-2">
             <p className="text-sm text-destructive">{t("loadError")}</p>
-            <Button variant="ghost" size="sm" onClick={() => faqModuleContent.refetch()}>{t("retry")}</Button>
+            <Button variant="ghost" size="sm" onClick={() => helpContent.refetch()}>{t("retry")}</Button>
           </div>
         ) : (
           <p className="mt-3 text-sm text-muted-foreground">{t("articleNotFound")}</p>
@@ -289,12 +292,22 @@ function HelpGuideTab({
     )
   }
 
-  // The listing carries the whole FAQ: the current page's entries (plus the ones with no
-  // module or "general", which belong everywhere) come first, every other module's after.
-  // Each group keeps the query's order.
+  // The listing carries every article: pinned ones come first on every page (and only there),
+  // then the current page's, every other module's after. Each group keeps the query's order.
+  const pinnedArticles: HelpArticleSummary[]  = []
+  const currentArticles: HelpArticleSummary[] = []
+  const otherArticles: HelpArticleSummary[]   = []
+  for (const article of helpContent.data?.articles ?? []) {
+    if (article.pinned) pinnedArticles.push(article)
+    else if (article.module === module) currentArticles.push(article)
+    else otherArticles.push(article)
+  }
+
+  // Same for the whole FAQ: the current page's entries (plus the ones with no module or
+  // "general", which belong everywhere) come first, every other module's after.
   const currentFaqEntries: FaqEntry[] = []
   const otherFaqEntries: FaqEntry[]   = []
-  for (const entry of moduleContent.data?.faq ?? []) {
+  for (const entry of helpContent.data?.faq ?? []) {
     const isCurrentPageEntry = !entry.module || entry.module === "general" || entry.module === module
     if (isCurrentPageEntry) currentFaqEntries.push(entry)
     else otherFaqEntries.push(entry)
@@ -349,42 +362,34 @@ function HelpGuideTab({
             </ul>
           </div>
         )
-      ) : moduleContent.isPending ? (
+      ) : helpContent.isPending ? (
         <HelpListSkeleton rows={4} />
-      ) : moduleContent.isError ? (
+      ) : helpContent.isError ? (
         <div className="flex flex-col items-start gap-2 px-4 py-6">
           <p className="text-sm text-destructive">{t("loadError")}</p>
-          <Button variant="ghost" size="sm" onClick={() => moduleContent.refetch()}>{t("retry")}</Button>
+          <Button variant="ghost" size="sm" onClick={() => helpContent.refetch()}>{t("retry")}</Button>
         </div>
-      ) : moduleContent.data.articles.length === 0 && moduleContent.data.faq.length === 0 ? (
+      ) : helpContent.data.articles.length === 0 && helpContent.data.faq.length === 0 ? (
         <p className="px-4 py-6 text-sm text-muted-foreground">{t("noContent")}</p>
       ) : (
         <>
-          <div>
-            <p className="px-4 text-xs font-medium uppercase tracking-wide text-muted-foreground">
-              {t("articlesSection")}
-            </p>
-            {moduleContent.data.articles.length === 0 ? (
-              <p className="mt-1 px-4 text-sm text-muted-foreground">{t("noArticles")}</p>
-            ) : (
-              <ul className="mt-1 divide-y divide-border/60">
-                {moduleContent.data.articles.map(article => (
-                  <li key={article.id}>
-                    <button
-                      type="button"
-                      onClick={() => onGuideViewChange({ kind: "article", slug: article.slug })}
-                      className="flex w-full flex-col items-start gap-0.5 px-4 py-3 text-left transition-colors hover:bg-muted/40 focus-visible:outline-1 focus-visible:outline-ring"
-                    >
-                      <span className="text-sm font-medium text-foreground">{article.title}</span>
-                      {article.summary && (
-                        <span className="text-xs text-muted-foreground line-clamp-2">{article.summary}</span>
-                      )}
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
+          {pinnedArticles.length > 0 && (
+            <div>
+              <p className="px-4 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                {t("pinnedSection")}
+              </p>
+              <HelpArticleList articles={pinnedArticles} onOpenArticle={openArticle} isPinned />
+            </div>
+          )}
+
+          {currentArticles.length > 0 && (
+            <div>
+              <p className="px-4 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                {t("articlesSection")}
+              </p>
+              <HelpArticleList articles={currentArticles} onOpenArticle={openArticle} />
+            </div>
+          )}
 
           {currentFaqEntries.length > 0 && (
             <div>
@@ -401,6 +406,16 @@ function HelpGuideTab({
                   </AccordionItem>
                 ))}
               </Accordion>
+            </div>
+          )}
+
+          {otherArticles.length > 0 && (
+            <div>
+              {/* Same rule as the FAQ below: "Autres articles" only reads under a first group. */}
+              <p className="px-4 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                {currentArticles.length > 0 ? t("articlesOtherSection") : t("articlesSection")}
+              </p>
+              <HelpArticleList articles={otherArticles} onOpenArticle={openArticle} showModule />
             </div>
           )}
 
@@ -434,11 +449,55 @@ function HelpGuideTab({
   )
 }
 
+interface HelpArticleListProps {
+  articles:      HelpArticleSummary[]
+  onOpenArticle: (slug: string) => void
+  /** Merged onto the list, after its defaults — so it can override the top margin or dividers. */
+  className?:    string
+  /** Outside the current page's group, the module tells the reader where the article applies. */
+  showModule?:   boolean
+  /** Pinned articles: tinted rows and a "Nouveau" badge after the title — same as pinned news. */
+  isPinned?:     boolean
+}
+
+function HelpArticleList({ className, articles, onOpenArticle, showModule = false, isPinned = false }: HelpArticleListProps) {
+  const t           = useTranslations("help")
+  const moduleLabel = useHelpModuleLabel()
+  return (
+    <ul className={cn("mt-1 divide-y divide-border/60", className)}>
+      {articles.map(article => (
+        <li key={article.id}>
+          <button
+            type="button"
+            onClick={() => onOpenArticle(article.slug)}
+            className={cn(
+              "flex w-full flex-col items-start gap-0.5 px-4 py-3 text-left transition-colors hover:bg-muted/40 focus-visible:outline-1 focus-visible:outline-ring",
+              isPinned && "bg-muted/40 hover:bg-muted/70",
+            )}
+          >
+            <span className="flex w-full items-baseline justify-between gap-3">
+              <span className="flex min-w-0 items-center gap-2">
+                <span className="min-w-0 text-sm font-medium text-foreground">{article.title}</span>
+                {isPinned && <Badge>{t("newBadge")}</Badge>}
+              </span>
+              {showModule && (
+                <span className="shrink-0 text-xs text-muted-foreground">{moduleLabel(article.module)}</span>
+              )}
+            </span>
+            {article.summary && (
+              <span className="text-xs text-muted-foreground line-clamp-2">{article.summary}</span>
+            )}
+          </button>
+        </li>
+      ))}
+    </ul>
+  )
+}
+
 /* ------------------------------------------------------- Nouveautés tab */
 
 function HelpChangelogTab() {
-  const t      = useTranslations("help")
-  const locale = useLocale() as Locale
+  const t = useTranslations("help")
 
   const changelogQuery = useHelpChangelog()
 
@@ -469,15 +528,55 @@ function HelpChangelogTab() {
     return <p className="px-4 py-6 text-sm text-muted-foreground">{t("changelog.empty")}</p>
   }
 
+  // Pinned entries lead (the query already sorts them first); without any, the tab is the
+  // plain list with no section labels.
+  const pinnedEntries = entries.filter(entry => entry.pinned)
+  const latestEntries = entries.filter(entry => !entry.pinned)
+  if (pinnedEntries.length === 0) return <HelpChangelogAccordion entries={latestEntries} />
+
   return (
-    <Accordion multiple variant="plain">
+    <div className="flex flex-col gap-5 py-4">
+      <div>
+        <p className="px-4 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+          {t("pinnedSection")}
+        </p>
+        <HelpChangelogAccordion entries={pinnedEntries} isPinned className="mt-1" />
+      </div>
+      {latestEntries.length > 0 && (
+        <div>
+          <p className="px-4 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+            {t("changelog.latestSection")}
+          </p>
+          <HelpChangelogAccordion entries={latestEntries} className="mt-1" />
+        </div>
+      )}
+    </div>
+  )
+}
+
+interface HelpChangelogAccordionProps {
+  entries:    ChangelogEntry[]
+  /** Pinned entries: tinted rows and a "Nouveau" badge after the title. */
+  isPinned?:  boolean
+  className?: string
+}
+
+function HelpChangelogAccordion({ entries, isPinned = false, className }: HelpChangelogAccordionProps) {
+  const t      = useTranslations("help")
+  const locale = useLocale() as Locale
+
+  return (
+    <Accordion multiple variant="plain" className={className}>
       {entries.map(entry => {
         const hasBody = !!entry.body && entry.body.length > 0
         return (
-          <AccordionItem key={entry.id} value={entry.id}>
+          <AccordionItem key={entry.id} value={entry.id} className={isPinned ? "bg-muted/40" : undefined}>
             {/* An entry with no body cannot expand: the caret would promise a panel that
                 never opens, so it is hidden and the trigger disabled. */}
-            <AccordionTrigger disabled={!hasBody} className={hasBody ? undefined : "[&>svg]:hidden"}>
+            <AccordionTrigger
+              disabled={!hasBody}
+              className={cn(!hasBody && "[&>svg]:hidden", isPinned && "hover:bg-muted/70")}
+            >
               <span className="flex min-w-0 flex-1 flex-col gap-1">
                 {/* `publishedAt` is a date-only value: parseISO keeps it on the editor's calendar
                     day instead of shifting it through UTC midnight for viewers west of UTC. */}
@@ -488,7 +587,10 @@ function HelpChangelogTab() {
                   <span aria-hidden>·</span>
                   <span>{t(`changelog.kind.${entry.kind}`)}</span>
                 </span>
-                <span className="text-sm font-medium text-foreground">{entry.title}</span>
+                <span className="flex min-w-0 items-center gap-2">
+                  <span className="min-w-0 text-sm font-medium text-foreground">{entry.title}</span>
+                  {isPinned && <Badge>{t("newBadge")}</Badge>}
+                </span>
               </span>
             </AccordionTrigger>
             {hasBody && (

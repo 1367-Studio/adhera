@@ -3044,6 +3044,8 @@
           "genderLabel": "Género",
           "photoLabel": "Foto",
           "languageLabel": "Idioma hablado",
+          "preferredLocaleLabel": "Idioma de comunicación",
+          "preferredLocaleHint": "El idioma seleccionado permitirá enviar a este miembro los correos electrónicos y comunicaciones en su idioma preferido.",
           "requirement": {
             "hidden": "Oculto",
             "optional": "Opcional",
@@ -3179,6 +3181,10 @@
       "genderFemme": "Mujer",
       "languageLabel": "Idioma hablado",
       "languageNone": "No indicado",
+      "preferredLocaleLabel": "Idioma de comunicación",
+      "preferredLocaleNone": "No indicado",
+      "preferredLocaleHintAdmin": "El idioma seleccionado permitirá enviar a este miembro los correos electrónicos y comunicaciones en su idioma preferido.",
+      "preferredLocaleHintMember": "El idioma indicado aquí permitirá enviarle los correos electrónicos y comunicaciones en su idioma preferido.",
       "viewConditionsLabel": "Consultar las condiciones generales",
       "conditionsModalTitle": "Condiciones generales",
       "conditionsAgreeLabel": "Acepto las condiciones generales",
@@ -3973,6 +3979,7 @@
       "groupeSanguinNone": "No especificado",
       "tailleTshirtNone": "No especificado",
       "preferredLocaleNone": "No especificado",
+      "preferredLocaleHint": "El idioma seleccionado permitirá enviar a este miembro los correos electrónicos y comunicaciones en su idioma preferido.",
       "spokenLanguageNone": "No indicado",
       "adherentOverride": {
         "auto": "Automático (según cuota)",
@@ -4001,9 +4008,14 @@
         "allergies": "Alergias conocidas",
         "allergiesPlaceholder": "Cacahuetes, polen…",
         "type": "Tipo de miembro",
-        "preferredLocale": "Idioma preferido",
+        "preferredLocale": "Idioma de comunicación",
         "spokenLanguage": "Idioma hablado",
-        "cotisationTier": "Cuota — tarifa de afiliación"
+        "cotisationTier": "Cuota — tarifa de afiliación",
+        "guardianName": "Responsable legal {number} — nombre",
+        "guardianPhone": "Responsable legal {number} — teléfono",
+        "imageRights": "Derecho de imagen",
+        "notes": "Notas",
+        "notesPlaceholder": "Información útil sobre este miembro (cursos, observaciones…)"
       },
       "invitationNotice": "Se enviará un correo de invitación con los datos de acceso a esta dirección.",
       "tierNone": "Sin tarifa (comportamiento por defecto)",
@@ -4014,7 +4026,22 @@
       "noResponsable": "Ninguno",
       "noAdultResponsable": "Ningún miembro adulto disponible",
       "preview": "Vista previa:",
-      "customFieldsSectionTitle": "Respuestas del formulario de afiliación"
+      "customFieldsSectionTitle": "Información del formulario de inscripción",
+      "sections": {
+        "personalInfo": "Información personal",
+        "address": "Dirección",
+        "memberInfo": "Información del miembro",
+        "legalGuardian": "Responsable legal",
+        "additionalInfo": "Información complementaria",
+        "management": "Gestión del miembro"
+      },
+      "invalidFormToast": "No se pudo guardar. Contacte con soporte si el problema persiste.",
+      "customFieldsLoading": "Cargando las respuestas del formulario de inscripción…",
+      "imageRights": {
+        "unknown": "No indicado",
+        "granted": "Sí",
+        "refused": "No"
+      }
     },
     "actions": {
       "add": "Añadir miembro",
@@ -4139,6 +4166,7 @@
       "hasTshirtColon": "Tiene camiseta: {value}",
       "tshirtSizeColon": "Talla de camiseta: {value}",
       "spokenLanguageColon": "Idioma hablado: {value}",
+      "preferredLocaleColon": "Idioma de comunicación: {value}",
       "allergiesColon": "Alergias: {value}",
       "mobileColon": "Móvil: {value}",
       "legalGuardianColon": "Responsable legal:",
@@ -5286,7 +5314,7 @@
         "tailleTshirt": "Talla de camiseta",
         "allergies": "Alergias conocidas",
         "allergiesPlaceholder": "Cacahuetes, polen…",
-        "preferredLocale": "Idioma preferido",
+        "preferredLocale": "Idioma de comunicación",
         "spokenLanguage": "Idioma hablado",
         "notProvided": "No proporcionado",
         "yes": "Sí",

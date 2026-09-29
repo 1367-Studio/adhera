@@ -1,12 +1,11 @@
 import { keepPreviousData, queryOptions, skipToken, useMutation, useQuery } from "@tanstack/react-query"
 import { apiError } from "@/lib/api-error"
-import type { HelpModuleKey } from "@/lib/help/modules"
 import type {
   ChangelogEntry,
   FaqEntry,
   HelpArticle,
   HelpArticleSummary,
-  HelpModuleContent,
+  HelpContent,
   HelpSearchHit,
   HelpSource,
   ReleaseNote,
@@ -18,7 +17,7 @@ export type {
   FaqEntry,
   HelpArticle,
   HelpArticleSummary,
-  HelpModuleContent,
+  HelpContent,
   HelpSearchHit,
   HelpSource,
   ReleaseNote,
@@ -47,9 +46,8 @@ export const HELP_ERROR_CODES = {
   aiUnexpected:        "AI_UNEXPECTED",
 } as const
 
-async function fetchHelpArticles(module: HelpModuleKey): Promise<HelpModuleContent> {
-  const params = new URLSearchParams({ module })
-  const res = await fetch(`/api/help/articles?${params}`)
+async function fetchHelpContent(): Promise<HelpContent> {
+  const res = await fetch("/api/help/articles")
   if (!res.ok) throw await apiError(res, "Erreur lors du chargement")
   return res.json()
 }
@@ -85,11 +83,17 @@ async function suggestSupportReply(ticketId: string): Promise<SupportReplySugges
   return res.json()
 }
 
-export function useHelpArticles(module: HelpModuleKey) {
+// Every article and FAQ entry, whatever the current page — the panel does the grouping.
+// Refetched each time the panel (or a tab of it) mounts, so an article just pinned or
+// published in the Studio shows on the next open instead of after the stale window. Cheap:
+// the route answers from Next's data cache, purged by the Sanity webhook on publish, and the
+// cached list stays on screen while the refetch runs.
+export function useHelpContent() {
   return useQuery({
-    queryKey:  [...QK, "articles", module],
-    queryFn:   () => fetchHelpArticles(module),
-    staleTime: HELP_CONTENT_STALE_TIME,
+    queryKey:       [...QK, "content"],
+    queryFn:        fetchHelpContent,
+    staleTime:      HELP_CONTENT_STALE_TIME,
+    refetchOnMount: "always",
   })
 }
 
@@ -114,11 +118,13 @@ export function useHelpSearch(query: string) {
   })
 }
 
+// Refetched on every mount for the same reason as useHelpContent (a new pin shows on open).
 export function useHelpChangelog() {
   return useQuery({
-    queryKey:  [...QK, "changelog"],
-    queryFn:   fetchHelpChangelog,
-    staleTime: HELP_CONTENT_STALE_TIME,
+    queryKey:       [...QK, "changelog"],
+    queryFn:        fetchHelpChangelog,
+    staleTime:      HELP_CONTENT_STALE_TIME,
+    refetchOnMount: "always",
   })
 }
 

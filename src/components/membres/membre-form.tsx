@@ -8,6 +8,7 @@ import { DateField, todayValue } from "@/components/ui/date-field"
 import { FormField } from "@/components/ui/form-field"
 import { MembreTypeBadge } from "@/components/ui/membre-type-badge"
 import { SelectField } from "@/components/ui/select-field"
+import { Separator } from "@/components/ui/separator"
 import { TextareaField } from "@/components/ui/textarea-field"
 import { useRequiredLegalDocuments } from "@/hooks/use-legal-documents"
 import { useMembershipTierOptions } from "@/hooks/use-membership-tier-options"
@@ -21,7 +22,8 @@ import { useModules } from "@/lib/user-context"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useTranslations } from "next-intl"
 import { useEffect, useState } from "react"
-import { Controller, useForm, useWatch, type Resolver } from "react-hook-form"
+import { Controller, useForm, useWatch, type FieldErrors, type Resolver } from "react-hook-form"
+import { toast } from "sonner"
 import { z } from "zod"
 import { ImageUpload } from "../ui/image-upload"
 
@@ -30,14 +32,6 @@ import { ImageUpload } from "../ui/image-upload"
 // marking a cotisation paid, so it's scoped the same way, narrower than general membre
 // management (which SECRETAIRE also has).
 const FINANCE_ROLES = ["ADMIN", "PRESIDENT", "TRESORIER"]
-
-const GROUPE_SANGUIN_VALUES = ["A_POSITIF", "A_NEGATIF", "B_POSITIF", "B_NEGATIF", "AB_POSITIF", "AB_NEGATIF", "O_POSITIF", "O_NEGATIF"] as const
-const GROUPE_SANGUIN_LABELS: Record<(typeof GROUPE_SANGUIN_VALUES)[number], string> = {
-  A_POSITIF: "A+", A_NEGATIF: "A-", B_POSITIF: "B+", B_NEGATIF: "B-",
-  AB_POSITIF: "AB+", AB_NEGATIF: "AB-", O_POSITIF: "O+", O_NEGATIF: "O-",
-}
-
-const TAILLE_TSHIRT_VALUES = ["XS", "S", "M", "L", "XL", "XXL", "XXXL"] as const
 
 export type MembreFormValues = z.infer<typeof membreSchema>
 type MembreCreateFormValues  = z.infer<typeof membreCreateSchema>
@@ -65,9 +59,14 @@ interface MembreFormProps {
   // member with no traceable form (manual creation), and always absent on create: there is no
   // member yet to have joined through anything.
   editableCustomFields?: { field: MembershipFormFieldInputField; value: string }[]
+  // True while editableCustomFields is still being fetched (the members-list quick-edit modal
+  // loads it on open, unlike the fiche détail where it's already in hand) — shows a placeholder
+  // instead of the section silently popping in after a beat, or never appearing to a manager who
+  // saves before the request resolves.
+  customFieldsLoading?: boolean
 }
 
-export function MembreForm({ defaultValues, onSubmit, onCancel, loading, isCreate, actorRole, isSelf, membreId, editableCustomFields = [] }: MembreFormProps) {
+export function MembreForm({ defaultValues, onSubmit, onCancel, loading, isCreate, actorRole, isSelf, membreId, editableCustomFields = [], customFieldsLoading }: MembreFormProps) {
   const t = useTranslations()
     const { data: types = [] } = useMembreTypes()
   const { data: responsableCandidates = [] } = useResponsableOptions(membreId)
@@ -105,14 +104,10 @@ export function MembreForm({ defaultValues, onSubmit, onCancel, loading, isCreat
     { value: "FEMME", label: t("membres.form.sexe.femme") },
   ]
 
-  const groupeSanguinOptions = [
-    { value: "", label: t("membres.form.groupeSanguinNone") },
-    ...GROUPE_SANGUIN_VALUES.map(value => ({ value, label: GROUPE_SANGUIN_LABELS[value] })),
-  ]
-
   const preferredLocaleOptions = [
     { value: "", label: t("membres.form.preferredLocaleNone") },
-    ...SUPPORTED_LOCALES.map(value => ({ value, label: LOCALE_LABELS[value] })),
+    // Sorted by label — same reasoning as spokenLanguageOptions() below.
+    ...SUPPORTED_LOCALES.map(value => ({ value, label: LOCALE_LABELS[value] })).sort((a, b) => a.label.localeCompare(b.label)),
   ]
   const spokenLanguageSelectOptions = [
     { value: "", label: t("membres.form.spokenLanguageNone") },
@@ -125,21 +120,10 @@ export function MembreForm({ defaultValues, onSubmit, onCancel, loading, isCreat
     { value: "false", label: t("membres.form.adherentOverride.forceBenevole") },
   ]
 
-  const possedeTshirtOptions = [
-    { value: "",      label: t("membres.form.tailleTshirtNone") },
-    { value: "true",  label: t("common.yes") },
-    { value: "false", label: t("common.no")  },
-  ]
-
   const imageRightsOptions = [
     { value: "",      label: t("membres.form.imageRights.unknown") },
     { value: "true",  label: t("membres.form.imageRights.granted") },
     { value: "false", label: t("membres.form.imageRights.refused") },
-  ]
-
-  const tailleTshirtOptions = [
-    { value: "", label: t("membres.form.tailleTshirtNone") },
-    ...TAILLE_TSHIRT_VALUES.map(value => ({ value, label: value })),
   ]
 
   const { data: requiredLegalDocuments = [] } = useRequiredLegalDocuments()
@@ -192,6 +176,16 @@ export function MembreForm({ defaultValues, onSubmit, onCancel, loading, isCreat
   // or when birthDate is unknown (can't rule out a minor).
   const showResponsableField = !birthDateValue || !isConfirmedAdult(birthDateValue) || !!responsableIdValue
 
+  const [guardianNameValue, guardianPhoneValue, secondGuardianNameValue, secondGuardianPhoneValue] = useWatch({
+    control,
+    name: ["guardianName", "guardianPhone", "secondGuardianName", "secondGuardianPhone"],
+  })
+  // Same reasoning as showResponsableField, extended to the whole section: a confirmed adult
+  // with nothing on file has no use for four blank guardian fields taking up a full section —
+  // but never hide any of it once something is actually filled in, whatever the age.
+  const showGuardianFields = showResponsableField
+    || !!guardianNameValue || !!guardianPhoneValue || !!secondGuardianNameValue || !!secondGuardianPhoneValue
+
   const roleOptions = actorRole === "ADMIN" ? allRoleOptions : allRoleOptions.filter(o => o.value !== "ADMIN")
 
   const typeOptions = [
@@ -238,69 +232,24 @@ export function MembreForm({ defaultValues, onSubmit, onCancel, loading, isCreat
     await onSubmit(Object.keys(changedCustomAnswers).length > 0 ? { ...data, answers: changedCustomAnswers } : data)
   }
 
-  return (
-    // PILOTE espacement (voir la discussion sur la densité des formulaires) : 20px entre
-    // champs au lieu de 16, pour que l'écart entre deux champs se distingue nettement des
-    // 6px qui séparent un label de son propre contrôle. À généraliser si validé.
-    <form onSubmit={handleSubmit(submit)} className="space-y-5" noValidate>
-      <Controller
-        name="photoUrl"
-        control={control}
-        render={({ field }) => (
-          <div className="flex justify-center">
-            <ImageUpload
-              value={field.value ?? ""}
-              onChange={field.onChange}
-              prefix="membres"
-              aspectRatio="square"
-              className="w-32"
-              compact
-            />
-          </div>
-        )}
-      />
-      <div className="grid grid-cols-2 gap-x-4 gap-y-5">
-        <FormField
-          label={t("membres.form.fields.firstName")}
-          required
-          error={errors.firstName?.message}
-          {...register("firstName")}
-        />
-        <FormField
-          label={t("membres.form.fields.lastName")}
-          required
-          error={errors.lastName?.message}
-          {...register("lastName")}
-        />
-      </div>
+  // Surfaces a failure that would otherwise be silent: groupeSanguin/possedeTshirt/tailleTshirt
+  // are still zod-validated even though they're hidden inputs with no visible control to show
+  // `errors.*` on (see the CLAUDE.md field-removal above) — if one ever holds a value the schema
+  // no longer accepts, clicking Guardar would do nothing at all with zero feedback. A generic
+  // toast beats silence for any validation failure, not just that one.
+  function onInvalid(formErrors: FieldErrors<MembreCreateFormValues>) {
+    if (Object.keys(formErrors).length === 0) return
+    toast.error(t("membres.form.invalidFormToast"))
+  }
 
-      <div className="grid grid-cols-2 gap-x-4 gap-y-5">
-        <FormField
-          label={t("membres.form.fields.email")}
-          type="email"
-          placeholder={t("membres.form.fields.emailPlaceholder")}
-          required={isCreate}
-          error={errors.email?.message}
-          {...register("email")}
-        />
-        <FormField
-          label={t("membres.form.fields.phone")}
-          type="tel"
-          placeholder={t("membres.form.fields.phonePlaceholder")}
-          error={errors.phone?.message}
-          {...register("phone")}
-        />
-        {/* Enregistré dans Membre.answers sous la clé "mobile", pas dans une colonne — voir
-            src/lib/membre-answers.ts. Sans ce champ, un numéro saisi par l'adhérent sur le
-            formulaire public n'était plus modifiable nulle part. */}
-        <FormField
-          label={t("membres.form.fields.mobile")}
-          type="tel"
-          placeholder={t("membres.form.fields.mobilePlaceholder")}
-          error={errors.mobile?.message}
-          {...register("mobile")}
-        />
-      </div>
+  // Rendered near the top on création (right after Informações pessoais) — cargo et tarif sont
+  // souvent la seule raison d'ouvrir "Adicionar", et les enterrer après adresse/langues/
+  // responsable légal/droit à l'image forçait un long scroll pour la décision la plus commune.
+  // En édition, où ni l'un ni l'autre n'apparaît, la section reste à sa place d'origine — voir
+  // l'ordre demandé (Contribuição, Status, Observações).
+  const gestaoMembroSection = (
+    <fieldset className="space-y-5">
+      <legend className="text-sm font-medium">{t("membres.form.sections.management")}</legend>
 
       {isCreate && (
         <Controller
@@ -346,37 +295,6 @@ export function MembreForm({ defaultValues, onSubmit, onCancel, loading, isCreat
         />
       )}
 
-      <div className="grid grid-cols-2 gap-x-4 gap-y-5">
-        <Controller
-          name="birthDate"
-          control={control}
-          render={({ field }) => (
-            <DateField
-              label={t("membres.form.fields.birthDate")}
-              // Nobody is born tomorrow — the picker refuses future months outright rather
-              // than letting one be chosen and rejected afterwards.
-              max={todayValue()}
-              value={field.value ?? ""}
-              onChange={field.onChange}
-              error={errors.birthDate?.message}
-            />
-          )}
-        />
-        <Controller
-          name="status"
-          control={control}
-          render={({ field }) => (
-            <SelectField
-              label={t("membres.form.fields.status")}
-              required
-              options={isSelf ? selfStatusOptions : statusOptions}
-              value={field.value}
-              onValueChange={field.onChange}
-              error={errors.status?.message}
-            />
-          )}
-        />
-      </div>
       {!isCreate && modules.cotisations && actorRole && FINANCE_ROLES.includes(actorRole) && (
         <Controller
           name="adherentOverride"
@@ -399,132 +317,216 @@ export function MembreForm({ defaultValues, onSubmit, onCancel, loading, isCreat
           )}
         />
       )}
-      <div className="grid grid-cols-3 gap-x-4 gap-y-5">
-        <Controller
-          name="civilite"
-          control={control}
-          render={({ field }) => (
-            <SelectField
-              label={t("membres.form.fields.civilite")}
-              options={civiliteOptions}
-              value={field.value ?? ""}
-              onValueChange={field.onChange}
-              error={errors.civilite?.message}
-            />
-          )}
-        />
-        <Controller
-          name="sexe"
-          control={control}
-          render={({ field }) => (
-            <SelectField
-              label={t("membres.form.fields.sexe")}
-              options={sexeOptions}
-              value={field.value ?? ""}
-              onValueChange={field.onChange}
-              error={errors.sexe?.message}
-            />
-          )}
-        />
-        <Controller
-          name="groupeSanguin"
-          control={control}
-          render={({ field }) => (
-            <SelectField
-              label={t("membres.form.fields.groupeSanguin")}
-              options={groupeSanguinOptions}
-              value={field.value ?? ""}
-              onValueChange={field.onChange}
-              error={errors.groupeSanguin?.message}
-            />
-          )}
-        />
-      </div>
 
-      <div className="grid grid-cols-2 gap-x-4 gap-y-5">
-        <Controller
-          name="possedeTshirt"
-          control={control}
-          render={({ field }) => (
-            <SelectField
-              label={t("membres.form.fields.possedeTshirt")}
-              options={possedeTshirtOptions}
-              value={field.value ?? ""}
-              onValueChange={(v) => {
-                field.onChange(v)
-                // A size doesn't make sense once "does not have a t-shirt" is selected —
-                // clear it so the two fields can't contradict each other.
-                if (v === "false") setValue("tailleTshirt", "")
-              }}
-              error={errors.possedeTshirt?.message}
-            />
-          )}
-        />
-        <Controller
-          name="tailleTshirt"
-          control={control}
-          render={({ field }) => (
-            <SelectField
-              label={t("membres.form.fields.tailleTshirt")}
-              options={tailleTshirtOptions}
-              value={field.value ?? ""}
-              onValueChange={field.onChange}
-              error={errors.tailleTshirt?.message}
-            />
-          )}
-        />
-      </div>
+      <Controller
+        name="status"
+        control={control}
+        render={({ field }) => (
+          <SelectField
+            label={t("membres.form.fields.status")}
+            required
+            options={isSelf ? selfStatusOptions : statusOptions}
+            value={field.value}
+            onValueChange={field.onChange}
+            error={errors.status?.message}
+          />
+        )}
+      />
 
-      {/* Deux colonnes : à 896px de large, un select seul occupait toute la modale —
-          900px de champ pour afficher « Français ». */}
-      <div className="grid grid-cols-2 gap-x-4 gap-y-5">
-        {showResponsableField && (
+      <TextareaField
+        label={t("membres.form.fields.notes")}
+        placeholder={t("membres.form.fields.notesPlaceholder")}
+        rows={4}
+        maxLength={5000}
+        error={errors.notes?.message}
+        {...register("notes")}
+      />
+    </fieldset>
+  )
+
+  return (
+    // PILOTE espacement (voir la discussion sur la densité des formulaires) : 20px entre
+    // champs au lieu de 16, pour que l'écart entre deux champs se distingue nettement des
+    // 6px qui séparent un label de son propre contrôle. À généraliser si validé.
+    <form onSubmit={handleSubmit(submit, onInvalid)} className="space-y-6" noValidate>
+      {/* Groupe sanguin / t-shirt / allergies : retirés de l'affichage (voir CLAUDE.md) mais
+          gardés enregistrés en hidden — la valeur déjà en base repart inchangée à chaque save,
+          sans jamais être écrasée, même si plus personne ne peut la modifier depuis ce
+          formulaire. */}
+      <input type="hidden" {...register("groupeSanguin")} />
+      <input type="hidden" {...register("possedeTshirt")} />
+      <input type="hidden" {...register("tailleTshirt")} />
+      <input type="hidden" {...register("allergies")} />
+
+      <fieldset className="space-y-5">
+        <legend className="text-sm font-medium">{t("membres.form.sections.personalInfo")}</legend>
+
+        <Controller
+          name="photoUrl"
+          control={control}
+          render={({ field }) => (
+            <div className="flex justify-center">
+              <ImageUpload
+                value={field.value ?? ""}
+                onChange={field.onChange}
+                prefix="membres"
+                aspectRatio="square"
+                className="w-32"
+                compact
+              />
+            </div>
+          )}
+        />
+
+        <div className="grid grid-cols-2 gap-x-4 gap-y-5">
+          <FormField
+            label={t("membres.form.fields.firstName")}
+            required
+            error={errors.firstName?.message}
+            {...register("firstName")}
+          />
+          <FormField
+            label={t("membres.form.fields.lastName")}
+            required
+            error={errors.lastName?.message}
+            {...register("lastName")}
+          />
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-x-4 gap-y-5">
+          <FormField
+            label={t("membres.form.fields.email")}
+            type="email"
+            placeholder={t("membres.form.fields.emailPlaceholder")}
+            required={isCreate}
+            error={errors.email?.message}
+            {...register("email")}
+          />
+          <FormField
+            label={t("membres.form.fields.phone")}
+            type="tel"
+            placeholder={t("membres.form.fields.phonePlaceholder")}
+            error={errors.phone?.message}
+            {...register("phone")}
+          />
+          {/* Enregistré dans Membre.answers sous la clé "mobile", pas dans une colonne — voir
+              src/lib/membre-answers.ts. Sans ce champ, un numéro saisi par l'adhérent sur le
+              formulaire public n'était plus modifiable nulle part. */}
+          <FormField
+            label={t("membres.form.fields.mobile")}
+            type="tel"
+            placeholder={t("membres.form.fields.mobilePlaceholder")}
+            error={errors.mobile?.message}
+            {...register("mobile")}
+          />
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-x-4 gap-y-5">
           <Controller
-            name="responsableId"
+            name="birthDate"
             control={control}
             render={({ field }) => (
-              <SelectField
-                label={t("membres.form.fields.responsable")}
-                options={responsableOptions}
+              <DateField
+                label={t("membres.form.fields.birthDate")}
+                // Nobody is born tomorrow — the picker refuses future months outright rather
+                // than letting one be chosen and rejected afterwards.
+                max={todayValue()}
                 value={field.value ?? ""}
-                onValueChange={field.onChange}
-                error={errors.responsableId?.message}
+                onChange={field.onChange}
+                error={errors.birthDate?.message}
               />
             )}
           />
-        )}
+          <Controller
+            name="civilite"
+            control={control}
+            render={({ field }) => (
+              <SelectField
+                label={t("membres.form.fields.civilite")}
+                options={civiliteOptions}
+                value={field.value ?? ""}
+                onValueChange={field.onChange}
+                error={errors.civilite?.message}
+              />
+            )}
+          />
+          <Controller
+            name="sexe"
+            control={control}
+            render={({ field }) => (
+              <SelectField
+                label={t("membres.form.fields.sexe")}
+                options={sexeOptions}
+                value={field.value ?? ""}
+                onValueChange={field.onChange}
+                error={errors.sexe?.message}
+              />
+            )}
+          />
+        </div>
+      </fieldset>
 
-        <Controller
-          name="preferredLocale"
-          control={control}
-          render={({ field }) => (
-            <SelectField
-              label={t("membres.form.fields.preferredLocale")}
-              options={preferredLocaleOptions}
-              value={field.value ?? ""}
-              onValueChange={field.onChange}
-              error={errors.preferredLocale?.message}
-            />
-          )}
+      {isCreate && gestaoMembroSection}
+
+      <Separator />
+
+      <div className="space-y-5">
+        <AddressFields
+          value={addressValue}
+          onChange={patch => {
+            for (const [fieldName, fieldValue] of Object.entries(patch) as [keyof AddressFormValues, string][]) {
+              setValue(fieldName, fieldValue, { shouldDirty: true })
+            }
+          }}
+          legacyHint={addressWasMigratedFromLegacy(defaultValues)}
+          errors={{
+            addressStreet:     errors.addressStreet?.message,
+            addressComplement: errors.addressComplement?.message,
+            postalCode:        errors.postalCode?.message,
+            city:              errors.city?.message,
+            country:           errors.country?.message,
+          }}
         />
       </div>
 
-      <div className="grid grid-cols-2 gap-x-4 gap-y-5">
-        <Controller
-          name="spokenLanguage"
-          control={control}
-          render={({ field }) => (
-            <SelectField
-              label={t("membres.form.fields.spokenLanguage")}
-              options={spokenLanguageSelectOptions}
-              value={field.value ?? ""}
-              onValueChange={field.onChange}
-              error={errors.spokenLanguage?.message}
-            />
-          )}
-        />
+      <fieldset className="space-y-5">
+        <legend className="text-sm font-medium">{t("membres.form.sections.memberInfo")}</legend>
 
-        {/* Type de membre */}
+        {/* Empilés plutôt que côte à côte : « Langue de communication » est plus long que
+            « Langue parlée » et passe sur deux lignes dans la largeur d'une colonne de modale,
+            ce qui désalignait les deux champs l'un à côté de l'autre. */}
+        <div className="space-y-3">
+          <Controller
+            name="spokenLanguage"
+            control={control}
+            render={({ field }) => (
+              <SelectField
+                label={t("membres.form.fields.spokenLanguage")}
+                options={spokenLanguageSelectOptions}
+                value={field.value ?? ""}
+                onValueChange={field.onChange}
+                error={errors.spokenLanguage?.message}
+              />
+            )}
+          />
+          <div className="space-y-1.5">
+            <Controller
+              name="preferredLocale"
+              control={control}
+              render={({ field }) => (
+                <SelectField
+                  label={t("membres.form.fields.preferredLocale")}
+                  options={preferredLocaleOptions}
+                  value={field.value ?? ""}
+                  onValueChange={field.onChange}
+                  error={errors.preferredLocale?.message}
+                />
+              )}
+            />
+            <p className="text-xs text-muted-foreground">{t("membres.form.preferredLocaleHint")}</p>
+          </div>
+        </div>
+
         {types.length > 0 && (
           <Controller
             name="typeId"
@@ -551,17 +553,64 @@ export function MembreForm({ defaultValues, onSubmit, onCancel, loading, isCreat
             )}
           />
         )}
-      </div>
+      </fieldset>
 
-      <TextareaField
-        label={t("membres.form.fields.allergies")}
-        placeholder={t("membres.form.fields.allergiesPlaceholder")}
-        rows={2}
-        error={errors.allergies?.message}
-        {...register("allergies")}
-      />
+      {/* Le sélecteur de responsable pointe vers un autre membre ; les responsables ci-dessous
+          sont saisis en texte libre sur la fiche du membre lui-même (Membre.guardianName…). Les
+          deux sont réunis ici car ils répondent à la même question : qui est responsable de ce
+          membre s'il est mineur. Toute la section se cache pour un adulte confirmé sans rien de
+          renseigné — voir showGuardianFields — pour ne pas infliger quatre champs vides à la
+          quasi-totalité des fiches. */}
+      {showGuardianFields && (
+        <>
+          <Separator />
+          <div className="space-y-5">
+            {showResponsableField && (
+              <Controller
+                name="responsableId"
+                control={control}
+                render={({ field }) => (
+                  <SelectField
+                    label={t("membres.form.fields.responsable")}
+                    options={responsableOptions}
+                    value={field.value ?? ""}
+                    onValueChange={field.onChange}
+                    error={errors.responsableId?.message}
+                  />
+                )}
+              />
+            )}
 
-      <div className="grid grid-cols-2 gap-x-4 gap-y-5">
+            <div className="grid gap-x-4 gap-y-5 sm:grid-cols-2">
+              <FormField
+                label={t("membres.form.fields.guardianName", { number: 1 })}
+                error={errors.guardianName?.message}
+                {...register("guardianName")}
+              />
+              <FormField
+                label={t("membres.form.fields.guardianPhone", { number: 1 })}
+                type="tel"
+                error={errors.guardianPhone?.message}
+                {...register("guardianPhone")}
+              />
+              <FormField
+                label={t("membres.form.fields.guardianName", { number: 2 })}
+                error={errors.secondGuardianName?.message}
+                {...register("secondGuardianName")}
+              />
+              <FormField
+                label={t("membres.form.fields.guardianPhone", { number: 2 })}
+                type="tel"
+                error={errors.secondGuardianPhone?.message}
+                {...register("secondGuardianPhone")}
+              />
+            </div>
+          </div>
+        </>
+      )}
+
+      <fieldset className="space-y-5">
+        <legend className="text-sm font-medium">{t("membres.form.sections.additionalInfo")}</legend>
         <Controller
           name="imageRightsConsent"
           control={control}
@@ -576,68 +625,21 @@ export function MembreForm({ defaultValues, onSubmit, onCancel, loading, isCreat
             />
           )}
         />
-      </div>
-
-      <AddressFields
-        value={addressValue}
-        onChange={patch => {
-          for (const [fieldName, fieldValue] of Object.entries(patch) as [keyof AddressFormValues, string][]) {
-            setValue(fieldName, fieldValue, { shouldDirty: true })
-          }
-        }}
-        legacyHint={addressWasMigratedFromLegacy(defaultValues)}
-        errors={{
-          addressStreet:     errors.addressStreet?.message,
-          addressComplement: errors.addressComplement?.message,
-          postalCode:        errors.postalCode?.message,
-          city:              errors.city?.message,
-          country:           errors.country?.message,
-        }}
-      />
-
-      {/* Parents written on the member's own record (name + phone), independent from the
-          « Responsable » link above, which points at another member. */}
-      <fieldset className="space-y-3">
-        <legend className="text-sm font-medium">{t("membres.form.fields.guardians")}</legend>
-        <div className="grid gap-x-4 gap-y-5 sm:grid-cols-2">
-          <FormField
-            label={t("membres.form.fields.guardianName", { number: 1 })}
-            error={errors.guardianName?.message}
-            {...register("guardianName")}
-          />
-          <FormField
-            label={t("membres.form.fields.guardianPhone", { number: 1 })}
-            type="tel"
-            error={errors.guardianPhone?.message}
-            {...register("guardianPhone")}
-          />
-          <FormField
-            label={t("membres.form.fields.guardianName", { number: 2 })}
-            error={errors.secondGuardianName?.message}
-            {...register("secondGuardianName")}
-          />
-          <FormField
-            label={t("membres.form.fields.guardianPhone", { number: 2 })}
-            type="tel"
-            error={errors.secondGuardianPhone?.message}
-            {...register("secondGuardianPhone")}
-          />
-        </div>
       </fieldset>
 
-      <TextareaField
-        label={t("membres.form.fields.notes")}
-        placeholder={t("membres.form.fields.notesPlaceholder")}
-        rows={4}
-        maxLength={5000}
-        error={errors.notes?.message}
-        {...register("notes")}
-      />
+      {!isCreate && gestaoMembroSection}
 
       {/* Réponses au formulaire d'adhésion réellement utilisé par ce membre (voir
           resolveMembreMembershipFormId) — jamais l'ancien formulaire figé d'origine. Absent
-          pour un membre créé manuellement, faute de formulaire à qui rattacher des réponses. */}
-      {editableCustomFields.length > 0 && (
+          pour un membre créé manuellement, faute de formulaire à qui rattacher des réponses.
+          Pendant le chargement (édition rapide depuis la liste, qui va chercher ces réponses
+          après ouverture du modal — voir membres-view.tsx), un texte tient la place plutôt que
+          de laisser la section apparaître sans prévenir une fois la requête terminée. */}
+      {customFieldsLoading && editableCustomFields.length === 0 ? (
+        <p className="text-xs text-muted-foreground border-t pt-5">
+          {t("membres.form.customFieldsLoading")}
+        </p>
+      ) : editableCustomFields.length > 0 && (
         <div className="space-y-5 border-t pt-5">
           <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
             {t("membres.form.customFieldsSectionTitle")}

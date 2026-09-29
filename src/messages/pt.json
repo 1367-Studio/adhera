@@ -3106,6 +3106,8 @@
           "genderLabel": "Gênero",
           "photoLabel": "Foto",
           "languageLabel": "Idioma falado",
+          "preferredLocaleLabel": "Idioma de comunicação",
+          "preferredLocaleHint": "O idioma selecionado permitirá enviar a este membro e-mails e comunicações no idioma preferido dele.",
           "requirement": {
             "hidden": "Oculto",
             "optional": "Opcional",
@@ -3241,6 +3243,10 @@
       "genderFemme": "Mulher",
       "languageLabel": "Idioma falado",
       "languageNone": "Não informado",
+      "preferredLocaleLabel": "Idioma de comunicação",
+      "preferredLocaleNone": "Não informado",
+      "preferredLocaleHintAdmin": "O idioma selecionado permitirá enviar a este membro e-mails e comunicações no idioma preferido dele.",
+      "preferredLocaleHintMember": "O idioma informado aqui permitirá que você receba e-mails e comunicações no seu idioma preferido.",
       "viewConditionsLabel": "Consultar os termos e condições gerais",
       "conditionsModalTitle": "Termos e condições gerais",
       "conditionsAgreeLabel": "Aceito os termos gerais",
@@ -4035,6 +4041,7 @@
       "groupeSanguinNone": "Não informado",
       "tailleTshirtNone": "Não informado",
       "preferredLocaleNone": "Não informado",
+      "preferredLocaleHint": "O idioma selecionado permitirá enviar a este membro e-mails e comunicações no idioma preferido dele.",
       "spokenLanguageNone": "Não informado",
       "adherentOverride": {
         "auto": "Automático (conforme mensalidade)",
@@ -4063,9 +4070,14 @@
         "allergies": "Alergias conhecidas",
         "allergiesPlaceholder": "Amendoim, pólen…",
         "type": "Tipo de membro",
-        "preferredLocale": "Idioma preferido",
+        "preferredLocale": "Idioma de comunicação",
         "spokenLanguage": "Idioma falado",
-        "cotisationTier": "Mensalidade — tarifa de adesão"
+        "cotisationTier": "Mensalidade — tarifa de adesão",
+        "guardianName": "Responsável legal {number} — nome",
+        "guardianPhone": "Responsável legal {number} — telefone",
+        "imageRights": "Direito de imagem",
+        "notes": "Observações",
+        "notesPlaceholder": "Informações úteis sobre este membro (cursos, observações…)"
       },
       "invitationNotice": "Um email de convite com os dados de acesso será enviado para este endereço.",
       "tierNone": "Sem tarifa (comportamento padrão)",
@@ -4076,7 +4088,22 @@
       "noResponsable": "Nenhum",
       "noAdultResponsable": "Nenhum membro maior de idade disponível",
       "preview": "Prévia:",
-      "customFieldsSectionTitle": "Respostas do formulário de adesão"
+      "customFieldsSectionTitle": "Informações do formulário de adesão",
+      "sections": {
+        "personalInfo": "Informações pessoais",
+        "address": "Endereço",
+        "memberInfo": "Informações do membro",
+        "legalGuardian": "Responsável legal",
+        "additionalInfo": "Informações complementares",
+        "management": "Gestão do membro"
+      },
+      "invalidFormToast": "Não foi possível guardar. Contate o suporte se o problema persistir.",
+      "customFieldsLoading": "Carregando as respostas do formulário de adesão…",
+      "imageRights": {
+        "unknown": "Não indicado",
+        "granted": "Sim",
+        "refused": "Não"
+      }
     },
     "actions": {
       "add": "Adicionar membro",
@@ -4201,6 +4228,7 @@
       "hasTshirtColon": "Possui camiseta: {value}",
       "tshirtSizeColon": "Tamanho da camiseta: {value}",
       "spokenLanguageColon": "Idioma falado: {value}",
+      "preferredLocaleColon": "Idioma de comunicação: {value}",
       "allergiesColon": "Alergias: {value}",
       "mobileColon": "Celular: {value}",
       "legalGuardianColon": "Responsável legal:",
@@ -5354,7 +5382,7 @@
         "tailleTshirt": "Tamanho da camiseta",
         "allergies": "Alergias conhecidas",
         "allergiesPlaceholder": "Amendoim, pólen…",
-        "preferredLocale": "Idioma preferido",
+        "preferredLocale": "Idioma de comunicação",
         "spokenLanguage": "Idioma falado",
         "notProvided": "Não informado",
         "yes": "Sim",

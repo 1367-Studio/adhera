@@ -3044,6 +3044,8 @@
           "genderLabel": "Género",
           "photoLabel": "Foto",
           "languageLabel": "Língua falada",
+          "preferredLocaleLabel": "Idioma de comunicação",
+          "preferredLocaleHint": "O idioma selecionado permitirá enviar a este membro e-mails e comunicações no seu idioma preferido.",
           "requirement": {
             "hidden": "Oculto",
             "optional": "Opcional",
@@ -3179,6 +3181,10 @@
       "genderFemme": "Mulher",
       "languageLabel": "Língua falada",
       "languageNone": "Não indicada",
+      "preferredLocaleLabel": "Idioma de comunicação",
+      "preferredLocaleNone": "Não indicada",
+      "preferredLocaleHintAdmin": "O idioma selecionado permitirá enviar a este membro e-mails e comunicações no seu idioma preferido.",
+      "preferredLocaleHintMember": "O idioma indicado aqui permitirá enviar-lhe e-mails e comunicações no seu idioma preferido.",
       "viewConditionsLabel": "Consultar os termos e condições gerais",
       "conditionsModalTitle": "Termos e condições gerais",
       "conditionsAgreeLabel": "Aceito as condições gerais",
@@ -3973,6 +3979,7 @@
       "groupeSanguinNone": "Não indicado",
       "tailleTshirtNone": "Não indicado",
       "preferredLocaleNone": "Não indicado",
+      "preferredLocaleHint": "O idioma selecionado permitirá enviar a este membro e-mails e comunicações no seu idioma preferido.",
       "spokenLanguageNone": "Não indicada",
       "adherentOverride": {
         "auto": "Automático (conforme a quota)",
@@ -4001,9 +4008,14 @@
         "allergies": "Alergias conhecidas",
         "allergiesPlaceholder": "Amendoim, pólen…",
         "type": "Tipo de membro",
-        "preferredLocale": "Idioma preferido",
+        "preferredLocale": "Idioma de comunicação",
         "spokenLanguage": "Língua falada",
-        "cotisationTier": "Quota — tarifa de adesão"
+        "cotisationTier": "Quota — tarifa de adesão",
+        "guardianName": "Responsável legal {number} — nome",
+        "guardianPhone": "Responsável legal {number} — telefone",
+        "imageRights": "Direito à imagem",
+        "notes": "Notas",
+        "notesPlaceholder": "Informações úteis sobre este membro (cursos, observações…)"
       },
       "invitationNotice": "Será enviado um e-mail de convite com os dados de acesso para este endereço.",
       "tierNone": "Sem tarifa (comportamento por omissão)",
@@ -4014,7 +4026,22 @@
       "noResponsable": "Nenhum",
       "noAdultResponsable": "Nenhum membro maior de idade disponível",
       "preview": "Pré-visualização:",
-      "customFieldsSectionTitle": "Respostas do formulário de adesão"
+      "customFieldsSectionTitle": "Informações do formulário de adesão",
+      "sections": {
+        "personalInfo": "Informações pessoais",
+        "address": "Morada",
+        "memberInfo": "Informações do membro",
+        "legalGuardian": "Responsável legal",
+        "additionalInfo": "Informações complementares",
+        "management": "Gestão do membro"
+      },
+      "invalidFormToast": "Não foi possível guardar. Contacte o suporte se o problema persistir.",
+      "customFieldsLoading": "A carregar as respostas do formulário de adesão…",
+      "imageRights": {
+        "unknown": "Não indicado",
+        "granted": "Sim",
+        "refused": "Não"
+      }
     },
     "actions": {
       "add": "Adicionar membro",
@@ -4139,6 +4166,7 @@
       "hasTshirtColon": "Tem t-shirt: {value}",
       "tshirtSizeColon": "Tamanho da t-shirt: {value}",
       "spokenLanguageColon": "Língua falada: {value}",
+      "preferredLocaleColon": "Idioma de comunicação: {value}",
       "allergiesColon": "Alergias: {value}",
       "mobileColon": "Telemóvel: {value}",
       "legalGuardianColon": "Responsável legal:",
@@ -5286,7 +5314,7 @@
         "tailleTshirt": "Tamanho da t-shirt",
         "allergies": "Alergias conhecidas",
         "allergiesPlaceholder": "Amendoim, pólen…",
-        "preferredLocale": "Idioma preferido",
+        "preferredLocale": "Idioma de comunicação",
         "spokenLanguage": "Língua falada",
         "notProvided": "Não indicado",
         "yes": "Sim",

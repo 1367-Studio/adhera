@@ -3153,6 +3153,8 @@
           "genderLabel": "Genre",
           "photoLabel": "Photo",
           "languageLabel": "Langue parlée",
+          "preferredLocaleLabel": "Langue de communication",
+          "preferredLocaleHint": "La langue sélectionnée permettra d'envoyer à ce membre les e-mails et communications dans sa langue préférée.",
           "requirement": {
             "hidden": "Masqué",
             "optional": "Optionnel",
@@ -3288,6 +3290,10 @@
       "genderFemme": "Femme",
       "languageLabel": "Langue parlée",
       "languageNone": "Non renseignée",
+      "preferredLocaleLabel": "Langue de communication",
+      "preferredLocaleNone": "Non renseignée",
+      "preferredLocaleHintAdmin": "La langue sélectionnée permettra d'envoyer à ce membre les e-mails et communications dans sa langue préférée.",
+      "preferredLocaleHintMember": "La langue renseignée ici permettra de vous envoyer les e-mails et communications dans votre langue préférée.",
       "viewConditionsLabel": "Consulter les conditions générales",
       "conditionsModalTitle": "Conditions générales",
       "conditionsAgreeLabel": "J'accepte les conditions générales",
@@ -4100,6 +4106,7 @@
       },
       "tailleTshirtNone": "Non renseigné",
       "preferredLocaleNone": "Non renseignée",
+      "preferredLocaleHint": "La langue sélectionnée permettra d'envoyer à ce membre les e-mails et communications dans sa langue préférée.",
       "spokenLanguageNone": "Non renseignée",
       "adherentOverride": {
         "auto": "Automatique (selon cotisation)",
@@ -4134,7 +4141,7 @@
         "guardians": "Responsables légaux",
         "guardianName": "Responsable légal {number} — nom",
         "guardianPhone": "Responsable légal {number} — téléphone",
-        "preferredLocale": "Langue préférée",
+        "preferredLocale": "Langue de communication",
         "spokenLanguage": "Langue parlée",
         "cotisationTier": "Cotisation — tarif d'adhésion"
       },
@@ -4147,7 +4154,17 @@
       "noResponsable": "Aucun",
       "noAdultResponsable": "Aucun membre majeur disponible",
       "preview": "Aperçu :",
-      "customFieldsSectionTitle": "Réponses au formulaire d'adhésion"
+      "customFieldsSectionTitle": "Informations du formulaire d'adhésion",
+      "sections": {
+        "personalInfo": "Informations personnelles",
+        "address": "Adresse",
+        "memberInfo": "Informations du membre",
+        "legalGuardian": "Responsable légal",
+        "additionalInfo": "Informations complémentaires",
+        "management": "Gestion du membre"
+      },
+      "invalidFormToast": "Impossible d'enregistrer. Contactez le support si le problème persiste.",
+      "customFieldsLoading": "Chargement des réponses au formulaire d'adhésion…"
     },
     "actions": {
       "add": "Ajouter un membre",
@@ -4272,6 +4289,7 @@
       "hasTshirtColon": "Possède un tee-shirt : {value}",
       "tshirtSizeColon": "Taille du tee-shirt : {value}",
       "spokenLanguageColon": "Langue parlée : {value}",
+      "preferredLocaleColon": "Langue de communication : {value}",
       "allergiesColon": "Allergies : {value}",
       "imageRightsColon": "Droit à l'image : {value}",
       "imageRightsDate": "(le {date})",
@@ -5665,7 +5683,7 @@
         "tailleTshirt": "Taille du tee-shirt",
         "allergies": "Allergies connues",
         "allergiesPlaceholder": "Arachides, pollen…",
-        "preferredLocale": "Langue préférée",
+        "preferredLocale": "Langue de communication",
         "spokenLanguage": "Langue parlée",
         "notProvided": "Non renseigné",
         "yes": "Oui",
@@ -6070,10 +6088,12 @@
     "searchResultsCount": "{count, plural, one {# résultat} other {# résultats}}",
     "searchNoResults": "Aucun résultat pour « {query} ».",
     "searchError": "La recherche est indisponible pour le moment.",
+    "newBadge": "Nouveau",
+    "pinnedSection": "À là une",
     "articlesSection": "Articles",
+    "articlesOtherSection": "Autres articles",
     "faqSection": "Questions fréquentes",
     "faqOtherSection": "Autres questions",
-    "noArticles": "Aucun article pour cette section pour l'instant.",
     "noContent": "Aucun contenu d'aide pour cette section pour l'instant.",
     "loadError": "Impossible de charger l'aide.",
     "retry": "Réessayer",
@@ -6136,6 +6156,7 @@
       "apiKeyInvalidAskAdmin": "Demandez à un administrateur de la vérifier dans Paramètres → Intégrations."
     },
     "changelog": {
+      "latestSection": "Dernières mises à jour",
       "empty": "Aucune nouveauté pour l'instant.",
       "loadError": "Impossible de charger les nouveautés.",
       "kind": {

@@ -15,6 +15,7 @@ export type HelpArticleSummary = {
   summary: string | null
   module:  HelpModuleKey
   order:   number
+  pinned:  boolean
 }
 
 export type HelpArticle = {
@@ -34,7 +35,7 @@ export type FaqEntry = {
   module:   HelpModuleKey | null
 }
 
-export type HelpModuleContent = {
+export type HelpContent = {
   articles: HelpArticleSummary[]
   faq:      FaqEntry[]
 }
@@ -44,6 +45,7 @@ export type ChangelogEntry = {
   title:       string
   publishedAt: string
   kind:        ChangelogKind
+  pinned:      boolean
   modules:     HelpModuleKey[]
   body:        PortableTextBlock[] | null
 }
@@ -55,7 +57,7 @@ export type ReleaseNoteImage = {
   height: number
 }
 
-export type ReleaseNote = Omit<ChangelogEntry, "modules"> & {
+export type ReleaseNote = Omit<ChangelogEntry, "modules" | "pinned"> & {
   image: ReleaseNoteImage | null
 }
 

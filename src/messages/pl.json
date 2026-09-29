@@ -3044,6 +3044,8 @@
           "genderLabel": "Płeć",
           "photoLabel": "Zdjęcie",
           "languageLabel": "Język używany",
+          "preferredLocaleLabel": "Język komunikacji",
+          "preferredLocaleHint": "Wybrany język umożliwi wysyłanie do tego członka e-maili i komunikatów w jego preferowanym języku.",
           "requirement": {
             "hidden": "Maskowane",
             "optional": "Opcjonalne",
@@ -3179,6 +3181,10 @@
       "genderFemme": "Kobiety",
       "languageLabel": "Język używany",
       "languageNone": "Nieokreślona",
+      "preferredLocaleLabel": "Język komunikacji",
+      "preferredLocaleNone": "Nieokreślona",
+      "preferredLocaleHintAdmin": "Wybrany język umożliwi wysyłanie do tego członka e-maili i komunikatów w jego preferowanym języku.",
+      "preferredLocaleHintMember": "Język podany tutaj umożliwi wysyłanie Ci e-maili i komunikatów w Twoim preferowanym języku.",
       "viewConditionsLabel": "Zobacz Regulamin",
       "conditionsModalTitle": "Warunki i zasady",
       "conditionsAgreeLabel": "Akceptuję warunki",
@@ -3973,6 +3979,7 @@
       "groupeSanguinNone": "Nieokreślona",
       "tailleTshirtNone": "Nieokreślona",
       "preferredLocaleNone": "Nieokreślona",
+      "preferredLocaleHint": "Wybrany język umożliwi wysyłanie do tego członka e-maili i komunikatów w jego preferowanym języku.",
       "spokenLanguageNone": "Nieokreślona",
       "adherentOverride": {
         "auto": "Automatyczne (w zależności od składu)",
@@ -4001,9 +4008,14 @@
         "allergies": "Znane alergie",
         "allergiesPlaceholder": "Arachidy, pyłek...",
         "type": "Typ członka",
-        "preferredLocale": "Preferowany język",
+        "preferredLocale": "Język komunikacji",
         "spokenLanguage": "Język używany",
-        "cotisationTier": "Składka członkowska"
+        "cotisationTier": "Składka członkowska",
+        "guardianName": "Opiekun prawny {number} — imię i nazwisko",
+        "guardianPhone": "Opiekun prawny {number} — telefon",
+        "imageRights": "Prawo do wizerunku",
+        "notes": "Notatki",
+        "notesPlaceholder": "Przydatne informacje o tym członku (zajęcia, uwagi…)"
       },
       "invitationNotice": "Na ten adres zostanie wysłany e-mail z zaproszeniem z identyfikatorami.",
       "tierNone": "Brak wyceny (domyślne zachowanie)",
@@ -4014,7 +4026,22 @@
       "noResponsable": "Brak",
       "noAdultResponsable": "Brak dostępnych dorosłych członków",
       "preview": "Przegląd:",
-      "customFieldsSectionTitle": "Odpowiedzi z formularza członkowskiego"
+      "customFieldsSectionTitle": "Informacje z formularza członkowskiego",
+      "sections": {
+        "personalInfo": "Dane osobowe",
+        "address": "Adres",
+        "memberInfo": "Informacje o członku",
+        "legalGuardian": "Opiekun prawny",
+        "additionalInfo": "Informacje dodatkowe",
+        "management": "Zarządzanie członkiem"
+      },
+      "invalidFormToast": "Nie udało się zapisać. Skontaktuj się z pomocą techniczną, jeśli problem się powtarza.",
+      "customFieldsLoading": "Wczytywanie odpowiedzi z formularza członkowskiego…",
+      "imageRights": {
+        "unknown": "Nie podano",
+        "granted": "Tak",
+        "refused": "Nie"
+      }
     },
     "actions": {
       "add": "Dodaj członka",
@@ -4139,6 +4166,7 @@
       "hasTshirtColon": "Ma koszulkę: {value}",
       "tshirtSizeColon": "Rozmiar koszulki: {value}",
       "spokenLanguageColon": "Język używany w języku: {value}",
+      "preferredLocaleColon": "Język komunikacji: {value}",
       "allergiesColon": "Alergie: {value}",
       "mobileColon": "Mobilne: {value}",
       "legalGuardianColon": "Opiekun prawny:",
@@ -5286,7 +5314,7 @@
         "tailleTshirt": "Rozmiar koszulki",
         "allergies": "Znane alergie",
         "allergiesPlaceholder": "Arachidy, pyłek...",
-        "preferredLocale": "Preferowany język",
+        "preferredLocale": "Język komunikacji",
         "spokenLanguage": "Język używany",
         "notProvided": "Nieokreślona",
         "yes": "Tak",

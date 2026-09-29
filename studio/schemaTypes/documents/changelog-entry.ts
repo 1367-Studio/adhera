@@ -30,6 +30,13 @@ export const changelogEntry = defineType({
       validation: (rule) => rule.required(),
     }),
     defineField({
+      name: "pinned",
+      title: "Épinglé",
+      type: "boolean",
+      description: "Affiché en tête de l'onglet Nouveautés du centre d'aide, avec le badge « Nouveau ».",
+      initialValue: false,
+    }),
+    defineField({
       name: "showInPopup",
       title: "Afficher dans la pop-up des nouveautés",
       description:
@@ -82,12 +89,12 @@ export const changelogEntry = defineType({
     { title: "Date de publication", name: "publishedAtDesc", by: [{ field: "publishedAt", direction: "desc" }] },
   ],
   preview: {
-    select: { title: "title", publishedAt: "publishedAt", kind: "kind" },
-    prepare({ title, publishedAt, kind }) {
+    select: { title: "title", publishedAt: "publishedAt", kind: "kind", pinned: "pinned" },
+    prepare({ title, publishedAt, kind, pinned }) {
       const kindTitle = CHANGELOG_KINDS.find((changelogKind) => changelogKind.value === kind)?.title
       return {
         title: pickDefaultLanguageValue<string>(title) ?? "Sans titre",
-        subtitle: [publishedAt, kindTitle].filter(Boolean).join(" · "),
+        subtitle: [pinned ? "Épinglé" : null, publishedAt, kindTitle].filter(Boolean).join(" · "),
       }
     },
   },

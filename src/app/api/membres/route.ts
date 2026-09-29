@@ -104,6 +104,11 @@ export const GET = withAdminAuth(async (req, ctx) => {
     : sort === "oldest"             ? [{ joinedAt: "asc"  as const }, ...byName]
     : byName
 
+  // `include` (never `select`) on purpose: every Membre scalar column rides along by default,
+  // including groupeSanguin/possedeTshirt/tailleTshirt/allergies, which no longer appear
+  // anywhere in this list's UI but are still required by the quick-edit modal's hidden inputs
+  // (see the `Membre` type above and membre-form.tsx) to round-trip those values unchanged on
+  // save. Switching this to an explicit `select` would silently null them out on the next edit.
   const include = {
     type:        { select: { id: true, name: true, color: true } },
     user:        { select: { role: true } },

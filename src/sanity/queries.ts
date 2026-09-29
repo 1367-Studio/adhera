@@ -14,18 +14,18 @@ const LOCALIZED_ANSWER   = `coalesce(answer[language == $locale][0].value, answe
 const LOCALIZED_HEADING   = `select(_type == "helpArticle" => ${LOCALIZED_TITLE}, ${LOCALIZED_QUESTION})`
 const LOCALIZED_RICH_TEXT = `coalesce(${LOCALIZED_BODY}, ${LOCALIZED_ANSWER})`
 
-// Articles of one module + the whole FAQ. Articles stay per module; the FAQ is every entry,
-// and the help panel groups it client-side (the current page's entries, plus the ones with
-// no module or "general", first; every other module's after). $module, $locale.
-export const HELP_MODULE_CONTENT_QUERY = defineQuery(`{
-  "articles": *[_type == "helpArticle" && module == $module]
+// Every article + the whole FAQ. The help panel groups both client-side: pinned articles on
+// every page, then the current page's content, then every other module's. $locale.
+export const HELP_CONTENT_QUERY = defineQuery(`{
+  "articles": *[_type == "helpArticle"]
     | order(coalesce(order, 100) asc, _createdAt asc) {
       "id": _id,
       "slug": slug.current,
       "title": ${LOCALIZED_TITLE},
       "summary": ${LOCALIZED_SUMMARY},
       module,
-      "order": coalesce(order, 100)
+      "order": coalesce(order, 100),
+      "pinned": coalesce(pinned, false)
     },
   "faq": *[_type == "faqEntry"]
     | order(coalesce(order, 100) asc, _createdAt asc) {
@@ -47,13 +47,15 @@ export const HELP_ARTICLE_BY_SLUG_QUERY = defineQuery(`*[_type == "helpArticle" 
   "updatedAt": _updatedAt
 }`)
 
-// Latest 20 entries, newest first. $locale.
+// Pinned entries first (so an old pinned one is never cut by the slice), then the latest,
+// newest first — 20 in all. $locale.
 export const HELP_CHANGELOG_QUERY = defineQuery(`*[_type == "changelogEntry" && defined(publishedAt)]
-  | order(publishedAt desc, _createdAt desc) [0...20] {
+  | order(coalesce(pinned, false) desc, publishedAt desc, _createdAt desc) [0...20] {
     "id": _id,
     "title": ${LOCALIZED_TITLE},
     publishedAt,
     kind,
+    "pinned": coalesce(pinned, false),
     "modules": coalesce(modules, []),
     "body": ${LOCALIZED_BODY}
   }`)

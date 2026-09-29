@@ -3044,6 +3044,8 @@
           "genderLabel": "Lytis",
           "photoLabel": "Nuotrauka",
           "languageLabel": "Vartojama kalba",
+          "preferredLocaleLabel": "Bendravimo kalba",
+          "preferredLocaleHint": "Pasirinkta kalba leis šiam nariui siųsti el. laiškus ir pranešimus jo pageidaujama kalba.",
           "requirement": {
             "hidden": "Su kauke",
             "optional": "Pasirenkama",
@@ -3179,6 +3181,10 @@
       "genderFemme": "Moteris",
       "languageLabel": "Vartojama kalba",
       "languageNone": "Nenurodyta",
+      "preferredLocaleLabel": "Bendravimo kalba",
+      "preferredLocaleNone": "Nenurodyta",
+      "preferredLocaleHintAdmin": "Pasirinkta kalba leis šiam nariui siųsti el. laiškus ir pranešimus jo pageidaujama kalba.",
+      "preferredLocaleHintMember": "Čia nurodyta kalba leis jums siųsti el. laiškus ir pranešimus jūsų pageidaujama kalba.",
       "viewConditionsLabel": "Peržiūrėti taisykles ir sąlygas",
       "conditionsModalTitle": "Taisyklės ir sąlygos",
       "conditionsAgreeLabel": "Sutinku su taisyklėmis ir sąlygomis",
@@ -3973,6 +3979,7 @@
       "groupeSanguinNone": "Nenurodyta",
       "tailleTshirtNone": "Nenurodyta",
       "preferredLocaleNone": "Nenurodyta",
+      "preferredLocaleHint": "Pasirinkta kalba leis šiam nariui siųsti el. laiškus ir pranešimus jo pageidaujama kalba.",
       "spokenLanguageNone": "Nenurodyta",
       "adherentOverride": {
         "auto": "Automatinis (priklausomai nuo indėlio)",
@@ -4001,9 +4008,14 @@
         "allergies": "Žinomos alergijos",
         "allergiesPlaceholder": "Arachidai, žiedadulkės...",
         "type": "Narių tipas",
-        "preferredLocale": "Pageidaujama kalba",
+        "preferredLocale": "Bendravimo kalba",
         "spokenLanguage": "Vartojama kalba",
-        "cotisationTier": "Narystės mokestis"
+        "cotisationTier": "Narystės mokestis",
+        "guardianName": "Teisėtas atstovas {number} — vardas",
+        "guardianPhone": "Teisėtas atstovas {number} — telefonas",
+        "imageRights": "Teisė į atvaizdą",
+        "notes": "Pastabos",
+        "notesPlaceholder": "Naudinga informacija apie šį narį (užsiėmimai, pastabos…)"
       },
       "invitationNotice": "Kvietimo el. laiškas su identifikatoriais bus išsiųstas į šį adresą.",
       "tierNone": "Nėra kainodaros (numatytoji elgsena)",
@@ -4014,7 +4026,22 @@
       "noResponsable": "Nėra",
       "noAdultResponsable": "Suaugusiųjų narių nėra.",
       "preview": "Apžvalga:",
-      "customFieldsSectionTitle": "Narystės formos atsakymai"
+      "customFieldsSectionTitle": "Narystės formos informacija",
+      "sections": {
+        "personalInfo": "Asmeninė informacija",
+        "address": "Adresas",
+        "memberInfo": "Nario informacija",
+        "legalGuardian": "Teisėtas atstovas",
+        "additionalInfo": "Papildoma informacija",
+        "management": "Nario valdymas"
+      },
+      "invalidFormToast": "Nepavyko išsaugoti. Jei problema tęsiasi, susisiekite su pagalba.",
+      "customFieldsLoading": "Įkeliami narystės formos atsakymai…",
+      "imageRights": {
+        "unknown": "Nenurodyta",
+        "granted": "Taip",
+        "refused": "Ne"
+      }
     },
     "actions": {
       "add": "Pridėti narį",
@@ -4139,6 +4166,7 @@
       "hasTshirtColon": "Turi marškinėlius: {value}",
       "tshirtSizeColon": "Marškinėlių dydis: {value}",
       "spokenLanguageColon": "Vartojama kalba: {value}",
+      "preferredLocaleColon": "Bendravimo kalba: {value}",
       "allergiesColon": "Alergijos: {value}",
       "mobileColon": "Mobilusis: {value}",
       "legalGuardianColon": "Teisinis globėjas:",
@@ -5286,7 +5314,7 @@
         "tailleTshirt": "Marškinėlių dydis",
         "allergies": "Žinomos alergijos",
         "allergiesPlaceholder": "Arachidai, žiedadulkės...",
-        "preferredLocale": "Pageidaujama kalba",
+        "preferredLocale": "Bendravimo kalba",
         "spokenLanguage": "Vartojama kalba",
         "notProvided": "Nenurodyta",
         "yes": "Taip",

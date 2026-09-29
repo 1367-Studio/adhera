@@ -3044,6 +3044,8 @@
           "genderLabel": "Kön",
           "photoLabel": "Foto",
           "languageLabel": "Talat språk",
+          "preferredLocaleLabel": "Kommunikationsspråk",
+          "preferredLocaleHint": "Det valda språket gör det möjligt att skicka e-post och kommunikation till denna medlem på dennes föredragna språk.",
           "requirement": {
             "hidden": "Maskerad",
             "optional": "Valfritt",
@@ -3179,6 +3181,10 @@
       "genderFemme": "Kvinna",
       "languageLabel": "Talat språk",
       "languageNone": "Ej specificerat",
+      "preferredLocaleLabel": "Kommunikationsspråk",
+      "preferredLocaleNone": "Ej specificerat",
+      "preferredLocaleHintAdmin": "Det valda språket gör det möjligt att skicka e-post och kommunikation till denna medlem på dennes föredragna språk.",
+      "preferredLocaleHintMember": "Språket som anges här gör det möjligt att skicka e-post och kommunikation till dig på ditt föredragna språk.",
       "viewConditionsLabel": "Visa villkor",
       "conditionsModalTitle": "Villkor",
       "conditionsAgreeLabel": "Jag accepterar villkoren",
@@ -3973,6 +3979,7 @@
       "groupeSanguinNone": "Ej specificerat",
       "tailleTshirtNone": "Ej specificerat",
       "preferredLocaleNone": "Ej specificerat",
+      "preferredLocaleHint": "Det valda språket gör det möjligt att skicka e-post och kommunikation till denna medlem på dennes föredragna språk.",
       "spokenLanguageNone": "Ej specificerat",
       "adherentOverride": {
         "auto": "Automatisk (beroende på insättning)",
@@ -4001,9 +4008,14 @@
         "allergies": "Kända allergier",
         "allergiesPlaceholder": "Arachides, pollen...",
         "type": "Medlemstyp",
-        "preferredLocale": "Föredraget språk",
+        "preferredLocale": "Kommunikationsspråk",
         "spokenLanguage": "Talat språk",
-        "cotisationTier": "Medlemsavgift"
+        "cotisationTier": "Medlemsavgift",
+        "guardianName": "Vårdnadshavare {number} — namn",
+        "guardianPhone": "Vårdnadshavare {number} — telefon",
+        "imageRights": "Bildrättigheter",
+        "notes": "Anteckningar",
+        "notesPlaceholder": "Användbar information om denna medlem (kurser, anmärkningar…)"
       },
       "invitationNotice": "Ett inbjudningsmail med identifierarna kommer att skickas till denna adress.",
       "tierNone": "Ingen prissättning (standardbeteende)",
@@ -4014,7 +4026,22 @@
       "noResponsable": "Inga",
       "noAdultResponsable": "Inga vuxna medlemmar tillgängliga",
       "preview": "Översikt:",
-      "customFieldsSectionTitle": "Svar från medlemsformuläret"
+      "customFieldsSectionTitle": "Information från anslutningsformuläret",
+      "sections": {
+        "personalInfo": "Personlig information",
+        "address": "Adress",
+        "memberInfo": "Medlemsinformation",
+        "legalGuardian": "Vårdnadshavare",
+        "additionalInfo": "Ytterligare information",
+        "management": "Medlemshantering"
+      },
+      "invalidFormToast": "Det gick inte att spara. Kontakta supporten om problemet kvarstår.",
+      "customFieldsLoading": "Läser in svar från anslutningsformuläret…",
+      "imageRights": {
+        "unknown": "Ej angivet",
+        "granted": "Ja",
+        "refused": "Nej"
+      }
     },
     "actions": {
       "add": "Lägg till en medlem",
@@ -4139,6 +4166,7 @@
       "hasTshirtColon": "Har en T-shirt: {value}",
       "tshirtSizeColon": "T-shirtstorlek: {value}",
       "spokenLanguageColon": "Talat språk: {value}",
+      "preferredLocaleColon": "Kommunikationsspråk: {value}",
       "allergiesColon": "Allergier: {value}",
       "mobileColon": "Mobil: {value}",
       "legalGuardianColon": "Juridisk förmyndare:",
@@ -5286,7 +5314,7 @@
         "tailleTshirt": "T-shirtstorlek",
         "allergies": "Kända allergier",
         "allergiesPlaceholder": "Arachides, pollen...",
-        "preferredLocale": "Föredraget språk",
+        "preferredLocale": "Kommunikationsspråk",
         "spokenLanguage": "Talat språk",
         "notProvided": "Ej specificerat",
         "yes": "Ja",

@@ -3044,6 +3044,8 @@
           "genderLabel": "Sugu",
           "photoLabel": "Foto",
           "languageLabel": "Räägitav keel",
+          "preferredLocaleLabel": "Suhtluskeel",
+          "preferredLocaleHint": "Valitud keel võimaldab saata sellele liikmele e-kirju ja teateid tema eelistatud keeles.",
           "requirement": {
             "hidden": "Maskiga",
             "optional": "Valikuline",
@@ -3179,6 +3181,10 @@
       "genderFemme": "Naine",
       "languageLabel": "Räägitav keel",
       "languageNone": "Täpsustamata",
+      "preferredLocaleLabel": "Suhtluskeel",
+      "preferredLocaleNone": "Täpsustamata",
+      "preferredLocaleHintAdmin": "Valitud keel võimaldab saata sellele liikmele e-kirju ja teateid tema eelistatud keeles.",
+      "preferredLocaleHintMember": "Siin määratud keel võimaldab teile saata e-kirju ja teateid teie eelistatud keeles.",
       "viewConditionsLabel": "Vaata tingimusi ja tingimusi",
       "conditionsModalTitle": "Tingimused",
       "conditionsAgreeLabel": "Nõustun tingimustega",
@@ -3973,6 +3979,7 @@
       "groupeSanguinNone": "Täpsustamata",
       "tailleTshirtNone": "Täpsustamata",
       "preferredLocaleNone": "Täpsustamata",
+      "preferredLocaleHint": "Valitud keel võimaldab saata sellele liikmele e-kirju ja teateid tema eelistatud keeles.",
       "spokenLanguageNone": "Täpsustamata",
       "adherentOverride": {
         "auto": "Automaatne (sõltuvalt panusest)",
@@ -4001,9 +4008,14 @@
         "allergies": "Tuntud allergiad",
         "allergiesPlaceholder": "Arahhiidid, õietolm...",
         "type": "Liikmetüüp",
-        "preferredLocale": "Eelistatud keel",
+        "preferredLocale": "Suhtluskeel",
         "spokenLanguage": "Räägitav keel",
-        "cotisationTier": "Liikmemaks"
+        "cotisationTier": "Liikmemaks",
+        "guardianName": "Seaduslik eestkostja {number} — nimi",
+        "guardianPhone": "Seaduslik eestkostja {number} — telefon",
+        "imageRights": "Pildiõigus",
+        "notes": "Märkmed",
+        "notesPlaceholder": "Kasulik teave selle liikme kohta (tunnid, märkused…)"
       },
       "invitationNotice": "Kutse e-kiri koos identifikaatoritega saadetakse sellele aadressile.",
       "tierNone": "Hinnastamist ei tohi (vaikimisi käitumine)",
@@ -4014,7 +4026,22 @@
       "noResponsable": "Puudub",
       "noAdultResponsable": "Täiskasvanud liikmeid pole saadaval",
       "preview": "Ülevaade:",
-      "customFieldsSectionTitle": "Liikmevormi vastused"
+      "customFieldsSectionTitle": "Liitumisvormi teave",
+      "sections": {
+        "personalInfo": "Isikuandmed",
+        "address": "Aadress",
+        "memberInfo": "Liikme teave",
+        "legalGuardian": "Seaduslik eestkostja",
+        "additionalInfo": "Lisateave",
+        "management": "Liikme haldamine"
+      },
+      "invalidFormToast": "Salvestamine ebaõnnestus. Kui probleem püsib, võtke ühendust toega.",
+      "customFieldsLoading": "Liitumisvormi vastuste laadimine…",
+      "imageRights": {
+        "unknown": "Pole määratud",
+        "granted": "Jah",
+        "refused": "Ei"
+      }
     },
     "actions": {
       "add": "Lisa liige",
@@ -4139,6 +4166,7 @@
       "hasTshirtColon": "Tal on T-särk: {value}",
       "tshirtSizeColon": "T-särgi suurus: {value}",
       "spokenLanguageColon": "Räägitav keel: {value}",
+      "preferredLocaleColon": "Suhtluskeel: {value}",
       "allergiesColon": "Allergiad : {value}",
       "mobileColon": "Mobiil : {value}",
       "legalGuardianColon": "Seaduslik eestkostja:",
@@ -5286,7 +5314,7 @@
         "tailleTshirt": "T-särgi suurus",
         "allergies": "Tuntud allergiad",
         "allergiesPlaceholder": "Arahhiidid, õietolm...",
-        "preferredLocale": "Eelistatud keel",
+        "preferredLocale": "Suhtluskeel",
         "spokenLanguage": "Räägitav keel",
         "notProvided": "Täpsustamata",
         "yes": "Jah",

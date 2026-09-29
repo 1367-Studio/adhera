@@ -3145,6 +3145,8 @@
           "genderLabel": "Gender",
           "photoLabel": "Photo",
           "languageLabel": "Spoken language",
+          "preferredLocaleLabel": "Communication language",
+          "preferredLocaleHint": "The selected language lets this member receive emails and communications in their preferred language.",
           "requirement": {
             "hidden": "Hidden",
             "optional": "Optional",
@@ -3280,6 +3282,10 @@
       "genderFemme": "Woman",
       "languageLabel": "Spoken language",
       "languageNone": "Not provided",
+      "preferredLocaleLabel": "Communication language",
+      "preferredLocaleNone": "Not provided",
+      "preferredLocaleHintAdmin": "The selected language lets this member receive emails and communications in their preferred language.",
+      "preferredLocaleHintMember": "The language you select here lets us send you emails and communications in your preferred language.",
       "viewConditionsLabel": "View the terms and conditions",
       "conditionsModalTitle": "Terms and conditions",
       "conditionsAgreeLabel": "I accept the terms and conditions",
@@ -4092,6 +4098,7 @@
       },
       "tailleTshirtNone": "Not specified",
       "preferredLocaleNone": "Not specified",
+      "preferredLocaleHint": "The selected language lets this member receive emails and communications in their preferred language.",
       "spokenLanguageNone": "Not provided",
       "adherentOverride": {
         "auto": "Automatic (based on membership fee)",
@@ -4126,7 +4133,7 @@
         "guardians": "Legal guardians",
         "guardianName": "Legal guardian {number} — name",
         "guardianPhone": "Legal guardian {number} — phone",
-        "preferredLocale": "Preferred language",
+        "preferredLocale": "Communication language",
         "spokenLanguage": "Spoken language",
         "cotisationTier": "Membership fee — tier"
       },
@@ -4139,7 +4146,17 @@
       "noResponsable": "None",
       "noAdultResponsable": "No eligible adult member available",
       "preview": "Preview:",
-      "customFieldsSectionTitle": "Membership form answers"
+      "customFieldsSectionTitle": "Membership form information",
+      "sections": {
+        "personalInfo": "Personal information",
+        "address": "Address",
+        "memberInfo": "Member information",
+        "legalGuardian": "Legal guardian",
+        "additionalInfo": "Additional information",
+        "management": "Member management"
+      },
+      "invalidFormToast": "Couldn't save. Contact support if the problem persists.",
+      "customFieldsLoading": "Loading membership form answers…"
     },
     "actions": {
       "add": "Add a member",
@@ -4264,6 +4281,7 @@
       "hasTshirtColon": "Has a t-shirt: {value}",
       "tshirtSizeColon": "T-shirt size: {value}",
       "spokenLanguageColon": "Spoken language: {value}",
+      "preferredLocaleColon": "Communication language: {value}",
       "allergiesColon": "Allergies: {value}",
       "imageRightsColon": "Image rights: {value}",
       "imageRightsDate": "(on {date})",
@@ -5657,7 +5675,7 @@
         "tailleTshirt": "T-shirt size",
         "allergies": "Known allergies",
         "allergiesPlaceholder": "Peanuts, pollen…",
-        "preferredLocale": "Preferred language",
+        "preferredLocale": "Communication language",
         "spokenLanguage": "Spoken language",
         "notProvided": "Not provided",
         "yes": "Yes",
@@ -6062,10 +6080,12 @@
     "searchResultsCount": "{count, plural, one {# result} other {# results}}",
     "searchNoResults": "No results for \"{query}\".",
     "searchError": "Search is unavailable right now.",
+    "newBadge": "New",
+    "pinnedSection": "New",
     "articlesSection": "Articles",
+    "articlesOtherSection": "Other articles",
     "faqSection": "Frequently asked questions",
     "faqOtherSection": "Other questions",
-    "noArticles": "No articles for this section yet.",
     "noContent": "No help content for this section yet.",
     "loadError": "Couldn't load the help.",
     "retry": "Retry",
@@ -6128,6 +6148,7 @@
       "apiKeyInvalidAskAdmin": "Ask an administrator to check it in Settings → Integrations."
     },
     "changelog": {
+      "latestSection": "Latest updates",
       "empty": "Nothing new yet.",
       "loadError": "Couldn't load what's new.",
       "kind": {

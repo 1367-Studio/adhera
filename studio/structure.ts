@@ -1,5 +1,6 @@
 import { BookIcon } from "@sanity/icons/Book"
 import { FolderIcon } from "@sanity/icons/Folder"
+import { PinIcon } from "@sanity/icons/Pin"
 import type { StructureResolver } from "sanity/structure"
 
 import { HELP_MODULES } from "./schemaTypes/shared/help-modules"
@@ -20,6 +21,17 @@ export const structure: StructureResolver = (structureBuilder) =>
           structureBuilder.list()
             .title("Aide")
             .items([
+              structureBuilder.listItem()
+                .title("Épinglés")
+                .id("aide-epingles")
+                .icon(PinIcon)
+                .child(
+                  structureBuilder.documentTypeList("helpArticle")
+                    .title("Épinglés")
+                    .apiVersion(SANITY_API_VERSION)
+                    .filter('_type == "helpArticle" && pinned == true'),
+                ),
+              structureBuilder.divider(),
               ...HELP_MODULES.map((helpModule) =>
                 structureBuilder.listItem()
                   .title(helpModule.title)

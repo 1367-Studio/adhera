@@ -3044,6 +3044,8 @@
           "genderLabel": "Køn",
           "photoLabel": "Foto",
           "languageLabel": "Sprog, der tales",
+          "preferredLocaleLabel": "Kommunikationssprog",
+          "preferredLocaleHint": "Det valgte sprog gør det muligt at sende e-mails og kommunikation til dette medlem på deres foretrukne sprog.",
           "requirement": {
             "hidden": "Maskeret",
             "optional": "Valgfrit",
@@ -3179,6 +3181,10 @@
       "genderFemme": "Kvinde",
       "languageLabel": "Sprog, der tales",
       "languageNone": "Ikke specificeret",
+      "preferredLocaleLabel": "Kommunikationssprog",
+      "preferredLocaleNone": "Ikke specificeret",
+      "preferredLocaleHintAdmin": "Det valgte sprog gør det muligt at sende e-mails og kommunikation til dette medlem på deres foretrukne sprog.",
+      "preferredLocaleHintMember": "Sproget angivet her gør det muligt at sende dig e-mails og kommunikation på dit foretrukne sprog.",
       "viewConditionsLabel": "Se vilkår og betingelser",
       "conditionsModalTitle": "Vilkår og betingelser",
       "conditionsAgreeLabel": "Jeg accepterer vilkårene og betingelserne",
@@ -3973,6 +3979,7 @@
       "groupeSanguinNone": "Ikke specificeret",
       "tailleTshirtNone": "Ikke specificeret",
       "preferredLocaleNone": "Ikke specificeret",
+      "preferredLocaleHint": "Det valgte sprog gør det muligt at sende e-mails og kommunikation til dette medlem på deres foretrukne sprog.",
       "spokenLanguageNone": "Ikke specificeret",
       "adherentOverride": {
         "auto": "Automatisk (afhængigt af bidrag)",
@@ -4001,9 +4008,14 @@
         "allergies": "Kendte allergier",
         "allergiesPlaceholder": "Arachides, pollen...",
         "type": "Medlemstype",
-        "preferredLocale": "Foretrukket sprog",
+        "preferredLocale": "Kommunikationssprog",
         "spokenLanguage": "Sprog, der tales",
-        "cotisationTier": "Medlemskontingent"
+        "cotisationTier": "Medlemskontingent",
+        "guardianName": "Værge {number} — navn",
+        "guardianPhone": "Værge {number} — telefon",
+        "imageRights": "Billedrettigheder",
+        "notes": "Noter",
+        "notesPlaceholder": "Nyttige oplysninger om dette medlem (kurser, bemærkninger…)"
       },
       "invitationNotice": "En invitationsmail med identifikatorerne vil blive sendt til denne adresse.",
       "tierNone": "Ingen prissætning (standardadfærd)",
@@ -4014,7 +4026,22 @@
       "noResponsable": "Ingen",
       "noAdultResponsable": "Ingen voksne medlemmer tilgængelige",
       "preview": "Oversigt:",
-      "customFieldsSectionTitle": "Svar fra indmeldelsesformularen"
+      "customFieldsSectionTitle": "Oplysninger fra optagelsesformularen",
+      "sections": {
+        "personalInfo": "Personlige oplysninger",
+        "address": "Adresse",
+        "memberInfo": "Medlemsoplysninger",
+        "legalGuardian": "Værge",
+        "additionalInfo": "Yderligere oplysninger",
+        "management": "Medlemsadministration"
+      },
+      "invalidFormToast": "Kunne ikke gemme. Kontakt support, hvis problemet fortsætter.",
+      "customFieldsLoading": "Indlæser svar fra optagelsesformularen…",
+      "imageRights": {
+        "unknown": "Ikke angivet",
+        "granted": "Ja",
+        "refused": "Nej"
+      }
     },
     "actions": {
       "add": "Tilføj et medlem",
@@ -4139,6 +4166,7 @@
       "hasTshirtColon": "Har en T-shirt: {value}",
       "tshirtSizeColon": "T-shirt-størrelse: {value}",
       "spokenLanguageColon": "Sprog, der tales: {value}",
+      "preferredLocaleColon": "Kommunikationssprog: {value}",
       "allergiesColon": "Allergier: {value}",
       "mobileColon": "Mobil: {value}",
       "legalGuardianColon": "Juridisk værge:",
@@ -5286,7 +5314,7 @@
         "tailleTshirt": "T-shirt-størrelse",
         "allergies": "Kendte allergier",
         "allergiesPlaceholder": "Arachides, pollen...",
-        "preferredLocale": "Foretrukket sprog",
+        "preferredLocale": "Kommunikationssprog",
         "spokenLanguage": "Sprog, der tales",
         "notProvided": "Ikke specificeret",
         "yes": "Ja",

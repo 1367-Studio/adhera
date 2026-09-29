@@ -11,7 +11,6 @@ import { toast } from "sonner"
 import { UserIcon, PhoneIcon, CalendarBlankIcon, EnvelopeSimpleIcon } from "@phosphor-icons/react/dist/ssr";
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -91,19 +90,6 @@ const statusVariant: Record<string, "default" | "secondary" | "destructive" | "o
   SUSPENDU: "destructive",
 }
 
-function getGroupeSanguinLabels(t: ReturnType<typeof useTranslations>): Record<string, string> {
-  return {
-    A_POSITIF:  t("groupeSanguinLabels.A_POSITIF"),
-    A_NEGATIF:  t("groupeSanguinLabels.A_NEGATIF"),
-    B_POSITIF:  t("groupeSanguinLabels.B_POSITIF"),
-    B_NEGATIF:  t("groupeSanguinLabels.B_NEGATIF"),
-    AB_POSITIF: t("groupeSanguinLabels.AB_POSITIF"),
-    AB_NEGATIF: t("groupeSanguinLabels.AB_NEGATIF"),
-    O_POSITIF:  t("groupeSanguinLabels.O_POSITIF"),
-    O_NEGATIF:  t("groupeSanguinLabels.O_NEGATIF"),
-  }
-}
-
 function getCiviliteLabels(t: ReturnType<typeof useTranslations>): Record<string, string> {
   return {
     MME:  t("civiliteLabels.MME"),
@@ -126,7 +112,6 @@ export default function ProfilPage() {
     const qc = useQueryClient()
   const [removePhotoOpen, setRemovePhotoOpen] = useState(false)
 
-  const GROUPE_SANGUIN_LABELS = getGroupeSanguinLabels(t)
   const CIVILITE_LABELS = getCiviliteLabels(t)
   const statusLabel = getStatusLabels(t)
 
@@ -319,6 +304,15 @@ export default function ProfilPage() {
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit(d => mutation.mutate(d))} className="space-y-4">
+            {/* Groupe sanguin / t-shirt / allergies : retirés de l'affichage (voir CLAUDE.md)
+                mais gardés enregistrés en hidden — la valeur déjà en base repart inchangée à
+                chaque save, sans jamais être écrasée, même si plus personne ne peut la
+                modifier depuis ce formulaire. */}
+            <input type="hidden" {...register("groupeSanguin")} />
+            <input type="hidden" {...register("possedeTshirt")} />
+            <input type="hidden" {...register("tailleTshirt")} />
+            <input type="hidden" {...register("allergies")} />
+
             <div className="space-y-1.5">
               <Label htmlFor="phone" className="flex items-center gap-1.5">
                 <PhoneIcon className="size-3.5" /> {t("contact.phone")}
@@ -358,124 +352,28 @@ export default function ProfilPage() {
               }}
             />
 
-            <div className="grid grid-cols-2 gap-4">
-              <Controller
-                name="civilite"
-                control={control}
-                render={({ field }) => (
-                  <div className="space-y-1.5">
-                    <Label>{t("contact.civilite")}</Label>
-                    <Select value={field.value || "__none__"} onValueChange={v => field.onChange(v === "__none__" ? "" : v)}>
-                      <SelectTrigger>
-                        <SelectValue placeholder={t("contact.notProvided")}>
-                          {field.value ? CIVILITE_LABELS[field.value] : t("contact.notProvided")}
-                        </SelectValue>
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="__none__">{t("contact.notProvided")}</SelectItem>
-                        <SelectItem value="MME">{CIVILITE_LABELS.MME}</SelectItem>
-                        <SelectItem value="MLLE">{CIVILITE_LABELS.MLLE}</SelectItem>
-                        <SelectItem value="M">{CIVILITE_LABELS.M}</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                )}
-              />
-
-              <Controller
-                name="groupeSanguin"
-                control={control}
-                render={({ field }) => (
-                  <div className="space-y-1.5">
-                    <Label>{t("contact.groupeSanguin")}</Label>
-                    <Select value={field.value || "__none__"} onValueChange={v => field.onChange(v === "__none__" ? "" : v)}>
-                      <SelectTrigger>
-                        <SelectValue placeholder={t("contact.notProvided")}>
-                          {field.value ? GROUPE_SANGUIN_LABELS[field.value] : t("contact.notProvided")}
-                        </SelectValue>
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="__none__">{t("contact.notProvided")}</SelectItem>
-                        <SelectItem value="A_POSITIF">{GROUPE_SANGUIN_LABELS.A_POSITIF}</SelectItem>
-                        <SelectItem value="A_NEGATIF">{GROUPE_SANGUIN_LABELS.A_NEGATIF}</SelectItem>
-                        <SelectItem value="B_POSITIF">{GROUPE_SANGUIN_LABELS.B_POSITIF}</SelectItem>
-                        <SelectItem value="B_NEGATIF">{GROUPE_SANGUIN_LABELS.B_NEGATIF}</SelectItem>
-                        <SelectItem value="AB_POSITIF">{GROUPE_SANGUIN_LABELS.AB_POSITIF}</SelectItem>
-                        <SelectItem value="AB_NEGATIF">{GROUPE_SANGUIN_LABELS.AB_NEGATIF}</SelectItem>
-                        <SelectItem value="O_POSITIF">{GROUPE_SANGUIN_LABELS.O_POSITIF}</SelectItem>
-                        <SelectItem value="O_NEGATIF">{GROUPE_SANGUIN_LABELS.O_NEGATIF}</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                )}
-              />
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <Controller
-                name="possedeTshirt"
-                control={control}
-                render={({ field }) => (
-                  <div className="space-y-1.5">
-                    <Label>{t("contact.possedeTshirt")}</Label>
-                    <Select
-                      value={field.value || "__none__"}
-                      onValueChange={v => {
-                        const next = v === "__none__" ? "" : v
-                        field.onChange(next)
-                        // A size doesn't make sense once "does not have a t-shirt" is
-                        // selected — clear it so the two fields can't contradict each other.
-                        if (next === "false") setValue("tailleTshirt", "", { shouldDirty: true })
-                      }}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder={t("contact.notProvided")}>
-                          {field.value === "true" ? t("contact.yes") : field.value === "false" ? t("contact.no") : t("contact.notProvided")}
-                        </SelectValue>
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="__none__">{t("contact.notProvided")}</SelectItem>
-                        <SelectItem value="true">{t("contact.yes")}</SelectItem>
-                        <SelectItem value="false">{t("contact.no")}</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                )}
-              />
-
-              <Controller
-                name="tailleTshirt"
-                control={control}
-                render={({ field }) => (
-                  <div className="space-y-1.5">
-                    <Label>{t("contact.tailleTshirt")}</Label>
-                    <Select value={field.value || "__none__"} onValueChange={v => field.onChange(v === "__none__" ? "" : v)}>
-                      <SelectTrigger>
-                        <SelectValue placeholder={t("contact.notProvided")}>
-                          {field.value || t("contact.notProvided")}
-                        </SelectValue>
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="__none__">{t("contact.notProvided")}</SelectItem>
-                        <SelectItem value="XS">XS</SelectItem>
-                        <SelectItem value="S">S</SelectItem>
-                        <SelectItem value="M">M</SelectItem>
-                        <SelectItem value="L">L</SelectItem>
-                        <SelectItem value="XL">XL</SelectItem>
-                        <SelectItem value="XXL">XXL</SelectItem>
-                        <SelectItem value="XXXL">XXXL</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                )}
-              />
-            </div>
-
-            <div className="space-y-1.5">
-              <Label htmlFor="allergies">{t("contact.allergies")}</Label>
-              <Textarea id="allergies" rows={2} placeholder={t("contact.allergiesPlaceholder")} {...register("allergies")} />
-              {errors.allergies && <p className="text-destructive text-xs">{errors.allergies.message}</p>}
-            </div>
+            <Controller
+              name="civilite"
+              control={control}
+              render={({ field }) => (
+                <div className="space-y-1.5">
+                  <Label>{t("contact.civilite")}</Label>
+                  <Select value={field.value || "__none__"} onValueChange={v => field.onChange(v === "__none__" ? "" : v)}>
+                    <SelectTrigger>
+                      <SelectValue placeholder={t("contact.notProvided")}>
+                        {field.value ? CIVILITE_LABELS[field.value] : t("contact.notProvided")}
+                      </SelectValue>
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="__none__">{t("contact.notProvided")}</SelectItem>
+                      <SelectItem value="MME">{CIVILITE_LABELS.MME}</SelectItem>
+                      <SelectItem value="MLLE">{CIVILITE_LABELS.MLLE}</SelectItem>
+                      <SelectItem value="M">{CIVILITE_LABELS.M}</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+            />
 
             <Controller
               name="preferredLocale"
@@ -491,7 +389,7 @@ export default function ProfilPage() {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="__none__">{t("contact.notProvided")}</SelectItem>
-                      {SUPPORTED_LOCALES.map(code => (
+                      {[...SUPPORTED_LOCALES].sort((a, b) => LOCALE_LABELS[a].localeCompare(LOCALE_LABELS[b])).map(code => (
                         <SelectItem key={code} value={code}>{LOCALE_LABELS[code]}</SelectItem>
                       ))}
                     </SelectContent>

@@ -31,6 +31,7 @@ export interface MembershipMultiRegistrant {
   birthDate?: string
   sexe?:      "HOMME" | "FEMME"
   spokenLanguage?: string
+  preferredLocale?: string
   phone?:     string
   mobile?:    string
   // `address` est l'adresse héritée en texte libre : les brouillons créés avant le découpage
@@ -151,7 +152,7 @@ export async function consumeMembershipCheckoutDraft(draftId: string, paymentInt
               sexe:          sexeValue,
               spokenLanguage: spokenLanguageValue,
               photoUrl:      r.photoUrl || null,
-              preferredLocale: r.locale || null,
+              preferredLocale: r.preferredLocale || r.locale || null,
               status:        "ACTIF",
               associationId: draft.associationId,
               typeId:        tier.membreTypeId,
@@ -171,7 +172,7 @@ export async function consumeMembershipCheckoutDraft(draftId: string, paymentInt
               sexe:          sexeValue,
               spokenLanguage: spokenLanguageValue,
               photoUrl:      r.photoUrl || null,
-              preferredLocale: r.locale || null,
+              preferredLocale: r.preferredLocale || r.locale || null,
               status:        "ACTIF",
               associationId: draft.associationId,
               typeId:        tier.membreTypeId,

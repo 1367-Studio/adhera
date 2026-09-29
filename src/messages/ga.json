@@ -3044,6 +3044,8 @@
           "genderLabel": "Inscne",
           "photoLabel": "Grianghraf",
           "languageLabel": "Teanga a labhraítear",
+          "preferredLocaleLabel": "Teanga chumarsáide",
+          "preferredLocaleHint": "Ligfidh an teanga roghnaithe ríomhphoist agus cumarsáid a sheoladh chuig an mball seo ina theanga is fearr leis.",
           "requirement": {
             "hidden": "Masc",
             "optional": "Roghnach",
@@ -3179,6 +3181,10 @@
       "genderFemme": "Mná",
       "languageLabel": "Teanga a labhraítear",
       "languageNone": "Gan sonrú",
+      "preferredLocaleLabel": "Teanga chumarsáide",
+      "preferredLocaleNone": "Gan sonrú",
+      "preferredLocaleHintAdmin": "Ligfidh an teanga roghnaithe ríomhphoist agus cumarsáid a sheoladh chuig an mball seo ina theanga is fearr leis.",
+      "preferredLocaleHintMember": "Ligfidh an teanga a sonraíodh anseo ríomhphoist agus cumarsáid a sheoladh chugat i do theanga is fearr leat.",
       "viewConditionsLabel": "Féach ar na Téarmaí agus Coinníollacha",
       "conditionsModalTitle": "Téarmaí & Coinníollacha",
       "conditionsAgreeLabel": "Glacaim leis na téarmaí agus coinníollacha",
@@ -3973,6 +3979,7 @@
       "groupeSanguinNone": "Gan sonrú",
       "tailleTshirtNone": "Gan sonrú",
       "preferredLocaleNone": "Gan sonrú",
+      "preferredLocaleHint": "Ligfidh an teanga roghnaithe ríomhphoist agus cumarsáid a sheoladh chuig an mball seo ina theanga is fearr leis.",
       "spokenLanguageNone": "Gan sonrú",
       "adherentOverride": {
         "auto": "Uathoibríoch (ag brath ar ranníocaíocht)",
@@ -4001,9 +4008,14 @@
         "allergies": "Ailléirgí aitheanta",
         "allergiesPlaceholder": "Arachides, pailin...",
         "type": "Cineál Ball",
-        "preferredLocale": "An teanga is fearr leat",
+        "preferredLocale": "Teanga chumarsáide",
         "spokenLanguage": "Teanga a labhraítear",
-        "cotisationTier": "Táille ballraíochta"
+        "cotisationTier": "Táille ballraíochta",
+        "guardianName": "Caomhnóir dlíthiúil {number} — ainm",
+        "guardianPhone": "Caomhnóir dlíthiúil {number} — fón",
+        "imageRights": "Cearta íomhá",
+        "notes": "Nótaí",
+        "notesPlaceholder": "Faisnéis úsáideach faoin mball seo (ranganna, nótaí…)"
       },
       "invitationNotice": "Seolfar ríomhphost cuireadh leis na haitheantóirí chuig an seoladh seo.",
       "tierNone": "Gan praghsáil (iompar réamhshocraithe)",
@@ -4014,7 +4026,22 @@
       "noResponsable": "Níl aon cheann",
       "noAdultResponsable": "Níl aon bhaill fásta ar fáil",
       "preview": "Forbhreathnú:",
-      "customFieldsSectionTitle": "Freagraí ar an bhfoirm bhallraíochta"
+      "customFieldsSectionTitle": "Faisnéis ón bhfoirm bhallraíochta",
+      "sections": {
+        "personalInfo": "Faisnéis Phearsanta",
+        "address": "Seoladh",
+        "memberInfo": "Faisnéis bhaill",
+        "legalGuardian": "Caomhnóir dlíthiúil",
+        "additionalInfo": "Faisnéis bhreise",
+        "management": "Bainistíocht bhaill"
+      },
+      "invalidFormToast": "Níorbh fhéidir sábháil. Déan teagmháil leis an tacaíocht mura réitítear an fhadhb.",
+      "customFieldsLoading": "Freagraí na foirme ballraíochta á lódáil…",
+      "imageRights": {
+        "unknown": "Gan sonrú",
+        "granted": "Tá",
+        "refused": "Níl"
+      }
     },
     "actions": {
       "add": "Cuir ball leis",
@@ -4139,6 +4166,7 @@
       "hasTshirtColon": "Tá T-léine aige: {value}",
       "tshirtSizeColon": "Méid an t-léine: {value}",
       "spokenLanguageColon": "Teanga a labhraítear: {value}",
+      "preferredLocaleColon": "Teanga chumarsáide: {value}",
       "allergiesColon": "Ailléirgí : {value}",
       "mobileColon": "Soghluaiste : {value}",
       "legalGuardianColon": "Caomhnóir dlíthiúil:",
@@ -5286,7 +5314,7 @@
         "tailleTshirt": "Méid an t-léine",
         "allergies": "Ailléirgí aitheanta",
         "allergiesPlaceholder": "Arachides, pailin...",
-        "preferredLocale": "An teanga is fearr leat",
+        "preferredLocale": "Teanga chumarsáide",
         "spokenLanguage": "Teanga a labhraítear",
         "notProvided": "Gan sonrú",
         "yes": "Is ea",

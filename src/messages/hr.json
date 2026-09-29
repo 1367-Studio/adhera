@@ -3044,6 +3044,8 @@
           "genderLabel": "Spol",
           "photoLabel": "Fotografija",
           "languageLabel": "Govoreni jezik",
+          "preferredLocaleLabel": "Komunikacijski jezik",
+          "preferredLocaleHint": "Odabrani jezik omogućit će slanje e-poruka i obavijesti ovom članu na njegovom preferiranom jeziku.",
           "requirement": {
             "hidden": "Maskirani",
             "optional": "Opcionalno",
@@ -3179,6 +3181,10 @@
       "genderFemme": "Ženski",
       "languageLabel": "Govoreni jezik",
       "languageNone": "Nije specificirano",
+      "preferredLocaleLabel": "Komunikacijski jezik",
+      "preferredLocaleNone": "Nije specificirano",
+      "preferredLocaleHintAdmin": "Odabrani jezik omogućit će slanje e-poruka i obavijesti ovom članu na njegovom preferiranom jeziku.",
+      "preferredLocaleHintMember": "Jezik naveden ovdje omogućit će slanje e-poruka i obavijesti na vašem preferiranom jeziku.",
       "viewConditionsLabel": "Pogledajte Uvjete korištenja",
       "conditionsModalTitle": "Uvjeti i odredbe",
       "conditionsAgreeLabel": "Prihvaćam uvjete i odredbe",
@@ -3973,6 +3979,7 @@
       "groupeSanguinNone": "Nije specificirano",
       "tailleTshirtNone": "Nije specificirano",
       "preferredLocaleNone": "Nije specificirano",
+      "preferredLocaleHint": "Odabrani jezik omogućit će slanje e-poruka i obavijesti ovom članu na njegovom preferiranom jeziku.",
       "spokenLanguageNone": "Nije specificirano",
       "adherentOverride": {
         "auto": "Automatski (ovisno o doprinosu)",
@@ -4001,9 +4008,14 @@
         "allergies": "Poznate alergije",
         "allergiesPlaceholder": "Arachide, pelud...",
         "type": "Tip člana",
-        "preferredLocale": "Preferirani jezik",
+        "preferredLocale": "Komunikacijski jezik",
         "spokenLanguage": "Govoreni jezik",
-        "cotisationTier": "Članarina"
+        "cotisationTier": "Članarina",
+        "guardianName": "Zakonski skrbnik {number} — ime",
+        "guardianPhone": "Zakonski skrbnik {number} — telefon",
+        "imageRights": "Pravo na sliku",
+        "notes": "Bilješke",
+        "notesPlaceholder": "Korisne informacije o ovom članu (tečajevi, napomene…)"
       },
       "invitationNotice": "Pozivni e-mail s identifikatorima bit će poslan na ovu adresu.",
       "tierNone": "Nema određivanja cijena (zadano ponašanje)",
@@ -4014,7 +4026,22 @@
       "noResponsable": "Nema",
       "noAdultResponsable": "Nema dostupnih punoljetnih članova",
       "preview": "Pregled:",
-      "customFieldsSectionTitle": "Odgovori s obrasca za članstvo"
+      "customFieldsSectionTitle": "Podaci iz pristupnice",
+      "sections": {
+        "personalInfo": "Osobni podaci",
+        "address": "Adresa",
+        "memberInfo": "Podaci o članu",
+        "legalGuardian": "Zakonski skrbnik",
+        "additionalInfo": "Dodatne informacije",
+        "management": "Upravljanje članom"
+      },
+      "invalidFormToast": "Spremanje nije uspjelo. Ako se problem nastavi, obratite se podršci.",
+      "customFieldsLoading": "Učitavanje odgovora iz pristupnice…",
+      "imageRights": {
+        "unknown": "Nije navedeno",
+        "granted": "Da",
+        "refused": "Ne"
+      }
     },
     "actions": {
       "add": "Dodajte člana",
@@ -4139,6 +4166,7 @@
       "hasTshirtColon": "Ima majicu: {value}",
       "tshirtSizeColon": "Veličina majice: {value}",
       "spokenLanguageColon": "Jezik koji se govori: {value}",
+      "preferredLocaleColon": "Komunikacijski jezik: {value}",
       "allergiesColon": "Alergije: {value}",
       "mobileColon": "Mobilno : {value}",
       "legalGuardianColon": "Zakonski skrbnik:",
@@ -5286,7 +5314,7 @@
         "tailleTshirt": "Veličina majice",
         "allergies": "Poznate alergije",
         "allergiesPlaceholder": "Arachide, pelud...",
-        "preferredLocale": "Preferirani jezik",
+        "preferredLocale": "Komunikacijski jezik",
         "spokenLanguage": "Govoreni jezik",
         "notProvided": "Nije specificirano",
         "yes": "Da",

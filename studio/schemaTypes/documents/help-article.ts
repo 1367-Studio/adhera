@@ -53,6 +53,13 @@ export const helpArticle = defineType({
       validation: (rule) => rule.required(),
     }),
     defineField({
+      name: "pinned",
+      title: "Épinglé",
+      type: "boolean",
+      description: "Affiché en haut de l'aide sur toutes les pages, quel que soit le module.",
+      initialValue: false,
+    }),
+    defineField({
       name: "summary",
       title: "Résumé",
       type: "internationalizedArrayText",
@@ -85,11 +92,11 @@ export const helpArticle = defineType({
     { title: "Dernière modification", name: "updatedAtDesc", by: [{ field: "_updatedAt", direction: "desc" }] },
   ],
   preview: {
-    select: { title: "title", module: "module", slug: "slug.current" },
-    prepare({ title, module, slug }) {
+    select: { title: "title", module: "module", slug: "slug.current", pinned: "pinned" },
+    prepare({ title, module, slug, pinned }) {
       return {
         title: pickDefaultLanguageValue<string>(title) ?? slug ?? "Sans titre",
-        subtitle: helpModuleTitle(module),
+        subtitle: pinned ? `Épinglé · ${helpModuleTitle(module)}` : helpModuleTitle(module),
       }
     },
   },

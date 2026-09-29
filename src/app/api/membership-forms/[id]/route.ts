@@ -28,6 +28,7 @@ const updateSchema = z.object({
   fieldGender:    z.enum(["HIDDEN", "OPTIONAL", "REQUIRED"]).optional(),
   fieldPhoto:     z.enum(["HIDDEN", "OPTIONAL", "REQUIRED"]).optional(),
   fieldLanguage:  z.enum(["HIDDEN", "OPTIONAL", "REQUIRED"]).optional(),
+  fieldPreferredLocale: z.enum(["HIDDEN", "OPTIONAL", "REQUIRED"]).optional(),
 
   allowCash:           z.boolean().optional(),
   allowCheque:         z.boolean().optional(),
@@ -131,6 +132,7 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
       ...(data.fieldGender          !== undefined ? { fieldGender: data.fieldGender }                      : {}),
       ...(data.fieldPhoto           !== undefined ? { fieldPhoto: data.fieldPhoto }                        : {}),
       ...(data.fieldLanguage        !== undefined ? { fieldLanguage: data.fieldLanguage }                  : {}),
+      ...(data.fieldPreferredLocale !== undefined ? { fieldPreferredLocale: data.fieldPreferredLocale }    : {}),
       ...(data.allowCash            !== undefined ? { allowCash: data.allowCash }                          : {}),
       ...(data.allowCheque          !== undefined ? { allowCheque: data.allowCheque }                      : {}),
       ...(data.allowTransfer        !== undefined ? { allowTransfer: data.allowTransfer }                  : {}),

@@ -3044,6 +3044,8 @@
           "genderLabel": "Genere",
           "photoLabel": "Foto",
           "languageLabel": "Lingua parlata",
+          "preferredLocaleLabel": "Lingua di comunicazione",
+          "preferredLocaleHint": "La lingua selezionata permetterà di inviare a questo membro e-mail e comunicazioni nella sua lingua preferita.",
           "requirement": {
             "hidden": "Mascherato",
             "optional": "Opzionale",
@@ -3179,6 +3181,10 @@
       "genderFemme": "Femmina",
       "languageLabel": "Lingua parlata",
       "languageNone": "Non specificato",
+      "preferredLocaleLabel": "Lingua di comunicazione",
+      "preferredLocaleNone": "Non specificato",
+      "preferredLocaleHintAdmin": "La lingua selezionata permetterà di inviare a questo membro e-mail e comunicazioni nella sua lingua preferita.",
+      "preferredLocaleHintMember": "La lingua indicata qui permetterà di inviarti e-mail e comunicazioni nella tua lingua preferita.",
       "viewConditionsLabel": "Visualizza Termini e Condizioni",
       "conditionsModalTitle": "Termini e Condizioni",
       "conditionsAgreeLabel": "Accetto i termini e le condizioni",
@@ -3973,6 +3979,7 @@
       "groupeSanguinNone": "Non specificato",
       "tailleTshirtNone": "Non specificato",
       "preferredLocaleNone": "Non specificato",
+      "preferredLocaleHint": "La lingua selezionata permetterà di inviare a questo membro e-mail e comunicazioni nella sua lingua preferita.",
       "spokenLanguageNone": "Non specificato",
       "adherentOverride": {
         "auto": "Automatico (a seconda del contributo)",
@@ -4001,9 +4008,14 @@
         "allergies": "Allergie note",
         "allergiesPlaceholder": "Arachidi, polline...",
         "type": "Tipo di membro",
-        "preferredLocale": "Lingua preferita",
+        "preferredLocale": "Lingua di comunicazione",
         "spokenLanguage": "Lingua parlata",
-        "cotisationTier": "Quota associativa"
+        "cotisationTier": "Quota associativa",
+        "guardianName": "Tutore legale {number} — nome",
+        "guardianPhone": "Tutore legale {number} — telefono",
+        "imageRights": "Diritto all'immagine",
+        "notes": "Note",
+        "notesPlaceholder": "Informazioni utili su questo socio (corsi, osservazioni…)"
       },
       "invitationNotice": "Un'email di invito con gli identificatori sarà inviata a questo indirizzo.",
       "tierNone": "Nessun prezzo (comportamento predefinito)",
@@ -4014,7 +4026,22 @@
       "noResponsable": "Nessuna",
       "noAdultResponsable": "Nessun membro adulto disponibile",
       "preview": "Panoramica:",
-      "customFieldsSectionTitle": "Risposte al modulo di adesione"
+      "customFieldsSectionTitle": "Informazioni del modulo di adesione",
+      "sections": {
+        "personalInfo": "Informazioni personali",
+        "address": "Indirizzo",
+        "memberInfo": "Informazioni sul socio",
+        "legalGuardian": "Tutore legale",
+        "additionalInfo": "Informazioni aggiuntive",
+        "management": "Gestione del socio"
+      },
+      "invalidFormToast": "Impossibile salvare. Contatta l'assistenza se il problema persiste.",
+      "customFieldsLoading": "Caricamento delle risposte al modulo di adesione…",
+      "imageRights": {
+        "unknown": "Non indicato",
+        "granted": "Sì",
+        "refused": "No"
+      }
     },
     "actions": {
       "add": "Aggiungi un membro",
@@ -4139,6 +4166,7 @@
       "hasTshirtColon": "Ha una maglietta: {value}",
       "tshirtSizeColon": "Taglia della maglietta: {value}",
       "spokenLanguageColon": "Lingua parlata: {value}",
+      "preferredLocaleColon": "Lingua di comunicazione: {value}",
       "allergiesColon": "Allergie: {value}",
       "mobileColon": "Mobile : {value}",
       "legalGuardianColon": "Tutore legale:",
@@ -5286,7 +5314,7 @@
         "tailleTshirt": "Taglia di maglietta",
         "allergies": "Allergie note",
         "allergiesPlaceholder": "Arachidi, polline...",
-        "preferredLocale": "Lingua preferita",
+        "preferredLocale": "Lingua di comunicazione",
         "spokenLanguage": "Lingua parlata",
         "notProvided": "Non specificato",
         "yes": "Sì",

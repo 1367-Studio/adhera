@@ -3044,6 +3044,8 @@
           "genderLabel": "Pohlaví",
           "photoLabel": "Foto",
           "languageLabel": "Mluvený jazyk",
+          "preferredLocaleLabel": "Komunikační jazyk",
+          "preferredLocaleHint": "Vybraný jazyk umožní zasílat tomuto členovi e-maily a sdělení v jeho preferovaném jazyce.",
           "requirement": {
             "hidden": "Maskovaný",
             "optional": "Volitelné",
@@ -3179,6 +3181,10 @@
       "genderFemme": "Ženy",
       "languageLabel": "Mluvený jazyk",
       "languageNone": "Není specifikováno",
+      "preferredLocaleLabel": "Komunikační jazyk",
+      "preferredLocaleNone": "Není specifikováno",
+      "preferredLocaleHintAdmin": "Vybraný jazyk umožní zasílat tomuto členovi e-maily a sdělení v jeho preferovaném jazyce.",
+      "preferredLocaleHintMember": "Jazyk uvedený zde umožní zasílat vám e-maily a sdělení ve vašem preferovaném jazyce.",
       "viewConditionsLabel": "Zobrazit Podmínky a ustanovení",
       "conditionsModalTitle": "Podmínky",
       "conditionsAgreeLabel": "Přijímám podmínky",
@@ -3973,6 +3979,7 @@
       "groupeSanguinNone": "Není specifikováno",
       "tailleTshirtNone": "Není specifikováno",
       "preferredLocaleNone": "Není specifikováno",
+      "preferredLocaleHint": "Vybraný jazyk umožní zasílat tomuto členovi e-maily a sdělení v jeho preferovaném jazyce.",
       "spokenLanguageNone": "Není specifikováno",
       "adherentOverride": {
         "auto": "Automatické (v závislosti na příspěvku)",
@@ -4001,9 +4008,14 @@
         "allergies": "Známé alergie",
         "allergiesPlaceholder": "Arachidy, pyl...",
         "type": "Typ člena",
-        "preferredLocale": "Preferovaný jazyk",
+        "preferredLocale": "Komunikační jazyk",
         "spokenLanguage": "Mluvený jazyk",
-        "cotisationTier": "Členský poplatek"
+        "cotisationTier": "Členský poplatek",
+        "guardianName": "Zákonný zástupce {number} — jméno",
+        "guardianPhone": "Zákonný zástupce {number} — telefon",
+        "imageRights": "Právo k obrazu",
+        "notes": "Poznámky",
+        "notesPlaceholder": "Užitečné informace o tomto členovi (kurzy, poznámky…)"
       },
       "invitationNotice": "Na tuto adresu bude zaslán pozvánkový e-mail s identifikátory.",
       "tierNone": "Žádné stanovování cen (výchozí chování)",
@@ -4014,7 +4026,22 @@
       "noResponsable": "Žádné",
       "noAdultResponsable": "Žádní dospělí členové nejsou k dispozici",
       "preview": "Přehled:",
-      "customFieldsSectionTitle": "Odpovědi z členské přihlášky"
+      "customFieldsSectionTitle": "Informace z přihlašovacího formuláře",
+      "sections": {
+        "personalInfo": "Osobní informace",
+        "address": "Adresa",
+        "memberInfo": "Informace o členovi",
+        "legalGuardian": "Zákonný zástupce",
+        "additionalInfo": "Doplňující informace",
+        "management": "Správa člena"
+      },
+      "invalidFormToast": "Uložení se nezdařilo. Pokud problém přetrvává, kontaktujte podporu.",
+      "customFieldsLoading": "Načítání odpovědí z přihlašovacího formuláře…",
+      "imageRights": {
+        "unknown": "Neuvedeno",
+        "granted": "Ano",
+        "refused": "Ne"
+      }
     },
     "actions": {
       "add": "Přidejte člena",
@@ -4139,6 +4166,7 @@
       "hasTshirtColon": "Má tričko: {value}",
       "tshirtSizeColon": "Velikost trička: {value}",
       "spokenLanguageColon": "Mluvený jazyk: {value}",
+      "preferredLocaleColon": "Komunikační jazyk: {value}",
       "allergiesColon": "Alergie: {value}",
       "mobileColon": "Mobilní : {value}",
       "legalGuardianColon": "Zákonný zástupce:",
@@ -5286,7 +5314,7 @@
         "tailleTshirt": "Velikost trička",
         "allergies": "Známé alergie",
         "allergiesPlaceholder": "Arachidy, pyl...",
-        "preferredLocale": "Preferovaný jazyk",
+        "preferredLocale": "Komunikační jazyk",
         "spokenLanguage": "Mluvený jazyk",
         "notProvided": "Není specifikováno",
         "yes": "Ano",

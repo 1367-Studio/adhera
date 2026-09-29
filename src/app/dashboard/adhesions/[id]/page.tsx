@@ -75,6 +75,7 @@ type MembershipForm = {
   fieldGender:    FieldRequirement
   fieldPhoto:     FieldRequirement
   fieldLanguage:  FieldRequirement
+  fieldPreferredLocale: FieldRequirement
 
   allowCash:           boolean
   allowCheque:         boolean
@@ -181,6 +182,7 @@ export default function MembershipFormDetailPage() {
   const [fieldGender, setFieldGender]       = useState<FieldRequirement>("HIDDEN")
   const [fieldPhoto, setFieldPhoto]         = useState<FieldRequirement>("HIDDEN")
   const [fieldLanguage, setFieldLanguage]   = useState<FieldRequirement>("HIDDEN")
+  const [fieldPreferredLocale, setFieldPreferredLocale] = useState<FieldRequirement>("HIDDEN")
 
   // Step 4 — Paiement
   const [allowCash, setAllowCash]         = useState(false)
@@ -260,6 +262,7 @@ export default function MembershipFormDetailPage() {
     setFieldGender(form.fieldGender)
     setFieldPhoto(form.fieldPhoto)
     setFieldLanguage(form.fieldLanguage)
+    setFieldPreferredLocale(form.fieldPreferredLocale)
     setAllowCash(form.allowCash)
     setAllowCheque(form.allowCheque)
     setAllowTransfer(form.allowTransfer)
@@ -364,7 +367,7 @@ export default function MembershipFormDetailPage() {
     }
   }
   const standardFieldsPayload = (): SaveableFields => ({
-    fieldAddress, fieldBirthDate, fieldPhone, fieldMobile, fieldGender, fieldPhoto, fieldLanguage,
+    fieldAddress, fieldBirthDate, fieldPhone, fieldMobile, fieldGender, fieldPhoto, fieldLanguage, fieldPreferredLocale,
   })
   const paymentPayload = (): SaveableFields => ({
     allowCash, allowCheque, allowTransfer,
@@ -446,8 +449,8 @@ export default function MembershipFormDetailPage() {
   // editor's own — so its halves are tracked apart (each greys out its own button) and merged
   // for the step.
   const standardFieldsDirty = !!form && changed(
-    [fieldAddress, fieldBirthDate, fieldPhone, fieldMobile, fieldGender, fieldPhoto, fieldLanguage],
-    [form.fieldAddress, form.fieldBirthDate, form.fieldPhone, form.fieldMobile, form.fieldGender, form.fieldPhoto, form.fieldLanguage],
+    [fieldAddress, fieldBirthDate, fieldPhone, fieldMobile, fieldGender, fieldPhoto, fieldLanguage, fieldPreferredLocale],
+    [form.fieldAddress, form.fieldBirthDate, form.fieldPhone, form.fieldMobile, form.fieldGender, form.fieldPhoto, form.fieldLanguage, form.fieldPreferredLocale],
   )
   const stepDirty: Record<StepKey, boolean> = {
     // A picked-but-not-yet-uploaded file only lives in memory (see the lazy-upload pattern
@@ -815,7 +818,18 @@ export default function MembershipFormDetailPage() {
                   <SelectField label={tSteps("fields.mobileLabel")} options={requirementOptions} value={fieldMobile} onValueChange={v => setFieldMobile(v as FieldRequirement)} />
                   <SelectField label={tSteps("fields.genderLabel")} options={requirementOptions} value={fieldGender} onValueChange={v => setFieldGender(v as FieldRequirement)} />
                   <SelectField label={tSteps("fields.photoLabel")} options={requirementOptions} value={fieldPhoto} onValueChange={v => setFieldPhoto(v as FieldRequirement)} />
+                </div>
+                {/* Empilés plutôt que côte à côte : « Langue de communication » est plus long que
+                    « Langue parlée » et passe sur deux lignes dans la largeur d'une colonne, ce qui
+                    désalignait les deux champs l'un à côté de l'autre. */}
+                <div className="mt-3 space-y-3">
                   <SelectField label={tSteps("fields.languageLabel")} options={requirementOptions} value={fieldLanguage} onValueChange={v => setFieldLanguage(v as FieldRequirement)} />
+                  <div className="space-y-1.5">
+                    <SelectField label={tSteps("fields.preferredLocaleLabel")} options={requirementOptions} value={fieldPreferredLocale} onValueChange={v => setFieldPreferredLocale(v as FieldRequirement)} />
+                    {fieldPreferredLocale !== "HIDDEN" && (
+                      <p className="text-xs text-muted-foreground">{tSteps("fields.preferredLocaleHint")}</p>
+                    )}
+                  </div>
                 </div>
                 <div className="flex justify-end mt-3">
                   <Button
