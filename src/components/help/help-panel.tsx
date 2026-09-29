@@ -103,6 +103,7 @@ export function HelpPanel({ open, onOpenChange, onStartTour, onCloseComplete }: 
     setDebouncedSearchQuery("")
   }
 
+  // From the assistant's sources or a pinned article in Nouveautés: articles are read in Aide.
   function openArticleFromAssistant(slug: string) {
     setActiveTab("guide")
     setGuideView({ kind: "article", slug })
@@ -160,7 +161,7 @@ export function HelpPanel({ open, onOpenChange, onStartTour, onCloseComplete }: 
           </TabsContent>
 
           <TabsContent value="changelog" className="min-h-0 flex-1 overflow-y-auto">
-            <HelpChangelogTab />
+            <HelpChangelogTab onOpenArticle={openArticleFromAssistant} />
           </TabsContent>
 
           <SheetFooter className="shrink-0 flex-row items-center justify-between border-t px-4 py-2">
@@ -290,14 +291,12 @@ function HelpGuideTab({
     )
   }
 
-  // The listing carries every article: pinned ones come first on every page (and only there),
-  // then the current page's, every other module's after. Each group keeps the query's order.
-  const pinnedArticles: HelpArticleSummary[]  = []
+  // The listing carries every article: the current page's come first, every other module's
+  // after. Each group keeps the query's order. (Pinned ones are featured in Nouveautés.)
   const currentArticles: HelpArticleSummary[] = []
   const otherArticles: HelpArticleSummary[]   = []
   for (const article of helpContent.data?.articles ?? []) {
-    if (article.pinned) pinnedArticles.push(article)
-    else if (article.module === module) currentArticles.push(article)
+    if (article.module === module) currentArticles.push(article)
     else otherArticles.push(article)
   }
 
@@ -371,15 +370,6 @@ function HelpGuideTab({
         <p className="px-4 py-6 text-sm text-muted-foreground">{t("noContent")}</p>
       ) : (
         <>
-          {pinnedArticles.length > 0 && (
-            <div>
-              <p className="px-4 text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                {t("pinnedSection")}
-              </p>
-              <HelpArticleList articles={pinnedArticles} onOpenArticle={openArticle} />
-            </div>
-          )}
-
           {currentArticles.length > 0 && (
             <div>
               <p className="px-4 text-xs font-medium uppercase tracking-wide text-muted-foreground">
@@ -483,7 +473,34 @@ function HelpArticleList({ articles, onOpenArticle, showModule = false }: HelpAr
 
 /* ------------------------------------------------------- Nouveautés tab */
 
-function HelpChangelogTab() {
+function HelpChangelogTab({ onOpenArticle }: { onOpenArticle: (slug: string) => void }) {
+  const t = useTranslations("help")
+
+  // Same cache entry as the Aide tab — pinned articles cost no extra request.
+  const helpContent    = useHelpContent()
+  const pinnedArticles = (helpContent.data?.articles ?? []).filter(article => article.pinned)
+
+  if (pinnedArticles.length === 0) return <HelpChangelogList />
+
+  return (
+    <div className="flex flex-col gap-5 py-4">
+      <div>
+        <p className="px-4 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+          {t("pinnedSection")}
+        </p>
+        <HelpArticleList articles={pinnedArticles} onOpenArticle={onOpenArticle} />
+      </div>
+      <div>
+        <p className="px-4 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+          {t("changelog.latestSection")}
+        </p>
+        <HelpChangelogList />
+      </div>
+    </div>
+  )
+}
+
+function HelpChangelogList() {
   const t      = useTranslations("help")
   const locale = useLocale() as Locale
 

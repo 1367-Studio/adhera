@@ -6154,6 +6154,7 @@
       "apiKeyInvalidAskAdmin": "Demandez à un administrateur de la vérifier dans Paramètres → Intégrations."
     },
     "changelog": {
+      "latestSection": "Dernières mises à jour",
       "empty": "Aucune nouveauté pour l'instant.",
       "loadError": "Impossible de charger les nouveautés.",
       "kind": {

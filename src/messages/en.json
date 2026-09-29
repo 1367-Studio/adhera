@@ -6146,6 +6146,7 @@
       "apiKeyInvalidAskAdmin": "Ask an administrator to check it in Settings → Integrations."
     },
     "changelog": {
+      "latestSection": "Latest updates",
       "empty": "Nothing new yet.",
       "loadError": "Couldn't load what's new.",
       "kind": {
