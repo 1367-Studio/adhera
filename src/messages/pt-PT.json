@@ -5507,6 +5507,7 @@
       "associations": "Associações",
       "pricingOffers": "Ofertas de preço",
       "support": "Suporte",
+      "controlAlerts": "Alertas de controlo",
       "signOut": "Terminar sessão"
     },
     "themeToggle": {
@@ -5663,6 +5664,38 @@
       "closed": "Pedido fechado",
       "reopened": "Pedido reaberto"
     }
+  },
+  "controlAlerts": {
+    "title": "Controlo de adesão",
+    "subtitle": "Membros ativos sem quota há mais de 30 minutos.",
+    "filterAll": "Todas",
+    "status": {
+      "open": "Aberto",
+      "resolved": "Resolvido"
+    },
+    "columns": {
+      "membre": "Membro",
+      "association": "Associação",
+      "raisedAt": "Criado em",
+      "daysWithoutCotisation": "Dias sem quota",
+      "status": "Estado"
+    },
+    "empty": "Sem alertas de controlo.",
+    "resolveAction": "Resolver",
+    "resolveConfirmTitle": "Resolver este alerta?",
+    "resolveConfirmDescription": "Confirme que este caso foi verificado: normal ou corrigido.",
+    "noteLabel": "Nota (opcional)",
+    "notePlaceholder": "Porque é que este caso é normal, ou o que foi corrigido…",
+    "searchPlaceholder": "Pesquisar um membro ou uma associação…",
+    "selectedCount": "Selecionados: {count}",
+    "deselectAll": "Desmarcar",
+    "resolveSelected": "Resolver seleção",
+    "resolveManyConfirmTitle": "Resolver os alertas selecionados?",
+    "reopenAction": "Reabrir",
+    "reopenConfirmTitle": "Reabrir este alerta?",
+    "reopenConfirmDescription": "O alerta volta a ficar \"Aberto\" e perde a sua nota de resolução.",
+    "autoResolvedLabel": "(auto)",
+    "emptyForSearch": "Sem resultados para \"{search}\"."
   },
   "formTermsEditor": {
     "contentRequired": "Tem de preencher o campo «{conditionsLabel}» ou carregar um documento."

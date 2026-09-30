@@ -5441,6 +5441,7 @@
       "associations": "Szövetségek",
       "pricingOffers": "Árajánlatok",
       "support": "Támogatás",
+      "controlAlerts": "Ellenőrzési riasztások",
       "signOut": "Kilépés"
     },
     "themeToggle": {
@@ -5597,6 +5598,38 @@
       "closed": "Kérelem lezárva",
       "reopened": "Újra megnyitották a jelentkezést"
     }
+  },
+  "controlAlerts": {
+    "title": "Tagsági ellenőrzés",
+    "subtitle": "Aktív tagok több mint 30 perce hozzájárulás nélkül.",
+    "filterAll": "Összes",
+    "status": {
+      "open": "Nyitott",
+      "resolved": "Megoldva"
+    },
+    "columns": {
+      "membre": "Tag",
+      "association": "Egyesület",
+      "raisedAt": "Létrehozva",
+      "daysWithoutCotisation": "Napok hozzájárulás nélkül",
+      "status": "Állapot"
+    },
+    "empty": "Nincsenek ellenőrzési riasztások.",
+    "resolveAction": "Megoldás",
+    "resolveConfirmTitle": "Megoldja ezt a riasztást?",
+    "resolveConfirmDescription": "Erősítse meg, hogy ezt az esetet ellenőrizték: normális, vagy javítva lett.",
+    "noteLabel": "Megjegyzés (opcionális)",
+    "notePlaceholder": "Miért normális ez az eset, vagy mi lett javítva…",
+    "searchPlaceholder": "Tag vagy egyesület keresése…",
+    "selectedCount": "Kiválasztva: {count}",
+    "deselectAll": "Kijelölés törlése",
+    "resolveSelected": "Kijelöltek megoldása",
+    "resolveManyConfirmTitle": "Megoldja a kijelölt riasztásokat?",
+    "reopenAction": "Újranyitás",
+    "reopenConfirmTitle": "Újra megnyitja ezt a riasztást?",
+    "reopenConfirmDescription": "A riasztás visszaáll \"Nyitott\" állapotba, és elveszíti a megoldási megjegyzést.",
+    "autoResolvedLabel": "(automatikus)",
+    "emptyForSearch": "Nincs találat erre: \"{search}\"."
   },
   "formTermsEditor": {
     "contentRequired": "Ki kell töltenie a(z) „{conditionsLabel}” mezőt, vagy fel kell töltenie egy dokumentumot."

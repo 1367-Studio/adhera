@@ -5507,6 +5507,7 @@
       "associations": "Verbände",
       "pricingOffers": "Preisangebote",
       "support": "Unterstützung",
+      "controlAlerts": "Kontrollhinweise",
       "signOut": "Ausloggen"
     },
     "themeToggle": {
@@ -5663,6 +5664,38 @@
       "closed": "Anfrage geschlossen",
       "reopened": "Der Antrag wurde erneut eröffnet"
     }
+  },
+  "controlAlerts": {
+    "title": "Mitgliedschaftskontrolle",
+    "subtitle": "Aktive Mitglieder seit mehr als 30 Minuten ohne Beitrag.",
+    "filterAll": "Alle",
+    "status": {
+      "open": "Offen",
+      "resolved": "Gelöst"
+    },
+    "columns": {
+      "membre": "Mitglied",
+      "association": "Verein",
+      "raisedAt": "Erstellt am",
+      "daysWithoutCotisation": "Tage ohne Beitrag",
+      "status": "Status"
+    },
+    "empty": "Keine Kontrollhinweise.",
+    "resolveAction": "Lösen",
+    "resolveConfirmTitle": "Diesen Hinweis lösen?",
+    "resolveConfirmDescription": "Bestätigen Sie, dass dieser Fall geprüft wurde: normal oder behoben.",
+    "noteLabel": "Notiz (optional)",
+    "notePlaceholder": "Warum dieser Fall normal ist, oder was behoben wurde…",
+    "searchPlaceholder": "Mitglied oder Verein suchen…",
+    "selectedCount": "Ausgewählt: {count}",
+    "deselectAll": "Auswahl aufheben",
+    "resolveSelected": "Auswahl lösen",
+    "resolveManyConfirmTitle": "Ausgewählte Hinweise lösen?",
+    "reopenAction": "Wieder öffnen",
+    "reopenConfirmTitle": "Diesen Hinweis wieder öffnen?",
+    "reopenConfirmDescription": "Der Hinweis wird wieder \"Offen\" und verliert seine Lösungsnotiz.",
+    "autoResolvedLabel": "(automatisch)",
+    "emptyForSearch": "Keine Ergebnisse für \"{search}\"."
   },
   "formTermsEditor": {
     "contentRequired": "Sie müssen das Feld „{conditionsLabel}“ ausfüllen oder ein Dokument hochladen."

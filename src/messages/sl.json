@@ -5441,6 +5441,7 @@
       "associations": "Združenja",
       "pricingOffers": "Ponudbe cen",
       "support": "Podpora",
+      "controlAlerts": "Kontrolna opozorila",
       "signOut": "Odjavi se"
     },
     "themeToggle": {
@@ -5597,6 +5598,38 @@
       "closed": "Zahteva zaključena",
       "reopened": "Vloga ponovno odprta"
     }
+  },
+  "controlAlerts": {
+    "title": "Nadzor članstva",
+    "subtitle": "Aktivni člani brez prispevka več kot 30 minut.",
+    "filterAll": "Vse",
+    "status": {
+      "open": "Odprto",
+      "resolved": "Rešeno"
+    },
+    "columns": {
+      "membre": "Član",
+      "association": "Društvo",
+      "raisedAt": "Ustvarjeno",
+      "daysWithoutCotisation": "Dni brez prispevka",
+      "status": "Stanje"
+    },
+    "empty": "Ni kontrolnih opozoril.",
+    "resolveAction": "Reši",
+    "resolveConfirmTitle": "Rešiti to opozorilo?",
+    "resolveConfirmDescription": "Potrdite, da je bil ta primer preverjen: normalen ali popravljen.",
+    "noteLabel": "Opomba (neobvezno)",
+    "notePlaceholder": "Zakaj je ta primer normalen, ali kaj je bilo popravljeno…",
+    "searchPlaceholder": "Išči člana ali društvo…",
+    "selectedCount": "Izbrano: {count}",
+    "deselectAll": "Prekliči izbor",
+    "resolveSelected": "Reši izbor",
+    "resolveManyConfirmTitle": "Rešiti izbrana opozorila?",
+    "reopenAction": "Znova odpri",
+    "reopenConfirmTitle": "Znova odpreti to opozorilo?",
+    "reopenConfirmDescription": "Opozorilo se vrne v stanje \"Odprto\" in izgubi opombo o rešitvi.",
+    "autoResolvedLabel": "(samodejno)",
+    "emptyForSearch": "Ni rezultatov za \"{search}\"."
   },
   "formTermsEditor": {
     "contentRequired": "Izpolniti morate polje »{conditionsLabel}« ali naložiti dokument."

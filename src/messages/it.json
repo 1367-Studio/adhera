@@ -5507,6 +5507,7 @@
       "associations": "Associazioni",
       "pricingOffers": "Offerte di prezzo",
       "support": "Supporto",
+      "controlAlerts": "Avvisi di controllo",
       "signOut": "Disconnettiti"
     },
     "themeToggle": {
@@ -5663,6 +5664,38 @@
       "closed": "Richiesta chiusa",
       "reopened": "Domanda riaperta"
     }
+  },
+  "controlAlerts": {
+    "title": "Controllo adesione",
+    "subtitle": "Membri attivi senza contributo da più di 30 minuti.",
+    "filterAll": "Tutte",
+    "status": {
+      "open": "Aperto",
+      "resolved": "Risolto"
+    },
+    "columns": {
+      "membre": "Membro",
+      "association": "Associazione",
+      "raisedAt": "Creato il",
+      "daysWithoutCotisation": "Giorni senza contributo",
+      "status": "Stato"
+    },
+    "empty": "Nessun avviso di controllo.",
+    "resolveAction": "Risolvi",
+    "resolveConfirmTitle": "Risolvere questo avviso?",
+    "resolveConfirmDescription": "Confermare che questo caso è stato verificato: normale o corretto.",
+    "noteLabel": "Nota (opzionale)",
+    "notePlaceholder": "Perché questo caso è normale, o cosa è stato corretto…",
+    "searchPlaceholder": "Cerca un membro o un'associazione…",
+    "selectedCount": "Selezionati: {count}",
+    "deselectAll": "Deseleziona",
+    "resolveSelected": "Risolvi selezione",
+    "resolveManyConfirmTitle": "Risolvere gli avvisi selezionati?",
+    "reopenAction": "Riapri",
+    "reopenConfirmTitle": "Riaprire questo avviso?",
+    "reopenConfirmDescription": "L'avviso torna \"Aperto\" e perde la sua nota di risoluzione.",
+    "autoResolvedLabel": "(auto)",
+    "emptyForSearch": "Nessun risultato per \"{search}\"."
   },
   "formTermsEditor": {
     "contentRequired": "Devi compilare il campo «{conditionsLabel}» o caricare un documento."

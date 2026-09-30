@@ -5441,6 +5441,7 @@
       "associations": "Foreninger",
       "pricingOffers": "Pristilbud",
       "support": "Støtte",
+      "controlAlerts": "Kontrolalarmer",
       "signOut": "Log ud"
     },
     "themeToggle": {
@@ -5597,6 +5598,38 @@
       "closed": "Anmodning lukket",
       "reopened": "Ansøgningen genåbnet"
     }
+  },
+  "controlAlerts": {
+    "title": "Medlemskabskontrol",
+    "subtitle": "Aktive medlemmer uden bidrag i mere end 30 minutter.",
+    "filterAll": "Alle",
+    "status": {
+      "open": "Åben",
+      "resolved": "Løst"
+    },
+    "columns": {
+      "membre": "Medlem",
+      "association": "Forening",
+      "raisedAt": "Oprettet den",
+      "daysWithoutCotisation": "Dage uden bidrag",
+      "status": "Status"
+    },
+    "empty": "Ingen kontrolalarmer.",
+    "resolveAction": "Løs",
+    "resolveConfirmTitle": "Løs denne alarm?",
+    "resolveConfirmDescription": "Bekræft at denne sag er blevet tjekket: normal eller rettet.",
+    "noteLabel": "Note (valgfrit)",
+    "notePlaceholder": "Hvorfor denne sag er normal, eller hvad der blev rettet…",
+    "searchPlaceholder": "Søg et medlem eller en forening…",
+    "selectedCount": "Valgt: {count}",
+    "deselectAll": "Fravælg",
+    "resolveSelected": "Løs valgte",
+    "resolveManyConfirmTitle": "Løse de valgte alarmer?",
+    "reopenAction": "Genåbn",
+    "reopenConfirmTitle": "Genåbne denne alarm?",
+    "reopenConfirmDescription": "Alarmen bliver \"Åben\" igen og mister sin løsningsnote.",
+    "autoResolvedLabel": "(auto)",
+    "emptyForSearch": "Ingen resultater for \"{search}\"."
   },
   "formTermsEditor": {
     "contentRequired": "Du skal udfylde feltet “{conditionsLabel}” eller uploade et dokument."

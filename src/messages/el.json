@@ -5441,6 +5441,7 @@
       "associations": "Σύλλογοι",
       "pricingOffers": "Προσφορές τιμολόγησης",
       "support": "Υποστήριξη",
+      "controlAlerts": "Ειδοποιήσεις ελέγχου",
       "signOut": "Αποσύνδεση"
     },
     "themeToggle": {
@@ -5597,6 +5598,38 @@
       "closed": "Το αίτημα έκλεισε",
       "reopened": "Η εφαρμογή άνοιξε ξανά"
     }
+  },
+  "controlAlerts": {
+    "title": "Έλεγχος εγγραφής μελών",
+    "subtitle": "Ενεργά μέλη χωρίς συνεισφορά για περισσότερο από 30 λεπτά.",
+    "filterAll": "Όλες",
+    "status": {
+      "open": "Ανοιχτή",
+      "resolved": "Επιλύθηκε"
+    },
+    "columns": {
+      "membre": "Μέλος",
+      "association": "Σύλλογος",
+      "raisedAt": "Δημιουργήθηκε στις",
+      "daysWithoutCotisation": "Ημέρες χωρίς συνεισφορά",
+      "status": "Κατάσταση"
+    },
+    "empty": "Δεν υπάρχουν ειδοποιήσεις ελέγχου.",
+    "resolveAction": "Επίλυση",
+    "resolveConfirmTitle": "Επίλυση αυτής της ειδοποίησης;",
+    "resolveConfirmDescription": "Επιβεβαιώστε ότι αυτή η περίπτωση ελέγχθηκε: φυσιολογική ή διορθώθηκε.",
+    "noteLabel": "Σημείωση (προαιρετικό)",
+    "notePlaceholder": "Γιατί αυτή η περίπτωση είναι φυσιολογική, ή τι διορθώθηκε…",
+    "searchPlaceholder": "Αναζήτηση μέλους ή συλλόγου…",
+    "selectedCount": "Επιλεγμένα: {count}",
+    "deselectAll": "Αποεπιλογή",
+    "resolveSelected": "Επίλυση επιλογής",
+    "resolveManyConfirmTitle": "Επίλυση των επιλεγμένων ειδοποιήσεων;",
+    "reopenAction": "Επανάνοιγμα",
+    "reopenConfirmTitle": "Επανάνοιγμα αυτής της ειδοποίησης;",
+    "reopenConfirmDescription": "Η ειδοποίηση επιστρέφει σε \"Ανοιχτή\" και χάνει τη σημείωση επίλυσης.",
+    "autoResolvedLabel": "(αυτόματα)",
+    "emptyForSearch": "Δεν υπάρχουν αποτελέσματα για «{search}»."
   },
   "formTermsEditor": {
     "contentRequired": "Πρέπει να συμπληρώσετε το πεδίο «{conditionsLabel}» ή να ανεβάσετε ένα έγγραφο."
