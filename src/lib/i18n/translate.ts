@@ -17,9 +17,37 @@ const AI_TRANSLATE_RATE_LIMIT_MAX       = 30
 
 // A chat completion is far slower than Azure's dedicated translation endpoint for large
 // batches, and public page responses shouldn't stall on it — skip straight to Azure instead
-// of risking a slow/hanging own-AI call in the hot path of an anonymous page load.
-const AI_TRANSLATE_TIMEOUT_MS = 10_000
+// of risking a slow/hanging own-AI call in the hot path of an anonymous page load. Each call
+// only ever carries one chunk (see AI_TRANSLATE_CHUNK_MAX_CHARS below), so this only needs to
+// cover one chunk's worth of generation, not a whole form's fields at once.
+const AI_TRANSLATE_TIMEOUT_MS = 20_000
 const AI_TRANSLATE_MAX_TOKENS = 8000
+
+// Keeps each chat completion small enough to reliably finish inside AI_TRANSLATE_TIMEOUT_MS —
+// a single call covering every field of a long form (title + rich description + conditions +
+// confirmation message + offline instructions) was regularly timing out on gpt-4o-mini.
+// Batches over this are split on text boundaries (never mid-string) and translated
+// concurrently instead of in one oversized call.
+const AI_TRANSLATE_CHUNK_MAX_CHARS = 2_000
+
+// Greedily groups texts into chunks no larger than maxChars, without ever splitting a single
+// text across chunks — a text longer than maxChars on its own just becomes a one-item chunk.
+function chunkTexts(texts: string[], maxChars: number): string[][] {
+  const chunks: string[][] = []
+  let current: string[] = []
+  let currentChars = 0
+  for (const text of texts) {
+    if (current.length > 0 && currentChars + text.length > maxChars) {
+      chunks.push(current)
+      current = []
+      currentChars = 0
+    }
+    current.push(text)
+    currentChars += text.length
+  }
+  if (current.length > 0) chunks.push(current)
+  return chunks
+}
 
 // Same reasoning as the other 3 AI routes' MAX_TEXT_CHARS-style caps, sized generously
 // enough to cover the largest legitimate batch (the portal event list combines title +
@@ -148,8 +176,8 @@ async function batchTranslate(
     let translated: string[] | null = null
 
     // Own AI first (BYOK) — never the platform's shared Groq fallback, only a real own key.
-    // Anthropic keys are skipped: a reasoning model with no JSON mode inside the 10 s budget
-    // below would mostly time out and log a spurious failure — Azure serves those directly.
+    // Anthropic keys are skipped: a reasoning model with no JSON mode inside the timeout
+    // budget below would mostly time out and log a spurious failure — Azure serves those directly.
     const aiConfig = await getCachedAiConfig(associationId)
     if (aiConfig && !aiConfig.usingPlatform && aiConfig.kind === "openai-compatible") {
       const totalChars = missTexts.reduce((sum, t) => sum + t.length, 0)
@@ -162,7 +190,9 @@ async function batchTranslate(
 
       if (withinSizeLimit && withinRateLimit) {
         try {
-          translated = await aiTranslate(missTexts, locale, aiConfig)
+          const chunks       = chunkTexts(missTexts, AI_TRANSLATE_CHUNK_MAX_CHARS)
+          const chunkResults = await Promise.all(chunks.map((chunk) => aiTranslate(chunk, locale, aiConfig)))
+          translated = chunkResults.flat()
         } catch (err) {
           reportError(err, {
             area:   "ai",
