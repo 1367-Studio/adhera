@@ -1,5 +1,7 @@
 import { Badge } from "@/components/ui/badge"
 import { APP_NAME } from "@/config/brand"
+import { APP_URL } from "@/lib/env"
+import { parseModules } from "@/lib/modules"
 import { prisma } from "@/lib/prisma/client"
 import type { Metadata } from "next"
 import Link from "next/link"
@@ -29,6 +31,7 @@ async function getAssociations() {
       subscriptionStatus: true,
       trialEndsAt:        true,
       sitePublished:      true,
+      modules:            true,
       createdAt:          true,
       users: {
         where:  { role: { in: ["ADMIN", "PRESIDENT"] }, deletedAt: null },
@@ -57,6 +60,7 @@ export default async function AssociationsPage() {
           <thead className="bg-muted/50">
             <tr className="text-xs text-muted-foreground">
               <th className="text-left px-4 py-2.5 font-medium">Association</th>
+              <th className="text-left px-4 py-2.5 font-medium hidden lg:table-cell">Site</th>
               <th className="text-left px-4 py-2.5 font-medium hidden md:table-cell">Admin</th>
               <th className="text-right px-4 py-2.5 font-medium">Membres</th>
               <th className="text-right px-4 py-2.5 font-medium hidden sm:table-cell">Événements</th>
@@ -68,6 +72,9 @@ export default async function AssociationsPage() {
             {assocs.map(assoc => {
               const sub  = subLabel[assoc.subscriptionStatus] ?? { label: assoc.subscriptionStatus, variant: "outline" as const }
               const href = `/backoffice/associations/${assoc.id}`
+              // Same gate as the public page (src/app/[slug]/page.tsx): published AND site module on.
+              const siteIsLive    = assoc.sitePublished && parseModules(assoc.modules).site
+              const publicSiteUrl = `${APP_URL}/${assoc.slug}`
               return (
                 <tr key={assoc.id} className="hover:bg-muted/30 transition-colors group">
                   <td className="px-0 py-0">
@@ -75,9 +82,21 @@ export default async function AssociationsPage() {
                       <span className="font-medium group-hover:underline">{assoc.name}</span>
                       <span className="text-xs text-muted-foreground">
                         /{assoc.slug} · {assoc.city ?? assoc.country}
-                        {assoc.sitePublished && <span className="ml-1.5 text-green-600">● site actif</span>}
                       </span>
                     </Link>
+                  </td>
+                  <td className="px-4 py-3 hidden lg:table-cell max-w-56 text-xs text-muted-foreground">
+                    {siteIsLive ? (
+                      <a
+                        href={publicSiteUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="block truncate hover:text-foreground hover:underline"
+                        title={publicSiteUrl}
+                      >
+                        {publicSiteUrl.replace(/^https?:\/\//, "")}
+                      </a>
+                    ) : "—"}
                   </td>
                   <td className="px-0 py-0 hidden md:table-cell">
                     <Link href={href} className="flex px-4 py-3 text-muted-foreground h-full">
@@ -109,7 +128,7 @@ export default async function AssociationsPage() {
             })}
             {assocs.length === 0 && (
               <tr>
-                <td colSpan={6} className="px-4 py-8 text-center text-muted-foreground text-sm">
+                <td colSpan={7} className="px-4 py-8 text-center text-muted-foreground text-sm">
                   Aucune association enregistrée.
                 </td>
               </tr>

@@ -16,6 +16,8 @@ import { SelectField } from "@/components/ui/select-field"
 import { FormField } from "@/components/ui/form-field"
 import { AddressFields } from "@/components/ui/address-fields"
 import { QuantityStepper } from "@/components/ui/quantity-stepper"
+import { FormDraftNotice } from "@/components/public/form-draft-notice"
+import { useFormDraft } from "@/hooks/use-form-draft"
 import { EventDonationPrompt } from "@/components/public/event-donation-prompt"
 import { FormTermsSection } from "@/components/public/form-terms-section"
 import { publicFormTerms } from "@/lib/form-terms"
@@ -110,6 +112,20 @@ type Attendee = {
 const EMPTY_ATTENDEE: Attendee = { firstName: "", lastName: "", email: "", ticketTypeId: "", phone: "", ...EMPTY_ADDRESS_FORM_VALUES, birthDate: "", gender: "", mobile: "", answers: {} }
 
 type Props = { slug: string; id: string; legalDocuments: RequiredLegalDocument[] }
+
+// What survives a round-trip through Stripe (see useFormDraft). Consent, the signature and the
+// applied discount are left out on purpose: consent is given again, and a discount code is
+// re-checked by the server when the visitor applies it again.
+type EventRegisterDraft = {
+  attendees:          Attendee[]
+  attendeeCount:      number
+  paymentMethod:      PaymentMethod
+  donationSelections: Record<string, boolean>
+  donationAmounts:    Record<string, number>
+  productQuantities:  Record<string, number>
+  discountCodeInput:  string
+}
+const EVENT_REGISTER_DRAFT_VERSION = 1
 
 export function EvenementRegisterForm(props: Props) {
   return (
@@ -551,6 +567,53 @@ function EvenementRegisterFormInner({ slug, id, legalDocuments }: Props) {
   const [discountCodeStatus, setDiscountCodeStatus] = useState<"idle" | "checking" | "valid" | "invalid" | "notApplicable">("idle")
   const [appliedDiscount, setAppliedDiscount] = useState<{ code: string; kind: "FIXED" | "PERCENT"; value: number; ticketTypeIds: string[] } | null>(null)
 
+  // Restored once the event is loaded, so anything it no longer offers (a removed tier, custom
+  // field, donation or product) is dropped instead of being sent back to the server.
+  function restoreEventRegisterDraft(savedDraft: EventRegisterDraft) {
+    if (!event || savedDraft.attendees.length === 0) return
+    const availableTicketTypeIds = new Set(event.ticketTypes.filter(isTicketTypeAvailable).map(ticketType => ticketType.id))
+    const defaultTicketTypeId    = event.ticketTypes.length
+      ? (event.ticketTypes.find(isTicketTypeAvailable) ?? event.ticketTypes[0]).id
+      : ""
+    const customFieldIds = new Set(event.customFields.map(customField => customField.id))
+    const restoredAttendees = savedDraft.attendees.map(savedAttendee => ({
+      ...EMPTY_ATTENDEE,
+      ...savedAttendee,
+      ticketTypeId: availableTicketTypeIds.has(savedAttendee.ticketTypeId) ? savedAttendee.ticketTypeId : defaultTicketTypeId,
+      answers:      Object.fromEntries(
+        Object.entries(savedAttendee.answers ?? {}).filter(([customFieldId]) => customFieldIds.has(customFieldId)),
+      ),
+    }))
+    const donationExtraIds = new Set(event.donationExtras.map(donationExtra => donationExtra.id))
+    const productStockByVarianteId = new Map(event.products.map(product => [product.varianteId, product.stock]))
+
+    setAttendees(restoredAttendees)
+    // The capacity clamp below still applies if fewer seats are left than were picked.
+    setAttendeeCount(Math.min(Math.max(1, savedDraft.attendeeCount), restoredAttendees.length))
+    // Reset to STRIPE by the effect below when this method is no longer offered.
+    setPaymentMethod(savedDraft.paymentMethod)
+    setDonationSelections(Object.fromEntries(
+      Object.entries(savedDraft.donationSelections).filter(([donationExtraId]) => donationExtraIds.has(donationExtraId)),
+    ))
+    setDonationAmounts(Object.fromEntries(
+      Object.entries(savedDraft.donationAmounts).filter(([donationExtraId]) => donationExtraIds.has(donationExtraId)),
+    ))
+    setProductQuantities(Object.fromEntries(
+      Object.entries(savedDraft.productQuantities)
+        .filter(([varianteId]) => productStockByVarianteId.has(varianteId))
+        .map(([varianteId, quantity]) => [varianteId, Math.min(quantity, productStockByVarianteId.get(varianteId) ?? 0)]),
+    ))
+    setDiscountCodeInput(savedDraft.discountCodeInput)
+  }
+
+  const { isRestored: isDraftRestored, clearDraft, discardDraft } = useFormDraft<EventRegisterDraft>({
+    storageKey: `event:${slug}:${id}`,
+    version:    EVENT_REGISTER_DRAFT_VERSION,
+    values:     { attendees, attendeeCount, paymentMethod, donationSelections, donationAmounts, productQuantities, discountCodeInput },
+    isReady:    !!event,
+    onRestore:  restoreEventRegisterDraft,
+  })
+
   useEffect(() => {
     fetch(`/api/public/${slug}/evenements/${id}`)
       .then(r => { if (!r.ok) throw new Error(); return r.json() })
@@ -726,6 +789,7 @@ function EvenementRegisterFormInner({ slug, id, legalDocuments }: Props) {
     if (!p || shownTicketToast.current === p) return
     shownTicketToast.current = p
     if (p === "success") {
+      clearDraft()
       // A modal rather than a toast — the buyer just came back from Stripe and needs the
       // "your ticket is on its way by email" message to actually register, not flash by.
       setThankYouOpen(true)
@@ -741,7 +805,7 @@ function EvenementRegisterFormInner({ slug, id, legalDocuments }: Props) {
     // visitor forwarding this exact link to someone else doesn't replay the "registration
     // confirmed" state (and donation prompt) for a page they never actually completed.
     router.replace(pathname, { scroll: false })
-  }, [searchParams, t, router, pathname])
+  }, [searchParams, t, router, pathname, clearDraft])
 
   // Same guard pattern as the ticket toast above, for the separate round-trip through
   // Stripe when the visitor donates from the post-registration prompt below.
@@ -883,7 +947,8 @@ function EvenementRegisterFormInner({ slug, id, legalDocuments }: Props) {
       // only genuinely new ones go through — so the buyer is told who was carried over.
       if (data.skippedEmails?.length) toast.info(t("attendeesSkipped", { count: data.skippedEmails.length }))
       if (data.url) { window.location.href = data.url; return }
-      if (data.waitlisted) { setWaitlisted(true); return }
+      if (data.waitlisted) { clearDraft(); setWaitlisted(true); return }
+      clearDraft()
       setSubmitted(true)
     } catch {
       toast.error(t("errorNetwork"))
@@ -1055,6 +1120,8 @@ function EvenementRegisterFormInner({ slug, id, legalDocuments }: Props) {
                       <label htmlFor="website">{t("honeypotLabel")}</label>
                       <input id="website" type="text" tabIndex={-1} autoComplete="off" value={website} onChange={e => setWebsite(e.target.value)} />
                     </div>
+
+                    {isDraftRestored && <FormDraftNotice onDiscard={discardDraft} />}
 
                     {maxAttendees > 1 && (
                       <QuantityStepper value={attendeeCount} onChange={setQuantity} max={maxAttendees} label={t("attendeesCountLabel")} />
