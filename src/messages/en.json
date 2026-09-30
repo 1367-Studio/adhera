@@ -5378,6 +5378,10 @@
     "backToList": "Back to documents",
     "pdfShort": "PDF"
   },
+  "formDraft": {
+    "restored": "Your answers have been kept.",
+    "discard": "Start over with an empty form"
+  },
   "legalConsent": {
     "agreeLabel": "{count, plural, one {I accept the following document:} other {I accept the following documents:}}",
     "required": "You must accept the association's documents to continue.",

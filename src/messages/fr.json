@@ -5386,6 +5386,10 @@
     "backToList": "Retour aux documents",
     "pdfShort": "PDF"
   },
+  "formDraft": {
+    "restored": "Vos informations ont été conservées.",
+    "discard": "Recommencer avec un formulaire vide"
+  },
   "legalConsent": {
     "agreeLabel": "{count, plural, one {J'accepte le document suivant :} other {J'accepte les documents suivants :}}",
     "required": "Vous devez accepter les documents de l'association pour continuer.",

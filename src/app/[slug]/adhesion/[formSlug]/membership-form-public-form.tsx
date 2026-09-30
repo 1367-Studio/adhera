@@ -22,6 +22,8 @@ import { FormTermsSection } from "@/components/public/form-terms-section"
 import { publicFormTerms } from "@/lib/form-terms"
 import { LegalConsent, type RequiredLegalDocument } from "@/components/public/legal-consent"
 import { PublicFormSkeleton } from "@/components/public/public-form-skeleton"
+import { FormDraftNotice } from "@/components/public/form-draft-notice"
+import { useFormDraft } from "@/hooks/use-form-draft"
 import { spokenLanguageOptions } from "@/lib/languages"
 import { SUPPORTED_LOCALES, LOCALE_LABELS } from "@/i18n/locales"
 import { EMPTY_ADDRESS_FORM_VALUES, type AddressFormValues } from "@/lib/address"
@@ -154,6 +156,34 @@ function addressPayload(values: AddressFormValues) {
 }
 
 let nextRegistrantId = 0
+
+// What survives a round-trip through Stripe (see useFormDraft). Left out on purpose: the
+// password (a secret has no place in storage), consent (conditions, legal documents — given
+// again), the honeypot and every UI/submission state. Extra registrants are stored without
+// their React key, which is regenerated on restore.
+type MembershipFormDraft = {
+  tierId:            string
+  freeAmount:        number
+  payInInstallments: boolean
+  paymentMethod:     PaymentMethod
+  selectedExtraIds:  string[]
+  extraAmounts:      Record<string, number>
+  productQuantities: Record<string, number>
+  firstName:         string
+  lastName:          string
+  email:             string
+  addressValues:     AddressFormValues
+  birthDate:         string
+  phone:             string
+  mobile:            string
+  photoUrl:          string
+  sexe:              "" | "HOMME" | "FEMME"
+  spokenLanguage:    string
+  preferredLocale:   string
+  answers:           Record<string, string>
+  extraRegistrants:  Omit<RegistrantDraft, "key">[]
+}
+const MEMBERSHIP_FORM_DRAFT_VERSION = 1
 
 type Props = { slug: string; formSlug: string; legalDocuments: RequiredLegalDocument[] }
 
@@ -291,16 +321,6 @@ function MembershipFormPublicFormInner({ slug, formSlug, legalDocuments }: Props
       })
       .catch(() => {})
   }
-
-  const shownPaymentToast = useRef<string | null>(null)
-  useEffect(() => {
-    const p = searchParams.get("payment")
-    if (!p || shownPaymentToast.current === p) return
-    shownPaymentToast.current = p
-    if (p === "success") setOutcome("url")
-    if (p === "cancelled") toast.info(t("toastCancelled"))
-    router.replace(pathname, { scroll: false })
-  }, [searchParams, t, router, pathname])
 
   const membershipTiers = (form?.tiers.filter(t => t.itemType === "MEMBERSHIP") ?? [])
     .filter(t => !isAdminFill || (t.kind === "ONE_OFF" && !t.free))
@@ -503,6 +523,106 @@ function MembershipFormPublicFormInner({ slug, formSlug, legalDocuments }: Props
   function updateRegistrant(key: string, patch: Partial<RegistrantDraft>) {
     setExtraRegistrants(prev => prev.map(r => r.key === key ? { ...r, ...patch } : r))
   }
+
+  // Restored once the form is loaded, so anything it no longer offers (a removed tier, extra,
+  // custom field or product) is dropped instead of being sent back to the server. The effects
+  // above still reset the payment method, installments and products when the restored
+  // combination no longer allows them.
+  function restoreMembershipFormDraft(savedDraft: MembershipFormDraft) {
+    if (!form) return
+    const customFieldIds = new Set(form.customFields.map(customField => customField.id))
+    const keepExistingAnswers = (savedAnswers: Record<string, string> | undefined) => Object.fromEntries(
+      Object.entries(savedAnswers ?? {}).filter(([customFieldId]) => customFieldIds.has(customFieldId)),
+    )
+    const validSexe = (savedSexe: string): "" | "HOMME" | "FEMME" =>
+      savedSexe === "HOMME" || savedSexe === "FEMME" ? savedSexe : ""
+    const validPreferredLocale = (savedLocale: string) =>
+      (SUPPORTED_LOCALES as readonly string[]).includes(savedLocale) ? savedLocale : ""
+
+    const restoredTier = membershipTiers.find(membershipTier => membershipTier.id === savedDraft.tierId)
+    if (restoredTier) setTierId(restoredTier.id)
+    setFreeAmount(savedDraft.freeAmount)
+    setPayInInstallments(savedDraft.payInInstallments)
+    setPaymentMethod(savedDraft.paymentMethod)
+
+    const extraTierIds = new Set(extraTiers.map(extraTier => extraTier.id))
+    setSelectedExtraIds(new Set(savedDraft.selectedExtraIds.filter(extraTierId => extraTierIds.has(extraTierId))))
+    setExtraAmounts(Object.fromEntries(
+      Object.entries(savedDraft.extraAmounts).filter(([extraTierId]) => extraTierIds.has(extraTierId)),
+    ))
+
+    const productStockByVarianteId = new Map(offeredProducts.map(product => [product.varianteId, product.stock]))
+    setProductQuantities(Object.fromEntries(
+      Object.entries(savedDraft.productQuantities)
+        .filter(([varianteId]) => productStockByVarianteId.has(varianteId))
+        .map(([varianteId, quantity]) => [varianteId, Math.min(quantity, productStockByVarianteId.get(varianteId) ?? 0)] as const)
+        .filter(([, quantity]) => quantity > 0),
+    ))
+
+    setFirstName(savedDraft.firstName)
+    setLastName(savedDraft.lastName)
+    setEmail(savedDraft.email)
+    setAddressValues({ ...EMPTY_ADDRESS_FORM_VALUES, ...savedDraft.addressValues })
+    setBirthDate(savedDraft.birthDate)
+    setPhone(savedDraft.phone)
+    setMobile(savedDraft.mobile)
+    setPhotoUrl(savedDraft.photoUrl)
+    setSexe(validSexe(savedDraft.sexe))
+    setSpokenLanguage(savedDraft.spokenLanguage)
+    setPreferredLocale(validPreferredLocale(savedDraft.preferredLocale))
+    setAnswers(keepExistingAnswers(savedDraft.answers))
+
+    // Group registration needs a tier every extra registrant can pay online — without one the
+    // form no longer offers it, so the extra blocks are dropped rather than left unpayable.
+    const multiUsableTierIds = new Set(multiUsableTiers.map(multiUsableTier => multiUsableTier.id))
+    const defaultRegistrantTierId = multiUsableTiers[0]?.id
+    setExtraRegistrants(!defaultRegistrantTierId ? [] : savedDraft.extraRegistrants
+      .slice(0, MAX_REGISTRANTS - 1)
+      .map(savedRegistrant => ({
+        ...savedRegistrant,
+        key:             `reg-${nextRegistrantId++}`,
+        tierId:          multiUsableTierIds.has(savedRegistrant.tierId) ? savedRegistrant.tierId : defaultRegistrantTierId,
+        sexe:            validSexe(savedRegistrant.sexe),
+        preferredLocale: validPreferredLocale(savedRegistrant.preferredLocale),
+        addressValues:   { ...EMPTY_ADDRESS_FORM_VALUES, ...savedRegistrant.addressValues },
+        answers:         keepExistingAnswers(savedRegistrant.answers),
+      })))
+  }
+
+  const { isRestored: isDraftRestored, clearDraft, discardDraft } = useFormDraft<MembershipFormDraft>({
+    storageKey: `membership:${slug}:${formSlug}`,
+    version:    MEMBERSHIP_FORM_DRAFT_VERSION,
+    values: {
+      tierId, freeAmount, payInInstallments, paymentMethod,
+      selectedExtraIds: [...selectedExtraIds], extraAmounts, productQuantities,
+      firstName, lastName, email, addressValues, birthDate, phone, mobile, photoUrl,
+      sexe, spokenLanguage, preferredLocale, answers,
+      extraRegistrants: extraRegistrants.map(registrant => ({
+        tierId: registrant.tierId, freeAmount: registrant.freeAmount,
+        firstName: registrant.firstName, lastName: registrant.lastName, birthDate: registrant.birthDate,
+        phone: registrant.phone, mobile: registrant.mobile, sexe: registrant.sexe,
+        spokenLanguage: registrant.spokenLanguage, preferredLocale: registrant.preferredLocale,
+        addressValues: registrant.addressValues, photoUrl: registrant.photoUrl, answers: registrant.answers,
+      })),
+    },
+    // Never in preview (a manager testing the form) nor in admin fill (a manager typing
+    // someone else's data, with no Stripe round-trip to survive).
+    isReady:    !!form && !isPreview && !isAdminFill,
+    onRestore:  restoreMembershipFormDraft,
+  })
+
+  const shownPaymentToast = useRef<string | null>(null)
+  useEffect(() => {
+    const p = searchParams.get("payment")
+    if (!p || shownPaymentToast.current === p) return
+    shownPaymentToast.current = p
+    if (p === "success") {
+      clearDraft()
+      setOutcome("url")
+    }
+    if (p === "cancelled") toast.info(t("toastCancelled"))
+    router.replace(pathname, { scroll: false })
+  }, [searchParams, t, router, pathname, clearDraft])
 
   const emailValid = (v: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)
 
@@ -748,9 +868,9 @@ function MembershipFormPublicFormInner({ slug, formSlug, legalDocuments }: Props
         return
       }
       if (data.url) { window.location.href = data.url; return }
-      if (data.offline) { setOutcome("offline"); return }
-      if (data.immediate) { setOutcome("immediate"); return }
-      if (data.pending) { setOutcome("pending"); return }
+      if (data.offline) { clearDraft(); setOutcome("offline"); return }
+      if (data.immediate) { clearDraft(); setOutcome("immediate"); return }
+      if (data.pending) { clearDraft(); setOutcome("pending"); return }
     } catch {
       toast.error(t("errorNetwork"))
     } finally {
@@ -861,6 +981,8 @@ function MembershipFormPublicFormInner({ slug, formSlug, legalDocuments }: Props
                   <label htmlFor="website">{t("honeypotLabel")}</label>
                   <input id="website" type="text" tabIndex={-1} autoComplete="off" value={website} onChange={e => setWebsite(e.target.value)} />
                 </div>
+
+                {isDraftRestored && <FormDraftNotice onDiscard={discardDraft} />}
 
                 <div className="space-y-2">
                   {isMulti && <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{t("registrantLabel", { number: 1 })}</p>}
