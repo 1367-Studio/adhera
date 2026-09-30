@@ -18,16 +18,20 @@ const AI_TRANSLATE_RATE_LIMIT_MAX       = 30
 // A chat completion is far slower than Azure's dedicated translation endpoint for large
 // batches, and public page responses shouldn't stall on it — skip straight to Azure instead
 // of risking a slow/hanging own-AI call in the hot path of an anonymous page load. Each call
-// only ever carries one chunk (see AI_TRANSLATE_CHUNK_MAX_CHARS below), so this only needs to
-// cover one chunk's worth of generation, not a whole form's fields at once.
-const AI_TRANSLATE_TIMEOUT_MS = 20_000
+// only ever carries one chunk (see AI_TRANSLATE_CHUNK_MAX_CHARS below), but a single field
+// (e.g. a long CGU/conditions block) can't be split without risking broken HTML, so it still
+// rides alone in its own oversized chunk — measured at ~30s for a 7 200-char conditions field
+// on gpt-4o-mini, hence the generous margin here rather than tying this to the chunk cap.
+const AI_TRANSLATE_TIMEOUT_MS = 60_000
 const AI_TRANSLATE_MAX_TOKENS = 8000
 
-// Keeps each chat completion small enough to reliably finish inside AI_TRANSLATE_TIMEOUT_MS —
-// a single call covering every field of a long form (title + rich description + conditions +
-// confirmation message + offline instructions) was regularly timing out on gpt-4o-mini.
-// Batches over this are split on text boundaries (never mid-string) and translated
-// concurrently instead of in one oversized call.
+// Keeps multiple small/medium fields from riding in one oversized call together — a single
+// call covering every short field of a form (title + confirmation message + offline
+// instructions, etc.) was regularly timing out on gpt-4o-mini even though none of them is
+// individually large. Batches over this are split on text boundaries (never mid-string) and
+// translated concurrently instead of in one call. A single field already larger than this
+// (e.g. a long rich-text description or conditions block) still rides alone in its own
+// chunk — AI_TRANSLATE_TIMEOUT_MS above is sized for that case, not this constant.
 const AI_TRANSLATE_CHUNK_MAX_CHARS = 2_000
 
 // Greedily groups texts into chunks no larger than maxChars, without ever splitting a single
