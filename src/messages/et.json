@@ -5441,6 +5441,7 @@
       "associations": "Ühendused",
       "pricingOffers": "Hinnapakkumised",
       "support": "Toetus",
+      "controlAlerts": "Kontrollteated",
       "signOut": "Logi välja"
     },
     "themeToggle": {
@@ -5597,6 +5598,38 @@
       "closed": "Taotlus suletud",
       "reopened": "Taotlus avati uuesti"
     }
+  },
+  "controlAlerts": {
+    "title": "Liikmesuse kontroll",
+    "subtitle": "Aktiivsed liikmed, kellel pole üle 30 minuti panust.",
+    "filterAll": "Kõik",
+    "status": {
+      "open": "Avatud",
+      "resolved": "Lahendatud"
+    },
+    "columns": {
+      "membre": "Liige",
+      "association": "Ühendus",
+      "raisedAt": "Loodud",
+      "daysWithoutCotisation": "Päevi ilma panuseta",
+      "status": "Olek"
+    },
+    "empty": "Kontrollteateid pole.",
+    "resolveAction": "Lahenda",
+    "resolveConfirmTitle": "Kas lahendada see teade?",
+    "resolveConfirmDescription": "Kinnitage, et see juhtum on kontrollitud: normaalne või parandatud.",
+    "noteLabel": "Märkus (valikuline)",
+    "notePlaceholder": "Miks see juhtum on normaalne, või mis parandati…",
+    "searchPlaceholder": "Otsi liiget või ühendust…",
+    "selectedCount": "Valitud: {count}",
+    "deselectAll": "Tühista valik",
+    "resolveSelected": "Lahenda valik",
+    "resolveManyConfirmTitle": "Kas lahendada valitud teated?",
+    "reopenAction": "Ava uuesti",
+    "reopenConfirmTitle": "Kas avada see teade uuesti?",
+    "reopenConfirmDescription": "Teade läheb tagasi olekusse \"Avatud\" ja kaotab oma lahendusmärkuse.",
+    "autoResolvedLabel": "(automaatne)",
+    "emptyForSearch": "Tulemusi ei leitud päringule \"{search}\"."
   },
   "formTermsEditor": {
     "contentRequired": "Peate täitma välja „{conditionsLabel}“ või üles laadima dokumendi."

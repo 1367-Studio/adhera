@@ -5441,6 +5441,7 @@
       "associations": "Asociacijos",
       "pricingOffers": "Kainos pasiūlymai",
       "support": "Parama",
+      "controlAlerts": "Kontrolės įspėjimai",
       "signOut": "Atsijungti"
     },
     "themeToggle": {
@@ -5597,6 +5598,38 @@
       "closed": "Prašymas uždarytas",
       "reopened": "Paraiška vėl atidaryta"
     }
+  },
+  "controlAlerts": {
+    "title": "Narystės kontrolė",
+    "subtitle": "Aktyvūs nariai be įnašo ilgiau nei 30 minučių.",
+    "filterAll": "Visi",
+    "status": {
+      "open": "Atviras",
+      "resolved": "Išspręstas"
+    },
+    "columns": {
+      "membre": "Narys",
+      "association": "Asociacija",
+      "raisedAt": "Sukurta",
+      "daysWithoutCotisation": "Dienos be įnašo",
+      "status": "Būsena"
+    },
+    "empty": "Kontrolės įspėjimų nėra.",
+    "resolveAction": "Išspręsti",
+    "resolveConfirmTitle": "Išspręsti šį įspėjimą?",
+    "resolveConfirmDescription": "Patvirtinkite, kad šis atvejis buvo patikrintas: normalus arba ištaisytas.",
+    "noteLabel": "Pastaba (neprivaloma)",
+    "notePlaceholder": "Kodėl šis atvejis normalus, arba kas buvo ištaisyta…",
+    "searchPlaceholder": "Ieškoti nario ar asociacijos…",
+    "selectedCount": "Pasirinkta: {count}",
+    "deselectAll": "Atžymėti",
+    "resolveSelected": "Išspręsti pasirinktus",
+    "resolveManyConfirmTitle": "Išspręsti pasirinktus įspėjimus?",
+    "reopenAction": "Atidaryti iš naujo",
+    "reopenConfirmTitle": "Atidaryti šį įspėjimą iš naujo?",
+    "reopenConfirmDescription": "Įspėjimas grįžta į būseną \"Atviras\" ir praranda sprendimo pastabą.",
+    "autoResolvedLabel": "(automatiškai)",
+    "emptyForSearch": "Rezultatų pagal \"{search}\" nerasta."
   },
   "formTermsEditor": {
     "contentRequired": "Turite užpildyti lauką „{conditionsLabel}“ arba įkelti dokumentą."

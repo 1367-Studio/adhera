@@ -5441,6 +5441,7 @@
       "associations": "Asociații",
       "pricingOffers": "Oferte de preț",
       "support": "Sprijin",
+      "controlAlerts": "Alerte de control",
       "signOut": "Deconectează-te"
     },
     "themeToggle": {
@@ -5597,6 +5598,38 @@
       "closed": "Cerere închisă",
       "reopened": "Cererea a fost redeschisă"
     }
+  },
+  "controlAlerts": {
+    "title": "Control aderare",
+    "subtitle": "Membri activi fără contribuție de mai mult de 30 de minute.",
+    "filterAll": "Toate",
+    "status": {
+      "open": "Deschisă",
+      "resolved": "Rezolvată"
+    },
+    "columns": {
+      "membre": "Membru",
+      "association": "Asociație",
+      "raisedAt": "Creată la",
+      "daysWithoutCotisation": "Zile fără contribuție",
+      "status": "Stare"
+    },
+    "empty": "Nicio alertă de control.",
+    "resolveAction": "Rezolvă",
+    "resolveConfirmTitle": "Rezolvați această alertă?",
+    "resolveConfirmDescription": "Confirmați că acest caz a fost verificat: normal sau corectat.",
+    "noteLabel": "Notă (opțional)",
+    "notePlaceholder": "De ce acest caz este normal, sau ce a fost corectat…",
+    "searchPlaceholder": "Căutați un membru sau o asociație…",
+    "selectedCount": "Selectate: {count}",
+    "deselectAll": "Deselectează",
+    "resolveSelected": "Rezolvă selecția",
+    "resolveManyConfirmTitle": "Rezolvați alertele selectate?",
+    "reopenAction": "Redeschide",
+    "reopenConfirmTitle": "Redeschideți această alertă?",
+    "reopenConfirmDescription": "Alerta revine la \"Deschisă\" și pierde nota de rezolvare.",
+    "autoResolvedLabel": "(auto)",
+    "emptyForSearch": "Niciun rezultat pentru \"{search}\"."
   },
   "formTermsEditor": {
     "contentRequired": "Trebuie să completați câmpul „{conditionsLabel}” sau să încărcați un document."

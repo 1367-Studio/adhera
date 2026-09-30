@@ -5441,6 +5441,7 @@
       "associations": "Udruge",
       "pricingOffers": "Ponude za određivanje cijena",
       "support": "Podrška",
+      "controlAlerts": "Kontrolna upozorenja",
       "signOut": "Odjavi se"
     },
     "themeToggle": {
@@ -5597,6 +5598,38 @@
       "closed": "Zahtjev zatvoren",
       "reopened": "Prijava ponovno otvorena"
     }
+  },
+  "controlAlerts": {
+    "title": "Kontrola članstva",
+    "subtitle": "Aktivni članovi bez doprinosa dulje od 30 minuta.",
+    "filterAll": "Sve",
+    "status": {
+      "open": "Otvoreno",
+      "resolved": "Riješeno"
+    },
+    "columns": {
+      "membre": "Član",
+      "association": "Udruga",
+      "raisedAt": "Kreirano",
+      "daysWithoutCotisation": "Dana bez doprinosa",
+      "status": "Status"
+    },
+    "empty": "Nema kontrolnih upozorenja.",
+    "resolveAction": "Riješi",
+    "resolveConfirmTitle": "Riješiti ovo upozorenje?",
+    "resolveConfirmDescription": "Potvrdite da je ovaj slučaj provjeren: normalan ili ispravljen.",
+    "noteLabel": "Bilješka (neobavezno)",
+    "notePlaceholder": "Zašto je ovaj slučaj normalan, ili što je ispravljeno…",
+    "searchPlaceholder": "Pretraži člana ili udrugu…",
+    "selectedCount": "Odabrano: {count}",
+    "deselectAll": "Poništi odabir",
+    "resolveSelected": "Riješi odabrano",
+    "resolveManyConfirmTitle": "Riješiti odabrana upozorenja?",
+    "reopenAction": "Ponovno otvori",
+    "reopenConfirmTitle": "Ponovno otvoriti ovo upozorenje?",
+    "reopenConfirmDescription": "Upozorenje se vraća u stanje \"Otvoreno\" i gubi bilješku o rješenju.",
+    "autoResolvedLabel": "(auto)",
+    "emptyForSearch": "Nema rezultata za \"{search}\"."
   },
   "formTermsEditor": {
     "contentRequired": "Morate ispuniti polje „{conditionsLabel}” ili prenijeti dokument."

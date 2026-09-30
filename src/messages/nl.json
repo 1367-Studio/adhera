@@ -5507,6 +5507,7 @@
       "associations": "Verenigingen",
       "pricingOffers": "Prijsaanbiedingen",
       "support": "Ondersteuning",
+      "controlAlerts": "Controlemeldingen",
       "signOut": "Uitloggen"
     },
     "themeToggle": {
@@ -5663,6 +5664,38 @@
       "closed": "Verzoek gesloten",
       "reopened": "De aanvraag is heropend"
     }
+  },
+  "controlAlerts": {
+    "title": "Lidmaatschapscontrole",
+    "subtitle": "Actieve leden zonder bijdrage gedurende meer dan 30 minuten.",
+    "filterAll": "Alle",
+    "status": {
+      "open": "Open",
+      "resolved": "Opgelost"
+    },
+    "columns": {
+      "membre": "Lid",
+      "association": "Vereniging",
+      "raisedAt": "Aangemaakt op",
+      "daysWithoutCotisation": "Dagen zonder bijdrage",
+      "status": "Status"
+    },
+    "empty": "Geen controlemeldingen.",
+    "resolveAction": "Oplossen",
+    "resolveConfirmTitle": "Deze melding oplossen?",
+    "resolveConfirmDescription": "Bevestig dat dit geval is gecontroleerd: normaal, of opgelost.",
+    "noteLabel": "Notitie (optioneel)",
+    "notePlaceholder": "Waarom dit geval normaal is, of wat er is opgelost…",
+    "searchPlaceholder": "Zoek een lid of vereniging…",
+    "selectedCount": "Geselecteerd: {count}",
+    "deselectAll": "Selectie opheffen",
+    "resolveSelected": "Selectie oplossen",
+    "resolveManyConfirmTitle": "Geselecteerde meldingen oplossen?",
+    "reopenAction": "Heropenen",
+    "reopenConfirmTitle": "Deze melding heropenen?",
+    "reopenConfirmDescription": "De melding wordt weer \"Open\" en verliest zijn oplossingsnotitie.",
+    "autoResolvedLabel": "(auto)",
+    "emptyForSearch": "Geen resultaten voor \"{search}\"."
   },
   "formTermsEditor": {
     "contentRequired": "U moet het veld ‘{conditionsLabel}’ invullen of een document uploaden."

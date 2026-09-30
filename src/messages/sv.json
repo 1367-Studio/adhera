@@ -5441,6 +5441,7 @@
       "associations": "Föreningar",
       "pricingOffers": "Prissättningserbjudanden",
       "support": "Stöd",
+      "controlAlerts": "Kontrollvarningar",
       "signOut": "Logga ut"
     },
     "themeToggle": {
@@ -5597,6 +5598,38 @@
       "closed": "Begäran avslutad",
       "reopened": "Ansökan öppnades på nytt"
     }
+  },
+  "controlAlerts": {
+    "title": "Medlemskontroll",
+    "subtitle": "Aktiva medlemmar utan bidrag i mer än 30 minuter.",
+    "filterAll": "Alla",
+    "status": {
+      "open": "Öppen",
+      "resolved": "Löst"
+    },
+    "columns": {
+      "membre": "Medlem",
+      "association": "Förening",
+      "raisedAt": "Skapad",
+      "daysWithoutCotisation": "Dagar utan bidrag",
+      "status": "Status"
+    },
+    "empty": "Inga kontrollvarningar.",
+    "resolveAction": "Lös",
+    "resolveConfirmTitle": "Lösa denna varning?",
+    "resolveConfirmDescription": "Bekräfta att detta fall har kontrollerats: normalt, eller åtgärdat.",
+    "noteLabel": "Anteckning (valfritt)",
+    "notePlaceholder": "Varför detta fall är normalt, eller vad som åtgärdades…",
+    "searchPlaceholder": "Sök en medlem eller förening…",
+    "selectedCount": "Valda: {count}",
+    "deselectAll": "Avmarkera",
+    "resolveSelected": "Lös urval",
+    "resolveManyConfirmTitle": "Lösa de valda varningarna?",
+    "reopenAction": "Återöppna",
+    "reopenConfirmTitle": "Återöppna denna varning?",
+    "reopenConfirmDescription": "Varningen blir \"Öppen\" igen och förlorar sin lösningsanteckning.",
+    "autoResolvedLabel": "(auto)",
+    "emptyForSearch": "Inga resultat för \"{search}\"."
   },
   "formTermsEditor": {
     "contentRequired": "Du måste fylla i fältet ”{conditionsLabel}” eller ladda upp ett dokument."
