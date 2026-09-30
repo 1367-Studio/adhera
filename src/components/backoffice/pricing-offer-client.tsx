@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
-import { PlusIcon, CopyIcon, CheckIcon, TrashIcon, XIcon } from "@phosphor-icons/react/dist/ssr";
+import { PlusIcon, CopyIcon, CheckIcon, TrashIcon, XIcon, BellIcon, ArrowsClockwiseIcon, LockOpenIcon } from "@phosphor-icons/react/dist/ssr";
 import { Modal } from "@/components/ui/modal"
 import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 import { Button } from "@/components/ui/button"
@@ -12,6 +12,10 @@ import { FormField } from "@/components/ui/form-field"
 import { SelectField } from "@/components/ui/select-field"
 import { CheckboxField } from "@/components/ui/checkbox-field"
 import { CurrencyField } from "@/components/ui/currency-field"
+import { DateField, todayValue } from "@/components/ui/date-field"
+import { Badge } from "@/components/ui/badge"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
+import { RowActions, type RowAction } from "@/components/ui/row-actions"
 import { BASE_PATH } from "@/lib/env"
 import { APP_NAME } from "@/config/brand"
 
@@ -259,20 +263,46 @@ export function NewPricingOfferButton() {
   )
 }
 
-export function PricingOfferRowActions({ id, token, status }: { id: string; token: string; status: string }) {
+type OfferAssociation = {
+  hasStripeCustomer:      boolean
+  hasStripeSchedule:      boolean
+  pendingScheduleRelease: boolean
+  alreadyConverted:       boolean
+}
+
+const NOTIFY_COOLDOWN_MS = 24 * 60 * 60 * 1000
+
+export function PricingOfferRowActions({
+  id, token, status, association, hasPaymentMethod, lastNotifiedAt,
+}: {
+  id:                string
+  token:              string
+  status:             string
+  association?:       OfferAssociation | null
+  hasPaymentMethod?:  boolean | null
+  lastNotifiedAt?:    string | null
+}) {
   const router = useRouter()
-  const [copied, setCopied]   = useState(false)
   const [confirmOpen, setConfirmOpen] = useState(false)
   const [revoking, setRevoking] = useState(false)
+  const [notifying, setNotifying] = useState(false)
+  const [convertOpen, setConvertOpen] = useState(false)
+  const [releaseConfirmOpen, setReleaseConfirmOpen] = useState(false)
+  const [releasing, setReleasing] = useState(false)
 
   const link = `${typeof window !== "undefined" ? window.location.origin : ""}${BASE_PATH}/register?offer=${token}`
+
+  // Date.now() can't be called directly during render (breaks purity) — a lazy useState
+  // initializer runs exactly once, which React treats as the sanctioned escape hatch for
+  // reading a non-deterministic value like the current time. Just a proactive UI hint, not
+  // the real cooldown boundary (that's enforced server-side, see notify-payment-method/route.ts).
+  const [mountedAt] = useState(() => Date.now())
+  const notifiedRecently = !!lastNotifiedAt && mountedAt - new Date(lastNotifiedAt).getTime() < NOTIFY_COOLDOWN_MS
 
   async function copyLink() {
     try {
       await navigator.clipboard.writeText(link)
-      setCopied(true)
       toast.success("Lien copié")
-      setTimeout(() => setCopied(false), 2000)
     } catch {
       toast.error("Copie impossible. Sélectionnez le lien manuellement.")
     }
@@ -292,16 +322,109 @@ export function PricingOfferRowActions({ id, token, status }: { id: string; toke
     }
   }
 
+  async function notify() {
+    setNotifying(true)
+    try {
+      const res = await fetch(`/api/backoffice/pricing-offers/${id}/notify-payment-method`, { method: "POST" })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error ?? "Erreur")
+      toast.success("Client notifié")
+      router.refresh()
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Erreur")
+    } finally {
+      setNotifying(false)
+    }
+  }
+
+  async function releaseNow() {
+    setReleasing(true)
+    try {
+      const res = await fetch(`/api/backoffice/pricing-offers/${id}/release-schedule`, { method: "POST" })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error ?? "Erreur")
+      toast.success("Planning libéré")
+      setReleaseConfirmOpen(false)
+      router.refresh()
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Erreur")
+    } finally {
+      setReleasing(false)
+    }
+  }
+
+  const usedActions: RowAction[] = []
+  if (association?.hasStripeCustomer && hasPaymentMethod !== true) {
+    usedActions.push({
+      label:    notifiedRecently ? "Notifier le client (relance dans 24h)" : "Notifier le client",
+      icon:     <BellIcon className="size-3.5" />,
+      onClick:  notify,
+      disabled: notifying || notifiedRecently,
+    })
+  }
+  if (association?.pendingScheduleRelease) {
+    usedActions.push({
+      label:   "Libérer maintenant",
+      icon:    <LockOpenIcon className="size-3.5" />,
+      onClick: () => setReleaseConfirmOpen(true),
+    })
+  } else if (association?.hasStripeSchedule && !association.alreadyConverted) {
+    usedActions.push({
+      label:   "Convertir en tarif standard",
+      icon:    <ArrowsClockwiseIcon className="size-3.5" />,
+      onClick: () => setConvertOpen(true),
+    })
+  }
+
   return (
-    <div className="flex items-center justify-end gap-1">
+    <div className="flex items-center justify-end gap-2">
+      {status === "USED" && association && (
+        <>
+          {association.hasStripeCustomer && (
+            <Badge variant={hasPaymentMethod ? "success" : "outline"}>
+              Carte : {hasPaymentMethod ? "oui" : "non"}
+            </Badge>
+          )}
+
+          {association.pendingScheduleRelease && (
+            <Tooltip>
+              <TooltipTrigger render={<Badge variant="warning" />}>En attente de paiement</TooltipTrigger>
+              <TooltipContent side="top" className="max-w-64 whitespace-normal text-left">
+                La conversion a été programmée mais le planning Stripe ne sera libéré qu&apos;au premier paiement confirmé sur le nouveau tarif.
+              </TooltipContent>
+            </Tooltip>
+          )}
+
+          {!association.pendingScheduleRelease && association.hasStripeSchedule && association.alreadyConverted && (
+            <Tooltip>
+              <TooltipTrigger render={<Badge variant="outline" />}>Convertie</TooltipTrigger>
+              <TooltipContent side="top" className="max-w-64 whitespace-normal text-left">
+                Déjà convertie, planning conservé pour d&apos;autres phases négociées — gérer manuellement dans Stripe si besoin.
+              </TooltipContent>
+            </Tooltip>
+          )}
+
+          {usedActions.length > 0 && <RowActions actions={usedActions} />}
+
+          <ConfirmDialog
+            open={releaseConfirmOpen}
+            onOpenChange={setReleaseConfirmOpen}
+            title="Libérer le planning maintenant ?"
+            description="À utiliser si le client n'ajoutera pas de carte bancaire — le planning Stripe sera détaché immédiatement, sans attendre de paiement confirmé."
+            confirmLabel="Libérer"
+            loading={releasing}
+            onConfirm={releaseNow}
+          />
+          <ConvertOfferDialog id={id} open={convertOpen} onOpenChange={setConvertOpen} />
+        </>
+      )}
+
       {status === "PENDING" && (
         <>
-          <Button variant="ghost" size="icon-sm" onClick={copyLink} aria-label="Copier le lien">
-            {copied ? <CheckIcon className="size-3.5" /> : <CopyIcon className="size-3.5" />}
-          </Button>
-          <Button variant="ghost" size="icon-sm" onClick={() => setConfirmOpen(true)} aria-label="Révoquer l'offre">
-            <TrashIcon className="size-3.5" />
-          </Button>
+          <RowActions actions={[
+            { label: "Copier le lien",     icon: <CopyIcon className="size-3.5" />,  onClick: copyLink },
+            { label: "Révoquer l'offre",   icon: <TrashIcon className="size-3.5" />, onClick: () => setConfirmOpen(true), destructive: true, separator: true },
+          ]} />
           <ConfirmDialog
             open={confirmOpen}
             onOpenChange={setConfirmOpen}
@@ -314,5 +437,112 @@ export function PricingOfferRowActions({ id, token, status }: { id: string; toke
         </>
       )}
     </div>
+  )
+}
+
+const BILLING_CYCLE_OPTIONS = [
+  { value: "monthly", label: "Mensuel" },
+  { value: "yearly",  label: "Annuel" },
+]
+
+function ConvertOfferDialog({ id, open, onOpenChange }: { id: string; open: boolean; onOpenChange: (v: boolean) => void }) {
+  const router = useRouter()
+  const [loading, setLoading] = useState(false)
+  const [error, setError]     = useState("")
+
+  const [effectiveDate, setEffectiveDate]     = useState(todayValue())
+  const [planTier, setPlanTier]               = useState("ESSENTIAL")
+  const [billingCycle, setBillingCycle]       = useState("monthly")
+  const [releaseOnPayment, setReleaseOnPayment] = useState(false)
+
+  function reset() {
+    setEffectiveDate(todayValue()); setPlanTier("ESSENTIAL"); setBillingCycle("monthly")
+    setReleaseOnPayment(false); setError("")
+  }
+
+  async function handleSubmit() {
+    setError("")
+    setLoading(true)
+    try {
+      const res = await fetch(`/api/backoffice/pricing-offers/${id}/convert`, {
+        method:  "POST",
+        headers: { "Content-Type": "application/json" },
+        body:    JSON.stringify({ effectiveDate, planTier, billingCycle, releaseOnPayment }),
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error ?? "Erreur lors de la conversion")
+      toast.success("Offre convertie en tarif standard")
+      onOpenChange(false)
+      reset()
+      router.refresh()
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Erreur")
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return (
+    <Modal
+      open={open}
+      onOpenChange={(v) => { onOpenChange(v); if (!v) reset() }}
+      title="Convertir en tarif standard"
+      description="Ferme la phase négociée en cours à la date choisie et enchaîne sur le tarif du catalogue."
+      size="lg"
+      footer={
+        <>
+          <Button variant="outline" onClick={() => onOpenChange(false)} disabled={loading}>Annuler</Button>
+          <Button onClick={handleSubmit} disabled={loading}>
+            {loading ? "Conversion…" : "Convertir"}
+          </Button>
+        </>
+      }
+    >
+      <div className="space-y-4 py-1">
+        <DateField
+          label="Date d'effet"
+          value={effectiveDate}
+          onChange={setEffectiveDate}
+          min={todayValue()}
+          allowFuture
+          required
+        />
+
+        <SelectField
+          label="Plan"
+          options={PLAN_OPTIONS}
+          value={planTier}
+          onValueChange={setPlanTier}
+          required
+        />
+
+        <SelectField
+          label="Cycle de facturation"
+          options={BILLING_CYCLE_OPTIONS}
+          value={billingCycle}
+          onValueChange={setBillingCycle}
+          required
+        />
+
+        <CheckboxField
+          id="release-on-payment"
+          label="Libérer le planning après confirmation du premier paiement"
+          checked={releaseOnPayment}
+          onChange={e => setReleaseOnPayment(e.target.checked)}
+        />
+        <p className="text-xs text-muted-foreground">
+          « Libérer » signifie que l&apos;association redevient un abonnement standard comme les
+          autres, dès que le premier paiement au nouveau tarif est confirmé — plus aucune gestion
+          particulière à faire ensuite. Cochez cette case si cette conversion est la dernière étape
+          prévue pour ce client. Ne cochez pas si d&apos;autres phases négociées sont prévues après
+          celle-ci : le planning doit alors rester actif pour pouvoir enchaîner la phase suivante
+          plus tard.
+        </p>
+
+        {error && (
+          <p className="rounded-md bg-destructive/10 px-3 py-2 text-xs text-destructive">{error}</p>
+        )}
+      </div>
+    </Modal>
   )
 }
