@@ -42,6 +42,15 @@ import {
 } from "@/lib/webhook/membership-installments"
 import { reportError } from "@/lib/monitoring"
 
+// This API version moved the subscription id off Invoice's top level and onto
+// invoice.parent.subscription_details.subscription — same helper as donation-subscriptions.ts
+// and cotisation-subscriptions.ts, duplicated locally rather than shared (same convention
+// those two modules already use for it).
+function invoiceSubscriptionId(invoice: Stripe.Invoice): string | null {
+  const sub = invoice.parent?.subscription_details?.subscription
+  return typeof sub === "string" ? sub : sub?.id ?? null
+}
+
 export const dynamic = "force-dynamic"
 
 export async function POST(req: Request) {
@@ -1440,6 +1449,37 @@ export async function POST(req: Request) {
       // isReferenceAlreadyRecorded), so a redelivery can't record the same payment twice.
       if (cotisationResult === "awaiting-checkout" || installmentResult === "awaiting-checkout") {
         return NextResponse.json({ error: "Adhésion pas encore enregistrée — paiement à retraiter plus tard" }, { status: 503 })
+      }
+
+      // A PricingOffer converted to standard pricing (see /api/backoffice/pricing-offers/[id]/convert)
+      // with "release after first confirmed payment" requested — once the new catalog-price
+      // phase actually generates a paid invoice, release the schedule so the association ends
+      // up structurally identical to one onboarded through the normal register flow. Runs
+      // independently of the donation/cotisation/installment handling above: a platform-billing
+      // invoice never carries their discriminating metadata, so there's no overlap.
+      const platformSubId = invoiceSubscriptionId(invoice)
+      if (platformSubId && invoice.amount_paid > 0) {
+        const pendingAssoc = await prisma.association.findFirst({
+          where:  { stripeSubscriptionId: platformSubId, stripeSchedulePendingReleaseAt: { not: null } },
+          select: { id: true, stripeSubscriptionScheduleId: true },
+        })
+        if (pendingAssoc?.stripeSubscriptionScheduleId) {
+          const schedule = await stripe.subscriptionSchedules.retrieve(pendingAssoc.stripeSubscriptionScheduleId)
+          if (schedule.status === "active") await stripe.subscriptionSchedules.release(schedule.id)
+          // stripeSchedulePendingReleaseAt being cleared here IS the idempotency guard — a
+          // redelivery of this same event finds nothing left pending and no-ops.
+          await prisma.association.update({
+            where: { id: pendingAssoc.id },
+            data:  { stripeSubscriptionScheduleId: null, stripeSchedulePendingReleaseAt: null },
+          })
+          await writeActivityLog({
+            associationId: pendingAssoc.id,
+            action:        "SUBSCRIPTION_SCHEDULE_RELEASED",
+            entity:        "Association",
+            entityId:      pendingAssoc.id,
+            metadata:      { stripeInvoiceId: invoice.id, stripeEventId: event.id },
+          })
+        }
       }
       break
     }
