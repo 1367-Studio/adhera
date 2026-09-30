@@ -8,7 +8,7 @@ import { withAdminAuth } from "@/lib/api-wrapper"
 import { sendEmail } from "@/lib/mail"
 import { membershipPaymentLinkEmail } from "@/lib/email"
 import { APP_URL } from "@/lib/env"
-import { assertMemberLimit, MemberLimitReachedError, resolveDocumentBranding } from "@/lib/plan-limits"
+import { assertMemberLimit, MemberLimitReachedError, resolveEmailBranding } from "@/lib/plan-limits"
 import { eligibleReceiptAmount } from "@/lib/receipt-eligibility"
 import { currentCotisationYear } from "@/lib/membre-adherent"
 import { writeActivityLog } from "@/lib/activity-log"
@@ -213,7 +213,7 @@ export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
     amount:          membershipAmount,
     year:            cotisation.year,
     payUrl:          `${APP_URL}/cotisation/${cotisation.paymentToken}`,
-    branding:        resolveDocumentBranding(assoc),
+    branding:        await resolveEmailBranding(associationId),
   }), { associationId, membreId: membre.id, source: "TRANSACTION" }).catch(error =>
     reportError(error, { area: "email", action: "membership-forms.admin-registration-payment-link-email", extra: { associationId, membreId: membre.id, cotisationId: cotisation.id } }))
 

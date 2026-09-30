@@ -6,7 +6,7 @@ import { sendEmail } from "@/lib/mail"
 import { customEmail, escapeHtml } from "@/lib/email"
 import { writeActivityLog } from "@/lib/activity-log"
 import { buildDocumentPdf } from "@/lib/pdf/document-pdf"
-import { resolveDocumentBranding } from "@/lib/plan-limits"
+import { resolveEmailBranding } from "@/lib/plan-limits"
 
 const FINANCE = ["ADMIN", "PRESIDENT", "TRESORIER"]
 
@@ -34,7 +34,7 @@ export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
     select: { name: true, address: true, city: true, siren: true, website: true, iban: true, bic: true, plan: true, customBrandingEnabled: true, logoUrl: true },
   })
   if (!association) return NextResponse.json({ error: "Association introuvable" }, { status: 404 })
-  const branding = resolveDocumentBranding(association)
+  const branding = await resolveEmailBranding(associationId)
 
   const pdf = await buildDocumentPdf({
     kind:           "FACTURE",

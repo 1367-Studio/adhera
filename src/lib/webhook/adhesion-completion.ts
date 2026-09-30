@@ -4,7 +4,7 @@ import { stripe } from "@/lib/stripe"
 import { sendEmail } from "@/lib/mail"
 import { adhesionCompletionConfirmationEmail } from "@/lib/email"
 import { writeActivityLog } from "@/lib/activity-log"
-import { resolveDocumentBranding } from "@/lib/plan-limits"
+import { resolveEmailBranding } from "@/lib/plan-limits"
 import { recordCotisationPayment } from "@/lib/cotisation-payments"
 import { resolveExerciceForDate } from "@/lib/finance/exercice"
 import { currentCotisationYear } from "@/lib/membre-adherent"
@@ -181,7 +181,7 @@ export async function handleAdhesionCompletion(session: Stripe.Checkout.Session)
   if (membre.email) {
     sendEmail(adhesionCompletionConfirmationEmail({
       firstName: membre.firstName, email: membre.email, associationName: membre.association.name,
-      amount, branding: resolveDocumentBranding(membre.association),
+      amount, branding: await resolveEmailBranding(membre.associationId),
     }), { associationId: membre.associationId, membreId: membre.id, source: "TRANSACTION", sourceId: cotisation.id })
       .catch(error => reportError(error, { area: "email", action: "webhook.adhesion-completion-email", extra: { associationId: membre.associationId, membreId: membre.id, cotisationId: cotisation.id } }))
   }

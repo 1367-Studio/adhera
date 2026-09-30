@@ -6,7 +6,7 @@ import { meetingUpdateSchema } from "@/lib/schemas"
 import { pusherServer } from "@/lib/pusher-server"
 import { sendEmail } from "@/lib/mail"
 import { meetingInviteEmail } from "@/lib/email"
-import { resolveDocumentBranding } from "@/lib/plan-limits"
+import { resolveEmailBranding } from "@/lib/plan-limits"
 import { MEETING_WITH_PARTICIPANTS_SELECT, redactParticipantStatus } from "@/lib/meetings/select"
 import { APP_URL } from "@/lib/env"
 
@@ -85,7 +85,7 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
       })
       const portalPath   = `/portal/${association?.slug}/reunions`
       const portalBase   = `${APP_URL}${portalPath}`
-      const branding     = association ? resolveDocumentBranding(association) : null
+      const branding     = association ? await resolveEmailBranding(associationId) : null
       const finalTitle       = title ?? existing.title
       const finalScheduledAt = scheduledAt !== undefined
         ? (scheduledAt ? new Date(scheduledAt) : null)

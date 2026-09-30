@@ -5,7 +5,7 @@ import { prisma } from "@/lib/prisma/client"
 import { withAdminAuth } from "@/lib/api-wrapper"
 import { guardModule } from "@/lib/auth/require-module"
 import { inngest } from "@/lib/inngest"
-import { resolveDocumentBranding } from "@/lib/plan-limits"
+import { resolveEmailBranding } from "@/lib/plan-limits"
 import { nextAmountDue } from "@/lib/cotisation-status"
 
 const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
@@ -81,7 +81,7 @@ export const POST = withAdminAuth(async (req, ctx) => {
     return NextResponse.json({ jobId: null, totalRecipients: 0, skippedNoContact, skippedInvalid })
   }
 
-  const branding = channel === "EMAIL" ? resolveDocumentBranding(assoc) : undefined
+  const branding = channel === "EMAIL" ? await resolveEmailBranding(associationId) : undefined
   const jobId    = randomUUID()
 
   await inngest.send({

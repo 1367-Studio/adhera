@@ -6,7 +6,7 @@ import { customEmail } from "@/lib/email"
 import { substituteVars, buildVars } from "@/lib/automation"
 import type { SessionUser } from "@/lib/user-context"
 import { withAdminAuth } from "@/lib/api-wrapper"
-import { resolveDocumentBranding } from "@/lib/plan-limits"
+import { resolveEmailBranding } from "@/lib/plan-limits"
 import { APP_URL } from "@/lib/env"
 
 const ALLOWED_ROLES = ["ADMIN", "PRESIDENT", "SECRETAIRE"]
@@ -52,7 +52,7 @@ export const POST = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
     subject,
     bodyHtml,
     recipientEmail:  adminEmail,
-    branding:        resolveDocumentBranding(rule.association),
+    branding:        await resolveEmailBranding(associationId),
   }), { associationId, source: "TEST", sourceId: id })
 
   return NextResponse.json({ ok: true, sentTo: adminEmail })

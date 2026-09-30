@@ -7,7 +7,7 @@ import { stripe } from "@/lib/stripe"
 import { writeActivityLog } from "@/lib/activity-log"
 import { guardModule } from "@/lib/auth/require-module"
 import { withAdminAuth } from "@/lib/api-wrapper"
-import { resolveDocumentBranding } from "@/lib/plan-limits"
+import { resolveEmailBranding } from "@/lib/plan-limits"
 import { sendEmail } from "@/lib/mail"
 import { boutiqueRefundEmail } from "@/lib/email"
 import { pusherServer } from "@/lib/pusher-server"
@@ -293,7 +293,7 @@ export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
           quantity:  item.refundedQty,
           unitPrice: item.unitPrice,
         })),
-        branding: association ? resolveDocumentBranding(association) : undefined,
+        branding: association ? await resolveEmailBranding(ctx.associationId) : undefined,
       }),
     }, { associationId: ctx.associationId, membreId: exists.membreId ?? undefined, source: "TRANSACTION", sourceId: id })
       .catch(error => reportError(error, { area: "email", action: "boutique.refund-email", extra: { associationId: ctx.associationId, commandeId: id } }))

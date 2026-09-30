@@ -4,7 +4,7 @@ import { z } from "zod"
 import { withAdminAuth } from "@/lib/api-wrapper"
 import { prisma } from "@/lib/prisma/client"
 import { inngest } from "@/lib/inngest"
-import { resolveDocumentBranding } from "@/lib/plan-limits"
+import { resolveEmailBranding } from "@/lib/plan-limits"
 import { EMAIL_ATTACHMENT_ERRORS, MAX_EMAIL_ATTACHMENTS_COUNT, verifyEmailAttachments } from "@/lib/email-attachments"
 import { SUPPORTED_LOCALES } from "@/i18n/locales"
 import { reportError } from "@/lib/monitoring"
@@ -76,7 +76,7 @@ export const POST = withAdminAuth(async (req, ctx) => {
   })
 
   const recipients = membres.filter(m => m.email)
-  const branding = resolveDocumentBranding(assoc)
+  const branding = await resolveEmailBranding(ctx.associationId)
 
   // An external address that happens to match a member already covered by this send would
   // otherwise get the message twice — once personalized, once with blank name variables.

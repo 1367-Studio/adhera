@@ -10,7 +10,7 @@ import { withPortalAuth } from "@/lib/api-wrapper"
 import { isEvenementOver } from "@/lib/evenement-timing"
 import { sendEmail } from "@/lib/mail"
 import { waitlistConfirmationEmail } from "@/lib/email"
-import { resolveDocumentBranding } from "@/lib/plan-limits"
+import { resolveEmailBranding } from "@/lib/plan-limits"
 import { reportError } from "@/lib/monitoring"
 
 const MAX_QUANTITY  = 10
@@ -251,6 +251,7 @@ export const POST = withPortalAuth<Params>(async (req, ctx, { id: evenementId })
         { firstName: membre.firstName, email: membre.email },
         ...guestNames.filter(g => g.email).map(g => ({ firstName: g.firstName, email: g.email! })),
       ]
+      const branding = await resolveEmailBranding(ctx.associationId)
       await Promise.all(recipients.filter(r => r.email).map(r => sendEmail(waitlistConfirmationEmail({
         firstName: r.firstName, email: r.email!,
         associationName: assoc.name,
@@ -258,7 +259,7 @@ export const POST = withPortalAuth<Params>(async (req, ctx, { id: evenementId })
         eventDate:       evenement.date,
         eventLocation:   evenement.location,
         portalUrl,
-        branding: resolveDocumentBranding(assoc),
+        branding,
       }), { associationId: ctx.associationId, source: "PUBLIC_EVENT_INSCRIPTION", sourceId: result.ids[0] })
         .catch(error => reportError(error, { area: "email", action: "portal.evenement.waitlist-email", extra: { associationId: ctx.associationId, evenementId } }))))
     }

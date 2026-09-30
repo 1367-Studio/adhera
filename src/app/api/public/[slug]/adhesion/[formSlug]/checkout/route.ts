@@ -10,7 +10,7 @@ import { prisma } from "@/lib/prisma/client"
 import { parseModules } from "@/lib/modules"
 import { APP_URL } from "@/lib/env"
 import { rateLimit, requestIp } from "@/lib/rate-limit"
-import { assertMemberLimit, MemberLimitReachedError, MEMBER_LIMIT_VISITOR_MESSAGE, resolveDocumentBranding } from "@/lib/plan-limits"
+import { assertMemberLimit, MemberLimitReachedError, MEMBER_LIMIT_VISITOR_MESSAGE, resolveEmailBranding } from "@/lib/plan-limits"
 import { CURRENT_TERMS_VERSION, consentIp } from "@/lib/consent"
 import { acceptLegalDocuments, LegalConsentError } from "@/lib/legal/acceptance"
 import { currentCotisationYear } from "@/lib/membre-adherent"
@@ -445,7 +445,7 @@ export async function POST(
 
       sendEmail(membershipPendingValidationEmail({
         firstName, email, associationName: assoc.name, formTitle: form.title,
-        branding: resolveDocumentBranding(assoc),
+        branding: await resolveEmailBranding(assoc.id),
       }), { associationId: assoc.id, membreId: membre.id, source: "TRANSACTION" }).catch(error => reportError(error, { area: "email", action: "adhesion.pending-email", extra: { associationId: assoc.id, membershipFormId: form.id, membreId: membre.id } }))
 
       notifyMembershipSignup({
@@ -505,7 +505,7 @@ export async function POST(
       throw err
     }
 
-    const branding = resolveDocumentBranding(assoc)
+    const branding = await resolveEmailBranding(assoc.id)
     // Tarif gratuit validé immédiatement : la cotisation EXONERE créée juste au-dessus couvre
     // déjà la période, donc la carte existe dès maintenant — sauf si l'association ne l'a pas
     // activée, ce que seule la source unique de vérité sait (voir isMemberCardAvailable).
@@ -663,7 +663,7 @@ export async function POST(
       throw err
     }
 
-    const branding = resolveDocumentBranding(assoc)
+    const branding = await resolveEmailBranding(assoc.id)
     // Attendu ici : pas de carte. La cotisation reste EN_ATTENTE tant qu'un admin n'a pas
     // enregistré l'encaissement — c'est l'email de confirmation de ce paiement qui portera le
     // bouton (voir sendCotisationPaymentConfirmation). On pose quand même la question à la
@@ -1168,7 +1168,7 @@ async function handleMultiRegistrantCheckout(
     // create loop above — so that's the one and only person who can be reached here.
     sendEmail(membershipPendingValidationEmail({
       firstName: resolved[0].r.firstName, email: data.email, associationName: assoc.name, formTitle: form.title,
-      branding: resolveDocumentBranding(assoc), otherRegistrants: allNames.slice(1),
+      branding: await resolveEmailBranding(assoc.id), otherRegistrants: allNames.slice(1),
     }), { associationId: assoc.id, membreId: firstMembreId, source: "TRANSACTION" }).catch(error => reportError(error, { area: "email", action: "adhesion.multi-pending-email", extra: { associationId: assoc.id, membershipFormId: form.id, membreId: firstMembreId } }))
 
     notifyMembershipSignup({

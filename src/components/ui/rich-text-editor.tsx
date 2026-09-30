@@ -11,7 +11,7 @@ import {
   TextBIcon, TextItalicIcon, TextUnderlineIcon as UnderlineIcon, ListIcon, ListNumbersIcon,
   TextHTwoIcon, TextHThreeIcon, SparkleIcon, LinkIcon, LinkBreakIcon, CaretDownIcon,
 } from "@phosphor-icons/react/dist/ssr"
-import { cn } from "@/lib/utils"
+import { cn, normalizeHref } from "@/lib/utils"
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -35,14 +35,6 @@ const toolbarBtn = (active: boolean) =>
       ? "bg-primary/10 dark:bg-primary/20 text-primary"
       : "text-muted-foreground hover:text-foreground hover:bg-muted/60",
   )
-
-// A bare "example.org" would be stored as a relative href and resolve against the current
-// page — prepend a scheme unless the user gave one (http, https, mailto, tel).
-function normalizeHref(raw: string): string {
-  const v = raw.trim()
-  if (!v) return ""
-  return /^(https?:|mailto:|tel:)/i.test(v) ? v : `https://${v}`
-}
 
 interface LinkButtonProps {
   editor:      Editor

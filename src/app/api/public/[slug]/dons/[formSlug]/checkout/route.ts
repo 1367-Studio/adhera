@@ -15,7 +15,7 @@ import { writeActivityLog } from "@/lib/activity-log"
 import { eligibleReceiptAmount } from "@/lib/receipt-eligibility"
 import { sendEmail } from "@/lib/mail"
 import { donPendingEmail } from "@/lib/email"
-import { resolveDocumentBranding } from "@/lib/plan-limits"
+import { resolveEmailBranding } from "@/lib/plan-limits"
 import { reportError } from "@/lib/monitoring"
 
 // Stripe refuses to charge below ~0,50 € on EUR cards. 1 € is a round number safely above
@@ -292,7 +292,7 @@ export async function POST(
         firstName, email, associationName: assoc.name, amount,
         paymentMethod: paymentMethod as "ESPECES" | "CHEQUE" | "VIREMENT",
         offlineInstructions: form.offlineInstructions,
-        branding: resolveDocumentBranding(assoc),
+        branding: await resolveEmailBranding(assoc.id),
       }),
       { associationId: assoc.id, source: "TRANSACTION", sourceId: don.id },
     ).catch(error => reportError(error, { area: "email", action: "public.don.pending-email", extra: { associationId: assoc.id, donId: don.id } }))

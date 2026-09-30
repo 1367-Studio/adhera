@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma/client"
 import { sendEmail } from "@/lib/mail"
 import { membershipPaymentLinkEmail } from "@/lib/email"
 import { APP_URL } from "@/lib/env"
-import { resolveDocumentBranding } from "@/lib/plan-limits"
+import { resolveEmailBranding } from "@/lib/plan-limits"
 import { nextAmountDue } from "@/lib/cotisation-status"
 import { writeActivityLog } from "@/lib/activity-log"
 import { reportError } from "@/lib/monitoring"
@@ -63,7 +63,7 @@ export const POST = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
     amount:          amountDue,
     year:            cotisation.year,
     payUrl:          `${APP_URL}/cotisation/${cotisation.paymentToken}`,
-    branding:        resolveDocumentBranding(assoc),
+    branding:        await resolveEmailBranding(associationId),
   }), { associationId, membreId: membre.id, source: "TRANSACTION" }).catch(error =>
     reportError(error, { area: "email", action: "membres.resend-payment-link-email", extra: { associationId, membreId: membre.id, cotisationId: cotisation.id } }))
 

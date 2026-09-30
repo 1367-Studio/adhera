@@ -8,7 +8,7 @@ import { isEvenementOver } from "@/lib/evenement-timing"
 import { resolveExerciceForDate, closedExerciceGuard } from "@/lib/finance/exercice"
 import { sendEmail } from "@/lib/mail"
 import { rsvpConfirmationEmail } from "@/lib/email"
-import { resolveDocumentBranding } from "@/lib/plan-limits"
+import { resolveEmailBranding } from "@/lib/plan-limits"
 import { APP_URL } from "@/lib/env"
 import {
   TicketPaymentError, applyDoorPayment, assertSeatAvailable, doorPaymentSchema, evenementHasFee,
@@ -131,7 +131,7 @@ export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id: eveneme
         portalUrl:       `${APP_URL}/${assoc.slug}/evenements/${evenement.slug ?? evenementId}`,
         cancelUrl,
         ticketQr,
-        branding: resolveDocumentBranding(assoc),
+        branding: await resolveEmailBranding(associationId),
       }), { associationId, source: "EVENT_GUEST_ADDED", sourceId: participation.id }).catch(error =>
         reportError(error, { area: "email", action: "evenements.guest-confirmation-email", extra: { associationId, evenementId, participationId: participation.id } }))
     }
