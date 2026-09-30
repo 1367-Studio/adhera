@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma/client"
 import { Badge } from "@/components/ui/badge"
 import { NewPricingOfferButton, PricingOfferRowActions } from "@/components/backoffice/pricing-offer-client"
 import { planLabel } from "@/lib/plan-tier"
+import { customerHasPaymentMethod } from "@/lib/stripe"
 
 export const metadata: Metadata = {
   title: `Offres tarifaires · Backoffice ${APP_NAME}`,
@@ -17,10 +18,65 @@ const statusLabel: Record<string, { label: string; variant: "success" | "warning
 }
 
 async function getOffers() {
-  return prisma.pricingOffer.findMany({
+  const offers = await prisma.pricingOffer.findMany({
     orderBy: { createdAt: "desc" },
-    include: { association: { select: { name: true, slug: true } } },
+    include: {
+      association: {
+        select: {
+          id: true, name: true, slug: true,
+          stripeCustomerId: true, stripeSubscriptionId: true,
+          stripeSubscriptionScheduleId: true, stripeSchedulePendingReleaseAt: true,
+        },
+      },
+    },
   })
+
+  // Live Stripe lookup + "last notified" only for offers where it's actually meaningful —
+  // an association already redeemed and with a Stripe customer to check.
+  const usedWithCustomer = offers.filter(
+    (o): o is typeof o & { association: NonNullable<typeof o.association> & { stripeCustomerId: string } } =>
+      o.status === "USED" && !!o.association?.stripeCustomerId,
+  )
+
+  const assocIds = usedWithCustomer.map(o => o.association.id)
+
+  const [paymentMethodEntries, lastNotified, converted] = await Promise.all([
+    // Never lets one flaky Stripe lookup (deleted customer, network blip) 500 the whole list —
+    // worst case that one badge just reads "unknown" instead of oui/non.
+    Promise.all(usedWithCustomer.map(async o => [
+      o.id,
+      await customerHasPaymentMethod(o.association.stripeCustomerId, o.association.stripeSubscriptionId).catch(() => null),
+    ] as const)),
+    assocIds.length
+      ? prisma.activityLog.findMany({
+          where:    { associationId: { in: assocIds }, action: "PRICING_OFFER_PAYMENT_METHOD_NOTIFIED" },
+          orderBy:  { createdAt: "desc" },
+          distinct: ["associationId"],
+          select:   { associationId: true, createdAt: true },
+        })
+      : Promise.resolve([]),
+    // Whether this association's schedule was ever converted — independent of
+    // stripeSchedulePendingReleaseAt, which is only set when "release on payment" was
+    // checked. Without this, a conversion left open on purpose (more negotiated phases
+    // still planned) would leave the "Convertir" button re-clickable forever.
+    assocIds.length
+      ? prisma.activityLog.findMany({
+          where:    { associationId: { in: assocIds }, action: "PRICING_OFFER_CONVERTED_TO_STANDARD" },
+          distinct: ["associationId"],
+          select:   { associationId: true },
+        })
+      : Promise.resolve([]),
+  ])
+  const paymentMethodByOfferId = new Map(paymentMethodEntries)
+  const lastNotifiedByAssocId  = new Map(lastNotified.map(l => [l.associationId, l.createdAt]))
+  const convertedAssocIds      = new Set(converted.map(c => c.associationId))
+
+  return offers.map(o => ({
+    ...o,
+    hasPaymentMethod: paymentMethodByOfferId.get(o.id) ?? null,
+    lastNotifiedAt:   o.association ? lastNotifiedByAssocId.get(o.association.id) ?? null : null,
+    alreadyConverted: o.association ? convertedAssocIds.has(o.association.id) : false,
+  }))
 }
 
 export default async function PricingOffersPage() {
@@ -75,7 +131,19 @@ export default async function PricingOffersPage() {
                     {new Date(offer.createdAt).toLocaleDateString("fr-FR")}
                   </td>
                   <td className="px-4 py-3">
-                    <PricingOfferRowActions id={offer.id} token={offer.token} status={effectiveStatus} />
+                    <PricingOfferRowActions
+                      id={offer.id}
+                      token={offer.token}
+                      status={effectiveStatus}
+                      association={offer.association ? {
+                        hasStripeCustomer:      !!offer.association.stripeCustomerId,
+                        hasStripeSchedule:      !!offer.association.stripeSubscriptionScheduleId,
+                        pendingScheduleRelease: !!offer.association.stripeSchedulePendingReleaseAt,
+                        alreadyConverted:       offer.alreadyConverted,
+                      } : null}
+                      hasPaymentMethod={offer.hasPaymentMethod}
+                      lastNotifiedAt={offer.lastNotifiedAt?.toISOString() ?? null}
+                    />
                   </td>
                 </tr>
               )

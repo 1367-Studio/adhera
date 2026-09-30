@@ -617,6 +617,30 @@ export function subscriptionPaymentFailedEmail(p: {
   }
 }
 
+// Sent from the backoffice (see /api/backoffice/pricing-offers/[id]/notify-payment-method)
+// when staff convert a negotiated PricingOffer to standard pricing and the association has
+// no card on file yet — distinct from trialEndingNoPaymentMethodEmail below, which is
+// automatic and trial-specific; this one is a manual, staff-triggered nudge.
+export function pricingOfferPaymentMethodReminderEmail(p: {
+  email:           string
+  associationName: string
+  billingUrl:      string
+}) {
+  const content = `
+    <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">Ajoutez un moyen de paiement</h2>
+    <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
+      L'abonnement ${APP_NAME} de <strong>${p.associationName}</strong> va prochainement
+      basculer sur une tarification standard. Ajoutez une carte bancaire dès maintenant pour
+      que la transition se fasse sans interruption d'accès.
+    </p>
+    ${btn("Gérer mon abonnement", p.billingUrl)}`
+  return {
+    to:      p.email,
+    subject: `Ajoutez un moyen de paiement — ${p.associationName}`,
+    html:    layout(APP_NAME, content),
+  }
+}
+
 // 3 days before a card-free trial ends (customer.subscription.trial_will_end) — only sent
 // while there is still no payment method on file, see src/lib/webhook/platform-trial.ts.
 export function trialEndingNoPaymentMethodEmail(p: {

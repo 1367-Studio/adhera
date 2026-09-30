@@ -486,6 +486,12 @@ model Association {
   // backoffice display only. The webhook sync (customer.subscription.*) keys off
   // stripeSubscriptionId as always, regardless of whether a Schedule manages it.
   stripeSubscriptionScheduleId   String?
+  // Set when a USED PricingOffer is converted to standard catalog pricing asking to
+  // "release after the first confirmed payment" (see /api/backoffice/pricing-offers/[id]/convert).
+  // The invoice.paid webhook releases the Stripe schedule and clears this + stripeSubscriptionScheduleId
+  // once the new phase's first invoice is actually paid; the "Libérer maintenant" backoffice
+  // action clears both manually if the association never adds a payment method.
+  stripeSchedulePendingReleaseAt DateTime?
   stripeConnectId                String?
   plan                           AssociationPlan     @default(ESSENTIAL)
   // Staff-set override for negotiated "sur mesure" deals (see form-wise-app's pricing
