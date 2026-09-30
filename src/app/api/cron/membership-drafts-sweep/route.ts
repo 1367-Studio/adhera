@@ -7,7 +7,9 @@ import { prisma } from "@/lib/prisma/client"
 // sit in the table forever. Never touches a consumed row (consumedAt set): those are the
 // permanent record of what a real payment/signup actually contained.
 // Runs daily, clustered with the other early-morning crons in vercel.json.
-export async function POST(req: Request) {
+// Vercel Cron always invokes the configured path with GET, not POST — this must export a GET
+// handler or the schedule silently 405s on every tick (POST kept for manual curl testing).
+async function handler(req: Request) {
   const secret = process.env.CRON_SECRET
   if (!secret) {
     console.error("[cron/membership-drafts-sweep] CRON_SECRET is not configured — refusing to run")
@@ -23,3 +25,6 @@ export async function POST(req: Request) {
 
   return NextResponse.json({ deleted: count })
 }
+
+export const GET = handler
+export const POST = handler
