@@ -13,7 +13,9 @@ import { writeActivityLog } from "@/lib/activity-log"
 // Runs daily, clustered with the other early-morning crons in vercel.json.
 const ABANDON_AFTER_MS = 48 * 60 * 60 * 1000
 
-export async function POST(req: Request) {
+// Vercel Cron always invokes the configured path with GET, not POST — this must export a GET
+// handler or the schedule silently 405s on every tick (POST kept for manual curl testing).
+async function handler(req: Request) {
   const secret = process.env.CRON_SECRET
   if (!secret) {
     console.error("[cron/boutique-storefront-sweep] CRON_SECRET is not configured — refusing to run")
@@ -68,3 +70,6 @@ export async function POST(req: Request) {
 
   return NextResponse.json({ cancelled })
 }
+
+export const GET = handler
+export const POST = handler

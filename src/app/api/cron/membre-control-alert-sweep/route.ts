@@ -13,7 +13,10 @@ const AUTO_RESOLVE_NOTE = "Résolu automatiquement : une cotisation valide a ét
 // renewal race) — each fixed individually, none of them predicted in advance. This sweep is
 // the generic net so the next unknown cause gets noticed instead of surfacing weeks later.
 // Runs every 15 minutes (vercel.json), comfortably inside the 30-minute grace period.
-export async function POST(req: Request) {
+// Vercel Cron always invokes the configured path with GET (not POST) — this must stay a GET
+// handler or the schedule silently 405s on every tick. POST is also exported so a manual
+// `curl -X POST ...` during development still works the same way.
+async function handler(req: Request) {
   const secret = process.env.CRON_SECRET
   if (!secret) {
     console.error("[cron/membre-control-alert-sweep] CRON_SECRET is not configured — refusing to run")
@@ -95,3 +98,6 @@ export async function POST(req: Request) {
 
   return NextResponse.json({ raised: raised.length, autoResolved: staleAlerts.length })
 }
+
+export const GET = handler
+export const POST = handler
