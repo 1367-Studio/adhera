@@ -187,6 +187,11 @@ enum SupportTicketStatus {
   FERME
 }
 
+enum MembreControlAlertStatus {
+  OUVERT
+  RESOLU
+}
+
 enum ExerciceStatus {
   OUVERT
   CLOTURE
@@ -604,6 +609,7 @@ model Association {
   smsMessages                SmsMessage[]
   supportTickets             SupportTicket[]
   pricingOffer               PricingOffer?
+  controlAlerts              MembreControlAlert[]
 
   @@index([customDomainStatus])
 }
@@ -689,6 +695,7 @@ model User {
   emailMessages         EmailMessage[]
   pricingOffersCreated  PricingOffer[]
   twoFactorBackupCodes  TwoFactorBackupCode[]
+  resolvedControlAlerts MembreControlAlert[]
 
   @@unique([email, associationId])
   @@index([associationId, role])
@@ -853,6 +860,7 @@ model Membre {
   emailMessages            EmailMessage[]
   smsMessages              SmsMessage[]
   cotisationSubscription   CotisationSubscription?
+  controlAlert             MembreControlAlert?
 
   @@index([associationId, deletedAt])
   @@index([associationId, status])
@@ -2047,6 +2055,37 @@ model SupportTicketMessage {
   author User          @relation(fields: [authorId], references: [id])
 
   @@index([ticketId, createdAt])
+}
+
+// Alerte de contrôle Superadmin : un Membre ACTIF reste 30 minutes sans aucune Cotisation
+// liée. Levée une seule fois par membre, jamais recréée après résolution — voir le sweep
+// (src/app/api/cron/membre-control-alert-sweep) et src/lib/membre-control-alerts.ts pour
+// l'e-mail. Volontairement séparé de Notification (src/lib/cotisation-alerts.ts) : ceci
+// est cross-association, avec son propre flux de résolution côté backoffice.
+model MembreControlAlert {
+  id            String                    @id @default(cuid())
+  membreId      String                    @unique
+  associationId String
+  status        MembreControlAlertStatus  @default(OUVERT)
+  raisedAt      DateTime                  @default(now())
+  resolvedAt    DateTime?
+  resolvedById  String?
+  // True when the sweep itself closed this alert because the member no longer matches the
+  // criteria (a valid cotisation appeared, the member left ACTIF, or was deleted) — distinct
+  // from a human clicking "Résoudre". resolvedById stays null for an auto-resolve, but this
+  // flag is what the UI actually checks: a manual resolve can just as legitimately have no
+  // note, so "no resolvedById" alone would be ambiguous.
+  autoResolved  Boolean                   @default(false)
+  note          String?
+  createdAt     DateTime                  @default(now())
+  updatedAt     DateTime                  @updatedAt
+
+  membre      Membre      @relation(fields: [membreId], references: [id], onDelete: Cascade)
+  association Association @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  resolvedBy  User?       @relation(fields: [resolvedById], references: [id], onDelete: SetNull)
+
+  @@index([status, raisedAt])
+  @@index([associationId])
 }
 
 model Actualite {

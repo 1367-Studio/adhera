@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { toast }    from "sonner"
 import { Badge }    from "@/components/ui/badge"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -47,6 +47,24 @@ const STATUS_LABELS: Record<string, string> = {
 export function MembersTable({ associationId, initialMembers }: { associationId: string; initialMembers: Membre[] }) {
   const [membres,    setMembres]    = useState(initialMembers)
   const [pendingId,  setPendingId]  = useState<string | null>(null)
+  // Deep-linked from the control-alerts backoffice page (#membre-<id>) — this table has no
+  // search of its own, so scrolling to and briefly highlighting the row is what actually
+  // closes the gap of "found the alert, now where in this list is that member".
+  const [highlightedId, setHighlightedId] = useState<string | null>(null)
+
+  useEffect(() => {
+    const match = window.location.hash.match(/^#membre-(.+)$/)
+    if (!match) return
+    const id = match[1]
+    const el = document.getElementById(`membre-${id}`)
+    if (!el) return
+    el.scrollIntoView({ behavior: "smooth", block: "center" })
+    // setState deferred to a callback (not called synchronously in the effect body) per
+    // react-hooks/set-state-in-effect — both timers share one cleanup.
+    const highlightTimeout   = setTimeout(() => setHighlightedId(id), 0)
+    const unhighlightTimeout = setTimeout(() => setHighlightedId(null), 3000)
+    return () => { clearTimeout(highlightTimeout); clearTimeout(unhighlightTimeout) }
+  }, [])
 
   async function handleRoleChange(userId: string, role: Role) {
     setPendingId(userId)
@@ -94,7 +112,11 @@ export function MembersTable({ associationId, initialMembers }: { associationId:
             {membres.map((m) => {
               const isRowPending = pendingId === m.user?.id
               return (
-                <tr key={m.id} className="hover:bg-muted/20 transition-colors">
+                <tr
+                  key={m.id}
+                  id={`membre-${m.id}`}
+                  className={`hover:bg-muted/20 transition-colors ${highlightedId === m.id ? "bg-primary/10" : ""}`}
+                >
                   <td className="px-4 py-3">
                     <span className="font-medium">{m.firstName} {m.lastName}</span>
                     {m.email && <span className="block text-xs text-muted-foreground">{m.email}</span>}

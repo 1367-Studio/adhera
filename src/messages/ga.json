@@ -5441,6 +5441,7 @@
       "associations": "Cumainn",
       "pricingOffers": "Tairiscintí praghsála",
       "support": "Tacaíocht",
+      "controlAlerts": "Airdeall Rialaithe",
       "signOut": "Logáil Amach"
     },
     "themeToggle": {
@@ -5597,6 +5598,38 @@
       "closed": "Dúnadh an t-iarratas",
       "reopened": "Feidhmchlár athoscailte"
     }
+  },
+  "controlAlerts": {
+    "title": "Rialú Ballraíochta",
+    "subtitle": "Baill ghníomhacha gan ranníocaíocht le breis is 30 nóiméad.",
+    "filterAll": "Uile",
+    "status": {
+      "open": "Oscailte",
+      "resolved": "Réitithe"
+    },
+    "columns": {
+      "membre": "Ball",
+      "association": "Cumann",
+      "raisedAt": "Cruthaithe an",
+      "daysWithoutCotisation": "Laethanta gan ranníocaíocht",
+      "status": "Stádas"
+    },
+    "empty": "Níl aon airdeall rialaithe ann.",
+    "resolveAction": "Réitigh",
+    "resolveConfirmTitle": "An réiteoidh tú an t-airdeall seo?",
+    "resolveConfirmDescription": "Deimhnigh gur seiceáladh an cás seo: gnáth, nó ceartaithe.",
+    "noteLabel": "Nóta (roghnach)",
+    "notePlaceholder": "Cén fáth a bhfuil an cás seo gnáth, nó cad a ceartaíodh…",
+    "searchPlaceholder": "Cuardaigh ball nó cumann…",
+    "selectedCount": "Roghnaithe: {count}",
+    "deselectAll": "Díroghnaigh",
+    "resolveSelected": "Réitigh an roghnú",
+    "resolveManyConfirmTitle": "An réiteoidh tú na hairdill roghnaithe?",
+    "reopenAction": "Athoscail",
+    "reopenConfirmTitle": "An athosclóidh tú an t-airdeall seo?",
+    "reopenConfirmDescription": "Fillann an t-airdeall ar \"Oscailte\" agus cailleann sé a nóta réitigh.",
+    "autoResolvedLabel": "(uathoibríoch)",
+    "emptyForSearch": "Gan torthaí do \"{search}\"."
   },
   "formTermsEditor": {
     "contentRequired": "Ní mór duit an réimse “{conditionsLabel}” a líonadh nó doiciméad a uaslódáil."
