@@ -15,7 +15,9 @@ const BATCH_SIZE = 500
 // every call) — no locking needed, unlike automations' nextRunAt CAS, since this never sends
 // anything, only flips a column. EXONERE/ANNULEE (manual) and PAYE (terminal at sweep time)
 // are never touched.
-export async function POST(req: Request) {
+// Vercel Cron always invokes the configured path with GET, not POST — this must export a GET
+// handler or the schedule silently 405s on every tick (POST kept for manual curl testing).
+async function handler(req: Request) {
   const secret = process.env.CRON_SECRET
   if (!secret) {
     console.error("[cron/cotisation-status-sweep] CRON_SECRET is not configured — refusing to run")
@@ -75,3 +77,6 @@ export async function POST(req: Request) {
 
   return NextResponse.json({ flipped: flippedByDueDate + flippedByInstallment })
 }
+
+export const GET = handler
+export const POST = handler
