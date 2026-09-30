@@ -8,7 +8,7 @@ import { stripe } from "@/lib/stripe"
 import { sendEmail } from "@/lib/mail"
 import { membershipWelcomeEmail, membershipInstallmentPaymentFailedEmail, membershipInstallmentPaymentFailedAdminEmail } from "@/lib/email"
 import { writeActivityLog } from "@/lib/activity-log"
-import { resolveDocumentBranding } from "@/lib/plan-limits"
+import { resolveEmailBranding } from "@/lib/plan-limits"
 import { resolveExerciceForDate } from "@/lib/finance/exercice"
 import { recordCotisationPayment, sendCotisationPaymentConfirmation, isReferenceAlreadyRecorded } from "@/lib/cotisation-payments"
 import { currentCotisationYear } from "@/lib/membre-adherent"
@@ -232,7 +232,7 @@ export async function handleMembershipInstallmentCheckout(session: Stripe.Checko
       amount:          totalAmount,
       loginUrl:        `${APP_URL}/portal/${assoc.slug}/login`,
       memberCardUrl:   memberCardAvailable ? `${APP_URL}/portal/${assoc.slug}/carte` : undefined,
-      branding:        resolveDocumentBranding(assoc),
+      branding:        await resolveEmailBranding(meta.associationId),
       canIssueTaxReceipts: assoc.canIssueTaxReceipts,
       receiptMode:         meta.receiptMode as "NONE" | "FULL" | "PARTIAL",
       deductibleAmount:    meta.deductibleAmount ? Number(meta.deductibleAmount) : undefined,
@@ -409,7 +409,7 @@ export async function tryHandleInstallmentInvoicePaymentFailed(invoice: Stripe.I
       amount, nextAttemptAt,
       installmentNumber, installmentsCount: plan.installmentsCount,
       cancelUrl: `${APP_URL}/adhesion/annulation-echeancier/${plan.cancelToken}`,
-      branding:  assoc ? resolveDocumentBranding(assoc) : undefined,
+      branding:  assoc ? await resolveEmailBranding(plan.associationId) : undefined,
     }), { associationId: plan.associationId, membreId: plan.cotisation.membreId, source: "TRANSACTION", sourceId: plan.id })
       .catch(error => reportError(error, { area: "email", action: "webhook.membership-installments-payment-failed-email", extra: { associationId: plan.associationId, installmentPlanId: plan.id, stripeEventId: eventId } }))
   }

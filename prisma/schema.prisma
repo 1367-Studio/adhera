@@ -505,6 +505,22 @@ model Association {
   // instead, only persisted once the admin actually saves.
   primaryColor                   String?
   secondaryColor                 String?
+  // "From" display name for association-owned emails (see getFrom() in src/lib/mail.ts) —
+  // null falls back to `name` above, so an association never has to fill this in just to
+  // send email. Kept distinct from `name` because the legal/administrative name used in the
+  // email body copy isn't always what an association wants recipients to see as the sender.
+  emailSenderName                String?
+  // Optional HTML (Tiptap) sign-off appended to association-authored emails — see
+  // customEmail() in src/lib/email.ts. Deliberately not applied to every email (fixed system
+  // templates like password reset keep their own copy) — only to the ones an admin actually
+  // wrote, whether sent ad hoc or via an AutomationRule/MessageTemplate.
+  emailSignature                 String?             @db.Text
+  // Visual style (classic/bold/minimal), colour, custom text and social links for the email
+  // footer in layout() (src/lib/email.ts) — same "Json blob + lenient parser" pattern as
+  // memberCardSettings below, see parseEmailFooterSettings() in src/lib/email-footer.ts.
+  // null — an association that never opened branding settings — yields the original fixed,
+  // unstyled footer.
+  emailFooterSettings            Json?
   // Custom branding (logo + colors) defaults to Pro-only — see canUseCustomBranding() in
   // src/lib/plan-limits.ts. Same override pattern as customMemberLimit: null/false uses
   // the plan default, true force-enables it for an Essentiel association.
@@ -2111,6 +2127,12 @@ model MessageTemplate {
   category      String   @default("GENERAL")
   subject       String
   body          String   @db.Text
+  // Visual block-based design (see src/lib/email-blocks.ts) — when set, this is the source
+  // of truth and `body` is a server-rendered cache kept in sync on every save (see
+  // /api/message-templates). Null means the template is still in plain-text mode (the
+  // original RichTextEditor-only editing), which every template created before this
+  // feature stays in — no migration of existing rows needed.
+  blocks        Json?
   smsBody       String?  @db.Text
   active        Boolean  @default(true)
   // At most one default per (associationId, category) — enforced in the API, not the DB.

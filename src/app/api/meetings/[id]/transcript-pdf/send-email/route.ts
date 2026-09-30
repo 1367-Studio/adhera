@@ -7,7 +7,7 @@ import { customEmail, escapeHtml } from "@/lib/email"
 import { writeActivityLog } from "@/lib/activity-log"
 import { MEETING_WITH_PARTICIPANTS_SELECT } from "@/lib/meetings/select"
 import { buildMeetingMinutesPdf } from "@/lib/pdf/meeting-minutes-pdf"
-import { resolveDocumentBranding } from "@/lib/plan-limits"
+import { resolveEmailBranding } from "@/lib/plan-limits"
 
 const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
 
@@ -35,7 +35,7 @@ export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
     select: { name: true, plan: true, customBrandingEnabled: true, logoUrl: true },
   })
   if (!association) return NextResponse.json({ error: "Association introuvable" }, { status: 404 })
-  const branding = resolveDocumentBranding(association)
+  const branding = await resolveEmailBranding(associationId)
 
   const pdf = await buildMeetingMinutesPdf({
     title:       meeting.title,

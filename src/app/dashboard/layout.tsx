@@ -9,7 +9,7 @@ import { TopLoader } from "@/components/top-loader"
 import { prisma } from "@/lib/prisma/client"
 import { parseModules, deriveModulesForPlan } from "@/lib/modules"
 import { parseMemberCardSettings } from "@/lib/member-card/settings"
-import { resolveDocumentBranding } from "@/lib/plan-limits"
+import { resolveDocumentBranding, canUseCustomBranding } from "@/lib/plan-limits"
 import { FiscalPeriodPopup } from "@/components/layout/fiscal-period-popup"
 import { ReleaseNotesPopup } from "@/components/layout/release-notes-popup"
 
@@ -45,6 +45,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
 
   const modules  = assocRow ? deriveModulesForPlan(assocRow.plan, parseModules(assocRow.modules)) : parseModules(null)
   const branding = assocRow ? { name: assocRow.name, ...resolveDocumentBranding(assocRow) } : null
+  const brandingAllowed = assocRow ? canUseCustomBranding(assocRow) : false
   // Read here for the same reason as in the portal layout: the card is not a module, so it
   // can't ride the modules context, and this row is already being fetched. Only the flag
   // travels — the template and colours are the card's own business, server-side.
@@ -57,7 +58,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
   // look like a bug that bounces you straight back to where you started.
   if (assocRow?.subscriptionStatus === "SUSPENDED" || assocRow?.subscriptionStatus === "CANCELLED") {
     return (
-      <UserProvider user={sessionUser} modules={modules} branding={branding} memberCardEnabled={memberCardEnabled}>
+      <UserProvider user={sessionUser} modules={modules} branding={branding} memberCardEnabled={memberCardEnabled} canUseCustomBranding={brandingAllowed}>
         <TopLoader />
         {children}
       </UserProvider>
@@ -86,7 +87,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
   const showFiscalPeriodPopup = canManageFinance && modules.finances && exerciceCount === 0 && !popupSeenThisLogin
 
   return (
-    <UserProvider user={sessionUser} modules={parseModules(assocRow?.modules)} branding={branding} memberCardEnabled={memberCardEnabled}>
+    <UserProvider user={sessionUser} modules={parseModules(assocRow?.modules)} branding={branding} memberCardEnabled={memberCardEnabled} canUseCustomBranding={brandingAllowed}>
       <TopLoader />
       <SidebarProvider className="dashboard-canvas">
         <AppSidebar />

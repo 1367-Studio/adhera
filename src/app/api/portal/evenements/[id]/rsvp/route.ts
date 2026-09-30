@@ -10,7 +10,7 @@ import { writeActivityLog } from "@/lib/activity-log"
 import { notifyEventRegistration } from "@/lib/evenement-notify"
 import { withPortalAuth } from "@/lib/api-wrapper"
 import { isEvenementOver } from "@/lib/evenement-timing"
-import { resolveDocumentBranding } from "@/lib/plan-limits"
+import { resolveEmailBranding } from "@/lib/plan-limits"
 import { APP_URL } from "@/lib/env"
 import { reportError } from "@/lib/monitoring"
 
@@ -228,6 +228,7 @@ export const PATCH = withPortalAuth<Params>(async (req, ctx, { id: evenementId }
         { firstName: membre.firstName, email: membre.email },
         ...guestNames.filter(g => g.email).map(g => ({ firstName: g.firstName, email: g.email! })),
       ]
+      const waitlistBranding = await resolveEmailBranding(ctx.associationId)
       await Promise.all(recipients.filter(r => r.email).map(r => sendEmail(waitlistConfirmationEmail({
         firstName: r.firstName, email: r.email!,
         associationName: assoc.name,
@@ -235,7 +236,7 @@ export const PATCH = withPortalAuth<Params>(async (req, ctx, { id: evenementId }
         eventDate:       evenement.date,
         eventLocation:   evenement.location,
         portalUrl,
-        branding: resolveDocumentBranding(assoc),
+        branding: waitlistBranding,
       }), { associationId: ctx.associationId, membreId: membre.id, source: "TRANSACTION", sourceId: evenementId }).catch(error => reportError(error, { area: "email", action: "portal.evenement.rsvp.waitlist-email", extra: { associationId: ctx.associationId, evenementId, membreId: membre.id } }))))
     }
 
@@ -266,7 +267,7 @@ export const PATCH = withPortalAuth<Params>(async (req, ctx, { id: evenementId }
     })
     if (assoc) {
       const portalUrl = `${APP_URL}/portal/${assoc.slug}/evenements`
-      const branding   = resolveDocumentBranding(assoc)
+      const branding   = await resolveEmailBranding(ctx.associationId)
       void fireEventRule({
         triggerType:   "RSVP_CONFIRMED",
         associationId: ctx.associationId,

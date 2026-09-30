@@ -3383,6 +3383,12 @@
       "isDefaultHint": "Automatically used as the suggested message for this category (e.g. cotisation reminders sent from the Cotisations page).",
       "emailSubject": "Email subject",
       "emailSubjectPlaceholder": "Reminder: your '{{annee_cotisation}}' membership fee",
+      "modeText": "Plain text",
+      "modeTextHint": "A single rich-text field.",
+      "modeBlocks": "Visual design",
+      "modeBlocksHint": "Reorderable blocks: text, image, button, divider.",
+      "modeBlocksProOnly": "Reserved for the Pro plan. Upgrade from the Subscription tab to enable it.",
+      "modeLockedHint": "The editing mode (plain text or visual design) is fixed when the template is created and can't be changed afterwards — create a new template to use the other mode.",
       "variablesHint": "Variables — drag into the subject, body, or SMS",
       "variables": {
         "prenom": "First name",
@@ -3413,6 +3419,8 @@
       "previewTitle": "Message preview",
       "previewDescription": "Rendered with sample data",
       "previewSubject": "Subject",
+      "previewBrandingHint": "The header, footer and signature come from the association's brand identity.",
+      "previewBrandingLink": "Edit in Settings",
       "toasts": {
         "updated": "Template updated",
         "created": "Template created",
@@ -3421,6 +3429,26 @@
       "validation": {
         "required": "Required"
       }
+    },
+    "blockEditor": {
+      "empty": "Add a first block below.",
+      "incomplete": "A block isn't complete (image with no file, or button with no text/link).",
+      "uploadError": "Error uploading an image — try again.",
+      "dragHandle": "Reorder",
+      "duplicate": "Duplicate",
+      "remove": "Remove",
+      "textPlaceholder": "Write your text…",
+      "imageLink": "Link (optional)",
+      "buttonLabel": "Button text",
+      "buttonLabelPlaceholder": "Learn more",
+      "buttonUrl": "Button link",
+      "urlHint": "https://… or a variable like '{{lien_portal}}'",
+      "buttonColor": "Background",
+      "buttonTextColor": "Text",
+      "addText": "Text",
+      "addImage": "Image",
+      "addButton": "Button",
+      "addDivider": "Divider"
     },
     "rulesManager": {
       "title": "Automation rules",
@@ -3739,9 +3767,43 @@
     },
     "branding": {
       "title": "Brand identity",
-      "subtitle": "Logo shown on the dashboard, invoices/quotes, attendance sheet and public site.",
+      "subtitle": "Logo, color and signature shown on the dashboard, invoices/quotes, attendance sheet, public site and emails sent to members.",
       "logo": "Logo",
-      "proOnlyText": "A custom logo (dashboard, invoices/quotes, attendance sheet) is reserved for the Pro plan. Upgrade from the Subscription tab to enable it.",
+      "color": "Color",
+      "colorHint": "Used in the email header and on buttons.",
+      "senderName": "Sender name",
+      "senderNameHint": "Name shown as the email sender. Leave empty to use the association's name.",
+      "signature": "Signature",
+      "signatureHint": "Added at the end of manually composed emails and automation-triggered emails.",
+      "footerText": "Footer text",
+      "footerTextHint": "Replaces the default text at the bottom of every email. Leave empty to keep the standard text.",
+      "footerTextPlaceholder": "Automated email sent by {name}…",
+      "footerStyles": {
+        "classic": "Classic",
+        "bold": "Bold",
+        "minimal": "Minimal"
+      },
+      "footer": {
+        "title": "Footer",
+        "subtitle": "Style, color, text and social links shown at the bottom of every email.",
+        "color": "Background color",
+        "socialLinks": "Social links",
+        "socialPlatforms": {
+          "facebook": "Facebook",
+          "instagram": "Instagram",
+          "linkedin": "LinkedIn",
+          "x": "X (Twitter)"
+        }
+      },
+      "proOnlyText": "Custom brand identity (dashboard, invoices/quotes, attendance sheet, emails) is reserved for the Pro plan. Upgrade from the Subscription tab to enable it.",
+      "preview": {
+        "label": "Preview",
+        "placeholderName": "Your association",
+        "sampleHeading": "Hello First name,",
+        "sampleButton": "View details",
+        "defaultFooter": "Automated email sent by {name} via Formwise.\nPlease do not reply directly to this email.",
+        "fromLabel": "Sender: {name}"
+      },
       "toasts": {
         "updated": "Brand identity updated",
         "uploadError": "Error uploading the logo"

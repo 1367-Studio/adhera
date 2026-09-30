@@ -2,7 +2,7 @@ import type { Prisma } from "@prisma/client"
 import { prisma } from "@/lib/prisma/client"
 import { sendEmail } from "@/lib/mail"
 import { paymentConfirmationEmail } from "@/lib/email"
-import { resolveDocumentBranding } from "@/lib/plan-limits"
+import { resolveEmailBranding } from "@/lib/plan-limits"
 import { deriveCotisationStatus } from "@/lib/cotisation-status"
 import { isMemberCardAvailable } from "@/lib/member-card/availability"
 import { APP_URL } from "@/lib/env"
@@ -170,7 +170,7 @@ export async function sendCotisationPaymentConfirmation(
     amount:          paymentAmount,
     period:          String(cotisation.year),
     paidAt:          cotisation.paidAt ?? new Date(),
-    branding:        resolveDocumentBranding(association),
+    branding:        await resolveEmailBranding(cotisation.associationId),
     memberCardUrl:   memberCardAvailable ? `${APP_URL}/portal/${association.slug}/carte` : undefined,
   }), { associationId: cotisation.associationId, membreId: cotisation.membre.id, source: "TRANSACTION", sourceId: cotisation.id }).catch((error: unknown) => reportError(error, { area: "email", action: "cotisation.payment-confirmation-email", extra: { associationId: cotisation.associationId, membreId: cotisation.membre.id, cotisationId: cotisation.id } }))
 }

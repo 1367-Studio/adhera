@@ -85,7 +85,9 @@ export function TemplatesManager() {
         name:     `${template.name}${t("messages.templatesManager.toasts.duplicateSuffix")}`,
         category: template.category,
         subject:  template.subject,
-        body:     template.body,
+        // Keep the duplicate in the same mode as the original — sending body alone here
+        // would freeze a design-mode template's blocks into unrenderable plain text.
+        ...(template.blocks ? { blocks: template.blocks } : { body: template.body }),
         smsBody:  template.smsBody ?? undefined,
       })
       toast.success(t("messages.templatesManager.toasts.duplicated", { name: template.name }))

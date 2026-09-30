@@ -3391,6 +3391,12 @@
       "isDefaultHint": "Utilisé automatiquement comme message suggéré pour cette catégorie (ex. rappels de cotisation envoyés depuis la page Cotisations).",
       "emailSubject": "Objet de l'email",
       "emailSubjectPlaceholder": "Rappel : votre cotisation '{{annee_cotisation}}'",
+      "modeText": "Texte simple",
+      "modeTextHint": "Un seul champ de texte enrichi.",
+      "modeBlocks": "Design visuel",
+      "modeBlocksHint": "Blocs réordonnables : texte, image, bouton, séparateur.",
+      "modeBlocksProOnly": "Réservé à la formule Pro. Passez à la formule supérieure dans l'onglet Abonnement pour l'activer.",
+      "modeLockedHint": "Le mode d'édition (texte simple ou design visuel) est fixé à la création du modèle et ne peut plus changer — créez un nouveau modèle pour utiliser l'autre mode.",
       "variablesHint": "Variables — glissez dans l'objet, le corps ou le SMS",
       "variables": {
         "prenom": "Prénom",
@@ -3421,6 +3427,8 @@
       "previewTitle": "Aperçu du message",
       "previewDescription": "Rendu avec des données d'exemple",
       "previewSubject": "Objet",
+      "previewBrandingHint": "L'en-tête, le pied de page et la signature viennent de l'identité visuelle de l'association.",
+      "previewBrandingLink": "Modifier dans Paramètres",
       "toasts": {
         "updated": "Modèle mis à jour",
         "created": "Modèle créé",
@@ -3429,6 +3437,26 @@
       "validation": {
         "required": "Requis"
       }
+    },
+    "blockEditor": {
+      "empty": "Ajoutez un premier bloc ci-dessous.",
+      "incomplete": "Un bloc n'est pas complet (image sans fichier, ou bouton sans texte/lien).",
+      "uploadError": "Erreur lors de l'upload d'une image — réessayez.",
+      "dragHandle": "Réordonner",
+      "duplicate": "Dupliquer",
+      "remove": "Supprimer",
+      "textPlaceholder": "Rédigez votre texte…",
+      "imageLink": "Lien (optionnel)",
+      "buttonLabel": "Texte du bouton",
+      "buttonLabelPlaceholder": "En savoir plus",
+      "buttonUrl": "Lien du bouton",
+      "urlHint": "https://… ou une variable comme '{{lien_portal}}'",
+      "buttonColor": "Fond",
+      "buttonTextColor": "Texte",
+      "addText": "Texte",
+      "addImage": "Image",
+      "addButton": "Bouton",
+      "addDivider": "Séparateur"
     },
     "rulesManager": {
       "title": "Règles d'automatisation",
@@ -3747,9 +3775,43 @@
     },
     "branding": {
       "title": "Identité visuelle",
-      "subtitle": "Logo affiché sur le dashboard, les devis/factures, la feuille de présence et le site public.",
+      "subtitle": "Logo, couleur et signature affichés sur le dashboard, les devis/factures, la feuille de présence, le site public et les emails envoyés aux membres.",
       "logo": "Logo",
-      "proOnlyText": "Le logo personnalisé (dashboard, devis/factures, feuille de présence) est réservé à la formule Pro. Passez à la formule supérieure dans l'onglet Abonnement pour l'activer.",
+      "color": "Couleur",
+      "colorHint": "Utilisée dans l'en-tête des emails et sur les boutons.",
+      "senderName": "Nom de l'expéditeur",
+      "senderNameHint": "Nom affiché comme expéditeur des emails. Laissez vide pour utiliser le nom de l'association.",
+      "signature": "Signature",
+      "signatureHint": "Ajoutée à la fin des emails composés manuellement ou envoyés par automatisation.",
+      "footerText": "Texte du pied de page",
+      "footerTextHint": "Remplace le texte par défaut en bas de tous les emails. Laissez vide pour garder le texte standard.",
+      "footerTextPlaceholder": "Email automatique envoyé par {name}…",
+      "footerStyles": {
+        "classic": "Classique",
+        "bold": "Accentué",
+        "minimal": "Minimaliste"
+      },
+      "footer": {
+        "title": "Pied de page",
+        "subtitle": "Style, couleur, texte et réseaux sociaux affichés en bas de chaque email.",
+        "color": "Couleur de fond",
+        "socialLinks": "Réseaux sociaux",
+        "socialPlatforms": {
+          "facebook": "Facebook",
+          "instagram": "Instagram",
+          "linkedin": "LinkedIn",
+          "x": "X (Twitter)"
+        }
+      },
+      "proOnlyText": "L'identité visuelle personnalisée (dashboard, devis/factures, feuille de présence, emails) est réservée à la formule Pro. Passez à la formule supérieure dans l'onglet Abonnement pour l'activer.",
+      "preview": {
+        "label": "Aperçu",
+        "placeholderName": "Votre association",
+        "sampleHeading": "Bonjour Prénom,",
+        "sampleButton": "Voir les détails",
+        "defaultFooter": "Email automatique envoyé par {name} via Formwise.\nVeuillez ne pas répondre directement à cet email.",
+        "fromLabel": "Expéditeur : {name}"
+      },
       "toasts": {
         "updated": "Identité visuelle mise à jour",
         "uploadError": "Erreur lors de l'upload du logo"

@@ -3,7 +3,7 @@ import { APP_TIME_ZONE } from "@/lib/date-format"
 import { inngest } from "@/lib/inngest"
 import { customEmail } from "@/lib/email"
 import { parseModules } from "@/lib/modules"
-import { resolveDocumentBranding } from "@/lib/plan-limits"
+import { resolveEmailBranding } from "@/lib/plan-limits"
 import { substituteVars, buildVars } from "@/lib/automation"
 import type { AssociationPlan, MessageChannel, TriggerType } from "@prisma/client"
 import { reportError } from "@/lib/monitoring"
@@ -60,7 +60,7 @@ export async function fireEventRule(params: FireParams): Promise<boolean> {
           subject:         substituteVars(rule.template.subject, vars),
           bodyHtml:        substituteVars(rule.template.body, vars),
           recipientEmail:  membre.email,
-          branding:        resolveDocumentBranding(association),
+          branding:        await resolveEmailBranding(associationId),
         }),
         context: { associationId, membreId: membre.id, source: "AUTOMATION", sourceId: rule.id },
       },

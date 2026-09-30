@@ -3,7 +3,7 @@ import { prisma } from "@/lib/prisma/client"
 import { withAdminAuth } from "@/lib/api-wrapper"
 import { writeActivityLog } from "@/lib/activity-log"
 import { resolveExerciceForDate } from "@/lib/finance/exercice"
-import { resolveDocumentBranding } from "@/lib/plan-limits"
+import { resolveEmailBranding } from "@/lib/plan-limits"
 import { generateRecuFiscalForDon } from "@/lib/pdf/recu-fiscal"
 import { sendEmail } from "@/lib/mail"
 import { donConfirmationEmail } from "@/lib/email"
@@ -84,7 +84,7 @@ export const POST = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
         receiptNumber:       refreshed?.receiptNumber ?? undefined,
         donorType:           don.donorType,
         deductibleAmount:    don.receiptMode === "PARTIAL" && don.deductibleAmount != null ? Number(don.deductibleAmount) : undefined,
-        branding:            resolveDocumentBranding(assoc),
+        branding:            await resolveEmailBranding(don.associationId),
       }),
       attachments: pdfAttachment ? [pdfAttachment] : undefined,
     }, { associationId: don.associationId, membreId: don.membreId ?? undefined, source: "TRANSACTION", sourceId: id })

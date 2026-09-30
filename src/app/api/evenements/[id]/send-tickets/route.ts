@@ -5,7 +5,7 @@ import { withAdminAuth } from "@/lib/api-wrapper"
 import { writeActivityLog } from "@/lib/activity-log"
 import { sendEmailBulk } from "@/lib/mail"
 import { ticketQrDeliveryEmail } from "@/lib/email"
-import { resolveDocumentBranding } from "@/lib/plan-limits"
+import { resolveEmailBranding } from "@/lib/plan-limits"
 import { APP_URL } from "@/lib/env"
 import { reportError } from "@/lib/monitoring"
 
@@ -55,7 +55,7 @@ export const POST = withAdminAuth<{ id: string }>(async (_req, ctx, { id: evenem
     prisma.participation.update({ where: { id: r.id }, data: { ticketToken: tokens.get(r.id)! } }),
   ))
 
-  const branding = resolveDocumentBranding(assoc)
+  const branding = await resolveEmailBranding(associationId)
   const result = await sendEmailBulk(rows.map(r => ({
     ...ticketQrDeliveryEmail({
       firstName:       r.firstName,

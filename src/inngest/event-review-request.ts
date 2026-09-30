@@ -3,7 +3,7 @@ import { inngest } from "@/lib/inngest"
 import { prisma } from "@/lib/prisma/client"
 import { sendEmailBatch } from "@/lib/mail"
 import { eventReviewRequestEmail } from "@/lib/email"
-import { resolveDocumentBranding } from "@/lib/plan-limits"
+import { resolveEmailBranding } from "@/lib/plan-limits"
 import { APP_URL } from "@/lib/env"
 
 // Sends a "leave a review" email one day after an event's date, to every participant who
@@ -35,6 +35,11 @@ export const eventReviewRequest = inngest.createFunction(
         const targets = event.participations
         if (!targets.length) continue
 
+        // Same association for every participation in this event — resolved once outside the
+        // map below instead of per-recipient (resolveEmailBranding is async, which a sync .map
+        // callback can't await anyway).
+        const branding = await resolveEmailBranding(event.associationId)
+
         const jobs = targets.map(p => {
           const reviewToken = p.reviewToken ?? randomBytes(20).toString("hex")
           const reviewUrl   = `${APP_URL}/avis/${reviewToken}`
@@ -45,7 +50,7 @@ export const eventReviewRequest = inngest.createFunction(
             eventTitle:      event.title,
             eventDate:       event.date,
             reviewUrl,
-            branding:        resolveDocumentBranding(event.association),
+            branding,
           })
           return {
             participationId: p.id,

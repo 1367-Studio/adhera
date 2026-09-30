@@ -4,7 +4,7 @@ import { pusherServer } from "@/lib/pusher-server"
 import { sendEmail } from "@/lib/mail"
 import { checkInReceiptEmail } from "@/lib/email"
 import { withPortalAuth } from "@/lib/api-wrapper"
-import { resolveDocumentBranding } from "@/lib/plan-limits"
+import { resolveDocumentBranding, resolveEmailBranding } from "@/lib/plan-limits"
 import { writeActivityLog } from "@/lib/activity-log"
 import { reportError } from "@/lib/monitoring"
 
@@ -137,7 +137,7 @@ export const POST = withPortalAuth<{ token: string }>(async (_req, ctx, { token 
       if (assoc) await sendEmail(checkInReceiptEmail({
         firstName: memberFirst, email: memberEmail,
         associationName: assoc.name, eventTitle, eventDate,
-        branding: resolveDocumentBranding(assoc),
+        branding: await resolveEmailBranding(associationIdForEmail),
       }), { associationId: associationIdForEmail, membreId: membre.id, source: "TRANSACTION", sourceId: evenement.id }).catch((error: unknown) => {
         reportError(error, { area: "email", action: "portal.check-in.receipt-email", extra: { associationId: associationIdForEmail, evenementId: evenement.id, membreId: membre.id } })
       })

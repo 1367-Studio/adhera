@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/prisma/client"
 import { sendEmail } from "@/lib/mail"
 import { evenementRegistrationAdminNotificationEmail, evenementReviewAdminNotificationEmail } from "@/lib/email"
-import { resolveDocumentBranding } from "@/lib/plan-limits"
+import { resolveEmailBranding } from "@/lib/plan-limits"
 import { pusherServer } from "@/lib/pusher-server"
 import { APP_URL } from "@/lib/env"
 import { reportError } from "@/lib/monitoring"
@@ -78,7 +78,7 @@ export async function notifyEventRegistration(params: {
     attendeeNames:   params.attendeeNames,
     amount:          params.amount,
     dashboardUrl:    `${APP_URL}/dashboard/evenements/${params.evenementId}/presences`,
-    branding:        resolveDocumentBranding(assoc),
+    branding:        await resolveEmailBranding(params.associationId),
   }), {
     associationId: params.associationId,
     membreId:      params.membreId,
@@ -142,7 +142,7 @@ export async function notifyEventReviewSubmitted(params: {
     rating:          params.rating,
     comment:         params.comment,
     dashboardUrl:    `${APP_URL}/dashboard/evenements/${params.evenementId}/avaliacoes`,
-    branding:        resolveDocumentBranding(assoc),
+    branding:        await resolveEmailBranding(params.associationId),
   }), {
     associationId: params.associationId,
     source:        "EVENT_REVIEW_ADMIN_ALERT",

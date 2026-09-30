@@ -10,7 +10,7 @@ import {
 import { generateRecuFiscalForDon } from "@/lib/pdf/recu-fiscal"
 import { addressColumns } from "@/lib/address"
 import { writeActivityLog } from "@/lib/activity-log"
-import { resolveDocumentBranding } from "@/lib/plan-limits"
+import { resolveEmailBranding } from "@/lib/plan-limits"
 import { resolveExerciceForDate } from "@/lib/finance/exercice"
 import { APP_URL } from "@/lib/env"
 import { reportError } from "@/lib/monitoring"
@@ -119,7 +119,7 @@ export async function handleDonationSubscriptionCheckout(session: Stripe.Checkou
       amount,
       interval:        created.interval,
       cancelUrl:       `${APP_URL}/dons/annulation/${created.cancelToken}`,
-      branding:        resolveDocumentBranding(created.association),
+      branding:        await resolveEmailBranding(meta.associationId),
     }), { associationId: meta.associationId, source: "TRANSACTION", sourceId: created.id })
       .catch(error => reportError(error, { area: "email", action: "webhook.donation-subscription-started-email", extra: { associationId: meta.associationId, donationSubscriptionId: created.id } }))
   }
@@ -260,7 +260,7 @@ export async function handleDonationInvoicePaid(invoice: Stripe.Invoice) {
         receiptNumber:       refreshed?.receiptNumber ?? undefined,
         donorType:           donationSub.donorType,
         deductibleAmount:    don.receiptMode === "PARTIAL" && don.deductibleAmount != null ? Number(don.deductibleAmount) : undefined,
-        branding:            resolveDocumentBranding(assoc),
+        branding:            await resolveEmailBranding(donationSub.associationId),
       }),
       attachments: pdfAttachment ? [pdfAttachment] : undefined,
     }, { associationId: donationSub.associationId, source: "TRANSACTION", sourceId: don.id })

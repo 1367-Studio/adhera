@@ -6,7 +6,7 @@ import { sendEmail } from "@/lib/mail"
 import { invitationEmail } from "@/lib/email"
 import { writeActivityLog } from "@/lib/activity-log"
 import { APP_URL } from "@/lib/env"
-import { resolveDocumentBranding } from "@/lib/plan-limits"
+import { resolveEmailBranding } from "@/lib/plan-limits"
 import { reportError } from "@/lib/monitoring"
 
 export type GrantAccessResult =
@@ -70,7 +70,7 @@ export async function grantMembrePortalAccess(params: {
     associationName: association.name,
     role:            "MEMBRE",
     loginUrl:        `${APP_URL}/portal/${association.slug}/login`,
-    branding:        resolveDocumentBranding(association),
+    branding:        await resolveEmailBranding(associationId),
   }), { associationId, membreId: membre.id, source: "MEMBER_INVITE" }).catch((error: unknown) => reportError(error, { area: "email", action: "membre-access.invitation-email", extra: { associationId, membreId: membre.id } }))
 
   await writeActivityLog({

@@ -10,7 +10,7 @@ import { DEFAULT_LOCALE, type Locale } from "@/i18n/locales"
 import { getDateFnsLocale } from "@/lib/date-fns-locale"
 import { parseModules } from "@/lib/modules"
 import { writeActivityLog } from "@/lib/activity-log"
-import { resolveDocumentBranding } from "@/lib/plan-limits"
+import { resolveEmailBranding } from "@/lib/plan-limits"
 import { currentCotisationYear, endOfCotisationYear, parisDayBounds, isMembreAdherent, membreAdherentResponsableSelect } from "@/lib/membre-adherent"
 import { nextAmountDue } from "@/lib/cotisation-status"
 import type { TriggerType, MessageChannel } from "@prisma/client"
@@ -207,7 +207,7 @@ export async function processRule(rule: RuleWithRelations, now: Date): Promise<n
 
   // Email dispatch
   if (emailEnabled) {
-    const branding      = resolveDocumentBranding(rule.association)
+    const branding      = await resolveEmailBranding(rule.associationId)
     const emailTargets  = jobs.filter(j => j.membre.email)
     const translations  = await localizeTemplateContent(rule.associationId, rule.template.subject, rule.template.body, emailTargets)
     const emailJobs = emailTargets
@@ -341,7 +341,7 @@ async function processBirthday(
   let sent = 0
 
   if (opts.emailEnabled) {
-    const branding      = resolveDocumentBranding(rule.association)
+    const branding      = await resolveEmailBranding(rule.associationId)
     const emailTargets  = jobs.filter(j => j.membre.email)
     const translations  = await localizeTemplateContent(rule.associationId, rule.template.subject, rule.template.body, emailTargets)
     const emailJobs = emailTargets
@@ -477,7 +477,7 @@ async function processAdherentLapsed(
   let sent = 0
 
   if (opts.emailEnabled) {
-    const branding      = resolveDocumentBranding(rule.association)
+    const branding      = await resolveEmailBranding(rule.associationId)
     const emailTargets  = jobs.filter(j => j.membre.email)
     const translations  = await localizeTemplateContent(rule.associationId, rule.template.subject, rule.template.body, emailTargets)
     const emailJobs = emailTargets
@@ -690,7 +690,7 @@ async function processMembershipExpiring(
   let sent = 0
 
   if (opts.emailEnabled) {
-    const branding      = resolveDocumentBranding(rule.association)
+    const branding      = await resolveEmailBranding(rule.associationId)
     const emailTargets  = jobs.filter(j => j.membre.email)
     const translations  = await localizeTemplateContent(rule.associationId, rule.template.subject, rule.template.body, emailTargets)
     const emailJobs = emailTargets
@@ -811,6 +811,8 @@ async function processEventReminder(
     notifiedByEvent.get(log.eventId)!.add(log.participationId)
   }
 
+  const branding = opts.emailEnabled ? await resolveEmailBranding(rule.associationId) : undefined
+
   for (const event of events) {
     const notifiedIds = notifiedByEvent.get(event.id) ?? new Set<string>()
     const targets = event.participations.filter(p => !notifiedIds.has(p.id))
@@ -830,7 +832,7 @@ async function processEventReminder(
             eventLocation:   event.location,
             portalUrl,
             daysBefore,
-            branding:        resolveDocumentBranding(rule.association),
+            branding,
           })
           return {
             membreId:        p.membreId,

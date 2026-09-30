@@ -2,7 +2,7 @@ import { randomUUID } from "crypto"
 import { prisma } from "@/lib/prisma/client"
 import { pusherServer } from "@/lib/pusher-server"
 import { inngest } from "@/lib/inngest"
-import { resolveDocumentBranding } from "@/lib/plan-limits"
+import { resolveEmailBranding } from "@/lib/plan-limits"
 import { reportError } from "@/lib/monitoring"
 
 export type SondageInviteResult = {
@@ -60,7 +60,7 @@ export async function sendSondageInvitations(params: {
   let jobId: string | null = null
   if (recipients.length) {
     jobId = randomUUID()
-    const branding = resolveDocumentBranding(association)
+    const branding = await resolveEmailBranding(associationId)
     await inngest.send({
       name: "bulk/sondage-invitations.requested",
       data: {
