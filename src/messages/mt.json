@@ -5441,6 +5441,7 @@
       "associations": "Assoċjazzjonijiet",
       "pricingOffers": "Offerti ta' prezzijiet",
       "support": "Appoġġ",
+      "controlAlerts": "Avviżi ta' Kontroll",
       "signOut": "Logout"
     },
     "themeToggle": {
@@ -5597,6 +5598,38 @@
       "closed": "Talba magħluqa",
       "reopened": "L-applikazzjoni reġgħet infetħet"
     }
+  },
+  "controlAlerts": {
+    "title": "Kontroll tas-Sħubija",
+    "subtitle": "Membri attivi mingħajr kontribuzzjoni għal aktar minn 30 minuta.",
+    "filterAll": "Kollha",
+    "status": {
+      "open": "Miftuħ",
+      "resolved": "Solvut"
+    },
+    "columns": {
+      "membre": "Membru",
+      "association": "Assoċjazzjoni",
+      "raisedAt": "Maħluq fi",
+      "daysWithoutCotisation": "Jiem mingħajr kontribuzzjoni",
+      "status": "Status"
+    },
+    "empty": "L-ebda avviż ta' kontroll.",
+    "resolveAction": "Solvi",
+    "resolveConfirmTitle": "Solvi dan l-avviż?",
+    "resolveConfirmDescription": "Ikkonferma li dan il-każ ġie vverifikat: normali, jew issewwa.",
+    "noteLabel": "Nota (mhux obbligatorja)",
+    "notePlaceholder": "Għaliex dan il-każ huwa normali, jew x'ġie issewwi…",
+    "searchPlaceholder": "Fittex membru jew assoċjazzjoni…",
+    "selectedCount": "Magħżula: {count}",
+    "deselectAll": "Neħħi l-għażla",
+    "resolveSelected": "Solvi l-magħżula",
+    "resolveManyConfirmTitle": "Solvi l-avviżi magħżula?",
+    "reopenAction": "Erġa' Iftaħ",
+    "reopenConfirmTitle": "Terġa' tiftaħ dan l-avviż?",
+    "reopenConfirmDescription": "L-avviż jerġa' lura għal \"Miftuħ\" u jitlef in-nota tas-soluzzjoni.",
+    "autoResolvedLabel": "(awtomatiku)",
+    "emptyForSearch": "L-ebda riżultat għal \"{search}\"."
   },
   "formTermsEditor": {
     "contentRequired": "Trid timla l-qasam “{conditionsLabel}” jew ittella’ dokument."

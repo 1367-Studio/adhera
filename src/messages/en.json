@@ -5936,6 +5936,7 @@
       "associations": "Associations",
       "pricingOffers": "Pricing offers",
       "support": "Support",
+      "controlAlerts": "Control Alerts",
       "signOut": "Sign out"
     },
     "themeToggle": {
@@ -6132,6 +6133,38 @@
     "suggestReplyNote": "AI-generated suggestion — review before sending.",
     "suggestReplySources": "Sources: {titles}",
     "suggestReplyError": "Couldn't generate a suggestion."
+  },
+  "controlAlerts": {
+    "title": "Membership Control",
+    "subtitle": "Active members with no membership fee for more than 30 minutes.",
+    "filterAll": "All",
+    "status": {
+      "open": "Open",
+      "resolved": "Resolved"
+    },
+    "columns": {
+      "membre": "Member",
+      "association": "Association",
+      "raisedAt": "Raised on",
+      "daysWithoutCotisation": "Days without a membership fee",
+      "status": "Status"
+    },
+    "empty": "No control alerts.",
+    "resolveAction": "Resolve",
+    "resolveConfirmTitle": "Resolve this alert?",
+    "resolveConfirmDescription": "Confirm this case has been checked: normal, or fixed.",
+    "noteLabel": "Note (optional)",
+    "notePlaceholder": "Why this case is normal, or what was fixed…",
+    "searchPlaceholder": "Search a member or association…",
+    "selectedCount": "Selected: {count}",
+    "deselectAll": "Deselect",
+    "resolveSelected": "Resolve selection",
+    "resolveManyConfirmTitle": "Resolve the selected alerts?",
+    "reopenAction": "Reopen",
+    "reopenConfirmTitle": "Reopen this alert?",
+    "reopenConfirmDescription": "The alert goes back to \"Open\" and loses its resolution note.",
+    "autoResolvedLabel": "(auto)",
+    "emptyForSearch": "No results for \"{search}\"."
   },
   "help": {
     "buttonLabel": "Help",

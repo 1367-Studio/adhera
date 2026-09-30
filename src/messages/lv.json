@@ -5441,6 +5441,7 @@
       "associations": "Asociācijas",
       "pricingOffers": "Cenu piedāvājumi",
       "support": "Atbalsts",
+      "controlAlerts": "Kontroles brīdinājumi",
       "signOut": "Izrakstīšanās"
     },
     "themeToggle": {
@@ -5597,6 +5598,38 @@
       "closed": "Pieprasījums slēgts",
       "reopened": "Pieteikšanās atkal atvērta"
     }
+  },
+  "controlAlerts": {
+    "title": "Dalības kontrole",
+    "subtitle": "Aktīvi biedri bez ieguldījuma vairāk nekā 30 minūtes.",
+    "filterAll": "Visi",
+    "status": {
+      "open": "Atvērts",
+      "resolved": "Atrisināts"
+    },
+    "columns": {
+      "membre": "Biedrs",
+      "association": "Biedrība",
+      "raisedAt": "Izveidots",
+      "daysWithoutCotisation": "Dienas bez ieguldījuma",
+      "status": "Statuss"
+    },
+    "empty": "Nav kontroles brīdinājumu.",
+    "resolveAction": "Atrisināt",
+    "resolveConfirmTitle": "Atrisināt šo brīdinājumu?",
+    "resolveConfirmDescription": "Apstipriniet, ka šis gadījums ir pārbaudīts: normāls vai izlabots.",
+    "noteLabel": "Piezīme (neobligāti)",
+    "notePlaceholder": "Kāpēc šis gadījums ir normāls, vai kas tika izlabots…",
+    "searchPlaceholder": "Meklēt biedru vai biedrību…",
+    "selectedCount": "Izvēlēts: {count}",
+    "deselectAll": "Noņemt atlasi",
+    "resolveSelected": "Atrisināt atlasītos",
+    "resolveManyConfirmTitle": "Atrisināt atlasītos brīdinājumus?",
+    "reopenAction": "Atvērt no jauna",
+    "reopenConfirmTitle": "Atvērt šo brīdinājumu no jauna?",
+    "reopenConfirmDescription": "Brīdinājums atgriežas statusā \"Atvērts\" un zaudē atrisinājuma piezīmi.",
+    "autoResolvedLabel": "(automātiski)",
+    "emptyForSearch": "Nav rezultātu vaicājumam \"{search}\"."
   },
   "formTermsEditor": {
     "contentRequired": "Jums jāaizpilda lauks “{conditionsLabel}” vai jāaugšupielādē dokuments."

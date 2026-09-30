@@ -5441,6 +5441,7 @@
       "associations": "Асоциации",
       "pricingOffers": "Оферти за цени",
       "support": "Поддръжка",
+      "controlAlerts": "Контролни сигнали",
       "signOut": "Излез от излизането"
     },
     "themeToggle": {
@@ -5597,6 +5598,38 @@
       "closed": "Заявката е затворена",
       "reopened": "Кандидатурата е отворена отново"
     }
+  },
+  "controlAlerts": {
+    "title": "Контрол на членството",
+    "subtitle": "Активни членове без принос повече от 30 минути.",
+    "filterAll": "Всички",
+    "status": {
+      "open": "Отворен",
+      "resolved": "Решен"
+    },
+    "columns": {
+      "membre": "Член",
+      "association": "Сдружение",
+      "raisedAt": "Създаден на",
+      "daysWithoutCotisation": "Дни без принос",
+      "status": "Статус"
+    },
+    "empty": "Няма контролни сигнали.",
+    "resolveAction": "Реши",
+    "resolveConfirmTitle": "Да се реши ли този сигнал?",
+    "resolveConfirmDescription": "Потвърдете, че случаят е проверен: нормален или коригиран.",
+    "noteLabel": "Бележка (по избор)",
+    "notePlaceholder": "Защо случаят е нормален, или какво е коригирано…",
+    "searchPlaceholder": "Търсене на член или сдружение…",
+    "selectedCount": "Избрани: {count}",
+    "deselectAll": "Премахване на избора",
+    "resolveSelected": "Решаване на избраните",
+    "resolveManyConfirmTitle": "Да се решат ли избраните сигнали?",
+    "reopenAction": "Отваряне отново",
+    "reopenConfirmTitle": "Да се отвори ли отново този сигнал?",
+    "reopenConfirmDescription": "Сигналът се връща в състояние \"Отворен\" и губи бележката за решаване.",
+    "autoResolvedLabel": "(автоматично)",
+    "emptyForSearch": "Няма резултати за \"{search}\"."
   },
   "formTermsEditor": {
     "contentRequired": "Трябва да попълните полето „{conditionsLabel}“ или да качите документ."

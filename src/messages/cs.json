@@ -5441,6 +5441,7 @@
       "associations": "Sdružení",
       "pricingOffers": "Cenové nabídky",
       "support": "Podpora",
+      "controlAlerts": "Kontrolní upozornění",
       "signOut": "Odhlásit se"
     },
     "themeToggle": {
@@ -5597,6 +5598,38 @@
       "closed": "Žádost uzavřena",
       "reopened": "Žádost znovu otevřena"
     }
+  },
+  "controlAlerts": {
+    "title": "Kontrola členství",
+    "subtitle": "Aktivní členové bez příspěvku po dobu delší než 30 minut.",
+    "filterAll": "Vše",
+    "status": {
+      "open": "Otevřené",
+      "resolved": "Vyřešené"
+    },
+    "columns": {
+      "membre": "Člen",
+      "association": "Sdružení",
+      "raisedAt": "Vytvořeno",
+      "daysWithoutCotisation": "Dní bez příspěvku",
+      "status": "Stav"
+    },
+    "empty": "Žádná kontrolní upozornění.",
+    "resolveAction": "Vyřešit",
+    "resolveConfirmTitle": "Vyřešit toto upozornění?",
+    "resolveConfirmDescription": "Potvrďte, že tento případ byl ověřen: je v pořádku, nebo byl opraven.",
+    "noteLabel": "Poznámka (volitelné)",
+    "notePlaceholder": "Proč je tento případ v pořádku, nebo co bylo opraveno…",
+    "searchPlaceholder": "Hledat člena nebo sdružení…",
+    "selectedCount": "Vybráno: {count}",
+    "deselectAll": "Zrušit výběr",
+    "resolveSelected": "Vyřešit výběr",
+    "resolveManyConfirmTitle": "Vyřešit vybraná upozornění?",
+    "reopenAction": "Znovu otevřít",
+    "reopenConfirmTitle": "Znovu otevřít toto upozornění?",
+    "reopenConfirmDescription": "Upozornění se vrátí do stavu \"Otevřené\" a ztratí poznámku o vyřešení.",
+    "autoResolvedLabel": "(auto)",
+    "emptyForSearch": "Žádné výsledky pro \"{search}\"."
   },
   "formTermsEditor": {
     "contentRequired": "Musíte vyplnit pole „{conditionsLabel}“ nebo nahrát dokument."

@@ -5441,6 +5441,7 @@
       "associations": "Stowarzyszenia",
       "pricingOffers": "Oferty cenowe",
       "support": "Wsparcie",
+      "controlAlerts": "Alerty kontrolne",
       "signOut": "Wyloguj się"
     },
     "themeToggle": {
@@ -5597,6 +5598,38 @@
       "closed": "Wniosek zamknięty",
       "reopened": "Wniosek ponownie otwarty"
     }
+  },
+  "controlAlerts": {
+    "title": "Kontrola członkostwa",
+    "subtitle": "Aktywni członkowie bez wkładu od ponad 30 minut.",
+    "filterAll": "Wszystkie",
+    "status": {
+      "open": "Otwarty",
+      "resolved": "Rozwiązany"
+    },
+    "columns": {
+      "membre": "Członek",
+      "association": "Stowarzyszenie",
+      "raisedAt": "Utworzono",
+      "daysWithoutCotisation": "Dni bez wkładu",
+      "status": "Status"
+    },
+    "empty": "Brak alertów kontrolnych.",
+    "resolveAction": "Rozwiąż",
+    "resolveConfirmTitle": "Rozwiązać ten alert?",
+    "resolveConfirmDescription": "Potwierdź, że ten przypadek został sprawdzony: normalny lub naprawiony.",
+    "noteLabel": "Notatka (opcjonalnie)",
+    "notePlaceholder": "Dlaczego ten przypadek jest normalny, lub co zostało naprawione…",
+    "searchPlaceholder": "Szukaj członka lub stowarzyszenia…",
+    "selectedCount": "Zaznaczono: {count}",
+    "deselectAll": "Odznacz",
+    "resolveSelected": "Rozwiąż zaznaczone",
+    "resolveManyConfirmTitle": "Rozwiązać zaznaczone alerty?",
+    "reopenAction": "Otwórz ponownie",
+    "reopenConfirmTitle": "Otworzyć ponownie ten alert?",
+    "reopenConfirmDescription": "Alert wraca do stanu \"Otwarty\" i traci notatkę rozwiązania.",
+    "autoResolvedLabel": "(auto)",
+    "emptyForSearch": "Brak wyników dla \"{search}\"."
   },
   "formTermsEditor": {
     "contentRequired": "Musisz wypełnić pole „{conditionsLabel}” lub przesłać dokument."

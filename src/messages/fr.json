@@ -5944,6 +5944,7 @@
       "associations": "Associations",
       "pricingOffers": "Offres tarifaires",
       "support": "Support",
+      "controlAlerts": "Alertes de contrôle",
       "signOut": "Se déconnecter"
     },
     "themeToggle": {
@@ -6140,6 +6141,38 @@
     "suggestReplyNote": "Suggestion générée par l'IA — relisez avant d'envoyer.",
     "suggestReplySources": "Sources : {titles}",
     "suggestReplyError": "Impossible de générer une suggestion."
+  },
+  "controlAlerts": {
+    "title": "Contrôle adhésion",
+    "subtitle": "Membres actifs sans cotisation depuis plus de 30 minutes.",
+    "filterAll": "Toutes",
+    "status": {
+      "open": "Ouverte",
+      "resolved": "Résolue"
+    },
+    "columns": {
+      "membre": "Membre",
+      "association": "Association",
+      "raisedAt": "Créé le",
+      "daysWithoutCotisation": "Jours sans cotisation",
+      "status": "Statut"
+    },
+    "empty": "Aucune alerte de contrôle.",
+    "resolveAction": "Résoudre",
+    "resolveConfirmTitle": "Résoudre cette alerte ?",
+    "resolveConfirmDescription": "Confirmez que ce cas a été vérifié : normal, ou corrigé.",
+    "noteLabel": "Note (optionnel)",
+    "notePlaceholder": "Pourquoi ce cas est normal, ou ce qui a été corrigé…",
+    "searchPlaceholder": "Rechercher un membre ou une association…",
+    "selectedCount": "Sélection : {count}",
+    "deselectAll": "Désélectionner",
+    "resolveSelected": "Résoudre la sélection",
+    "resolveManyConfirmTitle": "Résoudre les alertes sélectionnées ?",
+    "reopenAction": "Réouvrir",
+    "reopenConfirmTitle": "Réouvrir cette alerte ?",
+    "reopenConfirmDescription": "L'alerte redevient « Ouverte » et perd sa note de résolution.",
+    "autoResolvedLabel": "(auto)",
+    "emptyForSearch": "Aucun résultat pour « {search} »."
   },
   "help": {
     "buttonLabel": "Aide",

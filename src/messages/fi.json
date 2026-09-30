@@ -5441,6 +5441,7 @@
       "associations": "Yhdistykset",
       "pricingOffers": "Hinnoittelutarjoukset",
       "support": "Tuki",
+      "controlAlerts": "Valvontahälytykset",
       "signOut": "Kirjaudu ulos"
     },
     "themeToggle": {
@@ -5597,6 +5598,38 @@
       "closed": "Pyyntö suljettu",
       "reopened": "Hakemus avattiin uudelleen"
     }
+  },
+  "controlAlerts": {
+    "title": "Jäsenyyden valvonta",
+    "subtitle": "Aktiiviset jäsenet ilman panosta yli 30 minuuttia.",
+    "filterAll": "Kaikki",
+    "status": {
+      "open": "Avoin",
+      "resolved": "Ratkaistu"
+    },
+    "columns": {
+      "membre": "Jäsen",
+      "association": "Yhdistys",
+      "raisedAt": "Luotu",
+      "daysWithoutCotisation": "Päiviä ilman panosta",
+      "status": "Tila"
+    },
+    "empty": "Ei valvontahälytyksiä.",
+    "resolveAction": "Ratkaise",
+    "resolveConfirmTitle": "Ratkaistaanko tämä hälytys?",
+    "resolveConfirmDescription": "Vahvista, että tämä tapaus on tarkistettu: normaali tai korjattu.",
+    "noteLabel": "Huomautus (valinnainen)",
+    "notePlaceholder": "Miksi tämä tapaus on normaali, tai mitä korjattiin…",
+    "searchPlaceholder": "Hae jäsentä tai yhdistystä…",
+    "selectedCount": "Valittu: {count}",
+    "deselectAll": "Poista valinta",
+    "resolveSelected": "Ratkaise valinta",
+    "resolveManyConfirmTitle": "Ratkaistaanko valitut hälytykset?",
+    "reopenAction": "Avaa uudelleen",
+    "reopenConfirmTitle": "Avataanko tämä hälytys uudelleen?",
+    "reopenConfirmDescription": "Hälytys palaa tilaan \"Avoin\" ja menettää ratkaisuhuomautuksensa.",
+    "autoResolvedLabel": "(auto)",
+    "emptyForSearch": "Ei tuloksia haulle \"{search}\"."
   },
   "formTermsEditor": {
     "contentRequired": "Sinun on täytettävä kenttä ”{conditionsLabel}” tai ladattava asiakirja."

@@ -1963,6 +1963,57 @@ export function supportTicketReplyEmail(p: {
   }
 }
 
+// Sent to SUPPORT_TEAM_EMAIL by the membre-control-alert-sweep cron (src/lib/membre-
+// control-alerts.ts) whenever the sweep raises at least one new alert — one digest per
+// run, never one email per member, since a single outage can raise dozens at once.
+// Platform-branded, not association-branded: this is an internal ops notification, not
+// something sent on any one association's behalf, and it spans several associations at
+// once. Member/association names are admin-entered data, always escaped.
+// Gmail clips messages past ~102KB into a "view entire message" fold — a large bulk import
+// (AssoConnect migration, etc.) can raise dozens or hundreds of alerts in one sweep run, and
+// an unbounded row list would blow past that. Cap the table and point at the backoffice for
+// the rest instead of shipping a digest nobody can actually read.
+const MAX_EMAIL_ROWS = 30
+
+export function membreControlAlertStaffEmail(p: {
+  to:           string
+  alerts:       { membreName: string; associationName: string; createdAt: Date }[]
+  dashboardUrl: string
+}) {
+  const shown     = p.alerts.slice(0, MAX_EMAIL_ROWS)
+  const remaining = p.alerts.length - shown.length
+  const rows = shown.map(a => `
+    <tr>
+      <td style="padding:8px 12px;border-bottom:1px solid #e4e4e7;font-size:14px;color:#18181b;">${escapeHtml(a.membreName)}</td>
+      <td style="padding:8px 12px;border-bottom:1px solid #e4e4e7;font-size:14px;color:#3f3f46;">${escapeHtml(a.associationName)}</td>
+      <td style="padding:8px 12px;border-bottom:1px solid #e4e4e7;font-size:14px;color:#3f3f46;">${a.createdAt.toLocaleDateString("fr-FR", { timeZone: APP_TIME_ZONE, day: "numeric", month: "long", year: "numeric" })}</td>
+    </tr>`).join("")
+  const moreRow = remaining > 0 ? `
+    <tr>
+      <td colspan="3" style="padding:8px 12px;font-size:13px;font-style:italic;color:#71717a;">+ ${remaining} de plus — voir la liste complète dans le backoffice</td>
+    </tr>` : ""
+  const content = `
+    <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">Contrôle adhésion — ${p.alerts.length} membre(s) sans cotisation</h2>
+    <p style="margin:0 0 16px;font-size:15px;line-height:1.6;color:#3f3f46;">
+      Ces membres sont actifs depuis plus de 30 minutes sans aucune cotisation liée. Vérifiez s'il s'agit d'un cas normal ou d'un problème à corriger.
+    </p>
+    <table cellpadding="0" cellspacing="0" width="100%" style="margin:0 0 24px;border-collapse:collapse;">
+      <tr>
+        <th style="padding:8px 12px;text-align:left;font-size:12px;text-transform:uppercase;color:#71717a;border-bottom:1px solid #e4e4e7;">Membre</th>
+        <th style="padding:8px 12px;text-align:left;font-size:12px;text-transform:uppercase;color:#71717a;border-bottom:1px solid #e4e4e7;">Association</th>
+        <th style="padding:8px 12px;text-align:left;font-size:12px;text-transform:uppercase;color:#71717a;border-bottom:1px solid #e4e4e7;">Créé le</th>
+      </tr>
+      ${rows}
+      ${moreRow}
+    </table>
+    ${btn("Voir dans le backoffice", p.dashboardUrl)}`
+  return {
+    to:      p.to,
+    subject: `Contrôle adhésion — ${p.alerts.length} membre(s) sans cotisation`,
+    html:    layout(APP_NAME, content),
+  }
+}
+
 // Sent to SUPPORT_TEAM_EMAIL from the "Contactar o suporte" dialog on the auth pages
 // (login/register/forgot-password/reset-password) — an anonymous visitor, not yet an
 // authenticated account, so unlike supportTicketStaffEmail this has no association/ticket
