@@ -271,6 +271,7 @@ export const POST = withPortalAuth<{ formSlug: string }>(async (req, ctx, { form
         ],
         subscription_data: {
           transfer_data:           { destination: assoc.stripeConnectId! },
+          on_behalf_of:            assoc.stripeConnectId!,
           application_fee_percent: platformFeeRate(assoc) * 100,
           metadata:                subscriptionMeta,
         },
@@ -339,6 +340,7 @@ export const POST = withPortalAuth<{ formSlug: string }>(async (req, ctx, { form
       payment_intent_data: {
         application_fee_amount: applicationFee,
         transfer_data:          { destination: assoc.stripeConnectId! },
+        on_behalf_of:           assoc.stripeConnectId!,
         metadata:               { donId: don.id, associationId: assoc.id },
       },
       metadata:    { donId: don.id },

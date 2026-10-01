@@ -353,6 +353,7 @@ export async function POST(
           // Non-null: the `else` branch above already returned if this were unset — but that
           // narrowing doesn't survive past the offline branch's own early return in between.
           transfer_data:           { destination: assoc.stripeConnectId! },
+          on_behalf_of:            assoc.stripeConnectId!,
           application_fee_percent: platformFeeRate(assoc) * 100,
           metadata:                subscriptionMeta,
         },
@@ -423,6 +424,7 @@ export async function POST(
       payment_intent_data: {
         application_fee_amount: applicationFee,
         transfer_data:          { destination: assoc.stripeConnectId! },
+        on_behalf_of:           assoc.stripeConnectId!,
         metadata:               { donId: don.id, associationId: assoc.id },
       },
       metadata:    { donId: don.id },

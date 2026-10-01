@@ -119,6 +119,7 @@ export async function POST(
       ],
       subscription_data: {
         transfer_data:           { destination: assoc.stripeConnectId },
+        on_behalf_of:            assoc.stripeConnectId,
         application_fee_percent: platformFeeRate(assoc) * 100,
         metadata:                subscriptionMeta,
       },
