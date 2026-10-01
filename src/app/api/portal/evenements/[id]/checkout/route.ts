@@ -344,6 +344,7 @@ export const POST = withPortalAuth<Params>(async (req, ctx, { id: evenementId })
     payment_intent_data: {
       application_fee_amount: applicationFee,
       transfer_data:          { destination: evenement.association.stripeConnectId },
+      on_behalf_of:           evenement.association.stripeConnectId,
       metadata:               { orderId, associationId: ctx.associationId },
     },
     metadata:    { orderId },

@@ -216,6 +216,7 @@ export async function POST(
       payment_intent_data: {
         application_fee_amount: applicationFee,
         transfer_data:          { destination: assoc.stripeConnectId },
+        on_behalf_of:           assoc.stripeConnectId,
         metadata:               { commandeId: commande.id, associationId: assoc.id },
       },
       metadata:    { commandeId: commande.id },
