@@ -29,26 +29,40 @@ const BrandingContext          = createContext<Branding | null>(null)
 // Defaults to false, so a provider that doesn't pass it never offers a card the association
 // may not have.
 const MemberCardEnabledContext = createContext<boolean>(false)
+// canUseCustomBranding() from src/lib/plan-limits.ts, resolved once by the layout from the
+// same assocRow it already fetches for `branding` above — Pro by default, or a staff-set
+// backoffice override (Association.customBrandingEnabled) for a specific Essentiel
+// association. Same flag that gates the branding settings screen (logo/color/sender/
+// signature) and, downstream, the message-templates "Design visual" block editor — both are
+// "custom branding", just applied in two different places. Defaults to false like
+// MemberCardEnabledContext above, for the same reason (a provider that doesn't pass it, e.g.
+// the portal/backoffice layouts which never render anything Pro-gated this way, never grants
+// access it didn't actually resolve).
+const CanUseCustomBrandingContext = createContext<boolean>(false)
 
 export function UserProvider({
   user,
   modules,
   branding,
   memberCardEnabled,
+  canUseCustomBranding,
   children,
 }: {
-  user:               SessionUser
-  modules?:           AssocModules
-  branding?:          Branding | null
-  memberCardEnabled?: boolean
-  children:           React.ReactNode
+  user:                  SessionUser
+  modules?:              AssocModules
+  branding?:             Branding | null
+  memberCardEnabled?:    boolean
+  canUseCustomBranding?: boolean
+  children:              React.ReactNode
 }) {
   return (
     <UserContext.Provider value={user}>
       <ModulesContext.Provider value={modules ?? DEFAULT_MODULES}>
         <BrandingContext.Provider value={branding ?? null}>
           <MemberCardEnabledContext.Provider value={memberCardEnabled ?? false}>
-            {children}
+            <CanUseCustomBrandingContext.Provider value={canUseCustomBranding ?? false}>
+              {children}
+            </CanUseCustomBrandingContext.Provider>
           </MemberCardEnabledContext.Provider>
         </BrandingContext.Provider>
       </ModulesContext.Provider>
@@ -73,6 +87,11 @@ export function useBranding(): Branding | null {
 /** Whether this association offers the member card at all — see MemberCardEnabledContext. */
 export function useMemberCardEnabled(): boolean {
   return useContext(MemberCardEnabledContext)
+}
+
+/** See CanUseCustomBrandingContext above. */
+export function useCanUseCustomBranding(): boolean {
+  return useContext(CanUseCustomBrandingContext)
 }
 
 export function isManager(role: string) {

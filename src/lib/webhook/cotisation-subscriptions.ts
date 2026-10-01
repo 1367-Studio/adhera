@@ -11,7 +11,7 @@ import {
   cotisationSubscriptionPaymentFailedAdminEmail,
 } from "@/lib/email"
 import { writeActivityLog } from "@/lib/activity-log"
-import { resolveDocumentBranding } from "@/lib/plan-limits"
+import { resolveEmailBranding } from "@/lib/plan-limits"
 import { resolveExerciceForDate } from "@/lib/finance/exercice"
 import { recordCotisationPayment, sendCotisationPaymentConfirmation, isReferenceAlreadyRecorded } from "@/lib/cotisation-payments"
 import { currentCotisationYear } from "@/lib/membre-adherent"
@@ -302,7 +302,7 @@ export async function handleCotisationSubscriptionCheckout(session: Stripe.Check
       associationName: assoc.name,
       amount,
       loginUrl:        `${APP_URL}/portal/${assoc.slug}/login`,
-      branding:        resolveDocumentBranding(assoc),
+      branding:        await resolveEmailBranding(meta.associationId),
       durationMonths:  meta.durationMonths ? Number(meta.durationMonths) : null,
       canIssueTaxReceipts: assoc.canIssueTaxReceipts,
       receiptMode:         (meta.receiptMode as "NONE" | "FULL" | "PARTIAL" | undefined) || "NONE",

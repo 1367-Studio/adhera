@@ -1,4 +1,5 @@
 import { isColorDark } from "@/lib/color"
+import { SiteSocialIcons, visibleSocialLinks, type SocialLink } from "@/components/site/site-social-icons"
 
 type FooterLink = { label: string; url: string }
 
@@ -8,9 +9,10 @@ type Props = {
   footerBgColor?: string
   footerLinks?:  FooterLink[]
   color:         string
+  socialLinks?:  SocialLink[]
 }
 
-export function SiteFooter({ name, footerText, footerBgColor, footerLinks = [], color }: Props) {
+export function SiteFooter({ name, footerText, footerBgColor, footerLinks = [], color, socialLinks = [] }: Props) {
   const bg      = footerBgColor || "#ffffff"
   const isDark  = isColorDark(bg)
   const textCol = isDark ? "#e5e7eb" : "#6b7280"
@@ -19,6 +21,11 @@ export function SiteFooter({ name, footerText, footerBgColor, footerLinks = [], 
   return (
     <footer className="border-t border-black/5 py-8 mt-16" style={{ background: bg }}>
       <div className="max-w-5xl mx-auto px-4 space-y-4">
+        {visibleSocialLinks(socialLinks).length > 0 && (
+          <div style={{ color: linkCol }}>
+            <SiteSocialIcons socialLinks={socialLinks} className="justify-center" />
+          </div>
+        )}
         {footerLinks.length > 0 && (
           <div className="flex flex-wrap justify-center gap-x-6 gap-y-2">
             {footerLinks.filter(l => l.label && l.url).map((link, idx) => (

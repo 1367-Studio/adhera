@@ -10,7 +10,7 @@ import { buildDocumentPdf } from "@/lib/pdf/document-pdf"
 import { nextBoutiqueReceiptNumber } from "@/lib/document-numbering"
 import { pusherServer } from "@/lib/pusher-server"
 import { writeActivityLog } from "@/lib/activity-log"
-import { resolveDocumentBranding, memberLimitForPlan } from "@/lib/plan-limits"
+import { resolveEmailBranding, memberLimitForPlan } from "@/lib/plan-limits"
 import { planFromTier, planLabel } from "@/lib/plan-tier"
 import { recordCotisationPayment, sendCotisationPaymentConfirmation, CotisationOverpaymentError, removeRefundedCotisationPaymentsByReference } from "@/lib/cotisation-payments"
 import { deriveCotisationStatus } from "@/lib/cotisation-status"
@@ -270,7 +270,7 @@ export async function POST(req: Request) {
                 issueDate:      commande.createdAt,
                 secondaryLabel: "Payé le",
                 secondaryDate:  paidAt,
-                association: { ...commande.association, ...resolveDocumentBranding(commande.association) },
+                association: { ...commande.association, ...(await resolveEmailBranding(commande.associationId)) },
                 fournisseur: {
                   companyName: buyerLabel ?? recipientFirstName,
                   address: null, city: null, postalCode: null, siret: null, vatNumber: null,
@@ -308,7 +308,7 @@ export async function POST(req: Request) {
                   unitPrice: i.unitPrice,
                 })),
                 portalUrl,
-                branding: resolveDocumentBranding(commande.association),
+                branding: await resolveEmailBranding(commande.associationId),
               }),
               attachments: pdfAttachment ? [pdfAttachment] : undefined,
             }, { associationId: commande.associationId, membreId: commande.membreId ?? undefined, source: "TRANSACTION", sourceId: commande.id })
@@ -658,6 +658,7 @@ export async function POST(req: Request) {
           if (evenement.association) {
             const assoc = evenement.association
             const portalUrl = `${APP_URL}/portal/${assoc.slug}/evenements`
+            const branding = await resolveEmailBranding(evenement.associationId)
             // A member's own ticket is already cancellable from the authenticated portal,
             // so a Portal order (some ticket tied to a membreId) still gets a single
             // combined confirmation sent to the buyer, same as before. A public order (no
@@ -690,7 +691,7 @@ export async function POST(req: Request) {
                 portalUrl,
                 cancelUrl:       t.cancelToken ? `${APP_URL}/annulation/${t.cancelToken}` : undefined,
                 ticketQrs:       ticketQrFor(t) ? [ticketQrFor(t)!] : undefined,
-                branding:        resolveDocumentBranding(assoc),
+                branding,
               }), { associationId: evenement.associationId, source: "TRANSACTION", sourceId: orderId })
                 .catch(error => reportError(error, { area: "email", action: "webhook.ticket-purchase-email", extra: { associationId: evenement.associationId, orderId, stripeEventId: event.id } }))))
             } else if (buyerTicket.email) {
@@ -711,7 +712,7 @@ export async function POST(req: Request) {
                 portalUrl,
                 cancelUrl:       undefined,
                 ticketQrs:       allQrs.length ? allQrs : undefined,
-                branding:        resolveDocumentBranding(assoc),
+                branding,
               }), { associationId: evenement.associationId, membreId: buyerTicket.membreId ?? undefined, source: "TRANSACTION", sourceId: orderId })
                 .catch(error => reportError(error, { area: "email", action: "webhook.ticket-purchase-email", extra: { associationId: evenement.associationId, orderId, stripeEventId: event.id } }))
             }
@@ -834,7 +835,7 @@ export async function POST(req: Request) {
               receiptNumber:       refreshed?.receiptNumber ?? undefined,
               donorType:           don.donorType,
               deductibleAmount:    don.receiptMode === "PARTIAL" && don.deductibleAmount != null ? Number(don.deductibleAmount) : undefined,
-              branding:            resolveDocumentBranding(assoc),
+              branding:            await resolveEmailBranding(don.associationId),
             }),
             attachments: pdfAttachment ? [pdfAttachment] : undefined,
           }, { associationId: don.associationId, membreId: don.membreId ?? undefined, source: "TRANSACTION", sourceId: donId })

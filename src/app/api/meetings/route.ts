@@ -5,7 +5,7 @@ import { pusherServer } from "@/lib/pusher-server"
 import { sendEmail } from "@/lib/mail"
 import { meetingInviteEmail } from "@/lib/email"
 import { writeActivityLog } from "@/lib/activity-log"
-import { resolveDocumentBranding } from "@/lib/plan-limits"
+import { resolveEmailBranding } from "@/lib/plan-limits"
 import { meetingCreateSchema } from "@/lib/schemas"
 import { MEETING_WITH_PARTICIPANTS_SELECT, redactParticipantStatus } from "@/lib/meetings/select"
 import { APP_URL } from "@/lib/env"
@@ -75,7 +75,7 @@ export const POST = withAdminAuth(async (req, ctx) => {
     })
     const portalPath = `/portal/${association?.slug}/reunions`
     const portalBase = `${APP_URL}${portalPath}`
-    const branding = association ? resolveDocumentBranding(association) : null
+    const branding = association ? await resolveEmailBranding(associationId) : null
     for (const m of membres) {
       if (!m.user?.email) continue
       void sendEmail(meetingInviteEmail({

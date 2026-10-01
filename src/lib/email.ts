@@ -1,5 +1,7 @@
 import { APP_NAME } from "@/config/brand"
 import { APP_TIME_ZONE } from "@/lib/date-format"
+import { isColorDark } from "@/lib/color"
+import { EMAIL_FOOTER_SOCIAL_PLATFORMS, EMAIL_FOOTER_SOCIAL_LABEL, type EmailFooterSettings, type EmailFooterSocialPlatform } from "@/lib/email-footer"
 
 // Free-text user input (e.g. a custom message on a Devis/Facture send) interpolated into
 // an HTML email must be escaped — otherwise it's rendered as markup by the recipient's
@@ -18,7 +20,65 @@ export function escapeHtml(str: string): string {
 // Resolved via resolveDocumentBranding() (src/lib/plan-limits.ts) at each call site —
 // already null when the association's plan doesn't include custom branding, so this
 // file doesn't need to know about plans.
-export type EmailBranding = { logoUrl: string | null } | null | undefined
+export type EmailBranding = {
+  logoUrl:       string | null
+  accentColor:   string | null
+  senderName:    string | null
+  signatureHtml: string | null
+  footer:        EmailFooterSettings | null
+} | null | undefined
+
+// Text links, not icon images — see EMAIL_FOOTER_SOCIAL_PLATFORMS' own comment in
+// src/lib/email-footer.ts for why. Only platforms the admin actually filled in show up, in
+// the fixed EMAIL_FOOTER_SOCIAL_PLATFORMS order so the row doesn't reshuffle as links are
+// added/removed over time.
+function renderFooterSocialLinks(socialLinks: EmailFooterSettings["socialLinks"], linkColor: string): string {
+  const entries = EMAIL_FOOTER_SOCIAL_PLATFORMS
+    .map(platform => ({ platform, url: socialLinks[platform] }))
+    .filter((e): e is { platform: EmailFooterSocialPlatform; url: string } => !!e.url?.trim())
+  if (!entries.length) return ""
+  const links = entries
+    .map(({ platform, url }) => `<a href="${escapeHtml(url)}" style="color:${linkColor};text-decoration:none;font-weight:600;">${EMAIL_FOOTER_SOCIAL_LABEL[platform]}</a>`)
+    .join(`<span style="color:${linkColor};opacity:0.5;"> · </span>`)
+  return `<p style="margin:0 0 8px;font-size:12px;">${links}</p>`
+}
+
+// Three preset visual treatments (same "classic/bold/minimal" concept as
+// MEMBER_CARD_TEMPLATES) — `footer` null means an association without custom branding
+// access, or one that never opened branding settings: the original fixed, unstyled footer.
+function renderFooter(associationName: string, footer: EmailFooterSettings | null, fallbackAccent: string): string {
+  const nameEsc = escapeHtml(associationName)
+  const defaultText = `Email automatique envoyé par ${nameEsc} via ${APP_NAME}.<br>\n              Veuillez ne pas répondre directement à cet email.`
+  const textInner = footer?.text ? escapeHtml(footer.text) : defaultText
+
+  if (!footer || footer.style === "classic") {
+    return `<tr>
+        <td style="padding:20px 40px;border-top:1px solid #e4e4e7;background:#fafafa;">
+          ${renderFooterSocialLinks(footer?.socialLinks ?? { facebook: null, instagram: null, linkedin: null, x: null }, "#52525b")}
+          <p style="margin:0;font-size:12px;color:#71717a;text-align:center;white-space:pre-wrap;">${textInner}</p>
+        </td>
+      </tr>`
+  }
+
+  if (footer.style === "bold") {
+    const bg = footer.color || fallbackAccent
+    const fg = isColorDark(bg) ? "#ffffff" : "#111827"
+    return `<tr>
+        <td bgcolor="${bg}" style="padding:20px 40px;background:${bg};">
+          ${renderFooterSocialLinks(footer.socialLinks, fg)}
+          <p style="margin:0;font-size:12px;color:${fg};text-align:center;white-space:pre-wrap;">${textInner}</p>
+        </td>
+      </tr>`
+  }
+
+  // minimal — no border, no background, tighter padding.
+  return `<tr>
+      <td style="padding:12px 40px 20px;">
+        ${renderFooterSocialLinks(footer.socialLinks, "#a1a1aa")}
+        <p style="margin:0;font-size:11px;color:#a1a1aa;text-align:center;white-space:pre-wrap;">${textInner}</p>
+      </td>
+    </tr>`
+}
 
 // The accent shows through the header's top bar and the button, not as a full-bleed
 // banner behind white text — restrained, and it keeps a transparent-background logo
@@ -29,7 +89,12 @@ export type EmailBranding = { logoUrl: string | null } | null | undefined
 const ACCENT = "#18181b"
 
 function layout(associationName: string, content: string, branding?: EmailBranding): string {
-  const accent = ACCENT
+  // The header strip is the one piece of chrome branding actually colors — it carries no
+  // text, so unlike the button below it needs no contrast check. `btn()`'s CTA color stays
+  // pinned to the fixed ACCENT regardless of branding (see its own comment) — chromeAccent
+  // must stay separate from ACCENT so the dark-mode override below doesn't repaint that
+  // button to a color it was never rendered with in light mode.
+  const chromeAccent = branding?.accentColor || ACCENT
   const nameEsc = escapeHtml(associationName)
   const headerInner = branding?.logoUrl
     ? `<table cellpadding="0" cellspacing="0"><tr>
@@ -50,7 +115,8 @@ function layout(associationName: string, content: string, branding?: EmailBrandi
        meta tags above and repaint dark-mode colors from CSS instead — pins the card and
        button back to their authored light-mode colors. */
     @media (prefers-color-scheme: dark) {
-      .email-card, .email-btn { background: ${accent} !important; }
+      .email-card { background: ${chromeAccent} !important; }
+      .email-btn { background: ${ACCENT} !important; }
       .email-card-bg { background: #fff !important; }
       .email-btn a { color: #fff !important; }
     }
@@ -61,7 +127,7 @@ function layout(associationName: string, content: string, branding?: EmailBrandi
     <tr><td align="center">
       <table width="560" cellpadding="0" cellspacing="0" bgcolor="#ffffff" class="email-card-bg" style="background:#fff;border-radius:12px;overflow:hidden;border:1px solid #e4e4e7;">
         <tr>
-          <td class="email-card" bgcolor="${accent}" style="background:${accent};padding:4px;font-size:0;line-height:0;">&nbsp;</td>
+          <td class="email-card" bgcolor="${chromeAccent}" style="background:${chromeAccent};padding:4px;font-size:0;line-height:0;">&nbsp;</td>
         </tr>
         <tr>
           <td class="email-card-bg" bgcolor="#ffffff" style="background:#fff;padding:24px 40px;border-bottom:1px solid #e4e4e7;">
@@ -73,14 +139,7 @@ function layout(associationName: string, content: string, branding?: EmailBrandi
             ${content}
           </td>
         </tr>
-        <tr>
-          <td style="padding:20px 40px;border-top:1px solid #e4e4e7;background:#fafafa;">
-            <p style="margin:0;font-size:12px;color:#71717a;text-align:center;">
-              Email automatique envoyé par ${associationName} via ${APP_NAME}.<br>
-              Veuillez ne pas répondre directement à cet email.
-            </p>
-          </td>
-        </tr>
+        ${renderFooter(associationName, branding?.footer ?? null, chromeAccent)}
       </table>
     </td></tr>
   </table>
@@ -150,7 +209,7 @@ export function welcomeEmail(p: {
   return {
     to:       p.email,
     subject:  `Bienvenue dans ${p.associationName}`,
-    fromName: p.associationName,
+    fromName: p.branding?.senderName ?? p.associationName,
     html:     layout(p.associationName, content, p.branding),
   }
 }
@@ -211,7 +270,7 @@ export function invitationEmail(p: {
   return {
     to:       p.email,
     subject:  `Invitation — ${p.associationName}`,
-    fromName: p.associationName,
+    fromName: p.branding?.senderName ?? p.associationName,
     html:     layout(p.associationName, content, p.branding),
   }
 }
@@ -258,7 +317,7 @@ export function rsvpConfirmationEmail(p: {
   return {
     to:       p.email,
     subject:  `Confirmation — ${p.eventTitle}`,
-    fromName: p.associationName,
+    fromName: p.branding?.senderName ?? p.associationName,
     html:     layout(p.associationName, content, p.branding),
   }
 }
@@ -306,7 +365,7 @@ export function waitlistConfirmationEmail(p: {
   return {
     to:       p.email,
     subject:  `Liste d'attente — ${p.eventTitle}`,
-    fromName: p.associationName,
+    fromName: p.branding?.senderName ?? p.associationName,
     html:     layout(p.associationName, content, p.branding),
   }
 }
@@ -342,7 +401,7 @@ export function sondageInvitationEmail(p: {
   return {
     to:       p.email,
     subject:  `Sondage — ${p.sondageTitle}`,
-    fromName: p.associationName,
+    fromName: p.branding?.senderName ?? p.associationName,
     html:     layout(p.associationName, content, p.branding),
   }
 }
@@ -367,7 +426,7 @@ export function checkInReceiptEmail(p: {
   return {
     to:       p.email,
     subject:  `Présence confirmée — ${p.eventTitle}`,
-    fromName: p.associationName,
+    fromName: p.branding?.senderName ?? p.associationName,
     html:     layout(p.associationName, content, p.branding),
   }
 }
@@ -416,7 +475,7 @@ export function paymentConfirmationEmail(p: {
   return {
     to:       p.email,
     subject:  `Confirmation de cotisation — ${p.associationName}`,
-    fromName: p.associationName,
+    fromName: p.branding?.senderName ?? p.associationName,
     html:     layout(p.associationName, content, p.branding),
   }
 }
@@ -463,7 +522,7 @@ export function eventReminderEmail(p: {
   return {
     to:       p.email,
     subject:  `Rappel — ${p.eventTitle} (${whenLabel})`,
-    fromName: p.associationName,
+    fromName: p.branding?.senderName ?? p.associationName,
     html:     layout(p.associationName, content, p.branding),
   }
 }
@@ -488,7 +547,7 @@ export function eventReviewRequestEmail(p: {
   return {
     to:       p.email,
     subject:  `Votre avis sur ${p.eventTitle}`,
-    fromName: p.associationName,
+    fromName: p.branding?.senderName ?? p.associationName,
     html:     layout(p.associationName, content, p.branding),
   }
 }
@@ -699,7 +758,7 @@ export function portalWelcomeEmail(p: {
   return {
     to:       p.email,
     subject:  `Vos identifiants — Espace membre ${p.associationName}`,
-    fromName: p.associationName,
+    fromName: p.branding?.senderName ?? p.associationName,
     html:     layout(p.associationName, content, p.branding),
   }
 }
@@ -711,11 +770,17 @@ export function customEmail(p: {
   recipientEmail:  string
   branding?:       EmailBranding
 }) {
+  // Only here — this is the one email.ts function whose bodyHtml an admin actually wrote
+  // (directly, or via an AutomationRule/MessageTemplate), so it's the only one a personal
+  // sign-off belongs in. Rendered above the fixed footer disclaimer layout() always adds.
+  const signature = p.branding?.signatureHtml
+    ? `<div style="margin-top:24px;padding-top:20px;border-top:1px solid #e4e4e7;">${p.branding.signatureHtml}</div>`
+    : ""
   return {
     to:       p.recipientEmail,
     subject:  p.subject,
-    fromName: p.associationName,
-    html:     layout(p.associationName, p.bodyHtml, p.branding),
+    fromName: p.branding?.senderName ?? p.associationName,
+    html:     layout(p.associationName, p.bodyHtml + signature, p.branding),
   }
 }
 
@@ -797,7 +862,7 @@ export function ticketPurchaseEmail(p: {
   return {
     to:       p.email,
     subject:  `Billet confirmé — ${p.eventTitle}`,
-    fromName: p.associationName,
+    fromName: p.branding?.senderName ?? p.associationName,
     html:     layout(p.associationName, content, p.branding),
   }
 }
@@ -843,7 +908,7 @@ export function ticketQrDeliveryEmail(p: {
   return {
     to:       p.email,
     subject:  `Votre QR code d'entrée — ${p.eventTitle}`,
-    fromName: p.associationName,
+    fromName: p.branding?.senderName ?? p.associationName,
     html:     layout(p.associationName, content, p.branding),
   }
 }
@@ -867,7 +932,7 @@ export function cancellationConfirmationEmail(p: {
   return {
     to:       p.email,
     subject:  `Annulation confirmée — ${p.eventTitle}`,
-    fromName: p.associationName,
+    fromName: p.branding?.senderName ?? p.associationName,
     html:     layout(p.associationName, content, p.branding),
   }
 }
@@ -909,7 +974,7 @@ export function meetingInviteEmail(p: {
   return {
     to:       p.email,
     subject:  `Invitation — ${p.meetingTitle}`,
-    fromName: p.associationName,
+    fromName: p.branding?.senderName ?? p.associationName,
     html:     layout(p.associationName, content, p.branding),
   }
 }
@@ -964,7 +1029,7 @@ export function donPendingEmail(p: {
   return {
     to:       p.email,
     subject:  `Merci pour votre don à ${p.associationName}`,
-    fromName: p.associationName,
+    fromName: p.branding?.senderName ?? p.associationName,
     html:     layout(p.associationName, content, p.branding),
   }
 }
@@ -1020,7 +1085,7 @@ export function donConfirmationEmail(p: {
   return {
     to:       p.email,
     subject:  `Confirmation de don — ${p.associationName}`,
-    fromName: p.associationName,
+    fromName: p.branding?.senderName ?? p.associationName,
     html:     layout(p.associationName, content, p.branding),
   }
 }
@@ -1057,7 +1122,7 @@ export function donationSubscriptionStartedEmail(p: {
   return {
     to:       p.email,
     subject:  `Don récurrent activé — ${p.associationName}`,
-    fromName: p.associationName,
+    fromName: p.branding?.senderName ?? p.associationName,
     html:     layout(p.associationName, content, p.branding),
   }
 }
@@ -1088,7 +1153,7 @@ export function donationSubscriptionPaymentFailedEmail(p: {
   return {
     to:       p.email,
     subject:  `Échec de prélèvement — ${p.associationName}`,
-    fromName: p.associationName,
+    fromName: p.branding?.senderName ?? p.associationName,
     html:     layout(p.associationName, content, p.branding),
   }
 }
@@ -1146,7 +1211,7 @@ export function membershipSubscriptionStartedEmail(p: {
   return {
     to:       p.email,
     subject:  `Bienvenue chez ${p.associationName} !`,
-    fromName: p.associationName,
+    fromName: p.branding?.senderName ?? p.associationName,
     html:     layout(p.associationName, content, p.branding),
   }
 }
@@ -1260,7 +1325,7 @@ export function membershipWelcomeEmail(p: {
   return {
     to:       p.email,
     subject:  `Bienvenue chez ${p.associationName} !`,
-    fromName: p.associationName,
+    fromName: p.branding?.senderName ?? p.associationName,
     html:     layout(p.associationName, content, p.branding),
   }
 }
@@ -1295,7 +1360,7 @@ export function membershipPendingValidationEmail(p: {
   return {
     to:       p.email,
     subject:  `Votre demande d'adhésion à ${p.associationName} est en attente de validation`,
-    fromName: p.associationName,
+    fromName: p.branding?.senderName ?? p.associationName,
     html:     layout(p.associationName, content, p.branding),
   }
 }
@@ -1335,7 +1400,7 @@ export function membershipPaymentLinkEmail(p: {
   return {
     to:       p.email,
     subject:  `Finalisez votre adhésion à ${p.associationName}`,
-    fromName: p.associationName,
+    fromName: p.branding?.senderName ?? p.associationName,
     html:     layout(p.associationName, content, p.branding),
   }
 }
@@ -1363,7 +1428,7 @@ export function adhesionCompletionInviteEmail(p: {
   return {
     to:       p.email,
     subject:  `Complétez votre adhésion à ${p.associationName}`,
-    fromName: p.associationName,
+    fromName: p.branding?.senderName ?? p.associationName,
     html:     layout(p.associationName, content, p.branding),
   }
 }
@@ -1389,7 +1454,7 @@ export function adhesionCompletionConfirmationEmail(p: {
   return {
     to:       p.email,
     subject:  `Votre adhésion à ${p.associationName} est finalisée`,
-    fromName: p.associationName,
+    fromName: p.branding?.senderName ?? p.associationName,
     html:     layout(p.associationName, content, p.branding),
   }
 }
@@ -1441,7 +1506,7 @@ export function membershipSignupAdminNotificationEmail(p: {
     subject:  p.pendingValidation
       ? `Demande d'adhésion à valider · ${p.formTitle}`
       : (isGroup ? `Nouvelle inscription groupée · ${p.formTitle}` : `Nouvelle adhésion · ${p.formTitle}`),
-    fromName: p.associationName,
+    fromName: p.branding?.senderName ?? p.associationName,
     html:     layout(p.associationName, content, p.branding),
   }
 }
@@ -1486,7 +1551,7 @@ export function evenementRegistrationAdminNotificationEmail(p: {
   return {
     to:       p.email,
     subject:  `${heading} · ${p.eventTitle}`,
-    fromName: p.associationName,
+    fromName: p.branding?.senderName ?? p.associationName,
     html:     layout(p.associationName, content, p.branding),
   }
 }
@@ -1521,7 +1586,7 @@ export function evenementReviewAdminNotificationEmail(p: {
   return {
     to:       p.email,
     subject:  `Nouvel avis · ${p.eventTitle}`,
-    fromName: p.associationName,
+    fromName: p.branding?.senderName ?? p.associationName,
     html:     layout(p.associationName, content, p.branding),
   }
 }
@@ -1552,7 +1617,7 @@ export function cotisationSubscriptionPaymentFailedEmail(p: {
   return {
     to:       p.email,
     subject:  `Échec de prélèvement — ${p.associationName}`,
-    fromName: p.associationName,
+    fromName: p.branding?.senderName ?? p.associationName,
     html:     layout(p.associationName, content, p.branding),
   }
 }
@@ -1614,7 +1679,7 @@ export function membershipInstallmentPaymentFailedEmail(p: {
   return {
     to:       p.email,
     subject:  `Échec de prélèvement — ${p.associationName}`,
-    fromName: p.associationName,
+    fromName: p.branding?.senderName ?? p.associationName,
     html:     layout(p.associationName, content, p.branding),
   }
 }
@@ -1696,7 +1761,7 @@ export function boutiqueConfirmationEmail(p: {
   return {
     to:       p.email,
     subject:  `Confirmation de commande — ${p.associationName}`,
-    fromName: p.associationName,
+    fromName: p.branding?.senderName ?? p.associationName,
     html:     layout(p.associationName, content, p.branding),
   }
 }
@@ -1754,7 +1819,7 @@ export function boutiqueRefundEmail(p: {
   return {
     to:       p.email,
     subject:  `${p.fullyCancelled ? "Commande annulée" : "Remboursement"} — ${p.associationName}`,
-    fromName: p.associationName,
+    fromName: p.branding?.senderName ?? p.associationName,
     html:     layout(p.associationName, content, p.branding),
   }
 }
@@ -1809,7 +1874,7 @@ export function boutiquePendingOrderEmail(p: {
   return {
     to:       p.email,
     subject:  `Commande enregistrée — ${p.associationName}`,
-    fromName: p.associationName,
+    fromName: p.branding?.senderName ?? p.associationName,
     html:     layout(p.associationName, content, p.branding),
   }
 }

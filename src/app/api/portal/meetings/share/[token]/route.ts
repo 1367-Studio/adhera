@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma/client"
 import { withPortalAuth } from "@/lib/api-wrapper"
-import { resolveDocumentBranding } from "@/lib/plan-limits"
+import { resolveEmailBranding } from "@/lib/plan-limits"
 
 export const GET = withPortalAuth<{ token: string }>(async (_req, ctx, { token }) => {
   const { associationId } = ctx
@@ -25,6 +25,6 @@ export const GET = withPortalAuth<{ token: string }>(async (_req, ctx, { token }
     scheduledAt: meeting.scheduledAt,
     startedAt:   meeting.startedAt,
     expired,
-    association: association ? { name: association.name, ...resolveDocumentBranding(association) } : null,
+    association: association ? { name: association.name, ...(await resolveEmailBranding(associationId)) } : null,
   })
 }, { requireMembre: false })

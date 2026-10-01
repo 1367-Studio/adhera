@@ -12,7 +12,7 @@ import { eligibleReceiptAmount } from "@/lib/receipt-eligibility"
 import { withPortalAuth } from "@/lib/api-wrapper"
 import { sendEmail } from "@/lib/mail"
 import { donPendingEmail } from "@/lib/email"
-import { resolveDocumentBranding } from "@/lib/plan-limits"
+import { resolveEmailBranding } from "@/lib/plan-limits"
 import { reportError } from "@/lib/monitoring"
 
 // Mirrors MIN_DONATION_AMOUNT in /api/public/[slug]/dons/[formSlug]/checkout/route.ts.
@@ -217,7 +217,7 @@ export const POST = withPortalAuth<{ formSlug: string }>(async (req, ctx, { form
         firstName, email: email!, associationName: assoc.name, amount,
         paymentMethod: paymentMethod as "ESPECES" | "CHEQUE" | "VIREMENT",
         offlineInstructions: form.offlineInstructions,
-        branding: resolveDocumentBranding(assoc),
+        branding: await resolveEmailBranding(assoc.id),
       }),
       { associationId: assoc.id, source: "TRANSACTION", sourceId: don.id },
     ).catch(error => reportError(error, { area: "email", action: "portal.don.pending-email", extra: { associationId: assoc.id, donId: don.id } }))

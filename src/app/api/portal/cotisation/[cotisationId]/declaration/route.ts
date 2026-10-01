@@ -2,7 +2,7 @@ import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma/client"
 import { generateDeclarationCotisation } from "@/lib/pdf/declaration-cotisation"
 import { withPortalAuth } from "@/lib/api-wrapper"
-import { resolveDocumentBranding } from "@/lib/plan-limits"
+import { resolveEmailBranding } from "@/lib/plan-limits"
 
 type Params = {
   cotisationId: string
@@ -31,7 +31,7 @@ export const GET = withPortalAuth<Params>(async (_req, ctx, { cotisationId }) =>
 })
 if (!assoc) return NextResponse.json({ error: "Association introuvable" }, { status: 404 })
 
-const branding = resolveDocumentBranding(assoc)
+const branding = await resolveEmailBranding(ctx.associationId)
 const { pdf, declarationNumber } = await generateDeclarationCotisation(cotisation, membre, { ...assoc, logoUrl: branding.logoUrl })
 
   return new NextResponse(new Uint8Array(pdf), {

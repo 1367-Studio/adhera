@@ -5,6 +5,7 @@ import { writeActivityLog } from "@/lib/activity-log"
 import { withAdminAuth } from "@/lib/api-wrapper"
 import { canUseCustomBranding } from "@/lib/plan-limits"
 import { deleteFromR2 } from "@/lib/r2"
+import { emailFooterSettingsSchema } from "@/lib/email-footer"
 
 const ADMINS = ["ADMIN", "PRESIDENT"]
 
@@ -27,6 +28,13 @@ const schema = z.object({
   logoUrl: z.string().trim().url().max(500)
     .refine(isAllowedLogoUrl, "URL de logo non autorisée")
     .optional().or(z.literal("")),
+  primaryColor:        z.string().trim().regex(/^#[0-9a-fA-F]{6}$/, "Couleur invalide").optional().or(z.literal("")),
+  emailSenderName:     z.string().trim().max(120).optional().or(z.literal("")),
+  emailSignature:      z.string().trim().max(5000).optional().or(z.literal("")),
+  // Whole object each time (no partial-merge semantics) — simpler than reconciling a partial
+  // patch against whatever's already stored, and the UI always has the full current settings
+  // in hand anyway (it just saved from a form that started from them).
+  emailFooterSettings: emailFooterSettingsSchema.optional(),
 })
 
 export const PATCH = withAdminAuth(async (req, ctx) => {
@@ -43,13 +51,17 @@ export const PATCH = withAdminAuth(async (req, ctx) => {
   if (!canUseCustomBranding(association))
     return NextResponse.json({ error: "Personnalisation de marque réservée à la formule Pro" }, { status: 403 })
 
-  const { logoUrl } = parsed.data
+  const { logoUrl, primaryColor, emailSenderName, emailSignature, emailFooterSettings } = parsed.data
   const previousLogoUrl = association.logoUrl
 
   await prisma.association.update({
     where: { id: ctx.associationId },
     data: {
       ...(logoUrl !== undefined ? { logoUrl: logoUrl || null } : {}),
+      ...(primaryColor !== undefined ? { primaryColor: primaryColor || null } : {}),
+      ...(emailSenderName !== undefined ? { emailSenderName: emailSenderName || null } : {}),
+      ...(emailSignature !== undefined ? { emailSignature: emailSignature || null } : {}),
+      ...(emailFooterSettings !== undefined ? { emailFooterSettings } : {}),
     },
   })
 

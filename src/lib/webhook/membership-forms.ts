@@ -5,7 +5,7 @@ import { prisma } from "@/lib/prisma/client"
 import { sendEmail } from "@/lib/mail"
 import { membershipWelcomeEmail } from "@/lib/email"
 import { writeActivityLog } from "@/lib/activity-log"
-import { resolveDocumentBranding, effectiveMemberLimit } from "@/lib/plan-limits"
+import { resolveEmailBranding, effectiveMemberLimit } from "@/lib/plan-limits"
 import { getPricingInfo, stripe } from "@/lib/stripe"
 import { currentCotisationYear } from "@/lib/membre-adherent"
 import { recordCotisationPayment } from "@/lib/cotisation-payments"
@@ -282,7 +282,7 @@ export async function handleMembershipOneOffCheckout(session: Stripe.Checkout.Se
       amount:          totalAmount,
       loginUrl:        `${APP_URL}/portal/${assoc.slug}/login`,
       memberCardUrl:   memberCardAvailable ? `${APP_URL}/portal/${assoc.slug}/carte` : undefined,
-      branding:        resolveDocumentBranding(assoc),
+      branding:        await resolveEmailBranding(meta.associationId),
       canIssueTaxReceipts: assoc.canIssueTaxReceipts,
       receiptMode:         meta.receiptMode as "NONE" | "FULL" | "PARTIAL",
       deductibleAmount:    meta.deductibleAmount ? Number(meta.deductibleAmount) : undefined,

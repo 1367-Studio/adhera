@@ -1,5 +1,9 @@
-import type { DonsSection, SiteSection } from "@/types/site-config"
+import type { SiteSection } from "@/types/site-config"
 import { findDonationFormsOnSiteSection, usesDonationForms, type DonationFormPlacement } from "./site-section-picks"
+
+// Only what the text needs from a site block, so both builders' sections fit (siteConfig
+// sections, or the summaries GET /api/site-sections returns).
+type SiteSectionTitle = Pick<SiteSection, "id" | "type" | "title">
 
 // Scoped to the "donationForms" namespace.
 type Translate = (key: string, values?: Record<string, string>) => string
@@ -18,13 +22,13 @@ export function publishConfirmDescription({
   form:                 Pick<DonationFormPlacement, "id" | "visibility" | "siteSectionId">
   // undefined while the list is loading: nothing is named as replaced, no block announced as hidden.
   forms:                DonationFormPlacement[] | undefined
-  sections:             SiteSection[]
+  sections:             SiteSectionTitle[]
   donsModuleEnabled:    boolean
   fallbackSectionTitle: string
   translate:            Translate
 }) {
-  const donsSections  = sections.filter((section): section is DonsSection => section.type === "dons")
-  const sectionTitle  = (section: DonsSection) => section.title || fallbackSectionTitle
+  const donsSections  = sections.filter(section => section.type === "dons")
+  const sectionTitle  = (section: SiteSectionTitle) => section.title || fallbackSectionTitle
   // A SITE form whose section was deleted from the site is only reachable by its link.
   const targetSection = form.visibility === "SITE"
     ? donsSections.find(section => section.id === form.siteSectionId)

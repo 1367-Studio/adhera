@@ -21,6 +21,8 @@ import { LegalConsent, type RequiredLegalDocument } from "@/components/public/le
 import { PublicFormSkeleton } from "@/components/public/public-form-skeleton"
 import { InAppBrowserBanner } from "@/components/ui/in-app-browser-banner"
 import { useInAppBrowserEscape } from "@/hooks/use-in-app-browser-escape"
+import { FormDraftNotice } from "@/components/public/form-draft-notice"
+import { useFormDraft } from "@/hooks/use-form-draft"
 import { EMPTY_ADDRESS_FORM_VALUES, type AddressFormValues } from "@/lib/address"
 import { cn } from "@/lib/utils"
 
@@ -76,6 +78,29 @@ const MIN_DONATION_AMOUNT = 1
 
 type Props = { slug: string; formSlug: string; legalDocuments: RequiredLegalDocument[] }
 
+// What survives a round-trip through Stripe (see useFormDraft). Consent (the form's own
+// conditions and the association's legal documents) is left out on purpose: it is given again.
+type DonationDraft = {
+  tierId:        string
+  freeAmount:    number
+  paymentMethod: PaymentMethod
+  donorType:     "INDIVIDUAL" | "COMPANY"
+  firstName:     string
+  lastName:      string
+  companyName:   string
+  siret:         string
+  email:         string
+  addressValues: AddressFormValues
+  birthDate:     string
+  phone:         string
+  mobile:        string
+  gender:        string
+  message:       string
+  anonymous:     boolean
+  answers:       Record<string, AnswerValue>
+}
+const DONATION_DRAFT_VERSION = 1
+
 export function DonationFormPublicForm(props: Props) {
   return (
     <Suspense fallback={null}>
@@ -129,6 +154,63 @@ function DonationFormPublicFormInner({ slug, formSlug, legalDocuments }: Props) 
   const [answers, setAnswers]       = useState<Record<string, AnswerValue>>({})
   const [website, setWebsite]       = useState("") // honeypot
 
+  // Restored once the form is loaded, so a tier, custom field or option it no longer offers is
+  // dropped instead of being sent back to the server.
+  function restoreDonationDraft(savedDraft: DonationDraft) {
+    if (!form) return
+    const restoredTier = form.tiers.find(tier => tier.id === savedDraft.tierId)
+    if (restoredTier) setTierId(restoredTier.id)
+    setFreeAmount(Number(savedDraft.freeAmount) || 0)
+
+    const isOfflineMethodAllowed =
+      savedDraft.paymentMethod === "ESPECES"  ? form.allowCash
+      : savedDraft.paymentMethod === "CHEQUE" ? form.allowCheque
+      : savedDraft.paymentMethod === "VIREMENT" ? form.allowTransfer
+      : false
+    // Offline methods are for one-off gifts only (see showOfflineChoice below).
+    if (isOfflineMethodAllowed && restoredTier?.kind === "ONE_OFF") setPaymentMethod(savedDraft.paymentMethod)
+
+    setDonorType(savedDraft.donorType === "COMPANY" ? "COMPANY" : "INDIVIDUAL")
+    setFirstName(savedDraft.firstName ?? "")
+    setLastName(savedDraft.lastName ?? "")
+    setCompanyName(savedDraft.companyName ?? "")
+    setSiret(savedDraft.siret ?? "")
+    setEmail(savedDraft.email ?? "")
+    setAddressValues({ ...EMPTY_ADDRESS_FORM_VALUES, ...savedDraft.addressValues })
+    setBirthDate(savedDraft.birthDate ?? "")
+    setPhone(savedDraft.phone ?? "")
+    setMobile(savedDraft.mobile ?? "")
+    setGender(savedDraft.gender ?? "")
+    setMessage(savedDraft.message ?? "")
+    setAnonymous(!!savedDraft.anonymous)
+
+    const customFieldsById = new Map(form.customFields.map(customField => [customField.id, customField]))
+    const restoredAnswers: Record<string, AnswerValue> = {}
+    for (const [customFieldId, savedAnswer] of Object.entries(savedDraft.answers ?? {})) {
+      const customField = customFieldsById.get(customFieldId)
+      if (!customField) continue
+      const fieldOptions = customField.options ?? []
+      if (customField.type === "CHECKBOX_MULTI") {
+        if (Array.isArray(savedAnswer)) restoredAnswers[customFieldId] = savedAnswer.filter(option => fieldOptions.includes(option))
+      } else if (typeof savedAnswer === "string") {
+        const isChoiceField = customField.type === "SELECT" || customField.type === "RADIO"
+        if (!isChoiceField || fieldOptions.includes(savedAnswer)) restoredAnswers[customFieldId] = savedAnswer
+      }
+    }
+    setAnswers(restoredAnswers)
+  }
+
+  const { isRestored: isDraftRestored, clearDraft, discardDraft } = useFormDraft<DonationDraft>({
+    storageKey: `donation:${slug}:${formSlug}`,
+    version:    DONATION_DRAFT_VERSION,
+    values:     {
+      tierId, freeAmount, paymentMethod, donorType, firstName, lastName, companyName, siret, email,
+      addressValues, birthDate, phone, mobile, gender, message, anonymous, answers,
+    },
+    isReady:    !!form,
+    onRestore:  restoreDonationDraft,
+  })
+
   useEffect(() => {
     // Reset to the loading state on every re-fetch (including a locale switch), not just
     // the first mount — otherwise the previous-locale content stays on screen, unindicated,
@@ -150,10 +232,10 @@ function DonationFormPublicFormInner({ slug, formSlug, legalDocuments }: Props) 
     const p = searchParams.get("payment")
     if (!p || shownPaymentToast.current === p) return
     shownPaymentToast.current = p
-    if (p === "success") setSubmitted(true)
+    if (p === "success") { clearDraft(); setSubmitted(true) }
     if (p === "cancelled") toast.info(t("toastCancelled"))
     router.replace(pathname, { scroll: false })
-  }, [searchParams, t, router, pathname])
+  }, [searchParams, t, router, pathname, clearDraft])
 
   const selectedTier = form?.tiers.find(x => x.id === tierId) ?? null
   const amount = selectedTier?.freeAmount ? freeAmount : Number(selectedTier?.amount ?? 0)
@@ -284,7 +366,7 @@ function DonationFormPublicFormInner({ slug, formSlug, legalDocuments }: Props) 
         return
       }
       if (data.url) { window.location.href = data.url; return }
-      if (data.offline) { setOfflineSubmitted(true); setSubmitted(true); return }
+      if (data.offline) { clearDraft(); setOfflineSubmitted(true); setSubmitted(true); return }
     } catch {
       toast.error(t("errorNetwork"))
     } finally {
@@ -379,6 +461,8 @@ function DonationFormPublicFormInner({ slug, formSlug, legalDocuments }: Props) 
                 <label htmlFor="website">{t("honeypotLabel")}</label>
                 <input id="website" type="text" tabIndex={-1} autoComplete="off" value={website} onChange={e => setWebsite(e.target.value)} />
               </div>
+
+              {isDraftRestored && <FormDraftNotice onDiscard={discardDraft} />}
 
               <div className="space-y-2">
                 <p className="text-sm font-medium">{t("amountLabel")}</p>

@@ -16,7 +16,7 @@ import { writeActivityLog } from "@/lib/activity-log"
 import { sendEmail } from "@/lib/mail"
 import { rsvpConfirmationEmail, waitlistConfirmationEmail } from "@/lib/email"
 import { notifyEventRegistration } from "@/lib/evenement-notify"
-import { resolveDocumentBranding } from "@/lib/plan-limits"
+import { resolveEmailBranding } from "@/lib/plan-limits"
 import { createEvenementDonation } from "@/lib/webhook/evenement-addons"
 import { ON_SITE_PAYMENT_METHODS, isOnSitePaymentMethodAccepted } from "@/lib/evenement-payment-methods"
 import { reportError } from "@/lib/monitoring"
@@ -604,7 +604,7 @@ export async function POST(
         eventLocation:   evenement.location,
         portalUrl:       `${APP_URL}/${slug}/evenements/${evenementRef}`,
         cancelUrl:       `${APP_URL}/annulation/${cancelToken}`,
-        branding:        resolveDocumentBranding(assoc),
+        branding:        await resolveEmailBranding(assoc.id),
       }), { associationId: assoc.id, source: "PUBLIC_EVENT_INSCRIPTION", sourceId: participationId }).catch(error => reportError(error, { area: "email", action: "public.evenement.inscription.waitlist-email", extra: { associationId: assoc.id, slug, evenementId: evenement.id, participationId } }))
       await notifyEventRegistration({
         associationId: assoc.id, evenementId: evenement.id, eventTitle: evenement.title, eventDate: evenement.date,
@@ -627,7 +627,7 @@ export async function POST(
           imageUrl: `${APP_URL}/api/public/billet/${ticketToken}/qr`,
           pageUrl:  `${APP_URL}/billet/${ticketToken}`,
         },
-        branding:        resolveDocumentBranding(assoc),
+        branding:        await resolveEmailBranding(assoc.id),
       }), { associationId: assoc.id, source: "PUBLIC_EVENT_INSCRIPTION", sourceId: participationId }).catch(error => reportError(error, { area: "email", action: "public.evenement.inscription.confirmation-email", extra: { associationId: assoc.id, slug, evenementId: evenement.id, participationId } }))
       // Awaited like the confirmation above it: this route runs serverless, and an execution
       // frozen right after the response would drop a fire-and-forget notification. An offline
@@ -848,6 +848,7 @@ export async function POST(
   })))
 
   if (groupWaitlisted) {
+    const waitlistBranding = await resolveEmailBranding(assoc.id)
     await Promise.all(newAttendees.map((a, i) => sendEmail(waitlistConfirmationEmail({
       firstName: a.firstName,
       email:     a.email,
@@ -857,7 +858,7 @@ export async function POST(
       eventLocation:   evenement.location,
       portalUrl:       `${APP_URL}/${slug}/evenements/${evenementRef}`,
       cancelUrl:       `${APP_URL}/annulation/${cancelTokens[i]}`,
-      branding:        resolveDocumentBranding(assoc),
+      branding:        waitlistBranding,
     }), { associationId: assoc.id, source: "PUBLIC_EVENT_INSCRIPTION", sourceId: participationIds[i] }).catch(error => reportError(error, { area: "email", action: "public.evenement.inscription.waitlist-email", extra: { associationId: assoc.id, slug, evenementId: evenement.id, participationId: participationIds[i] } }))))
     await notifyEventRegistration({
       associationId: assoc.id, evenementId: evenement.id, eventTitle: evenement.title, eventDate: evenement.date,
@@ -868,6 +869,7 @@ export async function POST(
   }
 
   if (!isPaid) {
+    const confirmationBranding = await resolveEmailBranding(assoc.id)
     await Promise.all(newAttendees.map((a, i) => sendEmail(rsvpConfirmationEmail({
       firstName: a.firstName,
       email:     a.email,
@@ -881,7 +883,7 @@ export async function POST(
         imageUrl: `${APP_URL}/api/public/billet/${ticketTokens[i]}/qr`,
         pageUrl:  `${APP_URL}/billet/${ticketTokens[i]}`,
       },
-      branding:        resolveDocumentBranding(assoc),
+      branding:        confirmationBranding,
     }), { associationId: assoc.id, source: "PUBLIC_EVENT_INSCRIPTION", sourceId: participationIds[i] }).catch(error => reportError(error, { area: "email", action: "public.evenement.inscription.confirmation-email", extra: { associationId: assoc.id, slug, evenementId: evenement.id, participationId: participationIds[i] } }))))
     // One notification for the whole order, not one per seat — a family booking four places
     // is a single thing that happened, and four identical bells would read as four bookings.

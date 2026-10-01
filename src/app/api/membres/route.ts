@@ -10,7 +10,7 @@ import { membreCreateSchema } from "@/lib/schemas"
 import { readMobileAnswer } from "@/lib/membre-answers"
 import { parsePagination } from "@/lib/pagination"
 import { APP_URL } from "@/lib/env"
-import { assertMemberLimit, MemberLimitReachedError, resolveDocumentBranding } from "@/lib/plan-limits"
+import { assertMemberLimit, MemberLimitReachedError, resolveEmailBranding } from "@/lib/plan-limits"
 import { currentCotisationYear, isMembreAdherent, membreAdherentCotisationSelect, membreAdherentResponsableSelect, membreAdherentWhereClause } from "@/lib/membre-adherent"
 import { maybeCreateDefaultCotisation } from "@/lib/cotisation-defaults"
 import { eligibleReceiptAmount } from "@/lib/receipt-eligibility"
@@ -298,7 +298,7 @@ export const POST = withAdminAuth(async (req, ctx) => {
       associationName: assoc.name,
       role,
       loginUrl,
-      branding:        resolveDocumentBranding(assoc),
+      branding:        await resolveEmailBranding(associationId),
       cotisation:      notifyCotisation ? {
         amount: Number(notifyCotisation.amount),
         year:   notifyCotisation.year,

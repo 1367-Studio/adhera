@@ -2915,7 +2915,8 @@
           "siteSectionReplaceWarningPublished": "This section currently shows \"{title}\". When you save, this form will replace it; \"{title}\" will remain available through its link.",
           "siteSectionReplaceWarningDraft": "This section currently shows \"{title}\". This form will replace it as soon as it is published; \"{title}\" will remain available through its link.",
           "siteSectionRemovedWarning": "When you save, the \"{section}\" section will be hidden on the website.",
-          "datesOrderError": "The closing date must be after the opening date."
+          "datesOrderError": "The closing date must be after the opening date.",
+          "siteSectionPuckHint": "Blocks from the new site editor"
         }
       }
     },
@@ -3201,7 +3202,8 @@
           "siteSectionPlaceholder": "Choose…",
           "siteSectionCreateOption": "+ Create new section",
           "siteSectionCreateError": "Error creating the site section.",
-          "siteSectionRequiredError": "Choose which site section this form should be published on."
+          "siteSectionRequiredError": "Choose which site section this form should be published on.",
+          "siteSectionPuckHint": "Blocks from the new site editor"
         },
         "products": {
           "title": "Products",
@@ -3383,6 +3385,12 @@
       "isDefaultHint": "Automatically used as the suggested message for this category (e.g. cotisation reminders sent from the Cotisations page).",
       "emailSubject": "Email subject",
       "emailSubjectPlaceholder": "Reminder: your '{{annee_cotisation}}' membership fee",
+      "modeText": "Plain text",
+      "modeTextHint": "A single rich-text field.",
+      "modeBlocks": "Visual design",
+      "modeBlocksHint": "Reorderable blocks: text, image, button, divider.",
+      "modeBlocksProOnly": "Reserved for the Pro plan. Upgrade from the Subscription tab to enable it.",
+      "modeLockedHint": "The editing mode (plain text or visual design) is fixed when the template is created and can't be changed afterwards — create a new template to use the other mode.",
       "variablesHint": "Variables — drag into the subject, body, or SMS",
       "variables": {
         "prenom": "First name",
@@ -3413,6 +3421,8 @@
       "previewTitle": "Message preview",
       "previewDescription": "Rendered with sample data",
       "previewSubject": "Subject",
+      "previewBrandingHint": "The header, footer and signature come from the association's brand identity.",
+      "previewBrandingLink": "Edit in Settings",
       "toasts": {
         "updated": "Template updated",
         "created": "Template created",
@@ -3421,6 +3431,26 @@
       "validation": {
         "required": "Required"
       }
+    },
+    "blockEditor": {
+      "empty": "Add a first block below.",
+      "incomplete": "A block isn't complete (image with no file, or button with no text/link).",
+      "uploadError": "Error uploading an image — try again.",
+      "dragHandle": "Reorder",
+      "duplicate": "Duplicate",
+      "remove": "Remove",
+      "textPlaceholder": "Write your text…",
+      "imageLink": "Link (optional)",
+      "buttonLabel": "Button text",
+      "buttonLabelPlaceholder": "Learn more",
+      "buttonUrl": "Button link",
+      "urlHint": "https://… or a variable like '{{lien_portal}}'",
+      "buttonColor": "Background",
+      "buttonTextColor": "Text",
+      "addText": "Text",
+      "addImage": "Image",
+      "addButton": "Button",
+      "addDivider": "Divider"
     },
     "rulesManager": {
       "title": "Automation rules",
@@ -3739,9 +3769,43 @@
     },
     "branding": {
       "title": "Brand identity",
-      "subtitle": "Logo shown on the dashboard, invoices/quotes, attendance sheet and public site.",
+      "subtitle": "Logo, color and signature shown on the dashboard, invoices/quotes, attendance sheet, public site and emails sent to members.",
       "logo": "Logo",
-      "proOnlyText": "A custom logo (dashboard, invoices/quotes, attendance sheet) is reserved for the Pro plan. Upgrade from the Subscription tab to enable it.",
+      "color": "Color",
+      "colorHint": "Used in the email header and on buttons.",
+      "senderName": "Sender name",
+      "senderNameHint": "Name shown as the email sender. Leave empty to use the association's name.",
+      "signature": "Signature",
+      "signatureHint": "Added at the end of manually composed emails and automation-triggered emails.",
+      "footerText": "Footer text",
+      "footerTextHint": "Replaces the default text at the bottom of every email. Leave empty to keep the standard text.",
+      "footerTextPlaceholder": "Automated email sent by {name}…",
+      "footerStyles": {
+        "classic": "Classic",
+        "bold": "Bold",
+        "minimal": "Minimal"
+      },
+      "footer": {
+        "title": "Footer",
+        "subtitle": "Style, color, text and social links shown at the bottom of every email.",
+        "color": "Background color",
+        "socialLinks": "Social links",
+        "socialPlatforms": {
+          "facebook": "Facebook",
+          "instagram": "Instagram",
+          "linkedin": "LinkedIn",
+          "x": "X (Twitter)"
+        }
+      },
+      "proOnlyText": "Custom brand identity (dashboard, invoices/quotes, attendance sheet, emails) is reserved for the Pro plan. Upgrade from the Subscription tab to enable it.",
+      "preview": {
+        "label": "Preview",
+        "placeholderName": "Your association",
+        "sampleHeading": "Hello First name,",
+        "sampleButton": "View details",
+        "defaultFooter": "Automated email sent by {name} via Formwise.\nPlease do not reply directly to this email.",
+        "fromLabel": "Sender: {name}"
+      },
       "toasts": {
         "updated": "Brand identity updated",
         "uploadError": "Error uploading the logo"
@@ -5182,6 +5246,30 @@
       "headerPlaceholder": "E.g.: something understated that stands out on white…",
       "footerPlaceholder": "E.g.: a short thank-you message…",
       "sectionPlaceholder": "Describe what this section should say…"
+    },
+    "builderSwitch": {
+      "liveVersionLabel": "Live version",
+      "switchLabel": "New editor (beta)",
+      "statusLegacy": "Your visitors see the previous site",
+      "statusNewBuilder": "Your visitors see the version published on {date}",
+      "publishFirstHint": "Publish from the new editor first",
+      "openNewBuilder": "Open the new editor →",
+      "legacyEditsNotice": "Your site shows the new editor version: changes made here will only be visible if you switch back to the previous site.",
+      "confirmOn": {
+        "title": "Turn on the new editor?",
+        "description": "Your public site will show the version published on {date}. You can switch back to the previous site at any time.",
+        "confirmLabel": "Turn on"
+      },
+      "confirmOff": {
+        "title": "Switch back to the previous site?",
+        "description": "Your public site will show the previous site again.",
+        "confirmLabel": "Switch back"
+      },
+      "toasts": {
+        "switchedOn": "The new editor is live",
+        "switchedOff": "The previous site is live again",
+        "error": "Error while switching editor"
+      }
     }
   },
   "richTextEditor": {
@@ -5378,6 +5466,10 @@
     "notFound": "This document could not be found.",
     "backToList": "Back to documents",
     "pdfShort": "PDF"
+  },
+  "formDraft": {
+    "restored": "Your answers have been kept.",
+    "discard": "Start over with an empty form"
   },
   "legalConsent": {
     "agreeLabel": "{count, plural, one {I accept the following document:} other {I accept the following documents:}}",

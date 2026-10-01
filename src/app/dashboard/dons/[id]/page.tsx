@@ -26,7 +26,7 @@ import { isTermsConfigurationValid, TERMS_CONTENT_REQUIRED_CODE } from "@/lib/fo
 import { cn } from "@/lib/utils"
 import { useCurrentUser, useModules } from "@/lib/user-context"
 import { useDonationForms } from "@/hooks/use-donation-forms"
-import { useSiteConfig, useSaveSiteConfig } from "@/hooks/use-site-config"
+import { useCreateSiteSection, useSiteSections } from "@/hooks/use-site-sections"
 import { publishConfirmDescription } from "@/lib/dons/publish-confirm-description"
 import { findDonationFormsOnSiteSection } from "@/lib/dons/site-section-picks"
 import { SECTION_LABELS } from "@/types/site-config"
@@ -117,7 +117,6 @@ export default function DonationFormDetailPage() {
   // Also the translation of the save/publish routes' { code: "TERMS_CONTENT_REQUIRED" }.
   const termsContentRequiredMessage = useTermsContentRequiredMessage("donationForms.detail.steps.info")
   const tCommon = useTranslations("common")
-  const tSiteDefaults = useTranslations("site.defaultTitles")
   const user    = useCurrentUser()
   const modules = useModules()
 
@@ -203,12 +202,12 @@ export default function DonationFormDetailPage() {
     queryFn:  () => fetch(`/api/donation-forms/${id}/tiers`).then(response => response.json()),
   })
 
-  // Feeds the Publication step's section picker — same query key/hook the site editor
-  // itself uses (useSiteConfig), so the list always matches what an admin sees under Site
-  // internet, and stays in sync when this page creates a new section below.
-  const { data: siteConfigData } = useSiteConfig()
-  const saveSiteConfig = useSaveSiteConfig()
-  const donsSiteSections = (siteConfigData?.config?.sections ?? []).filter(s => s.type === "dons")
+  // Feeds the Publication step's section picker: the "dons" blocks of whichever builder the
+  // public site renders (old builder sections, or the new builder's blocks).
+  const { data: siteSectionsData } = useSiteSections("dons")
+  const createSiteSection = useCreateSiteSection()
+  const donsSiteSections     = siteSectionsData?.sections ?? []
+  const isNewSiteBuilderLive = siteSectionsData?.siteBuilder === "PUCK"
   const [creatingSection, setCreatingSection] = useState(false)
 
   // Every form of the association: tells the Publication step and the publish confirmation
@@ -220,10 +219,8 @@ export default function DonationFormDetailPage() {
   async function createDonsSection() {
     setCreatingSection(true)
     try {
-      const newSection = { id: crypto.randomUUID(), type: "dons" as const, title: tSiteDefaults("dons"), body: "", buttonLabel: "" }
-      const sections = [...(siteConfigData?.config?.sections ?? []), newSection]
-      await saveSiteConfig.mutateAsync({ sections })
-      setSiteSectionId(newSection.id)
+      const createdSection = await createSiteSection.mutateAsync("dons")
+      setSiteSectionId(createdSection.id)
     } catch {
       toast.error(tSteps("publish.siteSectionCreateError"))
     } finally {
@@ -913,7 +910,7 @@ export default function DonationFormDetailPage() {
                     disabled={creatingSection}
                     placeholder={tSteps("publish.siteSectionPlaceholder")}
                     options={[
-                      ...donsSiteSections.map(s => ({ value: s.id, label: s.title || SECTION_LABELS.dons })),
+                      ...donsSiteSections.map(section => ({ value: section.id, label: section.title || SECTION_LABELS.dons })),
                       { value: CREATE_SITE_SECTION_VALUE, label: tSteps("publish.siteSectionCreateOption") },
                     ]}
                     value={siteSectionId}
@@ -922,6 +919,9 @@ export default function DonationFormDetailPage() {
                       else setSiteSectionId(v)
                     }}
                   />
+                  {isNewSiteBuilderLive && (
+                    <p className="text-xs text-muted-foreground">{tSteps("publish.siteSectionPuckHint")}</p>
+                  )}
                   {formOnPickedSection && (
                     <p className="text-xs text-amber-600 dark:text-amber-400">
                       {form.status === "PUBLISHED"
@@ -1030,7 +1030,7 @@ export default function DonationFormDetailPage() {
           ? publishConfirmDescription({
               form,
               forms:                donationForms,
-              sections:             siteConfigData?.config?.sections ?? [],
+              sections:             donsSiteSections.map(section => ({ ...section, type: "dons" as const })),
               donsModuleEnabled:    modules.dons,
               fallbackSectionTitle: SECTION_LABELS.dons,
               translate:            t,

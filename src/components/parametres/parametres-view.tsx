@@ -44,6 +44,10 @@ type Association = {
   plan:    AssociationPlan
   customBrandingEnabled: boolean | null
   logoUrl: string | null
+  primaryColor: string | null
+  emailSenderName: string | null
+  emailSignature: string | null
+  emailFooterSettings: unknown
   cotisationDefaultAmount: string | number | null
   publicMembershipPaymentEnabled: boolean
 }
@@ -200,7 +204,14 @@ function ParametresViewInner() {
               <BrandingSettings
                 canEdit={canEdit}
                 canUse={assoc.customBrandingEnabled ?? assoc.plan === "PRO"}
-                data={{ logoUrl: assoc.logoUrl }}
+                data={{
+                  logoUrl:         assoc.logoUrl,
+                  primaryColor:    assoc.primaryColor,
+                  emailSenderName:     assoc.emailSenderName,
+                  emailSignature:      assoc.emailSignature,
+                  emailFooterSettings: assoc.emailFooterSettings,
+                  associationName:     assoc.name,
+                }}
               />
             </div>
           )}

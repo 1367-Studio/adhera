@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/prisma/client"
 import { sendEmail } from "@/lib/mail"
 import { membershipSignupAdminNotificationEmail } from "@/lib/email"
-import { resolveDocumentBranding } from "@/lib/plan-limits"
+import { resolveEmailBranding } from "@/lib/plan-limits"
 import { pusherServer } from "@/lib/pusher-server"
 import { APP_URL } from "@/lib/env"
 import { findPossibleDuplicates } from "@/lib/membre-duplicates"
@@ -103,7 +103,7 @@ export async function notifyMembershipSignup(params: {
     memberNames:     params.memberNames,
     amount:          params.amount,
     dashboardUrl:    `${APP_URL}/dashboard/membres`,
-    branding:        resolveDocumentBranding(assoc),
+    branding:        await resolveEmailBranding(params.associationId),
     pendingValidation: params.pendingValidation,
   }), { associationId: params.associationId, membreId: params.primaryMembreId, source: "TRANSACTION" })
     .catch(error => reportError(error, { area: "email", action: "membership-notify.admin-email", extra: { associationId: params.associationId, membreId: params.primaryMembreId } }))

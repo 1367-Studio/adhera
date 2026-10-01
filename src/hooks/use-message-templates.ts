@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import type { TemplateCategory } from "@/lib/automation"
+import type { EmailBlock } from "@/lib/email-blocks"
 
 export type { TemplateCategory }
 
@@ -9,6 +10,9 @@ export type MessageTemplate = {
   category:  TemplateCategory
   subject:   string
   body:      string
+  // Present only for a template in design mode — see MessageTemplate.blocks (schema comment)
+  // and /api/message-templates, which recomputes `body` from this on every save.
+  blocks:    EmailBlock[] | null
   smsBody:   string | null
   active:    boolean
   isDefault: boolean
@@ -18,7 +22,10 @@ export type MessageTemplate = {
   activeRulesCount: number
 }
 
-export type TemplateInput = { name: string; category?: TemplateCategory; subject: string; body: string; smsBody?: string; isDefault?: boolean }
+// body is optional because a design-mode (blocks) create/update doesn't need to send one —
+// the API recomputes it server-side from blocks. Plain-text mode still requires it (enforced
+// server-side, not repeated here).
+export type TemplateInput = { name: string; category?: TemplateCategory; subject: string; body?: string; blocks?: EmailBlock[]; smsBody?: string; isDefault?: boolean }
 
 const KEY = ["message-templates"]
 

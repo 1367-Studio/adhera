@@ -6,7 +6,7 @@ import { writeActivityLog } from "@/lib/activity-log"
 import { rateLimit, requestIp } from "@/lib/rate-limit"
 import { sendEmail } from "@/lib/mail"
 import { cancellationConfirmationEmail } from "@/lib/email"
-import { resolveDocumentBranding } from "@/lib/plan-limits"
+import { resolveEmailBranding } from "@/lib/plan-limits"
 import { isEvenementOver } from "@/lib/evenement-timing"
 import { reportError } from "@/lib/monitoring"
 
@@ -98,7 +98,7 @@ export async function POST(
         associationName: participation.evenement.association.name,
         eventTitle:      participation.evenement.title,
         refunded:        false,
-        branding:        resolveDocumentBranding(participation.evenement.association),
+        branding:        await resolveEmailBranding(associationId),
       }), { associationId, source: "PUBLIC_EVENT_CANCELLATION", sourceId: participation.id }).catch(error => reportError(error, { area: "email", action: "public.cancel-ticket.confirmation-email", extra: { associationId, participationId: participation.id } }))
     }
     return NextResponse.json({ ok: true, refunded: false })
@@ -200,7 +200,7 @@ export async function POST(
       eventTitle:      participation.evenement.title,
       refunded,
       amount:          refunded ? refundAmountCents / 100 : undefined,
-      branding:        resolveDocumentBranding(participation.evenement.association),
+      branding:        await resolveEmailBranding(associationId),
     }), { associationId, source: "PUBLIC_EVENT_CANCELLATION", sourceId: participation.id }).catch(error => reportError(error, { area: "email", action: "public.cancel-ticket.confirmation-email", extra: { associationId, participationId: participation.id } }))
   }
 

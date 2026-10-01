@@ -6,10 +6,8 @@ import { useQuery } from "@tanstack/react-query"
 import { useTranslations, useFormatter } from "next-intl"
 import { ArrowLeftIcon, CalendarBlankIcon, PushPinIcon } from "@phosphor-icons/react/dist/ssr";
 import { RichTextView } from "@/components/ui/rich-text-view"
-import { SiteNavbar } from "@/components/site/site-navbar"
-import { SiteFooter } from "@/components/site/site-footer"
+import { SitePublicChrome } from "@/components/site/site-public-chrome"
 import type { SiteConfig } from "@/types/site-config"
-import { getSiteColorVars } from "@/lib/site-theme"
 
 type EvenementRef = { id: string; title: string; date: string }
 
@@ -40,37 +38,6 @@ type Props = { slug: string; id: string }
 function backHref(slug: string, site?: SiteInfo) {
   const sectionId = site?.config?.sections.find(s => s.type === "actualites")?.id
   return sectionId ? `/${slug}#${sectionId}` : `/${slug}`
-}
-
-function Chrome({ site, slug, children }: { site: SiteInfo; slug: string; children: React.ReactNode }) {
-  const config = site.config
-  const color  = "var(--site-primary)"
-  return (
-    <div
-      className="min-h-screen flex flex-col bg-white text-gray-900"
-      style={{ colorScheme: "light", ...getSiteColorVars(config) }}
-    >
-      <SiteNavbar
-        name={site.name}
-        logoUrl={config?.logoUrl}
-        color={color}
-        secondaryColor="var(--site-secondary)"
-        portalSlug={slug}
-        headerBgColor={config?.headerBgColor}
-        headerShowMembres={config?.headerShowMembres}
-        headerShowRegister={config?.headerShowRegister}
-        membershipCta={null}
-      />
-      <main className="flex-1">{children}</main>
-      <SiteFooter
-        name={site.name}
-        footerText={config?.footerText}
-        footerBgColor={config?.footerBgColor}
-        footerLinks={config?.footerLinks}
-        color={color}
-      />
-    </div>
-  )
 }
 
 export function ActualiteDetailView({ slug, id }: Props) {
@@ -118,14 +85,14 @@ export function ActualiteDetailView({ slug, id }: Props) {
     )
     // No `site` at all means the association/site itself isn't reachable (unpublished,
     // module off) — nothing to build chrome from, so fall back to the bare centered message.
-    return site ? <Chrome site={site} slug={slug}>{notFoundBody}</Chrome> : <div className="min-h-screen">{notFoundBody}</div>
+    return site ? <SitePublicChrome site={site} slug={slug}>{notFoundBody}</SitePublicChrome> : <div className="min-h-screen">{notFoundBody}</div>
   }
 
   const color = "var(--site-primary)"
   const ev    = post.evenement
 
   return (
-    <Chrome site={site!} slug={slug}>
+    <SitePublicChrome site={site!} slug={slug}>
       <div className="max-w-3xl mx-auto px-4 py-10 space-y-6">
         <Link
           href={backHref(slug, site)}
@@ -186,6 +153,6 @@ export function ActualiteDetailView({ slug, id }: Props) {
           </Link>
         )}
       </div>
-    </Chrome>
+    </SitePublicChrome>
   )
 }
