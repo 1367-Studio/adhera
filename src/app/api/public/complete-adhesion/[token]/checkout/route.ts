@@ -180,6 +180,7 @@ export async function POST(
     payment_intent_data: {
       application_fee_amount: applicationFee,
       transfer_data:          { destination: membre.association.stripeConnectId },
+      on_behalf_of:           membre.association.stripeConnectId,
       metadata: meta,
     },
     metadata: meta,
