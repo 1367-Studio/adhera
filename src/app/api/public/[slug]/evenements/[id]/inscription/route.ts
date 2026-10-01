@@ -680,7 +680,7 @@ export async function POST(
         ...donationLineItems,
         ...productLineItems,
       ],
-      payment_intent_data: { application_fee_amount: applicationFee, transfer_data: { destination: assoc.stripeConnectId! }, metadata: { orderId, associationId: assoc.id } },
+      payment_intent_data: { application_fee_amount: applicationFee, transfer_data: { destination: assoc.stripeConnectId! }, on_behalf_of: assoc.stripeConnectId!, metadata: { orderId, associationId: assoc.id } },
       metadata: {
         orderId,
         ...(resolvedDonations.length > 0 ? { donations: JSON.stringify(resolvedDonations.map(d => ({ ticketTypeId: d.tier.id, label: d.tier.label, amount: d.amount, receiptMode: d.tier.receiptMode }))) } : {}),
@@ -923,6 +923,7 @@ export async function POST(
     payment_intent_data: {
       application_fee_amount: applicationFee,
       transfer_data:          { destination: assoc.stripeConnectId! },
+      on_behalf_of:           assoc.stripeConnectId!,
       metadata:               { orderId, associationId: assoc.id },
     },
     metadata:       { orderId },

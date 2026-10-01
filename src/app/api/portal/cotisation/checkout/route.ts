@@ -83,6 +83,7 @@ export const POST = withPortalAuth(async (req, ctx) => {
     payment_intent_data: {
       application_fee_amount: applicationFee,
       transfer_data:          { destination: cotisation.association.stripeConnectId },
+      on_behalf_of:           cotisation.association.stripeConnectId,
       metadata:               { cotisationId, associationId: ctx.associationId },
     },
     metadata:    { cotisationId },

@@ -129,6 +129,7 @@ export async function POST(
     payment_intent_data: {
       application_fee_amount: applicationFee,
       transfer_data:          { destination: cotisation.association.stripeConnectId },
+      on_behalf_of:           cotisation.association.stripeConnectId,
       metadata:               { cotisationId: cotisation.id, associationId: cotisation.associationId },
     },
     metadata:    { cotisationId: cotisation.id },
