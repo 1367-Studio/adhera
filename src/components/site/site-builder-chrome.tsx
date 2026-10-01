@@ -38,9 +38,9 @@ export function SiteBuilderChrome({
   const animationLevel = isEditing ? "none" : (rootProps.animations ?? "subtle")
   const fontKey = isSiteFontKey(rootProps.fontFamily) ? rootProps.fontFamily : SITE_DEFAULT_FONT
   const font    = SITE_FONTS[fontKey]
+  // The providers sit INSIDE the element carrying the site's CSS variables: the cookie banner they
+  // render must inherit --site-surface, --site-radius, etc. (outside it, its background was empty).
   return (
-    <SiteCookieConsentProvider slug={slug} settings={rootProps.cookies} isEditing={isEditing}>
-    <SiteAnimationsProvider level={animationLevel}>
     <div
       className={cn(className, font.variable)}
       style={{
@@ -50,6 +50,8 @@ export function SiteBuilderChrome({
         ...getSiteStyleVars(rootProps.cornerStyle),
       }}
     >
+      <SiteCookieConsentProvider slug={slug} settings={rootProps.cookies} isEditing={isEditing}>
+      <SiteAnimationsProvider level={animationLevel}>
       <SiteNavbar
         name={associationName}
         logoUrl={rootProps.logoUrl}
@@ -79,8 +81,8 @@ export function SiteBuilderChrome({
         slug={slug}
         bottomExtra={<SiteCookieSettingsLink />}
       />
+      </SiteAnimationsProvider>
+      </SiteCookieConsentProvider>
     </div>
-    </SiteAnimationsProvider>
-    </SiteCookieConsentProvider>
   )
 }

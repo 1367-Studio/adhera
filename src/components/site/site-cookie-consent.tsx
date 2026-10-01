@@ -261,7 +261,7 @@ export function SiteCookieConsentProvider({ slug, settings, isEditing, children 
 
 // Both choices share the exact same style: refusing must not look secondary.
 const CHOICE_BUTTON_CLASS =
-  "inline-flex h-10 min-w-28 flex-1 items-center justify-center px-5 text-sm font-medium transition-opacity hover:opacity-90 sm:flex-none"
+  "inline-flex h-10 flex-1 items-center justify-center px-5 text-sm font-medium transition-opacity hover:opacity-90"
 
 
 // Rendered by SiteCookieConsentProvider only.
@@ -281,41 +281,45 @@ export function SiteCookieBanner() {
   if (!bannerContext || !isBannerVisible) return null
 
   return (
-    <div className="pointer-events-none fixed inset-x-0 bottom-0 z-50 flex justify-center p-4">
+    // A compact card in the bottom-left corner (full width on phones), like most consent banners:
+    // it never covers the page's main content and stays out of the way of the header.
+    <div className="pointer-events-none fixed inset-x-0 bottom-0 z-50 flex p-4 sm:justify-start">
       <div
         role="dialog"
         aria-modal="false"
         aria-live="polite"
         aria-labelledby={titleId}
         aria-describedby={messageId}
-        className="pointer-events-auto flex w-full max-w-3xl flex-col gap-4 p-4 shadow-lg sm:flex-row sm:items-center sm:gap-6"
+        className="pointer-events-auto flex w-full flex-col gap-4 p-6 shadow-lg sm:max-w-md"
         style={{
           ...bannerContext.colors.surface,
           border:       "1px solid color-mix(in srgb, currentColor 15%, transparent)",
           borderRadius: "var(--site-radius)",
         }}
       >
-        <div className="flex min-w-0 flex-1 flex-col gap-1 text-sm">
-          <p id={titleId} className="font-medium">Cookies</p>
-          <p id={messageId} style={{ color: "color-mix(in srgb, currentColor 75%, transparent)" }}>
+        <div className="flex min-w-0 flex-col gap-2">
+          <p id={titleId} className="text-lg font-semibold leading-snug">Ce site utilise des cookies</p>
+          {/* break-words: a long unbroken word (URL, typo) wraps instead of overflowing the card. */}
+          <p
+            id={messageId}
+            className="text-sm leading-relaxed break-words"
+            style={{ color: "color-mix(in srgb, currentColor 80%, transparent)" }}
+          >
             {bannerContext.message}
-            {bannerContext.privacyUrl && (
-              <>
-                {" "}
-                <a
-                  href={bannerContext.privacyUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="underline underline-offset-2"
-                  style={{ color: "inherit" }}
-                >
-                  Politique de confidentialité
-                </a>
-              </>
-            )}
           </p>
+          {bannerContext.privacyUrl && (
+            <a
+              href={bannerContext.privacyUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="self-start text-sm underline underline-offset-2 break-all"
+              style={{ color: "inherit" }}
+            >
+              Politique de confidentialité
+            </a>
+          )}
         </div>
-        <div className="flex shrink-0 gap-2">
+        <div className="flex gap-2">
           <button
             ref={firstButtonRef}
             type="button"
