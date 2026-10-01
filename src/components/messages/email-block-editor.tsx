@@ -232,7 +232,23 @@ export function EmailBlockEditor({ blocks, onChange, ref }: EmailBlockEditorProp
   }
 
   return (
-    <div className="space-y-3">
+    <div className="flex gap-4 pt-2">
+      <div className="flex w-40 shrink-0 flex-col gap-1.5">
+        <Button type="button" variant="outline" size="sm" className="justify-start" onClick={() => addBlock("text")}>
+          <TextTIcon className="mr-1.5 size-4" /> {t("addText")}
+        </Button>
+        <Button type="button" variant="outline" size="sm" className="justify-start" onClick={() => addBlock("image")}>
+          <ImageIcon className="mr-1.5 size-4" /> {t("addImage")}
+        </Button>
+        <Button type="button" variant="outline" size="sm" className="justify-start" onClick={() => addBlock("button")}>
+          <CursorClickIcon className="mr-1.5 size-4" /> {t("addButton")}
+        </Button>
+        <Button type="button" variant="outline" size="sm" className="justify-start" onClick={() => addBlock("divider")}>
+          <MinusIcon className="mr-1.5 size-4" /> {t("addDivider")}
+        </Button>
+      </div>
+
+      <div className="min-w-0 flex-1 space-y-3">
       {blocks.length === 0 ? (
         <div className="rounded-md border border-dashed py-8 text-center text-sm text-muted-foreground">
           {t("empty")}
@@ -287,6 +303,10 @@ export function EmailBlockEditor({ blocks, onChange, ref }: EmailBlockEditorProp
                         aspectRatio="wide"
                         lazy
                         onFilePending={(blobUrl, file) => handleFilePending(block.id, blobUrl, file)}
+                        // Capped at the same 480px renderImage() actually emits (src/lib/email-blocks.ts)
+                        // — otherwise, now that this editor's dialog is wide, the preview stretches
+                        // far beyond what the image will really look like in the sent email.
+                        className="max-w-[480px]"
                       />
                       <FormField
                         label={t("imageLink")}
@@ -347,20 +367,6 @@ export function EmailBlockEditor({ blocks, onChange, ref }: EmailBlockEditorProp
           </SortableContext>
         </DndContext>
       )}
-
-      <div className="flex flex-wrap gap-2">
-        <Button type="button" variant="outline" size="sm" onClick={() => addBlock("text")}>
-          <TextTIcon className="mr-1.5 size-4" /> {t("addText")}
-        </Button>
-        <Button type="button" variant="outline" size="sm" onClick={() => addBlock("image")}>
-          <ImageIcon className="mr-1.5 size-4" /> {t("addImage")}
-        </Button>
-        <Button type="button" variant="outline" size="sm" onClick={() => addBlock("button")}>
-          <CursorClickIcon className="mr-1.5 size-4" /> {t("addButton")}
-        </Button>
-        <Button type="button" variant="outline" size="sm" onClick={() => addBlock("divider")}>
-          <MinusIcon className="mr-1.5 size-4" /> {t("addDivider")}
-        </Button>
       </div>
     </div>
   )

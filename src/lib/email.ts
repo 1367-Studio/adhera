@@ -2,6 +2,7 @@ import { APP_NAME } from "@/config/brand"
 import { APP_TIME_ZONE } from "@/lib/date-format"
 import { isColorDark } from "@/lib/color"
 import { EMAIL_FOOTER_SOCIAL_PLATFORMS, EMAIL_FOOTER_SOCIAL_LABEL, type EmailFooterSettings, type EmailFooterSocialPlatform } from "@/lib/email-footer"
+import { toProxiedAssetUrl } from "@/lib/r2"
 
 // Free-text user input (e.g. a custom message on a Devis/Facture send) interpolated into
 // an HTML email must be escaped — otherwise it's rendered as markup by the recipient's
@@ -98,7 +99,7 @@ function layout(associationName: string, content: string, branding?: EmailBrandi
   const nameEsc = escapeHtml(associationName)
   const headerInner = branding?.logoUrl
     ? `<table cellpadding="0" cellspacing="0"><tr>
-        <td style="vertical-align:middle;"><img src="${branding.logoUrl}" alt="${nameEsc}" height="32" style="display:block;max-height:32px;max-width:180px;width:auto;"></td>
+        <td style="vertical-align:middle;"><img src="${toProxiedAssetUrl(branding.logoUrl)}" alt="${nameEsc}" height="32" style="display:block;max-height:32px;max-width:180px;width:auto;"></td>
         <td style="vertical-align:middle;padding-left:12px;"><span style="color:#3f3f46;font-size:14px;font-weight:600;">${nameEsc}</span></td>
       </tr></table>`
     : `<span style="color:#18181b;font-size:17px;font-weight:700;letter-spacing:-0.3px;">${nameEsc}</span>`

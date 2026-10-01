@@ -7,6 +7,7 @@
 import { z } from "zod"
 import { isColorDark } from "@/lib/color"
 import { normalizeHref } from "@/lib/utils"
+import { toProxiedAssetUrl } from "@/lib/r2"
 
 export type EmailBlock =
   | { id: string; type: "text";    html: string }
@@ -67,7 +68,7 @@ function renderText(block: Extract<EmailBlock, { type: "text" }>): string {
 }
 
 function renderImage(block: Extract<EmailBlock, { type: "image" }>): string {
-  const img = `<img src="${escapeHtml(block.url)}" alt="${escapeHtml(block.alt ?? "")}" width="480" style="display:block;width:100%;max-width:480px;height:auto;border:0;">`
+  const img = `<img src="${escapeHtml(toProxiedAssetUrl(block.url))}" alt="${escapeHtml(block.alt ?? "")}" width="480" style="display:block;width:100%;max-width:480px;height:auto;border:0;">`
   const inner = block.linkUrl ? `<a href="${sanitizeHref(block.linkUrl)}" style="border:0;">${img}</a>` : img
   return `<table cellpadding="0" cellspacing="0" width="100%" style="margin:0 0 24px;"><tr><td align="center">${inner}</td></tr></table>`
 }
