@@ -2,10 +2,11 @@
 
 import {
   createContext, useCallback, useContext, useEffect, useId, useMemo, useRef, useState, useSyncExternalStore,
-  type ReactNode,
+  type CSSProperties, type ReactNode,
 } from "react"
 import type { ObjectField } from "@puckeditor/core"
-import { YES_NO_OPTIONS } from "@/components/site/blocks/site-block-fields"
+import { colorField, YES_NO_OPTIONS } from "@/components/site/blocks/site-block-fields"
+import { isColorDark } from "@/lib/color"
 import { cn } from "@/lib/utils"
 
 // Cookie consent of the public association sites (CNIL): the only cookie-setting content is
@@ -13,10 +14,15 @@ import { cn } from "@/lib/utils"
 // weighted buttons), nothing is pre-accepted, the choice is kept 6 months and can be changed at
 // any time through "Gérer les cookies".
 
+export type SiteCookieBannerBackground = "light" | "dark" | "primary" | "secondary" | "custom"
+
 export type SiteCookieSettings = {
-  enabled?:    boolean
-  message?:    string
-  privacyUrl?: string
+  enabled?:          boolean
+  message?:          string
+  privacyUrl?:       string
+  // Undefined = "light" (white surface), the banner's original look.
+  background?:       SiteCookieBannerBackground
+  customBackground?: string
 }
 
 export const DEFAULT_SITE_COOKIE_MESSAGE =
@@ -29,7 +35,48 @@ export const SITE_COOKIE_FIELD: ObjectField<SiteCookieSettings> = {
     enabled:    { type: "radio", label: "Afficher le bandeau", options: YES_NO_OPTIONS },
     message:    { type: "textarea", label: "Message" },
     privacyUrl: { type: "text", label: "Lien vers la politique de confidentialité" },
+    background: {
+      type:    "select",
+      label:   "Fond",
+      options: [
+        { label: "Clair",              value: "light" },
+        { label: "Sombre",             value: "dark" },
+        { label: "Couleur principale", value: "primary" },
+        { label: "Couleur secondaire", value: "secondary" },
+        { label: "Personnalisé",       value: "custom" },
+      ],
+    },
+    customBackground: colorField<string | undefined>("Couleur personnalisée (fond « Personnalisé »)"),
   },
+}
+
+// Same fixed dark surface as the footer's "Sombre" background.
+const DARK_BANNER_SURFACE = "#18181b"
+
+type BannerColors = { surface: CSSProperties; button: CSSProperties }
+
+// Text follows the surface (light text on dark colours); the two buttons always contrast with it
+// and stay identical to each other.
+function bannerColors(background: SiteCookieBannerBackground, customBackground: string): BannerColors {
+  const lightButton: CSSProperties   = { background: "#ffffff", color: "var(--site-text)" }
+  const primaryButton: CSSProperties = { background: "var(--site-primary)", color: "var(--site-primary-foreground)" }
+  switch (background) {
+    case "dark":
+      return { surface: { background: DARK_BANNER_SURFACE, color: "#ffffff" }, button: lightButton }
+    case "primary":
+      return { surface: { background: "var(--site-primary)", color: "var(--site-primary-foreground)" }, button: lightButton }
+    case "secondary":
+      return { surface: { background: "var(--site-secondary)", color: "var(--site-secondary-foreground)" }, button: lightButton }
+    case "custom": {
+      if (!customBackground) break
+      const isDarkSurface = isColorDark(customBackground)
+      return {
+        surface: { background: customBackground, color: isDarkSurface ? "#ffffff" : "var(--site-text)" },
+        button:  isDarkSurface ? lightButton : primaryButton,
+      }
+    }
+  }
+  return { surface: { background: "var(--site-surface)", color: "var(--site-text)" }, button: primaryButton }
 }
 
 export type SiteCookieConsentValue = "accepted" | "refused" | "undecided"
@@ -128,6 +175,7 @@ type SiteBannerContextValue = {
   isBannerVisible: boolean
   message:         string
   privacyUrl:      string
+  colors:          BannerColors
   focusRequest:    number
   accept:          () => void
   refuse:          () => void
@@ -190,10 +238,14 @@ export function SiteCookieConsentProvider({ slug, settings, isEditing, children 
     isBannerVisible,
     message:    settings?.message?.trim() || DEFAULT_SITE_COOKIE_MESSAGE,
     privacyUrl: settings?.privacyUrl?.trim() ?? "",
+    colors:     bannerColors(settings?.background ?? "light", settings?.customBackground ?? ""),
     focusRequest,
     accept,
     refuse,
-  }), [isBannerVisible, settings?.message, settings?.privacyUrl, focusRequest, accept, refuse])
+  }), [
+    isBannerVisible, settings?.message, settings?.privacyUrl, settings?.background, settings?.customBackground,
+    focusRequest, accept, refuse,
+  ])
 
   return (
     <SiteCookieConsentContext.Provider value={consentContextValue}>
@@ -211,11 +263,6 @@ export function SiteCookieConsentProvider({ slug, settings, isEditing, children 
 const CHOICE_BUTTON_CLASS =
   "inline-flex h-10 min-w-28 flex-1 items-center justify-center px-5 text-sm font-medium transition-opacity hover:opacity-90 sm:flex-none"
 
-const CHOICE_BUTTON_STYLE = {
-  background:   "var(--site-primary)",
-  color:        "var(--site-primary-foreground)",
-  borderRadius: "var(--site-radius)",
-} as const
 
 // Rendered by SiteCookieConsentProvider only.
 export function SiteCookieBanner() {
@@ -243,15 +290,14 @@ export function SiteCookieBanner() {
         aria-describedby={messageId}
         className="pointer-events-auto flex w-full max-w-3xl flex-col gap-4 p-4 shadow-lg sm:flex-row sm:items-center sm:gap-6"
         style={{
-          background:   "var(--site-surface)",
-          color:        "var(--site-text)",
-          border:       "1px solid var(--site-border)",
+          ...bannerContext.colors.surface,
+          border:       "1px solid color-mix(in srgb, currentColor 15%, transparent)",
           borderRadius: "var(--site-radius)",
         }}
       >
         <div className="flex min-w-0 flex-1 flex-col gap-1 text-sm">
           <p id={titleId} className="font-medium">Cookies</p>
-          <p id={messageId} style={{ color: "var(--site-text-muted)" }}>
+          <p id={messageId} style={{ color: "color-mix(in srgb, currentColor 75%, transparent)" }}>
             {bannerContext.message}
             {bannerContext.privacyUrl && (
               <>
@@ -261,7 +307,7 @@ export function SiteCookieBanner() {
                   target="_blank"
                   rel="noopener noreferrer"
                   className="underline underline-offset-2"
-                  style={{ color: "var(--site-text)" }}
+                  style={{ color: "inherit" }}
                 >
                   Politique de confidentialité
                 </a>
@@ -275,7 +321,7 @@ export function SiteCookieBanner() {
             type="button"
             onClick={bannerContext.refuse}
             className={CHOICE_BUTTON_CLASS}
-            style={CHOICE_BUTTON_STYLE}
+            style={{ ...bannerContext.colors.button, borderRadius: "var(--site-radius)" }}
           >
             Refuser
           </button>
@@ -283,7 +329,7 @@ export function SiteCookieBanner() {
             type="button"
             onClick={bannerContext.accept}
             className={CHOICE_BUTTON_CLASS}
-            style={CHOICE_BUTTON_STYLE}
+            style={{ ...bannerContext.colors.button, borderRadius: "var(--site-radius)" }}
           >
             Accepter
           </button>
