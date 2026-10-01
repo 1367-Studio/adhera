@@ -15,6 +15,12 @@ import { SiteFooter }             from "@/components/site/site-footer"
 import { prisma }                 from "@/lib/prisma/client"
 import { parseModules }           from "@/lib/modules"
 import { getSiteColorVars }       from "@/lib/site-theme"
+import { APP_URL }                from "@/lib/env"
+import { SitePuckPublicPage }     from "@/components/site/puck/site-puck-public-page"
+import type { SitePuckMetadata }  from "@/components/site/blocks/site-block-types"
+import type { SitePuckData }      from "@/lib/site-puck/site-puck-data"
+import { publishedRootProps, readPublishedPuckData } from "@/lib/site-puck/site-puck-published"
+import { listPuckBlocksOfType, puckBlockId } from "@/lib/site-puck/site-puck-tree"
 
 type PublicEvent = {
   id: string; title: string; date: string; endDate: string | null
@@ -38,6 +44,10 @@ async function getSiteData(slug: string) {
     select: {
       name: true, slug: true, city: true, country: true,
       sitePublished: true, siteConfig: true, modules: true, canIssueTaxReceipts: true,
+      // New builder (FORM-7): which version is live, the published page, and the contact
+      // details its Contact block shows.
+      siteBuilder: true, sitePuckPublished: true,
+      address: true, phone: true, contactEmail: true, website: true,
     },
   })
 
@@ -167,6 +177,104 @@ async function getSiteData(slug: string) {
       publishedAt: a.publishedAt!.toISOString(),
     })) satisfies PublicActualite[],
     boutiqueProduits: boutiqueProduits satisfies PublicBoutiqueProduit[],
+    siteBuilder:       assoc.siteBuilder,
+    sitePuckPublished: assoc.sitePuckPublished,
+    address:           assoc.address,
+    phone:             assoc.phone,
+    contactEmail:      assoc.contactEmail,
+    website:           assoc.website,
+  }
+}
+
+type SiteData = NonNullable<Awaited<ReturnType<typeof getSiteData>>>
+
+// The published new-builder page when it is the live version, else null (old builder). Stored
+// JSON is validated first: a missing or malformed page keeps the old builder's rendering.
+function livePuckPage(data: SiteData): SitePuckData | null {
+  if (data.siteBuilder !== "PUCK") return null
+  try {
+    return readPublishedPuckData(data.sitePuckPublished)
+  } catch {
+    return null
+  }
+}
+
+// The live data the new builder's blocks read (puck.metadata) — the same shape the editor
+// builds from the API (use-site-puck-metadata.ts), but from what visitors may see: the public
+// events/actualités/products and form bindings loaded by getSiteData.
+function buildSitePuckMetadata(data: SiteData, publishedData: SitePuckData): SitePuckMetadata {
+  // The header's single "Adhérer" button: the first membership block of the page, in reading
+  // order, that has a published form bound to it (same rule as the old builder's sections).
+  const firstBoundMembershipForm = listPuckBlocksOfType(publishedData, "membership")
+    .map(membershipBlock => puckBlockId(membershipBlock))
+    .map(blockId => (blockId ? data.membershipFormBySection[blockId] : undefined))
+    .find(Boolean)
+
+  return {
+    associationName:         data.name,
+    slug:                    data.slug,
+    city:                    data.city,
+    country:                 data.country,
+    address:                 data.address,
+    phone:                   data.phone,
+    contactEmail:            data.contactEmail,
+    website:                 data.website,
+    events:                  data.events,
+    actualites:              data.actualites,
+    boutiqueProduits:        data.boutiqueProduits,
+    membershipFormBySection: data.membershipFormBySection,
+    donationFormBySection:   data.donationFormBySection,
+    // The Dons block shows nothing without a bound form once this is true. With the dons
+    // module off no form is loaded, so forcing it hides the block — like the old builder,
+    // which skips "dons" sections when the module is off.
+    usesDonationForms:       data.donsEnabled ? data.usesDonationForms : true,
+    membershipCta:           firstBoundMembershipForm
+      ? { href: `/${data.slug}/adhesion/${firstBoundMembershipForm.slug}` }
+      : null,
+    canIssueTaxReceipts:     data.canIssueTaxReceipts,
+  }
+}
+
+function absoluteImageUrl(imageUrl: string | undefined): string | undefined {
+  const trimmedUrl = imageUrl?.trim()
+  return trimmedUrl && /^https?:\/\//i.test(trimmedUrl) ? trimmedUrl : undefined
+}
+
+// Search engines and link previews from the page's "Référencement et partage" settings.
+function sitePuckPageMetadata(data: SiteData, publishedData: SitePuckData): Metadata {
+  const rootProps   = publishedRootProps(publishedData)
+  const seo         = rootProps.seo ?? {}
+  const customTitle = typeof seo.title === "string" ? seo.title.trim() : ""
+  const pageTitle   = customTitle || data.name
+  const description = (typeof seo.description === "string" ? seo.description.trim() : "")
+    || `Site officiel de ${data.name}`
+  const shareImage  = absoluteImageUrl(seo.shareImage) ?? absoluteImageUrl(rootProps.logoUrl)
+  const faviconUrl  = (typeof seo.favicon === "string" ? seo.favicon.trim() : "")
+    || (typeof rootProps.logoUrl === "string" ? rootProps.logoUrl.trim() : "")
+  const siteUrl     = `${APP_URL}/${data.slug}`
+
+  return {
+    // A title typed by the association is used as is; the name keeps the app's title template.
+    title:       customTitle ? { absolute: customTitle } : data.name,
+    description,
+    alternates:  { canonical: siteUrl },
+    openGraph:   {
+      title:    pageTitle,
+      description,
+      url:      siteUrl,
+      siteName: data.name,
+      type:     "website",
+      locale:   "fr_FR",
+      images:   shareImage ? [{ url: shareImage }] : undefined,
+    },
+    twitter:     {
+      card:   shareImage ? "summary_large_image" : "summary",
+      title:  pageTitle,
+      description,
+      images: shareImage ? [shareImage] : undefined,
+    },
+    // Without a favicon or a logo, the app's default icons (root layout) stay.
+    ...(faviconUrl ? { icons: { icon: faviconUrl, apple: faviconUrl } } : {}),
   }
 }
 
@@ -176,6 +284,14 @@ export async function generateMetadata(
   const { slug } = await params
   const data = await getSiteData(slug)
   if (!data) return { title: "Association introuvable" }
+  const publishedData = livePuckPage(data)
+  if (publishedData) {
+    try {
+      return sitePuckPageMetadata(data, publishedData)
+    } catch (metadataError) {
+      console.error("[public-site] new builder metadata failed, using the old builder's", metadataError)
+    }
+  }
   return { title: data.name, description: `Site officiel de ${data.name}` }
 }
 
@@ -186,6 +302,28 @@ export default async function PublicSitePage(
   const data = await getSiteData(slug)
   if (!data) notFound()
 
+  const legacyPage = renderLegacySitePage(data, slug)
+
+  // New builder (FORM-7), only when it is the live version and its page is valid. The old
+  // builder's page is handed along as the fallback for any failure while rendering it.
+  const publishedData = livePuckPage(data)
+  if (publishedData) {
+    let metadata: SitePuckMetadata | null = null
+    try {
+      metadata = buildSitePuckMetadata(data, publishedData)
+    } catch (metadataError) {
+      console.error("[public-site] new builder data failed, showing the old builder's page", metadataError)
+    }
+    if (metadata) {
+      return <SitePuckPublicPage publishedData={publishedData} metadata={metadata} legacyFallback={legacyPage} />
+    }
+  }
+
+  return legacyPage
+}
+
+// The old builder's page (siteConfig sections) — what every association on the old builder sees.
+function renderLegacySitePage(data: SiteData, slug: string) {
   const config   = data.config
   const sections = config?.sections ?? []
   const color    = "var(--site-primary)"

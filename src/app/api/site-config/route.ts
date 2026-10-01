@@ -10,6 +10,7 @@ import {
   releaseDeletedDonsSiteSections,
   unbindDonationFormsFromSiteSection,
 } from "@/lib/dons/site-section-binding"
+import { liveSiteSectionIds } from "@/lib/site-puck/site-section-ids"
 
 const ADMINS = ["ADMIN", "PRESIDENT"]
 
@@ -78,7 +79,7 @@ export const PATCH = withAdminAuth(async (req, ctx) => {
 
   const existing = await prisma.association.findUnique({
     where:  { id: associationId },
-    select: { siteConfig: true },
+    select: { siteConfig: true, siteDraft: true, sitePuckPublished: true },
   })
   const existingConfig   = (existing?.siteConfig ?? {}) as Record<string, unknown>
   const existingSections = (existingConfig.sections as { id: string; type: string }[] | undefined) ?? []
@@ -90,9 +91,16 @@ export const PATCH = withAdminAuth(async (req, ctx) => {
   // the page while still counting as "published on the site" (e.g. still driving the header
   // CTA). Clearing it back to null falls through to the normal "not bound to a section yet"
   // state, which the Publication step already knows how to show and unblock.
-  const nextSectionIds    = new Set((configFields.sections ?? []).map(section => section.id))
+  // FORM-7: Puck block ids are shared with section ids, so a section deleted here may still be
+  // a block of the new builder's draft or published page — that binding stays alive. Only ids
+  // in none of the stores are released.
+  const liveSectionIds    = liveSiteSectionIds({
+    siteConfig:        data.siteConfig,
+    siteDraft:         existing?.siteDraft,
+    sitePuckPublished: existing?.sitePuckPublished,
+  })
   const removedSectionIds = configFields.sections
-    ? existingSections.map(section => section.id).filter(sectionId => !nextSectionIds.has(sectionId))
+    ? existingSections.map(section => section.id).filter(sectionId => !liveSectionIds.has(sectionId))
     : []
 
   const assignmentEntries = Object.entries(donsFormAssignments ?? {})

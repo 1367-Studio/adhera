@@ -24,7 +24,7 @@ import { SelectField } from "@/components/ui/select-field"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { SECTION_LABELS } from "@/types/site-config"
 import { useMembreTypes } from "@/hooks/use-membre-types"
-import { useSiteConfig, useSaveSiteConfig } from "@/hooks/use-site-config"
+import { useCreateSiteSection, useSiteSections } from "@/hooks/use-site-sections"
 import { BASE_PATH } from "@/lib/env"
 import { isTermsConfigurationValid, TERMS_CONTENT_REQUIRED_CODE } from "@/lib/form-terms"
 import { cn } from "@/lib/utils"
@@ -123,10 +123,6 @@ export default function MembershipFormDetailPage() {
   // Also the translation of the save/publish routes' { code: "TERMS_CONTENT_REQUIRED" }.
   const termsContentRequiredMessage = useTermsContentRequiredMessage("membershipForms.detail.steps.info")
   const tCommon = useTranslations("common")
-  // Same key the site editor itself uses as the default title for a newly added "membership"
-  // section — reused here so a section created from this picker looks identical to one
-  // created the old way, before "membership" was removed from the editor's add-section menu.
-  const tSiteDefaults = useTranslations("site.defaultTitles")
   const user    = useCurrentUser()
   const { data: membreTypes = [] } = useMembreTypes()
 
@@ -218,12 +214,12 @@ export default function MembershipFormDetailPage() {
     queryFn:  () => fetch(`/api/membership-forms/${id}/tiers`).then(r => r.json()),
   })
 
-  // Feeds the Publication step's section picker — same query key/hook the site editor
-  // itself uses (useSiteConfig), so the list always matches what an admin sees under Site
-  // internet, and stays in sync when this page creates a new section below.
-  const { data: siteConfigData } = useSiteConfig()
-  const saveSiteConfig = useSaveSiteConfig()
-  const membershipSiteSections = (siteConfigData?.config?.sections ?? []).filter(s => s.type === "membership")
+  // Feeds the Publication step's section picker: the "membership" blocks of whichever builder
+  // the public site renders (old builder sections, or the new builder's blocks).
+  const { data: siteSectionsData } = useSiteSections("membership")
+  const createSiteSection = useCreateSiteSection()
+  const membershipSiteSections = siteSectionsData?.sections ?? []
+  const isNewSiteBuilderLive   = siteSectionsData?.siteBuilder === "PUCK"
   const [creatingSection, setCreatingSection] = useState(false)
 
   // AssoConnect's own publication step lets an admin create the target page inline instead
@@ -233,10 +229,8 @@ export default function MembershipFormDetailPage() {
   async function createMembershipSection() {
     setCreatingSection(true)
     try {
-      const newSection = { id: crypto.randomUUID(), type: "membership" as const, title: tSiteDefaults("membership"), body: "" }
-      const sections = [...(siteConfigData?.config?.sections ?? []), newSection]
-      await saveSiteConfig.mutateAsync({ sections })
-      setSiteSectionId(newSection.id)
+      const createdSection = await createSiteSection.mutateAsync("membership")
+      setSiteSectionId(createdSection.id)
     } catch {
       toast.error(tSteps("publish.siteSectionCreateError"))
     } finally {
@@ -927,21 +921,26 @@ export default function MembershipFormDetailPage() {
                 onValueChange={v => setVisibility(v as Visibility)}
               />
               {visibility === "SITE" && (
-                <SelectField
-                  label={tSteps("publish.siteSectionLabel")}
-                  required
-                  disabled={creatingSection}
-                  placeholder={tSteps("publish.siteSectionPlaceholder")}
-                  options={[
-                    ...membershipSiteSections.map(s => ({ value: s.id, label: s.title || SECTION_LABELS.membership })),
-                    { value: CREATE_SITE_SECTION_VALUE, label: tSteps("publish.siteSectionCreateOption") },
-                  ]}
-                  value={siteSectionId}
-                  onValueChange={v => {
-                    if (v === CREATE_SITE_SECTION_VALUE) createMembershipSection()
-                    else setSiteSectionId(v)
-                  }}
-                />
+                <div className="space-y-1.5">
+                  <SelectField
+                    label={tSteps("publish.siteSectionLabel")}
+                    required
+                    disabled={creatingSection}
+                    placeholder={tSteps("publish.siteSectionPlaceholder")}
+                    options={[
+                      ...membershipSiteSections.map(section => ({ value: section.id, label: section.title || SECTION_LABELS.membership })),
+                      { value: CREATE_SITE_SECTION_VALUE, label: tSteps("publish.siteSectionCreateOption") },
+                    ]}
+                    value={siteSectionId}
+                    onValueChange={v => {
+                      if (v === CREATE_SITE_SECTION_VALUE) createMembershipSection()
+                      else setSiteSectionId(v)
+                    }}
+                  />
+                  {isNewSiteBuilderLive && (
+                    <p className="text-xs text-muted-foreground">{tSteps("publish.siteSectionPuckHint")}</p>
+                  )}
+                </div>
               )}
               <CheckboxField
                 label={tSteps("publish.schedulePeriodLabel")}

@@ -1,6 +1,10 @@
+"use client"
+
 import type { ReactNode } from "react"
 import { SiteNavbar } from "@/components/site/site-navbar"
 import { SiteFooter } from "@/components/site/site-footer"
+import { SiteBuilderChrome } from "@/components/site/site-builder-chrome"
+import { useSitePuckChrome } from "@/components/site/site-puck-chrome-context"
 import { getSiteColorVars } from "@/lib/site-theme"
 import type { SiteConfig } from "@/types/site-config"
 
@@ -12,13 +16,29 @@ export type PublicSiteInfo = { name: string; config: SiteConfig | null }
 // The public pages are always light: they follow the association's own site palette, not the
 // visitor's dark-mode preference, hence the explicit colorScheme.
 //
-// /[slug]/actualites/[id] still carries its own private copy of this markup — it predates
-// this component and was left alone on purpose. Worth folding in here next time it changes.
+// A site published from the new builder gets that builder's header, footer and style instead
+// (root settings provided by [slug]/layout.tsx); every other site keeps the old chrome below.
 export function SitePublicChrome(
   { site, slug, children }: { site: PublicSiteInfo; slug: string; children: ReactNode },
 ) {
+  const puckRootProps = useSitePuckChrome()
   const config = site.config
   const color  = "var(--site-primary)"
+
+  if (puckRootProps) {
+    return (
+      <SiteBuilderChrome
+        rootProps={puckRootProps}
+        associationName={site.name}
+        slug={slug}
+        membershipCta={null}
+        className="min-h-screen flex flex-col bg-white text-gray-900"
+        mainClassName="flex-1"
+      >
+        {children}
+      </SiteBuilderChrome>
+    )
+  }
 
   return (
     <div

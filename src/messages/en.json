@@ -2915,7 +2915,8 @@
           "siteSectionReplaceWarningPublished": "This section currently shows \"{title}\". When you save, this form will replace it; \"{title}\" will remain available through its link.",
           "siteSectionReplaceWarningDraft": "This section currently shows \"{title}\". This form will replace it as soon as it is published; \"{title}\" will remain available through its link.",
           "siteSectionRemovedWarning": "When you save, the \"{section}\" section will be hidden on the website.",
-          "datesOrderError": "The closing date must be after the opening date."
+          "datesOrderError": "The closing date must be after the opening date.",
+          "siteSectionPuckHint": "Blocks from the new site editor"
         }
       }
     },
@@ -3201,7 +3202,8 @@
           "siteSectionPlaceholder": "Choose…",
           "siteSectionCreateOption": "+ Create new section",
           "siteSectionCreateError": "Error creating the site section.",
-          "siteSectionRequiredError": "Choose which site section this form should be published on."
+          "siteSectionRequiredError": "Choose which site section this form should be published on.",
+          "siteSectionPuckHint": "Blocks from the new site editor"
         },
         "products": {
           "title": "Products",
@@ -5244,6 +5246,30 @@
       "headerPlaceholder": "E.g.: something understated that stands out on white…",
       "footerPlaceholder": "E.g.: a short thank-you message…",
       "sectionPlaceholder": "Describe what this section should say…"
+    },
+    "builderSwitch": {
+      "liveVersionLabel": "Live version",
+      "switchLabel": "New editor (beta)",
+      "statusLegacy": "Your visitors see the previous site",
+      "statusNewBuilder": "Your visitors see the version published on {date}",
+      "publishFirstHint": "Publish from the new editor first",
+      "openNewBuilder": "Open the new editor →",
+      "legacyEditsNotice": "Your site shows the new editor version: changes made here will only be visible if you switch back to the previous site.",
+      "confirmOn": {
+        "title": "Turn on the new editor?",
+        "description": "Your public site will show the version published on {date}. You can switch back to the previous site at any time.",
+        "confirmLabel": "Turn on"
+      },
+      "confirmOff": {
+        "title": "Switch back to the previous site?",
+        "description": "Your public site will show the previous site again.",
+        "confirmLabel": "Switch back"
+      },
+      "toasts": {
+        "switchedOn": "The new editor is live",
+        "switchedOff": "The previous site is live again",
+        "error": "Error while switching editor"
+      }
     }
   },
   "richTextEditor": {

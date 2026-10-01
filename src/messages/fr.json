@@ -2923,7 +2923,8 @@
           "siteSectionReplaceWarningPublished": "Cette section affiche actuellement « {title} ». En enregistrant, ce formulaire le remplacera ; « {title} » restera accessible par son lien.",
           "siteSectionReplaceWarningDraft": "Cette section affiche actuellement « {title} ». Ce formulaire le remplacera dès sa publication ; « {title} » restera accessible par son lien.",
           "siteSectionRemovedWarning": "En enregistrant, la section « {section} » sera masquée sur le site.",
-          "datesOrderError": "La date de clôture doit être postérieure à la date d'ouverture."
+          "datesOrderError": "La date de clôture doit être postérieure à la date d'ouverture.",
+          "siteSectionPuckHint": "Blocs du nouvel éditeur de site"
         }
       }
     },
@@ -3209,7 +3210,8 @@
           "siteSectionPlaceholder": "Choisir…",
           "siteSectionCreateOption": "+ Créer une nouvelle section",
           "siteSectionCreateError": "Erreur lors de la création de la section du site.",
-          "siteSectionRequiredError": "Choisissez la section du site sur laquelle publier ce formulaire."
+          "siteSectionRequiredError": "Choisissez la section du site sur laquelle publier ce formulaire.",
+          "siteSectionPuckHint": "Blocs du nouvel éditeur de site"
         },
         "products": {
           "title": "Produits",
@@ -5252,6 +5254,30 @@
       "headerPlaceholder": "Ex : quelque chose de sobre qui ressort sur fond blanc…",
       "footerPlaceholder": "Ex : un message de remerciement court…",
       "sectionPlaceholder": "Décrivez ce que cette section doit dire…"
+    },
+    "builderSwitch": {
+      "liveVersionLabel": "Version en ligne",
+      "switchLabel": "Nouvel éditeur (bêta)",
+      "statusLegacy": "Vos visiteurs voient l'ancien site",
+      "statusNewBuilder": "Vos visiteurs voient la version publiée le {date}",
+      "publishFirstHint": "Publiez d'abord depuis le nouvel éditeur",
+      "openNewBuilder": "Ouvrir le nouvel éditeur →",
+      "legacyEditsNotice": "Votre site affiche la version du nouvel éditeur : les modifications faites ici ne seront visibles que si vous revenez à l'ancien site.",
+      "confirmOn": {
+        "title": "Activer le nouvel éditeur ?",
+        "description": "Votre site public affichera la version publiée le {date}. Vous pourrez revenir à l'ancien site à tout moment.",
+        "confirmLabel": "Activer"
+      },
+      "confirmOff": {
+        "title": "Revenir à l'ancien site ?",
+        "description": "Votre site public affichera de nouveau l'ancien site.",
+        "confirmLabel": "Revenir à l'ancien site"
+      },
+      "toasts": {
+        "switchedOn": "Le nouvel éditeur est en ligne",
+        "switchedOff": "L'ancien site est de nouveau en ligne",
+        "error": "Erreur lors du changement d'éditeur"
+      }
     }
   },
   "richTextEditor": {

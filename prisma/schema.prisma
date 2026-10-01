@@ -412,6 +412,12 @@ enum MembershipValidationMode {
 
 // ─── Models ───────────────────────────────────────────────────────────────────
 
+// FORM-7: which website builder's version the public site renders (see Association.siteBuilder).
+enum SiteBuilder {
+  LEGACY
+  PUCK
+}
+
 model Association {
   id                             String              @id @default(cuid())
   name                           String
@@ -562,6 +568,14 @@ model Association {
   // zones }). A draft only — saved by "Enregistrer" in /dashboard/site/puck and never read by
   // the public site, which still renders siteConfig until publishing moves to this format.
   siteDraft                      Json?
+  // Which version visitors see: LEGACY renders siteConfig (old builder), PUCK renders
+  // sitePuckPublished (new builder). Switchable both ways from /dashboard/site; siteConfig is
+  // never modified by the new builder, so switching back is instant and lossless.
+  siteBuilder                    SiteBuilder         @default(LEGACY)
+  // Last version published from the new builder ("Publier"), as Puck Data. Separate from
+  // siteDraft so saving work in progress never reaches visitors.
+  sitePuckPublished              Json?
+  sitePuckPublishedAt            DateTime?
   modules                        Json?
   // Carte de membre numérique settings (enabled, template, color, showPhoto, showCategory) —
   // null until the admin first saves them. Always read through parseMemberCardSettings() in

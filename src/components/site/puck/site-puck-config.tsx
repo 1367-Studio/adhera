@@ -31,19 +31,17 @@ import { eventsBlock } from "@/components/site/blocks/site-block-events"
 import { actualitesBlock } from "@/components/site/blocks/site-block-actualites"
 import { boutiqueBlock } from "@/components/site/blocks/site-block-boutique"
 import { HandshakeIcon, IdentificationCardIcon } from "@phosphor-icons/react/dist/ssr"
-import { SITE_CORNER_OPTIONS, SITE_STYLE_PRESETS, getSiteStyleVars } from "@/components/site/blocks/site-block-theme"
+import { SITE_CORNER_OPTIONS, SITE_STYLE_PRESETS } from "@/components/site/blocks/site-block-theme"
 import { readSiteMetadata, type FormBinding } from "@/components/site/blocks/site-block-types"
-import { SiteNavbar }            from "@/components/site/site-navbar"
 import {
-  SITE_FOOTER_FIELD, SiteBuilderFooter, resolveFooterSettings,
+  SITE_FOOTER_FIELD, resolveFooterSettings,
 } from "@/components/site/site-builder-footer"
 import { SiteHeroSection }       from "@/components/site/sections/site-hero-section"
 import { SiteAboutSection }      from "@/components/site/sections/site-about-section"
 import { SiteContactSection }    from "@/components/site/sections/site-contact-section"
-import { getSiteColorVars } from "@/lib/site-theme"
-import { SITE_DEFAULT_FONT, SITE_FONTS, SITE_FONT_KEYS, isSiteFontKey } from "@/lib/site-fonts"
+import { SiteBuilderChrome } from "@/components/site/site-builder-chrome"
+import { SITE_FONTS, SITE_FONT_KEYS } from "@/lib/site-fonts"
 import type { SitePuckComponents, SitePuckRootProps } from "@/lib/site-puck/site-puck-data"
-import { cn } from "@/lib/utils"
 
 // FORM-7 Puck trial. Every block renders the exact component the public site renders; Puck
 // only adds the fields, the drag and drop, the iframe canvas and the viewports around them.
@@ -54,7 +52,6 @@ const PREVIEW_MEMBERSHIP_FORM: FormBinding = { slug: "#", title: "Voir la page d
 const PREVIEW_DONATION_FORM: FormBinding   = { slug: "#", title: "" }
 
 const SITE_PRIMARY_COLOR   = "var(--site-primary)"
-const SITE_SECONDARY_COLOR = "var(--site-secondary)"
 
 const readMetadata = readSiteMetadata
 
@@ -167,47 +164,16 @@ export const sitePuckConfig: Config<SitePuckComponents, SitePuckRootProps> = {
     },
     render: ({ children, puck, ...rootProps }) => {
       const metadata = readMetadata(puck.metadata)
-      const fontKey  = isSiteFontKey(rootProps.fontFamily) ? rootProps.fontFamily : SITE_DEFAULT_FONT
-      const font     = SITE_FONTS[fontKey]
       return (
-        <div
-          className={cn("min-h-full bg-white text-gray-900", font.variable)}
-          style={{
-            colorScheme: "light",
-            fontFamily:  font.cssVar,
-            ...getSiteColorVars({ ...rootProps, footerText: rootProps.footerText ?? "", sections: [] }),
-            ...getSiteStyleVars(rootProps.cornerStyle),
-          }}
+        <SiteBuilderChrome
+          rootProps={rootProps}
+          associationName={metadata.associationName}
+          slug={metadata.slug}
+          membershipCta={metadata.membershipCta}
+          className="min-h-full bg-white text-gray-900"
         >
-          <SiteNavbar
-            name={metadata.associationName}
-            logoUrl={rootProps.logoUrl}
-            color={SITE_PRIMARY_COLOR}
-            secondaryColor={SITE_SECONDARY_COLOR}
-            portalSlug={metadata.slug}
-            headerBgColor={rootProps.headerBgColor}
-            headerShowMembres={rootProps.headerShowMembres}
-            headerShowRegister={rootProps.headerShowRegister}
-            membershipCta={metadata.membershipCta}
-            // Automatic: an uploaded logo already carries the name. Without a logo the name
-            // always shows, so the header is never left with only an initial.
-            showName={!rootProps.logoUrl || rootProps.headerShowName === "show"}
-            socialLinks={rootProps.socialInHeader ? rootProps.socialLinks : []}
-          />
-          <main>{children}</main>
-          <SiteBuilderFooter
-            settings={rootProps.footer}
-            legacy={{
-              footerText:    rootProps.footerText,
-              footerBgColor: rootProps.footerBgColor,
-              footerLinks:   rootProps.footerLinks,
-            }}
-            associationName={metadata.associationName}
-            siteLogoUrl={rootProps.logoUrl}
-            socialLinks={rootProps.socialLinks}
-            slug={metadata.slug}
-          />
-        </div>
+          {children}
+        </SiteBuilderChrome>
       )
     },
   },
