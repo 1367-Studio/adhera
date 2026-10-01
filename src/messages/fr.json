@@ -3132,6 +3132,8 @@
           "kindField": "Type",
           "kindOneOff": "Ponctuel",
           "kindRecurring": "Récurrent (annuel)",
+          "recurringNeedsOnlinePayment": "Un tarif récurrent est réglé par abonnement en ligne : tant que le paiement en ligne n'est pas activé, il apparaît « Indisponible » sur le formulaire.",
+          "recurringNeedsOnlinePaymentLink": "Configurer le paiement en ligne",
           "itemTypeField": "Nature",
           "itemTypeMembership": "Tarif d'adhésion",
           "itemTypeAddon": "Option payante",

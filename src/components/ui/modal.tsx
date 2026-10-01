@@ -17,6 +17,11 @@ const sizes = {
   xl:  "sm:max-w-xl",
   "2xl": "sm:max-w-2xl",
   "4xl": "sm:max-w-4xl",
+  // Viewport-relative instead of a fixed rem step — for content (a block editor, a document
+  // preview) that should keep scaling with the window rather than cap out at a fixed width.
+  // Each caps at a px ceiling too so an ultra-wide monitor doesn't stretch the dialog absurdly.
+  "60vw": "sm:max-w-[min(60vw,900px)]",
+  "80vw": "sm:max-w-[min(80vw,1600px)]",
 }
 
 interface ModalProps {
