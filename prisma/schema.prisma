@@ -553,6 +553,10 @@ model Association {
   currentPeriodEndsAt            DateTime?
   sitePublished                  Boolean             @default(false)
   siteConfig                     Json?
+  // FORM-7 website builder (Puck): the page being edited, as Puck Data ({ root, content,
+  // zones }). A draft only — saved by "Enregistrer" in /dashboard/site/puck and never read by
+  // the public site, which still renders siteConfig until publishing moves to this format.
+  siteDraft                      Json?
   modules                        Json?
   // Carte de membre numérique settings (enabled, template, color, showPhoto, showCategory) —
   // null until the admin first saves them. Always read through parseMemberCardSettings() in
