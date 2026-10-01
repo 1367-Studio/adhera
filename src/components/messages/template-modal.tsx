@@ -215,7 +215,7 @@ export function TemplateModal({ open, onOpenChange, template }: Props) {
       open={open}
       onOpenChange={onOpenChange}
       title={isEditing ? t("messages.templateModal.editTitle") : t("messages.templateModal.newTitle")}
-      size="2xl"
+      size="80vw"
     >
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <div className="grid grid-cols-2 gap-3">
@@ -373,7 +373,7 @@ export function TemplateModal({ open, onOpenChange, template }: Props) {
         onOpenChange={setPreviewOpen}
         title={t("messages.templateModal.previewTitle")}
         description={t("messages.templateModal.previewDescription")}
-        size="lg"
+        size="60vw"
       >
         <div className="space-y-3">
           {previewSubject != null && (
@@ -389,7 +389,7 @@ export function TemplateModal({ open, onOpenChange, template }: Props) {
                 sandbox=""
                 referrerPolicy="no-referrer"
                 title={t("messages.templateModal.previewTitle")}
-                className="w-full h-96 rounded-md border bg-white"
+                className="w-full h-[70vh] rounded-md border bg-white"
               />
               <p className="text-xs text-muted-foreground">
                 {t("messages.templateModal.previewBrandingHint")}{" "}

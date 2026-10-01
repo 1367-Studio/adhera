@@ -2,6 +2,7 @@ import { S3Client, PutObjectCommand, DeleteObjectCommand, HeadObjectCommand, Get
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner"
 import { randomBytes } from "crypto"
 import { reportError } from "@/lib/monitoring"
+import { APP_URL } from "@/lib/env"
 
 const R2_CLIENT_CONFIG: S3ClientConfig = {
   region: "auto",
@@ -44,6 +45,28 @@ export async function uploadToR2(buffer: Buffer, prefix: string, contentType: st
   )
 
   return `${process.env.R2_PUBLIC_URL}/${key}`
+}
+
+// Rewrites a URL returned by uploadToR2() above into one served through the app's own
+// domain (src/app/api/public/assets/[...key]/route.ts) instead of R2_PUBLIC_URL directly.
+// Only applied where an image actually has to survive outside the app — an outgoing
+// email's <img src> — not to every reference everywhere (the SSRF allow-list in
+// association/branding/route.ts and deleteFromR2()'s key parsing above both still compare
+// against the real, stored R2_PUBLIC_URL value, so this never touches what's persisted).
+// R2_PUBLIC_URL today is Cloudflare's r2.dev development subdomain — not meant for
+// production traffic, and the likely reason template images rendered fine in the in-app
+// preview but silently never appeared in a received email (see toProxiedAssetUrl callers).
+// Leaves the URL untouched if it isn't actually one of ours.
+export function toProxiedAssetUrl(url: string): string {
+  const publicBase = process.env.R2_PUBLIC_URL
+  if (!url || !publicBase) return url
+  try {
+    const parsed = new URL(url)
+    if (parsed.origin !== new URL(publicBase).origin) return url
+    return `${APP_URL}/api/public/assets${parsed.pathname}`
+  } catch {
+    return url
+  }
 }
 
 // For uploads too large to pass through a serverless function body (Vercel caps those at
