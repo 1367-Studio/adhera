@@ -1,4 +1,4 @@
-import type { ReactNode } from "react"
+import type { CSSProperties, ReactNode } from "react"
 import type { ArrayField } from "@puckeditor/core"
 import { cn } from "@/lib/utils"
 
@@ -55,10 +55,17 @@ export function visibleSocialLinks(socialLinks: SocialLink[] | undefined): Socia
   )
 }
 
+const SOCIAL_ICON_STYLES: Record<NonNullable<SiteSocialIconsProps["variant"]>, CSSProperties | undefined> = {
+  framed: { borderColor: "currentColor", borderRadius: "var(--site-radius)" },
+  plain:  undefined,
+  round:  { background: "color-mix(in srgb, currentColor 12%, transparent)" },
+}
+
 type SiteSocialIconsProps = {
   socialLinks: SocialLink[] | undefined
-  /** "framed": bordered squares (the block); "plain": bare icons (navbar, footer). */
-  variant?:    "framed" | "plain"
+  /** "framed": bordered squares (the block); "plain": bare icons (navbar, old footer);
+   *  "round": icons in a subtle filled circle (builder footer). */
+  variant?:    "framed" | "plain" | "round"
   className?:  string
 }
 
@@ -66,7 +73,7 @@ export function SiteSocialIcons({ socialLinks, variant = "plain", className }: S
   const linksToShow = visibleSocialLinks(socialLinks)
   if (linksToShow.length === 0) return null
   return (
-    <ul className={cn("flex flex-wrap items-center", variant === "framed" ? "gap-3" : "gap-1", className)}>
+    <ul className={cn("flex flex-wrap items-center", variant === "plain" ? "gap-1" : "gap-3", className)}>
       {linksToShow.map((socialLink, linkIndex) => (
         <li key={`${socialLink.network}-${linkIndex}`}>
           <a
@@ -77,9 +84,11 @@ export function SiteSocialIcons({ socialLinks, variant = "plain", className }: S
             title={SOCIAL_NETWORK_LABELS[socialLink.network]}
             className={cn(
               "flex items-center justify-center transition-opacity hover:opacity-70",
-              variant === "framed" ? "size-11 border" : "size-9",
+              variant === "framed" && "size-11 border",
+              variant === "plain" && "size-9",
+              variant === "round" && "size-10 rounded-full",
             )}
-            style={variant === "framed" ? { borderColor: "currentColor", borderRadius: "var(--site-radius)" } : undefined}
+            style={SOCIAL_ICON_STYLES[variant]}
           >
             <svg
               aria-hidden="true"

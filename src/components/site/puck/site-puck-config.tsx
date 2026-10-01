@@ -34,7 +34,9 @@ import { HandshakeIcon, IdentificationCardIcon } from "@phosphor-icons/react/dis
 import { SITE_CORNER_OPTIONS, SITE_STYLE_PRESETS, getSiteStyleVars } from "@/components/site/blocks/site-block-theme"
 import { readSiteMetadata, type FormBinding } from "@/components/site/blocks/site-block-types"
 import { SiteNavbar }            from "@/components/site/site-navbar"
-import { SiteFooter }            from "@/components/site/site-footer"
+import {
+  SITE_FOOTER_FIELD, SiteBuilderFooter, resolveFooterSettings,
+} from "@/components/site/site-builder-footer"
 import { SiteHeroSection }       from "@/components/site/sections/site-hero-section"
 import { SiteAboutSection }      from "@/components/site/sections/site-about-section"
 import { SiteContactSection }    from "@/components/site/sections/site-contact-section"
@@ -112,18 +114,11 @@ export const sitePuckConfig: Config<SitePuckComponents, SitePuckRootProps> = {
       },
       headerShowMembres:  { type: "radio", label: "Bouton « Se connecter »", options: YES_NO_OPTIONS },
       headerShowRegister: { type: "radio", label: "Bouton « Adhérer »", options: YES_NO_OPTIONS },
-      footerText:         { type: "textarea", label: "Texte du pied de page" },
-      footerBgColor:      colorField("Fond du pied de page"),
-      footerLinks:        {
-        type:        "array",
-        label:       "Liens du pied de page",
-        max:         6,
-        arrayFields: { label: { type: "text", label: "Libellé" }, url: { type: "text", label: "Adresse" } },
-        getItemSummary: footerLink => footerLink.label || "Lien",
-      },
       socialLinks:        socialLinksField("Réseaux sociaux"),
       socialInHeader:     { type: "radio", label: "Réseaux sociaux dans l'en-tête", options: YES_NO_OPTIONS },
-      socialInFooter:     { type: "radio", label: "Réseaux sociaux dans le pied de page", options: YES_NO_OPTIONS },
+      // Replaces the old footerText / footerBgColor / footerLinks fields, which stay in the data
+      // only as the source the footer is first filled from (see resolveData).
+      footer:             SITE_FOOTER_FIELD,
       seo: {
         type:  "object",
         label: "Référencement et partage",
@@ -135,22 +130,40 @@ export const sitePuckConfig: Config<SitePuckComponents, SitePuckRootProps> = {
         },
       },
     },
-    // Picking a style fills colours, font and corners at once; each stays editable afterwards.
     resolveData: (rootData, { changed }) => {
       const rootProps = rootData.props
-      if (!changed.stylePreset || !rootProps) return rootData
-      const pickedPreset = SITE_STYLE_PRESETS.find(stylePreset => stylePreset.key === rootProps.stylePreset)
-      if (!pickedPreset) return rootData
-      return {
-        ...rootData,
-        props: {
-          ...rootProps,
+      if (!rootProps) return rootData
+      let resolvedProps = rootProps
+
+      // A site from the old builder has no footer settings yet: fill them from its old footer
+      // text, colour and links, so it looks the same and every value is editable. Without
+      // this, the first edit would create a footer object that ignores the old links.
+      if (!resolvedProps.footer) {
+        resolvedProps = {
+          ...resolvedProps,
+          footer: resolveFooterSettings(undefined, {
+            footerText:    resolvedProps.footerText,
+            footerBgColor: resolvedProps.footerBgColor,
+            footerLinks:   resolvedProps.footerLinks,
+          }),
+        }
+      }
+
+      // Picking a style fills colours, font and corners at once; each stays editable afterwards.
+      const pickedPreset = changed.stylePreset
+        ? SITE_STYLE_PRESETS.find(stylePreset => stylePreset.key === resolvedProps.stylePreset)
+        : undefined
+      if (pickedPreset) {
+        resolvedProps = {
+          ...resolvedProps,
           primaryColor:   pickedPreset.primaryColor,
           secondaryColor: pickedPreset.secondaryColor,
           fontFamily:     pickedPreset.fontFamily,
           cornerStyle:    pickedPreset.cornerStyle,
-        },
+        }
       }
+
+      return resolvedProps === rootProps ? rootData : { ...rootData, props: resolvedProps }
     },
     render: ({ children, puck, ...rootProps }) => {
       const metadata = readMetadata(puck.metadata)
@@ -162,7 +175,7 @@ export const sitePuckConfig: Config<SitePuckComponents, SitePuckRootProps> = {
           style={{
             colorScheme: "light",
             fontFamily:  font.cssVar,
-            ...getSiteColorVars({ ...rootProps, sections: [] }),
+            ...getSiteColorVars({ ...rootProps, footerText: rootProps.footerText ?? "", sections: [] }),
             ...getSiteStyleVars(rootProps.cornerStyle),
           }}
         >
@@ -182,14 +195,17 @@ export const sitePuckConfig: Config<SitePuckComponents, SitePuckRootProps> = {
             socialLinks={rootProps.socialInHeader ? rootProps.socialLinks : []}
           />
           <main>{children}</main>
-          <SiteFooter
-            name={metadata.associationName}
-            footerText={rootProps.footerText}
-            footerBgColor={rootProps.footerBgColor}
-            footerLinks={rootProps.footerLinks}
-            color={SITE_PRIMARY_COLOR}
-            // On by default: the footer is where visitors look for them.
-            socialLinks={rootProps.socialInFooter === false ? [] : rootProps.socialLinks}
+          <SiteBuilderFooter
+            settings={rootProps.footer}
+            legacy={{
+              footerText:    rootProps.footerText,
+              footerBgColor: rootProps.footerBgColor,
+              footerLinks:   rootProps.footerLinks,
+            }}
+            associationName={metadata.associationName}
+            siteLogoUrl={rootProps.logoUrl}
+            socialLinks={rootProps.socialLinks}
+            slug={metadata.slug}
           />
         </div>
       )

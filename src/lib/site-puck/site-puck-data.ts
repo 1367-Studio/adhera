@@ -22,6 +22,7 @@ import type { GalleryBlockProps } from "@/components/site/blocks/site-block-gall
 import type { SocialLinksBlockProps } from "@/components/site/blocks/site-block-social-links"
 import type { SiteCornerStyle } from "@/components/site/blocks/site-block-theme"
 import type { SocialLink } from "@/components/site/site-social-icons"
+import type { SiteFooterSettings } from "@/components/site/site-builder-footer"
 import type { FormCtaStyleProps } from "@/components/site/blocks/site-block-form-cta"
 import type { EventsBlockProps } from "@/components/site/blocks/site-block-events"
 import type { ActualitesBlockProps } from "@/components/site/blocks/site-block-actualites"
@@ -78,7 +79,10 @@ export type SitePuckComponents = {
 
 // Everything in SiteConfig that is not a section (theme, header, footer), plus the new
 // builder's style settings, which SiteConfig does not store yet.
-export type SitePuckRootProps = Omit<SiteConfig, "sections"> & {
+// footerText is optional here: the new footer settings replace it in the panel, and the old
+// value only seeds them (see the root resolveData in site-puck-config.tsx).
+export type SitePuckRootProps = Omit<SiteConfig, "sections" | "footerText"> & {
+  footerText?:  string
   stylePreset?: string
   cornerStyle?: SiteCornerStyle
   // "auto" (default): hidden once a logo is uploaded.
@@ -86,7 +90,9 @@ export type SitePuckRootProps = Omit<SiteConfig, "sections"> & {
   // Entered once, shown in the header and/or the footer.
   socialLinks?:    SocialLink[]
   socialInHeader?: boolean
-  socialInFooter?: boolean
+  // New footer (logo position, columns, socials, bottom line). Missing on sites from the old
+  // builder: the editor fills it from footerText / footerBgColor / footerLinks on load.
+  footer?:         SiteFooterSettings
   // Search engines and link previews. Stored with the draft; applied to the public page's
   // metadata when publishing moves to this format.
   seo?:            SiteSeoSettings
