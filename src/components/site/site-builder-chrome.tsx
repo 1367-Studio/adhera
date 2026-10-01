@@ -8,6 +8,8 @@ import { getSiteColorVars } from "@/lib/site-theme"
 import { SITE_DEFAULT_FONT, SITE_FONTS, isSiteFontKey } from "@/lib/site-fonts"
 import type { SitePuckRootProps } from "@/lib/site-puck/site-puck-data"
 import { cn } from "@/lib/utils"
+import { SiteAnimationsProvider } from "@/components/site/site-animations"
+import { SiteCookieConsentProvider, SiteCookieSettingsLink } from "@/components/site/site-cookie-consent"
 
 // Header, footer, colours, corners and font of a site made with the new builder (FORM-7), set
 // from the page's root settings. Shared by the page itself (the Puck root render, so the editor,
@@ -24,15 +26,21 @@ type SiteBuilderChromeProps = {
   membershipCta:   { href: string } | null
   className?:      string
   mainClassName?:  string
+  /** Inside the Puck editor: no reveal animations (blocks must stay visible) and no cookie banner. */
+  isEditing?:      boolean
   children:        ReactNode
 }
 
 export function SiteBuilderChrome({
-  rootProps, associationName, slug, membershipCta, className, mainClassName, children,
+  rootProps, associationName, slug, membershipCta, className, mainClassName, isEditing = false, children,
 }: SiteBuilderChromeProps) {
+  // "Discrètes" unless the association turned them off; never while editing.
+  const animationLevel = isEditing ? "none" : (rootProps.animations ?? "subtle")
   const fontKey = isSiteFontKey(rootProps.fontFamily) ? rootProps.fontFamily : SITE_DEFAULT_FONT
   const font    = SITE_FONTS[fontKey]
   return (
+    <SiteCookieConsentProvider slug={slug} settings={rootProps.cookies} isEditing={isEditing}>
+    <SiteAnimationsProvider level={animationLevel}>
     <div
       className={cn(className, font.variable)}
       style={{
@@ -69,7 +77,10 @@ export function SiteBuilderChrome({
         siteLogoUrl={rootProps.logoUrl}
         socialLinks={rootProps.socialLinks}
         slug={slug}
+        bottomExtra={<SiteCookieSettingsLink />}
       />
     </div>
+    </SiteAnimationsProvider>
+    </SiteCookieConsentProvider>
   )
 }

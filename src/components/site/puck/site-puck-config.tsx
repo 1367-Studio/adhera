@@ -40,6 +40,8 @@ import { SiteHeroSection }       from "@/components/site/sections/site-hero-sect
 import { SiteAboutSection }      from "@/components/site/sections/site-about-section"
 import { SiteContactSection }    from "@/components/site/sections/site-contact-section"
 import { SiteBuilderChrome } from "@/components/site/site-builder-chrome"
+import { SITE_ANIMATION_FIELD } from "@/components/site/site-animations"
+import { SITE_COOKIE_FIELD } from "@/components/site/site-cookie-consent"
 import { SITE_FONTS, SITE_FONT_KEYS } from "@/lib/site-fonts"
 import type { SitePuckComponents, SitePuckRootProps } from "@/lib/site-puck/site-puck-data"
 
@@ -116,6 +118,8 @@ export const sitePuckConfig: Config<SitePuckComponents, SitePuckRootProps> = {
       // Replaces the old footerText / footerBgColor / footerLinks fields, which stay in the data
       // only as the source the footer is first filled from (see resolveData).
       footer:             SITE_FOOTER_FIELD,
+      animations:         SITE_ANIMATION_FIELD,
+      cookies:            SITE_COOKIE_FIELD,
       seo: {
         type:  "object",
         label: "Référencement et partage",
@@ -171,6 +175,7 @@ export const sitePuckConfig: Config<SitePuckComponents, SitePuckRootProps> = {
           slug={metadata.slug}
           membershipCta={metadata.membershipCta}
           className="min-h-full bg-white text-gray-900"
+          isEditing={puck.isEditing}
         >
           {children}
         </SiteBuilderChrome>

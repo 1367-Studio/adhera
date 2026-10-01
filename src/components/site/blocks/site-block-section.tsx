@@ -1,6 +1,7 @@
 import type { ReactNode } from "react"
 import type { Fields } from "@puckeditor/core"
 import { cn } from "@/lib/utils"
+import { SiteReveal } from "@/components/site/site-animations"
 
 // The outer shell every full-width block renders in: background, vertical spacing, content
 // width. Blocks spread SECTION_STYLE_FIELDS into their fields and SECTION_STYLE_DEFAULTS into
@@ -89,7 +90,7 @@ export function SiteBlockSection({
 }: SiteBlockSectionProps) {
   return (
     <section id={id} className={cn("px-4", SPACING_CLASSES[spacing])} style={BACKGROUND_STYLES[background]}>
-      <div className={cn("mx-auto", WIDTH_CLASSES[width], className)}>{children}</div>
+      <SiteReveal className={cn("mx-auto", WIDTH_CLASSES[width], className)}>{children}</SiteReveal>
     </section>
   )
 }

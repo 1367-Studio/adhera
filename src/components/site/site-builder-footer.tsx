@@ -2,6 +2,7 @@ import type { CSSProperties, ReactNode } from "react"
 import Link from "next/link"
 import type { ObjectField } from "@puckeditor/core"
 import { cn } from "@/lib/utils"
+import { APP_NAME, POWERED_BY_LINK } from "@/config/brand"
 import { isColorDark } from "@/lib/color"
 import { colorField, imageField, YES_NO_OPTIONS } from "@/components/site/blocks/site-block-fields"
 import { resolveSiteHref } from "@/components/site/blocks/site-block-button"
@@ -228,9 +229,19 @@ type SiteBuilderFooterProps = {
   siteLogoUrl?:    string
   socialLinks?:    SocialLink[]
   slug:            string
+  /** Rendered on the bottom line after the "Propulsé par" mention (e.g. the cookie settings link). */
+  bottomExtra?:    ReactNode
 }
 
-export function SiteBuilderFooter({ settings, legacy, associationName, siteLogoUrl, socialLinks, slug }: SiteBuilderFooterProps) {
+const BOTTOM_LINE_JUSTIFY_CLASS: Record<SiteFooterAlignment, string> = {
+  left:   "sm:justify-start",
+  center: "sm:justify-center",
+  right:  "sm:justify-end",
+}
+
+export function SiteBuilderFooter({
+  settings, legacy, associationName, siteLogoUrl, socialLinks, slug, bottomExtra,
+}: SiteBuilderFooterProps) {
   const footerSettings = resolveFooterSettings(settings, legacy)
   const logoSource     = footerSettings.logoUrl || siteLogoUrl || ""
   const hasSocialLinks = footerSettings.showSocial && visibleSocialLinks(socialLinks).length > 0
@@ -354,6 +365,26 @@ export function SiteBuilderFooter({ settings, legacy, associationName, siteLogoU
           <p className={cn("text-sm", TEXT_ALIGNMENT_CLASS[footerSettings.bottomAlign])} style={MUTED_TEXT_STYLE}>
             {bottomText}
           </p>
+          <div
+            className={cn(
+              "mt-2 flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-xs",
+              BOTTOM_LINE_JUSTIFY_CLASS[footerSettings.bottomAlign],
+            )}
+            style={MUTED_TEXT_STYLE}
+          >
+            <span>
+              Propulsé par{" "}
+              <a href={POWERED_BY_LINK} target="_blank" rel="noopener" className="underline-offset-4 hover:underline">
+                {APP_NAME}
+              </a>
+            </span>
+            {bottomExtra && (
+              <>
+                <span aria-hidden="true">·</span>
+                {bottomExtra}
+              </>
+            )}
+          </div>
         </div>
       </div>
     </footer>

@@ -1,4 +1,5 @@
 import { isColorDark } from "@/lib/color"
+import { APP_NAME, POWERED_BY_LINK } from "@/config/brand"
 import { SiteSocialIcons, visibleSocialLinks, type SocialLink } from "@/components/site/site-social-icons"
 
 type FooterLink = { label: string; url: string }
@@ -46,6 +47,10 @@ export function SiteFooter({ name, footerText, footerBgColor, footerLinks = [], 
           <span className="font-medium" style={{ color }}>{name}</span>
           <span>{footerText || `© ${new Date().getFullYear()} ${name}`}</span>
         </div>
+        <p className="text-center text-xs" style={{ color: textCol }}>
+          Propulsé par{" "}
+          <a href={POWERED_BY_LINK} target="_blank" rel="noopener" className="hover:underline">{APP_NAME}</a>
+        </p>
       </div>
     </footer>
   )

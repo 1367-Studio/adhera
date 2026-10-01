@@ -23,6 +23,8 @@ import type { SocialLinksBlockProps } from "@/components/site/blocks/site-block-
 import type { SiteCornerStyle } from "@/components/site/blocks/site-block-theme"
 import type { SocialLink } from "@/components/site/site-social-icons"
 import type { SiteFooterSettings } from "@/components/site/site-builder-footer"
+import type { SiteAnimationLevel } from "@/components/site/site-animations"
+import type { SiteCookieSettings } from "@/components/site/site-cookie-consent"
 import type { FormCtaStyleProps } from "@/components/site/blocks/site-block-form-cta"
 import type { EventsBlockProps } from "@/components/site/blocks/site-block-events"
 import type { ActualitesBlockProps } from "@/components/site/blocks/site-block-actualites"
@@ -93,6 +95,10 @@ export type SitePuckRootProps = Omit<SiteConfig, "sections" | "footerText"> & {
   // New footer (logo position, columns, socials, bottom line). Missing on sites from the old
   // builder: the editor fills it from footerText / footerBgColor / footerLinks on load.
   footer?:         SiteFooterSettings
+  // Scroll reveal of the blocks; undefined = "subtle".
+  animations?:     SiteAnimationLevel
+  // Cookie banner for third-party embeds (videos); undefined = shown with the default text.
+  cookies?:        SiteCookieSettings
   // Search engines and link previews. Stored with the draft; applied to the public page's
   // metadata when publishing moves to this format.
   seo?:            SiteSeoSettings
