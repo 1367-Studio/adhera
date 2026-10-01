@@ -3084,6 +3084,8 @@
           "kindField": "Tipo",
           "kindOneOff": "Pontual",
           "kindRecurring": "Recorrente (anual)",
+          "recurringNeedsOnlinePayment": "Uma tarifa recorrente é paga por assinatura online: enquanto o pagamento online não estiver ativado, ela aparece como “Indisponível” no formulário.",
+          "recurringNeedsOnlinePaymentLink": "Configurar o pagamento online",
           "itemTypeField": "Natureza",
           "itemTypeMembership": "Tarifa de adesão",
           "itemTypeAddon": "Opção paga",

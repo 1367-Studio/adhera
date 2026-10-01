@@ -10,7 +10,8 @@ import { DndContext, KeyboardSensor, PointerSensor, closestCenter, useSensor, us
 import { restrictToParentElement, restrictToVerticalAxis } from "@dnd-kit/modifiers"
 import { SortableContext, arrayMove, sortableKeyboardCoordinates, useSortable, verticalListSortingStrategy } from "@dnd-kit/sortable"
 import { CSS } from "@dnd-kit/utilities"
-import { DotsSixIcon, PlusIcon, TrashIcon } from "@phosphor-icons/react/dist/ssr"
+import Link from "next/link"
+import { DotsSixIcon, PlusIcon, TrashIcon, WarningCircleIcon } from "@phosphor-icons/react/dist/ssr"
 import { Button } from "@/components/ui/button"
 import { FormField } from "@/components/ui/form-field"
 import { SelectField } from "@/components/ui/select-field"
@@ -122,6 +123,15 @@ export function MembershipTiersEditor({ formId, membreTypes, onDirtyChange, ref 
     queryKey: ["membership-form", formId, "tiers"],
     queryFn:  () => fetch(`/api/membership-forms/${formId}/tiers`).then(r => r.json()),
   })
+
+  // A recurring tier is a Stripe subscription: without online payment ready, the public form
+  // shows it as "Indisponible" (FORM-31). Same query as the Paiements settings, so it is cached.
+  const { data: connectStatus } = useQuery<{ status: "not_connected" | "incomplete" | "pending" | "enabled" | "invalid" }>({
+    queryKey: ["connect-status"],
+    queryFn:  () => fetch("/api/connect/status").then(r => r.json()),
+  })
+  // Only once the status is known: no warning flashing while it loads.
+  const isOnlinePaymentMissing = !!connectStatus && connectStatus.status !== "enabled"
 
   const saveMutation = useMutation({
     mutationFn: async (tiers: (MembershipTierDraft & { order: number })[]) => {
@@ -533,6 +543,17 @@ export function MembershipTiersEditor({ formId, membreTypes, onDirtyChange, ref 
                     </div>
                   )}
                 </div>
+                {tier.itemType === "MEMBERSHIP" && tier.kind === "RECURRING" && !tier.free && isOnlinePaymentMissing && (
+                  <p className="mt-3 flex items-start gap-2 text-xs text-amber-700 dark:text-amber-400">
+                    <WarningCircleIcon className="size-3.5 shrink-0 mt-0.5" />
+                    <span>
+                      {t("recurringNeedsOnlinePayment")}{" "}
+                      <Link href="/dashboard/parametres?tab=paiements" className="underline underline-offset-2">
+                        {t("recurringNeedsOnlinePaymentLink")}
+                      </Link>
+                    </span>
+                  </p>
+                )}
               </SortableTierCard>
             ))}
           </div>

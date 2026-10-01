@@ -3124,6 +3124,8 @@
           "kindField": "Type",
           "kindOneOff": "One-off",
           "kindRecurring": "Recurring (yearly)",
+          "recurringNeedsOnlinePayment": "A recurring tier is paid by online subscription: until online payment is enabled, it shows as “Unavailable” on the form.",
+          "recurringNeedsOnlinePaymentLink": "Set up online payment",
           "itemTypeField": "Nature",
           "itemTypeMembership": "Membership tier",
           "itemTypeAddon": "Paid option",
