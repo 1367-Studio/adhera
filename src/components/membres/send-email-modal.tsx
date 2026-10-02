@@ -444,9 +444,15 @@ export function SendEmailModal({ open, onOpenChange }: SendEmailModalProps) {
   useEffect(() => {
     if (!selectedTemplate?.blocks) { setDesignTemplatePreviewHtml(null); return }
     let cancelled = false
-    sanitizeEmailPreviewHtml(selectedTemplate.body).then(html => {
-      if (!cancelled) setDesignTemplatePreviewHtml(html)
-    })
+    sanitizeEmailPreviewHtml(selectedTemplate.body)
+      .then(html => { if (!cancelled) setDesignTemplatePreviewHtml(html) })
+      // The dynamic `import("dompurify")` inside sanitizeEmailPreviewHtml can reject (e.g. a
+      // ChunkLoadError on a tab left open across a deploy) — left unhandled, that silently
+      // stuck the preview at null forever with no feedback, i.e. the template area just
+      // looked empty. The iframe's sandbox="" already blocks script execution and navigation
+      // on its own (sanitizeEmailPreviewHtml's own comment), so falling back to the raw
+      // stored body here is a safe degradation, not a hole — better than a blank box.
+      .catch(() => { if (!cancelled) setDesignTemplatePreviewHtml(selectedTemplate.body) })
     return () => { cancelled = true }
   }, [selectedTemplate])
 
