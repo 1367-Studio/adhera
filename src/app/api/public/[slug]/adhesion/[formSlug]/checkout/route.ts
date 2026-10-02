@@ -4,7 +4,7 @@ import { z } from "zod"
 import { SPOKEN_LANGUAGE_CODES } from "@/lib/languages"
 import { Prisma } from "@prisma/client"
 import type Stripe from "stripe"
-import { stripe, connectAccountChargesEnabled, platformFeeRate } from "@/lib/stripe"
+import { stripe, connectAccountChargesEnabled, platformFeeRate, stripeFeeCents } from "@/lib/stripe"
 import { storedRowRequiresTermsAcceptance } from "@/lib/form-terms-response"
 import { prisma } from "@/lib/prisma/client"
 import { parseModules } from "@/lib/modules"
@@ -863,7 +863,8 @@ export async function POST(
       ...productLineItems,
     ]
 
-    const applicationFee = Math.round(lineItems.reduce((sum, li) => sum + (li.price_data!.unit_amount ?? 0) * (li.quantity ?? 1), 0) * platformFeeRate(assoc))
+    const grossAmountCents = lineItems.reduce((sum, li) => sum + (li.price_data!.unit_amount ?? 0) * (li.quantity ?? 1), 0)
+    const applicationFee   = Math.round(grossAmountCents * platformFeeRate(assoc)) + stripeFeeCents(grossAmountCents)
 
     let checkoutSession: Stripe.Checkout.Session
     try {
@@ -1292,7 +1293,8 @@ async function handleMultiRegistrantCheckout(
   const cancelUrl  = `${APP_URL}/${slug}/adhesion/${formSlug}?payment=cancelled`
   const metadata = { kind: "membership-multi", associationId: assoc.id, draftId: draft.id }
 
-  const applicationFee = Math.round(lineItems.reduce((sum, li) => sum + (li.price_data!.unit_amount ?? 0) * (li.quantity ?? 1), 0) * platformFeeRate(assoc))
+  const grossAmountCents = lineItems.reduce((sum, li) => sum + (li.price_data!.unit_amount ?? 0) * (li.quantity ?? 1), 0)
+  const applicationFee   = Math.round(grossAmountCents * platformFeeRate(assoc)) + stripeFeeCents(grossAmountCents)
 
   let checkoutSession: Stripe.Checkout.Session
   try {

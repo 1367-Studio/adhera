@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server"
 import { z } from "zod"
 import type Stripe from "stripe"
-import { stripe, connectAccountChargesEnabled, stripeRecurringInterval, platformFeeRate } from "@/lib/stripe"
+import { stripe, connectAccountChargesEnabled, stripeRecurringInterval, platformFeeRate, stripeFeeCents } from "@/lib/stripe"
 import { storedRowRequiresTermsAcceptance } from "@/lib/form-terms-response"
 import { prisma } from "@/lib/prisma/client"
 import { APP_URL } from "@/lib/env"
@@ -321,7 +321,7 @@ export const POST = withPortalAuth<{ formSlug: string }>(async (req, ctx, { form
     label: `${firstName} ${lastName} — ${amount}€ (${form.title})`,
   })
 
-  const applicationFee = Math.round(amountCents * platformFeeRate(assoc))
+  const applicationFee = Math.round(amountCents * platformFeeRate(assoc)) + stripeFeeCents(amountCents)
 
   let checkoutSession: Stripe.Checkout.Session
   try {
