@@ -1390,7 +1390,13 @@ export function SendEmailModal({ open, onOpenChange }: SendEmailModalProps) {
                   <Label>{t("membres.email.bodyLabel")}</Label>
                   <iframe
                     srcDoc={designTemplatePreviewHtml ?? ""}
-                    sandbox=""
+                    // allow-same-origin only (no allow-scripts, so this still can't execute
+                    // any JS): a fully opaque-origin iframe (plain sandbox="") makes "self" in
+                    // the app's inherited CSP match nothing, so every same-origin <img> (the
+                    // branding logo, every R2-proxied template image) silently fails to load —
+                    // looked like an empty/blank preview with no error anywhere. Verified live:
+                    // toggling this attribute is what made the image actually render.
+                    sandbox="allow-same-origin"
                     referrerPolicy="no-referrer"
                     title={t("membres.email.bodyLabel")}
                     className="w-full h-[220px] rounded-md border bg-white"
