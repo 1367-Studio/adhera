@@ -17,7 +17,17 @@ export function getPusherClient(): Pusher | null {
       cluster:      process.env.NEXT_PUBLIC_PUSHER_CLUSTER!,
       authEndpoint: `${BASE_PATH}/api/pusher/auth`,
     })
-  } catch {
+    // Temporary diagnostic logging for the "no completion toast" investigation — remove once
+    // the bulk-send-completed delivery gap is found. Logs every connection state transition
+    // and any subscription/auth error, none of which otherwise surface anywhere.
+    client.connection.bind("state_change", (states: { previous: string; current: string }) => {
+      console.log("[pusher] connection state:", states.previous, "->", states.current)
+    })
+    client.connection.bind("error", (err: unknown) => {
+      console.error("[pusher] connection error:", err)
+    })
+  } catch (err) {
+    console.error("[pusher] client construction failed:", err)
     client = null
   }
   return client

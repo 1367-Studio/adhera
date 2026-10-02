@@ -37,6 +37,10 @@ export function useNotifications(scope: NotificationScope) {
 
   return useQuery<Notification[]>({
     queryKey: QK(scope),
+    // SUPER_ADMIN sessions have no associationId (they aren't scoped to one), and the API
+    // route is association-scoped only — without this guard, every backoffice page load
+    // 403s fetching notifications for an account that will never have any.
+    enabled: !!associationId,
     queryFn: async () => {
       const res = await fetch(`/api/notifications?scope=${scope}`)
       if (!res.ok) return []
