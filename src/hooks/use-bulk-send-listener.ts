@@ -16,6 +16,7 @@ import { useCurrentUser } from "@/lib/user-context"
 const pendingJobIds = new Set<string>()
 
 export function registerPendingBulkSend(jobId: string | null | undefined) {
+  console.log("[bulk-send-listener] registering pending job:", jobId)
   if (jobId) pendingJobIds.add(jobId)
 }
 
@@ -47,9 +48,17 @@ export function useBulkSendListener() {
     if (!pusher) return
 
     const channelName = `private-association-${associationId}`
+    console.log("[bulk-send-listener] subscribing to channel:", channelName)
     const channel = pusher.subscribe(channelName)
+    channel.bind("pusher:subscription_succeeded", () => {
+      console.log("[bulk-send-listener] subscription succeeded:", channelName)
+    })
+    channel.bind("pusher:subscription_error", (status: unknown) => {
+      console.error("[bulk-send-listener] subscription error:", channelName, status)
+    })
 
     function handler(data: BulkSendCompletedPayload) {
+      console.log("[bulk-send-listener] received bulk-send-completed:", data, "pending:", [...pendingJobIds])
       if (!pendingJobIds.has(data.jobId)) return
       pendingJobIds.delete(data.jobId)
       const t = tRef.current
