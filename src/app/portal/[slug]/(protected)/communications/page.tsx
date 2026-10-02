@@ -225,11 +225,15 @@ function EmailRowItem({ e }: { e: EmailRow }) {
               sanitizedHtml ? (
                 <>
                   <iframe
-                    // sandbox="" is defense in depth on top of sanitizeEmailPreviewHtml, not
-                    // a substitute for it. no-referrer keeps this member's session/URL out of
-                    // the Referer header on any image the email loads.
+                    // Defense in depth on top of sanitizeEmailPreviewHtml, not a substitute
+                    // for it. no-referrer keeps this member's session/URL out of the Referer
+                    // header on any image the email loads. allow-same-origin only (no
+                    // allow-scripts, so still no JS execution) — a fully opaque-origin iframe
+                    // makes "self" in the app's inherited CSP match nothing, so every
+                    // same-origin <img> (branding logo, R2-proxied template images) silently
+                    // failed to load, i.e. the preview just looked blank.
                     srcDoc={sanitizedHtml}
-                    sandbox=""
+                    sandbox="allow-same-origin"
                     referrerPolicy="no-referrer"
                     title={`Contenu de l'email : ${e.subject}`}
                     // Shorter by default than the admin's equivalent (h-96) — this page is

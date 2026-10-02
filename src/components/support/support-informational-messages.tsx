@@ -65,7 +65,11 @@ function InformationalItem({ row }: { row: InformationalRow }) {
           {sanitizedHtml ? (
             <iframe
               srcDoc={sanitizedHtml}
-              sandbox=""
+              // allow-same-origin only (no allow-scripts, so still no JS execution) — a
+              // fully opaque-origin iframe makes "self" in the app's inherited CSP match
+              // nothing, so every same-origin <img> (branding logo, R2-proxied template
+              // images) silently failed to load, i.e. the preview just looked blank.
+              sandbox="allow-same-origin"
               referrerPolicy="no-referrer"
               title={row.subject}
               className="w-full h-96 rounded-md border bg-white"
