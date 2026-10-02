@@ -3,7 +3,6 @@ import { z } from "zod"
 import Stripe from "stripe"
 import { Prisma, type BoutiquePaymentMethod } from "@prisma/client"
 import { prisma } from "@/lib/prisma/client"
-import { stripe } from "@/lib/stripe"
 import { writeActivityLog } from "@/lib/activity-log"
 import { guardModule } from "@/lib/auth/require-module"
 import { withAdminAuth } from "@/lib/api-wrapper"
@@ -12,6 +11,7 @@ import { sendEmail } from "@/lib/mail"
 import { boutiqueRefundEmail } from "@/lib/email"
 import { pusherServer } from "@/lib/pusher-server"
 import { reportError } from "@/lib/monitoring"
+import { refundConnectCharge } from "@/lib/webhook/connect-stripe-fee"
 
 // Narrower than boutique/commandes/[id]/route.ts's MANAGERS (which includes SECRETAIRE) —
 // refunding money is a step up from managing orders, same role set as dons/[id]/encaisser.
@@ -225,17 +225,17 @@ export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
     const idempotencyKey = `commande-refund-${id}-${result.refundCents}-${result.changedItems.map(i => `${i.produitName}:${i.refundedQty}`).sort().join(",")}`
 
     try {
-      await stripe.refunds.create({
-        payment_intent:         paymentIntentId,
-        amount:                 result.refundCents,
-        reverse_transfer:       true,
-        refund_application_fee: true,
+      await refundConnectCharge({
+        associationId:   ctx.associationId,
+        paymentIntentId,
+        amountCents:     result.refundCents,
+        idempotencyKey,
         // Lets the charge.refunded webhook (webhook/stripe/route.ts) recognize this refund
         // as already reconciled by this route — without it, that webhook's partial-refund
         // safety net would redundantly re-apply the same Income/totalAmount adjustment a
         // second time when this refund's own event arrives.
         metadata: { source: "boutique-refund-route" },
-      }, { idempotencyKey })
+      })
     } catch (err) {
       await rollback()
       reportError(err, { area: "stripe", action: "boutique.refund", extra: { associationId: ctx.associationId, commandeId: id, paymentIntentId } })

@@ -2,7 +2,7 @@ import { NextResponse } from "next/server"
 import { z } from "zod"
 import { storedRowRequiresTermsAcceptance } from "@/lib/form-terms-response"
 import { prisma } from "@/lib/prisma/client"
-import { stripe, connectAccountChargesEnabled, PLATFORM_FEE } from "@/lib/stripe"
+import { stripe, connectAccountChargesEnabled, PLATFORM_FEE, stripeFeeCents } from "@/lib/stripe"
 import { APP_URL } from "@/lib/env"
 import { rateLimit, requestIp } from "@/lib/rate-limit"
 import { SPOKEN_LANGUAGE_CODES } from "@/lib/languages"
@@ -148,7 +148,7 @@ export async function POST(
   const slug = membre.association.slug
   const returnUrl = `${APP_URL}/${slug}/complete-adhesion/${token}`
   const amountCents = Math.round(amount * 100)
-  const applicationFee = Math.round(amountCents * PLATFORM_FEE)
+  const applicationFee = Math.round(amountCents * PLATFORM_FEE) + stripeFeeCents(amountCents)
 
   // Identity (firstName/lastName/email) is never taken from the request — it's re-derived
   // from the Membre the token resolved to, same reasoning the GET route's read-only prefill

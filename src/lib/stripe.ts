@@ -36,6 +36,23 @@ export function platformFeeRate(association: { subscriptionStatus: SubscriptionS
   return association.subscriptionAmountCents === 0 ? PLATFORM_FEE : 0
 }
 
+// Stripe's own processing fee for the platform's real European-card traffic, confirmed
+// empirically against 15 real production balance_transactions on 2026-10-01 (see
+// scripts/check-real-stripe-fee-rate.ts) — fits 1.5% + €0.25 exactly across all amounts.
+// On a Connect destination charge this fee is always deducted from the PLATFORM's own Stripe
+// balance, never the connected account's — on_behalf_of does not change that (confirmed via
+// Stripe's own docs and a sandbox reproduction, see memory stripe-connect-on-behalf-of-fee-fix).
+// The only way to make an association actually bear it is to fold it into application_fee: we
+// collect it on top of whatever platformFeeRate() commission already applies, every
+// transaction, regardless of the association's commission-exemption status — this is Stripe's
+// real cost, not a Formwise commission, so it's recovered unconditionally.
+export const STRIPE_FEE_PERCENT      = 0.015
+export const STRIPE_FEE_FIXED_CENTS  = 25
+
+export function stripeFeeCents(amountCents: number): number {
+  return Math.round(amountCents * STRIPE_FEE_PERCENT) + STRIPE_FEE_FIXED_CENTS
+}
+
 export type PlanTier   = "starter" | "essential" | "pro"
 export type BillingCycle = "monthly" | "yearly"
 

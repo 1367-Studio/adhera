@@ -1,6 +1,6 @@
 import { randomBytes } from "crypto"
 import type Stripe from "stripe"
-import type { DonationSubscriptionStatus } from "@prisma/client"
+import { Prisma, type DonationSubscriptionStatus } from "@prisma/client"
 import { prisma } from "@/lib/prisma/client"
 import { stripe, subscriptionPeriodEnd } from "@/lib/stripe"
 import { sendEmail } from "@/lib/mail"
@@ -58,7 +58,10 @@ export async function handleDonationSubscriptionCheckout(session: Stripe.Checkou
   const customerId      = typeof session.customer === "string" ? session.customer : session.customer?.id
   if (!subscriptionId || !customerId) return
 
-  // Redelivery of the same event — the row was already created by an earlier delivery.
+  // Redelivery of the same event — the row was already created by an earlier delivery. This
+  // check alone isn't airtight (two near-simultaneous deliveries can both pass it before either
+  // create() below commits — confirmed in sandbox 2026-10-02), so it's paired with a P2002
+  // catch around the create itself, which is the actual race-proof guard.
   const existing = await prisma.donationSubscription.findUnique({ where: { stripeSubscriptionId: subscriptionId } })
   if (existing) return
 
@@ -109,7 +112,14 @@ export async function handleDonationSubscriptionCheckout(session: Stripe.Checkou
       currentPeriodEndsAt: subscriptionPeriodEnd(sub),
     },
     include: { association: { select: { name: true, plan: true, customBrandingEnabled: true, logoUrl: true } } },
+  }).catch(error => {
+    // A concurrent delivery won the race and already created this row — the findUnique above
+    // couldn't see it yet. Whichever delivery actually won already sends the email/activity log
+    // below, so this one is done.
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") return null
+    throw error
   })
+  if (!created) return
 
   if (created.email) {
     sendEmail(donationSubscriptionStartedEmail({

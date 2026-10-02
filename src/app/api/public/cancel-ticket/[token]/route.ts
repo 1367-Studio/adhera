@@ -9,6 +9,7 @@ import { cancellationConfirmationEmail } from "@/lib/email"
 import { resolveEmailBranding } from "@/lib/plan-limits"
 import { isEvenementOver } from "@/lib/evenement-timing"
 import { reportError } from "@/lib/monitoring"
+import { refundConnectCharge } from "@/lib/webhook/connect-stripe-fee"
 
 // Self-service cancellation for public/guest event registrations (no portal account, so
 // the authenticated flow at src/app/api/portal/evenements/[id]/cancel-ticket/route.ts
@@ -142,12 +143,10 @@ export async function POST(
   // refund of amount 0, and there's no money to move anyway, so just release the seat.
   if (refundAmountCents > 0) {
     try {
-      await stripe.refunds.create({
-        payment_intent:         paymentIntentId,
-        amount:                 refundAmountCents,
-        reverse_transfer:       true,
-        refund_application_fee: true,
-      }, {
+      await refundConnectCharge({
+        associationId:   associationId,
+        paymentIntentId,
+        amountCents:     refundAmountCents,
         // Stable per participation — a network retry of this same call reaches the original
         // refund instead of creating a second one.
         idempotencyKey: `public-ticket-refund-${participation.id}`,
