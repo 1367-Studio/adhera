@@ -41,6 +41,7 @@ import {
   tryHandleInstallmentInvoicePaymentFailed, handleMembershipInstallmentDeleted,
 } from "@/lib/webhook/membership-installments"
 import { reportError } from "@/lib/monitoring"
+import { applyConnectSubscriptionInvoiceFee, reconcileConnectChargeStripeFee } from "@/lib/webhook/connect-stripe-fee"
 
 // This API version moved the subscription id off Invoice's top level and onto
 // invoice.parent.subscription_details.subscription — same helper as donation-subscriptions.ts
@@ -907,6 +908,15 @@ export async function POST(req: Request) {
       break
     }
 
+    // Tops up application_fee_amount for non-standard cards (premium EEA, international, UK)
+    // whose real Stripe fee exceeds the standard-EEA-card estimate baked in at checkout — see
+    // reconcileConnectChargeStripeFee for why this can only be known after the charge.
+    case "charge.succeeded": {
+      const charge = event.data.object as Stripe.Charge
+      await reconcileConnectChargeStripeFee(charge, event.id)
+      break
+    }
+
     // Safety net for refunds issued outside the app's own self-service cancellation
     // flows (Stripe Dashboard, disputes/chargebacks) — reverses the Income and the
     // paid state of whichever entity the charge belongs to.
@@ -1428,6 +1438,17 @@ export async function POST(req: Request) {
       const sub = event.data.object as Stripe.Subscription
       if (isDonationSubscriptionEvent(sub) || isCotisationSubscriptionEvent(sub) || isMembershipInstallmentEvent(sub)) break
       await handleTrialWillEnd(sub, event.id)
+      break
+    }
+
+    // Fires ~1h before Stripe auto-finalizes a subscription's invoice — the one chance to set
+    // a fixed application_fee_amount on it, since application_fee_percent (set at subscription
+    // creation) can't express Stripe's own fixed €0.25 component. No-ops for the platform's own
+    // Association billing subscriptions (not a Connect destination charge) and for any invoice
+    // that isn't tied to one of our 3 recurring-membership models — see the module.
+    case "invoice.created": {
+      const invoice = event.data.object as Stripe.Invoice
+      await applyConnectSubscriptionInvoiceFee(invoice)
       break
     }
 

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma/client"
-import { stripe, connectAccountChargesEnabled, platformFeeRate } from "@/lib/stripe"
+import { stripe, connectAccountChargesEnabled, platformFeeRate, stripeFeeCents } from "@/lib/stripe"
 import { APP_URL } from "@/lib/env"
 import { rateLimit, requestIp } from "@/lib/rate-limit"
 import { parseModules } from "@/lib/modules"
@@ -112,7 +112,7 @@ export async function POST(
     : amountPaid > 0
       ? `${cotisation.association.name} — Cotisation ${cotisation.year} (solde restant)`
       : `${cotisation.association.name} — Cotisation ${cotisation.year}`
-  const applicationFee = Math.round(amountCents * platformFeeRate(cotisation.association))
+  const applicationFee = Math.round(amountCents * platformFeeRate(cotisation.association)) + stripeFeeCents(amountCents)
 
   const checkoutSession = await stripe.checkout.sessions.create({
     mode: "payment",
