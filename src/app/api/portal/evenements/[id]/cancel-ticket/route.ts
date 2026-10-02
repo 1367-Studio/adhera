@@ -7,6 +7,7 @@ import { writeActivityLog } from "@/lib/activity-log"
 import { withPortalAuth } from "@/lib/api-wrapper"
 import { isEvenementOver } from "@/lib/evenement-timing"
 import { reportError } from "@/lib/monitoring"
+import { refundConnectCharge } from "@/lib/webhook/connect-stripe-fee"
 
 const bodySchema = z.object({ participationId: z.string().optional() })
 
@@ -98,12 +99,10 @@ export const POST = withPortalAuth<{ id: string }>(async (req, ctx, { id: evenem
   // release the seat(s) below.
   if (refundAmountCents > 0) {
     try {
-      await stripe.refunds.create({
-        payment_intent:         paymentIntentId,
-        amount:                 refundAmountCents,
-        reverse_transfer:       true,
-        refund_application_fee: true,
-      }, {
+      await refundConnectCharge({
+        associationId,
+        paymentIntentId,
+        amountCents: refundAmountCents,
         // Stable for this exact set of seats — safe to reuse on a network retry of this
         // same call (params never change once targetIds is fixed), so Stripe returns the
         // original refund instead of creating a second one.
