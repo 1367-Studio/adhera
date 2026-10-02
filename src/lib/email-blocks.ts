@@ -8,6 +8,7 @@ import { z } from "zod"
 import { isColorDark } from "@/lib/color"
 import { normalizeHref } from "@/lib/utils"
 import { toProxiedAssetUrl } from "@/lib/r2"
+import { wrapExternalLink } from "@/lib/link-redirect"
 
 export type EmailBlock =
   | { id: string; type: "text";    html: string }
@@ -53,11 +54,19 @@ function escapeHtml(str: string): string {
 // placeholder text, not a URL — substituteVars() turns it into a real one later, at actual
 // send time, on this function's already-rendered output. Safe to trust here because the
 // caller (/api/message-templates) runs findUnknownVars() on the exact string this produces
-// right after, rejecting anything that isn't one of the app's own known tokens.
+// right after, rejecting anything that isn't one of the app's own known tokens. (Those
+// tokens always resolve to the app's own portal/payment links anyway, so they never need
+// the external-link wrapping below.)
+//
+// An http(s) URL gets routed through wrapExternalLink() when it points off Formwise's own
+// domain — admins regularly link buttons/images out to the association's own site, a
+// fundraising page, social media, etc., and a CTA whose domain doesn't match the sending
+// domain is exactly what Resend's deliverability checker (and most spam filters) flags.
 function sanitizeHref(url: string): string {
   const normalized = normalizeHref(url)
   if (normalized.startsWith("{{")) return escapeHtml(normalized)
-  if (/^(https?:|mailto:|tel:)/i.test(normalized)) return escapeHtml(normalized)
+  if (/^https?:/i.test(normalized)) return escapeHtml(wrapExternalLink(normalized))
+  if (/^(mailto:|tel:)/i.test(normalized)) return escapeHtml(normalized)
   return "#"
 }
 
