@@ -536,6 +536,17 @@ export function SendEmailModal({ open, onOpenChange }: SendEmailModalProps) {
   }
 
   function clearTemplate() {
+    // A design-mode template's content never diverges from contentMatchesTemplate (it's
+    // read-only, no onChange to edit it with), so deselecting it would otherwise leave its
+    // raw <table>/<img> body sitting in bodyHtml — which the modal then hands to
+    // RichTextEditor the moment selectedTemplate goes null, silently mangling it the same
+    // way applying it used to. Only reset the compose area when nothing was typed on top of
+    // the template, so a plain-text template the admin customized keeps those edits.
+    if (contentMatchesTemplate) {
+      setSubject("")
+      setBodyHtml("")
+      setAppliedBodyBaseline("")
+    }
     setSelectedTemplate(null)
   }
 
