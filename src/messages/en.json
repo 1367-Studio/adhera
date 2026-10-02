@@ -4559,6 +4559,7 @@
       "subjectTooLong": "Subject too long: {length}/{max} characters — it will be rejected when sending.",
       "bodyLabel": "Message body",
       "bodyPlaceholder": "Write your message…",
+      "designTemplateReadonlyHint": "This template uses Visual design mode (images, buttons) — its content can't be edited here. To change it, edit the template in Messages.",
       "continue": "Continue",
       "confirmSendTitle": "Send confirmation",
       "confirmSendDescription": "This email will be sent to {recipients}. This action cannot be undone.",
