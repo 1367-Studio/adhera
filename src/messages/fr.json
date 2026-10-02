@@ -4543,6 +4543,7 @@
       "subjectTooLong": "Objet trop long : {length}/{max} caractères — il sera refusé à l'envoi.",
       "bodyLabel": "Corps du message",
       "bodyPlaceholder": "Rédigez votre message…",
+      "designTemplateReadonlyHint": "Ce modèle utilise le mode Design visuel (images, boutons) — son contenu ne peut pas être modifié ici. Pour le changer, modifiez le modèle dans Messages.",
       "language": {
         "title": "Langue d'envoi",
         "modeOriginal": "Langue d'origine",

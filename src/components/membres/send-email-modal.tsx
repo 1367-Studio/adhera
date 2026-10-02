@@ -12,6 +12,7 @@ import { FormField } from "@/components/ui/form-field"
 import { Label } from "@/components/ui/label"
 import { RichTextEditor } from "@/components/ui/rich-text-editor"
 import { RichTextView } from "@/components/ui/rich-text-view"
+import { sanitizeEmailPreviewHtml } from "@/lib/sanitize-email-preview"
 import { SelectField } from "@/components/ui/select-field"
 import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 import { useQuery } from "@tanstack/react-query"
@@ -345,6 +346,13 @@ export function SendEmailModal({ open, onOpenChange }: SendEmailModalProps) {
   const [selectedTemplate,    setSelectedTemplate]    = useState<MessageTemplate | null>(null)
   const [pendingTemplate,     setPendingTemplate]     = useState<MessageTemplate | null>(null)
   const [appliedBodyBaseline, setAppliedBodyBaseline] = useState<string>("")
+  // A design-mode template's body uses <table>/<img> for its images, buttons and dividers —
+  // RichTextEditor's Tiptap schema has no Table/Image extension, so letting it load (and thus
+  // re-parse) that body would silently drop every image and collapse every button down to
+  // plain linked text. Shown read-only instead, sanitized the same permissive way the template
+  // editor's own "Pré-visualiser" does (sanitizeEmailPreviewHtml), so what the admin sees here
+  // is what actually gets sent.
+  const [designTemplatePreviewHtml, setDesignTemplatePreviewHtml] = useState<string | null>(null)
   const captureNextBody = useRef(false)
   const [closeWarningOpen,    setCloseWarningOpen]    = useState(false)
   const [saveTemplateOpen,    setSaveTemplateOpen]    = useState(false)
@@ -404,6 +412,7 @@ export function SendEmailModal({ open, onOpenChange }: SendEmailModalProps) {
       setSelectedTemplate(null)
       setPendingTemplate(null)
       setAppliedBodyBaseline("")
+      setDesignTemplatePreviewHtml(null)
       captureNextBody.current = false
       setCloseWarningOpen(false)
       setSaveTemplateOpen(false)
@@ -429,6 +438,17 @@ export function SendEmailModal({ open, onOpenChange }: SendEmailModalProps) {
       uploadedAttachmentKeys.current.clear()
     }
   }, [open])
+
+  // Sanitized once per template selection (not per render) — dompurify is loaded dynamically,
+  // so this can't just be computed inline in JSX.
+  useEffect(() => {
+    if (!selectedTemplate?.blocks) { setDesignTemplatePreviewHtml(null); return }
+    let cancelled = false
+    sanitizeEmailPreviewHtml(selectedTemplate.body).then(html => {
+      if (!cancelled) setDesignTemplatePreviewHtml(html)
+    })
+    return () => { cancelled = true }
+  }, [selectedTemplate])
 
   useEffect(() => {
     const focusTarget = pendingRemovalFocus.current
@@ -485,8 +505,16 @@ export function SendEmailModal({ open, onOpenChange }: SendEmailModalProps) {
   function doApplyTemplate(tpl: MessageTemplate) {
     setSelectedTemplate(tpl)
     setSubject(tpl.subject)
-    captureNextBody.current = true
     setBodyHtml(tpl.body)
+    if (tpl.blocks) {
+      // Design-mode templates render as a read-only preview (see the iframe below, in the
+      // JSX) instead of RichTextEditor, so there's no onChange to capture the baseline the
+      // way handleBodyChange does for a plain-text template — set it directly instead.
+      setAppliedBodyBaseline(tpl.body)
+      captureNextBody.current = false
+    } else {
+      captureNextBody.current = true
+    }
     setPendingTemplate(null)
     // The template's content is a fresh French source, not a translation of whatever was
     // there before — without this, "Voir l'original" would later restore the pre-template
@@ -817,7 +845,11 @@ export function SendEmailModal({ open, onOpenChange }: SendEmailModalProps) {
       toast.error(t("membres.email.subjectTooLong", { length: subject.length, max: MAX_SUBJECT_LENGTH }))
       return
     }
-    if (!hasHtmlContent(bodyHtml)) {
+    // A design-mode template is already guaranteed non-empty at save time (see
+    // findIncompleteBlock in email-blocks.ts) and can legitimately be just an image with no
+    // text — hasHtmlContent strips all tags, including <img>, so it would wrongly read that
+    // as an empty body.
+    if (!selectedTemplate?.blocks && !hasHtmlContent(bodyHtml)) {
       toast.error(t("membres.email.toasts.bodyRequired"))
       return
     }
@@ -890,6 +922,9 @@ export function SendEmailModal({ open, onOpenChange }: SendEmailModalProps) {
 
     setSendPhase("queuing")
     try {
+      // A design-mode template's body (bodyHtml, set directly from tpl.body in doApplyTemplate)
+      // is never routed through RichTextEditor's Tiptap schema — see the read-only iframe
+      // preview above — so it reaches here exactly as designed, images/buttons intact.
       const body: Record<string, unknown> = { subject, bodyHtml }
       if (recipientMode === "manual")                 body.recipientIds = selectedMemberIds
       if (recipientMode === "type" && selectedTypeId) body.typeId       = selectedTypeId
@@ -1333,14 +1368,28 @@ export function SendEmailModal({ open, onOpenChange }: SendEmailModalProps) {
                   ? t("membres.email.subjectTooLong", { length: subject.length, max: MAX_SUBJECT_LENGTH })
                   : undefined}
               />
-              <RichTextEditor
-                label={t("membres.email.bodyLabel")}
-                required
-                value={bodyHtml}
-                onChange={handleBodyChange}
-                placeholder={t("membres.email.bodyPlaceholder")}
-                minHeight="180px"
-              />
+              {selectedTemplate?.blocks ? (
+                <div className="space-y-1.5">
+                  <Label>{t("membres.email.bodyLabel")}</Label>
+                  <iframe
+                    srcDoc={designTemplatePreviewHtml ?? ""}
+                    sandbox=""
+                    referrerPolicy="no-referrer"
+                    title={t("membres.email.bodyLabel")}
+                    className="w-full h-[220px] rounded-md border bg-white"
+                  />
+                  <p className="text-xs text-muted-foreground">{t("membres.email.designTemplateReadonlyHint")}</p>
+                </div>
+              ) : (
+                <RichTextEditor
+                  label={t("membres.email.bodyLabel")}
+                  required
+                  value={bodyHtml}
+                  onChange={handleBodyChange}
+                  placeholder={t("membres.email.bodyPlaceholder")}
+                  minHeight="180px"
+                />
+              )}
 
               <div className="space-y-2 rounded-lg border bg-muted/20 p-3">
                 <div className="flex items-center justify-between">
