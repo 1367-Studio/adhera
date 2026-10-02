@@ -890,7 +890,15 @@ export function SendEmailModal({ open, onOpenChange }: SendEmailModalProps) {
 
     setSendPhase("queuing")
     try {
-      const body: Record<string, unknown> = { subject, bodyHtml }
+      // A design-mode template's body uses <table>/<img> markup for its images, buttons and
+      // dividers — RichTextEditor's Tiptap schema has no Table/Image extension, so applying
+      // the template (which loads tpl.body into that editor) silently drops every image and
+      // collapses every button down to plain linked text the moment it's applied, before the
+      // admin even sends. Falling back to the template's own stored body whenever nothing was
+      // typed on top of it (contentMatchesTemplate) sends what was actually designed instead
+      // of what Tiptap could represent of it.
+      const effectiveBodyHtml = (selectedTemplate?.blocks && contentMatchesTemplate) ? selectedTemplate.body : bodyHtml
+      const body: Record<string, unknown> = { subject, bodyHtml: effectiveBodyHtml }
       if (recipientMode === "manual")                 body.recipientIds = selectedMemberIds
       if (recipientMode === "type" && selectedTypeId) body.typeId       = selectedTypeId
       if (externalEmails.length > 0)                  body.externalEmails = externalEmails
