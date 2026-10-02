@@ -21,7 +21,11 @@ const EMAIL_CHUNK_SIZE = 100
 const ATTACHMENT_SEND_CHUNK_SIZE = 40
 
 export function notifyBulkSendCompleted(associationId: string, payload: Record<string, unknown>) {
-  return pusherServer.trigger(`private-association-${associationId}`, "bulk-send-completed", payload).catch(() => {})
+  const channelName = `private-association-${associationId}`
+  console.log("[notifyBulkSendCompleted] triggering", channelName, payload)
+  return pusherServer.trigger(channelName, "bulk-send-completed", payload)
+    .then((res) => console.log("[notifyBulkSendCompleted] trigger ok", res))
+    .catch((err) => console.error("[notifyBulkSendCompleted] trigger FAILED", err))
 }
 
 // Only members with an activated portal account (Membre.userId set) can receive an
