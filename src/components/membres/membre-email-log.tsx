@@ -166,12 +166,16 @@ function EmailLogItem({ e, membreId }: { e: EmailLogRow; membreId: string }) {
               sanitizedHtml ? (
                 <>
                   <iframe
-                    // sandbox="" is defense in depth on top of sanitizeEmailPreviewHtml
-                    // above, not the primary mitigation. no-referrer keeps this admin's
-                    // session/URL out of the Referer header on any image the email loads
-                    // (e.g. a third-party pixel pasted into a bulk message body).
+                    // Defense in depth on top of sanitizeEmailPreviewHtml above, not the
+                    // primary mitigation. no-referrer keeps this admin's session/URL out of
+                    // the Referer header on any image the email loads (e.g. a third-party
+                    // pixel pasted into a bulk message body). allow-same-origin only (no
+                    // allow-scripts, so still no JS execution) — a fully opaque-origin iframe
+                    // makes "self" in the app's inherited CSP match nothing, so every
+                    // same-origin <img> (branding logo, R2-proxied template images) silently
+                    // failed to load, i.e. the preview just looked blank.
                     srcDoc={sanitizedHtml}
-                    sandbox=""
+                    sandbox="allow-same-origin"
                     referrerPolicy="no-referrer"
                     title={`Contenu de l'email : ${e.subject}`}
                     className="w-full h-96 rounded-md border bg-white"
