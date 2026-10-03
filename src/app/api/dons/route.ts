@@ -3,12 +3,7 @@ import { prisma } from "@/lib/prisma/client"
 import { parsePagination } from "@/lib/pagination"
 import { withAdminAuth } from "@/lib/api-wrapper"
 
-const FINANCE = ["ADMIN", "PRESIDENT", "TRESORIER"]
-
 export const GET = withAdminAuth(async (req, ctx) => {
-  if (!FINANCE.includes(ctx.role))
-    return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
-
   const { associationId } = ctx
   const { searchParams } = new URL(req.url)
 
@@ -114,4 +109,4 @@ export const GET = withAdminAuth(async (req, ctx) => {
     totalAmount: Number(aggregate._sum.amount ?? 0),
     totalCount:  aggregate._count.id,
   })
-})
+}, { area: "dons" })

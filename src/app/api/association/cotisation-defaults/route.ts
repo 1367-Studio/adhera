@@ -5,8 +5,8 @@ import { writeActivityLog } from "@/lib/activity-log"
 import { withAdminAuth } from "@/lib/api-wrapper"
 import { revalidatePublicSiteFor } from "@/lib/association/revalidate-site"
 
-// Same role set as bank/route.ts — the treasurer owns cotisation pricing day-to-day.
-const FINANCE = ["ADMIN", "PRESIDENT", "TRESORIER"]
+// Adhésions "edit" (admins, president, treasurer; the secretary only reads cotisations) —
+// the treasurer owns cotisation pricing day-to-day.
 
 const schema = z.object({
   cotisationDefaultAmount: z.number().positive("Montant invalide").nullable(),
@@ -47,4 +47,4 @@ export const PATCH = withAdminAuth(async (req, ctx) => {
     cotisationDefaultAmount:        association.cotisationDefaultAmount,
     publicMembershipPaymentEnabled: association.publicMembershipPaymentEnabled,
   })
-}, { roles: FINANCE })
+}, { area: "adhesions" })

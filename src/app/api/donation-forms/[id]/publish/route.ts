@@ -10,8 +10,6 @@ import { toSlug } from "@/lib/slug"
 import { revalidatePublicSiteFor } from "@/lib/association/revalidate-site"
 import { displaceDonationFormsFromSiteSection } from "@/lib/dons/site-section-binding"
 
-const FINANCE = ["ADMIN", "PRESIDENT", "TRESORIER"]
-
 const actionSchema = z.object({
   action: z.enum(["publish", "unpublish", "archive", "duplicate"]),
 })
@@ -27,9 +25,6 @@ async function generateFormSlug(associationId: string, title: string): Promise<s
 }
 
 export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
-  if (!FINANCE.includes(ctx.role))
-    return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
-
   const form = await prisma.donationForm.findFirst({
     where:   { id, associationId: ctx.associationId },
     include: { tiers: true, customFields: true },
@@ -150,4 +145,4 @@ export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   })
 
   return NextResponse.json(updated)
-}, { module: "dons" })
+}, { area: "dons", module: "dons" })

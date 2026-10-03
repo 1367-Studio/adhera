@@ -4,8 +4,6 @@ import { prisma } from "@/lib/prisma/client"
 import { writeActivityLog } from "@/lib/activity-log"
 import { withAdminAuth } from "@/lib/api-wrapper"
 
-const ALLOWED = ["ADMIN", "PRESIDENT", "SECRETAIRE", "TRESORIER"]
-
 const schema = z.object({
   name:          z.string().min(1).max(150).optional(),
   category:      z.string().max(80).optional().nullable(),
@@ -53,7 +51,7 @@ export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
   const currentQty  = activeLoans.filter(l => l.borrowedAt <= now).reduce((s, l) => s + l.quantity, 0)
 
   return NextResponse.json({ ...material, loanedQty, reservedQty, availableQty: material.quantity - currentQty })
-}, { roles: ALLOWED })
+}, { area: "materiel" })
 
 export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   const { associationId, userId } = ctx
@@ -93,7 +91,7 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
 
   await writeActivityLog({ associationId, actorId: userId, action: "MATERIEL_UPDATED", entity: "Material", entityId: id, label: updated.name })
   return NextResponse.json(updated)
-}, { roles: ALLOWED, module: "materiel" })
+}, { area: "materiel", module: "materiel" })
 
 export const DELETE = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
   const { associationId, userId } = ctx
@@ -114,4 +112,4 @@ export const DELETE = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) =>
   await prisma.material.delete({ where: { id } })
   await writeActivityLog({ associationId, actorId: userId, action: "MATERIEL_DELETED", entity: "Material", entityId: id, label: existing.name })
   return new NextResponse(null, { status: 204 })
-}, { roles: ALLOWED, module: "materiel" })
+}, { area: "materiel", module: "materiel" })

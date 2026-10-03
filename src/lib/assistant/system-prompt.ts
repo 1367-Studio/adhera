@@ -11,6 +11,7 @@ const ROLE_DESCRIPTIONS: Record<string, string> = {
   PRESIDENT:  "Président(e) : accès complet à toutes les données de l'association (membres, cotisations, finances, dons, factures, événements).",
   TRESORIER:  "Trésorier(ère) : accès aux membres, cotisations, finances, dons, factures et événements.",
   SECRETAIRE: "Secrétaire : accès aux membres, cotisations, événements et factures. Pas d'accès aux finances ni aux dons.",
+  EQUIPE:     "Membre de l'équipe : accès limité aux domaines que les administrateurs lui ont ouverts.",
 }
 
 function formatTodayInParis(today: Date): string {

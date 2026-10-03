@@ -6,8 +6,6 @@ import { guardModule } from "@/lib/auth/require-module"
 import { withAdminAuth } from "@/lib/api-wrapper"
 import { assertIncomeCategory } from "@/lib/validate-finance-category"
 
-const MANAGERS = ["ADMIN", "PRESIDENT", "SECRETAIRE"]
-
 const varianteSchema = z.object({
   id:          z.string().optional(),
   label:       z.string().trim().min(1).max(100),
@@ -30,8 +28,6 @@ const updateSchema = z.object({
 })
 
 export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
-  if (!MANAGERS.includes(ctx.role))
-    return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
   const guard = await guardModule(ctx.associationId, "boutique")
   if (guard) return guard
 
@@ -45,11 +41,9 @@ export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
   if (!produit) return NextResponse.json({ error: "Introuvable" }, { status: 404 })
 
   return NextResponse.json(produit)
-})
+}, { area: "boutique" })
 
 export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
-  if (!MANAGERS.includes(ctx.role))
-    return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
   const guard = await guardModule(ctx.associationId, "boutique")
   if (guard) return guard
 
@@ -124,11 +118,10 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   })
 
   return NextResponse.json(updated)
-})
+}, { area: "boutique" })
 
+// Deleting a product stays with administrators (was ADMIN/PRESIDENT only).
 export const DELETE = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
-  if (!["ADMIN", "PRESIDENT"].includes(ctx.role))
-    return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
   const guard = await guardModule(ctx.associationId, "boutique")
   if (guard) return guard
 
@@ -158,4 +151,4 @@ export const DELETE = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) =>
   })
 
   return NextResponse.json({ ok: true })
-})
+}, { administrator: true })

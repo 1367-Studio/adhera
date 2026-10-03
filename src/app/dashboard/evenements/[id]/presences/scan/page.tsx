@@ -1,7 +1,7 @@
 "use client"
 
 import { useCallback, useEffect, useRef, useState } from "react"
-import { useParams } from "next/navigation"
+import { useParams, useRouter } from "next/navigation"
 import { useTranslations } from "next-intl"
 import jsQR from "jsqr"
 import { toast } from "sonner"
@@ -9,6 +9,7 @@ import { CheckCircleIcon, WarningCircleIcon, XCircleIcon, CameraSlashIcon } from
 import { useEvenement } from "@/hooks/use-evenements"
 import { BackLink } from "@/components/ui/back-link"
 import { cn } from "@/lib/utils"
+import { useHasAccess } from "@/lib/user-context"
 
 type ScanStatus = "VALID" | "ALREADY" | "NOT_PAID" | "CANCELLED" | "WRONG_EVENT" | "INVALID" | "FULL"
 type ScanResult = {
@@ -35,8 +36,22 @@ const RESULT_STYLES: Record<ScanStatus, { bg: string; icon: typeof CheckCircleIc
   FULL:        { bg: "bg-red-600",   icon: XCircleIcon },
 }
 
+// FORM-34: scanning checks people in (POST /scan needs "evenements" edit) — a "read" user who
+// lands here by URL goes back to the attendance list instead of opening the camera.
 export default function ScanTicketsPage() {
-  const { id } = useParams<{ id: string }>()
+  const { id }            = useParams<{ id: string }>()
+  const router            = useRouter()
+  const canEditEvenements = useHasAccess("evenements", "edit")
+
+  useEffect(() => {
+    if (!canEditEvenements) router.replace(`/dashboard/evenements/${id}/presences`)
+  }, [canEditEvenements, id, router])
+
+  if (!canEditEvenements) return null
+  return <TicketScanner evenementId={id} />
+}
+
+function TicketScanner({ evenementId: id }: { evenementId: string }) {
   const t      = useTranslations("evenements.scanner")
 
   const { data: evenement } = useEvenement(id)

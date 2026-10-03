@@ -17,7 +17,7 @@ import { useBulkSendListener } from "@/hooks/use-bulk-send-listener"
 import { useSupportTicketMessageListener } from "@/hooks/use-support-ticket-listener"
 import { useSupportTickets } from "@/hooks/use-support-tickets"
 import type { AssocModules } from "@/lib/modules"
-import { FINANCE_ROLES, MANAGER_ROLES, PARAMETRES_ROLES } from "@/lib/roles"
+import { canAccessDashboardPath } from "@/lib/dashboard-access"
 import { useBranding, useCurrentUser, useModules } from "@/lib/user-context"
 import { cn } from "@/lib/utils"
 import type { Icon } from "@phosphor-icons/react"
@@ -53,14 +53,12 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { Fragment, useEffect, useRef, useState } from "react"
 
-type UserRole = "ADMIN" | "PRESIDENT" | "TRESORIER" | "SECRETAIRE" | "MEMBRE"
 type CategoryKey = "adherents" | "communication" | "finances" | "outils"
 
 interface NavItem {
   key:          string
   href:         string
   icon:         Icon
-  roles:        UserRole[]
   moduleKey?:   keyof AssocModules
   categoryKey?: CategoryKey
   // Standalone (not folded into a category) but rendered right after this category.
@@ -68,9 +66,6 @@ interface NavItem {
   // Rendered in the footer (with Documents and Paramètres) instead of the main list.
   inFooter?:    true
 }
-
-const MANAGERS: UserRole[] = [...MANAGER_ROLES]
-const FINANCE:  UserRole[] = [...FINANCE_ROLES]
 
 const CATEGORIES: { key: CategoryKey; icon: Icon }[] = [
   { key: "adherents",      icon: UsersThreeIcon },
@@ -84,49 +79,40 @@ const CATEGORIES: { key: CategoryKey; icon: Icon }[] = [
 // "Historique" alone in what would've been a single-item "Administration" category, so it
 // stays ungrouped instead, alongside "Tableau de bord".
 const navigationItems: NavItem[] = [
-  { key: "dashboard",     href: "/dashboard",              icon: SquaresFourIcon,   roles: MANAGERS },
+  { key: "dashboard",     href: "/dashboard",              icon: SquaresFourIcon },
 
-  { key: "membres",       href: "/dashboard/membres",      icon: UsersIcon,         roles: MANAGERS, categoryKey: "adherents" },
-  { key: "adhesions",     href: "/dashboard/adhesions",    icon: ClipboardTextIcon,        roles: FINANCE, moduleKey: "cotisations", categoryKey: "adherents" },
-  { key: "cotisations",   href: "/dashboard/cotisations",  icon: CoinsIcon,         roles: MANAGERS, moduleKey: "cotisations", categoryKey: "adherents" },
+  { key: "membres",       href: "/dashboard/membres",      icon: UsersIcon, categoryKey: "adherents" },
+  { key: "adhesions",     href: "/dashboard/adhesions",    icon: ClipboardTextIcon, moduleKey: "cotisations", categoryKey: "adherents" },
+  { key: "cotisations",   href: "/dashboard/cotisations",  icon: CoinsIcon, moduleKey: "cotisations", categoryKey: "adherents" },
   // Dons, Événements and Messagerie are daily entry points, so they sit as top-level items
   // right under "Adhérents" instead of inside a category.
-  { key: "dons",          href: "/dashboard/dons",         icon: HeartIcon,         roles: FINANCE, moduleKey: "dons",        afterCategory: "adherents" },
-  { key: "evenements",    href: "/dashboard/evenements",   icon: CalendarBlankIcon, roles: MANAGERS, moduleKey: "evenements",  afterCategory: "adherents" },
-  { key: "messages",      href: "/dashboard/messages",     icon: EnvelopeSimpleIcon, roles: ["ADMIN", "PRESIDENT", "SECRETAIRE"] as UserRole[], moduleKey: "messages", afterCategory: "adherents" },
+  { key: "dons",          href: "/dashboard/dons",         icon: HeartIcon, moduleKey: "dons",        afterCategory: "adherents" },
+  { key: "evenements",    href: "/dashboard/evenements",   icon: CalendarBlankIcon, moduleKey: "evenements",  afterCategory: "adherents" },
+  { key: "messages",      href: "/dashboard/messages",     icon: EnvelopeSimpleIcon, moduleKey: "messages", afterCategory: "adherents" },
 
-  { key: "reunions",      href: "/dashboard/reunions",     icon: VideoCameraIcon,   roles: MANAGERS, moduleKey: "reunions",   categoryKey: "communication" },
-  { key: "sondages",      href: "/dashboard/sondages",     icon: ClipboardTextIcon, roles: MANAGERS, moduleKey: "sondages",   categoryKey: "communication" },
-  { key: "actualites",    href: "/dashboard/actualites",   icon: NewspaperIcon,     roles: MANAGERS, moduleKey: "actualites", categoryKey: "communication" },
+  { key: "reunions",      href: "/dashboard/reunions",     icon: VideoCameraIcon, moduleKey: "reunions",   categoryKey: "communication" },
+  { key: "sondages",      href: "/dashboard/sondages",     icon: ClipboardTextIcon, moduleKey: "sondages",   categoryKey: "communication" },
+  { key: "actualites",    href: "/dashboard/actualites",   icon: NewspaperIcon, moduleKey: "actualites", categoryKey: "communication" },
   // No moduleKey — support isn't a toggleable module, every subscriber gets a channel to
   // reach the platform team. ADMIN-only per the client's own scoping of this feature. It's
   // help from the platform, not communication with members, so it lives in the footer.
-  { key: "suporte",       href: "/dashboard/suporte",      icon: LifebuoyIcon,      roles: ["ADMIN"] as UserRole[], inFooter: true },
+  { key: "suporte",       href: "/dashboard/suporte",      icon: LifebuoyIcon, inFooter: true },
 
-  { key: "finances",      href: "/dashboard/finances",     icon: MoneyIcon,      roles: FINANCE, moduleKey: "finances",     categoryKey: "finances" },
-  { key: "devis",         href: "/dashboard/devis",        icon: FileTextIcon,   roles: FINANCE, moduleKey: "devis",        categoryKey: "finances" },
-  { key: "factures",      href: "/dashboard/factures",     icon: ReceiptIcon,    roles: FINANCE, moduleKey: "factures",     categoryKey: "finances" },
-  { key: "fournisseurs",  href: "/dashboard/fournisseurs", icon: BuildingsIcon,  roles: FINANCE, moduleKey: "fournisseurs", categoryKey: "finances" },
-  { key: "site",          href: "/dashboard/site",         icon: GlobeIcon,       roles: ["ADMIN", "PRESIDENT"] as UserRole[], moduleKey: "site", categoryKey: "outils" },
-  { key: "boutique",      href: "/dashboard/boutique",     icon: ShoppingBagIcon, roles: MANAGERS, moduleKey: "boutique", categoryKey: "outils" },
+  { key: "finances",      href: "/dashboard/finances",     icon: MoneyIcon, moduleKey: "finances",     categoryKey: "finances" },
+  { key: "devis",         href: "/dashboard/devis",        icon: FileTextIcon, moduleKey: "devis",        categoryKey: "finances" },
+  { key: "factures",      href: "/dashboard/factures",     icon: ReceiptIcon, moduleKey: "factures",     categoryKey: "finances" },
+  { key: "fournisseurs",  href: "/dashboard/fournisseurs", icon: BuildingsIcon, moduleKey: "fournisseurs", categoryKey: "finances" },
+  { key: "site",          href: "/dashboard/site",         icon: GlobeIcon, moduleKey: "site", categoryKey: "outils" },
+  { key: "boutique",      href: "/dashboard/boutique",     icon: ShoppingBagIcon, moduleKey: "boutique", categoryKey: "outils" },
 
-  { key: "materiel",      href: "/dashboard/materiel",     icon: PackageIcon,     roles: MANAGERS, moduleKey: "materiel", categoryKey: "outils" },
+  { key: "materiel",      href: "/dashboard/materiel",     icon: PackageIcon, moduleKey: "materiel", categoryKey: "outils" },
   // Set up once and rarely revisited, so it sits with the settings in the footer.
 
-  { key: "activite",      href: "/dashboard/activite",     icon: PulseIcon, roles: MANAGERS },
+  { key: "activite",      href: "/dashboard/activite",     icon: PulseIcon },
 ]
 
-// Documents de l'association and Paramètres live in the footer, outside navigationItems, but
-// their access rules belong here with every other route's.
-
-// Single owner of "who may open which dashboard screen": the sidebar filter and the help
-// panel's in-panel links both read from here, so they can never disagree.
-export function canAccessDashboardRoute(role: string, href: string): boolean {
-  if (href === "/dashboard/parametres") return (PARAMETRES_ROLES as readonly string[]).includes(role)
-  if (href === "/dashboard/documents-association") return (MANAGER_ROLES as readonly string[]).includes(role)
-  const navigationItem = navigationItems.find((item) => item.href === href)
-  return !!navigationItem && navigationItem.roles.includes(role as UserRole)
-}
+// Who may open which screen is decided by src/lib/dashboard-access.ts (FORM-34 per-area
+// access), shared with the help panel and the server-side page guard.
 
 function isActive(href: string, pathname: string): boolean {
   if (href === "/dashboard") return pathname === href
@@ -146,26 +132,24 @@ function groupByCategory(items: NavItem[]): Map<CategoryKey, NavItem[]> {
 
 export function AppSidebar() {
   const t         = useTranslations("layout.appSidebar")
-  const { role }  = useCurrentUser()
+  const { role, permissions } = useCurrentUser()
   const modules   = useModules()
   const branding  = useBranding()
   const pathname  = usePathname()
   const { isMobile, setOpenMobile, setOpen, state } = useSidebar()
   const qc = useQueryClient()
 
-  const userRole = role as UserRole
-
   // Gated to ADMIN — the API itself is ADMIN-only (see /api/support-tickets), so firing this
   // for any other role would just be a wasted request that always 403s. Mirrors the same
   // unread-badge treatment already on the backoffice sidebar (src/components/backoffice/
   // backoffice-sidebar.tsx) — an association admin deserves the same at-a-glance cue that a
   // staff reply is waiting, not just the generic notification bell.
-  const { data: supportTickets = [] } = useSupportTickets({ enabled: userRole === "ADMIN" })
+  const { data: supportTickets = [] } = useSupportTickets({ enabled: role === "ADMIN" })
   const supportUnreadCount = supportTickets.filter(ticket => ticket.unread).length
   useSupportTicketMessageListener(() => { qc.invalidateQueries({ queryKey: ["support-tickets"] }) })
   useBulkSendListener()
   const visible  = navigationItems.filter(item => {
-    if (!item.roles.includes(userRole)) return false
+    if (!canAccessDashboardPath(permissions, role, item.href)) return false
     if (item.moduleKey && !modules[item.moduleKey]) return false
     return true
   })
@@ -480,7 +464,7 @@ export function AppSidebar() {
               </SidebarMenuButton>
             </SidebarMenuItem>
           ))}
-          {canAccessDashboardRoute(userRole, "/dashboard/documents-association") && (
+          {canAccessDashboardPath(permissions, role, "/dashboard/documents-association") && (
             <SidebarMenuItem>
               <SidebarMenuButton
                 render={<Link href="/dashboard/documents-association" />}
@@ -493,7 +477,7 @@ export function AppSidebar() {
               </SidebarMenuButton>
             </SidebarMenuItem>
           )}
-          {canAccessDashboardRoute(userRole, "/dashboard/parametres") && (
+          {canAccessDashboardPath(permissions, role, "/dashboard/parametres") && (
             <SidebarMenuItem data-tour="nav-parametres">
               <SidebarMenuButton
                 render={<Link href="/dashboard/parametres" />}

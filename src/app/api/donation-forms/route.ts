@@ -5,8 +5,6 @@ import { writeActivityLog } from "@/lib/activity-log"
 import { withAdminAuth } from "@/lib/api-wrapper"
 import { toSlug } from "@/lib/slug"
 
-const FINANCE = ["ADMIN", "PRESIDENT", "TRESORIER"]
-
 const createSchema = z.object({
   title: z.string().trim().min(1).max(200),
 })
@@ -22,9 +20,6 @@ async function generateFormSlug(associationId: string, title: string): Promise<s
 }
 
 export const GET = withAdminAuth(async (_req, ctx) => {
-  if (!FINANCE.includes(ctx.role))
-    return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
-
   const forms = await prisma.donationForm.findMany({
     where:   { associationId: ctx.associationId },
     orderBy: { createdAt: "desc" },
@@ -45,12 +40,9 @@ export const GET = withAdminAuth(async (_req, ctx) => {
     ...f,
     totalAmount: totalByForm.get(f.id) ?? 0,
   })))
-}, { module: "dons" })
+}, { area: "dons", module: "dons" })
 
 export const POST = withAdminAuth(async (req, ctx) => {
-  if (!FINANCE.includes(ctx.role))
-    return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
-
   const body   = await req.json().catch(() => null)
   const parsed = createSchema.safeParse(body)
   if (!parsed.success)
@@ -77,4 +69,4 @@ export const POST = withAdminAuth(async (req, ctx) => {
   })
 
   return NextResponse.json(form, { status: 201 })
-}, { module: "dons" })
+}, { area: "dons", module: "dons" })

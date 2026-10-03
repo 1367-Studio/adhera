@@ -25,6 +25,9 @@ export type TicketTypeDraftRow = {
 
 type Props = {
   evenementId:   string
+  // FORM-34: a "read" user sees the configuration without the add / remove / save controls
+  // (the page's <fieldset disabled> greys the inputs themselves).
+  readOnly?: boolean
   eventCapacity: number | null
   // Reported up so the wizard page can warn before navigating away — see the guard in
   // src/app/dashboard/evenements/[id]/page.tsx.
@@ -63,7 +66,7 @@ function fromDatetimeLocal(value: string | null): string {
   return value ? new Date(value).toISOString() : ""
 }
 
-export function EvenementTicketTypesEditor({ evenementId, eventCapacity, onDirtyChange, onDraftChange, ref }: Props) {
+export function EvenementTicketTypesEditor({ evenementId, eventCapacity, onDirtyChange, onDraftChange, readOnly = false, ref }: Props) {
   const t = useTranslations("evenements.ticketTypes")
   const tCommon = useTranslations("common")
   const { data, isLoading } = useEvenementTicketTypes(evenementId)
@@ -304,14 +307,17 @@ export function EvenementTicketTypesEditor({ evenementId, eventCapacity, onDirty
                   )}
                 </div>
               </div>
-              <Button type="button" variant="ghost" size="icon" onClick={() => removeType(ticketType.key)} aria-label={t("removeType")}>
-                <TrashIcon className="size-4" />
-              </Button>
+              {!readOnly && (
+                <Button type="button" variant="ghost" size="icon" onClick={() => removeType(ticketType.key)} aria-label={t("removeType")}>
+                  <TrashIcon className="size-4" />
+                </Button>
+              )}
             </div>
           )
         })}
       </div>
 
+      {!readOnly && (
       <div className="flex items-center justify-between pt-1">
         <Button type="button" variant="outline" size="sm" onClick={addType}>
           <PlusIcon className="mr-1.5 size-4" />
@@ -321,6 +327,7 @@ export function EvenementTicketTypesEditor({ evenementId, eventCapacity, onDirty
           {tCommon("save")}
         </Button>
       </div>
+      )}
 
       {exceedsEventCapacity && (
         <p className="text-xs text-amber-600 dark:text-amber-500">

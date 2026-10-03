@@ -5,12 +5,12 @@ import { withAdminAuth } from "@/lib/api-wrapper"
 import { MAX_FUNCTION_UPLOAD_BYTES } from "@/lib/upload-limits"
 import { reportError } from "@/lib/monitoring"
 
-const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
 // Shares MAX_FUNCTION_UPLOAD_BYTES with the client-side checks (document-upload.tsx,
 // image-upload.tsx, expenses-view.tsx) — a mismatch means the client accepts a file the
 // server then silently rejects.
 const MAX_SIZE = MAX_FUNCTION_UPLOAD_BYTES
 
+// Staff-wide (no area): every area of the dashboard uploads its files through this route.
 export const POST = withAdminAuth(async (req, ctx) => {
   const formData = await req.formData()
   const file     = formData.get("file")   as File   | null
@@ -32,4 +32,4 @@ export const POST = withAdminAuth(async (req, ctx) => {
     reportError(error, { area: "storage", action: "upload.r2", extra: { associationId: ctx.associationId } })
     return NextResponse.json({ error: "Erreur lors de l'upload" }, { status: 500 })
   }
-}, { roles: MANAGERS })
+})

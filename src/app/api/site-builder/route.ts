@@ -8,8 +8,6 @@ import { revalidatePublicSiteFor } from "@/lib/association/revalidate-site"
 // FORM-7: which builder's version visitors see — LEGACY renders siteConfig, PUCK renders
 // sitePuckPublished. Switching never touches either store, so it can be undone at any time.
 
-const SITE_EDITOR_ROLES = ["ADMIN", "PRESIDENT"]
-
 const siteBuilderSchema = z.object({
   siteBuilder: z.enum(["LEGACY", "PUCK"]),
 })
@@ -56,4 +54,4 @@ export const PATCH = withAdminAuth(async (req, ctx) => {
   })
 
   return NextResponse.json({ siteBuilder })
-}, { roles: SITE_EDITOR_ROLES, module: "site" })
+}, { area: "site", module: "site" })

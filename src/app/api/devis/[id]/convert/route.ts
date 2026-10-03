@@ -6,8 +6,6 @@ import { guardModule } from "@/lib/auth/require-module"
 import { writeActivityLog } from "@/lib/activity-log"
 import { nextFactureNumber } from "@/lib/document-numbering"
 
-const FINANCE = ["ADMIN", "PRESIDENT", "TRESORIER"]
-
 export const POST = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
   const { associationId, userId } = ctx
 
@@ -81,4 +79,4 @@ export const POST = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
   }
 
   return NextResponse.json({ error: "Impossible de générer un numéro de facture, réessayez" }, { status: 500 })
-}, { roles: FINANCE, module: "devis" })
+}, { area: "comptabilite", module: "devis" })

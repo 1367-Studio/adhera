@@ -6,12 +6,7 @@ import { ensureMemberCardToken } from "@/lib/member-card/token"
 import { memberCardVerificationUrl } from "@/lib/member-card/url"
 import { buildMemberCardViewModel } from "@/lib/member-card/view-model"
 
-// Spelled out rather than left to withAdminAuth's default: without a roles allowlist the
-// wrapper only resolves the session's association, so a MEMBRE portal account (which has an
-// associationId like everyone else) would reach this route and could read any member of the
-// association's card. The manager set is the same one create-access and resend-payment-link
-// use.
-const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
+// Gated on the Membres area, like create-access and resend-payment-link.
 
 // The card a manager sees in the members list / member sheet. Returns the eligibility state
 // alongside the card so the modal can explain *why* there is nothing to show (an unpaid
@@ -55,4 +50,4 @@ export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
     card,
     pendingCotisation,
   })
-}, { roles: MANAGERS, module: "cotisations" })
+}, { area: "membres", module: "cotisations" })

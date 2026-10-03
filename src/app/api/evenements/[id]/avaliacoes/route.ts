@@ -33,4 +33,4 @@ export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id: eveneme
       createdAt: a.createdAt,
     })),
   })
-})
+}, { area: "evenements" })

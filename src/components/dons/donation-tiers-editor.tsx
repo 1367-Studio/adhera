@@ -10,6 +10,7 @@ import { FormField } from "@/components/ui/form-field"
 import { SelectField } from "@/components/ui/select-field"
 import { CheckboxField } from "@/components/ui/checkbox-field"
 import { CurrencyField } from "@/components/ui/currency-field"
+import { useHasAccess } from "@/lib/user-context"
 
 type DonationInterval = "MONTH" | "QUARTER" | "YEAR"
 
@@ -60,6 +61,9 @@ export function DonationTiersEditor({ formId, onDirtyChange, ref }: {
 }) {
   const t       = useTranslations("donationForms.detail.steps.tiers")
   const tCommon = useTranslations("common")
+  // FORM-34: a Dons reader sees the tiers; the page renders them inert, this hides the
+  // add/remove/save controls they could not use anyway.
+  const canEditDons = useHasAccess("dons", "edit")
   const qc      = useQueryClient()
 
   const { data, isLoading } = useQuery<DonationTier[]>({
@@ -259,22 +263,26 @@ export function DonationTiersEditor({ formId, onDirtyChange, ref }: {
                 )}
               </div>
             </div>
-            <Button type="button" variant="ghost" size="icon" onClick={() => removeTier(tier.key)} aria-label={t("removeTier")}>
-              <TrashIcon className="size-4" />
-            </Button>
+            {canEditDons && (
+              <Button type="button" variant="ghost" size="icon" onClick={() => removeTier(tier.key)} aria-label={t("removeTier")}>
+                <TrashIcon className="size-4" />
+              </Button>
+            )}
           </div>
         ))}
       </div>
 
-      <div className="flex items-center justify-between pt-1">
-        <Button type="button" variant="outline" size="sm" onClick={addTier}>
-          <PlusIcon className="mr-1.5 size-4" />
-          {t("addTier")}
-        </Button>
-        <Button type="button" size="sm" disabled={!isDirty} onClick={handleSave} loading={saveMutation.isPending}>
-          {t("saveTiers")}
-        </Button>
-      </div>
+      {canEditDons && (
+        <div className="flex items-center justify-between pt-1">
+          <Button type="button" variant="outline" size="sm" onClick={addTier}>
+            <PlusIcon className="mr-1.5 size-4" />
+            {t("addTier")}
+          </Button>
+          <Button type="button" size="sm" disabled={!isDirty} onClick={handleSave} loading={saveMutation.isPending}>
+            {t("saveTiers")}
+          </Button>
+        </div>
+      )}
     </div>
   )
 }

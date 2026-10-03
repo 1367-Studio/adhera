@@ -4,8 +4,6 @@ import { prisma } from "@/lib/prisma/client"
 import { writeActivityLog } from "@/lib/activity-log"
 import { withAdminAuth } from "@/lib/api-wrapper"
 
-const ALLOWED = ["ADMIN", "PRESIDENT", "SECRETAIRE", "TRESORIER"]
-
 const schema = z.object({
   membreId:         z.string().optional().nullable(),
   borrowerName:     z.string().max(150).optional().nullable(),
@@ -77,4 +75,4 @@ export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   })
 
   return NextResponse.json(loan, { status: 201 })
-}, { roles: ALLOWED, module: "materiel" })
+}, { area: "materiel", module: "materiel" })

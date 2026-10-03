@@ -1,21 +1,16 @@
 import { NextResponse } from "next/server"
+import { Prisma } from "@prisma/client"
 import { withAdminAuth } from "@/lib/api-wrapper"
 import { prisma } from "@/lib/prisma/client"
 import { writeActivityLog } from "@/lib/activity-log"
+import { checkTeamAccessChange, TEAM_ASSIGNABLE_ROLES, type TeamAssignableRole } from "@/lib/team-access"
 
-const ASSIGNABLE_ROLES = ["MEMBRE", "SECRETAIRE", "TRESORIER", "PRESIDENT", "ADMIN"] as const
-type AssignableRole = typeof ASSIGNABLE_ROLES[number]
-
-const PRESIDENT_ASSIGNABLE_ROLES: AssignableRole[] = ["MEMBRE", "SECRETAIRE", "TRESORIER", "PRESIDENT"]
+const ASSIGNABLE_ROLES: readonly TeamAssignableRole[] = TEAM_ASSIGNABLE_ROLES
 
 export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   const { associationId, role: actorRole, userId: actorId } = ctx
 
-  if (actorRole !== "ADMIN" && actorRole !== "PRESIDENT") {
-    return NextResponse.json({ error: "Seul un administrateur ou le président peut modifier les rôles" }, { status: 403 })
-  }
-
-  const { role } = await req.json() as { role: AssignableRole }
+  const { role } = await req.json() as { role: TeamAssignableRole }
 
   if (!ASSIGNABLE_ROLES.includes(role)) {
     return NextResponse.json({ error: "Rôle invalide" }, { status: 422 })
@@ -30,31 +25,27 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
     return NextResponse.json({ error: "Ce membre n'a pas de compte portail" }, { status: 422 })
   }
 
-  if (membre.userId === actorId) {
-    return NextResponse.json({ error: "Vous ne pouvez pas modifier votre propre rôle" }, { status: 403 })
-  }
-
   const target = await prisma.user.findUnique({ where: { id: membre.userId }, select: { role: true } })
 
-  if (actorRole === "PRESIDENT") {
-    if (target?.role === "ADMIN") {
-      return NextResponse.json({ error: "Le président ne peut pas modifier le rôle d'un administrateur" }, { status: 403 })
-    }
-    if (!PRESIDENT_ASSIGNABLE_ROLES.includes(role)) {
-      return NextResponse.json({ error: "Le président ne peut pas attribuer le rôle administrateur" }, { status: 403 })
-    }
-  }
+  // Same guards as Paramètres › Équipe et accès (src/lib/team-access.ts): not yourself, ADMIN
+  // only by an ADMIN, never the last ADMIN.
+  const refusal = await checkTeamAccessChange({
+    associationId,
+    actorId,
+    actorRole,
+    targetUserId: membre.userId,
+    targetRole:   target?.role ?? "MEMBRE",
+    nextRole:     role,
+  })
+  if (refusal) return NextResponse.json({ error: refusal.error }, { status: refusal.status })
 
-  if (target?.role === "ADMIN" && role !== "ADMIN") {
-    const remainingAdmins = await prisma.user.count({
-      where: { associationId, role: "ADMIN", deletedAt: null, id: { not: membre.userId } },
-    })
-    if (remainingAdmins === 0) {
-      return NextResponse.json({ error: "Impossible de rétrograder le dernier administrateur" }, { status: 422 })
-    }
-  }
-
-  await prisma.user.update({ where: { id: membre.userId }, data: { role } })
+  // A new function starts from that function's profile: access customized for the previous
+  // role (FORM-34) must not silently follow the person into the new one.
+  const roleChanged = target?.role !== role
+  await prisma.user.update({
+    where: { id: membre.userId },
+    data:  roleChanged ? { role, permissions: Prisma.DbNull } : { role },
+  })
 
   await writeActivityLog({
     associationId,
@@ -63,8 +54,8 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
     entity:   "Membre",
     entityId: id,
     label:    `${membre.firstName} ${membre.lastName}`,
-    metadata: { role },
+    metadata: { role, changes: roleChanged ? { role: { old: target?.role ?? null, new: role } } : {} },
   })
 
   return NextResponse.json({ ok: true })
-})
+}, { administrator: true })

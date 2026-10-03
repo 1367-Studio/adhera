@@ -2,6 +2,7 @@
 
 import { createContext, useContext } from "react"
 import { type AssocModules, DEFAULT_MODULES } from "@/lib/modules"
+import { hasAccess, type AccessArea, type ResolvedPermissions } from "@/lib/permissions"
 
 export type SessionUser = {
   id:               string
@@ -10,6 +11,8 @@ export type SessionUser = {
   role:             string
   associationId?:   string | null
   associationSlug?: string | null
+  // Effective per-area access (FORM-34), resolved by the dashboard layout.
+  permissions:      ResolvedPermissions
 }
 
 // Already resolved against the Pro gate by the layout (see resolveDocumentBranding() in
@@ -74,6 +77,16 @@ export function useCurrentUser(): SessionUser {
   const ctx = useContext(UserContext)
   if (!ctx) throw new Error("useCurrentUser must be used inside UserProvider")
   return ctx
+}
+
+/** Whether the signed-in user may see ("read") or change ("edit") an area of the dashboard. */
+export function useHasAccess(area: AccessArea, level: "read" | "edit"): boolean {
+  return hasAccess(useCurrentUser().permissions, area, level)
+}
+
+/** Settings, billing, Stripe, team & access, support — what belongs to no area. */
+export function useIsAdministrator(): boolean {
+  return useCurrentUser().permissions.administrator
 }
 
 export function useModules(): AssocModules {

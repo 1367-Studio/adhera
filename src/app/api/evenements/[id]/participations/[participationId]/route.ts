@@ -5,8 +5,6 @@ import { writeActivityLog } from "@/lib/activity-log"
 import { withAdminAuth } from "@/lib/api-wrapper"
 import { isEvenementOver } from "@/lib/evenement-timing"
 
-const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
-
 type Params = { id: string; participationId: string }
 
 const bodySchema = z.object({
@@ -18,10 +16,7 @@ const bodySchema = z.object({
 // Editing/removing is only offered for guest rows (no Membre attached) — a member's own
 // name/email comes from their Membre record and shouldn't be forked here.
 export const PATCH = withAdminAuth<Params>(async (req, ctx, { id: evenementId, participationId }) => {
-  const { associationId, role, userId } = ctx
-
-  if (!MANAGERS.includes(role))
-    return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
+  const { associationId, userId } = ctx
 
   const evenement = await prisma.evenement.findFirst({ where: { id: evenementId, associationId } })
   if (!evenement) return NextResponse.json({ error: "Événement introuvable" }, { status: 404 })
@@ -53,13 +48,10 @@ export const PATCH = withAdminAuth<Params>(async (req, ctx, { id: evenementId, p
   })
 
   return NextResponse.json(updated)
-})
+}, { area: "evenements" })
 
 export const DELETE = withAdminAuth<Params>(async (_req, ctx, { id: evenementId, participationId }) => {
-  const { associationId, role, userId } = ctx
-
-  if (!MANAGERS.includes(role))
-    return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
+  const { associationId, userId } = ctx
 
   const evenement = await prisma.evenement.findFirst({ where: { id: evenementId, associationId } })
   if (!evenement) return NextResponse.json({ error: "Événement introuvable" }, { status: 404 })
@@ -86,4 +78,4 @@ export const DELETE = withAdminAuth<Params>(async (_req, ctx, { id: evenementId,
   })
 
   return new NextResponse(null, { status: 204 })
-})
+}, { area: "evenements" })

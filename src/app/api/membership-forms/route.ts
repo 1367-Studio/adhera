@@ -5,8 +5,6 @@ import { writeActivityLog } from "@/lib/activity-log"
 import { withAdminAuth } from "@/lib/api-wrapper"
 import { toSlug } from "@/lib/slug"
 
-const FINANCE = ["ADMIN", "PRESIDENT", "TRESORIER"]
-
 const createSchema = z.object({
   title: z.string().trim().min(1).max(200),
 })
@@ -21,10 +19,9 @@ async function generateFormSlug(associationId: string, title: string): Promise<s
   return slug
 }
 
+// Membership forms (and their tiers, products, custom fields) need Adhésions "edit" even to
+// read: the Secrétaire ("read" on Adhésions) sees the cotisations list but never had the forms.
 export const GET = withAdminAuth(async (_req, ctx) => {
-  if (!FINANCE.includes(ctx.role))
-    return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
-
   const forms = await prisma.membershipForm.findMany({
     where:   { associationId: ctx.associationId },
     orderBy: { createdAt: "desc" },
@@ -62,12 +59,9 @@ export const GET = withAdminAuth(async (_req, ctx) => {
     totalAmount: totalByForm.get(f.id) ?? 0,
     memberCount: memberCountByForm.get(f.id) ?? 0,
   })))
-}, { module: "cotisations" })
+}, { area: "adhesions", access: "edit", module: "cotisations" })
 
 export const POST = withAdminAuth(async (req, ctx) => {
-  if (!FINANCE.includes(ctx.role))
-    return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
-
   const body   = await req.json().catch(() => null)
   const parsed = createSchema.safeParse(body)
   if (!parsed.success)
@@ -94,4 +88,4 @@ export const POST = withAdminAuth(async (req, ctx) => {
   })
 
   return NextResponse.json(form, { status: 201 })
-}, { module: "cotisations" })
+}, { area: "adhesions", module: "cotisations" })

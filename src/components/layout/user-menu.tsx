@@ -42,6 +42,7 @@ function getRoleLabels(t: ReturnType<typeof useTranslations>): Record<string, st
     PRESIDENT:   t("roleLabels.PRESIDENT"),
     TRESORIER:   t("roleLabels.TRESORIER"),
     SECRETAIRE:  t("roleLabels.SECRETAIRE"),
+    EQUIPE:      t("roleLabels.EQUIPE"),
     MEMBRE:      t("roleLabels.MEMBRE"),
   }
 }

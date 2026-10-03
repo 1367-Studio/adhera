@@ -5,8 +5,6 @@ import { withAdminAuth } from "@/lib/api-wrapper"
 import { prisma } from "@/lib/prisma/client"
 import { inngest } from "@/lib/inngest"
 
-const MANAGERS = ["ADMIN", "PRESIDENT", "SECRETAIRE"]
-
 const schema = z.object({
   body:         z.string().min(1).max(1600),
   recipientIds: z.array(z.string()).min(1).optional(),
@@ -14,10 +12,6 @@ const schema = z.object({
 })
 
 export const POST = withAdminAuth(async (req, ctx) => {
-  if (!MANAGERS.includes(ctx.role)) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
-  }
-
   const raw    = await req.json().catch(() => null)
   const parsed = schema.safeParse(raw)
   if (!parsed.success) return NextResponse.json({ error: "Données invalides" }, { status: 400 })
@@ -68,4 +62,4 @@ export const POST = withAdminAuth(async (req, ctx) => {
   })
 
   return NextResponse.json({ jobId, totalRecipients: recipients.length })
-}, { module: "sms" })
+}, { area: "communication", module: "sms" })

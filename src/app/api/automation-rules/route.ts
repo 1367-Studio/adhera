@@ -11,8 +11,6 @@ import {
 import { writeActivityLog } from "@/lib/activity-log"
 import { withAdminAuth } from "@/lib/api-wrapper"
 
-const ALLOWED_ROLES = ["ADMIN", "PRESIDENT", "SECRETAIRE"]
-
 const schema = z.object({
   name:          z.string().min(1).max(100),
   templateId:    z.string().min(1),
@@ -40,7 +38,7 @@ export const GET = withAdminAuth(async (req, ctx) => {
     prisma.automationRule.count({ where }),
   ])
   return NextResponse.json({ data, total, page, limit, totalPages: Math.ceil(total / limit) })
-}, { roles: ALLOWED_ROLES })
+}, { area: "communication" })
 
 export const POST = withAdminAuth(async (req, ctx) => {
   const { associationId, userId } = ctx
@@ -120,4 +118,4 @@ export const POST = withAdminAuth(async (req, ctx) => {
 
   await writeActivityLog({ associationId, actorId: userId, action: "RULE_CREATED", entity: "AutomationRule", entityId: rule.id, label: rule.name })
   return NextResponse.json(rule, { status: 201 })
-}, { roles: ALLOWED_ROLES })
+}, { area: "communication" })

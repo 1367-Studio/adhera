@@ -4,8 +4,6 @@ import { prisma } from "@/lib/prisma/client"
 import { writeActivityLog } from "@/lib/activity-log"
 import { withAdminAuth } from "@/lib/api-wrapper"
 
-const ADMINS = ["ADMIN", "PRESIDENT"]
-
 const schema = z.object({
   shippingAddress:    z.string().trim().max(300).optional().or(z.literal("")),
   shippingCity:       z.string().trim().max(100).optional().or(z.literal("")),
@@ -58,4 +56,4 @@ export const PATCH = withAdminAuth(async (req, ctx) => {
   })
 
   return NextResponse.json({ ok: true })
-}, { roles: ADMINS })
+}, { administrator: true }) // was ADMIN/PRESIDENT only; "boutique" edit would also open it to the treasurer and secretary

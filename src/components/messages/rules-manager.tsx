@@ -14,6 +14,7 @@ import { RuleModal } from "@/components/messages/rule-modal"
 import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
+import { useHasAccess } from "@/lib/user-context"
 
 type Translator = ReturnType<typeof useTranslations>
 
@@ -109,6 +110,8 @@ export function RulesManager() {
   const { data: rules = [], isLoading } = useAutomationRules()
   const deleteMut = useDeleteRule()
   const toggleMut = useToggleRuleStatus()
+  // Same check as /api/automation-rules (POST/PATCH/DELETE): readers only see the rules.
+  const canEditCommunication = useHasAccess("communication", "edit")
 
   const [modalOpen,    setModalOpen]    = useState(false)
   const [editTarget,   setEditTarget]   = useState<AutomationRule | null>(null)
@@ -146,9 +149,11 @@ export function RulesManager() {
           <h2 className="text-base font-semibold">{t("messages.rulesManager.title")}</h2>
           <p className="text-sm text-muted-foreground">{t("messages.rulesManager.subtitle")}</p>
         </div>
-        <Button size="sm" onClick={openCreate}>
-          <PlusIcon className="mr-1.5 size-4" /> {t("messages.rulesManager.newRule")}
-        </Button>
+        {canEditCommunication && (
+          <Button size="sm" onClick={openCreate}>
+            <PlusIcon className="mr-1.5 size-4" /> {t("messages.rulesManager.newRule")}
+          </Button>
+        )}
       </div>
 
       {isLoading ? (
@@ -162,9 +167,11 @@ export function RulesManager() {
             <p className="text-sm font-medium">{t("messages.rulesManager.noRules")}</p>
             <p className="text-xs text-muted-foreground">{t("messages.rulesManager.noRulesHint")}</p>
           </div>
-          <Button size="sm" variant="outline" onClick={openCreate}>
-            <PlusIcon className="mr-1.5 size-3.5" /> {t("messages.rulesManager.createRule")}
-          </Button>
+          {canEditCommunication && (
+            <Button size="sm" variant="outline" onClick={openCreate}>
+              <PlusIcon className="mr-1.5 size-3.5" /> {t("messages.rulesManager.createRule")}
+            </Button>
+          )}
         </div>
       ) : (
         <div className="divide-y rounded-lg border overflow-hidden">
@@ -208,7 +215,7 @@ export function RulesManager() {
                   </p>
                 )}
               </div>
-              <div className="flex items-center gap-2 shrink-0 pt-0.5">
+              {canEditCommunication && <div className="flex items-center gap-2 shrink-0 pt-0.5">
                 {r.status !== "DONE" && (
                   <Button
                     variant="ghost"
@@ -240,7 +247,7 @@ export function RulesManager() {
                 >
                   <TrashIcon className="size-3.5" />
                 </Button>
-              </div>
+              </div>}
             </div>
           ))}
         </div>

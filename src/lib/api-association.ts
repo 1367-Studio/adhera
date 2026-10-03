@@ -1,17 +1,21 @@
 import { NextResponse } from "next/server"
 import { auth } from "@/lib/auth/config"
+import { resolvePermissions, type ResolvedPermissions } from "@/lib/permissions"
 
 type SessionUser = {
   id?:                 string
   role?:               string
   associationId?:      string | null
   subscriptionStatus?: string | null
+  permissions?:        unknown
 }
 
 export type AssociationCtx = {
   associationId: string
   userId:        string
   role:          string
+  // Effective per-area access (FORM-34) — stored permissions, or the role's profile.
+  permissions:   ResolvedPermissions
 }
 
 export async function getAssociationCtx(
@@ -34,6 +38,7 @@ export async function getAssociationCtx(
     associationId: u.associationId,
     userId:        u.id!,
     role:          u.role!,
+    permissions:   resolvePermissions(u.role, u.permissions),
   }
 }
 

@@ -2,10 +2,9 @@ import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma/client"
 import { withAdminAuth } from "@/lib/api-wrapper"
 
-// Same role set as POST /api/membres — this feeds the tarif picker in the dashboard's
-// add-member modal, so whoever can create a member must be able to list the choices
-// (notably SECRETAIRE, who is excluded from the FINANCE-gated /api/membership-forms GET).
-const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
+// Membres area, not Adhésions — this feeds the tarif picker in the dashboard's add-member
+// modal, so whoever works on members must be able to list the choices (notably the
+// Secrétaire, who cannot open /api/membership-forms itself).
 
 // Tarifs an admin can charge through the "créer le membre, il paie de son côté" flow:
 // published forms only, and only plain one-off fixed-price adhésion tiers — RECURRING needs
@@ -38,4 +37,4 @@ export const GET = withAdminAuth(async (_req, ctx) => {
       formTitle: t.form.title,
     })),
   })
-}, { roles: MANAGERS, module: "cotisations" })
+}, { area: "membres", module: "cotisations" })

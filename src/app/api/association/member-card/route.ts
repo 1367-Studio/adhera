@@ -12,7 +12,6 @@ import { memberCardSettingsSchema, parseMemberCardSettings } from "@/lib/member-
 // Both handlers are also module-gated on cotisations, like every surface that reads these
 // settings (the portal card routes, the manager's): a card only exists on top of a cotisation,
 // so an association without that module has nothing to configure here.
-const ADMINS = ["ADMIN", "PRESIDENT"]
 
 export const GET = withAdminAuth(async (_req, ctx) => {
   const association = await prisma.association.findUnique({
@@ -25,7 +24,7 @@ export const GET = withAdminAuth(async (_req, ctx) => {
   // written by an older version (or by hand) is missing, so the settings screen always
   // receives a complete object.
   return NextResponse.json(parseMemberCardSettings(association.memberCardSettings))
-}, { roles: ADMINS, module: "cotisations" })
+}, { administrator: true, module: "cotisations" })
 
 export const PATCH = withAdminAuth(async (req, ctx) => {
   const body   = await req.json().catch(() => null)
@@ -51,4 +50,4 @@ export const PATCH = withAdminAuth(async (req, ctx) => {
   })
 
   return NextResponse.json(parsed.data)
-}, { roles: ADMINS, module: "cotisations" })
+}, { administrator: true, module: "cotisations" })

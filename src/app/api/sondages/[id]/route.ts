@@ -7,8 +7,6 @@ import { writeActivityLog } from "@/lib/activity-log"
 import { sendSondageInvitations, type SondageInviteResult } from "@/lib/sondage-invitations"
 import { startOfTodayUTC } from "@/lib/date-boundaries"
 
-const MANAGERS = ["ADMIN", "PRESIDENT", "SECRETAIRE"]
-
 const questionSchema = z.object({
   clientKey: z.string().optional(),
   id:        z.string().optional(),
@@ -35,9 +33,6 @@ const updateSchema = z.object({
 })
 
 export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
-  if (!MANAGERS.includes(ctx.role))
-    return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
-
   // See src/app/api/sondages/route.ts — lazily close this one too if its deadline slipped by.
   await prisma.sondage.updateMany({
     where: { id, associationId: ctx.associationId, status: "ACTIF", deadline: { lt: startOfTodayUTC() } },
@@ -55,12 +50,9 @@ export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
   if (!sondage) return NextResponse.json({ error: "Introuvable" }, { status: 404 })
 
   return NextResponse.json(sondage)
-})
+}, { area: "communication" })
 
 export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
-  if (!MANAGERS.includes(ctx.role))
-    return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
-
   const sondage = await prisma.sondage.findFirst({
     where: { id, associationId: ctx.associationId },
     select: {
@@ -201,12 +193,10 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   }
 
   return NextResponse.json({ ...updated, invitations })
-})
+}, { area: "communication" })
 
+// Deleting a poll (and its answers) stays with administrators — président/admin, as before.
 export const DELETE = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
-  if (!["ADMIN", "PRESIDENT"].includes(ctx.role))
-    return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
-
   const sondage = await prisma.sondage.findFirst({
     where: { id, associationId: ctx.associationId },
     select: { id: true, title: true },
@@ -225,4 +215,4 @@ export const DELETE = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) =>
   })
 
   return NextResponse.json({ ok: true })
-})
+}, { administrator: true })

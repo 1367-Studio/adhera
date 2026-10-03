@@ -3,16 +3,11 @@ import { prisma } from "@/lib/prisma/client"
 import { writeActivityLog } from "@/lib/activity-log"
 import { withAdminAuth } from "@/lib/api-wrapper"
 
-const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
-
 // Reverses a cash ("espèces") ticket payment recorded via the mark-paid action — the only
 // way to unstick one, since the guest-removal endpoint refuses to delete a paid participation
 // and the portal's cancel-ticket flow only handles Stripe-paid tickets.
 export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id: evenementId }) => {
-  const { associationId, role, userId } = ctx
-
-  if (!MANAGERS.includes(role))
-    return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
+  const { associationId, userId } = ctx
 
   const { participationId, membreId } = await req.json() as { participationId?: string; membreId?: string }
 
@@ -69,4 +64,4 @@ export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id: eveneme
   })
 
   return NextResponse.json({ ok: true })
-})
+}, { area: "evenements" })

@@ -4,7 +4,6 @@ import { randomBytes } from "crypto"
 import { withAdminAuth } from "@/lib/api-wrapper"
 import { writeActivityLog } from "@/lib/activity-log"
 
-const MANAGERS    = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
 const QR_TTL_HOURS = 24
 
 export const POST = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
@@ -27,7 +26,7 @@ export const POST = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
   })
 
   return NextResponse.json({ qrToken: updated.qrToken, qrExpiresAt: updated.qrExpiresAt })
-}, { roles: MANAGERS })
+}, { area: "evenements" })
 
 export const DELETE = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
   const { associationId, userId } = ctx
@@ -43,4 +42,4 @@ export const DELETE = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) =>
   })
 
   return new NextResponse(null, { status: 204 })
-}, { roles: MANAGERS })
+}, { area: "evenements" })

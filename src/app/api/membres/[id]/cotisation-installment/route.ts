@@ -3,9 +3,8 @@ import { prisma } from "@/lib/prisma/client"
 import { withAdminAuth } from "@/lib/api-wrapper"
 import { cancelActiveInstallmentPlanForMembre } from "@/lib/webhook/membership-installments"
 
-// Same role set as the cotisation-subscription cancel route — stopping a recurring payment
-// is a finance call, not a general membre-management one.
-const FINANCE = ["ADMIN", "PRESIDENT", "TRESORIER"]
+// Same gate as the cotisation-subscription cancel route — stopping a recurring payment is a
+// cotisation call (Adhésions "edit"), not a general membre-management one.
 
 export const DELETE = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
   const { associationId, userId } = ctx
@@ -25,4 +24,4 @@ export const DELETE = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) =>
   }
 
   return NextResponse.json({ ok: true })
-}, { roles: FINANCE })
+}, { area: "adhesions" })

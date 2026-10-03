@@ -3,10 +3,9 @@ import { withAdminAuth } from "@/lib/api-wrapper"
 import { prisma } from "@/lib/prisma/client"
 
 const PAGE_SIZE = 50
-const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
 
-// This endpoint is only reachable by association-level managers (never SUPER_ADMIN — see
-// MANAGERS above). ASSOCIATION_UPDATED rows are written by the platform backoffice
+// This endpoint is only reachable by association staff with the Tableau de bord area (never
+// SUPER_ADMIN, who has no association context). ASSOCIATION_UPDATED rows are written by the platform backoffice
 // (src/app/api/backoffice/associations/[id]/route.ts) and can carry `internalNotes` in
 // their diff, which is staff-only. Strip it here rather than at write time so the full
 // diff still exists in the DB for platform-side auditing. Gated on both entity and action
@@ -109,4 +108,4 @@ export const GET = withAdminAuth(async (req, ctx) => {
     totalPages: Math.ceil(total / PAGE_SIZE),
     pageSize:   PAGE_SIZE,
   })
-}, { roles: MANAGERS })
+}, { area: "dashboard" })

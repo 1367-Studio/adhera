@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react"
 import { useParams } from "next/navigation"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { useTranslations } from "next-intl"
-import { useCurrentUser, useModules, isManager } from "@/lib/user-context"
+import { useCurrentUser, useHasAccess, useModules } from "@/lib/user-context"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import { toast } from "sonner"
@@ -81,7 +81,9 @@ export default function ReunionDetailPage() {
   const fileRef = useRef<HTMLInputElement>(null)
   const modules = useModules()
   const currentUser = useCurrentUser()
-  const canManage   = isManager(currentUser.role)
+  // FORM-34, same rules as the API: a "read" user joins the meeting, reads and exports the
+  // minutes, but transcribes, edits, summarises, shares and e-mails nothing.
+  const canEditReunions = useHasAccess("reunions", "edit")
   const STATUS_LABELS = getStatusLabels(t)
 
   const [transcript, setTranscript] = useState("")
@@ -118,7 +120,6 @@ export default function ReunionDetailPage() {
   }>({
     queryKey: ["association"],
     queryFn:  () => fetch("/api/association").then(r => r.json()),
-    enabled:  canManage,
   })
 
   // Cross-tab: this meeting being auto-closed by the LiveKit webhook (or ended from another
@@ -359,7 +360,7 @@ export default function ReunionDetailPage() {
               qc.invalidateQueries({ queryKey: ["meeting", id] })
             }
           }}
-          isAdmin
+          isAdmin={canEditReunions}
         />
       </div>
     )
@@ -383,7 +384,7 @@ export default function ReunionDetailPage() {
   const canJoin          = (meeting.status === "SCHEDULED" || meeting.status === "LIVE") && modules.reunions
   const isTranscribing   = transcribeRecording.isPending || transcribeUpload.isPending
   const hasRecording     = meeting.recordings.length > 0 && meeting.status === "ENDED"
-  const canTranscribe    = modules.reunions
+  const canTranscribe    = canEditReunions && modules.reunions
   const canSummarize     = modules.reunions
 
   return (
@@ -400,23 +401,19 @@ export default function ReunionDetailPage() {
             <p className="text-sm text-muted-foreground mt-0.5">{meeting.description}</p>
           )}
         </div>
-        {canManage && (
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={() => window.open(`${BASE_PATH}/api/meetings/${id}/transcript-pdf`, "_blank")}
-            disabled={!meeting.transcript?.trim()}
-          >
-            <FileTextIcon className="size-4 mr-1.5" />
-            <span className="hidden sm:inline">{t("reunions.detail.exportMinutes.prefix")}</span>{t("reunions.detail.exportMinutes.suffix")}
-          </Button>
-        )}
-        {canManage && (
-          <Button size="sm" variant="outline" onClick={handleExportPdf}>
-            <DownloadSimpleIcon className="size-4 mr-1.5" />
-            <span className="hidden sm:inline">{t("reunions.detail.exportAttendance.prefix")}</span>{t("reunions.detail.exportAttendance.suffix")}
-          </Button>
-        )}
+        <Button
+          size="sm"
+          variant="outline"
+          onClick={() => window.open(`${BASE_PATH}/api/meetings/${id}/transcript-pdf`, "_blank")}
+          disabled={!meeting.transcript?.trim()}
+        >
+          <FileTextIcon className="size-4 mr-1.5" />
+          <span className="hidden sm:inline">{t("reunions.detail.exportMinutes.prefix")}</span>{t("reunions.detail.exportMinutes.suffix")}
+        </Button>
+        <Button size="sm" variant="outline" onClick={handleExportPdf}>
+          <DownloadSimpleIcon className="size-4 mr-1.5" />
+          <span className="hidden sm:inline">{t("reunions.detail.exportAttendance.prefix")}</span>{t("reunions.detail.exportAttendance.suffix")}
+        </Button>
         {canJoin && (
           <Button size="sm" onClick={() => setInRoom(true)} loading={awaitingRefresh} disabled={awaitingRefresh}>
             <PlayIcon className="size-4 mr-1.5" />
@@ -474,7 +471,7 @@ export default function ReunionDetailPage() {
                 </>
               )}
 
-              {transcriptDirty && (
+              {canEditReunions && transcriptDirty && (
                 <Button
                   size="sm"
                   variant="outline"
@@ -498,12 +495,15 @@ export default function ReunionDetailPage() {
           <Textarea
             value={transcript}
             onChange={e => setTranscript(e.target.value)}
-            placeholder={t("reunions.detail.transcriptPlaceholder")}
+            readOnly={!canEditReunions}
+            placeholder={canEditReunions ? t("reunions.detail.transcriptPlaceholder") : undefined}
             className="font-mono text-xs resize-none flex-1 min-h-[300px]"
           />
-          <p className="text-xs text-muted-foreground">
-            {t("reunions.detail.acceptedFormats")}
-          </p>
+          {canTranscribe && (
+            <p className="text-xs text-muted-foreground">
+              {t("reunions.detail.acceptedFormats")}
+            </p>
+          )}
         </div>
 
         {/* Right — Meta + AI Summary (1/3) */}
@@ -552,19 +552,21 @@ export default function ReunionDetailPage() {
           </div>
 
           {/* AI Summary */}
-          {canSummarize && (
+          {canSummarize && (canEditReunions || meeting.summary) && (
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <Label>{t("reunions.detail.aiSummary")}</Label>
-                <Button
-                  size="sm"
-                  onClick={() => summarize.mutate()}
-                  loading={summarize.isPending}
-                  disabled={!transcript.trim()}
-                >
-                  <SparkleIcon className="size-3.5 mr-1.5" />
-                  {meeting.summary ? t("reunions.detail.regenerate") : t("reunions.detail.generate")}
-                </Button>
+                {canEditReunions && (
+                  <Button
+                    size="sm"
+                    onClick={() => summarize.mutate()}
+                    loading={summarize.isPending}
+                    disabled={!transcript.trim()}
+                  >
+                    <SparkleIcon className="size-3.5 mr-1.5" />
+                    {meeting.summary ? t("reunions.detail.regenerate") : t("reunions.detail.generate")}
+                  </Button>
+                )}
               </div>
 
               {meeting.summary ? (
@@ -583,7 +585,7 @@ export default function ReunionDetailPage() {
               )}
             </div>
           )}
-          {canManage && (
+          {canEditReunions && (
             <div className="space-y-2">
               <Label>{t("reunions.detail.share.heading")}</Label>
               <div className="rounded-lg border bg-card p-4 space-y-3">

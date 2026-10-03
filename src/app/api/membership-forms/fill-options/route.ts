@@ -2,11 +2,9 @@ import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma/client"
 import { withAdminAuth } from "@/lib/api-wrapper"
 
-// Same role set as POST /api/membres — this feeds the "Ajouter → via un formulaire
-// d'adhésion" dropdown on the Membres page (see membres-view.tsx), so whoever can create a
-// member must see the choices (notably SECRETAIRE, excluded from the FINANCE-gated
-// /api/membership-forms GET).
-const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
+// Membres area, not Adhésions — this feeds the "Ajouter → via un formulaire d'adhésion"
+// dropdown on the Membres page (see membres-view.tsx), so whoever works on members must see
+// the choices (notably the Secrétaire, who cannot open /api/membership-forms itself).
 
 // Published forms a manager can fill on a member's behalf (mode admin — see
 // membership-form-public-form.tsx's isAdminFill): only forms with at least one tier the
@@ -32,4 +30,4 @@ export const GET = withAdminAuth(async (_req, ctx) => {
     select:  { id: true, title: true, slug: true },
   })
   return NextResponse.json({ forms })
-}, { roles: MANAGERS, module: "cotisations" })
+}, { area: "membres", module: "cotisations" })

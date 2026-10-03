@@ -8,8 +8,6 @@ import { isTermsConfigurationValid } from "@/lib/form-terms"
 import { storedTermsAttachments, termsContentRequiredResponse } from "@/lib/form-terms-response"
 import { toSlug } from "@/lib/slug"
 
-const FINANCE = ["ADMIN", "PRESIDENT", "TRESORIER"]
-
 const actionSchema = z.object({
   action: z.enum(["publish", "unpublish", "archive", "duplicate"]),
 })
@@ -25,9 +23,6 @@ async function generateFormSlug(associationId: string, title: string): Promise<s
 }
 
 export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
-  if (!FINANCE.includes(ctx.role))
-    return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
-
   const form = await prisma.membershipForm.findFirst({
     where:   { id, associationId: ctx.associationId },
     include: { tiers: true, customFields: true, products: true },
@@ -161,4 +156,4 @@ export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   })
 
   return NextResponse.json(updated)
-}, { module: "cotisations" })
+}, { area: "adhesions", module: "cotisations" })

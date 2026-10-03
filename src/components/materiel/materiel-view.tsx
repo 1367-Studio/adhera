@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { SearchInput } from "@/components/ui/search-input"
 import { cn } from "@/lib/utils"
+import { useHasAccess } from "@/lib/user-context"
 
 type Translator = ReturnType<typeof useTranslations>
 
@@ -43,6 +44,8 @@ function DemandeRow({ demande, material, onOpen }: { demande: PendingDemande; ma
   const confirmLoan = useConfirmLoan(material.id)
   const refuseLoan  = useRefuseLoan(material.id)
   const busy        = confirmLoan.isPending || refuseLoan.isPending
+  // FORM-34: accepting / refusing a request changes the loan — "materiel" edit only.
+  const canEditMateriel = useHasAccess("materiel", "edit")
   const name        = demande.membre
     ? `${demande.membre.firstName} ${demande.membre.lastName}`
     : demande.borrowerName ?? "—"
@@ -58,6 +61,7 @@ function DemandeRow({ demande, material, onOpen }: { demande: PendingDemande; ma
           {demande.expectedReturnAt && t("materiel.view.returnExpected", { date: new Date(demande.expectedReturnAt).toLocaleDateString("fr-FR") })}
         </p>
       </div>
+      {canEditMateriel && (
       <div className="flex items-center gap-1 shrink-0">
         <Button
           size="xs"
@@ -84,6 +88,7 @@ function DemandeRow({ demande, material, onOpen }: { demande: PendingDemande; ma
           <XIcon className="size-3" /> {t("materiel.view.refuse")}
         </Button>
       </div>
+      )}
     </div>
   )
 }
@@ -168,6 +173,8 @@ function MaterialCard({ material, onClick }: { material: Material; onClick: () =
 export function MaterielView() {
   const t = useTranslations()
   const filterOptions = getFilterOptions(t)
+  // FORM-34: a "read" user browses the inventory and its loans but adds nothing.
+  const canEditMateriel = useHasAccess("materiel", "edit")
   const [searchInput,  setSearchInput]  = useState("")
   const [search,       setSearch]       = useState("")
   const [statusFilter, setStatusFilter] = useState<string>("ALL")
@@ -210,11 +217,11 @@ export function MaterielView() {
       <PageHeader
         title={t("materiel.view.title")}
         description={t("materiel.view.description")}
-        action={
+        action={canEditMateriel ? (
           <Button size="sm" onClick={() => setCreateOpen(true)}>
             <PlusIcon className="mr-1.5 size-4" /> {t("materiel.view.add")}
           </Button>
-        }
+        ) : undefined}
       />
 
       {/* Stats */}
@@ -306,7 +313,7 @@ export function MaterielView() {
               }
             </p>
           </div>
-          {materials.length === 0 && (
+          {canEditMateriel && materials.length === 0 && (
             <Button size="sm" variant="outline" onClick={() => setCreateOpen(true)}>
               <PlusIcon className="mr-1.5 size-3.5" /> {t("materiel.view.addArticle")}
             </Button>
@@ -320,7 +327,7 @@ export function MaterielView() {
         </div>
       )}
 
-      <MaterialModal open={createOpen} onOpenChange={setCreateOpen} />
+      {canEditMateriel && <MaterialModal open={createOpen} onOpenChange={setCreateOpen} />}
 
       <MaterialDetailSheet
         material={selected}

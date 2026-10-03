@@ -2,10 +2,7 @@ import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma/client"
 import { evenementNotOverWhere } from "@/lib/evenement-timing"
 import { withAdminAuth } from "@/lib/api-wrapper"
-
-// Same gate as /api/dons and the sidebar's Dons entry — a role that can't open the dons
-// list must not receive its yearly total here either (see donsRecus below).
-const FINANCE = ["ADMIN", "PRESIDENT", "TRESORIER"]
+import { hasAccess } from "@/lib/permissions"
 
 // Shared by the pending and paid halves of the dons card so both sides carry identical
 // fields — the card renders one list out of the two and can't branch on their shape.
@@ -35,7 +32,11 @@ export const GET = withAdminAuth(async (req, ctx) => {
   // just without crowding out real recent activity here.
   const pendingCutoff = new Date(now.getTime() - 14 * 24 * 60 * 60 * 1000)
 
-  const canSeeDons = FINANCE.includes(ctx.role)
+  // Same gate as /api/dons and the sidebar's Dons entry — a user who can't open the dons
+  // list must not receive its yearly total here either (see donsRecus below).
+  const canSeeDons = hasAccess(ctx.permissions, "dons", "read")
+  // Same idea for the balance: it is the Comptabilité area's figure (stat-solde widget).
+  const canSeeBalance = hasAccess(ctx.permissions, "comptabilite", "read")
 
   const [
     membresActifs,
@@ -226,7 +227,8 @@ export const GET = withAdminAuth(async (req, ctx) => {
     evenementsMois,
     cotisationsEnAttente,
     cotisationsEncaissees,
-    solde,
+    // null (not 0) for a user without Comptabilité, like donsRecus below.
+    solde: canSeeBalance ? solde : null,
     donsRecus,
     donsRecents,
     prochainEvenement,
@@ -240,4 +242,4 @@ export const GET = withAdminAuth(async (req, ctx) => {
       isOverdue:        !!l.expectedReturnAt && l.expectedReturnAt < now,
     })),
   })
-})
+}, { area: "dashboard" })

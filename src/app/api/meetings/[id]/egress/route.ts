@@ -6,8 +6,6 @@ import { withAdminAuth } from "@/lib/api-wrapper"
 import { getLiveKitConfigForMeeting, LiveKitConfigError, type LiveKitConfig } from "@/lib/livekit/config"
 import { makeEgressClient, startParticipantAudioEgress, type StartedRecording } from "@/lib/livekit/egress"
 
-const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
-
 function makeRoomServiceClient(livekit: LiveKitConfig) {
   return new RoomServiceClient(livekit.url, livekit.apiKey, livekit.apiSecret)
 }
@@ -91,7 +89,7 @@ export const POST = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
   })
 
   return NextResponse.json({ recording: true, count: started.length })
-}, { roles: MANAGERS, module: "reunions" })
+}, { area: "reunions", module: "reunions" })
 
 // DELETE — stop recording: stop every still-open per-participant egress for this meeting
 export const DELETE = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
@@ -128,4 +126,4 @@ export const DELETE = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) =>
   })
 
   return NextResponse.json({ recording: false })
-}, { roles: MANAGERS, module: "reunions" })
+}, { area: "reunions", module: "reunions" })

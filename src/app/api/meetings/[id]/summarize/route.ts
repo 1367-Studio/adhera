@@ -7,8 +7,6 @@ import { withAdminAuth } from "@/lib/api-wrapper"
 import { reportError } from "@/lib/monitoring"
 import { rateLimit } from "@/lib/rate-limit"
 
-const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
-
 const SYSTEM_PROMPT =
   "Tu es un assistant spécialisé dans la rédaction de comptes-rendus de réunions pour associations françaises. " +
   "Rédige des résumés clairs, structurés et professionnels en français. " +
@@ -96,4 +94,4 @@ export const POST = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
     const msg = err instanceof Error ? err.message : "Erreur IA"
     return NextResponse.json({ error: msg }, { status: 502 })
   }
-}, { roles: MANAGERS, module: "reunions" })
+}, { area: "reunions", module: "reunions" })

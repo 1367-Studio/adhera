@@ -24,10 +24,8 @@ const STATUS_LABELS: Record<string, string> = {
 }
 const SEXE_LABELS: Record<string, string> = { HOMME: "Homme", FEMME: "Femme" }
 
-// Matches the role gate on GET /api/membres (src/app/api/membres/route.ts) — this export
-// returns the same data in bulk, so it shouldn't be reachable by anyone the list itself
-// already excludes.
-const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
+// Same area as GET /api/membres (src/app/api/membres/route.ts) — this export returns the
+// same data in bulk, so it shouldn't be reachable by anyone the list itself excludes.
 
 export const GET = withAdminAuth(async (req, ctx) => {
   const { associationId } = ctx
@@ -163,4 +161,4 @@ export const GET = withAdminAuth(async (req, ctx) => {
   // Plain JSON — consumed client-side by the PDF export, which builds the jspdf-autotable
   // document with the same branded header used elsewhere (declaration, presences).
   return NextResponse.json(rows)
-}, { roles: MANAGERS })
+}, { area: "membres" })

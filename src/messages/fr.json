@@ -3686,7 +3686,8 @@
         "general": "Général",
         "paiements": "Paiements",
         "abonnement": "Abonnement",
-        "integrations": "Intégrations"
+        "integrations": "Intégrations",
+        "equipe": "Équipe et accès"
       },
       "associationInfo": "Informations de l'association",
       "associationName": "Nom de l'association",
@@ -3980,6 +3981,62 @@
       "titleTrialExpired": "S'abonner",
       "subtitleTrialExpired": "Votre essai gratuit est terminé. Choisissez une formule et renseignez un moyen de paiement pour continuer.",
       "confirmButtonSubscribe": "Confirmer et s'abonner"
+    },
+    "teamAccess": {
+      "title": "Équipe et accès",
+      "description": "Les personnes qui ont accès à la gestion de l'association, et ce que chacune peut voir ou modifier.",
+      "howToAdd": "Pour ajouter quelqu'un, attribuez-lui une fonction depuis la liste des membres, ou le rôle « Membre de l'équipe » pour lui ouvrir seulement certains domaines. Lecteur : peut consulter sans rien modifier.",
+      "empty": "Aucun membre de l'équipe pour le moment.",
+      "columns": {
+        "name": "Nom",
+        "role": "Fonction",
+        "access": "Accès"
+      },
+      "you": "Vous",
+      "summary": {
+        "administrator": "Administrateur",
+        "none": "Aucun accès",
+        "editAndRead": "{edit, plural, one {# domaine} other {# domaines}} en édition · {read} en lecture",
+        "editOnly": "{edit, plural, one {# domaine} other {# domaines}} en édition",
+        "readOnly": "{read, plural, one {# domaine} other {# domaines}} en lecture"
+      },
+      "editTitle": "Modifier les accès",
+      "editDescription": "Fonction et accès de {name}.",
+      "roleLabel": "Fonction",
+      "profileLabel": "Profil",
+      "profiles": {
+        "administrator": "Administrateur",
+        "role": "Profil du rôle",
+        "custom": "Personnalisé"
+      },
+      "administratorSwitch": "Administrateur (paramètres, facturation, accès)",
+      "administratorHint": "Accès complet à tous les domaines.",
+      "memberRoleHint": "Un simple membre n'a pas accès à la gestion : il utilise uniquement son espace membre.",
+      "adminRoleHint": "Le rôle Admin donne toujours un accès complet.",
+      "areasLabel": "Accès par domaine",
+      "levels": {
+        "none": "Aucun",
+        "read": "Lecteur",
+        "edit": "Éditeur"
+      },
+      "areas": {
+        "dashboard": "Tableau de bord et activité",
+        "membres": "Membres",
+        "adhesions": "Adhésions et cotisations",
+        "dons": "Dons",
+        "evenements": "Événements et billetterie",
+        "boutique": "Boutique",
+        "communication": "Communication (e-mails, SMS, sondages)",
+        "actualites": "Actualités",
+        "comptabilite": "Comptabilité (finances, devis, factures, fournisseurs)",
+        "reunions": "Réunions",
+        "materiel": "Matériel",
+        "site": "Site web",
+        "documents": "Documents de l'association"
+      },
+      "toasts": {
+        "saved": "Accès mis à jour"
+      }
     }
   },
   "cotisations": {
@@ -4151,7 +4208,8 @@
         "secretaire": "Secrétaire",
         "tresorier": "Trésorier",
         "president": "Président",
-        "admin": "Admin"
+        "admin": "Admin",
+        "equipe": "Membre de l'équipe"
       },
       "civilite": {
         "none": "Non renseigné",
@@ -4645,7 +4703,8 @@
         "guardianName": "Responsable légal 1",
         "guardianPhone": "Téléphone du responsable légal 1",
         "secondGuardianName": "Responsable légal 2",
-        "secondGuardianPhone": "Téléphone du responsable légal 2"
+        "secondGuardianPhone": "Téléphone du responsable légal 2",
+        "permissions": "Accès"
       },
       "adherentOverrideValues": {
         "forcedAdherent": "Forcé Adhérent",
@@ -5990,7 +6049,8 @@
         "PRESIDENT": "Président",
         "TRESORIER": "Trésorier",
         "SECRETAIRE": "Secrétaire",
-        "MEMBRE": "Membre"
+        "MEMBRE": "Membre",
+        "EQUIPE": "Membre de l'équipe"
       },
       "editProfile": "Modifier le profil",
       "changePassword": "Changer le mot de passe",

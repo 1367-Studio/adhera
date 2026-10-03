@@ -6,9 +6,8 @@ import { writeActivityLog, computeDiff } from "@/lib/activity-log"
 import { computeDocumentTotals, itemsUnchanged, exceedsMaxTotal, MAX_DOCUMENT_TOTAL } from "@/lib/devis-calc"
 import { deriveFactureStatus, resolveManualStatus, type FactureStatus } from "@/lib/facture-status"
 
-const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
-const FINANCE  = ["ADMIN", "PRESIDENT", "TRESORIER"]
-
+// Comptabilité area (FORM-34). The old GET/DELETE allowlists also let the Secrétaire in, although
+// the sidebar never showed her this screen and every write was finance-only; she now has no access here.
 const FACTURE_FIELDS = ["status", "issueDate", "dueDate", "notes", "paymentTerms", "fournisseurId"] as const
 
 function withDerivedStatus<T extends { status: string; dueDate: Date | string | null }>(f: T): T {
@@ -30,7 +29,7 @@ export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
 
   if (!facture) return NextResponse.json({ error: "Facture introuvable" }, { status: 404 })
   return NextResponse.json(withDerivedStatus(facture))
-}, { module: "factures" })
+}, { area: "comptabilite", module: "factures" })
 
 export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   const { associationId, userId } = ctx
@@ -129,7 +128,7 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   }
 
   return NextResponse.json(withDerivedStatus(facture))
-}, { roles: FINANCE, module: "factures" })
+}, { area: "comptabilite", module: "factures" })
 
 export const DELETE = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   const { associationId, userId } = ctx
@@ -177,4 +176,4 @@ export const DELETE = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => 
   await writeActivityLog({ associationId, actorId: userId, action: "FACTURE_DELETED", entity: "Facture", entityId: id, label: existing.number })
 
   return new NextResponse(null, { status: 204 })
-}, { roles: MANAGERS, module: "factures" })
+}, { area: "comptabilite", module: "factures" })

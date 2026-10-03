@@ -26,6 +26,7 @@ import { RowActions } from "@/components/ui/row-actions"
 import { FilterSelect } from "@/components/ui/filter-select"
 import { SearchInput } from "@/components/ui/search-input"
 import { BASE_PATH } from "@/lib/env"
+import { useHasAccess } from "@/lib/user-context"
 
 type FactureStatus = "BROUILLON" | "EN_ATTENTE" | "PARTIELLEMENT_PAYEE" | "PAYEE" | "EN_RETARD" | "ANNULEE"
 
@@ -84,6 +85,9 @@ function toFormValues(f: Facture): Partial<FactureInput> {
 export function FacturesView() {
   const t = useTranslations()
   const router = useRouter()
+  // FORM-34: a Comptabilité reader previews, downloads and reads the payment/document history
+  // of invoices but cannot create, edit, duplicate, cash, send or delete them.
+  const canEditComptabilite = useHasAccess("comptabilite", "edit")
   // Seeded from ?search=… so a "Voir tout" link from the Fournisseur detail page (or
   // any other deep link) lands here pre-filtered instead of on the unfiltered list.
   const searchParams = useSearchParams()
@@ -256,19 +260,25 @@ export function FacturesView() {
       className: "w-10",
       cell: (f) => (
         <RowActions actions={[
-          ...(f.status !== "BROUILLON" && f.status !== "PAYEE" && f.status !== "ANNULEE" ? [
+          ...(canEditComptabilite && f.status !== "BROUILLON" && f.status !== "PAYEE" && f.status !== "ANNULEE" ? [
             { label: t("factures.view.actions.recordPayment"), icon: <MoneyIcon className="size-3.5" />, onClick: () => setPaymentTarget(f) },
           ] : []),
           ...(Number(f.amountPaid) > 0 ? [
             { label: t("factures.view.actions.paymentHistory"), icon: <ClockCounterClockwiseIcon className="size-3.5" />, onClick: () => setPaymentsHistoryTarget(f) },
           ] : []),
-          { label: t("factures.view.actions.edit"),  icon: <PencilSimpleIcon className="size-3.5" />, onClick: () => setEditTarget(f), separator: true },
-          { label: t("factures.view.actions.duplicate"), icon: <CopyIcon className="size-3.5" />, onClick: () => handleDuplicate(f) },
+          ...(canEditComptabilite ? [
+            { label: t("factures.view.actions.edit"),  icon: <PencilSimpleIcon className="size-3.5" />, onClick: () => setEditTarget(f), separator: true },
+            { label: t("factures.view.actions.duplicate"), icon: <CopyIcon className="size-3.5" />, onClick: () => handleDuplicate(f) },
+          ] : []),
           { label: t("factures.view.actions.preview"), icon: <EyeIcon className="size-3.5" />, onClick: () => setPreviewTarget(f) },
           { label: t("factures.view.actions.downloadPdf"), icon: <DownloadSimpleIcon className="size-3.5" />, onClick: () => window.open(`${BASE_PATH}/api/factures/${f.id}/pdf`, "_blank") },
-          { label: t("factures.view.actions.sendEmail"), icon: <EnvelopeSimpleIcon className="size-3.5" />, onClick: () => setEmailTarget(f) },
+          ...(canEditComptabilite ? [
+            { label: t("factures.view.actions.sendEmail"), icon: <EnvelopeSimpleIcon className="size-3.5" />, onClick: () => setEmailTarget(f) },
+          ] : []),
           { label: t("factures.view.actions.history"), icon: <ClockCounterClockwiseIcon className="size-3.5" />, onClick: () => setHistoryTarget(f) },
-          { label: t("factures.view.actions.delete"), icon: <TrashIcon className="size-3.5" />, destructive: true, separator: true, onClick: () => setDeleteTarget(f) },
+          ...(canEditComptabilite ? [
+            { label: t("factures.view.actions.delete"), icon: <TrashIcon className="size-3.5" />, destructive: true, separator: true, onClick: () => setDeleteTarget(f) },
+          ] : []),
         ]} />
       ),
     },
@@ -283,12 +293,12 @@ export function FacturesView() {
       <PageHeader
         title={t("factures.view.title")}
         description={descriptionText}
-        action={
+        action={canEditComptabilite && (
           <Button size="sm" onClick={() => setCreateOpen(true)}>
             <PlusIcon className="mr-1.5 size-4" />
             {t("factures.view.newFacture")}
           </Button>
-        }
+        )}
       />
 
       <div className="flex flex-wrap gap-2">

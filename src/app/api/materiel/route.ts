@@ -4,8 +4,6 @@ import { prisma } from "@/lib/prisma/client"
 import { writeActivityLog } from "@/lib/activity-log"
 import { withAdminAuth } from "@/lib/api-wrapper"
 
-const ALLOWED = ["ADMIN", "PRESIDENT", "SECRETAIRE", "TRESORIER"]
-
 const schema = z.object({
   name:          z.string().min(1).max(150),
   category:      z.string().max(80).optional().nullable(),
@@ -77,7 +75,7 @@ export const GET = withAdminAuth(async (req, ctx) => {
   })
 
   return NextResponse.json(result)
-}, { roles: ALLOWED })
+}, { area: "materiel" })
 
 export const POST = withAdminAuth(async (req, ctx) => {
   const { associationId, userId } = ctx
@@ -99,4 +97,4 @@ export const POST = withAdminAuth(async (req, ctx) => {
 
   await writeActivityLog({ associationId, actorId: userId, action: "MATERIEL_CREATED", entity: "Material", entityId: material.id, label: material.name })
   return NextResponse.json(material, { status: 201 })
-}, { roles: ALLOWED, module: "materiel" })
+}, { area: "materiel", module: "materiel" })

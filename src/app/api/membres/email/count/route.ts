@@ -2,6 +2,7 @@ import { NextResponse } from "next/server"
 import { withAdminAuth } from "@/lib/api-wrapper"
 import { prisma } from "@/lib/prisma/client"
 
+// Recipient count shown in the send-email modal — same area as sending (../route.ts).
 export const GET = withAdminAuth(async (req, ctx) => {
   const { searchParams } = new URL(req.url)
   const typeId = searchParams.get("typeId") ?? undefined
@@ -17,4 +18,4 @@ export const GET = withAdminAuth(async (req, ctx) => {
   })
 
   return NextResponse.json({ count })
-})
+}, { area: "communication" })

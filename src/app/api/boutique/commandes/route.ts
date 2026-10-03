@@ -3,11 +3,7 @@ import { prisma } from "@/lib/prisma/client"
 import { guardModule } from "@/lib/auth/require-module"
 import { withAdminAuth } from "@/lib/api-wrapper"
 
-const MANAGERS = ["ADMIN", "PRESIDENT", "SECRETAIRE", "TRESORIER"]
-
 export const GET = withAdminAuth(async (req, ctx) => {
-  if (!MANAGERS.includes(ctx.role))
-    return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
   const guard = await guardModule(ctx.associationId, "boutique")
   if (guard) return guard
 
@@ -47,4 +43,4 @@ export const GET = withAdminAuth(async (req, ctx) => {
     limit,
     totalPages: Math.ceil(total / limit),
   })
-})
+}, { area: "boutique" })

@@ -10,7 +10,6 @@ import { rateLimit, rateLimitPeek, consumeQuota } from "@/lib/rate-limit"
 import type OpenAI from "openai"
 import type { MeetingRecording } from "@prisma/client"
 
-const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
 const MAX_BYTES = 25 * 1024 * 1024
 
 // Groq's whisper-large-v3 free tier caps ASD (audio-seconds/day) at 28,800 (8h), shared
@@ -260,4 +259,4 @@ export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
     const msg = err instanceof Error ? err.message : "Erreur transcription"
     return NextResponse.json({ error: msg }, { status: 502 })
   }
-}, { roles: MANAGERS, module: "reunions" })
+}, { area: "reunions", module: "reunions" })

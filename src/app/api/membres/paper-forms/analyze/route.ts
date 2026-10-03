@@ -4,7 +4,6 @@ import { reportError } from "@/lib/monitoring"
 import { prisma } from "@/lib/prisma/client"
 import { completeWithImages } from "@/lib/ai/complete"
 import { paperFormAnalyzeRequestSchema, type PaperFormAnalyzeResponse } from "@/lib/schemas"
-import { MANAGER_ROLES } from "@/lib/roles"
 import { decodePageImages, parseModelJson, readVisionJsonBody, resolveVisionConfig } from "@/lib/paper-form/vision-request"
 import { CHECKBOX_NOTES_HINT, normalizeProposedFields } from "@/lib/paper-form/normalize-extraction"
 
@@ -154,4 +153,4 @@ export const POST = withAdminAuth(async (req, ctx) => {
 
   const response: PaperFormAnalyzeResponse = { pagesPerForm, fields, droppedFieldCount }
   return NextResponse.json(response)
-}, { roles: MANAGER_ROLES })
+}, { area: "membres" })

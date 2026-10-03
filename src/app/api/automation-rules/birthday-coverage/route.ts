@@ -2,8 +2,6 @@ import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma/client"
 import { withAdminAuth } from "@/lib/api-wrapper"
 
-const ALLOWED_ROLES = ["ADMIN", "PRESIDENT", "SECRETAIRE"]
-
 export const GET = withAdminAuth(async (req, ctx) => {
   const { associationId } = ctx
   const typeId = new URL(req.url).searchParams.get("typeId") ?? undefined
@@ -16,4 +14,4 @@ export const GET = withAdminAuth(async (req, ctx) => {
   ])
 
   return NextResponse.json({ total, withBirthDate })
-}, { roles: ALLOWED_ROLES })
+}, { area: "communication" })
