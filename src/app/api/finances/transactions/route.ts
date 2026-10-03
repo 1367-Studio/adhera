@@ -3,8 +3,6 @@ import { prisma } from "@/lib/prisma/client"
 import { parsePagination } from "@/lib/pagination"
 import { withAdminAuth } from "@/lib/api-wrapper"
 
-const FINANCE = ["ADMIN", "PRESIDENT", "TRESORIER"]
-
 export const GET = withAdminAuth(async (req, ctx) => {
   const { associationId } = ctx
 
@@ -45,4 +43,4 @@ export const GET = withAdminAuth(async (req, ctx) => {
   ])
 
   return NextResponse.json({ data, total, page, limit, totalPages: Math.ceil(total / limit) })
-}, { roles: FINANCE, module: "finances" })
+}, { area: "comptabilite", module: "finances" })

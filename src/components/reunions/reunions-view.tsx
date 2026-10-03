@@ -16,7 +16,7 @@ import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 import { MeetingRoom } from "@/components/reunions/meeting-room"
 import { MeetingForm, type MeetingFormValues } from "@/components/reunions/meeting-form"
 import { Badge } from "@/components/ui/badge"
-import { useCurrentUser } from "@/lib/user-context"
+import { useCurrentUser, useHasAccess } from "@/lib/user-context"
 
 type Membre = { id: string; firstName: string; lastName: string; status: string; typeId: string | null }
 
@@ -50,6 +50,9 @@ export function ReunionsView() {
   const t = useTranslations()
   const qc = useQueryClient()
   const { id: currentUserId } = useCurrentUser()
+  // FORM-34, same rules as the API: a "read" user sees meetings, joins them (the token route
+  // only needs "read") and reads transcripts, but creates, edits, deletes, records and ends nothing.
+  const canEditReunions = useHasAccess("reunions", "edit")
   const { data: meetings = [], isLoading, isFetching, isError } = useMeetings()
   const createMeeting = useCreateMeeting()
   const updateMeeting = useUpdateMeeting()
@@ -163,7 +166,7 @@ export function ReunionsView() {
             }
             setActiveMeetingId(null)
           }}
-          isAdmin
+          isAdmin={canEditReunions}
         />
       </div>
     )
@@ -174,12 +177,12 @@ export function ReunionsView() {
       <PageHeader
         title={t("reunions.view.title")}
         description={t("reunions.view.description")}
-        action={
+        action={canEditReunions ? (
           <Button size="sm" onClick={() => setFormOpen(true)}>
             <PlusIcon className="mr-2 h-4 w-4" />
             {t("reunions.view.newMeeting")}
           </Button>
-        }
+        ) : undefined}
       />
 
       {isLoading ? (
@@ -188,10 +191,12 @@ export function ReunionsView() {
         <div className="flex flex-col items-center gap-3 rounded-lg border border-dashed py-16 text-center">
           <VideoCameraIcon className="h-10 w-10 text-muted-foreground" />
           <p className="text-sm text-muted-foreground">{t("reunions.view.noMeeting")}</p>
-          <Button variant="outline" onClick={() => setFormOpen(true)}>
-            <PlusIcon className="mr-2 h-4 w-4" />
-            {t("reunions.view.createMeeting")}
-          </Button>
+          {canEditReunions && (
+            <Button variant="outline" onClick={() => setFormOpen(true)}>
+              <PlusIcon className="mr-2 h-4 w-4" />
+              {t("reunions.view.createMeeting")}
+            </Button>
+          )}
         </div>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -201,8 +206,8 @@ export function ReunionsView() {
               meeting={meeting}
               refreshing={meeting.id === refreshingId}
               onJoin={() => setActiveMeetingId(meeting.id)}
-              onEdit={() => setEditTarget(meeting)}
-              onDelete={() => setDeleteId(meeting.id)}
+              onEdit={canEditReunions ? () => setEditTarget(meeting) : undefined}
+              onDelete={canEditReunions ? () => setDeleteId(meeting.id) : undefined}
             />
           ))}
         </div>
@@ -258,8 +263,9 @@ function MeetingCard({
   meeting: Meeting
   refreshing: boolean
   onJoin: () => void
-  onEdit: () => void
-  onDelete: () => void
+  /** Omitted for a "read" user (FORM-34). */
+  onEdit?: () => void
+  onDelete?: () => void
 }) {
   const t = useTranslations()
   const statusLabels = getStatusLabels(t)
@@ -333,14 +339,16 @@ function MeetingCard({
             {t("reunions.view.transcription")}
           </Button>
         )}
-        {meeting.status === "SCHEDULED" && (
+        {onEdit && meeting.status === "SCHEDULED" && (
           <Button size="sm" variant="ghost" onClick={onEdit}>
             <PencilSimpleIcon className="h-4 w-4" />
           </Button>
         )}
-        <Button size="sm" variant="ghost" onClick={onDelete} className="text-destructive hover:text-destructive">
-          <TrashIcon className="h-4 w-4" />
-        </Button>
+        {onDelete && (
+          <Button size="sm" variant="ghost" onClick={onDelete} className="text-destructive hover:text-destructive">
+            <TrashIcon className="h-4 w-4" />
+          </Button>
+        )}
       </div>
     </div>
   )

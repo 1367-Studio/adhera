@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { RowActions } from "@/components/ui/row-actions"
 import { BankAccountForm } from "@/components/finances/bank-account-form"
+import { useHasAccess } from "@/lib/user-context"
 
 type Account = {
   id:             string
@@ -28,6 +29,8 @@ type Account = {
 
 export function BankAccountsView() {
   const t = useTranslations()
+  // FORM-34: a Comptabilité reader browses and filters but cannot add, edit or delete.
+  const canEditComptabilite = useHasAccess("comptabilite", "edit")
   const [createOpen, setCreateOpen]     = useState(false)
   const [editTarget, setEditTarget]     = useState<Account | null>(null)
   const [deleteTarget, setDeleteTarget] = useState<Account | null>(null)
@@ -100,17 +103,17 @@ export function BankAccountsView() {
         ? <Badge variant="success">{t("finances.accountsView.status.actif")}</Badge>
         : <Badge variant="secondary">{t("finances.accountsView.status.inactif")}</Badge>,
     },
-    {
+    ...(canEditComptabilite ? [{
       key: "actions",
       header: "",
       className: "w-10",
-      cell: (a) => (
+      cell: (a: Account) => (
         <RowActions actions={[
           { label: t("finances.accountsView.actions.edit"),  icon: <PencilSimpleIcon className="size-3.5" />, onClick: () => setEditTarget(a) },
           { label: t("finances.accountsView.actions.delete"), icon: <TrashIcon className="size-3.5" />,  destructive: true, separator: true, onClick: () => setDeleteTarget(a) },
         ]} />
       ),
-    },
+    }] : []),
   ]
 
   return (
@@ -118,12 +121,12 @@ export function BankAccountsView() {
       <PageHeader
         title={t("finances.accountsView.title")}
         description={t("finances.accountsView.description")}
-        action={
+        action={canEditComptabilite && (
           <Button size="sm" onClick={() => setCreateOpen(true)}>
             <PlusIcon className="mr-1.5 size-4" />
             {t("finances.accountsView.add")}
           </Button>
-        }
+        )}
       />
 
       <DataTable

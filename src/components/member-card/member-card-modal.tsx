@@ -12,15 +12,13 @@ import { Modal } from "@/components/ui/modal"
 import { useMemberCard, useRotateMemberCardToken } from "@/hooks/use-member-card"
 import { BASE_PATH } from "@/lib/env"
 import type { SerializedMemberCardEligibility } from "@/lib/member-card/wire"
-import { useCurrentUser } from "@/lib/user-context"
+import { useHasAccess } from "@/lib/user-context"
 import { cn } from "@/lib/utils"
 
-// Mirrored from the two routes behind this modal, for the same reason the member sheet
-// mirrors the role route's ADMIN/PRESIDENT check: showing an action the server would refuse
-// is worse than not offering it. Rotating a card is an identity action (membres/[id]/carte/
-// rotate), recording a payment a finance one (cotisations/[id]/paiements).
-const CARD_ADMIN_ROLES = ["ADMIN", "PRESIDENT", "SECRETAIRE"]
-const FINANCE_ROLES    = ["ADMIN", "PRESIDENT", "TRESORIER"]
+// Mirrored from the two routes behind this modal: showing an action the server would refuse
+// is worse than not offering it. Rotating a card is a "membres" edit (membres/[id]/carte/
+// rotate), recording a payment an "adhesions" edit (cotisations/[id]/paiements). Viewing,
+// downloading and printing the card only need "membres" read.
 
 type CardFeedback = { kind: "success" | "error"; message: string }
 
@@ -34,7 +32,8 @@ interface MemberCardModalProps {
 
 export function MemberCardModal({ membreId, memberName, open, onOpenChange }: MemberCardModalProps) {
   const translate   = useTranslations()
-  const currentUser = useCurrentUser()
+  const canEditMembres   = useHasAccess("membres", "edit")
+  const canEditAdhesions = useHasAccess("adhesions", "edit")
 
   const [confirmRegenerateOpen, setConfirmRegenerateOpen] = useState(false)
   const [paymentOpen, setPaymentOpen]                     = useState(false)
@@ -51,8 +50,8 @@ export function MemberCardModal({ membreId, memberName, open, onOpenChange }: Me
 
   const card              = cardQuery.data?.card ?? null
   const pendingCotisation = cardQuery.data?.pendingCotisation ?? null
-  const canRegenerate     = !!card && CARD_ADMIN_ROLES.includes(currentUser.role)
-  const canRecordPayment  = !!pendingCotisation && pendingCotisation.remaining > 0 && FINANCE_ROLES.includes(currentUser.role)
+  const canRegenerate     = !!card && canEditMembres
+  const canRecordPayment  = !!pendingCotisation && pendingCotisation.remaining > 0 && canEditAdhesions
 
   function handleOpenChange(nextOpen: boolean) {
     if (!nextOpen) setCardFeedback(null)

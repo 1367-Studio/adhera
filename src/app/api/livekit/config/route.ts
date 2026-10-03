@@ -5,8 +5,6 @@ import { prisma } from "@/lib/prisma/client"
 import { writeActivityLog } from "@/lib/activity-log"
 import { APP_URL } from "@/lib/env"
 
-const MANAGERS = ["ADMIN", "PRESIDENT"]
-
 const schema = z.object({
   livekitUrl:       z.string().max(256).nullable().optional(),
   livekitApiKey:    z.string().max(256).nullable().optional(),
@@ -27,13 +25,9 @@ export const GET = withAdminAuth(async (req, ctx) => {
     // working the moment they switch off the platform's shared account.
     webhookUrl: `${APP_URL}/api/webhook/livekit`,
   })
-})
+}, { area: "reunions" })
 
 export const PATCH = withAdminAuth(async (req, ctx) => {
-  if (!MANAGERS.includes(ctx.role)) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
-  }
-
   const body   = await req.json().catch(() => null)
   const parsed = schema.safeParse(body)
   if (!parsed.success) return NextResponse.json({ error: "Données invalides" }, { status: 400 })
@@ -68,4 +62,4 @@ export const PATCH = withAdminAuth(async (req, ctx) => {
     ok:                true,
     livekitConfigured: !!(updated.livekitUrl && updated.livekitApiKey && updated.livekitApiSecret),
   })
-})
+}, { administrator: true })

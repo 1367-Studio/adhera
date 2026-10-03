@@ -5,8 +5,6 @@ import { MEETING_WITH_PARTICIPANTS_SELECT } from "@/lib/meetings/select"
 import { buildMeetingMinutesPdf } from "@/lib/pdf/meeting-minutes-pdf"
 import { resolveDocumentBranding } from "@/lib/plan-limits"
 
-const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
-
 export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
   const { associationId } = ctx
 
@@ -39,4 +37,4 @@ export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
       "Content-Disposition": `inline; filename="compte_rendu_${meeting.title.replace(/[^a-z0-9]/gi, "_").toLowerCase()}.pdf"`,
     },
   })
-}, { roles: MANAGERS, module: "reunions" })
+}, { area: "reunions", module: "reunions" })

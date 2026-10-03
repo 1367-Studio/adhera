@@ -9,8 +9,6 @@ import { guardModule } from "@/lib/auth/require-module"
 import { rateLimit } from "@/lib/rate-limit"
 import { MAX_FUNCTION_UPLOAD_BYTES } from "@/lib/upload-limits"
 
-const FINANCE = ["ADMIN", "PRESIDENT", "TRESORIER"]
-
 // Real cap is Vercel's serverless request body limit (~4.5MB, not overridable via
 // vercel.json) — kept comfortably under it, not copied from transcribe's 25MB (audio
 // route, different platform constraint).
@@ -142,4 +140,4 @@ export const POST = withAdminAuth(async (req, ctx) => {
   }
 
   return NextResponse.json({ rows, extracted: rows.length, skipped })
-}, { roles: FINANCE, module: "finances" })
+}, { area: "comptabilite", module: "finances" })

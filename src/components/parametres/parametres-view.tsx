@@ -7,14 +7,14 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
 import { useTranslations } from "next-intl"
-import { BuildingsIcon, CreditCardIcon, InfoIcon, LightningIcon, ReceiptIcon } from "@phosphor-icons/react/dist/ssr";
+import { BuildingsIcon, CreditCardIcon, InfoIcon, LightningIcon, ReceiptIcon, UsersThreeIcon } from "@phosphor-icons/react/dist/ssr";
 import { associationSchema, type AssociationInput } from "@/lib/schemas"
 import { PageHeader } from "@/components/ui/page-header"
 import { ViewToggle } from "@/components/ui/view-toggle"
 import { FormField } from "@/components/ui/form-field"
 import { Button } from "@/components/ui/button"
 import { apiErrorMessage } from "@/lib/api-error"
-import { useCurrentUser, useModules } from "@/lib/user-context"
+import { useIsAdministrator, useModules } from "@/lib/user-context"
 import { MembreTypesManager } from "@/components/parametres/membre-types-manager"
 import { PortalLinkSettings } from "@/components/parametres/portal-link-settings"
 import { CustomDomainSettings } from "@/components/parametres/custom-domain-settings"
@@ -29,6 +29,7 @@ import { BrandingSettings } from "@/components/parametres/branding-settings"
 import { MemberCardSettings } from "@/components/parametres/member-card-settings"
 import { BankSettings } from "@/components/parametres/bank-settings"
 import { CotisationDefaultsSettings } from "@/components/parametres/cotisation-defaults-settings"
+import { TeamAccessSettings } from "@/components/parametres/team-access-settings"
 import type { AssociationPlan } from "@prisma/client"
 type Association = {
   id:      string
@@ -52,19 +53,18 @@ type Association = {
   publicMembershipPaymentEnabled: boolean
 }
 
-type Tab = "general" | "paiements" | "abonnement" | "integrations"
+type Tab = "general" | "paiements" | "abonnement" | "integrations" | "equipe"
 
 function getAllTabs(t: ReturnType<typeof useTranslations>) {
   return [
-    { value: "general"      as Tab, label: t("parametres.view.tabs.general"),      icon: <BuildingsIcon   className="size-3.5" />, modules: null            },
-    { value: "paiements"    as Tab, label: t("parametres.view.tabs.paiements"),    icon: <CreditCardIcon className="size-3.5" />, modules: ["dons"]        },
-    { value: "abonnement"   as Tab, label: t("parametres.view.tabs.abonnement"),   icon: <ReceiptIcon     className="size-3.5" />, modules: null            },
-    { value: "integrations" as Tab, label: t("parametres.view.tabs.integrations"), icon: <LightningIcon        className="size-3.5" />, modules: ["ia", "sms"]  },
+    { value: "general"      as Tab, label: t("parametres.view.tabs.general"),      icon: <BuildingsIcon   className="size-3.5" />, modules: null,           administratorOnly: false },
+    { value: "paiements"    as Tab, label: t("parametres.view.tabs.paiements"),    icon: <CreditCardIcon className="size-3.5" />, modules: ["dons"],       administratorOnly: false },
+    { value: "abonnement"   as Tab, label: t("parametres.view.tabs.abonnement"),   icon: <ReceiptIcon     className="size-3.5" />, modules: null,           administratorOnly: false },
+    { value: "integrations" as Tab, label: t("parametres.view.tabs.integrations"), icon: <LightningIcon        className="size-3.5" />, modules: ["ia", "sms"], administratorOnly: false },
+    { value: "equipe"       as Tab, label: t("parametres.view.tabs.equipe"),       icon: <UsersThreeIcon  className="size-3.5" />, modules: null,           administratorOnly: true  },
   ] as const
 }
 
-const ADMINS  = ["ADMIN", "PRESIDENT"]
-const FINANCE = ["ADMIN", "PRESIDENT", "TRESORIER"]
 
 export function ParametresView() {
   return (
@@ -79,10 +79,12 @@ export function ParametresView() {
 function ParametresViewInner() {
   const t = useTranslations()
   const allTabs = getAllTabs(t)
-  const { role } = useCurrentUser()
   const modules  = useModules()
-  const canEdit  = ADMINS.includes(role)
-  const canEditFinance = FINANCE.includes(role)
+  // The page is administrators-only (see src/lib/dashboard-access.ts), so every section is
+  // editable by whoever reaches it.
+  const isAdministrator = useIsAdministrator()
+  const canEdit         = isAdministrator
+  const canEditFinance  = isAdministrator
   const qc       = useQueryClient()
   const searchParams = useSearchParams()
   const [tab, setTab] = useState<Tab>(() => {
@@ -90,7 +92,9 @@ function ParametresViewInner() {
     return (allTabs.some(opt => opt.value === fromUrl) ? fromUrl : "general") as Tab
   })
 
-  const tabs = allTabs.filter(opt => !opt.modules || opt.modules.some(m => modules[m]))
+  const tabs = allTabs.filter(opt =>
+    (!opt.modules || opt.modules.some(m => modules[m])) && (!opt.administratorOnly || isAdministrator),
+  )
 
   useEffect(() => {
     if (!tabs.some(opt => opt.value === tab)) setTab("general")
@@ -291,6 +295,13 @@ function ParametresViewInner() {
           <div className="rounded-lg border bg-card p-6">
             <BillingSettings canEdit={canEdit} />
           </div>
+        </div>
+      )}
+
+      {/* ── Équipe et accès (administrators only) ─────────────────────── */}
+      {tab === "equipe" && isAdministrator && (
+        <div className="rounded-lg border bg-card p-6">
+          <TeamAccessSettings />
         </div>
       )}
 

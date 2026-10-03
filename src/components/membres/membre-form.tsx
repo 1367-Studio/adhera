@@ -142,9 +142,13 @@ export function MembreForm({ defaultValues, onSubmit, onCancel, loading, isCreat
   const [customAnswers, setCustomAnswers] = useState<Record<string, string>>(
     () => Object.fromEntries(editableCustomFields.map(({ field, value }) => [field.id, value])),
   )
+  // Keyed on the fields' content, not the array: callers pass a fresh array on every render
+  // (the `= []` default when creating, `?? []` in the members list), and depending on that
+  // identity re-seeded the state on every render — "Maximum update depth exceeded".
+  const customAnswersSeed = JSON.stringify(editableCustomFields.map(({ field, value }) => [field.id, value]))
   useEffect(() => {
-    setCustomAnswers(Object.fromEntries(editableCustomFields.map(({ field, value }) => [field.id, value])))
-  }, [editableCustomFields])
+    setCustomAnswers(Object.fromEntries(JSON.parse(customAnswersSeed) as [string, string][]))
+  }, [customAnswersSeed])
   // Same touched/showAll pattern as the public adhésion form (membership-form-public-form.tsx):
   // a required field only turns red once it's been left, or once a submit was attempted —
   // never on first render, and never merely because another required field failed.

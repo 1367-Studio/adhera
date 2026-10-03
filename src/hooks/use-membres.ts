@@ -176,7 +176,7 @@ export type MembreDetail = {
   }[]
 
   user: {
-    role: "ADMIN" | "PRESIDENT" | "TRESORIER" | "SECRETAIRE" | "MEMBRE"
+    role: "ADMIN" | "PRESIDENT" | "TRESORIER" | "SECRETAIRE" | "EQUIPE" | "MEMBRE"
   } | null
 
   _count: {
@@ -346,7 +346,7 @@ export function useChangeRole() {
   const qc = useQueryClient()
   return useMutation({
     mutationFn: ({ id, role }: { id: string; role: string }) => changeRole(id, role),
-    onSuccess:  () => invalidateAll(qc),
+    onSuccess:  () => Promise.all([invalidateAll(qc), qc.invalidateQueries({ queryKey: ["team-access"] })]),
   })
 }
 

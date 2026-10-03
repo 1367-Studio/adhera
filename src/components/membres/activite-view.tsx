@@ -64,6 +64,7 @@ function getFieldLabels(t: Translator): Record<string, string> {
     phone: t("membres.activityLog.fields.phone"), address: t("membres.activityLog.fields.address"),
     birthDate: t("membres.activityLog.fields.birthDate"),
     status: t("membres.activityLog.fields.status"), typeId: t("membres.activityLog.fields.typeId"), role: t("membres.activityLog.fields.role"),
+    permissions: t("membres.activityLog.fields.permissions"),
     notes: t("membres.activityLog.fields.notes"), imageRightsConsent: t("membres.activityLog.fields.imageRightsConsent"),
     guardianName: t("membres.activityLog.fields.guardianName"), guardianPhone: t("membres.activityLog.fields.guardianPhone"),
     secondGuardianName: t("membres.activityLog.fields.secondGuardianName"), secondGuardianPhone: t("membres.activityLog.fields.secondGuardianPhone"),
@@ -73,7 +74,7 @@ function getFieldLabels(t: Translator): Record<string, string> {
 function getRoleLabels(t: Translator): Record<string, string> {
   return {
     ADMIN: t("membres.form.role.admin"), PRESIDENT: t("membres.form.role.president"), TRESORIER: t("membres.form.role.tresorier"),
-    SECRETAIRE: t("membres.form.role.secretaire"), MEMBRE: t("membres.form.role.membre"),
+    SECRETAIRE: t("membres.form.role.secretaire"), EQUIPE: t("membres.form.role.equipe"), MEMBRE: t("membres.form.role.membre"),
   }
 }
 

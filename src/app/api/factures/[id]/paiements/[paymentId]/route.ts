@@ -5,7 +5,6 @@ import { prisma } from "@/lib/prisma/client"
 import { writeActivityLog } from "@/lib/activity-log"
 import { closedExerciceGuard } from "@/lib/finance/exercice"
 
-const FINANCE = ["ADMIN", "PRESIDENT", "TRESORIER"]
 const EPSILON = 0.01
 
 export const DELETE = withAdminAuth<{ id: string; paymentId: string }>(async (_req, ctx, { id, paymentId }) => {
@@ -77,4 +76,4 @@ export const DELETE = withAdminAuth<{ id: string; paymentId: string }>(async (_r
     }
     throw err
   }
-}, { roles: FINANCE, module: "factures" })
+}, { area: "comptabilite", module: "factures" })

@@ -3,8 +3,6 @@ import { z } from "zod"
 import { RoomServiceClient } from "livekit-server-sdk"
 import { withAdminAuth } from "@/lib/api-wrapper"
 
-const MANAGERS = ["ADMIN", "PRESIDENT"]
-
 const schema = z.object({
   livekitUrl:       z.string().min(1),
   livekitApiKey:    z.string().min(1),
@@ -15,11 +13,7 @@ const schema = z.object({
 // instead of showing up later as a cryptic "Impossible de rejoindre la réunion" in the
 // middle of a real meeting. listRooms() is a cheap read-only call that just needs the
 // credentials to be valid for the given project — it doesn't require any room to exist.
-export const POST = withAdminAuth(async (req, ctx) => {
-  if (!MANAGERS.includes(ctx.role)) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
-  }
-
+export const POST = withAdminAuth(async (req) => {
   const body   = await req.json().catch(() => null)
   const parsed = schema.safeParse(body)
   if (!parsed.success) return NextResponse.json({ ok: false, error: "Champs manquants" }, { status: 400 })
@@ -33,4 +27,4 @@ export const POST = withAdminAuth(async (req, ctx) => {
   } catch {
     return NextResponse.json({ ok: false, error: "Connexion impossible — vérifiez l'URL, la clé et le secret." }, { status: 200 })
   }
-})
+}, { administrator: true })

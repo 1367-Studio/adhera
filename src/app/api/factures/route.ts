@@ -9,9 +9,8 @@ import { computeDocumentTotals, exceedsMaxTotal, MAX_DOCUMENT_TOTAL } from "@/li
 import { deriveFactureStatus, factureStatusWhere, resolveManualStatus, type FactureStatus } from "@/lib/facture-status"
 import { nextFactureNumber } from "@/lib/document-numbering"
 
-const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
-const FINANCE  = ["ADMIN", "PRESIDENT", "TRESORIER"]
-
+// Comptabilité area (FORM-34). The old GET/DELETE allowlists also let the Secrétaire in, although
+// the sidebar never showed her this screen and every write was finance-only; she now has no access here.
 function withDerivedStatus<T extends { status: string; dueDate: Date | string | null }>(f: T): T {
   return { ...f, status: deriveFactureStatus(f.status as FactureStatus, f.dueDate) }
 }
@@ -63,7 +62,7 @@ export const GET = withAdminAuth(async (req, ctx) => {
     prisma.facture.count({ where }),
   ])
   return NextResponse.json({ data: data.map(withDerivedStatus), total, page, limit, totalPages: Math.ceil(total / limit) })
-}, { roles: MANAGERS, module: "factures" })
+}, { area: "comptabilite", module: "factures" })
 
 export const POST = withAdminAuth(async (req, ctx) => {
   const { associationId, userId } = ctx
@@ -134,4 +133,4 @@ export const POST = withAdminAuth(async (req, ctx) => {
   }
 
   return NextResponse.json({ error: "Impossible de générer un numéro de facture, réessayez" }, { status: 500 })
-}, { roles: FINANCE, module: "factures" })
+}, { area: "comptabilite", module: "factures" })

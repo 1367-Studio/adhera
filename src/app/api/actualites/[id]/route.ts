@@ -7,8 +7,6 @@ import { writeActivityLog } from "@/lib/activity-log"
 import { withAdminAuth } from "@/lib/api-wrapper"
 import { reportError } from "@/lib/monitoring"
 
-const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
-
 const include = {
   evenement:  { select: { id: true, title: true, date: true, location: true } },
   recipients: { select: { membreId: true } },
@@ -117,7 +115,7 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
     metadata: Object.keys(changes).length > 0 ? { changes } : undefined,
   })
   return NextResponse.json(updated)
-}, { roles: MANAGERS, module: "actualites" })
+}, { area: "actualites", module: "actualites" })
 
 export const DELETE = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
   const { associationId, userId } = ctx
@@ -128,4 +126,4 @@ export const DELETE = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) =>
   await prisma.actualite.delete({ where: { id } })
   await writeActivityLog({ associationId, actorId: userId, action: "ACTUALITE_DELETED", entity: "Actualite", entityId: id, label: existing.title })
   return NextResponse.json({ ok: true })
-}, { roles: MANAGERS, module: "actualites" })
+}, { area: "actualites", module: "actualites" })

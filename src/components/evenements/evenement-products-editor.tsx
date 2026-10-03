@@ -19,8 +19,11 @@ const fmt = (cents: number) => (cents / 100).toLocaleString("fr-FR", { style: "c
 // MAX_PRODUCTS anticipé côté UI, etc).
 export type EvenementProductsEditorHandle = { save: () => Promise<boolean> }
 
-export function EvenementProductsEditor({ evenementId, onDirtyChange, ref }: {
+export function EvenementProductsEditor({ evenementId, onDirtyChange, readOnly = false, ref }: {
   evenementId: string
+  // FORM-34: a "read" user sees the configuration without the add / remove / save controls
+  // (the page's <fieldset disabled> greys the inputs themselves).
+  readOnly?: boolean
   onDirtyChange?: (dirty: boolean) => void
   ref?: Ref<EvenementProductsEditorHandle>
 }) {
@@ -135,9 +138,11 @@ export function EvenementProductsEditor({ evenementId, onDirtyChange, ref }: {
 
       <div className="flex items-center justify-between pt-1">
         <span className="text-xs text-muted-foreground">{t("selectedCount", { count: orderedSelectedIds.length, max: MAX_PRODUCTS })}</span>
-        <Button type="button" size="sm" disabled={!isDirty} onClick={handleSave} loading={saveMutation.isPending}>
-          {t("saveProducts")}
-        </Button>
+        {!readOnly && (
+          <Button type="button" size="sm" disabled={!isDirty} onClick={handleSave} loading={saveMutation.isPending}>
+            {t("saveProducts")}
+          </Button>
+        )}
       </div>
     </div>
   )

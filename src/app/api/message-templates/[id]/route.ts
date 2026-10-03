@@ -6,8 +6,6 @@ import { withAdminAuth } from "@/lib/api-wrapper"
 import { findUnknownVars, TEMPLATE_CATEGORIES } from "@/lib/automation"
 import { emailBlockSchema, renderBlocksToHtml } from "@/lib/email-blocks"
 
-const ALLOWED_ROLES = ["ADMIN", "PRESIDENT", "SECRETAIRE"]
-
 const schema = z.object({
   name:      z.string().min(1).max(100).optional(),
   category:  z.enum(TEMPLATE_CATEGORIES).optional(),
@@ -86,7 +84,7 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   const action  = parsed.data.active != null ? (parsed.data.active ? "TEMPLATE_ACTIVATED" : "TEMPLATE_DEACTIVATED") : "TEMPLATE_UPDATED"
   await writeActivityLog({ associationId, actorId: userId, action, entity: "MessageTemplate", entityId: id, label: updated.name })
   return NextResponse.json(updated)
-}, { roles: ALLOWED_ROLES })
+}, { area: "communication" })
 
 export const DELETE = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
   const { associationId, userId } = ctx
@@ -102,4 +100,4 @@ export const DELETE = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) =>
   await prisma.messageTemplate.delete({ where: { id } })
   await writeActivityLog({ associationId, actorId: userId, action: "TEMPLATE_DELETED", entity: "MessageTemplate", entityId: id, label: existing.name })
   return new NextResponse(null, { status: 204 })
-}, { roles: ALLOWED_ROLES })
+}, { area: "communication" })

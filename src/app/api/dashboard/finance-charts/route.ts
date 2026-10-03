@@ -3,14 +3,21 @@ import { getLocale, getTranslations } from "next-intl/server"
 import { prisma } from "@/lib/prisma/client"
 import { withAdminAuth } from "@/lib/api-wrapper"
 import { fetchModules } from "@/lib/auth/require-module"
+import { hasAccess } from "@/lib/permissions"
 
 function monthLabel(d: Date, locale: string): string {
   return d.toLocaleDateString(locale, { month: "short" }).replace(".", "")
 }
 
+// Area "dashboard" for the route itself: it feeds several home-page widgets. Each half is then
+// gated on the area of the widget that renders it (see DASHBOARD_WIDGET_META) — the
+// cotisations gauge on Adhésions, the recettes/dépenses charts on Comptabilité — so a user
+// without Comptabilité gets empty finance series rather than the association's figures.
 export const GET = withAdminAuth(async (_req, ctx) => {
   const { associationId } = ctx
   const modules = await fetchModules(associationId)
+  const canSeeCotisations = modules.cotisations && hasAccess(ctx.permissions, "adhesions", "read")
+  const canSeeFinances    = modules.finances && hasAccess(ctx.permissions, "comptabilite", "read")
   const locale  = await getLocale()
   const t       = await getTranslations("dashboard.charts")
 
@@ -24,7 +31,7 @@ export const GET = withAdminAuth(async (_req, ctx) => {
     // ANNULEE excluded — it was never really "collectable" for this year (consistent with
     // it being excluded from remaining-balance/pay-now displays elsewhere), and there's no
     // 6th validated categorical hue for it to render as here anyway (see finance-palette.ts).
-    modules.cotisations
+    canSeeCotisations
       ? prisma.cotisation.groupBy({
           by: ["status"],
           where: { associationId, year, status: { not: "ANNULEE" } },
@@ -33,7 +40,7 @@ export const GET = withAdminAuth(async (_req, ctx) => {
         })
       : Promise.resolve([]),
 
-    modules.finances
+    canSeeFinances
       ? prisma.income.groupBy({
           by: ["categoryId"],
           where: { associationId, status: "PAID", date: { gte: yearStart, lt: yearEnd } },
@@ -41,14 +48,14 @@ export const GET = withAdminAuth(async (_req, ctx) => {
         })
       : Promise.resolve([]),
 
-    modules.finances
+    canSeeFinances
       ? prisma.income.findMany({
           where: { associationId, status: "PAID", date: { gte: sixMonthsAgo } },
           select: { amount: true, date: true },
         })
       : Promise.resolve([]),
 
-    modules.finances
+    canSeeFinances
       ? prisma.expense.findMany({
           where: { associationId, status: "VALIDATED", date: { gte: sixMonthsAgo } },
           select: { amount: true, date: true },
@@ -94,10 +101,10 @@ export const GET = withAdminAuth(async (_req, ctx) => {
 
   return NextResponse.json({
     year,
-    hasCotisations: modules.cotisations && cotisations.length > 0,
-    hasFinances:    modules.finances && (incomeCategoryRows.length > 0 || monthly.some(m => m.recettes > 0 || m.depenses > 0)),
+    hasCotisations: canSeeCotisations && cotisations.length > 0,
+    hasFinances:    canSeeFinances && (incomeCategoryRows.length > 0 || monthly.some(m => m.recettes > 0 || m.depenses > 0)),
     cotisations,
     monthly,
     incomeByCategory: incomeCategoryRows,
   })
-})
+}, { area: "dashboard" })

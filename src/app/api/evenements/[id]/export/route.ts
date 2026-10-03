@@ -129,4 +129,4 @@ export const GET = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
       "Content-Disposition": `attachment; filename="presences_${date}_${slug}.csv"`,
     },
   })
-})
+}, { area: "evenements" })

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import { addMonths } from "date-fns"
 import { withAdminAuth } from "@/lib/api-wrapper"
+import { hasAccess } from "@/lib/permissions"
 import { prisma } from "@/lib/prisma/client"
 import { membreUpdateSchema } from "@/lib/schemas"
 import { addressColumnsPatch } from "@/lib/address"
@@ -21,11 +22,6 @@ const RESPONSABLE_SELECT = {
   },
 } as const
 
-const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
-// Forcing a member's adhérent status is a financial call equivalent to marking a cotisation
-// paid — same role set as /api/association/cotisation-defaults, narrower than MANAGERS so
-// SECRETAIRE can still manage every other membre field but not this one.
-const FINANCE = ["ADMIN", "PRESIDENT", "TRESORIER"]
 
 export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
   const { associationId } = ctx
@@ -118,10 +114,10 @@ export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
     editableCustomFields,
     isAdherent: isMembreAdherent(membre),
   })
-})
+}, { area: "membres" })
 
 export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
-  const { associationId, userId, role: actorRole } = ctx
+  const { associationId, userId } = ctx
 
   const existing = await prisma.membre.findFirst({ where: { id, associationId, deletedAt: null } })
   if (!existing) return NextResponse.json({ error: "Membre introuvable" }, { status: 404 })
@@ -160,7 +156,10 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
     }
   }
 
-  if (adherentOverride !== undefined && !FINANCE.includes(actorRole)) {
+  // Forcing a member's adhérent status is equivalent to marking a cotisation paid, so it needs
+  // Adhésions "edit" on top of Membres "edit" — the Secrétaire manages every other membre
+  // field but not this one.
+  if (adherentOverride !== undefined && !hasAccess(ctx.permissions, "adhesions", "edit")) {
     return NextResponse.json({ error: "Seuls un administrateur, président ou trésorier peuvent forcer le statut d'adhésion" }, { status: 403 })
   }
 
@@ -344,7 +343,7 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   }
 
   return NextResponse.json({ ...membre, isAdherent: isMembreAdherent(membre) })
-}, { roles: MANAGERS })
+}, { area: "membres" })
 
 export const DELETE = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
   const { associationId, userId } = ctx
@@ -384,4 +383,4 @@ export const DELETE = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) =>
   await cancelActiveCotisationSubscriptionForMembre(id, { actorId: userId, label: `${existing.firstName} ${existing.lastName}` })
 
   return NextResponse.json({ deletedId: id, unlinkedDependants })
-}, { roles: MANAGERS })
+}, { area: "membres" })

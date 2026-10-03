@@ -8,8 +8,6 @@ import { APP_URL } from "@/lib/env"
 import { resolveEmailBranding } from "@/lib/plan-limits"
 import { reportError } from "@/lib/monitoring"
 
-const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
-
 class CapacityError extends Error {}
 
 // Moves one waitlisted Participation to CONFIRME — a manual admin action, same trust level as
@@ -17,10 +15,7 @@ class CapacityError extends Error {}
 // admin still has to collect payment afterwards through the normal mark-paid/offline flow if
 // the tier isn't free — promoting only ever flips the seat status, never charges anyone.
 export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id: evenementId }) => {
-  const { associationId, role, userId } = ctx
-
-  if (!MANAGERS.includes(role))
-    return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
+  const { associationId, userId } = ctx
 
   const { participationId } = await req.json() as { participationId?: string }
   if (!participationId) return NextResponse.json({ error: "Participation introuvable" }, { status: 404 })
@@ -119,4 +114,4 @@ export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id: eveneme
   }
 
   return NextResponse.json({ ok: true })
-})
+}, { area: "evenements" })

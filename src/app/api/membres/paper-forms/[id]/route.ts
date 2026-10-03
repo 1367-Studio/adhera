@@ -3,7 +3,6 @@ import { withAdminAuth } from "@/lib/api-wrapper"
 import { prisma } from "@/lib/prisma/client"
 import { paperFormTemplateSchema, paperFormTemplateUpdateSchema } from "@/lib/schemas"
 import { writeActivityLog } from "@/lib/activity-log"
-import { MANAGER_ROLES } from "@/lib/roles"
 import {
   PAPER_FORM_TEMPLATE_SELECT,
   UNKNOWN_LEGAL_DOCUMENT_MESSAGE,
@@ -21,7 +20,7 @@ export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
 
   if (!template) return NextResponse.json({ error: "Modèle introuvable" }, { status: 404 })
   return NextResponse.json(toTemplateResponse(template))
-}, { roles: MANAGER_ROLES })
+}, { area: "membres" })
 
 export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   const { associationId, userId } = ctx
@@ -93,7 +92,7 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   }
 
   return NextResponse.json(toTemplateResponse(template))
-}, { roles: MANAGER_ROLES })
+}, { area: "membres" })
 
 export const DELETE = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
   const { associationId, userId } = ctx
@@ -112,4 +111,4 @@ export const DELETE = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) =>
   await writeActivityLog({ associationId, actorId: userId, action: "PAPER_FORM_TEMPLATE_DELETED", entity: "PaperFormTemplate", entityId: id, label: existing.name })
 
   return new NextResponse(null, { status: 204 })
-}, { roles: MANAGER_ROLES })
+}, { area: "membres" })

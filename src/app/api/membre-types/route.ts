@@ -4,8 +4,8 @@ import { prisma } from "@/lib/prisma/client"
 import { membreTypeSchema } from "@/lib/schemas"
 import { writeActivityLog } from "@/lib/activity-log"
 
-const ADMINS = ["ADMIN", "PRESIDENT"]
-
+// Member types are association settings: administrators only.
+// Reference data used by every area (filters, audiences, forms): open to the whole team.
 export const GET = withAdminAuth(async (req, ctx) => {
   const { associationId } = ctx
 
@@ -33,4 +33,4 @@ export const POST = withAdminAuth(async (req, ctx) => {
 
   await writeActivityLog({ associationId, actorId: userId, action: "TYPE_CREATED", entity: "MembreType", entityId: type.id, label: type.name })
   return NextResponse.json(type, { status: 201 })
-}, { roles: ADMINS })
+}, { administrator: true })

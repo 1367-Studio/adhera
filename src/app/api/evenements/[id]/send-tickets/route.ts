@@ -9,8 +9,6 @@ import { resolveEmailBranding } from "@/lib/plan-limits"
 import { APP_URL } from "@/lib/env"
 import { reportError } from "@/lib/monitoring"
 
-const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
-
 // Backfills Participation.ticketToken for this event's attendees registered before entry
 // QR codes existed (their confirmation email carried none) and emails each of them their
 // QR — so every ticket at the door can be scanned, not just post-feature ones. Idempotent
@@ -93,4 +91,4 @@ export const POST = withAdminAuth<{ id: string }>(async (_req, ctx, { id: evenem
   })
 
   return NextResponse.json({ sent: result.sent, failed: result.failed })
-}, { roles: MANAGERS })
+}, { area: "evenements" })

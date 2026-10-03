@@ -14,11 +14,14 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { RowActions } from "@/components/ui/row-actions"
 import { ExerciceForm } from "@/components/finances/exercice-form"
+import { useHasAccess } from "@/lib/user-context"
 
 type GapWarning = { data: ExerciceInput; gapDays: number; gapStart: string; gapEnd: string }
 
 export function ExercicesView() {
   const t = useTranslations()
+  // FORM-34: a Comptabilité reader sees the fiscal years but cannot create, close, reopen or delete them.
+  const canEditComptabilite = useHasAccess("comptabilite", "edit")
   const [createOpen, setCreateOpen]     = useState(false)
   const [formDefaults, setFormDefaults] = useState<Partial<ExerciceInput> | undefined>(undefined)
   const [gapWarning, setGapWarning]     = useState<GapWarning | null>(null)
@@ -188,11 +191,11 @@ export function ExercicesView() {
         ? <Badge variant="success">{t("finances.exercicesView.status.ouvert")}</Badge>
         : <Badge variant="outline">{t("finances.exercicesView.status.cloture")}</Badge>,
     },
-    {
+    ...(canEditComptabilite ? [{
       key: "actions",
       header: "",
       className: "w-10",
-      cell: (e) => (
+      cell: (e: Exercice) => (
         <RowActions actions={[
           e.status === "OUVERT"
             ? { label: t("finances.exercicesView.actions.close"),  icon: <LockIcon className="size-3.5" />,     onClick: () => setCloseTarget(e) }
@@ -200,7 +203,7 @@ export function ExercicesView() {
           { label: t("finances.exercicesView.actions.delete"), icon: <TrashIcon className="size-3.5" />, destructive: true, separator: true, onClick: () => setDeleteTarget(e) },
         ]} />
       ),
-    },
+    }] : []),
   ]
 
   return (
@@ -208,12 +211,12 @@ export function ExercicesView() {
       <PageHeader
         title={t("finances.exercicesView.title")}
         description={t("finances.exercicesView.description")}
-        action={
+        action={canEditComptabilite && (
           <Button size="sm" onClick={() => setCreateOpen(true)}>
             <PlusIcon className="mr-1.5 size-4" />
             {t("finances.exercicesView.add")}
           </Button>
-        }
+        )}
       />
 
       <DataTable

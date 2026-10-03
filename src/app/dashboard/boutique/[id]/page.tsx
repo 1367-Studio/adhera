@@ -27,6 +27,7 @@ import { DetailNotFound } from "@/components/ui/detail-not-found"
 import { DetailLoadingSkeleton } from "@/components/ui/detail-loading-skeleton"
 import { cn } from "@/lib/utils"
 import { BASE_PATH } from "@/lib/env"
+import { useHasAccess } from "@/lib/user-context"
 
 type Translator = ReturnType<typeof useTranslations>
 
@@ -88,6 +89,11 @@ export default function EditProduitPage() {
   const qc      = useQueryClient()
   const t       = useTranslations("boutique")
   const tCommon = useTranslations("common")
+  // FORM-34, same rules as the API: a "read" user sees the product (inputs disabled) and its
+  // orders, downloads receipts, and changes nothing; a refund also needs Comptabilité edit.
+  const canEditBoutique     = useHasAccess("boutique", "edit")
+  const canEditComptabilite = useHasAccess("comptabilite", "edit")
+  const canRefundCommandes  = canEditBoutique && canEditComptabilite
 
   const MANUAL_PAYMENT_TYPE_OPTIONS = getManualPaymentTypeOptions(t)
   const STATUS_PRODUIT_LABEL        = getProduitStatusLabel(t)
@@ -398,20 +404,22 @@ export default function EditProduitPage() {
       key:    "actions",
       header: "",
       className: "w-10",
-      cell: (c) => c.status === "PENDING" ? (
+      cell: (c) => c.status === "PENDING" ? (!canEditBoutique ? null : (
         <RowActions
           actions={[
             { label: t("view.actions.markPaid"), icon: <MoneyIcon className="size-3.5" />, onClick: () => openPayModal(c) },
           ]}
         />
-      ) : c.status === "PAID" ? (
+      )) : c.status === "PAID" ? (
         <RowActions
           actions={[
             { label: t("view.actions.downloadReceipt"), icon: <FileArrowDownIcon className="size-3.5" />, onClick: () => window.open(`${BASE_PATH}/api/boutique/commandes/${c.id}/pdf`, "_blank") },
-            ...(c.paymentMethod === "MANUAL" ? [
+            ...(canEditBoutique && c.paymentMethod === "MANUAL" ? [
               { label: t("view.actions.editPaymentMethod"), icon: <PencilSimpleIcon className="size-3.5" />, onClick: () => openCorrectModal(c) },
             ] : []),
-            { label: t("view.actions.refundOrder"), icon: <ArrowCounterClockwiseIcon className="size-3.5" />, onClick: () => openRefundModal(c), destructive: true, separator: true },
+            ...(canRefundCommandes ? [
+              { label: t("view.actions.refundOrder"), icon: <ArrowCounterClockwiseIcon className="size-3.5" />, onClick: () => openRefundModal(c), destructive: true, separator: true },
+            ] : []),
           ]}
         />
       ) : null,
@@ -438,7 +446,7 @@ export default function EditProduitPage() {
           </p>
         </div>
         <div className="flex items-center gap-2 shrink-0">
-          {produit.status === "DRAFT" && (
+          {canEditBoutique && produit.status === "DRAFT" && (
             <Button
               size="sm"
               onClick={() => updateStatusMutation.mutate("ACTIVE")}
@@ -448,7 +456,7 @@ export default function EditProduitPage() {
               {t("detail.putOnline")}
             </Button>
           )}
-          {produit.status === "ACTIVE" && (
+          {canEditBoutique && produit.status === "ACTIVE" && (
             <Button
               size="sm"
               variant="outline"
@@ -459,7 +467,7 @@ export default function EditProduitPage() {
               {t("detail.archive")}
             </Button>
           )}
-          {produit.status === "ARCHIVED" && (
+          {canEditBoutique && produit.status === "ARCHIVED" && (
             <Button
               size="sm"
               variant="outline"
@@ -488,6 +496,7 @@ export default function EditProduitPage() {
         {/* Edit tab */}
         <TabsContent value="edit">
           <form onSubmit={handleSave} className="pt-4 pb-10">
+            <fieldset disabled={!canEditBoutique} className="min-w-0">
             <div className="rounded-lg border bg-card overflow-hidden">
               <div className="grid grid-cols-1 lg:grid-cols-5 divide-y lg:divide-y-0 lg:divide-x">
 
@@ -596,6 +605,7 @@ export default function EditProduitPage() {
                           disabled={!v.shippable}
                           onChange={e => updateVariante(v._key, "weightGrams", e.target.value)}
                         />
+                        {canEditBoutique && (
                         <button
                           type="button"
                           onClick={() => removeVariante(v._key)}
@@ -604,21 +614,27 @@ export default function EditProduitPage() {
                         >
                           <TrashIcon className="size-3.5" />
                         </button>
+                        )}
                       </div>
                     ))}
 
-                    <Button type="button" variant="outline" size="sm" className="gap-1.5" onClick={addVariante}>
-                      <PlusIcon className="size-3.5" />
-                      {t("form.addVariant")}
-                    </Button>
+                    {canEditBoutique && (
+                      <Button type="button" variant="outline" size="sm" className="gap-1.5" onClick={addVariante}>
+                        <PlusIcon className="size-3.5" />
+                        {t("form.addVariant")}
+                      </Button>
+                    )}
                   </div>
                 </div>
               </div>
 
-              <div className="border-t px-5 py-3 bg-muted/20 flex justify-end">
-                <Button type="submit" loading={saveMutation.isPending}>{tCommon("save")}</Button>
-              </div>
+              {canEditBoutique && (
+                <div className="border-t px-5 py-3 bg-muted/20 flex justify-end">
+                  <Button type="submit" loading={saveMutation.isPending}>{tCommon("save")}</Button>
+                </div>
+              )}
             </div>
+            </fieldset>
           </form>
         </TabsContent>
 

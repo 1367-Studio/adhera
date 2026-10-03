@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button"
 import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 import { useToggleRegistrations, type RegistrationsToggleAction } from "@/hooks/use-evenements"
 import { isEvenementOver } from "@/lib/evenement-timing"
+import { useHasAccess } from "@/lib/user-context"
 import { LockSimpleIcon, LockSimpleOpenIcon } from "@phosphor-icons/react/dist/ssr"
 import { useTranslations } from "next-intl"
 import { useState } from "react"
@@ -36,8 +37,10 @@ export function RegistrationsToggleButton({ evenement }: { evenement: Registrati
   const tCommon = useTranslations("common")
   const [closeConfirmOpen, setCloseConfirmOpen] = useState(false)
   const toggleRegistrations = useToggleRegistrations(evenement.id)
+  // FORM-34: closing/reopening goes through the publish route, which needs "evenements" edit.
+  const canEditEvenements   = useHasAccess("evenements", "edit")
 
-  if (!areRegistrationsControllable(evenement)) return null
+  if (!canEditEvenements || !areRegistrationsControllable(evenement)) return null
 
   function runToggle(action: RegistrationsToggleAction) {
     toggleRegistrations.mutate(action, {

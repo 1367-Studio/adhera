@@ -4,8 +4,6 @@ import { prisma } from "@/lib/prisma/client"
 import { withAdminAuth } from "@/lib/api-wrapper"
 import { guardModule } from "@/lib/auth/require-module"
 
-const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
-
 // Mirroir exact de src/app/api/membership-forms/[id]/products/route.ts — voir ce fichier
 // pour le raisonnement détaillé (pointeur pur, jamais référencé par un BoutiqueCommandeItem,
 // donc supprimable/recréable librement à chaque sauvegarde).
@@ -35,7 +33,7 @@ export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
     },
   })
   return NextResponse.json(products)
-}, { roles: MANAGERS, module: "evenements" })
+}, { area: "evenements", module: "evenements" })
 
 export const PUT = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   // Vendre des produits depuis un événement n'a de sens que si le module Boutique lui-même
@@ -89,4 +87,4 @@ export const PUT = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   })
 
   return NextResponse.json(products)
-}, { roles: MANAGERS, module: "evenements" })
+}, { area: "evenements", module: "evenements" })

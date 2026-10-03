@@ -6,8 +6,6 @@ import { withAdminAuth } from "@/lib/api-wrapper"
 import { isTermsConfigurationValid, normalizeConditions } from "@/lib/form-terms"
 import { storedTermsAttachments, termsContentRequiredResponse } from "@/lib/form-terms-response"
 
-const FINANCE = ["ADMIN", "PRESIDENT", "TRESORIER"]
-
 // Étapes 1/3/5 du wizard — les tarifs (étape 2) arrivent avec MembershipTier et
 // allowCash/... (étape 4) sont ici même (pas de sous-ressource dédiée, contrairement aux tiers).
 const updateSchema = z.object({
@@ -44,9 +42,6 @@ const updateSchema = z.object({
 })
 
 export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
-  if (!FINANCE.includes(ctx.role))
-    return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
-
   const form = await prisma.membershipForm.findFirst({
     where:   { id, associationId: ctx.associationId },
     include: {
@@ -58,12 +53,9 @@ export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
   if (!form) return NextResponse.json({ error: "Introuvable" }, { status: 404 })
 
   return NextResponse.json(form)
-}, { module: "cotisations" })
+}, { area: "adhesions", access: "edit", module: "cotisations" })
 
 export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
-  if (!FINANCE.includes(ctx.role))
-    return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
-
   const form = await prisma.membershipForm.findFirst({
     where:  { id, associationId: ctx.associationId },
     select: { id: true, title: true, status: true, visibility: true, siteSectionId: true, opensAt: true, closesAt: true, conditions: true, attachments: true, requireCguvSignature: true },
@@ -148,12 +140,9 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   })
 
   return NextResponse.json(updated)
-}, { module: "cotisations" })
+}, { area: "adhesions", module: "cotisations" })
 
 export const DELETE = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
-  if (!FINANCE.includes(ctx.role))
-    return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
-
   const form = await prisma.membershipForm.findFirst({
     where:  { id, associationId: ctx.associationId },
     select: { id: true, title: true, _count: { select: { cotisations: true } } },
@@ -179,4 +168,4 @@ export const DELETE = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) =>
   })
 
   return NextResponse.json({ ok: true })
-}, { module: "cotisations" })
+}, { area: "adhesions", module: "cotisations" })

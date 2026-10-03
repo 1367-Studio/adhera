@@ -3,7 +3,6 @@ import { withAdminAuth } from "@/lib/api-wrapper"
 import { prisma } from "@/lib/prisma/client"
 import { grantMembrePortalAccess } from "@/lib/membre-access"
 
-const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
 
 // Members created via public self-registration (or imported without an account) have
 // `userId: null` and can never log in — this gives an admin a way to grant portal access
@@ -31,4 +30,4 @@ export const POST = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
   }
 
   return NextResponse.json({ ok: true })
-}, { roles: MANAGERS })
+}, { area: "membres" })

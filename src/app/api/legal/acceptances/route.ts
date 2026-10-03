@@ -1,7 +1,6 @@
 import { withAdminAuth } from "@/lib/api-wrapper"
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma/client"
-import { MANAGER_ROLES } from "@/lib/roles"
 
 // Proof of consent, as a CSV a manager can hand to whoever asks — an auditor, an insurer, a
 // judge. Evidence nobody can read is not evidence, which is the whole reason this endpoint
@@ -79,4 +78,5 @@ export const GET = withAdminAuth(async (req, ctx) => {
       "Content-Disposition": `attachment; filename="acceptations-${new Date().toISOString().slice(0, 10)}.csv"`,
     },
   })
-}, { roles: MANAGER_ROLES })
+// Consent records name people (members, donors, participants): the members area, read.
+}, { area: "membres", access: "read" })

@@ -5,8 +5,6 @@ import { writeActivityLog } from "@/lib/activity-log"
 import { withAdminAuth } from "@/lib/api-wrapper"
 import { findOverlappingExercice, findExerciceGap, derivePattern, expectedRangeForYear, exclusiveEndOfDay } from "@/lib/finance/exercice"
 
-const FINANCE = ["ADMIN", "PRESIDENT", "TRESORIER"]
-
 export const GET = withAdminAuth(async (_req, ctx) => {
   const { associationId } = ctx
 
@@ -22,7 +20,7 @@ export const GET = withAdminAuth(async (_req, ctx) => {
     recordCount: _count.incomes + _count.expenses + _count.bankTransactions,
   }))
   return NextResponse.json(withRecordCount)
-}, { roles: FINANCE, module: "finances" })
+}, { area: "comptabilite", module: "finances" })
 
 export const POST = withAdminAuth(async (req, ctx) => {
   const { associationId, userId } = ctx
@@ -109,4 +107,4 @@ export const POST = withAdminAuth(async (req, ctx) => {
     ...(linkedRecords > 0 ? { metadata: { linkedRecords } } : {}),
   })
   return NextResponse.json({ ...exercice, linkedRecords }, { status: 201 })
-}, { roles: FINANCE, module: "finances" })
+}, { area: "comptabilite", module: "finances" })

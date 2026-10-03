@@ -31,7 +31,7 @@ import { ActivityLogList, type ActivityLogEntry } from "@/components/ui/activity
 import { BackLink } from "@/components/ui/back-link"
 import { DetailNotFound } from "@/components/ui/detail-not-found"
 import { DetailLoadingSkeleton } from "@/components/ui/detail-loading-skeleton"
-import { useModules } from "@/lib/user-context"
+import { useHasAccess, useModules } from "@/lib/user-context"
 
 type Translator = ReturnType<typeof useTranslations>
 
@@ -81,6 +81,9 @@ export function FournisseurDetailView() {
   const { id } = useParams<{ id: string }>()
   const router = useRouter()
   const modules = useModules()
+  // FORM-34: a Comptabilité reader browses the supplier, its documents and history but
+  // cannot create a quote/invoice/document, edit, archive or delete anything.
+  const canEditComptabilite = useHasAccess("comptabilite", "edit")
 
   const [editOpen, setEditOpen]           = useState(false)
   const [archiveOpen, setArchiveOpen]     = useState(false)
@@ -218,34 +221,36 @@ export function FournisseurDetailView() {
             {fournisseur.category && <p className="text-sm text-muted-foreground">{fournisseur.category}</p>}
           </div>
 
-          <div className="flex flex-wrap items-center gap-2">
-            {modules.devis && (
-              <Button size="sm" variant="outline" onClick={() => setCreateDevisOpen(true)}>
-                <FileTextIcon className="mr-1.5 size-4" />
-                {t("fournisseurs.detail.devisButton")}
+          {canEditComptabilite && (
+            <div className="flex flex-wrap items-center gap-2">
+              {modules.devis && (
+                <Button size="sm" variant="outline" onClick={() => setCreateDevisOpen(true)}>
+                  <FileTextIcon className="mr-1.5 size-4" />
+                  {t("fournisseurs.detail.devisButton")}
+                </Button>
+              )}
+              {modules.factures && (
+                <Button size="sm" variant="outline" onClick={() => setCreateFactureOpen(true)}>
+                  <ReceiptIcon className="mr-1.5 size-4" />
+                  {t("fournisseurs.detail.factureButton")}
+                </Button>
+              )}
+              <Button size="sm" variant="outline" onClick={() => setCreateDocOpen(true)}>
+                <PaperclipIcon className="mr-1.5 size-4" />
+                {t("fournisseurs.detail.documentButton")}
               </Button>
-            )}
-            {modules.factures && (
-              <Button size="sm" variant="outline" onClick={() => setCreateFactureOpen(true)}>
-                <ReceiptIcon className="mr-1.5 size-4" />
-                {t("fournisseurs.detail.factureButton")}
+              <Button size="sm" variant="outline" onClick={() => setEditOpen(true)}>
+                <PencilSimpleIcon className="mr-1.5 size-4" />
+                {t("common.edit")}
               </Button>
-            )}
-            <Button size="sm" variant="outline" onClick={() => setCreateDocOpen(true)}>
-              <PaperclipIcon className="mr-1.5 size-4" />
-              {t("fournisseurs.detail.documentButton")}
-            </Button>
-            <Button size="sm" variant="outline" onClick={() => setEditOpen(true)}>
-              <PencilSimpleIcon className="mr-1.5 size-4" />
-              {t("common.edit")}
-            </Button>
-            {fournisseur.status !== "ARCHIVE" && (
-              <Button size="sm" variant="outline" onClick={() => setArchiveOpen(true)}>
-                <ArchiveIcon className="mr-1.5 size-4" />
-                {t("fournisseurs.view.actions.archive")}
-              </Button>
-            )}
-          </div>
+              {fournisseur.status !== "ARCHIVE" && (
+                <Button size="sm" variant="outline" onClick={() => setArchiveOpen(true)}>
+                  <ArchiveIcon className="mr-1.5 size-4" />
+                  {t("fournisseurs.view.actions.archive")}
+                </Button>
+              )}
+            </div>
+          )}
         </div>
       </div>
 
@@ -424,9 +429,11 @@ export function FournisseurDetailView() {
                     <a href={doc.fileUrl} target="_blank" rel="noopener noreferrer" className="p-1.5 text-muted-foreground hover:text-foreground" title={t("fournisseurs.detail.viewDocument")}>
                       <ArrowSquareOutIcon className="size-4" />
                     </a>
-                    <RowActions actions={[
-                      { label: t("fournisseurs.detail.delete"), icon: <TrashIcon className="size-3.5" />, destructive: true, onClick: () => setDeleteDocTarget({ id: doc.id, label: documentTypeLabel[doc.type] ?? doc.type, payee: doc.status === "PAYEE" }) },
-                    ]} />
+                    {canEditComptabilite && (
+                      <RowActions actions={[
+                        { label: t("fournisseurs.detail.delete"), icon: <TrashIcon className="size-3.5" />, destructive: true, onClick: () => setDeleteDocTarget({ id: doc.id, label: documentTypeLabel[doc.type] ?? doc.type, payee: doc.status === "PAYEE" }) },
+                      ]} />
+                    )}
                   </div>
                 </div>
               ))}

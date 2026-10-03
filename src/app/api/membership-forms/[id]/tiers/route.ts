@@ -4,8 +4,6 @@ import { prisma } from "@/lib/prisma/client"
 import { withAdminAuth } from "@/lib/api-wrapper"
 import { APP_TIME_ZONE } from "@/lib/date-format"
 
-const FINANCE = ["ADMIN", "PRESIDENT", "TRESORIER"]
-
 // Jour calendaire (YYYY-MM-DD, comparable en chaîne) d'un instant à Paris — pas en UTC, sinon
 // « aujourd'hui » basculerait 1 à 2 h trop tard chaque soir (même raisonnement que
 // currentCotisationYear dans src/lib/membre-adherent.ts).
@@ -100,20 +98,14 @@ const tierSchema = z.object({
 const tiersSchema = z.array(tierSchema).max(20)
 
 export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
-  if (!FINANCE.includes(ctx.role))
-    return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
-
   const form = await prisma.membershipForm.findFirst({ where: { id, associationId: ctx.associationId }, select: { id: true } })
   if (!form) return NextResponse.json({ error: "Introuvable" }, { status: 404 })
 
   const tiers = await prisma.membershipTier.findMany({ where: { formId: id }, orderBy: { order: "asc" } })
   return NextResponse.json(tiers)
-}, { module: "cotisations" })
+}, { area: "adhesions", access: "edit", module: "cotisations" })
 
 export const PUT = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
-  if (!FINANCE.includes(ctx.role))
-    return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
-
   const form = await prisma.membershipForm.findFirst({ where: { id, associationId: ctx.associationId } })
   if (!form) return NextResponse.json({ error: "Introuvable" }, { status: 404 })
 
@@ -255,4 +247,4 @@ export const PUT = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   })
 
   return NextResponse.json(tiers)
-}, { module: "cotisations" })
+}, { area: "adhesions", module: "cotisations" })

@@ -4,8 +4,7 @@ import { prisma } from "@/lib/prisma/client"
 import { membreTypeUpdateSchema } from "@/lib/schemas"
 import { writeActivityLog } from "@/lib/activity-log"
 
-const ADMINS = ["ADMIN", "PRESIDENT"]
-
+// Member types are association settings: administrators only.
 export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   const { associationId, userId } = ctx
 
@@ -21,7 +20,7 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   const type = await prisma.membreType.update({ where: { id }, data: parsed.data })
   await writeActivityLog({ associationId, actorId: userId, action: "TYPE_UPDATED", entity: "MembreType", entityId: id, label: type.name })
   return NextResponse.json(type)
-}, { roles: ADMINS })
+}, { administrator: true })
 
 export const DELETE = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
   const { associationId, userId } = ctx
@@ -42,4 +41,4 @@ export const DELETE = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) =>
   await prisma.membreType.delete({ where: { id } })
   await writeActivityLog({ associationId, actorId: userId, action: "TYPE_DELETED", entity: "MembreType", entityId: id, label: existing.name })
   return new NextResponse(null, { status: 204 })
-}, { roles: ADMINS })
+}, { administrator: true })

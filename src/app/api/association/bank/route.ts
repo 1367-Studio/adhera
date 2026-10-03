@@ -4,10 +4,9 @@ import { prisma } from "@/lib/prisma/client"
 import { writeActivityLog } from "@/lib/activity-log"
 import { withAdminAuth } from "@/lib/api-wrapper"
 
-// Same role set as the rest of finances/* — the treasurer owns this data day-to-day and
+// Comptabilité area, like the rest of finances/* — the treasurer owns this data day-to-day and
 // shouldn't need the president/admin to relay every IBAN change (unlike name/city/country,
-// which stay behind the general ADMINS-only Paramètres form).
-const FINANCE = ["ADMIN", "PRESIDENT", "TRESORIER"]
+// which stay behind the general administrator-only Paramètres form).
 
 // Loose but real format checks — not a full mod-97 IBAN checksum, but enough to catch a
 // mistyped/pasted-wrong value before it ends up printed on every devis/facture PDF and a
@@ -48,4 +47,4 @@ export const PATCH = withAdminAuth(async (req, ctx) => {
   })
 
   return NextResponse.json({ website: association.website, iban: association.iban, bic: association.bic })
-}, { roles: FINANCE })
+}, { area: "comptabilite" })

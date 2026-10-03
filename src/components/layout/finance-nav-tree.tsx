@@ -11,6 +11,8 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { NavIcon } from "@/components/layout/nav-icon"
 import { cn } from "@/lib/utils"
+import { canAccessDashboardPath } from "@/lib/dashboard-access"
+import { useCurrentUser } from "@/lib/user-context"
 
 interface FinanceNavTreeProps {
   pathname:   string
@@ -20,6 +22,15 @@ interface FinanceNavTreeProps {
 
 export function FinanceNavTree({ pathname, isFlyout, onNavigate }: FinanceNavTreeProps) {
   const t = useTranslations("finances.nav")
+  const currentUser = useCurrentUser()
+  // Only the screens this user may open (e.g. "Import" needs Comptabilité "edit"), same map as
+  // the sidebar and the page guards — see src/lib/dashboard-access.ts.
+  const visibleFinanceNav = FINANCE_NAV
+    .map(group => ({
+      ...group,
+      items: group.items.filter(leaf => canAccessDashboardPath(currentUser.permissions, currentUser.role, leaf.href)),
+    }))
+    .filter(group => group.items.length > 0)
 
   const activeGroup = findActiveFinanceGroup(pathname)
   // Lazily seeded from the active group on mount — this component only mounts once
@@ -46,7 +57,7 @@ export function FinanceNavTree({ pathname, isFlyout, onNavigate }: FinanceNavTre
   }, [activeGroup])
 
   useEffect(() => {
-    function expandAll() { setOpenGroups(new Set(FINANCE_NAV.map(g => g.key))) }
+    function expandAll() { setOpenGroups(new Set(visibleFinanceNav.map(g => g.key))) }
     window.addEventListener("adhera:expand-all-nav", expandAll)
     return () => window.removeEventListener("adhera:expand-all-nav", expandAll)
   }, [])
@@ -64,7 +75,7 @@ export function FinanceNavTree({ pathname, isFlyout, onNavigate }: FinanceNavTre
   if (isFlyout) {
     return (
       <>
-        {FINANCE_NAV.map(group => (
+        {visibleFinanceNav.map(group => (
           <DropdownMenuSub key={group.key}>
             <DropdownMenuSubTrigger>
               <group.icon />
@@ -87,7 +98,7 @@ export function FinanceNavTree({ pathname, isFlyout, onNavigate }: FinanceNavTre
   return (
     <SidebarMenuSubItem className="p-0" data-tour="nav-finances">
       <ul className="flex w-full flex-col gap-1">
-        {FINANCE_NAV.map(group => {
+        {visibleFinanceNav.map(group => {
           const isOpen        = openGroups.has(group.key)
           const isGroupActive = activeGroup === group.key
 

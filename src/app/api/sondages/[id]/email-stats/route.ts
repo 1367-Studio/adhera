@@ -3,12 +3,7 @@ import { withAdminAuth } from "@/lib/api-wrapper"
 import { prisma } from "@/lib/prisma/client"
 import type { EmailStatus } from "@prisma/client"
 
-const MANAGERS = ["ADMIN", "PRESIDENT", "SECRETAIRE"]
-
 export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
-  if (!MANAGERS.includes(ctx.role))
-    return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
-
   const sondage = await prisma.sondage.findFirst({
     where:   { id, associationId: ctx.associationId },
     include: { recipients: { select: { membreId: true } } },
@@ -69,4 +64,4 @@ export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
     skippedNoEmail:  skippedNoEmail.map(m => ({ id: m.id, name: `${m.firstName} ${m.lastName}` })),
     skippedNoAccess: skippedNoAccess.length,
   })
-})
+}, { area: "communication" })

@@ -29,7 +29,7 @@ import { MEMBER_LIMIT_ERROR_CODE } from "@/lib/api-error-codes"
 import { BASE_PATH } from "@/lib/env"
 import { exportMembresPdf } from "@/lib/pdf/membres-export-client"
 import type { MembreCreateInput, MembreInput } from "@/lib/schemas"
-import { useCurrentUser, useMemberCardEnabled, useModules } from "@/lib/user-context"
+import { useCurrentUser, useHasAccess, useIsAdministrator, useMemberCardEnabled, useModules } from "@/lib/user-context"
 import { useMembershipFillForms } from "@/hooks/use-membership-tier-options"
 import { ArrowsDownUpIcon, CaretDownIcon, FunnelSimpleIcon, ChartBarIcon, ClockCounterClockwiseIcon, EyeIcon, IdentificationCardIcon, KeyIcon, PaperPlaneTiltIcon, PencilSimpleIcon, PlusIcon, ShieldIcon, TrashIcon } from "@phosphor-icons/react/dist/ssr"
 import { useQuery } from "@tanstack/react-query"
@@ -43,7 +43,7 @@ import { toast } from "sonner"
 
 type MembreTypeRef = { id: string; name: string; color: string }
 
-type UserRole = "ADMIN" | "PRESIDENT" | "TRESORIER" | "SECRETAIRE" | "MEMBRE"
+type UserRole = "ADMIN" | "PRESIDENT" | "TRESORIER" | "SECRETAIRE" | "EQUIPE" | "MEMBRE"
 
 type Membre = {
   id:            string
@@ -96,6 +96,7 @@ function getRoleLabels(t: Translator): Record<UserRole, string> {
     PRESIDENT:  t("membres.form.role.president"),
     TRESORIER:  t("membres.form.role.tresorier"),
     SECRETAIRE: t("membres.form.role.secretaire"),
+    EQUIPE:     t("membres.form.role.equipe"),
     MEMBRE:     t("membres.form.role.membre"),
   }
 }
@@ -103,6 +104,7 @@ function getRoleLabels(t: Translator): Record<UserRole, string> {
 function getRoleOptions(t: Translator): { value: UserRole; label: string }[] {
   return [
     { value: "MEMBRE",     label: t("membres.form.role.membre")     },
+    { value: "EQUIPE",     label: t("membres.form.role.equipe")     },
     { value: "SECRETAIRE", label: t("membres.form.role.secretaire") },
     { value: "TRESORIER",  label: t("membres.form.role.tresorier")  },
     { value: "PRESIDENT",  label: t("membres.form.role.president")  },
@@ -190,6 +192,11 @@ export function MembresView() {
   const currentUser                     = useCurrentUser()
   const modules                         = useModules()
   const memberCardEnabled               = useMemberCardEnabled()
+  // FORM-34: a "Lecteur" sees and exports members but changes nothing; e-mails/SMS belong to
+  // the Communication area; role changes to administrators (same rules as the API).
+  const canEditMembres                  = useHasAccess("membres", "edit")
+  const canSendCommunication            = useHasAccess("communication", "edit")
+  const isAdministrator                 = useIsAdministrator()
   const { data: fillForms = [] }        = useMembershipFillForms(modules.cotisations)
   const [page, setPage]                 = useState(1)
   const [searchInput, setSearchInput]   = useState("")
@@ -420,19 +427,21 @@ export function MembresView() {
             // The cotisations module makes a card possible; the association's own switch makes
             // it exist (see the dashboard layout) — without both, the row action could only
             // ever open a modal saying the card is unavailable.
-            ...(modules.cotisations && memberCardEnabled ? [
+            ...(canEditMembres && modules.cotisations && memberCardEnabled ? [
               { label: t("memberCard.manager.rowAction"), icon: <IdentificationCardIcon className="size-3.5" />, onClick: () => setMemberCardTarget(m) },
             ] : []),
-            { label: t("membres.view.actions.edit"),   icon: <PencilSimpleIcon  className="size-3.5" />, onClick: () => setEditTarget(m) },
+            ...(canEditMembres ? [
+              { label: t("membres.view.actions.edit"),   icon: <PencilSimpleIcon  className="size-3.5" />, onClick: () => setEditTarget(m) },
+            ] : []),
             { label: t("membres.view.actions.history"), icon: <ClockCounterClockwiseIcon className="size-3.5" />, onClick: () => setHistoryTarget(m) },
-            ...((currentUser.role === "ADMIN" || currentUser.role === "PRESIDENT") && m.userId && !isSelf ? [
+            ...(isAdministrator && m.userId && !isSelf ? [
               { label: t("membres.view.actions.changeRole"), icon: <ShieldIcon className="size-3.5" />, onClick: () => setRoleTarget(m) },
             ] : []),
-            ...(!m.userId && m.email ? [
+            ...(canEditMembres && !m.userId && m.email ? [
               { label: t("membres.view.actions.createAccess"), icon: <KeyIcon className="size-3.5" />, onClick: () => handleCreateAccess(m) },
               { label: t("membres.view.actions.resendPaymentLink"), icon: <PaperPlaneTiltIcon className="size-3.5" />, onClick: () => handleResendPaymentLink(m) },
             ] : []),
-            ...(!isSelf ? [
+            ...(canEditMembres && !isSelf ? [
               { label: t("membres.view.actions.delete"), icon: <TrashIcon className="size-3.5" />, destructive: true, separator: true, onClick: () => setDeleteTarget(m) },
             ] : []),
           ]} />
@@ -491,6 +500,7 @@ export function MembresView() {
                 <TooltipContent>{t("membres.view.stats")}</TooltipContent>
               </Tooltip>
             </TooltipProvider>
+            {canSendCommunication && (
             <DropdownMenu>
               <DropdownMenuTrigger render={<Button size="sm" variant="outline" aria-label={t("membres.view.communication")} />}>
                 <PaperPlaneTiltIcon className="size-4 sm:hidden" />
@@ -508,6 +518,7 @@ export function MembresView() {
                 )}
               </DropdownMenuContent>
             </DropdownMenu>
+            )}
             <DropdownMenu>
               <DropdownMenuTrigger render={<Button size="sm" variant="outline" aria-label={t("membres.view.data")} />}>
                 <ArrowsDownUpIcon className="size-4 sm:hidden" />
@@ -515,6 +526,8 @@ export function MembresView() {
                 <CaretDownIcon className="ml-1 size-3" />
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
+                {canEditMembres && (
+                <>
                 <DropdownMenuGroup>
                   <DropdownMenuItem onClick={() => router.push("/dashboard/membres/import")}>
                     {t("membres.importWizard.title")}
@@ -532,6 +545,8 @@ export function MembresView() {
                   )}
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
+                </>
+                )}
                 <DropdownMenuGroup>
                   <DropdownMenuLabel>{t("membres.view.export")}</DropdownMenuLabel>
                   <DropdownMenuItem onClick={handleExportXlsx}>
@@ -553,7 +568,7 @@ export function MembresView() {
                 remplir à la place de l'adhérent (mode admin du formulaire public — la
                 personne reçoit alors le lien de paiement par email) en plus de l'ajout
                 manuel classique. Sans formulaire (ou sans slug résolu), bouton simple. */}
-            {fillForms.length > 0 && currentUser.associationSlug ? (
+            {!canEditMembres ? null : fillForms.length > 0 && currentUser.associationSlug ? (
               <DropdownMenu>
                 <DropdownMenuTrigger render={<Button size="sm" />}>
                   <PlusIcon className="mr-1.5 size-4" />

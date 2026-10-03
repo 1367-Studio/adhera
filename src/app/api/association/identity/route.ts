@@ -6,8 +6,6 @@ import { writeActivityLog } from "@/lib/activity-log"
 import { withAdminAuth } from "@/lib/api-wrapper"
 import { revalidatePublicSiteFor } from "@/lib/association/revalidate-site"
 
-const ADMINS = ["ADMIN", "PRESIDENT"]
-
 const schema = z.object({
   address:            z.string().trim().max(300).optional().or(z.literal("")),
   phone:              z.string().trim().max(30).optional().or(z.literal("")),
@@ -89,4 +87,4 @@ export const PATCH = withAdminAuth(async (req, ctx) => {
   if (canIssueTaxReceipts !== undefined) await revalidatePublicSiteFor(ctx.associationId)
 
   return NextResponse.json({ ok: true })
-}, { roles: ADMINS })
+}, { administrator: true })

@@ -21,6 +21,7 @@ import { cn } from "@/lib/utils"
 import type { IncomeInput, ExpenseInput } from "@/lib/schemas"
 import { useCreateIncome } from "@/hooks/use-incomes"
 import { useCreateExpense } from "@/hooks/use-expenses"
+import { useHasAccess } from "@/lib/user-context"
 
 type BankTx = {
   id:              string
@@ -62,6 +63,8 @@ function getStatusConfig(t: Translator): Record<string, { label: string; variant
 
 export function ReconciliationView() {
   const t = useTranslations()
+  // FORM-34: a Comptabilité reader browses the bank lines but cannot match, ignore or create from them.
+  const canEditComptabilite = useHasAccess("comptabilite", "edit")
   const [page, setPage]               = useState(1)
   const [statusFilter, setStatusFilter] = useState("UNMATCHED")
   const [accountFilter, setAccountFilter] = useState("")
@@ -188,12 +191,12 @@ export function ReconciliationView() {
         return <Badge variant={cfg.variant}>{cfg.label}</Badge>
       },
     },
-    {
+    ...(canEditComptabilite ? [{
       key: "actions",
       header: t("finances.reconciliationView.columns.actions"),
       className: "w-52",
       hideInCard: true,
-      cell: (tx) => {
+      cell: (tx: BankTx) => {
         if (tx.status === "MATCHED") {
           return (
             <Button
@@ -238,7 +241,7 @@ export function ReconciliationView() {
           </div>
         )
       },
-    },
+    }] : []),
   ]
 
   return (

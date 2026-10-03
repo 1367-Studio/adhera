@@ -23,7 +23,7 @@ import { Badge } from "@/components/ui/badge"
 import { RowActions } from "@/components/ui/row-actions"
 import { FilterSelect } from "@/components/ui/filter-select"
 import { SearchInput } from "@/components/ui/search-input"
-import { useModules } from "@/lib/user-context"
+import { useHasAccess, useModules } from "@/lib/user-context"
 import { BASE_PATH } from "@/lib/env"
 
 type Devis = {
@@ -78,6 +78,9 @@ export function DevisView() {
   const t = useTranslations()
   const router = useRouter()
   const modules = useModules()
+  // FORM-34: a Comptabilité reader previews, downloads and reads the history of quotes but
+  // cannot create, edit, duplicate, convert, send or delete them.
+  const canEditComptabilite = useHasAccess("comptabilite", "edit")
   // Seeded from ?search=… so a "Voir tout" link from the Fournisseur detail page (or
   // any other deep link) lands here pre-filtered instead of on the unfiltered list.
   const searchParams = useSearchParams()
@@ -238,23 +241,27 @@ export function DevisView() {
       className: "w-10",
       cell: (d) => (
         <RowActions actions={[
-          ...(d.status === "ACCEPTE" && !d.facture && modules.factures ? [
+          ...(canEditComptabilite && d.status === "ACCEPTE" && !d.facture && modules.factures ? [
             { label: t("devis.view.actions.convert"), icon: <ArrowRightIcon className="size-3.5" />, onClick: () => handleConvert(d) },
           ] : []),
-          { label: t("devis.view.actions.edit"),  icon: <PencilSimpleIcon className="size-3.5" />, onClick: () => setEditTarget(d), separator: true },
-          { label: t("devis.view.actions.duplicate"), icon: <CopyIcon className="size-3.5" />, onClick: () => handleDuplicate(d) },
+          ...(canEditComptabilite ? [
+            { label: t("devis.view.actions.edit"),  icon: <PencilSimpleIcon className="size-3.5" />, onClick: () => setEditTarget(d), separator: true },
+            { label: t("devis.view.actions.duplicate"), icon: <CopyIcon className="size-3.5" />, onClick: () => handleDuplicate(d) },
+          ] : []),
           { label: t("devis.view.actions.preview"), icon: <EyeIcon className="size-3.5" />, onClick: () => setPreviewTarget(d) },
           { label: t("devis.view.actions.downloadPdf"), icon: <DownloadSimpleIcon className="size-3.5" />, onClick: () => window.open(`${BASE_PATH}/api/devis/${d.id}/pdf`, "_blank") },
-          { label: t("devis.view.actions.sendEmail"), icon: <EnvelopeSimpleIcon className="size-3.5" />, onClick: () => setEmailTarget(d) },
+          ...(canEditComptabilite ? [
+            { label: t("devis.view.actions.sendEmail"), icon: <EnvelopeSimpleIcon className="size-3.5" />, onClick: () => setEmailTarget(d) },
+          ] : []),
           { label: t("devis.view.actions.history"), icon: <ClockCounterClockwiseIcon className="size-3.5" />, onClick: () => setHistoryTarget(d) },
-          {
+          ...(canEditComptabilite ? [{
             label: d.facture ? t("devis.view.actions.deleteAlreadyInvoiced") : t("devis.view.actions.delete"),
             icon: <TrashIcon className="size-3.5" />,
             destructive: true,
             separator: true,
             disabled: !!d.facture,
             onClick: () => setDeleteTarget(d),
-          },
+          }] : []),
         ]} />
       ),
     },
@@ -269,12 +276,12 @@ export function DevisView() {
       <PageHeader
         title={t("devis.view.title")}
         description={descriptionText}
-        action={
+        action={canEditComptabilite && (
           <Button size="sm" onClick={() => setCreateOpen(true)}>
             <PlusIcon className="mr-1.5 size-4" />
             {t("devis.view.newDevis")}
           </Button>
-        }
+        )}
       />
 
       <div className="flex flex-wrap gap-2">

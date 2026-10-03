@@ -55,4 +55,4 @@ export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
       "Content-Disposition": `inline; filename="${devis.number}.pdf"`,
     },
   })
-}, { module: "devis" })
+}, { area: "comptabilite", module: "devis" })

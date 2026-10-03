@@ -7,8 +7,6 @@ import { findUnknownVars, TEMPLATE_CATEGORIES } from "@/lib/automation"
 import { emailBlockSchema, renderBlocksToHtml } from "@/lib/email-blocks"
 import { canUseCustomBranding } from "@/lib/plan-limits"
 
-const ALLOWED_ROLES = ["ADMIN", "PRESIDENT", "SECRETAIRE"]
-
 const schema = z.object({
   name:      z.string().min(1).max(100),
   category:  z.enum(TEMPLATE_CATEGORIES).default("GENERAL"),
@@ -38,7 +36,7 @@ export const GET = withAdminAuth(async (req, ctx) => {
 
   const payload = templates.map(({ rules, ...t }) => ({ ...t, activeRulesCount: rules.length }))
   return NextResponse.json(payload)
-}, { roles: ALLOWED_ROLES })
+}, { area: "communication" })
 
 export const POST = withAdminAuth(async (req, ctx) => {
   const { associationId, userId } = ctx
@@ -99,4 +97,4 @@ export const POST = withAdminAuth(async (req, ctx) => {
 
   await writeActivityLog({ associationId, actorId: userId, action: "TEMPLATE_CREATED", entity: "MessageTemplate", entityId: template.id, label: template.name })
   return NextResponse.json(template, { status: 201 })
-}, { roles: ALLOWED_ROLES })
+}, { area: "communication" })

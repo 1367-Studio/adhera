@@ -5,8 +5,6 @@ import { utils, write } from "xlsx"
 import { withAdminAuth } from "@/lib/api-wrapper"
 import { isMembreAdherent, membreAdherentCotisationSelect, membreAdherentResponsableSelect } from "@/lib/membre-adherent"
 
-const ADMINS = ["ADMIN", "PRESIDENT"]
-
 // Neutralize CSV/formula injection — several of these fields (don/participation/commande
 // guest info) come from public, unauthenticated forms. Same helper as the events export.
 function sanitizeCell(value: string | null | undefined): string {
@@ -265,4 +263,4 @@ export const GET = withAdminAuth(async (_req, ctx) => {
       "Content-Disposition": `attachment; filename="export_donnees_${date}.xlsx"`,
     },
   })
-}, { roles: ADMINS, allowWhenLocked: true })
+}, { administrator: true, allowWhenLocked: true })

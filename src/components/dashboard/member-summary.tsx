@@ -4,6 +4,7 @@ import Link from "next/link"
 import { useQuery } from "@tanstack/react-query"
 import { useTranslations } from "next-intl"
 import { cn } from "@/lib/utils"
+import { useIsAdministrator } from "@/lib/user-context"
 import { memberUsageLevel, memberUsagePercent, type MemberUsageLevel } from "@/lib/member-usage"
 
 const BILLING_SETTINGS_PATH = "/dashboard/parametres?tab=abonnement"
@@ -68,6 +69,8 @@ function MemberUsageBar({ activeCount, limit }: MemberUsage) {
   const t       = useTranslations("dashboard.memberUsage")
   const level   = memberUsageLevel(activeCount, limit)
   const percent = memberUsagePercent(activeCount, limit)
+  // Billing belongs to administrators (/dashboard/parametres); anyone else just reads the bar.
+  const isAdministrator = useIsAdministrator()
 
   // Spelled out next to the numbers so the state never relies on color alone.
   const levelLabel =
@@ -75,11 +78,8 @@ function MemberUsageBar({ activeCount, limit }: MemberUsage) {
     : level === "critical" ? (activeCount >= limit ? t("limitReached") : t("almostReached"))
     : null
 
-  return (
-    <Link
-      href={BILLING_SETTINGS_PATH}
-      className="flex items-center gap-3 rounded-md text-muted-foreground transition-colors outline-none hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/50"
-    >
+  const usageContent = (
+    <>
       {levelLabel && <span className={cn("font-medium", LEVEL_TEXT_CLASS[level])}>{levelLabel}</span>}
       <span className="tabular-nums">{t("label", { active: activeCount, limit })}</span>
       <div
@@ -92,6 +92,19 @@ function MemberUsageBar({ activeCount, limit }: MemberUsage) {
       >
         <div className={cn("h-full rounded-full", BAR_FILL_CLASS[level])} style={{ width: `${percent}%` }} />
       </div>
+    </>
+  )
+
+  if (!isAdministrator) {
+    return <div className="flex items-center gap-3 text-muted-foreground">{usageContent}</div>
+  }
+
+  return (
+    <Link
+      href={BILLING_SETTINGS_PATH}
+      className="flex items-center gap-3 rounded-md text-muted-foreground transition-colors outline-none hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/50"
+    >
+      {usageContent}
     </Link>
   )
 }

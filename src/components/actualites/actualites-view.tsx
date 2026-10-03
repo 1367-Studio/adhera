@@ -21,6 +21,7 @@ import { Badge } from "@/components/ui/badge"
 import { RowActions } from "@/components/ui/row-actions"
 import { SearchInput } from "@/components/ui/search-input"
 import { cn, stripHtml } from "@/lib/utils"
+import { useHasAccess } from "@/lib/user-context"
 
 type EvenementRef = { id: string; title: string; date: string; location: string | null }
 
@@ -51,6 +52,8 @@ function PostCard({
   const t = useTranslations("actualites.view")
   const tCommon = useTranslations("common")
   const updateMutation = useUpdateActualite(post.id)
+  // Same check as PATCH/DELETE /api/actualites/[id]: readers get no row actions.
+  const canEditActualites = useHasAccess("actualites", "edit")
   const plainText = stripHtml(post.content)
 
   async function togglePublish() {
@@ -108,7 +111,7 @@ function PostCard({
               </Badge>
             )}
           </div>
-          <RowActions
+          {canEditActualites && <RowActions
             actions={[
               { label: t("actions.edit"),  icon: <PencilSimpleIcon className="size-3.5" />, onClick: onEdit },
               post.publishedAt
@@ -116,7 +119,7 @@ function PostCard({
                 : { label: t("actions.publish"),   icon: <PaperPlaneTiltIcon   className="size-3.5" />, onClick: togglePublish, separator: true },
               { label: t("actions.delete"), icon: <TrashIcon className="size-3.5" />, destructive: true, separator: true, onClick: onDelete },
             ]}
-          />
+          />}
         </div>
 
         {/* Title + excerpt */}
@@ -155,6 +158,8 @@ function PostRow({
   const t = useTranslations("actualites.view")
   const tCommon = useTranslations("common")
   const updateMutation = useUpdateActualite(post.id)
+  // Same check as PATCH/DELETE /api/actualites/[id]: readers get no row actions.
+  const canEditActualites = useHasAccess("actualites", "edit")
 
   async function togglePublish() {
     try {
@@ -198,7 +203,7 @@ function PostRow({
 
       <span className="text-xs text-muted-foreground shrink-0">{date}</span>
 
-      <RowActions
+      {canEditActualites && <RowActions
         actions={[
           { label: t("actions.edit"),  icon: <PencilSimpleIcon className="size-3.5" />, onClick: onEdit },
           post.publishedAt
@@ -206,7 +211,7 @@ function PostRow({
             : { label: t("actions.publish"),   icon: <PaperPlaneTiltIcon   className="size-3.5" />, onClick: togglePublish, separator: true },
           { label: t("actions.delete"), icon: <TrashIcon className="size-3.5" />, destructive: true, separator: true, onClick: onDelete },
         ]}
-      />
+      />}
     </div>
   )
 }
@@ -227,6 +232,8 @@ export function ActualitesView() {
   const [editTarget, setEditTarget]   = useState<Actualite | null>(null)
   const [deleteTarget, setDeleteTarget] = useState<Actualite | null>(null)
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  // Same check as POST /api/actualites.
+  const canEditActualites = useHasAccess("actualites", "edit")
 
   useEffect(() => () => { if (debounceRef.current) clearTimeout(debounceRef.current) }, [])
 
@@ -286,10 +293,12 @@ export function ActualitesView() {
         action={
           <div className="flex items-center gap-2">
             <ViewToggle options={viewOptions} value={view} onChange={setView} />
-            <Button size="sm" onClick={() => setCreateOpen(true)}>
-              <PlusIcon className="mr-1.5 size-4" />
-              {t("actualites.view.write")}
-            </Button>
+            {canEditActualites && (
+              <Button size="sm" onClick={() => setCreateOpen(true)}>
+                <PlusIcon className="mr-1.5 size-4" />
+                {t("actualites.view.write")}
+              </Button>
+            )}
           </div>
         }
       />

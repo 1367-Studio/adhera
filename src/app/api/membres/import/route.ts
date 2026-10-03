@@ -7,7 +7,6 @@ import { assertMemberLimit, MemberLimitReachedError } from "@/lib/plan-limits"
 import { isPlaceholderEmail, normalizeName } from "@/lib/membre-import-matching"
 import { inngest } from "@/lib/inngest"
 
-const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
 
 export const POST = withAdminAuth(async (req, ctx) => {
   const { associationId, userId } = ctx
@@ -94,4 +93,4 @@ export const POST = withAdminAuth(async (req, ctx) => {
   })
 
   return NextResponse.json({ jobId, totalRows: parsedRows.length, schemaErrors })
-}, { roles: MANAGERS })
+}, { area: "membres" })

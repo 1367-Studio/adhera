@@ -1,21 +1,18 @@
 import { NextResponse } from "next/server"
-import { getAssociationCtx, isCtx } from "@/lib/api-association"
 import { prisma } from "@/lib/prisma/client"
 import { actualiteSchema } from "@/lib/schemas"
 import { parsePagination } from "@/lib/pagination"
 import { writeActivityLog } from "@/lib/activity-log"
 import { withAdminAuth } from "@/lib/api-wrapper"
 
-const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
-
 const include = {
   evenement:  { select: { id: true, title: true, date: true, location: true } },
   recipients: { select: { membreId: true } },
 }
 
-export async function GET(req: Request) {
-  const ctx = await getAssociationCtx()
-  if (!isCtx(ctx)) return ctx
+// Every actualité, drafts and member-targeted ones included: staff only (withAdminAuth). Members
+// read theirs through the portal routes.
+export const GET = withAdminAuth(async (req, ctx) => {
   const { associationId } = ctx
 
   const { searchParams } = new URL(req.url)
@@ -41,7 +38,7 @@ export async function GET(req: Request) {
   ])
 
   return NextResponse.json({ data, total, page, limit, totalPages: Math.ceil(total / limit) })
-}
+}, { area: "actualites" })
 
 export const POST = withAdminAuth(async (req, ctx) => {
   const { associationId, userId } = ctx
@@ -70,4 +67,4 @@ export const POST = withAdminAuth(async (req, ctx) => {
 
   await writeActivityLog({ associationId, actorId: userId, action: "ACTUALITE_CREATED", entity: "Actualite", entityId: actualite.id, label: actualite.title })
   return NextResponse.json(actualite, { status: 201 })
-}, { roles: MANAGERS, module: "actualites" })
+}, { area: "actualites", module: "actualites" })

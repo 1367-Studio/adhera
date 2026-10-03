@@ -15,7 +15,7 @@ import {
   useEvenement, useParticipations, useTogglePresence, useGenerateQr, useRevokeQr, useMarkPaid, useCancelPayment,
   useAddGuest, useEditGuest, useDeleteGuest, usePromoteWaitlist, type RowRef,
 } from "@/hooks/use-evenements"
-import { useCurrentUser } from "@/lib/user-context"
+import { useCurrentUser, useHasAccess, useIsAdministrator } from "@/lib/user-context"
 import { Button } from "@/components/ui/button"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
@@ -139,9 +139,13 @@ export default function PresencesPage() {
   const qc      = useQueryClient()
   const user    = useCurrentUser()
   const RSVP_LABELS = getRsvpConfig(t)
-  // Mirrors FREE_MANAGERS server-side (src/app/api/evenements/[id]/participations/
-  // route.ts) — hiding the action for roles that would just get a 403 back.
-  const canMarkFree = user.role === "ADMIN" || user.role === "PRESIDENT"
+  // FORM-34, same rules as the API: a "read" user follows attendance and exports it, but
+  // checks nobody in, adds/removes nobody, collects nothing and sends nothing.
+  const canEditEvenements = useHasAccess("evenements", "edit")
+  // Waiving a ticket is administrators only (src/app/api/evenements/[id]/participations/route.ts).
+  const canMarkFree       = useIsAdministrator()
+  // The receipt route also needs to read the Comptabilité area.
+  const canReadReceipts   = useHasAccess("comptabilite", "read")
 
   // Local QR state — initialized from server data, updated immediately after mutations
   const [qrToken, setQrToken]           = useState<string | null>(null)
@@ -897,6 +901,7 @@ export default function PresencesPage() {
                 >
                   {t("evenements.presences.qr.copyLink")}
                 </Button>
+                {canEditEvenements && (
                 <div className="flex gap-2">
                   <TooltipProvider>
                     <Tooltip>
@@ -926,6 +931,7 @@ export default function PresencesPage() {
                     </Tooltip>
                   </TooltipProvider>
                 </div>
+                )}
               </div>
             </>
           ) : (
@@ -934,13 +940,16 @@ export default function PresencesPage() {
               <p className="text-xs text-muted-foreground">
                 {activeToken && activeExpired ? t("evenements.presences.qr.expired") : t("evenements.presences.qr.none")}
               </p>
-              <Button onClick={handleGenerateQr} loading={generateQr.isPending} className="w-full">
-                <QrCodeIcon className="mr-1.5 size-4" />
-                {t("evenements.presences.qr.generate")}
-              </Button>
+              {canEditEvenements && (
+                <Button onClick={handleGenerateQr} loading={generateQr.isPending} className="w-full">
+                  <QrCodeIcon className="mr-1.5 size-4" />
+                  {t("evenements.presences.qr.generate")}
+                </Button>
+              )}
             </div>
           )}
 
+          {canEditEvenements && (
           <div className="border-t pt-3 space-y-2">
             <Button
               variant="outline"
@@ -965,6 +974,7 @@ export default function PresencesPage() {
               </Button>
             )}
           </div>
+          )}
         </div>
 
         {/* Member list */}
@@ -980,7 +990,7 @@ export default function PresencesPage() {
                 className="w-full rounded-md border border-input bg-background pl-9 pr-3 py-2 text-sm outline-none focus:ring-1 focus:ring-ring"
               />
             </div>
-            {!isPast && (
+            {canEditEvenements && !isPast && (
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger render={<span />}>
@@ -1029,7 +1039,7 @@ export default function PresencesPage() {
                   <button
                     type="button"
                     onClick={() => handleToggle(row)}
-                    disabled={pendingIds.has(rowKey(row))}
+                    disabled={!canEditEvenements || pendingIds.has(rowKey(row))}
                     className="flex flex-1 items-center justify-between gap-3 text-left min-w-0"
                   >
                     <span className="flex items-center gap-1.5 min-w-0">
@@ -1070,6 +1080,7 @@ export default function PresencesPage() {
                         <HourglassIcon className="size-3" />
                         {t("evenements.presences.list.waitlistBadge")}
                       </span>
+                      {canEditEvenements && (
                       <button
                         type="button"
                         onClick={() => handlePromote(row)}
@@ -1079,6 +1090,7 @@ export default function PresencesPage() {
                         <ArrowUpIcon className="size-3" />
                         {t("evenements.presences.list.promote")}
                       </button>
+                      )}
                     </div>
                   ) : hasFee && (
                     row.ticketPaidAt ? (
@@ -1096,7 +1108,7 @@ export default function PresencesPage() {
                             ? t("evenements.presences.list.freeBadge")
                             : t("evenements.presences.list.paidBadge")}
                         </span>
-                        {row.receiptMode && row.receiptMode !== "NONE" && row.participationId && (
+                        {canReadReceipts && row.receiptMode && row.receiptMode !== "NONE" && row.participationId && (
                           <a
                             href={`/api/evenements/${id}/participations/${row.participationId}/recu`}
                             target="_blank"
@@ -1108,7 +1120,7 @@ export default function PresencesPage() {
                             <FileTextIcon className="size-3.5" />
                           </a>
                         )}
-                        {!row.stripeSessionId && (
+                        {canEditEvenements && !row.stripeSessionId && (
                           <TooltipProvider>
                             <Tooltip>
                               <TooltipTrigger render={<span />}>
@@ -1132,6 +1144,7 @@ export default function PresencesPage() {
                           <BookmarkSimpleIcon className="size-3" />
                           {t("evenements.presences.list.reservedBadge")}
                         </span>
+                        {canEditEvenements && (
                         <button
                           type="button"
                           onClick={() => handleMarkPaid(row)}
@@ -1141,7 +1154,8 @@ export default function PresencesPage() {
                           <MoneyIcon className="size-3" />
                           {t("evenements.presences.list.markPaid")}
                         </button>
-                        {canMarkFree && (
+                        )}
+                        {canEditEvenements && canMarkFree && (
                           <TooltipProvider>
                             <Tooltip>
                               <TooltipTrigger render={<span />}>
@@ -1161,6 +1175,7 @@ export default function PresencesPage() {
                       </div>
                     ) : (
                       <div className="flex items-center gap-1.5 shrink-0">
+                        {canEditEvenements && (
                         <button
                           type="button"
                           onClick={() => handleMarkPaid(row)}
@@ -1170,7 +1185,8 @@ export default function PresencesPage() {
                           <MoneyIcon className="size-3" />
                           {t("evenements.presences.list.markPaid")}
                         </button>
-                        {canMarkFree && (
+                        )}
+                        {canEditEvenements && canMarkFree && (
                           <TooltipProvider>
                             <Tooltip>
                               <TooltipTrigger render={<span />}>
@@ -1208,7 +1224,7 @@ export default function PresencesPage() {
                     </TooltipProvider>
                   )}
 
-                  {row.isGuest && !isPast && (
+                  {canEditEvenements && row.isGuest && !isPast && (
                     <div className="flex items-center gap-1 shrink-0">
                       <button
                         type="button"

@@ -5,8 +5,6 @@ import { writeActivityLog } from "@/lib/activity-log"
 import { withAdminAuth } from "@/lib/api-wrapper"
 import { revalidatePublicSiteFor } from "@/lib/association/revalidate-site"
 
-const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
-
 class TicketTypeInUseError extends Error {}
 
 export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
@@ -30,7 +28,7 @@ export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
   const occupiedMap = new Map(occupancy.map(o => [o.ticketTypeId, o._count._all]))
 
   return NextResponse.json(ticketTypes.map(tt => ({ ...tt, occupied: occupiedMap.get(tt.id) ?? 0 })))
-})
+}, { area: "evenements" })
 
 export const PUT = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   const { associationId, userId } = ctx
@@ -109,4 +107,4 @@ export const PUT = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   })
 
   return NextResponse.json({ ticketTypes, affectedDiscountCodes })
-}, { roles: MANAGERS, module: "evenements" })
+}, { area: "evenements", module: "evenements" })

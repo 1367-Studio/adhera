@@ -9,8 +9,6 @@ import { nextAmountDue } from "@/lib/cotisation-status"
 import { writeActivityLog } from "@/lib/activity-log"
 import { reportError } from "@/lib/monitoring"
 
-const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
-
 // A member registered by a manager through the public form's admin mode
 // (admin-registration/route.ts) has no account and no other way to hear from the
 // association until the payment email arrives — if it never reached them (typo, lost,
@@ -78,4 +76,4 @@ export const POST = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
   })
 
   return NextResponse.json({ sent: true })
-}, { roles: MANAGERS, module: "cotisations" })
+}, { area: "membres", module: "cotisations" })

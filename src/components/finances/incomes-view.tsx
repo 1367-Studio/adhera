@@ -20,6 +20,7 @@ import { RowActions } from "@/components/ui/row-actions"
 import { FilterSelect } from "@/components/ui/filter-select"
 import { SearchInput } from "@/components/ui/search-input"
 import { IncomeForm } from "@/components/finances/income-form"
+import { useHasAccess } from "@/lib/user-context"
 
 type Income = {
   id:               string
@@ -51,6 +52,8 @@ function getStatusConfig(t: Translator) {
 
 export function IncomesView() {
   const t = useTranslations()
+  // FORM-34: a Comptabilité reader browses and filters but cannot add, edit or delete.
+  const canEditComptabilite = useHasAccess("comptabilite", "edit")
   const [page, setPage]                 = useState(1)
   const [searchInput, setSearchInput]   = useState("")
   const [search, setSearch]             = useState("")
@@ -175,11 +178,11 @@ export function IncomesView() {
         return <Badge variant={cfg.variant}>{cfg.label}</Badge>
       },
     },
-    {
+    ...(canEditComptabilite ? [{
       key: "actions",
       header: "",
       className: "w-10",
-      cell: (i) => (
+      cell: (i: Income) => (
         <RowActions actions={[
           { label: t("finances.incomesView.actions.edit"),  icon: <PencilSimpleIcon className="size-3.5" />, onClick: () => setEditTarget(i) },
           {
@@ -190,7 +193,7 @@ export function IncomesView() {
           },
         ]} />
       ),
-    },
+    }] : []),
   ]
 
   return (
@@ -198,12 +201,12 @@ export function IncomesView() {
       <PageHeader
         title={t("finances.incomesView.title")}
         description={t("finances.incomesView.description")}
-        action={
+        action={canEditComptabilite && (
           <Button size="sm" onClick={() => setCreateOpen(true)}>
             <PlusIcon className="mr-1.5 size-4" />
             {t("common.add")}
           </Button>
-        }
+        )}
       />
 
       <div className="flex flex-wrap gap-2">

@@ -3,7 +3,6 @@ import { withAdminAuth } from "@/lib/api-wrapper"
 import { prisma } from "@/lib/prisma/client"
 import { paperFormTemplateSchema } from "@/lib/schemas"
 import { writeActivityLog } from "@/lib/activity-log"
-import { MANAGER_ROLES } from "@/lib/roles"
 import {
   PAPER_FORM_TEMPLATE_SELECT,
   UNKNOWN_LEGAL_DOCUMENT_MESSAGE,
@@ -21,7 +20,7 @@ export const GET = withAdminAuth(async (_req, ctx) => {
   })
 
   return NextResponse.json(templates.map(toTemplateResponse))
-}, { roles: MANAGER_ROLES })
+}, { area: "membres" })
 
 export const POST = withAdminAuth(async (req, ctx) => {
   const { associationId, userId } = ctx
@@ -45,4 +44,4 @@ export const POST = withAdminAuth(async (req, ctx) => {
   await writeActivityLog({ associationId, actorId: userId, action: "PAPER_FORM_TEMPLATE_CREATED", entity: "PaperFormTemplate", entityId: template.id, label: template.name })
 
   return NextResponse.json(toTemplateResponse(template), { status: 201 })
-}, { roles: MANAGER_ROLES })
+}, { area: "membres" })

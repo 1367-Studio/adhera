@@ -4,7 +4,6 @@ import { prisma } from "@/lib/prisma/client"
 import { buildFicheMembreViergePdf } from "@/lib/pdf/fiche-membre-vierge"
 import { resolveDocumentBranding } from "@/lib/plan-limits"
 
-const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
 
 export const GET = withAdminAuth(async (_req, ctx) => {
   const { associationId } = ctx
@@ -27,4 +26,4 @@ export const GET = withAdminAuth(async (_req, ctx) => {
       "Content-Disposition": `inline; filename="fiche_membre_vierge_${slug}.pdf"`,
     },
   })
-}, { roles: MANAGERS })
+}, { area: "membres" })

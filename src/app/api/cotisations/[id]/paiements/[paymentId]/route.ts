@@ -5,7 +5,6 @@ import { prisma } from "@/lib/prisma/client"
 import { writeActivityLog } from "@/lib/activity-log"
 import { removeCotisationPayment } from "@/lib/cotisation-payments"
 
-const FINANCE = ["ADMIN", "PRESIDENT", "TRESORIER"]
 
 export const DELETE = withAdminAuth<{ id: string; paymentId: string }>(async (_req, ctx, { id, paymentId }) => {
   const { associationId, userId } = ctx
@@ -34,4 +33,4 @@ export const DELETE = withAdminAuth<{ id: string; paymentId: string }>(async (_r
     }
     throw err
   }
-}, { roles: FINANCE, module: "cotisations" })
+}, { area: "adhesions", module: "cotisations" })

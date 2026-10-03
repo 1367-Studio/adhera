@@ -3,12 +3,7 @@ import { prisma } from "@/lib/prisma/client"
 import { generateRecuFiscalForDon } from "@/lib/pdf/recu-fiscal"
 import { withAdminAuth } from "@/lib/api-wrapper"
 
-const FINANCE = ["ADMIN", "PRESIDENT", "TRESORIER"]
-
 export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
-  if (!FINANCE.includes(ctx.role))
-    return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
-
   const don = await prisma.don.findFirst({
     where: { id, associationId: ctx.associationId, paidAt: { not: null }, refundedAt: null },
   })
@@ -38,4 +33,4 @@ export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
       "Content-Disposition": `attachment; filename="${name}"`,
     },
   })
-})
+}, { area: "dons" })

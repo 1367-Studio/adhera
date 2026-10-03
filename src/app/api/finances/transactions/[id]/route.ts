@@ -5,8 +5,6 @@ import { writeActivityLog } from "@/lib/activity-log"
 import { withAdminAuth } from "@/lib/api-wrapper"
 import { closedExerciceGuard } from "@/lib/finance/exercice"
 
-const FINANCE = ["ADMIN", "PRESIDENT", "TRESORIER"]
-
 export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   const { associationId, userId } = ctx
 
@@ -28,4 +26,4 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   const tx = await prisma.bankTransaction.update({ where: { id }, data: { status: parsed.data.status } })
   await writeActivityLog({ associationId, actorId: userId, action: "BANK_TX_STATUS_UPDATED", entity: "BankTransaction", entityId: id, label: existing.label, metadata: { status: parsed.data.status } })
   return NextResponse.json(tx)
-}, { roles: FINANCE, module: "finances" })
+}, { area: "comptabilite", module: "finances" })

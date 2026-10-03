@@ -3,8 +3,6 @@ import { prisma } from "@/lib/prisma/client"
 import { withAdminAuth } from "@/lib/api-wrapper"
 import { guardModule } from "@/lib/auth/require-module"
 
-const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
-
 const DEFAULT_SUBJECT = "Cotisation {{annee_cotisation}} en attente de paiement"
 const DEFAULT_BODY =
   "<p>Bonjour {{prenom}},</p>" +
@@ -41,4 +39,4 @@ export const GET = withAdminAuth(async (req, ctx) => {
     },
   })
   return NextResponse.json(created)
-}, { roles: MANAGERS, module: "cotisations" })
+}, { area: "adhesions", module: "cotisations" })

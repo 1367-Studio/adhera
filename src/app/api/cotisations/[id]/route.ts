@@ -9,7 +9,9 @@ import { deriveCotisationStatus, type CotisationStatus } from "@/lib/cotisation-
 
 const EPSILON = 0.01
 
-const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
+// Writes on a cotisation are gated on Membres "edit", not Adhésions: the Secrétaire, read-only
+// on Adhésions, has always been able to record and correct a member's cotisation (FORM-34
+// keeps that). Payments themselves (./paiements) need Adhésions "edit".
 
 const cotisationInclude = {
   membre:       { select: { id: true, firstName: true, lastName: true, email: true } },
@@ -44,7 +46,7 @@ export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
   })
   if (!cotisation) return NextResponse.json({ error: "Cotisation introuvable" }, { status: 404 })
   return NextResponse.json(cotisation)
-}, { roles: MANAGERS, module: "cotisations" })
+}, { area: "adhesions", module: "cotisations" })
 
 export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   const { associationId, userId } = ctx
@@ -197,7 +199,7 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   )
   await writeActivityLog({ associationId, actorId: userId, action: "COTISATION_UPDATED", entity: "Cotisation", entityId: id, label: `${cotisation.membre.firstName} ${cotisation.membre.lastName} — ${cotisation.year}`, metadata: Object.keys(changes).length > 0 ? { changes } : undefined })
   return NextResponse.json(cotisation)
-}, { roles: MANAGERS, module: "cotisations" })
+}, { area: "membres", module: "cotisations" })
 
 export const DELETE = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   const { associationId, userId } = ctx
@@ -242,4 +244,4 @@ export const DELETE = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => 
   await prisma.$transaction((tx) => deleteCotisationWithPayments(tx, id))
   await writeActivityLog({ associationId, actorId: userId, action: "COTISATION_DELETED", entity: "Cotisation", entityId: id, label: `${existing.membre.firstName} ${existing.membre.lastName} — ${existing.year}` })
   return new NextResponse(null, { status: 204 })
-}, { roles: MANAGERS, module: "cotisations" })
+}, { area: "membres", module: "cotisations" })

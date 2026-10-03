@@ -8,7 +8,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { CircleNotchIcon } from "@phosphor-icons/react/dist/ssr";
 import type { UserRole } from "@prisma/client"
 
-type Role = "ADMIN" | "PRESIDENT" | "TRESORIER" | "SECRETAIRE" | "MEMBRE"
+type Role = "ADMIN" | "PRESIDENT" | "TRESORIER" | "SECRETAIRE" | "EQUIPE" | "MEMBRE"
 
 type Membre = {
   id:        string
@@ -25,6 +25,7 @@ const ROLE_LABELS: Record<Role, string> = {
   PRESIDENT:  "Président",
   TRESORIER:  "Trésorier",
   SECRETAIRE: "Secrétaire",
+  EQUIPE:     "Membre de l'équipe",
   MEMBRE:     "Membre",
 }
 

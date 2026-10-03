@@ -6,8 +6,6 @@ import { writeActivityLog } from "@/lib/activity-log"
 import { withAdminAuth } from "@/lib/api-wrapper"
 import { assertIncomeCategory } from "@/lib/validate-finance-category"
 
-const MANAGERS = ["ADMIN", "PRESIDENT", "SECRETAIRE"]
-
 const varianteSchema = z.object({
   label:       z.string().trim().min(1).max(100),
   price:       z.number().int().min(0),
@@ -29,8 +27,6 @@ const createSchema = z.object({
 })
 
 export const GET = withAdminAuth(async (req, ctx) => {
-  if (!MANAGERS.includes(ctx.role))
-    return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
   const guard = await guardModule(ctx.associationId, "boutique")
   if (guard) return guard
 
@@ -44,11 +40,9 @@ export const GET = withAdminAuth(async (req, ctx) => {
   })
 
   return NextResponse.json(produits)
-})
+}, { area: "boutique" })
 
 export const POST = withAdminAuth(async (req, ctx) => {
-  if (!MANAGERS.includes(ctx.role))
-    return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
 
   const guard = await guardModule(ctx.associationId, "boutique")
   if (guard) return guard
@@ -88,4 +82,4 @@ export const POST = withAdminAuth(async (req, ctx) => {
   })
 
   return NextResponse.json(produit, { status: 201 })
-})
+}, { area: "boutique" })

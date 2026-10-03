@@ -4,8 +4,6 @@ import { withAdminAuth } from "@/lib/api-wrapper"
 import { prisma } from "@/lib/prisma/client"
 import { writeActivityLog } from "@/lib/activity-log"
 
-const MANAGERS = ["ADMIN", "PRESIDENT"]
-
 const schema = z.object({
   smsAccountSid:  z.string().max(256).nullable().optional(),
   smsAuthToken:   z.string().max(256).nullable().optional(),
@@ -24,11 +22,8 @@ export const GET = withAdminAuth(async (req, ctx) => {
   })
 })
 
+// Credentials of the association: administrators only (président/admin, as before).
 export const PATCH = withAdminAuth(async (req, ctx) => {
-  if (!MANAGERS.includes(ctx.role)) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
-  }
-
   const body   = await req.json().catch(() => null)
   const parsed = schema.safeParse(body)
   if (!parsed.success) return NextResponse.json({ error: "Données invalides" }, { status: 400 })
@@ -63,4 +58,4 @@ export const PATCH = withAdminAuth(async (req, ctx) => {
     ok:            true,
     smsConfigured: !!(updated.smsAccountSid && updated.smsAuthToken && updated.smsPhoneNumber),
   })
-})
+}, { administrator: true })
