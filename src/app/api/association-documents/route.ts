@@ -4,7 +4,6 @@ import { prisma } from "@/lib/prisma/client"
 import { associationDocumentSchema } from "@/lib/schemas"
 import { writeActivityLog } from "@/lib/activity-log"
 import { syncDocumentRevision } from "@/lib/legal/revisions"
-import { MANAGER_ROLES } from "@/lib/roles"
 import { isAssociationDocumentFileUrl } from "@/lib/legal/document-file"
 
 // The list never carries `content` — a document's HTML can run to 200 000 characters and
@@ -34,7 +33,7 @@ export const GET = withAdminAuth(async (_req, ctx) => {
   })
 
   return NextResponse.json(documents)
-}, { roles: MANAGER_ROLES })
+}, { area: "documents" })
 
 export const POST = withAdminAuth(async (req, ctx) => {
   const { associationId, userId } = ctx
@@ -71,4 +70,4 @@ export const POST = withAdminAuth(async (req, ctx) => {
   await writeActivityLog({ associationId, actorId: userId, action: "ASSOCIATION_DOCUMENT_CREATED", entity: "AssociationDocument", entityId: document.id, label: document.title })
 
   return NextResponse.json(document, { status: 201 })
-}, { roles: MANAGER_ROLES })
+}, { area: "documents" })

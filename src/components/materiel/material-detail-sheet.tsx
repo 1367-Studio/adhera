@@ -19,9 +19,7 @@ import { LoanModal } from "@/components/materiel/loan-modal"
 import { MaterialModal } from "@/components/materiel/material-modal"
 import { cn } from "@/lib/utils"
 import { BASE_PATH } from "@/lib/env"
-import { useCurrentUser, useModules } from "@/lib/user-context"
-
-const FINANCE_ROLES = ["ADMIN", "PRESIDENT", "TRESORIER"]
+import { useHasAccess, useModules } from "@/lib/user-context"
 
 type Translator = ReturnType<typeof useTranslations>
 
@@ -105,8 +103,8 @@ function FactureAction({ loan, onGenerate, pending, canGenerate }: { loan: Mater
       </Link>
     )
   }
-  // Facture generation is finance-only server-side (POST .../facture) — hide the trigger for
-  // other roles instead of letting them hit a dead-end "Unauthorized" toast.
+  // Facture generation needs "materiel" edit + "comptabilite" edit server-side (POST
+  // .../facture) — hide the trigger for anyone else instead of a dead-end 403 toast.
   if (!canGenerate) return null
   if (Number(loan.feeAmount ?? 0) <= 0) return null
   return (
@@ -131,8 +129,11 @@ interface Props {
 
 export function MaterialDetailSheet({ material, open, onOpenChange, onDeleted }: Props) {
   const t = useTranslations()
-  const { role } = useCurrentUser()
-  const canGenerateFacture = FINANCE_ROLES.includes(role)
+  // FORM-34, same rules as the API: a "read" user sees the item, its loans and their PDFs,
+  // and changes nothing (no lend / return / accept / e-mail / delete).
+  const canEditMateriel     = useHasAccess("materiel", "edit")
+  const canEditComptabilite = useHasAccess("comptabilite", "edit")
+  const canGenerateFacture  = canEditMateriel && canEditComptabilite
   const { data: detail, isLoading } = useMaterialDetail(material?.id ?? null)
   const returnLoan  = useReturnLoan(material?.id  ?? "")
   const confirmLoan = useConfirmLoan(material?.id ?? "")
@@ -226,6 +227,7 @@ export function MaterialDetailSheet({ material, open, onOpenChange, onDeleted }:
                   )}
                 </div>
               </div>
+              {canEditMateriel && (
               <div className="flex gap-1.5 shrink-0">
                 <Button size="sm" variant="outline" className="h-7 px-2" onClick={() => setEditModalOpen(true)}>
                   <PencilSimpleIcon className="size-3.5" />
@@ -234,6 +236,7 @@ export function MaterialDetailSheet({ material, open, onOpenChange, onDeleted }:
                   <TrashIcon className="size-3.5" />
                 </Button>
               </div>
+              )}
             </div>
           </SheetHeader>
 
@@ -313,6 +316,7 @@ export function MaterialDetailSheet({ material, open, onOpenChange, onDeleted }:
                               {loan.membre ? `${loan.membre.firstName} ${loan.membre.lastName}` : loan.borrowerName ?? "—"}
                               {loan.quantity > 1 && <span className="text-muted-foreground ml-1">×{loan.quantity}</span>}
                             </p>
+                            {canEditMateriel && (
                             <div className="flex items-center gap-1">
                               <button
                                 type="button"
@@ -337,6 +341,7 @@ export function MaterialDetailSheet({ material, open, onOpenChange, onDeleted }:
                                 <XIcon className="size-3" /> {t("materiel.detailSheet.pendingSection.refuse")}
                               </button>
                             </div>
+                            )}
                           </div>
                           {loan.expectedReturnAt && (
                             <p className="text-xs text-muted-foreground">
@@ -361,9 +366,11 @@ export function MaterialDetailSheet({ material, open, onOpenChange, onDeleted }:
                     {/* Not gated on availableQty === 0 — that reflects only today's stock, but
                         the modal still lets you register a future-dated reservation for an
                         item that's fully out today and free again by then. */}
-                    <Button size="sm" variant="outline" className="h-7 px-2 text-xs" onClick={() => setLoanModalOpen(true)}>
-                      <PlusIcon className="size-3 mr-1" /> {t("materiel.detailSheet.activeSection.lend")}
-                    </Button>
+                    {canEditMateriel && (
+                      <Button size="sm" variant="outline" className="h-7 px-2 text-xs" onClick={() => setLoanModalOpen(true)}>
+                        <PlusIcon className="size-3 mr-1" /> {t("materiel.detailSheet.activeSection.lend")}
+                      </Button>
+                    )}
                   </div>
 
                   {activeLoans.length === 0 ? (
@@ -392,15 +399,19 @@ export function MaterialDetailSheet({ material, open, onOpenChange, onDeleted }:
                               <button type="button" onClick={() => window.open(`${BASE_PATH}/api/materiel/${material?.id}/loans/${loan.id}/pdf`, "_blank")} className="text-muted-foreground hover:text-foreground transition-colors" title={t("materiel.detailSheet.activeSection.pdfTitle")}>
                                 <FilePdfIcon className="size-3.5" />
                               </button>
+                              {canEditMateriel && (
+                              <>
                               <button type="button" onClick={() => setEmailTarget(loan)} className="text-muted-foreground hover:text-foreground transition-colors" title={t("materiel.detailSheet.activeSection.emailTitle")}>
                                 <EnvelopeSimpleIcon className="size-3.5" />
                               </button>
                               <button type="button" onClick={() => handleReturn(loan)} disabled={returnLoan.isPending || reserved} className="inline-flex items-center gap-1 text-xs font-medium px-2 py-0.5 rounded-md text-muted-foreground hover:bg-muted hover:text-foreground transition-colors disabled:opacity-40 disabled:cursor-not-allowed" title={reserved ? t("materiel.detailSheet.activeSection.notYetOutTitle") : t("materiel.detailSheet.activeSection.markReturnedTitle")}>
                                 <ArrowElbowDownLeftIcon className="size-3" /> {t("materiel.detailSheet.activeSection.returned")}
                               </button>
+                              </>
+                              )}
                               {/* Deleting a loan with a facture is rejected server-side (it would
                                   orphan the invoice) — hide the trigger instead of a dead-end error. */}
-                              {!loan.facture && (
+                              {canEditMateriel && !loan.facture && (
                                 <button type="button" onClick={() => setDeletingLoan(loan)} className="text-muted-foreground hover:text-destructive transition-colors" title={t("materiel.detailSheet.activeSection.deleteTitle")}>
                                   <TrashIcon className="size-3.5" />
                                 </button>
@@ -464,7 +475,7 @@ export function MaterialDetailSheet({ material, open, onOpenChange, onDeleted }:
                               <FactureAction loan={loan} onGenerate={() => handleGenerateFacture(loan)} pending={generateFacture.isPending} canGenerate={canGenerateFacture} />
                             </div>
                           </div>
-                          {!loan.facture && (
+                          {canEditMateriel && !loan.facture && (
                             <button type="button" onClick={() => setDeletingLoan(loan)} className="text-muted-foreground hover:text-destructive transition-colors shrink-0">
                               <TrashIcon className="size-3" />
                             </button>
@@ -480,7 +491,7 @@ export function MaterialDetailSheet({ material, open, onOpenChange, onDeleted }:
         </SheetContent>
       </Sheet>
 
-      {detail && (
+      {canEditMateriel && detail && (
         <LoanModal
           open={loanModalOpen}
           onOpenChange={setLoanModalOpen}
@@ -488,7 +499,7 @@ export function MaterialDetailSheet({ material, open, onOpenChange, onDeleted }:
         />
       )}
 
-      {material && (
+      {canEditMateriel && material && (
         <MaterialModal
           open={editModalOpen}
           onOpenChange={setEditModalOpen}

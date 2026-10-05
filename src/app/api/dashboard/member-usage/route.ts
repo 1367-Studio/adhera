@@ -8,8 +8,8 @@ import { effectiveMemberLimit } from "@/lib/plan-limits"
 // Stripe on a cache miss. A slow or failing Stripe must only hide the usage bar, never
 // block the whole dashboard.
 //
-// No role restriction, same as /api/billing — every dashboard role can open the
-// Abonnement tab this bar links to.
+// Gated on the Tableau de bord area only (every bureau role has it): the usage bar sits on
+// the home page for all of them.
 export const GET = withAdminAuth(async (_req, ctx) => {
   const { associationId } = ctx
 
@@ -27,4 +27,4 @@ export const GET = withAdminAuth(async (_req, ctx) => {
     activeCount,
     limit: effectiveMemberLimit(association, pricing),
   })
-})
+}, { area: "dashboard" })

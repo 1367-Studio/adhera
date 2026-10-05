@@ -6,7 +6,6 @@ import { prisma } from "@/lib/prisma/client"
 import { completeWithImages } from "@/lib/ai/complete"
 import { paperFormExtractRequestSchema, type PaperFormField, type PaperFormTemplateResponse } from "@/lib/schemas"
 import { isCheckboxTarget, isFullNameTarget } from "@/lib/paper-form-targets"
-import { MANAGER_ROLES } from "@/lib/roles"
 import { decodePageImages, parseModelJson, readVisionJsonBody, resolveVisionConfig } from "@/lib/paper-form/vision-request"
 import { normalizeExtraction } from "@/lib/paper-form/normalize-extraction"
 import { PAPER_FORM_TEMPLATE_SELECT, toTemplateResponse } from "@/lib/paper-form/templates"
@@ -219,4 +218,4 @@ export const POST = withAdminAuth(async (req, ctx) => {
   }
 
   return NextResponse.json(normalizeExtraction(rawAnswer, readableFields, template.pagesPerForm, expectedPageNumber ?? undefined))
-}, { roles: MANAGER_ROLES })
+}, { area: "membres" })

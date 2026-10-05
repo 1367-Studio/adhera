@@ -10,8 +10,6 @@ import {
 import { writeActivityLog } from "@/lib/activity-log"
 import { withAdminAuth } from "@/lib/api-wrapper"
 
-const ALLOWED_ROLES = ["ADMIN", "PRESIDENT", "SECRETAIRE"]
-
 const schema = z.object({
   name:          z.string().min(1).max(100).optional(),
   templateId:    z.string().min(1).optional(),
@@ -108,7 +106,7 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
 
   await writeActivityLog({ associationId, actorId: userId, action: "RULE_UPDATED", entity: "AutomationRule", entityId: id, label: updated.name, metadata: parsed.data.status ? { status: parsed.data.status } : undefined })
   return NextResponse.json(updated)
-}, { roles: ALLOWED_ROLES })
+}, { area: "communication" })
 
 export const DELETE = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
   const { associationId, userId } = ctx
@@ -119,4 +117,4 @@ export const DELETE = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) =>
   await prisma.automationRule.delete({ where: { id } })
   await writeActivityLog({ associationId, actorId: userId, action: "RULE_DELETED", entity: "AutomationRule", entityId: id, label: existing.name })
   return new NextResponse(null, { status: 204 })
-}, { roles: ALLOWED_ROLES })
+}, { area: "communication" })

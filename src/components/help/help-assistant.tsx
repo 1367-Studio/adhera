@@ -4,7 +4,6 @@ import { Fragment, useCallback, useEffect, useLayoutEffect, useRef, useState } f
 import Link from "next/link"
 import { useTranslations } from "next-intl"
 import { toast } from "sonner"
-import { canAccessDashboardRoute } from "@/components/layout/app-sidebar"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { RichTextView } from "@/components/ui/rich-text-view"
@@ -246,9 +245,9 @@ export function HelpAssistant({ module, isActive, onOpenArticle, onClosePanel }:
   const failedError   = !isPending && pendingQuestion !== null ? assistantChat.error : null
   const hasTranscript = completedExchanges.length > 0 || pendingQuestion !== null
 
-  // Whoever cannot open Paramètres is told to ask an administrator instead of getting a link
-  // to a page that would redirect them.
-  const canConfigureApiKey = canAccessDashboardRoute(currentUser.role, "/dashboard/parametres")
+  // The API key lives in an administrator-only part of Paramètres (/api/ai/config): anyone
+  // else is told to ask an administrator instead of getting a link to a tab they cannot see.
+  const canConfigureApiKey = currentUser.permissions.administrator
 
   const scrollTranscriptToBottom = useCallback(() => {
     const transcriptElement = transcriptRef.current

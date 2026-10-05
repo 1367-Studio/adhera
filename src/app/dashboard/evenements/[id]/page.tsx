@@ -28,7 +28,7 @@ import { useParticipations, useEvenementTicketTypes } from "@/hooks/use-evenemen
 import { BASE_PATH } from "@/lib/env"
 import { isTermsConfigurationValid, TERMS_CONTENT_REQUIRED_CODE } from "@/lib/form-terms"
 import { cn } from "@/lib/utils"
-import { useCurrentUser } from "@/lib/user-context"
+import { useCurrentUser, useHasAccess } from "@/lib/user-context"
 import {
   ArchiveIcon,
   CheckIcon,
@@ -133,6 +133,9 @@ export default function EvenementDetailPage() {
   const termsContentRequiredMessage = useTermsContentRequiredMessage("evenements.form")
   const tCommon = useTranslations("common")
   const user    = useCurrentUser()
+  // FORM-34: a "read" user sees every step's configuration (inputs disabled by the
+  // <fieldset> around each panel) but none of the publish / save / delete actions.
+  const canEditEvenements = useHasAccess("evenements", "edit")
 
   const [deleteConfirm, setDeleteConfirm] = useState(false)
   // The Tarifs / Formulaire (custom fields) editors own their own drafts, so they report
@@ -450,7 +453,8 @@ export default function EvenementDetailPage() {
     ),
   }
 
-  const isDirty = STEP_KEYS.some(k => stepDirty[k])
+  // A reader cannot save, so nothing they touch counts as unsaved work worth a leave warning.
+  const isDirty = canEditEvenements && STEP_KEYS.some(k => stepDirty[k])
 
   // Unlike Adesões, an event with zero tarifs is a perfectly valid free/RSVP event, so
   // publishing is only ever blocked by unsaved work, never by a missing tier.
@@ -630,7 +634,7 @@ export default function EvenementDetailPage() {
         }
         action={
           <div className="flex gap-2">
-            {evenement.status !== "PUBLISHED" ? (
+            {!canEditEvenements ? null : evenement.status !== "PUBLISHED" ? (
               <Button size="sm" onClick={handlePublish} loading={publishMutation.isPending}>
                 <CloudArrowUpIcon className="mr-1.5 size-4" />
                 {t("detail.publishButton")}
@@ -652,24 +656,28 @@ export default function EvenementDetailPage() {
                 {t("detail.copyLinkButton")}
               </Button>
             )}
-            <Button size="sm" variant="ghost" onClick={() => publishMutation.mutate("duplicate")} loading={publishMutation.isPending}>
-              <CopyIcon className="mr-1.5 size-4" />
-              {t("detail.duplicateButton")}
-            </Button>
+            {canEditEvenements && (
+              <Button size="sm" variant="ghost" onClick={() => publishMutation.mutate("duplicate")} loading={publishMutation.isPending}>
+                <CopyIcon className="mr-1.5 size-4" />
+                {t("detail.duplicateButton")}
+              </Button>
+            )}
             <Button size="sm" variant="ghost" onClick={() => router.push(`/dashboard/evenements/${id}/avaliacoes`)}>
               <StarIcon className="mr-1.5 size-4" />
               {t("detail.avaliacoesButton")}
             </Button>
-            {evenement.status !== "ARCHIVED" && (
+            {canEditEvenements && evenement.status !== "ARCHIVED" && (
               <Button size="sm" variant="ghost" onClick={() => publishMutation.mutate("archive")} loading={publishMutation.isPending}>
                 <ArchiveIcon className="mr-1.5 size-4" />
                 {t("detail.archiveButton")}
               </Button>
             )}
-            <Button size="sm" variant="destructive" disabled={!canDelete} onClick={() => setDeleteConfirm(true)}>
-              <TrashIcon className="mr-1.5 size-4" />
-              {t("detail.deleteButton")}
-            </Button>
+            {canEditEvenements && (
+              <Button size="sm" variant="destructive" disabled={!canDelete} onClick={() => setDeleteConfirm(true)}>
+                <TrashIcon className="mr-1.5 size-4" />
+                {t("detail.deleteButton")}
+              </Button>
+            )}
           </div>
         }
       />
@@ -678,6 +686,7 @@ export default function EvenementDetailPage() {
         <AccordionItem id="step-info" value="info" className={stepClass("info")}>
           <AccordionTrigger className={stepHeaderClass("info")}>{stepTrigger("info")}</AccordionTrigger>
           <AccordionPanel>
+            <fieldset disabled={!canEditEvenements} className="min-w-0">
             <div className="space-y-4">
               <div className="max-w-xl space-y-1.5">
                 <Label htmlFor="evenement-title">{t("detail.titleLabel")}</Label>
@@ -760,26 +769,30 @@ export default function EvenementDetailPage() {
                   onChange={(e) => setContactPhone(e.target.value)}
                 />
               </div>
-              <div className="flex justify-end">
+              {canEditEvenements && <div className="flex justify-end">
                 <Button size="sm" disabled={!stepDirty.info} loading={saveMutation.isPending || uploadingImage} onClick={handleSaveInfo}>
                   {tCommon("save")}
                 </Button>
-              </div>
+              </div>}
             </div>
+            </fieldset>
           </AccordionPanel>
         </AccordionItem>
 
         <AccordionItem id="step-tiers" value="tiers" className={stepClass("tiers")}>
           <AccordionTrigger className={stepHeaderClass("tiers")}>{stepTrigger("tiers")}</AccordionTrigger>
           <AccordionPanel>
-            <EvenementTicketTypesEditor ref={tiersRef} evenementId={id} eventCapacity={capacity === "" ? null : capacity} onDirtyChange={setTiersDirty} onDraftChange={setTiersDraft} />
-            <EvenementDiscountCodesEditor ref={discountCodesRef} evenementId={id} ticketTypes={tiersDraft} onDirtyChange={setDiscountCodesDirty} />
+            <fieldset disabled={!canEditEvenements} className="min-w-0">
+            <EvenementTicketTypesEditor ref={tiersRef} evenementId={id} eventCapacity={capacity === "" ? null : capacity} onDirtyChange={setTiersDirty} onDraftChange={setTiersDraft} readOnly={!canEditEvenements} />
+            <EvenementDiscountCodesEditor ref={discountCodesRef} evenementId={id} ticketTypes={tiersDraft} onDirtyChange={setDiscountCodesDirty} readOnly={!canEditEvenements} />
+            </fieldset>
           </AccordionPanel>
         </AccordionItem>
 
         <AccordionItem id="step-fields" value="fields" className={stepClass("fields")}>
           <AccordionTrigger className={stepHeaderClass("fields")}>{stepTrigger("fields")}</AccordionTrigger>
           <AccordionPanel>
+            <fieldset disabled={!canEditEvenements} className="min-w-0">
             <div className="space-y-5">
               <div>
                 <p className="text-sm font-medium text-primary">{tSteps("fields.standardFieldsHint")}</p>
@@ -790,29 +803,35 @@ export default function EvenementDetailPage() {
                   <SelectField label={tSteps("fields.birthDateLabel")} options={requirementOptions} value={fieldBirthDate} onValueChange={v => setFieldBirthDate(v as FieldRequirement)} />
                   <SelectField label={tSteps("fields.genderLabel")} options={requirementOptions} value={fieldGender} onValueChange={v => setFieldGender(v as FieldRequirement)} />
                 </div>
-                <div className="flex justify-end mt-3">
-                  <Button size="sm" disabled={!standardFieldsDirty} loading={saveMutation.isPending} onClick={() => saveMutation.mutate(standardFieldsPayload())}>
-                    {tCommon("save")}
-                  </Button>
-                </div>
+                {canEditEvenements && (
+                  <div className="flex justify-end mt-3">
+                    <Button size="sm" disabled={!standardFieldsDirty} loading={saveMutation.isPending} onClick={() => saveMutation.mutate(standardFieldsPayload())}>
+                      {tCommon("save")}
+                    </Button>
+                  </div>
+                )}
               </div>
               <div className="border-t pt-4">
-                <EvenementCustomFieldsEditor ref={fieldsRef} evenementId={id} onDirtyChange={setFieldsDirty} />
+                <EvenementCustomFieldsEditor ref={fieldsRef} evenementId={id} onDirtyChange={setFieldsDirty} readOnly={!canEditEvenements} />
               </div>
             </div>
+            </fieldset>
           </AccordionPanel>
         </AccordionItem>
 
         <AccordionItem id="step-products" value="products" className={stepClass("products")}>
           <AccordionTrigger className={stepHeaderClass("products")}>{stepTrigger("products")}</AccordionTrigger>
           <AccordionPanel>
-            <EvenementProductsEditor ref={productsRef} evenementId={id} onDirtyChange={setProductsDirty} />
+            <fieldset disabled={!canEditEvenements} className="min-w-0">
+            <EvenementProductsEditor ref={productsRef} evenementId={id} onDirtyChange={setProductsDirty} readOnly={!canEditEvenements} />
+            </fieldset>
           </AccordionPanel>
         </AccordionItem>
 
         <AccordionItem id="step-payment" value="payment" className={stepClass("payment")}>
           <AccordionTrigger className={stepHeaderClass("payment")}>{stepTrigger("payment")}</AccordionTrigger>
           <AccordionPanel>
+            <fieldset disabled={!canEditEvenements} className="min-w-0">
             <div className="space-y-3">
               <p className="text-xs text-muted-foreground">{tSteps("payment.hint")}</p>
               <CheckboxField label={tSteps("payment.allowCashLabel")} checked={allowCash} onChange={(e) => setAllowCash(e.target.checked)} />
@@ -835,18 +854,20 @@ export default function EvenementDetailPage() {
                 value={adminNotificationEmail}
                 onChange={(e) => setAdminNotificationEmail(e.target.value)}
               />
-              <div className="flex justify-end">
+              {canEditEvenements && <div className="flex justify-end">
                 <Button size="sm" disabled={!stepDirty.payment} loading={saveMutation.isPending} onClick={() => saveMutation.mutate(paymentPayload())}>
                   {tCommon("save")}
                 </Button>
-              </div>
+              </div>}
             </div>
+            </fieldset>
           </AccordionPanel>
         </AccordionItem>
 
         <AccordionItem id="step-publish" value="publish" className={stepClass("publish")}>
           <AccordionTrigger className={stepHeaderClass("publish")}>{stepTrigger("publish")}</AccordionTrigger>
           <AccordionPanel>
+            <fieldset disabled={!canEditEvenements} className="min-w-0">
             <div className="space-y-4">
               <SelectField
                 label={tSteps("publish.visibilityLabel")}
@@ -872,7 +893,7 @@ export default function EvenementDetailPage() {
                   <FormField label={tSteps("publish.closesAtLabel")} type="datetime-local" value={closesAt} onChange={(e) => setClosesAt(e.target.value)} />
                 </div>
               )}
-              <div className="flex justify-end">
+              {canEditEvenements && <div className="flex justify-end">
                 <Button
                   size="sm"
                   disabled={!stepDirty.publish}
@@ -884,8 +905,9 @@ export default function EvenementDetailPage() {
                 >
                   {tCommon("save")}
                 </Button>
-              </div>
+              </div>}
             </div>
+            </fieldset>
           </AccordionPanel>
         </AccordionItem>
       </Accordion>

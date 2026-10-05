@@ -7,9 +7,8 @@ import { writeActivityLog } from "@/lib/activity-log"
 import { factureRecueExpenseDescription } from "@/lib/facture-recue"
 import { resolveExerciceForDate, closedExerciceGuard } from "@/lib/finance/exercice"
 
-const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
-const FINANCE  = ["ADMIN", "PRESIDENT", "TRESORIER"]
-
+// Comptabilité area (FORM-34). The old GET/DELETE allowlists also let the Secrétaire in, although
+// the sidebar never showed her this screen and every write was finance-only; she now has no access here.
 export const GET = withAdminAuth(async (req, ctx) => {
   const { associationId } = ctx
 
@@ -35,7 +34,7 @@ export const GET = withAdminAuth(async (req, ctx) => {
     prisma.factureRecue.count({ where }),
   ])
   return NextResponse.json({ data, total, page, limit, totalPages: Math.ceil(total / limit) })
-}, { roles: MANAGERS, module: "fournisseurs" })
+}, { area: "comptabilite", module: "fournisseurs" })
 
 export const POST = withAdminAuth(async (req, ctx) => {
   const { associationId, userId } = ctx
@@ -99,4 +98,4 @@ export const POST = withAdminAuth(async (req, ctx) => {
   await writeActivityLog({ associationId, actorId: userId, action: "FACTURE_RECUE_CREATED", entity: "FactureRecue", entityId: factureRecue.id, label: factureRecue.number ?? factureRecue.type })
 
   return NextResponse.json(factureRecue, { status: 201 })
-}, { roles: FINANCE, module: "fournisseurs" })
+}, { area: "comptabilite", module: "fournisseurs" })

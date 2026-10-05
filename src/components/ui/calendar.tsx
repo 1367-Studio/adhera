@@ -5,11 +5,13 @@ import {
   DayPicker,
   getDefaultClassNames,
   type DayButton,
+  type DropdownProps,
   type Locale,
 } from "react-day-picker"
 
 import { cn } from "@/lib/utils"
 import { Button, buttonVariants } from "@/components/ui/button"
+import { Select, SelectContent, SelectItem, SelectTrigger } from "@/components/ui/select"
 import { CaretLeftIcon, CaretRightIcon, CaretDownIcon } from "@phosphor-icons/react/dist/ssr";
 function Calendar({
   className,
@@ -52,18 +54,21 @@ function Calendar({
           defaultClassNames.months
         ),
         month: cn("flex w-full flex-col gap-3", defaultClassNames.month),
+        // The arrow bar is laid over the whole caption row: it lets clicks through
+        // (pointer-events-none) so the month/year pickers underneath stay clickable, and only
+        // the two arrows take clicks back.
         nav: cn(
-          "absolute inset-x-0 top-0 flex w-full items-center justify-between gap-1",
+          "pointer-events-none absolute inset-x-0 top-0 flex w-full items-center justify-between gap-1",
           defaultClassNames.nav
         ),
         button_previous: cn(
           buttonVariants({ variant: buttonVariant }),
-          "size-(--cell-size) p-0 select-none aria-disabled:opacity-50",
+          "pointer-events-auto size-(--cell-size) p-0 select-none aria-disabled:opacity-50",
           defaultClassNames.button_previous
         ),
         button_next: cn(
           buttonVariants({ variant: buttonVariant }),
-          "size-(--cell-size) p-0 select-none aria-disabled:opacity-50",
+          "pointer-events-auto size-(--cell-size) p-0 select-none aria-disabled:opacity-50",
           defaultClassNames.button_next
         ),
         month_caption: cn(
@@ -172,6 +177,7 @@ function Calendar({
         DayButton: ({ ...props }) => (
           <CalendarDayButton locale={locale} {...props} />
         ),
+        Dropdown: CalendarDropdown,
         WeekNumber: ({ children, ...props }) => {
           return (
             <td {...props}>
@@ -185,6 +191,54 @@ function Calendar({
       }}
       {...props}
     />
+  )
+}
+
+// Month / year pickers of the caption. The native <select> react-day-picker renders by default
+// opens as one system-drawn list of every year at once (a full-height menu on macOS) that
+// cannot be styled or limited — this uses the app's own Select instead: about five rows
+// visible, scrollable, opened on the current value, themed like every other dropdown.
+const CALENDAR_DROPDOWN_LIST_HEIGHT = "max-h-44"
+
+// The list opens in a portal, i.e. outside the date field's own popover in the DOM: to that
+// popover, a click (or the focus moving) into the list looks like an outside interaction and
+// closes it before the year is applied. Date fields pass their close events through this to
+// keep the picker open while the list is used.
+export function isCalendarDropdownEvent(event: Event | undefined): boolean {
+  if (!event) return false
+  const relatedTarget = "relatedTarget" in event ? (event as FocusEvent).relatedTarget : null
+  return [event.target, relatedTarget].some(
+    candidate => candidate instanceof Element && candidate.closest("[data-calendar-dropdown]") !== null,
+  )
+}
+
+function CalendarDropdown({ options = [], value, onChange, disabled, "aria-label": ariaLabel }: DropdownProps) {
+  const selectedOption = options.find(option => String(option.value) === String(value))
+
+  // react-day-picker listens for a <select> change event and only reads target.value.
+  function selectOption(nextValue: string | null) {
+    if (nextValue === null) return
+    onChange?.({ target: { value: nextValue }, currentTarget: { value: nextValue } } as unknown as React.ChangeEvent<HTMLSelectElement>)
+  }
+
+  return (
+    // Not modal: a modal list would lock the rest of the page, the date popover included.
+    <Select value={value === undefined ? "" : String(value)} onValueChange={selectOption} disabled={disabled} modal={false}>
+      <SelectTrigger
+        size="sm"
+        aria-label={ariaLabel}
+        className="gap-1 border-transparent px-2 font-medium hover:bg-muted dark:bg-transparent"
+      >
+        <span>{selectedOption?.label}</span>
+      </SelectTrigger>
+      <SelectContent alignItemWithTrigger className={CALENDAR_DROPDOWN_LIST_HEIGHT} data-calendar-dropdown="">
+        {options.map(option => (
+          <SelectItem key={option.value} value={String(option.value)} disabled={option.disabled}>
+            {option.label}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
   )
 }
 

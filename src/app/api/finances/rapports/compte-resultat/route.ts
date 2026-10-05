@@ -3,8 +3,6 @@ import { prisma } from "@/lib/prisma/client"
 import { withAdminAuth } from "@/lib/api-wrapper"
 import { computeIncomeStatementPeriod, findPreviousExercice } from "@/lib/finance/income-statement"
 
-const FINANCE = ["ADMIN", "PRESIDENT", "TRESORIER"]
-
 // ?exerciceId — defaults to the most recent exercice (open or not) when omitted, mirroring
 // how the exercices list itself already sorts (startDate asc, so the last entry is latest).
 export const GET = withAdminAuth(async (req, ctx) => {
@@ -37,4 +35,4 @@ export const GET = withAdminAuth(async (req, ctx) => {
     current:   currentPeriod,
     previous:  previousPeriod,
   })
-}, { roles: FINANCE, module: "finances" })
+}, { area: "comptabilite", module: "finances" })

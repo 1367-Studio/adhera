@@ -4,6 +4,7 @@ import { auth } from "@/lib/auth/config"
 import { prisma } from "@/lib/prisma/client"
 import { guardModule } from "@/lib/auth/require-module"
 import type { AssocModules } from "@/lib/modules"
+import { hasAccess, isStaffRole, type AccessArea } from "@/lib/permissions"
 
 type RouteContext<Params> = { params: Promise<Params> }
 type Handler<Ctx, Params> = (req: Request, ctx: Ctx, params: Params) => Promise<NextResponse> | NextResponse
@@ -13,18 +14,54 @@ type Handler<Ctx, Params> = (req: Request, ctx: Ctx, params: Params) => Promise<
  * gates on a module, optionally restricts to a role allowlist. Replaces the
  * getAssociationCtx()/isCtx()/guardModule()/role-check block that used to be
  * hand-copied at the top of every admin route.
+ *
+ * Staff only by default (FORM-34): a member (MEMBRE) has a session with an associationId too,
+ * so without this check every route lacking its own `roles` list was open to any member with a
+ * portal account (other members' emails and logs, invoices, unpublished news…). Member-facing
+ * features use withPortalAuth / the /api/portal routes instead.
  */
+type AdminAuthOptions = {
+  module?:          keyof AssocModules
+  allowWhenLocked?: boolean
+  /**
+   * Area of the dashboard the route belongs to (FORM-34). Required level: "read" for GET/HEAD,
+   * "edit" for every other method, unless `access` says otherwise (e.g. a POST that only
+   * computes a preview → "read"; a GET export of sensitive data that should need "edit").
+   */
+  area?:            AccessArea
+  access?:          "read" | "edit"
+  /** Settings, billing, Stripe, team & access, support: administrators only. */
+  administrator?:   boolean
+  /** Legacy role allowlist — being replaced by `area` / `administrator` route by route. */
+  roles?:           readonly string[]
+}
+
+const READ_METHODS = new Set(["GET", "HEAD"])
+
 export function withAdminAuth<Params = Record<string, string>>(
   handler: Handler<AssociationCtx, Params>,
-  options: { roles?: readonly string[]; module?: keyof AssocModules; allowWhenLocked?: boolean } = {},
+  options: AdminAuthOptions = {},
 ) {
   return async (req: Request, context?: RouteContext<Params>) => {
     const ctx = await getAssociationCtx({ allowWhenLocked: options.allowWhenLocked })
     if (!isCtx(ctx)) return ctx
 
+    if (!isStaffRole(ctx.role)) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
+    }
+
     if (options.module) {
       const guard = await guardModule(ctx.associationId, options.module)
       if (guard) return guard
+    }
+    if (options.administrator && !ctx.permissions.administrator) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
+    }
+    if (options.area) {
+      const requiredLevel = options.access ?? (READ_METHODS.has(req.method) ? "read" : "edit")
+      if (!hasAccess(ctx.permissions, options.area, requiredLevel)) {
+        return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
+      }
     }
     if (options.roles && !options.roles.includes(ctx.role)) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 403 })

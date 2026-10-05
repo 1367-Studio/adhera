@@ -20,8 +20,6 @@ import { pusherServer } from "@/lib/pusher-server"
 import { announceMembreCreated, findMembreCreationAssociation, membreColumns, recordOfflineAcceptances } from "@/lib/membres/create-membre"
 import { reportError } from "@/lib/monitoring"
 
-const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
-
 // Même seuil que /api/membres/stats/route.ts pour bucketer "adulte" à partir de birthDate.
 const ADULT_AGE_YEARS = 18
 
@@ -135,7 +133,7 @@ export const GET = withAdminAuth(async (req, ctx) => {
     prisma.membre.count({ where: { associationId, deletedAt: null, status: "PENDING" } }),
   ])
   return NextResponse.json({ data: data.map(m => ({ ...m, mobile: readMobileAnswer(m.answers), isAdherent: isMembreAdherent(m) })), total, pendingCount, page, limit, totalPages: Math.ceil(total / limit) })
-}, { roles: MANAGERS })
+}, { area: "membres" })
 
 export const POST = withAdminAuth(async (req, ctx) => {
   const { associationId, role: actorRole, userId } = ctx
@@ -329,4 +327,4 @@ export const POST = withAdminAuth(async (req, ctx) => {
   await announceMembreCreated({ associationId, actorId: userId, association: assoc, membre, fireMemberCreatedRule: role === "MEMBRE" })
 
   return NextResponse.json(membre, { status: 201 })
-}, { roles: MANAGERS })
+}, { area: "membres" })

@@ -4,7 +4,6 @@ import { prisma } from "@/lib/prisma/client"
 import { associationDocumentUpdateSchema, hasContentOrFile, CONTENT_OR_FILE_REQUIRED } from "@/lib/schemas"
 import { writeActivityLog, computeDiff } from "@/lib/activity-log"
 import { syncDocumentRevision } from "@/lib/legal/revisions"
-import { MANAGER_ROLES } from "@/lib/roles"
 import { isAssociationDocumentFileUrl } from "@/lib/legal/document-file"
 
 const DOCUMENT_SELECT = {
@@ -36,7 +35,7 @@ export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
 
   if (!document) return NextResponse.json({ error: "Document introuvable" }, { status: 404 })
   return NextResponse.json(document)
-}, { roles: MANAGER_ROLES })
+}, { area: "documents" })
 
 export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   const { associationId, userId } = ctx
@@ -130,7 +129,7 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   }
 
   return NextResponse.json(document)
-}, { roles: MANAGER_ROLES })
+}, { area: "documents" })
 
 export const DELETE = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
   const { associationId, userId } = ctx
@@ -149,4 +148,4 @@ export const DELETE = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) =>
   await writeActivityLog({ associationId, actorId: userId, action: "ASSOCIATION_DOCUMENT_DELETED", entity: "AssociationDocument", entityId: id, label: existing.title })
 
   return new NextResponse(null, { status: 204 })
-}, { roles: MANAGER_ROLES })
+}, { area: "documents" })

@@ -16,7 +16,6 @@ import { formatHelpDocumentation, helpSourcesFrom, retrieveHelpContextOrEmpty } 
 import { deriveModulesForPlan, parseModules } from "@/lib/modules"
 import { prisma } from "@/lib/prisma/client"
 import { rateLimit } from "@/lib/rate-limit"
-import { MANAGER_ROLES } from "@/lib/roles"
 
 // Several tool round-trips can sit inside one request; the runner caps them at 8 iterations
 // and the Anthropic client has its own 60 s timeout (see makeAnthropicClient).
@@ -211,4 +210,6 @@ export const POST = withAdminAuth(async (req, ctx) => {
   } catch (error) {
     return providerErrorResponse(error, aiConfig, associationId)
   }
-}, { roles: MANAGER_ROLES })
+// The assistant looks up members (get-member) among others, so it needs the members area — which
+// every former bureau role has. Its tool set is still narrowed per role (isFinanceRole).
+}, { area: "membres", access: "read" })

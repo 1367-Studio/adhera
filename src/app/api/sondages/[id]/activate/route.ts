@@ -5,12 +5,7 @@ import { writeActivityLog } from "@/lib/activity-log"
 import { sendSondageInvitations } from "@/lib/sondage-invitations"
 import { startOfTodayUTC } from "@/lib/date-boundaries"
 
-const MANAGERS = ["ADMIN", "PRESIDENT", "SECRETAIRE"]
-
 export const POST = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
-  if (!MANAGERS.includes(ctx.role))
-    return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
-
   const sondage = await prisma.sondage.findFirst({
     where:   { id, associationId: ctx.associationId },
     include: { recipients: { select: { membreId: true } } },
@@ -53,4 +48,4 @@ export const POST = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
   })
 
   return NextResponse.json({ ok: true, ...result })
-})
+}, { area: "communication" })

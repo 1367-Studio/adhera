@@ -4,12 +4,9 @@ import { writeActivityLog } from "@/lib/activity-log"
 import { loadMemberCardEligibility } from "@/lib/member-card/loader"
 import { rotateMemberCardToken } from "@/lib/member-card/token"
 
-// Narrower than the read route's manager set, and matched on the roles that administer the
-// members themselves (create-access, role changes): revoking a card is an identity action,
-// not a finance one, and a Trésorier has no reason to invalidate a printed member card.
-// Spelled out rather than omitted for the same reason as in ../route.ts — without a roles
-// allowlist a MEMBRE portal session would reach this handler.
-const MEMBER_ADMINS = ["ADMIN", "PRESIDENT", "SECRETAIRE"]
+// Revoking a card is an identity action on the member file: Membres "edit", like
+// create-access. (FORM-34: the old allowlist left out the Trésorier, who edits members
+// everywhere else — the area makes this consistent.)
 
 // Replaces the member's card token, which kills every existing copy of their QR code at once
 // (see rotateMemberCardToken) — the way out when a card has been lost, screenshotted or
@@ -49,4 +46,4 @@ export const POST = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
   })
 
   return NextResponse.json({ ok: true })
-}, { roles: MEMBER_ADMINS, module: "cotisations" })
+}, { area: "membres", module: "cotisations" })

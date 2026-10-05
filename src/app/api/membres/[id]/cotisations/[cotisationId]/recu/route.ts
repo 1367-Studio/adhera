@@ -3,12 +3,9 @@ import { prisma } from "@/lib/prisma/client"
 import { generateRecuFiscalForCotisation } from "@/lib/pdf/recu-fiscal"
 import { withAdminAuth } from "@/lib/api-wrapper"
 
-const FINANCE = ["ADMIN", "PRESIDENT", "TRESORIER"]
-
+// Issuing a cotisation's fiscal document is a finance call: Adhésions "edit" (the Secrétaire,
+// read-only on Adhésions, never could).
 export const GET = withAdminAuth<{ id: string; cotisationId: string }>(async (_req, ctx, { id, cotisationId }) => {
-  if (!FINANCE.includes(ctx.role))
-    return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
-
   const cotisation = await prisma.cotisation.findFirst({
     where: { id: cotisationId, membreId: id, associationId: ctx.associationId, paidAt: { not: null } },
   })
@@ -44,4 +41,4 @@ export const GET = withAdminAuth<{ id: string; cotisationId: string }>(async (_r
       "Content-Disposition": `attachment; filename="${name}"`,
     },
   })
-})
+}, { area: "adhesions", access: "edit" })

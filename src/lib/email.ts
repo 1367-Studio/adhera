@@ -233,6 +233,7 @@ export function invitationEmail(p: {
   const roleLabel: Record<string, string> = {
     MEMBRE:     "membre",
     SECRETAIRE: "secrétaire",
+    EQUIPE:     "membre de l'équipe",
     TRESORIER:  "trésorier",
     PRESIDENT:  "président",
     ADMIN:      "administrateur",

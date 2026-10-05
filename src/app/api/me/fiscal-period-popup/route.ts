@@ -5,8 +5,6 @@ import { pusherServer } from "@/lib/pusher-server"
 import { withAdminAuth } from "@/lib/api-wrapper"
 import { reportError } from "@/lib/monitoring"
 
-const FINANCE = ["ADMIN", "PRESIDENT", "TRESORIER"]
-
 // Called every time the popup itself opens (see FiscalPeriodPopup — it shows on every
 // login until a fiscal period exists, by design), but this route only ever fires the
 // bell notification once: fiscalPeriodPopupSeenAt gates that side effect, not whether the
@@ -47,4 +45,4 @@ export const PATCH = withAdminAuth(async (_req, ctx) => {
     reportError(error, { area: "api", action: "fiscal-period-popup.notify-pusher", extra: { associationId } }))
 
   return NextResponse.json({ ok: true })
-}, { roles: FINANCE, module: "finances" })
+}, { area: "comptabilite", module: "finances" })

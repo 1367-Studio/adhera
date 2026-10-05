@@ -6,8 +6,6 @@ import { writeActivityLog } from "@/lib/activity-log"
 import { withAdminAuth } from "@/lib/api-wrapper"
 import { exclusiveEndOfDay } from "@/lib/finance/exercice"
 
-const FINANCE = ["ADMIN", "PRESIDENT", "TRESORIER"]
-
 export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   const { associationId, userId } = ctx
 
@@ -91,7 +89,7 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
     ...(Object.keys(metadata).length > 0 ? { metadata } : {}),
   })
   return NextResponse.json({ ...exercice, linkedRecords })
-}, { roles: FINANCE, module: "finances" })
+}, { area: "comptabilite", module: "finances" })
 
 export const DELETE = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
   const { associationId, userId } = ctx
@@ -120,4 +118,4 @@ export const DELETE = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) =>
     metadata: { incomeCount, expenseCount, bankTxCount },
   })
   return new NextResponse(null, { status: 204 })
-}, { roles: FINANCE, module: "finances" })
+}, { area: "comptabilite", module: "finances" })

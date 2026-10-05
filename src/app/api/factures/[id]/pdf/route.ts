@@ -56,4 +56,4 @@ export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
       "Content-Disposition": `inline; filename="${facture.number}.pdf"`,
     },
   })
-}, { module: "factures" })
+}, { area: "comptabilite", module: "factures" })

@@ -9,16 +9,11 @@ import { sendEmail } from "@/lib/mail"
 import { donConfirmationEmail } from "@/lib/email"
 import { reportError } from "@/lib/monitoring"
 
-const FINANCE = ["ADMIN", "PRESIDENT", "TRESORIER"]
-
 // Confirms receipt of an offline donation (espèces/chèque/virement) — the one place
 // besides the Stripe webhook that's allowed to write Don.paidAt. Non-negotiable: no
 // fiscal receipt number is minted before this fires. It's sequential and legally
 // opposable — burning one on a cheque that later bounces isn't something you undo.
 export const POST = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
-  if (!FINANCE.includes(ctx.role))
-    return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
-
   const don = await prisma.don.findFirst({
     where:   { id, associationId: ctx.associationId },
     include: {
@@ -102,4 +97,4 @@ export const POST = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
   })
 
   return NextResponse.json({ ok: true })
-}, { module: "dons" })
+}, { area: "dons", module: "dons" })

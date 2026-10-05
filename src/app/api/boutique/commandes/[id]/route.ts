@@ -9,8 +9,6 @@ import { nextBoutiqueReceiptNumber } from "@/lib/document-numbering"
 import { resolveExerciceForDate, closedExerciceGuard } from "@/lib/finance/exercice"
 import type { ExerciceStatus } from "@prisma/client"
 
-const MANAGERS = ["ADMIN", "PRESIDENT", "SECRETAIRE", "TRESORIER"]
-
 const updateSchema = z.object({
   status:            z.enum(["PENDING", "PAID", "CANCELLED"]),
   note:              z.string().trim().max(500).optional().nullable(),
@@ -19,8 +17,6 @@ const updateSchema = z.object({
 })
 
 export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
-  if (!MANAGERS.includes(ctx.role))
-    return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
   const guard = await guardModule(ctx.associationId, "boutique")
   if (guard) return guard
 
@@ -39,11 +35,9 @@ export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
   if (!commande) return NextResponse.json({ error: "Introuvable" }, { status: 404 })
 
   return NextResponse.json(commande)
-})
+}, { area: "boutique" })
 
 export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
-  if (!MANAGERS.includes(ctx.role))
-    return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
   const guard = await guardModule(ctx.associationId, "boutique")
   if (guard) return guard
 
@@ -265,4 +259,4 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
     },
   })
   return NextResponse.json(updated)
-})
+}, { area: "boutique" })

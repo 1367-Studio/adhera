@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 import { addMonths } from "date-fns"
 import { withAdminAuth } from "@/lib/api-wrapper"
+import { hasAccess } from "@/lib/permissions"
 import { prisma } from "@/lib/prisma/client"
 import { membreUpdateSchema } from "@/lib/schemas"
 import { addressColumnsPatch } from "@/lib/address"
@@ -9,6 +10,7 @@ import { isMembreAdherent, membreAdherentCotisationSelect, currentCotisationYear
 import { MOBILE_ANSWER_KEY, mergeAnswers, readMobileAnswer } from "@/lib/membre-answers"
 import { cancelActiveCotisationSubscriptionForMembre } from "@/lib/webhook/cotisation-subscriptions"
 import { grantMembrePortalAccess } from "@/lib/membre-access"
+import { assertCanDeactivateAdministrator } from "@/lib/team-access"
 import { resolveMembreMembershipFormId } from "@/lib/membre-membership-form"
 import { findInvalidMembershipFormAnswer } from "@/lib/membership-form-answers-validation"
 import { reportError } from "@/lib/monitoring"
@@ -21,11 +23,6 @@ const RESPONSABLE_SELECT = {
   },
 } as const
 
-const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
-// Forcing a member's adhérent status is a financial call equivalent to marking a cotisation
-// paid — same role set as /api/association/cotisation-defaults, narrower than MANAGERS so
-// SECRETAIRE can still manage every other membre field but not this one.
-const FINANCE = ["ADMIN", "PRESIDENT", "TRESORIER"]
 
 export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
   const { associationId } = ctx
@@ -118,10 +115,10 @@ export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
     editableCustomFields,
     isAdherent: isMembreAdherent(membre),
   })
-})
+}, { area: "membres" })
 
 export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
-  const { associationId, userId, role: actorRole } = ctx
+  const { associationId, userId } = ctx
 
   const existing = await prisma.membre.findFirst({ where: { id, associationId, deletedAt: null } })
   if (!existing) return NextResponse.json({ error: "Membre introuvable" }, { status: 404 })
@@ -160,7 +157,10 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
     }
   }
 
-  if (adherentOverride !== undefined && !FINANCE.includes(actorRole)) {
+  // Forcing a member's adhérent status is equivalent to marking a cotisation paid, so it needs
+  // Adhésions "edit" on top of Membres "edit" — the Secrétaire manages every other membre
+  // field but not this one.
+  if (adherentOverride !== undefined && !hasAccess(ctx.permissions, "adhesions", "edit")) {
     return NextResponse.json({ error: "Seuls un administrateur, président ou trésorier peuvent forcer le statut d'adhésion" }, { status: 403 })
   }
 
@@ -168,6 +168,14 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   // "INACTIF" here left PENDING/SUSPENDU as an unguarded way to lock yourself out.
   if (existing.userId === userId && rest.status !== undefined && rest.status !== "ACTIF") {
     return NextResponse.json({ error: "Vous ne pouvez pas désactiver votre propre compte" }, { status: 403 })
+  }
+
+  // Same last-administrator protection as Paramètres › Équipe et accès — deactivating a
+  // member here flips their linked User.active below too, so it's just as real a way to
+  // strip the association's last administrator of access as a role/permissions change.
+  if (existing.userId && rest.status !== undefined && rest.status !== "ACTIF") {
+    const refusal = await assertCanDeactivateAdministrator(associationId, existing.userId)
+    if (refusal) return NextResponse.json({ error: refusal.error }, { status: refusal.status })
   }
 
   if (responsableId) {
@@ -344,7 +352,7 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   }
 
   return NextResponse.json({ ...membre, isAdherent: isMembreAdherent(membre) })
-}, { roles: MANAGERS })
+}, { area: "membres" })
 
 export const DELETE = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
   const { associationId, userId } = ctx
@@ -354,6 +362,11 @@ export const DELETE = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) =>
 
   if (existing.userId === userId) {
     return NextResponse.json({ error: "Vous ne pouvez pas supprimer votre propre compte" }, { status: 403 })
+  }
+
+  if (existing.userId) {
+    const refusal = await assertCanDeactivateAdministrator(associationId, existing.userId)
+    if (refusal) return NextResponse.json({ error: refusal.error }, { status: refusal.status })
   }
 
   const unlinkedDependants = await prisma.$transaction(async (tx) => {
@@ -384,4 +397,4 @@ export const DELETE = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) =>
   await cancelActiveCotisationSubscriptionForMembre(id, { actorId: userId, label: `${existing.firstName} ${existing.lastName}` })
 
   return NextResponse.json({ deletedId: id, unlinkedDependants })
-}, { roles: MANAGERS })
+}, { area: "membres" })

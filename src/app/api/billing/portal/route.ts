@@ -5,8 +5,6 @@ import { APP_URL } from "@/lib/env"
 import { withAdminAuth } from "@/lib/api-wrapper"
 import { reportError } from "@/lib/monitoring"
 
-const ADMINS = ["ADMIN", "PRESIDENT"]
-
 export const POST = withAdminAuth(async (req, ctx) => {
   const assoc = await prisma.association.findUnique({
     where:  { id: ctx.associationId },
@@ -47,4 +45,4 @@ export const POST = withAdminAuth(async (req, ctx) => {
       { status: 502 },
     )
   }
-}, { roles: ADMINS, allowWhenLocked: true })
+}, { administrator: true, allowWhenLocked: true })

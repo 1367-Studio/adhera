@@ -6,11 +6,15 @@ import { writeActivityLog } from "@/lib/activity-log"
 import { computeDocumentTotals } from "@/lib/devis-calc"
 import { nextFactureNumber } from "@/lib/document-numbering"
 import { guardModule } from "@/lib/auth/require-module"
-
-const FINANCE = ["ADMIN", "PRESIDENT", "TRESORIER"]
+import { hasAccess } from "@/lib/permissions"
 
 export const POST = withAdminAuth<{ id: string; loanId: string }>(async (_req, ctx, { id, loanId }) => {
   const { associationId, userId } = ctx
+
+  // Creates an invoice, so it also needs to edit the accounting area (the Secrétaire edits
+  // equipment but has no access to accounting — was ADMIN/PRESIDENT/TRESORIER).
+  if (!hasAccess(ctx.permissions, "comptabilite", "edit"))
+    return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
 
   // withAdminAuth's `module` option only takes one key, but a generated facture is unusable
   // without the Factures module — its only payment path (paiements/route.ts) hard-requires
@@ -73,4 +77,4 @@ export const POST = withAdminAuth<{ id: string; loanId: string }>(async (_req, c
   }
 
   return NextResponse.json({ error: "Impossible de générer un numéro de facture, réessayez" }, { status: 500 })
-}, { roles: FINANCE, module: "materiel" })
+}, { area: "materiel", module: "materiel" })

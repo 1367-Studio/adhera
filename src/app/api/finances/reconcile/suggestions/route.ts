@@ -3,8 +3,6 @@ import { prisma } from "@/lib/prisma/client"
 import { computeMatchScore } from "@/lib/finance/match-score"
 import { withAdminAuth } from "@/lib/api-wrapper"
 
-const FINANCE = ["ADMIN", "PRESIDENT", "TRESORIER"]
-
 export const GET = withAdminAuth(async (req, ctx) => {
   const { associationId } = ctx
 
@@ -74,4 +72,4 @@ export const GET = withAdminAuth(async (req, ctx) => {
     .slice(0, 5)
 
   return NextResponse.json({ transaction: tx, suggestions })
-}, { roles: FINANCE, module: "finances" })
+}, { area: "comptabilite", module: "finances" })

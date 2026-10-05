@@ -23,6 +23,7 @@ import { BackLink } from "@/components/ui/back-link"
 import { DetailNotFound } from "@/components/ui/detail-not-found"
 import { DetailLoadingSkeleton } from "@/components/ui/detail-loading-skeleton"
 import { registerPendingBulkSend } from "@/hooks/use-bulk-send-listener"
+import { useHasAccess } from "@/lib/user-context"
 
 type Membre = { id: string; firstName: string; lastName: string; email: string | null }
 
@@ -101,6 +102,9 @@ function SondageDetailPageInner() {
   const { id }  = useParams<{ id: string }>()
   const qc      = useQueryClient()
   const searchParams = useSearchParams()
+  // Readers of "communication" see the questionnaire read-only (same check as PATCH,
+  // /activate and /close in /api/sondages/[id]).
+  const canEditCommunication = useHasAccess("communication", "edit")
 
   const [activeTab, setActiveTab] = useState<string>(() => {
     const fromUrl = searchParams.get("tab")
@@ -289,7 +293,7 @@ function SondageDetailPageInner() {
     )
   }
 
-  const editable         = sondage.status !== "FERME"
+  const editable         = canEditCommunication && sondage.status !== "FERME"
   const questionsEditable = editable && sondage._count.reponses === 0
 
   function handleSave(e: React.FormEvent) {
@@ -322,7 +326,7 @@ function SondageDetailPageInner() {
           </p>
         </div>
         <div className="flex items-center gap-2 shrink-0">
-          {sondage.status === "BROUILLON" && (
+          {canEditCommunication && sondage.status === "BROUILLON" && (
             <Button
               size="sm"
               onClick={() => activateMutation.mutate()}
@@ -332,7 +336,7 @@ function SondageDetailPageInner() {
               Activer
             </Button>
           )}
-          {sondage.status === "ACTIF" && (
+          {canEditCommunication && sondage.status === "ACTIF" && (
             <Button
               size="sm"
               variant="outline"

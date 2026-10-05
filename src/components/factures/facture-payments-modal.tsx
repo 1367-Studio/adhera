@@ -10,6 +10,7 @@ import { useFactureDetail, useRemoveFacturePayment } from "@/hooks/use-factures"
 import { Modal } from "@/components/ui/modal"
 import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 import { Button } from "@/components/ui/button"
+import { useHasAccess } from "@/lib/user-context"
 
 type Payment = { id: string; amount: string; method: string; paidAt: string; note: string | null }
 
@@ -23,6 +24,8 @@ interface Props {
 
 export function FacturePaymentsModal({ factureId, open, onOpenChange }: Props) {
   const t = useTranslations()
+  // FORM-34: a Comptabilité reader sees the payments but cannot remove one.
+  const canEditComptabilite = useHasAccess("comptabilite", "edit")
   const [deleteTarget, setDeleteTarget] = useState<Payment | null>(null)
   const { data: facture, isLoading } = useFactureDetail(open ? factureId : "")
   const removeMutation = useRemoveFacturePayment(factureId)
@@ -58,9 +61,11 @@ export function FacturePaymentsModal({ factureId, open, onOpenChange }: Props) {
                     {p.note && <> · {p.note}</>}
                   </p>
                 </div>
-                <Button variant="ghost" size="icon-sm" onClick={() => setDeleteTarget(p)} title={t("factures.payment.deleteTooltip")}>
-                  <TrashIcon className="size-3.5 text-muted-foreground hover:text-destructive" />
-                </Button>
+                {canEditComptabilite && (
+                  <Button variant="ghost" size="icon-sm" onClick={() => setDeleteTarget(p)} title={t("factures.payment.deleteTooltip")}>
+                    <TrashIcon className="size-3.5 text-muted-foreground hover:text-destructive" />
+                  </Button>
+                )}
               </div>
             ))}
           </div>

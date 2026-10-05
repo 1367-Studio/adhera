@@ -9,8 +9,6 @@ import { withAdminAuth } from "@/lib/api-wrapper"
 import { resolveEmailBranding } from "@/lib/plan-limits"
 import { APP_URL } from "@/lib/env"
 
-const ALLOWED_ROLES = ["ADMIN", "PRESIDENT", "SECRETAIRE"]
-
 export const POST = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
   const { associationId } = ctx
 
@@ -56,4 +54,4 @@ export const POST = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
   }), { associationId, source: "TEST", sourceId: id })
 
   return NextResponse.json({ ok: true, sentTo: adminEmail })
-}, { roles: ALLOWED_ROLES, module: "messages" })
+}, { area: "communication", module: "messages" })

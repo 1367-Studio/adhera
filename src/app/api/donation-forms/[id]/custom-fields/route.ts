@@ -4,8 +4,6 @@ import { Prisma } from "@prisma/client"
 import { prisma } from "@/lib/prisma/client"
 import { withAdminAuth } from "@/lib/api-wrapper"
 
-const FINANCE = ["ADMIN", "PRESIDENT", "TRESORIER"]
-
 const CHOICE_FIELD_TYPES = ["SELECT", "RADIO", "CHECKBOX_MULTI"]
 
 const donationFormFieldSchema = z.object({
@@ -36,20 +34,14 @@ const donationFormFieldSchema = z.object({
 const donationFormFieldsSchema = z.array(donationFormFieldSchema).max(20)
 
 export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
-  if (!FINANCE.includes(ctx.role))
-    return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
-
   const form = await prisma.donationForm.findFirst({ where: { id, associationId: ctx.associationId }, select: { id: true } })
   if (!form) return NextResponse.json({ error: "Introuvable" }, { status: 404 })
 
   const fields = await prisma.donationFormField.findMany({ where: { formId: id }, orderBy: { order: "asc" } })
   return NextResponse.json(fields)
-}, { module: "dons" })
+}, { area: "dons", module: "dons" })
 
 export const PUT = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
-  if (!FINANCE.includes(ctx.role))
-    return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
-
   const form = await prisma.donationForm.findFirst({ where: { id, associationId: ctx.associationId } })
   if (!form) return NextResponse.json({ error: "Introuvable" }, { status: 404 })
 
@@ -90,4 +82,4 @@ export const PUT = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   })
 
   return NextResponse.json(fields)
-}, { module: "dons" })
+}, { area: "dons", module: "dons" })

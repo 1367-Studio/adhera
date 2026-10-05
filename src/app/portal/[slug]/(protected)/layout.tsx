@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation"
 import { auth } from "@/lib/auth/config"
 import { UserProvider, type SessionUser } from "@/lib/user-context"
+import { resolvePermissions } from "@/lib/permissions"
 import { TopLoader } from "@/components/top-loader"
 import { Header } from "@/components/layout/header"
 import { PortalSidebar } from "@/components/portal/portal-sidebar"
@@ -36,6 +37,8 @@ export default async function PortalLayout({
     role:            u.role ?? "MEMBRE",
     associationId:   u.associationId,
     associationSlug: slug,
+    // Members resolve to no dashboard access; staff browsing their portal keep theirs.
+    permissions:     resolvePermissions(u.role, (session.user as { permissions?: unknown }).permissions),
   }
 
   const assocRow = u.associationId

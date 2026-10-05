@@ -5,8 +5,6 @@ import { withAdminAuth } from "@/lib/api-wrapper"
 import { writeActivityLog } from "@/lib/activity-log"
 import { reportError } from "@/lib/monitoring"
 
-const ADMINS = ["ADMIN", "PRESIDENT"]
-
 // The standby screen's "cancel definitively" action — an explicit, admin-initiated exit
 // from SUSPENDED, distinct from Stripe's own automatic PAST_DUE → SUSPENDED transition.
 // Updates the DB optimistically; the customer.subscription.deleted webhook that follows
@@ -47,4 +45,4 @@ export const POST = withAdminAuth(async (_req, ctx) => {
   })
 
   return NextResponse.json({ ok: true })
-}, { roles: ADMINS, allowWhenLocked: true })
+}, { administrator: true, allowWhenLocked: true })

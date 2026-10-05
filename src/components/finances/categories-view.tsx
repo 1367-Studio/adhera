@@ -12,6 +12,7 @@ import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { FinanceCategoryForm } from "@/components/finances/finance-category-form"
+import { useHasAccess } from "@/lib/user-context"
 
 type Category = {
   id:            string
@@ -22,9 +23,10 @@ type Category = {
   _count?:       { incomes: number; expenses: number }
 }
 
-function CategoryList({ categories, loading, onEdit, onDelete }: {
+function CategoryList({ categories, loading, canEdit, onEdit, onDelete }: {
   categories: Category[]
   loading:    boolean
+  canEdit:    boolean
   onEdit:     (c: Category) => void
   onDelete:   (c: Category) => void
 }) {
@@ -44,14 +46,16 @@ function CategoryList({ categories, loading, onEdit, onDelete }: {
             {c.accountingCode && <span className="text-xs text-muted-foreground">{c.accountingCode}</span>}
             {c.isDefault && <Badge variant="outline">{t("default")}</Badge>}
           </div>
-          <div className="flex items-center gap-1">
-            <Button size="icon-sm" variant="ghost" onClick={() => onEdit(c)}>
-              <PencilSimpleIcon className="size-3.5" />
-            </Button>
-            <Button size="icon-sm" variant="ghost" className="text-destructive hover:text-destructive" onClick={() => onDelete(c)}>
-              <TrashIcon className="size-3.5" />
-            </Button>
-          </div>
+          {canEdit && (
+            <div className="flex items-center gap-1">
+              <Button size="icon-sm" variant="ghost" onClick={() => onEdit(c)}>
+                <PencilSimpleIcon className="size-3.5" />
+              </Button>
+              <Button size="icon-sm" variant="ghost" className="text-destructive hover:text-destructive" onClick={() => onDelete(c)}>
+                <TrashIcon className="size-3.5" />
+              </Button>
+            </div>
+          )}
         </li>
       ))}
     </ul>
@@ -60,6 +64,8 @@ function CategoryList({ categories, loading, onEdit, onDelete }: {
 
 export function CategoriesView() {
   const t = useTranslations()
+  // FORM-34: a Comptabilité reader sees the categories but cannot seed, add, edit or delete them.
+  const canEditComptabilite = useHasAccess("comptabilite", "edit")
   const [createOpen, setCreateOpen]         = useState(false)
   const [createType, setCreateType]         = useState<"INCOME" | "EXPENSE">("INCOME")
   const [editTarget, setEditTarget]         = useState<Category | null>(null)
@@ -118,33 +124,37 @@ export function CategoriesView() {
       <PageHeader
         title={t("finances.categoriesView.title")}
         description={t("finances.categoriesView.description")}
-        action={
+        action={canEditComptabilite && (
           <Button size="sm" variant="outline" onClick={handleSeed} loading={seedMutation.isPending}>
             <SparkleIcon className="mr-1.5 size-4" />
             {t("finances.categoriesView.seedButton")}
           </Button>
-        }
+        )}
       />
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="rounded-lg border bg-card p-4 space-y-3">
           <div className="flex items-center justify-between">
             <h3 className="font-semibold text-sm text-green-700 dark:text-green-400">{t("finances.categoriesView.income")}</h3>
-            <Button size="icon-sm" variant="ghost" onClick={() => { setCreateType("INCOME"); setCreateOpen(true) }}>
-              <PlusIcon className="size-4" />
-            </Button>
+            {canEditComptabilite && (
+              <Button size="icon-sm" variant="ghost" onClick={() => { setCreateType("INCOME"); setCreateOpen(true) }}>
+                <PlusIcon className="size-4" />
+              </Button>
+            )}
           </div>
-          <CategoryList categories={incomeCategories as Category[]} loading={loadingI} onEdit={setEditTarget} onDelete={setDeleteTarget} />
+          <CategoryList categories={incomeCategories as Category[]} loading={loadingI} canEdit={canEditComptabilite} onEdit={setEditTarget} onDelete={setDeleteTarget} />
         </div>
 
         <div className="rounded-lg border bg-card p-4 space-y-3">
           <div className="flex items-center justify-between">
             <h3 className="font-semibold text-sm text-red-700 dark:text-red-400">{t("finances.categoriesView.expenses")}</h3>
-            <Button size="icon-sm" variant="ghost" onClick={() => { setCreateType("EXPENSE"); setCreateOpen(true) }}>
-              <PlusIcon className="size-4" />
-            </Button>
+            {canEditComptabilite && (
+              <Button size="icon-sm" variant="ghost" onClick={() => { setCreateType("EXPENSE"); setCreateOpen(true) }}>
+                <PlusIcon className="size-4" />
+              </Button>
+            )}
           </div>
-          <CategoryList categories={expenseCategories as Category[]} loading={loadingE} onEdit={setEditTarget} onDelete={setDeleteTarget} />
+          <CategoryList categories={expenseCategories as Category[]} loading={loadingE} canEdit={canEditComptabilite} onEdit={setEditTarget} onDelete={setDeleteTarget} />
         </div>
       </div>
 

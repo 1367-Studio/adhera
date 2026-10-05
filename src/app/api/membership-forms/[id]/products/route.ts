@@ -4,8 +4,6 @@ import { prisma } from "@/lib/prisma/client"
 import { withAdminAuth } from "@/lib/api-wrapper"
 import { guardModule } from "@/lib/auth/require-module"
 
-const FINANCE = ["ADMIN", "PRESIDENT", "TRESORIER"]
-
 // Un même produit ne peut apparaître qu'une fois par formulaire (voir aussi la contrainte
 // @@unique([formId, varianteId]) côté schema) et le nombre de lignes reste faible — ce sont
 // des articles d'upsell curés par l'admin, pas un catalogue entier à parcourir ici.
@@ -19,9 +17,6 @@ const productSchema = z.object({
 const productsSchema = z.array(productSchema).max(MAX_PRODUCTS)
 
 export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
-  if (!FINANCE.includes(ctx.role))
-    return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
-
   const form = await prisma.membershipForm.findFirst({ where: { id, associationId: ctx.associationId }, select: { id: true } })
   if (!form) return NextResponse.json({ error: "Introuvable" }, { status: 404 })
 
@@ -38,12 +33,9 @@ export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
     },
   })
   return NextResponse.json(products)
-}, { module: "cotisations" })
+}, { area: "adhesions", access: "edit", module: "cotisations" })
 
 export const PUT = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
-  if (!FINANCE.includes(ctx.role))
-    return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
-
   // Vendre des produits depuis l'adhésion n'a de sens que si le module Boutique lui-même est
   // actif — sans ça, un admin pourrait configurer des offres qu'aucune page publique ne pourra
   // jamais honorer (et dont le stock ne serait plus visible nulle part ailleurs).
@@ -104,4 +96,4 @@ export const PUT = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   })
 
   return NextResponse.json(products)
-}, { module: "cotisations" })
+}, { area: "adhesions", module: "cotisations" })

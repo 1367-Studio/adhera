@@ -6,8 +6,6 @@ import { writeActivityLog } from "@/lib/activity-log"
 import { withAdminAuth } from "@/lib/api-wrapper"
 import { addProjectDomain, removeProjectDomain, standardDnsRecord, type DnsRecord } from "@/lib/vercel-domains"
 
-const ADMINS = ["ADMIN", "PRESIDENT"]
-
 // Accepts a bare hostname only (no scheme, no path) — same shape Vercel's Domains API
 // expects for `name`. Lowercased so `WWW.Assoc.fr` and `www.assoc.fr` aren't treated as
 // two different domains by the @unique constraint.
@@ -24,7 +22,7 @@ export const GET = withAdminAuth(async (req, ctx) => {
   if (!association) return NextResponse.json({ error: "Not found" }, { status: 404 })
 
   return NextResponse.json(association)
-}, { roles: ADMINS })
+}, { administrator: true })
 
 export const POST = withAdminAuth(async (req, ctx) => {
   const body   = await req.json().catch(() => null)
@@ -64,7 +62,7 @@ export const POST = withAdminAuth(async (req, ctx) => {
   })
 
   return NextResponse.json({ ok: true, domain, dnsRecords: records })
-}, { roles: ADMINS })
+}, { administrator: true })
 
 export const DELETE = withAdminAuth(async (req, ctx) => {
   const association = await prisma.association.findUnique({
@@ -94,4 +92,4 @@ export const DELETE = withAdminAuth(async (req, ctx) => {
   })
 
   return NextResponse.json({ ok: true })
-}, { roles: ADMINS })
+}, { administrator: true })

@@ -9,8 +9,6 @@ import { storedTermsAttachments, termsContentRequiredResponse } from "@/lib/form
 import { revalidatePublicSiteFor } from "@/lib/association/revalidate-site"
 import { displaceDonationFormsFromSiteSection } from "@/lib/dons/site-section-binding"
 
-const FINANCE = ["ADMIN", "PRESIDENT", "TRESORIER"]
-
 // Étapes 1/3/5 du wizard — les champs de paiement/paliers (étapes 2/4) arrivent avec
 // DonationTier et allowOnline/allowCash/... en phase 4/6.
 const updateSchema = z.object({
@@ -43,9 +41,6 @@ const updateSchema = z.object({
 })
 
 export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
-  if (!FINANCE.includes(ctx.role))
-    return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
-
   const form = await prisma.donationForm.findFirst({
     where:   { id, associationId: ctx.associationId },
     include: {
@@ -57,12 +52,9 @@ export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
   if (!form) return NextResponse.json({ error: "Introuvable" }, { status: 404 })
 
   return NextResponse.json(form)
-}, { module: "dons" })
+}, { area: "dons", module: "dons" })
 
 export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
-  if (!FINANCE.includes(ctx.role))
-    return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
-
   const form = await prisma.donationForm.findFirst({
     where:  { id, associationId: ctx.associationId },
     select: { id: true, title: true, status: true, visibility: true, siteSectionId: true, opensAt: true, closesAt: true, conditions: true, attachments: true, requireCguvSignature: true },
@@ -146,12 +138,9 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
     await revalidatePublicSiteFor(ctx.associationId)
 
   return NextResponse.json(updated)
-}, { module: "dons" })
+}, { area: "dons", module: "dons" })
 
 export const DELETE = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
-  if (!FINANCE.includes(ctx.role))
-    return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
-
   const form = await prisma.donationForm.findFirst({
     where:  { id, associationId: ctx.associationId },
     select: { id: true, title: true, _count: { select: { dons: true, subscriptions: true } } },
@@ -177,4 +166,4 @@ export const DELETE = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) =>
   })
 
   return NextResponse.json({ ok: true })
-}, { module: "dons" })
+}, { area: "dons", module: "dons" })

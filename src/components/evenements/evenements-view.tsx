@@ -24,6 +24,7 @@ import { RowActions } from "@/components/ui/row-actions"
 import { SearchInput } from "@/components/ui/search-input"
 import { BASE_PATH } from "@/lib/env"
 import { cheapestAvailableTicketTypePrice } from "@/lib/ticket-types"
+import { useHasAccess } from "@/lib/user-context"
 
 type EvenementStatus = "DRAFT" | "PUBLISHED" | "ARCHIVED"
 type EvenementTicketType = { id: string; label: string; price: string; remaining: number | null; full: boolean; active: boolean }
@@ -60,6 +61,8 @@ export function EvenementsView() {
   const t = useTranslations()
   const router = useRouter()
   const qc = useQueryClient()
+  // FORM-34: a "read" user browses events, attendance and reviews but changes nothing.
+  const canEditEvenements = useHasAccess("evenements", "edit")
   const [view, setView]                   = useState<ViewMode>("list")
   const [page, setPage]                   = useState(1)
   const [searchInput, setSearchInput]     = useState("")
@@ -258,14 +261,16 @@ export function EvenementsView() {
           ...(e.status === "PUBLISHED"
             ? [{ label: t("evenements.view.actions.copyLink"), icon: <LinkIcon className="size-3.5" />, disabled: !assoc?.slug, onClick: () => handleCopyLink(e.slug ?? e.id), separator: true }]
             : []),
-          ...(e.status !== "PUBLISHED"
-            ? [{ label: t("evenements.view.actions.publish"), icon: <CloudArrowUpIcon className="size-3.5" />, onClick: () => publishMutation.mutate({ id: e.id, action: "publish" }), separator: true }]
-            : [{ label: t("evenements.view.actions.unpublish"), icon: <CloudArrowDownIcon className="size-3.5" />, onClick: () => publishMutation.mutate({ id: e.id, action: "unpublish" }) }]),
-          { label: t("evenements.view.actions.duplicate"), icon: <CopyIcon className="size-3.5" />, onClick: () => publishMutation.mutate({ id: e.id, action: "duplicate" }) },
-          ...(e.status !== "ARCHIVED"
-            ? [{ label: t("evenements.view.actions.archive"), icon: <ArchiveIcon className="size-3.5" />, onClick: () => publishMutation.mutate({ id: e.id, action: "archive" }) }]
-            : []),
-          { label: t("evenements.view.actions.delete"), icon: <TrashIcon className="size-3.5" />, destructive: true, separator: true, onClick: () => setDeleteTarget(e) },
+          ...(canEditEvenements ? [
+            ...(e.status !== "PUBLISHED"
+              ? [{ label: t("evenements.view.actions.publish"), icon: <CloudArrowUpIcon className="size-3.5" />, onClick: () => publishMutation.mutate({ id: e.id, action: "publish" }), separator: true }]
+              : [{ label: t("evenements.view.actions.unpublish"), icon: <CloudArrowDownIcon className="size-3.5" />, onClick: () => publishMutation.mutate({ id: e.id, action: "unpublish" }) }]),
+            { label: t("evenements.view.actions.duplicate"), icon: <CopyIcon className="size-3.5" />, onClick: () => publishMutation.mutate({ id: e.id, action: "duplicate" }) },
+            ...(e.status !== "ARCHIVED"
+              ? [{ label: t("evenements.view.actions.archive"), icon: <ArchiveIcon className="size-3.5" />, onClick: () => publishMutation.mutate({ id: e.id, action: "archive" }) }]
+              : []),
+            { label: t("evenements.view.actions.delete"), icon: <TrashIcon className="size-3.5" />, destructive: true, separator: true, onClick: () => setDeleteTarget(e) },
+          ] : []),
         ]} />
       ),
     },
@@ -286,10 +291,12 @@ export function EvenementsView() {
               value={view}
               onChange={setView}
             />
-            <Button size="sm" onClick={() => openCreate()}>
-              <PlusIcon className="mr-1.5 size-4" />
-              {t("evenements.view.create")}
-            </Button>
+            {canEditEvenements && (
+              <Button size="sm" onClick={() => openCreate()}>
+                <PlusIcon className="mr-1.5 size-4" />
+                {t("evenements.view.create")}
+              </Button>
+            )}
           </div>
         }
       />
@@ -298,7 +305,7 @@ export function EvenementsView() {
         <EvenementsCalendar
           onEditClick={(ev) => router.push(`/dashboard/evenements/${ev.id}`)}
           onPresencesClick={handleCalendarPresencesClick}
-          onCreateClick={openCreate}
+          onCreateClick={canEditEvenements ? openCreate : undefined}
         />
       ) : (
         <>

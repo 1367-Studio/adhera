@@ -7,8 +7,6 @@ import { withAdminAuth } from "@/lib/api-wrapper"
 import { findExerciceForDate, type ExerciceLookup } from "@/lib/finance/exercice"
 import { reportError } from "@/lib/monitoring"
 
-const FINANCE = ["ADMIN", "PRESIDENT", "TRESORIER"]
-
 export const POST = withAdminAuth(async (req, ctx) => {
   const { associationId, userId } = ctx
 
@@ -116,4 +114,4 @@ export const POST = withAdminAuth(async (req, ctx) => {
   })
 
   return NextResponse.json({ imported, duplicates, errors, blocked, toReconcile: imported })
-}, { roles: FINANCE, module: "finances" })
+}, { area: "comptabilite", module: "finances" })

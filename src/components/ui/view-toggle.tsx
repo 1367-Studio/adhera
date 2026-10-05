@@ -1,7 +1,7 @@
 "use client"
 
-import type { ReactNode } from "react"
 import { SegmentedControl } from "@/components/ui/segmented-control"
+import type { ReactNode } from "react"
 
 interface ViewToggleOption<T extends string> {
   value: T
@@ -23,7 +23,7 @@ interface ViewToggleProps<T extends string> {
 export function ViewToggle<T extends string>(props: ViewToggleProps<T>) {
   return (
     <div className="no-scrollbar max-w-full overflow-x-auto">
-      <SegmentedControl size="sm" className="w-max" {...props} />
+      <SegmentedControl size="default" className="w-max" {...props} />
     </div>
   )
 }

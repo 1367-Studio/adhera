@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server"
 import { withAdminAuth } from "@/lib/api-wrapper"
+import { hasAccess } from "@/lib/permissions"
 import { prisma } from "@/lib/prisma/client"
 import { pusherServer } from "@/lib/pusher-server"
 import { sendEmail } from "@/lib/mail"
@@ -10,8 +11,6 @@ import { meetingCreateSchema } from "@/lib/schemas"
 import { MEETING_WITH_PARTICIPANTS_SELECT, redactParticipantStatus } from "@/lib/meetings/select"
 import { APP_URL } from "@/lib/env"
 
-const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
-
 export const GET = withAdminAuth(async (req, ctx) => {
   const { associationId } = ctx
 
@@ -21,8 +20,11 @@ export const GET = withAdminAuth(async (req, ctx) => {
     orderBy: { createdAt: "desc" },
   })
 
-  return NextResponse.json(meetings.map(m => redactParticipantStatus(m, ctx.role, MANAGERS)))
-})
+  // Participant status (suspended/inactive) is for people who manage meetings. The helper
+  // still takes a role allowlist, so pass the viewer's own role only when they may edit.
+  const participantStatusViewers = hasAccess(ctx.permissions, "reunions", "edit") ? [ctx.role] : []
+  return NextResponse.json(meetings.map(m => redactParticipantStatus(m, ctx.role, participantStatusViewers)))
+}, { area: "reunions" })
 
 export const POST = withAdminAuth(async (req, ctx) => {
   const { associationId, userId } = ctx
@@ -133,4 +135,4 @@ export const POST = withAdminAuth(async (req, ctx) => {
   })
 
   return NextResponse.json(meeting, { status: 201 })
-}, { roles: MANAGERS, module: "reunions" })
+}, { area: "reunions", module: "reunions" })

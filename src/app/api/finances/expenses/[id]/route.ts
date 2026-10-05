@@ -5,8 +5,6 @@ import { writeActivityLog } from "@/lib/activity-log"
 import { withAdminAuth } from "@/lib/api-wrapper"
 import { closedExerciceGuard } from "@/lib/finance/exercice"
 
-const FINANCE = ["ADMIN", "PRESIDENT", "TRESORIER"]
-
 export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   const { associationId, userId } = ctx
 
@@ -70,7 +68,7 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
 
   await writeActivityLog({ associationId, actorId: userId, action: "EXPENSE_UPDATED", entity: "Expense", entityId: id })
   return NextResponse.json(expense)
-}, { roles: FINANCE, module: "finances" })
+}, { area: "comptabilite", module: "finances" })
 
 export const DELETE = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
   const { associationId, userId } = ctx
@@ -106,4 +104,4 @@ export const DELETE = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) =>
 
   await writeActivityLog({ associationId, actorId: userId, action: "EXPENSE_DELETED", entity: "Expense", entityId: id })
   return new NextResponse(null, { status: 204 })
-}, { roles: FINANCE, module: "finances" })
+}, { area: "comptabilite", module: "finances" })

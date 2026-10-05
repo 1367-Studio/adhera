@@ -3,8 +3,6 @@ import { stripe } from "@/lib/stripe"
 import { prisma } from "@/lib/prisma/client"
 import { withAdminAuth } from "@/lib/api-wrapper"
 
-const ADMINS = ["ADMIN", "PRESIDENT"]
-
 // Unlike /api/stripe/setup-intent (unauthenticated, used pre-signup, trusts a
 // client-supplied customerId), this resolves the Stripe customer server-side from the
 // caller's own association — never from client input, so an authenticated admin can't
@@ -25,4 +23,4 @@ export const POST = withAdminAuth(async (_req, ctx) => {
   })
 
   return NextResponse.json({ clientSecret: setupIntent.client_secret })
-}, { roles: ADMINS, allowWhenLocked: true })
+}, { administrator: true, allowWhenLocked: true })

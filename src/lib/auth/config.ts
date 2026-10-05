@@ -252,10 +252,12 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           : null
         const freshUser = await prisma.user.findUnique({
           where:  { id: user.id },
-          select: { locale: true, twoFactorEnabled: true },
+          select: { locale: true, twoFactorEnabled: true, permissions: true },
         })
         token.locale           = freshUser?.locale ?? "fr"
         token.twoFactorEnabled = freshUser?.twoFactorEnabled ?? false
+        // Raw User.permissions (FORM-34) — resolved against the role by resolvePermissions().
+        token.permissions      = freshUser?.permissions ?? null
 
         // Sync the user's saved preference to the device on every fresh sign-in, so switching
         // devices/browsers shows their chosen language immediately instead of that device's
@@ -269,7 +271,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           where:  { id: token.id as string },
           select: {
             role: true, associationId: true, active: true, deletedAt: true, locale: true,
-            twoFactorEnabled: true,
+            twoFactorEnabled: true, permissions: true,
             association: { select: { subscriptionStatus: true } },
           },
         })
@@ -281,6 +283,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         token.subscriptionStatus = fresh.association?.subscriptionStatus ?? null
         token.locale             = fresh.locale
         token.twoFactorEnabled   = fresh.twoFactorEnabled
+        // Re-read on every request like the role, so a change made in "Équipe et accès"
+        // applies on the user's next click, without signing out.
+        token.permissions        = fresh.permissions ?? null
       }
       return token
     },
@@ -295,6 +300,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           locale?:             string
           loginAt?:            number
           twoFactorEnabled?:   boolean
+          permissions?:        unknown
         }
         u.id                 = token.id                 as string
         u.role               = token.role               as string
@@ -304,6 +310,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         u.locale             = token.locale              as string | undefined
         u.loginAt            = token.loginAt             as number | undefined
         u.twoFactorEnabled   = token.twoFactorEnabled    as boolean | undefined
+        u.permissions        = token.permissions ?? null
       }
       return session
     },

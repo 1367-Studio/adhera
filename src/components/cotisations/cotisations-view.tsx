@@ -29,6 +29,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { exportMembresPdf } from "@/lib/pdf/membres-export-client"
 import { BASE_PATH } from "@/lib/env";
 import { ApiError } from "@/lib/api-error"
+import { useHasAccess } from "@/lib/user-context"
 
 type CotisationPayment = { id: string; amount: string; method: string; paidAt: string; note: string | null }
 type CotisationInstallment = { id: string; amount: string; dueDate: string }
@@ -78,6 +79,12 @@ const PAGE_SIZE = 25
 export function CotisationsView() {
   const searchParams = useSearchParams()
   const t = useTranslations()
+  // Same areas as the API (FORM-34): creating, editing, deleting a cotisation and sending
+  // reminders are "membres" edits; payments and fiscal declarations are "adhesions" edits;
+  // the members export needs "membres" read. A "read" user keeps the list, filters and history.
+  const canEditMembres   = useHasAccess("membres", "edit")
+  const canReadMembres   = useHasAccess("membres", "read")
+  const canEditAdhesions = useHasAccess("adhesions", "edit")
   const [page, setPage]                 = useState(1)
   const [searchInput, setSearchInput]   = useState("")
   const [search, setSearch]             = useState("")
@@ -381,7 +388,7 @@ export function CotisationsView() {
       className: "w-10",
       cell: (c) => {
         const actions = [
-          ...(c.status !== "EXONERE" && c.status !== "ANNULEE" && Number(c.amountPaid) < Number(c.amount) ? [{
+          ...(canEditAdhesions && c.status !== "EXONERE" && c.status !== "ANNULEE" && Number(c.amountPaid) < Number(c.amount) ? [{
             label:   t("cotisations.view.actions.recordPayment"),
             icon:    <MoneyIcon className="size-3.5" />,
             onClick: () => setPaymentTarget(c),
@@ -391,18 +398,22 @@ export function CotisationsView() {
             icon:    <ClockCounterClockwiseIcon className="size-3.5" />,
             onClick: () => setPaymentsHistoryTarget(c),
           }] : []),
-          { label: t("cotisations.view.actions.edit"), icon: <PencilSimpleIcon className="size-3.5" />, onClick: () => setEditTarget(c), separator: true },
+          ...(canEditMembres ? [
+            { label: t("cotisations.view.actions.edit"), icon: <PencilSimpleIcon className="size-3.5" />, onClick: () => setEditTarget(c), separator: true },
+          ] : []),
           // Gated on declarationNumber rather than status === "PAYE" — a cotisation that was
           // PAYE and later cancelled can still have an already-issued fiscal document that
           // shouldn't disappear just because ANNULEE isn't PAYE anymore.
-          ...(c.declarationNumber ? [{
+          ...(canEditAdhesions && c.declarationNumber ? [{
             label:   t("cotisations.view.actions.declaration"),
             icon:    <DownloadSimpleIcon className="size-3.5" />,
             onClick: () => window.open(`${BASE_PATH}/api/membres/${c.membre.id}/cotisations/${c.id}/declaration`, "_blank"),
           }] : []),
-          { label: t("cotisations.view.actions.delete"), icon: <TrashIcon className="size-3.5" />, destructive: true, separator: true, onClick: () => setDeleteTarget(c) },
+          ...(canEditMembres ? [
+            { label: t("cotisations.view.actions.delete"), icon: <TrashIcon className="size-3.5" />, destructive: true, separator: true, onClick: () => setDeleteTarget(c) },
+          ] : []),
         ]
-        return <RowActions actions={actions} />
+        return actions.length > 0 ? <RowActions actions={actions} /> : null
       },
     },
   ]
@@ -414,25 +425,29 @@ export function CotisationsView() {
         description={t("cotisations.view.count", { count: result?.total ?? 0 }) + (totalPaye > 0 ? t("cotisations.view.totalCollected", { amount: totalPaye.toLocaleString("fr-FR", { style: "currency", currency: "EUR" }) }) : "")}
         action={
           <div className="flex items-center gap-2">
-            <DropdownMenu>
-              <DropdownMenuTrigger render={<Button size="sm" variant="outline" disabled={membresLoading} />}>
-                <DownloadSimpleIcon className="mr-1.5 size-4" />
-                {t("cotisations.view.exportMembers")}
-                <CaretDownIcon className="ml-1 size-3" />
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={handleExportMembresXlsx}>
-                  {t("cotisations.view.exportExcel")}
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={handleExportMembresPdf}>
-                  {t("cotisations.view.exportPdf")}
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-            <Button size="sm" onClick={() => setCreateOpen(true)}>
-              <PlusIcon className="mr-1.5 size-4" />
-              {t("common.add")}
-            </Button>
+            {canReadMembres && (
+              <DropdownMenu>
+                <DropdownMenuTrigger render={<Button size="sm" variant="outline" disabled={membresLoading} />}>
+                  <DownloadSimpleIcon className="mr-1.5 size-4" />
+                  {t("cotisations.view.exportMembers")}
+                  <CaretDownIcon className="ml-1 size-3" />
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem onClick={handleExportMembresXlsx}>
+                    {t("cotisations.view.exportExcel")}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={handleExportMembresPdf}>
+                    {t("cotisations.view.exportPdf")}
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
+            {canEditMembres && (
+              <Button size="sm" onClick={() => setCreateOpen(true)}>
+                <PlusIcon className="mr-1.5 size-4" />
+                {t("common.add")}
+              </Button>
+            )}
           </div>
         }
       />
@@ -492,7 +507,8 @@ export function CotisationsView() {
           </SelectContent>
         </Select>
 
-        {statusFilter !== "PAYE" && statusFilter !== "EXONERE" && statusFilter !== "ANNULEE" && (
+        {/* Selection only exists to send reminders — a "membres" edit. */}
+        {canEditMembres && statusFilter !== "PAYE" && statusFilter !== "EXONERE" && statusFilter !== "ANNULEE" && (
           <label className="flex items-center gap-1.5 text-sm text-muted-foreground cursor-pointer select-none">
             <input
               type="checkbox"
@@ -525,12 +541,12 @@ export function CotisationsView() {
         loading={isLoading}
         keyExtractor={(c) => c.id}
         empty={search ? t("cotisations.view.noResultsFor", { search }) : t("cotisations.view.noCotisation")}
-        selection={{
+        selection={canEditMembres ? {
           selectedIds:  new Set(selected.keys()),
           onToggle:     toggleOne,
           onToggleAll:  toggleAllOnPage,
           isSelectable: (c) => c.status === "EN_ATTENTE" || c.status === "PARTIELLEMENT_PAYEE" || c.status === "EN_RETARD",
-        }}
+        } : undefined}
         pagination={result ? {
           page:         result.page,
           totalPages:   result.totalPages,

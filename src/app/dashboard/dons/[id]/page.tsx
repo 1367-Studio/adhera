@@ -24,7 +24,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import { BASE_PATH } from "@/lib/env"
 import { isTermsConfigurationValid, TERMS_CONTENT_REQUIRED_CODE } from "@/lib/form-terms"
 import { cn } from "@/lib/utils"
-import { useCurrentUser, useModules } from "@/lib/user-context"
+import { useCurrentUser, useHasAccess, useModules } from "@/lib/user-context"
 import { useDonationForms } from "@/hooks/use-donation-forms"
 import { useCreateSiteSection, useSiteSections } from "@/hooks/use-site-sections"
 import { publishConfirmDescription } from "@/lib/dons/publish-confirm-description"
@@ -119,6 +119,10 @@ export default function DonationFormDetailPage() {
   const tCommon = useTranslations("common")
   const user    = useCurrentUser()
   const modules = useModules()
+  // FORM-34: a Dons reader sees the whole form (fields rendered read-only through the
+  // disabled + inert fieldset below) and can preview it or copy its link, but cannot save,
+  // publish, duplicate, archive or delete it.
+  const canEditDons = useHasAccess("dons", "edit")
 
   const [title, setTitle]                 = useState("")
   const [deleteConfirm, setDeleteConfirm]  = useState(false)
@@ -668,7 +672,7 @@ export default function DonationFormDetailPage() {
         description={<Badge variant={STATUS_VARIANT[form.status]}>{STATUS_LABEL[form.status]}</Badge>}
         action={
           <div className="flex gap-2">
-            {form.status !== "PUBLISHED" ? (
+            {canEditDons && (form.status !== "PUBLISHED" ? (
               <Button size="sm" variant="secondary" onClick={handlePublish} loading={publishMutation.isPending}>
                 <CloudArrowUpIcon className="mr-1.5 size-4" />
                 {t("detail.publishButton")}
@@ -678,7 +682,7 @@ export default function DonationFormDetailPage() {
                 <CloudArrowDownIcon className="mr-1.5 size-4" />
                 {t("detail.unpublishButton")}
               </Button>
-            )}
+            ))}
             <Button size="sm" variant="ghost" onClick={handlePreview}>
               <EyeIcon className="mr-1.5 size-4" />
               {t("detail.previewButton")}
@@ -689,20 +693,24 @@ export default function DonationFormDetailPage() {
                 {t("detail.copyLinkButton")}
               </Button>
             )}
-            <Button size="sm" variant="ghost" onClick={() => publishMutation.mutate("duplicate")} loading={publishMutation.isPending}>
-              <CopyIcon className="mr-1.5 size-4" />
-              {t("detail.duplicateButton")}
-            </Button>
-            {form.status !== "ARCHIVED" && (
-              <Button size="sm" variant="ghost" onClick={() => setArchiveConfirm("archive")}>
-                <ArchiveIcon className="mr-1.5 size-4" />
-                {t("detail.archiveButton")}
-              </Button>
+            {canEditDons && (
+              <>
+                <Button size="sm" variant="ghost" onClick={() => publishMutation.mutate("duplicate")} loading={publishMutation.isPending}>
+                  <CopyIcon className="mr-1.5 size-4" />
+                  {t("detail.duplicateButton")}
+                </Button>
+                {form.status !== "ARCHIVED" && (
+                  <Button size="sm" variant="ghost" onClick={() => setArchiveConfirm("archive")}>
+                    <ArchiveIcon className="mr-1.5 size-4" />
+                    {t("detail.archiveButton")}
+                  </Button>
+                )}
+                <Button size="sm" variant="destructive" onClick={handleDelete}>
+                  <TrashIcon className="mr-1.5 size-4" />
+                  {t("detail.deleteButton")}
+                </Button>
+              </>
             )}
-            <Button size="sm" variant="destructive" onClick={handleDelete}>
-              <TrashIcon className="mr-1.5 size-4" />
-              {t("detail.deleteButton")}
-            </Button>
           </div>
         }
       />
@@ -714,6 +722,7 @@ export default function DonationFormDetailPage() {
         <AccordionItem id="step-info" value="info" className={stepClass("info")}>
           <AccordionTrigger className={stepHeaderClass("info")}>{stepTrigger("info")}</AccordionTrigger>
           <AccordionPanel>
+            <fieldset disabled={!canEditDons} inert={!canEditDons} className="min-w-0">
             <div className="space-y-4">
               {/* Part of this step's Save rather than saved on blur — blur also fired when
                   clicking the back link, so "leave without saving" still saved the title. */}
@@ -782,30 +791,36 @@ export default function DonationFormDetailPage() {
                   />
                 </div>
               </div>
-              <div className="flex justify-end">
-                <Button
-                  size="sm"
-                  disabled={!stepDirty.info}
-                  loading={saveMutation.isPending || uploadingImage}
-                  onClick={handleSaveInfo}
-                >
-                  {tCommon("save")}
-                </Button>
-              </div>
+              {canEditDons && (
+                <div className="flex justify-end">
+                  <Button
+                    size="sm"
+                    disabled={!stepDirty.info}
+                    loading={saveMutation.isPending || uploadingImage}
+                    onClick={handleSaveInfo}
+                  >
+                    {tCommon("save")}
+                  </Button>
+                </div>
+              )}
             </div>
+            </fieldset>
           </AccordionPanel>
         </AccordionItem>
 
         <AccordionItem id="step-tiers" value="tiers" className={stepClass("tiers")}>
           <AccordionTrigger className={stepHeaderClass("tiers")}>{stepTrigger("tiers")}</AccordionTrigger>
           <AccordionPanel>
+            <fieldset disabled={!canEditDons} inert={!canEditDons} className="min-w-0">
             <DonationTiersEditor ref={tiersRef} formId={id} onDirtyChange={setTiersDirty} />
+            </fieldset>
           </AccordionPanel>
         </AccordionItem>
 
         <AccordionItem id="step-fields" value="fields" className={stepClass("fields")}>
           <AccordionTrigger className={stepHeaderClass("fields")}>{stepTrigger("fields")}</AccordionTrigger>
           <AccordionPanel>
+            <fieldset disabled={!canEditDons} inert={!canEditDons} className="min-w-0">
             <div className="space-y-5">
               <div>
                 <p className="text-sm font-medium">{tSteps("fields.standardFieldsHint")}</p>
@@ -816,28 +831,32 @@ export default function DonationFormDetailPage() {
                   <SelectField label={tSteps("fields.mobileLabel")} options={requirementOptions} value={fieldMobile} onValueChange={v => setFieldMobile(v as FieldRequirement)} />
                   <SelectField label={tSteps("fields.genderLabel")} options={requirementOptions} value={fieldGender} onValueChange={v => setFieldGender(v as FieldRequirement)} />
                 </div>
-                <div className="flex justify-end mt-3">
-                  <Button
-                    size="sm"
-                    disabled={!standardFieldsDirty}
-                    loading={saveMutation.isPending}
-                    onClick={() => saveMutation.mutate(standardFieldsPayload())}
-                  >
-                    {tCommon("save")}
-                  </Button>
-                </div>
+                {canEditDons && (
+                  <div className="flex justify-end mt-3">
+                    <Button
+                      size="sm"
+                      disabled={!standardFieldsDirty}
+                      loading={saveMutation.isPending}
+                      onClick={() => saveMutation.mutate(standardFieldsPayload())}
+                    >
+                      {tCommon("save")}
+                    </Button>
+                  </div>
+                )}
               </div>
 
               <div className="border-t pt-4">
                 <DonationFormFieldsEditor ref={fieldsRef} formId={id} onDirtyChange={setFieldsDirty} />
               </div>
             </div>
+            </fieldset>
           </AccordionPanel>
         </AccordionItem>
 
         <AccordionItem id="step-payment" value="payment" className={stepClass("payment")}>
           <AccordionTrigger className={stepHeaderClass("payment")}>{stepTrigger("payment")}</AccordionTrigger>
           <AccordionPanel>
+            <fieldset disabled={!canEditDons} inert={!canEditDons} className="min-w-0">
             <div className="space-y-3">
               <CheckboxField
                 label={tSteps("payment.allowOnlineLabel")}
@@ -867,23 +886,27 @@ export default function DonationFormDetailPage() {
                   onChange={(e) => setOfflineInstructions(e.target.value)}
                 />
               )}
-              <div className="flex justify-end">
-                <Button
-                  size="sm"
-                  disabled={!stepDirty.payment}
-                  loading={saveMutation.isPending}
-                  onClick={() => saveMutation.mutate(paymentPayload())}
-                >
-                  {tCommon("save")}
-                </Button>
-              </div>
+              {canEditDons && (
+                <div className="flex justify-end">
+                  <Button
+                    size="sm"
+                    disabled={!stepDirty.payment}
+                    loading={saveMutation.isPending}
+                    onClick={() => saveMutation.mutate(paymentPayload())}
+                  >
+                    {tCommon("save")}
+                  </Button>
+                </div>
+              )}
             </div>
+            </fieldset>
           </AccordionPanel>
         </AccordionItem>
 
         <AccordionItem id="step-publish" value="publish" className={stepClass("publish")}>
           <AccordionTrigger className={stepHeaderClass("publish")}>{stepTrigger("publish")}</AccordionTrigger>
           <AccordionPanel>
+            <fieldset disabled={!canEditDons} inert={!canEditDons} className="min-w-0">
             <div className="space-y-4">
               <div className="space-y-1.5">
                 <SelectField
@@ -946,20 +969,23 @@ export default function DonationFormDetailPage() {
                   onChange={setClosesAt}
                 />
               </div>
-              <div className="flex justify-end">
-                <Button
-                  size="sm"
-                  disabled={!stepDirty.publish}
-                  loading={saveMutation.isPending}
-                  onClick={() => {
-                    const payload = publishPayload()
-                    if (payload) saveMutation.mutate(payload)
-                  }}
-                >
-                  {tCommon("save")}
-                </Button>
-              </div>
+              {canEditDons && (
+                <div className="flex justify-end">
+                  <Button
+                    size="sm"
+                    disabled={!stepDirty.publish}
+                    loading={saveMutation.isPending}
+                    onClick={() => {
+                      const payload = publishPayload()
+                      if (payload) saveMutation.mutate(payload)
+                    }}
+                  >
+                    {tCommon("save")}
+                  </Button>
+                </div>
+              )}
             </div>
+            </fieldset>
           </AccordionPanel>
         </AccordionItem>
       </Accordion>

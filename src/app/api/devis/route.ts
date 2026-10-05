@@ -9,9 +9,8 @@ import { computeDocumentTotals, exceedsMaxTotal, MAX_DOCUMENT_TOTAL } from "@/li
 import { nextDevisNumber } from "@/lib/document-numbering"
 import { deriveDevisStatus, devisStatusWhere, type DevisStatus } from "@/lib/devis-status"
 
-const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
-const FINANCE  = ["ADMIN", "PRESIDENT", "TRESORIER"]
-
+// Comptabilité area (FORM-34). The old GET/DELETE allowlists also let the Secrétaire in, although
+// the sidebar never showed her this screen and every write was finance-only; she now has no access here.
 function withDerivedStatus<T extends { status: string; validUntil: Date | string | null }>(d: T): T {
   return { ...d, status: deriveDevisStatus(d.status as DevisStatus, d.validUntil) }
 }
@@ -59,7 +58,7 @@ export const GET = withAdminAuth(async (req, ctx) => {
     prisma.devis.count({ where }),
   ])
   return NextResponse.json({ data: data.map(withDerivedStatus), total, page, limit, totalPages: Math.ceil(total / limit) })
-}, { roles: MANAGERS, module: "devis" })
+}, { area: "comptabilite", module: "devis" })
 
 export const POST = withAdminAuth(async (req, ctx) => {
   const { associationId, userId } = ctx
@@ -120,4 +119,4 @@ export const POST = withAdminAuth(async (req, ctx) => {
   }
 
   return NextResponse.json({ error: "Impossible de générer un numéro de devis, réessayez" }, { status: 500 })
-}, { roles: FINANCE, module: "devis" })
+}, { area: "comptabilite", module: "devis" })

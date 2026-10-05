@@ -5,8 +5,8 @@ import { fournisseurCreateSchema } from "@/lib/schemas"
 import { parsePagination } from "@/lib/pagination"
 import { writeActivityLog } from "@/lib/activity-log"
 
-const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
-
+// Comptabilité area (FORM-34). The old allowlist also let the Secrétaire in, although the sidebar
+// only showed Fournisseurs to the finance roles; she now has no access here.
 export const GET = withAdminAuth(async (req, ctx) => {
   const { associationId } = ctx
 
@@ -46,7 +46,7 @@ export const GET = withAdminAuth(async (req, ctx) => {
     prisma.fournisseur.count({ where }),
   ])
   return NextResponse.json({ data, total, page, limit, totalPages: Math.ceil(total / limit) })
-}, { roles: MANAGERS, module: "fournisseurs" })
+}, { area: "comptabilite", module: "fournisseurs" })
 
 export const POST = withAdminAuth(async (req, ctx) => {
   const { associationId, userId } = ctx
@@ -85,4 +85,4 @@ export const POST = withAdminAuth(async (req, ctx) => {
   await writeActivityLog({ associationId, actorId: userId, action: "FOURNISSEUR_CREATED", entity: "Fournisseur", entityId: fournisseur.id, label: fournisseur.companyName })
 
   return NextResponse.json(fournisseur, { status: 201 })
-}, { roles: MANAGERS, module: "fournisseurs" })
+}, { area: "comptabilite", module: "fournisseurs" })

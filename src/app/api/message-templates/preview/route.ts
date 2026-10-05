@@ -7,8 +7,6 @@ import { resolveEmailBranding } from "@/lib/plan-limits"
 import { substituteVars, buildVars } from "@/lib/automation"
 import { emailBlockSchema, renderBlocksToHtml } from "@/lib/email-blocks"
 
-const ALLOWED_ROLES = ["ADMIN", "PRESIDENT", "SECRETAIRE"]
-
 // A wider image.url than emailBlockSchema allows — the *save* routes reject anything but a
 // short R2 URL there on purpose (never let a giant base64 blob into the stored `blocks` JSON
 // or the sent email's HTML). This preview route is the one place that's actually supposed to
@@ -85,4 +83,4 @@ export const POST = withAdminAuth(async (req, ctx) => {
   })
 
   return NextResponse.json({ subject, html })
-}, { roles: ALLOWED_ROLES, module: "messages" })
+}, { area: "communication", module: "messages" })

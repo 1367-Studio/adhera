@@ -8,8 +8,6 @@ import { writeActivityLog } from "@/lib/activity-log"
 import { buildDocumentPdf } from "@/lib/pdf/document-pdf"
 import { resolveEmailBranding } from "@/lib/plan-limits"
 
-const FINANCE = ["ADMIN", "PRESIDENT", "TRESORIER"]
-
 const schema = z.object({
   to:      z.string().trim().email("Email invalide"),
   message: z.string().trim().optional(),
@@ -88,4 +86,4 @@ export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   await writeActivityLog({ associationId, actorId: userId, action: "DEVIS_EMAIL_SENT", entity: "Devis", entityId: id, label: devis.number, metadata: { to, subject } })
 
   return NextResponse.json({ ok: true })
-}, { roles: FINANCE, module: "devis" })
+}, { area: "comptabilite", module: "devis" })

@@ -2,8 +2,6 @@ import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma/client"
 import { withAdminAuth } from "@/lib/api-wrapper"
 
-const ALLOWED = ["ADMIN", "PRESIDENT", "SECRETAIRE", "TRESORIER"]
-
 export const GET = withAdminAuth(async (_req, ctx) => {
   const { associationId } = ctx
 
@@ -46,4 +44,4 @@ export const GET = withAdminAuth(async (_req, ctx) => {
     .slice(0, 8)
 
   return NextResponse.json({ totalRevenue, topLoaned, revenueByMaterial })
-}, { roles: ALLOWED })
+}, { area: "materiel" })

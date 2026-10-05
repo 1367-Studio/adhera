@@ -2,11 +2,14 @@ import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma/client"
 import { generateRecuFiscalForParticipation } from "@/lib/pdf/recu-fiscal"
 import { withAdminAuth } from "@/lib/api-wrapper"
-
-const FINANCE = ["ADMIN", "PRESIDENT", "TRESORIER"]
+import { hasAccess } from "@/lib/permissions"
 
 export const GET = withAdminAuth<{ id: string; participationId: string }>(async (_req, ctx, { id: evenementId, participationId }) => {
-  if (!FINANCE.includes(ctx.role))
+  // A tax receipt is an accounting document — and assigns the next sequential receipt number
+  // on first view, like the cotisation receipt route — so Comptabilité "edit" is required, not
+  // just the event area (the Secrétaire edits events but has no access to accounting — was
+  // ADMIN/PRESIDENT/TRESORIER) and not just "read".
+  if (!hasAccess(ctx.permissions, "comptabilite", "edit"))
     return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
 
   const participation = await prisma.participation.findFirst({
@@ -38,4 +41,4 @@ export const GET = withAdminAuth<{ id: string; participationId: string }>(async 
       "Content-Disposition": `attachment; filename="${name}"`,
     },
   })
-})
+}, { area: "evenements" })
