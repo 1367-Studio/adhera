@@ -6,8 +6,6 @@ import { withAdminAuth } from "@/lib/api-wrapper"
 import { reportError } from "@/lib/monitoring"
 import { getLiveKitConfigForMeeting, LiveKitConfigError } from "@/lib/livekit/config"
 
-const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
-
 export const POST = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
   const { associationId } = ctx
 
@@ -42,7 +40,6 @@ export const POST = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
     }
   }
 
-
   try {
     const roomClient = new RoomServiceClient(livekit.url, livekit.apiKey, livekit.apiSecret)
     await roomClient.deleteRoom(meeting.roomName)
@@ -68,4 +65,4 @@ export const POST = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
   }
 
   return NextResponse.json({ ok: true })
-}, { roles: MANAGERS, module: "reunions" })
+}, { area: "reunions", module: "reunions" })

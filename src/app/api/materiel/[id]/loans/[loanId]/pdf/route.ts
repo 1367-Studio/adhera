@@ -4,8 +4,6 @@ import { prisma } from "@/lib/prisma/client"
 import { buildDocumentPdf } from "@/lib/pdf/document-pdf"
 import { resolveDocumentBranding } from "@/lib/plan-limits"
 
-const ALLOWED = ["ADMIN", "PRESIDENT", "SECRETAIRE", "TRESORIER"]
-
 export const GET = withAdminAuth<{ id: string; loanId: string }>(async (_req, ctx, { id, loanId }) => {
   const { associationId } = ctx
 
@@ -61,4 +59,4 @@ export const GET = withAdminAuth<{ id: string; loanId: string }>(async (_req, ct
       "Content-Disposition": `inline; filename="${number}.pdf"`,
     },
   })
-}, { roles: ALLOWED, module: "materiel" })
+}, { area: "materiel", module: "materiel" })

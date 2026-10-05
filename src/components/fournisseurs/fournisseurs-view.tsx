@@ -18,6 +18,7 @@ import { Badge } from "@/components/ui/badge"
 import { RowActions } from "@/components/ui/row-actions"
 import { FilterSelect } from "@/components/ui/filter-select"
 import { SearchInput } from "@/components/ui/search-input"
+import { useHasAccess } from "@/lib/user-context"
 
 type Fournisseur = {
   id:           string
@@ -46,6 +47,8 @@ const PAGE_SIZE = 20
 export function FournisseursView() {
   const t                               = useTranslations()
   const router                          = useRouter()
+  // FORM-34: a Comptabilité reader opens suppliers but cannot add, edit or archive them.
+  const canEditComptabilite             = useHasAccess("comptabilite", "edit")
   const [page, setPage]                 = useState(1)
   const [searchInput, setSearchInput]   = useState("")
   const [search, setSearch]             = useState("")
@@ -177,8 +180,10 @@ export function FournisseursView() {
       cell: (f) => (
         <RowActions actions={[
           { label: t("fournisseurs.view.actions.view"), icon: <EyeIcon className="size-3.5" />, onClick: () => router.push(`/dashboard/fournisseurs/${f.id}`) },
-          { label: t("fournisseurs.view.actions.edit"),      icon: <PencilSimpleIcon className="size-3.5" />, onClick: () => setEditTarget(f) },
-          { label: t("fournisseurs.view.actions.archive"),     icon: <ArchiveIcon className="size-3.5" />, destructive: true, separator: true, onClick: () => setDeleteTarget(f) },
+          ...(canEditComptabilite ? [
+            { label: t("fournisseurs.view.actions.edit"),      icon: <PencilSimpleIcon className="size-3.5" />, onClick: () => setEditTarget(f) },
+            { label: t("fournisseurs.view.actions.archive"),     icon: <ArchiveIcon className="size-3.5" />, destructive: true, separator: true, onClick: () => setDeleteTarget(f) },
+          ] : []),
         ]} />
       ),
     },
@@ -193,12 +198,12 @@ export function FournisseursView() {
       <PageHeader
         title={t("fournisseurs.view.title")}
         description={descriptionText}
-        action={
+        action={canEditComptabilite && (
           <Button size="sm" onClick={() => setCreateOpen(true)}>
             <PlusIcon className="mr-1.5 size-4" />
             {t("common.add")}
           </Button>
-        }
+        )}
       />
 
       <div className="flex flex-wrap gap-2">

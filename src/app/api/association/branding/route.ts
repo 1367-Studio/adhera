@@ -7,8 +7,6 @@ import { canUseCustomBranding } from "@/lib/plan-limits"
 import { deleteFromR2 } from "@/lib/r2"
 import { emailFooterSettingsSchema } from "@/lib/email-footer"
 
-const ADMINS = ["ADMIN", "PRESIDENT"]
-
 // logoUrl is only ever supposed to come from our own /api/upload → R2 flow (see
 // ImageUpload), but this is a raw JSON PATCH endpoint — without this check, an admin
 // could point it at an arbitrary host and turn buildDocumentPdf()'s server-side fetch()
@@ -81,4 +79,4 @@ export const PATCH = withAdminAuth(async (req, ctx) => {
   })
 
   return NextResponse.json({ ok: true })
-}, { roles: ADMINS })
+}, { administrator: true })

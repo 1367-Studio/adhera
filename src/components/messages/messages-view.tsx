@@ -13,7 +13,7 @@ import { HistoriqueView } from "@/components/messages/historique-view"
 import { CampagneModal } from "@/components/messages/campagne-modal"
 import { SendEmailModal } from "@/components/membres/send-email-modal"
 import { SendSmsModal } from "@/components/membres/send-sms-modal"
-import { useModules } from "@/lib/user-context"
+import { useHasAccess, useModules } from "@/lib/user-context"
 
 type View = "templates" | "rules" | "historique"
 
@@ -21,6 +21,9 @@ export function MessagesView() {
   const t = useTranslations("messages.view")
   const tMembres = useTranslations("membres.view")
   const modules = useModules()
+  // Sending, scheduling reminders and the templates/rules editors all need "communication"
+  // edit access (same check as /api/membres/email, /api/membres/sms, /api/automation-rules).
+  const canEditCommunication = useHasAccess("communication", "edit")
   const [view,          setView]          = useState<View>("templates")
   const [campagneOpen,  setCampagneOpen]  = useState(false)
   const [emailOpen,     setEmailOpen]     = useState(false)
@@ -39,24 +42,26 @@ export function MessagesView() {
         description={t("description")}
         action={
           <div className="flex flex-wrap items-center justify-end gap-2">
-            <DropdownMenu>
-              <DropdownMenuTrigger render={<Button size="sm" variant="outline" aria-label={tMembres("communication")} />}>
-                <PaperPlaneTiltIcon className="size-4 sm:hidden" />
-                <span className="hidden sm:inline">{tMembres("communication")}</span>
-                <CaretDownIcon className="ml-1 size-3" />
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={() => setEmailOpen(true)}>
-                  {tMembres("sendEmail")}
-                </DropdownMenuItem>
-                {modules.sms && (
-                  <DropdownMenuItem onClick={() => setSmsOpen(true)}>
-                    {tMembres("sendSms")}
+            {canEditCommunication && (
+              <DropdownMenu>
+                <DropdownMenuTrigger render={<Button size="sm" variant="outline" aria-label={tMembres("communication")} />}>
+                  <PaperPlaneTiltIcon className="size-4 sm:hidden" />
+                  <span className="hidden sm:inline">{tMembres("communication")}</span>
+                  <CaretDownIcon className="ml-1 size-3" />
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem onClick={() => setEmailOpen(true)}>
+                    {tMembres("sendEmail")}
                   </DropdownMenuItem>
-                )}
-              </DropdownMenuContent>
-            </DropdownMenu>
-            {view === "rules" && (
+                  {modules.sms && (
+                    <DropdownMenuItem onClick={() => setSmsOpen(true)}>
+                      {tMembres("sendSms")}
+                    </DropdownMenuItem>
+                  )}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
+            {canEditCommunication && view === "rules" && (
               <Button variant="outline" size="sm" aria-label={t("reminderSchedule")} onClick={() => setCampagneOpen(true)}>
                 <ListChecksIcon className="size-3.5 sm:mr-1.5" />
                 <span className="hidden sm:inline">{t("reminderSchedule")}</span>
@@ -71,9 +76,13 @@ export function MessagesView() {
       {view === "rules"      && <RulesManager />}
       {view === "historique" && <HistoriqueView />}
 
-      <CampagneModal open={campagneOpen} onOpenChange={setCampagneOpen} />
-      <SendEmailModal open={emailOpen} onOpenChange={setEmailOpen} />
-      <SendSmsModal open={smsOpen} onOpenChange={setSmsOpen} />
+      {canEditCommunication && (
+        <>
+          <CampagneModal open={campagneOpen} onOpenChange={setCampagneOpen} />
+          <SendEmailModal open={emailOpen} onOpenChange={setEmailOpen} />
+          <SendSmsModal open={smsOpen} onOpenChange={setSmsOpen} />
+        </>
+      )}
     </div>
   )
 }

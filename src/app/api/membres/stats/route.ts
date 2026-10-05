@@ -3,7 +3,6 @@ import { withAdminAuth } from "@/lib/api-wrapper"
 import { prisma } from "@/lib/prisma/client"
 import { isMembreAdherent, membreAdherentCotisationSelect, membreAdherentResponsableSelect } from "@/lib/membre-adherent"
 
-const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
 
 // Cutoff used to bucket "adulte"/"enfant" from birthDate — Prisma can't groupBy a computed
 // age, so members with a known birthDate are fetched and bucketed here instead.
@@ -46,4 +45,4 @@ export const GET = withAdminAuth(async (_req, ctx) => {
   }
 
   return NextResponse.json({ ...total, adherents, benevoles })
-}, { roles: MANAGERS })
+}, { area: "membres" })

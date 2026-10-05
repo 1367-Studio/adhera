@@ -3,12 +3,7 @@ import { withAdminAuth } from "@/lib/api-wrapper"
 import { prisma } from "@/lib/prisma/client"
 import { writeActivityLog } from "@/lib/activity-log"
 
-const MANAGERS = ["ADMIN", "PRESIDENT", "SECRETAIRE"]
-
 export const POST = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
-  if (!MANAGERS.includes(ctx.role))
-    return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
-
   const sondage = await prisma.sondage.findFirst({
     where:  { id, associationId: ctx.associationId },
     select: { id: true, status: true, title: true },
@@ -29,4 +24,4 @@ export const POST = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
   })
 
   return NextResponse.json({ ok: true })
-})
+}, { area: "communication" })

@@ -7,8 +7,6 @@ import { writeActivityLog } from "@/lib/activity-log"
 import { withAdminAuth } from "@/lib/api-wrapper"
 import { generateEvenementSlug } from "@/lib/slug"
 
-const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
-
 type EvenementWithTicketTypes = { ticketTypes: { id: string; label: string; price: unknown; capacity: number | null; active: boolean }[] }
 
 // Shared by both the unpaginated (calendar) and paginated (list) branches below — merges
@@ -102,7 +100,7 @@ export const GET = withAdminAuth(async (req, ctx) => {
   const enriched = withOccupancy.map(e => ({ ...e, confirmedCount: confirmedMap[e.id] ?? 0 }))
 
   return NextResponse.json({ data: enriched, total, page, limit, totalPages: Math.ceil(total / limit) })
-})
+}, { area: "evenements" })
 
 export const POST = withAdminAuth(async (req, ctx) => {
   const { associationId, userId } = ctx
@@ -146,4 +144,4 @@ export const POST = withAdminAuth(async (req, ctx) => {
   // transition, so an admin can freely configure an event without spamming every member.
 
   return NextResponse.json(evenement, { status: 201 })
-}, { roles: MANAGERS, module: "evenements" })
+}, { area: "evenements", module: "evenements" })

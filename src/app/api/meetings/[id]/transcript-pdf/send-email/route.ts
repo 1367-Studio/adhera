@@ -9,8 +9,6 @@ import { MEETING_WITH_PARTICIPANTS_SELECT } from "@/lib/meetings/select"
 import { buildMeetingMinutesPdf } from "@/lib/pdf/meeting-minutes-pdf"
 import { resolveEmailBranding } from "@/lib/plan-limits"
 
-const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
-
 const schema = z.object({
   to:      z.string().trim().email("Email invalide"),
   message: z.string().trim().optional(),
@@ -64,4 +62,4 @@ export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   await writeActivityLog({ associationId, actorId: userId, action: "MEETING_MINUTES_EMAIL_SENT", entity: "Meeting", entityId: id, label: meeting.title })
 
   return NextResponse.json({ ok: true })
-}, { roles: MANAGERS, module: "reunions" })
+}, { area: "reunions", module: "reunions" })

@@ -39,4 +39,4 @@ export const GET = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
     totalPages: Math.ceil(total / pageSize),
     pageSize,
   })
-}, { module: "sms" })
+}, { area: "membres", module: "sms" })

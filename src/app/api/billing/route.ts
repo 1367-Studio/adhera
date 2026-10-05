@@ -6,6 +6,7 @@ import { effectiveMemberLimit } from "@/lib/plan-limits"
 import { reportError } from "@/lib/monitoring"
 import { tierFromPlan } from "@/lib/plan-tier"
 
+// No area on purpose: the past-due banner reads the subscription status for every team member.
 export const GET = withAdminAuth(async (_req, ctx) => {
   const [assoc, pricing, memberCount] = await Promise.all([
     prisma.association.findUnique({

@@ -5,8 +5,6 @@ import { withAdminAuth } from "@/lib/api-wrapper"
 import { buildDocumentPdf } from "@/lib/pdf/document-pdf"
 import { resolveDocumentBranding } from "@/lib/plan-limits"
 
-const MANAGERS = ["ADMIN", "PRESIDENT", "SECRETAIRE", "TRESORIER"]
-
 const PAYMENT_METHOD_LABEL: Record<string, string> = {
   STRIPE:   "carte bancaire (en ligne)",
   ESPECES:  "espèces",
@@ -17,8 +15,6 @@ const PAYMENT_METHOD_LABEL: Record<string, string> = {
 }
 
 export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
-  if (!MANAGERS.includes(ctx.role))
-    return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
   const guard = await guardModule(ctx.associationId, "boutique")
   if (guard) return guard
 
@@ -103,4 +99,4 @@ export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
       "Content-Disposition": `inline; filename="recu-${number}.pdf"`,
     },
   })
-})
+}, { area: "boutique" })

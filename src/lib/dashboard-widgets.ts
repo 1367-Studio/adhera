@@ -1,4 +1,5 @@
 import type { AssocModules } from "@/lib/modules"
+import { hasAccess, type AccessArea, type ResolvedPermissions } from "@/lib/permissions"
 
 // Canonical order = today's default, hardcoded visual order — a brand-new user (no saved
 // dashboardLayout) sees exactly this, unchanged from before drag-and-drop existed.
@@ -24,9 +25,6 @@ export const DASHBOARD_WIDGET_IDS = [
 
 export type DashboardWidgetId = (typeof DASHBOARD_WIDGET_IDS)[number]
 
-// Same list the matching app-sidebar entry uses to gate /dashboard/dons — see `roles` below.
-const FINANCE = ["ADMIN", "PRESIDENT", "TRESORIER"] as const
-
 // The grid is 4 columns wide at lg (2 at sm, 1 below), and every row is one fixed unit tall
 // — see the `auto-rows-` class in tableau-de-bord. A widget's `w`/`h` are how many columns
 // and how many of those row units it spans. Heights being quantized to a shared unit is the
@@ -47,35 +45,35 @@ export type DashboardWidget = {
 // an empty recettes/dépenses card, and vice versa.
 export const DASHBOARD_WIDGET_META: Record<DashboardWidgetId, {
   moduleKey: keyof AssocModules | (keyof AssocModules)[] | null
-  // Roles allowed to see the widget, for a tile linking to a page the sidebar itself
-  // restricts — undefined means every admin role, which is the case for every widget but
-  // the two dons ones. Without it a SECRETAIRE would get a tile onto a page whose API 403s.
-  roles?:    readonly string[]
+  // Area (FORM-34) the user must be able to read to see the widget — the same area that
+  // gates the page the tile links to and the API behind its figures, so nobody gets a tile
+  // onto a page they cannot open (e.g. the balance for someone without Comptabilité).
+  area:      AccessArea
   // Starting size, used for a brand-new dashboard and whenever a widget appears in a saved
   // layout that predates it. Only a default — the user resizes from the Personnaliser mode.
   w:         number
   h:         number
 }> = {
-  "stat-membres":         { moduleKey: null,                          w: 1, h: 1 },
-  "stat-evenements":      { moduleKey: "evenements",                  w: 1, h: 1 },
-  "stat-cotisations":     { moduleKey: "cotisations",                 w: 1, h: 1 },
-  "stat-solde":           { moduleKey: "finances",                    w: 1, h: 1 },
-  "stat-dons":            { moduleKey: "dons", roles: FINANCE,        w: 1, h: 1 },
-  "cotisations-gauge":    { moduleKey: "cotisations",                 w: 2, h: 3 },
-  "income-expense-chart": { moduleKey: "finances",                    w: 2, h: 3 },
-  "next-event":           { moduleKey: "evenements",                  w: 2, h: 2 },
-  "cotisations-summary":  { moduleKey: "cotisations",                 w: 2, h: 2 },
-  "income-by-category":   { moduleKey: "finances",                    w: 2, h: 2 },
-  "recent-orders":        { moduleKey: "boutique",                    w: 2, h: 3 },
-  "dons-recents":         { moduleKey: "dons", roles: FINANCE,        w: 2, h: 3 },
-  "loaned-material":      { moduleKey: "materiel",                    w: 2, h: 2 },
+  "stat-membres":         { moduleKey: null,          area: "membres",      w: 1, h: 1 },
+  "stat-evenements":      { moduleKey: "evenements",  area: "evenements",   w: 1, h: 1 },
+  "stat-cotisations":     { moduleKey: "cotisations", area: "adhesions",    w: 1, h: 1 },
+  "stat-solde":           { moduleKey: "finances",    area: "comptabilite", w: 1, h: 1 },
+  "stat-dons":            { moduleKey: "dons",        area: "dons",         w: 1, h: 1 },
+  "cotisations-gauge":    { moduleKey: "cotisations", area: "adhesions",    w: 2, h: 3 },
+  "income-expense-chart": { moduleKey: "finances",    area: "comptabilite", w: 2, h: 3 },
+  "next-event":           { moduleKey: "evenements",  area: "evenements",   w: 2, h: 2 },
+  "cotisations-summary":  { moduleKey: "cotisations", area: "adhesions",    w: 2, h: 2 },
+  "income-by-category":   { moduleKey: "finances",    area: "comptabilite", w: 2, h: 2 },
+  "recent-orders":        { moduleKey: "boutique",    area: "boutique",     w: 2, h: 3 },
+  "dons-recents":         { moduleKey: "dons",        area: "dons",         w: 2, h: 3 },
+  "loaned-material":      { moduleKey: "materiel",    area: "materiel",     w: 2, h: 2 },
 }
 
-export function isDashboardWidgetVisible(id: DashboardWidgetId, modules: AssocModules, role?: string): boolean {
-  const { moduleKey, roles } = DASHBOARD_WIDGET_META[id]
-  if (roles && (!role || !roles.includes(role))) return false
+export function isDashboardWidgetVisible(id: DashboardWidgetId, modules: AssocModules, permissions: ResolvedPermissions): boolean {
+  const { moduleKey, area } = DASHBOARD_WIDGET_META[id]
+  if (!hasAccess(permissions, area, "read")) return false
   if (!moduleKey) return true
-  if (Array.isArray(moduleKey)) return moduleKey.some(k => modules[k])
+  if (Array.isArray(moduleKey)) return moduleKey.some(moduleName => modules[moduleName])
   return modules[moduleKey]
 }
 

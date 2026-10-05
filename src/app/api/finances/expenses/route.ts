@@ -6,8 +6,6 @@ import { writeActivityLog } from "@/lib/activity-log"
 import { withAdminAuth } from "@/lib/api-wrapper"
 import { resolveExerciceForDate, closedExerciceGuard } from "@/lib/finance/exercice"
 
-const FINANCE = ["ADMIN", "PRESIDENT", "TRESORIER"]
-
 export const GET = withAdminAuth(async (req, ctx) => {
   const { associationId } = ctx
 
@@ -56,7 +54,7 @@ export const GET = withAdminAuth(async (req, ctx) => {
   ])
 
   return NextResponse.json({ data, total, page, limit, totalPages: Math.ceil(total / limit) })
-}, { roles: FINANCE, module: "finances" })
+}, { area: "comptabilite", module: "finances" })
 
 export const POST = withAdminAuth(async (req, ctx) => {
   const { associationId, userId } = ctx
@@ -91,4 +89,4 @@ export const POST = withAdminAuth(async (req, ctx) => {
 
   await writeActivityLog({ associationId, actorId: userId, action: "EXPENSE_CREATED", entity: "Expense", entityId: expense.id, label: description || vendor || `Dépense ${Number(expense.amount)}€`, metadata: { amount: Number(expense.amount) } })
   return NextResponse.json(expense, { status: 201 })
-}, { roles: FINANCE, module: "finances" })
+}, { area: "comptabilite", module: "finances" })

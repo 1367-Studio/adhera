@@ -40,6 +40,7 @@ function getFieldLabels(t: Translator): Record<string, string> {
     status:    t("membres.activityLog.fields.status"),
     typeId:    t("membres.activityLog.fields.typeId"),
     role:      t("membres.activityLog.fields.role"),
+    permissions: t("membres.activityLog.fields.permissions"),
     adherentOverride: t("membres.activityLog.fields.adherentOverride"),
     notes:              t("membres.activityLog.fields.notes"),
     imageRightsConsent: t("membres.activityLog.fields.imageRightsConsent"),
@@ -69,7 +70,7 @@ function getAdherentOverrideLabels(t: Translator): Record<string, string> {
 function getRoleLabels(t: Translator): Record<string, string> {
   return {
     ADMIN: t("membres.form.role.admin"), PRESIDENT: t("membres.form.role.president"), TRESORIER: t("membres.form.role.tresorier"),
-    SECRETAIRE: t("membres.form.role.secretaire"), MEMBRE: t("membres.form.role.membre"),
+    SECRETAIRE: t("membres.form.role.secretaire"), EQUIPE: t("membres.form.role.equipe"), MEMBRE: t("membres.form.role.membre"),
   }
 }
 

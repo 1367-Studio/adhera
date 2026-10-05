@@ -4,12 +4,9 @@ import { generateDeclarationCotisation } from "@/lib/pdf/declaration-cotisation"
 import { withAdminAuth } from "@/lib/api-wrapper"
 import { resolveDocumentBranding } from "@/lib/plan-limits"
 
-const FINANCE = ["ADMIN", "PRESIDENT", "TRESORIER"]
-
+// Issuing a cotisation's fiscal document is a finance call: Adhésions "edit" (the Secrétaire,
+// read-only on Adhésions, never could).
 export const GET = withAdminAuth<{ id: string; cotisationId: string }>(async (_req, ctx, { id, cotisationId }) => {
-  if (!FINANCE.includes(ctx.role))
-    return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
-
   // A cotisation that was PAYE and has since been cancelled can still have an already-issued
   // fiscal document — re-downloading it must keep working even though status is now ANNULEE.
   const cotisation = await prisma.cotisation.findFirst({
@@ -40,4 +37,4 @@ const { pdf, declarationNumber } = await generateDeclarationCotisation(cotisatio
       "Content-Disposition": `inline; filename="declaration-cotisation-${declarationNumber}.pdf"`,
     },
   })
-})
+}, { area: "adhesions", access: "edit" })

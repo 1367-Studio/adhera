@@ -5,8 +5,6 @@ import { writeActivityLog } from "@/lib/activity-log"
 import { withAdminAuth } from "@/lib/api-wrapper"
 import { revalidatePublicSiteFor } from "@/lib/association/revalidate-site"
 
-const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
-
 class DiscountCodeInUseError extends Error {}
 class DuplicateCodeError extends Error {}
 
@@ -22,7 +20,7 @@ export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
   })
 
   return NextResponse.json(discountCodes)
-})
+}, { area: "evenements" })
 
 export const PUT = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   const { associationId, userId } = ctx
@@ -99,4 +97,4 @@ export const PUT = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   })
 
   return NextResponse.json(discountCodes)
-}, { roles: MANAGERS, module: "evenements" })
+}, { area: "evenements", module: "evenements" })

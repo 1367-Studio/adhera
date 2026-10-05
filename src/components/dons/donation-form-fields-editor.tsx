@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button"
 import { FormField } from "@/components/ui/form-field"
 import { SelectField } from "@/components/ui/select-field"
 import { CheckboxField } from "@/components/ui/checkbox-field"
+import { useHasAccess } from "@/lib/user-context"
 
 type DonationFieldType = "TEXT" | "NUMBER" | "SELECT" | "RADIO" | "CHECKBOX_MULTI"
 type DonationFormFieldDraft = { id?: string; type: DonationFieldType; label: string; required: boolean; options: string[] | null }
@@ -41,6 +42,9 @@ export function DonationFormFieldsEditor({ formId, onDirtyChange, ref }: {
 }) {
   const t       = useTranslations("donationForms.detail.steps.fields")
   const tCommon = useTranslations("common")
+  // FORM-34: a Dons reader sees the custom fields; the page renders them inert, this hides
+  // the add/remove/save controls they could not use anyway.
+  const canEditDons = useHasAccess("dons", "edit")
   const qc      = useQueryClient()
 
   const { data, isLoading } = useQuery<DonationFormField[]>({
@@ -193,43 +197,51 @@ export function DonationFormFieldsEditor({ formId, onDirtyChange, ref }: {
                         onChange={e => updateOption(field.key, i, e.target.value)}
                         className="h-8 flex-1 rounded-md border border-input bg-background px-2.5 text-sm outline-none focus:ring-1 focus:ring-ring"
                       />
-                      <button
-                        type="button"
-                        disabled={(field.options ?? []).length <= 2}
-                        onClick={() => removeOption(field.key, i)}
-                        className="text-muted-foreground hover:text-destructive disabled:opacity-30"
-                        aria-label={t("removeOption")}
-                      >
-                        <TrashIcon className="size-3.5" />
-                      </button>
+                      {canEditDons && (
+                        <button
+                          type="button"
+                          disabled={(field.options ?? []).length <= 2}
+                          onClick={() => removeOption(field.key, i)}
+                          className="text-muted-foreground hover:text-destructive disabled:opacity-30"
+                          aria-label={t("removeOption")}
+                        >
+                          <TrashIcon className="size-3.5" />
+                        </button>
+                      )}
                     </div>
                   ))}
-                  <button
-                    type="button"
-                    onClick={() => addOption(field.key)}
-                    className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground"
-                  >
-                    <PlusIcon className="size-3" /> {t("addOption")}
-                  </button>
+                  {canEditDons && (
+                    <button
+                      type="button"
+                      onClick={() => addOption(field.key)}
+                      className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground"
+                    >
+                      <PlusIcon className="size-3" /> {t("addOption")}
+                    </button>
+                  )}
                 </div>
               )}
             </div>
-            <Button type="button" variant="ghost" size="icon" onClick={() => removeField(field.key)} aria-label={t("removeField")}>
-              <TrashIcon className="size-4" />
-            </Button>
+            {canEditDons && (
+              <Button type="button" variant="ghost" size="icon" onClick={() => removeField(field.key)} aria-label={t("removeField")}>
+                <TrashIcon className="size-4" />
+              </Button>
+            )}
           </div>
         ))}
       </div>
 
-      <div className="flex items-center justify-between pt-1">
-        <Button type="button" variant="outline" size="sm" onClick={addField}>
-          <PlusIcon className="mr-1.5 size-4" />
-          {t("addField")}
-        </Button>
-        <Button type="button" size="sm" disabled={!isDirty} onClick={handleSave} loading={saveMutation.isPending}>
-          {t("saveFields")}
-        </Button>
-      </div>
+      {canEditDons && (
+        <div className="flex items-center justify-between pt-1">
+          <Button type="button" variant="outline" size="sm" onClick={addField}>
+            <PlusIcon className="mr-1.5 size-4" />
+            {t("addField")}
+          </Button>
+          <Button type="button" size="sm" disabled={!isDirty} onClick={handleSave} loading={saveMutation.isPending}>
+            {t("saveFields")}
+          </Button>
+        </div>
+      )}
     </div>
   )
 }

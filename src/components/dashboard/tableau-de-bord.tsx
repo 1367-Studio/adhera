@@ -41,7 +41,8 @@ type DashboardData = {
   evenementsMois:        number
   cotisationsEnAttente:  number
   cotisationsEncaissees: number
-  solde:                 number
+  // null for a user without Comptabilité (see /api/dashboard) — stat-solde is hidden for them.
+  solde:                 number | null
   // null for a role that isn't allowed to see donation totals (see /api/dashboard) — the
   // stat-dons tile is hidden for those roles anyway.
   donsRecus:             number | null
@@ -97,7 +98,7 @@ export function TableauDeBord({ initialLayout }: Props) {
   const t          = useTranslations()
   const tCustomize = useTranslations("dashboard.customize")
   const modules    = useModules()
-  const { role }   = useCurrentUser()
+  const { permissions } = useCurrentUser()
   const pal        = usePalette()
   const { data, isLoading } = useQuery<DashboardData>({
     queryKey: ["dashboard"],
@@ -129,11 +130,11 @@ export function TableauDeBord({ initialLayout }: Props) {
 
   const year             = new Date().getFullYear()
   const cotisationsAlert = !!data?.cotisationsEnAttente
-  const soldePositive    = !data || data.solde >= 0
+  const soldePositive    = !data || data.solde === null || data.solde >= 0
 
   const visibleLayout = useMemo(
-    () => layout.filter(w => isDashboardWidgetVisible(w.id, modules, role)),
-    [layout, modules, role],
+    () => layout.filter(widget => isDashboardWidgetVisible(widget.id, modules, permissions)),
+    [layout, modules, permissions],
   )
   // dnd-kit addresses sortable items by id, so it gets the ids alone — sizes never enter
   // into drag ordering.
@@ -182,7 +183,7 @@ export function TableauDeBord({ initialLayout }: Props) {
     "stat-solde": (
       <StatTile
         label={t("dashboard.stats.financialBalance")}
-        value={data ? fmt(data.solde) : "—"}
+        value={data && data.solde !== null ? fmt(data.solde) : "—"}
         icon={BankIcon}
         href="/dashboard/finances"
         accent={soldePositive ? pal.recettes : pal.depenses}

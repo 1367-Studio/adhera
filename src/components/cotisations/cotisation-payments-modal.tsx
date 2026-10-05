@@ -10,6 +10,7 @@ import { useRemoveCotisationPayment } from "@/hooks/use-cotisations"
 import { Modal } from "@/components/ui/modal"
 import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 import { Button } from "@/components/ui/button"
+import { useHasAccess } from "@/lib/user-context"
 
 type Payment = { id: string; amount: string; method: string; paidAt: string; note: string | null }
 
@@ -26,6 +27,9 @@ export function CotisationPaymentsModal({ cotisationId, payments, open, onOpenCh
   const t = useTranslations()
   const [deleteTarget, setDeleteTarget] = useState<Payment | null>(null)
   const removeMutation = useRemoveCotisationPayment(cotisationId)
+  // Same area as DELETE /api/cotisations/[id]/paiements/[paymentId]: a "read" user sees the
+  // history without the delete action.
+  const canEditAdhesions = useHasAccess("adhesions", "edit")
 
   async function handleRemove() {
     if (!deleteTarget) return
@@ -54,9 +58,11 @@ export function CotisationPaymentsModal({ cotisationId, payments, open, onOpenCh
                     {p.note && <> · {p.note}</>}
                   </p>
                 </div>
-                <Button variant="ghost" size="icon-sm" onClick={() => setDeleteTarget(p)} title={t("cotisations.payment.deleteTooltip")}>
-                  <TrashIcon className="size-3.5 text-muted-foreground hover:text-destructive" />
-                </Button>
+                {canEditAdhesions && (
+                  <Button variant="ghost" size="icon-sm" onClick={() => setDeleteTarget(p)} title={t("cotisations.payment.deleteTooltip")}>
+                    <TrashIcon className="size-3.5 text-muted-foreground hover:text-destructive" />
+                  </Button>
+                )}
               </div>
             ))}
           </div>

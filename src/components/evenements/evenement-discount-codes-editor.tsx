@@ -15,6 +15,9 @@ import type { TicketTypeDraftRow } from "@/components/evenements/evenement-ticke
 
 type Props = {
   evenementId: string
+  // FORM-34: a "read" user sees the configuration without the add / remove / save controls
+  // (the page's <fieldset disabled> greys the inputs themselves).
+  readOnly?: boolean
   // Le brouillon en direct de l'éditeur de tarifs voisin (pas la liste déjà enregistrée) —
   // voir onDraftChange dans evenement-ticket-types-editor.tsx. Only TICKET rows can be
   // targeted — voir le commentaire du champ ticketTypeIds dans schema.prisma (un code ne
@@ -42,7 +45,7 @@ function fromDatetimeLocal(value: string | null): string {
   return value ? new Date(value).toISOString() : ""
 }
 
-export function EvenementDiscountCodesEditor({ evenementId, ticketTypes, onDirtyChange, ref }: Props) {
+export function EvenementDiscountCodesEditor({ evenementId, ticketTypes, onDirtyChange, readOnly = false, ref }: Props) {
   const t = useTranslations("evenements.discountCodes")
   const tCommon = useTranslations("common")
   const { data, isLoading } = useEvenementDiscountCodes(evenementId)
@@ -246,13 +249,16 @@ export function EvenementDiscountCodesEditor({ evenementId, ticketTypes, onDirty
                 </div>
               )}
             </div>
-            <Button type="button" variant="ghost" size="icon" onClick={() => removeCode(code.key)} aria-label={t("removeCode")}>
-              <TrashIcon className="size-4" />
-            </Button>
+            {!readOnly && (
+              <Button type="button" variant="ghost" size="icon" onClick={() => removeCode(code.key)} aria-label={t("removeCode")}>
+                <TrashIcon className="size-4" />
+              </Button>
+            )}
           </div>
         ))}
       </div>
 
+      {!readOnly && (
       <div className="flex items-center justify-between pt-1">
         <Button type="button" variant="outline" size="sm" onClick={addCode}>
           <PlusIcon className="mr-1.5 size-4" />
@@ -262,6 +268,7 @@ export function EvenementDiscountCodesEditor({ evenementId, ticketTypes, onDirty
           {tCommon("save")}
         </Button>
       </div>
+      )}
     </div>
   )
 }

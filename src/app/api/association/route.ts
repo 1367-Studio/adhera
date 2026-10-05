@@ -5,8 +5,6 @@ import { writeActivityLog } from "@/lib/activity-log"
 import { withAdminAuth } from "@/lib/api-wrapper"
 import { ASSOCIATION_SAFE_SELECT } from "@/lib/association/select"
 
-const ADMINS = ["ADMIN", "PRESIDENT"]
-
 export const GET = withAdminAuth(async (req, ctx) => {
   const { associationId } = ctx
 
@@ -42,4 +40,4 @@ export const PATCH = withAdminAuth(async (req, ctx) => {
     label:    association.name,
   })
   return NextResponse.json(association)
-}, { roles: ADMINS })
+}, { administrator: true })

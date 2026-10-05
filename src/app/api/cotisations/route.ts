@@ -6,7 +6,9 @@ import { writeActivityLog } from "@/lib/activity-log"
 import { withAdminAuth } from "@/lib/api-wrapper"
 import { deriveCotisationStatus } from "@/lib/cotisation-status"
 
-const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
+// Writes on a cotisation are gated on Membres "edit", not Adhésions: the Secrétaire, read-only
+// on Adhésions, has always been able to record and correct a member's cotisation (FORM-34
+// keeps that). Payments themselves (./[id]/paiements) need Adhésions "edit".
 
 export const GET = withAdminAuth(async (req, ctx) => {
   const { associationId } = ctx
@@ -55,7 +57,7 @@ export const GET = withAdminAuth(async (req, ctx) => {
   ])
   const totalPaye = Number(aggregate._sum.amount ?? 0)
   return NextResponse.json({ data, total, page, limit, totalPages: Math.ceil(total / limit), totalPaye })
-})
+}, { area: "adhesions" })
 
 export const POST = withAdminAuth(async (req, ctx) => {
   const { associationId, userId } = ctx
@@ -118,4 +120,4 @@ export const POST = withAdminAuth(async (req, ctx) => {
 
   await writeActivityLog({ associationId, actorId: userId, action: "COTISATION_CREATED", entity: "Cotisation", entityId: cotisation.id, label: `${cotisation.membre.firstName} ${cotisation.membre.lastName} — ${cotisation.year}` })
   return NextResponse.json(cotisation, { status: 201 })
-}, { roles: MANAGERS, module: "cotisations" })
+}, { area: "membres", module: "cotisations" })

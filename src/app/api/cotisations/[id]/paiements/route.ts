@@ -5,7 +5,6 @@ import { writeActivityLog } from "@/lib/activity-log"
 import { withAdminAuth } from "@/lib/api-wrapper"
 import { recordCotisationPayment, sendCotisationPaymentConfirmation, CotisationOverpaymentError } from "@/lib/cotisation-payments"
 
-const FINANCE = ["ADMIN", "PRESIDENT", "TRESORIER"]
 
 export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   const { associationId, userId } = ctx
@@ -49,4 +48,4 @@ export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
     }
     throw err
   }
-}, { roles: FINANCE, module: "cotisations" })
+}, { area: "adhesions", module: "cotisations" })

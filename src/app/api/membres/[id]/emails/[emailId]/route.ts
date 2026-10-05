@@ -16,4 +16,4 @@ export const GET = withAdminAuth<{ id: string; emailId: string }>(async (_req, c
   if (!email) return NextResponse.json({ error: "Introuvable" }, { status: 404 })
 
   return NextResponse.json({ html: email.html })
-})
+}, { area: "membres" })

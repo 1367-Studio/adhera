@@ -13,9 +13,6 @@ import { listPuckBlocksOfType, puckBlockId } from "@/lib/site-puck/site-puck-tre
 // siteConfig.sections for LEGACY, the Puck blocks for PUCK. Lets the form pages' Publication
 // step work the same whichever builder is active.
 
-// Same roles as PATCH /api/site-config, which the form pages used to create sections.
-const SITE_SECTION_CREATOR_ROLES = ["ADMIN", "PRESIDENT"]
-
 const sectionTypeSchema = z.enum(["membership", "dons"])
 type FormSectionType = z.infer<typeof sectionTypeSchema>
 
@@ -166,4 +163,4 @@ export const POST = withAdminAuth(async (req, ctx) => {
     metadata: { createdSiteSection: { id: sectionId, type: sectionType, siteBuilder: association.siteBuilder } },
   })
   return NextResponse.json({ id: sectionId, title: sectionTitle }, { status: 201 })
-}, { roles: SITE_SECTION_CREATOR_ROLES })
+}, { area: "site" }) // same gate as PATCH /api/site-config, which the form pages used to create sections

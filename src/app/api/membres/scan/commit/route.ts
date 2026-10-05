@@ -2,7 +2,6 @@ import { NextResponse } from "next/server"
 import { withAdminAuth } from "@/lib/api-wrapper"
 import { prisma } from "@/lib/prisma/client"
 import { paperFormCommitRequestSchema, type PaperFormCommitResponse, type PaperFormCommitResult } from "@/lib/schemas"
-import { MANAGER_ROLES } from "@/lib/roles"
 import { assertMemberLimit, MemberLimitReachedError } from "@/lib/plan-limits"
 import { findMembreCreationAssociation } from "@/lib/membres/create-membre"
 import { commitPaperForm, resolveTickedDocumentRevisions } from "@/lib/paper-form/commit"
@@ -56,4 +55,4 @@ export const POST = withAdminAuth(async (req, ctx) => {
 
   const response: PaperFormCommitResponse = { results }
   return NextResponse.json(response)
-}, { roles: MANAGER_ROLES })
+}, { area: "membres" })

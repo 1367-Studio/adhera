@@ -4,8 +4,8 @@ import { prisma } from "@/lib/prisma/client"
 import { fournisseurUpdateSchema } from "@/lib/schemas"
 import { writeActivityLog, computeFournisseurDiff } from "@/lib/activity-log"
 
-const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
-
+// Comptabilité area (FORM-34). The old allowlist also let the Secrétaire in, although the sidebar
+// only showed Fournisseurs to the finance roles; she now has no access here.
 export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
   const { associationId } = ctx
 
@@ -15,7 +15,7 @@ export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
 
   if (!fournisseur) return NextResponse.json({ error: "Fournisseur introuvable" }, { status: 404 })
   return NextResponse.json(fournisseur)
-}, { module: "fournisseurs" })
+}, { area: "comptabilite", module: "fournisseurs" })
 
 export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   const { associationId, userId } = ctx
@@ -63,7 +63,7 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   }
 
   return NextResponse.json(fournisseur)
-}, { roles: MANAGERS, module: "fournisseurs" })
+}, { area: "comptabilite", module: "fournisseurs" })
 
 export const DELETE = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
   const { associationId, userId } = ctx
@@ -76,4 +76,4 @@ export const DELETE = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) =>
   await writeActivityLog({ associationId, actorId: userId, action: "FOURNISSEUR_DELETED", entity: "Fournisseur", entityId: id, label: existing.companyName })
 
   return new NextResponse(null, { status: 204 })
-}, { roles: MANAGERS, module: "fournisseurs" })
+}, { area: "comptabilite", module: "fournisseurs" })

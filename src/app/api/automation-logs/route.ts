@@ -1,8 +1,6 @@
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma/client"
 import { withAdminAuth } from "@/lib/api-wrapper"
-
-const ALLOWED_ROLES = ["ADMIN", "PRESIDENT", "SECRETAIRE"]
 const PAGE_SIZE = 50
 
 export const GET = withAdminAuth(async (req, ctx) => {
@@ -33,4 +31,4 @@ export const GET = withAdminAuth(async (req, ctx) => {
   ])
 
   return NextResponse.json({ logs, total, page, pageSize: PAGE_SIZE })
-}, { roles: ALLOWED_ROLES })
+}, { area: "communication" })

@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation"
 import { auth } from "@/lib/auth/config"
 import { UserProvider, type SessionUser } from "@/lib/user-context"
+import { hasAccess, resolvePermissions } from "@/lib/permissions"
 import { AppSidebar } from "@/components/layout/app-sidebar"
 import { Header } from "@/components/layout/header"
 import { PastDueBanner } from "@/components/layout/past-due-banner"
@@ -18,9 +19,6 @@ export default async function DashboardLayout({ children }: { children: React.Re
   if (!session?.user) redirect("/login")
 
   const u = session.user as SessionUser
-  const FINANCE = ["ADMIN", "PRESIDENT", "TRESORIER"]
-  const canManageFinance = FINANCE.includes(u.role)
-
   if (u.role === "SUPER_ADMIN") redirect("/backoffice")
   if (u.role === "MEMBRE")      redirect(u.associationSlug ? `/portal/${u.associationSlug}` : "/login")
 
@@ -31,7 +29,11 @@ export default async function DashboardLayout({ children }: { children: React.Re
     role:             u.role ?? "MEMBRE",
     associationId:    u.associationId,
     associationSlug:  u.associationSlug,
+    permissions:      resolvePermissions(u.role, (session.user as { permissions?: unknown }).permissions),
   }
+  // Creating the fiscal period is a Comptabilité change — same people as before for the
+  // legacy roles (ADMIN, PRESIDENT, TRESORIER have Comptabilité at "edit").
+  const canManageFinance = hasAccess(sessionUser.permissions, "comptabilite", "edit")
 
   const assocRow = u.associationId
     ? await prisma.association.findUnique({
@@ -87,7 +89,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
   const showFiscalPeriodPopup = canManageFinance && modules.finances && exerciceCount === 0 && !popupSeenThisLogin
 
   return (
-    <UserProvider user={sessionUser} modules={parseModules(assocRow?.modules)} branding={branding} memberCardEnabled={memberCardEnabled} canUseCustomBranding={brandingAllowed}>
+    <UserProvider user={sessionUser} modules={modules} branding={branding} memberCardEnabled={memberCardEnabled} canUseCustomBranding={brandingAllowed}>
       <TopLoader />
       <SidebarProvider className="dashboard-canvas">
         <AppSidebar />

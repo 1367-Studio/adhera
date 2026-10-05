@@ -4,7 +4,6 @@ import { prisma } from "@/lib/prisma/client"
 import { withAdminAuth } from "@/lib/api-wrapper"
 import { writeActivityLog } from "@/lib/activity-log"
 
-const MANAGERS       = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
 const SHARE_TTL_DAYS = 7
 
 export const POST = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
@@ -27,7 +26,7 @@ export const POST = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
   })
 
   return NextResponse.json({ shareToken: updated.shareToken, shareExpiresAt: updated.shareExpiresAt })
-}, { roles: MANAGERS, module: "reunions" })
+}, { area: "reunions", module: "reunions" })
 
 export const DELETE = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
   const { associationId, userId } = ctx
@@ -43,4 +42,4 @@ export const DELETE = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) =>
   })
 
   return new NextResponse(null, { status: 204 })
-}, { roles: MANAGERS, module: "reunions" })
+}, { area: "reunions", module: "reunions" })

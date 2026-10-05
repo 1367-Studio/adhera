@@ -4,6 +4,8 @@ import { withAdminAuth } from "@/lib/api-wrapper"
 import { prisma } from "@/lib/prisma/client"
 import { getLiveKitConfigForMeeting, LiveKitConfigError } from "@/lib/livekit/config"
 
+// Joining a meeting only needs to see the meetings area, not edit it (access "read", since a
+// POST would otherwise require "edit").
 export const POST = withAdminAuth(async (req, ctx) => {
   const { associationId, userId } = ctx
 
@@ -46,4 +48,4 @@ export const POST = withAdminAuth(async (req, ctx) => {
 
   const token = await at.toJwt()
   return NextResponse.json({ token, roomName: meeting.roomName, serverUrl: livekit.url })
-}, { module: "reunions" })
+}, { area: "reunions", access: "read", module: "reunions" })

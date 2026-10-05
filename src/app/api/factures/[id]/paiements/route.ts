@@ -5,8 +5,6 @@ import { facturePaymentSchema } from "@/lib/schemas"
 import { writeActivityLog } from "@/lib/activity-log"
 import { resolveExerciceForDate, closedExerciceGuard } from "@/lib/finance/exercice"
 
-const FINANCE = ["ADMIN", "PRESIDENT", "TRESORIER"]
-
 // A tiny epsilon guards against float/Decimal rounding noise (e.g. 19.99 + 0.01
 // landing on 20.000000000000004) without letting a real overpayment through.
 const EPSILON = 0.01
@@ -119,4 +117,4 @@ export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
     }
     throw err
   }
-}, { roles: FINANCE, module: "factures" })
+}, { area: "comptabilite", module: "factures" })

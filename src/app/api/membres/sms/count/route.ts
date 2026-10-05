@@ -2,13 +2,7 @@ import { NextResponse } from "next/server"
 import { withAdminAuth } from "@/lib/api-wrapper"
 import { prisma } from "@/lib/prisma/client"
 
-const MANAGERS = ["ADMIN", "PRESIDENT", "SECRETAIRE"]
-
 export const GET = withAdminAuth(async (req, ctx) => {
-  if (!MANAGERS.includes(ctx.role)) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
-  }
-
   const { searchParams } = new URL(req.url)
   const typeId = searchParams.get("typeId") ?? undefined
 
@@ -23,4 +17,4 @@ export const GET = withAdminAuth(async (req, ctx) => {
   })
 
   return NextResponse.json({ count })
-}, { module: "sms" })
+}, { area: "communication", module: "sms" })

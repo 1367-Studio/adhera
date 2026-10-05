@@ -16,6 +16,7 @@ import { Pagination } from "@/components/ui/pagination"
 import { SearchInput } from "@/components/ui/search-input"
 import { useEffect, useState } from "react"
 import { cn } from "@/lib/utils"
+import { useHasAccess, useIsAdministrator } from "@/lib/user-context"
 import type { PaginatedResult } from "@/lib/pagination"
 
 type Sondage = {
@@ -52,6 +53,10 @@ export default function SondagesPage() {
   }
   const router = useRouter()
   const qc     = useQueryClient()
+  // Same checks as the API: creating/activating/closing need "communication" edit,
+  // deleting a poll stays with administrators (DELETE /api/sondages/[id]).
+  const canEditCommunication = useHasAccess("communication", "edit")
+  const isAdministrator      = useIsAdministrator()
   const [deleteTarget,  setDeleteTarget]  = useState<Sondage | null>(null)
   const [page,          setPage]          = useState(1)
   const [searchInput,   setSearchInput]   = useState("")
@@ -110,12 +115,12 @@ export default function SondagesPage() {
       <PageHeader
         title={t("sondages.view.title")}
         description={t("sondages.view.description")}
-        action={
+        action={canEditCommunication && (
           <Button size="sm" onClick={() => router.push("/dashboard/sondages/nouveau")}>
             <PlusIcon className="mr-1.5 size-4" />
             {t("sondages.view.newSurvey")}
           </Button>
-        }
+        )}
       />
 
       <SearchInput
@@ -138,10 +143,12 @@ export default function SondagesPage() {
         <div className="rounded-lg border border-dashed p-12 text-center space-y-3">
           <ClipboardTextIcon className="size-10 text-muted-foreground/50 mx-auto" />
           <p className="text-sm text-muted-foreground">{t("sondages.view.noSurvey")}</p>
-          <Button size="sm" onClick={() => router.push("/dashboard/sondages/nouveau")}>
-            <PlusIcon className="mr-1.5 size-4" />
-            {t("sondages.view.newSurvey")}
-          </Button>
+          {canEditCommunication && (
+            <Button size="sm" onClick={() => router.push("/dashboard/sondages/nouveau")}>
+              <PlusIcon className="mr-1.5 size-4" />
+              {t("sondages.view.newSurvey")}
+            </Button>
+          )}
         </div>
       ) : (
         <div className="space-y-3">
@@ -182,7 +189,7 @@ export default function SondagesPage() {
               </div>
 
               <div className="flex items-center gap-2 shrink-0" onClick={e => e.stopPropagation()}>
-                {s.status === "BROUILLON" && (
+                {canEditCommunication && s.status === "BROUILLON" && (
                   <Button
                     variant="outline"
                     size="sm"
@@ -192,7 +199,7 @@ export default function SondagesPage() {
                     {t("sondages.view.activate")}
                   </Button>
                 )}
-                {s.status === "ACTIF" && (
+                {canEditCommunication && s.status === "ACTIF" && (
                   <Button
                     size="sm"
                     variant="outline"
@@ -202,15 +209,15 @@ export default function SondagesPage() {
                     {t("sondages.view.close")}
                   </Button>
                 )}
-                <RowActions actions={[
+                {canEditCommunication && <RowActions actions={[
                   { label: t("sondages.view.actions.edit"), onClick: () => router.push(`/dashboard/sondages/${s.id}`) },
-                  ...(s.status === "BROUILLON" ? [{
+                  ...(isAdministrator && s.status === "BROUILLON" ? [{
                     label: t("sondages.view.actions.delete"),
                     destructive: true as const,
                     separator: true as const,
                     onClick: () => setDeleteTarget(s),
                   }] : []),
-                ]} />
+                ]} />}
               </div>
             </div>
           ))}

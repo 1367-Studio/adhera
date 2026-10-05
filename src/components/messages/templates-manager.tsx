@@ -16,6 +16,7 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { RowActions } from "@/components/ui/row-actions"
 import type { TemplateCategory } from "@/lib/automation"
+import { useHasAccess } from "@/lib/user-context"
 
 function getTemplateCategoryLabels(t: ReturnType<typeof useTranslations>): Record<TemplateCategory, string> {
   return {
@@ -34,6 +35,8 @@ export function TemplatesManager() {
   const deleteMut   = useDeleteTemplate()
   const createMut   = useCreateTemplate()
   const toggleMut   = useToggleTemplateStatus()
+  // Same check as /api/message-templates (POST/PATCH/DELETE): readers only see the list.
+  const canEditCommunication = useHasAccess("communication", "edit")
 
   const [modalOpen,      setModalOpen]      = useState(false)
   const [editTarget,     setEditTarget]     = useState<MessageTemplate | null>(null)
@@ -103,9 +106,11 @@ export function TemplatesManager() {
           <h2 className="text-base font-semibold">{t("messages.templatesManager.title")}</h2>
           <p className="text-sm text-muted-foreground">{t("messages.templatesManager.subtitle")}</p>
         </div>
-        <Button size="sm" onClick={openCreate}>
-          <PlusIcon className="mr-1.5 size-4" /> {t("messages.templatesManager.newTemplate")}
-        </Button>
+        {canEditCommunication && (
+          <Button size="sm" onClick={openCreate}>
+            <PlusIcon className="mr-1.5 size-4" /> {t("messages.templatesManager.newTemplate")}
+          </Button>
+        )}
       </div>
 
       {isLoading ? (
@@ -119,9 +124,11 @@ export function TemplatesManager() {
             <p className="text-sm font-medium">{t("messages.templatesManager.noTemplates")}</p>
             <p className="text-xs text-muted-foreground">{t("messages.templatesManager.noTemplatesHint")}</p>
           </div>
-          <Button size="sm" variant="outline" onClick={openCreate}>
-            <PlusIcon className="mr-1.5 size-3.5" /> {t("messages.templatesManager.createTemplate")}
-          </Button>
+          {canEditCommunication && (
+            <Button size="sm" variant="outline" onClick={openCreate}>
+              <PlusIcon className="mr-1.5 size-3.5" /> {t("messages.templatesManager.createTemplate")}
+            </Button>
+          )}
         </div>
       ) : (
         <div className="divide-y rounded-lg border overflow-hidden">
@@ -143,7 +150,7 @@ export function TemplatesManager() {
                   {t("messages.templatesManager.modifiedOn", { date: format(new Date(template.updatedAt), "d MMM yyyy", { locale: fr }) })}
                 </p>
               </div>
-              <div className="shrink-0">
+              {canEditCommunication && <div className="shrink-0">
                 <RowActions actions={[
                   { label: t("messages.templatesManager.actions.edit"),  icon: <PencilSimpleIcon className="size-3.5" />, onClick: () => openEdit(template) },
                   { label: t("messages.templatesManager.actions.duplicate"), icon: <CopyIcon className="size-3.5" />, onClick: () => handleDuplicate(template), disabled: createMut.isPending },
@@ -155,7 +162,7 @@ export function TemplatesManager() {
                   },
                   { label: t("messages.templatesManager.actions.delete"), icon: <TrashIcon className="size-3.5" />, destructive: true, separator: true, onClick: () => setDeleteTarget(template) },
                 ]} />
-              </div>
+              </div>}
             </div>
           ))}
         </div>

@@ -11,12 +11,6 @@ import {
 } from "@/lib/evenement-ticket-payment"
 import { formatAddress } from "@/lib/address"
 
-const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
-// Narrower than MANAGERS on purpose — waiving a ticket's price is a judgment call an
-// association may not want its Trésorier/Secrétaire making unilaterally, unlike simply
-// recording a payment that already happened.
-const FREE_MANAGERS = ["ADMIN", "PRESIDENT"]
-
 export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id: evenementId }) => {
   const { associationId } = ctx
 
@@ -67,7 +61,7 @@ export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id: eveneme
     .sort((a, b) => a.lastName.localeCompare(b.lastName) || a.firstName.localeCompare(b.firstName))
 
   return NextResponse.json(rows)
-})
+}, { area: "evenements" })
 
 const markPaidBodySchema = z.object({
   participationId: z.string().min(1).optional(),
@@ -79,10 +73,7 @@ const markPaidBodySchema = z.object({
 })
 
 export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id: evenementId }) => {
-  const { associationId, role, userId } = ctx
-
-  if (!MANAGERS.includes(role))
-    return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
+  const { associationId, userId } = ctx
 
   const parsedBody = markPaidBodySchema.safeParse(await req.json())
   if (!parsedBody.success) return NextResponse.json({ error: parsedBody.error.issues }, { status: 422 })
@@ -123,7 +114,10 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id: evenem
   // while this only ever applies to the one row it's clicked on. No amount, no tier, no
   // Income — there's no real payment to reconcile, unlike every other branch below.
   if (free) {
-    if (!FREE_MANAGERS.includes(role))
+    // Narrower than the evenements area on purpose — waiving a ticket's price is a judgment
+    // call an association may not want its Trésorier/Secrétaire making unilaterally, unlike
+    // simply recording a payment that already happened. Administrators only (was ADMIN/PRESIDENT).
+    if (!ctx.permissions.administrator)
       return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
 
     // Clears any tier the registration had already picked (public form, portal, or a
@@ -180,7 +174,7 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id: evenem
   })
 
   return NextResponse.json(updated)
-})
+}, { area: "evenements" })
 
 const presenceBodySchema = z.object({
   participationId: z.string().min(1).optional(),
@@ -190,10 +184,7 @@ const presenceBodySchema = z.object({
 })
 
 export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id: evenementId }) => {
-  const { associationId, role, userId } = ctx
-
-  if (!MANAGERS.includes(role))
-    return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
+  const { associationId, userId } = ctx
 
   const evenement = await prisma.evenement.findFirst({ where: { id: evenementId, associationId } })
   if (!evenement) return NextResponse.json({ error: "Événement introuvable" }, { status: 404 })
@@ -284,7 +275,7 @@ export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id: eveneme
   }
 
   return NextResponse.json(updated)
-})
+}, { area: "evenements" })
 
 async function addMemberWithPayment(params: {
   associationId: string

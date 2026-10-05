@@ -4,8 +4,6 @@ import { bankAccountSchema } from "@/lib/schemas"
 import { writeActivityLog } from "@/lib/activity-log"
 import { withAdminAuth } from "@/lib/api-wrapper"
 
-const FINANCE = ["ADMIN", "PRESIDENT", "TRESORIER"]
-
 export const GET = withAdminAuth(async (_req, ctx) => {
   const { associationId } = ctx
 
@@ -14,7 +12,7 @@ export const GET = withAdminAuth(async (_req, ctx) => {
     orderBy: { createdAt: "asc" },
   })
   return NextResponse.json(accounts)
-}, { roles: FINANCE, module: "finances" })
+}, { area: "comptabilite", module: "finances" })
 
 export const POST = withAdminAuth(async (req, ctx) => {
   const { associationId, userId } = ctx
@@ -38,4 +36,4 @@ export const POST = withAdminAuth(async (req, ctx) => {
 
   await writeActivityLog({ associationId, actorId: userId, action: "BANK_ACCOUNT_CREATED", entity: "BankAccount", entityId: account.id, label: account.accountName })
   return NextResponse.json(account, { status: 201 })
-}, { roles: FINANCE, module: "finances" })
+}, { area: "comptabilite", module: "finances" })

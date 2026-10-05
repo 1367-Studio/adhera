@@ -14,10 +14,11 @@ import {
 import { PageHeader } from "@/components/ui/page-header"
 import { DataTable, type Column } from "@/components/ui/data-table"
 import { ConfirmDialog } from "@/components/ui/confirm-dialog"
-import { RowActions } from "@/components/ui/row-actions"
+import { RowActions, type RowAction } from "@/components/ui/row-actions"
 import { Button } from "@/components/ui/button"
 import { Switch } from "@/components/ui/switch"
 import { BASE_PATH } from "@/lib/env"
+import { useHasAccess } from "@/lib/user-context"
 import { getDateFnsLocale } from "@/lib/date-fns-locale"
 import type { Locale } from "@/i18n/locales"
 
@@ -28,6 +29,10 @@ export function AssociationDocumentsView() {
   const tCommon       = useTranslations("common")
   const router        = useRouter()
   const dateFnsLocale = getDateFnsLocale(useLocale() as Locale)
+  // Same checks as the API: /api/association-documents changes need "documents" edit,
+  // the acceptances export (/api/legal/acceptances) needs "membres" read.
+  const canEditDocuments  = useHasAccess("documents", "edit")
+  const canReadMembres    = useHasAccess("membres", "read")
   const [deleteTarget, setDeleteTarget] = useState<AssociationDocumentSummary | null>(null)
   // One entry per toggle still in flight — the mutation's own `variables` only reflects the
   // latest call, so toggling A then B would otherwise re-enable A while its PATCH runs.
@@ -84,12 +89,14 @@ export function AssociationDocumentsView() {
       cell:      document => (
         // Toggling visibility must not also open the document through the row click.
         <div className="flex items-center gap-2" onClick={event => event.stopPropagation()}>
-          <Switch
-            checked={document.visibleToMembers}
-            aria-label={`${t("visibleToMembers")} – ${document.title}`}
-            disabled={pendingVisibilityIds.has(document.id)}
-            onCheckedChange={checked => handleVisibilityChange(document, checked)}
-          />
+          {canEditDocuments && (
+            <Switch
+              checked={document.visibleToMembers}
+              aria-label={`${t("visibleToMembers")} – ${document.title}`}
+              disabled={pendingVisibilityIds.has(document.id)}
+              onCheckedChange={checked => handleVisibilityChange(document, checked)}
+            />
+          )}
           {/* The switch drives the portal visibility only; public publication is set in the
               editor, so it shows here as plain text rather than a second control per row. */}
           <span className="text-xs text-muted-foreground">
@@ -114,17 +121,23 @@ export function AssociationDocumentsView() {
       key:       "actions",
       header:    "",
       className: "w-10",
-      cell:      document => (
-        <RowActions actions={[
-          { label: tCommon("edit"),   icon: <PencilSimpleIcon className="size-3.5" />, onClick: () => router.push(`${ASSOCIATION_DOCUMENTS_PATH}/${document.id}`) },
+      cell:      document => {
+        const rowActions: RowAction[] = [
+          ...(canEditDocuments
+            ? [{ label: tCommon("edit"), icon: <PencilSimpleIcon className="size-3.5" />, onClick: () => router.push(`${ASSOCIATION_DOCUMENTS_PATH}/${document.id}`) }]
+            : []),
           // Only offered where there is something to export: a document nobody has to accept
           // has no acceptances behind it.
-          ...(document.requiresAcceptance
+          ...(canReadMembres && document.requiresAcceptance
             ? [{ label: t("exportAcceptances"), icon: <DownloadSimpleIcon className="size-3.5" />, onClick: () => { window.location.href = `${BASE_PATH}/api/legal/acceptances?documentId=${document.id}` } }]
             : []),
-          { label: tCommon("delete"), icon: <TrashIcon className="size-3.5" />, destructive: true, separator: true, onClick: () => setDeleteTarget(document) },
-        ]} />
-      ),
+          ...(canEditDocuments
+            ? [{ label: tCommon("delete"), icon: <TrashIcon className="size-3.5" />, destructive: true, separator: true, onClick: () => setDeleteTarget(document) }]
+            : []),
+        ]
+        // A reader of a document nobody has to accept has nothing to do on the row.
+        return rowActions.length > 0 ? <RowActions actions={rowActions} /> : null
+      },
     },
   ]
 
@@ -141,12 +154,12 @@ export function AssociationDocumentsView() {
       <PageHeader
         title={t("title")}
         description={description}
-        action={
+        action={canEditDocuments && (
           <Button size="sm" nativeButton={false} render={<Link href={`${ASSOCIATION_DOCUMENTS_PATH}/nouveau`} />}>
             <PlusIcon className="mr-1.5 size-4" />
             {tCommon("add")}
           </Button>
-        }
+        )}
       />
 
       <DataTable

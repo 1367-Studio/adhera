@@ -5,7 +5,7 @@ import { useLocale, useTranslations } from "next-intl"
 import { format } from "date-fns"
 import { CalendarBlankIcon, XIcon } from "@phosphor-icons/react/dist/ssr"
 
-import { Calendar } from "@/components/ui/calendar"
+import { Calendar, isCalendarDropdownEvent } from "@/components/ui/calendar"
 import { Label } from "@/components/ui/label"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
@@ -133,7 +133,17 @@ export function DateField({
       )}
 
       <div className="relative">
-        <Popover open={open} onOpenChange={setOpen}>
+        <Popover
+          open={open}
+          onOpenChange={(nextOpen, eventDetails) => {
+            // Picking a month/year in the calendar's list must not close the picker.
+            if (!nextOpen && isCalendarDropdownEvent(eventDetails.event)) {
+              eventDetails.cancel()
+              return
+            }
+            setOpen(nextOpen)
+          }}
+        >
           <PopoverTrigger
             id={fieldId}
             disabled={disabled}

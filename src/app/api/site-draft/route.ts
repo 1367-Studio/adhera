@@ -8,8 +8,6 @@ import { parseSiteDraftRequest } from "@/lib/site-puck/site-draft-schema"
 // saving here never changes what they see. Saving never releases form bindings either: a
 // block removed from a work-in-progress draft may come back before the next publish.
 
-const SITE_EDITOR_ROLES = ["ADMIN", "PRESIDENT"]
-
 export const GET = withAdminAuth(async (_req, ctx) => {
   const association = await prisma.association.findUnique({
     where:  { id: ctx.associationId },
@@ -22,8 +20,8 @@ export const GET = withAdminAuth(async (_req, ctx) => {
     siteBuilder: association.siteBuilder,
   })
 // Readable by every dashboard role that can open /dashboard/site (like GET /api/site-config):
-// the switch bar shows which version is live, read-only for non-editors. Writing stays
-// ADMIN/PRESIDENT (PUT here, publish, /api/site-builder).
+// the switch bar shows which version is live, read-only for non-editors. Writing needs
+// "site" edit (PUT here, publish, /api/site-builder).
 }, { module: "site" })
 
 export const PUT = withAdminAuth(async (req, ctx) => {
@@ -35,4 +33,4 @@ export const PUT = withAdminAuth(async (req, ctx) => {
     data:  { siteDraft: parsedDraft.siteDraft },
   })
   return NextResponse.json({ ok: true, savedAt: new Date().toISOString() })
-}, { roles: SITE_EDITOR_ROLES, module: "site" })
+}, { area: "site", module: "site" })

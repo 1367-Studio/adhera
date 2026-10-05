@@ -39,7 +39,7 @@ import { ChangeRoleModal } from "@/components/membres/membres-view"
 import { BackLink } from "@/components/ui/back-link"
 import { DetailNotFound } from "@/components/ui/detail-not-found"
 import { DetailLoadingSkeleton } from "@/components/ui/detail-loading-skeleton"
-import { useCurrentUser, useMemberCardEnabled, useModules } from "@/lib/user-context"
+import { useCurrentUser, useHasAccess, useIsAdministrator, useMemberCardEnabled, useModules } from "@/lib/user-context"
 import { BASE_PATH } from "@/lib/env"
 import { isMembreAdherentViaResponsable } from "@/lib/membre-adherent"
 
@@ -51,6 +51,7 @@ function getRoleLabels(t: Translator): Record<string, string> {
     PRESIDENT:  t("membres.form.role.president"),
     TRESORIER:  t("membres.form.role.tresorier"),
     SECRETAIRE: t("membres.form.role.secretaire"),
+    EQUIPE:     t("membres.form.role.equipe"),
     MEMBRE:     t("membres.form.role.membre"),
   }
 }
@@ -145,6 +146,12 @@ export function MembreDetailView() {
   const modules = useModules()
   const currentUser = useCurrentUser()
   const memberCardEnabled = useMemberCardEnabled()
+  // Same areas as the API routes (FORM-34): the member record, its cotisations and access are
+  // "membres"; payments, subscriptions, installment plans and receipts are "adhesions"; roles
+  // belong to administrators. A "read" user sees the sheet without the actions it would refuse.
+  const canEditMembres    = useHasAccess("membres", "edit")
+  const canEditAdhesions  = useHasAccess("adhesions", "edit")
+  const isAdministrator   = useIsAdministrator()
 
   const [editOpen, setEditOpen]                 = useState(false)
   const [deleteOpen, setDeleteOpen]             = useState(false)
@@ -358,9 +365,9 @@ export function MembreDetailView() {
   // afficher un tarif d'il y a deux ans comme si c'était encore le sien. Absente pour un membre
   // créé manuellement ou hors MembershipForm (voir Cotisation.tierId).
   const currentTierLabel      = cotisations[0]?.tier?.label ?? null
-  // Mêmes rôles que POST /api/cotisations/[id]/paiements — le serveur reste la référence,
+  // Même zone que POST /api/cotisations/[id]/paiements — le serveur reste la référence,
   // ceci évite seulement d'afficher une action qui répondrait 403.
-  const canRecordPayment      = ["ADMIN", "PRESIDENT", "TRESORIER"].includes(currentUser.role)
+  const canRecordPayment      = canEditAdhesions
   const participations        = membre.participations ?? []
   const meetingsAsParticipant = membre.meetingsAsParticipant ?? []
   const materialLoans         = membre.materialLoans ?? []
@@ -444,10 +451,12 @@ export function MembreDetailView() {
           <div className="flex flex-wrap items-center gap-2">
             {modules.cotisations && (
               <>
-                <Button size="sm" variant="outline" onClick={() => setCreateCotisationOpen(true)}>
-                  <PlusIcon className="mr-1.5 size-4" />
-                  {t("membres.detail.cotisationButton")}
-                </Button>
+                {canEditMembres && (
+                  <Button size="sm" variant="outline" onClick={() => setCreateCotisationOpen(true)}>
+                    <PlusIcon className="mr-1.5 size-4" />
+                    {t("membres.detail.cotisationButton")}
+                  </Button>
+                )}
                 {/* The card only exists for a member with a cotisation, so it hangs off the
                     same module gate as the button that creates one — plus the association's
                     own switch, which is what actually makes a card exist (parseMemberCardSettings
@@ -461,26 +470,27 @@ export function MembreDetailView() {
                 )}
               </>
             )}
-            {!membre.userId && membre.email && (
+            {canEditMembres && !membre.userId && membre.email && (
               <Button size="sm" variant="outline" onClick={handleCreateAccess} loading={createAccessMutation.isPending}>
                 <KeyIcon className="mr-1.5 size-4" />
                 {t("membres.detail.createAccessButton")}
               </Button>
             )}
-            {/* Role changes are ADMIN/PRESIDENT-only server-side (see membres/[id]/role/route.ts)
-                — matching that here instead of the broader isManager() avoids showing an action
-                a Trésorier/Secrétaire could open but never actually save. */}
-            {(currentUser.role === "ADMIN" || currentUser.role === "PRESIDENT") && membre.userId && !isSelf && (
+            {/* Role changes are administrator-only server-side (see membres/[id]/role/route.ts)
+                — matching that here avoids showing an action that could never be saved. */}
+            {isAdministrator && membre.userId && !isSelf && (
               <Button size="sm" variant="outline" onClick={() => setRoleOpen(true)}>
                 <ShieldIcon className="mr-1.5 size-4" />
                 {t("membres.detail.roleButton")}
               </Button>
             )}
-            <Button size="sm" variant="outline" onClick={() => setEditOpen(true)}>
-              <PencilSimpleIcon className="mr-1.5 size-4" />
-              {t("common.edit")}
-            </Button>
-            {!isSelf && (
+            {canEditMembres && (
+              <Button size="sm" variant="outline" onClick={() => setEditOpen(true)}>
+                <PencilSimpleIcon className="mr-1.5 size-4" />
+                {t("common.edit")}
+              </Button>
+            )}
+            {canEditMembres && !isSelf && (
               <Button size="sm" variant="outline" onClick={() => setDeleteOpen(true)}>
                 <TrashIcon className="mr-1.5 size-4" />
                 {t("common.delete")}
@@ -493,7 +503,7 @@ export function MembreDetailView() {
             an action nothing on the page announced. Shown for any PENDING membre, not only one
             carrying a pendingTier: a PENDING created by another path (site membership section,
             manual creation) needs the same way out. */}
-        {membre.status === "PENDING" && !isSelf && (
+        {membre.status === "PENDING" && !isSelf && canEditMembres && (
           <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border bg-muted/40 px-4 py-3">
             <div className="space-y-0.5">
               <p className="text-sm font-medium">{t("membres.detail.pendingRequest.title")}</p>
@@ -526,10 +536,12 @@ export function MembreDetailView() {
             <WarningIcon className="size-4 shrink-0" />
             {t("membres.detail.noCotisation")}
           </span>
-          <Button size="sm" variant="outline" onClick={() => setCreateCotisationOpen(true)}>
-            <PlusIcon className="mr-1.5 size-4" />
-            {t("membres.detail.cotisationButton")}
-          </Button>
+          {canEditMembres && (
+            <Button size="sm" variant="outline" onClick={() => setCreateCotisationOpen(true)}>
+              <PlusIcon className="mr-1.5 size-4" />
+              {t("membres.detail.cotisationButton")}
+            </Button>
+          )}
         </div>
       )}
 
@@ -697,7 +709,7 @@ export function MembreDetailView() {
             )}
           </div>
           {membre.cotisationSubscription.status !== "CANCELLED"
-            && (currentUser.role === "ADMIN" || currentUser.role === "PRESIDENT" || currentUser.role === "TRESORIER") && (
+            && canEditAdhesions && (
             <Button size="sm" variant="outline" onClick={() => setCancelSubscriptionOpen(true)}>
               {t("membres.detail.cancelSubscriptionButton")}
             </Button>
@@ -780,7 +792,9 @@ export function MembreDetailView() {
                           </Tooltip>
                         </TooltipProvider>
                       )}
-                      {c.declarationNumber && (
+                      {/* Declaration and receipt PDFs need "adhesions" edit server-side (they
+                          are issued, not only read) — see their GET routes. */}
+                      {canEditAdhesions && c.declarationNumber && (
                         <Button
                           size="sm"
                           variant="outline"
@@ -789,7 +803,7 @@ export function MembreDetailView() {
                           <DownloadSimpleIcon className="size-3.5" />
                         </Button>
                       )}
-                      {c.receiptMode && c.receiptMode !== "NONE" && c.paidAt && (
+                      {canEditAdhesions && c.receiptMode && c.receiptMode !== "NONE" && c.paidAt && (
                         <TooltipProvider>
                           <Tooltip>
                             <TooltipTrigger render={
@@ -805,7 +819,7 @@ export function MembreDetailView() {
                           </Tooltip>
                         </TooltipProvider>
                       )}
-                      {c.installmentPlan?.status === "ACTIVE" && (
+                      {canEditAdhesions && c.installmentPlan?.status === "ACTIVE" && (
                         <TooltipProvider>
                           <Tooltip>
                             <TooltipTrigger render={

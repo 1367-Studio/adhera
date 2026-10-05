@@ -11,8 +11,6 @@ import { pusherServer } from "@/lib/pusher-server"
 import { revalidatePublicSite } from "@/lib/association/revalidate-site"
 import { APP_TIME_ZONE } from "@/lib/date-format"
 
-const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
-
 const actionSchema = z.object({
   action: z.enum(["publish", "unpublish", "archive", "duplicate", "closeRegistrations", "reopenRegistrations"]),
 })
@@ -180,4 +178,4 @@ export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   }
 
   return NextResponse.json(updated)
-}, { roles: MANAGERS, module: "evenements" })
+}, { area: "evenements", module: "evenements" })

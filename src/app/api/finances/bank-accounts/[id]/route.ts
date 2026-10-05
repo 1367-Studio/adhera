@@ -4,8 +4,6 @@ import { bankAccountUpdateSchema } from "@/lib/schemas"
 import { writeActivityLog } from "@/lib/activity-log"
 import { withAdminAuth } from "@/lib/api-wrapper"
 
-const FINANCE = ["ADMIN", "PRESIDENT", "TRESORIER"]
-
 export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   const { associationId, userId } = ctx
 
@@ -25,7 +23,7 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
 
   await writeActivityLog({ associationId, actorId: userId, action: "BANK_ACCOUNT_UPDATED", entity: "BankAccount", entityId: id, label: account.accountName })
   return NextResponse.json(account)
-}, { roles: FINANCE, module: "finances" })
+}, { area: "comptabilite", module: "finances" })
 
 export const DELETE = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
   const { associationId, userId } = ctx
@@ -44,4 +42,4 @@ export const DELETE = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) =>
   await prisma.bankAccount.delete({ where: { id } })
   await writeActivityLog({ associationId, actorId: userId, action: "BANK_ACCOUNT_DELETED", entity: "BankAccount", entityId: id, label: existing.accountName })
   return new NextResponse(null, { status: 204 })
-}, { roles: FINANCE, module: "finances" })
+}, { area: "comptabilite", module: "finances" })

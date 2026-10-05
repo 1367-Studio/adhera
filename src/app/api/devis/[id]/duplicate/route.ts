@@ -5,8 +5,6 @@ import { prisma } from "@/lib/prisma/client"
 import { writeActivityLog } from "@/lib/activity-log"
 import { nextDevisNumber } from "@/lib/document-numbering"
 
-const FINANCE = ["ADMIN", "PRESIDENT", "TRESORIER"]
-
 export const POST = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
   const { associationId, userId } = ctx
 
@@ -60,4 +58,4 @@ export const POST = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
   }
 
   return NextResponse.json({ error: "Impossible de générer un numéro de devis, réessayez" }, { status: 500 })
-}, { roles: FINANCE, module: "devis" })
+}, { area: "comptabilite", module: "devis" })

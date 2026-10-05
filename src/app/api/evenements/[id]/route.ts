@@ -7,8 +7,6 @@ import { isTermsConfigurationValid, normalizeConditions } from "@/lib/form-terms
 import { storedTermsAttachments, termsContentRequiredResponse } from "@/lib/form-terms-response"
 import { revalidatePublicSiteFor } from "@/lib/association/revalidate-site"
 
-const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
-
 export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
   const { associationId } = ctx
 
@@ -26,7 +24,7 @@ export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
 
   if (!evenement) return NextResponse.json({ error: "Événement introuvable" }, { status: 404 })
   return NextResponse.json(evenement)
-})
+}, { area: "evenements" })
 
 export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   const { associationId, userId } = ctx
@@ -101,7 +99,7 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   )
   await writeActivityLog({ associationId, actorId: userId, action: "EVENEMENT_UPDATED", entity: "Evenement", entityId: id, label: evenement.title, metadata: Object.keys(changes).length > 0 ? { changes } : undefined })
   return NextResponse.json(evenement)
-}, { roles: MANAGERS, module: "evenements" })
+}, { area: "evenements", module: "evenements" })
 
 export const DELETE = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
   const { associationId, userId } = ctx
@@ -121,4 +119,4 @@ export const DELETE = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) =>
   await revalidatePublicSiteFor(associationId)
   await writeActivityLog({ associationId, actorId: userId, action: "EVENEMENT_DELETED", entity: "Evenement", entityId: id, label: existing.title })
   return new NextResponse(null, { status: 204 })
-}, { roles: MANAGERS, module: "evenements" })
+}, { area: "evenements", module: "evenements" })

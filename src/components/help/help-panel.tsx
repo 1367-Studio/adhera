@@ -2,7 +2,6 @@
 
 import { HelpArticleView } from "@/components/help/help-article-view"
 import { HelpAssistant } from "@/components/help/help-assistant"
-import { canAccessDashboardRoute } from "@/components/layout/app-sidebar"
 import { Accordion, AccordionItem, AccordionPanel, AccordionTrigger } from "@/components/ui/accordion"
 import { BackLink } from "@/components/ui/back-link"
 import { Badge } from "@/components/ui/badge"
@@ -21,6 +20,7 @@ import {
 } from "@/hooks/use-help"
 import type { Locale } from "@/i18n/locales"
 import { ApiError } from "@/lib/api-error"
+import { canAccessDashboardPath } from "@/lib/dashboard-access"
 import { getDateFnsLocale } from "@/lib/date-fns-locale"
 import { helpModuleFromPathname, type HelpModuleKey } from "@/lib/help/modules"
 import { getRouteLabels } from "@/lib/route-labels"
@@ -169,7 +169,7 @@ export function HelpPanel({ open, onOpenChange, onStartTour, onCloseComplete }: 
             <Button variant="ghost" size="sm" onClick={onStartTour}>
               {t("footer.tour")}
             </Button>
-            {canAccessDashboardRoute(currentUser.role, "/dashboard/suporte") && (
+            {canAccessDashboardPath(currentUser.permissions, currentUser.role, "/dashboard/suporte") && (
               <Button
                 variant="ghost"
                 size="sm"

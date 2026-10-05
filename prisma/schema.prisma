@@ -14,6 +14,9 @@ enum UserRole {
   PRESIDENT
   TRESORIER
   SECRETAIRE
+  // FORM-34: a team member with no bureau position — dashboard access only through the areas
+  // granted in User.permissions (see src/lib/permissions.ts).
+  EQUIPE
   MEMBRE
 }
 
@@ -678,6 +681,11 @@ model User {
   name            String?
   passwordHash    String
   role            UserRole  @default(MEMBRE)
+  // FORM-34 per-area access (StoredPermissions in src/lib/permissions.ts): { administrator,
+  // areas: { membres: "edit", comptabilite: "read", … } }. Null = the profile of the role,
+  // which reproduces the access that role had before — always read through
+  // resolvePermissions(), never directly.
+  permissions     Json?
   active          Boolean   @default(true)
   locale          String    @default("fr")
   // Ordered array of DashboardWidgetId strings (see src/lib/dashboard-widgets.ts) —

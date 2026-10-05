@@ -7,8 +7,6 @@ import { withAdminAuth } from "@/lib/api-wrapper"
 import { SUPPORTED_PROVIDERS, DEFAULT_MODELS, isAnthropicProvider, makeAiClient, makeAnthropicClient } from "@/lib/ai/client"
 import { writeActivityLog } from "@/lib/activity-log"
 
-const MANAGERS = ["ADMIN", "PRESIDENT"]
-
 const schema = z.object({
   aiProvider: z.enum(SUPPORTED_PROVIDERS as [string, ...string[]]).nullable().optional(),
   // Key is optional — omitting it preserves the stored value; explicit null clears it.
@@ -73,11 +71,8 @@ export const GET = withAdminAuth(async (req, ctx) => {
   })
 })
 
+// Credentials of the association: administrators only (président/admin, as before).
 export const PATCH = withAdminAuth(async (req, ctx) => {
-  if (!MANAGERS.includes(ctx.role)) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
-  }
-
   const body   = await req.json().catch(() => null)
   const parsed = schema.safeParse(body)
   if (!parsed.success) return NextResponse.json({ error: "Données invalides" }, { status: 400 })
@@ -148,4 +143,4 @@ export const PATCH = withAdminAuth(async (req, ctx) => {
   }
 
   return NextResponse.json({ ok: true })
-})
+}, { administrator: true })

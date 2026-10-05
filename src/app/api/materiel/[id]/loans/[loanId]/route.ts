@@ -4,8 +4,6 @@ import { prisma } from "@/lib/prisma/client"
 import { writeActivityLog } from "@/lib/activity-log"
 import { withAdminAuth } from "@/lib/api-wrapper"
 
-const ALLOWED = ["ADMIN", "PRESIDENT", "SECRETAIRE", "TRESORIER"]
-
 const patchSchema = z.object({
   action: z.enum(["return", "confirm", "refuse"]).optional(),
 })
@@ -99,7 +97,7 @@ export const PATCH = withAdminAuth<{ id: string; loanId: string }>(async (req, c
   }
 
   return NextResponse.json({ error: "Action invalide" }, { status: 400 })
-}, { roles: ALLOWED, module: "materiel" })
+}, { area: "materiel", module: "materiel" })
 
 export const DELETE = withAdminAuth<{ id: string; loanId: string }>(async (_req, ctx, { id, loanId }) => {
   const { associationId, userId } = ctx
@@ -125,4 +123,4 @@ export const DELETE = withAdminAuth<{ id: string; loanId: string }>(async (_req,
   await writeActivityLog({ associationId, actorId: userId, action: "LOAN_DELETED", entity: "MaterialLoan", entityId: loanId, label: `${loan.material.name} — ${borrower}` })
 
   return new NextResponse(null, { status: 204 })
-}, { roles: ALLOWED, module: "materiel" })
+}, { area: "materiel", module: "materiel" })

@@ -5,8 +5,6 @@ import { evenementCustomFieldsSchema } from "@/lib/schemas/evenement"
 import { writeActivityLog } from "@/lib/activity-log"
 import { withAdminAuth } from "@/lib/api-wrapper"
 
-const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
-
 export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
   const { associationId } = ctx
 
@@ -18,7 +16,7 @@ export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
     orderBy: { order: "asc" },
   })
   return NextResponse.json(fields)
-})
+}, { area: "evenements" })
 
 export const PUT = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   const { associationId, userId } = ctx
@@ -70,4 +68,4 @@ export const PUT = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   })
 
   return NextResponse.json(fields)
-}, { roles: MANAGERS, module: "evenements" })
+}, { area: "evenements", module: "evenements" })

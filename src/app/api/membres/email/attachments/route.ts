@@ -11,10 +11,6 @@ import {
 } from "@/lib/email-attachments"
 import { reportError } from "@/lib/monitoring"
 
-// Same roles as the send route itself (../route.ts) — only someone who can send the email
-// has any reason to upload its attachments.
-const MANAGERS = ["ADMIN", "PRESIDENT", "SECRETAIRE"]
-
 // `filename` isn't part of the key (that's random) — the original name travels with the send
 // request instead, which is where it gets sanitized. It's still bounded here so the client
 // can't declare something the send route would then reject.
@@ -28,11 +24,9 @@ const schema = z.object({
 // PUTs the file to directly, so the bytes never pass through a function (Vercel caps their
 // request bodies at 4.5 MB). The declared size and type are signed into that URL; the send
 // route re-verifies both against the stored object anyway (src/lib/email-attachments.ts).
+// Same area as the send route itself (../route.ts) — only someone who can send the email
+// has any reason to upload its attachments.
 export const POST = withAdminAuth(async (req, ctx) => {
-  if (!MANAGERS.includes(ctx.role)) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
-  }
-
   const body   = await req.json().catch(() => null)
   // Checks without their own message above (a wrong JSON type, a non-integer size) fall
   // back to the generic one rather than zod's English defaults.
@@ -55,4 +49,4 @@ export const POST = withAdminAuth(async (req, ctx) => {
     reportError(error, { area: "storage", action: "membres.email-attachment-presign", extra: { associationId: ctx.associationId } })
     return NextResponse.json({ error: "Erreur lors de la préparation de l'envoi du fichier" }, { status: 500 })
   }
-}, { module: "messages" })
+}, { area: "communication", module: "messages" })

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { useMutation } from "@tanstack/react-query"
 import { useTranslations } from "next-intl"
@@ -14,6 +14,7 @@ import { ImageUpload } from "@/components/ui/image-upload"
 import { CurrencyInput } from "@/components/ui/currency-field"
 import { SelectField } from "@/components/ui/select-field"
 import { useFinanceCategories } from "@/hooks/use-finance-categories"
+import { useHasAccess } from "@/lib/user-context"
 
 type VarianteRow = { _key: string; label: string; price: number; stock: string; shippable: boolean; weightGrams: string }
 
@@ -21,7 +22,21 @@ function newVariante(): VarianteRow {
   return { _key: crypto.randomUUID(), label: "", price: 0, stock: "0", shippable: false, weightGrams: "" }
 }
 
+// FORM-34: creating a product needs "boutique" edit — a "read" user who lands here by URL
+// goes back to the catalogue instead of filling a form the API would refuse.
 export default function NouveauProduitPage() {
+  const router          = useRouter()
+  const canEditBoutique = useHasAccess("boutique", "edit")
+
+  useEffect(() => {
+    if (!canEditBoutique) router.replace("/dashboard/boutique")
+  }, [canEditBoutique, router])
+
+  if (!canEditBoutique) return null
+  return <NouveauProduitForm />
+}
+
+function NouveauProduitForm() {
   const router = useRouter()
   const t       = useTranslations("boutique")
   const tCommon = useTranslations("common")

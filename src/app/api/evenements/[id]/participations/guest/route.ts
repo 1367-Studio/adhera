@@ -16,8 +16,6 @@ import {
 } from "@/lib/evenement-ticket-payment"
 import { reportError } from "@/lib/monitoring"
 
-const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
-
 const bodySchema = z.object({
   firstName: z.string().min(1).max(80),
   lastName:  z.string().min(1).max(80),
@@ -30,10 +28,7 @@ const bodySchema = z.object({
 // Lets the organizer add someone directly to the door list who never went through
 // RSVP/checkout — a walk-in guest with no Membre record at all.
 export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id: evenementId }) => {
-  const { associationId, role, userId } = ctx
-
-  if (!MANAGERS.includes(role))
-    return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
+  const { associationId, userId } = ctx
 
   const evenement = await prisma.evenement.findFirst({
     where:  { id: evenementId, associationId },
@@ -138,4 +133,4 @@ export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id: eveneme
   }
 
   return NextResponse.json(participation, { status: 201 })
-})
+}, { area: "evenements" })

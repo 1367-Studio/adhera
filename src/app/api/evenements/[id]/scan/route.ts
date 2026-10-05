@@ -5,8 +5,6 @@ import { pusherServer } from "@/lib/pusher-server"
 import { withAdminAuth } from "@/lib/api-wrapper"
 import { writeActivityLog } from "@/lib/activity-log"
 
-const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
-
 const bodySchema = z.object({
   // Raw decoded QR content — either the bare ticketToken or the /billet/[token] URL the
   // emailed QR encodes; the token is extracted here so every scanner client stays dumb.
@@ -103,4 +101,4 @@ export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id: eveneme
   pusherServer.trigger(`event-${evenementId}`, "check-in", { participationId: participation.id }).catch(() => {})
 
   return NextResponse.json({ status: "VALID", attendee })
-}, { roles: MANAGERS })
+}, { area: "evenements" })

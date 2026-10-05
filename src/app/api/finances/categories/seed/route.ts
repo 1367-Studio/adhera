@@ -2,8 +2,6 @@ import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma/client"
 import { withAdminAuth } from "@/lib/api-wrapper"
 
-const FINANCE = ["ADMIN", "PRESIDENT", "TRESORIER"]
-
 const DEFAULT_INCOME_CATEGORIES = [
   "Cotisations",
   "Dons",
@@ -50,4 +48,4 @@ export const POST = withAdminAuth(async (req, ctx) => {
   }
 
   return NextResponse.json({ created: toCreate.length, skipped: existing.length })
-}, { roles: FINANCE, module: "finances" })
+}, { area: "comptabilite", module: "finances" })

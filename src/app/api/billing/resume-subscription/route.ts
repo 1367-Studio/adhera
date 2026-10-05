@@ -5,8 +5,6 @@ import { withAdminAuth } from "@/lib/api-wrapper"
 import { writeActivityLog } from "@/lib/activity-log"
 import { reportError } from "@/lib/monitoring"
 
-const ADMINS = ["ADMIN", "PRESIDENT"]
-
 // Undoes a cancellation scheduled via /api/billing/cancel-subscription, while the
 // current billing period — and therefore the subscription itself — hasn't ended yet.
 export const POST = withAdminAuth(async (_req, ctx) => {
@@ -44,4 +42,4 @@ export const POST = withAdminAuth(async (_req, ctx) => {
   })
 
   return NextResponse.json({ ok: true })
-}, { roles: ADMINS })
+}, { administrator: true })

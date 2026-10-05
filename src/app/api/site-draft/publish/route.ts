@@ -12,8 +12,6 @@ import { liveSiteSectionIds } from "@/lib/site-puck/site-section-ids"
 // see when siteBuilder is PUCK. Blocks removed since the previous draft/publish release the
 // forms bound to them, unless the legacy siteConfig still has a section with that id.
 
-const SITE_EDITOR_ROLES = ["ADMIN", "PRESIDENT"]
-
 export const POST = withAdminAuth(async (req, ctx) => {
   const { associationId, userId } = ctx
 
@@ -68,4 +66,4 @@ export const POST = withAdminAuth(async (req, ctx) => {
   })
 
   return NextResponse.json({ ok: true, publishedAt: publishedAt.toISOString() })
-}, { roles: SITE_EDITOR_ROLES, module: "site" })
+}, { area: "site", module: "site" })

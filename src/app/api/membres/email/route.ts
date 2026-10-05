@@ -9,8 +9,6 @@ import { EMAIL_ATTACHMENT_ERRORS, MAX_EMAIL_ATTACHMENTS_COUNT, verifyEmailAttach
 import { SUPPORTED_LOCALES } from "@/i18n/locales"
 import { reportError } from "@/lib/monitoring"
 
-const MANAGERS = ["ADMIN", "PRESIDENT", "SECRETAIRE"]
-
 const schema = z.object({
   subject:        z.string().min(1).max(200),
   bodyHtml:       z.string().min(1),
@@ -35,10 +33,6 @@ const schema = z.object({
 })
 
 export const POST = withAdminAuth(async (req, ctx) => {
-  if (!MANAGERS.includes(ctx.role)) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
-  }
-
   const body   = await req.json().catch(() => null)
   // Only the attachment count carries its own message; every other failure keeps the
   // generic one (rather than zod's English defaults).
@@ -137,4 +131,4 @@ export const POST = withAdminAuth(async (req, ctx) => {
     totalRecipients: recipients.length + uniqueExternalEmails.length,
     skippedDuplicateExternalCount,
   })
-}, { module: "messages" })
+}, { area: "communication", module: "messages" })

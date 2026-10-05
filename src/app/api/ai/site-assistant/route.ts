@@ -9,8 +9,6 @@ import { rateLimit } from "@/lib/rate-limit"
 import { fetchModules } from "@/lib/auth/require-module"
 import { SITE_FONT_KEYS } from "@/lib/site-fonts"
 
-const ADMINS = ["ADMIN", "PRESIDENT"]
-
 const HEX_COLOR = /^#[0-9a-fA-F]{6}$/
 
 // Every SectionType except the ones the "full" draft generator can produce fresh (see
@@ -317,4 +315,4 @@ export const POST = withAdminAuth(async (req, ctx) => {
     const msg = err instanceof Error ? err.message : "Erreur IA"
     return NextResponse.json({ error: msg }, { status: 502 })
   }
-}, { module: "ia", roles: ADMINS })
+}, { module: "ia", area: "site" })

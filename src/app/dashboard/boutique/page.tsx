@@ -19,6 +19,7 @@ import { SelectField } from "@/components/ui/select-field"
 import { cn } from "@/lib/utils"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { BASE_PATH } from "@/lib/env"
+import { useHasAccess, useIsAdministrator } from "@/lib/user-context"
 
 type Translator = ReturnType<typeof useTranslations>
 
@@ -109,6 +110,13 @@ function BoutiquePageInner() {
   const t            = useTranslations("boutique")
   const tCommon      = useTranslations("common")
   const tShip        = useTranslations("boutiqueShipping")
+  // FORM-34, same rules as the API: a "read" user browses products and orders and downloads
+  // receipts; deleting a product is administrators only; a refund also moves money, so it
+  // needs the Comptabilité area in edit too.
+  const canEditBoutique       = useHasAccess("boutique", "edit")
+  const canEditComptabilite   = useHasAccess("comptabilite", "edit")
+  const isAdministrator       = useIsAdministrator()
+  const canRefundCommandes    = canEditBoutique && canEditComptabilite
 
   const MANUAL_PAYMENT_TYPE_OPTIONS = getManualPaymentTypeOptions(t)
   const STATUS_PRODUIT_LABEL        = getProduitStatusLabel(t)
@@ -363,15 +371,17 @@ function BoutiquePageInner() {
       cell: (p) => (
         <RowActions
           actions={[
-            { label: t("view.actions.edit"),   icon: <NotePencilIcon className="size-3.5" />, onClick: () => router.push(`/dashboard/boutique/${p.id}`) },
-            {
+            canEditBoutique
+              ? { label: t("view.actions.edit"), icon: <NotePencilIcon className="size-3.5" />, onClick: () => router.push(`/dashboard/boutique/${p.id}`) }
+              : { label: t("view.actions.view"), icon: <EyeIcon className="size-3.5" />,         onClick: () => router.push(`/dashboard/boutique/${p.id}`) },
+            ...(isAdministrator ? [{
               label:       p._count.commandeItems > 0 ? t("view.actions.deleteAlreadyOrdered") : t("view.actions.delete"),
               icon:        <ArchiveIcon className="size-3.5" />,
               onClick:     () => setDeleteTarget(p),
               destructive: true,
               separator:   true,
               disabled:    p._count.commandeItems > 0,
-            },
+            }] : []),
           ]}
         />
       ),
@@ -451,21 +461,23 @@ function BoutiquePageInner() {
       key:    "actions",
       header: "",
       className: "w-10",
-      cell: (c) => c.status === "PENDING" ? (
+      cell: (c) => c.status === "PENDING" ? (!canEditBoutique ? null : (
         <RowActions
           actions={[
             { label: t("view.actions.markPaid"), icon: <EyeIcon className="size-3.5" />,    onClick: () => openPayModal(c) },
             { label: t("view.actions.cancelOrder"), icon: <ArchiveIcon className="size-3.5" />, onClick: () => setCancelTarget(c), destructive: true, separator: true },
           ]}
         />
-      ) : c.status === "PAID" ? (
+      )) : c.status === "PAID" ? (
         <RowActions
           actions={[
             { label: t("view.actions.downloadReceipt"), icon: <FileArrowDownIcon className="size-3.5" />, onClick: () => window.open(`${BASE_PATH}/api/boutique/commandes/${c.id}/pdf`, "_blank") },
-            ...(c.paymentMethod === "MANUAL" ? [
+            ...(canEditBoutique && c.paymentMethod === "MANUAL" ? [
               { label: t("view.actions.editPaymentMethod"), icon: <PencilSimpleIcon className="size-3.5" />, onClick: () => openCorrectModal(c) },
             ] : []),
-            { label: t("view.actions.refundOrder"), icon: <ArrowCounterClockwiseIcon className="size-3.5" />, onClick: () => openRefundModal(c), destructive: true, separator: true },
+            ...(canRefundCommandes ? [
+              { label: t("view.actions.refundOrder"), icon: <ArrowCounterClockwiseIcon className="size-3.5" />, onClick: () => openRefundModal(c), destructive: true, separator: true },
+            ] : []),
           ]}
         />
       ) : null,
@@ -479,7 +491,7 @@ function BoutiquePageInner() {
       <PageHeader
         title={t("view.title")}
         description={t("view.description")}
-        action={tab === "produits" ? (
+        action={tab === "produits" && canEditBoutique ? (
           <Button size="sm" onClick={() => router.push("/dashboard/boutique/nouveau")}>
             <PlusIcon className="mr-1.5 size-4" />
             {t("view.newProduct")}

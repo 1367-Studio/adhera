@@ -12,6 +12,9 @@ import { useEvenementCustomFields, useSaveEvenementCustomFields, type EvenementC
 
 type Props = {
   evenementId: string
+  // FORM-34: a "read" user sees the configuration without the add / remove / save controls
+  // (the page's <fieldset disabled> greys the inputs themselves).
+  readOnly?: boolean
   // Reported up so the wizard page can warn before navigating away — see the guard in
   // src/app/dashboard/evenements/[id]/page.tsx.
   onDirtyChange?: (dirty: boolean) => void
@@ -31,7 +34,7 @@ function fieldsSignature(rows: EvenementCustomFieldDraft[]): string {
   return JSON.stringify(rows.map(f => [f.type, f.label, f.required, f.options ?? null]))
 }
 
-export function EvenementCustomFieldsEditor({ evenementId, onDirtyChange, ref }: Props) {
+export function EvenementCustomFieldsEditor({ evenementId, onDirtyChange, readOnly = false, ref }: Props) {
   const t = useTranslations("evenements.customFields")
   const tCommon = useTranslations("common")
   const { data, isLoading } = useEvenementCustomFields(evenementId)
@@ -181,6 +184,7 @@ export function EvenementCustomFieldsEditor({ evenementId, onDirtyChange, ref }:
                         onChange={e => updateOption(field.key, i, e.target.value)}
                         className="h-8 flex-1 rounded-md border border-input bg-background px-2.5 text-sm outline-none focus:ring-1 focus:ring-ring"
                       />
+                      {!readOnly && (
                       <button
                         type="button"
                         disabled={(field.options ?? []).length <= 2}
@@ -190,8 +194,10 @@ export function EvenementCustomFieldsEditor({ evenementId, onDirtyChange, ref }:
                       >
                         <TrashIcon className="size-3.5" />
                       </button>
+                      )}
                     </div>
                   ))}
+                  {!readOnly && (
                   <button
                     type="button"
                     onClick={() => addOption(field.key)}
@@ -199,16 +205,20 @@ export function EvenementCustomFieldsEditor({ evenementId, onDirtyChange, ref }:
                   >
                     <PlusIcon className="size-3" /> {t("addOption")}
                   </button>
+                  )}
                 </div>
               )}
             </div>
-            <Button type="button" variant="ghost" size="icon" onClick={() => removeField(field.key)} aria-label={t("removeField")}>
-              <TrashIcon className="size-4" />
-            </Button>
+            {!readOnly && (
+              <Button type="button" variant="ghost" size="icon" onClick={() => removeField(field.key)} aria-label={t("removeField")}>
+                <TrashIcon className="size-4" />
+              </Button>
+            )}
           </div>
         ))}
       </div>
 
+      {!readOnly && (
       <div className="flex items-center justify-between pt-1">
         <Button type="button" variant="outline" size="sm" onClick={addField}>
           <PlusIcon className="mr-1.5 size-4" />
@@ -218,6 +228,7 @@ export function EvenementCustomFieldsEditor({ evenementId, onDirtyChange, ref }:
           {tCommon("save")}
         </Button>
       </div>
+      )}
     </div>
   )
 }

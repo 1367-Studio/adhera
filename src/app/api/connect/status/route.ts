@@ -3,6 +3,7 @@ import { stripe, isStaleStripeResourceError } from "@/lib/stripe"
 import { prisma } from "@/lib/prisma/client"
 import { withAdminAuth } from "@/lib/api-wrapper"
 
+// No area on purpose: read by the settings screen and the membership tiers editor (is Stripe ready?).
 export const GET = withAdminAuth(async (req, ctx) => {
   const { associationId } = ctx
 

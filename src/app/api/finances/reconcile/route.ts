@@ -7,8 +7,6 @@ import { withAdminAuth } from "@/lib/api-wrapper"
 import { computeMatchScore } from "@/lib/finance/match-score"
 import { closedExerciceGuard } from "@/lib/finance/exercice"
 
-const FINANCE = ["ADMIN", "PRESIDENT", "TRESORIER"]
-
 export const POST = withAdminAuth(async (req, ctx) => {
   const { associationId, userId } = ctx
 
@@ -166,4 +164,4 @@ export const POST = withAdminAuth(async (req, ctx) => {
   }
 
   return NextResponse.json({ error: "Action invalide" }, { status: 422 })
-}, { roles: FINANCE, module: "finances" })
+}, { area: "comptabilite", module: "finances" })

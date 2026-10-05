@@ -4,8 +4,6 @@ import { Prisma } from "@prisma/client"
 import { prisma } from "@/lib/prisma/client"
 import { withAdminAuth } from "@/lib/api-wrapper"
 
-const FINANCE = ["ADMIN", "PRESIDENT", "TRESORIER"]
-
 const membershipFormFieldSchema = z.object({
   id:       z.string().optional(), // absent = nouveau champ
   type:     z.enum(["TEXT", "NUMBER", "SELECT"]),
@@ -33,20 +31,14 @@ const membershipFormFieldSchema = z.object({
 const membershipFormFieldsSchema = z.array(membershipFormFieldSchema).max(20)
 
 export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
-  if (!FINANCE.includes(ctx.role))
-    return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
-
   const form = await prisma.membershipForm.findFirst({ where: { id, associationId: ctx.associationId }, select: { id: true } })
   if (!form) return NextResponse.json({ error: "Introuvable" }, { status: 404 })
 
   const fields = await prisma.membershipFormField.findMany({ where: { formId: id }, orderBy: { order: "asc" } })
   return NextResponse.json(fields)
-}, { module: "cotisations" })
+}, { area: "adhesions", access: "edit", module: "cotisations" })
 
 export const PUT = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
-  if (!FINANCE.includes(ctx.role))
-    return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
-
   const form = await prisma.membershipForm.findFirst({ where: { id, associationId: ctx.associationId } })
   if (!form) return NextResponse.json({ error: "Introuvable" }, { status: 404 })
 
@@ -87,4 +79,4 @@ export const PUT = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   })
 
   return NextResponse.json(fields)
-}, { module: "cotisations" })
+}, { area: "adhesions", module: "cotisations" })

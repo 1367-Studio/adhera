@@ -6,8 +6,6 @@ import { writeActivityLog } from "@/lib/activity-log"
 import { cancelSubscriptionSchema as schema } from "@/lib/schemas"
 import { reportError } from "@/lib/monitoring"
 
-const ADMINS = ["ADMIN", "PRESIDENT"]
-
 // Self-service in-app cancellation for a trialing/active subscription — schedules the
 // cancellation for the end of the current billing period instead of cancelling immediately,
 // so an already-paid period stays usable and no refund is issued. Distinct from
@@ -59,4 +57,4 @@ export const POST = withAdminAuth(async (req, ctx) => {
   })
 
   return NextResponse.json({ ok: true })
-}, { roles: ADMINS })
+}, { administrator: true })

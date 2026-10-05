@@ -13,7 +13,7 @@ import {
   FileTextIcon, ReceiptIcon, NotePencilIcon, CopyIcon, ArchiveIcon,
   CloudArrowUpIcon, CloudArrowDownIcon, TrashIcon, LinkIcon, FunnelXIcon, InfoIcon,
 } from "@phosphor-icons/react/dist/ssr";
-import { useCurrentUser, useModules } from "@/lib/user-context"
+import { useCurrentUser, useHasAccess, useModules } from "@/lib/user-context"
 import { useSiteConfig } from "@/hooks/use-site-config"
 import { publishConfirmDescription } from "@/lib/dons/publish-confirm-description"
 import type { DonationFormPlacement } from "@/lib/dons/site-section-picks"
@@ -112,6 +112,9 @@ function DonsPageInner() {
   const tCommon      = useTranslations("common")
   const user         = useCurrentUser()
   const modules      = useModules()
+  // FORM-34: a Dons reader browses forms, donations and receipts (and downloads receipts) but
+  // cannot create, duplicate, publish, archive or delete a form, nor cash a pending donation.
+  const canEditDons  = useHasAccess("dons", "edit")
 
   // Same "read origin at click time" reasoning as the copy-link button on the form's own
   // detail page — no need for the SSR-safe useSyncExternalStore dance DonShareCard uses,
@@ -426,11 +429,11 @@ function DonsPageInner() {
         </span>
       ),
     },
-    {
+    ...(canEditDons ? [{
       key:       "actions",
       header:    "",
       className: "w-40",
-      cell: (d) => (
+      cell: (d: Don) => (
         <Button
           size="sm"
           variant="secondary"
@@ -441,7 +444,7 @@ function DonsPageInner() {
           {t("donationsView.encaisserButton")}
         </Button>
       ),
-    },
+    }] : []),
   ]
 
   const donColumns: Column<Don>[] = [
@@ -603,7 +606,7 @@ function DonsPageInner() {
       <PageHeader
         title={t("title")}
         description={t("description")}
-        action={tab === "formulaires" ? (
+        action={tab === "formulaires" && canEditDons ? (
           <Button size="sm" onClick={() => setNewFormOpen(true)}>
             <PlusIcon className="mr-1.5 size-4" />
             {t("newForm")}
@@ -672,28 +675,37 @@ function DonsPageInner() {
                       <p className="font-medium truncate">{f.title}</p>
                       <p className="text-xs text-muted-foreground truncate">/{f.slug}</p>
                     </button>
-                    <RowActions
-                      actions={[
-                        { label: t("formsView.actions.edit"), icon: <NotePencilIcon className="size-3.5" />, onClick: () => router.push(`/dashboard/dons/${f.id}`) },
-                        { label: t("formsView.actions.duplicate"), icon: <CopyIcon className="size-3.5" />, onClick: () => publishMutation.mutate({ id: f.id, action: "duplicate" }) },
-                        ...(f.status === "PUBLISHED"
-                          ? [{ label: t("detail.copyLinkButton"), icon: <LinkIcon className="size-3.5" />, onClick: () => handleCopyFormLink(f) }]
-                          : []),
-                        ...(f.status !== "PUBLISHED"
-                          ? [{ label: t("formsView.actions.publish"), icon: <CloudArrowUpIcon className="size-3.5" />, onClick: () => setPublishTarget({ form: f, action: "publish" }) }]
-                          : [{ label: t("formsView.actions.unpublish"), icon: <CloudArrowDownIcon className="size-3.5" />, onClick: () => setPublishTarget({ form: f, action: "unpublish" }) }]),
-                        ...(f.status !== "ARCHIVED"
-                          ? [{ label: t("formsView.actions.archive"), icon: <ArchiveIcon className="size-3.5" />, onClick: () => setArchiveTarget({ form: f, reason: "archive" }) }]
-                          : []),
-                        {
-                          label:       t("formsView.actions.delete"),
-                          icon:        <TrashIcon className="size-3.5" />,
-                          onClick:     () => handleDeleteForm(f),
-                          destructive: true,
-                          separator:   true,
-                        },
-                      ]}
-                    />
+                    {canEditDons ? (
+                      <RowActions
+                        actions={[
+                          { label: t("formsView.actions.edit"), icon: <NotePencilIcon className="size-3.5" />, onClick: () => router.push(`/dashboard/dons/${f.id}`) },
+                          { label: t("formsView.actions.duplicate"), icon: <CopyIcon className="size-3.5" />, onClick: () => publishMutation.mutate({ id: f.id, action: "duplicate" }) },
+                          ...(f.status === "PUBLISHED"
+                            ? [{ label: t("detail.copyLinkButton"), icon: <LinkIcon className="size-3.5" />, onClick: () => handleCopyFormLink(f) }]
+                            : []),
+                          ...(f.status !== "PUBLISHED"
+                            ? [{ label: t("formsView.actions.publish"), icon: <CloudArrowUpIcon className="size-3.5" />, onClick: () => setPublishTarget({ form: f, action: "publish" }) }]
+                            : [{ label: t("formsView.actions.unpublish"), icon: <CloudArrowDownIcon className="size-3.5" />, onClick: () => setPublishTarget({ form: f, action: "unpublish" }) }]),
+                          ...(f.status !== "ARCHIVED"
+                            ? [{ label: t("formsView.actions.archive"), icon: <ArchiveIcon className="size-3.5" />, onClick: () => setArchiveTarget({ form: f, reason: "archive" }) }]
+                            : []),
+                          {
+                            label:       t("formsView.actions.delete"),
+                            icon:        <TrashIcon className="size-3.5" />,
+                            onClick:     () => handleDeleteForm(f),
+                            destructive: true,
+                            separator:   true,
+                          },
+                        ]}
+                      />
+                    ) : f.status === "PUBLISHED" && (
+                      // Copying the public link changes nothing, so a reader keeps it.
+                      <RowActions
+                        actions={[
+                          { label: t("detail.copyLinkButton"), icon: <LinkIcon className="size-3.5" />, onClick: () => handleCopyFormLink(f) },
+                        ]}
+                      />
+                    )}
                   </div>
                   <div className="flex items-center justify-between">
                     <Badge variant={FORM_STATUS_VARIANT[f.status]}>{FORM_STATUS_LABEL[f.status]}</Badge>

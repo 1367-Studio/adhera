@@ -36,7 +36,8 @@ function eventColor(id: string) {
 interface EvenementsCalendarProps {
   onEditClick:      (ev: CalendarEvenement) => void
   onPresencesClick: (ev: CalendarEvenement) => void
-  onCreateClick:    (date?: Date) => void
+  /** Omitted for a "read" user (FORM-34): the calendar then offers no way to create an event. */
+  onCreateClick?:   (date?: Date) => void
 }
 
 export function EvenementsCalendar({ onEditClick, onPresencesClick, onCreateClick }: EvenementsCalendarProps) {
@@ -159,7 +160,7 @@ export function EvenementsCalendar({ onEditClick, onPresencesClick, onCreateClic
                   )}>
                     {format(day, "d")}
                   </span>
-                  {isCurrentM && (
+                  {isCurrentM && onCreateClick && (
                     <button
                       onClick={(e) => { e.stopPropagation(); onCreateClick(day) }}
                       className="opacity-0 hover:!opacity-100 flex size-4 items-center justify-center rounded text-muted-foreground hover:text-foreground hover:bg-muted transition-opacity"
@@ -214,9 +215,11 @@ export function EvenementsCalendar({ onEditClick, onPresencesClick, onCreateClic
             <h3 className="text-sm font-semibold capitalize">
               {format(selected, "EEEE d MMMM yyyy", { locale: fr })}
             </h3>
-            <Button variant="ghost" size="sm" className="h-7 text-xs" onClick={() => onCreateClick(selected)}>
-              <PlusIcon className="size-3 mr-1" /> {t("evenements.calendar.createHere")}
-            </Button>
+            {onCreateClick && (
+              <Button variant="ghost" size="sm" className="h-7 text-xs" onClick={() => onCreateClick(selected)}>
+                <PlusIcon className="size-3 mr-1" /> {t("evenements.calendar.createHere")}
+              </Button>
+            )}
           </div>
 
           {selectedEvents.length === 0 ? (

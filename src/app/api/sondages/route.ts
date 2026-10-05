@@ -8,8 +8,6 @@ import { guardModule } from "@/lib/auth/require-module"
 import { writeActivityLog } from "@/lib/activity-log"
 import { startOfTodayUTC } from "@/lib/date-boundaries"
 
-const MANAGERS = ["ADMIN", "PRESIDENT", "SECRETAIRE"]
-
 const questionSchema = z.object({
   clientKey: z.string().optional(),
   type:      z.enum(["TEXT_SHORT", "TEXT_LONG", "SINGLE_CHOICE", "MULTIPLE_CHOICE", "RATING", "YES_NO"]),
@@ -38,9 +36,6 @@ const createSchema = z.object({
 })
 
 export const GET = withAdminAuth(async (req, ctx) => {
-  if (!MANAGERS.includes(ctx.role))
-    return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
-
   // Nothing else ever flips status back to FERME once a deadline passes — lazily
   // close stale ones here so the list doesn't keep showing "Actif" past the deadline
   // while the member portal (which filters on deadline directly) already hides them.
@@ -68,12 +63,9 @@ export const GET = withAdminAuth(async (req, ctx) => {
     prisma.sondage.count({ where }),
   ])
   return NextResponse.json({ data, total, page, limit, totalPages: Math.ceil(total / limit) })
-})
+}, { area: "communication" })
 
 export const POST = withAdminAuth(async (req, ctx) => {
-  if (!MANAGERS.includes(ctx.role))
-    return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
-
   const guard = await guardModule(ctx.associationId, "sondages")
   if (guard) return guard
 
@@ -144,4 +136,4 @@ export const POST = withAdminAuth(async (req, ctx) => {
   })
 
   return NextResponse.json(sondage, { status: 201 })
-})
+}, { area: "communication" })

@@ -1,7 +1,7 @@
 "use client"
 
-import type { ReactNode } from "react"
 import { cn } from "@/lib/utils"
+import type { ReactNode } from "react"
 
 export interface SegmentedControlOption<T extends string> {
   value:     T
@@ -41,7 +41,7 @@ export function SegmentedControl<T extends string>({
           disabled={disabled || opt.disabled}
           onClick={() => onChange(opt.value)}
           className={cn(
-            "flex flex-1 items-center justify-center gap-1.5 rounded-md font-medium transition-colors disabled:pointer-events-none disabled:opacity-60 [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-3.5",
+            "flex text-nowrap flex-1 items-center justify-center gap-1.5 rounded-md font-medium transition-colors disabled:pointer-events-none disabled:opacity-60 [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-3.5",
             size === "sm" ? "px-3 py-1.5 text-xs" : "px-4 py-1.5 text-sm",
             value === opt.value
               ? "bg-primary text-primary-foreground"

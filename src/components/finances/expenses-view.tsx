@@ -19,6 +19,7 @@ import { RowActions } from "@/components/ui/row-actions"
 import { FilterSelect } from "@/components/ui/filter-select"
 import { ExpenseForm } from "@/components/finances/expense-form"
 import { MAX_FUNCTION_UPLOAD_BYTES } from "@/lib/upload-limits"
+import { useHasAccess } from "@/lib/user-context"
 
 type Expense = {
   id:              string
@@ -63,6 +64,7 @@ function ReceiptCell({ expense, editModalOpen }: { expense: Expense; editModalOp
   const updateMutation = useUpdateExpense(expense.id)
   const [uploading, setUploading] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
+  const canEditComptabilite = useHasAccess("comptabilite", "edit")
 
   async function handleFile(file: File) {
     if (file.size > MAX_FUNCTION_UPLOAD_BYTES) {
@@ -99,7 +101,7 @@ function ReceiptCell({ expense, editModalOpen }: { expense: Expense; editModalOp
     )
   }
 
-  if (editModalOpen) {
+  if (editModalOpen || !canEditComptabilite) {
     return <span className="text-xs text-muted-foreground">—</span>
   }
 
@@ -124,6 +126,8 @@ function ReceiptCell({ expense, editModalOpen }: { expense: Expense; editModalOp
 
 export function ExpensesView() {
   const t = useTranslations()
+  // FORM-34: a Comptabilité reader browses and filters but cannot add, edit or delete.
+  const canEditComptabilite = useHasAccess("comptabilite", "edit")
   const [page, setPage]                     = useState(1)
   const [statusFilter, setStatusFilter]     = useState("")
   const [createOpen, setCreateOpen]         = useState(false)
@@ -243,11 +247,11 @@ export function ExpensesView() {
         return <Badge variant={cfg.variant}>{cfg.label}</Badge>
       },
     },
-    {
+    ...(canEditComptabilite ? [{
       key: "actions",
       header: "",
       className: "w-10",
-      cell: (e) => (
+      cell: (e: Expense) => (
         <RowActions actions={[
           { label: t("finances.expensesView.actions.edit"),  icon: <PencilSimpleIcon className="size-3.5" />, onClick: () => setEditTarget(e) },
           {
@@ -258,7 +262,7 @@ export function ExpensesView() {
           },
         ]} />
       ),
-    },
+    }] : []),
   ]
 
   return (
@@ -266,12 +270,12 @@ export function ExpensesView() {
       <PageHeader
         title={t("finances.expensesView.title")}
         description={t("finances.expensesView.description")}
-        action={
+        action={canEditComptabilite && (
           <Button size="sm" onClick={() => setCreateOpen(true)}>
             <PlusIcon className="mr-1.5 size-4" />
             {t("common.add")}
           </Button>
-        }
+        )}
       />
 
       <div className="flex flex-wrap gap-2">

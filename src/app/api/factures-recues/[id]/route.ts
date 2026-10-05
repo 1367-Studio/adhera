@@ -10,9 +10,8 @@ import { resolveExerciceForDate, closedExerciceGuard } from "@/lib/finance/exerc
 import type { ExerciceStatus } from "@prisma/client"
 import { reportError } from "@/lib/monitoring"
 
-const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
-const FINANCE  = ["ADMIN", "PRESIDENT", "TRESORIER"]
-
+// Comptabilité area (FORM-34). The old GET/DELETE allowlists also let the Secrétaire in, although
+// the sidebar never showed her this screen and every write was finance-only; she now has no access here.
 const FACTURE_RECUE_FIELDS = ["number", "type", "issueDate", "amount", "status", "notes", "fournisseurId"] as const
 
 export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
@@ -25,7 +24,7 @@ export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
 
   if (!factureRecue) return NextResponse.json({ error: "Document introuvable" }, { status: 404 })
   return NextResponse.json(factureRecue)
-}, { module: "fournisseurs" })
+}, { area: "comptabilite", module: "fournisseurs" })
 
 export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   const { associationId, userId } = ctx
@@ -176,7 +175,7 @@ let newExercice: { id: string; status: ExerciceStatus } | null = null
   }
 
   return NextResponse.json(factureRecue)
-}, { roles: FINANCE, module: "fournisseurs" })
+}, { area: "comptabilite", module: "fournisseurs" })
 
 export const DELETE = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
   const { associationId, userId } = ctx
@@ -221,4 +220,4 @@ export const DELETE = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) =>
   await writeActivityLog({ associationId, actorId: userId, action: "FACTURE_RECUE_DELETED", entity: "FactureRecue", entityId: id, label: existing.number ?? existing.type })
 
   return new NextResponse(null, { status: 204 })
-}, { roles: MANAGERS, module: "fournisseurs" })
+}, { area: "comptabilite", module: "fournisseurs" })

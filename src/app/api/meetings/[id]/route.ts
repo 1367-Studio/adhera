@@ -2,6 +2,7 @@ import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma/client"
 import { writeActivityLog } from "@/lib/activity-log"
 import { withAdminAuth } from "@/lib/api-wrapper"
+import { hasAccess } from "@/lib/permissions"
 import { meetingUpdateSchema } from "@/lib/schemas"
 import { pusherServer } from "@/lib/pusher-server"
 import { sendEmail } from "@/lib/mail"
@@ -16,8 +17,6 @@ import { APP_URL } from "@/lib/env"
 // exempt since those are how a meeting normally progresses through its own lifecycle.
 const STRUCTURAL_FIELDS = ["title", "description", "type", "scheduledAt", "participantIds"] as const
 
-const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
-
 export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
   const { associationId } = ctx
 
@@ -27,8 +26,11 @@ export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
   })
 
   if (!meeting) return NextResponse.json({ error: "Réunion introuvable" }, { status: 404 })
-  return NextResponse.json(redactParticipantStatus(meeting, ctx.role, MANAGERS))
-})
+  // Participant status (suspended/inactive) is for people who manage meetings. The helper
+  // still takes a role allowlist, so pass the viewer's own role only when they may edit.
+  const participantStatusViewers = hasAccess(ctx.permissions, "reunions", "edit") ? [ctx.role] : []
+  return NextResponse.json(redactParticipantStatus(meeting, ctx.role, participantStatusViewers))
+}, { area: "reunions" })
 
 export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   const { associationId } = ctx
@@ -146,7 +148,7 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   })
 
   return NextResponse.json(meeting)
-}, { roles: MANAGERS })
+}, { area: "reunions" })
 
 export const DELETE = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
   const { associationId } = ctx
@@ -166,4 +168,4 @@ export const DELETE = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) =>
   })
 
   return new NextResponse(null, { status: 204 })
-}, { roles: MANAGERS })
+}, { area: "reunions" })

@@ -8,8 +8,6 @@ import { writeActivityLog } from "@/lib/activity-log"
 import { buildDocumentPdf } from "@/lib/pdf/document-pdf"
 import { resolveEmailBranding } from "@/lib/plan-limits"
 
-const ALLOWED = ["ADMIN", "PRESIDENT", "SECRETAIRE", "TRESORIER"]
-
 const schema = z.object({
   to:      z.string().trim().email("Email invalide"),
   message: z.string().trim().optional(),
@@ -93,4 +91,4 @@ export const POST = withAdminAuth<{ id: string; loanId: string }>(async (req, ct
   })
 
   return NextResponse.json({ ok: true })
-}, { roles: ALLOWED, module: "materiel" })
+}, { area: "materiel", module: "materiel" })

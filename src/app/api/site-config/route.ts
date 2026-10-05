@@ -12,8 +12,6 @@ import {
 } from "@/lib/dons/site-section-binding"
 import { liveSiteSectionIds } from "@/lib/site-puck/site-section-ids"
 
-const ADMINS = ["ADMIN", "PRESIDENT"]
-
 const sectionSchema = z.object({
   id:          z.string(),
   type:        z.enum(["hero", "about", "events", "actualites", "membership", "dons", "boutique", "contact"]),
@@ -157,4 +155,4 @@ export const PATCH = withAdminAuth(async (req, ctx) => {
   })
 
   return NextResponse.json({ ok: true })
-}, { roles: ADMINS })
+}, { area: "site" })

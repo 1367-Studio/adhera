@@ -6,9 +6,8 @@ import { writeActivityLog, computeDiff } from "@/lib/activity-log"
 import { computeDocumentTotals, itemsUnchanged, exceedsMaxTotal, MAX_DOCUMENT_TOTAL } from "@/lib/devis-calc"
 import { deriveDevisStatus, type DevisStatus } from "@/lib/devis-status"
 
-const MANAGERS = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"]
-const FINANCE  = ["ADMIN", "PRESIDENT", "TRESORIER"]
-
+// Comptabilité area (FORM-34). The old GET/DELETE allowlists also let the Secrétaire in, although
+// the sidebar never showed her this screen and every write was finance-only; she now has no access here.
 function withDerivedStatus<T extends { status: string; validUntil: Date | string | null }>(d: T): T {
   return { ...d, status: deriveDevisStatus(d.status as DevisStatus, d.validUntil) }
 }
@@ -44,7 +43,7 @@ export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
   const facture = await prisma.facture.findFirst({ where: { devisId: id, deletedAt: null }, select: { id: true, number: true } })
 
   return NextResponse.json(withDerivedStatus({ ...devis, facture }))
-}, { module: "devis" })
+}, { area: "comptabilite", module: "devis" })
 
 export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   const { associationId, userId } = ctx
@@ -132,7 +131,7 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   }
 
   return NextResponse.json(withDerivedStatus(devis))
-}, { roles: FINANCE, module: "devis" })
+}, { area: "comptabilite", module: "devis" })
 
 export const DELETE = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   const { associationId, userId } = ctx
@@ -164,4 +163,4 @@ export const DELETE = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => 
   await writeActivityLog({ associationId, actorId: userId, action: "DEVIS_DELETED", entity: "Devis", entityId: id, label: existing.number })
 
   return new NextResponse(null, { status: 204 })
-}, { roles: MANAGERS, module: "devis" })
+}, { area: "comptabilite", module: "devis" })

@@ -9,8 +9,6 @@ import { memberLimitForPlan } from "@/lib/plan-limits"
 import { reportError } from "@/lib/monitoring"
 import { planFromTier, planLabel } from "@/lib/plan-tier"
 
-const ADMINS = ["ADMIN", "PRESIDENT"]
-
 const schema = z.object({
   paymentMethodId: z.string(),
   plan:            z.enum(["monthly", "yearly"]),
@@ -120,4 +118,4 @@ export const POST = withAdminAuth(async (req, ctx) => {
   })
 
   return NextResponse.json({ ok: true })
-}, { roles: ADMINS, allowWhenLocked: true })
+}, { administrator: true, allowWhenLocked: true })
