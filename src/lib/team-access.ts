@@ -4,7 +4,7 @@
 // the way around the other.
 import { prisma } from "@/lib/prisma/client"
 import {
-  ACCESS_AREAS, ACCESS_AREA_LABELS, type ResolvedPermissions,
+  ACCESS_AREAS, ACCESS_AREA_LABELS, STAFF_ROLES, resolvePermissions, type ResolvedPermissions,
 } from "@/lib/permissions"
 
 export const TEAM_ASSIGNABLE_ROLES = ["MEMBRE", "EQUIPE", "SECRETAIRE", "TRESORIER", "PRESIDENT", "ADMIN"] as const
@@ -16,45 +16,84 @@ export const TEAM_ROLE_ORDER = ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE",
 export type TeamGuardFailure = { error: string; status: number }
 
 /**
- * Checks that `actor` may change the access of `target` — and, when `nextRole` is given, give
- * it that role. Returns null when allowed.
+ * Number of OTHER active staff accounts of the association that currently resolve as
+ * administrator — role ADMIN, or any staff role granted the custom "administrator" permission.
+ * Used by the last-admin guard below: counting only the literal ADMIN role would miss a
+ * PRESIDENT or EQUIPE member currently holding full admin rights through custom permissions.
+ */
+async function countOtherAdministrators(associationId: string, excludingUserId: string): Promise<number> {
+  const others = await prisma.user.findMany({
+    where:  { associationId, active: true, deletedAt: null, id: { not: excludingUserId }, role: { in: [...STAFF_ROLES] } },
+    select: { role: true, permissions: true },
+  })
+  return others.filter(user => resolvePermissions(user.role, user.permissions).administrator).length
+}
+
+/**
+ * Checks that `actor` may change the access of `target` — to `nextRole` and/or
+ * `nextIsAdministrator`, whichever the caller is changing. Returns null when allowed.
  * - nobody edits their own access (a mistaken click would lock them out);
- * - only the ADMIN role touches an ADMIN or hands out ADMIN — any other administrator (the
- *   président, or a team member granted "administrator") gets the président's limits;
- * - the last active ADMIN of the association cannot be demoted.
+ * - only the ADMIN role touches an account that is currently an administrator (by role or by
+ *   permission), or hands out the ADMIN role or the "administrator" permission — any other
+ *   administrator (the président, or a team member granted "administrator") gets the
+ *   président's limits;
+ * - the last active administrator of the association cannot be demoted, whether that demotion
+ *   happens through the role or through the permissions payload.
  */
 export async function checkTeamAccessChange({
-  associationId, actorId, actorRole, targetUserId, targetRole, nextRole,
+  associationId, actorId, actorRole, targetUserId, targetRole, targetIsAdministrator,
+  nextRole, nextIsAdministrator,
 }: {
-  associationId: string
-  actorId:       string
-  actorRole:     string
-  targetUserId:  string
-  targetRole:    string
-  nextRole?:     TeamAssignableRole
+  associationId:          string
+  actorId:                string
+  actorRole:              string
+  targetUserId:           string
+  targetRole:             string
+  targetIsAdministrator:  boolean
+  nextRole?:              TeamAssignableRole
+  nextIsAdministrator:    boolean
 }): Promise<TeamGuardFailure | null> {
   if (targetUserId === actorId) {
     return { error: "Vous ne pouvez pas modifier votre propre rôle ni vos propres accès", status: 403 }
   }
 
   if (actorRole !== "ADMIN") {
-    if (targetRole === "ADMIN") {
+    if (targetRole === "ADMIN" || targetIsAdministrator) {
       return { error: "Seul un administrateur peut modifier les accès d'un administrateur", status: 403 }
     }
-    if (nextRole === "ADMIN") {
-      return { error: "Seul un administrateur peut attribuer le rôle administrateur", status: 403 }
+    if (nextRole === "ADMIN" || nextIsAdministrator) {
+      return { error: "Seul un administrateur peut attribuer le rôle ou les droits d'administrateur", status: 403 }
     }
   }
 
-  if (targetRole === "ADMIN" && nextRole !== undefined && nextRole !== "ADMIN") {
-    const remainingAdmins = await prisma.user.count({
-      where: { associationId, role: "ADMIN", active: true, deletedAt: null, id: { not: targetUserId } },
-    })
+  if (targetIsAdministrator && !nextIsAdministrator) {
+    const remainingAdmins = await countOtherAdministrators(associationId, targetUserId)
     if (remainingAdmins === 0) {
       return { error: "Impossible de rétrograder le dernier administrateur", status: 422 }
     }
   }
 
+  return null
+}
+
+/**
+ * Guards deactivating a staff account outside the role/permissions screens — a Membre's linked
+ * User can also lose admin rights by being deleted or suspended from the Membres screen, which
+ * must not be a side door around the last-admin guard above.
+ */
+export async function assertCanDeactivateAdministrator(
+  associationId: string, targetUserId: string,
+): Promise<TeamGuardFailure | null> {
+  const target = await prisma.user.findUnique({
+    where:  { id: targetUserId },
+    select: { role: true, permissions: true },
+  })
+  if (!target || !resolvePermissions(target.role, target.permissions).administrator) return null
+
+  const remainingAdmins = await countOtherAdministrators(associationId, targetUserId)
+  if (remainingAdmins === 0) {
+    return { error: "Impossible de désactiver le dernier administrateur de l'association", status: 422 }
+  }
   return null
 }
 

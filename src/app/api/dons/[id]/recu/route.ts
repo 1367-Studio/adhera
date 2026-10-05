@@ -3,6 +3,8 @@ import { prisma } from "@/lib/prisma/client"
 import { generateRecuFiscalForDon } from "@/lib/pdf/recu-fiscal"
 import { withAdminAuth } from "@/lib/api-wrapper"
 
+// Issuing a don's fiscal document is a finance call (assigns the next sequential receipt
+// number on first view, like the cotisation and participation receipt routes): Dons "edit".
 export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
   const don = await prisma.don.findFirst({
     where: { id, associationId: ctx.associationId, paidAt: { not: null }, refundedAt: null },
@@ -33,4 +35,4 @@ export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
       "Content-Disposition": `attachment; filename="${name}"`,
     },
   })
-}, { area: "dons" })
+}, { area: "dons", access: "edit" })

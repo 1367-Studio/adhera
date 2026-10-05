@@ -5,9 +5,11 @@ import { withAdminAuth } from "@/lib/api-wrapper"
 import { hasAccess } from "@/lib/permissions"
 
 export const GET = withAdminAuth<{ id: string; participationId: string }>(async (_req, ctx, { id: evenementId, participationId }) => {
-  // A tax receipt is an accounting document: the event area alone is not enough (the
-  // Secrétaire edits events but has no access to accounting — was ADMIN/PRESIDENT/TRESORIER).
-  if (!hasAccess(ctx.permissions, "comptabilite", "read"))
+  // A tax receipt is an accounting document — and assigns the next sequential receipt number
+  // on first view, like the cotisation receipt route — so Comptabilité "edit" is required, not
+  // just the event area (the Secrétaire edits events but has no access to accounting — was
+  // ADMIN/PRESIDENT/TRESORIER) and not just "read".
+  if (!hasAccess(ctx.permissions, "comptabilite", "edit"))
     return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
 
   const participation = await prisma.participation.findFirst({

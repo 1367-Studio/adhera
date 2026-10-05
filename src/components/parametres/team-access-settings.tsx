@@ -186,7 +186,10 @@ function TeamMemberAccessModal({
       setProfile("administrator")
       return
     }
-    setCustomPermissions({ administrator: false, areas: { ...effectivePermissions.areas } })
+    // effectivePermissions.areas is all "edit" while profile is "administrator" — carrying
+    // that over here would turn off the switch but silently keep full edit access everywhere,
+    // which looks like a downgrade and isn't one. Start from a clean slate instead.
+    setCustomPermissions({ administrator: false, areas: allAreasAt("none") })
     setProfile("custom")
   }
 

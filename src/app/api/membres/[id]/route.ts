@@ -10,6 +10,7 @@ import { isMembreAdherent, membreAdherentCotisationSelect, currentCotisationYear
 import { MOBILE_ANSWER_KEY, mergeAnswers, readMobileAnswer } from "@/lib/membre-answers"
 import { cancelActiveCotisationSubscriptionForMembre } from "@/lib/webhook/cotisation-subscriptions"
 import { grantMembrePortalAccess } from "@/lib/membre-access"
+import { assertCanDeactivateAdministrator } from "@/lib/team-access"
 import { resolveMembreMembershipFormId } from "@/lib/membre-membership-form"
 import { findInvalidMembershipFormAnswer } from "@/lib/membership-form-answers-validation"
 import { reportError } from "@/lib/monitoring"
@@ -167,6 +168,14 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   // "INACTIF" here left PENDING/SUSPENDU as an unguarded way to lock yourself out.
   if (existing.userId === userId && rest.status !== undefined && rest.status !== "ACTIF") {
     return NextResponse.json({ error: "Vous ne pouvez pas désactiver votre propre compte" }, { status: 403 })
+  }
+
+  // Same last-administrator protection as Paramètres › Équipe et accès — deactivating a
+  // member here flips their linked User.active below too, so it's just as real a way to
+  // strip the association's last administrator of access as a role/permissions change.
+  if (existing.userId && rest.status !== undefined && rest.status !== "ACTIF") {
+    const refusal = await assertCanDeactivateAdministrator(associationId, existing.userId)
+    if (refusal) return NextResponse.json({ error: refusal.error }, { status: refusal.status })
   }
 
   if (responsableId) {
@@ -353,6 +362,11 @@ export const DELETE = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) =>
 
   if (existing.userId === userId) {
     return NextResponse.json({ error: "Vous ne pouvez pas supprimer votre propre compte" }, { status: 403 })
+  }
+
+  if (existing.userId) {
+    const refusal = await assertCanDeactivateAdministrator(associationId, existing.userId)
+    if (refusal) return NextResponse.json({ error: refusal.error }, { status: refusal.status })
   }
 
   const unlinkedDependants = await prisma.$transaction(async (tx) => {
