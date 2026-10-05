@@ -2558,6 +2558,7 @@
       "variantsCount": "{count, plural, one {# variante} other {# variantes}}",
       "actions": {
         "edit": "Modifier",
+        "view": "Voir",
         "delete": "Supprimer",
         "deleteAlreadyOrdered": "Supprimer (déjà commandé)",
         "markPaid": "Marquer payée",

@@ -38,16 +38,6 @@ export const PATCH = withAdminAuth<{ userId: string }>(async (req, ctx, { userId
     return NextResponse.json({ error: "Membre de l'équipe introuvable" }, { status: 404 })
   }
 
-  const refusal = await checkTeamAccessChange({
-    associationId,
-    actorId,
-    actorRole,
-    targetUserId: target.id,
-    targetRole:   target.role,
-    nextRole:     requestedRole,
-  })
-  if (refusal) return NextResponse.json({ error: refusal.error }, { status: refusal.status })
-
   const nextRole    = requestedRole ?? target.role
   const roleChanged = nextRole !== target.role
 
@@ -67,6 +57,18 @@ export const PATCH = withAdminAuth<{ userId: string }>(async (req, ctx, { userId
   } else {
     nextStoredPermissions = target.permissions as Prisma.InputJsonValue
   }
+
+  const refusal = await checkTeamAccessChange({
+    associationId,
+    actorId,
+    actorRole,
+    targetUserId:          target.id,
+    targetRole:            target.role,
+    targetIsAdministrator: resolvePermissions(target.role, target.permissions).administrator,
+    nextRole:              requestedRole,
+    nextIsAdministrator:   resolvePermissions(nextRole, nextStoredPermissions === Prisma.DbNull ? null : nextStoredPermissions).administrator,
+  })
+  if (refusal) return NextResponse.json({ error: refusal.error }, { status: refusal.status })
 
   const updatedUser = await prisma.user.update({
     where:  { id: target.id },

@@ -371,7 +371,9 @@ function BoutiquePageInner() {
       cell: (p) => (
         <RowActions
           actions={[
-            { label: t("view.actions.edit"),   icon: <NotePencilIcon className="size-3.5" />, onClick: () => router.push(`/dashboard/boutique/${p.id}`) },
+            canEditBoutique
+              ? { label: t("view.actions.edit"), icon: <NotePencilIcon className="size-3.5" />, onClick: () => router.push(`/dashboard/boutique/${p.id}`) }
+              : { label: t("view.actions.view"), icon: <EyeIcon className="size-3.5" />,         onClick: () => router.push(`/dashboard/boutique/${p.id}`) },
             ...(isAdministrator ? [{
               label:       p._count.commandeItems > 0 ? t("view.actions.deleteAlreadyOrdered") : t("view.actions.delete"),
               icon:        <ArchiveIcon className="size-3.5" />,

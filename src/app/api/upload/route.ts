@@ -10,8 +10,16 @@ import { reportError } from "@/lib/monitoring"
 // server then silently rejects.
 const MAX_SIZE = MAX_FUNCTION_UPLOAD_BYTES
 
-// Staff-wide (no area): every area of the dashboard uploads its files through this route.
+// Staff-wide (no single area): every area of the dashboard uploads its files through this
+// route, so it can't be gated on one specific area. It used to be ADMIN/PRESIDENT/TRESORIER/
+// SECRETAIRE only — an EQUIPE member (no bureau position) couldn't upload at all. Kept
+// equivalent here: at least edit access somewhere, so a volunteer granted zero areas still
+// can't push files into storage they then have nothing to attach them to.
 export const POST = withAdminAuth(async (req, ctx) => {
+  const canUpload = ctx.permissions.administrator
+    || Object.values(ctx.permissions.areas).some(level => level === "edit")
+  if (!canUpload) return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
+
   const formData = await req.formData()
   const file     = formData.get("file")   as File   | null
   const prefix   = (formData.get("prefix") as string) || "adhera"
