@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma/client"
 import bcrypt from "bcryptjs"
 import { z } from "zod"
 import { writeActivityLog, computeDiff } from "@/lib/activity-log"
+import { rateLimit } from "@/lib/rate-limit"
 
 type SessionUser = { id?: string; associationId?: string | null }
 
@@ -94,6 +95,15 @@ export async function PATCH(req: Request) {
       return NextResponse.json({ field: issue?.path[0], error: issue?.message }, { status: 400 })
     }
     const { currentPassword, newPassword } = parsed.data
+
+    // Guessing currentPassword needs an existing session, so this is lower risk than the
+    // main login (security audit M7) — but an attacker with a stolen/shared session cookie
+    // could otherwise brute-force it with no limit at all. Keyed by userId like the 2FA
+    // rate limits in two-factor.ts.
+    const allowed = await rateLimit(`password-change:${u.id!}`, 8, 15 * 60 * 1000)
+    if (!allowed) {
+      return NextResponse.json({ field: "currentPassword", error: "Trop de tentatives. Réessayez plus tard." }, { status: 429 })
+    }
 
     const user = await prisma.user.findUnique({ where: { id: u.id! } })
     if (!user) return NextResponse.json({ error: "Not found" }, { status: 404 })
