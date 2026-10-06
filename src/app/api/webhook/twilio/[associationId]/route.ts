@@ -3,6 +3,7 @@ import twilio from "twilio"
 import { prisma } from "@/lib/prisma/client"
 import { APP_URL } from "@/lib/env"
 import { twilioErrorReasonForCode } from "@/lib/sms"
+import { decryptField } from "@/lib/crypto/field-encryption"
 import type { SmsStatus } from "@prisma/client"
 
 export const dynamic = "force-dynamic"
@@ -59,7 +60,7 @@ export async function POST(
   const expectedUrl = `${APP_URL}/api/webhook/twilio/${associationId}`
   const signature    = req.headers.get("x-twilio-signature") ?? ""
 
-  if (!twilio.validateRequest(assoc.smsAuthToken, signature, expectedUrl, twilioParams)) {
+  if (!twilio.validateRequest(decryptField(assoc.smsAuthToken), signature, expectedUrl, twilioParams)) {
     console.error("[webhook/twilio] signature verification failed for association", associationId)
     return NextResponse.json({ error: "Signature invalide" }, { status: 400 })
   }

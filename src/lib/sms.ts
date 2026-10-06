@@ -2,6 +2,7 @@ import twilio from "twilio"
 import { prisma } from "@/lib/prisma/client"
 import { APP_URL } from "@/lib/env"
 import { reportError } from "@/lib/monitoring"
+import { decryptField } from "@/lib/crypto/field-encryption"
 
 export class SmsSendError extends Error {
   constructor(message: string) {
@@ -20,7 +21,11 @@ async function getCredentials(associationId: string): Promise<Credentials> {
   if (!assoc?.smsAccountSid || !assoc.smsAuthToken || !assoc.smsPhoneNumber) {
     throw new SmsSendError("Twilio non configuré pour cette association.")
   }
-  return assoc as Credentials
+  return {
+    smsAccountSid:  decryptField(assoc.smsAccountSid),
+    smsAuthToken:   decryptField(assoc.smsAuthToken),
+    smsPhoneNumber: assoc.smsPhoneNumber,
+  }
 }
 
 // Twilio error codes worth surfacing to the user instead of the generic failure message.

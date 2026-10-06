@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma/client"
 import { reportError } from "@/lib/monitoring"
+import { encryptField, decryptField } from "@/lib/crypto/field-encryption"
 
 export class LiveKitConfigError extends Error {
   constructor(message: string) {
@@ -33,8 +34,8 @@ export async function getLiveKitConfig(associationId: string): Promise<LiveKitCo
   if (assoc?.livekitUrl && assoc.livekitApiKey && assoc.livekitApiSecret) {
     return {
       url:           assoc.livekitUrl,
-      apiKey:        assoc.livekitApiKey,
-      apiSecret:     assoc.livekitApiSecret,
+      apiKey:        decryptField(assoc.livekitApiKey),
+      apiSecret:     decryptField(assoc.livekitApiSecret),
       usingPlatform: false,
     }
   }
@@ -61,11 +62,12 @@ type MeetingLiveKitFields = {
 
 function fromSnapshot(meeting: MeetingLiveKitFields): LiveKitConfig | null {
   if (!meeting.livekitUrl || !meeting.livekitApiKey || !meeting.livekitApiSecret) return null
+  const apiKey = decryptField(meeting.livekitApiKey)
   return {
     url:           meeting.livekitUrl,
-    apiKey:        meeting.livekitApiKey,
-    apiSecret:     meeting.livekitApiSecret,
-    usingPlatform: meeting.livekitApiKey === PLATFORM_API_KEY,
+    apiKey,
+    apiSecret:     decryptField(meeting.livekitApiSecret),
+    usingPlatform: apiKey === PLATFORM_API_KEY,
   }
 }
 
@@ -83,7 +85,7 @@ export async function getLiveKitConfigForMeeting(meeting: MeetingLiveKitFields):
 
   await prisma.meeting.update({
     where: { id: meeting.id },
-    data:  { livekitUrl: resolved.url, livekitApiKey: resolved.apiKey, livekitApiSecret: resolved.apiSecret },
+    data:  { livekitUrl: resolved.url, livekitApiKey: encryptField(resolved.apiKey), livekitApiSecret: encryptField(resolved.apiSecret) },
   }).catch((error: unknown) => {
     // Best-effort: if the pin write fails, this call still gets a valid config: worst case
     // the next call re-resolves live and tries to pin again.
