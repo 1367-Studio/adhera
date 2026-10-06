@@ -36,6 +36,11 @@ const TIMESTAMP_FIELD: Partial<Record<SmsStatus, "sentAt" | "deliveredAt" | "fai
   FAILED:      "failedAt",
 }
 
+// Generous on purpose — wide enough that a legitimately late status update is never
+// rejected, narrow enough to bound how long a captured callback stays replayable (security
+// audit L4). See smsStatusCallbackUrl()'s own comment in src/lib/sms.ts for why `ts` exists.
+const MAX_CALLBACK_AGE_MS = 7 * 24 * 60 * 60 * 1000
+
 export async function POST(
   req: Request,
   { params }: { params: Promise<{ associationId: string }> },
@@ -50,6 +55,13 @@ export async function POST(
     return NextResponse.json({ error: "Association introuvable" }, { status: 404 })
   }
 
+  // The query string (unlike the host/protocol below) survives the reverse proxy
+  // unchanged, so `ts` is read straight off the real incoming request.
+  const ts = new URL(req.url).searchParams.get("ts")
+  if (!ts || Date.now() - Number(ts) > MAX_CALLBACK_AGE_MS) {
+    return NextResponse.json({ error: "Requête expirée" }, { status: 400 })
+  }
+
   const formData     = await req.formData()
   const twilioParams = Object.fromEntries(formData.entries()) as Record<string, string>
 
@@ -57,7 +69,7 @@ export async function POST(
   // a reverse proxy that can rewrite the host/protocol before the handler sees it, but
   // validateRequest needs an exact match against the public URL Twilio actually POSTed
   // to (the same one passed as `statusCallback` at send time in src/lib/sms.ts).
-  const expectedUrl = `${APP_URL}/api/webhook/twilio/${associationId}`
+  const expectedUrl = `${APP_URL}/api/webhook/twilio/${associationId}?ts=${ts}`
   const signature    = req.headers.get("x-twilio-signature") ?? ""
 
   if (!twilio.validateRequest(decryptField(assoc.smsAuthToken), signature, expectedUrl, twilioParams)) {

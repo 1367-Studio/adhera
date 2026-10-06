@@ -60,7 +60,11 @@ export type SmsContext = {
 }
 
 function smsStatusCallbackUrl(associationId: string): string {
-  return `${APP_URL}/api/webhook/twilio/${associationId}`
+  // `ts` pins the callback to roughly when the message was sent — not a secret, just bounds
+  // how long a captured status-callback POST stays validly replayable (security audit L4).
+  // Twilio's own signature has no notion of time by itself; it only signs over whatever URL
+  // + form params it's handed, so this is the only way to give it one.
+  return `${APP_URL}/api/webhook/twilio/${associationId}?ts=${Date.now()}`
 }
 
 async function logSmsMessage(
