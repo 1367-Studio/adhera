@@ -16,9 +16,10 @@ Sentry.init({
   tracesSampleRate: process.env.NODE_ENV === "production" ? 0.1 : 1,
 
   dataCollection: {
-    // To disable sending user data and HTTP bodies, uncomment the lines below. For more info visit:
-    // https://docs.sentry.io/platforms/javascript/guides/nextjs/configuration/options/#dataCollection
-    // userInfo: false,
-    // httpBodies: [],
+    // Personal data (names, emails, amounts...) must never reach a third-party service —
+    // see reportError() in src/lib/monitoring.ts for the manual PII-minimization discipline
+    // this is meant to back up at the SDK level.
+    userInfo: false,
+    httpBodies: [],
   },
 });
