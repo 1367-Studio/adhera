@@ -484,6 +484,12 @@ export function MembreDetailView() {
                 {t("membres.detail.roleButton")}
               </Button>
             )}
+            {isAdministrator && (
+              <Button size="sm" variant="outline" onClick={() => window.open(`${BASE_PATH}/api/membres/${id}/personal-data-export`)}>
+                <DownloadSimpleIcon className="mr-1.5 size-4" />
+                {t("membres.detail.exportDataButton")}
+              </Button>
+            )}
             {canEditMembres && (
               <Button size="sm" variant="outline" onClick={() => setEditOpen(true)}>
                 <PencilSimpleIcon className="mr-1.5 size-4" />

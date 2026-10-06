@@ -4393,6 +4393,7 @@
       "cotisationButton": "Membership fee",
       "createAccessButton": "Create access",
       "roleButton": "Role",
+      "exportDataButton": "Export data (GDPR)",
       "contact": "Contact",
       "noContactInfo": "No contact information",
       "memberSinceColon": "Member since: {date}",

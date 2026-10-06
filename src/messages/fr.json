@@ -4401,6 +4401,7 @@
       "cotisationButton": "Cotisation",
       "createAccessButton": "Créer un accès",
       "roleButton": "Rôle",
+      "exportDataButton": "Exporter les données (RGPD)",
       "contact": "Contact",
       "noContactInfo": "Aucune information de contact",
       "memberSinceColon": "Membre depuis : {date}",
