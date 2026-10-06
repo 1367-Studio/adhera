@@ -1,0 +1,26 @@
+# Vercel's local `vercel deploy` does NOT read .gitignore — without this file it uploads
+# the full working directory as-is. This file exists specifically to stop that: it mirrors
+# every sensitive/local-only entry from .gitignore, since those files must never leave this
+# machine, let alone land on Vercel's build infrastructure (incident 2026-10-06: a local
+# `vercel deploy` uploaded scripts/send-adhesion-completion-invites.ts, which has real
+# members' names/emails hardcoded, and security-audit/, which has live vulnerability
+# details and generated DB credentials).
+
+# Never upload local env files — Vercel manages its own via project env vars.
+.env
+.env.*
+!.env.example
+
+.git
+node_modules
+.next
+coverage
+
+# Security/GDPR audit material — vulnerability details, generated credentials.
+/security-audit/
+
+# Local-only ops scripts with real production data hardcoded or queried directly.
+/_bf.sh
+/scripts/send-adhesion-completion-invites.ts
+/scripts/check-adhesion-completion.ts
+/scripts/find-member.ts
