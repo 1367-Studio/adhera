@@ -1,14 +1,45 @@
 "use server"
 
 import { randomBytes } from "crypto"
-import { cookies } from "next/headers"
+import { cookies, headers } from "next/headers"
 import { signIn, signOut, resolveCredentialsUser, OAUTH_PORTAL_SLUG_COOKIE } from "@/lib/auth/config"
 import { setPendingLogin, setVerifiedLogin } from "@/lib/auth/two-factor-store"
 import { AuthError } from "next-auth"
 import { BASE_PATH } from "@/lib/env"
 import { reportError } from "@/lib/monitoring"
+import { rateLimit, ipFromHeaders } from "@/lib/rate-limit"
+import { writeActivityLog } from "@/lib/activity-log"
+import { prisma } from "@/lib/prisma/client"
 
 type LoginState = { error?: string; requires2FA?: true; pendingToken?: string } | undefined
+
+const RATE_LIMIT_ERROR = "Trop de tentatives. Réessayez plus tard."
+
+// No detection existed at all for a wrong password before this (security audit H3, paired
+// with H2's rate limit below). A portal attempt already has a known association (resolved
+// from the slug), so it's logged where that association's own staff can see it in their
+// ActivityLog — same LOGIN_FAILED action already used for a failed 2FA code in
+// two-factor.ts. A dashboard attempt has no single tenant to attribute it to: the same
+// email can legitimately match zero, one, or several unrelated associations (see
+// resolveCredentialsUser's own comment on that), so it's reported to Sentry instead — IP
+// and whether a slug was involved only, never the email itself (reportError's own no-PII
+// rule).
+async function logFailedLogin(email: string, slug: string | null, ip: string) {
+  if (slug) {
+    const association = await prisma.association.findUnique({ where: { slug }, select: { id: true } })
+    if (association) {
+      await writeActivityLog({
+        associationId: association.id,
+        action:        "LOGIN_FAILED",
+        entity:        "User",
+        label:         email,
+        metadata:      { ip },
+      })
+      return
+    }
+  }
+  reportError(new Error("Failed login attempt"), { area: "api", action: "auth.login-failed", extra: { ip, hasSlug: !!slug } })
+}
 
 // Auth.js's default `redirect` callback resolves a relative `redirectTo` against the
 // request's bare origin (`url.origin`, see @auth/core/lib/init.js) — it has no notion of
@@ -23,6 +54,18 @@ export async function authenticate(prevState: LoginState, formData: FormData): P
 
   const defaultRedirect = slug ? `/portal/${slug}` : "/dashboard"
 
+  const ip = ipFromHeaders(await headers())
+
+  // Two independent buckets, checked before ever touching bcrypt: per-email stops a
+  // focused brute force on one account even spread across many IPs (a botnet); per-IP
+  // stops one source spraying many accounts/passwords, which the per-email bucket alone
+  // wouldn't catch. Same budget as the 2FA code-entry rate limit in two-factor.ts
+  // (8/15min) — bcrypt.compare() below is already the slow/expensive part of a guess,
+  // this just caps how many of those a single account or source gets per window.
+  const emailAllowed = await rateLimit(`login-email:${email.toLowerCase()}`, 8, 15 * 60 * 1000)
+  const ipAllowed    = await rateLimit(`login-ip:${ip}`, 20, 15 * 60 * 1000)
+  if (!emailAllowed || !ipAllowed) return { error: RATE_LIMIT_ERROR }
+
   // Resolved up front — once, here — rather than letting signIn() run the same bcrypt
   // check again inside authorize(): a 2FA-enabled account also needs to be intercepted
   // here instead of completing sign-in immediately, and this is the one check that tells
@@ -32,7 +75,10 @@ export async function authenticate(prevState: LoginState, formData: FormData): P
   // requireStaffSession() in two-factor.ts), so this never fires for portal logins even
   // though the same code path is shared with PortalLoginForm.
   const user = await resolveCredentialsUser(email, password, slug)
-  if (!user) return { error: "Identifiants incorrects. Veuillez réessayer." }
+  if (!user) {
+    await logFailedLogin(email, slug, ip)
+    return { error: "Identifiants incorrects. Veuillez réessayer." }
+  }
 
   if (user.twoFactorEnabled) {
     const pendingToken = randomBytes(32).toString("hex")
