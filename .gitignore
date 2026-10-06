@@ -60,3 +60,7 @@ src/sanity/sanity.types.ts
 # local-only scripts
 /_bf.sh
 /scripts/send-adhesion-completion-invites.ts
+/scripts/check-adhesion-completion.ts
+
+# Security/GDPR audit report — contains real vulnerability details, never commit
+/security-audit/
