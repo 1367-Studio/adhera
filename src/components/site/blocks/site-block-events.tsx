@@ -43,25 +43,28 @@ const COLUMN_CLASSES: Record<EventsColumns, string> = {
 
 // Same rules as the original section: several ticket types → the cheapest available one,
 // one ticket type → its price, otherwise the event price when it is not free.
-function eventPriceLabel(siteEvent: SiteEvent): string | null {
-  if (siteEvent.ticketTypes.length > 1) return `À partir de ${cheapestAvailableTicketTypePrice(siteEvent.ticketTypes).toFixed(2)} €`
+function eventPriceLabel(siteEvent: SiteEvent, priceFromLabel: string): string | null {
+  if (siteEvent.ticketTypes.length > 1) return `${priceFromLabel} ${cheapestAvailableTicketTypePrice(siteEvent.ticketTypes).toFixed(2)} €`
   if (siteEvent.ticketTypes.length === 1) return `${Number(siteEvent.ticketTypes[0].price).toFixed(2)} €`
   if (siteEvent.price && Number(siteEvent.price) > 0) return `${Number(siteEvent.price).toFixed(2)} €`
   return null
 }
 
-function eventTimeLabel(siteEvent: SiteEvent): string {
-  return `${formatTime(siteEvent.date)}${siteEvent.endDate ? ` — ${formatTime(siteEvent.endDate)}` : ""}`
+function eventTimeLabel(siteEvent: SiteEvent, locale: string): string {
+  return `${formatTime(siteEvent.date, locale)}${siteEvent.endDate ? ` — ${formatTime(siteEvent.endDate, locale)}` : ""}`
 }
 
-function EventDetails({ siteEvent, background }: { siteEvent: SiteEvent; background: SectionBackground }) {
-  const priceLabel = eventPriceLabel(siteEvent)
+function EventDetails(
+  { siteEvent, background, locale, priceFromLabel }:
+  { siteEvent: SiteEvent; background: SectionBackground; locale: string; priceFromLabel: string },
+) {
+  const priceLabel = eventPriceLabel(siteEvent, priceFromLabel)
   return (
     <>
       <div className="flex flex-col gap-1 text-sm" style={mutedTextStyle(background)}>
         <span className="flex items-center gap-1.5">
           <CalendarBlankIcon className="size-4 shrink-0" aria-hidden="true" />
-          {eventTimeLabel(siteEvent)}
+          {eventTimeLabel(siteEvent, locale)}
         </span>
         {siteEvent.location && (
           <span className="flex min-w-0 items-center gap-1.5">
@@ -116,10 +119,10 @@ export const eventsBlock: ComponentConfig<EventsBlockProps> = {
     return (
       <SiteBlockSection background={sectionBackground} spacing={spacing} width={width}>
         <SiteListingHeader
-          title={title || "Prochains événements"}
+          title={title || metadata.ui.eventsDefaultTitle}
           intro={intro}
           background={sectionBackground}
-          showAllLabel={showAllButton ? "Voir tous les événements" : undefined}
+          showAllLabel={showAllButton ? metadata.ui.eventsSeeAll : undefined}
           showAllHref={`/${metadata.slug}/evenements`}
           slug={metadata.slug}
         />
@@ -132,12 +135,15 @@ export const eventsBlock: ComponentConfig<EventsBlockProps> = {
               <li key={siteEvent.id} style={{ borderBottom: `1px solid ${listingBorderColor(sectionBackground)}` }}>
                 <Link href={`/${metadata.slug}/evenements/${siteEvent.slug ?? siteEvent.id}`} className="group flex gap-5 py-5">
                   <time dateTime={siteEvent.date} className="flex w-14 shrink-0 flex-col items-center pt-0.5 text-center" style={listingAccentStyle(sectionBackground)}>
-                    <span className="text-2xl leading-none font-bold">{new Date(siteEvent.date).toLocaleDateString("fr-FR", { day: "numeric" })}</span>
-                    <span className="mt-1 text-xs font-medium uppercase">{new Date(siteEvent.date).toLocaleDateString("fr-FR", { month: "short" })}</span>
+                    <span className="text-2xl leading-none font-bold">{new Date(siteEvent.date).toLocaleDateString(metadata.locale, { day: "numeric" })}</span>
+                    <span className="mt-1 text-xs font-medium uppercase">{new Date(siteEvent.date).toLocaleDateString(metadata.locale, { month: "short" })}</span>
                   </time>
                   <div className="flex min-w-0 flex-1 flex-col gap-2">
                     <h3 className="text-lg leading-snug font-semibold group-hover:underline">{siteEvent.title}</h3>
-                    <EventDetails siteEvent={siteEvent} background={sectionBackground} />
+                    <EventDetails
+                      siteEvent={siteEvent} background={sectionBackground}
+                      locale={metadata.locale} priceFromLabel={metadata.ui.eventsPriceFrom}
+                    />
                   </div>
                   {withImages && siteEvent.imageUrl && (
                     // eslint-disable-next-line @next/next/no-img-element
@@ -170,13 +176,16 @@ export const eventsBlock: ComponentConfig<EventsBlockProps> = {
                   )}
                   <div className="flex flex-1 flex-col gap-3 p-5">
                     <time dateTime={siteEvent.date} className="text-sm font-semibold" style={listingAccentStyle(sectionBackground)}>
-                      {formatLongDate(siteEvent.date)}
+                      {formatLongDate(siteEvent.date, metadata.locale)}
                     </time>
                     <h3 className="text-lg leading-snug font-semibold group-hover:underline">{siteEvent.title}</h3>
                     {descriptionExcerpt && (
                       <p className="line-clamp-2 text-sm leading-relaxed" style={mutedTextStyle(sectionBackground)}>{descriptionExcerpt}</p>
                     )}
-                    <EventDetails siteEvent={siteEvent} background={sectionBackground} />
+                    <EventDetails
+                      siteEvent={siteEvent} background={sectionBackground}
+                      locale={metadata.locale} priceFromLabel={metadata.ui.eventsPriceFrom}
+                    />
                   </div>
                 </Link>
               )

@@ -37,16 +37,18 @@ const COLUMN_CLASSES: Record<BoutiqueColumns, string> = {
   "4": "grid-cols-2 lg:grid-cols-4",
 }
 
-function formatCents(amountInCents: number): string {
-  return (amountInCents / 100).toLocaleString("fr-FR", { style: "currency", currency: "EUR" })
+function formatCents(amountInCents: number, locale: string): string {
+  return (amountInCents / 100).toLocaleString(locale, { style: "currency", currency: "EUR" })
 }
 
 // Same as the original section: one price when every variant costs the same, else the range.
-function produitPriceLabel(produit: SiteProduit): string {
+function produitPriceLabel(produit: SiteProduit, locale: string): string {
   const variantePrices = produit.variantes.map(variante => variante.price)
   const minimumPrice   = variantePrices.length ? Math.min(...variantePrices) : 0
   const maximumPrice   = variantePrices.length ? Math.max(...variantePrices) : 0
-  return minimumPrice === maximumPrice ? formatCents(minimumPrice) : `${formatCents(minimumPrice)} – ${formatCents(maximumPrice)}`
+  return minimumPrice === maximumPrice
+    ? formatCents(minimumPrice, locale)
+    : `${formatCents(minimumPrice, locale)} – ${formatCents(maximumPrice, locale)}`
 }
 
 export const boutiqueBlock: ComponentConfig<BoutiqueBlockProps> = {
@@ -84,10 +86,10 @@ export const boutiqueBlock: ComponentConfig<BoutiqueBlockProps> = {
     return (
       <SiteBlockSection background={sectionBackground} spacing={spacing} width={width}>
         <SiteListingHeader
-          title={title || "Boutique"}
+          title={title || metadata.ui.boutiqueDefaultTitle}
           intro={intro}
           background={sectionBackground}
-          showAllLabel={(showAllButton ?? true) ? "Voir la boutique" : undefined}
+          showAllLabel={(showAllButton ?? true) ? metadata.ui.boutiqueSeeAll : undefined}
           showAllHref={`/${metadata.slug}/boutique`}
           slug={metadata.slug}
         />
@@ -112,7 +114,7 @@ export const boutiqueBlock: ComponentConfig<BoutiqueBlockProps> = {
                 <div className="flex flex-1 flex-col gap-1.5 p-4">
                   <h3 className="text-base leading-snug font-semibold group-hover:underline">{produit.name}</h3>
                   {withPrices && (
-                    <p className="text-sm font-semibold" style={listingAccentStyle(sectionBackground)}>{produitPriceLabel(produit)}</p>
+                    <p className="text-sm font-semibold" style={listingAccentStyle(sectionBackground)}>{produitPriceLabel(produit, metadata.locale)}</p>
                   )}
                 </div>
               </Link>

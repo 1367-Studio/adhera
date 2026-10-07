@@ -7,6 +7,7 @@ import {
 import type { ObjectField } from "@puckeditor/core"
 import { YES_NO_OPTIONS } from "@/components/site/blocks/site-block-fields"
 import { cn } from "@/lib/utils"
+import { SITE_UI_STRINGS, type SiteUiStrings } from "@/lib/site-puck/site-ui-strings"
 
 // Cookie consent of the public association sites (CNIL): the only cookie-setting content is
 // third-party embeds (YouTube / Vimeo videos). Refusing is as easy as accepting (two equally
@@ -18,9 +19,6 @@ export type SiteCookieSettings = {
   message?:    string
   privacyUrl?: string
 }
-
-export const DEFAULT_SITE_COOKIE_MESSAGE =
-  "Ce site utilise des contenus tiers (vidéos…) susceptibles de déposer des cookies. Vous pouvez les accepter ou les refuser."
 
 export const SITE_COOKIE_FIELD: ObjectField<SiteCookieSettings> = {
   type:  "object",
@@ -131,6 +129,7 @@ type SiteBannerContextValue = {
   focusRequest:    number
   accept:          () => void
   refuse:          () => void
+  ui:              SiteUiStrings
 }
 
 const SiteBannerContext = createContext<SiteBannerContextValue | null>(null)
@@ -144,9 +143,10 @@ type SiteCookieConsentProviderProps = {
   settings?: SiteCookieSettings
   isEditing: boolean
   children:  ReactNode
+  ui?:       SiteUiStrings
 }
 
-export function SiteCookieConsentProvider({ slug, settings, isEditing, children }: SiteCookieConsentProviderProps) {
+export function SiteCookieConsentProvider({ slug, settings, isEditing, children, ui = SITE_UI_STRINGS }: SiteCookieConsentProviderProps) {
   const isBannerEnabled = settings?.enabled !== false
 
   const storedConsent = useSyncExternalStore(
@@ -188,12 +188,13 @@ export function SiteCookieConsentProvider({ slug, settings, isEditing, children 
 
   const bannerContextValue = useMemo<SiteBannerContextValue>(() => ({
     isBannerVisible,
-    message:    settings?.message?.trim() || DEFAULT_SITE_COOKIE_MESSAGE,
+    message:    settings?.message?.trim() || ui.cookieDefaultMessage,
     privacyUrl: settings?.privacyUrl?.trim() ?? "",
     focusRequest,
     accept,
     refuse,
-  }), [isBannerVisible, settings?.message, settings?.privacyUrl, focusRequest, accept, refuse])
+    ui,
+  }), [isBannerVisible, settings?.message, settings?.privacyUrl, focusRequest, accept, refuse, ui])
 
   return (
     <SiteCookieConsentContext.Provider value={consentContextValue}>
@@ -250,7 +251,7 @@ export function SiteCookieBanner() {
         }}
       >
         <div className="flex min-w-0 flex-1 flex-col gap-1 text-sm">
-          <p id={titleId} className="font-medium">Cookies</p>
+          <p id={titleId} className="font-medium">{bannerContext.ui.cookieTitle}</p>
           <p id={messageId} style={{ color: "var(--site-text-muted)" }}>
             {bannerContext.message}
             {bannerContext.privacyUrl && (
@@ -263,7 +264,7 @@ export function SiteCookieBanner() {
                   className="underline underline-offset-2"
                   style={{ color: "var(--site-text)" }}
                 >
-                  Politique de confidentialité
+                  {bannerContext.ui.cookiePrivacyPolicy}
                 </a>
               </>
             )}
@@ -277,7 +278,7 @@ export function SiteCookieBanner() {
             className={CHOICE_BUTTON_CLASS}
             style={CHOICE_BUTTON_STYLE}
           >
-            Refuser
+            {bannerContext.ui.cookieRefuse}
           </button>
           <button
             type="button"
@@ -285,7 +286,7 @@ export function SiteCookieBanner() {
             className={CHOICE_BUTTON_CLASS}
             style={CHOICE_BUTTON_STYLE}
           >
-            Accepter
+            {bannerContext.ui.cookieAccept}
           </button>
         </div>
       </div>
@@ -297,7 +298,7 @@ export function SiteCookieBanner() {
 
 // Lets visitors change their mind. Renders nothing when the banner is turned off or outside a
 // provider, since there is then no choice to manage.
-export function SiteCookieSettingsLink({ className }: { className?: string }) {
+export function SiteCookieSettingsLink({ className, ui = SITE_UI_STRINGS }: { className?: string; ui?: SiteUiStrings }) {
   const { reopen, isManaged } = useSiteCookieConsent()
   if (!isManaged) return null
   return (
@@ -306,7 +307,7 @@ export function SiteCookieSettingsLink({ className }: { className?: string }) {
       onClick={reopen}
       className={cn("text-sm underline-offset-2 hover:underline", className)}
     >
-      Gérer les cookies
+      {ui.cookieManage}
     </button>
   )
 }

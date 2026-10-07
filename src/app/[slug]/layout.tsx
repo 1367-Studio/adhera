@@ -3,6 +3,8 @@ import { prisma } from "@/lib/prisma/client"
 import { SITE_FONTS, SITE_DEFAULT_FONT, isSiteFontKey } from "@/lib/site-fonts"
 import { SitePuckChromeProvider } from "@/components/site/site-puck-chrome-context"
 import { publishedRootProps, readPublishedPuckData } from "@/lib/site-puck/site-puck-published"
+import { resolvePublicLocale } from "@/lib/i18n/public-locale"
+import { translateSiteUiStrings } from "@/lib/site-puck/site-ui-strings-translate"
 import type { SitePuckRootProps } from "@/lib/site-puck/site-puck-data"
 import type { SiteConfig } from "@/types/site-config"
 
@@ -32,7 +34,7 @@ export default async function SiteLayout(
 
   const assoc = await prisma.association.findUnique({
     where:  { slug },
-    select: { siteConfig: true, siteBuilder: true, sitePuckPublished: true },
+    select: { id: true, siteConfig: true, siteBuilder: true, sitePuckPublished: true },
   })
   const config = assoc?.siteConfig as SiteConfig | null
   const puckRootProps = livePuckRootProps(assoc?.siteBuilder, assoc?.sitePuckPublished)
@@ -48,7 +50,13 @@ export default async function SiteLayout(
   )
 
   // Old builder: no provider at all, so its pages render exactly as before.
-  return puckRootProps
-    ? <SitePuckChromeProvider rootProps={puckRootProps}>{content}</SitePuckChromeProvider>
-    : content
+  if (!puckRootProps) return content
+
+  const locale = await resolvePublicLocale()
+  const ui     = await translateSiteUiStrings(locale, assoc!.id)
+  return (
+    <SitePuckChromeProvider value={{ rootProps: puckRootProps, locale, ui }}>
+      {content}
+    </SitePuckChromeProvider>
+  )
 }
