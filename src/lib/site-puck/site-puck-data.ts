@@ -20,6 +20,7 @@ import type { MapBlockProps } from "@/components/site/blocks/site-block-map"
 import type { PartnersBlockProps } from "@/components/site/blocks/site-block-partners"
 import type { GalleryBlockProps } from "@/components/site/blocks/site-block-gallery"
 import type { SocialLinksBlockProps } from "@/components/site/blocks/site-block-social-links"
+import type { TranslateBlockProps } from "@/components/site/blocks/site-block-translate"
 import type { SiteCornerStyle } from "@/components/site/blocks/site-block-theme"
 import type { SocialLink } from "@/components/site/site-social-icons"
 import type { SiteFooterSettings } from "@/components/site/site-builder-footer"
@@ -77,6 +78,7 @@ export type SitePuckComponents = {
   partners:     PartnersBlockProps
   gallery:      GalleryBlockProps
   socialLinks:  SocialLinksBlockProps
+  translate:    TranslateBlockProps
 }
 
 // Everything in SiteConfig that is not a section (theme, header, footer), plus the new

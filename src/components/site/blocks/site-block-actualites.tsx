@@ -33,14 +33,17 @@ export type ActualitesBlockProps = Partial<SectionStyleProps> & {
 
 const DEFAULT_LIMIT = 3
 
-function ActualiteMeta({ actualite, background }: { actualite: SiteActualite; background: SectionBackground }) {
+function ActualiteMeta(
+  { actualite, background, locale, featuredBadgeLabel }:
+  { actualite: SiteActualite; background: SectionBackground; locale: string; featuredBadgeLabel: string },
+) {
   return (
     <div className="flex flex-wrap items-center gap-2">
       {actualite.pinned && (
-        <span className="px-2 py-0.5 text-xs font-semibold" style={listingBadgeStyle(background)}>À la une</span>
+        <span className="px-2 py-0.5 text-xs font-semibold" style={listingBadgeStyle(background)}>{featuredBadgeLabel}</span>
       )}
       <time dateTime={actualite.publishedAt} className="text-sm" style={mutedTextStyle(background)}>
-        {formatLongDate(actualite.publishedAt)}
+        {formatLongDate(actualite.publishedAt, locale)}
       </time>
     </div>
   )
@@ -55,7 +58,7 @@ function ActualiteExcerpt({ actualite, background, lineClampClass }: { actualite
 // A compact row: small thumbnail, date, title, optional excerpt. Used by "list" and by the
 // secondary items of "featured".
 function ActualiteRow({
-  actualite, href, background, withImage, withExcerpt, isCompact,
+  actualite, href, background, withImage, withExcerpt, isCompact, locale, featuredBadgeLabel,
 }: {
   actualite:   SiteActualite
   href:        string
@@ -63,6 +66,8 @@ function ActualiteRow({
   withImage:   boolean
   withExcerpt: boolean
   isCompact:   boolean
+  locale:      string
+  featuredBadgeLabel: string
 }) {
   return (
     <Link href={href} className={cn("group flex gap-5", isCompact ? "py-4" : "py-5")}>
@@ -77,7 +82,7 @@ function ActualiteRow({
         />
       )}
       <div className="flex min-w-0 flex-1 flex-col gap-2">
-        <ActualiteMeta actualite={actualite} background={background} />
+        <ActualiteMeta actualite={actualite} background={background} locale={locale} featuredBadgeLabel={featuredBadgeLabel} />
         <h3 className={cn("leading-snug font-semibold group-hover:underline", isCompact ? "text-base" : "text-lg")}>{actualite.title}</h3>
         {withExcerpt && <ActualiteExcerpt actualite={actualite} background={background} lineClampClass="line-clamp-2" />}
       </div>
@@ -135,10 +140,10 @@ export const actualitesBlock: ComponentConfig<ActualitesBlockProps> = {
       <div id={id} className="scroll-mt-16">
         <SiteBlockSection background={sectionBackground} spacing={spacing} width={width}>
           <SiteListingHeader
-            title={title || "Actualités"}
+            title={title || metadata.ui.actualitesDefaultTitle}
             intro={intro}
             background={sectionBackground}
-            showAllLabel={showAllButton ? "Toutes les actualités" : undefined}
+            showAllLabel={showAllButton ? metadata.ui.actualitesSeeAll : undefined}
             showAllHref={`/${metadata.slug}/actualites`}
             slug={metadata.slug}
           />
@@ -156,6 +161,8 @@ export const actualitesBlock: ComponentConfig<ActualitesBlockProps> = {
                     withImage={withImages}
                     withExcerpt={withExcerpt}
                     isCompact={false}
+                    locale={metadata.locale}
+                    featuredBadgeLabel={metadata.ui.actualitesFeaturedBadge}
                   />
                 </li>
               ))}
@@ -172,7 +179,10 @@ export const actualitesBlock: ComponentConfig<ActualitesBlockProps> = {
                     style={LISTING_IMAGE_RADIUS}
                   />
                 )}
-                <ActualiteMeta actualite={featuredActualite} background={sectionBackground} />
+                <ActualiteMeta
+                  actualite={featuredActualite} background={sectionBackground}
+                  locale={metadata.locale} featuredBadgeLabel={metadata.ui.actualitesFeaturedBadge}
+                />
                 <h3 className="text-2xl leading-tight font-bold tracking-tight text-balance group-hover:underline sm:text-3xl">
                   {featuredActualite.title}
                 </h3>
@@ -193,6 +203,8 @@ export const actualitesBlock: ComponentConfig<ActualitesBlockProps> = {
                         withImage={withImages}
                         withExcerpt={false}
                         isCompact
+                        locale={metadata.locale}
+                        featuredBadgeLabel={metadata.ui.actualitesFeaturedBadge}
                       />
                     </li>
                   ))}
@@ -213,7 +225,10 @@ export const actualitesBlock: ComponentConfig<ActualitesBlockProps> = {
                     <img src={actualite.imageUrl} alt={actualite.title} loading="lazy" className="aspect-video w-full object-cover" />
                   )}
                   <div className="flex flex-1 flex-col gap-3 p-5">
-                    <ActualiteMeta actualite={actualite} background={sectionBackground} />
+                    <ActualiteMeta
+                      actualite={actualite} background={sectionBackground}
+                      locale={metadata.locale} featuredBadgeLabel={metadata.ui.actualitesFeaturedBadge}
+                    />
                     <h3 className="text-lg leading-snug font-semibold group-hover:underline">{actualite.title}</h3>
                     {withExcerpt && <ActualiteExcerpt actualite={actualite} background={sectionBackground} lineClampClass="line-clamp-3" />}
                   </div>

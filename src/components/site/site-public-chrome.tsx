@@ -21,17 +21,19 @@ export type PublicSiteInfo = { name: string; config: SiteConfig | null }
 export function SitePublicChrome(
   { site, slug, children }: { site: PublicSiteInfo; slug: string; children: ReactNode },
 ) {
-  const puckRootProps = useSitePuckChrome()
+  const puckChrome = useSitePuckChrome()
   const config = site.config
   const color  = "var(--site-primary)"
 
-  if (puckRootProps) {
+  if (puckChrome) {
     return (
       <SiteBuilderChrome
-        rootProps={puckRootProps}
+        rootProps={puckChrome.rootProps}
         associationName={site.name}
         slug={slug}
         membershipCta={null}
+        locale={puckChrome.locale}
+        ui={puckChrome.ui}
         className="min-h-screen flex flex-col bg-white text-gray-900"
         mainClassName="flex-1"
       >

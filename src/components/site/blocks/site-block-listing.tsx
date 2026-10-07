@@ -24,12 +24,12 @@ export function plainTextExcerpt(html: string | null | undefined): string {
   return (html ?? "").replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim()
 }
 
-export function formatLongDate(isoDate: string): string {
-  return new Date(isoDate).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })
+export function formatLongDate(isoDate: string, locale: string = "fr-FR"): string {
+  return new Date(isoDate).toLocaleDateString(locale, { day: "numeric", month: "long", year: "numeric" })
 }
 
-export function formatTime(isoDate: string): string {
-  return new Date(isoDate).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })
+export function formatTime(isoDate: string, locale: string = "fr-FR"): string {
+  return new Date(isoDate).toLocaleTimeString(locale, { hour: "2-digit", minute: "2-digit" })
 }
 
 // Border of cards and separators: the grey token on light sections, the text colour on

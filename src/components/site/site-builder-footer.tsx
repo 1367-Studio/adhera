@@ -7,6 +7,7 @@ import { isColorDark } from "@/lib/color"
 import { colorField, imageField, YES_NO_OPTIONS } from "@/components/site/blocks/site-block-fields"
 import { resolveSiteHref } from "@/components/site/blocks/site-block-button"
 import { SiteSocialIcons, visibleSocialLinks, type SocialLink } from "@/components/site/site-social-icons"
+import { SITE_UI_STRINGS, type SiteUiStrings } from "@/lib/site-puck/site-ui-strings"
 
 // Footer of the new site builder (site-wide, edited from the Puck root fields). Existing sites
 // that never saved a `footer` object keep their old settings through resolveFooterSettings.
@@ -231,6 +232,8 @@ type SiteBuilderFooterProps = {
   slug:            string
   /** Rendered on the bottom line after the "Propulsé par" mention (e.g. the cookie settings link). */
   bottomExtra?:    ReactNode
+  // Defaults to French for the old builder's callers, which don't yet resolve a visitor locale.
+  ui?:             SiteUiStrings
 }
 
 const BOTTOM_LINE_JUSTIFY_CLASS: Record<SiteFooterAlignment, string> = {
@@ -240,7 +243,7 @@ const BOTTOM_LINE_JUSTIFY_CLASS: Record<SiteFooterAlignment, string> = {
 }
 
 export function SiteBuilderFooter({
-  settings, legacy, associationName, siteLogoUrl, socialLinks, slug, bottomExtra,
+  settings, legacy, associationName, siteLogoUrl, socialLinks, slug, bottomExtra, ui = SITE_UI_STRINGS,
 }: SiteBuilderFooterProps) {
   const footerSettings = resolveFooterSettings(settings, legacy)
   const logoSource     = footerSettings.logoUrl || siteLogoUrl || ""
@@ -250,7 +253,7 @@ export function SiteBuilderFooter({
     .filter(footerColumn => footerColumn.links.length > 0 || footerColumn.title.trim() !== "")
   const flattenedLinks = visibleColumns.flatMap(footerColumn => footerColumn.links)
   const bottomText     = footerSettings.bottomText.trim()
-    || `© ${new Date().getFullYear()} ${associationName}. Tous droits réservés.`
+    || `© ${new Date().getFullYear()} ${associationName}. ${ui.footerRights}`
   const logoPosition   = footerSettings.logoPosition
 
   const homeHref = resolveSiteHref("/", slug)
@@ -274,7 +277,7 @@ export function SiteBuilderFooter({
   const socialIcons = hasSocialLinks ? <SiteSocialIcons socialLinks={socialLinks} variant="round" /> : null
 
   const flattenedLinksNav = flattenedLinks.length > 0 ? (
-    <nav aria-label="Pied de page">
+    <nav aria-label={ui.footerAriaLabel}>
       <ul className={cn("flex flex-wrap gap-x-6 gap-y-2", footerSettings.layout === "centered" && "justify-center")}>
         {flattenedLinks.map((footerLink, linkIndex) => (
           <li key={`${footerLink.label}-${linkIndex}`}><FooterLink link={footerLink} slug={slug} /></li>
@@ -320,7 +323,7 @@ export function SiteBuilderFooter({
     ) : null
     const columnsGrid = visibleColumns.length > 0 ? (
       <nav
-        aria-label="Pied de page"
+        aria-label={ui.footerAriaLabel}
         className={cn(
           "grid grid-cols-2 gap-x-8 gap-y-10",
           visibleColumns.length >= 3 && "sm:grid-cols-3",
@@ -373,7 +376,7 @@ export function SiteBuilderFooter({
             style={MUTED_TEXT_STYLE}
           >
             <span>
-              Propulsé par{" "}
+              {ui.footerPoweredBy}{" "}
               <a href={POWERED_BY_LINK} target="_blank" rel="noopener" className="underline-offset-4 hover:underline">
                 {APP_NAME}
               </a>

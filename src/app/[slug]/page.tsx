@@ -21,6 +21,12 @@ import type { SitePuckMetadata }  from "@/components/site/blocks/site-block-type
 import type { SitePuckData }      from "@/lib/site-puck/site-puck-data"
 import { publishedRootProps, readPublishedPuckData } from "@/lib/site-puck/site-puck-published"
 import { listPuckBlocksOfType, puckBlockId } from "@/lib/site-puck/site-puck-tree"
+import { translateSitePuckData, translateSitePuckSeo } from "@/lib/site-puck/site-puck-translate"
+import type { SiteUiStrings } from "@/lib/site-puck/site-ui-strings"
+import { translateSiteUiStrings } from "@/lib/site-puck/site-ui-strings-translate"
+import { translateFields } from "@/lib/i18n/translate"
+import { resolvePublicLocale } from "@/lib/i18n/public-locale"
+import { DEFAULT_LOCALE, type Locale } from "@/i18n/locales"
 
 type PublicEvent = {
   id: string; title: string; date: string; endDate: string | null
@@ -42,7 +48,7 @@ async function getSiteData(slug: string) {
   const assoc = await prisma.association.findUnique({
     where:  { slug },
     select: {
-      name: true, slug: true, city: true, country: true,
+      id: true, name: true, slug: true, city: true, country: true,
       sitePublished: true, siteConfig: true, modules: true, canIssueTaxReceipts: true,
       // New builder (FORM-7): which version is live, the published page, and the contact
       // details its Contact block shows.
@@ -148,6 +154,7 @@ async function getSiteData(slug: string) {
   }
 
   return {
+    id:          assoc.id,
     name:        assoc.name,
     slug:        assoc.slug,
     // Une section "dons"/"boutique" peut rester dans siteConfig après désactivation du
@@ -188,6 +195,20 @@ async function getSiteData(slug: string) {
 
 type SiteData = NonNullable<Awaited<ReturnType<typeof getSiteData>>>
 
+// Translates the association's own live content (events/actualités/boutique, read live from
+// the DB by getSiteData) — shared by both builders, since the old builder's sections render
+// the same data. Puck block content itself is translated separately (translateSitePuckData),
+// since it is stored in sitePuckPublished rather than here.
+async function translateListings(data: SiteData, locale: Locale): Promise<SiteData> {
+  if (locale === DEFAULT_LOCALE) return data
+  const [events, actualites, boutiqueProduits] = await Promise.all([
+    translateFields(data.events, ["title", "description"], locale, data.id),
+    translateFields(data.actualites, ["title", "content"], locale, data.id),
+    translateFields(data.boutiqueProduits, ["name"], locale, data.id),
+  ])
+  return { ...data, events, actualites, boutiqueProduits }
+}
+
 // The published new-builder page when it is the live version, else null (old builder). Stored
 // JSON is validated first: a missing or malformed page keeps the old builder's rendering.
 function livePuckPage(data: SiteData): SitePuckData | null {
@@ -202,7 +223,9 @@ function livePuckPage(data: SiteData): SitePuckData | null {
 // The live data the new builder's blocks read (puck.metadata) — the same shape the editor
 // builds from the API (use-site-puck-metadata.ts), but from what visitors may see: the public
 // events/actualités/products and form bindings loaded by getSiteData.
-function buildSitePuckMetadata(data: SiteData, publishedData: SitePuckData): SitePuckMetadata {
+function buildSitePuckMetadata(
+  data: SiteData, publishedData: SitePuckData, locale: Locale, ui: SiteUiStrings,
+): SitePuckMetadata {
   // The header's single "Adhérer" button: the first membership block of the page, in reading
   // order, that has a published form bound to it (same rule as the old builder's sections).
   const firstBoundMembershipForm = listPuckBlocksOfType(publishedData, "membership")
@@ -232,6 +255,8 @@ function buildSitePuckMetadata(data: SiteData, publishedData: SitePuckData): Sit
       ? { href: `/${data.slug}/adhesion/${firstBoundMembershipForm.slug}` }
       : null,
     canIssueTaxReceipts:     data.canIssueTaxReceipts,
+    locale,
+    ui,
   }
 }
 
@@ -287,7 +312,9 @@ export async function generateMetadata(
   const publishedData = livePuckPage(data)
   if (publishedData) {
     try {
-      return sitePuckPageMetadata(data, publishedData)
+      const locale        = await resolvePublicLocale()
+      const translatedPage = await translateSitePuckSeo(publishedData, locale, data.id)
+      return sitePuckPageMetadata(data, translatedPage)
     } catch (metadataError) {
       console.error("[public-site] new builder metadata failed, using the old builder's", metadataError)
     }
@@ -299,8 +326,11 @@ export default async function PublicSitePage(
   { params }: { params: Promise<{ slug: string }> },
 ) {
   const { slug } = await params
-  const data = await getSiteData(slug)
-  if (!data) notFound()
+  const rawData = await getSiteData(slug)
+  if (!rawData) notFound()
+
+  const locale = await resolvePublicLocale()
+  const data   = await translateListings(rawData, locale)
 
   const legacyPage = renderLegacySitePage(data, slug)
 
@@ -308,14 +338,20 @@ export default async function PublicSitePage(
   // builder's page is handed along as the fallback for any failure while rendering it.
   const publishedData = livePuckPage(data)
   if (publishedData) {
+    let translatedPage: SitePuckData | null = null
     let metadata: SitePuckMetadata | null = null
     try {
-      metadata = buildSitePuckMetadata(data, publishedData)
+      const [translated, ui] = await Promise.all([
+        translateSitePuckData(publishedData, locale, data.id),
+        translateSiteUiStrings(locale, data.id),
+      ])
+      translatedPage = translated
+      metadata       = buildSitePuckMetadata(data, translatedPage, locale, ui)
     } catch (metadataError) {
       console.error("[public-site] new builder data failed, showing the old builder's page", metadataError)
     }
-    if (metadata) {
-      return <SitePuckPublicPage publishedData={publishedData} metadata={metadata} legacyFallback={legacyPage} />
+    if (metadata && translatedPage) {
+      return <SitePuckPublicPage publishedData={translatedPage} metadata={metadata} legacyFallback={legacyPage} />
     }
   }
 

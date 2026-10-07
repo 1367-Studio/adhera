@@ -2,6 +2,8 @@ import { NextResponse } from "next/server"
 import { withAdminAuth } from "@/lib/api-wrapper"
 import { prisma } from "@/lib/prisma/client"
 import type { SiteConfig, SiteSection } from "@/types/site-config"
+import { DEFAULT_LOCALE } from "@/i18n/locales"
+import { SITE_UI_STRINGS } from "@/lib/site-puck/site-ui-strings"
 
 // Feeds SitePreviewPanel the same real data [slug]/page.tsx's getSiteData() fetches for the
 // public site — actualités, boutique products, and MembershipForm/DonationForm section
@@ -71,5 +73,9 @@ export const GET = withAdminAuth(async (req, ctx) => {
     usesDonationForms: liveDonationFormCount > 0,
     membershipCta:firstBoundMembershipForm ? { href: "#" } : null,
     canIssueTaxReceipts: assoc.canIssueTaxReceipts,
+    // The editor/preview always shows the admin's own authoring language (French), regardless
+    // of what a real visitor might later choose on the public page — see SitePuckMetadata.
+    locale: DEFAULT_LOCALE,
+    ui:     SITE_UI_STRINGS,
   })
 })

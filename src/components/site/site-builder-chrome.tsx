@@ -10,6 +10,8 @@ import type { SitePuckRootProps } from "@/lib/site-puck/site-puck-data"
 import { cn } from "@/lib/utils"
 import { SiteAnimationsProvider } from "@/components/site/site-animations"
 import { SiteCookieConsentProvider, SiteCookieSettingsLink } from "@/components/site/site-cookie-consent"
+import type { Locale } from "@/i18n/locales"
+import type { SiteUiStrings } from "@/lib/site-puck/site-ui-strings"
 
 // Header, footer, colours, corners and font of a site made with the new builder (FORM-7), set
 // from the page's root settings. Shared by the page itself (the Puck root render, so the editor,
@@ -24,6 +26,8 @@ type SiteBuilderChromeProps = {
   associationName: string
   slug:            string
   membershipCta:   { href: string } | null
+  locale:          Locale
+  ui:              SiteUiStrings
   className?:      string
   mainClassName?:  string
   /** Inside the Puck editor: no reveal animations (blocks must stay visible) and no cookie banner. */
@@ -32,16 +36,17 @@ type SiteBuilderChromeProps = {
 }
 
 export function SiteBuilderChrome({
-  rootProps, associationName, slug, membershipCta, className, mainClassName, isEditing = false, children,
+  rootProps, associationName, slug, membershipCta, locale, ui, className, mainClassName, isEditing = false, children,
 }: SiteBuilderChromeProps) {
   // "Discrètes" unless the association turned them off; never while editing.
   const animationLevel = isEditing ? "none" : (rootProps.animations ?? "subtle")
   const fontKey = isSiteFontKey(rootProps.fontFamily) ? rootProps.fontFamily : SITE_DEFAULT_FONT
   const font    = SITE_FONTS[fontKey]
   return (
-    <SiteCookieConsentProvider slug={slug} settings={rootProps.cookies} isEditing={isEditing}>
+    <SiteCookieConsentProvider slug={slug} settings={rootProps.cookies} isEditing={isEditing} ui={ui}>
     <SiteAnimationsProvider level={animationLevel}>
     <div
+      lang={locale}
       className={cn(className, font.variable)}
       style={{
         colorScheme: "light",
@@ -64,6 +69,7 @@ export function SiteBuilderChrome({
         // always shows, so the header is never left with only an initial.
         showName={!rootProps.logoUrl || rootProps.headerShowName === "show"}
         socialLinks={rootProps.socialInHeader ? rootProps.socialLinks : []}
+        ui={ui}
       />
       <main className={mainClassName}>{children}</main>
       <SiteBuilderFooter
@@ -77,7 +83,8 @@ export function SiteBuilderChrome({
         siteLogoUrl={rootProps.logoUrl}
         socialLinks={rootProps.socialLinks}
         slug={slug}
-        bottomExtra={<SiteCookieSettingsLink />}
+        ui={ui}
+        bottomExtra={<SiteCookieSettingsLink ui={ui} />}
       />
     </div>
     </SiteAnimationsProvider>

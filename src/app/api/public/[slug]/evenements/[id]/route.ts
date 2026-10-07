@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server"
-import { getLocale } from "next-intl/server"
+import { resolvePublicLocale } from "@/lib/i18n/public-locale"
 import { publicFormTerms } from "@/lib/form-terms"
 import { storedTermsAttachments } from "@/lib/form-terms-response"
 import { prisma } from "@/lib/prisma/client"
@@ -9,7 +9,6 @@ import { translateFields } from "@/lib/i18n/translate"
 import { canPreviewForm } from "@/lib/form-preview"
 import { evenementRefWhere } from "@/lib/slug"
 import { isEvenementOver } from "@/lib/evenement-timing"
-import type { Locale } from "@/i18n/locales"
 import { reportError } from "@/lib/monitoring"
 
 export async function GET(
@@ -72,7 +71,7 @@ export async function GET(
   // visitors on the fly (cached per locale) rather than asking associations to
   // maintain multiple copies. Location is a street address, not content, so it's
   // left as-is — translating it would garble the "open in Google Maps" query.
-  const locale = (await getLocale()) as Locale
+  const locale = await resolvePublicLocale()
   const [translated]  = await translateFields(
     [{ title: evenement.title, description: evenement.description, conditions: evenement.conditions }],
     ["title", "description", "conditions"],

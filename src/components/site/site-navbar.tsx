@@ -3,6 +3,7 @@
 import Link from "next/link"
 import { isColorDark } from "@/lib/color"
 import { SiteSocialIcons, visibleSocialLinks, type SocialLink } from "@/components/site/site-social-icons"
+import { SITE_UI_STRINGS, type SiteUiStrings } from "@/lib/site-puck/site-ui-strings"
 
 type Props = {
   name:               string
@@ -24,9 +25,12 @@ type Props = {
   showName?:          boolean
   // Social network icons next to the buttons (hidden on phones, where the bar is too narrow).
   socialLinks?:       SocialLink[]
+  // Translated "Adhérer"/"Se connecter" labels — defaults to French for the old builder's
+  // callers, which don't yet resolve a visitor locale.
+  ui?:                SiteUiStrings
 }
 
-export function SiteNavbar({ name, logoUrl, color, secondaryColor, portalSlug, headerBgColor, headerShowMembres = true, headerShowRegister = true, membershipCta = null, showName = true, socialLinks = [] }: Props) {
+export function SiteNavbar({ name, logoUrl, color, secondaryColor, portalSlug, headerBgColor, headerShowMembres = true, headerShowRegister = true, membershipCta = null, showName = true, socialLinks = [], ui = SITE_UI_STRINGS }: Props) {
   const hasSocialLinks = visibleSocialLinks(socialLinks).length > 0
   const bg     = headerBgColor || "#ffffff"
   const isDark = isColorDark(bg)
@@ -71,7 +75,7 @@ export function SiteNavbar({ name, logoUrl, color, secondaryColor, portalSlug, h
                 className="text-sm font-medium px-3 py-1.5 rounded-lg border transition-opacity hover:opacity-80"
                 style={{ color: secondaryColor ?? color, borderColor: secondaryColor ?? color }}
               >
-                Adhérer
+                {ui.navAdherer}
               </Link>
             )}
             {headerShowMembres && (
@@ -80,7 +84,7 @@ export function SiteNavbar({ name, logoUrl, color, secondaryColor, portalSlug, h
                 className="text-sm font-medium px-3 py-1.5 rounded-lg transition-opacity hover:opacity-90"
                 style={{ background: color, color: "var(--site-primary-foreground)" }}
               >
-                Se connecter
+                {ui.navSeConnecter}
               </Link>
             )}
           </div>

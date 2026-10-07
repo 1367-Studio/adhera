@@ -22,6 +22,7 @@ import { mapBlock } from "@/components/site/blocks/site-block-map"
 import { partnersBlock } from "@/components/site/blocks/site-block-partners"
 import { galleryBlock } from "@/components/site/blocks/site-block-gallery"
 import { socialLinksBlock } from "@/components/site/blocks/site-block-social-links"
+import { translateBlock } from "@/components/site/blocks/site-block-translate"
 import { colorField, imageField, YES_NO_OPTIONS } from "@/components/site/blocks/site-block-fields"
 import { socialLinksField } from "@/components/site/site-social-icons"
 import {
@@ -70,7 +71,7 @@ function sectionFieldsOf<RenderProps extends object>(renderProps: RenderProps): 
 export const sitePuckConfig: Config<SitePuckComponents, SitePuckRootProps> = {
   categories: {
     layout:    { title: "Mise en page", components: ["section", "columns", "spacer"] },
-    content:   { title: "Contenu", components: ["heading", "text", "image", "buttons", "video", "mediaText"] },
+    content:   { title: "Contenu", components: ["heading", "text", "image", "buttons", "translate", "video", "mediaText"] },
     highlight: { title: "Mise en avant", components: ["banner", "ctaBanner", "stats", "features", "testimonials"] },
     association: {
       title:      "Association",
@@ -174,6 +175,8 @@ export const sitePuckConfig: Config<SitePuckComponents, SitePuckRootProps> = {
           associationName={metadata.associationName}
           slug={metadata.slug}
           membershipCta={metadata.membershipCta}
+          locale={metadata.locale}
+          ui={metadata.ui}
           className="min-h-full bg-white text-gray-900"
           isEditing={puck.isEditing}
         >
@@ -191,6 +194,7 @@ export const sitePuckConfig: Config<SitePuckComponents, SitePuckRootProps> = {
     text: textBlock,
     image: imageBlock,
     buttons: buttonsBlock,
+    translate: translateBlock,
     video: videoBlock,
     mediaText: mediaTextBlock,
     banner: bannerBlock,

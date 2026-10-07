@@ -58,3 +58,11 @@ export function isSupportedLocale(value: string | undefined | null): value is Lo
 }
 
 export const NEXT_LOCALE_COOKIE = "NEXT_LOCALE"
+
+// Separate from NEXT_LOCALE on purpose: NEXT_LOCALE drives the authenticated app (portal,
+// dashboard, backoffice) and is synced from the account's own User.locale at login (see the
+// `jwt` callback in src/lib/auth/config.ts). An anonymous visitor translating a public
+// association site (the site-builder "Traduction" block) must never bleed into that — someone
+// browsing a public site while also logged into their own portal in the same browser shouldn't
+// find their dashboard silently switched language. See src/lib/i18n/public-locale.ts.
+export const SITE_LOCALE_COOKIE = "SITE_LOCALE"
