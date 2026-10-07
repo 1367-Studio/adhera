@@ -1,10 +1,9 @@
 import { NextResponse } from "next/server"
-import { getLocale } from "next-intl/server"
+import { resolvePublicLocale } from "@/lib/i18n/public-locale"
 import { publicFormTerms } from "@/lib/form-terms"
 import { storedTermsAttachments } from "@/lib/form-terms-response"
 import { prisma } from "@/lib/prisma/client"
 import { translateFields } from "@/lib/i18n/translate"
-import type { Locale } from "@/i18n/locales"
 import { parseModules } from "@/lib/modules"
 import { connectAccountChargesEnabled } from "@/lib/stripe"
 import { canPreviewForm } from "@/lib/form-preview"
@@ -57,7 +56,7 @@ export async function GET(
 
   // Admin-authored content, translated on the fly for the visitor's locale — see the
   // matching note in the public adhésion route.
-  const locale = (await getLocale()) as Locale
+  const locale = await resolvePublicLocale()
   const [content] = await translateFields(
     [{
       title:               form.title,

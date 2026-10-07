@@ -8,7 +8,7 @@ import { DEFAULT_LOCALE, NEXT_LOCALE_COOKIE, SUPPORTED_LOCALES, isSupportedLocal
 // pt-PT could only ever match "pt" — European Portuguese was unreachable by detection even
 // though the catalogue exists. Quality values (";q=0.8") are stripped but not sorted on:
 // browsers already emit the list most-preferred first.
-function localeFromAcceptLanguage(header: string | null): Locale | undefined {
+export function localeFromAcceptLanguage(header: string | null): Locale | undefined {
   if (!header) return undefined
 
   for (const part of header.split(",")) {
