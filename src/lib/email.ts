@@ -2189,3 +2189,17 @@ export function erasureRequestAdminNotificationEmail(p: {
     html:     layout(p.associationName, content, p.branding),
   }
 }
+
+// Security audit M1 — platform-level alert (brute-force login pattern, administrator
+// permission change), not tied to any one association, so no branding/fromName the way
+// every other template above gets one — same convention as passwordResetEmail etc.
+export function securityAlertEmail(p: { to: string; heading: string; body: string }) {
+  const content = `
+    <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">${p.heading}</h2>
+    <p style="margin:0;font-size:15px;line-height:1.6;color:#3f3f46;">${p.body}</p>`
+  return {
+    to:      p.to,
+    subject: `[Formwise] ${p.heading}`,
+    html:    layout(APP_NAME, content),
+  }
+}

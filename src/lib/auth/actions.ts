@@ -9,6 +9,7 @@ import { BASE_PATH } from "@/lib/env"
 import { reportError } from "@/lib/monitoring"
 import { rateLimit, ipFromHeaders } from "@/lib/rate-limit"
 import { writeActivityLog } from "@/lib/activity-log"
+import { alertOnLoginRateLimitBreach } from "@/lib/security-alerts"
 import { prisma } from "@/lib/prisma/client"
 
 type LoginState = { error?: string; requires2FA?: true; pendingToken?: string } | undefined
@@ -62,9 +63,18 @@ export async function authenticate(prevState: LoginState, formData: FormData): P
   // wouldn't catch. Same budget as the 2FA code-entry rate limit in two-factor.ts
   // (8/15min) — bcrypt.compare() below is already the slow/expensive part of a guess,
   // this just caps how many of those a single account or source gets per window.
-  const emailAllowed = await rateLimit(`login-email:${email.toLowerCase()}`, 8, 15 * 60 * 1000)
-  const ipAllowed    = await rateLimit(`login-ip:${ip}`, 20, 15 * 60 * 1000)
-  if (!emailAllowed || !ipAllowed) return { error: RATE_LIMIT_ERROR }
+  const emailKey     = `login-email:${email.toLowerCase()}`
+  const ipKey        = `login-ip:${ip}`
+  const EMAIL_LIMIT  = 8
+  const IP_LIMIT     = 20
+  const emailAllowed = await rateLimit(emailKey, EMAIL_LIMIT, 15 * 60 * 1000)
+  const ipAllowed    = await rateLimit(ipKey, IP_LIMIT, 15 * 60 * 1000)
+  if (!emailAllowed || !ipAllowed) {
+    // Security audit M1 — fire-and-forget, never blocks the (already rate-limited) response.
+    if (!emailAllowed) alertOnLoginRateLimitBreach(emailKey, EMAIL_LIMIT, `Compte ciblé : ${email}`)
+    if (!ipAllowed)    alertOnLoginRateLimitBreach(ipKey, IP_LIMIT, `Adresse IP : ${ip}`)
+    return { error: RATE_LIMIT_ERROR }
+  }
 
   // Resolved up front — once, here — rather than letting signIn() run the same bcrypt
   // check again inside authorize(): a 2FA-enabled account also needs to be intercepted

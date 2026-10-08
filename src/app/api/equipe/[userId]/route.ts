@@ -9,6 +9,7 @@ import {
   type AccessLevel, type ResolvedPermissions,
 } from "@/lib/permissions"
 import { checkTeamAccessChange, describeStoredPermissions, TEAM_ASSIGNABLE_ROLES } from "@/lib/team-access"
+import { alertAdministratorPermissionChange } from "@/lib/security-alerts"
 
 const teamMemberUpdateSchema = z.object({
   role:        z.enum(TEAM_ASSIGNABLE_ROLES).optional(),
@@ -58,15 +59,18 @@ export const PATCH = withAdminAuth<{ userId: string }>(async (req, ctx, { userId
     nextStoredPermissions = target.permissions as Prisma.InputJsonValue
   }
 
+  const targetWasAdministrator = resolvePermissions(target.role, target.permissions).administrator
+  const targetWillBeAdministrator = resolvePermissions(nextRole, nextStoredPermissions === Prisma.DbNull ? null : nextStoredPermissions).administrator
+
   const refusal = await checkTeamAccessChange({
     associationId,
     actorId,
     actorRole,
     targetUserId:          target.id,
     targetRole:            target.role,
-    targetIsAdministrator: resolvePermissions(target.role, target.permissions).administrator,
+    targetIsAdministrator: targetWasAdministrator,
     nextRole:              requestedRole,
-    nextIsAdministrator:   resolvePermissions(nextRole, nextStoredPermissions === Prisma.DbNull ? null : nextStoredPermissions).administrator,
+    nextIsAdministrator:   targetWillBeAdministrator,
   })
   if (refusal) return NextResponse.json({ error: refusal.error }, { status: refusal.status })
 
@@ -93,6 +97,24 @@ export const PATCH = withAdminAuth<{ userId: string }>(async (req, ctx, { userId
       label:    linkedMembre ? `${linkedMembre.firstName} ${linkedMembre.lastName}` : (target.name || target.email),
       metadata: { role: nextRole, changes },
     })
+  }
+
+  // Security audit M1 — fire-and-forget, after the change is already committed above. Only
+  // the administrator flag itself fires this, not every role/area tweak (e.g. a "membres"
+  // area level going from read to write) — that one bit is the actual escalation signal.
+  if (targetWasAdministrator !== targetWillBeAdministrator) {
+    const [association, actor] = await Promise.all([
+      prisma.association.findUnique({ where: { id: associationId }, select: { name: true } }),
+      prisma.user.findUnique({ where: { id: actorId }, select: { name: true, email: true } }),
+    ])
+    if (association && actor) {
+      alertAdministratorPermissionChange({
+        associationName: association.name,
+        targetName:       target.name || target.email,
+        actorName:        actor.name || actor.email,
+        granted:          targetWillBeAdministrator,
+      })
+    }
   }
 
   return NextResponse.json({ ok: true })
