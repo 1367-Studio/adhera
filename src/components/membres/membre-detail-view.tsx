@@ -11,9 +11,10 @@ import {
   PencilSimpleIcon, TrashIcon, ShieldIcon, KeyIcon, PlusIcon,
   EnvelopeSimpleIcon, PhoneIcon, DeviceMobileIcon, MapPinIcon, CalendarIcon, UserIcon, WarningIcon,
   DownloadSimpleIcon, ReceiptIcon, XCircleIcon, CheckIcon, CurrencyEurIcon,
-  IdentificationCardIcon
+  IdentificationCardIcon, EraserIcon
 } from "@phosphor-icons/react/dist/ssr";
 import { useMembre, useUpdateMembre, useDeleteMembre, useCreateAccess, useCancelCotisationSubscription, useCancelCotisationInstallmentPlan } from "@/hooks/use-membres"
+import { useErasureRequests, useCreateErasureRequest, erasureRequestStatusBadge } from "@/hooks/use-erasure-requests"
 import { spokenLanguageLabel } from "@/lib/languages"
 import { LOCALE_LABELS, isSupportedLocale } from "@/i18n/locales"
 import { formatAddress } from "@/lib/address"
@@ -155,6 +156,7 @@ export function MembreDetailView() {
 
   const [editOpen, setEditOpen]                 = useState(false)
   const [deleteOpen, setDeleteOpen]             = useState(false)
+  const [eraseOpen, setEraseOpen]               = useState(false)
   const [roleOpen, setRoleOpen]                 = useState(false)
   const [cancelSubscriptionOpen, setCancelSubscriptionOpen] = useState(false)
   const [cancelInstallmentOpen, setCancelInstallmentOpen] = useState(false)
@@ -173,6 +175,12 @@ export function MembreDetailView() {
 
   const updateMutation          = useUpdateMembre(id)
   const deleteMutation          = useDeleteMembre()
+  // Admin-only list, fetched just to find this one membre's own request (if any) — lets the
+  // button below give way to a status badge instead of letting the admin re-submit into a
+  // guaranteed 409 from POST /api/erasure-requests.
+  const { data: erasureRequests } = useErasureRequests(isAdministrator)
+  const existingErasureRequest = erasureRequests?.find(request => request.membreId === id)
+  const createErasureRequestMutation = useCreateErasureRequest()
   const createAccessMutation    = useCreateAccess()
   const cancelSubscriptionMutation = useCancelCotisationSubscription()
   const cancelInstallmentMutation = useCancelCotisationInstallmentPlan()
@@ -208,6 +216,16 @@ export function MembreDetailView() {
         ? t("membres.view.toasts.memberDeletedWithUnlink", { count: unlinkedDependants })
         : t("membres.view.toasts.memberDeleted"))
       router.push("/dashboard/membres")
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : t("common.error"))
+    }
+  }
+
+  async function handleErase() {
+    try {
+      await createErasureRequestMutation.mutateAsync(id)
+      toast.success(t("membres.detail.eraseData.toastSuccess"))
+      setEraseOpen(false)
     } catch (err) {
       toast.error(err instanceof Error ? err.message : t("common.error"))
     }
@@ -483,6 +501,27 @@ export function MembreDetailView() {
                 <ShieldIcon className="mr-1.5 size-4" />
                 {t("membres.detail.roleButton")}
               </Button>
+            )}
+            {isAdministrator && (
+              <Button size="sm" variant="outline" onClick={() => window.open(`${BASE_PATH}/api/membres/${id}/personal-data-export`)}>
+                <DownloadSimpleIcon className="mr-1.5 size-4" />
+                {t("membres.detail.exportDataButton")}
+              </Button>
+            )}
+            {isAdministrator && !isSelf && (
+              existingErasureRequest ? (
+                <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                  {t("membres.detail.eraseData.requestLabel")}
+                  <Badge variant={erasureRequestStatusBadge(t, existingErasureRequest.status).variant}>
+                    {erasureRequestStatusBadge(t, existingErasureRequest.status).label}
+                  </Badge>
+                </div>
+              ) : (
+                <Button size="sm" variant="outline" onClick={() => setEraseOpen(true)}>
+                  <EraserIcon className="mr-1.5 size-4" />
+                  {t("membres.detail.eraseData.button")}
+                </Button>
+              )
             )}
             {canEditMembres && (
               <Button size="sm" variant="outline" onClick={() => setEditOpen(true)}>
@@ -1053,6 +1092,16 @@ export function MembreDetailView() {
         confirmLabel={t("common.delete")}
         loading={deleteMutation.isPending}
         onConfirm={handleDelete}
+      />
+
+      <ConfirmDialog
+        open={eraseOpen}
+        onOpenChange={setEraseOpen}
+        title={t("membres.detail.eraseData.confirmTitle", { name: `${membre.firstName} ${membre.lastName}` })}
+        description={t("membres.detail.eraseData.confirmDescription")}
+        confirmLabel={t("membres.detail.eraseData.button")}
+        loading={createErasureRequestMutation.isPending}
+        onConfirm={handleErase}
       />
 
       <ConfirmDialog

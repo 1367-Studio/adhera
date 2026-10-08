@@ -3,6 +3,7 @@ import { z } from "zod"
 import { withAdminAuth } from "@/lib/api-wrapper"
 import { prisma } from "@/lib/prisma/client"
 import { writeActivityLog } from "@/lib/activity-log"
+import { encryptNullable } from "@/lib/crypto/field-encryption"
 
 const schema = z.object({
   smsAccountSid:  z.string().max(256).nullable().optional(),
@@ -33,8 +34,8 @@ export const PATCH = withAdminAuth(async (req, ctx) => {
   const updated = await prisma.association.update({
     where: { id: ctx.associationId },
     data: {
-      ...(smsAccountSid  !== undefined ? { smsAccountSid:  smsAccountSid  ?? null } : {}),
-      ...(smsAuthToken   !== undefined ? { smsAuthToken:   smsAuthToken   ?? null } : {}),
+      ...(smsAccountSid  !== undefined ? { smsAccountSid:  encryptNullable(smsAccountSid) ?? null } : {}),
+      ...(smsAuthToken   !== undefined ? { smsAuthToken:   encryptNullable(smsAuthToken)  ?? null } : {}),
       ...(smsPhoneNumber !== undefined ? { smsPhoneNumber: smsPhoneNumber ?? null } : {}),
     },
     select: { smsAccountSid: true, smsAuthToken: true, smsPhoneNumber: true },

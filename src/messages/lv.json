@@ -3545,7 +3545,8 @@
         "general": "Vispārīgi",
         "paiements": "Maksājumi",
         "abonnement": "Abonements",
-        "integrations": "Integrācijas"
+        "integrations": "Integrācijas",
+        "rgpd": "VDAR"
       },
       "associationInfo": "Asociācijas informācija",
       "associationName": "Asociācijas nosaukums",
@@ -3801,6 +3802,43 @@
       "titleTrialExpired": "Abonēt",
       "subtitleTrialExpired": "Jūsu bezmaksas izmēģinājums ir beidzies. Izvēlieties plānu un ievadiet maksājuma metodi, lai turpinātu.",
       "confirmButtonSubscribe": "Apstiprini un abonē"
+    },
+    "erasureRequests": {
+      "title": "Datu dzēšana (VDAR)",
+      "description": "Pieprasījumi neatgriezeniski dzēst biedra personas datus saskaņā ar VDAR 17. pantu. Tie tiek automātiski apstrādāti katru nakti, izņemot tos, kas ir aizturēti.",
+      "empty": "Pagaidām nav dzēšanas pieprasījumu.",
+      "retryWarning": "Neizdevās {count} reizes — automātiski tiks atkārtots",
+      "columns": {
+        "membre": "Biedrs",
+        "status": "Statuss",
+        "requestedAt": "Pieprasīts"
+      },
+      "status": {
+        "review": "Tiek pārskatīts",
+        "pending": "Gaida apstrādi",
+        "held": "Aizturēts",
+        "processed": "Apstrādāts"
+      },
+      "actions": {
+        "approve": "Apstiprināt",
+        "hold": "Aizturēt",
+        "release": "Atbrīvot",
+        "cancel": "Atcelt"
+      },
+      "holdModal": {
+        "title": "Aizturēt šo pieprasījumu",
+        "description": "Kamēr pieprasījums ir aizturēts, tas nākamajā automātiskajā izpildē netiks apstrādāts. Biedrs saņems paziņojumu e-pastā.",
+        "reasonLabel": "Iemesls (iekšējs, biedram netiek rādīts)",
+        "confirm": "Aizturēt"
+      },
+      "cancelConfirmTitle": "Atcelt šo dzēšanas pieprasījumu?",
+      "cancelConfirmDescription": "Biedrs un citi administratori saņems paziņojumu e-pastā par šo atcelšanu.",
+      "toasts": {
+        "held": "Pieprasījums aizturēts",
+        "released": "Aizturēšana atcelta",
+        "cancelled": "Pieprasījums atcelts",
+        "approved": "Pieprasījums apstiprināts"
+      }
     }
   },
   "cotisations": {
@@ -4261,6 +4299,13 @@
         "rejectedToast": "Pieteikums noraidīts",
         "rejectConfirmTitle": "Noraidīt šo lūgumu?",
         "rejectConfirmDescription": "{name} mainīsies uz \"Neaktīvs\" statusu un nevarēs pieslēgties. Pieprasījums un tā atbildes uz formu tiek saglabātas."
+      },
+      "eraseData": {
+        "button": "Dzēst datus (VDAR)",
+        "confirmTitle": "Pieprasīt neatgriezenisku {name} datu dzēšanu?",
+        "confirmDescription": "Šī darbība reģistrē dzēšanas pieprasījumu saskaņā ar VDAR 17. pantu. Biedrs saņems apstiprinājuma e-pastu, un pēc tam viņa personas dati tiks neatgriezeniski anonimizēti nākamajā automātiskajā apstrādē, ja pieprasījums netiks aizturēts.",
+        "toastSuccess": "Dzēšanas pieprasījums reģistrēts",
+        "requestLabel": "VDAR dzēšana"
       }
     },
     "sms": {
@@ -4450,7 +4495,13 @@
         "loanReturned": "Renderētais materiāls",
         "loanUpdated": "Modificētais aizdevums",
         "loanCancelled": "Aizdevums atcelts",
-        "loanDeleted": "Aizdevums atcelts"
+        "loanDeleted": "Aizdevums atcelts",
+        "erasureRequestCreated": "Pieprasīta datu dzēšana (VDAR)",
+        "erasureRequestHeld": "Dzēšanas pieprasījums apturēts",
+        "erasureRequestHoldReleased": "Dzēšanas pieprasījuma apturēšana atcelta",
+        "erasureRequestCancelled": "Dzēšanas pieprasījums atcelts",
+        "membreAnonymized": "Personas dati dzēsti (VDAR)",
+        "erasureRequestApproved": "Dzēšanas pieprasījums apstiprināts"
       },
       "actorPrefix": "autors {name}",
       "loadError": "Neizdevās ielādēt vēsturi.",
@@ -5347,6 +5398,17 @@
         "title": "Noņemt profila bildi?",
         "description": "Tu vari pievienot jaunu jebkurā laikā.",
         "confirm": "Noņemt"
+      },
+      "eraseData": {
+        "title": "Privātums",
+        "description": "Jūs varat pieprasīt savu personas datu neatgriezenisku dzēšanu saskaņā ar VDAR 17. pantu.",
+        "button": "Pieprasīt manu datu dzēšanu",
+        "confirmTitle": "Pieprasīt neatgriezenisku savu datu dzēšanu?",
+        "confirmDescription": "Biedrības administrators pārskatīs šo pieprasījumu pirms tā apstrādes. Pēc apstiprinājuma jūsu personas dati tiks neatgriezeniski anonimizēti nākamajā automātiskajā apstrādē.",
+        "toastSuccess": "Pieprasījums nosūtīts",
+        "statusLabel": "Jūsu pieprasījuma statuss",
+        "withdrawButton": "Atsaukt manu pieprasījumu",
+        "toastWithdrawn": "Pieprasījums atsaukts"
       }
     },
     "evenements": {

@@ -3545,7 +3545,8 @@
         "general": "Algemeen",
         "paiements": "Betalingen",
         "abonnement": "Abonnement",
-        "integrations": "Integraties"
+        "integrations": "Integraties",
+        "rgpd": "AVG"
       },
       "associationInfo": "Vereniging Informatie",
       "associationName": "Naam van de vereniging",
@@ -3801,6 +3802,43 @@
       "titleTrialExpired": "Abonneer je",
       "subtitleTrialExpired": "Je gratis proefperiode is voorbij. Kies een abonnement en voer een betaalmethode in om door te gaan.",
       "confirmButtonSubscribe": "Bevestig en abonneer je"
+    },
+    "erasureRequests": {
+      "title": "Gegevenswissing (AVG)",
+      "description": "Verzoeken om definitieve verwijdering van de persoonsgegevens van een lid, conform artikel 17 van de AVG. Worden elke nacht automatisch verwerkt, tenzij ze in de wacht staan.",
+      "empty": "Nog geen wisverzoeken.",
+      "retryWarning": "{count} keer mislukt — wordt automatisch opnieuw geprobeerd",
+      "columns": {
+        "membre": "Lid",
+        "status": "Status",
+        "requestedAt": "Aangevraagd op"
+      },
+      "status": {
+        "review": "In beoordeling",
+        "pending": "Wacht op verwerking",
+        "held": "In de wacht",
+        "processed": "Verwerkt"
+      },
+      "actions": {
+        "approve": "Goedkeuren",
+        "hold": "In de wacht zetten",
+        "release": "Wachtstand opheffen",
+        "cancel": "Annuleren"
+      },
+      "holdModal": {
+        "title": "Dit verzoek in de wacht zetten",
+        "description": "Het verzoek wordt niet verwerkt bij de volgende automatische run zolang het in de wacht staat. Het lid wordt per e-mail geïnformeerd.",
+        "reasonLabel": "Reden (intern, niet zichtbaar voor het lid)",
+        "confirm": "In de wacht zetten"
+      },
+      "cancelConfirmTitle": "Dit wisverzoek annuleren?",
+      "cancelConfirmDescription": "Het lid en de andere beheerders worden per e-mail geïnformeerd over deze annulering.",
+      "toasts": {
+        "held": "Verzoek in de wacht gezet",
+        "released": "Wachtstand opgeheven",
+        "cancelled": "Verzoek geannuleerd",
+        "approved": "Verzoek goedgekeurd"
+      }
     }
   },
   "cotisations": {
@@ -4261,6 +4299,13 @@
         "rejectedToast": "Aanvraag afgewezen",
         "rejectConfirmTitle": "Dit verzoek weigeren?",
         "rejectConfirmDescription": "{name} zal veranderen naar de status \"Inactief\" en kan niet inloggen. Het verzoek en de antwoorden op het formulier worden behouden."
+      },
+      "eraseData": {
+        "button": "Gegevens wissen (AVG)",
+        "confirmTitle": "Definitieve verwijdering van de gegevens van {name} aanvragen?",
+        "confirmDescription": "Dit registreert een AVG artikel 17-verzoek tot verwijdering. Het lid ontvangt een bevestigingsmail, waarna de persoonsgegevens onomkeerbaar worden geanonimiseerd bij de volgende automatische verwerking, tenzij het verzoek in de wacht wordt gezet.",
+        "toastSuccess": "Wisverzoek geregistreerd",
+        "requestLabel": "AVG-wissing"
       }
     },
     "sms": {
@@ -4450,7 +4495,13 @@
         "loanReturned": "Weergegeven materiaal",
         "loanUpdated": "Gemodificeerde lening",
         "loanCancelled": "Lening geannuleerd",
-        "loanDeleted": "Afgeschaft lening"
+        "loanDeleted": "Afgeschaft lening",
+        "erasureRequestCreated": "Verzoek om gegevenswissing (AVG)",
+        "erasureRequestHeld": "Wisverzoek in de wacht gezet",
+        "erasureRequestHoldReleased": "Wachtstand op wisverzoek opgeheven",
+        "erasureRequestCancelled": "Wisverzoek geannuleerd",
+        "membreAnonymized": "Persoonsgegevens gewist (AVG)",
+        "erasureRequestApproved": "Wisverzoek goedgekeurd"
       },
       "actorPrefix": "door {name}",
       "loadError": "Kan de geschiedenis niet laden.",
@@ -5347,6 +5398,17 @@
         "title": "De profielfoto verwijderen?",
         "description": "Je kunt op elk moment een nieuwe toevoegen.",
         "confirm": "Verwijder"
+      },
+      "eraseData": {
+        "title": "Privacy",
+        "description": "U kunt de definitieve verwijdering van uw persoonsgegevens aanvragen, conform artikel 17 van de AVG.",
+        "button": "Verwijdering van mijn gegevens aanvragen",
+        "confirmTitle": "Definitieve verwijdering van uw gegevens aanvragen?",
+        "confirmDescription": "Een beheerder van de vereniging beoordeelt dit verzoek voordat het wordt verwerkt. Na goedkeuring worden uw persoonsgegevens onomkeerbaar geanonimiseerd bij de volgende automatische verwerking.",
+        "toastSuccess": "Verzoek verzonden",
+        "statusLabel": "Status van uw verzoek",
+        "withdrawButton": "Mijn verzoek intrekken",
+        "toastWithdrawn": "Verzoek ingetrokken"
       }
     },
     "evenements": {

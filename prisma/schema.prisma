@@ -631,6 +631,7 @@ model Association {
   supportTickets             SupportTicket[]
   pricingOffer               PricingOffer?
   controlAlerts              MembreControlAlert[]
+  erasureRequests            ErasureRequest[]
 
   @@index([customDomainStatus])
 }
@@ -722,6 +723,8 @@ model User {
   pricingOffersCreated  PricingOffer[]
   twoFactorBackupCodes  TwoFactorBackupCode[]
   resolvedControlAlerts MembreControlAlert[]
+  erasureRequestsMade   ErasureRequest[]       @relation("ErasureRequestedBy")
+  erasureRequestsHeld   ErasureRequest[]       @relation("ErasureHeldBy")
 
   @@unique([email, associationId])
   @@index([associationId, role])
@@ -887,6 +890,7 @@ model Membre {
   smsMessages              SmsMessage[]
   cotisationSubscription   CotisationSubscription?
   controlAlert             MembreControlAlert?
+  erasureRequests          ErasureRequest[]
 
   @@index([associationId, deletedAt])
   @@index([associationId, status])
@@ -2112,6 +2116,51 @@ model MembreControlAlert {
 
   @@index([status, raisedAt])
   @@index([associationId])
+}
+
+// RGPD Art. 17 — security audit H6, step 2. A request to actually erase one Membre's
+// personal data (see anonymizeMembre, src/lib/gdpr/anonymize.ts — step 1), distinct from the
+// plain Membre.deletedAt soft-delete used for routine member turnover. One Membre can have
+// several rows over time: a PROCESSED one stays as permanent history, so "only one active
+// request at a time" is enforced by a partial unique index on membreId (REVIEW/PENDING/HELD
+// only — see migration 20261007170500_erasure_request_active_unique), not a plain
+// @@unique here: Prisma's schema syntax can't express the WHERE clause that excludes
+// PROCESSED rows, so it only exists as hand-written SQL and isn't mirrored below.
+enum ErasureRequestStatus {
+  REVIEW    // self-service request from the portal (POST /api/portal/erasure-request) —
+            // awaiting an administrator's approval before it can reach the nightly cron
+  PENDING   // approved, queued for the nightly cron (step 3)
+  HELD      // legal hold — data frozen
+  PROCESSED // anonymization executed — irreversible
+}
+
+model ErasureRequest {
+  id            String               @id @default(cuid())
+  associationId String
+  membreId      String
+  requestedById String
+  requestedAt   DateTime             @default(now())
+  processedAt   DateTime?
+  status        ErasureRequestStatus @default(REVIEW)
+
+  // Internal note, never shown to the data subject.
+  heldReason     String?               @db.Text
+  heldAt         DateTime?
+  heldById       String?
+  // Status before the hold was placed — restored on release.
+  heldFromStatus ErasureRequestStatus?
+
+  // Incremented by the step-3 cron on a failed anonymization attempt.
+  retryCount Int     @default(0)
+  lastError  String? @db.Text
+
+  association Association @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  membre      Membre      @relation(fields: [membreId], references: [id], onDelete: Cascade)
+  requestedBy User        @relation("ErasureRequestedBy", fields: [requestedById], references: [id])
+  heldBy      User?       @relation("ErasureHeldBy", fields: [heldById], references: [id], onDelete: SetNull)
+
+  @@index([associationId, status])
+  @@index([membreId])
 }
 
 model Actualite {

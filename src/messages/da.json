@@ -3545,7 +3545,8 @@
         "general": "Generel",
         "paiements": "Betalinger",
         "abonnement": "Abonnement",
-        "integrations": "Integrationer"
+        "integrations": "Integrationer",
+        "rgpd": "GDPR"
       },
       "associationInfo": "Foreningsinformation",
       "associationName": "Foreningens navn",
@@ -3801,6 +3802,43 @@
       "titleTrialExpired": "Abonner",
       "subtitleTrialExpired": "Din gratis prøveperiode er slut. Vælg en plan og indtast en betalingsmetode for at fortsætte.",
       "confirmButtonSubscribe": "Bekræft og abonner"
+    },
+    "erasureRequests": {
+      "title": "Datasletning (GDPR)",
+      "description": "Anmodninger om permanent sletning af et medlems personoplysninger i henhold til artikel 17 i GDPR. Behandles automatisk hver nat, med undtagelse af anmodninger sat på hold.",
+      "empty": "Ingen anmodninger om sletning endnu.",
+      "retryWarning": "Mislykkedes {count} gange — forsøges automatisk igen",
+      "columns": {
+        "membre": "Medlem",
+        "status": "Status",
+        "requestedAt": "Anmodet den"
+      },
+      "status": {
+        "review": "Under gennemgang",
+        "pending": "Afventer behandling",
+        "held": "Sat på hold",
+        "processed": "Behandlet"
+      },
+      "actions": {
+        "approve": "Godkend",
+        "hold": "Sæt på hold",
+        "release": "Frigiv hold",
+        "cancel": "Annuller"
+      },
+      "holdModal": {
+        "title": "Sæt denne anmodning på hold",
+        "description": "Anmodningen bliver ikke behandlet ved næste automatiske kørsel, så længe den er på hold. Medlemmet underrettes via e-mail.",
+        "reasonLabel": "Årsag (intern, vises ikke for medlemmet)",
+        "confirm": "Sæt på hold"
+      },
+      "cancelConfirmTitle": "Annuller denne anmodning om sletning?",
+      "cancelConfirmDescription": "Medlemmet og de øvrige administratorer underrettes via e-mail om denne annullering.",
+      "toasts": {
+        "held": "Anmodning sat på hold",
+        "released": "Hold frigivet",
+        "cancelled": "Anmodning annulleret",
+        "approved": "Anmodning godkendt"
+      }
     }
   },
   "cotisations": {
@@ -4261,6 +4299,13 @@
         "rejectedToast": "Ansøgning afvist",
         "rejectConfirmTitle": "Afvise denne anmodning?",
         "rejectConfirmDescription": "{name} vil ændre sig til \"Inaktiv\" status og vil ikke kunne logge ind. Anmodningen og dens svar på formularen bevares."
+      },
+      "eraseData": {
+        "button": "Slet data (GDPR)",
+        "confirmTitle": "Anmod om permanent sletning af {name}'s data?",
+        "confirmDescription": "Dette registrerer en GDPR artikel 17-anmodning om sletning. Medlemmet modtager en bekræftelses-e-mail, hvorefter deres personoplysninger anonymiseres uigenkaldeligt ved næste automatiske behandling, med mindre anmodningen sættes på hold.",
+        "toastSuccess": "Anmodning om sletning registreret",
+        "requestLabel": "GDPR-sletning"
       }
     },
     "sms": {
@@ -4450,7 +4495,13 @@
         "loanReturned": "Renderet materiale",
         "loanUpdated": "Modificeret lån",
         "loanCancelled": "Lån annulleret",
-        "loanDeleted": "Lån afskaffet"
+        "loanDeleted": "Lån afskaffet",
+        "erasureRequestCreated": "Anmodning om dataudslettelse (GDPR)",
+        "erasureRequestHeld": "Udslettelsesanmodning sat på pause",
+        "erasureRequestHoldReleased": "Pause på udslettelsesanmodning ophævet",
+        "erasureRequestCancelled": "Udslettelsesanmodning annulleret",
+        "membreAnonymized": "Personoplysninger slettet (GDPR)",
+        "erasureRequestApproved": "Sletningsanmodning godkendt"
       },
       "actorPrefix": "af {name}",
       "loadError": "Kan ikke indlæse historik.",
@@ -5347,6 +5398,17 @@
         "title": "Fjerne profilbilledet?",
         "description": "Du kan tilføje en ny når som helst.",
         "confirm": "Fjern"
+      },
+      "eraseData": {
+        "title": "Privatliv",
+        "description": "Du kan anmode om permanent sletning af dine personoplysninger i henhold til GDPR artikel 17.",
+        "button": "Anmod om sletning af mine data",
+        "confirmTitle": "Anmode om permanent sletning af dine data?",
+        "confirmDescription": "En administrator i foreningen gennemgår denne anmodning, før den behandles. Når den er godkendt, bliver dine personoplysninger uigenkaldeligt anonymiseret ved næste automatiske behandling.",
+        "toastSuccess": "Anmodning sendt",
+        "statusLabel": "Status for din anmodning",
+        "withdrawButton": "Træk min anmodning tilbage",
+        "toastWithdrawn": "Anmodning trukket tilbage"
       }
     },
     "evenements": {

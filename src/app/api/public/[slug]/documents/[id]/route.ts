@@ -32,5 +32,11 @@ export async function GET(
   })
   if (!document) return NextResponse.json({ error: "Not found", site }, { status: 404 })
 
-  return NextResponse.json({ document, site })
+  // fileUrl points at ./file/route.ts, not the raw stored R2 URL — that route re-checks
+  // visibleToPublic on every request, so unpublishing the document takes effect immediately
+  // instead of leaving the old direct link working forever.
+  return NextResponse.json({
+    document: { ...document, fileUrl: document.fileUrl ? `/api/public/${slug}/documents/${id}/file` : null },
+    site,
+  })
 }

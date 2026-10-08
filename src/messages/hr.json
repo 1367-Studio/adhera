@@ -3545,7 +3545,8 @@
         "general": "Općenito",
         "paiements": "Isplate",
         "abonnement": "Pretplata",
-        "integrations": "Integracije"
+        "integrations": "Integracije",
+        "rgpd": "GDPR"
       },
       "associationInfo": "Informacije o udruzi",
       "associationName": "Naziv udruge",
@@ -3801,6 +3802,43 @@
       "titleTrialExpired": "Pretplatite se",
       "subtitleTrialExpired": "Vaše besplatno probno razdoblje je isteklo. Odaberite plan i unesite način plaćanja kako biste nastavili.",
       "confirmButtonSubscribe": "Potvrdite i pretplatite se"
+    },
+    "erasureRequests": {
+      "title": "Brisanje podataka (GDPR)",
+      "description": "Zahtjevi za trajno brisanje osobnih podataka člana, u skladu s člankom 17. GDPR-a. Obrađuju se automatski svake noći, osim onih koji su stavljeni na čekanje.",
+      "empty": "Još nema zahtjeva za brisanje.",
+      "retryWarning": "Neuspjelo {count} puta — automatski novi pokušaj",
+      "columns": {
+        "membre": "Član",
+        "status": "Status",
+        "requestedAt": "Zatraženo"
+      },
+      "status": {
+        "review": "Na pregledu",
+        "pending": "Čeka obradu",
+        "held": "Na čekanju",
+        "processed": "Obrađeno"
+      },
+      "actions": {
+        "approve": "Odobri",
+        "hold": "Stavi na čekanje",
+        "release": "Ukini čekanje",
+        "cancel": "Otkaži"
+      },
+      "holdModal": {
+        "title": "Staviti ovaj zahtjev na čekanje",
+        "description": "Zahtjev se neće obraditi u sljedećem automatskom pokretanju dok je na čekanju. Član će biti obaviješten e-poštom.",
+        "reasonLabel": "Razlog (interno, ne prikazuje se članu)",
+        "confirm": "Stavi na čekanje"
+      },
+      "cancelConfirmTitle": "Otkazati ovaj zahtjev za brisanje?",
+      "cancelConfirmDescription": "Član i ostali administratori bit će obaviješteni e-poštom o ovom otkazivanju.",
+      "toasts": {
+        "held": "Zahtjev stavljen na čekanje",
+        "released": "Čekanje ukinuto",
+        "cancelled": "Zahtjev otkazan",
+        "approved": "Zahtjev odobren"
+      }
     }
   },
   "cotisations": {
@@ -4261,6 +4299,13 @@
         "rejectedToast": "Zahtjev je odbijen",
         "rejectConfirmTitle": "Odbiti ovaj zahtjev?",
         "rejectConfirmDescription": "{name} promijenit će status u \"Neaktivno\" i neće se moći prijaviti. Zahtjev i njegovi odgovori na obrazac ostaju sačuvani."
+      },
+      "eraseData": {
+        "button": "Izbriši podatke (GDPR)",
+        "confirmTitle": "Zatražiti trajno brisanje podataka člana {name}?",
+        "confirmDescription": "Ovime se registrira zahtjev za brisanje prema čl. 17. GDPR-a. Član će primiti e-poštu s potvrdom, a zatim će njegovi osobni podaci biti nepovratno anonimizirani prilikom sljedeće automatske obrade, osim ako zahtjev ne bude stavljen na čekanje.",
+        "toastSuccess": "Zahtjev za brisanje registriran",
+        "requestLabel": "GDPR brisanje"
       }
     },
     "sms": {
@@ -4450,7 +4495,13 @@
         "loanReturned": "Renderirani materijal",
         "loanUpdated": "Modificirani kredit",
         "loanCancelled": "Posudba otkazana",
-        "loanDeleted": "Ukidanje zajmova"
+        "loanDeleted": "Ukidanje zajmova",
+        "erasureRequestCreated": "Zahtjev za brisanje podataka (GDPR)",
+        "erasureRequestHeld": "Zahtjev za brisanje stavljen na čekanje",
+        "erasureRequestHoldReleased": "Čekanje zahtjeva za brisanje ukinuto",
+        "erasureRequestCancelled": "Zahtjev za brisanje otkazan",
+        "membreAnonymized": "Osobni podaci izbrisani (GDPR)",
+        "erasureRequestApproved": "Zahtjev za brisanje odobren"
       },
       "actorPrefix": "autor {name}",
       "loadError": "Nije moguće učitati povijest.",
@@ -5347,6 +5398,17 @@
         "title": "Ukloniti profilnu sliku?",
         "description": "Možete dodati novu u bilo kojem trenutku.",
         "confirm": "Uklonite"
+      },
+      "eraseData": {
+        "title": "Privatnost",
+        "description": "Možete zatražiti trajno brisanje svojih osobnih podataka, u skladu s člankom 17. GDPR-a.",
+        "button": "Zatraži brisanje mojih podataka",
+        "confirmTitle": "Zatražiti trajno brisanje svojih podataka?",
+        "confirmDescription": "Administrator udruge pregledat će ovaj zahtjev prije obrade. Nakon odobrenja vaši osobni podaci bit će nepovratno anonimizirani prilikom sljedeće automatske obrade.",
+        "toastSuccess": "Zahtjev poslan",
+        "statusLabel": "Status vašeg zahtjeva",
+        "withdrawButton": "Povuci moj zahtjev",
+        "toastWithdrawn": "Zahtjev povučen"
       }
     },
     "evenements": {

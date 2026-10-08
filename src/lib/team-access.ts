@@ -30,6 +30,23 @@ async function countOtherAdministrators(associationId: string, excludingUserId: 
 }
 
 /**
+ * Email addresses of every active administrator of the association — role ADMIN, or any
+ * staff role granted the custom "administrator" permission, same resolution as the guard
+ * above. `excludingUserId` leaves out the admin who just performed the action being
+ * notified about (they already know; this is for the rest of the team).
+ */
+export async function getAdministratorEmails(associationId: string, excludingUserId?: string): Promise<string[]> {
+  const staff = await prisma.user.findMany({
+    where:  {
+      associationId, active: true, deletedAt: null, role: { in: [...STAFF_ROLES] },
+      ...(excludingUserId ? { id: { not: excludingUserId } } : {}),
+    },
+    select: { role: true, permissions: true, email: true },
+  })
+  return staff.filter(user => resolvePermissions(user.role, user.permissions).administrator).map(user => user.email)
+}
+
+/**
  * Checks that `actor` may change the access of `target` — to `nextRole` and/or
  * `nextIsAdministrator`, whichever the caller is changing. Returns null when allowed.
  * - nobody edits their own access (a mistaken click would lock them out);

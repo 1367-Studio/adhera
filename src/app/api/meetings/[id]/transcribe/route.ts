@@ -7,6 +7,7 @@ import { writeActivityLog } from "@/lib/activity-log"
 import { withAdminAuth } from "@/lib/api-wrapper"
 import { reportError } from "@/lib/monitoring"
 import { rateLimit, rateLimitPeek, consumeQuota } from "@/lib/rate-limit"
+import { decryptField } from "@/lib/crypto/field-encryption"
 import type OpenAI from "openai"
 import type { MeetingRecording } from "@prisma/client"
 
@@ -136,7 +137,7 @@ export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   // Transcription only ever runs against Groq's Whisper endpoint (see src/lib/ai/client.ts)
   // — an association whose BYOK is OpenAI/Mistral doesn't have a matching key for this, so
   // it falls back to the platform's Groq key here specifically, same as having no key at all.
-  const ownGroqKey = assoc?.aiApiKey && (assoc.aiProvider ?? "groq") === "groq" ? assoc.aiApiKey : null
+  const ownGroqKey = assoc?.aiApiKey && (assoc.aiProvider ?? "groq") === "groq" ? decryptField(assoc.aiApiKey) : null
 
   const client = ownGroqKey ? makeGroqClient(ownGroqKey) : platformClient
   if (!client) {

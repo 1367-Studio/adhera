@@ -3545,7 +3545,8 @@
         "general": "Üldine",
         "paiements": "Maksed",
         "abonnement": "Tellimus",
-        "integrations": "Integratsioonid"
+        "integrations": "Integratsioonid",
+        "rgpd": "GDPR"
       },
       "associationInfo": "Ühingu info",
       "associationName": "Ühingu nimi",
@@ -3801,6 +3802,43 @@
       "titleTrialExpired": "Telli",
       "subtitleTrialExpired": "Sinu tasuta prooviperiood on läbi. Vali plaan ja sisesta makseviis, et jätkata.",
       "confirmButtonSubscribe": "Kinnita ja telli"
+    },
+    "erasureRequests": {
+      "title": "Andmete kustutamine (GDPR)",
+      "description": "Taotlused liikme isikuandmete püsivaks kustutamiseks GDPR artikli 17 alusel. Töödeldakse automaatselt igal ööl, välja arvatud ootele seatud taotlused.",
+      "empty": "Kustutamistaotlusi veel ei ole.",
+      "retryWarning": "Ebaõnnestus {count} korda — proovitakse automaatselt uuesti",
+      "columns": {
+        "membre": "Liige",
+        "status": "Olek",
+        "requestedAt": "Taotletud"
+      },
+      "status": {
+        "review": "Läbivaatamisel",
+        "pending": "Ootab töötlemist",
+        "held": "Ootel",
+        "processed": "Töödeldud"
+      },
+      "actions": {
+        "approve": "Kinnita",
+        "hold": "Seo ootele",
+        "release": "Vabasta ootelt",
+        "cancel": "Tühista"
+      },
+      "holdModal": {
+        "title": "Sea see taotlus ootele",
+        "description": "Taotlust ei töödelda järgmisel automaatsel käivitusel, kuni see on ootel. Liiget teavitatakse e-posti teel.",
+        "reasonLabel": "Põhjus (sisemine, liikmele ei kuvata)",
+        "confirm": "Sea ootele"
+      },
+      "cancelConfirmTitle": "Tühistada see kustutamistaotlus?",
+      "cancelConfirmDescription": "Liiget ja teisi administraatoreid teavitatakse sellest tühistamisest e-posti teel.",
+      "toasts": {
+        "held": "Taotlus seatud ootele",
+        "released": "Ootelt vabastatud",
+        "cancelled": "Taotlus tühistatud",
+        "approved": "Taotlus kinnitatud"
+      }
     }
   },
   "cotisations": {
@@ -4261,6 +4299,13 @@
         "rejectedToast": "Taotlus lükatud tagasi",
         "rejectConfirmTitle": "Keelduda sellest palvest?",
         "rejectConfirmDescription": "{name} muutub olekuks \"Mitteaktiivne\" ja sisse logida ei saa. Taotlus ja selle vastused vormile säilitatakse."
+      },
+      "eraseData": {
+        "button": "Kustuta andmed (GDPR)",
+        "confirmTitle": "Taotleda {name} andmete püsivat kustutamist?",
+        "confirmDescription": "See registreerib GDPR artikli 17 kustutamistaotluse. Liige saab kinnituskirja, misjärel tema isikuandmed anonümiseeritakse pöördumatult järgmisel automaatsel töötlemisel, välja arvatud juhul, kui taotlus seatakse ootele.",
+        "toastSuccess": "Kustutamistaotlus registreeritud",
+        "requestLabel": "GDPR kustutamine"
       }
     },
     "sms": {
@@ -4450,7 +4495,13 @@
         "loanReturned": "Renderdatud materjal",
         "loanUpdated": "Muudetud laen",
         "loanCancelled": "Laen tühistati",
-        "loanDeleted": "Laen tühistatud"
+        "loanDeleted": "Laen tühistatud",
+        "erasureRequestCreated": "Andmete kustutamise taotlus (GDPR)",
+        "erasureRequestHeld": "Kustutamistaotlus peatatud",
+        "erasureRequestHoldReleased": "Kustutamistaotluse peatamine lõpetatud",
+        "erasureRequestCancelled": "Kustutamistaotlus tühistatud",
+        "membreAnonymized": "Isikuandmed kustutatud (GDPR)",
+        "erasureRequestApproved": "Kustutamistaotlus kinnitatud"
       },
       "actorPrefix": "autor {name}",
       "loadError": "Ajalugu ei saa laadida.",
@@ -5347,6 +5398,17 @@
         "title": "Eemaldada profiilipilt?",
         "description": "Uue saab igal ajal lisada.",
         "confirm": "Eemalda"
+      },
+      "eraseData": {
+        "title": "Privaatsus",
+        "description": "Võite taotleda oma isikuandmete püsivat kustutamist vastavalt GDPR artiklile 17.",
+        "button": "Taotle minu andmete kustutamist",
+        "confirmTitle": "Taotleda oma andmete püsivat kustutamist?",
+        "confirmDescription": "Ühenduse administraator vaatab selle taotluse enne töötlemist üle. Pärast heakskiitmist anonümiseeritakse teie isikuandmed pöördumatult järgmisel automaatsel töötlemisel.",
+        "toastSuccess": "Taotlus saadetud",
+        "statusLabel": "Teie taotluse olek",
+        "withdrawButton": "Taotluse tagasivõtmine",
+        "toastWithdrawn": "Taotlus tagasi võetud"
       }
     },
     "evenements": {

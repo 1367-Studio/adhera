@@ -3545,7 +3545,8 @@
         "general": "Ġenerali",
         "paiements": "Ħlasijiet",
         "abonnement": "Abbonament",
-        "integrations": "Integrazzjonijiet"
+        "integrations": "Integrazzjonijiet",
+        "rgpd": "GDPR"
       },
       "associationInfo": "Informazzjoni dwar l-Assoċjazzjoni",
       "associationName": "Isem tal-assoċjazzjoni",
@@ -3801,6 +3802,43 @@
       "titleTrialExpired": "Abbona",
       "subtitleTrialExpired": "Il-prova b'xejn tiegħek spiċċat. Agħżel pjan u daħħal metodu ta' ħlas biex tkompli.",
       "confirmButtonSubscribe": "Ikkonferma u abbona"
+    },
+    "erasureRequests": {
+      "title": "Tħassir tad-data (GDPR)",
+      "description": "Talbiet għat-tħassir permanenti tad-data personali ta' membru, skont l-Artikolu 17 tal-GDPR. Jiġu pproċessati awtomatikament kull lejl, ħlief dawk miżmuma in sospensjoni.",
+      "empty": "L-ebda talba għat-tħassir s'issa.",
+      "retryWarning": "Falliet {count} darba/darbiet — tentattiv ieħor awtomatiku",
+      "columns": {
+        "membre": "Membru",
+        "status": "Status",
+        "requestedAt": "Mitlub fit"
+      },
+      "status": {
+        "review": "Taħt reviżjoni",
+        "pending": "Jistenna l-ipproċessar",
+        "held": "In sospensjoni",
+        "processed": "Ipproċessat"
+      },
+      "actions": {
+        "approve": "Approva",
+        "hold": "Issospendi",
+        "release": "Neħħi s-sospensjoni",
+        "cancel": "Ikkanċella"
+      },
+      "holdModal": {
+        "title": "Issospendi din it-talba",
+        "description": "It-talba ma tiġix ipproċessata fil-ġirja awtomatika li jmiss sakemm tkun in sospensjoni. Il-membru jiġi nnotifikat bl-email.",
+        "reasonLabel": "Raġuni (interna, ma tidhirx lill-membru)",
+        "confirm": "Issospendi"
+      },
+      "cancelConfirmTitle": "Tikkanċella din it-talba għat-tħassir?",
+      "cancelConfirmDescription": "Il-membru u l-amministraturi l-oħra jiġu nnotifikati bl-email dwar dan il-kanċellament.",
+      "toasts": {
+        "held": "Talba sospiża",
+        "released": "Sospensjoni meħuda",
+        "cancelled": "Talba kkanċellata",
+        "approved": "Talba approvata"
+      }
     }
   },
   "cotisations": {
@@ -4261,6 +4299,13 @@
         "rejectedToast": "Applikazzjoni miċħuda",
         "rejectConfirmTitle": "Tirrifjuta din it-talba?",
         "rejectConfirmDescription": "{name} se jinbidel għal status ta' \"Inattiv\" u ma jkunx jista' jidħol fil-ħin. It-talba u r-risposti tagħha għall-formola jinżammu."
+      },
+      "eraseData": {
+        "button": "Ħassar id-data (GDPR)",
+        "confirmTitle": "Titlob it-tħassir permanenti tad-data ta' {name}?",
+        "confirmDescription": "Din l-azzjoni tirreġistra talba għat-tħassir skont l-Art. 17 tal-GDPR. Il-membru jirċievi email ta' konferma, u mbagħad id-data personali tiegħu tiġi anonimizzata b'mod irriversibbli fl-ipproċessar awtomatiku li jmiss, ħlief jekk titwaqqaf in sospensjoni.",
+        "toastSuccess": "Talba għat-tħassir irreġistrata",
+        "requestLabel": "Tħassir GDPR"
       }
     },
     "sms": {
@@ -4450,7 +4495,13 @@
         "loanReturned": "Materjal imwettaq",
         "loanUpdated": "Self modifikat",
         "loanCancelled": "Self ikkanċellat",
-        "loanDeleted": "Self imneħħi"
+        "loanDeleted": "Self imneħħi",
+        "erasureRequestCreated": "Talba għat-tħassir tad-data (GDPR)",
+        "erasureRequestHeld": "Talba għat-tħassir imwaqqfa temporanjament",
+        "erasureRequestHoldReleased": "Waqfien temporanju fuq it-talba għat-tħassir tneħħa",
+        "erasureRequestCancelled": "Talba għat-tħassir ikkanċellata",
+        "membreAnonymized": "Data personali tħassret (GDPR)",
+        "erasureRequestApproved": "Talba għat-tħassir approvata"
       },
       "actorPrefix": "Minn {name}",
       "loadError": "Ma nistax jħaddem l-istorja.",
@@ -5347,6 +5398,17 @@
         "title": "Neħħi r-ritratt tal-profil?",
         "description": "Tista' żżid waħda ġdida fi kwalunkwe ħin.",
         "confirm": "Neħħi"
+      },
+      "eraseData": {
+        "title": "Privatezza",
+        "description": "Tista' titlob it-tħassir permanenti tad-data personali tiegħek, skont l-Artikolu 17 tal-GDPR.",
+        "button": "Itlob it-tħassir tad-data tiegħi",
+        "confirmTitle": "Titlob it-tħassir permanenti tad-data tiegħek?",
+        "confirmDescription": "Amministratur tal-assoċjazzjoni ser jirrevedi din it-talba qabel ma tiġi pproċessata. Wara l-approvazzjoni, id-data personali tiegħek tiġi anonimizzata b'mod irriversibbli fl-ipproċessar awtomatiku li jmiss.",
+        "toastSuccess": "Talba mibgħuta",
+        "statusLabel": "Status tat-talba tiegħek",
+        "withdrawButton": "Irtira t-talba tiegħi",
+        "toastWithdrawn": "Talba rtirata"
       }
     },
     "evenements": {

@@ -15,6 +15,7 @@ import {
   type PendingLogin,
 } from "@/lib/auth/two-factor-store"
 import { reportError } from "@/lib/monitoring"
+import { encryptField, decryptField } from "@/lib/crypto/field-encryption"
 
 type SessionUser = { id?: string; role?: string; associationId?: string | null }
 type Result<T = object> = ({ ok: true } & T) | { ok: false; error: string }
@@ -83,7 +84,7 @@ export async function confirmTotpSetup(code: string): Promise<Result<{ backupCod
   const user = await prisma.$transaction(async (tx) => {
     const updated = await tx.user.update({
       where: { id: session.id },
-      data:  { twoFactorEnabled: true, twoFactorSecret: secret },
+      data:  { twoFactorEnabled: true, twoFactorSecret: encryptField(secret) },
       select: { id: true, name: true, email: true },
     })
     await tx.twoFactorBackupCode.deleteMany({ where: { userId: session.id } })
@@ -194,7 +195,7 @@ export async function regenerateBackupCodes(code: string): Promise<Result<{ back
   if (!user?.twoFactorEnabled || !user.twoFactorSecret) {
     return { ok: false, error: "L'authentification à deux facteurs n'est pas activée." }
   }
-  if (!verifyTotpCode(code, user.twoFactorSecret)) return { ok: false, error: "Code invalide." }
+  if (!verifyTotpCode(code, decryptField(user.twoFactorSecret))) return { ok: false, error: "Code invalide." }
 
   const plainCodes = generateBackupCodes()
   const hashedCodes = await Promise.all(plainCodes.map((c) => bcrypt.hash(c, 12)))
@@ -252,7 +253,7 @@ export async function verifyTwoFactorLogin(
   if (!user || !user.twoFactorEnabled) return { ok: false, error: "Session invalide." }
 
   const verified = method === "totp"
-    ? !!user.twoFactorSecret && verifyTotpCode(code, user.twoFactorSecret)
+    ? !!user.twoFactorSecret && verifyTotpCode(code, decryptField(user.twoFactorSecret))
     : await consumeBackupCode(user.id, code)
 
   if (!verified) {

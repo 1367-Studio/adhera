@@ -3545,7 +3545,8 @@
         "general": "Všeobecné",
         "paiements": "Platby",
         "abonnement": "Predplatné",
-        "integrations": "Integrácie"
+        "integrations": "Integrácie",
+        "rgpd": "GDPR"
       },
       "associationInfo": "Informácie o asociácii",
       "associationName": "Názov združenia",
@@ -3801,6 +3802,43 @@
       "titleTrialExpired": "Prihláste sa na odber",
       "subtitleTrialExpired": "Vaša bezplatná skúšobná doba skončila. Vyberte si plán a zadajte platobný spôsob, aby ste mohli pokračovať.",
       "confirmButtonSubscribe": "Potvrďte a prihláste sa na odber"
+    },
+    "erasureRequests": {
+      "title": "Vymazanie údajov (GDPR)",
+      "description": "Žiadosti o trvalé vymazanie osobných údajov člena podľa článku 17 GDPR. Spracúvajú sa automaticky každú noc, s výnimkou tých, ktoré sú pozastavené.",
+      "empty": "Zatiaľ žiadne žiadosti o vymazanie.",
+      "retryWarning": "Zlyhalo {count}-krát — automaticky sa skúsi znova",
+      "columns": {
+        "membre": "Člen",
+        "status": "Stav",
+        "requestedAt": "Požadované dňa"
+      },
+      "status": {
+        "review": "Posudzuje sa",
+        "pending": "Čaká na spracovanie",
+        "held": "Pozastavené",
+        "processed": "Spracované"
+      },
+      "actions": {
+        "approve": "Schváliť",
+        "hold": "Pozastaviť",
+        "release": "Zrušiť pozastavenie",
+        "cancel": "Zrušiť"
+      },
+      "holdModal": {
+        "title": "Pozastaviť túto žiadosť",
+        "description": "Žiadosť nebude spracovaná pri ďalšom automatickom behu, kým je pozastavená. Člen bude informovaný e-mailom.",
+        "reasonLabel": "Dôvod (interný, člen ho nevidí)",
+        "confirm": "Pozastaviť"
+      },
+      "cancelConfirmTitle": "Zrušiť túto žiadosť o vymazanie?",
+      "cancelConfirmDescription": "Člen a ostatní administrátori budú o tomto zrušení informovaní e-mailom.",
+      "toasts": {
+        "held": "Žiadosť pozastavená",
+        "released": "Pozastavenie zrušené",
+        "cancelled": "Žiadosť zrušená",
+        "approved": "Žiadosť schválená"
+      }
     }
   },
   "cotisations": {
@@ -4261,6 +4299,13 @@
         "rejectedToast": "Žiadosť bola zamietnutá",
         "rejectConfirmTitle": "Odmietnuť túto žiadosť?",
         "rejectConfirmDescription": "{name} sa zmení na stav \"Neaktívny\" a nebude možné sa prihlásiť. Žiadosť a jej odpovede na formulár zostanú zachované."
+      },
+      "eraseData": {
+        "button": "Vymazať údaje (GDPR)",
+        "confirmTitle": "Požiadať o trvalé vymazanie údajov používateľa {name}?",
+        "confirmDescription": "Táto akcia zaregistruje žiadosť o vymazanie podľa čl. 17 GDPR. Člen dostane potvrdzujúci e-mail a následne budú jeho osobné údaje nenávratne anonymizované pri ďalšom automatickom spracovaní, pokiaľ žiadosť nebude pozastavená.",
+        "toastSuccess": "Žiadosť o vymazanie zaregistrovaná",
+        "requestLabel": "Vymazanie GDPR"
       }
     },
     "sms": {
@@ -4450,7 +4495,13 @@
         "loanReturned": "Renderovaný materiál",
         "loanUpdated": "Modifikovaná pôžička",
         "loanCancelled": "Hosťovanie zrušené",
-        "loanDeleted": "Zrušenie pôžičiek"
+        "loanDeleted": "Zrušenie pôžičiek",
+        "erasureRequestCreated": "Žiadosť o vymazanie údajov (GDPR)",
+        "erasureRequestHeld": "Žiadosť o vymazanie pozastavená",
+        "erasureRequestHoldReleased": "Pozastavenie žiadosti o vymazanie zrušené",
+        "erasureRequestCancelled": "Žiadosť o vymazanie zrušená",
+        "membreAnonymized": "Osobné údaje vymazané (GDPR)",
+        "erasureRequestApproved": "Žiadosť o vymazanie schválená"
       },
       "actorPrefix": "autor {name}",
       "loadError": "Históriu nie je možné načítať.",
@@ -5347,6 +5398,17 @@
         "title": "Odstrániť profilovú fotku?",
         "description": "Nový môžete pridať kedykoľvek.",
         "confirm": "Odstrániť"
+      },
+      "eraseData": {
+        "title": "Súkromie",
+        "description": "Môžete požiadať o trvalé vymazanie svojich osobných údajov podľa čl. 17 GDPR.",
+        "button": "Požiadať o vymazanie mojich údajov",
+        "confirmTitle": "Požiadať o trvalé vymazanie vašich údajov?",
+        "confirmDescription": "Správca združenia túto žiadosť posúdi pred jej spracovaním. Po schválení budú vaše osobné údaje pri ďalšom automatickom spracovaní nenávratne anonymizované.",
+        "toastSuccess": "Žiadosť odoslaná",
+        "statusLabel": "Stav vašej žiadosti",
+        "withdrawButton": "Stiahnuť moju žiadosť",
+        "toastWithdrawn": "Žiadosť stiahnutá"
       }
     },
     "evenements": {

@@ -22,7 +22,9 @@ import {
   type PDFOperator,
   type PDFPage,
 } from "pdf-lib"
+import { GetObjectCommand } from "@aws-sdk/client-s3"
 import { sniffFileType } from "@/lib/file-sniff"
+import { r2, extractR2Key } from "@/lib/r2"
 import { getContrastingTextColor, resolveMemberCardColor } from "@/lib/member-card/color"
 import {
   CARD_ASSOCIATION_NAME_TRACKING_MM,
@@ -250,22 +252,16 @@ export function memberCardPdfFilename(lastName: string, firstName: string): stri
 // ── Images: what the server is allowed to fetch ───────────────────────────────────────────
 
 /**
- * SECURITY — this renderer runs server-side and fetch()es the URLs it is given, so an
- * unchecked URL is a straight SSRF primitive: the member photo is writable by the member
- * themselves (PATCH /api/portal/profil takes `photoUrl` as a free-form string), and pointing
- * it at an internal address would make our own server fetch it and hand the bytes back inside
- * a PDF. Only our R2 public host is accepted, compared on the full origin exactly like
- * isAllowedLogoUrl in src/app/api/association/branding/route.ts — a prefix test would let
- * "https://<bucket>.r2.dev.evil.com" through. Anything else is skipped, never fetched.
+ * SECURITY — the member photo is writable by the member themselves (PATCH /api/portal/profil
+ * takes `photoUrl` as a free-form string), so embedRemoteImage below must never be handed an
+ * arbitrary URL to fetch. extractR2Key (src/lib/r2.ts) only resolves a key for our own R2
+ * object, in either shape a stored URL may be in (legacy direct R2_PUBLIC_URL, or the
+ * app-domain proxy uploadToR2 returns today) — comparing the full origin exactly like
+ * isAllowedLogoUrl in src/app/api/association/branding/route.ts, so a lookalike host such as
+ * "https://<bucket>.r2.dev.evil.com" can't resolve to a key. Anything else is skipped.
  */
 export function isMemberCardImageUrlAllowed(imageUrl: string): boolean {
-  const allowedBase = process.env.R2_PUBLIC_URL
-  if (!allowedBase) return false
-  try {
-    return new URL(imageUrl).origin === new URL(allowedBase).origin
-  } catch {
-    return false
-  }
+  return extractR2Key(imageUrl) !== null
 }
 
 /** Well past what any printer resolves, and small enough that a 4 MB upload doesn't become a
@@ -320,19 +316,19 @@ async function embedRemoteImage(
   maxDrawnSizeMillimetres: number,
 ): Promise<PDFImage | null> {
   if (!isMemberCardImageUrlAllowed(imageUrl)) return null
+  const key = extractR2Key(imageUrl)
+  if (!key) return null
 
   try {
-    // `redirect: "manual"`, so the origin allowlist above covers the whole fetch and not just
-    // its first hop: followed automatically, a 302 served from our own bucket would pull the
-    // bytes from wherever it points, which is exactly what the allowlist exists to prevent.
-    // A redirect then arrives as a non-ok response and the image is skipped like any other
-    // failure — our own R2 objects are served directly and never redirect.
-    const response = await fetch(imageUrl, {
-      signal:   AbortSignal.timeout(IMAGE_FETCH_TIMEOUT_MS),
-      redirect: "manual",
-    })
-    if (!response.ok) return null
-    const originalBytes = Buffer.from(await response.arrayBuffer())
+    // Fetched straight off R2 with our own credentials instead of an HTTP fetch() of the
+    // stored URL — no bucket-reachability requirement, and no redirect to worry about
+    // (a GetObjectCommand either returns the object's own bytes or fails, full stop).
+    const object = await r2.send(
+      new GetObjectCommand({ Bucket: process.env.R2_BUCKET_NAME!, Key: key }),
+      { abortSignal: AbortSignal.timeout(IMAGE_FETCH_TIMEOUT_MS) },
+    )
+    if (!object.Body) return null
+    const originalBytes = Buffer.from(await object.Body.transformToByteArray())
 
     // Sniffed from the magic bytes rather than trusted from Content-Type, like every other
     // place the app decides what a stored file really is. A PDF stored in the same bucket is

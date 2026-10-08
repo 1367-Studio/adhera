@@ -3680,7 +3680,8 @@
         "paiements": "Payments",
         "abonnement": "Subscription",
         "integrations": "Integrations",
-        "equipe": "Team and access"
+        "equipe": "Team and access",
+        "rgpd": "GDPR"
       },
       "associationInfo": "Association information",
       "associationName": "Association name",
@@ -4029,6 +4030,43 @@
       },
       "toasts": {
         "saved": "Access updated"
+      }
+    },
+    "erasureRequests": {
+      "title": "Data erasure (GDPR)",
+      "description": "Requests to permanently delete a member's personal data, under Article 17 of the GDPR. Processed automatically every night, unless placed on hold.",
+      "empty": "No erasure requests yet.",
+      "retryWarning": "Failed {count} time(s) — retrying automatically",
+      "columns": {
+        "membre": "Member",
+        "status": "Status",
+        "requestedAt": "Requested on"
+      },
+      "status": {
+        "review": "Under review",
+        "pending": "Pending processing",
+        "held": "On hold",
+        "processed": "Processed"
+      },
+      "actions": {
+        "approve": "Approve",
+        "hold": "Place on hold",
+        "release": "Release hold",
+        "cancel": "Cancel"
+      },
+      "holdModal": {
+        "title": "Place this request on hold",
+        "description": "The request won't be processed by the next automated run while on hold. The member will be notified by email.",
+        "reasonLabel": "Reason (internal, not shown to the member)",
+        "confirm": "Place on hold"
+      },
+      "cancelConfirmTitle": "Cancel this erasure request?",
+      "cancelConfirmDescription": "The member and the other administrators will be notified by email of this cancellation.",
+      "toasts": {
+        "held": "Request placed on hold",
+        "released": "Hold released",
+        "cancelled": "Request cancelled",
+        "approved": "Request approved"
       }
     }
   },
@@ -4393,6 +4431,14 @@
       "cotisationButton": "Membership fee",
       "createAccessButton": "Create access",
       "roleButton": "Role",
+      "exportDataButton": "Export data (GDPR)",
+      "eraseData": {
+        "button": "Erase data (GDPR)",
+        "confirmTitle": "Request permanent erasure of {name}'s data?",
+        "confirmDescription": "This registers a GDPR Art. 17 erasure request. The member will receive a confirmation email, then their personal data will be irreversibly anonymized during the next automated processing run, unless placed on hold.",
+        "toastSuccess": "Erasure request registered",
+        "requestLabel": "GDPR erasure"
+      },
       "contact": "Contact",
       "noContactInfo": "No contact information",
       "memberSinceColon": "Member since: {date}",
@@ -4729,7 +4775,13 @@
         "loanReturned": "Equipment returned",
         "loanUpdated": "Loan updated",
         "loanCancelled": "Loan cancelled",
-        "loanDeleted": "Loan deleted"
+        "loanDeleted": "Loan deleted",
+        "erasureRequestCreated": "Data erasure requested (GDPR)",
+        "erasureRequestHeld": "Data erasure request put on hold",
+        "erasureRequestHoldReleased": "Data erasure hold released",
+        "erasureRequestCancelled": "Data erasure request cancelled",
+        "membreAnonymized": "Personal data erased (GDPR)",
+        "erasureRequestApproved": "Data erasure request approved"
       },
       "actorPrefix": "by {name}",
       "loadError": "Unable to load history.",
@@ -5863,6 +5915,17 @@
         "title": "Remove profile photo?",
         "description": "You can add a new one anytime.",
         "confirm": "Remove"
+      },
+      "eraseData": {
+        "title": "Privacy",
+        "description": "You can request the permanent erasure of your personal data, under Article 17 of the GDPR.",
+        "button": "Request erasure of my data",
+        "confirmTitle": "Request permanent erasure of your data?",
+        "confirmDescription": "An association administrator will review this request before it is processed. Once approved, your personal data will be irreversibly anonymized during the next automated processing run.",
+        "toastSuccess": "Request sent",
+        "statusLabel": "Status of your request",
+        "withdrawButton": "Withdraw my request",
+        "toastWithdrawn": "Request withdrawn"
       }
     },
     "evenements": {

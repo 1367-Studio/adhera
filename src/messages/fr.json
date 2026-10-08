@@ -3688,7 +3688,8 @@
         "paiements": "Paiements",
         "abonnement": "Abonnement",
         "integrations": "Intégrations",
-        "equipe": "Équipe et accès"
+        "equipe": "Équipe et accès",
+        "rgpd": "RGPD"
       },
       "associationInfo": "Informations de l'association",
       "associationName": "Nom de l'association",
@@ -4037,6 +4038,43 @@
       },
       "toasts": {
         "saved": "Accès mis à jour"
+      }
+    },
+    "erasureRequests": {
+      "title": "Effacement des données (RGPD)",
+      "description": "Demandes de suppression définitive des données personnelles d'un membre, conformément à l'article 17 du RGPD. Traitées automatiquement chaque nuit, sauf mise en attente.",
+      "empty": "Aucune demande d'effacement pour le moment.",
+      "retryWarning": "Échec {count} fois — nouvelle tentative automatique",
+      "columns": {
+        "membre": "Membre",
+        "status": "Statut",
+        "requestedAt": "Demandée le"
+      },
+      "status": {
+        "review": "En révision",
+        "pending": "En attente de traitement",
+        "held": "Mise en attente",
+        "processed": "Traitée"
+      },
+      "actions": {
+        "approve": "Valider",
+        "hold": "Mettre en attente",
+        "release": "Lever l'attente",
+        "cancel": "Annuler"
+      },
+      "holdModal": {
+        "title": "Mettre cette demande en attente",
+        "description": "La demande ne sera pas traitée par le prochain passage automatique tant que l'attente n'est pas levée. Le membre sera informé par e-mail.",
+        "reasonLabel": "Motif (interne, non visible par le membre)",
+        "confirm": "Mettre en attente"
+      },
+      "cancelConfirmTitle": "Annuler cette demande d'effacement ?",
+      "cancelConfirmDescription": "Le membre et les autres administrateurs seront informés par e-mail de cette annulation.",
+      "toasts": {
+        "held": "Demande mise en attente",
+        "released": "Attente levée",
+        "cancelled": "Demande annulée",
+        "approved": "Demande validée"
       }
     }
   },
@@ -4401,6 +4439,14 @@
       "cotisationButton": "Cotisation",
       "createAccessButton": "Créer un accès",
       "roleButton": "Rôle",
+      "exportDataButton": "Exporter les données (RGPD)",
+      "eraseData": {
+        "button": "Effacer les données (RGPD)",
+        "confirmTitle": "Demander l'effacement définitif des données de {name} ?",
+        "confirmDescription": "Cette action enregistre une demande d'effacement RGPD (article 17). Le membre recevra un e-mail de confirmation, puis ses données personnelles seront anonymisées de façon irréversible lors du prochain traitement automatique, sauf mise en attente.",
+        "toastSuccess": "Demande d'effacement enregistrée",
+        "requestLabel": "Effacement RGPD"
+      },
       "contact": "Contact",
       "noContactInfo": "Aucune information de contact",
       "memberSinceColon": "Membre depuis : {date}",
@@ -4737,7 +4783,13 @@
         "loanReturned": "Matériel rendu",
         "loanUpdated": "Prêt modifié",
         "loanCancelled": "Prêt annulé",
-        "loanDeleted": "Prêt supprimé"
+        "loanDeleted": "Prêt supprimé",
+        "erasureRequestCreated": "Demande d'effacement des données (RGPD)",
+        "erasureRequestHeld": "Demande d'effacement mise en attente",
+        "erasureRequestHoldReleased": "Attente levée sur la demande d'effacement",
+        "erasureRequestCancelled": "Demande d'effacement annulée",
+        "membreAnonymized": "Données personnelles effacées (RGPD)",
+        "erasureRequestApproved": "Demande d'effacement validée"
       },
       "actorPrefix": "par {name}",
       "loadError": "Impossible de charger l'historique.",
@@ -5871,6 +5923,17 @@
         "title": "Retirer la photo de profil ?",
         "description": "Vous pourrez en ajouter une nouvelle à tout moment.",
         "confirm": "Retirer"
+      },
+      "eraseData": {
+        "title": "Confidentialité",
+        "description": "Vous pouvez demander la suppression définitive de vos données personnelles, conformément à l'article 17 du RGPD.",
+        "button": "Demander la suppression de mes données",
+        "confirmTitle": "Demander la suppression définitive de vos données ?",
+        "confirmDescription": "Un administrateur de l'association examinera cette demande avant son traitement. Une fois validée, vos données personnelles seront anonymisées de façon irréversible lors du prochain traitement automatique.",
+        "toastSuccess": "Demande envoyée",
+        "statusLabel": "Statut de votre demande",
+        "withdrawButton": "Retirer ma demande",
+        "toastWithdrawn": "Demande retirée"
       }
     },
     "evenements": {

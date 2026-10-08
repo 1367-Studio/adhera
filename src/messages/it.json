@@ -3545,7 +3545,8 @@
         "general": "Generale",
         "paiements": "Pagamenti",
         "abonnement": "Abbonamento",
-        "integrations": "Integrazioni"
+        "integrations": "Integrazioni",
+        "rgpd": "GDPR"
       },
       "associationInfo": "Informazioni sull'associazione",
       "associationName": "Nome dell'associazione",
@@ -3801,6 +3802,43 @@
       "titleTrialExpired": "Abbonati",
       "subtitleTrialExpired": "La tua prova gratuita è finita. Scegli un piano e inserisci un metodo di pagamento per continuare.",
       "confirmButtonSubscribe": "Conferma e iscriviti"
+    },
+    "erasureRequests": {
+      "title": "Cancellazione dei dati (GDPR)",
+      "description": "Richieste di cancellazione definitiva dei dati personali di un membro, ai sensi dell'articolo 17 del GDPR. Vengono elaborate automaticamente ogni notte, salvo quelle messe in attesa.",
+      "empty": "Nessuna richiesta di cancellazione per il momento.",
+      "retryWarning": "Fallito {count} volte — nuovo tentativo automatico",
+      "columns": {
+        "membre": "Membro",
+        "status": "Stato",
+        "requestedAt": "Richiesta il"
+      },
+      "status": {
+        "review": "In revisione",
+        "pending": "In attesa di elaborazione",
+        "held": "In attesa",
+        "processed": "Elaborata"
+      },
+      "actions": {
+        "approve": "Approva",
+        "hold": "Metti in attesa",
+        "release": "Riprendi",
+        "cancel": "Annulla"
+      },
+      "holdModal": {
+        "title": "Metti in attesa questa richiesta",
+        "description": "La richiesta non verrà elaborata nella prossima esecuzione automatica finché resta in attesa. Il membro verrà informato via e-mail.",
+        "reasonLabel": "Motivo (interno, non visibile al membro)",
+        "confirm": "Metti in attesa"
+      },
+      "cancelConfirmTitle": "Annullare questa richiesta di cancellazione?",
+      "cancelConfirmDescription": "Il membro e gli altri amministratori verranno informati via e-mail di questo annullamento.",
+      "toasts": {
+        "held": "Richiesta messa in attesa",
+        "released": "Attesa rimossa",
+        "cancelled": "Richiesta annullata",
+        "approved": "Richiesta approvata"
+      }
     }
   },
   "cotisations": {
@@ -4261,6 +4299,13 @@
         "rejectedToast": "Domanda respinta",
         "rejectConfirmTitle": "Rifiutare questa richiesta?",
         "rejectConfirmDescription": "{name} passerà a stato \"Inattivo\" e non sarà più possibile effettuare il login. La richiesta e le sue risposte al modulo sono conservate."
+      },
+      "eraseData": {
+        "button": "Cancella dati (GDPR)",
+        "confirmTitle": "Richiedere la cancellazione definitiva dei dati di {name}?",
+        "confirmDescription": "Questa azione registra una richiesta di cancellazione ai sensi dell'art. 17 del GDPR. Il membro riceverà un'e-mail di conferma, dopodiché i suoi dati personali saranno anonimizzati in modo irreversibile durante la prossima elaborazione automatica, salvo messa in attesa.",
+        "toastSuccess": "Richiesta di cancellazione registrata",
+        "requestLabel": "Cancellazione GDPR"
       }
     },
     "sms": {
@@ -4450,7 +4495,13 @@
         "loanReturned": "Materiale renderizzato",
         "loanUpdated": "Prestito modificato",
         "loanCancelled": "Prestito annullato",
-        "loanDeleted": "Prestito abolito"
+        "loanDeleted": "Prestito abolito",
+        "erasureRequestCreated": "Richiesta di cancellazione dati (GDPR)",
+        "erasureRequestHeld": "Richiesta di cancellazione in sospeso",
+        "erasureRequestHoldReleased": "Sospensione della richiesta di cancellazione revocata",
+        "erasureRequestCancelled": "Richiesta di cancellazione annullata",
+        "membreAnonymized": "Dati personali cancellati (GDPR)",
+        "erasureRequestApproved": "Richiesta di cancellazione approvata"
       },
       "actorPrefix": "di {name}",
       "loadError": "Impossibile caricare la cronologia.",
@@ -5347,6 +5398,17 @@
         "title": "Rimuovere la foto profilo?",
         "description": "Puoi aggiungerne uno nuovo in qualsiasi momento.",
         "confirm": "Rimuovere"
+      },
+      "eraseData": {
+        "title": "Privacy",
+        "description": "Puoi richiedere la cancellazione definitiva dei tuoi dati personali, ai sensi dell'art. 17 del GDPR.",
+        "button": "Richiedi la cancellazione dei miei dati",
+        "confirmTitle": "Richiedere la cancellazione definitiva dei tuoi dati?",
+        "confirmDescription": "Un amministratore dell'associazione esaminerà questa richiesta prima che venga elaborata. Una volta approvata, i tuoi dati personali saranno anonimizzati in modo irreversibile durante la prossima elaborazione automatica.",
+        "toastSuccess": "Richiesta inviata",
+        "statusLabel": "Stato della tua richiesta",
+        "withdrawButton": "Ritira la mia richiesta",
+        "toastWithdrawn": "Richiesta ritirata"
       }
     },
     "evenements": {
