@@ -6,6 +6,7 @@ import { withAdminAuth } from "@/lib/api-wrapper"
 import { membreAdherentWhereClause } from "@/lib/membre-adherent"
 import { formatAddress } from "@/lib/address"
 import { readMobileAnswer } from "@/lib/membre-answers"
+import { hasSensitiveMembreAccess } from "@/lib/membre-sensitive-fields"
 
 // Same reasoning as evenements/[id]/export — Nom/Prénom/Email can come from public,
 // unauthenticated self-registration (site-membership-section.tsx), so a value starting
@@ -39,6 +40,7 @@ export const GET = withAdminAuth(async (req, ctx) => {
   // intake form these mirror) beyond the default column set below — opt-in so the existing
   // membres page export keeps its current column layout unchanged.
   const full     = searchParams.get("full") === "1"
+  const canSeeSensitive = hasSensitiveMembreAccess(ctx.permissions)
   const firstName = searchParams.get("firstName")?.trim()
   const lastName  = searchParams.get("lastName")?.trim()
   const address   = searchParams.get("address")?.trim()
@@ -121,8 +123,12 @@ export const GET = withAdminAuth(async (req, ctx) => {
     Pays:              sanitizeCell(m.country ?? ""),
     "Date de naissance": m.birthDate ? format(m.birthDate, "dd/MM/yyyy") : "",
     ...(full ? { Sexe: m.sexe ? SEXE_LABELS[m.sexe] : "" } : {}),
-    "Groupe sanguin":  m.groupeSanguin ? GROUPE_SANGUIN_LABELS[m.groupeSanguin] : "",
-    Allergies:         sanitizeCell(m.allergies ?? ""),
+    // Security audit M2+L8 — the column itself is omitted (not just left blank) without the
+    // `sensible` area, same reasoning as every other redaction in this feature.
+    ...(canSeeSensitive ? {
+      "Groupe sanguin": m.groupeSanguin ? GROUPE_SANGUIN_LABELS[m.groupeSanguin] : "",
+      Allergies:        sanitizeCell(m.allergies ?? ""),
+    } : {}),
     ...(full ? {
       "Possède un tee-shirt": m.possedeTshirt == null ? "" : (m.possedeTshirt ? "Oui" : "Non"),
       "Taille tee-shirt":     m.tailleTshirt ?? "",

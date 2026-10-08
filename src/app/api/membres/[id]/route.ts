@@ -14,6 +14,7 @@ import { assertCanDeactivateAdministrator } from "@/lib/team-access"
 import { resolveMembreMembershipFormId } from "@/lib/membre-membership-form"
 import { findInvalidMembershipFormAnswer } from "@/lib/membership-form-answers-validation"
 import { reportError } from "@/lib/monitoring"
+import { redactSensitiveMembreFields, stripSensitiveMembreFields } from "@/lib/membre-sensitive-fields"
 
 const RESPONSABLE_SELECT = {
   select: {
@@ -108,13 +109,13 @@ export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
       })).map(field => ({ field, value: rawAnswers?.[field.id] ?? "" }))
     : []
 
-  return NextResponse.json({
+  return NextResponse.json(redactSensitiveMembreFields({
     ...membre,
     mobile: readMobileAnswer(rawAnswers),
     customFieldAnswers,
     editableCustomFields,
     isAdherent: isMembreAdherent(membre),
-  })
+  }, ctx.permissions))
 }, { area: "membres" })
 
 export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
@@ -129,7 +130,14 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
     return NextResponse.json({ error: parsed.error.issues }, { status: 422 })
   }
 
-  const { birthDate, email, phone, mobile, answers, address, addressStreet, addressComplement, postalCode, city, country, typeId, civilite, sexe, groupeSanguin, allergies, photoUrl, preferredLocale, spokenLanguage, possedeTshirt, tailleTshirt, responsableId, adherentOverride, notes, imageRightsConsent, guardianName, guardianPhone, secondGuardianName, secondGuardianPhone, ...rest } = parsed.data
+  // Security audit M2+L8 — stripped before destructuring, not after: without the `sensible`
+  // area, these 6 fields are forced to `undefined` here, so every `!== undefined` check below
+  // treats them as "not submitted" and leaves the existing DB value untouched. This closes a
+  // real data-loss bug, not just a visibility one — membre-form.tsx round-trips groupeSanguin/
+  // allergies through hidden inputs (see its own comment), so an unauthorized user saving an
+  // unrelated field change would otherwise submit an empty value for fields they never saw
+  // the real content of, silently wiping someone else's data.
+  const { birthDate, email, phone, mobile, answers, address, addressStreet, addressComplement, postalCode, city, country, typeId, civilite, sexe, groupeSanguin, allergies, photoUrl, preferredLocale, spokenLanguage, possedeTshirt, tailleTshirt, responsableId, adherentOverride, notes, imageRightsConsent, guardianName, guardianPhone, secondGuardianName, secondGuardianPhone, ...rest } = stripSensitiveMembreFields(parsed.data, ctx.permissions)
 
   // Réponses aux champs personnalisés du formulaire d'adhésion réellement suivi par ce membre —
   // revalidées contre ce même formulaire, jamais contre un autre (voir

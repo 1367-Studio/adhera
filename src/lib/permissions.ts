@@ -8,9 +8,18 @@
 // existed — their access is then the profile of their role (ROLE_PROFILES), which reproduces
 // exactly what that role could do before. So nobody gains or loses access at migration.
 // Server-safe (no React): used by the API wrapper, the session and the dashboard alike.
+//
+// Exception to "nobody gains or loses access": the `sensible` area added later (security audit
+// M2+L8) is deliberately fail-closed for anyone with a *custom* stored `areas` object — a
+// stored blob from before this area existed has no `sensible` key, and resolvePermissions
+// below treats any area missing from `areas` as "none", not "whatever ROLE_PROFILES would
+// say". That's the actual fix (nobody saw guardian/health fields as a side effect of some
+// unrelated grant before this), but it does mean an admin has to go re-grant "Lecture" on
+// Données sensibles for any custom profile that genuinely needs it. Users with no stored
+// permissions at all still get ROLE_PROFILES' `sensible` value unchanged, same as every area.
 
 export const ACCESS_AREAS = [
-  "dashboard", "membres", "adhesions", "dons", "evenements", "boutique",
+  "dashboard", "membres", "sensible", "adhesions", "dons", "evenements", "boutique",
   "communication", "actualites", "comptabilite", "reunions", "materiel", "site", "documents",
 ] as const
 
@@ -23,6 +32,12 @@ export const ACCESS_LEVELS: readonly AccessLevel[] = ["none", "read", "edit"]
 export const ACCESS_AREA_LABELS: Record<AccessArea, string> = {
   dashboard:     "Tableau de bord et activité",
   membres:       "Membres",
+  // Security audit M2+L8 — visibility only (see hasAccess's own doc comment below): controls
+  // whether groupeSanguin/allergies/guardian* appear in membre responses, the export, and the
+  // guardian section of the membre detail/edit screens. "Édition" has the same effect as
+  // "Lecture" for this one area — editing a Membre is a single whole-record PATCH, there's no
+  // separate save path for just these fields to gate independently.
+  sensible:      "Données sensibles des membres (santé, responsables de mineurs)",
   adhesions:     "Adhésions et cotisations",
   dons:          "Dons",
   evenements:    "Événements et billetterie",
@@ -79,7 +94,7 @@ export const ROLE_PROFILES: Record<StaffRole, ResolvedPermissions> = {
   TRESORIER: {
     administrator: false,
     areas: {
-      dashboard: "read", membres: "edit", adhesions: "edit", dons: "edit", evenements: "edit",
+      dashboard: "read", membres: "edit", sensible: "read", adhesions: "edit", dons: "edit", evenements: "edit",
       boutique: "edit", communication: "none", actualites: "edit", comptabilite: "edit",
       reunions: "edit", materiel: "edit", site: "none", documents: "edit",
     },
@@ -87,7 +102,7 @@ export const ROLE_PROFILES: Record<StaffRole, ResolvedPermissions> = {
   SECRETAIRE: {
     administrator: false,
     areas: {
-      dashboard: "read", membres: "edit", adhesions: "read", dons: "none", evenements: "edit",
+      dashboard: "read", membres: "edit", sensible: "read", adhesions: "read", dons: "none", evenements: "edit",
       boutique: "edit", communication: "edit", actualites: "edit", comptabilite: "none",
       reunions: "edit", materiel: "edit", site: "none", documents: "edit",
     },
