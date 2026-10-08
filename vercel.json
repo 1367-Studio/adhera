@@ -49,6 +49,10 @@
     {
       "path": "/api/cron/erasure-request-sweep",
       "schedule": "0 3 * * *"
+    },
+    {
+      "path": "/api/cron/activity-log-retention-sweep",
+      "schedule": "0 2 * * *"
     }
   ]
 }
