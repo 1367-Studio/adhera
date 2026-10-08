@@ -4070,13 +4070,16 @@
       },
       "cancelConfirmTitle": "Annuler cette demande d'effacement ?",
       "cancelConfirmDescription": "Le membre et les autres administrateurs seront informés par e-mail de cette annulation.",
+      "approveConfirmTitle": "Valider cette demande d'effacement ?",
+      "approveConfirmDescription": "Les données du membre seront anonymisées de façon irréversible lors du prochain passage nocturne, sauf mise en attente avant cette échéance.",
       "toasts": {
         "held": "Demande mise en attente",
         "released": "Attente levée",
         "cancelled": "Demande annulée",
         "approved": "Demande validée"
       },
-      "automaticOrigin": "Déclenché automatiquement — inactif depuis plus de 3 ans"
+      "automaticOrigin": "Déclenché automatiquement — inactif depuis plus de 3 ans",
+      "inactiveSince": "quitté le {date}"
     }
   },
   "cotisations": {

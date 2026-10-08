@@ -67,12 +67,13 @@ export async function authenticate(prevState: LoginState, formData: FormData): P
   const ipKey        = `login-ip:${ip}`
   const EMAIL_LIMIT  = 8
   const IP_LIMIT     = 20
-  const emailAllowed = await rateLimit(emailKey, EMAIL_LIMIT, 15 * 60 * 1000)
-  const ipAllowed    = await rateLimit(ipKey, IP_LIMIT, 15 * 60 * 1000)
+  const WINDOW_MS    = 15 * 60 * 1000
+  const emailAllowed = await rateLimit(emailKey, EMAIL_LIMIT, WINDOW_MS)
+  const ipAllowed    = await rateLimit(ipKey, IP_LIMIT, WINDOW_MS)
   if (!emailAllowed || !ipAllowed) {
     // Security audit M1 — fire-and-forget, never blocks the (already rate-limited) response.
-    if (!emailAllowed) alertOnLoginRateLimitBreach(emailKey, EMAIL_LIMIT, `Compte ciblé : ${email}`)
-    if (!ipAllowed)    alertOnLoginRateLimitBreach(ipKey, IP_LIMIT, `Adresse IP : ${ip}`)
+    if (!emailAllowed) alertOnLoginRateLimitBreach(emailKey, EMAIL_LIMIT, WINDOW_MS, `Compte ciblé : ${email}`)
+    if (!ipAllowed)    alertOnLoginRateLimitBreach(ipKey, IP_LIMIT, WINDOW_MS, `Adresse IP : ${ip}`)
     return { error: RATE_LIMIT_ERROR }
   }
 

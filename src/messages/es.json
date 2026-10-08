@@ -3833,13 +3833,16 @@
       },
       "cancelConfirmTitle": "¿Cancelar esta solicitud de eliminación?",
       "cancelConfirmDescription": "El miembro y los demás administradores serán notificados por correo electrónico de esta cancelación.",
+      "approveConfirmTitle": "¿Aprobar esta solicitud de eliminación?",
+      "approveConfirmDescription": "Los datos del miembro se anonimizarán de forma irreversible durante el próximo proceso nocturno, a menos que se pongan en espera antes de esa fecha.",
       "toasts": {
         "held": "Solicitud puesta en espera",
         "released": "Espera finalizada",
         "cancelled": "Solicitud cancelada",
         "approved": "Solicitud aprobada"
       },
-      "automaticOrigin": "Marcado automáticamente — inactivo desde hace más de 3 años"
+      "automaticOrigin": "Marcado automáticamente — inactivo desde hace más de 3 años",
+      "inactiveSince": "dado de baja el {date}"
     }
   },
   "cotisations": {

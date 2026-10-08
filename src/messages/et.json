@@ -3833,13 +3833,16 @@
       },
       "cancelConfirmTitle": "Tühistada see kustutamistaotlus?",
       "cancelConfirmDescription": "Liiget ja teisi administraatoreid teavitatakse sellest tühistamisest e-posti teel.",
+      "approveConfirmTitle": "Kinnitada see kustutamistaotlus?",
+      "approveConfirmDescription": "Liikme andmed anonümiseeritakse pöördumatult järgmise öise käituse ajal, kui neid enne seda ei peatata.",
       "toasts": {
         "held": "Taotlus seatud ootele",
         "released": "Ootelt vabastatud",
         "cancelled": "Taotlus tühistatud",
         "approved": "Taotlus kinnitatud"
       },
-      "automaticOrigin": "Automaatselt märgistatud — tegevuseta rohkem kui 3 aastat"
+      "automaticOrigin": "Automaatselt märgistatud — tegevuseta rohkem kui 3 aastat",
+      "inactiveSince": "lahkus {date}"
     }
   },
   "cotisations": {

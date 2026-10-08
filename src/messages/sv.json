@@ -3833,13 +3833,16 @@
       },
       "cancelConfirmTitle": "Avbryta denna raderingsbegäran?",
       "cancelConfirmDescription": "Medlemmen och de andra administratörerna meddelas via e-post om denna avbokning.",
+      "approveConfirmTitle": "Godkänna denna raderingsbegäran?",
+      "approveConfirmDescription": "Medlemmens uppgifter kommer att anonymiseras oåterkalleligt under nästa nattliga körning, om de inte sätts på paus innan det.",
       "toasts": {
         "held": "Begäran pausad",
         "released": "Pausning upphävd",
         "cancelled": "Begäran avbruten",
         "approved": "Begäran godkänd"
       },
-      "automaticOrigin": "Automatiskt flaggad — inaktiv i mer än 3 år"
+      "automaticOrigin": "Automatiskt flaggad — inaktiv i mer än 3 år",
+      "inactiveSince": "lämnade den {date}"
     }
   },
   "cotisations": {

@@ -3833,13 +3833,16 @@
       },
       "cancelConfirmTitle": "Zrušit tuto žádost o výmaz?",
       "cancelConfirmDescription": "Člen a ostatní administrátoři budou o tomto zrušení informováni e-mailem.",
+      "approveConfirmTitle": "Schválit tuto žádost o výmaz?",
+      "approveConfirmDescription": "Údaje člena budou při příštím nočním běhu nevratně anonymizovány, pokud nebudou do té doby pozastaveny.",
       "toasts": {
         "held": "Žádost byla pozastavena",
         "released": "Pozastavení bylo zrušeno",
         "cancelled": "Žádost byla zrušena",
         "approved": "Žádost schválena"
       },
-      "automaticOrigin": "Automaticky označeno — neaktivní více než 3 roky"
+      "automaticOrigin": "Automaticky označeno — neaktivní více než 3 roky",
+      "inactiveSince": "odešel dne {date}"
     }
   },
   "cotisations": {

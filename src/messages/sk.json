@@ -3833,13 +3833,16 @@
       },
       "cancelConfirmTitle": "Zrušiť túto žiadosť o vymazanie?",
       "cancelConfirmDescription": "Člen a ostatní administrátori budú o tomto zrušení informovaní e-mailom.",
+      "approveConfirmTitle": "Schváliť túto žiadosť o vymazanie?",
+      "approveConfirmDescription": "Údaje člena budú pri ďalšom nočnom spustení nenávratne anonymizované, pokiaľ nebudú predtým pozastavené.",
       "toasts": {
         "held": "Žiadosť pozastavená",
         "released": "Pozastavenie zrušené",
         "cancelled": "Žiadosť zrušená",
         "approved": "Žiadosť schválená"
       },
-      "automaticOrigin": "Automaticky označené — neaktívny viac ako 3 roky"
+      "automaticOrigin": "Automaticky označené — neaktívny viac ako 3 roky",
+      "inactiveSince": "odišiel/odišla {date}"
     }
   },
   "cotisations": {

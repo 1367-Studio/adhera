@@ -162,6 +162,15 @@ export const DELETE = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) =>
   if (existing.status === "PROCESSED") {
     return NextResponse.json({ error: "Une demande déjà traitée ne peut pas être annulée" }, { status: 409 })
   }
+  // requestedById null means the retention-sweep cron flagged this, not a human — cancelling
+  // it would be a no-op in disguise: deleting the row doesn't change Membre.deletedAt, so the
+  // very next nightly run would just re-flag the same membre into a brand-new REVIEW request,
+  // while this call's member-facing "cancelled" email (below) would have already gone out for
+  // a request the member never knew existed in the first place. Mettre en attente is the only
+  // action that actually sticks for this origin (held requests are excluded from re-flagging).
+  if (!existing.requestedById) {
+    return NextResponse.json({ error: "Une demande signalée automatiquement ne peut pas être annulée — mettez-la en attente pour conserver les données." }, { status: 409 })
+  }
 
   await prisma.erasureRequest.delete({ where: { id } })
   await writeActivityLog({

@@ -3833,13 +3833,16 @@
       },
       "cancelConfirmTitle": "Atcelt šo dzēšanas pieprasījumu?",
       "cancelConfirmDescription": "Biedrs un citi administratori saņems paziņojumu e-pastā par šo atcelšanu.",
+      "approveConfirmTitle": "Apstiprināt šo dzēšanas pieprasījumu?",
+      "approveConfirmDescription": "Biedra dati tiks neatgriezeniski anonimizēti nākamās nakts apstrādes laikā, ja tie iepriekš netiks apturēti.",
       "toasts": {
         "held": "Pieprasījums aizturēts",
         "released": "Aizturēšana atcelta",
         "cancelled": "Pieprasījums atcelts",
         "approved": "Pieprasījums apstiprināts"
       },
-      "automaticOrigin": "Automātiski atzīmēts — neaktīvs vairāk nekā 3 gadus"
+      "automaticOrigin": "Automātiski atzīmēts — neaktīvs vairāk nekā 3 gadus",
+      "inactiveSince": "pameta {date}"
     }
   },
   "cotisations": {

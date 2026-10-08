@@ -3833,13 +3833,16 @@
       },
       "cancelConfirmTitle": "Dit wisverzoek annuleren?",
       "cancelConfirmDescription": "Het lid en de andere beheerders worden per e-mail geïnformeerd over deze annulering.",
+      "approveConfirmTitle": "Dit wisverzoek goedkeuren?",
+      "approveConfirmDescription": "De gegevens van het lid worden tijdens de volgende nachtelijke verwerking onherroepelijk geanonimiseerd, tenzij ze voor die tijd in de wacht worden gezet.",
       "toasts": {
         "held": "Verzoek in de wacht gezet",
         "released": "Wachtstand opgeheven",
         "cancelled": "Verzoek geannuleerd",
         "approved": "Verzoek goedgekeurd"
       },
-      "automaticOrigin": "Automatisch gemarkeerd — meer dan 3 jaar inactief"
+      "automaticOrigin": "Automatisch gemarkeerd — meer dan 3 jaar inactief",
+      "inactiveSince": "vertrokken op {date}"
     }
   },
   "cotisations": {

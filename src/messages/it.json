@@ -3833,13 +3833,16 @@
       },
       "cancelConfirmTitle": "Annullare questa richiesta di cancellazione?",
       "cancelConfirmDescription": "Il membro e gli altri amministratori verranno informati via e-mail di questo annullamento.",
+      "approveConfirmTitle": "Approvare questa richiesta di cancellazione?",
+      "approveConfirmDescription": "I dati del membro verranno anonimizzati in modo irreversibile durante la prossima esecuzione notturna, a meno che non vengano messi in attesa prima di allora.",
       "toasts": {
         "held": "Richiesta messa in attesa",
         "released": "Attesa rimossa",
         "cancelled": "Richiesta annullata",
         "approved": "Richiesta approvata"
       },
-      "automaticOrigin": "Segnalato automaticamente — inattivo da più di 3 anni"
+      "automaticOrigin": "Segnalato automaticamente — inattivo da più di 3 anni",
+      "inactiveSince": "uscito il {date}"
     }
   },
   "cotisations": {

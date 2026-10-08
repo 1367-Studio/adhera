@@ -3833,13 +3833,16 @@
       },
       "cancelConfirmTitle": "Annuller denne anmodning om sletning?",
       "cancelConfirmDescription": "Medlemmet og de øvrige administratorer underrettes via e-mail om denne annullering.",
+      "approveConfirmTitle": "Godkend denne anmodning om sletning?",
+      "approveConfirmDescription": "Medlemmets data vil blive anonymiseret uigenkaldeligt ved næste natlige kørsel, medmindre de sættes på hold inden da.",
       "toasts": {
         "held": "Anmodning sat på hold",
         "released": "Hold frigivet",
         "cancelled": "Anmodning annulleret",
         "approved": "Anmodning godkendt"
       },
-      "automaticOrigin": "Automatisk markeret — inaktiv i mere end 3 år"
+      "automaticOrigin": "Automatisk markeret — inaktiv i mere end 3 år",
+      "inactiveSince": "forlod den {date}"
     }
   },
   "cotisations": {

@@ -3833,13 +3833,16 @@
       },
       "cancelConfirmTitle": "Visszavonja ezt a törlési kérelmet?",
       "cancelConfirmDescription": "A tag és a többi rendszergazda e-mail értesítést kap erről a visszavonásról.",
+      "approveConfirmTitle": "Jóváhagyja ezt a törlési kérelmet?",
+      "approveConfirmDescription": "A tag adatai a következő éjszakai futás során véglegesen anonimizálódnak, kivéve ha előtte felfüggesztik a kérelmet.",
       "toasts": {
         "held": "Kérelem felfüggesztve",
         "released": "Felfüggesztés feloldva",
         "cancelled": "Kérelem visszavonva",
         "approved": "Kérelem jóváhagyva"
       },
-      "automaticOrigin": "Automatikusan megjelölve — több mint 3 éve inaktív"
+      "automaticOrigin": "Automatikusan megjelölve — több mint 3 éve inaktív",
+      "inactiveSince": "kilépett: {date}"
     }
   },
   "cotisations": {

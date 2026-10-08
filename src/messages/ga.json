@@ -3833,13 +3833,16 @@
       },
       "cancelConfirmTitle": "Cealaigh an iarraidh scriosta seo?",
       "cancelConfirmDescription": "Cuirfear an ball agus na riarthóirí eile ar an eolas faoin gcealú seo trí ríomhphost.",
+      "approveConfirmTitle": "Ceadaigh an iarraidh scriosta seo?",
+      "approveConfirmDescription": "Déanfar sonraí an bhaill a dhíainmniú go buan le linn an chéad rith oíche eile, mura gcuirtear ar fionraí roimhe sin.",
       "toasts": {
         "held": "Cuireadh an iarraidh ar fionraí",
         "released": "Scaoileadh an fionraí",
         "cancelled": "Cealaíodh an iarraidh",
         "approved": "Iarraidh ceadaithe"
       },
-      "automaticOrigin": "Brataíodh go huathoibríoch — neamhghníomhach le breis agus 3 bliana"
+      "automaticOrigin": "Brataíodh go huathoibríoch — neamhghníomhach le breis agus 3 bliana",
+      "inactiveSince": "d'fhág ar {date}"
     }
   },
   "cotisations": {

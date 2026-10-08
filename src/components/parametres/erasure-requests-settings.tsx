@@ -19,25 +19,16 @@ import {
 export function ErasureRequestsSettings() {
   const t = useTranslations()
   const { data: requests = [], isLoading } = useErasureRequests()
-  const [holdTarget, setHoldTarget]     = useState<ErasureRequest | null>(null)
-  const [cancelTarget, setCancelTarget] = useState<ErasureRequest | null>(null)
+  const [holdTarget, setHoldTarget]       = useState<ErasureRequest | null>(null)
+  const [cancelTarget, setCancelTarget]   = useState<ErasureRequest | null>(null)
+  const [approveTarget, setApproveTarget] = useState<ErasureRequest | null>(null)
 
   const releaseMutation = useReleaseErasureRequest()
-  const approveMutation = useApproveErasureRequest()
 
   async function handleRelease(request: ErasureRequest) {
     try {
       await releaseMutation.mutateAsync(request.id)
       toast.success(t("parametres.erasureRequests.toasts.released"))
-    } catch (error) {
-      toast.error(error instanceof Error ? error.message : t("common.error"))
-    }
-  }
-
-  async function handleApprove(request: ErasureRequest) {
-    try {
-      await approveMutation.mutateAsync(request.id)
-      toast.success(t("parametres.erasureRequests.toasts.approved"))
     } catch (error) {
       toast.error(error instanceof Error ? error.message : t("common.error"))
     }
@@ -75,14 +66,26 @@ export function ErasureRequestsSettings() {
               const canApprove = request.status === "REVIEW"
               const canHold    = request.status === "PENDING" || request.status === "REVIEW"
               const canRelease = request.status === "HELD"
-              const canCancel  = request.status !== "PROCESSED"
+              // Cancelling only makes sense for a human-initiated request: an automatic
+              // (requestedById null) one would just reappear on the next nightly sweep since
+              // deleting the row doesn't change the Membre.deletedAt that triggered it in the
+              // first place — see the DELETE route's own guard for the same reasoning. Hold is
+              // the only action that actually sticks for that origin.
+              const canCancel  = request.status !== "PROCESSED" && request.requestedById !== null
               return (
                 <TableRow key={request.id}>
                   <TableCell>
                     <div className="font-medium">{request.membre.firstName} {request.membre.lastName}</div>
                     {request.membre.email && <div className="text-xs text-muted-foreground">{request.membre.email}</div>}
                     {!request.requestedById && (
-                      <div className="text-xs text-muted-foreground">{t("parametres.erasureRequests.automaticOrigin")}</div>
+                      <div className="text-xs text-muted-foreground">
+                        {t("parametres.erasureRequests.automaticOrigin")}
+                        {request.membre.deletedAt && (
+                          <> · {t("parametres.erasureRequests.inactiveSince", {
+                            date: format(new Date(request.membre.deletedAt), "d MMMM yyyy", { locale: fr }),
+                          })}</>
+                        )}
+                      </div>
                     )}
                   </TableCell>
                   <TableCell>
@@ -107,7 +110,7 @@ export function ErasureRequestsSettings() {
                   <TableCell className="text-right">
                     <div className="flex items-center justify-end gap-1">
                       {canApprove && (
-                        <Button variant="ghost" size="sm" onClick={() => handleApprove(request)} loading={approveMutation.isPending}>
+                        <Button variant="ghost" size="sm" onClick={() => setApproveTarget(request)}>
                           {t("parametres.erasureRequests.actions.approve")}
                         </Button>
                       )}
@@ -140,6 +143,7 @@ export function ErasureRequestsSettings() {
       )}
 
       <CancelErasureRequestDialog request={cancelTarget} onClose={() => setCancelTarget(null)} />
+      <ApproveErasureRequestDialog request={approveTarget} onClose={() => setApproveTarget(null)} />
     </div>
   )
 }
@@ -181,6 +185,39 @@ function HoldErasureRequestModal({ request, onClose }: { request: ErasureRequest
         rows={3}
       />
     </Modal>
+  )
+}
+
+// Approving puts the request on the path the very next nightly cron processes irreversibly
+// (anonymizeMembre) — the most consequential action in this table, so unlike the plain ghost
+// button it used to be, it now goes through the same confirm step as Cancel rather than firing
+// on a single click.
+function ApproveErasureRequestDialog({ request, onClose }: { request: ErasureRequest | null; onClose: () => void }) {
+  const t = useTranslations()
+  const approveMutation = useApproveErasureRequest()
+
+  async function handleConfirm() {
+    if (!request) return
+    try {
+      await approveMutation.mutateAsync(request.id)
+      toast.success(t("parametres.erasureRequests.toasts.approved"))
+      onClose()
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : t("common.error"))
+    }
+  }
+
+  return (
+    <ConfirmDialog
+      open={!!request}
+      onOpenChange={isOpen => { if (!isOpen) onClose() }}
+      title={t("parametres.erasureRequests.approveConfirmTitle")}
+      description={t("parametres.erasureRequests.approveConfirmDescription")}
+      confirmLabel={t("parametres.erasureRequests.actions.approve")}
+      confirmVariant="default"
+      loading={approveMutation.isPending}
+      onConfirm={handleConfirm}
+    />
   )
 }
 

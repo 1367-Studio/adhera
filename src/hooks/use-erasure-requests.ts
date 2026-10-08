@@ -21,7 +21,7 @@ export type ErasureRequest = {
   heldFromStatus: ErasureRequestStatus | null
   retryCount:     number
   lastError:      string | null
-  membre:         { firstName: string; lastName: string; email: string | null }
+  membre:         { firstName: string; lastName: string; email: string | null; deletedAt: string | null }
 }
 
 const ERASURE_REQUESTS_QUERY_KEY = ["erasure-requests"] as const

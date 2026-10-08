@@ -3833,13 +3833,16 @@
       },
       "cancelConfirmTitle": "Diesen Löschantrag abbrechen?",
       "cancelConfirmDescription": "Das Mitglied und die anderen Administratoren werden per E-Mail über diesen Abbruch informiert.",
+      "approveConfirmTitle": "Diesen Löschantrag genehmigen?",
+      "approveConfirmDescription": "Die Daten des Mitglieds werden beim nächsten nächtlichen Durchlauf unwiderruflich anonymisiert, sofern sie nicht vorher zurückgestellt werden.",
       "toasts": {
         "held": "Antrag zurückgestellt",
         "released": "Zurückstellung aufgehoben",
         "cancelled": "Antrag abgebrochen",
         "approved": "Antrag genehmigt"
       },
-      "automaticOrigin": "Automatisch markiert — seit mehr als 3 Jahren inaktiv"
+      "automaticOrigin": "Automatisch markiert — seit mehr als 3 Jahren inaktiv",
+      "inactiveSince": "ausgetreten am {date}"
     }
   },
   "cotisations": {

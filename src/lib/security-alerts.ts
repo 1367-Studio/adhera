@@ -1,7 +1,7 @@
 import { sendEmail } from "@/lib/mail"
 import { securityAlertEmail, escapeHtml } from "@/lib/email"
 import { reportError } from "@/lib/monitoring"
-import { rateLimitPeek } from "@/lib/rate-limit"
+import { claimOnce } from "@/lib/rate-limit"
 
 // Security audit M1 — until now nothing in the codebase ever proactively told anyone about a
 // critical security event; the only way to notice one was to go looking in Sentry/ActivityLog
@@ -24,14 +24,15 @@ async function dispatchSecurityAlert(heading: string, body: string): Promise<voi
   }
 }
 
-// Call right after rateLimit() returns false for `key` — fires exactly once per window, the
-// moment the bucket first crosses `limit` (peeked count === limit + 1). Every blocked attempt
-// after that reads a higher count and is skipped, so a retried/looping attacker doesn't flood
-// the inbox for the rest of the 15-minute window.
-export async function alertOnLoginRateLimitBreach(key: string, limit: number, description: string): Promise<void> {
+// Call right after rateLimit() returns false for `key` — fires exactly once per `windowMs`,
+// via an atomic SET NX claim rather than peeking the counter and comparing it to `limit + 1`:
+// under a real brute-force attempt (concurrent requests), several increments can land before
+// any of them reads back, so the counter can skip straight past `limit + 1` and a peek-based
+// check would never fire at all. The claim can't be missed the same way — exactly one caller
+// ever wins it per window, no matter how many arrive at once.
+export async function alertOnLoginRateLimitBreach(key: string, limit: number, windowMs: number, description: string): Promise<void> {
   try {
-    const count = await rateLimitPeek(key)
-    if (count !== limit + 1) return
+    if (!(await claimOnce(key, windowMs))) return
     await dispatchSecurityAlert(
       "Tentatives de connexion suspectes",
       `${escapeHtml(description)}<br>Limite de ${limit} tentatives dépassée sur une fenêtre de 15 minutes.`,
