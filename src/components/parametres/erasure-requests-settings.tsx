@@ -69,7 +69,9 @@ export function ErasureRequestsSettings() {
           <TableBody>
             {requests.map(request => {
               const badge = erasureRequestStatusBadge(t, request.status)
-              // Self-service only — nothing creates REVIEW outside of POST /api/portal/erasure-request.
+              // REVIEW now has two distinct origins: the member themselves (POST /api/portal/
+              // erasure-request) or the retention-sweep cron flagging 3+ years of inactivity
+              // (requestedById null either way requires the same human approval below).
               const canApprove = request.status === "REVIEW"
               const canHold    = request.status === "PENDING" || request.status === "REVIEW"
               const canRelease = request.status === "HELD"
@@ -79,6 +81,9 @@ export function ErasureRequestsSettings() {
                   <TableCell>
                     <div className="font-medium">{request.membre.firstName} {request.membre.lastName}</div>
                     {request.membre.email && <div className="text-xs text-muted-foreground">{request.membre.email}</div>}
+                    {!request.requestedById && (
+                      <div className="text-xs text-muted-foreground">{t("parametres.erasureRequests.automaticOrigin")}</div>
+                    )}
                   </TableCell>
                   <TableCell>
                     <Badge variant={badge.variant}>{badge.label}</Badge>

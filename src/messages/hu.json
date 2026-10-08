@@ -3838,7 +3838,8 @@
         "released": "Felfüggesztés feloldva",
         "cancelled": "Kérelem visszavonva",
         "approved": "Kérelem jóváhagyva"
-      }
+      },
+      "automaticOrigin": "Automatikusan megjelölve — több mint 3 éve inaktív"
     }
   },
   "cotisations": {

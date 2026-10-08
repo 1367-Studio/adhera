@@ -4067,7 +4067,8 @@
         "released": "Hold released",
         "cancelled": "Request cancelled",
         "approved": "Request approved"
-      }
+      },
+      "automaticOrigin": "Automatically flagged — inactive for more than 3 years"
     }
   },
   "cotisations": {

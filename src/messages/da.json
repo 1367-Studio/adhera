@@ -3838,7 +3838,8 @@
         "released": "Hold frigivet",
         "cancelled": "Anmodning annulleret",
         "approved": "Anmodning godkendt"
-      }
+      },
+      "automaticOrigin": "Automatisk markeret — inaktiv i mere end 3 år"
     }
   },
   "cotisations": {

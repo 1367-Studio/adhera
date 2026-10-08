@@ -16,11 +16,12 @@ export async function notifyAdministratorsOfErasureRequest(opts: {
   erasureRequestId: string
   membreId:         string
   membreName:       string
-  event:            "created" | "review_requested" | "approved" | "held" | "released" | "cancelled" | "completed"
+  event:            "created" | "review_requested" | "retention_triggered" | "approved" | "held" | "released" | "cancelled" | "completed"
   heldReason?:      string | null
-  // Omit for the cron's "completed" event, and for "review_requested" — in both cases the
-  // actor isn't one of the association's administrators (the cron, or the member themselves
-  // from the portal), so there's nobody on the admin side to leave out.
+  // Omit for the cron's "completed" and "retention_triggered" events, and for
+  // "review_requested" — in all three cases the actor isn't one of the association's
+  // administrators (the cron, or the member themselves from the portal), so there's nobody
+  // on the admin side to leave out.
   excludeUserId?:   string
 }): Promise<void> {
   try {

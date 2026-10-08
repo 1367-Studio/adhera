@@ -3838,7 +3838,8 @@
         "released": "Suspendare ridicată",
         "cancelled": "Cerere anulată",
         "approved": "Cerere aprobată"
-      }
+      },
+      "automaticOrigin": "Semnalat automat — inactiv de peste 3 ani"
     }
   },
   "cotisations": {

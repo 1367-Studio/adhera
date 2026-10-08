@@ -4075,7 +4075,8 @@
         "released": "Attente levée",
         "cancelled": "Demande annulée",
         "approved": "Demande validée"
-      }
+      },
+      "automaticOrigin": "Déclenché automatiquement — inactif depuis plus de 3 ans"
     }
   },
   "cotisations": {

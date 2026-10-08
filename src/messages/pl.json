@@ -3838,7 +3838,8 @@
         "released": "Wstrzymanie zwolnione",
         "cancelled": "Wniosek anulowany",
         "approved": "Wniosek zatwierdzony"
-      }
+      },
+      "automaticOrigin": "Oznaczone automatycznie — nieaktywne od ponad 3 lat"
     }
   },
   "cotisations": {

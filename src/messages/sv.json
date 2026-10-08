@@ -3838,7 +3838,8 @@
         "released": "Pausning upphävd",
         "cancelled": "Begäran avbruten",
         "approved": "Begäran godkänd"
-      }
+      },
+      "automaticOrigin": "Automatiskt flaggad — inaktiv i mer än 3 år"
     }
   },
   "cotisations": {

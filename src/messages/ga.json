@@ -3838,7 +3838,8 @@
         "released": "Scaoileadh an fionraí",
         "cancelled": "Cealaíodh an iarraidh",
         "approved": "Iarraidh ceadaithe"
-      }
+      },
+      "automaticOrigin": "Brataíodh go huathoibríoch — neamhghníomhach le breis agus 3 bliana"
     }
   },
   "cotisations": {

@@ -3902,7 +3902,8 @@
         "released": "Espera retomada",
         "cancelled": "Solicitação cancelada",
         "approved": "Solicitação aprovada"
-      }
+      },
+      "automaticOrigin": "Marcado automaticamente — inativo há mais de 3 anos"
     }
   },
   "cotisations": {

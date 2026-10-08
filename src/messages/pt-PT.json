@@ -3840,7 +3840,8 @@
         "released": "Espera retomada",
         "cancelled": "Pedido cancelado",
         "approved": "Pedido aprovado"
-      }
+      },
+      "automaticOrigin": "Assinalado automaticamente — inativo há mais de 3 anos"
     }
   },
   "cotisations": {

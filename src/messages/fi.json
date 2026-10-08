@@ -3838,7 +3838,8 @@
         "released": "Odotus poistettu",
         "cancelled": "Pyyntö peruutettu",
         "approved": "Pyyntö hyväksytty"
-      }
+      },
+      "automaticOrigin": "Merkitty automaattisesti — ei toimintaa yli 3 vuoteen"
     }
   },
   "cotisations": {

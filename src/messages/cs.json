@@ -3838,7 +3838,8 @@
         "released": "Pozastavení bylo zrušeno",
         "cancelled": "Žádost byla zrušena",
         "approved": "Žádost schválena"
-      }
+      },
+      "automaticOrigin": "Automaticky označeno — neaktivní více než 3 roky"
     }
   },
   "cotisations": {

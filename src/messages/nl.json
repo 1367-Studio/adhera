@@ -3838,7 +3838,8 @@
         "released": "Wachtstand opgeheven",
         "cancelled": "Verzoek geannuleerd",
         "approved": "Verzoek goedgekeurd"
-      }
+      },
+      "automaticOrigin": "Automatisch gemarkeerd — meer dan 3 jaar inactief"
     }
   },
   "cotisations": {

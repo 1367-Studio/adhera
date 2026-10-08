@@ -24,7 +24,10 @@ import { writeActivityLog } from "@/lib/activity-log"
 // a prior check — some of those rows may already carry an issued fiscal receipt, which French
 // tax law can require keeping identified for years, the same reasoning that already protects
 // Cotisation/Income. Not guessing that in a destructive operation; follow-up once confirmed.
-const ANONYMIZED = "[Anonymisé]"
+// Exported so callers that need to recognize an already-anonymized Membre (e.g. the
+// retention-sweep cron, to avoid re-flagging one) check against this exact value rather than
+// duplicating the literal.
+export const ANONYMIZED = "[Anonymisé]"
 
 export async function anonymizeMembre(
   associationId: string,

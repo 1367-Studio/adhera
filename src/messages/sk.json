@@ -3838,7 +3838,8 @@
         "released": "Pozastavenie zrušené",
         "cancelled": "Žiadosť zrušená",
         "approved": "Žiadosť schválená"
-      }
+      },
+      "automaticOrigin": "Automaticky označené — neaktívny viac ako 3 roky"
     }
   },
   "cotisations": {

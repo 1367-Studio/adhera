@@ -3838,7 +3838,8 @@
         "released": "Sustabdymas atšauktas",
         "cancelled": "Prašymas atšauktas",
         "approved": "Prašymas patvirtintas"
-      }
+      },
+      "automaticOrigin": "Automatiškai pažymėta — neaktyvus ilgiau nei 3 metus"
     }
   },
   "cotisations": {

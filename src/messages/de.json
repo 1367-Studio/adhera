@@ -3838,7 +3838,8 @@
         "released": "Zurückstellung aufgehoben",
         "cancelled": "Antrag abgebrochen",
         "approved": "Antrag genehmigt"
-      }
+      },
+      "automaticOrigin": "Automatisch markiert — seit mehr als 3 Jahren inaktiv"
     }
   },
   "cotisations": {

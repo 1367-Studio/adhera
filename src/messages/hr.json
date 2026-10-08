@@ -3838,7 +3838,8 @@
         "released": "Čekanje ukinuto",
         "cancelled": "Zahtjev otkazan",
         "approved": "Zahtjev odobren"
-      }
+      },
+      "automaticOrigin": "Automatski označeno — neaktivan više od 3 godine"
     }
   },
   "cotisations": {

@@ -53,6 +53,10 @@
     {
       "path": "/api/cron/activity-log-retention-sweep",
       "schedule": "0 2 * * *"
+    },
+    {
+      "path": "/api/cron/erasure-retention-sweep",
+      "schedule": "0 1 * * *"
     }
   ]
 }

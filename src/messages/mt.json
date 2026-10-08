@@ -3838,7 +3838,8 @@
         "released": "Sospensjoni meħuda",
         "cancelled": "Talba kkanċellata",
         "approved": "Talba approvata"
-      }
+      },
+      "automaticOrigin": "Immarkat awtomatikament — mhux attiv għal aktar minn 3 snin"
     }
   },
   "cotisations": {

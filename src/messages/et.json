@@ -3838,7 +3838,8 @@
         "released": "Ootelt vabastatud",
         "cancelled": "Taotlus tühistatud",
         "approved": "Taotlus kinnitatud"
-      }
+      },
+      "automaticOrigin": "Automaatselt märgistatud — tegevuseta rohkem kui 3 aastat"
     }
   },
   "cotisations": {

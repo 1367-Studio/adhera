@@ -3838,7 +3838,8 @@
         "released": "Aizturēšana atcelta",
         "cancelled": "Pieprasījums atcelts",
         "approved": "Pieprasījums apstiprināts"
-      }
+      },
+      "automaticOrigin": "Automātiski atzīmēts — neaktīvs vairāk nekā 3 gadus"
     }
   },
   "cotisations": {

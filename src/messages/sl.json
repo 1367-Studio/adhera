@@ -3838,7 +3838,8 @@
         "released": "Zadržanje preklicano",
         "cancelled": "Zahteva preklicana",
         "approved": "Zahteva potrjena"
-      }
+      },
+      "automaticOrigin": "Samodejno označeno — nedejaven več kot 3 leta"
     }
   },
   "cotisations": {

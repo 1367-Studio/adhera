@@ -3838,7 +3838,8 @@
         "released": "Attesa rimossa",
         "cancelled": "Richiesta annullata",
         "approved": "Richiesta approvata"
-      }
+      },
+      "automaticOrigin": "Segnalato automaticamente — inattivo da più di 3 anni"
     }
   },
   "cotisations": {
