@@ -3545,7 +3545,8 @@
         "general": "Obecné",
         "paiements": "Platby",
         "abonnement": "Předplatné",
-        "integrations": "Integrace"
+        "integrations": "Integrace",
+        "rgpd": "GDPR"
       },
       "associationInfo": "Informace o asociaci",
       "associationName": "Název sdružení",
@@ -3801,6 +3802,43 @@
       "titleTrialExpired": "Přihlaste se k odběru",
       "subtitleTrialExpired": "Vaše bezplatná zkušební doba skončila. Vyberte si tarif a zadejte platební metodu, abyste mohli pokračovat.",
       "confirmButtonSubscribe": "Potvrďte a přihlaste se k odběru"
+    },
+    "erasureRequests": {
+      "title": "Výmaz údajů (GDPR)",
+      "description": "Žádosti o trvalé vymazání osobních údajů člena podle článku 17 GDPR. Zpracovávají se automaticky každou noc, pokud nejsou pozastaveny.",
+      "empty": "Zatím žádné žádosti o výmaz.",
+      "retryWarning": "Selhalo {count}x — automaticky se zkusí znovu",
+      "columns": {
+        "membre": "Člen",
+        "status": "Stav",
+        "requestedAt": "Požádáno dne"
+      },
+      "status": {
+        "review": "Posuzuje se",
+        "pending": "Čeká na zpracování",
+        "held": "Pozastaveno",
+        "processed": "Zpracováno"
+      },
+      "actions": {
+        "approve": "Schválit",
+        "hold": "Pozastavit",
+        "release": "Zrušit pozastavení",
+        "cancel": "Zrušit"
+      },
+      "holdModal": {
+        "title": "Pozastavit tuto žádost",
+        "description": "Žádost nebude zpracována při dalším automatickém běhu, dokud nebude pozastavení zrušeno. Člen bude informován e-mailem.",
+        "reasonLabel": "Důvod (interní, nezobrazuje se členovi)",
+        "confirm": "Pozastavit"
+      },
+      "cancelConfirmTitle": "Zrušit tuto žádost o výmaz?",
+      "cancelConfirmDescription": "Člen a ostatní administrátoři budou o tomto zrušení informováni e-mailem.",
+      "toasts": {
+        "held": "Žádost byla pozastavena",
+        "released": "Pozastavení bylo zrušeno",
+        "cancelled": "Žádost byla zrušena",
+        "approved": "Žádost schválena"
+      }
     }
   },
   "cotisations": {
@@ -4261,6 +4299,13 @@
         "rejectedToast": "Žádost byla zamítnuta",
         "rejectConfirmTitle": "Odmítnout tuto žádost?",
         "rejectConfirmDescription": "{name} se změní na \"Neaktivní\" a nebude možné se přihlásit. Žádost a její odpovědi na formulář zůstávají zachovány."
+      },
+      "eraseData": {
+        "button": "Vymazat údaje (GDPR)",
+        "confirmTitle": "Požádat o trvalé vymazání údajů uživatele {name}?",
+        "confirmDescription": "Tímto se zaregistruje žádost o výmaz podle čl. 17 GDPR. Člen obdrží potvrzovací e-mail a jeho osobní údaje budou nenávratně anonymizovány při dalším automatickém zpracování, pokud nebude žádost pozastavena.",
+        "toastSuccess": "Žádost o výmaz byla zaregistrována",
+        "requestLabel": "Výmaz GDPR"
       }
     },
     "sms": {
@@ -4450,7 +4495,13 @@
         "loanReturned": "Vykreslený materiál",
         "loanUpdated": "Modifikovaná půjčka",
         "loanCancelled": "Zrušení půjčky",
-        "loanDeleted": "Zrušení půjček"
+        "loanDeleted": "Zrušení půjček",
+        "erasureRequestCreated": "Vyžádáno vymazání údajů (GDPR)",
+        "erasureRequestHeld": "Žádost o vymazání pozastavena",
+        "erasureRequestHoldReleased": "Pozastavení žádosti o vymazání zrušeno",
+        "erasureRequestCancelled": "Žádost o vymazání zrušena",
+        "membreAnonymized": "Osobní údaje vymazány (GDPR)",
+        "erasureRequestApproved": "Žádost o vymazání schválena"
       },
       "actorPrefix": "autor {name}",
       "loadError": "Nelze načíst historii.",
@@ -5347,6 +5398,17 @@
         "title": "Odstranit profilovou fotku?",
         "description": "Novou můžete přidat kdykoliv.",
         "confirm": "Odstranit"
+      },
+      "eraseData": {
+        "title": "Soukromí",
+        "description": "Můžete požádat o trvalé vymazání svých osobních údajů podle čl. 17 GDPR.",
+        "button": "Požádat o vymazání mých údajů",
+        "confirmTitle": "Požádat o trvalé vymazání vašich údajů?",
+        "confirmDescription": "Správce spolku tuto žádost před zpracováním posoudí. Po schválení budou vaše osobní údaje při dalším automatickém zpracování nenávratně anonymizovány.",
+        "toastSuccess": "Žádost odeslána",
+        "statusLabel": "Stav vaší žádosti",
+        "withdrawButton": "Stáhnout svou žádost",
+        "toastWithdrawn": "Žádost stažena"
       }
     },
     "evenements": {

@@ -3545,7 +3545,8 @@
         "general": "General",
         "paiements": "Plăți",
         "abonnement": "Abonament",
-        "integrations": "Integrări"
+        "integrations": "Integrări",
+        "rgpd": "RGPD"
       },
       "associationInfo": "Informații despre asociație",
       "associationName": "Denumirea asociației",
@@ -3801,6 +3802,43 @@
       "titleTrialExpired": "Abonează-te",
       "subtitleTrialExpired": "Perioada ta de probă gratuită s-a încheiat. Alege un plan și introdu o metodă de plată pentru a continua.",
       "confirmButtonSubscribe": "Confirmă și abonează-te"
+    },
+    "erasureRequests": {
+      "title": "Ștergerea datelor (RGPD)",
+      "description": "Cereri de ștergere definitivă a datelor cu caracter personal ale unui membru, conform articolului 17 din RGPD. Sunt procesate automat în fiecare noapte, cu excepția celor suspendate.",
+      "empty": "Nu există încă cereri de ștergere.",
+      "retryWarning": "A eșuat de {count} ori — se va reîncerca automat",
+      "columns": {
+        "membre": "Membru",
+        "status": "Stare",
+        "requestedAt": "Solicitată la"
+      },
+      "status": {
+        "review": "În curs de analiză",
+        "pending": "Așteaptă procesarea",
+        "held": "Suspendată",
+        "processed": "Procesată"
+      },
+      "actions": {
+        "approve": "Aprobă",
+        "hold": "Suspendă",
+        "release": "Ridică suspendarea",
+        "cancel": "Anulează"
+      },
+      "holdModal": {
+        "title": "Suspendă această cerere",
+        "description": "Cererea nu va fi procesată la următoarea rulare automată cât timp este suspendată. Membrul va fi notificat prin e-mail.",
+        "reasonLabel": "Motiv (intern, nu este vizibil membrului)",
+        "confirm": "Suspendă"
+      },
+      "cancelConfirmTitle": "Anulezi această cerere de ștergere?",
+      "cancelConfirmDescription": "Membrul și ceilalți administratori vor fi notificați prin e-mail despre această anulare.",
+      "toasts": {
+        "held": "Cerere suspendată",
+        "released": "Suspendare ridicată",
+        "cancelled": "Cerere anulată",
+        "approved": "Cerere aprobată"
+      }
     }
   },
   "cotisations": {
@@ -4261,6 +4299,13 @@
         "rejectedToast": "Cererea respinsă",
         "rejectConfirmTitle": "Să refuzi această cerere?",
         "rejectConfirmDescription": "{name} va trece la statutul \"Inactiv\" și nu va mai putea să mă conectezi. Cererea și răspunsurile la formular sunt păstrate."
+      },
+      "eraseData": {
+        "button": "Șterge datele (RGPD)",
+        "confirmTitle": "Soliciți ștergerea definitivă a datelor lui {name}?",
+        "confirmDescription": "Această acțiune înregistrează o cerere de ștergere conform art. 17 din RGPD. Membrul va primi un e-mail de confirmare, apoi datele sale personale vor fi anonimizate ireversibil la următoarea procesare automată, cu excepția cazului în care cererea este suspendată.",
+        "toastSuccess": "Cerere de ștergere înregistrată",
+        "requestLabel": "Ștergere RGPD"
       }
     },
     "sms": {
@@ -4450,7 +4495,13 @@
         "loanReturned": "Material randat",
         "loanUpdated": "Împrumut modificat",
         "loanCancelled": "Împrumut anulat",
-        "loanDeleted": "Împrumut desființat"
+        "loanDeleted": "Împrumut desființat",
+        "erasureRequestCreated": "Cerere de ștergere a datelor (RGPD)",
+        "erasureRequestHeld": "Cerere de ștergere suspendată",
+        "erasureRequestHoldReleased": "Suspendarea cererii de ștergere ridicată",
+        "erasureRequestCancelled": "Cerere de ștergere anulată",
+        "membreAnonymized": "Date personale șterse (RGPD)",
+        "erasureRequestApproved": "Cerere de ștergere aprobată"
       },
       "actorPrefix": "de {name}",
       "loadError": "Nu se poate încărca istoricul.",
@@ -5347,6 +5398,17 @@
         "title": "Să elimin poza de profil?",
         "description": "Poți adăuga unul nou oricând.",
         "confirm": "Îndepărtează"
+      },
+      "eraseData": {
+        "title": "Confidențialitate",
+        "description": "Puteți solicita ștergerea definitivă a datelor dvs. personale, conform art. 17 din RGPD.",
+        "button": "Solicită ștergerea datelor mele",
+        "confirmTitle": "Solicitați ștergerea definitivă a datelor dvs.?",
+        "confirmDescription": "Un administrator al asociației va analiza această cerere înainte de procesare. După aprobare, datele dvs. personale vor fi anonimizate ireversibil la următoarea procesare automată.",
+        "toastSuccess": "Cerere trimisă",
+        "statusLabel": "Starea cererii dvs.",
+        "withdrawButton": "Retrage cererea mea",
+        "toastWithdrawn": "Cerere retrasă"
       }
     },
     "evenements": {

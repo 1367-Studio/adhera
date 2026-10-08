@@ -3545,7 +3545,8 @@
         "general": "Allmänt",
         "paiements": "Betalningar",
         "abonnement": "Prenumeration",
-        "integrations": "Integrationer"
+        "integrations": "Integrationer",
+        "rgpd": "GDPR"
       },
       "associationInfo": "Föreningsinformation",
       "associationName": "Föreningens namn",
@@ -3801,6 +3802,43 @@
       "titleTrialExpired": "Prenumerera",
       "subtitleTrialExpired": "Din gratis provperiod är över. Välj ett abonnemang och ange en betalningsmetod för att fortsätta.",
       "confirmButtonSubscribe": "Bekräfta och prenumerera"
+    },
+    "erasureRequests": {
+      "title": "Dataradering (GDPR)",
+      "description": "Begäranden om permanent radering av en medlems personuppgifter enligt artikel 17 i GDPR. Behandlas automatiskt varje natt, förutom de som är pausade.",
+      "empty": "Inga raderingsbegäranden ännu.",
+      "retryWarning": "Misslyckades {count} gånger — försöker automatiskt igen",
+      "columns": {
+        "membre": "Medlem",
+        "status": "Status",
+        "requestedAt": "Begärd den"
+      },
+      "status": {
+        "review": "Under granskning",
+        "pending": "Väntar på behandling",
+        "held": "Pausad",
+        "processed": "Behandlad"
+      },
+      "actions": {
+        "approve": "Godkänn",
+        "hold": "Pausa",
+        "release": "Återuppta",
+        "cancel": "Avbryt"
+      },
+      "holdModal": {
+        "title": "Pausa denna begäran",
+        "description": "Begäran kommer inte att behandlas vid nästa automatiska körning så länge den är pausad. Medlemmen meddelas via e-post.",
+        "reasonLabel": "Anledning (intern, visas inte för medlemmen)",
+        "confirm": "Pausa"
+      },
+      "cancelConfirmTitle": "Avbryta denna raderingsbegäran?",
+      "cancelConfirmDescription": "Medlemmen och de andra administratörerna meddelas via e-post om denna avbokning.",
+      "toasts": {
+        "held": "Begäran pausad",
+        "released": "Pausning upphävd",
+        "cancelled": "Begäran avbruten",
+        "approved": "Begäran godkänd"
+      }
     }
   },
   "cotisations": {
@@ -4261,6 +4299,13 @@
         "rejectedToast": "Ansökan avslås",
         "rejectConfirmTitle": "Vägra denna begäran?",
         "rejectConfirmDescription": "{name} kommer att ändras till \"Inaktiv\" och kan inte logga in. Begäran och dess svar på formuläret behålls."
+      },
+      "eraseData": {
+        "button": "Radera data (GDPR)",
+        "confirmTitle": "Begära permanent radering av {name}s data?",
+        "confirmDescription": "Denna åtgärd registrerar en raderingsbegäran enligt art. 17 i GDPR. Medlemmen får ett bekräftelsemail, och därefter anonymiseras deras personuppgifter oåterkalleligt vid nästa automatiska behandling, såvida begäran inte pausas.",
+        "toastSuccess": "Raderingsbegäran registrerad",
+        "requestLabel": "GDPR-radering"
       }
     },
     "sms": {
@@ -4450,7 +4495,13 @@
         "loanReturned": "Renderat material",
         "loanUpdated": "Modifierat lån",
         "loanCancelled": "Lånet avbrutet",
-        "loanDeleted": "Lån avskaffat"
+        "loanDeleted": "Lån avskaffat",
+        "erasureRequestCreated": "Begäran om radering av uppgifter (GDPR)",
+        "erasureRequestHeld": "Raderingsbegäran pausad",
+        "erasureRequestHoldReleased": "Paus på raderingsbegäran upphävd",
+        "erasureRequestCancelled": "Raderingsbegäran avbruten",
+        "membreAnonymized": "Personuppgifter raderade (GDPR)",
+        "erasureRequestApproved": "Raderingsbegäran godkänd"
       },
       "actorPrefix": "av {name}",
       "loadError": "Kan inte ladda historiken.",
@@ -5347,6 +5398,17 @@
         "title": "Ta bort profilbilden?",
         "description": "Du kan lägga till en ny när som helst.",
         "confirm": "Ta bort"
+      },
+      "eraseData": {
+        "title": "Sekretess",
+        "description": "Du kan begära permanent radering av dina personuppgifter, enligt artikel 17 i GDPR.",
+        "button": "Begär radering av mina uppgifter",
+        "confirmTitle": "Begära permanent radering av dina uppgifter?",
+        "confirmDescription": "En administratör för föreningen granskar denna begäran innan den behandlas. Efter godkännande anonymiseras dina personuppgifter oåterkalleligt vid nästa automatiska behandling.",
+        "toastSuccess": "Begäran skickad",
+        "statusLabel": "Status för din begäran",
+        "withdrawButton": "Återkalla min begäran",
+        "toastWithdrawn": "Begäran återkallad"
       }
     },
     "evenements": {

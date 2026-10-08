@@ -2042,3 +2042,148 @@ export function contactSupportEmail(p: {
     html:    layout(APP_NAME, content),
   }
 }
+
+// ─── RGPD erasure (security audit H6, step 4) ──────────────────────────────────
+// Sent to the Membre who is the subject of an ErasureRequest, at each stage of its
+// lifecycle — mirrors the sibling asr-temp implementation's 3 data-subject emails. There is
+// no separate "a request was submitted" email for the admin-initiated path here unlike
+// asr-temp: when an association admin registers the request directly (POST
+// /api/erasure-requests), they already know it exists. The portal self-service path (POST
+// /api/portal/erasure-request) reuses this same erasureRequestReceivedEmail below instead of
+// a dedicated template — its wording already fits a member-initiated request.
+
+export function erasureRequestReceivedEmail(p: {
+  to:              string
+  associationName: string
+  branding?:       EmailBranding
+}) {
+  const content = `
+    <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">Demande de suppression reçue</h2>
+    <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
+      Nous avons bien enregistré votre demande de suppression de vos données personnelles
+      auprès de ${escapeHtml(p.associationName)}, conformément à l'article 17 du RGPD.
+      Elle sera traitée dans les prochains jours.
+    </p>
+    <p style="margin:0;font-size:13px;color:#71717a;">
+      Si vous n'êtes pas à l'origine de cette demande, contactez ${escapeHtml(p.associationName)} dès que possible.
+    </p>`
+  return {
+    to:       p.to,
+    subject:  `Demande de suppression reçue — ${p.associationName}`,
+    fromName: p.branding?.senderName ?? p.associationName,
+    html:     layout(p.associationName, content, p.branding),
+  }
+}
+
+export function erasureRequestHeldEmail(p: {
+  to:              string
+  associationName: string
+  branding?:       EmailBranding
+}) {
+  const content = `
+    <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">Votre demande de suppression est mise en attente</h2>
+    <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
+      Le traitement de votre demande de suppression auprès de ${escapeHtml(p.associationName)}
+      est temporairement suspendu. Conformément à l'article 17(3) du RGPD, la suppression
+      peut être retardée lorsque les données doivent encore être conservées, par exemple pour
+      répondre à une obligation légale.
+    </p>
+    <p style="margin:0;font-size:13px;color:#71717a;">
+      ${escapeHtml(p.associationName)} reviendra vers vous une fois la situation clarifiée.
+    </p>`
+  return {
+    to:       p.to,
+    subject:  `Votre demande de suppression est mise en attente — ${p.associationName}`,
+    fromName: p.branding?.senderName ?? p.associationName,
+    html:     layout(p.associationName, content, p.branding),
+  }
+}
+
+export function erasureRequestCompletedEmail(p: {
+  to:              string
+  associationName: string
+  branding?:       EmailBranding
+}) {
+  const content = `
+    <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">Suppression effectuée</h2>
+    <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
+      Votre demande de suppression de données personnelles auprès de ${escapeHtml(p.associationName)}
+      a été traitée. Vos informations personnelles ont été anonymisées ou supprimées de nos
+      systèmes actifs.
+    </p>
+    <p style="margin:0;font-size:13px;color:#71717a;">
+      Certaines données transactionnelles peuvent être conservées séparément lorsque la loi
+      l'exige (obligations comptables ou fiscales, par exemple). Aucune autre action n'est
+      requise de votre part.
+    </p>`
+  return {
+    to:       p.to,
+    subject:  `Confirmation de suppression de vos données — ${p.associationName}`,
+    fromName: p.branding?.senderName ?? p.associationName,
+    html:     layout(p.associationName, content, p.branding),
+  }
+}
+
+export function erasureRequestCancelledEmail(p: {
+  to:              string
+  associationName: string
+  branding?:       EmailBranding
+}) {
+  const content = `
+    <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">Demande de suppression annulée</h2>
+    <p style="margin:0;font-size:15px;line-height:1.6;color:#3f3f46;">
+      Votre demande de suppression de données personnelles auprès de ${escapeHtml(p.associationName)}
+      a été annulée. Vos données n'ont pas été modifiées.
+    </p>`
+  return {
+    to:       p.to,
+    subject:  `Demande de suppression annulée — ${p.associationName}`,
+    fromName: p.branding?.senderName ?? p.associationName,
+    html:     layout(p.associationName, content, p.branding),
+  }
+}
+
+// Sent to every OTHER administrator of the association at each stage of an ErasureRequest's
+// lifecycle (security audit H6) — the admin who performed the action already knows; this is
+// for the rest of the team, since an irreversible action can otherwise move forward with only
+// one person aware it's queued. One parameterized template rather than five near-duplicates,
+// same reasoning as membershipSignupAdminNotificationEmail's pendingValidation switch.
+export function erasureRequestAdminNotificationEmail(p: {
+  to:              string
+  associationName: string
+  membreName:      string
+  event:           "created" | "review_requested" | "approved" | "held" | "released" | "cancelled" | "completed"
+  heldReason?:     string | null
+  dashboardUrl:    string
+  branding?:       EmailBranding
+}) {
+  const name = escapeHtml(p.membreName)
+  const { heading, body } = (() => {
+    switch (p.event) {
+      case "created":
+        return { heading: "Demande de suppression enregistrée", body: `Une demande de suppression RGPD (article 17) a été enregistrée pour <strong>${name}</strong>. Sans mise en attente, elle sera traitée automatiquement lors du prochain passage nocturne.` }
+      case "review_requested":
+        return { heading: "Nouvelle demande de suppression (auto-déclarée)", body: `<strong>${name}</strong> a demandé la suppression de ses données personnelles depuis son espace membre. Cette demande doit être validée par un administrateur avant d'être traitée.` }
+      case "approved":
+        return { heading: "Demande de suppression validée", body: `La demande de suppression pour <strong>${name}</strong> a été validée. Elle sera traitée lors du prochain passage nocturne.` }
+      case "held":
+        return { heading: "Demande de suppression mise en attente", body: `La demande de suppression pour <strong>${name}</strong> a été mise en attente${p.heldReason ? ` : <em>${escapeHtml(p.heldReason)}</em>` : "."}` }
+      case "released":
+        return { heading: "Attente levée sur une demande de suppression", body: `L'attente sur la demande de suppression pour <strong>${name}</strong> a été levée. Elle sera traitée lors du prochain passage nocturne.` }
+      case "cancelled":
+        return { heading: "Demande de suppression annulée", body: `La demande de suppression pour <strong>${name}</strong> a été annulée.` }
+      case "completed":
+        return { heading: "Suppression effectuée", body: `Les données personnelles de <strong>${name}</strong> ont été anonymisées, conformément à la demande de suppression enregistrée.` }
+    }
+  })()
+  const content = `
+    <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">${heading}</h2>
+    <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">${body}</p>
+    ${btn("Voir les demandes d'effacement", p.dashboardUrl)}`
+  return {
+    to:       p.to,
+    subject:  `${heading} — ${p.associationName}`,
+    fromName: p.branding?.senderName ?? p.associationName,
+    html:     layout(p.associationName, content, p.branding),
+  }
+}

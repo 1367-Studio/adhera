@@ -3609,7 +3609,8 @@
         "general": "Geral",
         "paiements": "Pagamentos",
         "abonnement": "Assinatura",
-        "integrations": "Integrações"
+        "integrations": "Integrações",
+        "rgpd": "GDPR"
       },
       "associationInfo": "Informações da associação",
       "associationName": "Nome da associação",
@@ -3865,6 +3866,43 @@
       "titleTrialExpired": "Assinar",
       "subtitleTrialExpired": "Seu teste gratuito terminou. Escolha um plano e informe um método de pagamento para continuar.",
       "confirmButtonSubscribe": "Confirmar e assinar"
+    },
+    "erasureRequests": {
+      "title": "Exclusão de dados (GDPR)",
+      "description": "Solicitações de exclusão definitiva dos dados pessoais de um membro, conforme o artigo 17 do GDPR. São processadas automaticamente todas as noites, exceto as que estão em espera.",
+      "empty": "Ainda não há solicitações de exclusão.",
+      "retryWarning": "Falhou {count} vez(es) — nova tentativa automática",
+      "columns": {
+        "membre": "Membro",
+        "status": "Status",
+        "requestedAt": "Solicitado em"
+      },
+      "status": {
+        "review": "Em análise",
+        "pending": "Aguardando processamento",
+        "held": "Em espera",
+        "processed": "Processado"
+      },
+      "actions": {
+        "approve": "Aprovar",
+        "hold": "Colocar em espera",
+        "release": "Retomar",
+        "cancel": "Cancelar"
+      },
+      "holdModal": {
+        "title": "Colocar esta solicitação em espera",
+        "description": "A solicitação não será processada na próxima execução automática enquanto estiver em espera. O membro será notificado por e-mail.",
+        "reasonLabel": "Motivo (interno, não visível para o membro)",
+        "confirm": "Colocar em espera"
+      },
+      "cancelConfirmTitle": "Cancelar esta solicitação de exclusão?",
+      "cancelConfirmDescription": "O membro e os outros administradores serão notificados por e-mail sobre este cancelamento.",
+      "toasts": {
+        "held": "Solicitação colocada em espera",
+        "released": "Espera retomada",
+        "cancelled": "Solicitação cancelada",
+        "approved": "Solicitação aprovada"
+      }
     }
   },
   "cotisations": {
@@ -4325,6 +4363,13 @@
         "rejectedToast": "Pedido recusado",
         "rejectConfirmTitle": "Recusar este pedido?",
         "rejectConfirmDescription": "{name} passará ao estado «Inativo» e não poderá iniciar sessão. O pedido e as respostas ao formulário são mantidos."
+      },
+      "eraseData": {
+        "button": "Excluir dados (GDPR)",
+        "confirmTitle": "Solicitar a exclusão definitiva dos dados de {name}?",
+        "confirmDescription": "Esta ação registra uma solicitação de exclusão conforme o art. 17 do GDPR. O membro receberá um e-mail de confirmação e, em seguida, seus dados pessoais serão anonimizados de forma irreversível no próximo processamento automático, salvo colocação em espera.",
+        "toastSuccess": "Solicitação de exclusão registrada",
+        "requestLabel": "Exclusão GDPR"
       }
     },
     "sms": {
@@ -4514,7 +4559,13 @@
         "loanReturned": "Material devolvido",
         "loanUpdated": "Empréstimo atualizado",
         "loanCancelled": "Empréstimo cancelado",
-        "loanDeleted": "Empréstimo excluído"
+        "loanDeleted": "Empréstimo excluído",
+        "erasureRequestCreated": "Solicitação de exclusão de dados (GDPR)",
+        "erasureRequestHeld": "Solicitação de exclusão em espera",
+        "erasureRequestHoldReleased": "Espera da solicitação de exclusão retomada",
+        "erasureRequestCancelled": "Solicitação de exclusão cancelada",
+        "membreAnonymized": "Dados pessoais excluídos (GDPR)",
+        "erasureRequestApproved": "Solicitação de exclusão aprovada"
       },
       "actorPrefix": "por {name}",
       "loadError": "Não foi possível carregar o histórico.",
@@ -5417,6 +5468,17 @@
         "title": "Remover a foto de perfil?",
         "description": "Você pode adicionar uma nova a qualquer momento.",
         "confirm": "Remover"
+      },
+      "eraseData": {
+        "title": "Privacidade",
+        "description": "Você pode solicitar a exclusão definitiva dos seus dados pessoais, conforme o artigo 17 do GDPR.",
+        "button": "Solicitar a exclusão dos meus dados",
+        "confirmTitle": "Solicitar a exclusão definitiva dos seus dados?",
+        "confirmDescription": "Um administrador da associação analisará esta solicitação antes de processá-la. Após a aprovação, seus dados pessoais serão anonimizados de forma irreversível no próximo processamento automático.",
+        "toastSuccess": "Solicitação enviada",
+        "statusLabel": "Status da sua solicitação",
+        "withdrawButton": "Retirar minha solicitação",
+        "toastWithdrawn": "Solicitação retirada"
       }
     },
     "evenements": {

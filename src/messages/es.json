@@ -3545,7 +3545,8 @@
         "general": "General",
         "paiements": "Pagos",
         "abonnement": "Suscripción",
-        "integrations": "Integraciones"
+        "integrations": "Integraciones",
+        "rgpd": "RGPD"
       },
       "associationInfo": "Información de la asociación",
       "associationName": "Nombre de la asociación",
@@ -3801,6 +3802,43 @@
       "titleTrialExpired": "Suscribirse",
       "subtitleTrialExpired": "Su prueba gratuita ha terminado. Elija un plan e introduzca un método de pago para continuar.",
       "confirmButtonSubscribe": "Confirmar y suscribirse"
+    },
+    "erasureRequests": {
+      "title": "Eliminación de datos (RGPD)",
+      "description": "Solicitudes de eliminación definitiva de los datos personales de un miembro, conforme al artículo 17 del RGPD. Se procesan automáticamente cada noche, salvo que estén en espera.",
+      "empty": "Todavía no hay solicitudes de eliminación.",
+      "retryWarning": "Fallido {count} veces — se reintentará automáticamente",
+      "columns": {
+        "membre": "Miembro",
+        "status": "Estado",
+        "requestedAt": "Solicitado el"
+      },
+      "status": {
+        "review": "En revisión",
+        "pending": "Pendiente de procesamiento",
+        "held": "En espera",
+        "processed": "Procesado"
+      },
+      "actions": {
+        "approve": "Aprobar",
+        "hold": "Poner en espera",
+        "release": "Reanudar",
+        "cancel": "Cancelar"
+      },
+      "holdModal": {
+        "title": "Poner esta solicitud en espera",
+        "description": "La solicitud no se procesará en la próxima ejecución automática mientras esté en espera. El miembro será notificado por correo electrónico.",
+        "reasonLabel": "Motivo (interno, no visible para el miembro)",
+        "confirm": "Poner en espera"
+      },
+      "cancelConfirmTitle": "¿Cancelar esta solicitud de eliminación?",
+      "cancelConfirmDescription": "El miembro y los demás administradores serán notificados por correo electrónico de esta cancelación.",
+      "toasts": {
+        "held": "Solicitud puesta en espera",
+        "released": "Espera finalizada",
+        "cancelled": "Solicitud cancelada",
+        "approved": "Solicitud aprobada"
+      }
     }
   },
   "cotisations": {
@@ -4261,6 +4299,13 @@
         "rejectedToast": "Solicitud rechazada",
         "rejectConfirmTitle": "¿Rechazar esta solicitud?",
         "rejectConfirmDescription": "{name} pasará al estado «Inactivo» y no podrá iniciar sesión. La solicitud y sus respuestas al formulario se conservan."
+      },
+      "eraseData": {
+        "button": "Eliminar datos (RGPD)",
+        "confirmTitle": "¿Solicitar la eliminación definitiva de los datos de {name}?",
+        "confirmDescription": "Esta acción registra una solicitud de eliminación conforme al art. 17 del RGPD. El miembro recibirá un correo de confirmación y, a continuación, sus datos personales se anonimizarán de forma irreversible en el próximo procesamiento automático, salvo que se ponga en espera.",
+        "toastSuccess": "Solicitud de eliminación registrada",
+        "requestLabel": "Eliminación RGPD"
       }
     },
     "sms": {
@@ -4450,7 +4495,13 @@
         "loanReturned": "Material devuelto",
         "loanUpdated": "Préstamo modificado",
         "loanCancelled": "Préstamo cancelado",
-        "loanDeleted": "Préstamo eliminado"
+        "loanDeleted": "Préstamo eliminado",
+        "erasureRequestCreated": "Solicitud de supresión de datos (RGPD)",
+        "erasureRequestHeld": "Solicitud de supresión en espera",
+        "erasureRequestHoldReleased": "Espera finalizada en la solicitud de supresión",
+        "erasureRequestCancelled": "Solicitud de supresión cancelada",
+        "membreAnonymized": "Datos personales eliminados (RGPD)",
+        "erasureRequestApproved": "Solicitud de supresión aprobada"
       },
       "actorPrefix": "por {name}",
       "loadError": "No se pudo cargar el historial.",
@@ -5347,6 +5398,17 @@
         "title": "¿Eliminar la foto de perfil?",
         "description": "Podrás añadir una nueva en cualquier momento.",
         "confirm": "Eliminar"
+      },
+      "eraseData": {
+        "title": "Privacidad",
+        "description": "Puede solicitar la eliminación definitiva de sus datos personales, conforme al artículo 17 del RGPD.",
+        "button": "Solicitar la eliminación de mis datos",
+        "confirmTitle": "¿Solicitar la eliminación definitiva de sus datos?",
+        "confirmDescription": "Un administrador de la asociación revisará esta solicitud antes de procesarla. Una vez aprobada, sus datos personales se anonimizarán de forma irreversible en el próximo procesamiento automático.",
+        "toastSuccess": "Solicitud enviada",
+        "statusLabel": "Estado de su solicitud",
+        "withdrawButton": "Retirar mi solicitud",
+        "toastWithdrawn": "Solicitud retirada"
       }
     },
     "evenements": {

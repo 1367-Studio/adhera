@@ -3545,7 +3545,8 @@
         "general": "Yleiset",
         "paiements": "Maksut",
         "abonnement": "Tilaus",
-        "integrations": "Integraatiot"
+        "integrations": "Integraatiot",
+        "rgpd": "GDPR"
       },
       "associationInfo": "Yhdistyksen tiedot",
       "associationName": "Yhdistyksen nimi",
@@ -3801,6 +3802,43 @@
       "titleTrialExpired": "Tilaa",
       "subtitleTrialExpired": "Ilmainen kokeilujaksosi on ohi. Valitse liittymä ja syötä maksutapa jatkaaksesi.",
       "confirmButtonSubscribe": "Vahvista ja tilaa"
+    },
+    "erasureRequests": {
+      "title": "Tietojen poistaminen (GDPR)",
+      "description": "Pyynnöt jäsenen henkilötietojen pysyvästä poistamisesta GDPR:n 17 artiklan mukaisesti. Käsitellään automaattisesti joka yö, paitsi jos pyyntö on asetettu odottamaan.",
+      "empty": "Ei vielä poistopyyntöjä.",
+      "retryWarning": "Epäonnistui {count} kertaa — yritetään automaattisesti uudelleen",
+      "columns": {
+        "membre": "Jäsen",
+        "status": "Tila",
+        "requestedAt": "Pyydetty"
+      },
+      "status": {
+        "review": "Tarkastuksessa",
+        "pending": "Odottaa käsittelyä",
+        "held": "Odottaa",
+        "processed": "Käsitelty"
+      },
+      "actions": {
+        "approve": "Hyväksy",
+        "hold": "Aseta odottamaan",
+        "release": "Jatka käsittelyä",
+        "cancel": "Peruuta"
+      },
+      "holdModal": {
+        "title": "Aseta tämä pyyntö odottamaan",
+        "description": "Pyyntöä ei käsitellä seuraavalla automaattisella ajolla niin kauan kuin se on odottamassa. Jäsenelle ilmoitetaan sähköpostitse.",
+        "reasonLabel": "Syy (sisäinen, ei näy jäsenelle)",
+        "confirm": "Aseta odottamaan"
+      },
+      "cancelConfirmTitle": "Peruutetaanko tämä poistopyyntö?",
+      "cancelConfirmDescription": "Jäsenelle ja muille ylläpitäjille ilmoitetaan tästä peruutuksesta sähköpostitse.",
+      "toasts": {
+        "held": "Pyyntö asetettu odottamaan",
+        "released": "Odotus poistettu",
+        "cancelled": "Pyyntö peruutettu",
+        "approved": "Pyyntö hyväksytty"
+      }
     }
   },
   "cotisations": {
@@ -4261,6 +4299,13 @@
         "rejectedToast": "Hakemus hylätty",
         "rejectConfirmTitle": "Kieltäydytkö tästä pyynnöstä?",
         "rejectConfirmDescription": "{name} muuttuu \"Passiivinen\" -tilaan eikä voi kirjautua sisään. Pyyntö ja sen vastaukset lomakkeeseen säilyvät."
+      },
+      "eraseData": {
+        "button": "Poista tiedot (GDPR)",
+        "confirmTitle": "Pyydetäänkö {name} tietojen pysyvää poistamista?",
+        "confirmDescription": "Tämä kirjaa GDPR:n 17 artiklan mukaisen poistopyynnön. Jäsen saa vahvistussähköpostin, jonka jälkeen hänen henkilötietonsa anonymisoidaan peruuttamattomasti seuraavassa automaattisessa käsittelyssä, ellei pyyntöä aseteta odottamaan.",
+        "toastSuccess": "Poistopyyntö kirjattu",
+        "requestLabel": "GDPR-poisto"
       }
     },
     "sms": {
@@ -4450,7 +4495,13 @@
         "loanReturned": "Renderöity materiaali",
         "loanUpdated": "Muokattu laina",
         "loanCancelled": "Laina peruttu",
-        "loanDeleted": "Laina lakkautettu"
+        "loanDeleted": "Laina lakkautettu",
+        "erasureRequestCreated": "Tietojen poistopyyntö (GDPR)",
+        "erasureRequestHeld": "Poistopyyntö asetettu odottamaan",
+        "erasureRequestHoldReleased": "Poistopyynnön odotus poistettu",
+        "erasureRequestCancelled": "Poistopyyntö peruutettu",
+        "membreAnonymized": "Henkilötiedot poistettu (GDPR)",
+        "erasureRequestApproved": "Poistopyyntö hyväksytty"
       },
       "actorPrefix": "kirjoittanut {name}",
       "loadError": "Historiaa ei voi ladata.",
@@ -5347,6 +5398,17 @@
         "title": "Poistatko profiilikuvan?",
         "description": "Voit lisätä uuden milloin tahansa.",
         "confirm": "Poista"
+      },
+      "eraseData": {
+        "title": "Tietosuoja",
+        "description": "Voit pyytää henkilötietojesi pysyvää poistamista GDPR:n 17 artiklan mukaisesti.",
+        "button": "Pyydä tietojeni poistamista",
+        "confirmTitle": "Pyydetäänkö tietojesi pysyvää poistamista?",
+        "confirmDescription": "Yhdistyksen pääkäyttäjä tarkistaa pyynnön ennen käsittelyä. Hyväksymisen jälkeen henkilötietosi anonymisoidaan peruuttamattomasti seuraavassa automaattisessa käsittelyssä.",
+        "toastSuccess": "Pyyntö lähetetty",
+        "statusLabel": "Pyyntösi tila",
+        "withdrawButton": "Peru pyyntöni",
+        "toastWithdrawn": "Pyyntö peruttu"
       }
     },
     "evenements": {

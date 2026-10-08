@@ -3545,7 +3545,8 @@
         "general": "Ogólne",
         "paiements": "Płatności",
         "abonnement": "Subskrypcja",
-        "integrations": "Integracje"
+        "integrations": "Integracje",
+        "rgpd": "RODO"
       },
       "associationInfo": "Informacje o stowarzyszeniu",
       "associationName": "Nazwa stowarzyszenia",
@@ -3801,6 +3802,43 @@
       "titleTrialExpired": "Subskrybuj",
       "subtitleTrialExpired": "Twój bezpłatny okres próbny dobiegł końca. Wybierz plan i wpisz metodę płatności, aby kontynuować.",
       "confirmButtonSubscribe": "Potwierdź i subskrybuj"
+    },
+    "erasureRequests": {
+      "title": "Usuwanie danych (RODO)",
+      "description": "Wnioski o trwałe usunięcie danych osobowych członka, na podstawie art. 17 RODO. Są przetwarzane automatycznie każdej noc, z wyjątkiem tych wstrzymanych.",
+      "empty": "Brak wniosków o usunięcie danych.",
+      "retryWarning": "Nie powiodło się {count} razy — automatyczna ponowna próba",
+      "columns": {
+        "membre": "Członek",
+        "status": "Status",
+        "requestedAt": "Zgłoszono"
+      },
+      "status": {
+        "review": "W trakcie weryfikacji",
+        "pending": "Czeka na przetworzenie",
+        "held": "Wstrzymano",
+        "processed": "Przetworzono"
+      },
+      "actions": {
+        "approve": "Zatwierdź",
+        "hold": "Wstrzymaj",
+        "release": "Zwolnij wstrzymanie",
+        "cancel": "Anuluj"
+      },
+      "holdModal": {
+        "title": "Wstrzymaj ten wniosek",
+        "description": "Wniosek nie zostanie przetworzony podczas kolejnego automatycznego uruchomienia, dopóki jest wstrzymany. Członek zostanie poinformowany e-mailem.",
+        "reasonLabel": "Powód (wewnętrzny, niewidoczny dla członka)",
+        "confirm": "Wstrzymaj"
+      },
+      "cancelConfirmTitle": "Anulować ten wniosek o usunięcie danych?",
+      "cancelConfirmDescription": "Członek i inni administratorzy zostaną poinformowani e-mailem o tym anulowaniu.",
+      "toasts": {
+        "held": "Wniosek wstrzymany",
+        "released": "Wstrzymanie zwolnione",
+        "cancelled": "Wniosek anulowany",
+        "approved": "Wniosek zatwierdzony"
+      }
     }
   },
   "cotisations": {
@@ -4261,6 +4299,13 @@
         "rejectedToast": "Wniosek odrzucony",
         "rejectConfirmTitle": "Odmówić tej prośbie?",
         "rejectConfirmDescription": "{name} zmieni się na status \"Nieaktywny\" i nie będzie można się zalogować. Żądanie oraz odpowiedzi na formularz pozostają zachowane."
+      },
+      "eraseData": {
+        "button": "Usuń dane (RODO)",
+        "confirmTitle": "Złożyć wniosek o trwałe usunięcie danych {name}?",
+        "confirmDescription": "Ta czynność rejestruje wniosek o usunięcie danych na podstawie art. 17 RODO. Członek otrzyma e-mail z potwierdzeniem, a następnie jego dane osobowe zostaną nieodwracalnie zanonimizowane podczas kolejnego automatycznego przetwarzania, o ile wniosek nie zostanie wstrzymany.",
+        "toastSuccess": "Wniosek o usunięcie danych zarejestrowany",
+        "requestLabel": "Usunięcie RODO"
       }
     },
     "sms": {
@@ -4450,7 +4495,13 @@
         "loanReturned": "Materiały renderowane",
         "loanUpdated": "Zmodyfikowana pożyczka",
         "loanCancelled": "Anulowanie wypożyczenia",
-        "loanDeleted": "Zniesiona pożyczka"
+        "loanDeleted": "Zniesiona pożyczka",
+        "erasureRequestCreated": "Żądanie usunięcia danych (RODO)",
+        "erasureRequestHeld": "Żądanie usunięcia wstrzymane",
+        "erasureRequestHoldReleased": "Wstrzymanie żądania usunięcia zniesione",
+        "erasureRequestCancelled": "Żądanie usunięcia odwołane",
+        "membreAnonymized": "Dane osobowe usunięte (RODO)",
+        "erasureRequestApproved": "Żądanie usunięcia zatwierdzone"
       },
       "actorPrefix": "autor: {name}",
       "loadError": "Nie można wczytać historii.",
@@ -5347,6 +5398,17 @@
         "title": "Usunąć zdjęcie profilowe?",
         "description": "Możesz dodać nowy w dowolnym momencie.",
         "confirm": "Usuń"
+      },
+      "eraseData": {
+        "title": "Prywatność",
+        "description": "Możesz złożyć wniosek o trwałe usunięcie swoich danych osobowych, na podstawie art. 17 RODO.",
+        "button": "Złóż wniosek o usunięcie moich danych",
+        "confirmTitle": "Złożyć wniosek o trwałe usunięcie swoich danych?",
+        "confirmDescription": "Administrator organizacji rozpatrzy ten wniosek przed jego realizacją. Po zatwierdzeniu Twoje dane osobowe zostaną nieodwracalnie zanonimizowane podczas kolejnego automatycznego przetwarzania.",
+        "toastSuccess": "Wniosek wysłany",
+        "statusLabel": "Status Twojego wniosku",
+        "withdrawButton": "Wycofaj mój wniosek",
+        "toastWithdrawn": "Wniosek wycofany"
       }
     },
     "evenements": {
