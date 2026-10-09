@@ -49,7 +49,8 @@
     "actions": "Gníomhartha",
     "dismissTip": "Scipeáil an leid",
     "addressPlaceholder": "Salle des fêtes, 12 rue de la Paix, Páras...",
-    "viewOnGoogleMaps": "Féach ar Google Maps"
+    "viewOnGoogleMaps": "Féach ar Google Maps",
+    "backToSite": "Ar ais go dtí an suíomh"
   },
   "address": {
     "street": "Seoladh",

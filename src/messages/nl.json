@@ -49,7 +49,8 @@
     "actions": "Acties",
     "dismissTip": "Sla de tip over",
     "addressPlaceholder": "Salle des fêtes, 12 rue de la Paix, Parijs...",
-    "viewOnGoogleMaps": "Zie op Google Maps"
+    "viewOnGoogleMaps": "Zie op Google Maps",
+    "backToSite": "Terug naar de site"
   },
   "address": {
     "street": "Adres",

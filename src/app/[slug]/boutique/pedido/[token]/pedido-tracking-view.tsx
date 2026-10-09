@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query"
 import { useTranslations } from "next-intl"
 import { CheckCircleIcon, ClockIcon, XCircleIcon, ShoppingBagIcon } from "@phosphor-icons/react/dist/ssr";
 import { Badge } from "@/components/ui/badge"
+import { BackToSiteLink } from "@/components/public/back-to-site-link"
 
 type Pedido = {
   status:          "PENDING" | "PAID" | "CANCELLED"
@@ -14,6 +15,8 @@ type Pedido = {
   createdAt:       string
   paidAt:          string | null
   associationName: string
+  sitePublished:   boolean
+  website:         string | null
   items:           { name: string; quantity: number; unitPrice: number }[]
 }
 
@@ -35,6 +38,8 @@ export function PedidoTrackingView({ slug, token }: Props) {
   if (isLoading) return <div className="min-h-screen bg-background" />
 
   if (error || !data) {
+    // No commande data (bad token) — nothing to know a site state from, so "Voltar ao
+    // site" is omitted rather than risk a second dead link.
     return (
       <div className="min-h-screen flex flex-col items-center justify-center text-center px-4 gap-2">
         <p className="text-lg font-semibold">{t("trackingNotFound")}</p>
@@ -51,6 +56,7 @@ export function PedidoTrackingView({ slug, token }: Props) {
   return (
     <div className="min-h-screen bg-background py-10 px-4">
       <div className="max-w-lg mx-auto space-y-6">
+        <BackToSiteLink slug={slug} sitePublished={data.sitePublished} website={data.website} />
         <div className="text-center space-y-2">
           <div className="inline-flex items-center justify-center size-12 rounded-full bg-primary/10 dark:bg-primary/20">
             <ShoppingBagIcon className="size-6 text-primary" />

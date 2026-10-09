@@ -18,7 +18,7 @@ export async function GET(
 
   const assoc = await prisma.association.findUnique({
     where:  { slug },
-    select: { id: true, name: true, modules: true, stripeConnectId: true },
+    select: { id: true, name: true, modules: true, stripeConnectId: true, sitePublished: true, website: true },
   })
   if (!assoc) return NextResponse.json({ error: "Not found" }, { status: 404 })
 
@@ -94,8 +94,14 @@ export async function GET(
     requireCguvSignature: form.requireCguvSignature,
   })
 
+  // Whether "Voltar ao site" (the public homepage) actually resolves — getSiteData() requires
+  // both sitePublished AND the "site" module, so a membership form can be live with neither.
+  const sitePublished = assoc.sitePublished && modules.site
+
   return NextResponse.json({
     associationName:      assoc.name,
+    sitePublished,
+    website:              assoc.website,
     id:                   form.id,
     title:                content.title,
     imageUrl:             form.imageUrl,

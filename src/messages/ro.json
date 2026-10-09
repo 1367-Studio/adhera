@@ -49,7 +49,8 @@
     "actions": "Acțiuni",
     "dismissTip": "Sari peste pont",
     "addressPlaceholder": "Salle des fêtes, 12 rue de la Paix, Paris...",
-    "viewOnGoogleMaps": "Vezi pe Google Maps"
+    "viewOnGoogleMaps": "Vezi pe Google Maps",
+    "backToSite": "Înapoi la site"
   },
   "address": {
     "street": "Adresă",

@@ -49,7 +49,8 @@
     "actions": "Åtgärder",
     "dismissTip": "Hoppa över tipset",
     "addressPlaceholder": "Salle des fêtes, 12 rue de la Paix, Paris...",
-    "viewOnGoogleMaps": "Se på Google Maps"
+    "viewOnGoogleMaps": "Se på Google Maps",
+    "backToSite": "Tillbaka till webbplatsen"
   },
   "address": {
     "street": "Adress",

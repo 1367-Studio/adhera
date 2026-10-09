@@ -49,7 +49,8 @@
     "actions": "Acciones",
     "dismissTip": "Descartar consejo",
     "addressPlaceholder": "Salón de actos, Calle Mayor 12…",
-    "viewOnGoogleMaps": "Ver en Google Maps"
+    "viewOnGoogleMaps": "Ver en Google Maps",
+    "backToSite": "Volver al sitio"
   },
   "address": {
     "street": "Dirección",

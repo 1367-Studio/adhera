@@ -49,7 +49,8 @@
     "actions": "Działania",
     "dismissTip": "Pomiń wskazówkę",
     "addressPlaceholder": "Salle des fêtes, 12 rue de la Paix, Paryż...",
-    "viewOnGoogleMaps": "Zobacz na Google Maps"
+    "viewOnGoogleMaps": "Zobacz na Google Maps",
+    "backToSite": "Powrót do strony"
   },
   "address": {
     "street": "Adres",

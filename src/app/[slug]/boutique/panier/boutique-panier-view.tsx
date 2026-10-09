@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button"
 import { FormField } from "@/components/ui/form-field"
 import { LocaleSwitcher } from "@/components/layout/locale-switcher"
 import { LegalConsent, type RequiredLegalDocument } from "@/components/public/legal-consent"
+import { BackToSiteLink } from "@/components/public/back-to-site-link"
 import { useCart } from "@/lib/hooks/use-cart"
 
 type CheckoutError = Error & { insufficientItems?: { varianteId: string; available: number }[] }
@@ -58,7 +59,7 @@ function PanierContent({ legalDocuments }: Props) {
   // whole cart + guest form and only discover Stripe isn't configured after clicking
   // submit. Defaults to enabled while loading so the toggle doesn't flash MANUAL-only for
   // a split second on every page load.
-  const { data: shopData } = useQuery<{ paymentEnabled: boolean }>({
+  const { data: shopData } = useQuery<{ paymentEnabled: boolean; sitePublished: boolean; website: string | null }>({
     queryKey: ["public-boutique-shop", slug],
     queryFn:  () => fetch(`/api/public/${slug}/boutique`).then(r => r.json()),
   })
@@ -232,6 +233,7 @@ function PanierContent({ legalDocuments }: Props) {
             )}
             <Button onClick={() => router.push(`/${slug}/boutique`)}>{t("continueShopping")}</Button>
           </div>
+          <BackToSiteLink slug={slug} sitePublished={!!shopData?.sitePublished} website={shopData?.website} />
         </div>
       </div>
     )
@@ -247,6 +249,7 @@ function PanierContent({ legalDocuments }: Props) {
     return (
       <div className="min-h-screen bg-background py-10 px-4">
         <div className="max-w-5xl mx-auto space-y-6">
+          <BackToSiteLink slug={slug} sitePublished={!!shopData?.sitePublished} website={shopData?.website} />
           <div className="flex items-center gap-3">
             <Button type="button" variant="ghost" size="icon" onClick={() => router.push(`/${slug}/boutique`)}>
               <ArrowLeftIcon className="size-4" />
@@ -266,6 +269,7 @@ function PanierContent({ legalDocuments }: Props) {
   return (
     <div className="min-h-screen bg-background py-10 px-4">
       <div className="max-w-5xl mx-auto space-y-6">
+        <BackToSiteLink slug={slug} sitePublished={!!shopData?.sitePublished} website={shopData?.website} />
         <div className="flex items-center justify-between gap-3">
           <div className="flex items-center gap-3">
             <Button type="button" variant="ghost" size="icon" onClick={() => router.push(`/${slug}/boutique`)}>

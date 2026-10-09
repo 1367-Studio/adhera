@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma/client"
+import { parseModules } from "@/lib/modules"
 
 // Bearer-token lookup, same convention as Participation.cancelToken/ticketToken — a guest
 // storefront buyer has no portal account to authenticate a status page any other way.
@@ -12,7 +13,7 @@ export async function GET(
   const commande = await prisma.boutiqueCommande.findUnique({
     where:   { trackingToken: token },
     include: {
-      association: { select: { slug: true, name: true } },
+      association: { select: { slug: true, name: true, modules: true, sitePublished: true, website: true } },
       items: {
         include: {
           produit:  { select: { name: true } },
@@ -24,6 +25,10 @@ export async function GET(
   if (!commande || commande.association.slug !== slug)
     return NextResponse.json({ error: "Commande introuvable" }, { status: 404 })
 
+  // Whether "Voltar ao site" (the public homepage) actually resolves — getSiteData() requires
+  // both sitePublished AND the "site" module, so an order can exist with neither.
+  const sitePublished = commande.association.sitePublished && parseModules(commande.association.modules).site
+
   return NextResponse.json({
     status:          commande.status,
     guestName:       commande.guestName,
@@ -33,6 +38,8 @@ export async function GET(
     createdAt:       commande.createdAt,
     paidAt:          commande.paidAt,
     associationName: commande.association.name,
+    sitePublished,
+    website: commande.association.website,
     items: commande.items.map(i => ({
       name:      `${i.produit.name} – ${i.variante.label}`,
       quantity:  i.quantity,

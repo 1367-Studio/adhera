@@ -49,7 +49,8 @@
     "actions": "Toimet",
     "dismissTip": "Jätä vinkki väliin",
     "addressPlaceholder": "Salle des fêtes, 12 rue de la Paix, Pariisi...",
-    "viewOnGoogleMaps": "Katso Google Mapsista"
+    "viewOnGoogleMaps": "Katso Google Mapsista",
+    "backToSite": "Takaisin sivustolle"
   },
   "address": {
     "street": "Osoite",

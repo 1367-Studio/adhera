@@ -17,6 +17,7 @@ import { PasswordRequirements, PASSWORD_MIN_LENGTH } from "@/components/ui/passw
 import { ImageUpload } from "@/components/ui/image-upload"
 import { ImageThumbnail } from "@/components/ui/image-thumbnail"
 import { LocaleSwitcher } from "@/components/layout/locale-switcher"
+import { BackToSiteLink } from "@/components/public/back-to-site-link"
 import { RichTextView } from "@/components/ui/rich-text-view"
 import { FormTermsSection } from "@/components/public/form-terms-section"
 import { publicFormTerms } from "@/lib/form-terms"
@@ -69,6 +70,8 @@ type OfferedProduct = {
 
 type FormInfo = {
   associationName: string
+  sitePublished: boolean
+  website: string | null
   id: string
   title: string
   imageUrl: string | null
@@ -894,6 +897,8 @@ function MembershipFormPublicFormInner({ slug, formSlug, legalDocuments }: Props
   }
 
   if (form === null) {
+    // No association/form data at all (bad slug or module off) — nothing to know a site
+    // state from, so "Voltar ao site" is omitted rather than risk a second dead link.
     return (
       <>
         {showInAppBrowserBanner && <InAppBrowserBanner>{t("inAppBrowserWarning")}</InAppBrowserBanner>}
@@ -913,7 +918,14 @@ function MembershipFormPublicFormInner({ slug, formSlug, legalDocuments }: Props
       <div className="dashboard-canvas public-canvas min-h-screen p-3">
         <div className="min-h-[calc(100vh-1.5rem)] rounded-[10px] bg-public-panel flex items-start justify-center py-12 px-4">
           <div className="w-full max-w-md space-y-6">
-            <div className="flex justify-end">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                {/* Admin filling this in on a member's behalf is at their own dashboard
+                    session, not a public visitor — "Voltar ao site" would just be a confusing
+                    exit, so it's left out entirely in this mode (same spirit as the other
+                    isAdminFill-gated features above: this mode is deliberately stripped down). */}
+                {!isAdminFill && <BackToSiteLink slug={slug} sitePublished={form.sitePublished} website={form.website} />}
+              </div>
               <LocaleSwitcher persistAccountLocale={!isPreview} />
             </div>
 

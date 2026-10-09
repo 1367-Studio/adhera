@@ -49,7 +49,8 @@
     "actions": "Veiksmai",
     "dismissTip": "Praleiskite galiuką",
     "addressPlaceholder": "Salle des fêtes, 12 rue de la Paix, Paryžius...",
-    "viewOnGoogleMaps": "Žr. Google žemėlapiuose"
+    "viewOnGoogleMaps": "Žr. Google žemėlapiuose",
+    "backToSite": "Grįžti į svetainę"
   },
   "address": {
     "street": "Adresas",
