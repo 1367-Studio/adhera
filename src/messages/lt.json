@@ -3833,12 +3833,16 @@
       },
       "cancelConfirmTitle": "Atšaukti šį ištrynimo prašymą?",
       "cancelConfirmDescription": "Narys ir kiti administratoriai bus informuoti el. paštu apie šį atšaukimą.",
+      "approveConfirmTitle": "Patvirtinti šį ištrynimo prašymą?",
+      "approveConfirmDescription": "Nario duomenys bus negrįžtamai anonimizuoti per kitą naktinį paleidimą, jei prieš tai jie nebus sustabdyti.",
       "toasts": {
         "held": "Prašymas sustabdytas",
         "released": "Sustabdymas atšauktas",
         "cancelled": "Prašymas atšauktas",
         "approved": "Prašymas patvirtintas"
-      }
+      },
+      "automaticOrigin": "Automatiškai pažymėta — neaktyvus ilgiau nei 3 metus",
+      "inactiveSince": "išvyko {date}"
     }
   },
   "cotisations": {

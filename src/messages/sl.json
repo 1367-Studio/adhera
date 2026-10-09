@@ -3833,12 +3833,16 @@
       },
       "cancelConfirmTitle": "Preklicati to zahtevo za brisanje?",
       "cancelConfirmDescription": "Član in drugi skrbniki bodo o tem preklicu obveščeni po e-pošti.",
+      "approveConfirmTitle": "Potrditi to zahtevo za brisanje?",
+      "approveConfirmDescription": "Podatki člana bodo med naslednjim nočnim izvajanjem nepovratno anonimizirani, razen če bodo pred tem postavljeni na čakanje.",
       "toasts": {
         "held": "Zahteva zadržana",
         "released": "Zadržanje preklicano",
         "cancelled": "Zahteva preklicana",
         "approved": "Zahteva potrjena"
-      }
+      },
+      "automaticOrigin": "Samodejno označeno — nedejaven več kot 3 leta",
+      "inactiveSince": "odšel/odšla {date}"
     }
   },
   "cotisations": {

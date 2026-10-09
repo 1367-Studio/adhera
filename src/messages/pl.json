@@ -3833,12 +3833,16 @@
       },
       "cancelConfirmTitle": "Anulować ten wniosek o usunięcie danych?",
       "cancelConfirmDescription": "Członek i inni administratorzy zostaną poinformowani e-mailem o tym anulowaniu.",
+      "approveConfirmTitle": "Zatwierdzić ten wniosek o usunięcie danych?",
+      "approveConfirmDescription": "Dane członka zostaną nieodwracalnie zanonimizowane podczas najbliższego nocnego przebiegu, o ile nie zostaną wcześniej wstrzymane.",
       "toasts": {
         "held": "Wniosek wstrzymany",
         "released": "Wstrzymanie zwolnione",
         "cancelled": "Wniosek anulowany",
         "approved": "Wniosek zatwierdzony"
-      }
+      },
+      "automaticOrigin": "Oznaczone automatycznie — nieaktywne od ponad 3 lat",
+      "inactiveSince": "opuścił/a {date}"
     }
   },
   "cotisations": {

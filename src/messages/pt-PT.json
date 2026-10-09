@@ -3835,12 +3835,16 @@
       },
       "cancelConfirmTitle": "Cancelar este pedido de eliminação?",
       "cancelConfirmDescription": "O membro e os outros administradores serão notificados por e-mail sobre este cancelamento.",
+      "approveConfirmTitle": "Aprovar este pedido de eliminação?",
+      "approveConfirmDescription": "Os dados do membro serão anonimizados de forma irreversível durante o próximo processamento noturno, salvo se for colocado em espera antes disso.",
       "toasts": {
         "held": "Pedido colocado em espera",
         "released": "Espera retomada",
         "cancelled": "Pedido cancelado",
         "approved": "Pedido aprovado"
-      }
+      },
+      "automaticOrigin": "Assinalado automaticamente — inativo há mais de 3 anos",
+      "inactiveSince": "saiu em {date}"
     }
   },
   "cotisations": {

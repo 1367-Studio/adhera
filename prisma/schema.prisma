@@ -2138,7 +2138,10 @@ model ErasureRequest {
   id            String               @id @default(cuid())
   associationId String
   membreId      String
-  requestedById String
+  // Null means the system created this request, not an admin or the member — see the
+  // retention-sweep cron (CNIL deliberation n°2021-122-adjacent rule: anonymize 3 years after
+  // the relationship ends). No User id to point at there, unlike every human-initiated path.
+  requestedById String?
   requestedAt   DateTime             @default(now())
   processedAt   DateTime?
   status        ErasureRequestStatus @default(REVIEW)
@@ -2156,7 +2159,7 @@ model ErasureRequest {
 
   association Association @relation(fields: [associationId], references: [id], onDelete: Cascade)
   membre      Membre      @relation(fields: [membreId], references: [id], onDelete: Cascade)
-  requestedBy User        @relation("ErasureRequestedBy", fields: [requestedById], references: [id])
+  requestedBy User?       @relation("ErasureRequestedBy", fields: [requestedById], references: [id])
   heldBy      User?       @relation("ErasureHeldBy", fields: [heldById], references: [id], onDelete: SetNull)
 
   @@index([associationId, status])

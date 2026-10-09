@@ -3897,12 +3897,16 @@
       },
       "cancelConfirmTitle": "Cancelar esta solicitação de exclusão?",
       "cancelConfirmDescription": "O membro e os outros administradores serão notificados por e-mail sobre este cancelamento.",
+      "approveConfirmTitle": "Aprovar esta solicitação de exclusão?",
+      "approveConfirmDescription": "Os dados do membro serão anonimizados de forma irreversível durante o próximo processamento noturno, a menos que seja colocada em espera antes disso.",
       "toasts": {
         "held": "Solicitação colocada em espera",
         "released": "Espera retomada",
         "cancelled": "Solicitação cancelada",
         "approved": "Solicitação aprovada"
-      }
+      },
+      "automaticOrigin": "Marcado automaticamente — inativo há mais de 3 anos",
+      "inactiveSince": "saiu em {date}"
     }
   },
   "cotisations": {

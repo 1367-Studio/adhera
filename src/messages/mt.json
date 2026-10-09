@@ -3833,12 +3833,16 @@
       },
       "cancelConfirmTitle": "Tikkanċella din it-talba għat-tħassir?",
       "cancelConfirmDescription": "Il-membru u l-amministraturi l-oħra jiġu nnotifikati bl-email dwar dan il-kanċellament.",
+      "approveConfirmTitle": "Tapprova din it-talba għat-tħassir?",
+      "approveConfirmDescription": "Id-data tal-membru tiġi anonimizzata b'mod irriversibbli matul il-proċess ta' billejl li jmiss, sakemm ma titqiegħedx fi stennija qabel dak iż-żmien.",
       "toasts": {
         "held": "Talba sospiża",
         "released": "Sospensjoni meħuda",
         "cancelled": "Talba kkanċellata",
         "approved": "Talba approvata"
-      }
+      },
+      "automaticOrigin": "Immarkat awtomatikament — mhux attiv għal aktar minn 3 snin",
+      "inactiveSince": "telaq fi {date}"
     }
   },
   "cotisations": {

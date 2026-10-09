@@ -75,6 +75,22 @@ export async function rateLimitPeek(key: string): Promise<number> {
   }
 }
 
+// Atomic "first caller in this window wins" claim — SET NX+PX is a single round-trip, so
+// unlike a separate read-then-compare, two concurrent callers can never both win. Used to
+// fire a one-shot side effect (e.g. a security alert) exactly once per window even when the
+// triggering condition (a rate-limit counter crossing its threshold) is itself being hit by
+// several requests at once, which a "peek the counter, check it equals exactly N" check can
+// miss entirely if concurrent increments skip past N.
+export async function claimOnce(key: string, windowMs: number): Promise<boolean> {
+  try {
+    const result = await redis.set(`${KEY_PREFIX}claim:${key}`, "1", { nx: true, px: windowMs })
+    return result === "OK"
+  } catch (err) {
+    console.error("[rate-limit] Redis call failed during claimOnce, assuming already claimed:", err)
+    return false
+  }
+}
+
 // Adds `amount` to a fixed-window counter, creating the window (with its expiry) on first
 // use — the "spend" half of the peek-then-spend pattern above. Callers are expected to have
 // already checked rateLimitPeek() before calling this; it doesn't enforce a limit itself.

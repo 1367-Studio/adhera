@@ -19,6 +19,7 @@ import { addMonths } from "date-fns"
 import { pusherServer } from "@/lib/pusher-server"
 import { announceMembreCreated, findMembreCreationAssociation, membreColumns, recordOfflineAcceptances } from "@/lib/membres/create-membre"
 import { reportError } from "@/lib/monitoring"
+import { redactSensitiveMembreFields, stripSensitiveMembreFields } from "@/lib/membre-sensitive-fields"
 
 // Même seuil que /api/membres/stats/route.ts pour bucketer "adulte" à partir de birthDate.
 const ADULT_AGE_YEARS = 18
@@ -119,7 +120,7 @@ export const GET = withAdminAuth(async (req, ctx) => {
     // `mobile` est résolu ici comme sur la fiche (GET /api/membres/[id]) : la modale d'édition
     // de la liste repose dessus, et sans lui elle posterait un mobile vide qui effacerait le
     // numéro saisi sur le formulaire public.
-    return NextResponse.json(data.map(m => ({ ...m, mobile: readMobileAnswer(m.answers), isAdherent: isMembreAdherent(m) })))
+    return NextResponse.json(data.map(m => redactSensitiveMembreFields({ ...m, mobile: readMobileAnswer(m.answers), isAdherent: isMembreAdherent(m) }, ctx.permissions)))
   }
 
   const { page, limit, skip } = parsePagination(searchParams)
@@ -132,7 +133,7 @@ export const GET = withAdminAuth(async (req, ctx) => {
     // when they'd want to still see there is something to review.
     prisma.membre.count({ where: { associationId, deletedAt: null, status: "PENDING" } }),
   ])
-  return NextResponse.json({ data: data.map(m => ({ ...m, mobile: readMobileAnswer(m.answers), isAdherent: isMembreAdherent(m) })), total, pendingCount, page, limit, totalPages: Math.ceil(total / limit) })
+  return NextResponse.json({ data: data.map(m => redactSensitiveMembreFields({ ...m, mobile: readMobileAnswer(m.answers), isAdherent: isMembreAdherent(m) }, ctx.permissions)), total, pendingCount, page, limit, totalPages: Math.ceil(total / limit) })
 }, { area: "membres" })
 
 export const POST = withAdminAuth(async (req, ctx) => {
@@ -147,7 +148,10 @@ export const POST = withAdminAuth(async (req, ctx) => {
   // adherentOverride is intentionally dropped here (not spread into rest): a new member
   // always starts "automatic" (bénévole until a cotisation is paid) — the override is only
   // settable afterwards, via PATCH.
-  const { birthDate, email, phone, mobile, address, addressStreet, addressComplement, postalCode, city, country, typeId, civilite, sexe, groupeSanguin, allergies, spokenLanguage, possedeTshirt, tailleTshirt, responsableId, notes, imageRightsConsent, guardianName, guardianPhone, secondGuardianName, secondGuardianPhone, role = "MEMBRE", adherentOverride: _adherentOverride, tierId, legalOfflineAttestation, ...rest } = parsed.data
+  //
+  // Security audit M2+L8 — stripped before destructuring so someone without the `sensible`
+  // area simply cannot set these at creation either, same as on PATCH.
+  const { birthDate, email, phone, mobile, address, addressStreet, addressComplement, postalCode, city, country, typeId, civilite, sexe, groupeSanguin, allergies, spokenLanguage, possedeTshirt, tailleTshirt, responsableId, notes, imageRightsConsent, guardianName, guardianPhone, secondGuardianName, secondGuardianPhone, role = "MEMBRE", adherentOverride: _adherentOverride, tierId, legalOfflineAttestation, ...rest } = stripSensitiveMembreFields(parsed.data, ctx.permissions)
 
   if (role === "ADMIN" && actorRole !== "ADMIN") {
     return NextResponse.json({ error: "Seul un administrateur peut attribuer le rôle admin" }, { status: 403 })

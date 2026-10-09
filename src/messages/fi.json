@@ -3833,12 +3833,16 @@
       },
       "cancelConfirmTitle": "Peruutetaanko tämä poistopyyntö?",
       "cancelConfirmDescription": "Jäsenelle ja muille ylläpitäjille ilmoitetaan tästä peruutuksesta sähköpostitse.",
+      "approveConfirmTitle": "Hyväksytäänkö tämä poistopyyntö?",
+      "approveConfirmDescription": "Jäsenen tiedot anonymisoidaan peruuttamattomasti seuraavan yöllisen ajon aikana, jollei pyyntöä aseteta odottamaan sitä ennen.",
       "toasts": {
         "held": "Pyyntö asetettu odottamaan",
         "released": "Odotus poistettu",
         "cancelled": "Pyyntö peruutettu",
         "approved": "Pyyntö hyväksytty"
-      }
+      },
+      "automaticOrigin": "Merkitty automaattisesti — ei toimintaa yli 3 vuoteen",
+      "inactiveSince": "poistui {date}"
     }
   },
   "cotisations": {

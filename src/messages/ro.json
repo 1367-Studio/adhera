@@ -3833,12 +3833,16 @@
       },
       "cancelConfirmTitle": "Anulezi această cerere de ștergere?",
       "cancelConfirmDescription": "Membrul și ceilalți administratori vor fi notificați prin e-mail despre această anulare.",
+      "approveConfirmTitle": "Aprobi această cerere de ștergere?",
+      "approveConfirmDescription": "Datele membrului vor fi anonimizate ireversibil în timpul următoarei execuții nocturne, cu excepția cazului în care este pusă în așteptare înainte de aceasta.",
       "toasts": {
         "held": "Cerere suspendată",
         "released": "Suspendare ridicată",
         "cancelled": "Cerere anulată",
         "approved": "Cerere aprobată"
-      }
+      },
+      "automaticOrigin": "Semnalat automat — inactiv de peste 3 ani",
+      "inactiveSince": "a părăsit la {date}"
     }
   },
   "cotisations": {

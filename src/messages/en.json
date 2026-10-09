@@ -4062,12 +4062,16 @@
       },
       "cancelConfirmTitle": "Cancel this erasure request?",
       "cancelConfirmDescription": "The member and the other administrators will be notified by email of this cancellation.",
+      "approveConfirmTitle": "Approve this erasure request?",
+      "approveConfirmDescription": "The member's data will be irreversibly anonymized during the next nightly run, unless placed on hold before then.",
       "toasts": {
         "held": "Request placed on hold",
         "released": "Hold released",
         "cancelled": "Request cancelled",
         "approved": "Request approved"
-      }
+      },
+      "automaticOrigin": "Automatically flagged — inactive for more than 3 years",
+      "inactiveSince": "left on {date}"
     }
   },
   "cotisations": {

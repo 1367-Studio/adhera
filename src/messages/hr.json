@@ -3833,12 +3833,16 @@
       },
       "cancelConfirmTitle": "Otkazati ovaj zahtjev za brisanje?",
       "cancelConfirmDescription": "Član i ostali administratori bit će obaviješteni e-poštom o ovom otkazivanju.",
+      "approveConfirmTitle": "Odobriti ovaj zahtjev za brisanje?",
+      "approveConfirmDescription": "Podaci člana bit će trajno anonimizirani tijekom sljedećeg noćnog izvršavanja, osim ako se prije toga ne stave na čekanje.",
       "toasts": {
         "held": "Zahtjev stavljen na čekanje",
         "released": "Čekanje ukinuto",
         "cancelled": "Zahtjev otkazan",
         "approved": "Zahtjev odobren"
-      }
+      },
+      "automaticOrigin": "Automatski označeno — neaktivan više od 3 godine",
+      "inactiveSince": "napustio/la {date}"
     }
   },
   "cotisations": {

@@ -20,7 +20,7 @@ const ACTIVE_STATUSES = ["REVIEW", "PENDING", "HELD"] as const
 export const GET = withAdminAuth(async (_req, ctx) => {
   const requests = await prisma.erasureRequest.findMany({
     where:   { associationId: ctx.associationId },
-    include: { membre: { select: { firstName: true, lastName: true, email: true } } },
+    include: { membre: { select: { firstName: true, lastName: true, email: true, deletedAt: true } } },
     orderBy: [{ status: "asc" }, { requestedAt: "desc" }],
   })
   return NextResponse.json(requests)

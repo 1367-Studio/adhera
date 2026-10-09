@@ -2152,7 +2152,7 @@ export function erasureRequestAdminNotificationEmail(p: {
   to:              string
   associationName: string
   membreName:      string
-  event:           "created" | "review_requested" | "approved" | "held" | "released" | "cancelled" | "completed"
+  event:           "created" | "review_requested" | "retention_triggered" | "approved" | "held" | "released" | "cancelled" | "completed"
   heldReason?:     string | null
   dashboardUrl:    string
   branding?:       EmailBranding
@@ -2164,6 +2164,8 @@ export function erasureRequestAdminNotificationEmail(p: {
         return { heading: "Demande de suppression enregistrée", body: `Une demande de suppression RGPD (article 17) a été enregistrée pour <strong>${name}</strong>. Sans mise en attente, elle sera traitée automatiquement lors du prochain passage nocturne.` }
       case "review_requested":
         return { heading: "Nouvelle demande de suppression (auto-déclarée)", body: `<strong>${name}</strong> a demandé la suppression de ses données personnelles depuis son espace membre. Cette demande doit être validée par un administrateur avant d'être traitée.` }
+      case "retention_triggered":
+        return { heading: "Membre inactif depuis 3 ans — examen requis", body: `<strong>${name}</strong> n'a eu aucune activité depuis plus de 3 ans après la fin de son adhésion, conformément à notre politique de conservation des données. Un examen est requis avant tout traitement : validez si l'effacement peut avoir lieu, ou mettez la demande en attente si une raison justifie de conserver ces données plus longtemps.` }
       case "approved":
         return { heading: "Demande de suppression validée", body: `La demande de suppression pour <strong>${name}</strong> a été validée. Elle sera traitée lors du prochain passage nocturne.` }
       case "held":
@@ -2185,5 +2187,19 @@ export function erasureRequestAdminNotificationEmail(p: {
     subject:  `${heading} — ${p.associationName}`,
     fromName: p.branding?.senderName ?? p.associationName,
     html:     layout(p.associationName, content, p.branding),
+  }
+}
+
+// Security audit M1 — platform-level alert (brute-force login pattern, administrator
+// permission change), not tied to any one association, so no branding/fromName the way
+// every other template above gets one — same convention as passwordResetEmail etc.
+export function securityAlertEmail(p: { to: string; heading: string; body: string }) {
+  const content = `
+    <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">${p.heading}</h2>
+    <p style="margin:0;font-size:15px;line-height:1.6;color:#3f3f46;">${p.body}</p>`
+  return {
+    to:      p.to,
+    subject: `[Formwise] ${p.heading}`,
+    html:    layout(APP_NAME, content),
   }
 }

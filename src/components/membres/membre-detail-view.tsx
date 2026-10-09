@@ -152,6 +152,8 @@ export function MembreDetailView() {
   // belong to administrators. A "read" user sees the sheet without the actions it would refuse.
   const canEditMembres    = useHasAccess("membres", "edit")
   const canEditAdhesions  = useHasAccess("adhesions", "edit")
+  // Security audit M2+L8 — guardian contact info is an exception to "membres" visibility.
+  const canSeeSensitive   = useHasAccess("sensible", "read")
   const isAdministrator   = useIsAdministrator()
 
   const [editOpen, setEditOpen]                 = useState(false)
@@ -705,7 +707,7 @@ export function MembreDetailView() {
         </div>
       </div>
 
-      {guardianRows.length > 0 && (
+      {canSeeSensitive && guardianRows.length > 0 && (
         <section className="space-y-1.5 text-sm">
           <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{t("membres.detail.guardians")}</h3>
           <ul className="space-y-1">

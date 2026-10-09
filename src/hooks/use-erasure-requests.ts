@@ -9,7 +9,9 @@ export type ErasureRequestStatus = "REVIEW" | "PENDING" | "HELD" | "PROCESSED"
 export type ErasureRequest = {
   id:             string
   membreId:       string
-  requestedById:  string
+  // Null means this was flagged automatically by the retention-sweep cron, not requested by
+  // an admin or the member — see erasure-retention-sweep/route.ts.
+  requestedById:  string | null
   requestedAt:    string
   processedAt:    string | null
   status:         ErasureRequestStatus
@@ -19,7 +21,7 @@ export type ErasureRequest = {
   heldFromStatus: ErasureRequestStatus | null
   retryCount:     number
   lastError:      string | null
-  membre:         { firstName: string; lastName: string; email: string | null }
+  membre:         { firstName: string; lastName: string; email: string | null; deletedAt: string | null }
 }
 
 const ERASURE_REQUESTS_QUERY_KEY = ["erasure-requests"] as const
