@@ -49,7 +49,8 @@
     "actions": "Darbības",
     "dismissTip": "Izlaidiet galu",
     "addressPlaceholder": "Salle des fêtes, 12 rue de la Paix, Parīze...",
-    "viewOnGoogleMaps": "Skatīt Google Maps"
+    "viewOnGoogleMaps": "Skatīt Google Maps",
+    "backToSite": "Atpakaļ uz vietni"
   },
   "address": {
     "street": "Adrese",

@@ -19,6 +19,7 @@ import { LegalConsent, type RequiredLegalDocument } from "@/components/public/le
 import { MembershipFormFieldInput, type MembershipFormFieldInputField } from "@/components/adhesions/membership-form-field-input"
 import { EMPTY_ADDRESS_FORM_VALUES, type AddressFormValues } from "@/lib/address"
 import { spokenLanguageOptions } from "@/lib/languages"
+import { BackToSiteLink } from "@/components/public/back-to-site-link"
 
 type FieldRequirement = "HIDDEN" | "OPTIONAL" | "REQUIRED"
 
@@ -26,6 +27,8 @@ type Tier = { id: string; label: string; freeAmount: boolean; amount: string | n
 
 type CompletionData = {
   associationName: string
+  sitePublished:   boolean
+  website:         string | null
   slug:            string
   formSlug:        string
   formTitle:       string
@@ -60,7 +63,7 @@ type CompletionData = {
 // installments/addons/products/offline-payment, none of which apply here, and this is a
 // one-off tool, not a permanent feature worth threading through its complexity.
 export default function CompletarAdesaoPage() {
-  const { token } = useParams<{ token: string }>()
+  const { slug, token } = useParams<{ slug: string; token: string }>()
   // Same terms wording as the membership public form (the rest of this page is still hardcoded French).
   const tMembership = useTranslations("membershipForms.public")
 
@@ -209,6 +212,9 @@ export default function CompletarAdesaoPage() {
   }
 
   if (outcome === "success") {
+    // The fetch is skipped once payment already succeeded (see the effect above), so there's
+    // no sitePublished/website to check here — "Voltar ao site" is left out rather than
+    // risk a dead link.
     return (
       <div className="dashboard-canvas public-canvas min-h-screen p-3">
         <div className="min-h-[calc(100vh-1.5rem)] rounded-[10px] bg-public-panel flex items-center justify-center text-center px-4">
@@ -223,9 +229,11 @@ export default function CompletarAdesaoPage() {
   }
 
   if (notFound || !data) {
+    // No data at all (bad/used token) — nothing to know a site state from, so "Voltar ao
+    // site" is omitted rather than risk a dead link.
     return (
       <div className="dashboard-canvas public-canvas min-h-screen p-3">
-        <div className="min-h-[calc(100vh-1.5rem)] rounded-[10px] bg-public-panel flex items-center justify-center text-center px-4">
+        <div className="min-h-[calc(100vh-1.5rem)] rounded-[10px] bg-public-panel flex flex-col items-center justify-center text-center px-4 gap-2">
           <p className="text-muted-foreground">Ce lien est invalide ou a déjà été utilisé.</p>
         </div>
       </div>
@@ -236,6 +244,7 @@ export default function CompletarAdesaoPage() {
     <div className="dashboard-canvas public-canvas min-h-screen p-3">
       <div className="min-h-[calc(100vh-1.5rem)] rounded-[10px] bg-public-panel flex items-start justify-center py-12 px-4">
         <div className="w-full max-w-md space-y-6">
+          <BackToSiteLink slug={slug} sitePublished={data.sitePublished} website={data.website} />
           <div className="text-center space-y-2">
             <div className="inline-flex items-center justify-center size-12 rounded-full bg-primary/10 dark:bg-primary/20 mb-2">
               <IdentificationCardIcon className="size-6 text-primary" />
