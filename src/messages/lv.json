@@ -3844,6 +3844,11 @@
       },
       "automaticOrigin": "Automātiski atzīmēts — neaktīvs vairāk nekā 3 gadus",
       "inactiveSince": "pameta {date}"
+    },
+    "teamAccess": {
+      "areas": {
+        "sensible": "Sensitīvi dalībnieku dati"
+      }
     }
   },
   "cotisations": {

@@ -3908,6 +3908,11 @@
       },
       "automaticOrigin": "Marcado automaticamente — inativo há mais de 3 anos",
       "inactiveSince": "saiu em {date}"
+    },
+    "teamAccess": {
+      "areas": {
+        "sensible": "Dados sensíveis dos membros"
+      }
     }
   },
   "cotisations": {

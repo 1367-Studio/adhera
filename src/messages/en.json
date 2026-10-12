@@ -4019,6 +4019,7 @@
       "areas": {
         "dashboard": "Dashboard and activity",
         "membres": "Members",
+        "sensible": "Members' sensitive data",
         "adhesions": "Memberships and dues",
         "dons": "Donations",
         "evenements": "Events and ticketing",

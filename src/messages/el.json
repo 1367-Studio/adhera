@@ -3844,6 +3844,11 @@
       },
       "automaticOrigin": "Σημειώθηκε αυτόματα — ανενεργός για περισσότερα από 3 χρόνια",
       "inactiveSince": "αποχώρησε στις {date}"
+    },
+    "teamAccess": {
+      "areas": {
+        "sensible": "Ευαίσθητα δεδομένα μελών"
+      }
     }
   },
   "cotisations": {

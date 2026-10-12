@@ -3844,6 +3844,11 @@
       },
       "automaticOrigin": "Immarkat awtomatikament — mhux attiv għal aktar minn 3 snin",
       "inactiveSince": "telaq fi {date}"
+    },
+    "teamAccess": {
+      "areas": {
+        "sensible": "Data sensittiva tal-membri"
+      }
     }
   },
   "cotisations": {

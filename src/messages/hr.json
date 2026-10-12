@@ -3844,6 +3844,11 @@
       },
       "automaticOrigin": "Automatski označeno — neaktivan više od 3 godine",
       "inactiveSince": "napustio/la {date}"
+    },
+    "teamAccess": {
+      "areas": {
+        "sensible": "Osjetljivi podaci članova"
+      }
     }
   },
   "cotisations": {

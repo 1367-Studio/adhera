@@ -3844,6 +3844,11 @@
       },
       "automaticOrigin": "Automatisch gemarkeerd — meer dan 3 jaar inactief",
       "inactiveSince": "vertrokken op {date}"
+    },
+    "teamAccess": {
+      "areas": {
+        "sensible": "Gevoelige gegevens van leden"
+      }
     }
   },
   "cotisations": {

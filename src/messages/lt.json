@@ -3844,6 +3844,11 @@
       },
       "automaticOrigin": "Automatiškai pažymėta — neaktyvus ilgiau nei 3 metus",
       "inactiveSince": "išvyko {date}"
+    },
+    "teamAccess": {
+      "areas": {
+        "sensible": "Jautrūs narių duomenys"
+      }
     }
   },
   "cotisations": {
