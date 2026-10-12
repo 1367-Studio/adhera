@@ -3,12 +3,17 @@ import { z } from "zod"
 import { Prisma } from "@prisma/client"
 import { prisma } from "@/lib/prisma/client"
 import { withAdminAuth } from "@/lib/api-wrapper"
+import { hasAccess } from "@/lib/permissions"
 
 const membershipFormFieldSchema = z.object({
   id:       z.string().optional(), // absent = nouveau champ
   type:     z.enum(["TEXT", "NUMBER", "SELECT"]),
   label:    z.string().trim().min(1).max(100),
   required: z.boolean().optional().default(false),
+  // Security audit M2+L8 extension — marque la réponse à ce champ comme gouvernée par la
+  // permission "sensible" (santé, données d'un mineur). La route PUT revalide ci-dessous
+  // que seul un acteur avec "sensible: edit" peut effectivement poser ou retirer ce drapeau.
+  sensible: z.boolean().optional().default(false),
   // Liste de choix — uniquement pour SELECT, ignoré sinon. Même convention qu'EvenementCustomField.
   options:  z.array(z.string().trim().min(1).max(200)).max(50).optional().nullable(),
 }).refine(
@@ -46,11 +51,19 @@ export const PUT = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   const parsed = membershipFormFieldsSchema.safeParse(body)
   if (!parsed.success) return NextResponse.json({ error: parsed.error.issues }, { status: 422 })
 
+  // Marquer (ou démarquer) un champ comme "sensible" est une décision sur la gouvernance des
+  // données sensibles elle-même, pas juste sur le formulaire — ça ne doit pas dépendre
+  // seulement d'"adhesions: edit" (que le trésorier a, sans avoir "sensible: edit"). Un acteur
+  // sans ce droit garde la valeur déjà en base pour un champ existant, ou `false` pour un
+  // nouveau champ, quoi que le client ait envoyé.
+  const canEditSensible = hasAccess(ctx.permissions, "sensible", "edit")
+
   const fields = await prisma.$transaction(async (tx) => {
     // Upsert by id, scoped to this form — évite d'orphaner les Membre.answers déjà répondus
     // à un id existant, même raison que DonationFormField.
-    const existing    = await tx.membershipFormField.findMany({ where: { formId: id }, select: { id: true } })
+    const existing    = await tx.membershipFormField.findMany({ where: { formId: id }, select: { id: true, sensible: true } })
     const existingIds = new Set(existing.map(f => f.id))
+    const sensibleById = new Map(existing.map(f => [f.id, f.sensible]))
     const incomingIds = new Set(parsed.data.filter(f => f.id).map(f => f.id))
 
     const toDelete = [...existingIds].filter(fid => !incomingIds.has(fid))
@@ -59,6 +72,7 @@ export const PUT = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
     }
 
     for (const [order, f] of parsed.data.entries()) {
+      const sensible = canEditSensible ? f.sensible : (f.id ? (sensibleById.get(f.id) ?? false) : false)
       // `options` is always sent explicitly by the editor (an array for SELECT, null
       // otherwise) — passed through as-is so switching a field away from SELECT actually
       // clears its old options instead of leaving them stale (Prisma treats `undefined`
@@ -66,11 +80,11 @@ export const PUT = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
       if (f.id && existingIds.has(f.id)) {
         await tx.membershipFormField.update({
           where: { id: f.id },
-          data:  { type: f.type, label: f.label, required: f.required ?? false, order, options: f.options ?? Prisma.JsonNull },
+          data:  { type: f.type, label: f.label, required: f.required ?? false, order, sensible, options: f.options ?? Prisma.JsonNull },
         })
       } else {
         await tx.membershipFormField.create({
-          data: { formId: id, type: f.type, label: f.label, required: f.required ?? false, order, options: f.options ?? Prisma.JsonNull },
+          data: { formId: id, type: f.type, label: f.label, required: f.required ?? false, order, sensible, options: f.options ?? Prisma.JsonNull },
         })
       }
     }

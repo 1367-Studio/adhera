@@ -3166,6 +3166,8 @@
           "fieldLabelPlaceholder": "E.g. Occupation",
           "fieldType": "Type",
           "fieldRequired": "Required",
+          "fieldSensible": "Sensitive data",
+          "fieldSensibleRequiredHint": "Since this field is both sensitive and required, a staff member without access to sensitive data won't be able to create or edit a member without being granted it.",
           "typeText": "Text",
           "typeNumber": "Number",
           "typeSelect": "Dropdown",

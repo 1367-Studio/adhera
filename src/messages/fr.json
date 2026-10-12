@@ -3174,6 +3174,8 @@
           "fieldLabelPlaceholder": "Ex. Profession",
           "fieldType": "Type",
           "fieldRequired": "Obligatoire",
+          "fieldSensible": "Donnée sensible",
+          "fieldSensibleRequiredHint": "Ce champ étant sensible et obligatoire, un gestionnaire sans accès aux données sensibles ne pourra pas créer ou modifier un membre sans y avoir accès.",
           "typeText": "Texte",
           "typeNumber": "Nombre",
           "typeSelect": "Liste déroulante",

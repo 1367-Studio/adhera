@@ -9,9 +9,10 @@ import { Button } from "@/components/ui/button"
 import { FormField } from "@/components/ui/form-field"
 import { SelectField } from "@/components/ui/select-field"
 import { CheckboxField } from "@/components/ui/checkbox-field"
+import { useHasAccess } from "@/lib/user-context"
 
 type MembershipFieldType = "TEXT" | "NUMBER" | "SELECT"
-type MembershipFormFieldDraft = { id?: string; type: MembershipFieldType; label: string; required: boolean; options: string[] | null }
+type MembershipFormFieldDraft = { id?: string; type: MembershipFieldType; label: string; required: boolean; sensible: boolean; options: string[] | null }
 type MembershipFormField      = MembershipFormFieldDraft & { id: string }
 
 const CHOICE_TYPES: MembershipFieldType[] = ["SELECT"]
@@ -20,7 +21,7 @@ let nextTempId = 0
 
 // Mirrors the handleSave() payload — see the same helper in membership-tiers-editor.tsx.
 function fieldsSignature(rows: MembershipFormFieldDraft[]): string {
-  return JSON.stringify(rows.map(f => [f.type, f.label, f.required, f.options ?? null]))
+  return JSON.stringify(rows.map(f => [f.type, f.label, f.required, f.sensible, f.options ?? null]))
 }
 
 // Lets the page trigger this editor's save from "Enregistrer et quitter". Resolves to false
@@ -35,6 +36,7 @@ export function MembershipFormFieldsEditor({ formId, onDirtyChange, ref }: {
   const t       = useTranslations("membershipForms.detail.steps.fields")
   const tCommon = useTranslations("common")
   const qc      = useQueryClient()
+  const canEditSensible = useHasAccess("sensible", "edit")
 
   const { data, isLoading } = useQuery<MembershipFormField[]>({
     queryKey: ["membership-form", formId, "custom-fields"],
@@ -59,7 +61,7 @@ export function MembershipFormFieldsEditor({ formId, onDirtyChange, ref }: {
   useEffect(() => {
     // Normalisé une seule fois ici, à la frontière avec le serveur — voir la même note dans
     // evenement-custom-fields-editor.tsx.
-    if (data) setFields(data.map(f => ({ ...f, key: f.id, options: Array.isArray(f.options) ? f.options : null })))
+    if (data) setFields(data.map(f => ({ ...f, key: f.id, sensible: f.sensible ?? false, options: Array.isArray(f.options) ? f.options : null })))
   }, [data])
 
   const isDirty = fieldsSignature(fields) !== fieldsSignature(data ?? [])
@@ -68,7 +70,7 @@ export function MembershipFormFieldsEditor({ formId, onDirtyChange, ref }: {
   useImperativeHandle(ref, () => ({ save: handleSave }))
 
   function addField() {
-    setFields(prev => [...prev, { key: `new-${nextTempId++}`, type: "TEXT", label: "", required: false, options: null }])
+    setFields(prev => [...prev, { key: `new-${nextTempId++}`, type: "TEXT", label: "", required: false, sensible: false, options: null }])
   }
   function updateField(key: string, patch: Partial<MembershipFormFieldDraft>) {
     setFields(prev => prev.map(f => f.key === key ? { ...f, ...patch } : f))
@@ -118,7 +120,7 @@ export function MembershipFormFieldsEditor({ formId, onDirtyChange, ref }: {
     }
     try {
       await saveMutation.mutateAsync(fields.map(f => ({
-        type: f.type, label: f.label, required: f.required, id: f.id,
+        type: f.type, label: f.label, required: f.required, sensible: f.sensible, id: f.id,
         options: CHOICE_TYPES.includes(f.type) ? (f.options ?? []).map(o => o.trim()).filter(Boolean) : null,
       })))
       toast.success(t("saved"))
@@ -174,7 +176,18 @@ export function MembershipFormFieldsEditor({ formId, onDirtyChange, ref }: {
                     onChange={e => updateField(field.key, { required: e.target.checked })}
                   />
                 </div>
+                <div className="pb-2.5">
+                  <CheckboxField
+                    label={t("fieldSensible")}
+                    checked={field.sensible}
+                    disabled={!canEditSensible}
+                    onChange={e => updateField(field.key, { sensible: e.target.checked })}
+                  />
+                </div>
               </div>
+              {field.sensible && field.required && (
+                <p className="text-xs text-muted-foreground">{t("fieldSensibleRequiredHint")}</p>
+              )}
               {CHOICE_TYPES.includes(field.type) && (
                 <div className="space-y-1.5 pl-1">
                   {(field.options ?? []).map((opt, i) => (
