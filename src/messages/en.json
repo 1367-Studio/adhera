@@ -6303,9 +6303,27 @@
     "columns": {
       "membre": "Member",
       "association": "Association",
+      "origin": "Origin",
       "raisedAt": "Raised on",
       "daysWithoutCotisation": "Days without a membership fee",
       "status": "Status"
+    },
+    "originByLabel": "By {name}",
+    "originSources": {
+      "ADMIN_MANUAL": "Added manually by an admin",
+      "ADMIN_REGISTRATION": "Registered by an admin (form)",
+      "PUBLIC_ADHESION_FORM": "Public membership form (free)",
+      "PUBLIC_ADHESION_FORM_OFFLINE": "Public membership form (offline payment)",
+      "PUBLIC_ADHESION_STRIPE": "Public membership form (online payment)",
+      "PUBLIC_ADHESION_INSTALLMENTS": "Public membership form (installment payment)",
+      "PUBLIC_ADHESION_MULTI": "Public membership form (group signup)",
+      "PUBLIC_ADHESION_SUBSCRIPTION": "Public membership form (recurring subscription)",
+      "ASSOCONNECT_IMPORT": "AssoConnect import",
+      "PAPER_FORM": "Paper form import",
+      "ASSOCIATION_SIGNUP_ADMIN": "Founding member (association signup)",
+      "PUBLIC_INSCRIPTION_REQUEST": "Public membership request (pending approval)",
+      "PUBLIC_INSCRIPTION_REQUEST_MULTI": "Public group membership request (pending approval)",
+      "unknown": "Unknown origin"
     },
     "empty": "No control alerts.",
     "resolveAction": "Resolve",

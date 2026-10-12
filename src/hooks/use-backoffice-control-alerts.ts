@@ -15,6 +15,10 @@ export type BackofficeControlAlert = {
   note:          string | null
   membre:        { firstName: string; lastName: string; email: string | null; createdAt: string }
   association:   { name: string; slug: string }
+  // Optional, not just nullable: a browser tab left open across the deploy that added this
+  // field holds React Query cache from the old API shape until it refetches, so a stale
+  // alert object here can genuinely lack the key rather than just have it null.
+  origin?:       { source: string | null; actorName: string | null }
 }
 
 const QK = ["backoffice", "control-alerts"]

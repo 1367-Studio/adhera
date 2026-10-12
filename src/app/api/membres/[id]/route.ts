@@ -347,7 +347,15 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
     membre   as unknown as Record<string, unknown>,
   )
   if (Object.keys(changes).length > 0) {
-    await writeActivityLog({ associationId, actorId: userId, action: "MEMBRE_UPDATED", entity: "Membre", entityId: id, label: `${membre.firstName} ${membre.lastName}`, metadata: { changes } })
+    // approvedFromPending flags the one case a control-alert investigation (src/app/api/
+    // backoffice/control-alerts/route.ts's resolveOrigins) actually cares about here: a paid
+    // pendingTier approved straight to ACTIF gets no Cotisation (see isApproval above), so
+    // this is the moment that explains why the member is ACTIF with nothing billed yet.
+    await writeActivityLog({
+      associationId, actorId: userId, action: "MEMBRE_UPDATED", entity: "Membre", entityId: id,
+      label: `${membre.firstName} ${membre.lastName}`,
+      metadata: { changes, ...(isApproval ? { approvedFromPending: true } : {}) },
+    })
   }
 
   // A member losing ACTIF status (suspended, marked inactive, ...) shouldn't keep being

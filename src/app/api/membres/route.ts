@@ -328,7 +328,7 @@ export const POST = withAdminAuth(async (req, ctx) => {
   }
 
   // MEMBER_CREATED automation (MEMBRE role only, as before) + MEMBRE_CREATED activity log.
-  await announceMembreCreated({ associationId, actorId: userId, association: assoc, membre, fireMemberCreatedRule: role === "MEMBRE" })
+  await announceMembreCreated({ associationId, actorId: userId, association: assoc, membre, fireMemberCreatedRule: role === "MEMBRE", metadata: { source: "ADMIN_MANUAL" } })
 
   return NextResponse.json(membre, { status: 201 })
 }, { area: "membres" })

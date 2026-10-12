@@ -223,7 +223,7 @@ export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
     entity:   "Membre",
     entityId: membre.id,
     label:    `${firstName} ${lastName}`,
-    metadata: { via: "admin-registration", formId: form.id, tierId: tier.id },
+    metadata: { source: "ADMIN_REGISTRATION", formId: form.id, tierId: tier.id },
   })
 
   return NextResponse.json({ sent: true, email })
