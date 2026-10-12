@@ -59,10 +59,15 @@ export type MembreDetail = {
   // Resolved server-side from Membre.answers (see GET /api/membres/[id]) — collected via a
   // MembershipForm's "mobile" standard field and its custom MembershipFormField questions.
   mobile:             string | null
-  customFieldAnswers: { label: string; value: string }[]
+  // Entries whose field is marked "sensible" are already omitted server-side when the actor
+  // lacks the "sensible" area's read access (see filterSensitiveCustomFieldAnswers) — nothing
+  // else to gate on this side.
+  customFieldAnswers: { label: string; value: string; sensible: boolean }[]
   // Full field set of the MembershipForm this member joined through (see
   // resolveMembreMembershipFormId), each with its current raw answer — feeds "Editar membro"'s
-  // custom-fields section. Empty for a member with no traceable form.
+  // custom-fields section. Empty for a member with no traceable form. A "sensible" field the
+  // actor can see but not edit (only "Lecture") still comes through, with `readOnly: true` —
+  // see filterEditableSensitiveCustomFields.
   editableCustomFields: {
     field: {
       id:       string
@@ -70,8 +75,10 @@ export type MembreDetail = {
       label:    string
       required: boolean
       options:  string[] | null
+      sensible: boolean
     }
-    value: string
+    value:    string
+    readOnly: boolean
   }[]
   cotisations: {
     id:     string

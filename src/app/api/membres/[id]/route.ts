@@ -14,7 +14,10 @@ import { assertCanDeactivateAdministrator } from "@/lib/team-access"
 import { resolveMembreMembershipFormId } from "@/lib/membre-membership-form"
 import { findInvalidMembershipFormAnswer } from "@/lib/membership-form-answers-validation"
 import { reportError } from "@/lib/monitoring"
-import { redactSensitiveMembreFields, stripSensitiveMembreFields } from "@/lib/membre-sensitive-fields"
+import {
+  redactSensitiveMembreFields, stripSensitiveMembreFields,
+  filterSensitiveCustomFieldAnswers, filterEditableSensitiveCustomFields, stripSensitiveCustomFieldAnswers,
+} from "@/lib/membre-sensitive-fields"
 
 const RESPONSABLE_SELECT = {
   select: {
@@ -83,31 +86,39 @@ export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
   // Membre.answers is keyed by "mobile" (fixed) or a MembershipFormField id — resolved here
   // so membre-detail-view.tsx can render real labels without a second round-trip. "mobile"
   // has no MembershipFormField row to look up, so it's handled separately from the rest.
-  let customFieldAnswers: { label: string; value: string }[] = []
+  let customFieldAnswers: { label: string; value: string; sensible: boolean }[] = []
   const rawAnswers = membre.answers as Record<string, string> | null
   if (rawAnswers && Object.keys(rawAnswers).length > 0) {
     const fieldIds = Object.keys(rawAnswers).filter(k => k !== "mobile")
     const fields = fieldIds.length
-      ? await prisma.membershipFormField.findMany({ where: { id: { in: fieldIds } }, select: { id: true, label: true } })
+      ? await prisma.membershipFormField.findMany({ where: { id: { in: fieldIds } }, select: { id: true, label: true, sensible: true } })
       : []
-    const labelById = new Map(fields.map(f => [f.id, f.label]))
+    const fieldById = new Map(fields.map(f => [f.id, f]))
+    // An orphaned answer (its MembershipFormField was deleted from the form editor — a hard
+    // delete, see custom-fields/route.ts's PUT) defaults to `sensible: true`, not false: we no
+    // longer know whether it used to be marked sensitive, and failing open would silently
+    // un-gate a health/guardian answer the moment its field definition is removed.
     customFieldAnswers = Object.entries(rawAnswers)
       .filter(([k]) => k !== "mobile")
-      .map(([k, value]) => ({ label: labelById.get(k) ?? k, value }))
+      .map(([k, value]) => ({ label: fieldById.get(k)?.label ?? k, value, sensible: fieldById.get(k)?.sensible ?? true }))
   }
+  customFieldAnswers = filterSensitiveCustomFieldAnswers(customFieldAnswers, ctx.permissions)
 
   // The full field set of the MembershipForm this member actually joined through — not just
   // the fields they already answered — so "Editar membro" can render an empty optional field
   // too. Empty for a member with no traceable form (manual creation, legacy /inscription):
   // the edit modal then shows no custom-fields section at all, unchanged from before this.
   const membershipFormId = await resolveMembreMembershipFormId(id)
-  const editableCustomFields = membershipFormId
-    ? (await prisma.membershipFormField.findMany({
-        where:   { formId: membershipFormId },
-        orderBy: { order: "asc" },
-        select:  { id: true, type: true, label: true, required: true, options: true },
-      })).map(field => ({ field, value: rawAnswers?.[field.id] ?? "" }))
-    : []
+  const editableCustomFields = filterEditableSensitiveCustomFields(
+    membershipFormId
+      ? (await prisma.membershipFormField.findMany({
+          where:   { formId: membershipFormId },
+          orderBy: { order: "asc" },
+          select:  { id: true, type: true, label: true, required: true, options: true, sensible: true },
+        })).map(field => ({ field, value: rawAnswers?.[field.id] ?? "" }))
+      : [],
+    ctx.permissions,
+  )
 
   return NextResponse.json(redactSensitiveMembreFields({
     ...membre,
@@ -149,6 +160,7 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   // devenu obligatoire après l'adhésion d'un membre, jamais rempli, ne doit jamais bloquer une
   // modification qui ne le touche pas (changer un téléphone, par exemple) : il resterait sinon
   // impossible à modifier tant que ce champ précis n'est pas renseigné.
+  let sanitizedAnswers = answers
   if (answers !== undefined && Object.keys(answers).length > 0) {
     const submittedFieldIds = new Set(Object.keys(answers))
     const membershipFormId = await resolveMembreMembershipFormId(id)
@@ -156,7 +168,14 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
       ? (await prisma.membershipFormField.findMany({ where: { formId: membershipFormId } }))
           .filter(field => submittedFieldIds.has(field.id))
       : []
-    const invalidAnswer = findInvalidMembershipFormAnswer(fields, answers)
+
+    // Drops any submitted answer for a field marked "sensible" when the actor lacks the
+    // "sensible" area's edit access — same defensive principle as stripSensitiveMembreFields
+    // just above: a hidden/re-enabled input can't write a value the actor was never allowed to.
+    const sensitiveFieldIds = new Set(fields.filter(f => f.sensible).map(f => f.id))
+    sanitizedAnswers = stripSensitiveCustomFieldAnswers(answers, sensitiveFieldIds, ctx.permissions)
+
+    const invalidAnswer = findInvalidMembershipFormAnswer(fields, sanitizedAnswers ?? {})
     if (invalidAnswer) {
       const message = invalidAnswer.kind === "required"
         ? `Le champ « ${invalidAnswer.field.label} » est requis.`
@@ -255,8 +274,8 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
         // tous deux dans answers : un seul merge pour les deux, jamais un remplacement de
         // l'objet — et jamais deux écritures indépendantes qui s'écraseraient l'une l'autre
         // si les deux arrivent dans la même requête.
-        ...((mobile !== undefined || answers !== undefined)
-          ? { answers: mergeAnswers(existing.answers, { ...(mobile !== undefined ? { [MOBILE_ANSWER_KEY]: mobile } : {}), ...answers }) }
+        ...((mobile !== undefined || sanitizedAnswers !== undefined)
+          ? { answers: mergeAnswers(existing.answers, { ...(mobile !== undefined ? { [MOBILE_ANSWER_KEY]: mobile } : {}), ...sanitizedAnswers }) }
           : {}),
         // L'adresse se met à jour d'un bloc : les six colonnes sont recalculées ensemble à
         // partir de ce qui est envoyé complété par ce qui est déjà en base, sinon la colonne
@@ -367,7 +386,11 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
     await cancelActiveCotisationSubscriptionForMembre(id, { actorId: userId, label: `${membre.firstName} ${membre.lastName}` })
   }
 
-  return NextResponse.json({ ...membre, isAdherent: isMembreAdherent(membre) })
+  // Unlike GET above, this response was never redacted — an actor without `sensible` access
+  // could PATCH an unrelated field (e.g. phone) and get groupeSanguin/allergies/guardian* and
+  // the raw answers Json (every custom field's real value) back in the response regardless.
+  const { answers: _answers, ...membreWithoutAnswers } = membre
+  return NextResponse.json(redactSensitiveMembreFields({ ...membreWithoutAnswers, isAdherent: isMembreAdherent(membre) }, ctx.permissions))
 }, { area: "membres" })
 
 export const DELETE = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {

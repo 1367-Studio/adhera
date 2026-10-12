@@ -119,8 +119,11 @@ export const GET = withAdminAuth(async (req, ctx) => {
     const data = await prisma.membre.findMany({ where, orderBy, include, take: 500 })
     // `mobile` est résolu ici comme sur la fiche (GET /api/membres/[id]) : la modale d'édition
     // de la liste repose dessus, et sans lui elle posterait un mobile vide qui effacerait le
-    // numéro saisi sur le formulaire public.
-    return NextResponse.json(data.map(m => redactSensitiveMembreFields({ ...m, mobile: readMobileAnswer(m.answers), isAdherent: isMembreAdherent(m) }, ctx.permissions)))
+    // numéro saisi sur le formulaire public. `answers` brut (toutes les réponses aux champs
+    // personnalisés, y compris les sensibles) n'est en revanche jamais utilisé par la liste —
+    // retiré systématiquement plutôt que filtré champ par champ, qui exigerait de rejoindre
+    // MembershipFormField pour chaque membre de la page.
+    return NextResponse.json(data.map(({ answers, ...m }) => redactSensitiveMembreFields({ ...m, mobile: readMobileAnswer(answers), isAdherent: isMembreAdherent(m) }, ctx.permissions)))
   }
 
   const { page, limit, skip } = parsePagination(searchParams)
@@ -133,7 +136,10 @@ export const GET = withAdminAuth(async (req, ctx) => {
     // when they'd want to still see there is something to review.
     prisma.membre.count({ where: { associationId, deletedAt: null, status: "PENDING" } }),
   ])
-  return NextResponse.json({ data: data.map(m => redactSensitiveMembreFields({ ...m, mobile: readMobileAnswer(m.answers), isAdherent: isMembreAdherent(m) }, ctx.permissions)), total, pendingCount, page, limit, totalPages: Math.ceil(total / limit) })
+  return NextResponse.json({
+    data: data.map(({ answers, ...m }) => redactSensitiveMembreFields({ ...m, mobile: readMobileAnswer(answers), isAdherent: isMembreAdherent(m) }, ctx.permissions)),
+    total, pendingCount, page, limit, totalPages: Math.ceil(total / limit),
+  })
 }, { area: "membres" })
 
 export const POST = withAdminAuth(async (req, ctx) => {

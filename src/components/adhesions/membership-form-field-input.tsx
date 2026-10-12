@@ -20,13 +20,17 @@ type MembershipFormFieldInputProps = {
   // Overrides the SELECT trigger's id — needed wherever the same field.id repeats on screen
   // (the public form's registrants 2..N), so two triggers never share one DOM id.
   id?:      string
+  // Sensitive-field extension (security audit M2+L8) — set by the manager's "Editar membro"
+  // screen when the field is marked "sensible" and the actor only has "Lecture", never on the
+  // public form (the applicant is the data subject, always free to answer their own field).
+  disabled?: boolean
 }
 
 // A MembershipFormField only ever has 3 shapes (TEXT/NUMBER/SELECT — see MembershipFieldType
 // in schema.prisma). Shared by the public adhésion form (single and multi-registrant) and the
 // manager's "Editar membro" screen, so the three can never render — or validate — a field
 // differently from one another.
-export function MembershipFormFieldInput({ field, value, onChange, onBlur, error, id }: MembershipFormFieldInputProps) {
+export function MembershipFormFieldInput({ field, value, onChange, onBlur, error, id, disabled }: MembershipFormFieldInputProps) {
   if (field.type === "SELECT") {
     const configuredOptions = field.options ?? []
     // An existing answer can fall outside the field's current options — the admin edited the
@@ -51,6 +55,7 @@ export function MembershipFormFieldInput({ field, value, onChange, onBlur, error
           value={value}
           onValueChange={onChange}
           error={error}
+          disabled={disabled}
         />
       </div>
     )
@@ -65,6 +70,7 @@ export function MembershipFormFieldInput({ field, value, onChange, onBlur, error
       onChange={event => onChange(event.target.value)}
       onBlur={onBlur}
       error={error}
+      disabled={disabled}
     />
   )
 }

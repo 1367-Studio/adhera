@@ -58,7 +58,7 @@ interface MembreFormProps {
   // resolveMembreMembershipFormId), pre-filled with their current answers — absent for a
   // member with no traceable form (manual creation), and always absent on create: there is no
   // member yet to have joined through anything.
-  editableCustomFields?: { field: MembershipFormFieldInputField; value: string }[]
+  editableCustomFields?: { field: MembershipFormFieldInputField; value: string; readOnly: boolean }[]
   // True while editableCustomFields is still being fetched (the members-list quick-edit modal
   // loads it on open, unlike the fiche détail where it's already in hand) — shows a placeholder
   // instead of the section silently popping in after a beat, or never appearing to a manager who
@@ -653,7 +653,7 @@ export function MembreForm({ defaultValues, onSubmit, onCancel, loading, isCreat
           <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
             {t("membres.form.customFieldsSectionTitle")}
           </p>
-          {editableCustomFields.map(({ field }) => (
+          {editableCustomFields.map(({ field, readOnly }) => (
             <MembershipFormFieldInput
               key={field.id}
               field={field}
@@ -661,6 +661,7 @@ export function MembreForm({ defaultValues, onSubmit, onCancel, loading, isCreat
               onChange={value => setCustomAnswers(prev => ({ ...prev, [field.id]: value }))}
               onBlur={() => setTouchedCustomFields(prev => new Set(prev).add(field.id))}
               error={customFieldError(field.id, field.required)}
+              disabled={readOnly}
             />
           ))}
         </div>

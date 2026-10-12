@@ -1895,6 +1895,10 @@ model MembershipFormField {
   order    Int
   // Choice list for SELECT — a plain string array. Null/ignored for TEXT/NUMBER.
   options  Json?
+  // Security audit M2+L8 extension — marks this field's answer (Membre.answers[id]) as
+  // governed by the "sensible" area permission, same as groupeSanguin/allergies/guardian*.
+  // Defaults false so every pre-existing field keeps its current (unrestricted) visibility.
+  sensible Boolean             @default(false)
 
   form MembershipForm @relation(fields: [formId], references: [id], onDelete: Cascade)
 

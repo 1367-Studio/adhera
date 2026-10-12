@@ -32,11 +32,10 @@ export const ACCESS_LEVELS: readonly AccessLevel[] = ["none", "read", "edit"]
 export const ACCESS_AREA_LABELS: Record<AccessArea, string> = {
   dashboard:     "Tableau de bord et activité",
   membres:       "Membres",
-  // Security audit M2+L8 — visibility only (see hasAccess's own doc comment below): controls
-  // whether groupeSanguin/allergies/guardian* appear in membre responses, the export, and the
-  // guardian section of the membre detail/edit screens. "Édition" has the same effect as
-  // "Lecture" for this one area — editing a Membre is a single whole-record PATCH, there's no
-  // separate save path for just these fields to gate independently.
+  // Security audit M2+L8 (+ later custom-field extension) — controls whether
+  // groupeSanguin/allergies/guardian* and any MembershipFormField marked "sensible" appear in
+  // membre responses, the export, and the membre detail/edit screens. "Lecture" allows viewing
+  // only; "Édition" is required to change the value (see membre-sensitive-fields.ts).
   sensible:      "Données sensibles des membres (santé, responsables de mineurs)",
   adhesions:     "Adhésions et cotisations",
   dons:          "Dons",
