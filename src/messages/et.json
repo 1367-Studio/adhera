@@ -3844,6 +3844,11 @@
       },
       "automaticOrigin": "Automaatselt märgistatud — tegevuseta rohkem kui 3 aastat",
       "inactiveSince": "lahkus {date}"
+    },
+    "teamAccess": {
+      "areas": {
+        "sensible": "Liikmete tundlikud andmed"
+      }
     }
   },
   "cotisations": {

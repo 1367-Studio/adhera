@@ -3844,6 +3844,11 @@
       },
       "automaticOrigin": "Segnalato automaticamente — inattivo da più di 3 anni",
       "inactiveSince": "uscito il {date}"
+    },
+    "teamAccess": {
+      "areas": {
+        "sensible": "Dati sensibili dei membri"
+      }
     }
   },
   "cotisations": {

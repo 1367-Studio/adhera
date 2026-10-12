@@ -3844,6 +3844,11 @@
       },
       "automaticOrigin": "Automatisk markeret — inaktiv i mere end 3 år",
       "inactiveSince": "forlod den {date}"
+    },
+    "teamAccess": {
+      "areas": {
+        "sensible": "Medlemmers følsomme data"
+      }
     }
   },
   "cotisations": {

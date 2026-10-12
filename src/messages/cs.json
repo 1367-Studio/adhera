@@ -3844,6 +3844,11 @@
       },
       "automaticOrigin": "Automaticky označeno — neaktivní více než 3 roky",
       "inactiveSince": "odešel dne {date}"
+    },
+    "teamAccess": {
+      "areas": {
+        "sensible": "Citlivé údaje členů"
+      }
     }
   },
   "cotisations": {

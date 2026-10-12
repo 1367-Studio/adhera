@@ -3844,6 +3844,11 @@
       },
       "automaticOrigin": "Brataíodh go huathoibríoch — neamhghníomhach le breis agus 3 bliana",
       "inactiveSince": "d'fhág ar {date}"
+    },
+    "teamAccess": {
+      "areas": {
+        "sensible": "Sonraí íogaire na mBall"
+      }
     }
   },
   "cotisations": {

@@ -3844,6 +3844,11 @@
       },
       "automaticOrigin": "Semnalat automat — inactiv de peste 3 ani",
       "inactiveSince": "a părăsit la {date}"
+    },
+    "teamAccess": {
+      "areas": {
+        "sensible": "Date sensibile ale membrilor"
+      }
     }
   },
   "cotisations": {

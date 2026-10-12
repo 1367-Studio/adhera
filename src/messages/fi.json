@@ -3844,6 +3844,11 @@
       },
       "automaticOrigin": "Merkitty automaattisesti — ei toimintaa yli 3 vuoteen",
       "inactiveSince": "poistui {date}"
+    },
+    "teamAccess": {
+      "areas": {
+        "sensible": "Jäsenten arkaluonteiset tiedot"
+      }
     }
   },
   "cotisations": {

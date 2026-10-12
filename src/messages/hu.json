@@ -3844,6 +3844,11 @@
       },
       "automaticOrigin": "Automatikusan megjelölve — több mint 3 éve inaktív",
       "inactiveSince": "kilépett: {date}"
+    },
+    "teamAccess": {
+      "areas": {
+        "sensible": "Tagok érzékeny adatai"
+      }
     }
   },
   "cotisations": {
