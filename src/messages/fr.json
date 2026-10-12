@@ -4027,6 +4027,7 @@
       "areas": {
         "dashboard": "Tableau de bord et activité",
         "membres": "Membres",
+        "sensible": "Données sensibles des membres",
         "adhesions": "Adhésions et cotisations",
         "dons": "Dons",
         "evenements": "Événements et billetterie",
