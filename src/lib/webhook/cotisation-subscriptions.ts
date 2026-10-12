@@ -335,6 +335,20 @@ export async function handleCotisationSubscriptionCheckout(session: Stripe.Check
     entityId:      created.cotisationSubscription.id,
     label:         `${created.membre.firstName} ${created.membre.lastName} — ${amount}€/an`,
   })
+
+  // Per-member trail (entityId = membre.id) — distinct from the subscription-entity log just
+  // above. The matching Cotisation row isn't written here (see handleCotisationInvoicePaid's
+  // self-heal call above) — if that invoice.paid never arrives, this member stays ACTIF with
+  // no cotisation and the control-alert sweep flags it, so it needs to resolve the same way
+  // every other MEMBRE_CREATED entry does.
+  await writeActivityLog({
+    associationId: meta.associationId,
+    action:        "MEMBRE_CREATED",
+    entity:        "Membre",
+    entityId:      created.membre.id,
+    label:         `${created.membre.firstName} ${created.membre.lastName}`,
+    metadata:      { source: "PUBLIC_ADHESION_SUBSCRIPTION" },
+  })
 }
 
 // ─── customer.subscription.created / updated ────────────────────────────────────

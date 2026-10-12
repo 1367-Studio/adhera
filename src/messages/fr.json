@@ -6311,9 +6311,27 @@
     "columns": {
       "membre": "Membre",
       "association": "Association",
+      "origin": "Origine",
       "raisedAt": "Créé le",
       "daysWithoutCotisation": "Jours sans cotisation",
       "status": "Statut"
+    },
+    "originByLabel": "Par {name}",
+    "originSources": {
+      "ADMIN_MANUAL": "Ajout manuel par un admin",
+      "ADMIN_REGISTRATION": "Inscription par un admin (formulaire)",
+      "PUBLIC_ADHESION_FORM": "Formulaire public d'adhésion (gratuit)",
+      "PUBLIC_ADHESION_FORM_OFFLINE": "Formulaire public d'adhésion (paiement hors ligne)",
+      "PUBLIC_ADHESION_STRIPE": "Formulaire public d'adhésion (paiement en ligne)",
+      "PUBLIC_ADHESION_INSTALLMENTS": "Formulaire public d'adhésion (paiement en plusieurs fois)",
+      "PUBLIC_ADHESION_MULTI": "Formulaire public d'adhésion (inscription groupée)",
+      "PUBLIC_ADHESION_SUBSCRIPTION": "Formulaire public d'adhésion (abonnement récurrent)",
+      "ASSOCONNECT_IMPORT": "Import AssoConnect",
+      "PAPER_FORM": "Import de fiche papier",
+      "ASSOCIATION_SIGNUP_ADMIN": "Membre fondateur (création de l'association)",
+      "PUBLIC_INSCRIPTION_REQUEST": "Demande d'inscription publique (en attente de validation)",
+      "PUBLIC_INSCRIPTION_REQUEST_MULTI": "Demande d'inscription publique groupée (en attente de validation)",
+      "unknown": "Origine inconnue"
     },
     "empty": "Aucune alerte de contrôle.",
     "resolveAction": "Résoudre",

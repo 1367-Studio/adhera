@@ -155,6 +155,15 @@ export const importMembres = inngest.createFunction(
               },
             })
             membersCreated++
+            // Per-member trail (entityId = membre.id), distinct from the batch-level
+            // MEMBRES_IMPORTED summary below — needed so a later control-alert investigation
+            // (e.g. an ACTIF member with no cotisation, a contact-only row without row.amount)
+            // can resolve this one member's origin without having to guess from the summary.
+            await writeActivityLog({
+              associationId, actorId, action: "MEMBRE_CREATED", entity: "Membre", entityId: membre.id,
+              label: `${membre.firstName} ${membre.lastName}`,
+              metadata: { source: "ASSOCONNECT_IMPORT" },
+            })
           }
 
           touchedMembreIds.push(membre.id)

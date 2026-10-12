@@ -312,7 +312,7 @@ export async function handleMembershipOneOffCheckout(session: Stripe.Checkout.Se
     entity:        "Membre",
     entityId:      created.membre.id,
     label:         `${created.membre.firstName} ${created.membre.lastName} — ${totalAmount}€`,
-    metadata:      { stripeCheckoutSessionId: session.id },
+    metadata:      { source: "PUBLIC_ADHESION_STRIPE", stripeCheckoutSessionId: session.id },
   })
 
   // The visitor already paid — assertMemberLimit was only checked before Stripe redirected
