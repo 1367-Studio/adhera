@@ -8,7 +8,7 @@ import { Controller, useForm, useWatch } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 import { toast } from "sonner"
-import { UserIcon, PhoneIcon, CalendarBlankIcon, EnvelopeSimpleIcon } from "@phosphor-icons/react/dist/ssr";
+import { UserIcon, PhoneIcon, CalendarBlankIcon, EnvelopeSimpleIcon, ShieldCheckIcon, EraserIcon } from "@phosphor-icons/react/dist/ssr";
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -16,6 +16,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 import { portalFetch } from "@/lib/portal-fetch"
+import { usePortalErasureRequest, usePortalRequestErasure, usePortalWithdrawErasureRequest, erasureRequestStatusBadge } from "@/hooks/use-erasure-requests"
 import { AddressFields } from "@/components/ui/address-fields"
 import { addressFormValues, addressWasMigratedFromLegacy, type AddressFormValues } from "@/lib/address"
 import { ImageUpload } from "@/components/ui/image-upload"
@@ -109,8 +110,33 @@ function getStatusLabels(t: ReturnType<typeof useTranslations>): Record<string, 
 
 export default function ProfilPage() {
   const t = useTranslations("portalMembre.profil")
+  const tGlobal = useTranslations()
     const qc = useQueryClient()
   const [removePhotoOpen, setRemovePhotoOpen] = useState(false)
+  const [eraseOpen, setEraseOpen] = useState(false)
+
+  const { data: erasureRequest, isLoading: isLoadingErasureRequest } = usePortalErasureRequest()
+  const requestErasureMutation  = usePortalRequestErasure()
+  const withdrawErasureMutation = usePortalWithdrawErasureRequest()
+
+  async function handleRequestErasure() {
+    try {
+      await requestErasureMutation.mutateAsync()
+      toast.success(t("eraseData.toastSuccess"))
+      setEraseOpen(false)
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : tGlobal("common.error"))
+    }
+  }
+
+  async function handleWithdrawErasure() {
+    try {
+      await withdrawErasureMutation.mutateAsync()
+      toast.success(t("eraseData.toastWithdrawn"))
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : tGlobal("common.error"))
+    }
+  }
 
   const CIVILITE_LABELS = getCiviliteLabels(t)
   const statusLabel = getStatusLabels(t)
@@ -429,6 +455,41 @@ export default function ProfilPage() {
       </Card>
       </div>
 
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-base">
+            <ShieldCheckIcon className="size-4" />
+            {t("eraseData.title")}
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-sm text-muted-foreground mb-4">{t("eraseData.description")}</p>
+          {isLoadingErasureRequest ? (
+            // Without this, the button below flashes visible for a moment on every load —
+            // long enough to invite a click that just bounces off the API's 409 if a request
+            // already exists, since `erasureRequest` reads as falsy until the fetch resolves.
+            <div className="h-8 w-48 rounded-md bg-muted animate-pulse" />
+          ) : erasureRequest ? (
+            <div className="flex items-center gap-2 text-sm">
+              <span className="text-muted-foreground">{t("eraseData.statusLabel")}</span>
+              <Badge variant={erasureRequestStatusBadge(tGlobal, erasureRequest.status).variant}>
+                {erasureRequestStatusBadge(tGlobal, erasureRequest.status).label}
+              </Badge>
+              {erasureRequest.status === "REVIEW" && (
+                <Button variant="ghost" size="sm" onClick={handleWithdrawErasure} loading={withdrawErasureMutation.isPending}>
+                  {t("eraseData.withdrawButton")}
+                </Button>
+              )}
+            </div>
+          ) : (
+            <Button variant="outline" size="sm" onClick={() => setEraseOpen(true)}>
+              <EraserIcon className="mr-1.5 size-4" />
+              {t("eraseData.button")}
+            </Button>
+          )}
+        </CardContent>
+      </Card>
+
       <ConfirmDialog
         open={removePhotoOpen}
         onOpenChange={setRemovePhotoOpen}
@@ -437,6 +498,16 @@ export default function ProfilPage() {
         confirmLabel={t("removePhoto.confirm")}
         loading={photoMutation.isPending}
         onConfirm={confirmRemovePhoto}
+      />
+
+      <ConfirmDialog
+        open={eraseOpen}
+        onOpenChange={setEraseOpen}
+        title={t("eraseData.confirmTitle")}
+        description={t("eraseData.confirmDescription")}
+        confirmLabel={t("eraseData.button")}
+        loading={requestErasureMutation.isPending}
+        onConfirm={handleRequestErasure}
       />
     </div>
   )

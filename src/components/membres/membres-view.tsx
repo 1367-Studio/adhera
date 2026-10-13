@@ -195,6 +195,7 @@ export function MembresView() {
   // FORM-34: a "Lecteur" sees and exports members but changes nothing; e-mails/SMS belong to
   // the Communication area; role changes to administrators (same rules as the API).
   const canEditMembres                  = useHasAccess("membres", "edit")
+  const canEditAdhesions                = useHasAccess("adhesions", "edit")
   const canSendCommunication            = useHasAccess("communication", "edit")
   const isAdministrator                 = useIsAdministrator()
   const { data: fillForms = [] }        = useMembershipFillForms(modules.cotisations)
@@ -439,6 +440,10 @@ export function MembresView() {
             ] : []),
             ...(canEditMembres && !m.userId && m.email ? [
               { label: t("membres.view.actions.createAccess"), icon: <KeyIcon className="size-3.5" />, onClick: () => handleCreateAccess(m) },
+            ] : []),
+            // Resending the cotisation payment link is an "adhesions" edit, not "membres" —
+            // same area as every other cotisation write (resend-payment-link/route.ts).
+            ...(canEditAdhesions && !m.userId && m.email ? [
               { label: t("membres.view.actions.resendPaymentLink"), icon: <PaperPlaneTiltIcon className="size-3.5" />, onClick: () => handleResendPaymentLink(m) },
             ] : []),
             ...(canEditMembres && !isSelf ? [
@@ -567,8 +572,11 @@ export function MembresView() {
             {/* Avec au moins un formulaire d'adhésion publié, « Ajouter » propose de le
                 remplir à la place de l'adhérent (mode admin du formulaire public — la
                 personne reçoit alors le lien de paiement par email) en plus de l'ajout
-                manuel classique. Sans formulaire (ou sans slug résolu), bouton simple. */}
-            {!canEditMembres ? null : fillForms.length > 0 && currentUser.associationSlug ? (
+                manuel classique. Sans formulaire (ou sans slug résolu), bouton simple. Also
+                requires "adhesions" edit — submitting that flow creates a Cotisation
+                server-side (admin-registration/route.ts), same as every other cotisation
+                write. */}
+            {!canEditMembres ? null : fillForms.length > 0 && currentUser.associationSlug && canEditAdhesions ? (
               <DropdownMenu>
                 <DropdownMenuTrigger render={<Button size="sm" />}>
                   <PlusIcon className="mr-1.5 size-4" />

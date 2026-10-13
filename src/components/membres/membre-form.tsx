@@ -18,7 +18,7 @@ import { LOCALE_LABELS, SUPPORTED_LOCALES } from "@/i18n/locales"
 import { addressFormValues, addressWasMigratedFromLegacy, type AddressFormValues } from "@/lib/address"
 import { spokenLanguageOptions } from "@/lib/languages"
 import { membreCreateSchema, membreSchema, type MembreCreateInput } from "@/lib/schemas"
-import { useModules } from "@/lib/user-context"
+import { useHasAccess, useModules } from "@/lib/user-context"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useTranslations } from "next-intl"
 import { useEffect, useState } from "react"
@@ -58,7 +58,7 @@ interface MembreFormProps {
   // resolveMembreMembershipFormId), pre-filled with their current answers — absent for a
   // member with no traceable form (manual creation), and always absent on create: there is no
   // member yet to have joined through anything.
-  editableCustomFields?: { field: MembershipFormFieldInputField; value: string }[]
+  editableCustomFields?: { field: MembershipFormFieldInputField; value: string; readOnly: boolean }[]
   // True while editableCustomFields is still being fetched (the members-list quick-edit modal
   // loads it on open, unlike the fiche détail where it's already in hand) — shows a placeholder
   // instead of the section silently popping in after a beat, or never appearing to a manager who
@@ -189,6 +189,9 @@ export function MembreForm({ defaultValues, onSubmit, onCancel, loading, isCreat
   // but never hide any of it once something is actually filled in, whatever the age.
   const showGuardianFields = showResponsableField
     || !!guardianNameValue || !!guardianPhoneValue || !!secondGuardianNameValue || !!secondGuardianPhoneValue
+  // Security audit M2+L8 — the free-text guardian name/phone fields below (not the
+  // `responsableId` selector above, a link to another Membre record and not in scope).
+  const canSeeSensitive = useHasAccess("sensible", "read")
 
   const roleOptions = actorRole === "ADMIN" ? allRoleOptions : allRoleOptions.filter(o => o.value !== "ADMIN")
 
@@ -585,30 +588,32 @@ export function MembreForm({ defaultValues, onSubmit, onCancel, loading, isCreat
               />
             )}
 
-            <div className="grid gap-x-4 gap-y-5 sm:grid-cols-2">
-              <FormField
-                label={t("membres.form.fields.guardianName", { number: 1 })}
-                error={errors.guardianName?.message}
-                {...register("guardianName")}
-              />
-              <FormField
-                label={t("membres.form.fields.guardianPhone", { number: 1 })}
-                type="tel"
-                error={errors.guardianPhone?.message}
-                {...register("guardianPhone")}
-              />
-              <FormField
-                label={t("membres.form.fields.guardianName", { number: 2 })}
-                error={errors.secondGuardianName?.message}
-                {...register("secondGuardianName")}
-              />
-              <FormField
-                label={t("membres.form.fields.guardianPhone", { number: 2 })}
-                type="tel"
-                error={errors.secondGuardianPhone?.message}
-                {...register("secondGuardianPhone")}
-              />
-            </div>
+            {canSeeSensitive && (
+              <div className="grid gap-x-4 gap-y-5 sm:grid-cols-2">
+                <FormField
+                  label={t("membres.form.fields.guardianName", { number: 1 })}
+                  error={errors.guardianName?.message}
+                  {...register("guardianName")}
+                />
+                <FormField
+                  label={t("membres.form.fields.guardianPhone", { number: 1 })}
+                  type="tel"
+                  error={errors.guardianPhone?.message}
+                  {...register("guardianPhone")}
+                />
+                <FormField
+                  label={t("membres.form.fields.guardianName", { number: 2 })}
+                  error={errors.secondGuardianName?.message}
+                  {...register("secondGuardianName")}
+                />
+                <FormField
+                  label={t("membres.form.fields.guardianPhone", { number: 2 })}
+                  type="tel"
+                  error={errors.secondGuardianPhone?.message}
+                  {...register("secondGuardianPhone")}
+                />
+              </div>
+            )}
           </div>
         </>
       )}
@@ -648,7 +653,7 @@ export function MembreForm({ defaultValues, onSubmit, onCancel, loading, isCreat
           <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
             {t("membres.form.customFieldsSectionTitle")}
           </p>
-          {editableCustomFields.map(({ field }) => (
+          {editableCustomFields.map(({ field, readOnly }) => (
             <MembershipFormFieldInput
               key={field.id}
               field={field}
@@ -656,6 +661,7 @@ export function MembreForm({ defaultValues, onSubmit, onCancel, loading, isCreat
               onChange={value => setCustomAnswers(prev => ({ ...prev, [field.id]: value }))}
               onBlur={() => setTouchedCustomFields(prev => new Set(prev).add(field.id))}
               error={customFieldError(field.id, field.required)}
+              disabled={readOnly}
             />
           ))}
         </div>

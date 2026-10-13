@@ -28,7 +28,16 @@ export async function GET(
     select:  { id: true, title: true, fileUrl: true, fileName: true, updatedAt: true },
   })
 
+  // fileUrl points at [id]/file/route.ts, not the raw stored R2 URL — see ../[id]/route.ts.
+  const documentsWithProxiedFileUrl = documents.map(document => ({
+    ...document,
+    fileUrl: document.fileUrl ? `/api/public/${slug}/documents/${document.id}/file` : null,
+  }))
+
   // `site` lets the page draw the association's nav/footer around the list — sent even when
   // there are no documents, same convention as the actualites public route.
-  return NextResponse.json({ documents, site: { name: assoc.name, config: assoc.siteConfig } })
+  return NextResponse.json({
+    documents: documentsWithProxiedFileUrl,
+    site:      { name: assoc.name, config: assoc.siteConfig },
+  })
 }

@@ -7,7 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
 import { useTranslations } from "next-intl"
-import { BuildingsIcon, CreditCardIcon, InfoIcon, LightningIcon, ReceiptIcon, UsersThreeIcon } from "@phosphor-icons/react/dist/ssr";
+import { BuildingsIcon, CreditCardIcon, InfoIcon, LightningIcon, ReceiptIcon, ShieldCheckIcon, UsersThreeIcon } from "@phosphor-icons/react/dist/ssr";
 import { associationSchema, type AssociationInput } from "@/lib/schemas"
 import { PageHeader } from "@/components/ui/page-header"
 import { ViewToggle } from "@/components/ui/view-toggle"
@@ -30,6 +30,7 @@ import { MemberCardSettings } from "@/components/parametres/member-card-settings
 import { BankSettings } from "@/components/parametres/bank-settings"
 import { CotisationDefaultsSettings } from "@/components/parametres/cotisation-defaults-settings"
 import { TeamAccessSettings } from "@/components/parametres/team-access-settings"
+import { ErasureRequestsSettings } from "@/components/parametres/erasure-requests-settings"
 import type { AssociationPlan } from "@prisma/client"
 type Association = {
   id:      string
@@ -53,7 +54,7 @@ type Association = {
   publicMembershipPaymentEnabled: boolean
 }
 
-type Tab = "general" | "paiements" | "abonnement" | "integrations" | "equipe"
+type Tab = "general" | "paiements" | "abonnement" | "integrations" | "equipe" | "rgpd"
 
 function getAllTabs(t: ReturnType<typeof useTranslations>) {
   return [
@@ -62,6 +63,7 @@ function getAllTabs(t: ReturnType<typeof useTranslations>) {
     { value: "abonnement"   as Tab, label: t("parametres.view.tabs.abonnement"),   icon: <ReceiptIcon     className="size-3.5" />, modules: null,           administratorOnly: false },
     { value: "integrations" as Tab, label: t("parametres.view.tabs.integrations"), icon: <LightningIcon        className="size-3.5" />, modules: ["ia", "sms"], administratorOnly: false },
     { value: "equipe"       as Tab, label: t("parametres.view.tabs.equipe"),       icon: <UsersThreeIcon  className="size-3.5" />, modules: null,           administratorOnly: true  },
+    { value: "rgpd"         as Tab, label: t("parametres.view.tabs.rgpd"),         icon: <ShieldCheckIcon className="size-3.5" />, modules: null,           administratorOnly: true  },
   ] as const
 }
 
@@ -302,6 +304,13 @@ function ParametresViewInner() {
       {tab === "equipe" && isAdministrator && (
         <div className="rounded-lg border bg-card p-6">
           <TeamAccessSettings />
+        </div>
+      )}
+
+      {/* ── RGPD (administrators only) ─────────────────────────────────── */}
+      {tab === "rgpd" && isAdministrator && (
+        <div className="rounded-lg border bg-card p-6">
+          <ErasureRequestsSettings />
         </div>
       )}
 

@@ -10,7 +10,7 @@ export async function GET(
 
   const assoc = await prisma.association.findUnique({
     where:  { slug },
-    select: { id: true, modules: true },
+    select: { id: true, modules: true, sitePublished: true, website: true },
   })
   if (!assoc) return NextResponse.json({ error: "Not found" }, { status: 404 })
 
@@ -28,5 +28,9 @@ export async function GET(
   })
   if (!produit) return NextResponse.json({ error: "Produit introuvable" }, { status: 404 })
 
-  return NextResponse.json(produit)
+  // Whether "Voltar ao site" (the public homepage) actually resolves — getSiteData() requires
+  // both sitePublished AND the "site" module, so a boutique can be live with neither.
+  const sitePublished = assoc.sitePublished && modules.site
+
+  return NextResponse.json({ ...produit, sitePublished, website: assoc.website })
 }

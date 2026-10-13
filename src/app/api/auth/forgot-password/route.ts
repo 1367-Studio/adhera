@@ -5,6 +5,7 @@ import { sendEmail } from "@/lib/mail"
 import { passwordResetEmail } from "@/lib/email"
 import { APP_URL } from "@/lib/env"
 import { reportError } from "@/lib/monitoring"
+import { rateLimit, ipFromHeaders } from "@/lib/rate-limit"
 
 const TOKEN_TTL_MS = 60 * 60 * 1000  // 1 hour
 const COOLDOWN_MS  = 2 * 60 * 1000   // 2 minutes
@@ -13,6 +14,13 @@ export async function POST(req: Request) {
   const body = await req.json().catch(() => ({}))
   const email = typeof body?.email === "string" ? body.email.toLowerCase().trim() : ""
   if (!email) return NextResponse.json({ error: "Email requis" }, { status: 422 })
+
+  // The per-email cooldown below only throttles repeated requests for the *same* address —
+  // it does nothing against one source cycling through many different emails (security
+  // audit L2). Silently a no-op on the response (still `{ ok: true }`), same as every other
+  // branch here, so this never becomes a new way to detect rate limiting from outside.
+  const ipAllowed = await rateLimit(`forgot-password-ip:${ipFromHeaders(req.headers)}`, 5, 15 * 60 * 1000)
+  if (!ipAllowed) return NextResponse.json({ ok: true })
 
   // Run both queries in parallel to prevent timing attacks
   const [users, existing] = await Promise.all([

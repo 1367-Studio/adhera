@@ -6,6 +6,7 @@ import { prisma } from "@/lib/prisma/client"
 import { withAdminAuth } from "@/lib/api-wrapper"
 import { SUPPORTED_PROVIDERS, DEFAULT_MODELS, isAnthropicProvider, makeAiClient, makeAnthropicClient } from "@/lib/ai/client"
 import { writeActivityLog } from "@/lib/activity-log"
+import { encryptNullable } from "@/lib/crypto/field-encryption"
 
 const schema = z.object({
   aiProvider: z.enum(SUPPORTED_PROVIDERS as [string, ...string[]]).nullable().optional(),
@@ -124,7 +125,7 @@ export const PATCH = withAdminAuth(async (req, ctx) => {
     data: {
       aiProvider: aiProvider !== undefined ? aiProvider : undefined,
       aiModel:    aiModel    !== undefined ? aiModel    : undefined,
-      ...(aiApiKey !== undefined ? { aiApiKey: aiApiKey ?? null } : {}),
+      ...(aiApiKey !== undefined ? { aiApiKey: encryptNullable(aiApiKey) ?? null } : {}),
     },
   })
 

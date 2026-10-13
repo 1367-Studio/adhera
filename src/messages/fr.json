@@ -49,7 +49,8 @@
     "actions": "Actions",
     "dismissTip": "Ignorer l'astuce",
     "addressPlaceholder": "Salle des fêtes, 12 rue de la Paix, Paris…",
-    "viewOnGoogleMaps": "Voir sur Google Maps"
+    "viewOnGoogleMaps": "Voir sur Google Maps",
+    "backToSite": "Retour au site"
   },
   "address": {
     "street": "Adresse",
@@ -3173,6 +3174,8 @@
           "fieldLabelPlaceholder": "Ex. Profession",
           "fieldType": "Type",
           "fieldRequired": "Obligatoire",
+          "fieldSensible": "Donnée sensible",
+          "fieldSensibleRequiredHint": "Ce champ étant sensible et obligatoire, un gestionnaire sans accès aux données sensibles ne pourra pas créer ou modifier un membre sans y avoir accès.",
           "typeText": "Texte",
           "typeNumber": "Nombre",
           "typeSelect": "Liste déroulante",
@@ -3254,6 +3257,7 @@
       "adminLinkSentTitle": "Lien de paiement envoyé",
       "adminLinkSentBody": "Le membre a été créé et un email avec le lien de paiement a été envoyé à {email}. Il deviendra adhérent une fois la cotisation réglée.",
       "adminEmailAlreadyMember": "Cette adresse email appartient déjà à un membre de l'association.",
+      "adminAccessDenied": "Vous n'avez pas la permission d'effectuer une adhésion via ce formulaire. Seuls un administrateur, président ou trésorier de l'association peuvent le faire.",
       "firstNamePlaceholder": "Marie",
       "lastNamePlaceholder": "Dupont",
       "emailPlaceholder": "marie.dupont@email.fr",
@@ -3688,7 +3692,8 @@
         "paiements": "Paiements",
         "abonnement": "Abonnement",
         "integrations": "Intégrations",
-        "equipe": "Équipe et accès"
+        "equipe": "Équipe et accès",
+        "rgpd": "RGPD"
       },
       "associationInfo": "Informations de l'association",
       "associationName": "Nom de l'association",
@@ -4023,6 +4028,7 @@
       "areas": {
         "dashboard": "Tableau de bord et activité",
         "membres": "Membres",
+        "sensible": "Données sensibles des membres",
         "adhesions": "Adhésions et cotisations",
         "dons": "Dons",
         "evenements": "Événements et billetterie",
@@ -4038,6 +4044,47 @@
       "toasts": {
         "saved": "Accès mis à jour"
       }
+    },
+    "erasureRequests": {
+      "title": "Effacement des données (RGPD)",
+      "description": "Demandes de suppression définitive des données personnelles d'un membre, conformément à l'article 17 du RGPD. Traitées automatiquement chaque nuit, sauf mise en attente.",
+      "empty": "Aucune demande d'effacement pour le moment.",
+      "retryWarning": "Échec {count} fois — nouvelle tentative automatique",
+      "columns": {
+        "membre": "Membre",
+        "status": "Statut",
+        "requestedAt": "Demandée le"
+      },
+      "status": {
+        "review": "En révision",
+        "pending": "En attente de traitement",
+        "held": "Mise en attente",
+        "processed": "Traitée"
+      },
+      "actions": {
+        "approve": "Valider",
+        "hold": "Mettre en attente",
+        "release": "Lever l'attente",
+        "cancel": "Annuler"
+      },
+      "holdModal": {
+        "title": "Mettre cette demande en attente",
+        "description": "La demande ne sera pas traitée par le prochain passage automatique tant que l'attente n'est pas levée. Le membre sera informé par e-mail.",
+        "reasonLabel": "Motif (interne, non visible par le membre)",
+        "confirm": "Mettre en attente"
+      },
+      "cancelConfirmTitle": "Annuler cette demande d'effacement ?",
+      "cancelConfirmDescription": "Le membre et les autres administrateurs seront informés par e-mail de cette annulation.",
+      "approveConfirmTitle": "Valider cette demande d'effacement ?",
+      "approveConfirmDescription": "Les données du membre seront anonymisées de façon irréversible lors du prochain passage nocturne, sauf mise en attente avant cette échéance.",
+      "toasts": {
+        "held": "Demande mise en attente",
+        "released": "Attente levée",
+        "cancelled": "Demande annulée",
+        "approved": "Demande validée"
+      },
+      "automaticOrigin": "Déclenché automatiquement — inactif depuis plus de 3 ans",
+      "inactiveSince": "quitté le {date}"
     }
   },
   "cotisations": {
@@ -4401,6 +4448,14 @@
       "cotisationButton": "Cotisation",
       "createAccessButton": "Créer un accès",
       "roleButton": "Rôle",
+      "exportDataButton": "Exporter les données (RGPD)",
+      "eraseData": {
+        "button": "Effacer les données (RGPD)",
+        "confirmTitle": "Demander l'effacement définitif des données de {name} ?",
+        "confirmDescription": "Cette action enregistre une demande d'effacement RGPD (article 17). Le membre recevra un e-mail de confirmation, puis ses données personnelles seront anonymisées de façon irréversible lors du prochain traitement automatique, sauf mise en attente.",
+        "toastSuccess": "Demande d'effacement enregistrée",
+        "requestLabel": "Effacement RGPD"
+      },
       "contact": "Contact",
       "noContactInfo": "Aucune information de contact",
       "memberSinceColon": "Membre depuis : {date}",
@@ -4737,7 +4792,13 @@
         "loanReturned": "Matériel rendu",
         "loanUpdated": "Prêt modifié",
         "loanCancelled": "Prêt annulé",
-        "loanDeleted": "Prêt supprimé"
+        "loanDeleted": "Prêt supprimé",
+        "erasureRequestCreated": "Demande d'effacement des données (RGPD)",
+        "erasureRequestHeld": "Demande d'effacement mise en attente",
+        "erasureRequestHoldReleased": "Attente levée sur la demande d'effacement",
+        "erasureRequestCancelled": "Demande d'effacement annulée",
+        "membreAnonymized": "Données personnelles effacées (RGPD)",
+        "erasureRequestApproved": "Demande d'effacement validée"
       },
       "actorPrefix": "par {name}",
       "loadError": "Impossible de charger l'historique.",
@@ -5871,6 +5932,17 @@
         "title": "Retirer la photo de profil ?",
         "description": "Vous pourrez en ajouter une nouvelle à tout moment.",
         "confirm": "Retirer"
+      },
+      "eraseData": {
+        "title": "Confidentialité",
+        "description": "Vous pouvez demander la suppression définitive de vos données personnelles, conformément à l'article 17 du RGPD.",
+        "button": "Demander la suppression de mes données",
+        "confirmTitle": "Demander la suppression définitive de vos données ?",
+        "confirmDescription": "Un administrateur de l'association examinera cette demande avant son traitement. Une fois validée, vos données personnelles seront anonymisées de façon irréversible lors du prochain traitement automatique.",
+        "toastSuccess": "Demande envoyée",
+        "statusLabel": "Statut de votre demande",
+        "withdrawButton": "Retirer ma demande",
+        "toastWithdrawn": "Demande retirée"
       }
     },
     "evenements": {
@@ -6243,9 +6315,27 @@
     "columns": {
       "membre": "Membre",
       "association": "Association",
+      "origin": "Origine",
       "raisedAt": "Créé le",
       "daysWithoutCotisation": "Jours sans cotisation",
       "status": "Statut"
+    },
+    "originByLabel": "Par {name}",
+    "originSources": {
+      "ADMIN_MANUAL": "Ajout manuel par un admin",
+      "ADMIN_REGISTRATION": "Inscription par un admin (formulaire)",
+      "PUBLIC_ADHESION_FORM": "Formulaire public d'adhésion (gratuit)",
+      "PUBLIC_ADHESION_FORM_OFFLINE": "Formulaire public d'adhésion (paiement hors ligne)",
+      "PUBLIC_ADHESION_STRIPE": "Formulaire public d'adhésion (paiement en ligne)",
+      "PUBLIC_ADHESION_INSTALLMENTS": "Formulaire public d'adhésion (paiement en plusieurs fois)",
+      "PUBLIC_ADHESION_MULTI": "Formulaire public d'adhésion (inscription groupée)",
+      "PUBLIC_ADHESION_SUBSCRIPTION": "Formulaire public d'adhésion (abonnement récurrent)",
+      "ASSOCONNECT_IMPORT": "Import AssoConnect",
+      "PAPER_FORM": "Import de fiche papier",
+      "ASSOCIATION_SIGNUP_ADMIN": "Membre fondateur (création de l'association)",
+      "PUBLIC_INSCRIPTION_REQUEST": "Demande d'inscription publique (en attente de validation)",
+      "PUBLIC_INSCRIPTION_REQUEST_MULTI": "Demande d'inscription publique groupée (en attente de validation)",
+      "unknown": "Origine inconnue"
     },
     "empty": "Aucune alerte de contrôle.",
     "resolveAction": "Résoudre",
@@ -6378,7 +6468,7 @@
     "countryLabel": "Pays",
     "saved": "Adresse de livraison enregistrée",
     "deliveryMethodLabel": "Mode de réception",
-    "pickupOption": "Retrait en main",
+    "pickupOption": "Retrait sur place",
     "deliveryOption": "Envoi postal",
     "shippingAddressHint": "Nécessaire pour calculer les frais de livraison.",
     "shippingOptionsLabel": "Frais de livraison",

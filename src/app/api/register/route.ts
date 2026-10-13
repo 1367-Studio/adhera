@@ -189,7 +189,7 @@ export async function POST(req: Request) {
     const passwordHash = await bcrypt.hash(password, 12)
     const trialEndsAt  = offer ? null : new Date(Date.now() + TRIAL_DAYS * 86_400_000)
 
-    const { association, user } = await prisma.$transaction(async (tx) => {
+    const { association, user, membre } = await prisma.$transaction(async (tx) => {
       const association = await tx.association.create({
         data: {
           name:                 associationName,
@@ -217,7 +217,7 @@ export async function POST(req: Request) {
           termsAcceptedIp: acceptedIp,
         },
       })
-      await tx.membre.create({
+      const membre = await tx.membre.create({
         data: {
           firstName,
           lastName,
@@ -234,13 +234,23 @@ export async function POST(req: Request) {
           data:  { associationId: association.id, usedAt: new Date() },
         })
       }
-      return { association, user }
+      return { association, user, membre }
     })
 
     await writeActivityLog({
       associationId: association.id, actorId: user.id, action: "ASSOCIATION_REGISTERED",
       entity: "Association", entityId: association.id, label: associationName,
       metadata: offer ? { offerId: offer.id } : { tier, billingInterval: plan },
+    })
+
+    // The founding admin's own Membre row — ACTIF with no cotisation by design (it's the
+    // admin, not a dues-paying member), which is exactly the shape the control-alert sweep
+    // (membre-control-alert-sweep) flags. Tagged so that alert can be told apart at a glance
+    // from a real orphaned member instead of someone having to look it up.
+    await writeActivityLog({
+      associationId: association.id, actorId: user.id, action: "MEMBRE_CREATED",
+      entity: "Membre", entityId: membre.id, label: `${firstName} ${lastName}`,
+      metadata: { source: "ASSOCIATION_SIGNUP_ADMIN" },
     })
 
     const loginUrl = `${APP_URL}/login`

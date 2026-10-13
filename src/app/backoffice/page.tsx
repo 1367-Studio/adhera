@@ -56,12 +56,26 @@ export default async function BackofficePage() {
     { title: "Attention",     value: problem, icon: WarningCircleIcon,  description: "en retard ou annulées"          },
   ]
 
+  // Security audit M1 follow-up — the only way to know these alerts are silently inert (both
+  // only ever console.error, never surfaced anywhere a human would look) was to read the code.
+  // This is the one page every session of this backoffice passes through, so a stale/missing
+  // env var doesn't quietly stay unnoticed indefinitely. Shown only when actually missing, not
+  // as a permanent fixture once configured.
+  const securityAlertsConfigured = !!process.env.SECURITY_ALERT_EMAIL
+
   return (
     <div className="space-y-6">
       <div>
         <h2 className="text-xl font-semibold tracking-tight">Vue d&apos;ensemble</h2>
         <p className="text-sm text-muted-foreground">Métriques SaaS de la plateforme</p>
       </div>
+
+      {!securityAlertsConfigured && (
+        <p className="flex items-center gap-1.5 text-xs text-amber-600 dark:text-amber-400">
+          <WarningCircleIcon className="size-3.5" />
+          SECURITY_ALERT_EMAIL n&apos;est pas configurée — les alertes de sécurité (force brute, changement de droits administrateur) sont désactivées.
+        </p>
+      )}
 
       <RevenueChart />
 

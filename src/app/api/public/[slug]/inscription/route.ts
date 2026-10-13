@@ -122,6 +122,7 @@ export async function POST(
   await writeActivityLog({
     associationId: assoc.id, action: "MEMBRE_INSCRIPTION_REQUESTED",
     entity: "Membre", entityId: membre.id, label: `${firstName} ${lastName}`,
+    metadata: { source: "PUBLIC_INSCRIPTION_REQUEST" },
   })
 
   return NextResponse.json({ ok: true }, { status: 201 })

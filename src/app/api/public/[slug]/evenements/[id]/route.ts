@@ -19,7 +19,7 @@ export async function GET(
 
   const assoc = await prisma.association.findUnique({
     where:  { slug },
-    select: { id: true, name: true, sitePublished: true, modules: true, stripeConnectId: true, canIssueTaxReceipts: true },
+    select: { id: true, name: true, sitePublished: true, modules: true, stripeConnectId: true, canIssueTaxReceipts: true, website: true },
   })
   if (!assoc || !assoc.sitePublished) return NextResponse.json({ error: "Not found" }, { status: 404 })
 
@@ -145,6 +145,10 @@ export async function GET(
 
   return NextResponse.json({
     associationName: assoc.name,
+    // Always true here — the gate above already 404s otherwise — but sent through anyway so
+    // the frontend's BackToSiteLink doesn't need a special case for this one flow.
+    sitePublished: true,
+    website:     assoc.website,
     id:          evenement.id,
     title:       translated.title,
     description: translated.description,

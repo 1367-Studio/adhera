@@ -49,7 +49,8 @@
     "actions": "Radnje",
     "dismissTip": "Preskoči savjet",
     "addressPlaceholder": "Salle des fêtes, 12 rue de la Paix, Pariz...",
-    "viewOnGoogleMaps": "Pogledajte na Google kartama"
+    "viewOnGoogleMaps": "Pogledajte na Google kartama",
+    "backToSite": "Natrag na web"
   },
   "address": {
     "street": "Adresa",
@@ -3140,6 +3141,7 @@
       "adminLinkSentTitle": "Poslana poveznica za plaćanje",
       "adminLinkSentBody": "Član je kreiran i poslan je e-mail s poveznicom za plaćanje na {email}. Član će postati nakon što se plati članarina.",
       "adminEmailAlreadyMember": "Ova e-mail adresa već pripada članu udruge.",
+      "adminAccessDenied": "Nemate dopuštenje za obradu članstva putem ovog obrasca. To može učiniti samo administrator, predsjednik ili blagajnik udruge.",
       "firstNamePlaceholder": "Marie",
       "lastNamePlaceholder": "Dupont",
       "emailPlaceholder": "marie.dupont@email.fr",
@@ -3545,7 +3547,8 @@
         "general": "Općenito",
         "paiements": "Isplate",
         "abonnement": "Pretplata",
-        "integrations": "Integracije"
+        "integrations": "Integracije",
+        "rgpd": "GDPR"
       },
       "associationInfo": "Informacije o udruzi",
       "associationName": "Naziv udruge",
@@ -3801,6 +3804,52 @@
       "titleTrialExpired": "Pretplatite se",
       "subtitleTrialExpired": "Vaše besplatno probno razdoblje je isteklo. Odaberite plan i unesite način plaćanja kako biste nastavili.",
       "confirmButtonSubscribe": "Potvrdite i pretplatite se"
+    },
+    "erasureRequests": {
+      "title": "Brisanje podataka (GDPR)",
+      "description": "Zahtjevi za trajno brisanje osobnih podataka člana, u skladu s člankom 17. GDPR-a. Obrađuju se automatski svake noći, osim onih koji su stavljeni na čekanje.",
+      "empty": "Još nema zahtjeva za brisanje.",
+      "retryWarning": "Neuspjelo {count} puta — automatski novi pokušaj",
+      "columns": {
+        "membre": "Član",
+        "status": "Status",
+        "requestedAt": "Zatraženo"
+      },
+      "status": {
+        "review": "Na pregledu",
+        "pending": "Čeka obradu",
+        "held": "Na čekanju",
+        "processed": "Obrađeno"
+      },
+      "actions": {
+        "approve": "Odobri",
+        "hold": "Stavi na čekanje",
+        "release": "Ukini čekanje",
+        "cancel": "Otkaži"
+      },
+      "holdModal": {
+        "title": "Staviti ovaj zahtjev na čekanje",
+        "description": "Zahtjev se neće obraditi u sljedećem automatskom pokretanju dok je na čekanju. Član će biti obaviješten e-poštom.",
+        "reasonLabel": "Razlog (interno, ne prikazuje se članu)",
+        "confirm": "Stavi na čekanje"
+      },
+      "cancelConfirmTitle": "Otkazati ovaj zahtjev za brisanje?",
+      "cancelConfirmDescription": "Član i ostali administratori bit će obaviješteni e-poštom o ovom otkazivanju.",
+      "approveConfirmTitle": "Odobriti ovaj zahtjev za brisanje?",
+      "approveConfirmDescription": "Podaci člana bit će trajno anonimizirani tijekom sljedećeg noćnog izvršavanja, osim ako se prije toga ne stave na čekanje.",
+      "toasts": {
+        "held": "Zahtjev stavljen na čekanje",
+        "released": "Čekanje ukinuto",
+        "cancelled": "Zahtjev otkazan",
+        "approved": "Zahtjev odobren"
+      },
+      "automaticOrigin": "Automatski označeno — neaktivan više od 3 godine",
+      "inactiveSince": "napustio/la {date}"
+    },
+    "teamAccess": {
+      "areas": {
+        "sensible": "Osjetljivi podaci članova"
+      }
     }
   },
   "cotisations": {
@@ -4261,6 +4310,13 @@
         "rejectedToast": "Zahtjev je odbijen",
         "rejectConfirmTitle": "Odbiti ovaj zahtjev?",
         "rejectConfirmDescription": "{name} promijenit će status u \"Neaktivno\" i neće se moći prijaviti. Zahtjev i njegovi odgovori na obrazac ostaju sačuvani."
+      },
+      "eraseData": {
+        "button": "Izbriši podatke (GDPR)",
+        "confirmTitle": "Zatražiti trajno brisanje podataka člana {name}?",
+        "confirmDescription": "Ovime se registrira zahtjev za brisanje prema čl. 17. GDPR-a. Član će primiti e-poštu s potvrdom, a zatim će njegovi osobni podaci biti nepovratno anonimizirani prilikom sljedeće automatske obrade, osim ako zahtjev ne bude stavljen na čekanje.",
+        "toastSuccess": "Zahtjev za brisanje registriran",
+        "requestLabel": "GDPR brisanje"
       }
     },
     "sms": {
@@ -4450,7 +4506,13 @@
         "loanReturned": "Renderirani materijal",
         "loanUpdated": "Modificirani kredit",
         "loanCancelled": "Posudba otkazana",
-        "loanDeleted": "Ukidanje zajmova"
+        "loanDeleted": "Ukidanje zajmova",
+        "erasureRequestCreated": "Zahtjev za brisanje podataka (GDPR)",
+        "erasureRequestHeld": "Zahtjev za brisanje stavljen na čekanje",
+        "erasureRequestHoldReleased": "Čekanje zahtjeva za brisanje ukinuto",
+        "erasureRequestCancelled": "Zahtjev za brisanje otkazan",
+        "membreAnonymized": "Osobni podaci izbrisani (GDPR)",
+        "erasureRequestApproved": "Zahtjev za brisanje odobren"
       },
       "actorPrefix": "autor {name}",
       "loadError": "Nije moguće učitati povijest.",
@@ -5347,6 +5409,17 @@
         "title": "Ukloniti profilnu sliku?",
         "description": "Možete dodati novu u bilo kojem trenutku.",
         "confirm": "Uklonite"
+      },
+      "eraseData": {
+        "title": "Privatnost",
+        "description": "Možete zatražiti trajno brisanje svojih osobnih podataka, u skladu s člankom 17. GDPR-a.",
+        "button": "Zatraži brisanje mojih podataka",
+        "confirmTitle": "Zatražiti trajno brisanje svojih podataka?",
+        "confirmDescription": "Administrator udruge pregledat će ovaj zahtjev prije obrade. Nakon odobrenja vaši osobni podaci bit će nepovratno anonimizirani prilikom sljedeće automatske obrade.",
+        "toastSuccess": "Zahtjev poslan",
+        "statusLabel": "Status vašeg zahtjeva",
+        "withdrawButton": "Povuci moj zahtjev",
+        "toastWithdrawn": "Zahtjev povučen"
       }
     },
     "evenements": {

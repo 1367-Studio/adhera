@@ -49,7 +49,8 @@
     "actions": "Akciók",
     "dismissTip": "Hagyd ki a tippet",
     "addressPlaceholder": "Salle des fêtes, 12 rue de la Paix, Párizs...",
-    "viewOnGoogleMaps": "Lásd a Google Térképen"
+    "viewOnGoogleMaps": "Lásd a Google Térképen",
+    "backToSite": "Vissza az oldalra"
   },
   "address": {
     "street": "Cím",
@@ -3140,6 +3141,7 @@
       "adminLinkSentTitle": "Fizetési link küldése",
       "adminLinkSentBody": "A tag létrejött, és egy e-mailt a fizetési linkkel együtt küldtek {email}. Taggá válik, amint a tagságdíj kifizetett.",
       "adminEmailAlreadyMember": "Ez az e-mail cím már az egyesület egyik tagjáé.",
+      "adminAccessDenied": "Önnek nincs jogosultsága tagság létrehozására ezen az űrlapon keresztül. Ezt csak az egyesület adminisztrátora, elnöke vagy pénztárosa teheti meg.",
       "firstNamePlaceholder": "Marie",
       "lastNamePlaceholder": "Dupont",
       "emailPlaceholder": "marie.dupont@email.fr",
@@ -3545,7 +3547,8 @@
         "general": "Általános",
         "paiements": "Kifizetések",
         "abonnement": "Előfizetés",
-        "integrations": "Integrációk"
+        "integrations": "Integrációk",
+        "rgpd": "GDPR"
       },
       "associationInfo": "Szövetségi információk",
       "associationName": "Az egyesület neve",
@@ -3801,6 +3804,52 @@
       "titleTrialExpired": "Iratkozz fel",
       "subtitleTrialExpired": "Az ingyenes próbaidőszakod véget ért. Válassz egy csomagot, és adj be egy fizetési módot a folytatáshoz.",
       "confirmButtonSubscribe": "Erősítsd meg és iratkozz fel"
+    },
+    "erasureRequests": {
+      "title": "Adattörlés (GDPR)",
+      "description": "Egy tag személyes adatainak végleges törlésére vonatkozó kérelmek, a GDPR 17. cikke alapján. Minden éjjel automatikusan feldolgozásra kerülnek, kivéve a felfüggesztett kérelmeket.",
+      "empty": "Még nincs törlési kérelem.",
+      "retryWarning": "{count} alkalommal sikertelen — automatikus újrapróbálkozás",
+      "columns": {
+        "membre": "Tag",
+        "status": "Állapot",
+        "requestedAt": "Kérelmezve"
+      },
+      "status": {
+        "review": "Felülvizsgálat alatt",
+        "pending": "Feldolgozásra vár",
+        "held": "Felfüggesztve",
+        "processed": "Feldolgozva"
+      },
+      "actions": {
+        "approve": "Jóváhagyás",
+        "hold": "Felfüggesztés",
+        "release": "Felfüggesztés feloldása",
+        "cancel": "Visszavonás"
+      },
+      "holdModal": {
+        "title": "Kérelem felfüggesztése",
+        "description": "A kérelem a felfüggesztés feloldásáig nem kerül feldolgozásra a következő automatikus futás során. A tag e-mail értesítést kap.",
+        "reasonLabel": "Indok (belső, a tag számára nem látható)",
+        "confirm": "Felfüggesztés"
+      },
+      "cancelConfirmTitle": "Visszavonja ezt a törlési kérelmet?",
+      "cancelConfirmDescription": "A tag és a többi rendszergazda e-mail értesítést kap erről a visszavonásról.",
+      "approveConfirmTitle": "Jóváhagyja ezt a törlési kérelmet?",
+      "approveConfirmDescription": "A tag adatai a következő éjszakai futás során véglegesen anonimizálódnak, kivéve ha előtte felfüggesztik a kérelmet.",
+      "toasts": {
+        "held": "Kérelem felfüggesztve",
+        "released": "Felfüggesztés feloldva",
+        "cancelled": "Kérelem visszavonva",
+        "approved": "Kérelem jóváhagyva"
+      },
+      "automaticOrigin": "Automatikusan megjelölve — több mint 3 éve inaktív",
+      "inactiveSince": "kilépett: {date}"
+    },
+    "teamAccess": {
+      "areas": {
+        "sensible": "Tagok érzékeny adatai"
+      }
     }
   },
   "cotisations": {
@@ -4261,6 +4310,13 @@
         "rejectedToast": "A kérelem elutasítása",
         "rejectConfirmTitle": "Elutasítani ezt a kérést?",
         "rejectConfirmDescription": "{name} \"Inaktív\" státuszra változik, és nem lesz lehetőség bejelentkezni. A kérelmet és a válaszokat megőrizték."
+      },
+      "eraseData": {
+        "button": "Adatok törlése (GDPR)",
+        "confirmTitle": "{name} adatainak végleges törlését kéri?",
+        "confirmDescription": "Ez a művelet a GDPR 17. cikke szerinti törlési kérelmet rögzít. A tag megerősítő e-mailt kap, majd személyes adatai a következő automatikus feldolgozás során véglegesen anonimizálásra kerülnek, kivéve ha a kérelmet felfüggesztik.",
+        "toastSuccess": "Törlési kérelem rögzítve",
+        "requestLabel": "GDPR-törlés"
       }
     },
     "sms": {
@@ -4450,7 +4506,13 @@
         "loanReturned": "Megjelenített anyagok",
         "loanUpdated": "Módosított kölcsön",
         "loanCancelled": "Hitel megszűnése",
-        "loanDeleted": "Hitel megszüntetése"
+        "loanDeleted": "Hitel megszüntetése",
+        "erasureRequestCreated": "Adattörlési kérelem (GDPR)",
+        "erasureRequestHeld": "Törlési kérelem felfüggesztve",
+        "erasureRequestHoldReleased": "Törlési kérelem felfüggesztése megszüntetve",
+        "erasureRequestCancelled": "Törlési kérelem visszavonva",
+        "membreAnonymized": "Személyes adatok törölve (GDPR)",
+        "erasureRequestApproved": "Törlési kérelem jóváhagyva"
       },
       "actorPrefix": "szerző {name}",
       "loadError": "Nem tudok előzményeket betölteni.",
@@ -5347,6 +5409,17 @@
         "title": "Eltávolítani a profilképet?",
         "description": "Bármikor hozzáadhatsz újat.",
         "confirm": "Távolítsd el"
+      },
+      "eraseData": {
+        "title": "Adatvédelem",
+        "description": "Kérheti személyes adatai végleges törlését a GDPR 17. cikke alapján.",
+        "button": "Adataim törlésének kérése",
+        "confirmTitle": "Kéri adatai végleges törlését?",
+        "confirmDescription": "Az egyesület egyik rendszergazdája megvizsgálja ezt a kérelmet, mielőtt feldolgozásra kerülne. Jóváhagyás után személyes adatai a következő automatikus feldolgozás során véglegesen anonimizálásra kerülnek.",
+        "toastSuccess": "Kérelem elküldve",
+        "statusLabel": "Kérelme állapota",
+        "withdrawButton": "Kérelem visszavonása",
+        "toastWithdrawn": "Kérelem visszavonva"
       }
     },
     "evenements": {

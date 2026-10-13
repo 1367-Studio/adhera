@@ -4,22 +4,18 @@ import { prisma } from "@/lib/prisma/client"
 import { writeActivityLog } from "@/lib/activity-log"
 import { withAdminAuth } from "@/lib/api-wrapper"
 import { canUseCustomBranding } from "@/lib/plan-limits"
-import { deleteFromR2 } from "@/lib/r2"
+import { deleteFromR2, extractR2Key } from "@/lib/r2"
 import { emailFooterSettingsSchema } from "@/lib/email-footer"
 
 // logoUrl is only ever supposed to come from our own /api/upload → R2 flow (see
 // ImageUpload), but this is a raw JSON PATCH endpoint — without this check, an admin
 // could point it at an arbitrary host and turn buildDocumentPdf()'s server-side fetch()
-// (and the /api/association/branding/logo proxy) into an SSRF primitive. Compares the
-// full origin, not a string prefix, so "https://<bucket>.r2.dev.evil.com" can't sneak by.
+// (and the /api/association/branding/logo proxy) into an SSRF primitive. extractR2Key
+// accepts both the legacy direct R2_PUBLIC_URL shape (existing rows) and the app-domain
+// proxy shape uploadToR2 returns today — anything else, including a lookalike host such as
+// "https://<bucket>.r2.dev.evil.com", resolves to null.
 function isAllowedLogoUrl(url: string): boolean {
-  const allowedBase = process.env.R2_PUBLIC_URL
-  if (!allowedBase) return false
-  try {
-    return new URL(url).origin === new URL(allowedBase).origin
-  } catch {
-    return false
-  }
+  return extractR2Key(url) !== null
 }
 
 const schema = z.object({

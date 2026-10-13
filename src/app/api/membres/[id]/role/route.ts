@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma/client"
 import { writeActivityLog } from "@/lib/activity-log"
 import { resolvePermissions } from "@/lib/permissions"
 import { checkTeamAccessChange, TEAM_ASSIGNABLE_ROLES, type TeamAssignableRole } from "@/lib/team-access"
+import { alertAdministratorPermissionChange } from "@/lib/security-alerts"
 
 const ASSIGNABLE_ROLES: readonly TeamAssignableRole[] = TEAM_ASSIGNABLE_ROLES
 
@@ -36,15 +37,18 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   // administrator rights only touched by an administrator, never the last administrator. A
   // role change resets permissions to the new role's profile (see below), so the resulting
   // administrator status is that profile's rather than the target's current permissions.
+  const targetWasAdministrator    = resolvePermissions(target?.role ?? "MEMBRE", target?.permissions ?? null).administrator
+  const targetWillBeAdministrator = resolvePermissions(role, roleChanged ? null : target?.permissions ?? null).administrator
+
   const refusal = await checkTeamAccessChange({
     associationId,
     actorId,
     actorRole,
     targetUserId:          membre.userId,
     targetRole:            target?.role ?? "MEMBRE",
-    targetIsAdministrator: resolvePermissions(target?.role ?? "MEMBRE", target?.permissions ?? null).administrator,
+    targetIsAdministrator: targetWasAdministrator,
     nextRole:              role,
-    nextIsAdministrator:   resolvePermissions(role, roleChanged ? null : target?.permissions ?? null).administrator,
+    nextIsAdministrator:   targetWillBeAdministrator,
   })
   if (refusal) return NextResponse.json({ error: refusal.error }, { status: refusal.status })
 
@@ -62,6 +66,24 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
     label:    `${membre.firstName} ${membre.lastName}`,
     metadata: { role, changes: roleChanged ? { role: { old: target?.role ?? null, new: role } } : {} },
   })
+
+  // Security audit M1 — this route can flip the `administrator` flag exactly like PATCH
+  // /api/equipe/[userId] (a role change here resets permissions to the new role's profile),
+  // so it must fire the same alert instead of leaving this a silent second path around it.
+  if (targetWasAdministrator !== targetWillBeAdministrator) {
+    const [association, actor] = await Promise.all([
+      prisma.association.findUnique({ where: { id: associationId }, select: { name: true } }),
+      prisma.user.findUnique({ where: { id: actorId }, select: { name: true, email: true } }),
+    ])
+    if (association && actor) {
+      alertAdministratorPermissionChange({
+        associationName: association.name,
+        targetName:      `${membre.firstName} ${membre.lastName}`,
+        actorName:       actor.name || actor.email,
+        granted:         targetWillBeAdministrator,
+      })
+    }
+  }
 
   return NextResponse.json({ ok: true })
 }, { administrator: true })

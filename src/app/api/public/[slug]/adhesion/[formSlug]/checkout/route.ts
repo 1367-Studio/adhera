@@ -521,6 +521,7 @@ export async function POST(
     await writeActivityLog({
       associationId: assoc.id, action: "MEMBRE_CREATED", entity: "Membre", entityId: membre.id,
       label: `${firstName} ${lastName} (${form.title})`,
+      metadata: { source: "PUBLIC_ADHESION_FORM", formId: form.id, tierId: tier.id },
     })
 
     fireEventRule({
@@ -682,6 +683,7 @@ export async function POST(
     await writeActivityLog({
       associationId: assoc.id, action: "MEMBRE_CREATED", entity: "Membre", entityId: membre.id,
       label: `${firstName} ${lastName} (${form.title}, ${paymentMethod})`,
+      metadata: { source: "PUBLIC_ADHESION_FORM_OFFLINE", formId: form.id, tierId: tier.id, paymentMethod },
     })
 
     fireEventRule({
@@ -1121,6 +1123,7 @@ async function handleMultiRegistrantCheckout(
     // individually once an admin reviews them. Linked via responsableId to the person who
     // filled out the form, same as the paid/immediate path below.
     let firstMembreId: string | undefined
+    const allMembreIds: string[] = []
     await prisma.$transaction(async (tx) => {
       for (let i = 0; i < resolved.length; i++) {
         const { tier, r, answers } = resolved[i]
@@ -1158,13 +1161,21 @@ async function handleMultiRegistrantCheckout(
           },
         })
         if (i === 0) firstMembreId = membre.id
+        allMembreIds.push(membre.id)
       }
     })
 
-    await writeActivityLog({
-      associationId: assoc.id, action: "MEMBRE_INSCRIPTION_REQUESTED", entity: "Membre", entityId: firstMembreId!,
-      label: `${resolved[0].r.firstName} ${resolved[0].r.lastName} + ${resolved.length - 1} (${form.title})`,
-    })
+    // One entry per registrant — same reasoning as the paid multi-registrant webhook
+    // (handleMembershipMultiCheckout): a household member's own activity trail / a
+    // control-alert investigation on them specifically needs their own entityId, not just
+    // the first registrant's.
+    for (let i = 0; i < resolved.length; i++) {
+      await writeActivityLog({
+        associationId: assoc.id, action: "MEMBRE_INSCRIPTION_REQUESTED", entity: "Membre", entityId: allMembreIds[i],
+        label: `${resolved[i].r.firstName} ${resolved[i].r.lastName}`,
+        metadata: { source: "PUBLIC_INSCRIPTION_REQUEST_MULTI", groupSize: resolved.length },
+      })
+    }
 
     const allNames = resolved.map(({ r }) => `${r.firstName} ${r.lastName}`)
 

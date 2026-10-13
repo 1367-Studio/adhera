@@ -260,6 +260,7 @@ export async function handleMembershipInstallmentCheckout(session: Stripe.Checko
     entity:        "Membre",
     entityId:      created.membre.id,
     label:         `${created.membre.firstName} ${created.membre.lastName} (paiement en ${installmentsCount} fois)`,
+    metadata:      { source: "PUBLIC_ADHESION_INSTALLMENTS" },
   })
 }
 

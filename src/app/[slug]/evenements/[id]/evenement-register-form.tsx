@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button"
 import { Modal } from "@/components/ui/modal"
 import { ImageThumbnail } from "@/components/ui/image-thumbnail"
 import { LocaleSwitcher } from "@/components/layout/locale-switcher"
+import { BackToSiteLink } from "@/components/public/back-to-site-link"
 import { RichTextView } from "@/components/ui/rich-text-view"
 import { InAppBrowserBanner } from "@/components/ui/in-app-browser-banner"
 import { useInAppBrowserEscape } from "@/hooks/use-in-app-browser-escape"
@@ -50,6 +51,8 @@ type PaymentMethod = "STRIPE" | OnSitePaymentMethod
 
 type EventInfo = {
   associationName: string
+  sitePublished: boolean
+  website: string | null
   id:          string
   title:       string
   description: string | null
@@ -969,6 +972,9 @@ function EvenementRegisterFormInner({ slug, id, legalDocuments }: Props) {
   }
 
   if (notFound || !event) {
+    // No event data at all (bad id, bad slug, or site unpublished — the API 404s all three
+    // the same way) — nothing to know a site state from, so "Voltar ao site" is omitted
+    // rather than risk a dead link.
     return (
       <>
         {showInAppBrowserBanner && <InAppBrowserBanner>{t("inAppBrowserWarning")}</InAppBrowserBanner>}
@@ -987,7 +993,8 @@ function EvenementRegisterFormInner({ slug, id, legalDocuments }: Props) {
       {showInAppBrowserBanner && <InAppBrowserBanner>{t("inAppBrowserWarning")}</InAppBrowserBanner>}
       <div className="min-h-screen bg-gradient-to-b from-primary/5 to-background flex items-start justify-center py-12 px-4">
         <div className={`w-full space-y-6 ${event.imageUrl && isPortrait ? "max-w-5xl" : "max-w-md"}`}>
-          <div className="flex justify-end">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <BackToSiteLink slug={slug} sitePublished={event.sitePublished} website={event.website} />
             <LocaleSwitcher />
           </div>
 

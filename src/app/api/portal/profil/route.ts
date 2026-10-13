@@ -41,10 +41,26 @@ const updateSchema = z.object({
   tailleTshirt:  z.enum(["XS", "S", "M", "L", "XL", "XXL", "XXXL"]).optional().or(z.literal("")),
 })
 
+// Internal-only columns with no reason to ever reach the member's own portal: `notes` is the
+// manager's private free-text about them, the rest are secret bearer tokens / import plumbing
+// with their own dedicated, properly-scoped routes (card token → /api/portal/carte,
+// adhesionCompletionToken → the public completion link emailed once) — handing them back here
+// would let anyone reading this response (or just curious in devtools) mint those links/cards
+// without going through the real flow.
+function stripInternalMembreFields<T extends Record<string, unknown>>(membre: T) {
+  const {
+    notes: _notes, externalId: _externalId, pendingTierId: _pendingTierId,
+    adhesionCompletionToken: _adhesionCompletionToken, adhesionCompletionFormId: _adhesionCompletionFormId,
+    cardToken: _cardToken, cardTokenRotatedAt: _cardTokenRotatedAt,
+    ...rest
+  } = membre
+  return rest
+}
+
 export const GET = withPortalAuth(async (_req, ctx) => {
   const membre = await prisma.membre.findUnique({ where: { id: ctx.membreId! } })
   if (!membre) return NextResponse.json({ error: "Membre introuvable" }, { status: 404 })
-  return NextResponse.json(membre)
+  return NextResponse.json(stripInternalMembreFields(membre))
 })
 
 export const PATCH = withPortalAuth(async (req, ctx) => {
@@ -100,5 +116,5 @@ export const PATCH = withPortalAuth(async (req, ctx) => {
     })
   }
 
-  return NextResponse.json(updated)
+  return NextResponse.json(stripInternalMembreFields(updated))
 })

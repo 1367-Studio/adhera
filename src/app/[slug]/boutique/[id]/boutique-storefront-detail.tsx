@@ -11,14 +11,17 @@ import { Badge } from "@/components/ui/badge"
 import { useCart } from "@/lib/hooks/use-cart"
 import { cn } from "@/lib/utils"
 import { RichTextView } from "@/components/ui/rich-text-view"
+import { BackToSiteLink } from "@/components/public/back-to-site-link"
 
 type Variante = { id: string; label: string; price: number; stock: number; shippable: boolean; weightGrams: number | null }
 type Produit  = {
-  id:          string
-  name:        string
-  description: string | null
-  imageUrl:    string | null
-  variantes:   Variante[]
+  id:            string
+  name:          string
+  description:   string | null
+  imageUrl:      string | null
+  variantes:     Variante[]
+  sitePublished: boolean
+  website:       string | null
 }
 
 type Props = { slug: string; id: string }
@@ -79,6 +82,8 @@ export function BoutiqueStorefrontDetail({ slug, id }: Props) {
   }
 
   if (error || !produit) {
+    // No produit data loaded (bad id or module off) — nothing to know a site state from,
+    // so "Voltar ao site" is omitted rather than risk a second dead link.
     return (
       <div className="min-h-screen flex flex-col items-center justify-center text-center px-4 gap-4">
         <p className="text-lg font-semibold">{t("notFound")}</p>
@@ -90,18 +95,24 @@ export function BoutiqueStorefrontDetail({ slug, id }: Props) {
     )
   }
 
+  const canBackToSite = produit.sitePublished || !!produit.website
+
   return (
     <div className="min-h-screen bg-background py-10 px-4">
       <div className="max-w-3xl mx-auto space-y-6">
         <div className="flex items-center justify-between gap-3">
-          <button
-            type="button"
-            onClick={() => router.push(`/${slug}/boutique`)}
-            className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
-          >
-            <ArrowLeftIcon className="size-4" />
-            {t("backToShop")}
-          </button>
+          <div className="flex items-center gap-2.5">
+            <button
+              type="button"
+              onClick={() => router.push(`/${slug}/boutique`)}
+              className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
+              <ArrowLeftIcon className="size-4" />
+              {t("backToShop")}
+            </button>
+            {canBackToSite && <span className="text-muted-foreground/30">·</span>}
+            <BackToSiteLink slug={slug} sitePublished={produit.sitePublished} website={produit.website} />
+          </div>
           {count > 0 && (
             <button
               type="button"

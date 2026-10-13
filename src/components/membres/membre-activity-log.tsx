@@ -4,7 +4,7 @@ import { useInfiniteQuery } from "@tanstack/react-query"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import { useTranslations } from "next-intl"
-import { UserPlusIcon, PencilSimpleIcon, TrashIcon, GlobeIcon, CircleNotchIcon, WarningCircleIcon, MoneyIcon, ArrowElbowDownLeftIcon, PackageIcon, XIcon, ShieldIcon, LockIcon, IdentificationCardIcon } from "@phosphor-icons/react/dist/ssr";
+import { UserPlusIcon, PencilSimpleIcon, TrashIcon, GlobeIcon, CircleNotchIcon, WarningCircleIcon, MoneyIcon, ArrowElbowDownLeftIcon, PackageIcon, XIcon, ShieldIcon, LockIcon, IdentificationCardIcon, EraserIcon, HourglassIcon, PlayIcon } from "@phosphor-icons/react/dist/ssr";
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 
@@ -101,6 +101,12 @@ function getActionConfig(t: Translator): Record<string, { label: string; icon: R
     LOAN_UPDATED:   { label: t("membres.activityLog.actions.loanUpdated"),             icon: <PencilSimpleIcon className="size-3.5" />, color: "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300"           },
     LOAN_CANCELLED: { label: t("membres.activityLog.actions.loanCancelled"),              icon: <XIcon className="size-3.5" />, color: "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300"             },
     LOAN_DELETED:   { label: t("membres.activityLog.actions.loanDeleted"),            icon: <TrashIcon className="size-3.5" />, color: "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300"             },
+    ERASURE_REQUEST_CREATED:       { label: t("membres.activityLog.actions.erasureRequestCreated"),       icon: <EraserIcon className="size-3.5" />,    color: "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300" },
+    ERASURE_REQUEST_APPROVED:      { label: t("membres.activityLog.actions.erasureRequestApproved"),      icon: <EraserIcon className="size-3.5" />,    color: "bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300" },
+    ERASURE_REQUEST_HELD:          { label: t("membres.activityLog.actions.erasureRequestHeld"),          icon: <HourglassIcon className="size-3.5" />, color: "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300"       },
+    ERASURE_REQUEST_HOLD_RELEASED: { label: t("membres.activityLog.actions.erasureRequestHoldReleased"), icon: <PlayIcon className="size-3.5" />,      color: "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300"    },
+    ERASURE_REQUEST_CANCELLED:     { label: t("membres.activityLog.actions.erasureRequestCancelled"),     icon: <XIcon className="size-3.5" />,         color: "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300"       },
+    MEMBRE_ANONYMIZED:             { label: t("membres.activityLog.actions.membreAnonymized"),             icon: <EraserIcon className="size-3.5" />,    color: "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300"       },
   }
 }
 

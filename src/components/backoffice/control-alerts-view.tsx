@@ -119,6 +119,29 @@ export function ControlAlertsView() {
     })
   }
 
+  // Maps the metadata.source code written at every MEMBRE_CREATED activity-log call site
+  // (see src/lib/membres/create-membre.ts and its callers) to a human label — one switch
+  // branch per known code rather than a dynamic t(`originSources.${source}`) key, which
+  // next-intl's typed messages wouldn't accept for a non-literal key anyway.
+  function originLabel(source: string | null): string {
+    switch (source) {
+      case "ADMIN_MANUAL":                  return t("originSources.ADMIN_MANUAL")
+      case "ADMIN_REGISTRATION":            return t("originSources.ADMIN_REGISTRATION")
+      case "PUBLIC_ADHESION_FORM":          return t("originSources.PUBLIC_ADHESION_FORM")
+      case "PUBLIC_ADHESION_FORM_OFFLINE":  return t("originSources.PUBLIC_ADHESION_FORM_OFFLINE")
+      case "PUBLIC_ADHESION_STRIPE":        return t("originSources.PUBLIC_ADHESION_STRIPE")
+      case "PUBLIC_ADHESION_INSTALLMENTS":  return t("originSources.PUBLIC_ADHESION_INSTALLMENTS")
+      case "PUBLIC_ADHESION_MULTI":         return t("originSources.PUBLIC_ADHESION_MULTI")
+      case "PUBLIC_ADHESION_SUBSCRIPTION":  return t("originSources.PUBLIC_ADHESION_SUBSCRIPTION")
+      case "ASSOCONNECT_IMPORT":            return t("originSources.ASSOCONNECT_IMPORT")
+      case "PAPER_FORM":                    return t("originSources.PAPER_FORM")
+      case "ASSOCIATION_SIGNUP_ADMIN":      return t("originSources.ASSOCIATION_SIGNUP_ADMIN")
+      case "PUBLIC_INSCRIPTION_REQUEST":        return t("originSources.PUBLIC_INSCRIPTION_REQUEST")
+      case "PUBLIC_INSCRIPTION_REQUEST_MULTI":  return t("originSources.PUBLIC_INSCRIPTION_REQUEST_MULTI")
+      default:                              return t("originSources.unknown")
+    }
+  }
+
   const columns: Column<BackofficeControlAlert>[] = [
     {
       key: "membre", header: t("columns.membre"),
@@ -135,6 +158,15 @@ export function ControlAlertsView() {
         <Link href={`/backoffice/associations/${alert.associationId}/members#membre-${alert.membreId}`} className="hover:underline">
           {alert.association.name}
         </Link>
+      ),
+    },
+    {
+      key: "origin", header: t("columns.origin"),
+      cell: alert => (
+        <div className="text-muted-foreground">
+          <span className="block">{originLabel(alert.origin?.source ?? null)}</span>
+          {alert.origin?.actorName && <span className="block text-xs">{t("originByLabel", { name: alert.origin.actorName })}</span>}
+        </div>
       ),
     },
     {

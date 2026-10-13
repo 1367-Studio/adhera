@@ -6,6 +6,7 @@ import { useTranslations } from "next-intl"
 import { ShoppingBagIcon, ShoppingCartIcon } from "@phosphor-icons/react/dist/ssr";
 import { Badge } from "@/components/ui/badge"
 import { LocaleSwitcher } from "@/components/layout/locale-switcher"
+import { BackToSiteLink } from "@/components/public/back-to-site-link"
 import { useCart } from "@/lib/hooks/use-cart"
 
 type Variante = { id: string; label: string; price: number; stock: number }
@@ -24,7 +25,7 @@ export function BoutiqueStorefrontListing({ slug }: Props) {
   const router = useRouter()
   const { count } = useCart(slug)
 
-  const { data, isLoading, error } = useQuery<{ associationName: string; produits: Produit[] }>({
+  const { data, isLoading, error } = useQuery<{ associationName: string; produits: Produit[]; sitePublished: boolean; website: string | null }>({
     queryKey: ["public-boutique", slug],
     queryFn:  () => fetch(`/api/public/${slug}/boutique`).then(async r => {
       if (!r.ok) throw new Error("not-found")
@@ -49,6 +50,8 @@ export function BoutiqueStorefrontListing({ slug }: Props) {
   const fmt = (c: number) => (c / 100).toLocaleString("fr-FR", { style: "currency", currency: "EUR" })
 
   if (error) {
+    // No association/boutique data at all (bad slug or module off) — nothing to send
+    // "Voltar ao site" back to, so it's omitted rather than risk a second dead link.
     return (
       <div className="min-h-screen flex flex-col items-center justify-center text-center px-4 gap-2">
         <p className="text-lg font-semibold">{t("notFound")}</p>
@@ -59,6 +62,7 @@ export function BoutiqueStorefrontListing({ slug }: Props) {
   return (
     <div className="min-h-screen bg-background py-10 px-4">
       <div className="max-w-5xl mx-auto space-y-6">
+        <BackToSiteLink slug={slug} sitePublished={!!data?.sitePublished} website={data?.website} />
         <div className="flex items-center justify-between gap-3">
           <div>
             <h1 className="text-xl font-semibold tracking-tight">{t("title")}</h1>

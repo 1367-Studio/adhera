@@ -14,6 +14,7 @@ import { SelectField } from "@/components/ui/select-field"
 import { CheckboxField } from "@/components/ui/checkbox-field"
 import { CurrencyField } from "@/components/ui/currency-field"
 import { LocaleSwitcher } from "@/components/layout/locale-switcher"
+import { BackToSiteLink } from "@/components/public/back-to-site-link"
 import { RichTextView } from "@/components/ui/rich-text-view"
 import { FormTermsSection } from "@/components/public/form-terms-section"
 import { publicFormTerms } from "@/lib/form-terms"
@@ -43,6 +44,8 @@ type Tier = {
 
 type FormInfo = {
   associationName: string
+  sitePublished: boolean
+  website: string | null
   id: string
   title: string
   imageUrl: string | null
@@ -389,6 +392,8 @@ function DonationFormPublicFormInner({ slug, formSlug, legalDocuments }: Props) 
   }
 
   if (form === null) {
+    // No association/form data at all (bad slug or module off) — nothing to know a site
+    // state from, so "Voltar ao site" is omitted rather than risk a second dead link.
     return (
       <>
         {showInAppBrowserBanner && <InAppBrowserBanner>{t("inAppBrowserWarning")}</InAppBrowserBanner>}
@@ -405,7 +410,8 @@ function DonationFormPublicFormInner({ slug, formSlug, legalDocuments }: Props) 
       {showInAppBrowserBanner && <InAppBrowserBanner>{t("inAppBrowserWarning")}</InAppBrowserBanner>}
       <div className="min-h-screen bg-gradient-to-b from-primary/5 to-background flex items-start justify-center py-12 px-4">
         <div className="w-full max-w-md space-y-6">
-          <div className="flex justify-end">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <BackToSiteLink slug={slug} sitePublished={form.sitePublished} website={form.website} />
             <LocaleSwitcher persistAccountLocale={!isPreview} />
           </div>
 

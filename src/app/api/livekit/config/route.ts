@@ -4,6 +4,7 @@ import { withAdminAuth } from "@/lib/api-wrapper"
 import { prisma } from "@/lib/prisma/client"
 import { writeActivityLog } from "@/lib/activity-log"
 import { APP_URL } from "@/lib/env"
+import { encryptNullable } from "@/lib/crypto/field-encryption"
 
 const schema = z.object({
   livekitUrl:       z.string().max(256).nullable().optional(),
@@ -37,9 +38,9 @@ export const PATCH = withAdminAuth(async (req, ctx) => {
   const updated = await prisma.association.update({
     where: { id: ctx.associationId },
     data: {
-      ...(livekitUrl       !== undefined ? { livekitUrl:       livekitUrl       ?? null } : {}),
-      ...(livekitApiKey    !== undefined ? { livekitApiKey:    livekitApiKey    ?? null } : {}),
-      ...(livekitApiSecret !== undefined ? { livekitApiSecret: livekitApiSecret ?? null } : {}),
+      ...(livekitUrl       !== undefined ? { livekitUrl:       livekitUrl ?? null } : {}),
+      ...(livekitApiKey    !== undefined ? { livekitApiKey:    encryptNullable(livekitApiKey)    ?? null } : {}),
+      ...(livekitApiSecret !== undefined ? { livekitApiSecret: encryptNullable(livekitApiSecret) ?? null } : {}),
     },
     select: { livekitUrl: true, livekitApiKey: true, livekitApiSecret: true },
   })

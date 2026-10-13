@@ -31,6 +31,12 @@ export const EXT_BY_CONTENT_TYPE: Record<string, string> = {
 
 // `buffer` and `contentType` should come from server-side content sniffing, not from the
 // client-supplied filename/Content-Type header — those are trivially spoofable.
+//
+// Returns the app-domain proxy URL (toProxiedAssetUrl below), not R2_PUBLIC_URL directly —
+// R2_PUBLIC_URL is Cloudflare's r2.dev development subdomain, never meant to be fetched
+// straight from a browser (throttled for non-browser fetchers, and the real bucket location
+// has no business being public). Every caller gets this for free; nothing downstream needs
+// to know the raw bucket URL exists.
 export async function uploadToR2(buffer: Buffer, prefix: string, contentType: string): Promise<string> {
   const ext = EXT_BY_CONTENT_TYPE[contentType] || "bin"
   const key = `${prefix}/${randomBytes(8).toString("hex")}.${ext}`
@@ -44,19 +50,12 @@ export async function uploadToR2(buffer: Buffer, prefix: string, contentType: st
     }),
   )
 
-  return `${process.env.R2_PUBLIC_URL}/${key}`
+  return toProxiedAssetUrl(`${process.env.R2_PUBLIC_URL}/${key}`)
 }
 
-// Rewrites a URL returned by uploadToR2() above into one served through the app's own
-// domain (src/app/api/public/assets/[...key]/route.ts) instead of R2_PUBLIC_URL directly.
-// Only applied where an image actually has to survive outside the app — an outgoing
-// email's <img src> — not to every reference everywhere (the SSRF allow-list in
-// association/branding/route.ts and deleteFromR2()'s key parsing above both still compare
-// against the real, stored R2_PUBLIC_URL value, so this never touches what's persisted).
-// R2_PUBLIC_URL today is Cloudflare's r2.dev development subdomain — not meant for
-// production traffic, and the likely reason template images rendered fine in the in-app
-// preview but silently never appeared in a received email (see toProxiedAssetUrl callers).
-// Leaves the URL untouched if it isn't actually one of ours.
+// Rewrites a URL into one served through the app's own domain
+// (src/app/api/public/assets/[...key]/route.ts) instead of R2_PUBLIC_URL directly. Leaves the
+// URL untouched if it isn't actually one of ours.
 export function toProxiedAssetUrl(url: string): string {
   const publicBase = process.env.R2_PUBLIC_URL
   if (!url || !publicBase) return url
@@ -67,6 +66,44 @@ export function toProxiedAssetUrl(url: string): string {
   } catch {
     return url
   }
+}
+
+// APP_URL itself carries the app's basePath (e.g. ".../app" — see BASE_PATH in src/lib/env.ts),
+// and toProxiedAssetUrl builds its URL as `${APP_URL}/api/public/assets${key path}`, so the
+// prefix to strip has to be read off the parsed APP_URL's own pathname rather than assumed to
+// be a bare "/api/public/assets/" — hardcoding that silently broke matching on every
+// environment where APP_URL has a path component.
+const PROXIED_ASSET_PATH_PREFIX = `${new URL(APP_URL).pathname.replace(/\/$/, "")}/api/public/assets/`
+
+// Resolves a stored URL back to its bare R2 key, whichever shape it was saved in: the legacy
+// direct public URL (R2_PUBLIC_URL/<key>, still sitting in rows written before uploadToR2
+// started proxying) or the app-domain proxy uploadToR2 returns today. Every "is this URL
+// really ours" check (isAllowedLogoUrl, isMemberCardImageUrlAllowed,
+// isAssociationDocumentFileUrl) and deleteFromR2 below go through this so a value in either
+// shape keeps working. Returns null for anything else.
+export function extractR2Key(url: string): string | null {
+  if (!url) return null
+
+  const publicBase = process.env.R2_PUBLIC_URL
+  if (publicBase) {
+    try {
+      const parsed = new URL(url)
+      if (parsed.origin === new URL(publicBase).origin) return parsed.pathname.slice(1)
+    } catch {
+      // not a legacy-shaped URL — fall through to the proxy shape below
+    }
+  }
+
+  try {
+    const parsed = new URL(url)
+    if (parsed.origin === new URL(APP_URL).origin && parsed.pathname.startsWith(PROXIED_ASSET_PATH_PREFIX)) {
+      return parsed.pathname.slice(PROXIED_ASSET_PATH_PREFIX.length)
+    }
+  } catch {
+    // not a URL at all
+  }
+
+  return null
 }
 
 // For uploads too large to pass through a serverless function body (Vercel caps those at
@@ -128,9 +165,9 @@ export async function readR2ObjectFirstBytes(key: string, byteCount: number): Pr
 }
 
 export async function deleteFromR2(url: string): Promise<void> {
+  const key = extractR2Key(url)
+  if (!key) return
   try {
-    const { pathname } = new URL(url)
-    const key = pathname.slice(1)
     await r2.send(new DeleteObjectCommand({ Bucket: process.env.R2_BUCKET_NAME!, Key: key }))
   } catch (error) {
     // ignore if already deleted

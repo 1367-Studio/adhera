@@ -11,9 +11,10 @@ import {
   PencilSimpleIcon, TrashIcon, ShieldIcon, KeyIcon, PlusIcon,
   EnvelopeSimpleIcon, PhoneIcon, DeviceMobileIcon, MapPinIcon, CalendarIcon, UserIcon, WarningIcon,
   DownloadSimpleIcon, ReceiptIcon, XCircleIcon, CheckIcon, CurrencyEurIcon,
-  IdentificationCardIcon
+  IdentificationCardIcon, EraserIcon
 } from "@phosphor-icons/react/dist/ssr";
 import { useMembre, useUpdateMembre, useDeleteMembre, useCreateAccess, useCancelCotisationSubscription, useCancelCotisationInstallmentPlan } from "@/hooks/use-membres"
+import { useErasureRequests, useCreateErasureRequest, erasureRequestStatusBadge } from "@/hooks/use-erasure-requests"
 import { spokenLanguageLabel } from "@/lib/languages"
 import { LOCALE_LABELS, isSupportedLocale } from "@/i18n/locales"
 import { formatAddress } from "@/lib/address"
@@ -146,15 +147,19 @@ export function MembreDetailView() {
   const modules = useModules()
   const currentUser = useCurrentUser()
   const memberCardEnabled = useMemberCardEnabled()
-  // Same areas as the API routes (FORM-34): the member record, its cotisations and access are
-  // "membres"; payments, subscriptions, installment plans and receipts are "adhesions"; roles
-  // belong to administrators. A "read" user sees the sheet without the actions it would refuse.
+  // Same areas as the API routes (FORM-34): the member record and access are "membres";
+  // creating/approving a cotisation, payments, subscriptions, installment plans and receipts
+  // are "adhesions"; roles belong to administrators. A "read" user sees the sheet without the
+  // actions it would refuse.
   const canEditMembres    = useHasAccess("membres", "edit")
   const canEditAdhesions  = useHasAccess("adhesions", "edit")
+  // Security audit M2+L8 — guardian contact info is an exception to "membres" visibility.
+  const canSeeSensitive   = useHasAccess("sensible", "read")
   const isAdministrator   = useIsAdministrator()
 
   const [editOpen, setEditOpen]                 = useState(false)
   const [deleteOpen, setDeleteOpen]             = useState(false)
+  const [eraseOpen, setEraseOpen]               = useState(false)
   const [roleOpen, setRoleOpen]                 = useState(false)
   const [cancelSubscriptionOpen, setCancelSubscriptionOpen] = useState(false)
   const [cancelInstallmentOpen, setCancelInstallmentOpen] = useState(false)
@@ -173,6 +178,12 @@ export function MembreDetailView() {
 
   const updateMutation          = useUpdateMembre(id)
   const deleteMutation          = useDeleteMembre()
+  // Admin-only list, fetched just to find this one membre's own request (if any) — lets the
+  // button below give way to a status badge instead of letting the admin re-submit into a
+  // guaranteed 409 from POST /api/erasure-requests.
+  const { data: erasureRequests } = useErasureRequests(isAdministrator)
+  const existingErasureRequest = erasureRequests?.find(request => request.membreId === id)
+  const createErasureRequestMutation = useCreateErasureRequest()
   const createAccessMutation    = useCreateAccess()
   const cancelSubscriptionMutation = useCancelCotisationSubscription()
   const cancelInstallmentMutation = useCancelCotisationInstallmentPlan()
@@ -208,6 +219,16 @@ export function MembreDetailView() {
         ? t("membres.view.toasts.memberDeletedWithUnlink", { count: unlinkedDependants })
         : t("membres.view.toasts.memberDeleted"))
       router.push("/dashboard/membres")
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : t("common.error"))
+    }
+  }
+
+  async function handleErase() {
+    try {
+      await createErasureRequestMutation.mutateAsync(id)
+      toast.success(t("membres.detail.eraseData.toastSuccess"))
+      setEraseOpen(false)
     } catch (err) {
       toast.error(err instanceof Error ? err.message : t("common.error"))
     }
@@ -451,7 +472,7 @@ export function MembreDetailView() {
           <div className="flex flex-wrap items-center gap-2">
             {modules.cotisations && (
               <>
-                {canEditMembres && (
+                {canEditAdhesions && (
                   <Button size="sm" variant="outline" onClick={() => setCreateCotisationOpen(true)}>
                     <PlusIcon className="mr-1.5 size-4" />
                     {t("membres.detail.cotisationButton")}
@@ -484,6 +505,27 @@ export function MembreDetailView() {
                 {t("membres.detail.roleButton")}
               </Button>
             )}
+            {isAdministrator && (
+              <Button size="sm" variant="outline" onClick={() => window.open(`${BASE_PATH}/api/membres/${id}/personal-data-export`)}>
+                <DownloadSimpleIcon className="mr-1.5 size-4" />
+                {t("membres.detail.exportDataButton")}
+              </Button>
+            )}
+            {isAdministrator && !isSelf && (
+              existingErasureRequest ? (
+                <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                  {t("membres.detail.eraseData.requestLabel")}
+                  <Badge variant={erasureRequestStatusBadge(t, existingErasureRequest.status).variant}>
+                    {erasureRequestStatusBadge(t, existingErasureRequest.status).label}
+                  </Badge>
+                </div>
+              ) : (
+                <Button size="sm" variant="outline" onClick={() => setEraseOpen(true)}>
+                  <EraserIcon className="mr-1.5 size-4" />
+                  {t("membres.detail.eraseData.button")}
+                </Button>
+              )
+            )}
             {canEditMembres && (
               <Button size="sm" variant="outline" onClick={() => setEditOpen(true)}>
                 <PencilSimpleIcon className="mr-1.5 size-4" />
@@ -502,8 +544,11 @@ export function MembreDetailView() {
         {/* Approving a request used to mean opening the edit modal and changing a dropdown —
             an action nothing on the page announced. Shown for any PENDING membre, not only one
             carrying a pendingTier: a PENDING created by another path (site membership section,
-            manual creation) needs the same way out. */}
-        {membre.status === "PENDING" && !isSelf && canEditMembres && (
+            manual creation) needs the same way out. Only a *free* pendingTier additionally
+            needs "adhesions" edit — approving it creates a Cotisation server-side
+            (membres/[id]/route.ts's isApproval branch); a paid tier or no tier at all doesn't,
+            so Membres "edit" alone must stay enough for those. */}
+        {membre.status === "PENDING" && !isSelf && canEditMembres && (!membre.pendingTier?.free || canEditAdhesions) && (
           <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border bg-muted/40 px-4 py-3">
             <div className="space-y-0.5">
               <p className="text-sm font-medium">{t("membres.detail.pendingRequest.title")}</p>
@@ -666,7 +711,7 @@ export function MembreDetailView() {
         </div>
       </div>
 
-      {guardianRows.length > 0 && (
+      {canSeeSensitive && guardianRows.length > 0 && (
         <section className="space-y-1.5 text-sm">
           <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{t("membres.detail.guardians")}</h3>
           <ul className="space-y-1">
@@ -1053,6 +1098,16 @@ export function MembreDetailView() {
         confirmLabel={t("common.delete")}
         loading={deleteMutation.isPending}
         onConfirm={handleDelete}
+      />
+
+      <ConfirmDialog
+        open={eraseOpen}
+        onOpenChange={setEraseOpen}
+        title={t("membres.detail.eraseData.confirmTitle", { name: `${membre.firstName} ${membre.lastName}` })}
+        description={t("membres.detail.eraseData.confirmDescription")}
+        confirmLabel={t("membres.detail.eraseData.button")}
+        loading={createErasureRequestMutation.isPending}
+        onConfirm={handleErase}
       />
 
       <ConfirmDialog

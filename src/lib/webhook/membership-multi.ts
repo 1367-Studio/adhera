@@ -374,13 +374,20 @@ export async function consumeMembershipCheckoutDraft(draftId: string, paymentInt
     membreIds,
   }).catch(error => reportError(error, { area: "webhook", action: "webhook.membership-multi-notify-signup", extra: { associationId: draft.associationId, draftId } }))
 
-  await writeActivityLog({
-    associationId: draft.associationId,
-    action:        "MEMBRE_CREATED",
-    entity:        "Membre",
-    entityId:      membreIds[0],
-    label:         `${registrants[0].firstName} ${registrants[0].lastName} + ${registrants.length - 1} (${form.title})`,
-  })
+  // One entry per registrant (entityId = that registrant's own membre.id), not just the
+  // primary one — otherwise a household member (child/spouse) added in the same checkout has
+  // no creation trail at all: neither their own "Activité" tab nor a control-alert
+  // investigation on them specifically could resolve where they came from.
+  for (let i = 0; i < registrants.length; i++) {
+    await writeActivityLog({
+      associationId: draft.associationId,
+      action:        "MEMBRE_CREATED",
+      entity:        "Membre",
+      entityId:      membreIds[i],
+      label:         `${registrants[i].firstName} ${registrants[i].lastName}`,
+      metadata:      { source: "PUBLIC_ADHESION_MULTI", groupSize: registrants.length },
+    })
+  }
 
   // The visitor already paid (if totalAmount > 0) — assertMemberLimit was only checked before
   // Stripe redirected them away (or right before this ran, for the free path), and can't be

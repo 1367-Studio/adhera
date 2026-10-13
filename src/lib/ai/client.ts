@@ -1,6 +1,7 @@
 import Anthropic from "@anthropic-ai/sdk"
 import OpenAI from "openai"
 import { prisma } from "@/lib/prisma/client"
+import { decryptField } from "@/lib/crypto/field-encryption"
 
 // Groq, OpenAI and Mistral expose an OpenAI-compatible REST API, so one SDK client covers
 // the three — only the base URL and default model differ. Anthropic speaks its own Messages
@@ -90,10 +91,11 @@ export async function resolveAiConfig(associationId: string): Promise<ResolvedAn
 
   if (assoc?.aiApiKey) {
     const provider = (assoc.aiProvider ?? "groq") as AiProvider
+    const apiKey   = decryptField(assoc.aiApiKey)
     if (isAnthropicProvider(provider)) {
-      return { kind: "anthropic", provider: "anthropic", usingPlatform: false, ...makeAnthropicClient({ provider, apiKey: assoc.aiApiKey, model: assoc.aiModel }) }
+      return { kind: "anthropic", provider: "anthropic", usingPlatform: false, ...makeAnthropicClient({ provider, apiKey, model: assoc.aiModel }) }
     }
-    return { kind: "openai-compatible", provider, usingPlatform: false, ...makeAiClient({ provider, apiKey: assoc.aiApiKey, model: assoc.aiModel }) }
+    return { kind: "openai-compatible", provider, usingPlatform: false, ...makeAiClient({ provider, apiKey, model: assoc.aiModel }) }
   }
 
   return platformClient

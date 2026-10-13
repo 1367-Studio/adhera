@@ -49,7 +49,8 @@
     "actions": "Aktionen",
     "dismissTip": "Überspringe den Tipp",
     "addressPlaceholder": "Salle des fêtes, 12 rue de la Paix, Paris...",
-    "viewOnGoogleMaps": "Siehe auf Google Maps"
+    "viewOnGoogleMaps": "Siehe auf Google Maps",
+    "backToSite": "Zurück zur Website"
   },
   "address": {
     "street": "Adresse",
@@ -3140,6 +3141,7 @@
       "adminLinkSentTitle": "Zahlungslink gesendet",
       "adminLinkSentBody": "Das Mitglied wurde erstellt und eine E-Mail mit dem Zahlungslink wurde an {email}. Er wird Mitglied werden, sobald der Mitgliedsbeitrag bezahlt wurde.",
       "adminEmailAlreadyMember": "Diese E-Mail-Adresse gehört bereits einem Mitglied der Vereinigung.",
+      "adminAccessDenied": "Sie sind nicht berechtigt, über dieses Formular eine Mitgliedschaft anzulegen. Nur ein Administrator, Vorsitzender oder Schatzmeister des Vereins kann dies tun.",
       "firstNamePlaceholder": "Marie",
       "lastNamePlaceholder": "Dupont",
       "emailPlaceholder": "marie.dupont@email.fr",
@@ -3545,7 +3547,8 @@
         "general": "Allgemeines",
         "paiements": "Zahlungen",
         "abonnement": "Abonnement",
-        "integrations": "Integrationen"
+        "integrations": "Integrationen",
+        "rgpd": "DSGVO"
       },
       "associationInfo": "Vereinsinformationen",
       "associationName": "Name des Verbandes",
@@ -3801,6 +3804,52 @@
       "titleTrialExpired": "Abonnieren",
       "subtitleTrialExpired": "Ihre kostenlose Testphase ist vorbei. Wählen Sie einen Plan und geben Sie eine Zahlungsmethode ein, um weiterzumachen.",
       "confirmButtonSubscribe": "Bestätigen und abonnieren"
+    },
+    "erasureRequests": {
+      "title": "Datenlöschung (DSGVO)",
+      "description": "Anträge auf endgültige Löschung der personenbezogenen Daten eines Mitglieds gemäß Artikel 17 der DSGVO. Werden jede Nacht automatisch verarbeitet, sofern nicht zurückgestellt.",
+      "empty": "Noch keine Löschanträge.",
+      "retryWarning": "{count}-mal fehlgeschlagen — automatischer erneuter Versuch",
+      "columns": {
+        "membre": "Mitglied",
+        "status": "Status",
+        "requestedAt": "Beantragt am"
+      },
+      "status": {
+        "review": "In Prüfung",
+        "pending": "Wartet auf Verarbeitung",
+        "held": "Zurückgestellt",
+        "processed": "Bearbeitet"
+      },
+      "actions": {
+        "approve": "Genehmigen",
+        "hold": "Zurückstellen",
+        "release": "Zurückstellung aufheben",
+        "cancel": "Abbrechen"
+      },
+      "holdModal": {
+        "title": "Diesen Antrag zurückstellen",
+        "description": "Der Antrag wird beim nächsten automatischen Durchlauf nicht bearbeitet, solange er zurückgestellt ist. Das Mitglied wird per E-Mail informiert.",
+        "reasonLabel": "Grund (intern, für das Mitglied nicht sichtbar)",
+        "confirm": "Zurückstellen"
+      },
+      "cancelConfirmTitle": "Diesen Löschantrag abbrechen?",
+      "cancelConfirmDescription": "Das Mitglied und die anderen Administratoren werden per E-Mail über diesen Abbruch informiert.",
+      "approveConfirmTitle": "Diesen Löschantrag genehmigen?",
+      "approveConfirmDescription": "Die Daten des Mitglieds werden beim nächsten nächtlichen Durchlauf unwiderruflich anonymisiert, sofern sie nicht vorher zurückgestellt werden.",
+      "toasts": {
+        "held": "Antrag zurückgestellt",
+        "released": "Zurückstellung aufgehoben",
+        "cancelled": "Antrag abgebrochen",
+        "approved": "Antrag genehmigt"
+      },
+      "automaticOrigin": "Automatisch markiert — seit mehr als 3 Jahren inaktiv",
+      "inactiveSince": "ausgetreten am {date}"
+    },
+    "teamAccess": {
+      "areas": {
+        "sensible": "Sensible Daten der Mitglieder"
+      }
     }
   },
   "cotisations": {
@@ -4261,6 +4310,13 @@
         "rejectedToast": "Antrag abgelehnt",
         "rejectConfirmTitle": "Diese Bitte ablehnen?",
         "rejectConfirmDescription": "{name} wird auf den Status \"Inaktiv\" geändert und kann sich nicht mehr anmelden. Die Anfrage und die Antworten auf das Formular werden behalten."
+      },
+      "eraseData": {
+        "button": "Daten löschen (DSGVO)",
+        "confirmTitle": "Endgültige Löschung der Daten von {name} beantragen?",
+        "confirmDescription": "Dies registriert einen Löschantrag gemäß Art. 17 DSGVO. Das Mitglied erhält eine Bestätigungs-E-Mail, anschließend werden seine personenbezogenen Daten bei der nächsten automatischen Verarbeitung unwiderruflich anonymisiert, sofern der Antrag nicht zurückgestellt wird.",
+        "toastSuccess": "Löschantrag registriert",
+        "requestLabel": "DSGVO-Löschung"
       }
     },
     "sms": {
@@ -4450,7 +4506,13 @@
         "loanReturned": "Gerendertes Material",
         "loanUpdated": "Modifiziertes Darlehen",
         "loanCancelled": "Leihgabe aufgehoben",
-        "loanDeleted": "Leihgabe abgeschafft"
+        "loanDeleted": "Leihgabe abgeschafft",
+        "erasureRequestCreated": "Datenlöschung beantragt (DSGVO)",
+        "erasureRequestHeld": "Löschantrag zurückgestellt",
+        "erasureRequestHoldReleased": "Zurückstellung aufgehoben",
+        "erasureRequestCancelled": "Löschantrag abgebrochen",
+        "membreAnonymized": "Personenbezogene Daten gelöscht (DSGVO)",
+        "erasureRequestApproved": "Löschantrag genehmigt"
       },
       "actorPrefix": "von {name}",
       "loadError": "Versionsgeschichte kann nicht geladen werden.",
@@ -5347,6 +5409,17 @@
         "title": "Das Profilbild entfernen?",
         "description": "Du kannst jederzeit ein neues hinzufügen.",
         "confirm": "Entfernen"
+      },
+      "eraseData": {
+        "title": "Datenschutz",
+        "description": "Sie können die endgültige Löschung Ihrer personenbezogenen Daten gemäß Artikel 17 der DSGVO beantragen.",
+        "button": "Löschung meiner Daten beantragen",
+        "confirmTitle": "Endgültige Löschung Ihrer Daten beantragen?",
+        "confirmDescription": "Ein Administrator des Vereins prüft diesen Antrag, bevor er bearbeitet wird. Nach der Genehmigung werden Ihre personenbezogenen Daten bei der nächsten automatischen Verarbeitung unwiderruflich anonymisiert.",
+        "toastSuccess": "Antrag gesendet",
+        "statusLabel": "Status Ihres Antrags",
+        "withdrawButton": "Antrag zurückziehen",
+        "toastWithdrawn": "Antrag zurückgezogen"
       }
     },
     "evenements": {

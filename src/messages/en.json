@@ -49,7 +49,8 @@
     "actions": "Actions",
     "dismissTip": "Dismiss tip",
     "addressPlaceholder": "Community hall, 12 Main Street…",
-    "viewOnGoogleMaps": "View on Google Maps"
+    "viewOnGoogleMaps": "View on Google Maps",
+    "backToSite": "Back to site"
   },
   "address": {
     "street": "Address",
@@ -3165,6 +3166,8 @@
           "fieldLabelPlaceholder": "E.g. Occupation",
           "fieldType": "Type",
           "fieldRequired": "Required",
+          "fieldSensible": "Sensitive data",
+          "fieldSensibleRequiredHint": "Since this field is both sensitive and required, a staff member without access to sensitive data won't be able to create or edit a member without being granted it.",
           "typeText": "Text",
           "typeNumber": "Number",
           "typeSelect": "Dropdown",
@@ -3246,6 +3249,7 @@
       "adminLinkSentTitle": "Payment link sent",
       "adminLinkSentBody": "The member was created and an email with the payment link was sent to {email}. They will become a member once the fee is paid.",
       "adminEmailAlreadyMember": "This email address already belongs to a member of the association.",
+      "adminAccessDenied": "You do not have permission to register a membership through this form. Only an administrator, president or treasurer of the association can do this.",
       "firstNamePlaceholder": "Jane",
       "lastNamePlaceholder": "Smith",
       "emailPlaceholder": "jane.smith@email.com",
@@ -3680,7 +3684,8 @@
         "paiements": "Payments",
         "abonnement": "Subscription",
         "integrations": "Integrations",
-        "equipe": "Team and access"
+        "equipe": "Team and access",
+        "rgpd": "GDPR"
       },
       "associationInfo": "Association information",
       "associationName": "Association name",
@@ -4015,6 +4020,7 @@
       "areas": {
         "dashboard": "Dashboard and activity",
         "membres": "Members",
+        "sensible": "Members' sensitive data",
         "adhesions": "Memberships and dues",
         "dons": "Donations",
         "evenements": "Events and ticketing",
@@ -4030,6 +4036,47 @@
       "toasts": {
         "saved": "Access updated"
       }
+    },
+    "erasureRequests": {
+      "title": "Data erasure (GDPR)",
+      "description": "Requests to permanently delete a member's personal data, under Article 17 of the GDPR. Processed automatically every night, unless placed on hold.",
+      "empty": "No erasure requests yet.",
+      "retryWarning": "Failed {count} time(s) — retrying automatically",
+      "columns": {
+        "membre": "Member",
+        "status": "Status",
+        "requestedAt": "Requested on"
+      },
+      "status": {
+        "review": "Under review",
+        "pending": "Pending processing",
+        "held": "On hold",
+        "processed": "Processed"
+      },
+      "actions": {
+        "approve": "Approve",
+        "hold": "Place on hold",
+        "release": "Release hold",
+        "cancel": "Cancel"
+      },
+      "holdModal": {
+        "title": "Place this request on hold",
+        "description": "The request won't be processed by the next automated run while on hold. The member will be notified by email.",
+        "reasonLabel": "Reason (internal, not shown to the member)",
+        "confirm": "Place on hold"
+      },
+      "cancelConfirmTitle": "Cancel this erasure request?",
+      "cancelConfirmDescription": "The member and the other administrators will be notified by email of this cancellation.",
+      "approveConfirmTitle": "Approve this erasure request?",
+      "approveConfirmDescription": "The member's data will be irreversibly anonymized during the next nightly run, unless placed on hold before then.",
+      "toasts": {
+        "held": "Request placed on hold",
+        "released": "Hold released",
+        "cancelled": "Request cancelled",
+        "approved": "Request approved"
+      },
+      "automaticOrigin": "Automatically flagged — inactive for more than 3 years",
+      "inactiveSince": "left on {date}"
     }
   },
   "cotisations": {
@@ -4393,6 +4440,14 @@
       "cotisationButton": "Membership fee",
       "createAccessButton": "Create access",
       "roleButton": "Role",
+      "exportDataButton": "Export data (GDPR)",
+      "eraseData": {
+        "button": "Erase data (GDPR)",
+        "confirmTitle": "Request permanent erasure of {name}'s data?",
+        "confirmDescription": "This registers a GDPR Art. 17 erasure request. The member will receive a confirmation email, then their personal data will be irreversibly anonymized during the next automated processing run, unless placed on hold.",
+        "toastSuccess": "Erasure request registered",
+        "requestLabel": "GDPR erasure"
+      },
       "contact": "Contact",
       "noContactInfo": "No contact information",
       "memberSinceColon": "Member since: {date}",
@@ -4729,7 +4784,13 @@
         "loanReturned": "Equipment returned",
         "loanUpdated": "Loan updated",
         "loanCancelled": "Loan cancelled",
-        "loanDeleted": "Loan deleted"
+        "loanDeleted": "Loan deleted",
+        "erasureRequestCreated": "Data erasure requested (GDPR)",
+        "erasureRequestHeld": "Data erasure request put on hold",
+        "erasureRequestHoldReleased": "Data erasure hold released",
+        "erasureRequestCancelled": "Data erasure request cancelled",
+        "membreAnonymized": "Personal data erased (GDPR)",
+        "erasureRequestApproved": "Data erasure request approved"
       },
       "actorPrefix": "by {name}",
       "loadError": "Unable to load history.",
@@ -5863,6 +5924,17 @@
         "title": "Remove profile photo?",
         "description": "You can add a new one anytime.",
         "confirm": "Remove"
+      },
+      "eraseData": {
+        "title": "Privacy",
+        "description": "You can request the permanent erasure of your personal data, under Article 17 of the GDPR.",
+        "button": "Request erasure of my data",
+        "confirmTitle": "Request permanent erasure of your data?",
+        "confirmDescription": "An association administrator will review this request before it is processed. Once approved, your personal data will be irreversibly anonymized during the next automated processing run.",
+        "toastSuccess": "Request sent",
+        "statusLabel": "Status of your request",
+        "withdrawButton": "Withdraw my request",
+        "toastWithdrawn": "Request withdrawn"
       }
     },
     "evenements": {
@@ -6235,9 +6307,27 @@
     "columns": {
       "membre": "Member",
       "association": "Association",
+      "origin": "Origin",
       "raisedAt": "Raised on",
       "daysWithoutCotisation": "Days without a membership fee",
       "status": "Status"
+    },
+    "originByLabel": "By {name}",
+    "originSources": {
+      "ADMIN_MANUAL": "Added manually by an admin",
+      "ADMIN_REGISTRATION": "Registered by an admin (form)",
+      "PUBLIC_ADHESION_FORM": "Public membership form (free)",
+      "PUBLIC_ADHESION_FORM_OFFLINE": "Public membership form (offline payment)",
+      "PUBLIC_ADHESION_STRIPE": "Public membership form (online payment)",
+      "PUBLIC_ADHESION_INSTALLMENTS": "Public membership form (installment payment)",
+      "PUBLIC_ADHESION_MULTI": "Public membership form (group signup)",
+      "PUBLIC_ADHESION_SUBSCRIPTION": "Public membership form (recurring subscription)",
+      "ASSOCONNECT_IMPORT": "AssoConnect import",
+      "PAPER_FORM": "Paper form import",
+      "ASSOCIATION_SIGNUP_ADMIN": "Founding member (association signup)",
+      "PUBLIC_INSCRIPTION_REQUEST": "Public membership request (pending approval)",
+      "PUBLIC_INSCRIPTION_REQUEST_MULTI": "Public group membership request (pending approval)",
+      "unknown": "Unknown origin"
     },
     "empty": "No control alerts.",
     "resolveAction": "Resolve",

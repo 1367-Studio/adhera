@@ -1,5 +1,6 @@
 import { afterEach, beforeAll, describe, expect, it, vi } from "vitest"
 import { PDFDocument, StandardFonts, type PDFFont } from "pdf-lib"
+import { APP_URL } from "@/lib/env"
 import { CARD_CONTACT_MAX_WIDTH_MM, CARD_FONT_FOOTER_MM } from "@/lib/member-card/layout"
 import {
   isMemberCardImageUrlAllowed,
@@ -148,5 +149,16 @@ describe("isMemberCardImageUrlAllowed", () => {
   it("refuses everything when no R2 host is configured", () => {
     vi.stubEnv("R2_PUBLIC_URL", "")
     expect(isMemberCardImageUrlAllowed("https://files.formwise.fr/logo.png")).toBe(false)
+  })
+
+  // uploadToR2 (src/lib/r2.ts) now returns this shape for every new upload, rather than the
+  // direct R2_PUBLIC_URL above — rows written before that change still carry the old shape, so
+  // both must keep working.
+  it("accepts the app-domain asset-proxy shape uploadToR2 returns today", () => {
+    expect(isMemberCardImageUrlAllowed(`${APP_URL}/api/public/assets/membres/photo.jpg`)).toBe(true)
+  })
+
+  it("refuses an app-domain URL outside the asset-proxy path", () => {
+    expect(isMemberCardImageUrlAllowed(`${APP_URL}/api/some-other-route`)).toBe(false)
   })
 })

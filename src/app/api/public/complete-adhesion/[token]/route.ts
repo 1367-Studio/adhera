@@ -2,6 +2,7 @@ import { NextResponse } from "next/server"
 import { publicFormTerms } from "@/lib/form-terms"
 import { storedTermsAttachments } from "@/lib/form-terms-response"
 import { prisma } from "@/lib/prisma/client"
+import { parseModules } from "@/lib/modules"
 import { rateLimit, requestIp } from "@/lib/rate-limit"
 import { addressFormValues } from "@/lib/address"
 import { requiredDocuments } from "@/lib/legal/acceptance"
@@ -21,7 +22,7 @@ async function findByToken(token: string) {
       firstName: true, lastName: true, email: true, phone: true,
       addressStreet: true, addressComplement: true, postalCode: true, city: true, country: true, address: true,
       birthDate: true, sexe: true, spokenLanguage: true, photoUrl: true, answers: true,
-      association: { select: { id: true, name: true, slug: true, stripeConnectId: true } },
+      association: { select: { id: true, name: true, slug: true, stripeConnectId: true, modules: true, sitePublished: true, website: true } },
       adhesionCompletionForm: {
         select: {
           id: true, slug: true, title: true, status: true, description: true, conditions: true,
@@ -71,9 +72,15 @@ export async function GET(
     requireCguvSignature: form.requireCguvSignature,
   })
 
+  // Whether "Voltar ao site" (the public homepage) actually resolves — getSiteData() requires
+  // both sitePublished AND the "site" module, so this one-off link can be live with neither.
+  const sitePublished = membre.association.sitePublished && parseModules(membre.association.modules).site
+
   return NextResponse.json({
     associationName: membre.association.name,
     slug:            membre.association.slug,
+    sitePublished,
+    website:         membre.association.website,
     legalDocuments:  legalDocuments.map(d => ({ documentId: d.documentId, revisionId: d.revisionId, version: d.version, title: d.title })),
     formId:          form.id,
     formSlug:        form.slug,
