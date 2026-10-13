@@ -9,10 +9,6 @@ import { deriveCotisationStatus, type CotisationStatus } from "@/lib/cotisation-
 
 const EPSILON = 0.01
 
-// Writes on a cotisation are gated on Membres "edit", not Adhésions: the Secrétaire, read-only
-// on Adhésions, has always been able to record and correct a member's cotisation (FORM-34
-// keeps that). Payments themselves (./paiements) need Adhésions "edit".
-
 const cotisationInclude = {
   membre:       { select: { id: true, firstName: true, lastName: true, email: true } },
   payments:     { orderBy: { paidAt: "desc" as const } },
@@ -199,7 +195,7 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   )
   await writeActivityLog({ associationId, actorId: userId, action: "COTISATION_UPDATED", entity: "Cotisation", entityId: id, label: `${cotisation.membre.firstName} ${cotisation.membre.lastName} — ${cotisation.year}`, metadata: Object.keys(changes).length > 0 ? { changes } : undefined })
   return NextResponse.json(cotisation)
-}, { area: "membres", module: "cotisations" })
+}, { area: "adhesions", module: "cotisations" })
 
 export const DELETE = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   const { associationId, userId } = ctx
@@ -244,4 +240,4 @@ export const DELETE = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => 
   await prisma.$transaction((tx) => deleteCotisationWithPayments(tx, id))
   await writeActivityLog({ associationId, actorId: userId, action: "COTISATION_DELETED", entity: "Cotisation", entityId: id, label: `${existing.membre.firstName} ${existing.membre.lastName} — ${existing.year}` })
   return new NextResponse(null, { status: 204 })
-}, { area: "membres", module: "cotisations" })
+}, { area: "adhesions", module: "cotisations" })

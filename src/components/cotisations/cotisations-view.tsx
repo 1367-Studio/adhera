@@ -79,10 +79,9 @@ const PAGE_SIZE = 25
 export function CotisationsView() {
   const searchParams = useSearchParams()
   const t = useTranslations()
-  // Same areas as the API (FORM-34): creating, editing, deleting a cotisation and sending
-  // reminders are "membres" edits; payments and fiscal declarations are "adhesions" edits;
-  // the members export needs "membres" read. A "read" user keeps the list, filters and history.
-  const canEditMembres   = useHasAccess("membres", "edit")
+  // Same areas as the API (FORM-34): creating, editing, deleting a cotisation, sending
+  // reminders, payments and fiscal declarations are all "adhesions" edits; the members export
+  // needs "membres" read. A "read" user keeps the list, filters and history.
   const canReadMembres   = useHasAccess("membres", "read")
   const canEditAdhesions = useHasAccess("adhesions", "edit")
   const [page, setPage]                 = useState(1)
@@ -398,7 +397,7 @@ export function CotisationsView() {
             icon:    <ClockCounterClockwiseIcon className="size-3.5" />,
             onClick: () => setPaymentsHistoryTarget(c),
           }] : []),
-          ...(canEditMembres ? [
+          ...(canEditAdhesions ? [
             { label: t("cotisations.view.actions.edit"), icon: <PencilSimpleIcon className="size-3.5" />, onClick: () => setEditTarget(c), separator: true },
           ] : []),
           // Gated on declarationNumber rather than status === "PAYE" — a cotisation that was
@@ -409,7 +408,7 @@ export function CotisationsView() {
             icon:    <DownloadSimpleIcon className="size-3.5" />,
             onClick: () => window.open(`${BASE_PATH}/api/membres/${c.membre.id}/cotisations/${c.id}/declaration`, "_blank"),
           }] : []),
-          ...(canEditMembres ? [
+          ...(canEditAdhesions ? [
             { label: t("cotisations.view.actions.delete"), icon: <TrashIcon className="size-3.5" />, destructive: true, separator: true, onClick: () => setDeleteTarget(c) },
           ] : []),
         ]
@@ -442,7 +441,7 @@ export function CotisationsView() {
                 </DropdownMenuContent>
               </DropdownMenu>
             )}
-            {canEditMembres && (
+            {canEditAdhesions && (
               <Button size="sm" onClick={() => setCreateOpen(true)}>
                 <PlusIcon className="mr-1.5 size-4" />
                 {t("common.add")}
@@ -508,7 +507,7 @@ export function CotisationsView() {
         </Select>
 
         {/* Selection only exists to send reminders — a "membres" edit. */}
-        {canEditMembres && statusFilter !== "PAYE" && statusFilter !== "EXONERE" && statusFilter !== "ANNULEE" && (
+        {canEditAdhesions && statusFilter !== "PAYE" && statusFilter !== "EXONERE" && statusFilter !== "ANNULEE" && (
           <label className="flex items-center gap-1.5 text-sm text-muted-foreground cursor-pointer select-none">
             <input
               type="checkbox"
@@ -541,7 +540,7 @@ export function CotisationsView() {
         loading={isLoading}
         keyExtractor={(c) => c.id}
         empty={search ? t("cotisations.view.noResultsFor", { search }) : t("cotisations.view.noCotisation")}
-        selection={canEditMembres ? {
+        selection={canEditAdhesions ? {
           selectedIds:  new Set(selected.keys()),
           onToggle:     toggleOne,
           onToggleAll:  toggleAllOnPage,

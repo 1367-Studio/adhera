@@ -18,8 +18,9 @@ import { SUPPORTED_LOCALES } from "@/i18n/locales"
 import { findInvalidMembershipFormAnswer } from "@/lib/membership-form-answers-validation"
 import { reportError } from "@/lib/monitoring"
 
-// Same area as POST /api/membres — whoever can create a member can register one through a
-// form on their behalf.
+// Gated on Adhésions "edit", not Membres: this creates a Cotisation (with a real payment link)
+// alongside the Membre, so it needs the same permission as every other cotisation write
+// (../../cotisations/route.ts).
 
 // The public adhésion form, filled by a manager instead of the member (mode admin — see
 // membership-form-public-form.tsx's isAdminFill): the member's profile is created exactly
@@ -227,4 +228,4 @@ export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   })
 
   return NextResponse.json({ sent: true, email })
-}, { area: "membres", module: "cotisations" })
+}, { area: "adhesions", module: "cotisations" })

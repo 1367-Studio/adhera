@@ -14,7 +14,8 @@ import { reportError } from "@/lib/monitoring"
 // association until the payment email arrives — if it never reached them (typo, lost,
 // or the exact silent-send bug fixed alongside this route), the only prior recourse was
 // deleting and recreating the member. This resends the same link/email without touching
-// anything else.
+// anything else. Gated on Adhésions "edit", not Membres: it's still a cotisation-payment
+// action, same area as every other cotisation write (../../../cotisations/route.ts).
 export const POST = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
   const { associationId, userId } = ctx
 
@@ -76,4 +77,4 @@ export const POST = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
   })
 
   return NextResponse.json({ sent: true })
-}, { area: "membres", module: "cotisations" })
+}, { area: "adhesions", module: "cotisations" })

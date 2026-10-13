@@ -6,10 +6,6 @@ import { writeActivityLog } from "@/lib/activity-log"
 import { withAdminAuth } from "@/lib/api-wrapper"
 import { deriveCotisationStatus } from "@/lib/cotisation-status"
 
-// Writes on a cotisation are gated on Membres "edit", not Adhésions: the Secrétaire, read-only
-// on Adhésions, has always been able to record and correct a member's cotisation (FORM-34
-// keeps that). Payments themselves (./[id]/paiements) need Adhésions "edit".
-
 export const GET = withAdminAuth(async (req, ctx) => {
   const { associationId } = ctx
 
@@ -120,4 +116,4 @@ export const POST = withAdminAuth(async (req, ctx) => {
 
   await writeActivityLog({ associationId, actorId: userId, action: "COTISATION_CREATED", entity: "Cotisation", entityId: cotisation.id, label: `${cotisation.membre.firstName} ${cotisation.membre.lastName} — ${cotisation.year}` })
   return NextResponse.json(cotisation, { status: 201 })
-}, { area: "membres", module: "cotisations" })
+}, { area: "adhesions", module: "cotisations" })
