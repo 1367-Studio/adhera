@@ -3141,6 +3141,7 @@
       "adminLinkSentTitle": "Odoslaný odkaz na platbu",
       "adminLinkSentBody": "Člen bol vytvorený a e-mail s odkazom na platbu bol zaslaný {email}. Stane sa členom po zaplatení členského poplatku.",
       "adminEmailAlreadyMember": "Táto e-mailová adresa už patrí členovi združenia.",
+      "adminAccessDenied": "Nemáte oprávnenie vykonať členstvo prostredníctvom tohto formulára. Môže to urobiť iba administrátor, predseda alebo pokladník združenia.",
       "firstNamePlaceholder": "Marie",
       "lastNamePlaceholder": "Dupont",
       "emailPlaceholder": "marie.dupont@email.fr",

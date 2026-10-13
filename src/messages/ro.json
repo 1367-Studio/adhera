@@ -3141,6 +3141,7 @@
       "adminLinkSentTitle": "Link de plată trimis",
       "adminLinkSentBody": "Membrul a fost creat și un email cu linkul de plată a fost trimis la {email}. Va deveni membru după ce taxa de membru va fi plătită.",
       "adminEmailAlreadyMember": "Această adresă de email aparține deja unui membru al asociației.",
+      "adminAccessDenied": "Nu aveți permisiunea de a efectua o aderare prin acest formular. Doar un administrator, președinte sau trezorier al asociației poate face acest lucru.",
       "firstNamePlaceholder": "Marie",
       "lastNamePlaceholder": "Dupont",
       "emailPlaceholder": "marie.dupont@email.fr",

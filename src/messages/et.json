@@ -3141,6 +3141,7 @@
       "adminLinkSentTitle": "Makselink saadetud",
       "adminLinkSentBody": "Liige on loodud ja makselingiga on saadetud e-kiri {email}. Ta saab liikmeks pärast liikmemaksu tasumist.",
       "adminEmailAlreadyMember": "See e-posti aadress kuulub juba ühingu liikmele.",
+      "adminAccessDenied": "Teil ei ole luba sellel vormil liikmesust registreerida. Seda saab teha ainult ühingu administraator, esimees või laekur.",
       "firstNamePlaceholder": "Marie",
       "lastNamePlaceholder": "Dupont",
       "emailPlaceholder": "marie.dupont@email.fr",

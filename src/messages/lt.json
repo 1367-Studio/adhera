@@ -3141,6 +3141,7 @@
       "adminLinkSentTitle": "Mokėjimo nuoroda išsiųsta",
       "adminLinkSentBody": "Narys buvo sukurtas ir išsiųstas el. laiškas su mokėjimo nuoroda {email}. Jis taps nariu, kai bus sumokėtas narystės mokestis.",
       "adminEmailAlreadyMember": "Šis el. pašto adresas jau priklauso asociacijos nariui.",
+      "adminAccessDenied": "Neturite leidimo užregistruoti narystės per šią formą. Tai gali padaryti tik asociacijos administratorius, pirmininkas ar iždininkas.",
       "firstNamePlaceholder": "Marie",
       "lastNamePlaceholder": "Dupont",
       "emailPlaceholder": "marie.dupont@email.fr",

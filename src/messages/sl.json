@@ -3141,6 +3141,7 @@
       "adminLinkSentTitle": "Povezava do plačila poslana",
       "adminLinkSentBody": "Član je bil ustvarjen in poslan je bil e-poštni naslov s povezavo za plačilo {email}. Postal bo član, ko bo članarina plačana.",
       "adminEmailAlreadyMember": "Ta e-poštni naslov že pripada članu združenja.",
+      "adminAccessDenied": "Nimate dovoljenja za izvedbo članstva prek tega obrazca. To lahko stori samo skrbnik, predsednik ali blagajnik društva.",
       "firstNamePlaceholder": "Marie",
       "lastNamePlaceholder": "Dupont",
       "emailPlaceholder": "marie.dupont@email.fr",

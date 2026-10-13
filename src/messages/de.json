@@ -3141,6 +3141,7 @@
       "adminLinkSentTitle": "Zahlungslink gesendet",
       "adminLinkSentBody": "Das Mitglied wurde erstellt und eine E-Mail mit dem Zahlungslink wurde an {email}. Er wird Mitglied werden, sobald der Mitgliedsbeitrag bezahlt wurde.",
       "adminEmailAlreadyMember": "Diese E-Mail-Adresse gehört bereits einem Mitglied der Vereinigung.",
+      "adminAccessDenied": "Sie sind nicht berechtigt, über dieses Formular eine Mitgliedschaft anzulegen. Nur ein Administrator, Vorsitzender oder Schatzmeister des Vereins kann dies tun.",
       "firstNamePlaceholder": "Marie",
       "lastNamePlaceholder": "Dupont",
       "emailPlaceholder": "marie.dupont@email.fr",

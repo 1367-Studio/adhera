@@ -3249,6 +3249,7 @@
       "adminLinkSentTitle": "Payment link sent",
       "adminLinkSentBody": "The member was created and an email with the payment link was sent to {email}. They will become a member once the fee is paid.",
       "adminEmailAlreadyMember": "This email address already belongs to a member of the association.",
+      "adminAccessDenied": "You do not have permission to register a membership through this form. Only an administrator, president or treasurer of the association can do this.",
       "firstNamePlaceholder": "Jane",
       "lastNamePlaceholder": "Smith",
       "emailPlaceholder": "jane.smith@email.com",
