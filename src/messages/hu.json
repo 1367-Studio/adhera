@@ -3216,6 +3216,8 @@
       "submittedRequestTitle": "Kérés elküldve!",
       "submittedWithPayment": "A tagságod aktív és a fizetésed megérkezett.",
       "submittedRequestBody": "A tagsági kérelmed megérkezett. Az egyesület a lehető leghamarabb felveszi Önnel a kapcsolatot.",
+      "submittedOfflineTitle": "Kérelem regisztrálva!",
+      "submittedOfflineBody": "Offline fizetési módot választott. Tagságát a szervezet akkor erősíti meg, amikor megkapta és jóváhagyta a befizetését. A jóváhagyás után megerősítő e-mailt kap.",
       "toastCancelled": "Fizetés törölve.",
       "errorNetwork": "Hálózati hiba. Próbáld újra.",
       "productsLabel": "Termékek",

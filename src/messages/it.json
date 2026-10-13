@@ -3216,6 +3216,8 @@
       "submittedRequestTitle": "Richiesta inviata!",
       "submittedWithPayment": "La tua iscrizione è attiva e il pagamento è stato ricevuto.",
       "submittedRequestBody": "La tua domanda di iscrizione è stata ricevuta. L'associazione ti contatterà il prima possibile.",
+      "submittedOfflineTitle": "Richiesta registrata!",
+      "submittedOfflineBody": "Hai scelto un pagamento offline. La tua adesione sarà confermata dopo la ricezione e la validazione del pagamento da parte dell'associazione. Riceverai un'e-mail di conferma non appena sarà validato.",
       "toastCancelled": "Pagamento annullato.",
       "errorNetwork": "Errore di rete. Riprova.",
       "productsLabel": "Prodotti",

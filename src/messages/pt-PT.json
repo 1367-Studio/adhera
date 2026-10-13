@@ -3218,6 +3218,8 @@
       "submittedRequestTitle": "Pedido enviado!",
       "submittedWithPayment": "A sua adesão está ativa e o seu pagamento foi recebido.",
       "submittedRequestBody": "O seu pedido de adesão foi recebido. A associação entrará em contacto brevemente.",
+      "submittedOfflineTitle": "Pedido registado!",
+      "submittedOfflineBody": "Escolheu um pagamento offline. A sua adesão será confirmada após a receção e validação do seu pagamento pela associação. Ser-lhe-á enviado um e-mail de confirmação assim que for validado.",
       "toastCancelled": "Pagamento cancelado.",
       "errorNetwork": "Erro de rede. Tente novamente.",
       "productsLabel": "Produtos",

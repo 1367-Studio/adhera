@@ -996,19 +996,30 @@ function MembershipFormPublicFormInner({ slug, formSlug, legalDocuments }: Props
             {outcome ? (
               <div className="rounded-lg border bg-card p-6 text-center text-sm space-y-1">
                 <p className="font-medium">
-                  {outcome === "linkSent" ? t("adminLinkSentTitle") : outcome === "pending" ? t("submittedRequestTitle") : t("submittedTitle")}
+                  {outcome === "linkSent"
+                    ? t("adminLinkSentTitle")
+                    : outcome === "pending"
+                      ? t("submittedRequestTitle")
+                      : outcome === "offline"
+                        ? t("submittedOfflineTitle")
+                        : t("submittedTitle")}
                 </p>
                 {outcome === "linkSent" ? (
                   <p className="text-muted-foreground">{t("adminLinkSentBody", { email: email.trim() })}</p>
+                ) : outcome === "offline" ? (
+                  <p className="text-muted-foreground">{t("submittedOfflineBody")}</p>
+                ) : outcome === "pending" ? (
+                  <p className="text-muted-foreground">{t("submittedRequestBody")}</p>
                 ) : form.confirmationMessage ? (
                   <RichTextView content={form.confirmationMessage} className="text-muted-foreground" />
                 ) : (
-                  <p className="text-muted-foreground">
-                    {outcome === "pending" ? t("submittedRequestBody") : t("submittedWithPayment")}
-                  </p>
+                  <p className="text-muted-foreground">{t("submittedWithPayment")}</p>
                 )}
-                {outcome === "offline" && form.offlineInstructions && (
-                  <p className="text-muted-foreground pt-2 border-t mt-3">{form.offlineInstructions}</p>
+                {outcome === "offline" && (form.offlineInstructions || hasDonationExtraSelected) && (
+                  <div className="text-muted-foreground pt-2 border-t mt-3 space-y-1">
+                    {form.offlineInstructions && <p>{form.offlineInstructions}</p>}
+                    {hasDonationExtraSelected && <p>{t("offlineDonationSeparateReceiptNotice")}</p>}
+                  </div>
                 )}
               </div>
             ) : form.notOpenYet ? (
