@@ -3141,6 +3141,7 @@
       "adminLinkSentTitle": "Przesłany link do płatności",
       "adminLinkSentBody": "Członkostwo zostało utworzone, a e-mail z linkiem do płatności został wysłany na {email}. Zostanie członkiem po uiszczeniu składki członkowskiej.",
       "adminEmailAlreadyMember": "Ten adres e-mail należy już do członka stowarzyszenia.",
+      "adminAccessDenied": "Nie masz uprawnień do dokonania rejestracji członkostwa za pomocą tego formularza. Może to zrobić wyłącznie administrator, prezes lub skarbnik stowarzyszenia.",
       "firstNamePlaceholder": "Marie",
       "lastNamePlaceholder": "Dupont",
       "emailPlaceholder": "marie.dupont@email.fr",

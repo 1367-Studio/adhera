@@ -3141,6 +3141,7 @@
       "adminLinkSentTitle": "Poslana poveznica za plaćanje",
       "adminLinkSentBody": "Član je kreiran i poslan je e-mail s poveznicom za plaćanje na {email}. Član će postati nakon što se plati članarina.",
       "adminEmailAlreadyMember": "Ova e-mail adresa već pripada članu udruge.",
+      "adminAccessDenied": "Nemate dopuštenje za obradu članstva putem ovog obrasca. To može učiniti samo administrator, predsjednik ili blagajnik udruge.",
       "firstNamePlaceholder": "Marie",
       "lastNamePlaceholder": "Dupont",
       "emailPlaceholder": "marie.dupont@email.fr",

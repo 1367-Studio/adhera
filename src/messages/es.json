@@ -3141,6 +3141,7 @@
       "adminLinkSentTitle": "Enlace de pago enviado",
       "adminLinkSentBody": "El miembro fue creado y se envió un correo con el enlace de pago a {email}. Será miembro una vez pagada la cuota.",
       "adminEmailAlreadyMember": "Esta dirección de correo ya pertenece a un miembro de la asociación.",
+      "adminAccessDenied": "No tiene permiso para realizar una afiliación a través de este formulario. Solo un administrador, presidente o tesorero de la asociación puede hacerlo.",
       "firstNamePlaceholder": "María",
       "lastNamePlaceholder": "García",
       "emailPlaceholder": "maria.garcia@email.es",

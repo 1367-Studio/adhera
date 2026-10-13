@@ -3141,6 +3141,7 @@
       "adminLinkSentTitle": "Maksājuma saite nosūtīta",
       "adminLinkSentBody": "Biedrs ir izveidots, un e-pasts ar maksājuma saiti ir nosūtīts uz {email}. Viņš kļūs par biedru, kad biedra maksa būs samaksāta.",
       "adminEmailAlreadyMember": "Šī e-pasta adrese jau pieder asociācijas biedram.",
+      "adminAccessDenied": "Jums nav atļaujas noformēt dalību, izmantojot šo veidlapu. To var izdarīt tikai biedrības administrators, priekšsēdētājs vai kasieris.",
       "firstNamePlaceholder": "Marija",
       "lastNamePlaceholder": "Dupont",
       "emailPlaceholder": "marie.dupont@email.fr",

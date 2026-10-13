@@ -147,9 +147,10 @@ export function MembreDetailView() {
   const modules = useModules()
   const currentUser = useCurrentUser()
   const memberCardEnabled = useMemberCardEnabled()
-  // Same areas as the API routes (FORM-34): the member record, its cotisations and access are
-  // "membres"; payments, subscriptions, installment plans and receipts are "adhesions"; roles
-  // belong to administrators. A "read" user sees the sheet without the actions it would refuse.
+  // Same areas as the API routes (FORM-34): the member record and access are "membres";
+  // creating/approving a cotisation, payments, subscriptions, installment plans and receipts
+  // are "adhesions"; roles belong to administrators. A "read" user sees the sheet without the
+  // actions it would refuse.
   const canEditMembres    = useHasAccess("membres", "edit")
   const canEditAdhesions  = useHasAccess("adhesions", "edit")
   // Security audit M2+L8 — guardian contact info is an exception to "membres" visibility.
@@ -471,7 +472,7 @@ export function MembreDetailView() {
           <div className="flex flex-wrap items-center gap-2">
             {modules.cotisations && (
               <>
-                {canEditMembres && (
+                {canEditAdhesions && (
                   <Button size="sm" variant="outline" onClick={() => setCreateCotisationOpen(true)}>
                     <PlusIcon className="mr-1.5 size-4" />
                     {t("membres.detail.cotisationButton")}
@@ -543,8 +544,11 @@ export function MembreDetailView() {
         {/* Approving a request used to mean opening the edit modal and changing a dropdown —
             an action nothing on the page announced. Shown for any PENDING membre, not only one
             carrying a pendingTier: a PENDING created by another path (site membership section,
-            manual creation) needs the same way out. */}
-        {membre.status === "PENDING" && !isSelf && canEditMembres && (
+            manual creation) needs the same way out. Only a *free* pendingTier additionally
+            needs "adhesions" edit — approving it creates a Cotisation server-side
+            (membres/[id]/route.ts's isApproval branch); a paid tier or no tier at all doesn't,
+            so Membres "edit" alone must stay enough for those. */}
+        {membre.status === "PENDING" && !isSelf && canEditMembres && (!membre.pendingTier?.free || canEditAdhesions) && (
           <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border bg-muted/40 px-4 py-3">
             <div className="space-y-0.5">
               <p className="text-sm font-medium">{t("membres.detail.pendingRequest.title")}</p>

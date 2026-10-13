@@ -218,6 +218,23 @@ function MembershipFormPublicFormInner({ slug, formSlug, legalDocuments }: Props
   const [form, setForm]         = useState<FormInfo | null | undefined>(undefined) // undefined = loading, null = not found
   const [loading, setLoading]   = useState(false)
   const [outcome, setOutcome]   = useState<SubmitOutcome>(null)
+  // Previews the POST .../admin-registration gate before the manager fills in anything — this
+  // page is public, so without this they'd only find out they lack "adhesions" edit at the
+  // very last step, after typing a whole member's details. Stays true (never fetched) outside
+  // admin-fill mode, where no permission applies to a real visitor at all.
+  const [adminAccessChecking, setAdminAccessChecking] = useState(isAdminFill)
+  const [adminAccessDenied, setAdminAccessDenied]     = useState(false)
+
+  useEffect(() => {
+    if (!isAdminFill) return
+    let cancelled = false
+    fetch("/api/membership-forms/admin-fill-access")
+      .then(res => { if (!cancelled) setAdminAccessDenied(!res.ok) })
+      .catch(() => { if (!cancelled) setAdminAccessDenied(true) })
+      .finally(() => { if (!cancelled) setAdminAccessChecking(false) })
+    return () => { cancelled = true }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- isAdminFill is derived from the URL once, not re-checked on every render
+  }, [])
 
   const [tierId, setTierId]         = useState("")
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("STRIPE")
@@ -881,7 +898,7 @@ function MembershipFormPublicFormInner({ slug, formSlug, legalDocuments }: Props
     }
   }
 
-  if (form === undefined) {
+  if (form === undefined || (isAdminFill && adminAccessChecking)) {
     return (
       <>
         {showInAppBrowserBanner && <InAppBrowserBanner>{t("inAppBrowserWarning")}</InAppBrowserBanner>}
@@ -905,6 +922,22 @@ function MembershipFormPublicFormInner({ slug, formSlug, legalDocuments }: Props
         <div className="dashboard-canvas public-canvas min-h-screen p-3">
           <div className="min-h-[calc(100vh-1.5rem)] rounded-[10px] bg-public-panel flex flex-col items-center justify-center text-center px-4 gap-4">
             <p className="text-muted-foreground">{t("notFound")}</p>
+            <LocaleSwitcher persistAccountLocale={!isPreview} />
+          </div>
+        </div>
+      </>
+    )
+  }
+
+  if (isAdminFill && adminAccessDenied) {
+    // Same gate as POST .../admin-registration (api/membership-forms/admin-fill-access just
+    // previews it) — caught here, before a single field is typed, instead of on submit.
+    return (
+      <>
+        {showInAppBrowserBanner && <InAppBrowserBanner>{t("inAppBrowserWarning")}</InAppBrowserBanner>}
+        <div className="dashboard-canvas public-canvas min-h-screen p-3">
+          <div className="min-h-[calc(100vh-1.5rem)] rounded-[10px] bg-public-panel flex flex-col items-center justify-center text-center px-4 gap-4">
+            <p className="text-muted-foreground">{t("adminAccessDenied")}</p>
             <LocaleSwitcher persistAccountLocale={!isPreview} />
           </div>
         </div>

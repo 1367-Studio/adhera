@@ -3141,6 +3141,7 @@
       "adminLinkSentTitle": "Link di pagamento inviato",
       "adminLinkSentBody": "Il membro è stato creato e una email con il link del pagamento è stata inviata a {email}. Diventerà membro una volta pagata la quota associativa.",
       "adminEmailAlreadyMember": "Questo indirizzo email appartiene già a un membro dell'associazione.",
+      "adminAccessDenied": "Non hai il permesso di effettuare un'iscrizione tramite questo modulo. Solo un amministratore, presidente o tesoriere dell'associazione può farlo.",
       "firstNamePlaceholder": "Marie",
       "lastNamePlaceholder": "Dupont",
       "emailPlaceholder": "marie.dupont@email.fr",

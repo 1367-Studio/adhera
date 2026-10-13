@@ -8,8 +8,8 @@ import { inngest } from "@/lib/inngest"
 import { resolveEmailBranding } from "@/lib/plan-limits"
 import { nextAmountDue } from "@/lib/cotisation-status"
 
-// Same gate as the other cotisation writes (../route.ts): Membres "edit". The Trésorier sends
-// these reminders even though he has no Communication area.
+// Same gate as the other cotisation writes (../route.ts): Adhésions "edit". The Trésorier
+// sends these reminders even though he has no Communication area.
 const schema = z.object({
   cotisationIds: z.array(z.string()).min(1).max(500),
   channel:       z.enum(["EMAIL", "SMS"]),
@@ -110,4 +110,4 @@ export const POST = withAdminAuth(async (req, ctx) => {
   })
 
   return NextResponse.json({ jobId, totalRecipients: eligible.length, skippedNoContact, skippedInvalid })
-}, { area: "membres", module: "cotisations" })
+}, { area: "adhesions", module: "cotisations" })

@@ -263,6 +263,14 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
     ? await prisma.membershipTier.findUnique({ where: { id: existing.pendingTierId! }, select: { id: true, free: true, formId: true, durationMonths: true, fixedPeriodEnd: true } })
     : null
 
+  // Approving a free-tier pending request creates a Cotisation below — same Adhésions "edit"
+  // requirement as every other cotisation write (../../cotisations/route.ts), on top of
+  // Membres "edit": the Secrétaire, read-only on Adhésions, manages every other membre field
+  // but cannot be the one who settles this member's adhésion.
+  if (pendingTier?.free && !hasAccess(ctx.permissions, "adhesions", "edit")) {
+    return NextResponse.json({ error: "Seuls un administrateur, président ou trésorier peuvent valider une adhésion en attente" }, { status: 403 })
+  }
+
   const membre = await prisma.$transaction(async (tx) => {
     const updated = await tx.membre.update({
       where: { id },

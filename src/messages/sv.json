@@ -3141,6 +3141,7 @@
       "adminLinkSentTitle": "Betalningslänk skickad",
       "adminLinkSentBody": "Medlemmen har skapats och ett mejl med betalningslänken har skickats till {email}. Han blir medlem när medlemsavgiften är betald.",
       "adminEmailAlreadyMember": "Denna e-postadress tillhör redan en medlem i föreningen.",
+      "adminAccessDenied": "Du har inte behörighet att registrera ett medlemskap via det här formuläret. Endast en administratör, ordförande eller kassör i föreningen kan göra detta.",
       "firstNamePlaceholder": "Marie",
       "lastNamePlaceholder": "Dupont",
       "emailPlaceholder": "marie.dupont@email.fr",

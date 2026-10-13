@@ -3257,6 +3257,7 @@
       "adminLinkSentTitle": "Lien de paiement envoyé",
       "adminLinkSentBody": "Le membre a été créé et un email avec le lien de paiement a été envoyé à {email}. Il deviendra adhérent une fois la cotisation réglée.",
       "adminEmailAlreadyMember": "Cette adresse email appartient déjà à un membre de l'association.",
+      "adminAccessDenied": "Vous n'avez pas la permission d'effectuer une adhésion via ce formulaire. Seuls un administrateur, président ou trésorier de l'association peuvent le faire.",
       "firstNamePlaceholder": "Marie",
       "lastNamePlaceholder": "Dupont",
       "emailPlaceholder": "marie.dupont@email.fr",

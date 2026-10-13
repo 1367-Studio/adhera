@@ -3141,6 +3141,7 @@
       "adminLinkSentTitle": "Betalingslink sendt",
       "adminLinkSentBody": "Medlemmet er oprettet, og en e-mail med betalingslinket er blevet sendt til {email}. Han bliver medlem, når medlemsgebyret er betalt.",
       "adminEmailAlreadyMember": "Denne e-mailadresse tilhører allerede et medlem af foreningen.",
+      "adminAccessDenied": "Du har ikke tilladelse til at oprette et medlemskab via denne formular. Kun en administrator, formand eller kasserer i foreningen kan gøre dette.",
       "firstNamePlaceholder": "Marie",
       "lastNamePlaceholder": "Dupont",
       "emailPlaceholder": "marie.dupont@email.fr",

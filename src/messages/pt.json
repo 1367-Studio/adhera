@@ -3205,6 +3205,7 @@
       "adminLinkSentTitle": "Link de pagamento enviado",
       "adminLinkSentBody": "O membro foi criado e um email com o link de pagamento foi enviado para {email}. Ele se tornará membro assim que a mensalidade for paga.",
       "adminEmailAlreadyMember": "Este endereço de email já pertence a um membro da associação.",
+      "adminAccessDenied": "Você não tem permissão para fazer uma adesão através deste formulário. Somente um administrador, presidente ou tesoureiro da associação pode fazer isso.",
       "firstNamePlaceholder": "Maria",
       "lastNamePlaceholder": "Silva",
       "emailPlaceholder": "maria.silva@email.pt",

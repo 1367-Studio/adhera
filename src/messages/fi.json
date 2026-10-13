@@ -3141,6 +3141,7 @@
       "adminLinkSentTitle": "Maksulinkki lähetetty",
       "adminLinkSentBody": "Jäsen on luotu ja sähköposti, jossa on maksulinkki, on lähetetty osoitteeseen {email}. Hänestä tulee jäsen, kun jäsenmaksu on maksettu.",
       "adminEmailAlreadyMember": "Tämä sähköpostiosoite kuuluu jo yhdistyksen jäsenelle.",
+      "adminAccessDenied": "Sinulla ei ole oikeutta rekisteröidä jäsenyyttä tällä lomakkeella. Vain yhdistyksen pääkäyttäjä, puheenjohtaja tai rahastonhoitaja voi tehdä tämän.",
       "firstNamePlaceholder": "Marie",
       "lastNamePlaceholder": "Dupont",
       "emailPlaceholder": "marie.dupont@email.fr",

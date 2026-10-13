@@ -3141,6 +3141,7 @@
       "adminLinkSentTitle": "Seoladh nasc íocaíochta",
       "adminLinkSentBody": "Cruthaíodh an ball agus seoladh ríomhphost leis an nasc íocaíochta chuig {email}. Beidh sé ina bhall nuair a bheidh an táille ballraíochta íoctha.",
       "adminEmailAlreadyMember": "Baineann an seoladh ríomhphoist seo le ball den chumann cheana féin.",
+      "adminAccessDenied": "Níl cead agat ballraíocht a dhéanamh tríd an bhfoirm seo. Ní féidir ach le riarthóir, uachtarán nó cisteoir an chumainn é seo a dhéanamh.",
       "firstNamePlaceholder": "Marie",
       "lastNamePlaceholder": "Dupont",
       "emailPlaceholder": "marie.dupont@email.fr",
