@@ -4,6 +4,15 @@ import { prisma } from "@/lib/prisma/client"
 import type { SiteConfig, SiteSection } from "@/types/site-config"
 import { DEFAULT_LOCALE } from "@/i18n/locales"
 import { SITE_UI_STRINGS } from "@/lib/site-puck/site-ui-strings"
+import { listPuckBlocksOfType, puckBlockId } from "@/lib/site-puck/site-puck-tree"
+
+// The membership block ids of a Puck tree (draft or published) — same lookup page.tsx's
+// buildSitePuckMetadata uses for the real public site.
+function puckMembershipSectionIds(puckData: unknown): string[] {
+  return listPuckBlocksOfType(puckData, "membership")
+    .map(block => puckBlockId(block))
+    .filter((id): id is string => id !== null)
+}
 
 // Feeds SitePreviewPanel the same real data [slug]/page.tsx's getSiteData() fetches for the
 // public site — actualités, boutique products, and MembershipForm/DonationForm section
@@ -16,7 +25,7 @@ export const GET = withAdminAuth(async (req, ctx) => {
 
   const assoc = await prisma.association.findUnique({
     where:  { id: associationId },
-    select: { siteConfig: true, canIssueTaxReceipts: true },
+    select: { siteConfig: true, siteBuilder: true, siteDraft: true, sitePuckPublished: true, canIssueTaxReceipts: true },
   })
   if (!assoc) return NextResponse.json({ error: "Not found" }, { status: 404 })
 
@@ -57,11 +66,17 @@ export const GET = withAdminAuth(async (req, ctx) => {
     if (!donationFormBySection[sectionId]) donationFormBySection[sectionId] = { slug: donationForm.slug, title: donationForm.title }
   }
 
-  const siteSections = (assoc.siteConfig as SiteConfig | null)?.sections ?? []
-  const firstBoundMembershipForm = siteSections
-    .filter((s): s is SiteSection & { type: "membership" } => s.type === "membership")
-    .map(s => membershipFormBySection[s.id])
-    .find(Boolean)
+  // FORM-7: the "Adhérer" header button's bound form — looked up from the Puck draft/published
+  // trees for the new builder (draft first, since that's what the editor's canvas is showing),
+  // from siteConfig.sections for the old one. Same rule as the real public site (page.tsx).
+  const firstBoundMembershipForm = assoc.siteBuilder === "PUCK"
+    ? [...puckMembershipSectionIds(assoc.siteDraft), ...puckMembershipSectionIds(assoc.sitePuckPublished)]
+        .map(sectionId => membershipFormBySection[sectionId])
+        .find(Boolean)
+    : ((assoc.siteConfig as SiteConfig | null)?.sections ?? [])
+        .filter((s): s is SiteSection & { type: "membership" } => s.type === "membership")
+        .map(s => membershipFormBySection[s.id])
+        .find(Boolean)
 
   return NextResponse.json({
     actualites: actualites.map(a => ({ ...a, publishedAt: a.publishedAt!.toISOString() })),
