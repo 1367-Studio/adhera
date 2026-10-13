@@ -3216,6 +3216,8 @@
       "submittedRequestTitle": "Talba mibgħuta!",
       "submittedWithPayment": "Il-membri tiegħek huma attivi u l-ħlas tiegħek ġie rċevut.",
       "submittedRequestBody": "L-applikazzjoni tiegħek għall-membriżmu ġiet irċevuta. L-assoċjazzjoni se tikkuntattjak kemm jista' jkun malajr.",
+      "submittedOfflineTitle": "Talba rreġistrata!",
+      "submittedOfflineBody": "Int għażilt ħlas offline. Is-sħubija tiegħek tiġi kkonfermata ladarba l-assoċjazzjoni tirċievi u tivvalida l-ħlas tiegħek. Email ta' konferma tintbagħtlek hekk kif jiġi validat.",
       "toastCancelled": "Il-ħlas ġie kkanċellat.",
       "errorNetwork": "Żball tan-netwerk. Erġa' pprova.",
       "productsLabel": "Prodotti",

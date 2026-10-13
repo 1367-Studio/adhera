@@ -3332,6 +3332,8 @@
       "submittedRequestTitle": "Demande envoyée !",
       "submittedWithPayment": "Votre adhésion est active et votre paiement a bien été reçu.",
       "submittedRequestBody": "Votre demande d'adhésion a bien été reçue. L'association vous contactera dans les meilleurs délais.",
+      "submittedOfflineTitle": "Demande enregistrée !",
+      "submittedOfflineBody": "Vous avez choisi un paiement hors ligne. Votre adhésion sera confirmée après réception et validation de votre règlement par l'association. Un e-mail de confirmation vous sera envoyé dès sa validation.",
       "toastCancelled": "Paiement annulé.",
       "errorNetwork": "Erreur réseau. Réessayez.",
       "productsLabel": "Produits",

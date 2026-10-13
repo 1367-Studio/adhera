@@ -3280,6 +3280,8 @@
       "submittedRequestTitle": "Pedido enviado!",
       "submittedWithPayment": "Sua adesão está ativa e seu pagamento foi recebido.",
       "submittedRequestBody": "Seu pedido de adesão foi recebido. A associação entrará em contato em breve.",
+      "submittedOfflineTitle": "Solicitação registrada!",
+      "submittedOfflineBody": "Você escolheu um pagamento offline. Sua adesão será confirmada após o recebimento e a validação do seu pagamento pela associação. Um e-mail de confirmação será enviado a você assim que for validado.",
       "toastCancelled": "Pagamento cancelado.",
       "errorNetwork": "Erro de rede. Tente novamente.",
       "productsLabel": "Produtos",

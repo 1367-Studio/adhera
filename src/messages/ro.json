@@ -3216,6 +3216,8 @@
       "submittedRequestTitle": "Cerere trimisă!",
       "submittedWithPayment": "Calitatea ta de membru este activă și plata a fost primită.",
       "submittedRequestBody": "Cererea dumneavoastră de membru a fost primită. Asociația vă va contacta cât mai curând posibil.",
+      "submittedOfflineTitle": "Cerere înregistrată!",
+      "submittedOfflineBody": "Ați ales o plată offline. Calitatea de membru va fi confirmată după primirea și validarea plății de către asociație. Vi se va trimite un e-mail de confirmare imediat ce aceasta este validată.",
       "toastCancelled": "Plata a fost anulată.",
       "errorNetwork": "Eroare de rețea. Încearcă din nou.",
       "productsLabel": "Produse",

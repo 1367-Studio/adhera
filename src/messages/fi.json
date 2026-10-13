@@ -3216,6 +3216,8 @@
       "submittedRequestTitle": "Pyyntö lähetetty!",
       "submittedWithPayment": "Jäsenyytesi on voimassa ja maksusi on vastaanotettu.",
       "submittedRequestBody": "Jäsenhakemuksesi on vastaanotettu. Yhdistys ottaa sinuun yhteyttä mahdollisimman pian.",
+      "submittedOfflineTitle": "Pyyntö rekisteröity!",
+      "submittedOfflineBody": "Olet valinnut offline-maksun. Jäsenyytesi vahvistetaan, kun yhdistys on vastaanottanut ja vahvistanut maksusi. Saat vahvistussähköpostin, kun se on vahvistettu.",
       "toastCancelled": "Maksu peruttu.",
       "errorNetwork": "Verkkovirhe. Yritä uudestaan.",
       "productsLabel": "Tuotteet",

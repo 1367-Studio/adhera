@@ -3216,6 +3216,8 @@
       "submittedRequestTitle": "Anfrage gesendet!",
       "submittedWithPayment": "Ihre Mitgliedschaft ist aktiv und Ihre Zahlung wurde erhalten.",
       "submittedRequestBody": "Ihr Antrag auf Mitgliedschaft ist eingegangen worden. Der Verein wird Sie so bald wie möglich kontaktieren.",
+      "submittedOfflineTitle": "Anfrage registriert!",
+      "submittedOfflineBody": "Sie haben eine Offline-Zahlung gewählt. Ihre Mitgliedschaft wird bestätigt, sobald Ihre Zahlung vom Verein empfangen und validiert wurde. Eine Bestätigungs-E-Mail wird Ihnen nach der Validierung zugesendet.",
       "toastCancelled": "Zahlung storniert.",
       "errorNetwork": "Netzwerkfehler. Versuchen Sie es erneut.",
       "productsLabel": "Produkte",

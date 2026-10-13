@@ -3216,6 +3216,8 @@
       "submittedRequestTitle": "Iarratas seolta!",
       "submittedWithPayment": "Tá do bhallraíocht gníomhach agus tá d'íocaíocht faighte.",
       "submittedRequestBody": "Tá d'iarratas ar bhallraíocht faighte. Rachaidh an cumann i dteagmháil leat chomh luath agus is féidir.",
+      "submittedOfflineTitle": "Iarratas cláraithe!",
+      "submittedOfflineBody": "Roghnaigh tú íocaíocht as líne. Deimhneofar do bhallraíocht nuair a bheidh d'íocaíocht faighte agus bailíochtaithe ag an gcomhlachas. Seolfar ríomhphost deimhnithe chugat a luaithe a bheidh sé bailíochtaithe.",
       "toastCancelled": "Cealaíodh an íocaíocht.",
       "errorNetwork": "Earráid líonra. Bain triail as arís.",
       "productsLabel": "Táirgí",

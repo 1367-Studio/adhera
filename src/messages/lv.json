@@ -3216,6 +3216,8 @@
       "submittedRequestTitle": "Pieprasījums nosūtīts!",
       "submittedWithPayment": "Jūsu dalība ir aktīva un maksājums ir saņemts.",
       "submittedRequestBody": "Jūsu pieteikums dalībai ir saņemts. Asociācija sazināsies ar jums pēc iespējas ātrāk.",
+      "submittedOfflineTitle": "Pieteikums reģistrēts!",
+      "submittedOfflineBody": "Jūs izvēlējāties bezsaistes maksājumu. Jūsu dalība tiks apstiprināta pēc tam, kad biedrība būs saņēmusi un validējusi jūsu maksājumu. Apstiprinājuma e-pasts tiks jums nosūtīts, tiklīdz tas būs validēts.",
       "toastCancelled": "Maksājums atcelts.",
       "errorNetwork": "Tīkla kļūda. Mēģiniet vēlreiz.",
       "productsLabel": "Produkti",
