@@ -3216,6 +3216,8 @@
       "submittedRequestTitle": "Verzoek verzonden!",
       "submittedWithPayment": "Je lidmaatschap is actief en je betaling is ontvangen.",
       "submittedRequestBody": "Uw aanvraag voor lidmaatschap is ontvangen. De vereniging zal zo snel mogelijk contact met u opnemen.",
+      "submittedOfflineTitle": "Aanvraag geregistreerd!",
+      "submittedOfflineBody": "U heeft gekozen voor een offline betaling. Uw lidmaatschap wordt bevestigd zodra uw betaling is ontvangen en gevalideerd door de vereniging. U ontvangt een bevestigingsmail zodra deze is gevalideerd.",
       "toastCancelled": "Betaling geannuleerd.",
       "errorNetwork": "Netwerkfout. Probeer het opnieuw.",
       "productsLabel": "Producten",

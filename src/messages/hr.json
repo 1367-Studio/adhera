@@ -3216,6 +3216,8 @@
       "submittedRequestTitle": "Zahtjev poslan!",
       "submittedWithPayment": "Vaše članstvo je aktivno i vaša uplata je primljena.",
       "submittedRequestBody": "Vaša prijava za članstvo je zaprimljena. Udruga će vas kontaktirati što je prije moguće.",
+      "submittedOfflineTitle": "Zahtjev zaprimljen!",
+      "submittedOfflineBody": "Odabrali ste izvanmrežno plaćanje. Vaše članstvo bit će potvrđeno nakon primitka i provjere vaše uplate od strane udruge. Potvrdni e-mail bit će vam poslan nakon provjere.",
       "toastCancelled": "Plaćanje otkazano.",
       "errorNetwork": "Greška mreže. Pokušaj ponovno.",
       "productsLabel": "Proizvodi",

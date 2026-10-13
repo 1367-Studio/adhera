@@ -3216,6 +3216,8 @@
       "submittedRequestTitle": "Žádost odeslána!",
       "submittedWithPayment": "Vaše členství je aktivní a vaše platba byla přijata.",
       "submittedRequestBody": "Vaše žádost o členství byla přijata. Asociace vás bude co nejdříve kontaktovat.",
+      "submittedOfflineTitle": "Žádost zaregistrována!",
+      "submittedOfflineBody": "Vybrali jste offline platbu. Vaše členství bude potvrzeno po přijetí a ověření platby sdružením. Jakmile bude platba ověřena, obdržíte potvrzovací e-mail.",
       "toastCancelled": "Platba zrušena.",
       "errorNetwork": "Chyba sítě. Zkus to znovu.",
       "productsLabel": "Produkty",

@@ -3216,6 +3216,8 @@
       "submittedRequestTitle": "Begäran skickad!",
       "submittedWithPayment": "Ditt medlemskap är aktivt och din betalning har mottagits.",
       "submittedRequestBody": "Din ansökan om medlemskap har mottagits. Föreningen kommer att kontakta dig så snart som möjligt.",
+      "submittedOfflineTitle": "Ansökan registrerad!",
+      "submittedOfflineBody": "Du har valt en offlinebetalning. Ditt medlemskap bekräftas när din betalning har mottagits och validerats av föreningen. Ett bekräftelsemail skickas till dig när det har validerats.",
       "toastCancelled": "Betalning avbruten.",
       "errorNetwork": "Nätverksfel. Försök igen.",
       "productsLabel": "Produkter",

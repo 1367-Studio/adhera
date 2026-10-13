@@ -3216,6 +3216,8 @@
       "submittedRequestTitle": "Prośba wysłana!",
       "submittedWithPayment": "Twoje członkostwo jest aktywne, a Twoja płatność została otrzymana.",
       "submittedRequestBody": "Twój wniosek o członkostwo został otrzymany. Stowarzyszenie skontaktuje się z Tobą tak szybko, jak to możliwe.",
+      "submittedOfflineTitle": "Zgłoszenie zarejestrowane!",
+      "submittedOfflineBody": "Wybrałeś płatność offline. Twoje członkostwo zostanie potwierdzone po otrzymaniu i zatwierdzeniu płatności przez organizację. Po zatwierdzeniu otrzymasz e-mail potwierdzający.",
       "toastCancelled": "Płatność anulowana.",
       "errorNetwork": "Błąd sieci. Spróbuj ponownie.",
       "productsLabel": "Produkty",

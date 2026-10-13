@@ -3216,6 +3216,8 @@
       "submittedRequestTitle": "Taotlus saadetud!",
       "submittedWithPayment": "Teie liikmelisus on aktiivne ja teie makse on laekunud.",
       "submittedRequestBody": "Teie liikmeks saamise taotlus on vastu võetud. Ühing võtab teiega ühendust nii kiiresti kui võimalik.",
+      "submittedOfflineTitle": "Taotlus registreeritud!",
+      "submittedOfflineBody": "Valisite võrguühenduseta makse. Teie liikmestaatus kinnitatakse, kui ühing on teie makse kätte saanud ja kinnitanud. Kinnituskirja saate e-postiga pärast makse kinnitamist.",
       "toastCancelled": "Makse tühistatud.",
       "errorNetwork": "Võrguviga. Proovi uuesti.",
       "productsLabel": "Tooted",

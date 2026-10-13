@@ -3324,6 +3324,8 @@
       "submittedRequestTitle": "Request sent!",
       "submittedWithPayment": "Your membership is active and your payment has been received.",
       "submittedRequestBody": "Your membership request has been received. The association will contact you soon.",
+      "submittedOfflineTitle": "Request received!",
+      "submittedOfflineBody": "You chose an offline payment method. Your membership will be confirmed once your payment has been received and validated by the association. A confirmation email will be sent to you once it is validated.",
       "toastCancelled": "Payment cancelled.",
       "errorNetwork": "Network error. Please try again.",
       "productsLabel": "Products",

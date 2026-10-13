@@ -3216,6 +3216,8 @@
       "submittedRequestTitle": "Anmodning sendt!",
       "submittedWithPayment": "Dit medlemskab er aktivt, og din betaling er modtaget.",
       "submittedRequestBody": "Din ansøgning om medlemskab er modtaget. Foreningen vil kontakte dig så hurtigt som muligt.",
+      "submittedOfflineTitle": "Anmodning registreret!",
+      "submittedOfflineBody": "Du har valgt en offlinebetaling. Dit medlemskab bekræftes, når din betaling er modtaget og valideret af foreningen. Du får en bekræftelsesmail, så snart det er valideret.",
       "toastCancelled": "Betaling annulleret.",
       "errorNetwork": "Netværksfejl. Prøv igen.",
       "productsLabel": "Produkter",

@@ -3216,6 +3216,8 @@
       "submittedRequestTitle": "Užklausa išsiųsta!",
       "submittedWithPayment": "Jūsų narystė aktyvi, o mokėjimas gautas.",
       "submittedRequestBody": "Jūsų paraiška narystei jau gauta. Asociacija susisieks su jumis kuo greičiau.",
+      "submittedOfflineTitle": "Prašymas užregistruotas!",
+      "submittedOfflineBody": "Pasirinkote atsiskaitymą ne internetu. Jūsų narystė bus patvirtinta, kai asociacija gaus ir patvirtins jūsų mokėjimą. Patvirtinimo el. laišką gausite, kai jis bus patvirtintas.",
       "toastCancelled": "Mokėjimas atšauktas.",
       "errorNetwork": "Tinklo klaida. Pabandyk dar kartą.",
       "productsLabel": "Produktai",

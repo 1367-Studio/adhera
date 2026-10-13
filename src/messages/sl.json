@@ -3216,6 +3216,8 @@
       "submittedRequestTitle": "Zahteva poslana!",
       "submittedWithPayment": "Vaše članstvo je aktivno in vaše plačilo je bilo prejeto.",
       "submittedRequestBody": "Vaša prijava za članstvo je bila prejeta. Združenje vas bo kontaktiralo takoj, ko bo mogoče.",
+      "submittedOfflineTitle": "Zahtevek registriran!",
+      "submittedOfflineBody": "Izbrali ste plačilo brez povezave. Vaše članstvo bo potrjeno po prejemu in preveritvi plačila s strani društva. Ko bo plačilo preverjeno, boste prejeli potrditveno e-pošto.",
       "toastCancelled": "Plačilo preklicano.",
       "errorNetwork": "Omrežna napaka. Poskusi znova.",
       "productsLabel": "Izdelki",
