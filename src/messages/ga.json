@@ -2546,6 +2546,48 @@
         "created": "Táirge cruthaithe",
         "createError": "Earráid á chruthú"
       }
+    },
+    "manualCommandeModal": {
+      "openButton": "Cuir ceannach de láimh leis",
+      "title": "Cuir ceannach de láimh leis",
+      "submit": "Sábháil an ceannach",
+      "buyerLabel": "Ceannaitheoir",
+      "existingContact": "Teagmhálaí atá ann cheana",
+      "externalPerson": "Duine seachtrach",
+      "searchPlaceholder": "Cuardaigh teagmhálaí de réir ainm nó ríomhphoist…",
+      "typeToSearch": "Clóscríobh ar a laghad 2 charachtar chun cuardach a dhéanamh",
+      "noResults": "Níor aimsíodh aon teagmhálaí",
+      "firstNamePlaceholder": "Ainm",
+      "lastNamePlaceholder": "Sloinne",
+      "emailPlaceholder": "Ríomhphost (roghnach)",
+      "scopeLabel": "Siopa nó foirm ghaolmhar",
+      "scopeStorefront": "Siopa",
+      "productsLabel": "Táirgí ceannaithe",
+      "productPlaceholder": "Roghnaigh táirge",
+      "variantPlaceholder": "Roghnaigh leagan",
+      "quantityColumn": "Líon",
+      "addProduct": "Cuir táirge leis",
+      "noProductsForScope": "Níl aon táirgí ar fáil don roghnú seo.",
+      "outOfStock": "as stoc",
+      "totalLabel": "Iomlán",
+      "dateLabel": "Dáta an cheannaigh",
+      "paymentStatusLabel": "Stádas íocaíochta",
+      "paid": "Íoctha",
+      "pending": "Ag fanacht le híocaíocht",
+      "noteLabel": "Nóta",
+      "sendReceiptEmail": "Seol an admháil ar ríomhphost chuig an gceannaitheoir",
+      "sendPendingEmail": "Seol deimhniú ar ríomhphost chuig an gceannaitheoir",
+      "notifyResponsible": "Cuir in iúl do {name} trí ríomhphost",
+      "toasts": {
+        "created": "Ceannach sábháilte"
+      }
+    },
+    "responsableModal": {
+      "openButton": "Duine freagrach",
+      "title": "Duine freagrach as an siopa",
+      "selectLabel": "Faigheann ríomhphoist faoi dhíolacháin nua",
+      "none": "Aon cheann",
+      "hint": "Faigheann an duine seo ríomhphost gach uair a dhéantar díolachán nua ar líne (nuair a íoctar é) agus, de réir rogha an riarthóra, gach uair a chuirtear ceannach de láimh leis."
     }
   },
   "donationForms": {
@@ -4249,7 +4291,8 @@
         "materiel": "Ábhar",
         "historique": "Stair",
         "emails": "Ríomhphoist",
-        "sms": "SMS"
+        "sms": "SMS",
+        "boutique": "Siopa"
       },
       "cotisationStatus": {
         "enAttente": "Ar feitheamh",
@@ -4319,7 +4362,14 @@
         "confirmDescription": "Cláraíonn an gníomh seo iarraidh scriosta faoi Airt. 17 den GDPR. Gheobhaidh an ball ríomhphost deimhnithe, agus ina dhiaidh sin déanfar a shonraí pearsanta a dhíainmniú go dochúlaithe ag an chéad phróiseáil uathoibríoch eile, ach amháin má chuirtear ar fionraí é.",
         "toastSuccess": "Cláraíodh an iarraidh scriosta",
         "requestLabel": "Scriosadh GDPR"
-      }
+      },
+      "noCommande": "Níl aon cheannacháin siopa ag an teagmhálaí seo.",
+      "commandeStatus": {
+        "PENDING": "Ar feitheamh",
+        "PAID": "Íoctha",
+        "CANCELLED": "Cealaithe"
+      },
+      "showingRecentCommandes": "Ag taispeáint na {count} ceannach is déanaí as {total} iomlán."
     },
     "sms": {
       "title": "Seol SMS",

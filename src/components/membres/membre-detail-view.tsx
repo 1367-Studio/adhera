@@ -406,6 +406,8 @@ export function MembreDetailView() {
   const participationsTotal   = membre._count?.participations ?? participations.length
   const meetingsTotal         = membre._count?.meetingsAsParticipant ?? meetingsAsParticipant.length
   const materialLoansTotal    = membre._count?.materialLoans  ?? materialLoans.length
+  const boutiqueCommandes      = membre.boutiqueCommandes ?? []
+  const boutiqueCommandesTotal = membre._count?.boutiqueCommandes ?? boutiqueCommandes.length
   // ADDON purchases and DONATION-item-type extras live in two different tables (see
   // Don.membershipAddonTierId) but are the same thing from this member's point of view —
   // merged into one chronological list rather than two separate sub-sections.
@@ -762,12 +764,13 @@ export function MembreDetailView() {
         </div>
       )}
 
-      <Tabs defaultValue={modules.cotisations ? "cotisations" : modules.evenements ? "evenements" : modules.reunions ? "reunions" : modules.materiel ? "materiel" : "historique"}>
+      <Tabs defaultValue={modules.cotisations ? "cotisations" : modules.evenements ? "evenements" : modules.reunions ? "reunions" : modules.materiel ? "materiel" : modules.boutique ? "boutique" : "historique"}>
         <TabsList>
           {modules.cotisations && <TabsTrigger value="cotisations">{t("membres.detail.tabs.cotisations")}</TabsTrigger>}
           {modules.evenements && <TabsTrigger value="evenements">{t("membres.detail.tabs.evenements")}</TabsTrigger>}
           {modules.reunions && <TabsTrigger value="reunions">{t("membres.detail.tabs.reunions")}</TabsTrigger>}
           {modules.materiel && <TabsTrigger value="materiel">{t("membres.detail.tabs.materiel")}</TabsTrigger>}
+          {modules.boutique && <TabsTrigger value="boutique">{t("membres.detail.tabs.boutique")}</TabsTrigger>}
           <TabsTrigger value="historique">{t("membres.detail.tabs.historique")}</TabsTrigger>
           <TabsTrigger value="emails">{t("membres.detail.tabs.emails")}</TabsTrigger>
           {modules.sms && <TabsTrigger value="sms">{t("membres.detail.tabs.sms")}</TabsTrigger>}
@@ -1016,6 +1019,46 @@ export function MembreDetailView() {
           {materialLoansTotal > TAB_PAGE_SIZE && (
             <p className="mt-2 text-xs text-muted-foreground">
               {t("membres.detail.showingRecentLoans", { count: TAB_PAGE_SIZE, total: materialLoansTotal })}
+            </p>
+          )}
+        </TabsContent>
+        )}
+
+        {modules.boutique && (
+        <TabsContent value="boutique" className="pt-3">
+          {boutiqueCommandes.length === 0 ? (
+            <p className="rounded-lg border border-dashed p-6 text-center text-sm text-muted-foreground">{t("membres.detail.noCommande")}</p>
+          ) : (
+            <div className="space-y-2">
+              {boutiqueCommandes.map((c: {
+                id: string; status: "PENDING" | "PAID" | "CANCELLED"; totalAmount: number; createdAt: string
+                items: { quantity: number; produit: { name: string }; variante: { label: string } }[]
+              }) => (
+                <button
+                  key={c.id}
+                  type="button"
+                  onClick={() => router.push(`/dashboard/boutique?tab=commandes&commandeId=${c.id}`)}
+                  className="flex w-full items-center justify-between rounded-lg border bg-card px-3 py-2.5 text-left text-sm hover:bg-muted/40 transition-colors"
+                >
+                  <div>
+                    <p className="font-medium">
+                      {c.items.slice(0, 2).map(i => `${i.quantity}× ${i.produit.name}`).join(", ")}
+                      {c.items.length > 2 && ` +${c.items.length - 2}`}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      {format(new Date(c.createdAt), "dd/MM/yyyy", { locale: fr })} · {(c.totalAmount / 100).toLocaleString("fr-FR", { style: "currency", currency: "EUR" })}
+                    </p>
+                  </div>
+                  <Badge variant={c.status === "PAID" ? "default" : c.status === "CANCELLED" ? "destructive" : "secondary"}>
+                    {t(`membres.detail.commandeStatus.${c.status}`)}
+                  </Badge>
+                </button>
+              ))}
+            </div>
+          )}
+          {boutiqueCommandesTotal > TAB_PAGE_SIZE && (
+            <p className="mt-2 text-xs text-muted-foreground">
+              {t("membres.detail.showingRecentCommandes", { count: TAB_PAGE_SIZE, total: boutiqueCommandesTotal })}
             </p>
           )}
         </TabsContent>

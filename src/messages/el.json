@@ -2546,6 +2546,48 @@
         "created": "Δημιουργημένο προϊόν",
         "createError": "Σφάλμα κατά τη δημιουργία"
       }
+    },
+    "manualCommandeModal": {
+      "openButton": "Προσθήκη χειροκίνητης αγοράς",
+      "title": "Προσθήκη χειροκίνητης αγοράς",
+      "submit": "Αποθήκευση αγοράς",
+      "buyerLabel": "Αγοραστής",
+      "existingContact": "Υπάρχουσα επαφή",
+      "externalPerson": "Εξωτερικό άτομο",
+      "searchPlaceholder": "Αναζήτηση επαφής με όνομα ή email…",
+      "typeToSearch": "Πληκτρολογήστε τουλάχιστον 2 χαρακτήρες για αναζήτηση",
+      "noResults": "Δεν βρέθηκε επαφή",
+      "firstNamePlaceholder": "Όνομα",
+      "lastNamePlaceholder": "Επώνυμο",
+      "emailPlaceholder": "Email (προαιρετικό)",
+      "scopeLabel": "Κατάστημα ή σχετική φόρμα",
+      "scopeStorefront": "Κατάστημα",
+      "productsLabel": "Αγορασμένα προϊόντα",
+      "productPlaceholder": "Επιλέξτε προϊόν",
+      "variantPlaceholder": "Επιλέξτε παραλλαγή",
+      "quantityColumn": "Ποσ.",
+      "addProduct": "Προσθήκη προϊόντος",
+      "noProductsForScope": "Δεν υπάρχουν διαθέσιμα προϊόντα για αυτήν την επιλογή.",
+      "outOfStock": "εξαντλημένο",
+      "totalLabel": "Σύνολο",
+      "dateLabel": "Ημερομηνία αγοράς",
+      "paymentStatusLabel": "Κατάσταση πληρωμής",
+      "paid": "Πληρωμένο",
+      "pending": "Σε αναμονή πληρωμής",
+      "noteLabel": "Σημείωση",
+      "sendReceiptEmail": "Αποστολή απόδειξης με email στον αγοραστή",
+      "sendPendingEmail": "Αποστολή επιβεβαίωσης με email στον αγοραστή",
+      "notifyResponsible": "Ειδοποίηση {name} μέσω email",
+      "toasts": {
+        "created": "Η αγορά αποθηκεύτηκε"
+      }
+    },
+    "responsableModal": {
+      "openButton": "Υπεύθυνος",
+      "title": "Υπεύθυνος καταστήματος",
+      "selectLabel": "Λαμβάνει email νέων πωλήσεων",
+      "none": "Κανένας",
+      "hint": "Αυτό το άτομο λαμβάνει email για κάθε νέα online πώληση (μόλις πληρωθεί) και, κατ' επιλογή του διαχειριστή, για κάθε χειροκίνητα προστιθέμενη αγορά."
     }
   },
   "donationForms": {
@@ -4249,7 +4291,8 @@
         "materiel": "Υλικό",
         "historique": "Ιστορικό",
         "emails": "Μηνύματα ηλεκτρονικού ταχυδρομείου",
-        "sms": "SMS"
+        "sms": "SMS",
+        "boutique": "Κατάστημα"
       },
       "cotisationStatus": {
         "enAttente": "Σε εκκρεμότητα",
@@ -4319,7 +4362,14 @@
         "confirmDescription": "Αυτό καταχωρεί αίτημα διαγραφής βάσει του άρθρου 17 του ΓΚΠΔ. Το μέλος θα λάβει e-mail επιβεβαίωσης και τα προσωπικά του δεδομένα θα ανωνυμοποιηθούν αμετάκλητα στην επόμενη αυτόματη επεξεργασία, εκτός αν το αίτημα τεθεί σε αναστολή.",
         "toastSuccess": "Το αίτημα διαγραφής καταχωρήθηκε",
         "requestLabel": "Διαγραφή ΓΚΠΔ"
-      }
+      },
+      "noCommande": "Καμία αγορά καταστήματος για αυτήν την επαφή.",
+      "commandeStatus": {
+        "PENDING": "Σε εκκρεμότητα",
+        "PAID": "Πληρωμένο",
+        "CANCELLED": "Ακυρώθηκε"
+      },
+      "showingRecentCommandes": "Εμφανίζονται οι {count} πιο πρόσφατες αγορές από σύνολο {total}."
     },
     "sms": {
       "title": "Στείλτε ένα SMS",

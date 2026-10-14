@@ -2546,6 +2546,48 @@
         "created": "Prodotto creato",
         "createError": "Creazione di errori"
       }
+    },
+    "manualCommandeModal": {
+      "openButton": "Aggiungi un acquisto manuale",
+      "title": "Aggiungi un acquisto manuale",
+      "submit": "Salva acquisto",
+      "buyerLabel": "Acquirente",
+      "existingContact": "Contatto esistente",
+      "externalPerson": "Persona esterna",
+      "searchPlaceholder": "Cerca un contatto per nome o e-mail…",
+      "typeToSearch": "Digita almeno 2 caratteri per cercare",
+      "noResults": "Nessun contatto trovato",
+      "firstNamePlaceholder": "Nome",
+      "lastNamePlaceholder": "Cognome",
+      "emailPlaceholder": "E-mail (facoltativo)",
+      "scopeLabel": "Negozio o modulo associato",
+      "scopeStorefront": "Negozio",
+      "productsLabel": "Prodotti acquistati",
+      "productPlaceholder": "Scegli un prodotto",
+      "variantPlaceholder": "Scegli una variante",
+      "quantityColumn": "Qtà",
+      "addProduct": "Aggiungi un prodotto",
+      "noProductsForScope": "Nessun prodotto disponibile per questa selezione.",
+      "outOfStock": "esaurito",
+      "totalLabel": "Totale",
+      "dateLabel": "Data dell'acquisto",
+      "paymentStatusLabel": "Stato del pagamento",
+      "paid": "Pagato",
+      "pending": "In attesa di pagamento",
+      "noteLabel": "Nota",
+      "sendReceiptEmail": "Invia la ricevuta via e-mail all'acquirente",
+      "sendPendingEmail": "Invia una conferma via e-mail all'acquirente",
+      "notifyResponsible": "Avvisa {name} via e-mail",
+      "toasts": {
+        "created": "Acquisto salvato"
+      }
+    },
+    "responsableModal": {
+      "openButton": "Responsabile",
+      "title": "Responsabile del negozio",
+      "selectLabel": "Riceve le e-mail delle nuove vendite",
+      "none": "Nessuno",
+      "hint": "Questa persona riceve un'e-mail per ogni nuova vendita online (una volta pagata) e, a scelta dell'amministratore, per ogni acquisto aggiunto manualmente."
     }
   },
   "donationForms": {
@@ -4249,7 +4291,8 @@
         "materiel": "Materiale",
         "historique": "Cronologia",
         "emails": "Email",
-        "sms": "SMS"
+        "sms": "SMS",
+        "boutique": "Negozio"
       },
       "cotisationStatus": {
         "enAttente": "In attesa",
@@ -4319,7 +4362,14 @@
         "confirmDescription": "Questa azione registra una richiesta di cancellazione ai sensi dell'art. 17 del GDPR. Il membro riceverà un'e-mail di conferma, dopodiché i suoi dati personali saranno anonimizzati in modo irreversibile durante la prossima elaborazione automatica, salvo messa in attesa.",
         "toastSuccess": "Richiesta di cancellazione registrata",
         "requestLabel": "Cancellazione GDPR"
-      }
+      },
+      "noCommande": "Nessun acquisto in negozio per questo contatto.",
+      "commandeStatus": {
+        "PENDING": "In attesa",
+        "PAID": "Pagato",
+        "CANCELLED": "Annullato"
+      },
+      "showingRecentCommandes": "Visualizzazione degli ultimi {count} acquisti su {total}."
     },
     "sms": {
       "title": "Invia un SMS",

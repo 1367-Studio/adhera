@@ -2546,6 +2546,48 @@
         "created": "Toode loodud",
         "createError": "Vea tekitamine"
       }
+    },
+    "manualCommandeModal": {
+      "openButton": "Lisa käsitsi ost",
+      "title": "Lisa käsitsi ost",
+      "submit": "Salvesta ost",
+      "buyerLabel": "Ostja",
+      "existingContact": "Olemasolev kontakt",
+      "externalPerson": "Väline isik",
+      "searchPlaceholder": "Otsi kontakti nime või e-posti järgi…",
+      "typeToSearch": "Otsimiseks sisestage vähemalt 2 tähemärki",
+      "noResults": "Kontakti ei leitud",
+      "firstNamePlaceholder": "Eesnimi",
+      "lastNamePlaceholder": "Perekonnanimi",
+      "emailPlaceholder": "E-post (valikuline)",
+      "scopeLabel": "Pood või seotud vorm",
+      "scopeStorefront": "Pood",
+      "productsLabel": "Ostetud tooted",
+      "productPlaceholder": "Vali toode",
+      "variantPlaceholder": "Vali variant",
+      "quantityColumn": "Kogus",
+      "addProduct": "Lisa toode",
+      "noProductsForScope": "Selle valiku jaoks pole tooteid saadaval.",
+      "outOfStock": "otsas",
+      "totalLabel": "Kokku",
+      "dateLabel": "Ostu kuupäev",
+      "paymentStatusLabel": "Makse olek",
+      "paid": "Tasutud",
+      "pending": "Makse ootel",
+      "noteLabel": "Märkus",
+      "sendReceiptEmail": "Saada ostjale kviitung e-postiga",
+      "sendPendingEmail": "Saada ostjale kinnitus e-postiga",
+      "notifyResponsible": "Teavita {name} e-postiga",
+      "toasts": {
+        "created": "Ost salvestatud"
+      }
+    },
+    "responsableModal": {
+      "openButton": "Vastutav isik",
+      "title": "Poe vastutav isik",
+      "selectLabel": "Saab uute müükide e-kirju",
+      "none": "Puudub",
+      "hint": "See isik saab e-kirja iga uue veebimüügi kohta (kui see on tasutud) ja administraatori valikul iga käsitsi lisatud ostu kohta."
     }
   },
   "donationForms": {
@@ -4249,7 +4291,8 @@
         "materiel": "Materjal",
         "historique": "Ajalugu",
         "emails": "E-kirjad",
-        "sms": "SMS"
+        "sms": "SMS",
+        "boutique": "Pood"
       },
       "cotisationStatus": {
         "enAttente": "Ootel",
@@ -4319,7 +4362,14 @@
         "confirmDescription": "See registreerib GDPR artikli 17 kustutamistaotluse. Liige saab kinnituskirja, misjärel tema isikuandmed anonümiseeritakse pöördumatult järgmisel automaatsel töötlemisel, välja arvatud juhul, kui taotlus seatakse ootele.",
         "toastSuccess": "Kustutamistaotlus registreeritud",
         "requestLabel": "GDPR kustutamine"
-      }
+      },
+      "noCommande": "Sellel kontaktil pole poe oste.",
+      "commandeStatus": {
+        "PENDING": "Ootel",
+        "PAID": "Tasutud",
+        "CANCELLED": "Tühistatud"
+      },
+      "showingRecentCommandes": "Kuvatakse {count} viimast ostu kokku {total}-st."
     },
     "sms": {
       "title": "Saada SMS",

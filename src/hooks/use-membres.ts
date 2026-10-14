@@ -186,11 +186,26 @@ export type MembreDetail = {
     role: "ADMIN" | "PRESIDENT" | "TRESORIER" | "SECRETAIRE" | "EQUIPE" | "MEMBRE"
   } | null
 
+  // Both self-service (online) and admin-recorded (manual) Boutique sales — see
+  // POST /api/boutique/commandes.
+  boutiqueCommandes: {
+    id:          string
+    status:      "PENDING" | "PAID" | "CANCELLED"
+    totalAmount: number
+    createdAt:   string
+    items: {
+      quantity: number
+      produit:  { name: string }
+      variante: { label: string }
+    }[]
+  }[]
+
   _count: {
     cotisations:    number
     participations: number
     materialLoans:  number
     meetingsAsParticipant: number
+    boutiqueCommandes: number
   }
 }
 

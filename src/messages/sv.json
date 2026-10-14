@@ -2546,6 +2546,48 @@
         "created": "Produkt skapad",
         "createError": "Felskapande"
       }
+    },
+    "manualCommandeModal": {
+      "openButton": "Lägg till ett manuellt köp",
+      "title": "Lägg till ett manuellt köp",
+      "submit": "Spara köp",
+      "buyerLabel": "Köpare",
+      "existingContact": "Befintlig kontakt",
+      "externalPerson": "Extern person",
+      "searchPlaceholder": "Sök en kontakt efter namn eller e-post…",
+      "typeToSearch": "Skriv minst 2 tecken för att söka",
+      "noResults": "Ingen kontakt hittades",
+      "firstNamePlaceholder": "Förnamn",
+      "lastNamePlaceholder": "Efternamn",
+      "emailPlaceholder": "E-post (valfritt)",
+      "scopeLabel": "Butik eller tillhörande formulär",
+      "scopeStorefront": "Butik",
+      "productsLabel": "Köpta produkter",
+      "productPlaceholder": "Välj en produkt",
+      "variantPlaceholder": "Välj en variant",
+      "quantityColumn": "Antal",
+      "addProduct": "Lägg till en produkt",
+      "noProductsForScope": "Inga produkter tillgängliga för detta val.",
+      "outOfStock": "slut i lager",
+      "totalLabel": "Totalt",
+      "dateLabel": "Köpdatum",
+      "paymentStatusLabel": "Betalningsstatus",
+      "paid": "Betald",
+      "pending": "Väntar på betalning",
+      "noteLabel": "Anteckning",
+      "sendReceiptEmail": "Skicka kvittot via e-post till köparen",
+      "sendPendingEmail": "Skicka en bekräftelse via e-post till köparen",
+      "notifyResponsible": "Meddela {name} via e-post",
+      "toasts": {
+        "created": "Köp sparat"
+      }
+    },
+    "responsableModal": {
+      "openButton": "Ansvarig",
+      "title": "Butikens ansvariga",
+      "selectLabel": "Får e-post om nya försäljningar",
+      "none": "Ingen",
+      "hint": "Denna person får ett e-postmeddelande för varje ny onlineförsäljning (när den är betald) och, enligt administratörens val, för varje manuellt tillagt köp."
     }
   },
   "donationForms": {
@@ -4249,7 +4291,8 @@
         "materiel": "Material",
         "historique": "Historik",
         "emails": "E-post",
-        "sms": "SMS"
+        "sms": "SMS",
+        "boutique": "Butik"
       },
       "cotisationStatus": {
         "enAttente": "Väntar",
@@ -4319,7 +4362,14 @@
         "confirmDescription": "Denna åtgärd registrerar en raderingsbegäran enligt art. 17 i GDPR. Medlemmen får ett bekräftelsemail, och därefter anonymiseras deras personuppgifter oåterkalleligt vid nästa automatiska behandling, såvida begäran inte pausas.",
         "toastSuccess": "Raderingsbegäran registrerad",
         "requestLabel": "GDPR-radering"
-      }
+      },
+      "noCommande": "Inga butiksköp för denna kontakt.",
+      "commandeStatus": {
+        "PENDING": "Väntar",
+        "PAID": "Betald",
+        "CANCELLED": "Avbruten"
+      },
+      "showingRecentCommandes": "Visar de {count} senaste köpen av totalt {total}."
     },
     "sms": {
       "title": "Skicka ett SMS",

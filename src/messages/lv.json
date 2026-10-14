@@ -2546,6 +2546,48 @@
         "created": "Izveidots produkts",
         "createError": "Kļūdu radīšana"
       }
+    },
+    "manualCommandeModal": {
+      "openButton": "Pievienot manuālu pirkumu",
+      "title": "Pievienot manuālu pirkumu",
+      "submit": "Saglabāt pirkumu",
+      "buyerLabel": "Pircējs",
+      "existingContact": "Esošs kontakts",
+      "externalPerson": "Ārēja persona",
+      "searchPlaceholder": "Meklēt kontaktu pēc vārda vai e-pasta…",
+      "typeToSearch": "Ierakstiet vismaz 2 rakstzīmes, lai meklētu",
+      "noResults": "Kontakts nav atrasts",
+      "firstNamePlaceholder": "Vārds",
+      "lastNamePlaceholder": "Uzvārds",
+      "emailPlaceholder": "E-pasts (neobligāts)",
+      "scopeLabel": "Veikals vai saistītā forma",
+      "scopeStorefront": "Veikals",
+      "productsLabel": "Iegādātie produkti",
+      "productPlaceholder": "Izvēlieties produktu",
+      "variantPlaceholder": "Izvēlieties variantu",
+      "quantityColumn": "Daudz.",
+      "addProduct": "Pievienot produktu",
+      "noProductsForScope": "Šai izvēlei nav pieejamu produktu.",
+      "outOfStock": "nav noliktavā",
+      "totalLabel": "Kopā",
+      "dateLabel": "Pirkuma datums",
+      "paymentStatusLabel": "Maksājuma statuss",
+      "paid": "Apmaksāts",
+      "pending": "Gaida maksājumu",
+      "noteLabel": "Piezīme",
+      "sendReceiptEmail": "Nosūtīt čeku pircējam pa e-pastu",
+      "sendPendingEmail": "Nosūtīt apstiprinājumu pircējam pa e-pastu",
+      "notifyResponsible": "Paziņot {name} pa e-pastu",
+      "toasts": {
+        "created": "Pirkums saglabāts"
+      }
+    },
+    "responsableModal": {
+      "openButton": "Atbildīgā persona",
+      "title": "Veikala atbildīgā persona",
+      "selectLabel": "Saņem e-pastus par jauniem pārdošanas darījumiem",
+      "none": "Nav",
+      "hint": "Šī persona saņem e-pastu par katru jaunu pārdošanu tiešsaistē (kad tā ir apmaksāta) un, pēc administratora izvēles, par katru manuāli pievienotu pirkumu."
     }
   },
   "donationForms": {
@@ -4249,7 +4291,8 @@
         "materiel": "Materiāls",
         "historique": "Vēsture",
         "emails": "E-pasti",
-        "sms": "SMS"
+        "sms": "SMS",
+        "boutique": "Veikals"
       },
       "cotisationStatus": {
         "enAttente": "Gaida",
@@ -4319,7 +4362,14 @@
         "confirmDescription": "Šī darbība reģistrē dzēšanas pieprasījumu saskaņā ar VDAR 17. pantu. Biedrs saņems apstiprinājuma e-pastu, un pēc tam viņa personas dati tiks neatgriezeniski anonimizēti nākamajā automātiskajā apstrādē, ja pieprasījums netiks aizturēts.",
         "toastSuccess": "Dzēšanas pieprasījums reģistrēts",
         "requestLabel": "VDAR dzēšana"
-      }
+      },
+      "noCommande": "Šim kontaktam nav veikala pirkumu.",
+      "commandeStatus": {
+        "PENDING": "Gaida",
+        "PAID": "Apmaksāts",
+        "CANCELLED": "Atcelts"
+      },
+      "showingRecentCommandes": "Rādīti {count} jaunākie pirkumi no {total}."
     },
     "sms": {
       "title": "Sūti SMS",

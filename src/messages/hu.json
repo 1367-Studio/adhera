@@ -2546,6 +2546,48 @@
         "created": "Terméket készítettek",
         "createError": "Hiba keletkezése"
       }
+    },
+    "manualCommandeModal": {
+      "openButton": "Kézi vásárlás hozzáadása",
+      "title": "Kézi vásárlás hozzáadása",
+      "submit": "Vásárlás mentése",
+      "buyerLabel": "Vásárló",
+      "existingContact": "Meglévő kapcsolat",
+      "externalPerson": "Külső személy",
+      "searchPlaceholder": "Kapcsolat keresése név vagy e-mail alapján…",
+      "typeToSearch": "Írjon be legalább 2 karaktert a kereséshez",
+      "noResults": "Nem található kapcsolat",
+      "firstNamePlaceholder": "Keresztnév",
+      "lastNamePlaceholder": "Vezetéknév",
+      "emailPlaceholder": "E-mail (nem kötelező)",
+      "scopeLabel": "Bolt vagy kapcsolódó űrlap",
+      "scopeStorefront": "Bolt",
+      "productsLabel": "Vásárolt termékek",
+      "productPlaceholder": "Válasszon terméket",
+      "variantPlaceholder": "Válasszon változatot",
+      "quantityColumn": "Menny.",
+      "addProduct": "Termék hozzáadása",
+      "noProductsForScope": "Ehhez a kiválasztáshoz nincs elérhető termék.",
+      "outOfStock": "elfogyott",
+      "totalLabel": "Összesen",
+      "dateLabel": "Vásárlás dátuma",
+      "paymentStatusLabel": "Fizetési állapot",
+      "paid": "Fizetve",
+      "pending": "Fizetésre vár",
+      "noteLabel": "Megjegyzés",
+      "sendReceiptEmail": "Nyugta küldése e-mailben a vásárlónak",
+      "sendPendingEmail": "Visszaigazolás küldése e-mailben a vásárlónak",
+      "notifyResponsible": "{name} értesítése e-mailben",
+      "toasts": {
+        "created": "Vásárlás mentve"
+      }
+    },
+    "responsableModal": {
+      "openButton": "Felelős",
+      "title": "A bolt felelőse",
+      "selectLabel": "Értesítést kap új eladásokról",
+      "none": "Nincs",
+      "hint": "Ez a személy e-mailt kap minden új online eladásról (a kifizetés után), és az adminisztrátor választása szerint minden kézzel hozzáadott vásárlásról."
     }
   },
   "donationForms": {
@@ -4249,7 +4291,8 @@
         "materiel": "Anyagok",
         "historique": "Előzmények",
         "emails": "E-mailek",
-        "sms": "SMS"
+        "sms": "SMS",
+        "boutique": "Bolt"
       },
       "cotisationStatus": {
         "enAttente": "Függőben",
@@ -4319,7 +4362,14 @@
         "confirmDescription": "Ez a művelet a GDPR 17. cikke szerinti törlési kérelmet rögzít. A tag megerősítő e-mailt kap, majd személyes adatai a következő automatikus feldolgozás során véglegesen anonimizálásra kerülnek, kivéve ha a kérelmet felfüggesztik.",
         "toastSuccess": "Törlési kérelem rögzítve",
         "requestLabel": "GDPR-törlés"
-      }
+      },
+      "noCommande": "Ennek a kapcsolatnak nincs bolti vásárlása.",
+      "commandeStatus": {
+        "PENDING": "Függőben",
+        "PAID": "Fizetve",
+        "CANCELLED": "Törölve"
+      },
+      "showingRecentCommandes": "A {count} legutóbbi vásárlás megjelenítése összesen {total} közül."
     },
     "sms": {
       "title": "Küldj SMS-et",

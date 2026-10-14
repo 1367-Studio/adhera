@@ -1887,14 +1887,38 @@ export function boutiqueNewOrderAdminEmail(p: {
   buyerLabel:      string
   totalAmount:     number
   dashboardUrl:    string
+  // Optional for backward compatibility with older call sites that only had buyer+total —
+  // when omitted, the items table and payment-status line are simply skipped.
+  items?:               { name: string; quantity: number; unitPrice: number }[]
+  paymentStatusLabel?:  string
 }) {
   const totalStr = (p.totalAmount / 100).toLocaleString("fr-FR", { style: "currency", currency: "EUR" })
+
+  const rows = p.items?.length ? p.items.map(i => {
+    const unitStr = (i.unitPrice / 100).toLocaleString("fr-FR", { style: "currency", currency: "EUR" })
+    return `<tr>
+      <td style="padding:8px 0;font-size:14px;border-bottom:1px solid #f0f0f0;">${escapeHtml(i.name)}</td>
+      <td style="padding:8px 0;font-size:14px;border-bottom:1px solid #f0f0f0;text-align:center;">${i.quantity}</td>
+      <td style="padding:8px 0;font-size:14px;border-bottom:1px solid #f0f0f0;text-align:right;">${unitStr}</td>
+    </tr>`
+  }).join("") : ""
+
   const content = `
     <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">Nouvelle vente boutique</h2>
     <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
-      <strong>${p.buyerLabel}</strong> vient de passer une commande de <strong>${totalStr}</strong>
-      sur la boutique de <strong>${p.associationName}</strong>.
+      <strong>${escapeHtml(p.buyerLabel)}</strong> vient de passer une commande de <strong>${totalStr}</strong>
+      sur la boutique de <strong>${escapeHtml(p.associationName)}</strong>${p.paymentStatusLabel ? ` — <strong>${escapeHtml(p.paymentStatusLabel)}</strong>` : ""}.
     </p>
+    ${rows ? `<table cellpadding="0" cellspacing="0" style="margin:0 0 24px;width:100%;background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;padding:16px 20px;box-sizing:border-box;">
+      <thead>
+        <tr>
+          <th style="text-align:left;font-size:12px;color:#6b7280;font-weight:600;padding-bottom:8px;">Article</th>
+          <th style="text-align:center;font-size:12px;color:#6b7280;font-weight:600;padding-bottom:8px;">Qté</th>
+          <th style="text-align:right;font-size:12px;color:#6b7280;font-weight:600;padding-bottom:8px;">Prix</th>
+        </tr>
+      </thead>
+      <tbody>${rows}</tbody>
+    </table>` : ""}
     ${btn("Voir la commande", p.dashboardUrl)}`
   return {
     to:      p.email,
