@@ -2611,6 +2611,30 @@
       "titlePlaceholder": "Bijvoorbeeld de eindejaarscampagne",
       "createButton": "Creëer"
     },
+    "addManualDonModal": {
+      "title": "Handmatige donatie toevoegen",
+      "donorModeMember": "Bestaand contact",
+      "donorModeExternal": "Externe persoon",
+      "searchPlaceholder": "Zoeken op naam of e-mail…",
+      "typeToSearch": "Typ minstens 2 tekens",
+      "noResults": "Geen contact gevonden",
+      "changeContact": "Contact wijzigen",
+      "firstNameLabel": "Voornaam",
+      "lastNameLabel": "Achternaam",
+      "emailLabel": "E-mail",
+      "emailOptional": "(optioneel)",
+      "invalidEmail": "Voer een geldig e-mailadres in",
+      "amountLabel": "Donatiebedrag",
+      "dateLabel": "Ontvangstdatum",
+      "paymentMethodLabel": "Betaalmethode",
+      "donationFormLabel": "Gekoppeld donatieformulier",
+      "noFormOption": "Geen formulier",
+      "noteLabel": "Notitie of betalingsreferentie",
+      "notePlaceholder": "Betalingsreferentie, details…",
+      "sendReceiptLabel": "Stuur een bevestiging per e-mail",
+      "sendReceiptHint": "Er wordt een bevestigingsmail naar de donor gestuurd.",
+      "submitButton": "Donatie registreren"
+    },
     "formsView": {
       "columns": {
         "form": "Vorm",
@@ -2686,6 +2710,8 @@
       "averageLabel": "Gemiddelde donatie",
       "pendingTitle": "Wachten op afhaling",
       "encaisserButton": "Cash out",
+      "addManual": "Handmatige donatie toevoegen",
+      "manualEntryBy": "Handmatige invoer · {name}",
       "fromMembershipForm": "Lidmaatschapsdonatie — \" {tier} »",
       "fromEvenement": "Donatie van evenementtickets: \" {evenement} »",
       "fromEvenementPrompt": "Donatie na registratie voor het evenement: \" {evenement} »",
@@ -2695,15 +2721,18 @@
         "adhesion": "Lidmaatschap",
         "evenementTicket": "Evenement (ticket)",
         "evenementPrompt": "Evenement (registratie)",
-        "standalone": "Zelfstandige pagina"
+        "standalone": "Zelfstandige pagina",
+        "manual": "Handmatige invoer"
       },
       "paymentMethod": {
         "especes": "Soorten",
         "cheque": "Check",
-        "virement": "Overdracht"
+        "virement": "Overdracht",
+        "autre": "Overig"
       },
       "toasts": {
-        "encaisse": "Donatie ontvangen"
+        "encaisse": "Donatie ontvangen",
+        "manualDonAdded": "Donatie geregistreerd"
       }
     },
     "receiptsView": {
@@ -4289,6 +4318,7 @@
         "evenements": "Evenementen",
         "reunions": "Vergaderingen",
         "materiel": "Materiaal",
+        "dons": "Donaties",
         "historique": "Geschiedenis",
         "emails": "E-mails",
         "sms": "SMS",
@@ -4335,6 +4365,11 @@
       "borrowedOn": "Geleend op {date}",
       "returnedOn": " · Weergegeven op {date}",
       "showingRecentLoans": "Tentoonstelling {count} Laatste leningen op {total} In totaal.",
+      "noDons": "Geen donatie geregistreerd",
+      "donManualEntry": "Handmatige invoer",
+      "donStandalone": "Zelfstandige donatie",
+      "donPending": "Wacht op inning",
+      "showingRecentDons": "Toont de {count} meest recente donaties van in totaal {total}.",
       "addCotisationTitle": "Voeg een lidmaatschapsbijdrage toe",
       "editCotisationTitle": "Verander het lidmaatschapsgeld",
       "deleteConfirmWithDependants": "Dit lid wordt gearchiveerd en kan niet langer toegang krijgen tot de vereniging. Hij wordt ook verwijderd als wettelijke voogd van de vereniging. {count} Leden(s): {names}.",

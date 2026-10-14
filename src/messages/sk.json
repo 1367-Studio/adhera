@@ -2611,6 +2611,30 @@
       "titlePlaceholder": "Napríklad koncoročná kampaň",
       "createButton": "Tvor"
     },
+    "addManualDonModal": {
+      "title": "Pridať manuálny dar",
+      "donorModeMember": "Existujúci kontakt",
+      "donorModeExternal": "Externá osoba",
+      "searchPlaceholder": "Hľadať podľa mena alebo e-mailu…",
+      "typeToSearch": "Zadajte aspoň 2 znaky",
+      "noResults": "Žiadny kontakt nebol nájdený",
+      "changeContact": "Zmeniť kontakt",
+      "firstNameLabel": "Meno",
+      "lastNameLabel": "Priezvisko",
+      "emailLabel": "E-mail",
+      "emailOptional": "(nepovinné)",
+      "invalidEmail": "Zadajte platnú e-mailovú adresu",
+      "amountLabel": "Výška daru",
+      "dateLabel": "Dátum prijatia",
+      "paymentMethodLabel": "Spôsob platby",
+      "donationFormLabel": "Prepojený formulár daru",
+      "noFormOption": "Žiadny formulár",
+      "noteLabel": "Poznámka alebo platobná referencia",
+      "notePlaceholder": "Platobná referencia, podrobnosti…",
+      "sendReceiptLabel": "Odoslať potvrdenie e-mailom",
+      "sendReceiptHint": "Darcovi bude zaslaný potvrdzovací e-mail.",
+      "submitButton": "Zaznamenať dar"
+    },
     "formsView": {
       "columns": {
         "form": "Forma",
@@ -2686,6 +2710,8 @@
       "averageLabel": "Priemerný dar",
       "pendingTitle": "Čakanie na vyzdvihnutie",
       "encaisserButton": "Hotovost",
+      "addManual": "Pridať manuálny dar",
+      "manualEntryBy": "Manuálny zápis · {name}",
       "fromMembershipForm": "Členský dar — \" {tier} »",
       "fromEvenement": "Darovanie vstupenky na podujatie: \" {evenement} »",
       "fromEvenementPrompt": "Dar po registrácii na podujatie: \" {evenement} »",
@@ -2695,15 +2721,18 @@
         "adhesion": "Členstvo",
         "evenementTicket": "Podujatie (lístok)",
         "evenementPrompt": "Podujatie (registrácia)",
-        "standalone": "Samostatná stránka"
+        "standalone": "Samostatná stránka",
+        "manual": "Manuálny zápis"
       },
       "paymentMethod": {
         "especes": "Druhy",
         "cheque": "Skontrolované",
-        "virement": "Presun"
+        "virement": "Presun",
+        "autre": "Iné"
       },
       "toasts": {
-        "encaisse": "Prijatý dar"
+        "encaisse": "Prijatý dar",
+        "manualDonAdded": "Dar bol zaznamenaný"
       }
     },
     "receiptsView": {
@@ -4289,6 +4318,7 @@
         "evenements": "Podujatia",
         "reunions": "Stretnutia",
         "materiel": "Materiál",
+        "dons": "Dary",
         "historique": "História",
         "emails": "E-maily",
         "sms": "SMS",
@@ -4335,6 +4365,11 @@
       "borrowedOn": "Požičané ďalej {date}",
       "returnedOn": " · Renderované na {date}",
       "showingRecentLoans": "Zobrazovanie {count} Najnovšie pôžičky na {total} Celkovo.",
+      "noDons": "Žiadny dar nebol zaznamenaný",
+      "donManualEntry": "Manuálny zápis",
+      "donStandalone": "Samostatný dar",
+      "donPending": "Čaká na inkaso",
+      "showingRecentDons": "Zobrazených {count} najnovších darov z celkových {total}.",
       "addCotisationTitle": "Pridajte členský poplatok",
       "editCotisationTitle": "Zmeňte členský poplatok",
       "deleteConfirmWithDependants": "Tento člen bude archivovaný a už nebude môcť pristupovať k združeniu. Bude tiež odstránený ako zákonný zástupca združenia. {count} Člen(i): {names}.",

@@ -2611,6 +2611,30 @@
       "titlePlaceholder": "M.sh. Feachtas deireadh na bliana",
       "createButton": "Cruthaigh"
     },
+    "addManualDonModal": {
+      "title": "Cuir síntiús láimhseáilte leis",
+      "donorModeMember": "Teagmháil atá ann cheana",
+      "donorModeExternal": "Duine seachtrach",
+      "searchPlaceholder": "Cuardaigh de réir ainm nó ríomhphoist…",
+      "typeToSearch": "Clóscríobh ar a laghad 2 charachtar",
+      "noResults": "Níor aimsíodh teagmháil",
+      "changeContact": "Athraigh teagmháil",
+      "firstNameLabel": "Ainm",
+      "lastNameLabel": "Sloinne",
+      "emailLabel": "Ríomhphost",
+      "emailOptional": "(roghnach)",
+      "invalidEmail": "Cuir isteach seoladh ríomhphoist bailí",
+      "amountLabel": "Méid an tsíntiúis",
+      "dateLabel": "Dáta a fuarthas",
+      "paymentMethodLabel": "Modh íocaíochta",
+      "donationFormLabel": "Foirm síntiúis nasctha",
+      "noFormOption": "Gan fhoirm",
+      "noteLabel": "Nóta nó tagairt íocaíochta",
+      "notePlaceholder": "Tagairt íocaíochta, sonraí…",
+      "sendReceiptLabel": "Seol admháil trí ríomhphost",
+      "sendReceiptHint": "Seolfar ríomhphost deimhnithe chuig an deontóir.",
+      "submitButton": "Taifead an síntiús"
+    },
     "formsView": {
       "columns": {
         "form": "Foirm",
@@ -2686,6 +2710,8 @@
       "averageLabel": "Meánbhronntanas",
       "pendingTitle": "Ag fanacht le bailiú",
       "encaisserButton": "Airgead tirim amach",
+      "addManual": "Cuir síntiús láimhseáilte leis",
+      "manualEntryBy": "Iontráil de láimh · {name}",
       "fromMembershipForm": "Síntiús Ballraíochta — \" {tier} »",
       "fromEvenement": "Síntiús Ticéad Imeachta: \" {evenement} »",
       "fromEvenementPrompt": "Síntiús tar éis clárú don ócáid: \" {evenement} »",
@@ -2695,15 +2721,18 @@
         "adhesion": "Ballraíocht",
         "evenementTicket": "Imeacht (ticéad)",
         "evenementPrompt": "Imeacht (clárú)",
-        "standalone": "Leathanach neamhspleách"
+        "standalone": "Leathanach neamhspleách",
+        "manual": "Iontráil de láimh"
       },
       "paymentMethod": {
         "especes": "Speicis",
         "cheque": "Seiceáil",
-        "virement": "Aistriú"
+        "virement": "Aistriú",
+        "autre": "Eile"
       },
       "toasts": {
-        "encaisse": "Síntiús faighte"
+        "encaisse": "Síntiús faighte",
+        "manualDonAdded": "Síntiús taifeadta"
       }
     },
     "receiptsView": {
@@ -4289,6 +4318,7 @@
         "evenements": "Imeachtaí",
         "reunions": "Cruinnithe",
         "materiel": "Ábhar",
+        "dons": "Síntiúis",
         "historique": "Stair",
         "emails": "Ríomhphoist",
         "sms": "SMS",
@@ -4335,6 +4365,11 @@
       "borrowedOn": "Fuarthas ar iasacht ar {date}",
       "returnedOn": " · Rindreáilte ar {date}",
       "showingRecentLoans": "Ag taispeáint {count} Iasachtaí is déanaí ar {total} san iomlán.",
+      "noDons": "Níor taifeadadh aon síntiús",
+      "donManualEntry": "Iontráil de láimh",
+      "donStandalone": "Síntiús neamhspleách",
+      "donPending": "Ag feitheamh le bailiú",
+      "showingRecentDons": "Ag taispeáint na {count} síntiús is déanaí as {total} ar fad.",
       "addCotisationTitle": "Cuir táille bhallraíochta leis",
       "editCotisationTitle": "Athraigh an táille ballraíochta",
       "deleteConfirmWithDependants": "Déanfar an ball seo a chartlannú agus ní bheidh sé in ann rochtain a fháil ar an gcumann a thuilleadh. Bainfear é freisin mar chaomhnóir dlíthiúil an chumainn. {count} Comhalta(í): {names}.",

@@ -2611,6 +2611,30 @@
       "titlePlaceholder": "Np. kampania na koniec roku",
       "createButton": "Stwórz"
     },
+    "addManualDonModal": {
+      "title": "Dodaj darowiznę ręcznie",
+      "donorModeMember": "Istniejący kontakt",
+      "donorModeExternal": "Osoba zewnętrzna",
+      "searchPlaceholder": "Szukaj po imieniu lub e-mailu…",
+      "typeToSearch": "Wpisz co najmniej 2 znaki",
+      "noResults": "Nie znaleziono kontaktu",
+      "changeContact": "Zmień kontakt",
+      "firstNameLabel": "Imię",
+      "lastNameLabel": "Nazwisko",
+      "emailLabel": "E-mail",
+      "emailOptional": "(opcjonalnie)",
+      "invalidEmail": "Wprowadź prawidłowy adres e-mail",
+      "amountLabel": "Kwota darowizny",
+      "dateLabel": "Data otrzymania",
+      "paymentMethodLabel": "Metoda płatności",
+      "donationFormLabel": "Powiązany formularz darowizny",
+      "noFormOption": "Brak formularza",
+      "noteLabel": "Notatka lub referencja płatności",
+      "notePlaceholder": "Referencja płatności, szczegóły…",
+      "sendReceiptLabel": "Wyślij potwierdzenie e-mailem",
+      "sendReceiptHint": "Darczyńcy zostanie wysłany e-mail potwierdzający.",
+      "submitButton": "Zapisz darowiznę"
+    },
     "formsView": {
       "columns": {
         "form": "Forma",
@@ -2686,6 +2710,8 @@
       "averageLabel": "Średnia darowizna",
       "pendingTitle": "Oczekiwanie na odebranie",
       "encaisserButton": "Wypłata",
+      "addManual": "Dodaj darowiznę ręcznie",
+      "manualEntryBy": "Wpis ręczny · {name}",
       "fromMembershipForm": "Darowiznę członkowską — \" {tier} »",
       "fromEvenement": "Darowizna na bilet na wydarzenie: \" {evenement} »",
       "fromEvenementPrompt": "Darowizna po rejestracji na wydarzenie: \" {evenement} »",
@@ -2695,15 +2721,18 @@
         "adhesion": "Członkostwo",
         "evenementTicket": "Wydarzenie (bilet)",
         "evenementPrompt": "Wydarzenie (rejestracja)",
-        "standalone": "Strona osobna"
+        "standalone": "Strona osobna",
+        "manual": "Wpis ręczny"
       },
       "paymentMethod": {
         "especes": "Gatunki",
         "cheque": "Sprawdzone",
-        "virement": "Przeniesienie"
+        "virement": "Przeniesienie",
+        "autre": "Inne"
       },
       "toasts": {
-        "encaisse": "Otrzymana darowizna"
+        "encaisse": "Otrzymana darowizna",
+        "manualDonAdded": "Darowizna zapisana"
       }
     },
     "receiptsView": {
@@ -4289,6 +4318,7 @@
         "evenements": "Wydarzenia",
         "reunions": "Spotkania",
         "materiel": "Materiał",
+        "dons": "Darowizny",
         "historique": "Historia",
         "emails": "E-maile",
         "sms": "SMS",
@@ -4335,6 +4365,11 @@
       "borrowedOn": "Pożyczone {date}",
       "returnedOn": " · Renderowane na {date}",
       "showingRecentLoans": "Wyświetlanie {count} Najnowsze pożyczki na {total} w sumie.",
+      "noDons": "Brak zarejestrowanej darowizny",
+      "donManualEntry": "Wpis ręczny",
+      "donStandalone": "Samodzielna darowizna",
+      "donPending": "Oczekuje na inkaso",
+      "showingRecentDons": "Wyświetlono {count} najnowszych darowizn z {total} łącznie.",
       "addCotisationTitle": "Dodaj składkę członkowską",
       "editCotisationTitle": "Zmień składkę członkowską",
       "deleteConfirmWithDependants": "Ten członek zostanie zarchiwizowany i nie będzie mógł już korzystać ze stowarzyszenia. Zostanie również usunięty z funkcji prawnego opiekuna stowarzyszenia. {count} Członek(owie): {names}.",

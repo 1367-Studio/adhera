@@ -2611,6 +2611,30 @@
       "titlePlaceholder": "Pvz., metų pabaigos kampanija",
       "createButton": "Sukurti"
     },
+    "addManualDonModal": {
+      "title": "Pridėti rankinę auką",
+      "donorModeMember": "Esamas kontaktas",
+      "donorModeExternal": "Išorinis asmuo",
+      "searchPlaceholder": "Ieškoti pagal vardą arba el. paštą…",
+      "typeToSearch": "Įveskite bent 2 simbolius",
+      "noResults": "Kontaktas nerastas",
+      "changeContact": "Keisti kontaktą",
+      "firstNameLabel": "Vardas",
+      "lastNameLabel": "Pavardė",
+      "emailLabel": "El. paštas",
+      "emailOptional": "(neprivaloma)",
+      "invalidEmail": "Įveskite galiojantį el. pašto adresą",
+      "amountLabel": "Aukos suma",
+      "dateLabel": "Gavimo data",
+      "paymentMethodLabel": "Mokėjimo būdas",
+      "donationFormLabel": "Susieta aukos forma",
+      "noFormOption": "Nėra formos",
+      "noteLabel": "Pastaba ar mokėjimo nuoroda",
+      "notePlaceholder": "Mokėjimo nuoroda, informacija…",
+      "sendReceiptLabel": "Siųsti kvitą el. paštu",
+      "sendReceiptHint": "Aukotojui bus išsiųstas patvirtinimo laiškas.",
+      "submitButton": "Įrašyti auką"
+    },
     "formsView": {
       "columns": {
         "form": "Forma",
@@ -2686,6 +2710,8 @@
       "averageLabel": "Vidutinė auka",
       "pendingTitle": "Laukiu atsiėmimo",
       "encaisserButton": "Išsigrynink",
+      "addManual": "Pridėti rankinę auką",
+      "manualEntryBy": "Rankinis įrašas · {name}",
       "fromMembershipForm": "Narystės auka — \" {tier} »",
       "fromEvenement": "Renginio bilietų auka: \" {evenement} »",
       "fromEvenementPrompt": "Auka po registracijos į renginį: \" {evenement} »",
@@ -2695,15 +2721,18 @@
         "adhesion": "Narystė",
         "evenementTicket": "Renginys (bilietas)",
         "evenementPrompt": "Renginys (registracija)",
-        "standalone": "Atskiras puslapis"
+        "standalone": "Atskiras puslapis",
+        "manual": "Rankinis įrašas"
       },
       "paymentMethod": {
         "especes": "Rūšys",
         "cheque": "Patikrinta",
-        "virement": "Perkėlimas"
+        "virement": "Perkėlimas",
+        "autre": "Kita"
       },
       "toasts": {
-        "encaisse": "Gauta auka"
+        "encaisse": "Gauta auka",
+        "manualDonAdded": "Auka įrašyta"
       }
     },
     "receiptsView": {
@@ -4289,6 +4318,7 @@
         "evenements": "Renginiai",
         "reunions": "Susitikimai",
         "materiel": "Medžiaga",
+        "dons": "Aukos",
         "historique": "Istorija",
         "emails": "El. laiškai",
         "sms": "SMS",
@@ -4335,6 +4365,11 @@
       "borrowedOn": "Pasiskolinta {date}",
       "returnedOn": " · Atvaizduota {date}",
       "showingRecentLoans": "Eksponavimas {count} Naujausios paskolos {total} Iš viso.",
+      "noDons": "Nėra įrašytų aukų",
+      "donManualEntry": "Rankinis įrašas",
+      "donStandalone": "Savarankiška auka",
+      "donPending": "Laukiama inkasavimo",
+      "showingRecentDons": "Rodoma {count} naujausių aukų iš {total} iš viso.",
       "addCotisationTitle": "Pridėkite narystės mokestį",
       "editCotisationTitle": "Pakeiskite narystės mokestį",
       "deleteConfirmWithDependants": "Šis narys bus archyvuotas ir nebegalės prisijungti prie asociacijos. Jis taip pat bus pašalintas iš asociacijos teisėto globėjo pareigų. {count} Narys(-iai): {names}.",

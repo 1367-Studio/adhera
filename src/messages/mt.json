@@ -2611,6 +2611,30 @@
       "titlePlaceholder": "Eż. Kampanja ta' tmiem is-sena",
       "createButton": "Oħloq"
     },
+    "addManualDonModal": {
+      "title": "Żid donazzjoni manwali",
+      "donorModeMember": "Kuntatt eżistenti",
+      "donorModeExternal": "Persuna esterna",
+      "searchPlaceholder": "Fittex bl-isem jew bl-email…",
+      "typeToSearch": "Ittajpja mill-inqas 2 karattri",
+      "noResults": "Ma nstab ebda kuntatt",
+      "changeContact": "Biddel il-kuntatt",
+      "firstNameLabel": "Isem",
+      "lastNameLabel": "Kunjom",
+      "emailLabel": "Email",
+      "emailOptional": "(mhux obbligatorju)",
+      "invalidEmail": "Daħħal indirizz email validu",
+      "amountLabel": "Ammont tad-donazzjoni",
+      "dateLabel": "Data tal-wasla",
+      "paymentMethodLabel": "Metodu ta' ħlas",
+      "donationFormLabel": "Formola tad-donazzjoni marbuta",
+      "noFormOption": "L-ebda formola",
+      "noteLabel": "Nota jew referenza tal-ħlas",
+      "notePlaceholder": "Referenza tal-ħlas, dettalji…",
+      "sendReceiptLabel": "Ibgħat rċevuta bl-email",
+      "sendReceiptHint": "Email ta' konferma tintbagħat lid-donatur.",
+      "submitButton": "Irreġistra d-donazzjoni"
+    },
     "formsView": {
       "columns": {
         "form": "Forma",
@@ -2686,6 +2710,8 @@
       "averageLabel": "Donazzjoni medja",
       "pendingTitle": "Nistennew il-ġbir",
       "encaisserButton": "Flus ta' flus",
+      "addManual": "Żid donazzjoni manwali",
+      "manualEntryBy": "Dħul manwali · {name}",
       "fromMembershipForm": "Donazzjoni tal-Membri — \" {tier} »",
       "fromEvenement": "Donazzjoni ta' Biljetti tal-Avveniment: \" {evenement} »",
       "fromEvenementPrompt": "Donazzjoni wara r-reġistrazzjoni għall-avveniment: \" {evenement} »",
@@ -2695,15 +2721,18 @@
         "adhesion": "Membri",
         "evenementTicket": "Avveniment (biljett)",
         "evenementPrompt": "Avveniment (reġistrazzjoni)",
-        "standalone": "Paġna indipendenti"
+        "standalone": "Paġna indipendenti",
+        "manual": "Dħul manwali"
       },
       "paymentMethod": {
         "especes": "Speċi",
         "cheque": "Iċċekkja",
-        "virement": "Trasferiment"
+        "virement": "Trasferiment",
+        "autre": "Ieħor"
       },
       "toasts": {
-        "encaisse": "Donazzjoni riċevuta"
+        "encaisse": "Donazzjoni riċevuta",
+        "manualDonAdded": "Donazzjoni rreġistrata"
       }
     },
     "receiptsView": {
@@ -4289,6 +4318,7 @@
         "evenements": "Avvenimenti",
         "reunions": "Laqgħat",
         "materiel": "Materjal",
+        "dons": "Donazzjonijiet",
         "historique": "Storja",
         "emails": "Emails",
         "sms": "SMS",
@@ -4335,6 +4365,11 @@
       "borrowedOn": "Mikrija fuq {date}",
       "returnedOn": " · Rendered fuq {date}",
       "showingRecentLoans": "Wirja {count} L-aħħar self fuq {total} b'kollox.",
+      "noDons": "L-ebda donazzjoni rreġistrata",
+      "donManualEntry": "Dħul manwali",
+      "donStandalone": "Donazzjoni awtonoma",
+      "donPending": "Tistenna l-inkaxxament",
+      "showingRecentDons": "Qed juri l-{count} l-aktar donazzjonijiet riċenti minn total ta' {total}.",
       "addCotisationTitle": "Żid ħlas ta' sħubija",
       "editCotisationTitle": "Biddel il-miżata tal-membri",
       "deleteConfirmWithDependants": "Dan il-membru se jiġi arkivjat u ma jkunx jista' jibqa' jaċċessa l-assoċjazzjoni. Se jitneħħa wkoll bħala l-gwardjan legali tal-assoċjazzjoni. {count} Membru(i): {names}.",

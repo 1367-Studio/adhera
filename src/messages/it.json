@@ -2611,6 +2611,30 @@
       "titlePlaceholder": "Ad esempio, campagna di fine anno",
       "createButton": "Crea"
     },
+    "addManualDonModal": {
+      "title": "Aggiungi una donazione manuale",
+      "donorModeMember": "Contatto esistente",
+      "donorModeExternal": "Persona esterna",
+      "searchPlaceholder": "Cerca per nome o email…",
+      "typeToSearch": "Digita almeno 2 caratteri",
+      "noResults": "Nessun contatto trovato",
+      "changeContact": "Cambia contatto",
+      "firstNameLabel": "Nome",
+      "lastNameLabel": "Cognome",
+      "emailLabel": "Email",
+      "emailOptional": "(opzionale)",
+      "invalidEmail": "Inserisci un indirizzo email valido",
+      "amountLabel": "Importo della donazione",
+      "dateLabel": "Data di ricezione",
+      "paymentMethodLabel": "Metodo di pagamento",
+      "donationFormLabel": "Modulo di donazione collegato",
+      "noFormOption": "Nessun modulo",
+      "noteLabel": "Nota o riferimento di pagamento",
+      "notePlaceholder": "Riferimento del pagamento, dettagli…",
+      "sendReceiptLabel": "Invia una ricevuta via email",
+      "sendReceiptHint": "Un'email di conferma sarà inviata al donatore.",
+      "submitButton": "Registra la donazione"
+    },
     "formsView": {
       "columns": {
         "form": "Forma",
@@ -2686,6 +2710,8 @@
       "averageLabel": "Donazione media",
       "pendingTitle": "In attesa di riscossione",
       "encaisserButton": "Incassa",
+      "addManual": "Aggiungi una donazione manuale",
+      "manualEntryBy": "Inserimento manuale · {name}",
       "fromMembershipForm": "Donazione per l'iscrizione — \" {tier} »",
       "fromEvenement": "Donazione dei biglietti per l'evento: \" {evenement} »",
       "fromEvenementPrompt": "Donazione dopo la registrazione all'evento: \" {evenement} »",
@@ -2695,15 +2721,18 @@
         "adhesion": "Iscrizione",
         "evenementTicket": "Evento (biglietto)",
         "evenementPrompt": "Evento (iscrizione)",
-        "standalone": "Pagina autonoma"
+        "standalone": "Pagina autonoma",
+        "manual": "Inserimento manuale"
       },
       "paymentMethod": {
         "especes": "Specie",
         "cheque": "Controllo",
-        "virement": "Trasferimento"
+        "virement": "Trasferimento",
+        "autre": "Altro"
       },
       "toasts": {
-        "encaisse": "Donazione ricevuta"
+        "encaisse": "Donazione ricevuta",
+        "manualDonAdded": "Donazione registrata"
       }
     },
     "receiptsView": {
@@ -4289,6 +4318,7 @@
         "evenements": "Eventi",
         "reunions": "Incontri",
         "materiel": "Materiale",
+        "dons": "Donazioni",
         "historique": "Cronologia",
         "emails": "Email",
         "sms": "SMS",
@@ -4335,6 +4365,11 @@
       "borrowedOn": "Preso in prestito {date}",
       "returnedOn": " · Renderizzato su {date}",
       "showingRecentLoans": "Esposizione {count} Ultimi prestiti su {total} in totale.",
+      "noDons": "Nessuna donazione registrata",
+      "donManualEntry": "Inserimento manuale",
+      "donStandalone": "Donazione autonoma",
+      "donPending": "In attesa di incasso",
+      "showingRecentDons": "Visualizzazione delle {count} donazioni più recenti su un totale di {total}.",
       "addCotisationTitle": "Aggiungi una quota associativa",
       "editCotisationTitle": "Modifica la quota associativa",
       "deleteConfirmWithDependants": "Questo membro sarà archiviato e non potrà più accedere all'associazione. Sarà inoltre rimosso dal ruolo di tutore legale dell'associazione. {count} Membro/i: {names}.",

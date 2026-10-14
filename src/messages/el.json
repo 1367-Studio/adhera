@@ -2611,6 +2611,30 @@
       "titlePlaceholder": "Π.χ. εκστρατεία τέλους έτους",
       "createButton": "Δημιουργία"
     },
+    "addManualDonModal": {
+      "title": "Προσθήκη χειροκίνητης δωρεάς",
+      "donorModeMember": "Υπάρχουσα επαφή",
+      "donorModeExternal": "Εξωτερικό άτομο",
+      "searchPlaceholder": "Αναζήτηση με όνομα ή email…",
+      "typeToSearch": "Πληκτρολογήστε τουλάχιστον 2 χαρακτήρες",
+      "noResults": "Δεν βρέθηκε επαφή",
+      "changeContact": "Αλλαγή επαφής",
+      "firstNameLabel": "Όνομα",
+      "lastNameLabel": "Επώνυμο",
+      "emailLabel": "Email",
+      "emailOptional": "(προαιρετικό)",
+      "invalidEmail": "Εισαγάγετε μια έγκυρη διεύθυνση email",
+      "amountLabel": "Ποσό δωρεάς",
+      "dateLabel": "Ημερομηνία παραλαβής",
+      "paymentMethodLabel": "Τρόπος πληρωμής",
+      "donationFormLabel": "Συνδεδεμένη φόρμα δωρεάς",
+      "noFormOption": "Χωρίς φόρμα",
+      "noteLabel": "Σημείωση ή αναφορά πληρωμής",
+      "notePlaceholder": "Αναφορά πληρωμής, λεπτομέρειες…",
+      "sendReceiptLabel": "Αποστολή απόδειξης μέσω email",
+      "sendReceiptHint": "Θα σταλεί email επιβεβαίωσης στον δωρητή.",
+      "submitButton": "Καταχώριση της δωρεάς"
+    },
     "formsView": {
       "columns": {
         "form": "Μορφή",
@@ -2686,6 +2710,8 @@
       "averageLabel": "Μέση δωρεά",
       "pendingTitle": "Αναμονή για παραλαβή",
       "encaisserButton": "Εξαργύρωση",
+      "addManual": "Προσθήκη χειροκίνητης δωρεάς",
+      "manualEntryBy": "Χειροκίνητη καταχώριση · {name}",
       "fromMembershipForm": "Δωρεά μέλους — \" {tier} »",
       "fromEvenement": "Δωρεά εισιτηρίων εκδήλωσης: \" {evenement} »",
       "fromEvenementPrompt": "Δωρεά μετά την εγγραφή στην εκδήλωση: \" {evenement} »",
@@ -2695,15 +2721,18 @@
         "adhesion": "Ιδιότητα μέλους",
         "evenementTicket": "Εκδήλωση (εισιτήριο)",
         "evenementPrompt": "Εκδήλωση (εγγραφή)",
-        "standalone": "Αυτόνομη σελίδα"
+        "standalone": "Αυτόνομη σελίδα",
+        "manual": "Χειροκίνητη καταχώριση"
       },
       "paymentMethod": {
         "especes": "Είδος",
         "cheque": "Έλεγχος",
-        "virement": "Μεταφορά"
+        "virement": "Μεταφορά",
+        "autre": "Άλλο"
       },
       "toasts": {
-        "encaisse": "Η δωρεά ελήφθη"
+        "encaisse": "Η δωρεά ελήφθη",
+        "manualDonAdded": "Η δωρεά καταχωρίστηκε"
       }
     },
     "receiptsView": {
@@ -4289,6 +4318,7 @@
         "evenements": "Εκδηλώσεις",
         "reunions": "Συναντήσεις",
         "materiel": "Υλικό",
+        "dons": "Δωρεές",
         "historique": "Ιστορικό",
         "emails": "Μηνύματα ηλεκτρονικού ταχυδρομείου",
         "sms": "SMS",
@@ -4335,6 +4365,11 @@
       "borrowedOn": "Δανείστηκε στις {date}",
       "returnedOn": " · Απόδοση στις {date}",
       "showingRecentLoans": "Εμφάνιση {count} Τελευταία δάνεια στις {total} συνολικά.",
+      "noDons": "Δεν καταχωρίστηκε δωρεά",
+      "donManualEntry": "Χειροκίνητη καταχώριση",
+      "donStandalone": "Αυτόνομη δωρεά",
+      "donPending": "Σε αναμονή είσπραξης",
+      "showingRecentDons": "Εμφανίζονται οι {count} πιο πρόσφατες δωρεές από σύνολο {total}.",
       "addCotisationTitle": "Προσθέστε μια συνδρομή μέλους",
       "editCotisationTitle": "Αλλαγή της συνδρομής μέλους",
       "deleteConfirmWithDependants": "Αυτό το μέλος θα αρχειοθετηθεί και δεν θα μπορεί πλέον να έχει πρόσβαση στον σύλλογο. Θα αφαιρεθεί επίσης ως νόμιμος κηδεμόνας του συλλόγου. {count} Μέλος(η): {names}.",
