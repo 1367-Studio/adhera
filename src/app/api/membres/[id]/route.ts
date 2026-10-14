@@ -75,9 +75,16 @@ export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
         take:    50,
         select:  { id: true, amount: true, paidAt: true, membershipAddonTier: { select: { label: true } } },
       },
+      // Both self-service (online) and admin-recorded (manual) Boutique sales — see
+      // POST /api/boutique/commandes. Previously invisible anywhere on the contact's own page.
+      boutiqueCommandes: {
+        orderBy: { createdAt: "desc" },
+        take:    50,
+        include: { items: { include: { produit: { select: { name: true } }, variante: { select: { label: true } } } } },
+      },
       // Lets the detail view tell "showing the 50 most recent" from "that's really all of them" —
       // a long-standing member can have far more rows than the take:50 caps above return.
-      _count: { select: { cotisations: true, participations: true, materialLoans: true, meetingsAsParticipant: true } },
+      _count: { select: { cotisations: true, participations: true, materialLoans: true, meetingsAsParticipant: true, boutiqueCommandes: true } },
     },
   })
 

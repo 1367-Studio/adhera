@@ -2546,6 +2546,48 @@
         "created": "Produkt vytvořený",
         "createError": "Vytváření chyb"
       }
+    },
+    "manualCommandeModal": {
+      "openButton": "Přidat ruční nákup",
+      "title": "Přidat ruční nákup",
+      "submit": "Uložit nákup",
+      "buyerLabel": "Kupující",
+      "existingContact": "Existující kontakt",
+      "externalPerson": "Externí osoba",
+      "searchPlaceholder": "Hledat kontakt podle jména nebo e-mailu…",
+      "typeToSearch": "Zadejte alespoň 2 znaky pro vyhledávání",
+      "noResults": "Žádný kontakt nenalezen",
+      "firstNamePlaceholder": "Jméno",
+      "lastNamePlaceholder": "Příjmení",
+      "emailPlaceholder": "E-mail (nepovinné)",
+      "scopeLabel": "Obchod nebo související formulář",
+      "scopeStorefront": "Obchod",
+      "productsLabel": "Zakoupené produkty",
+      "productPlaceholder": "Vyberte produkt",
+      "variantPlaceholder": "Vyberte variantu",
+      "quantityColumn": "Množ.",
+      "addProduct": "Přidat produkt",
+      "noProductsForScope": "Pro tento výběr nejsou k dispozici žádné produkty.",
+      "outOfStock": "vyprodáno",
+      "totalLabel": "Celkem",
+      "dateLabel": "Datum nákupu",
+      "paymentStatusLabel": "Stav platby",
+      "paid": "Placené",
+      "pending": "Čeká na platbu",
+      "noteLabel": "Poznámka",
+      "sendReceiptEmail": "Odeslat kupujícímu doklad e-mailem",
+      "sendPendingEmail": "Odeslat kupujícímu potvrzení e-mailem",
+      "notifyResponsible": "Upozornit {name} e-mailem",
+      "toasts": {
+        "created": "Nákup uložen"
+      }
+    },
+    "responsableModal": {
+      "openButton": "Odpovědná osoba",
+      "title": "Odpovědná osoba obchodu",
+      "selectLabel": "Dostává e-maily o nových prodejích",
+      "none": "Žádná",
+      "hint": "Tato osoba dostává e-mail při každém novém online prodeji (po zaplacení) a podle volby administrátora i při každém ručně přidaném nákupu."
     }
   },
   "donationForms": {
@@ -4249,7 +4291,8 @@
         "materiel": "Materiál",
         "historique": "Historie",
         "emails": "E-maily",
-        "sms": "SMS"
+        "sms": "SMS",
+        "boutique": "Obchod"
       },
       "cotisationStatus": {
         "enAttente": "Čeká",
@@ -4319,7 +4362,14 @@
         "confirmDescription": "Tímto se zaregistruje žádost o výmaz podle čl. 17 GDPR. Člen obdrží potvrzovací e-mail a jeho osobní údaje budou nenávratně anonymizovány při dalším automatickém zpracování, pokud nebude žádost pozastavena.",
         "toastSuccess": "Žádost o výmaz byla zaregistrována",
         "requestLabel": "Výmaz GDPR"
-      }
+      },
+      "noCommande": "Tento kontakt nemá žádné nákupy v obchodě.",
+      "commandeStatus": {
+        "PENDING": "Čeká",
+        "PAID": "Placené",
+        "CANCELLED": "Zrušeno"
+      },
+      "showingRecentCommandes": "Zobrazeno {count} nejnovějších nákupů z celkových {total}."
     },
     "sms": {
       "title": "Pošlete SMS",

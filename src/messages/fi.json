@@ -2546,6 +2546,48 @@
         "created": "Tuote luotu",
         "createError": "Virheiden syntyminen"
       }
+    },
+    "manualCommandeModal": {
+      "openButton": "Lisää manuaalinen osto",
+      "title": "Lisää manuaalinen osto",
+      "submit": "Tallenna osto",
+      "buyerLabel": "Ostaja",
+      "existingContact": "Olemassa oleva yhteystieto",
+      "externalPerson": "Ulkopuolinen henkilö",
+      "searchPlaceholder": "Hae yhteystietoa nimellä tai sähköpostilla…",
+      "typeToSearch": "Kirjoita vähintään 2 merkkiä hakeaksesi",
+      "noResults": "Yhteystietoa ei löytynyt",
+      "firstNamePlaceholder": "Etunimi",
+      "lastNamePlaceholder": "Sukunimi",
+      "emailPlaceholder": "Sähköposti (valinnainen)",
+      "scopeLabel": "Kauppa tai siihen liittyvä lomake",
+      "scopeStorefront": "Kauppa",
+      "productsLabel": "Ostetut tuotteet",
+      "productPlaceholder": "Valitse tuote",
+      "variantPlaceholder": "Valitse variantti",
+      "quantityColumn": "Määrä",
+      "addProduct": "Lisää tuote",
+      "noProductsForScope": "Tälle valinnalle ei ole saatavilla tuotteita.",
+      "outOfStock": "loppunut varastosta",
+      "totalLabel": "Yhteensä",
+      "dateLabel": "Ostopäivä",
+      "paymentStatusLabel": "Maksun tila",
+      "paid": "Maksettu",
+      "pending": "Odottaa maksua",
+      "noteLabel": "Huomautus",
+      "sendReceiptEmail": "Lähetä kuitti sähköpostitse ostajalle",
+      "sendPendingEmail": "Lähetä vahvistus sähköpostitse ostajalle",
+      "notifyResponsible": "Ilmoita {name}lle sähköpostitse",
+      "toasts": {
+        "created": "Osto tallennettu"
+      }
+    },
+    "responsableModal": {
+      "openButton": "Vastuuhenkilö",
+      "title": "Kaupan vastuuhenkilö",
+      "selectLabel": "Saa uusien myyntien sähköpostit",
+      "none": "Ei kukaan",
+      "hint": "Tämä henkilö saa sähköpostin jokaisesta uudesta verkkomyynnistä (kun se on maksettu) ja ylläpitäjän valinnan mukaan jokaisesta manuaalisesti lisätystä ostosta."
     }
   },
   "donationForms": {
@@ -4249,7 +4291,8 @@
         "materiel": "Materiaali",
         "historique": "Historia",
         "emails": "Sähköpostit",
-        "sms": "SMS"
+        "sms": "SMS",
+        "boutique": "Kauppa"
       },
       "cotisationStatus": {
         "enAttente": "Vireillä",
@@ -4319,7 +4362,14 @@
         "confirmDescription": "Tämä kirjaa GDPR:n 17 artiklan mukaisen poistopyynnön. Jäsen saa vahvistussähköpostin, jonka jälkeen hänen henkilötietonsa anonymisoidaan peruuttamattomasti seuraavassa automaattisessa käsittelyssä, ellei pyyntöä aseteta odottamaan.",
         "toastSuccess": "Poistopyyntö kirjattu",
         "requestLabel": "GDPR-poisto"
-      }
+      },
+      "noCommande": "Tällä yhteystiedolla ei ole kauppaostoksia.",
+      "commandeStatus": {
+        "PENDING": "Odottaa",
+        "PAID": "Maksettu",
+        "CANCELLED": "Peruttu"
+      },
+      "showingRecentCommandes": "Näytetään {count} viimeisintä ostosta yhteensä {total}:sta."
     },
     "sms": {
       "title": "Lähetä SMS",

@@ -2546,6 +2546,48 @@
         "created": "Producto creado",
         "createError": "Error al crear"
       }
+    },
+    "manualCommandeModal": {
+      "openButton": "Añadir una compra manual",
+      "title": "Añadir una compra manual",
+      "submit": "Guardar compra",
+      "buyerLabel": "Comprador",
+      "existingContact": "Contacto existente",
+      "externalPerson": "Persona externa",
+      "searchPlaceholder": "Buscar un contacto por nombre o correo…",
+      "typeToSearch": "Escriba al menos 2 caracteres para buscar",
+      "noResults": "No se encontró ningún contacto",
+      "firstNamePlaceholder": "Nombre",
+      "lastNamePlaceholder": "Apellido",
+      "emailPlaceholder": "Correo (opcional)",
+      "scopeLabel": "Tienda o formulario asociado",
+      "scopeStorefront": "Tienda",
+      "productsLabel": "Productos comprados",
+      "productPlaceholder": "Elegir un producto",
+      "variantPlaceholder": "Elegir una variante",
+      "quantityColumn": "Cant.",
+      "addProduct": "Añadir un producto",
+      "noProductsForScope": "No hay productos disponibles para esta selección.",
+      "outOfStock": "sin stock",
+      "totalLabel": "Total",
+      "dateLabel": "Fecha de la compra",
+      "paymentStatusLabel": "Estado del pago",
+      "paid": "Pagado",
+      "pending": "Pendiente de pago",
+      "noteLabel": "Nota",
+      "sendReceiptEmail": "Enviar el recibo por correo al comprador",
+      "sendPendingEmail": "Enviar una confirmación por correo al comprador",
+      "notifyResponsible": "Notificar a {name} por correo",
+      "toasts": {
+        "created": "Compra guardada"
+      }
+    },
+    "responsableModal": {
+      "openButton": "Responsable",
+      "title": "Responsable de la tienda",
+      "selectLabel": "Recibe los correos de nuevas ventas",
+      "none": "Ninguno",
+      "hint": "Esta persona recibe un correo por cada nueva venta en línea (una vez pagada) y, a elección del administrador, por cada compra añadida manualmente."
     }
   },
   "donationForms": {
@@ -4249,7 +4291,8 @@
         "materiel": "Material",
         "historique": "Historial",
         "emails": "Correos",
-        "sms": "SMS"
+        "sms": "SMS",
+        "boutique": "Tienda"
       },
       "cotisationStatus": {
         "enAttente": "Pendiente",
@@ -4319,7 +4362,14 @@
         "confirmDescription": "Esta acción registra una solicitud de eliminación conforme al art. 17 del RGPD. El miembro recibirá un correo de confirmación y, a continuación, sus datos personales se anonimizarán de forma irreversible en el próximo procesamiento automático, salvo que se ponga en espera.",
         "toastSuccess": "Solicitud de eliminación registrada",
         "requestLabel": "Eliminación RGPD"
-      }
+      },
+      "noCommande": "Este contacto no tiene compras en la tienda.",
+      "commandeStatus": {
+        "PENDING": "Pendiente",
+        "PAID": "Pagado",
+        "CANCELLED": "Cancelado"
+      },
+      "showingRecentCommandes": "Mostrando las {count} compras más recientes de un total de {total}."
     },
     "sms": {
       "title": "Enviar un SMS",

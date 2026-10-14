@@ -2546,6 +2546,48 @@
         "created": "Proizvod izrađen",
         "createError": "Stvaranje pogrešaka"
       }
+    },
+    "manualCommandeModal": {
+      "openButton": "Dodaj ručnu kupnju",
+      "title": "Dodaj ručnu kupnju",
+      "submit": "Spremi kupnju",
+      "buyerLabel": "Kupac",
+      "existingContact": "Postojeći kontakt",
+      "externalPerson": "Vanjska osoba",
+      "searchPlaceholder": "Pretraži kontakt po imenu ili e-pošti…",
+      "typeToSearch": "Unesite najmanje 2 znaka za pretragu",
+      "noResults": "Kontakt nije pronađen",
+      "firstNamePlaceholder": "Ime",
+      "lastNamePlaceholder": "Prezime",
+      "emailPlaceholder": "E-pošta (neobavezno)",
+      "scopeLabel": "Trgovina ili povezani obrazac",
+      "scopeStorefront": "Trgovina",
+      "productsLabel": "Kupljeni proizvodi",
+      "productPlaceholder": "Odaberite proizvod",
+      "variantPlaceholder": "Odaberite varijantu",
+      "quantityColumn": "Kol.",
+      "addProduct": "Dodaj proizvod",
+      "noProductsForScope": "Za ovaj odabir nema dostupnih proizvoda.",
+      "outOfStock": "nema na zalihi",
+      "totalLabel": "Ukupno",
+      "dateLabel": "Datum kupnje",
+      "paymentStatusLabel": "Status plaćanja",
+      "paid": "Plaćeno",
+      "pending": "Čeka plaćanje",
+      "noteLabel": "Napomena",
+      "sendReceiptEmail": "Pošalji račun kupcu e-poštom",
+      "sendPendingEmail": "Pošalji potvrdu kupcu e-poštom",
+      "notifyResponsible": "Obavijesti {name} e-poštom",
+      "toasts": {
+        "created": "Kupnja spremljena"
+      }
+    },
+    "responsableModal": {
+      "openButton": "Odgovorna osoba",
+      "title": "Odgovorna osoba trgovine",
+      "selectLabel": "Prima e-poštu o novim prodajama",
+      "none": "Nitko",
+      "hint": "Ova osoba prima e-poštu za svaku novu online prodaju (nakon plaćanja) i, prema izboru administratora, za svaku ručno dodanu kupnju."
     }
   },
   "donationForms": {
@@ -4249,7 +4291,8 @@
         "materiel": "Materijal",
         "historique": "Povijest",
         "emails": "E-mailovi",
-        "sms": "SMS"
+        "sms": "SMS",
+        "boutique": "Trgovina"
       },
       "cotisationStatus": {
         "enAttente": "Na čekanju",
@@ -4319,7 +4362,14 @@
         "confirmDescription": "Ovime se registrira zahtjev za brisanje prema čl. 17. GDPR-a. Član će primiti e-poštu s potvrdom, a zatim će njegovi osobni podaci biti nepovratno anonimizirani prilikom sljedeće automatske obrade, osim ako zahtjev ne bude stavljen na čekanje.",
         "toastSuccess": "Zahtjev za brisanje registriran",
         "requestLabel": "GDPR brisanje"
-      }
+      },
+      "noCommande": "Ovaj kontakt nema kupnji u trgovini.",
+      "commandeStatus": {
+        "PENDING": "Na čekanju",
+        "PAID": "Plaćeno",
+        "CANCELLED": "Otkazano"
+      },
+      "showingRecentCommandes": "Prikazano {count} najnovijih kupnji od ukupno {total}."
     },
     "sms": {
       "title": "Pošaljite SMS",

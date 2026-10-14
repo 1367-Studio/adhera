@@ -2546,6 +2546,48 @@
         "created": "Sukurtas produktas",
         "createError": "Klaidų kūrimas"
       }
+    },
+    "manualCommandeModal": {
+      "openButton": "Pridėti rankinį pirkimą",
+      "title": "Pridėti rankinį pirkimą",
+      "submit": "Išsaugoti pirkimą",
+      "buyerLabel": "Pirkėjas",
+      "existingContact": "Esamas kontaktas",
+      "externalPerson": "Išorinis asmuo",
+      "searchPlaceholder": "Ieškoti kontakto pagal vardą ar el. paštą…",
+      "typeToSearch": "Įveskite bent 2 simbolius, kad ieškotumėte",
+      "noResults": "Kontaktas nerastas",
+      "firstNamePlaceholder": "Vardas",
+      "lastNamePlaceholder": "Pavardė",
+      "emailPlaceholder": "El. paštas (neprivaloma)",
+      "scopeLabel": "Parduotuvė arba susijusi forma",
+      "scopeStorefront": "Parduotuvė",
+      "productsLabel": "Įsigyti produktai",
+      "productPlaceholder": "Pasirinkite produktą",
+      "variantPlaceholder": "Pasirinkite variantą",
+      "quantityColumn": "Kiekis",
+      "addProduct": "Pridėti produktą",
+      "noProductsForScope": "Šiam pasirinkimui nėra prieinamų produktų.",
+      "outOfStock": "nėra sandėlyje",
+      "totalLabel": "Iš viso",
+      "dateLabel": "Pirkimo data",
+      "paymentStatusLabel": "Mokėjimo būsena",
+      "paid": "Apmokėta",
+      "pending": "Laukiama mokėjimo",
+      "noteLabel": "Pastaba",
+      "sendReceiptEmail": "Siųsti kvitą el. paštu pirkėjui",
+      "sendPendingEmail": "Siųsti patvirtinimą el. paštu pirkėjui",
+      "notifyResponsible": "Pranešti {name} el. paštu",
+      "toasts": {
+        "created": "Pirkimas išsaugotas"
+      }
+    },
+    "responsableModal": {
+      "openButton": "Atsakingas asmuo",
+      "title": "Parduotuvės atsakingas asmuo",
+      "selectLabel": "Gauna el. laiškus apie naujus pardavimus",
+      "none": "Nėra",
+      "hint": "Šis asmuo gauna el. laišką apie kiekvieną naują pardavimą internetu (kai jis apmokamas) ir, administratoriaus pasirinkimu, apie kiekvieną rankiniu būdu pridėtą pirkimą."
     }
   },
   "donationForms": {
@@ -4249,7 +4291,8 @@
         "materiel": "Medžiaga",
         "historique": "Istorija",
         "emails": "El. laiškai",
-        "sms": "SMS"
+        "sms": "SMS",
+        "boutique": "Parduotuvė"
       },
       "cotisationStatus": {
         "enAttente": "Laukiama",
@@ -4319,7 +4362,14 @@
         "confirmDescription": "Šis veiksmas užregistruoja BDAR 17 straipsnio ištrynimo prašymą. Narys gaus patvirtinimo el. laišką, po to jo asmens duomenys bus neatšaukiamai anonimizuoti per kitą automatinį apdorojimą, jei prašymas nebus sustabdytas.",
         "toastSuccess": "Ištrynimo prašymas užregistruotas",
         "requestLabel": "BDAR ištrynimas"
-      }
+      },
+      "noCommande": "Šis kontaktas neturi pirkimų parduotuvėje.",
+      "commandeStatus": {
+        "PENDING": "Laukiama",
+        "PAID": "Apmokėta",
+        "CANCELLED": "Atšaukta"
+      },
+      "showingRecentCommandes": "Rodomi {count} naujausi pirkimai iš {total}."
     },
     "sms": {
       "title": "Siųskite SMS žinutę",

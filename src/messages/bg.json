@@ -2546,6 +2546,48 @@
         "created": "Създаден продукт",
         "createError": "Създаване на грешки"
       }
+    },
+    "manualCommandeModal": {
+      "openButton": "Добавяне на ръчна покупка",
+      "title": "Добавяне на ръчна покупка",
+      "submit": "Запазване на покупката",
+      "buyerLabel": "Купувач",
+      "existingContact": "Съществуващ контакт",
+      "externalPerson": "Външно лице",
+      "searchPlaceholder": "Търсене на контакт по име или имейл…",
+      "typeToSearch": "Въведете поне 2 символа за търсене",
+      "noResults": "Няма намерен контакт",
+      "firstNamePlaceholder": "Име",
+      "lastNamePlaceholder": "Фамилия",
+      "emailPlaceholder": "Имейл (по избор)",
+      "scopeLabel": "Магазин или свързан формуляр",
+      "scopeStorefront": "Магазин",
+      "productsLabel": "Закупени продукти",
+      "productPlaceholder": "Изберете продукт",
+      "variantPlaceholder": "Изберете вариант",
+      "quantityColumn": "Кол.",
+      "addProduct": "Добавяне на продукт",
+      "noProductsForScope": "Няма налични продукти за този избор.",
+      "outOfStock": "изчерпана наличност",
+      "totalLabel": "Общо",
+      "dateLabel": "Дата на покупката",
+      "paymentStatusLabel": "Статус на плащането",
+      "paid": "Платено",
+      "pending": "Изчаква плащане",
+      "noteLabel": "Бележка",
+      "sendReceiptEmail": "Изпращане на разписка по имейл на купувача",
+      "sendPendingEmail": "Изпращане на потвърждение по имейл на купувача",
+      "notifyResponsible": "Уведомяване на {name} по имейл",
+      "toasts": {
+        "created": "Покупката е запазена"
+      }
+    },
+    "responsableModal": {
+      "openButton": "Отговорник",
+      "title": "Отговорник на магазина",
+      "selectLabel": "Получава имейли за нови продажби",
+      "none": "Няма",
+      "hint": "Този човек получава имейл при всяка нова онлайн продажба (след плащане) и, по избор на администратора, при всяка ръчно добавена покупка."
     }
   },
   "donationForms": {
@@ -4249,7 +4291,8 @@
         "materiel": "Материал",
         "historique": "История",
         "emails": "Имейли",
-        "sms": "SMS"
+        "sms": "SMS",
+        "boutique": "Магазин"
       },
       "cotisationStatus": {
         "enAttente": "В процес на изчакване",
@@ -4319,7 +4362,14 @@
         "confirmDescription": "Това регистрира заявка за изтриване по член 17 от ОРЗД. Членът ще получи имейл за потвърждение, след което личните му данни ще бъдат анонимизирани безвъзвратно при следващата автоматична обработка, освен ако не бъдат поставени на изчакване.",
         "toastSuccess": "Заявката за изтриване е регистрирана",
         "requestLabel": "Изтриване по ОРЗД"
-      }
+      },
+      "noCommande": "Няма покупки от магазина за този контакт.",
+      "commandeStatus": {
+        "PENDING": "Изчаква",
+        "PAID": "Платено",
+        "CANCELLED": "Отменено"
+      },
+      "showingRecentCommandes": "Показани са {count} най-скорошни покупки от общо {total}."
     },
     "sms": {
       "title": "Изпратете SMS",

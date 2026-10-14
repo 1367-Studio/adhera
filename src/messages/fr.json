@@ -2656,6 +2656,48 @@
         "created": "Produit créé",
         "createError": "Erreur lors de la création"
       }
+    },
+    "manualCommandeModal": {
+      "openButton": "Ajouter un achat manuel",
+      "title": "Ajouter un achat manuel",
+      "submit": "Enregistrer l'achat",
+      "buyerLabel": "Acheteur",
+      "existingContact": "Contact existant",
+      "externalPerson": "Personne externe",
+      "searchPlaceholder": "Rechercher un contact par nom ou e-mail…",
+      "typeToSearch": "Tapez au moins 2 caractères pour rechercher",
+      "noResults": "Aucun contact trouvé",
+      "firstNamePlaceholder": "Prénom",
+      "lastNamePlaceholder": "Nom",
+      "emailPlaceholder": "E-mail (optionnel)",
+      "scopeLabel": "Boutique ou formulaire associé",
+      "scopeStorefront": "Boutique",
+      "productsLabel": "Produits achetés",
+      "productPlaceholder": "Choisir un produit",
+      "variantPlaceholder": "Choisir une variante",
+      "quantityColumn": "Qté",
+      "addProduct": "Ajouter un produit",
+      "noProductsForScope": "Aucun produit disponible pour cette sélection.",
+      "outOfStock": "rupture de stock",
+      "totalLabel": "Total",
+      "dateLabel": "Date de l'achat",
+      "paymentStatusLabel": "Statut du paiement",
+      "paid": "Payé",
+      "pending": "En attente de paiement",
+      "noteLabel": "Note",
+      "sendReceiptEmail": "Envoyer le reçu par e-mail à l'acheteur",
+      "sendPendingEmail": "Envoyer une confirmation par e-mail à l'acheteur",
+      "notifyResponsible": "Notifier {name} par e-mail",
+      "toasts": {
+        "created": "Achat enregistré"
+      }
+    },
+    "responsableModal": {
+      "openButton": "Responsable",
+      "title": "Responsable de la boutique",
+      "selectLabel": "Reçoit les e-mails de nouvelle vente",
+      "none": "Aucun",
+      "hint": "Cette personne reçoit un e-mail à chaque nouvelle vente en ligne (une fois payée) et, sur choix de l'admin, à chaque achat ajouté manuellement."
     }
   },
   "donationForms": {
@@ -4507,7 +4549,8 @@
         "materiel": "Matériel",
         "historique": "Historique",
         "emails": "Emails",
-        "sms": "SMS"
+        "sms": "SMS",
+        "boutique": "Boutique"
       },
       "cotisationStatus": {
         "enAttente": "En attente",
@@ -4571,7 +4614,14 @@
         "rejectedToast": "Demande refusée",
         "rejectConfirmTitle": "Refuser cette demande ?",
         "rejectConfirmDescription": "{name} passera au statut « Inactif » et ne pourra pas se connecter. La demande et ses réponses au formulaire sont conservées."
-      }
+      },
+      "noCommande": "Aucun achat boutique pour ce contact.",
+      "commandeStatus": {
+        "PENDING": "En attente",
+        "PAID": "Payée",
+        "CANCELLED": "Annulée"
+      },
+      "showingRecentCommandes": "Affichage des {count} achats les plus récents sur {total}."
     },
     "sms": {
       "title": "Envoyer un SMS",

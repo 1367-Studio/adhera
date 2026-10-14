@@ -2546,6 +2546,48 @@
         "created": "Prodott maħluq",
         "createError": "Ħolqien ta' żbalji"
       }
+    },
+    "manualCommandeModal": {
+      "openButton": "Żid xiri manwali",
+      "title": "Żid xiri manwali",
+      "submit": "Issejvja x-xiri",
+      "buyerLabel": "Xerrej",
+      "existingContact": "Kuntatt eżistenti",
+      "externalPerson": "Persuna esterna",
+      "searchPlaceholder": "Fittex kuntatt bl-isem jew l-email…",
+      "typeToSearch": "Ittajpja mill-inqas 2 karattri biex tfittex",
+      "noResults": "Ebda kuntatt misjub",
+      "firstNamePlaceholder": "Isem",
+      "lastNamePlaceholder": "Kunjom",
+      "emailPlaceholder": "Email (mhux obbligatorju)",
+      "scopeLabel": "Ħanut jew formola assoċjata",
+      "scopeStorefront": "Ħanut",
+      "productsLabel": "Prodotti mixtrija",
+      "productPlaceholder": "Agħżel prodott",
+      "variantPlaceholder": "Agħżel varjant",
+      "quantityColumn": "Kwant.",
+      "addProduct": "Żid prodott",
+      "noProductsForScope": "L-ebda prodott disponibbli għal din l-għażla.",
+      "outOfStock": "spiċċat",
+      "totalLabel": "Total",
+      "dateLabel": "Data tax-xiri",
+      "paymentStatusLabel": "Status tal-ħlas",
+      "paid": "Imħallas",
+      "pending": "Jistenna l-ħlas",
+      "noteLabel": "Nota",
+      "sendReceiptEmail": "Ibgħat ir-riċevuta bl-email lix-xerrej",
+      "sendPendingEmail": "Ibgħat konferma bl-email lix-xerrej",
+      "notifyResponsible": "Innotifika lil {name} bl-email",
+      "toasts": {
+        "created": "Xiri ssejvjat"
+      }
+    },
+    "responsableModal": {
+      "openButton": "Responsabbli",
+      "title": "Responsabbli tal-ħanut",
+      "selectLabel": "Jirċievi emails ta' bejgħ ġdid",
+      "none": "Ħadd",
+      "hint": "Din il-persuna tirċievi email għal kull bejgħ online ġdid (ladarba jitħallas) u, skont l-għażla tal-amministratur, għal kull xiri miżjud manwalment."
     }
   },
   "donationForms": {
@@ -4249,7 +4291,8 @@
         "materiel": "Materjal",
         "historique": "Storja",
         "emails": "Emails",
-        "sms": "SMS"
+        "sms": "SMS",
+        "boutique": "Ħanut"
       },
       "cotisationStatus": {
         "enAttente": "Pendenti",
@@ -4319,7 +4362,14 @@
         "confirmDescription": "Din l-azzjoni tirreġistra talba għat-tħassir skont l-Art. 17 tal-GDPR. Il-membru jirċievi email ta' konferma, u mbagħad id-data personali tiegħu tiġi anonimizzata b'mod irriversibbli fl-ipproċessar awtomatiku li jmiss, ħlief jekk titwaqqaf in sospensjoni.",
         "toastSuccess": "Talba għat-tħassir irreġistrata",
         "requestLabel": "Tħassir GDPR"
-      }
+      },
+      "noCommande": "Dan il-kuntatt m'għandu l-ebda xiri mill-ħanut.",
+      "commandeStatus": {
+        "PENDING": "Pendenti",
+        "PAID": "Imħallas",
+        "CANCELLED": "Ikkanċellat"
+      },
+      "showingRecentCommandes": "Qed jintwerew l-aktar {count} xiri reċenti minn total ta' {total}."
     },
     "sms": {
       "title": "Ibgħat SMS",
