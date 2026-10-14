@@ -2,6 +2,7 @@ import { NextResponse } from "next/server"
 import { addMonths } from "date-fns"
 import { withAdminAuth } from "@/lib/api-wrapper"
 import { hasAccess } from "@/lib/permissions"
+import { fetchModules } from "@/lib/auth/require-module"
 import { prisma } from "@/lib/prisma/client"
 import { membreUpdateSchema } from "@/lib/schemas"
 import { addressColumnsPatch } from "@/lib/address"
@@ -127,12 +128,35 @@ export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
     ctx.permissions,
   )
 
+  // General donation history for the "Dons" tab — deliberately separate from the `dons`
+  // relation above (which stays scoped to addon-tier purchases for the Cotisations tab's
+  // addonPurchases list): showing the same addon-tier Don in both places would duplicate it.
+  // Gated the same way get-member.ts (assistant tool) gates it — finance-role "dons" access
+  // plus the Dons module actually being enabled for this association — rather than just
+  // checking "membres" area, since a membre reader without finance access shouldn't see
+  // donation amounts. `null` (not an empty array) tells the frontend "not visible" so it can
+  // hide the tab entirely instead of rendering an always-empty one.
+  const canSeeDonations = hasAccess(ctx.permissions, "dons", "read") && (await fetchModules(associationId)).dons
+  const [donsHistory, donsHistoryTotal] = canSeeDonations
+    ? await Promise.all([
+        prisma.don.findMany({
+          where:   { membreId: id, associationId, membershipAddonTierId: null },
+          orderBy: { paidAt: "desc" },
+          take:    50,
+          select:  { id: true, amount: true, paidAt: true, createdByUserId: true, donationForm: { select: { title: true } } },
+        }),
+        prisma.don.count({ where: { membreId: id, associationId, membershipAddonTierId: null } }),
+      ])
+    : [null, null]
+
   return NextResponse.json(redactSensitiveMembreFields({
     ...membre,
     mobile: readMobileAnswer(rawAnswers),
     customFieldAnswers,
     editableCustomFields,
     isAdherent: isMembreAdherent(membre),
+    donsHistory,
+    donsHistoryTotal,
   }, ctx.permissions))
 }, { area: "membres" })
 

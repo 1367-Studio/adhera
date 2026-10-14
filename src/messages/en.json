@@ -2713,6 +2713,30 @@
       "titlePlaceholder": "E.g. Year-end campaign",
       "createButton": "Create"
     },
+    "addManualDonModal": {
+      "title": "Add a manual donation",
+      "donorModeMember": "Existing contact",
+      "donorModeExternal": "External person",
+      "searchPlaceholder": "Search by name or email…",
+      "typeToSearch": "Type at least 2 characters",
+      "noResults": "No contact found",
+      "changeContact": "Change contact",
+      "firstNameLabel": "First name",
+      "lastNameLabel": "Last name",
+      "emailLabel": "Email",
+      "emailOptional": "(optional)",
+      "invalidEmail": "Enter a valid email address",
+      "amountLabel": "Donation amount",
+      "dateLabel": "Date received",
+      "paymentMethodLabel": "Payment method",
+      "donationFormLabel": "Linked donation form",
+      "noFormOption": "No form",
+      "noteLabel": "Note or payment reference",
+      "notePlaceholder": "Payment reference, details…",
+      "sendReceiptLabel": "Send a receipt by email",
+      "sendReceiptHint": "A confirmation email will be sent to the donor.",
+      "submitButton": "Record the donation"
+    },
     "formsView": {
       "columns": {
         "form": "Form",
@@ -2788,6 +2812,8 @@
       "averageLabel": "Average donation",
       "pendingTitle": "Awaiting encashment",
       "encaisserButton": "Mark as received",
+      "addManual": "Add a manual donation",
+      "manualEntryBy": "Manual entry · {name}",
       "fromMembershipForm": "Linked to a membership signup — \"{tier}\"",
       "fromEvenement": "Linked to an event ticket: \"{evenement}\"",
       "fromEvenementPrompt": "Linked to an event registration: \"{evenement}\"",
@@ -2797,15 +2823,18 @@
         "adhesion": "Membership",
         "evenementTicket": "Event (ticket)",
         "evenementPrompt": "Event (registration)",
-        "standalone": "Standalone page"
+        "standalone": "Standalone page",
+        "manual": "Manual entry"
       },
       "paymentMethod": {
         "especes": "Cash",
         "cheque": "Cheque",
-        "virement": "Bank transfer"
+        "virement": "Bank transfer",
+        "autre": "Other"
       },
       "toasts": {
-        "encaisse": "Donation marked as received"
+        "encaisse": "Donation marked as received",
+        "manualDonAdded": "Donation recorded"
       }
     },
     "receiptsView": {
@@ -4539,6 +4568,7 @@
         "evenements": "Events",
         "reunions": "Meetings",
         "materiel": "Equipment",
+        "dons": "Donations",
         "historique": "History",
         "emails": "Emails",
         "sms": "SMS",
@@ -4586,6 +4616,11 @@
       "borrowedOn": "Borrowed on {date}",
       "returnedOn": " · Returned on {date}",
       "showingRecentLoans": "Showing the {count} most recent loans out of {total} total.",
+      "noDons": "No donation recorded",
+      "donManualEntry": "Manual entry",
+      "donStandalone": "Standalone donation",
+      "donPending": "Awaiting encashment",
+      "showingRecentDons": "Showing the {count} most recent donations out of {total} total.",
       "addCotisationTitle": "Add a membership fee",
       "editCotisationTitle": "Edit membership fee",
       "deleteConfirmWithDependants": "This member will be archived and will no longer be able to access the association. They will also be removed as legal guardian of {count} member(s): {names}.",

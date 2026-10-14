@@ -2611,6 +2611,30 @@
       "titlePlaceholder": "Näiteks aasta lõpu kampaania",
       "createButton": "Loo"
     },
+    "addManualDonModal": {
+      "title": "Lisa käsitsi annetus",
+      "donorModeMember": "Olemasolev kontakt",
+      "donorModeExternal": "Väline isik",
+      "searchPlaceholder": "Otsi nime või e-posti järgi…",
+      "typeToSearch": "Sisestage vähemalt 2 tähemärki",
+      "noResults": "Kontakti ei leitud",
+      "changeContact": "Vaheta kontakti",
+      "firstNameLabel": "Eesnimi",
+      "lastNameLabel": "Perekonnanimi",
+      "emailLabel": "E-post",
+      "emailOptional": "(valikuline)",
+      "invalidEmail": "Sisestage kehtiv e-posti aadress",
+      "amountLabel": "Annetuse summa",
+      "dateLabel": "Vastuvõtmise kuupäev",
+      "paymentMethodLabel": "Makseviis",
+      "donationFormLabel": "Seotud annetusvorm",
+      "noFormOption": "Vormi pole",
+      "noteLabel": "Märkus või makse viide",
+      "notePlaceholder": "Makse viide, üksikasjad…",
+      "sendReceiptLabel": "Saada kviitung e-postiga",
+      "sendReceiptHint": "Annetajale saadetakse kinnituskiri.",
+      "submitButton": "Salvesta annetus"
+    },
     "formsView": {
       "columns": {
         "form": "Vorm",
@@ -2686,6 +2710,8 @@
       "averageLabel": "Keskmine annetus",
       "pendingTitle": "Ootan kogumist",
       "encaisserButton": "Raha välja võtmine",
+      "addManual": "Lisa käsitsi annetus",
+      "manualEntryBy": "Käsitsi sisestus · {name}",
       "fromMembershipForm": "Liikmeks annetamine — \" {tier} »",
       "fromEvenement": "Ürituse piletite annetus: \" {evenement} »",
       "fromEvenementPrompt": "Annetus pärast registreerimist üritusele: \" {evenement} »",
@@ -2695,15 +2721,18 @@
         "adhesion": "Liikmelisus",
         "evenementTicket": "Üritus (pilet)",
         "evenementPrompt": "Üritus (registreerimine)",
-        "standalone": "Iseseisev leht"
+        "standalone": "Iseseisev leht",
+        "manual": "Käsitsi sisestus"
       },
       "paymentMethod": {
         "especes": "Liigid",
         "cheque": "Kontroll",
-        "virement": "Ülekanne"
+        "virement": "Ülekanne",
+        "autre": "Muu"
       },
       "toasts": {
-        "encaisse": "Saadud annetus"
+        "encaisse": "Saadud annetus",
+        "manualDonAdded": "Annetus salvestatud"
       }
     },
     "receiptsView": {
@@ -4289,6 +4318,7 @@
         "evenements": "Sündmused",
         "reunions": "Koosolekud",
         "materiel": "Materjal",
+        "dons": "Annetused",
         "historique": "Ajalugu",
         "emails": "E-kirjad",
         "sms": "SMS",
@@ -4335,6 +4365,11 @@
       "borrowedOn": "Laenatud {date}",
       "returnedOn": " · Renderdatud {date}",
       "showingRecentLoans": "Kuvamine {count} Viimased laenud {total} Kokku.",
+      "noDons": "Annetusi pole registreeritud",
+      "donManualEntry": "Käsitsi sisestus",
+      "donStandalone": "Iseseisev annetus",
+      "donPending": "Ootab sissenõudmist",
+      "showingRecentDons": "Kuvatakse {count} viimast annetust kokku {total}-st.",
       "addCotisationTitle": "Lisa liikmemaksu",
       "editCotisationTitle": "Muuda liikmemaksu",
       "deleteConfirmWithDependants": "See liige arhiveeritakse ja tal ei ole enam juurdepääsu ühingule. Ta eemaldatakse ka ühingu seadusliku eestkostja kohalt. {count} Liikme(d): {names}.",

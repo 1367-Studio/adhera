@@ -2721,6 +2721,30 @@
       "titlePlaceholder": "Ex. Campagne de fin d'année",
       "createButton": "Créer"
     },
+    "addManualDonModal": {
+      "title": "Ajouter un don manuel",
+      "donorModeMember": "Contact existant",
+      "donorModeExternal": "Personne externe",
+      "searchPlaceholder": "Rechercher par nom ou email…",
+      "typeToSearch": "Tapez au moins 2 caractères",
+      "noResults": "Aucun contact trouvé",
+      "changeContact": "Changer de contact",
+      "firstNameLabel": "Prénom",
+      "lastNameLabel": "Nom",
+      "emailLabel": "Email",
+      "emailOptional": "(optionnel)",
+      "invalidEmail": "Saisissez une adresse email valide",
+      "amountLabel": "Montant du don",
+      "dateLabel": "Date de réception",
+      "paymentMethodLabel": "Moyen de paiement",
+      "donationFormLabel": "Formulaire de don associé",
+      "noFormOption": "Aucun formulaire",
+      "noteLabel": "Observation ou référence",
+      "notePlaceholder": "Référence du paiement, précisions…",
+      "sendReceiptLabel": "Envoyer un reçu par email",
+      "sendReceiptHint": "Un email de confirmation sera envoyé au donateur.",
+      "submitButton": "Enregistrer le don reçu"
+    },
     "formsView": {
       "columns": {
         "form": "Formulaire",
@@ -2796,6 +2820,8 @@
       "averageLabel": "Don moyen",
       "pendingTitle": "En attente d'encaissement",
       "encaisserButton": "Encaisser",
+      "addManual": "Ajouter un don manuel",
+      "manualEntryBy": "Saisie manuelle · {name}",
       "fromMembershipForm": "Don lié à une adhésion — « {tier} »",
       "fromEvenement": "Don lié à un billet d'évènement : « {evenement} »",
       "fromEvenementPrompt": "Don suite à une inscription à l'évènement : « {evenement} »",
@@ -2805,15 +2831,18 @@
         "adhesion": "Adhésion",
         "evenementTicket": "Évènement (billet)",
         "evenementPrompt": "Évènement (inscription)",
-        "standalone": "Page autonome"
+        "standalone": "Page autonome",
+        "manual": "Saisie manuelle"
       },
       "paymentMethod": {
         "especes": "Espèces",
         "cheque": "Chèque",
-        "virement": "Virement"
+        "virement": "Virement",
+        "autre": "Autre"
       },
       "toasts": {
-        "encaisse": "Don encaissé"
+        "encaisse": "Don encaissé",
+        "manualDonAdded": "Don enregistré"
       }
     },
     "receiptsView": {
@@ -4547,6 +4576,7 @@
         "evenements": "Événements",
         "reunions": "Réunions",
         "materiel": "Matériel",
+        "dons": "Dons",
         "historique": "Historique",
         "emails": "Emails",
         "sms": "SMS",
@@ -4594,6 +4624,11 @@
       "borrowedOn": "Emprunté le {date}",
       "returnedOn": " · Rendu le {date}",
       "showingRecentLoans": "Affichage des {count} prêts les plus récents sur {total} au total.",
+      "noDons": "Aucun don enregistré",
+      "donManualEntry": "Saisie manuelle",
+      "donStandalone": "Don autonome",
+      "donPending": "En attente d'encaissement",
+      "showingRecentDons": "Affichage des {count} dons les plus récents sur {total} au total.",
       "addCotisationTitle": "Ajouter une cotisation",
       "editCotisationTitle": "Modifier la cotisation",
       "deleteConfirmWithDependants": "Ce membre sera archivé et ne pourra plus accéder à l'association. Il sera aussi retiré comme responsable légal de {count} membre(s) : {names}.",

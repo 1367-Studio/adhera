@@ -2611,6 +2611,30 @@
       "titlePlaceholder": "Például év végi kampány",
       "createButton": "Létrehozni"
     },
+    "addManualDonModal": {
+      "title": "Manuális adomány hozzáadása",
+      "donorModeMember": "Meglévő kapcsolat",
+      "donorModeExternal": "Külső személy",
+      "searchPlaceholder": "Keresés név vagy email alapján…",
+      "typeToSearch": "Írjon be legalább 2 karaktert",
+      "noResults": "Nem található kapcsolat",
+      "changeContact": "Kapcsolat módosítása",
+      "firstNameLabel": "Keresztnév",
+      "lastNameLabel": "Vezetéknév",
+      "emailLabel": "Email",
+      "emailOptional": "(opcionális)",
+      "invalidEmail": "Adjon meg egy érvényes email címet",
+      "amountLabel": "Adomány összege",
+      "dateLabel": "Beérkezés dátuma",
+      "paymentMethodLabel": "Fizetési mód",
+      "donationFormLabel": "Kapcsolt adományűrlap",
+      "noFormOption": "Nincs űrlap",
+      "noteLabel": "Megjegyzés vagy fizetési hivatkozás",
+      "notePlaceholder": "Fizetési hivatkozás, részletek…",
+      "sendReceiptLabel": "Nyugta küldése emailben",
+      "sendReceiptHint": "Megerősítő emailt küldünk az adományozónak.",
+      "submitButton": "Adomány rögzítése"
+    },
     "formsView": {
       "columns": {
         "form": "Forma",
@@ -2686,6 +2710,8 @@
       "averageLabel": "Átlagos adomány",
       "pendingTitle": "Várva a beszedésre",
       "encaisserButton": "Cash out",
+      "addManual": "Manuális adomány hozzáadása",
+      "manualEntryBy": "Manuális rögzítés · {name}",
       "fromMembershipForm": "Tagsági adomány — \" {tier} »",
       "fromEvenement": "Eseményjegy adományozás: \" {evenement} »",
       "fromEvenementPrompt": "Adomány a regisztráció után: \" {evenement} »",
@@ -2695,15 +2721,18 @@
         "adhesion": "Tagság",
         "evenementTicket": "Esemény (jegy)",
         "evenementPrompt": "Esemény (regisztráció)",
-        "standalone": "Különálló oldal"
+        "standalone": "Különálló oldal",
+        "manual": "Manuális rögzítés"
       },
       "paymentMethod": {
         "especes": "Fajok",
         "cheque": "Megvan",
-        "virement": "Átigazolás"
+        "virement": "Átigazolás",
+        "autre": "Egyéb"
       },
       "toasts": {
-        "encaisse": "Fogadott adomány"
+        "encaisse": "Fogadott adomány",
+        "manualDonAdded": "Adomány rögzítve"
       }
     },
     "receiptsView": {
@@ -4289,6 +4318,7 @@
         "evenements": "Események",
         "reunions": "Találkozók",
         "materiel": "Anyagok",
+        "dons": "Adományok",
         "historique": "Előzmények",
         "emails": "E-mailek",
         "sms": "SMS",
@@ -4335,6 +4365,11 @@
       "borrowedOn": "Kölcsön {date}",
       "returnedOn": " · Renderelve {date}",
       "showingRecentLoans": "Megjelenítés {count} Legutóbbi hitelek {total} összesen.",
+      "noDons": "Nincs rögzített adomány",
+      "donManualEntry": "Manuális rögzítés",
+      "donStandalone": "Önálló adomány",
+      "donPending": "Beváltásra vár",
+      "showingRecentDons": "A {count} legutóbbi adomány megjelenítve, összesen {total}.",
       "addCotisationTitle": "Tagságdíj hozzáadása",
       "editCotisationTitle": "A tagsági díj módosítása",
       "deleteConfirmWithDependants": "Ez a tag archiválva kerül, és többé nem férhet hozzá az egyesülethez. Emellett eltávolítják a szövetség törvényes gyámjai közül. {count} Tag(ok): {names}.",

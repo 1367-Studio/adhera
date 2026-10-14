@@ -2611,6 +2611,30 @@
       "titlePlaceholder": "Piemēram, gada noslēguma kampaņa",
       "createButton": "Izveidot"
     },
+    "addManualDonModal": {
+      "title": "Pievienot manuālu ziedojumu",
+      "donorModeMember": "Esošs kontakts",
+      "donorModeExternal": "Ārēja persona",
+      "searchPlaceholder": "Meklēt pēc vārda vai e-pasta…",
+      "typeToSearch": "Ierakstiet vismaz 2 rakstzīmes",
+      "noResults": "Kontakts netika atrasts",
+      "changeContact": "Mainīt kontaktu",
+      "firstNameLabel": "Vārds",
+      "lastNameLabel": "Uzvārds",
+      "emailLabel": "E-pasts",
+      "emailOptional": "(nav obligāti)",
+      "invalidEmail": "Ievadiet derīgu e-pasta adresi",
+      "amountLabel": "Ziedojuma summa",
+      "dateLabel": "Saņemšanas datums",
+      "paymentMethodLabel": "Maksājuma veids",
+      "donationFormLabel": "Saistītā ziedojuma forma",
+      "noFormOption": "Nav formas",
+      "noteLabel": "Piezīme vai maksājuma atsauce",
+      "notePlaceholder": "Maksājuma atsauce, detaļas…",
+      "sendReceiptLabel": "Nosūtīt kvīti pa e-pastu",
+      "sendReceiptHint": "Ziedotājam tiks nosūtīts apstiprinājuma e-pasts.",
+      "submitButton": "Reģistrēt ziedojumu"
+    },
     "formsView": {
       "columns": {
         "form": "Forma",
@@ -2686,6 +2710,8 @@
       "averageLabel": "Vidējais ziedojums",
       "pendingTitle": "Gaida saņemšanu",
       "encaisserButton": "Izņem naudu",
+      "addManual": "Pievienot manuālu ziedojumu",
+      "manualEntryBy": "Manuāls ieraksts · {name}",
       "fromMembershipForm": "Biedru ziedojums — \" {tier} »",
       "fromEvenement": "Pasākuma biļešu ziedojums: \" {evenement} »",
       "fromEvenementPrompt": "Ziedojums pēc reģistrācijas pasākumam: \" {evenement} »",
@@ -2695,15 +2721,18 @@
         "adhesion": "Biedrība",
         "evenementTicket": "Pasākums (biļete)",
         "evenementPrompt": "Pasākums (reģistrācija)",
-        "standalone": "Atsevišķa lapa"
+        "standalone": "Atsevišķa lapa",
+        "manual": "Manuāls ieraksts"
       },
       "paymentMethod": {
         "especes": "Sugas",
         "cheque": "Pārbaudīts",
-        "virement": "Pāreja"
+        "virement": "Pāreja",
+        "autre": "Citi"
       },
       "toasts": {
-        "encaisse": "Saņemts ziedojums"
+        "encaisse": "Saņemts ziedojums",
+        "manualDonAdded": "Ziedojums reģistrēts"
       }
     },
     "receiptsView": {
@@ -4289,6 +4318,7 @@
         "evenements": "Notikumi",
         "reunions": "Sanāksmes",
         "materiel": "Materiāls",
+        "dons": "Ziedojumi",
         "historique": "Vēsture",
         "emails": "E-pasti",
         "sms": "SMS",
@@ -4335,6 +4365,11 @@
       "borrowedOn": "Aizņemts {date}",
       "returnedOn": " · Renderēts uz {date}",
       "showingRecentLoans": "Izstādīšana {count} Jaunākie aizdevumi {total} Kopumā.",
+      "noDons": "Nav reģistrētu ziedojumu",
+      "donManualEntry": "Manuāls ieraksts",
+      "donStandalone": "Patstāvīgs ziedojums",
+      "donPending": "Gaida iekasēšanu",
+      "showingRecentDons": "Rāda {count} jaunākos ziedojumus no kopā {total}.",
       "addCotisationTitle": "Pievieno biedra maksu",
       "editCotisationTitle": "Mainīt biedru maksu",
       "deleteConfirmWithDependants": "Šis biedrs tiks arhivēts un vairs nevarēs piekļūt asociācijai. Viņš tiks arī atcelts no asociācijas likumīgā aizbildņa amata. {count} Locekļi: {names}.",
