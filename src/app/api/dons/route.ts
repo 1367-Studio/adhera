@@ -1,7 +1,15 @@
 import { NextResponse } from "next/server"
+import { z } from "zod"
 import { prisma } from "@/lib/prisma/client"
 import { parsePagination } from "@/lib/pagination"
 import { withAdminAuth } from "@/lib/api-wrapper"
+import { writeActivityLog } from "@/lib/activity-log"
+import { resolveExerciceForDate } from "@/lib/finance/exercice"
+import { resolveEmailBranding } from "@/lib/plan-limits"
+import { generateRecuFiscalForDon } from "@/lib/pdf/recu-fiscal"
+import { sendEmail } from "@/lib/mail"
+import { donConfirmationEmail } from "@/lib/email"
+import { reportError } from "@/lib/monitoring"
 
 export const GET = withAdminAuth(async (req, ctx) => {
   const { associationId } = ctx
@@ -64,7 +72,13 @@ export const GET = withAdminAuth(async (req, ctx) => {
     where.membershipAddonTierId = null
     where.evenementTicketTypeId = null
     where.evenementId           = null
+    // Without this, a manually-typed don with no linked form (origin "manual" below) matched
+    // this bucket too — donationFormId/membershipAddonTierId/evenementId are all null for it
+    // just like a real standalone-page don, so it silently double-counted in both filters.
+    where.createdByUserId       = null
   }
+  // Admin-typed via the "add manual donation" form (POST below) — see Don.createdByUserId.
+  if (origin === "manual") where.createdByUserId = { not: null }
 
   // KPI totals intentionally ignore `search` — they summarize the year, not the filtered
   // list, so typing in the search box doesn't make the summary cards jump around.
@@ -94,6 +108,10 @@ export const GET = withAdminAuth(async (req, ctx) => {
         // (Don.evenementId, see event-donation-prompt.tsx) — a different flow from the ticket
         // add-on above, but the same "came from an event" origin from an admin's viewpoint.
         evenement: { select: { id: true, title: true } },
+        // Set only on a Don created through the manual-entry form below — see
+        // Don.createdByUserId. Lets the "origine" column attribute it to the admin who
+        // typed it, instead of looking like a normal donor-submitted donation.
+        createdBy: { select: { name: true, email: true } },
       },
     }),
     prisma.don.count({ where }),
@@ -110,3 +128,151 @@ export const GET = withAdminAuth(async (req, ctx) => {
     totalCount:  aggregate._count.id,
   })
 }, { area: "dons" })
+
+const manualDonSchema = z.object({
+  donorMode:        z.enum(["member", "external"]),
+  membreId:         z.string().optional(),
+  firstName:        z.string().trim().min(1).optional(),
+  lastName:         z.string().trim().min(1).optional(),
+  email:            z.string().trim().email().optional(),
+  amount:           z.number().positive(),
+  paidAt:           z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+  paymentMethod:    z.enum(["ESPECES", "CHEQUE", "VIREMENT", "AUTRE"]),
+  donationFormId:   z.string().nullable().optional(),
+  note:             z.string().trim().optional(),
+  sendReceiptEmail: z.boolean(),
+}).refine(
+  d => d.donorMode !== "member" || !!d.membreId,
+  { message: "Contact requis", path: ["membreId"] },
+).refine(
+  d => d.donorMode !== "external" || (!!d.firstName && !!d.lastName),
+  { message: "Nom et prénom requis", path: ["firstName"] },
+)
+
+// Records a donation already received in hand (cash/cheque/transfer/other) in one step —
+// unlike the public offline flow (checkout → pending → admin "encaisser"), the admin here is
+// the one attesting the money already arrived, so paidAt is set immediately and there is no
+// intermediate pending state. Don.createdByUserId is what tells this apart from a
+// donor-submitted donation an admin merely confirmed — see the field's comment in
+// schema.prisma.
+export const POST = withAdminAuth(async (req, ctx) => {
+  const body   = await req.json().catch(() => null)
+  const parsed = manualDonSchema.safeParse(body)
+  if (!parsed.success) return NextResponse.json({ error: "Données invalides" }, { status: 422 })
+  const data = parsed.data
+
+  let firstName: string
+  let lastName:  string
+  let email:     string
+  let membreId:  string | null = null
+
+  if (data.donorMode === "member") {
+    const membre = await prisma.membre.findFirst({
+      where:  { id: data.membreId, associationId: ctx.associationId, deletedAt: null },
+      select: { id: true, firstName: true, lastName: true, email: true },
+    })
+    if (!membre) return NextResponse.json({ error: "Contact introuvable" }, { status: 404 })
+    membreId  = membre.id
+    firstName = membre.firstName
+    lastName  = membre.lastName
+    email     = membre.email ?? ""
+  } else {
+    firstName = data.firstName!
+    lastName  = data.lastName!
+    email     = data.email ?? ""
+  }
+
+  if (data.donationFormId) {
+    const form = await prisma.donationForm.findFirst({
+      where:  { id: data.donationFormId, associationId: ctx.associationId },
+      select: { id: true },
+    })
+    if (!form) return NextResponse.json({ error: "Formulaire introuvable" }, { status: 404 })
+  }
+
+  // Anchored at noon UTC, same convention as Membre.birthDate — a date-only value stored at
+  // UTC midnight would read back as the previous day for anyone west of Greenwich.
+  const paidAt = new Date(`${data.paidAt}T12:00:00.000Z`)
+
+  const don = await prisma.don.create({
+    data: {
+      associationId:   ctx.associationId,
+      membreId,
+      donorType:       "INDIVIDUAL",
+      firstName,
+      lastName,
+      email,
+      amount:          data.amount,
+      message:         data.note || null,
+      donationFormId:  data.donationFormId || null,
+      paymentMethod:   data.paymentMethod,
+      paidAt,
+      createdByUserId: ctx.userId,
+    },
+  })
+
+  const exercice = await resolveExerciceForDate(ctx.associationId, paidAt)
+  await prisma.income.create({
+    data: {
+      associationId: ctx.associationId,
+      exerciceId:    exercice?.status === "OUVERT" ? exercice.id : null,
+      donId:         don.id,
+      amount:        data.amount,
+      description:   `Don de ${firstName} ${lastName}`,
+      paymentMethod: data.paymentMethod,
+      source:        "MANUAL",
+      status:        "PAID",
+      date:          paidAt,
+    },
+  })
+
+  await writeActivityLog({
+    associationId: ctx.associationId,
+    actorId:       ctx.userId,
+    action:        "DON_CREATED",
+    entity:        "Don",
+    entityId:      don.id,
+    label:         `${firstName} ${lastName} — ${data.amount}€ (saisie manuelle, ${data.paymentMethod})`,
+    metadata:      { amount: data.amount, paymentMethod: data.paymentMethod, manual: true },
+  })
+
+  if (data.sendReceiptEmail && email) {
+    const assoc = await prisma.association.findUnique({
+      where:  { id: ctx.associationId },
+      select: { id: true, name: true, address: true, city: true, siren: true, rna: true, canIssueTaxReceipts: true, objet: true, organismeCategory: true, organismeCategoryDetail: true, plan: true, customBrandingEnabled: true, logoUrl: true },
+    })
+    if (assoc) {
+      // Null receiptMode (no tier, same as a standalone donation) means "always receipt
+      // when the association can issue them" — see the field's comment in schema.prisma.
+      const issueReceipt = don.receiptMode !== "NONE"
+      let pdfAttachment: { filename: string; content: Buffer } | undefined
+
+      if (assoc.canIssueTaxReceipts && issueReceipt) {
+        try {
+          const pdf = await generateRecuFiscalForDon(don, assoc)
+          pdfAttachment = { filename: `recu-fiscal-${don.receiptNumber ?? don.id}.pdf`, content: pdf }
+        } catch (err) {
+          reportError(err, { area: "payments", action: "dons.manual.generate-recu-fiscal", extra: { associationId: ctx.associationId, donId: don.id } })
+        }
+      }
+
+      sendEmail({
+        ...donConfirmationEmail({
+          firstName,
+          email,
+          associationName:     assoc.name,
+          amount:              data.amount,
+          paidAt,
+          canIssueTaxReceipts: assoc.canIssueTaxReceipts && issueReceipt,
+          receiptNumber:       don.receiptNumber ?? undefined,
+          donorType:           "INDIVIDUAL",
+          branding:            await resolveEmailBranding(ctx.associationId),
+        }),
+        attachments: pdfAttachment ? [pdfAttachment] : undefined,
+      }, { associationId: ctx.associationId, membreId: membreId ?? undefined, source: "TRANSACTION", sourceId: don.id })
+        .catch(error => reportError(error, { area: "email", action: "dons.manual-confirmation-email", extra: { associationId: ctx.associationId, donId: don.id } }))
+    }
+  }
+
+  return NextResponse.json(don, { status: 201 })
+}, { area: "dons", module: "dons" })

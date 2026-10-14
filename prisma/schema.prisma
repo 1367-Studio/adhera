@@ -248,6 +248,7 @@ enum DonPaymentMethod {
   ESPECES
   CHEQUE
   VIREMENT
+  AUTRE
 }
 
 // Catégories de l'organisme bénéficiaire cochées sur les Cerfa 11580 (2041-RD) et
@@ -734,6 +735,7 @@ model User {
   erasureRequestsHeld      ErasureRequest[]       @relation("ErasureHeldBy")
   boutiqueResponsableFor   Association[]          @relation("BoutiqueResponsable")
   boutiqueCommandesCreated BoutiqueCommande[]     @relation("BoutiqueCommandeCreatedBy")
+  donsCreatedManually      Don[]
 
   @@unique([email, associationId])
   @@index([associationId, role])
@@ -1477,6 +1479,12 @@ model Don {
   // "always full", matching the pre-existing behavior.
   receiptMode           DonationReceiptMode?
   deductibleAmount      Decimal?             @db.Decimal(10, 2)
+  // Set only by the admin "add manual donation" form (POST /api/dons) — every other path
+  // that creates a Don (public/portal checkout, Stripe webhook) leaves this null. This is
+  // the only thing that distinguishes an admin-typed record from a donor-submitted offline
+  // donation an admin merely confirmed (encaisser) once both end up with the same paidAt +
+  // paymentMethod — without it the two are indistinguishable in the dons list.
+  createdByUserId       String?
 
   association         Association           @relation(fields: [associationId], references: [id])
   membre              Membre?               @relation(fields: [membreId], references: [id])
@@ -1495,6 +1503,7 @@ model Don {
   evenementTicketType EvenementTicketType?  @relation(fields: [evenementTicketTypeId], references: [id], onDelete: SetNull)
   // The Income row this donation produced once paid — see Income.donId.
   income              Income?
+  createdBy           User?                 @relation(fields: [createdByUserId], references: [id], onDelete: SetNull)
 
   @@unique([associationId, receiptNumber])
   @@index([associationId, paidAt])
@@ -1503,6 +1512,7 @@ model Don {
   @@index([donationFormId])
   @@index([subscriptionId])
   @@index([membershipAddonTierId])
+  @@index([createdByUserId])
   @@index([evenementTicketTypeId])
 }
 

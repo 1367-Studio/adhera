@@ -2611,6 +2611,30 @@
       "titlePlaceholder": "Npr. kampanja ob koncu leta",
       "createButton": "Ustvarjaj"
     },
+    "addManualDonModal": {
+      "title": "Dodaj ročno donacijo",
+      "donorModeMember": "Obstoječi stik",
+      "donorModeExternal": "Zunanja oseba",
+      "searchPlaceholder": "Iskanje po imenu ali e-pošti…",
+      "typeToSearch": "Vnesite vsaj 2 znaka",
+      "noResults": "Stik ni bil najden",
+      "changeContact": "Spremeni stik",
+      "firstNameLabel": "Ime",
+      "lastNameLabel": "Priimek",
+      "emailLabel": "E-pošta",
+      "emailOptional": "(neobvezno)",
+      "invalidEmail": "Vnesite veljaven e-poštni naslov",
+      "amountLabel": "Znesek donacije",
+      "dateLabel": "Datum prejema",
+      "paymentMethodLabel": "Način plačila",
+      "donationFormLabel": "Povezan obrazec donacije",
+      "noFormOption": "Brez obrazca",
+      "noteLabel": "Opomba ali referenca plačila",
+      "notePlaceholder": "Referenca plačila, podrobnosti…",
+      "sendReceiptLabel": "Pošlji potrdilo po e-pošti",
+      "sendReceiptHint": "Darovalcu bo poslano potrditveno e-poštno sporočilo.",
+      "submitButton": "Zabeleži donacijo"
+    },
     "formsView": {
       "columns": {
         "form": "Oblika",
@@ -2686,6 +2710,8 @@
       "averageLabel": "Povprečna donacija",
       "pendingTitle": "Čakanje na prevzem",
       "encaisserButton": "Izplačilo denarja",
+      "addManual": "Dodaj ročno donacijo",
+      "manualEntryBy": "Ročni vnos · {name}",
       "fromMembershipForm": "Donacija članarine — \" {tier} »",
       "fromEvenement": "Donacija vstopnic za dogodek: \" {evenement} »",
       "fromEvenementPrompt": "Donacija po prijavi na dogodek: \" {evenement} »",
@@ -2695,15 +2721,18 @@
         "adhesion": "Članstvo",
         "evenementTicket": "Dogodek (vstopnica)",
         "evenementPrompt": "Dogodek (registracija)",
-        "standalone": "Samostojna stran"
+        "standalone": "Samostojna stran",
+        "manual": "Ročni vnos"
       },
       "paymentMethod": {
         "especes": "Vrste",
         "cheque": "Preverjeno",
-        "virement": "Prenos"
+        "virement": "Prenos",
+        "autre": "Drugo"
       },
       "toasts": {
-        "encaisse": "Prejeta donacija"
+        "encaisse": "Prejeta donacija",
+        "manualDonAdded": "Donacija zabeležena"
       }
     },
     "receiptsView": {
@@ -4289,6 +4318,7 @@
         "evenements": "Dogodki",
         "reunions": "Sestanki",
         "materiel": "Gradivo",
+        "dons": "Donacije",
         "historique": "Zgodovina",
         "emails": "E-pošta",
         "sms": "SMS",
@@ -4335,6 +4365,11 @@
       "borrowedOn": "Izposojeno naprej {date}",
       "returnedOn": " · Upodobljeno na {date}",
       "showingRecentLoans": "Prikazovanje {count} Najnovejša posojila na {total} Skupaj.",
+      "noDons": "Ni zabeležene donacije",
+      "donManualEntry": "Ročni vnos",
+      "donStandalone": "Samostojna donacija",
+      "donPending": "Čaka na unovčitev",
+      "showingRecentDons": "Prikazanih {count} najnovejših donacij od skupno {total}.",
       "addCotisationTitle": "Dodajte članarino",
       "editCotisationTitle": "Spremeni članarino",
       "deleteConfirmWithDependants": "Ta član bo arhiviran in ne bo več mogel dostopati do združenja. Prav tako bo odstranjen kot zakoniti skrbnik združenja. {count} Član(i): {names}.",

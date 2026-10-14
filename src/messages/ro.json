@@ -2611,6 +2611,30 @@
       "titlePlaceholder": "De exemplu, campania de sfârșit de an",
       "createButton": "Creează"
     },
+    "addManualDonModal": {
+      "title": "Adaugă o donație manuală",
+      "donorModeMember": "Contact existent",
+      "donorModeExternal": "Persoană externă",
+      "searchPlaceholder": "Căutare după nume sau email…",
+      "typeToSearch": "Introduceți cel puțin 2 caractere",
+      "noResults": "Niciun contact găsit",
+      "changeContact": "Schimbă contactul",
+      "firstNameLabel": "Prenume",
+      "lastNameLabel": "Nume",
+      "emailLabel": "Email",
+      "emailOptional": "(opțional)",
+      "invalidEmail": "Introduceți o adresă de email validă",
+      "amountLabel": "Suma donației",
+      "dateLabel": "Data primirii",
+      "paymentMethodLabel": "Metodă de plată",
+      "donationFormLabel": "Formular de donație asociat",
+      "noFormOption": "Niciun formular",
+      "noteLabel": "Notă sau referință de plată",
+      "notePlaceholder": "Referință de plată, detalii…",
+      "sendReceiptLabel": "Trimite o chitanță prin email",
+      "sendReceiptHint": "Un email de confirmare va fi trimis donatorului.",
+      "submitButton": "Înregistrează donația"
+    },
     "formsView": {
       "columns": {
         "form": "Formă",
@@ -2686,6 +2710,8 @@
       "averageLabel": "Donație medie",
       "pendingTitle": "Așteptarea colectării",
       "encaisserButton": "Încasare",
+      "addManual": "Adaugă o donație manuală",
+      "manualEntryBy": "Înregistrare manuală · {name}",
       "fromMembershipForm": "Donație pentru membri — \" {tier} »",
       "fromEvenement": "Donare de bilete la eveniment: \" {evenement} »",
       "fromEvenementPrompt": "Donație după înregistrarea pentru eveniment: \" {evenement} »",
@@ -2695,15 +2721,18 @@
         "adhesion": "Calitatea de membru",
         "evenementTicket": "Eveniment (bilet)",
         "evenementPrompt": "Eveniment (înscriere)",
-        "standalone": "Pagină independentă"
+        "standalone": "Pagină independentă",
+        "manual": "Înregistrare manuală"
       },
       "paymentMethod": {
         "especes": "Specii",
         "cheque": "Bifat",
-        "virement": "Transfer"
+        "virement": "Transfer",
+        "autre": "Altul"
       },
       "toasts": {
-        "encaisse": "Donație primită"
+        "encaisse": "Donație primită",
+        "manualDonAdded": "Donație înregistrată"
       }
     },
     "receiptsView": {
@@ -4289,6 +4318,7 @@
         "evenements": "Evenimente",
         "reunions": "Întâlniri",
         "materiel": "Material",
+        "dons": "Donații",
         "historique": "Istoric",
         "emails": "Emailuri",
         "sms": "SMS",
@@ -4335,6 +4365,11 @@
       "borrowedOn": "Împrumutat pe {date}",
       "returnedOn": " · Redat pe {date}",
       "showingRecentLoans": "Expunere {count} Ultimele împrumuturi pe {total} în total.",
+      "noDons": "Nicio donație înregistrată",
+      "donManualEntry": "Înregistrare manuală",
+      "donStandalone": "Donație independentă",
+      "donPending": "În așteptarea încasării",
+      "showingRecentDons": "Se afișează cele mai recente {count} donații din totalul de {total}.",
       "addCotisationTitle": "Adaugă o cotizație de membru",
       "editCotisationTitle": "Modifică taxa de membru",
       "deleteConfirmWithDependants": "Acest membru va fi arhivat și nu va mai putea accesa asociația. De asemenea, va fi înlăturat din funcția de tutore legal al asociației. {count} Membru(i): {names}.",

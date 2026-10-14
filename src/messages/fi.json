@@ -2611,6 +2611,30 @@
       "titlePlaceholder": "Esim. vuoden lopun kampanja",
       "createButton": "Luo"
     },
+    "addManualDonModal": {
+      "title": "Lisää manuaalinen lahjoitus",
+      "donorModeMember": "Olemassa oleva yhteystieto",
+      "donorModeExternal": "Ulkopuolinen henkilö",
+      "searchPlaceholder": "Hae nimellä tai sähköpostilla…",
+      "typeToSearch": "Kirjoita vähintään 2 merkkiä",
+      "noResults": "Yhteystietoa ei löytynyt",
+      "changeContact": "Vaihda yhteystieto",
+      "firstNameLabel": "Etunimi",
+      "lastNameLabel": "Sukunimi",
+      "emailLabel": "Sähköposti",
+      "emailOptional": "(valinnainen)",
+      "invalidEmail": "Anna kelvollinen sähköpostiosoite",
+      "amountLabel": "Lahjoituksen määrä",
+      "dateLabel": "Vastaanottopäivä",
+      "paymentMethodLabel": "Maksutapa",
+      "donationFormLabel": "Linkitetty lahjoituslomake",
+      "noFormOption": "Ei lomaketta",
+      "noteLabel": "Huomautus tai maksuviite",
+      "notePlaceholder": "Maksuviite, tiedot…",
+      "sendReceiptLabel": "Lähetä kuitti sähköpostitse",
+      "sendReceiptHint": "Lahjoittajalle lähetetään vahvistussähköposti.",
+      "submitButton": "Tallenna lahjoitus"
+    },
     "formsView": {
       "columns": {
         "form": "Muoto",
@@ -2686,6 +2710,8 @@
       "averageLabel": "Keskimääräinen lahjoitus",
       "pendingTitle": "Odotan noutoa",
       "encaisserButton": "Cash out",
+      "addManual": "Lisää manuaalinen lahjoitus",
+      "manualEntryBy": "Manuaalinen kirjaus · {name}",
       "fromMembershipForm": "Jäsenlahjoitus — \" {tier} »",
       "fromEvenement": "Tapahtumalippujen lahjoitus: \" {evenement} »",
       "fromEvenementPrompt": "Lahjoitus tapahtumaan rekisteröitymisen jälkeen: \" {evenement} »",
@@ -2695,15 +2721,18 @@
         "adhesion": "Jäsenyys",
         "evenementTicket": "Tapahtuma (lippu)",
         "evenementPrompt": "Tapahtuma (rekisteröinti)",
-        "standalone": "Itsenäinen sivu"
+        "standalone": "Itsenäinen sivu",
+        "manual": "Manuaalinen kirjaus"
       },
       "paymentMethod": {
         "especes": "Lajit",
         "cheque": "Tarkista",
-        "virement": "Siirto"
+        "virement": "Siirto",
+        "autre": "Muu"
       },
       "toasts": {
-        "encaisse": "Vastaanotettu lahjoitus"
+        "encaisse": "Vastaanotettu lahjoitus",
+        "manualDonAdded": "Lahjoitus tallennettu"
       }
     },
     "receiptsView": {
@@ -4289,6 +4318,7 @@
         "evenements": "Tapahtumat",
         "reunions": "Kokoukset",
         "materiel": "Materiaali",
+        "dons": "Lahjoitukset",
         "historique": "Historia",
         "emails": "Sähköpostit",
         "sms": "SMS",
@@ -4335,6 +4365,11 @@
       "borrowedOn": "Lainattu {date}",
       "returnedOn": " · Renderöity {date}",
       "showingRecentLoans": "Näyttäminen {count} Viimeisimmät lainat {total} Yhteensä.",
+      "noDons": "Ei kirjattuja lahjoituksia",
+      "donManualEntry": "Manuaalinen kirjaus",
+      "donStandalone": "Itsenäinen lahjoitus",
+      "donPending": "Odottaa veloitusta",
+      "showingRecentDons": "Näytetään {count} viimeisintä lahjoitusta yhteensä {total}:sta.",
       "addCotisationTitle": "Lisää jäsenmaksu",
       "editCotisationTitle": "Muuta jäsenmaksua",
       "deleteConfirmWithDependants": "Tämä jäsen arkistoidaan eikä hän enää pääse käsiksi yhdistykseen. Hänet myös poistetaan yhdistyksen laillisen huoltajan asemasta. {count} Jäsen(t): {names}.",

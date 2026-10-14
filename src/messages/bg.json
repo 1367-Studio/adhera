@@ -2611,6 +2611,30 @@
       "titlePlaceholder": "Например кампания в края на годината",
       "createButton": "Създаване"
     },
+    "addManualDonModal": {
+      "title": "Добавяне на ръчно дарение",
+      "donorModeMember": "Съществуващ контакт",
+      "donorModeExternal": "Външно лице",
+      "searchPlaceholder": "Търсене по име или имейл…",
+      "typeToSearch": "Въведете поне 2 символа",
+      "noResults": "Няма намерен контакт",
+      "changeContact": "Смяна на контакта",
+      "firstNameLabel": "Име",
+      "lastNameLabel": "Фамилия",
+      "emailLabel": "Имейл",
+      "emailOptional": "(незадължително)",
+      "invalidEmail": "Въведете валиден имейл адрес",
+      "amountLabel": "Сума на дарението",
+      "dateLabel": "Дата на получаване",
+      "paymentMethodLabel": "Начин на плащане",
+      "donationFormLabel": "Свързан формуляр за дарение",
+      "noFormOption": "Без формуляр",
+      "noteLabel": "Бележка или референция за плащане",
+      "notePlaceholder": "Референция на плащането, подробности…",
+      "sendReceiptLabel": "Изпращане на разписка по имейл",
+      "sendReceiptHint": "Имейл за потвърждение ще бъде изпратен на дарителя.",
+      "submitButton": "Запазване на дарението"
+    },
     "formsView": {
       "columns": {
         "form": "Форма",
@@ -2686,6 +2710,8 @@
       "averageLabel": "Средно дарение",
       "pendingTitle": "Чакане за събиране",
       "encaisserButton": "Плащане на пари",
+      "addManual": "Добавяне на ръчно дарение",
+      "manualEntryBy": "Ръчно въвеждане · {name}",
       "fromMembershipForm": "Дарение за членство — \" {tier} »",
       "fromEvenement": "Дарение за билет за събитие: \" {evenement} »",
       "fromEvenementPrompt": "Дарение след регистрация за събитието: \" {evenement} »",
@@ -2695,15 +2721,18 @@
         "adhesion": "Членство",
         "evenementTicket": "Събитие (билет)",
         "evenementPrompt": "Събитие (регистрация)",
-        "standalone": "Самостоятелна страница"
+        "standalone": "Самостоятелна страница",
+        "manual": "Ръчно въвеждане"
       },
       "paymentMethod": {
         "especes": "Видове",
         "cheque": "Проверете",
-        "virement": "Трансфер"
+        "virement": "Трансфер",
+        "autre": "Друго"
       },
       "toasts": {
-        "encaisse": "Получено дарение"
+        "encaisse": "Получено дарение",
+        "manualDonAdded": "Дарението е записано"
       }
     },
     "receiptsView": {
@@ -4289,6 +4318,7 @@
         "evenements": "Събития",
         "reunions": "Срещи",
         "materiel": "Материал",
+        "dons": "Дарения",
         "historique": "История",
         "emails": "Имейли",
         "sms": "SMS",
@@ -4335,6 +4365,11 @@
       "borrowedOn": "Взето назаем {date}",
       "returnedOn": " · Рендерирано на {date}",
       "showingRecentLoans": "Показване {count} Последни заеми {total} Общо.",
+      "noDons": "Няма регистрирано дарение",
+      "donManualEntry": "Ръчно въвеждане",
+      "donStandalone": "Самостоятелно дарение",
+      "donPending": "Чака осребряване",
+      "showingRecentDons": "Показани са {count} най-скорошни дарения от общо {total}.",
       "addCotisationTitle": "Добавете членска такса",
       "editCotisationTitle": "Промяна на членската такса",
       "deleteConfirmWithDependants": "Този член ще бъде архивиран и вече няма да има достъп до асоциацията. Той също така ще бъде отстранен като законен настойник на асоциацията. {count} Членове: {names}.",

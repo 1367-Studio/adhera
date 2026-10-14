@@ -2611,6 +2611,30 @@
       "titlePlaceholder": "T.ex. årsslutskampanj",
       "createButton": "Skapa"
     },
+    "addManualDonModal": {
+      "title": "Lägg till en manuell donation",
+      "donorModeMember": "Befintlig kontakt",
+      "donorModeExternal": "Extern person",
+      "searchPlaceholder": "Sök efter namn eller e-post…",
+      "typeToSearch": "Skriv minst 2 tecken",
+      "noResults": "Ingen kontakt hittades",
+      "changeContact": "Byt kontakt",
+      "firstNameLabel": "Förnamn",
+      "lastNameLabel": "Efternamn",
+      "emailLabel": "E-post",
+      "emailOptional": "(valfritt)",
+      "invalidEmail": "Ange en giltig e-postadress",
+      "amountLabel": "Donationsbelopp",
+      "dateLabel": "Mottagandedatum",
+      "paymentMethodLabel": "Betalningsmetod",
+      "donationFormLabel": "Kopplat donationsformulär",
+      "noFormOption": "Inget formulär",
+      "noteLabel": "Anteckning eller betalningsreferens",
+      "notePlaceholder": "Betalningsreferens, detaljer…",
+      "sendReceiptLabel": "Skicka ett kvitto via e-post",
+      "sendReceiptHint": "Ett bekräftelsemejl skickas till givaren.",
+      "submitButton": "Registrera donationen"
+    },
     "formsView": {
       "columns": {
         "form": "Form",
@@ -2686,6 +2710,8 @@
       "averageLabel": "Genomsnittlig donation",
       "pendingTitle": "Väntar på insamling",
       "encaisserButton": "Cash out",
+      "addManual": "Lägg till en manuell donation",
+      "manualEntryBy": "Manuell registrering · {name}",
       "fromMembershipForm": "Medlemsdonation — \" {tier} »",
       "fromEvenement": "Donation till evenemangsbiljetter: \" {evenement} »",
       "fromEvenementPrompt": "Donation efter registrering för evenemanget: \" {evenement} »",
@@ -2695,15 +2721,18 @@
         "adhesion": "Medlemskap",
         "evenementTicket": "Evenemang (biljett)",
         "evenementPrompt": "Evenemang (registrering)",
-        "standalone": "Fristående sida"
+        "standalone": "Fristående sida",
+        "manual": "Manuell registrering"
       },
       "paymentMethod": {
         "especes": "Arter",
         "cheque": "Check",
-        "virement": "Övergång"
+        "virement": "Övergång",
+        "autre": "Övrigt"
       },
       "toasts": {
-        "encaisse": "Mottagen donation"
+        "encaisse": "Mottagen donation",
+        "manualDonAdded": "Donation registrerad"
       }
     },
     "receiptsView": {
@@ -4289,6 +4318,7 @@
         "evenements": "Evenemang",
         "reunions": "Möten",
         "materiel": "Material",
+        "dons": "Donationer",
         "historique": "Historik",
         "emails": "E-post",
         "sms": "SMS",
@@ -4335,6 +4365,11 @@
       "borrowedOn": "Lånad på {date}",
       "returnedOn": " · Renderad på {date}",
       "showingRecentLoans": "Utställning {count} Senaste lån på {total} Totalt.",
+      "noDons": "Ingen donation registrerad",
+      "donManualEntry": "Manuell registrering",
+      "donStandalone": "Fristående donation",
+      "donPending": "Väntar på inlösen",
+      "showingRecentDons": "Visar de {count} senaste donationerna av totalt {total}.",
       "addCotisationTitle": "Lägg till en medlemsavgift",
       "editCotisationTitle": "Ändra medlemsavgiften",
       "deleteConfirmWithDependants": "Denna medlem kommer att arkiveras och kommer inte längre att kunna få tillgång till föreningen. Han kommer också att tas bort som föreningens juridiska förmyndare. {count} Medlemmar: {names}.",

@@ -2611,6 +2611,30 @@
       "titlePlaceholder": "Npr. Kampanja na kraju godine",
       "createButton": "Stvori"
     },
+    "addManualDonModal": {
+      "title": "Dodaj ručnu donaciju",
+      "donorModeMember": "Postojeći kontakt",
+      "donorModeExternal": "Vanjska osoba",
+      "searchPlaceholder": "Pretraži po imenu ili e-mailu…",
+      "typeToSearch": "Unesite najmanje 2 znaka",
+      "noResults": "Kontakt nije pronađen",
+      "changeContact": "Promijeni kontakt",
+      "firstNameLabel": "Ime",
+      "lastNameLabel": "Prezime",
+      "emailLabel": "E-mail",
+      "emailOptional": "(neobavezno)",
+      "invalidEmail": "Unesite valjanu adresu e-pošte",
+      "amountLabel": "Iznos donacije",
+      "dateLabel": "Datum primitka",
+      "paymentMethodLabel": "Način plaćanja",
+      "donationFormLabel": "Povezani obrazac donacije",
+      "noFormOption": "Bez obrasca",
+      "noteLabel": "Napomena ili referenca plaćanja",
+      "notePlaceholder": "Referenca plaćanja, detalji…",
+      "sendReceiptLabel": "Pošalji potvrdu e-mailom",
+      "sendReceiptHint": "Darovatelju će biti poslan e-mail s potvrdom.",
+      "submitButton": "Zabilježi donaciju"
+    },
     "formsView": {
       "columns": {
         "form": "Oblik",
@@ -2686,6 +2710,8 @@
       "averageLabel": "Prosječna donacija",
       "pendingTitle": "Čekanje na preuzimanje",
       "encaisserButton": "Isplata",
+      "addManual": "Dodaj ručnu donaciju",
+      "manualEntryBy": "Ručni unos · {name}",
       "fromMembershipForm": "Donacija članarine — \" {tier} »",
       "fromEvenement": "Donacija ulaznica za događaj: \" {evenement} »",
       "fromEvenementPrompt": "Donacija nakon registracije za događaj: \" {evenement} »",
@@ -2695,15 +2721,18 @@
         "adhesion": "Članstvo",
         "evenementTicket": "Događaj (ulaznica)",
         "evenementPrompt": "Događaj (registracija)",
-        "standalone": "Samostalna stranica"
+        "standalone": "Samostalna stranica",
+        "manual": "Ručni unos"
       },
       "paymentMethod": {
         "especes": "Vrste",
         "cheque": "Provjera",
-        "virement": "Prijenos"
+        "virement": "Prijenos",
+        "autre": "Ostalo"
       },
       "toasts": {
-        "encaisse": "Primljena donacija"
+        "encaisse": "Primljena donacija",
+        "manualDonAdded": "Donacija zabilježena"
       }
     },
     "receiptsView": {
@@ -4289,6 +4318,7 @@
         "evenements": "Događaji",
         "reunions": "Sastanci",
         "materiel": "Materijal",
+        "dons": "Donacije",
         "historique": "Povijest",
         "emails": "E-mailovi",
         "sms": "SMS",
@@ -4335,6 +4365,11 @@
       "borrowedOn": "Posuđeno dalje {date}",
       "returnedOn": " · Renderirano na {date}",
       "showingRecentLoans": "Prikazivanje {count} Najnoviji zajmovi na {total} ukupno.",
+      "noDons": "Nema zabilježene donacije",
+      "donManualEntry": "Ručni unos",
+      "donStandalone": "Samostalna donacija",
+      "donPending": "Čeka naplatu",
+      "showingRecentDons": "Prikazano {count} najnovijih donacija od ukupno {total}.",
       "addCotisationTitle": "Dodajte članarinu",
       "editCotisationTitle": "Promjena članarine",
       "deleteConfirmWithDependants": "Ovaj član bit će arhiviran i više neće moći pristupiti udruzi. Također će biti uklonjen kao zakonski skrbnik udruge. {count} Članovi: {names}.",

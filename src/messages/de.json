@@ -2611,6 +2611,30 @@
       "titlePlaceholder": "Zum Beispiel die Jahresendkampagne",
       "createButton": "Erstellen"
     },
+    "addManualDonModal": {
+      "title": "Manuelle Spende hinzufügen",
+      "donorModeMember": "Bestehender Kontakt",
+      "donorModeExternal": "Externe Person",
+      "searchPlaceholder": "Nach Name oder E-Mail suchen…",
+      "typeToSearch": "Mindestens 2 Zeichen eingeben",
+      "noResults": "Kein Kontakt gefunden",
+      "changeContact": "Kontakt ändern",
+      "firstNameLabel": "Vorname",
+      "lastNameLabel": "Nachname",
+      "emailLabel": "E-Mail",
+      "emailOptional": "(optional)",
+      "invalidEmail": "Geben Sie eine gültige E-Mail-Adresse ein",
+      "amountLabel": "Spendenbetrag",
+      "dateLabel": "Eingangsdatum",
+      "paymentMethodLabel": "Zahlungsmethode",
+      "donationFormLabel": "Verknüpftes Spendenformular",
+      "noFormOption": "Kein Formular",
+      "noteLabel": "Notiz oder Zahlungsreferenz",
+      "notePlaceholder": "Zahlungsreferenz, Details…",
+      "sendReceiptLabel": "Quittung per E-Mail senden",
+      "sendReceiptHint": "Eine Bestätigungs-E-Mail wird an den Spender gesendet.",
+      "submitButton": "Spende erfassen"
+    },
     "formsView": {
       "columns": {
         "form": "Formular",
@@ -2686,6 +2710,8 @@
       "averageLabel": "Durchschnittliche Spende",
       "pendingTitle": "Wartet auf Abholung",
       "encaisserButton": "Auszahlung",
+      "addManual": "Manuelle Spende hinzufügen",
+      "manualEntryBy": "Manuelle Erfassung · {name}",
       "fromMembershipForm": "Mitgliedsspende — \" {tier} »",
       "fromEvenement": "Veranstaltungsticketspende: \" {evenement} »",
       "fromEvenementPrompt": "Spende nach der Anmeldung für die Veranstaltung: \" {evenement} »",
@@ -2695,15 +2721,18 @@
         "adhesion": "Mitgliedschaft",
         "evenementTicket": "Veranstaltung (Ticket)",
         "evenementPrompt": "Veranstaltung (Anmeldung)",
-        "standalone": "Eigenständige Seite"
+        "standalone": "Eigenständige Seite",
+        "manual": "Manuelle Erfassung"
       },
       "paymentMethod": {
         "especes": "Arten",
         "cheque": "Check",
-        "virement": "Transfer"
+        "virement": "Transfer",
+        "autre": "Sonstiges"
       },
       "toasts": {
-        "encaisse": "Erhaltene Spende"
+        "encaisse": "Erhaltene Spende",
+        "manualDonAdded": "Spende erfasst"
       }
     },
     "receiptsView": {
@@ -4289,6 +4318,7 @@
         "evenements": "Veranstaltungen",
         "reunions": "Treffen",
         "materiel": "Material",
+        "dons": "Spenden",
         "historique": "Verlauf",
         "emails": "E-Mails",
         "sms": "SMS",
@@ -4335,6 +4365,11 @@
       "borrowedOn": "Geliehen auf {date}",
       "returnedOn": " · Gerendert auf {date}",
       "showingRecentLoans": "Präsentation {count} Neueste Kredite auf {total} insgesamt.",
+      "noDons": "Keine Spende erfasst",
+      "donManualEntry": "Manuelle Erfassung",
+      "donStandalone": "Eigenständige Spende",
+      "donPending": "Einlösung ausstehend",
+      "showingRecentDons": "Zeigt die {count} neuesten Spenden von insgesamt {total}.",
       "addCotisationTitle": "Fügen Sie eine Mitgliedsgebühr hinzu",
       "editCotisationTitle": "Änderung der Mitgliedsgebühr",
       "deleteConfirmWithDependants": "Dieses Mitglied wird archiviert und hat keinen Zugriff mehr auf die Vereinigung. Er wird außerdem als gesetzlicher Vormund der Vereinigung entfernt. {count} Mitglied(e): {names}.",

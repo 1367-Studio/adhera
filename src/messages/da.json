@@ -2611,6 +2611,30 @@
       "titlePlaceholder": "F.eks. afslutningskampagne",
       "createButton": "Opret"
     },
+    "addManualDonModal": {
+      "title": "Tilføj en manuel donation",
+      "donorModeMember": "Eksisterende kontakt",
+      "donorModeExternal": "Ekstern person",
+      "searchPlaceholder": "Søg efter navn eller e-mail…",
+      "typeToSearch": "Indtast mindst 2 tegn",
+      "noResults": "Ingen kontakt fundet",
+      "changeContact": "Skift kontakt",
+      "firstNameLabel": "Fornavn",
+      "lastNameLabel": "Efternavn",
+      "emailLabel": "E-mail",
+      "emailOptional": "(valgfrit)",
+      "invalidEmail": "Indtast en gyldig e-mailadresse",
+      "amountLabel": "Donationsbeløb",
+      "dateLabel": "Dato for modtagelse",
+      "paymentMethodLabel": "Betalingsmetode",
+      "donationFormLabel": "Tilknyttet donationsformular",
+      "noFormOption": "Ingen formular",
+      "noteLabel": "Note eller betalingsreference",
+      "notePlaceholder": "Betalingsreference, detaljer…",
+      "sendReceiptLabel": "Send en kvittering via e-mail",
+      "sendReceiptHint": "En bekræftelsesmail sendes til donoren.",
+      "submitButton": "Registrer donationen"
+    },
     "formsView": {
       "columns": {
         "form": "Form",
@@ -2686,6 +2710,8 @@
       "averageLabel": "Gennemsnitlig donation",
       "pendingTitle": "Venter på afhentning",
       "encaisserButton": "Cash out",
+      "addManual": "Tilføj en manuel donation",
+      "manualEntryBy": "Manuel registrering · {name}",
       "fromMembershipForm": "Medlemsdonation — \" {tier} »",
       "fromEvenement": "Donation af eventbillet: \" {evenement} »",
       "fromEvenementPrompt": "Donation efter tilmelding til arrangementet: \" {evenement} »",
@@ -2695,15 +2721,18 @@
         "adhesion": "Medlemskab",
         "evenementTicket": "Arrangement (billet)",
         "evenementPrompt": "Arrangement (registrering)",
-        "standalone": "Selvstændig side"
+        "standalone": "Selvstændig side",
+        "manual": "Manuel registrering"
       },
       "paymentMethod": {
         "especes": "Arter",
         "cheque": "Tjek",
-        "virement": "Overførsel"
+        "virement": "Overførsel",
+        "autre": "Andet"
       },
       "toasts": {
-        "encaisse": "Modtaget donation"
+        "encaisse": "Modtaget donation",
+        "manualDonAdded": "Donation registreret"
       }
     },
     "receiptsView": {
@@ -4289,6 +4318,7 @@
         "evenements": "Begivenheder",
         "reunions": "Møder",
         "materiel": "Materiale",
+        "dons": "Donationer",
         "historique": "Historik",
         "emails": "E-mails",
         "sms": "SMS",
@@ -4335,6 +4365,11 @@
       "borrowedOn": "Lånt på {date}",
       "returnedOn": " · Renderet på {date}",
       "showingRecentLoans": "Udstilling {count} Seneste lån på {total} I alt.",
+      "noDons": "Ingen donation registreret",
+      "donManualEntry": "Manuel registrering",
+      "donStandalone": "Selvstændig donation",
+      "donPending": "Afventer indløsning",
+      "showingRecentDons": "Viser de {count} seneste donationer ud af {total} i alt.",
       "addCotisationTitle": "Tilføj et medlemsgebyr",
       "editCotisationTitle": "Ændr medlemsgebyret",
       "deleteConfirmWithDependants": "Dette medlem vil blive arkiveret og vil ikke længere kunne få adgang til foreningen. Han vil også blive fjernet som foreningens juridiske værge. {count} Medlem(e): {names}.",
