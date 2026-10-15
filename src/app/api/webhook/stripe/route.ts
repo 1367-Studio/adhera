@@ -10,6 +10,7 @@ import { buildDocumentPdf } from "@/lib/pdf/document-pdf"
 import { nextBoutiqueReceiptNumber } from "@/lib/document-numbering"
 import { bookBoutiqueOrderIncome } from "@/lib/boutique/book-income"
 import { resolveBoutiqueResponsable } from "@/lib/boutique/responsable"
+import { notifyDonResponsable, notifyNewAddonDonations } from "@/lib/dons/notify"
 import { pusherServer } from "@/lib/pusher-server"
 import { writeActivityLog } from "@/lib/activity-log"
 import { resolveEmailBranding, memberLimitForPlan } from "@/lib/plan-limits"
@@ -537,14 +538,15 @@ export async function POST(req: Request) {
           // Stripe-webhook timing.
           const donations = parseEvenementDonations(sess.metadata?.donations)
           if (donations.length > 0) {
-            await prisma.$transaction(async (tx) => {
-              await createEvenementDonation(tx, {
+            const createdDonations = await prisma.$transaction(async (tx) => {
+              return createEvenementDonation(tx, {
                 associationId: evenement.associationId,
                 firstName: buyerTicket.firstName, lastName: buyerTicket.lastName, email: buyerTicket.email!,
                 donations,
                 canIssueTaxReceipts: evenement.association?.canIssueTaxReceipts ?? false,
               })
             })
+            notifyNewAddonDonations(evenement.associationId, `${buyerTicket.firstName} ${buyerTicket.lastName}`, createdDonations)
           }
 
           // Boutique products chosen alongside the ticket — only ever present for a
@@ -822,6 +824,12 @@ export async function POST(req: Request) {
           label:         don.donorType === "COMPANY" ? (don.companyName ?? don.firstName) : `${don.firstName} ${don.lastName}`,
           metadata:      { amount: Number(don.amount) },
         })
+
+        await notifyDonResponsable({
+          associationId: don.associationId, donId,
+          donorLabel: don.donorType === "COMPANY" ? (don.companyName ?? don.firstName) : `${don.firstName} ${don.lastName}`,
+          amount: Number(don.amount), paymentMethod: "STRIPE", paidAt: true,
+        }).catch(error => reportError(error, { area: "webhook", action: "webhook.don-notify-responsable", extra: { associationId: don.associationId, donId, stripeEventId: event.id } }))
       }
       break
     }

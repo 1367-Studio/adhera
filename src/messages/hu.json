@@ -2633,7 +2633,8 @@
       "notePlaceholder": "Fizetési hivatkozás, részletek…",
       "sendReceiptLabel": "Nyugta küldése emailben",
       "sendReceiptHint": "Megerősítő emailt küldünk az adományozónak.",
-      "submitButton": "Adomány rögzítése"
+      "submitButton": "Adomány rögzítése",
+      "notifyResponsible": "{name} értesítése e-mailben"
     },
     "formsView": {
       "columns": {
@@ -2956,6 +2957,13 @@
       "intervalYear": "egy",
       "confirmButton": "Állítsák meg ezt az ismétlődő adományozást",
       "genericError": "Hiba történt. Próbáld újra."
+    },
+    "responsableModal": {
+      "openButton": "Felelős",
+      "title": "Az adományok felelőse",
+      "selectLabel": "Értesítést kap új adományokról",
+      "none": "Nincs",
+      "hint": "Ez a személy e-mailt és értesítést kap minden új adományról: online a kifizetés után, offline (készpénz/csekk/átutalás) azonnal a rögzítés után, és az adminisztrátor választása szerint egy kézzel rögzített adomány esetén."
     }
   },
   "membershipForms": {

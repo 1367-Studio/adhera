@@ -2633,7 +2633,8 @@
       "notePlaceholder": "Referencja płatności, szczegóły…",
       "sendReceiptLabel": "Wyślij potwierdzenie e-mailem",
       "sendReceiptHint": "Darczyńcy zostanie wysłany e-mail potwierdzający.",
-      "submitButton": "Zapisz darowiznę"
+      "submitButton": "Zapisz darowiznę",
+      "notifyResponsible": "Powiadom {name} e-mailem"
     },
     "formsView": {
       "columns": {
@@ -2956,6 +2957,13 @@
       "intervalYear": "an",
       "confirmButton": "Zatrzymaj tę powtarzającą się darowiznę",
       "genericError": "Wystąpił błąd. Spróbuj ponownie."
+    },
+    "responsableModal": {
+      "openButton": "Osoba odpowiedzialna",
+      "title": "Osoba odpowiedzialna za darowizny",
+      "selectLabel": "Otrzymuje e-maile o nowych darowiznach",
+      "none": "Brak",
+      "hint": "Ta osoba otrzymuje e-mail i powiadomienie przy każdej nowej darowiźnie: online po opłaceniu, offline (gotówka/czek/przelew) od razu po zarejestrowaniu, oraz według wyboru administratora przy darowiźnie wpisanej ręcznie."
     }
   },
   "membershipForms": {

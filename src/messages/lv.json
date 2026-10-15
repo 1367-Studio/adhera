@@ -2633,7 +2633,8 @@
       "notePlaceholder": "Maksājuma atsauce, detaļas…",
       "sendReceiptLabel": "Nosūtīt kvīti pa e-pastu",
       "sendReceiptHint": "Ziedotājam tiks nosūtīts apstiprinājuma e-pasts.",
-      "submitButton": "Reģistrēt ziedojumu"
+      "submitButton": "Reģistrēt ziedojumu",
+      "notifyResponsible": "Paziņot {name} pa e-pastu"
     },
     "formsView": {
       "columns": {
@@ -2956,6 +2957,13 @@
       "intervalYear": "an",
       "confirmButton": "Pārtrauciet šo regulāro ziedojumu",
       "genericError": "Ir notikusi kļūda. Mēģini vēlreiz."
+    },
+    "responsableModal": {
+      "openButton": "Atbildīgā persona",
+      "title": "Ziedojumu atbildīgā persona",
+      "selectLabel": "Saņem e-pastus par jauniem ziedojumiem",
+      "none": "Nav",
+      "hint": "Šī persona saņem e-pastu un paziņojumu par katru jaunu ziedojumu: tiešsaistē, kad tas ir apmaksāts, bezsaistē (skaidrā naudā/čekā/pārskaitījumā) tiklīdz tas ir reģistrēts, un pēc administratora izvēles manuāli ievadītam ziedojumam."
     }
   },
   "membershipForms": {

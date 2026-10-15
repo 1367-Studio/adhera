@@ -465,6 +465,11 @@ model Association {
   // POST /api/boutique/commandes. Tant qu'aucun responsable n'est choisi, l'alerte en ligne
   // retombe sur l'ancien comportement (tous les ADMIN/PRESIDENT/TRESORIER/SECRETAIRE).
   boutiqueResponsableId          String?
+  // Seule personne avertie (notification in-app + e-mail) des nouveaux dons — en ligne une
+  // fois payés (webhook Stripe), hors ligne dès l'enregistrement (espèces/chèque/virement,
+  // avant même l'encaissement), manuels sur choix de l'admin — voir resolveDonResponsable et
+  // notifyDonResponsable. Tant qu'aucun responsable n'est choisi, aucune alerte n'est envoyée.
+  donResponsableId               String?
   // Shown on devis/facture PDFs (below "Conditions de paiement") so the recipient knows
   // where to wire payment — distinct from BankAccount, which is for reconciliation import
   // and only ever stores a last-4, never a full IBAN.
@@ -639,6 +644,7 @@ model Association {
   controlAlerts                 MembreControlAlert[]
   erasureRequests               ErasureRequest[]
   boutiqueResponsable           User?                          @relation("BoutiqueResponsable", fields: [boutiqueResponsableId], references: [id], onDelete: SetNull)
+  donResponsable                User?                          @relation("DonResponsable", fields: [donResponsableId], references: [id], onDelete: SetNull)
   electronicInvoicingConnection ElectronicInvoicingConnection?
 
   @@index([customDomainStatus])
@@ -736,6 +742,7 @@ model User {
   boutiqueResponsableFor   Association[]          @relation("BoutiqueResponsable")
   boutiqueCommandesCreated BoutiqueCommande[]     @relation("BoutiqueCommandeCreatedBy")
   donsCreatedManually      Don[]
+  donResponsableFor        Association[]          @relation("DonResponsable")
 
   @@unique([email, associationId])
   @@index([associationId, role])

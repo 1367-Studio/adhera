@@ -2633,7 +2633,8 @@
       "notePlaceholder": "Zahlungsreferenz, Details…",
       "sendReceiptLabel": "Quittung per E-Mail senden",
       "sendReceiptHint": "Eine Bestätigungs-E-Mail wird an den Spender gesendet.",
-      "submitButton": "Spende erfassen"
+      "submitButton": "Spende erfassen",
+      "notifyResponsible": "{name} per E-Mail benachrichtigen"
     },
     "formsView": {
       "columns": {
@@ -2956,6 +2957,13 @@
       "intervalYear": "ein",
       "confirmButton": "Stoppen Sie diese wiederkehrende Spende",
       "genericError": "Ein Fehler ist aufgetreten. Versuchen Sie es erneut."
+    },
+    "responsableModal": {
+      "openButton": "Verantwortlicher",
+      "title": "Verantwortlicher für Spenden",
+      "selectLabel": "Erhält E-Mails bei neuen Spenden",
+      "none": "Keiner",
+      "hint": "Diese Person erhält bei jeder neuen Spende eine E-Mail und eine Benachrichtigung: online sobald sie bezahlt ist, offline (Bargeld/Scheck/Überweisung) sobald sie erfasst wird, und je nach Wahl des Administrators bei einer manuell erfassten Spende."
     }
   },
   "membershipForms": {

@@ -2735,7 +2735,8 @@
       "notePlaceholder": "Payment reference, details…",
       "sendReceiptLabel": "Send a receipt by email",
       "sendReceiptHint": "A confirmation email will be sent to the donor.",
-      "submitButton": "Record the donation"
+      "submitButton": "Record the donation",
+      "notifyResponsible": "Notify {name} by email"
     },
     "formsView": {
       "columns": {
@@ -3059,6 +3060,13 @@
       "intervalYear": "year",
       "confirmButton": "Stop this recurring donation",
       "genericError": "Something went wrong. Please try again."
+    },
+    "responsableModal": {
+      "openButton": "Manager",
+      "title": "Donations manager",
+      "selectLabel": "Receives new-donation emails",
+      "none": "None",
+      "hint": "This person receives an email and an in-app notification for every new donation: online once paid, offline (cash/cheque/transfer) as soon as it's recorded, and at the admin's choice for a manually entered donation."
     }
   },
   "membershipForms": {

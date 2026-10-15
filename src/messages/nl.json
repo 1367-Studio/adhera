@@ -2633,7 +2633,8 @@
       "notePlaceholder": "Betalingsreferentie, details…",
       "sendReceiptLabel": "Stuur een bevestiging per e-mail",
       "sendReceiptHint": "Er wordt een bevestigingsmail naar de donor gestuurd.",
-      "submitButton": "Donatie registreren"
+      "submitButton": "Donatie registreren",
+      "notifyResponsible": "{name} per e-mail op de hoogte stellen"
     },
     "formsView": {
       "columns": {
@@ -2956,6 +2957,13 @@
       "intervalYear": "een",
       "confirmButton": "Stop deze terugkerende donatie",
       "genericError": "Er is een fout opgetreden. Probeer het opnieuw."
+    },
+    "responsableModal": {
+      "openButton": "Verantwoordelijke",
+      "title": "Verantwoordelijke voor donaties",
+      "selectLabel": "Ontvangt e-mails bij nieuwe donaties",
+      "none": "Geen",
+      "hint": "Deze persoon ontvangt een e-mail en een melding bij elke nieuwe donatie: online zodra deze betaald is, offline (contant/cheque/overschrijving) zodra ze geregistreerd is, en naar keuze van de beheerder bij een handmatig ingevoerde donatie."
     }
   },
   "membershipForms": {
