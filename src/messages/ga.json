@@ -2633,7 +2633,8 @@
       "notePlaceholder": "Tagairt íocaíochta, sonraí…",
       "sendReceiptLabel": "Seol admháil trí ríomhphost",
       "sendReceiptHint": "Seolfar ríomhphost deimhnithe chuig an deontóir.",
-      "submitButton": "Taifead an síntiús"
+      "submitButton": "Taifead an síntiús",
+      "notifyResponsible": "Cuir in iúl do {name} trí ríomhphost"
     },
     "formsView": {
       "columns": {
@@ -2956,6 +2957,13 @@
       "intervalYear": "an",
       "confirmButton": "Stop an síntiús athfhillteach seo",
       "genericError": "Tharla earráid. Bain triail as arís."
+    },
+    "responsableModal": {
+      "openButton": "Duine freagrach",
+      "title": "Duine freagrach as síntiúsaí",
+      "selectLabel": "Faigheann ríomhphoist faoi shíntiúsaí nua",
+      "none": "Aon cheann",
+      "hint": "Faigheann an duine seo ríomhphost agus fógra gach uair a dhéantar síntiús nua: ar líne a luaithe a íoctar é, as líne (airgead tirim/seic/aistriú) a luaithe a chláraítear é, agus de réir rogha an riarthóra i gcás síntiús a iontráladh de láimh."
     }
   },
   "membershipForms": {

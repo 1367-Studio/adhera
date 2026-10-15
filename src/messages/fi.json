@@ -2633,7 +2633,8 @@
       "notePlaceholder": "Maksuviite, tiedot…",
       "sendReceiptLabel": "Lähetä kuitti sähköpostitse",
       "sendReceiptHint": "Lahjoittajalle lähetetään vahvistussähköposti.",
-      "submitButton": "Tallenna lahjoitus"
+      "submitButton": "Tallenna lahjoitus",
+      "notifyResponsible": "Ilmoita {name}lle sähköpostitse"
     },
     "formsView": {
       "columns": {
@@ -2956,6 +2957,13 @@
       "intervalYear": "an",
       "confirmButton": "Lopeta tämä toistuva lahjoitus",
       "genericError": "Virhe on tapahtunut. Yritä uudestaan."
+    },
+    "responsableModal": {
+      "openButton": "Vastuuhenkilö",
+      "title": "Lahjoitusten vastuuhenkilö",
+      "selectLabel": "Saa uusien lahjoitusten sähköpostit",
+      "none": "Ei kukaan",
+      "hint": "Tämä henkilö saa sähköpostin ja ilmoituksen jokaisesta uudesta lahjoituksesta: verkossa kun se on maksettu, offline (käteinen/shekki/tilisiirto) heti kun se on kirjattu, ja ylläpitäjän valinnan mukaan manuaalisesti kirjatusta lahjoituksesta."
     }
   },
   "membershipForms": {

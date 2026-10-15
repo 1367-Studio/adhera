@@ -2633,7 +2633,8 @@
       "notePlaceholder": "Platobná referencia, podrobnosti…",
       "sendReceiptLabel": "Odoslať potvrdenie e-mailom",
       "sendReceiptHint": "Darcovi bude zaslaný potvrdzovací e-mail.",
-      "submitButton": "Zaznamenať dar"
+      "submitButton": "Zaznamenať dar",
+      "notifyResponsible": "Upozorniť {name} e-mailom"
     },
     "formsView": {
       "columns": {
@@ -2956,6 +2957,13 @@
       "intervalYear": "an",
       "confirmButton": "Zastavte túto pravidelnú darcovskú činnosť",
       "genericError": "Došlo k chybe. Skúste to znova."
+    },
+    "responsableModal": {
+      "openButton": "Zodpovedná osoba",
+      "title": "Zodpovedná osoba za dary",
+      "selectLabel": "Dostáva e-maily o nových daroch",
+      "none": "Žiadna",
+      "hint": "Táto osoba dostáva e-mail a upozornenie pri každom novom dare: online po zaplatení, offline (hotovosť/šek/prevod) hneď po zaregistrovaní, a podľa výberu administrátora aj pri manuálne zadanom dare."
     }
   },
   "membershipForms": {

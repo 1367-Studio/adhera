@@ -17,6 +17,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { cn } from "@/lib/utils"
 import type { DonationFormPlacement } from "@/lib/dons/site-section-picks"
 import { useAddManualDon, type ManualDonInput } from "@/hooks/use-dons"
+import { useCurrentUser } from "@/lib/user-context"
 
 type MembreCandidate = { id: string; firstName: string; lastName: string; email: string }
 
@@ -37,6 +38,7 @@ export function AddManualDonModal({ open, onOpenChange }: Props) {
   const t       = useTranslations("donationForms")
   const tCommon = useTranslations("common")
   const mutation = useAddManualDon()
+  const user     = useCurrentUser()
 
   const [donorMode, setDonorMode] = useState<ManualDonInput["donorMode"]>("member")
 
@@ -69,12 +71,24 @@ export function AddManualDonModal({ open, onOpenChange }: Props) {
   const [donationFormId, setDonationFormId] = useState(NO_FORM)
   const [note, setNote]                   = useState("")
   const [sendReceiptEmail, setSendReceiptEmail] = useState(false)
+  const [notifyResponsible, setNotifyResponsible] = useState(true)
 
   const { data: forms = [] } = useQuery<DonationFormPlacement[]>({
     queryKey: ["donation-forms"],
     queryFn:  () => fetch("/api/donation-forms").then(r => r.json()),
     enabled:  open,
   })
+
+  const { data: donSettings } = useQuery<{ responsableId: string | null; responsable: { name: string; email: string } | null }>({
+    queryKey: ["dons-settings"],
+    queryFn:  () => fetch("/api/dons/settings").then(r => r.ok ? r.json() : { responsableId: null, responsable: null }),
+    enabled:  open,
+  })
+  const hasResponsible = !!donSettings?.responsableId
+  useEffect(() => {
+    if (!donSettings) return
+    setNotifyResponsible(!!donSettings.responsableId && donSettings.responsableId !== user.id)
+  }, [donSettings, user.id])
 
   const email = donorMode === "member" ? (selectedMember?.email ?? "") : externalEmail.trim()
   const hasEmail = email.length > 0
@@ -85,7 +99,7 @@ export function AddManualDonModal({ open, onOpenChange }: Props) {
     setMemberQuery(""); setDebouncedMemberQuery(""); setSelectedMember(null)
     setExternalFirstName(""); setExternalLastName(""); setExternalEmail(""); setExternalEmailTouched(false)
     setAmount(0); setPaidAt(todayValue()); setPaymentMethod("ESPECES")
-    setDonationFormId(NO_FORM); setNote(""); setSendReceiptEmail(false)
+    setDonationFormId(NO_FORM); setNote(""); setSendReceiptEmail(false); setNotifyResponsible(true)
   }
 
   const isValid = amount > 0 && !externalEmailInvalid && (
@@ -103,6 +117,7 @@ export function AddManualDonModal({ open, onOpenChange }: Props) {
       donationFormId: donationFormId === NO_FORM ? null : donationFormId,
       note:           note.trim() || undefined,
       sendReceiptEmail: sendReceiptEmail && hasEmail,
+      notifyResponsible: notifyResponsible && hasResponsible,
       ...(donorMode === "member"
         ? { membreId: selectedMember!.id }
         : { firstName: externalFirstName.trim(), lastName: externalLastName.trim(), email: email || undefined }),
@@ -258,6 +273,14 @@ export function AddManualDonModal({ open, onOpenChange }: Props) {
           onChange={e => setSendReceiptEmail(e.target.checked)}
           className={cn(!hasEmail && "cursor-not-allowed")}
         />
+
+        {hasResponsible && (
+          <CheckboxField
+            label={t("addManualDonModal.notifyResponsible", { name: donSettings?.responsable?.name || donSettings?.responsable?.email || "" })}
+            checked={notifyResponsible}
+            onChange={e => setNotifyResponsible(e.target.checked)}
+          />
+        )}
 
         <div className="flex justify-end gap-2 pt-2">
           <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={mutation.isPending}>

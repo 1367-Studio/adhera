@@ -2633,7 +2633,8 @@
       "notePlaceholder": "Makse viide, üksikasjad…",
       "sendReceiptLabel": "Saada kviitung e-postiga",
       "sendReceiptHint": "Annetajale saadetakse kinnituskiri.",
-      "submitButton": "Salvesta annetus"
+      "submitButton": "Salvesta annetus",
+      "notifyResponsible": "Teavita {name} e-postiga"
     },
     "formsView": {
       "columns": {
@@ -2956,6 +2957,13 @@
       "intervalYear": "an",
       "confirmButton": "Lõpetage see korduv annetus",
       "genericError": "On tekkinud viga. Proovi uuesti."
+    },
+    "responsableModal": {
+      "openButton": "Vastutav isik",
+      "title": "Annetuste vastutav isik",
+      "selectLabel": "Saab uute annetuste e-kirju",
+      "none": "Puudub",
+      "hint": "See isik saab e-kirja ja teavituse iga uue annetuse kohta: veebis kohe, kui see on tasutud, mitteveebis (sularaha/tšekk/pangaülekanne) kohe pärast registreerimist ja administraatori valikul käsitsi sisestatud annetuse puhul."
     }
   },
   "membershipForms": {

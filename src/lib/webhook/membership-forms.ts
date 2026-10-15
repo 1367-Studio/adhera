@@ -14,6 +14,7 @@ import { pusherServer } from "@/lib/pusher-server"
 import { fireEventRule } from "@/lib/fire-event-rule"
 import { APP_URL } from "@/lib/env"
 import { createMembershipAddonPurchases, parseAddons } from "@/lib/webhook/membership-addons"
+import { notifyNewAddonDonations } from "@/lib/dons/notify"
 import { createMembershipFormProductPurchase } from "@/lib/webhook/membership-form-products"
 import { notifyMembershipSignup } from "@/lib/webhook/membership-notify"
 import { isMemberCardAvailable } from "@/lib/member-card/availability"
@@ -162,7 +163,7 @@ export async function handleMembershipOneOffCheckout(session: Stripe.Checkout.Se
         })
       }
 
-      await createMembershipAddonPurchases(tx, {
+      const donations = await createMembershipAddonPurchases(tx, {
         associationId: meta.associationId,
         membreId:      membre.id,
         cotisationId:  cotisation.id,
@@ -173,7 +174,7 @@ export async function handleMembershipOneOffCheckout(session: Stripe.Checkout.Se
         canIssueTaxReceipts: assoc?.canIssueTaxReceipts ?? false,
       })
 
-      return { user, membre, cotisation }
+      return { user, membre, cotisation, donations }
     })
   } catch (err) {
     // The person has already paid at this point — same "can't auto-recover, so make sure a
@@ -199,6 +200,8 @@ export async function handleMembershipOneOffCheckout(session: Stripe.Checkout.Se
     }
     return
   }
+
+  notifyNewAddonDonations(meta.associationId, `${meta.firstName} ${meta.lastName}`, created.donations)
 
   // The shared charge.refunded handler (src/app/api/webhook/stripe/route.ts) reconciles a
   // full refund by reading cotisationId/donId/orderId/commandeId off the PaymentIntent's own

@@ -2743,7 +2743,8 @@
       "notePlaceholder": "Référence du paiement, précisions…",
       "sendReceiptLabel": "Envoyer un reçu par email",
       "sendReceiptHint": "Un email de confirmation sera envoyé au donateur.",
-      "submitButton": "Enregistrer le don reçu"
+      "submitButton": "Enregistrer le don reçu",
+      "notifyResponsible": "Notifier {name} par e-mail"
     },
     "formsView": {
       "columns": {
@@ -3067,6 +3068,13 @@
       "intervalYear": "an",
       "confirmButton": "Arrêter ce don récurrent",
       "genericError": "Une erreur est survenue. Réessayez."
+    },
+    "responsableModal": {
+      "openButton": "Responsable",
+      "title": "Responsable des dons",
+      "selectLabel": "Reçoit les e-mails de nouveau don",
+      "none": "Aucun",
+      "hint": "Cette personne reçoit un e-mail et une notification à chaque nouveau don : en ligne une fois payé, hors ligne (espèces/chèque/virement) dès l'enregistrement, et sur choix de l'admin pour un don saisi manuellement."
     }
   },
   "membershipForms": {

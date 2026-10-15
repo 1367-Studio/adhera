@@ -18,6 +18,7 @@ import { rsvpConfirmationEmail, waitlistConfirmationEmail } from "@/lib/email"
 import { notifyEventRegistration } from "@/lib/evenement-notify"
 import { resolveEmailBranding } from "@/lib/plan-limits"
 import { createEvenementDonation } from "@/lib/webhook/evenement-addons"
+import { notifyNewAddonDonations } from "@/lib/dons/notify"
 import { ON_SITE_PAYMENT_METHODS, isOnSitePaymentMethodAccepted } from "@/lib/evenement-payment-methods"
 import { reportError } from "@/lib/monitoring"
 
@@ -461,8 +462,9 @@ export async function POST(
 
     let participationId: string
     let waitlisted = false
+    let createdDonations: Awaited<ReturnType<typeof createEvenementDonation>> = []
     try {
-      ;({ pid: participationId, waitlisted } = await prisma.$transaction(async (tx) => {
+      ;({ pid: participationId, waitlisted, donations: createdDonations } = await prisma.$transaction(async (tx) => {
         if (evenement.capacity != null || evenement.ticketTypes.some(tt => tt.capacity != null)) {
           await tx.$queryRaw`SELECT id FROM "Evenement" WHERE id = ${evenement.id} FOR UPDATE`
         }
@@ -544,7 +546,7 @@ export async function POST(
 
         if (isWaitlisted) {
           await tx.participation.update({ where: { id: pid }, data: { rsvp: "LISTA_ESPERA" } })
-          return { pid, waitlisted: true }
+          return { pid, waitlisted: true, donations: [] }
         }
 
         // usesCount ne bouge que pour une inscription qui aboutit réellement (pas en liste
@@ -571,17 +573,17 @@ export async function POST(
         // Offline donations are recorded pending encaissement right away, same as the
         // ticket itself — the Stripe-paid path instead stashes this in the checkout
         // session's metadata and only creates the Don once the webhook confirms payment.
-        if (isOffline && resolvedDonations.length > 0) {
-          await createEvenementDonation(tx, {
-            associationId: assoc.id, firstName, lastName, email,
-            donations: resolvedDonations.map(d => ({ ticketTypeId: d.tier.id, label: d.tier.label, amount: d.amount, receiptMode: d.tier.receiptMode as "NONE" | "FULL" })),
-            canIssueTaxReceipts: assoc.canIssueTaxReceipts,
-            donPaymentMethod: paymentMethod as "ESPECES" | "CHEQUE" | "VIREMENT",
-            donPaidAt: null,
-          })
-        }
+        const donations = isOffline && resolvedDonations.length > 0
+          ? await createEvenementDonation(tx, {
+              associationId: assoc.id, firstName, lastName, email,
+              donations: resolvedDonations.map(d => ({ ticketTypeId: d.tier.id, label: d.tier.label, amount: d.amount, receiptMode: d.tier.receiptMode as "NONE" | "FULL" })),
+              canIssueTaxReceipts: assoc.canIssueTaxReceipts,
+              donPaymentMethod: paymentMethod as "ESPECES" | "CHEQUE" | "VIREMENT",
+              donPaidAt: null,
+            })
+          : []
 
-        return { pid, waitlisted: false }
+        return { pid, waitlisted: false, donations }
       }))
     } catch (err) {
       if (err instanceof EventFullError) return NextResponse.json({ error: "Événement complet" }, { status: 422 })
@@ -589,6 +591,8 @@ export async function POST(
       if (err instanceof DiscountCodeInvalidError) return NextResponse.json({ error: "Ce code promotionnel n'est plus valide.", code: "DISCOUNT_CODE_INVALID" }, { status: 422 })
       throw err
     }
+
+    notifyNewAddonDonations(assoc.id, `${firstName} ${lastName}`, createdDonations)
 
     await writeActivityLog({
       associationId: assoc.id, action: waitlisted ? "PARTICIPATION_WAITLISTED" : "PARTICIPATION_PUBLIC_CREATED", entity: "Participation", entityId: participationId,

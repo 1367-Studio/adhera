@@ -13,6 +13,7 @@ export type ManualDonInput = {
   donationFormId?: string | null
   note?:           string
   sendReceiptEmail: boolean
+  notifyResponsible: boolean
 }
 
 async function addManualDon(data: ManualDonInput) {

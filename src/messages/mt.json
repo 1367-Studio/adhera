@@ -2633,7 +2633,8 @@
       "notePlaceholder": "Referenza tal-ħlas, dettalji…",
       "sendReceiptLabel": "Ibgħat rċevuta bl-email",
       "sendReceiptHint": "Email ta' konferma tintbagħat lid-donatur.",
-      "submitButton": "Irreġistra d-donazzjoni"
+      "submitButton": "Irreġistra d-donazzjoni",
+      "notifyResponsible": "Innotifika lil {name} bl-email"
     },
     "formsView": {
       "columns": {
@@ -2956,6 +2957,13 @@
       "intervalYear": "An",
       "confirmButton": "Waqqaf din id-donazzjoni ripetuta",
       "genericError": "Seħħ żball. Erġa' pprova."
+    },
+    "responsableModal": {
+      "openButton": "Responsabbli",
+      "title": "Responsabbli tad-donazzjonijiet",
+      "selectLabel": "Jirċievi emails ta' donazzjonijiet ġodda",
+      "none": "Ħadd",
+      "hint": "Din il-persuna tirċievi email u notifika għal kull donazzjoni ġdida: online ladarba titħallas, offline (flus kontanti/ċekk/trasferiment) hekk kif tiġi rreġistrata, u skont l-għażla tal-amministratur għal donazzjoni mdaħħla manwalment."
     }
   },
   "membershipForms": {

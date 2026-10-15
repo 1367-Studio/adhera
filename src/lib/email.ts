@@ -1092,6 +1092,51 @@ export function donConfirmationEmail(p: {
   }
 }
 
+// Sent to Association.donResponsable (see resolveDonResponsable/notifyDonResponsable) for
+// every new don — offline (espèces/chèque/virement) right at submission, before any
+// encaissement, online (Stripe) only once the webhook confirms payment, manual at the
+// admin's choice. statusLabel carries whichever of those two states applies ("À recevoir" vs
+// "Reçu") so the responsable never has to guess from the payment method alone.
+export function donNewDonationAdminEmail(p: {
+  email:           string
+  associationName: string
+  donorLabel:      string
+  amount:          number
+  paymentMethodLabel: string
+  statusLabel:     string
+  dashboardUrl:    string
+}) {
+  const amountStr = p.amount.toLocaleString("fr-FR", { style: "currency", currency: "EUR" })
+
+  const content = `
+    <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">Nouveau don</h2>
+    <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
+      <strong>${escapeHtml(p.donorLabel)}</strong> vient de faire un don de <strong>${amountStr}</strong>
+      à <strong>${escapeHtml(p.associationName)}</strong>.
+    </p>
+    <table cellpadding="0" cellspacing="0" style="margin:0 0 24px;background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;padding:16px 20px;width:100%;box-sizing:border-box;">
+      <tr><td style="padding-bottom:10px;">
+        <span style="font-size:13px;color:#6b7280;display:block;margin-bottom:2px;">Montant</span>
+        <span style="font-size:18px;font-weight:700;">${amountStr}</span>
+      </td></tr>
+      <tr><td style="padding-bottom:10px;">
+        <span style="font-size:13px;color:#6b7280;display:block;margin-bottom:2px;">Moyen de paiement</span>
+        <span style="font-size:14px;">${escapeHtml(p.paymentMethodLabel)}</span>
+      </td></tr>
+      <tr><td>
+        <span style="font-size:13px;color:#6b7280;display:block;margin-bottom:2px;">Statut</span>
+        <span style="font-size:14px;font-weight:600;">${escapeHtml(p.statusLabel)}</span>
+      </td></tr>
+    </table>
+    ${btn("Voir le don", p.dashboardUrl)}`
+
+  return {
+    to:      p.email,
+    subject: `Nouveau don — ${amountStr}`,
+    html:    layout(APP_NAME, content),
+  }
+}
+
 const INTERVAL_LABEL: Record<"MONTH" | "QUARTER" | "YEAR", string> = {
   MONTH: "mois", QUARTER: "trimestre", YEAR: "an",
 }

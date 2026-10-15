@@ -2633,7 +2633,8 @@
       "notePlaceholder": "Riferimento del pagamento, dettagli…",
       "sendReceiptLabel": "Invia una ricevuta via email",
       "sendReceiptHint": "Un'email di conferma sarà inviata al donatore.",
-      "submitButton": "Registra la donazione"
+      "submitButton": "Registra la donazione",
+      "notifyResponsible": "Avvisa {name} via e-mail"
     },
     "formsView": {
       "columns": {
@@ -2956,6 +2957,13 @@
       "intervalYear": "un",
       "confirmButton": "Fermate questa donazione ricorrente",
       "genericError": "Si è verificato un errore. Riprova."
+    },
+    "responsableModal": {
+      "openButton": "Responsabile",
+      "title": "Responsabile delle donazioni",
+      "selectLabel": "Riceve le e-mail delle nuove donazioni",
+      "none": "Nessuno",
+      "hint": "Questa persona riceve un'e-mail e una notifica per ogni nuova donazione: online una volta pagata, offline (contanti/assegno/bonifico) non appena registrata, e a scelta dell'amministratore per una donazione inserita manualmente."
     }
   },
   "membershipForms": {

@@ -16,6 +16,7 @@ import { eligibleReceiptAmount } from "@/lib/receipt-eligibility"
 import { sendEmail } from "@/lib/mail"
 import { donPendingEmail } from "@/lib/email"
 import { resolveEmailBranding } from "@/lib/plan-limits"
+import { notifyDonResponsable } from "@/lib/dons/notify"
 import { reportError } from "@/lib/monitoring"
 
 // Stripe refuses to charge below ~0,50 € on EUR cards. 1 € is a round number safely above
@@ -296,6 +297,12 @@ export async function POST(
       }),
       { associationId: assoc.id, source: "TRANSACTION", sourceId: don.id },
     ).catch(error => reportError(error, { area: "email", action: "public.don.pending-email", extra: { associationId: assoc.id, donId: don.id } }))
+
+    notifyDonResponsable({
+      associationId: assoc.id, donId: don.id,
+      donorLabel: donorType === "COMPANY" ? (companyName ?? firstName) : `${firstName} ${lastName}`,
+      amount, paymentMethod, paidAt: false,
+    }).catch(error => reportError(error, { area: "api", action: "public.don.notify-responsable", extra: { associationId: assoc.id, donId: don.id } }))
 
     return NextResponse.json({ offline: true })
   }

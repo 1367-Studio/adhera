@@ -2633,7 +2633,8 @@
       "notePlaceholder": "Referenca plačila, podrobnosti…",
       "sendReceiptLabel": "Pošlji potrdilo po e-pošti",
       "sendReceiptHint": "Darovalcu bo poslano potrditveno e-poštno sporočilo.",
-      "submitButton": "Zabeleži donacijo"
+      "submitButton": "Zabeleži donacijo",
+      "notifyResponsible": "Obvesti {name} po e-pošti"
     },
     "formsView": {
       "columns": {
@@ -2956,6 +2957,13 @@
       "intervalYear": "an",
       "confirmButton": "Ustavite to ponavljajočo se donacijo",
       "genericError": "Prišlo je do napake. Poskusi znova."
+    },
+    "responsableModal": {
+      "openButton": "Odgovorna oseba",
+      "title": "Odgovorna oseba za donacije",
+      "selectLabel": "Prejema e-pošto o novih donacijah",
+      "none": "Nihče",
+      "hint": "Ta oseba prejme e-poštno sporočilo in obvestilo ob vsaki novi donaciji: splet takoj, ko je plačana, zunaj spleta (gotovina/ček/nakazilo) takoj, ko je registrirana, in po izbiri skrbnika za ročno vnesena donacijo."
     }
   },
   "membershipForms": {

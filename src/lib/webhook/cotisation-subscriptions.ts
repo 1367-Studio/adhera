@@ -20,6 +20,7 @@ import { fireEventRule } from "@/lib/fire-event-rule"
 import { APP_URL } from "@/lib/env"
 import { notifyMissingCotisation } from "@/lib/cotisation-alerts"
 import { createMembershipAddonPurchases } from "@/lib/webhook/membership-addons"
+import { notifyNewAddonDonations } from "@/lib/dons/notify"
 import { notifyMembershipSignup } from "@/lib/webhook/membership-notify"
 import { addressColumns } from "@/lib/address"
 import { reportError } from "@/lib/monitoring"
@@ -239,7 +240,7 @@ export async function handleCotisationSubscriptionCheckout(session: Stripe.Check
       // Any paid add-on/embedded donation rides as a one-time invoice item on this same
       // checkout — Stripe bills it once on the first invoice, never on renewals, which is
       // exactly why this only runs here and not in handleCotisationInvoicePaid below.
-      await createMembershipAddonPurchases(tx, {
+      const donations = await createMembershipAddonPurchases(tx, {
         associationId: meta.associationId,
         membreId:      membre.id,
         firstName:     meta.firstName ?? "",
@@ -249,7 +250,7 @@ export async function handleCotisationSubscriptionCheckout(session: Stripe.Check
         canIssueTaxReceipts: assoc?.canIssueTaxReceipts ?? false,
       })
 
-      return { user, membre, cotisationSubscription }
+      return { user, membre, cotisationSubscription, donations }
     })
   } catch (err) {
     // The person has already paid at this point — Stripe won't retry a checkout.session.
@@ -281,6 +282,8 @@ export async function handleCotisationSubscriptionCheckout(session: Stripe.Check
     }
     return
   }
+
+  notifyNewAddonDonations(meta.associationId, `${created.membre.firstName} ${created.membre.lastName}`, created.donations)
 
   // Self-heal for the race documented on shouldRetryUntilCheckoutProcessed above: if invoice.paid
   // for this subscription's first invoice already arrived and gave up (Stripe only retries it for

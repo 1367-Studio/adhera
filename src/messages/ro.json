@@ -2633,7 +2633,8 @@
       "notePlaceholder": "Referință de plată, detalii…",
       "sendReceiptLabel": "Trimite o chitanță prin email",
       "sendReceiptHint": "Un email de confirmare va fi trimis donatorului.",
-      "submitButton": "Înregistrează donația"
+      "submitButton": "Înregistrează donația",
+      "notifyResponsible": "Notifică {name} prin e-mail"
     },
     "formsView": {
       "columns": {
@@ -2956,6 +2957,13 @@
       "intervalYear": "an",
       "confirmButton": "Oprește această donație recurentă",
       "genericError": "A apărut o eroare. Încearcă din nou."
+    },
+    "responsableModal": {
+      "openButton": "Responsabil",
+      "title": "Responsabilul donațiilor",
+      "selectLabel": "Primește e-mailuri despre donațiile noi",
+      "none": "Niciunul",
+      "hint": "Această persoană primește un e-mail și o notificare pentru fiecare donație nouă: online odată plătită, offline (numerar/cec/transfer) imediat după înregistrare și, la alegerea administratorului, pentru o donație introdusă manual."
     }
   },
   "membershipForms": {

@@ -2633,7 +2633,8 @@
       "notePlaceholder": "Mokėjimo nuoroda, informacija…",
       "sendReceiptLabel": "Siųsti kvitą el. paštu",
       "sendReceiptHint": "Aukotojui bus išsiųstas patvirtinimo laiškas.",
-      "submitButton": "Įrašyti auką"
+      "submitButton": "Įrašyti auką",
+      "notifyResponsible": "Pranešti {name} el. paštu"
     },
     "formsView": {
       "columns": {
@@ -2956,6 +2957,13 @@
       "intervalYear": "an",
       "confirmButton": "Sustabdykite šią pasikartojančią auką",
       "genericError": "Įvyko klaida. Pabandyk dar kartą."
+    },
+    "responsableModal": {
+      "openButton": "Atsakingas asmuo",
+      "title": "Aukų atsakingas asmuo",
+      "selectLabel": "Gauna el. laiškus apie naujas aukas",
+      "none": "Nėra",
+      "hint": "Šis asmuo gauna el. laišką ir pranešimą apie kiekvieną naują auką: internetu, kai ji apmokama, ne internetu (grynaisiais/čekiu/pervedimu), kai ji iškart užregistruojama, ir administratoriaus pasirinkimu, kai auka įvedama rankiniu būdu."
     }
   },
   "membershipForms": {
