@@ -463,8 +463,17 @@ function RegisterFormInner({ pricing, header, footer }: RegisterFormProps) {
   const router        = useRouter()
   const searchParams  = useSearchParams()
   const [step,         setStep]         = useState<Step>("info")
-  const [tier,         setTier]         = useState<PlanTier>("starter")
-  const [plan,         setPlan]         = useState<Plan>("monthly")
+  // Pre-select the plan a marketing CTA linked to (e.g. /register?tier=pro&plan=yearly)
+  // instead of always defaulting to Starter/monthly. Falls back silently on a
+  // missing/unknown value — this is only a convenience pre-selection, not a link that
+  // can expire the way ?offer= can.
+  const [tier,         setTier]         = useState<PlanTier>(() => {
+    const requestedTier = searchParams.get("tier")
+    return requestedTier && requestedTier in pricing.plans ? (requestedTier as PlanTier) : "starter"
+  })
+  const [plan,         setPlan]         = useState<Plan>(() =>
+    searchParams.get("plan") === "yearly" ? "yearly" : "monthly"
+  )
   const [info,         setInfo]         = useState<Info | null>(null)
   const [customerId,   setCustomerId]   = useState("")
   const [clientSecret, setClientSecret] = useState("")
