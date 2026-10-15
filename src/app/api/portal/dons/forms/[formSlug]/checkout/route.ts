@@ -13,6 +13,7 @@ import { withPortalAuth } from "@/lib/api-wrapper"
 import { sendEmail } from "@/lib/mail"
 import { donPendingEmail } from "@/lib/email"
 import { resolveEmailBranding } from "@/lib/plan-limits"
+import { notifyDonResponsable } from "@/lib/dons/notify"
 import { reportError } from "@/lib/monitoring"
 
 // Mirrors MIN_DONATION_AMOUNT in /api/public/[slug]/dons/[formSlug]/checkout/route.ts.
@@ -221,6 +222,12 @@ export const POST = withPortalAuth<{ formSlug: string }>(async (req, ctx, { form
       }),
       { associationId: assoc.id, source: "TRANSACTION", sourceId: don.id },
     ).catch(error => reportError(error, { area: "email", action: "portal.don.pending-email", extra: { associationId: assoc.id, donId: don.id } }))
+
+    notifyDonResponsable({
+      associationId: assoc.id, donId: don.id,
+      donorLabel: donorType === "COMPANY" ? (companyName ?? firstName) : `${firstName} ${lastName}`,
+      amount, paymentMethod, paidAt: false,
+    }).catch(error => reportError(error, { area: "api", action: "portal.don.notify-responsable", extra: { associationId: assoc.id, donId: don.id } }))
 
     return NextResponse.json({ offline: true })
   }

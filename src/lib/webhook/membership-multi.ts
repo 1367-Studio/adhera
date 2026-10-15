@@ -14,6 +14,7 @@ import { APP_URL } from "@/lib/env"
 import { notifyMembershipSignup } from "@/lib/webhook/membership-notify"
 import { createMembershipFormProductPurchase } from "@/lib/webhook/membership-form-products"
 import { createMembershipAddonPurchases, parseAddons } from "@/lib/webhook/membership-addons"
+import { notifyNewAddonDonations } from "@/lib/dons/notify"
 import { eligibleReceiptAmount } from "@/lib/receipt-eligibility"
 import { recordCotisationPayment } from "@/lib/cotisation-payments"
 import { resolveExerciceForDate } from "@/lib/finance/exercice"
@@ -97,8 +98,9 @@ export async function consumeMembershipCheckoutDraft(draftId: string, paymentInt
 
   let membreIds: string[]
   let firstCotisationId: string
+  let donations: Awaited<ReturnType<typeof createMembershipAddonPurchases>>
   try {
-    ({ membreIds, firstCotisationId } = await prisma.$transaction(async (tx) => {
+    ({ membreIds, firstCotisationId, donations } = await prisma.$transaction(async (tx) => {
       const ids: string[] = []
       let firstMembreId: string | undefined
       let firstCotisationId: string | undefined
@@ -217,22 +219,22 @@ export async function consumeMembershipCheckoutDraft(draftId: string, paymentInt
       // groupe avec un email réel (même règle que products, voir MembershipCheckoutDraft).
       // Dans la transaction, comme le parcours à un seul adhérent : un échec ici doit annuler
       // toute l'inscription plutôt que laisser une option orpheline derrière un paiement.
-      if (draft.addons) {
-        await createMembershipAddonPurchases(tx, {
-          associationId: draft.associationId,
-          membreId:      ids[0],
-          cotisationId:  firstCotisationId,
-          firstName:     registrants[0].firstName,
-          lastName:      registrants[0].lastName,
-          email:         draft.email,
-          addonsJson:    JSON.stringify(draft.addons),
-          canIssueTaxReceipts: receiptsAllowed,
-        })
-      }
+      const donations = draft.addons
+        ? await createMembershipAddonPurchases(tx, {
+            associationId: draft.associationId,
+            membreId:      ids[0],
+            cotisationId:  firstCotisationId,
+            firstName:     registrants[0].firstName,
+            lastName:      registrants[0].lastName,
+            email:         draft.email,
+            addonsJson:    JSON.stringify(draft.addons),
+            canIssueTaxReceipts: receiptsAllowed,
+          })
+        : []
 
       await tx.membershipCheckoutDraft.update({ where: { id: draftId }, data: { consumedAt: now } })
       // Non-null : registrants.length ≥ 2 (voir multiSchema), donc i === 0 s'exécute toujours.
-      return { membreIds: ids, firstCotisationId: firstCotisationId! }
+      return { membreIds: ids, firstCotisationId: firstCotisationId!, donations }
     }))
   } catch (err) {
     // Same "money (if any) already moved, a human must reconcile" reasoning as
@@ -259,6 +261,8 @@ export async function consumeMembershipCheckoutDraft(draftId: string, paymentInt
     }
     return isDuplicateEmail ? { status: "duplicate-email" } : { status: "error" }
   }
+
+  notifyNewAddonDonations(draft.associationId, `${registrants[0].firstName} ${registrants[0].lastName}`, donations)
 
   // Étape séparée délibérée, après que le groupe a été créé avec succès — même raisonnement
   // que handleMembershipOneOffCheckout (voir le commentaire de createMembershipFormProductPurchase) :

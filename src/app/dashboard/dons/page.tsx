@@ -11,9 +11,9 @@ import { fr } from "date-fns/locale"
 import {
   DownloadSimpleIcon, HandshakeIcon, UsersIcon, TrendUpIcon, PlusIcon,
   FileTextIcon, ReceiptIcon, NotePencilIcon, CopyIcon, ArchiveIcon,
-  CloudArrowUpIcon, CloudArrowDownIcon, TrashIcon, LinkIcon, FunnelXIcon, InfoIcon,
+  CloudArrowUpIcon, CloudArrowDownIcon, TrashIcon, LinkIcon, FunnelXIcon, InfoIcon, GearIcon,
 } from "@phosphor-icons/react/dist/ssr";
-import { useCurrentUser, useHasAccess, useModules } from "@/lib/user-context"
+import { useCurrentUser, useHasAccess, useModules, useIsAdministrator } from "@/lib/user-context"
 import { useSiteConfig } from "@/hooks/use-site-config"
 import { publishConfirmDescription } from "@/lib/dons/publish-confirm-description"
 import type { DonationFormPlacement } from "@/lib/dons/site-section-picks"
@@ -34,6 +34,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { BASE_PATH } from "@/lib/env"
 import { DonShareCard } from "@/components/dons/don-share-card"
 import { AddManualDonModal } from "@/components/dons/add-manual-don-modal"
+import { DonResponsableModal } from "@/components/dons/don-responsable-modal"
 
 type DonationForm = DonationFormPlacement & {
   imageUrl:    string | null
@@ -119,6 +120,7 @@ function DonsPageInner() {
   // FORM-34: a Dons reader browses forms, donations and receipts (and downloads receipts) but
   // cannot create, duplicate, publish, archive or delete a form, nor cash a pending donation.
   const canEditDons  = useHasAccess("dons", "edit")
+  const isAdministrator = useIsAdministrator()
 
   // Same "read origin at click time" reasoning as the copy-link button on the form's own
   // detail page — no need for the SSR-safe useSyncExternalStore dance DonShareCard uses,
@@ -179,6 +181,7 @@ function DonsPageInner() {
   // ─── Formulaires ────────────────────────────────────────────────────────
   const [newFormOpen, setNewFormOpen]   = useState(false)
   const [manualDonOpen, setManualDonOpen] = useState(false)
+  const [responsableOpen, setResponsableOpen] = useState(false)
   const [newFormTitle, setNewFormTitle] = useState("")
   const [deleteTarget, setDeleteTarget] = useState<DonationForm | null>(null)
   const [publishTarget, setPublishTarget] = useState<{ form: DonationForm; action: "publish" | "unpublish" } | null>(null)
@@ -628,10 +631,18 @@ function DonsPageInner() {
             {t("newForm")}
           </Button>
         ) : tab === "dons" && canEditDons ? (
-          <Button size="sm" onClick={() => setManualDonOpen(true)}>
-            <PlusIcon className="mr-1.5 size-4" />
-            {t("donationsView.addManual")}
-          </Button>
+          <div className="flex items-center gap-2">
+            {isAdministrator && (
+              <Button variant="ghost" size="sm" onClick={() => setResponsableOpen(true)}>
+                <GearIcon className="mr-1.5 size-4" />
+                {t("responsableModal.openButton")}
+              </Button>
+            )}
+            <Button size="sm" onClick={() => setManualDonOpen(true)}>
+              <PlusIcon className="mr-1.5 size-4" />
+              {t("donationsView.addManual")}
+            </Button>
+          </div>
         ) : undefined}
       />
 
@@ -911,6 +922,7 @@ function DonsPageInner() {
       </Modal>
 
       <AddManualDonModal open={manualDonOpen} onOpenChange={setManualDonOpen} />
+      <DonResponsableModal open={responsableOpen} onOpenChange={setResponsableOpen} />
 
       {/* New form modal */}
       <Modal

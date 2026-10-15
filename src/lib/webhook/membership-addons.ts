@@ -25,10 +25,21 @@ export function parseAddons(addonsJson: string | undefined): ResolvedAddon[] {
   }
 }
 
+export interface CreatedAddonDonation {
+  id:            string
+  amount:        number
+  paymentMethod: DonPaymentMethod
+  paidAt:        Date | null
+}
+
 // Resolves a paid MembershipForm checkout's `addons` metadata into real rows, once the
 // Membre this session paid for actually exists — called from inside the same transaction
 // that creates it (both the one-off and recurring checkout webhooks), so a mid-way failure
-// rolls back the whole signup instead of leaving an orphaned addon purchase.
+// rolls back the whole signup instead of leaving an orphaned addon purchase. Returns every
+// DONATION-type row it created so the caller can notify Association.donResponsable (see
+// notifyDonResponsable) once the transaction has actually committed — never from in here,
+// since a mid-way failure after this call must roll back without anyone having already been
+// alerted about a don that no longer exists.
 export async function createMembershipAddonPurchases(tx: TxClient, params: {
   associationId: string
   membreId:      string
@@ -43,8 +54,9 @@ export async function createMembershipAddonPurchases(tx: TxClient, params: {
   // don is created before the visitor's cash/cheque/virement has actually been encaissé.
   donPaymentMethod?: DonPaymentMethod
   donPaidAt?:        Date | null
-}): Promise<void> {
+}): Promise<CreatedAddonDonation[]> {
   const addons = parseAddons(params.addonsJson)
+  const createdDonations: CreatedAddonDonation[] = []
   for (const addon of addons) {
     if (addon.itemType === "ADDON") {
       await tx.membershipAddonPurchase.create({
@@ -58,26 +70,30 @@ export async function createMembershipAddonPurchases(tx: TxClient, params: {
         },
       })
     } else if (addon.itemType === "DONATION") {
-      await tx.don.create({
+      const paymentMethod = params.donPaymentMethod ?? "STRIPE"
+      const paidAt         = params.donPaidAt === undefined ? new Date() : params.donPaidAt
+      const don = await tx.don.create({
         data: {
           associationId:  params.associationId,
           membreId:       params.membreId,
           donationFormId: null,
           tierId:         null,
           membershipAddonTierId: addon.tierId,
-          paymentMethod:  params.donPaymentMethod ?? "STRIPE",
+          paymentMethod,
           donorType:      "INDIVIDUAL",
           firstName:      params.firstName,
           lastName:       params.lastName,
           email:          params.email,
           amount:         addon.amount,
-          paidAt:         params.donPaidAt === undefined ? new Date() : params.donPaidAt,
+          paidAt,
           // La tarif porte son propre réglage (voir membership-tiers-editor.tsx) — seul le
           // droit global de l'association à émettre des reçus fiscaux peut l'écraser à NONE.
           receiptMode:      params.canIssueTaxReceipts ? addon.receiptMode : "NONE",
           deductibleAmount: params.canIssueTaxReceipts && addon.receiptMode === "PARTIAL" ? addon.deductibleAmount : null,
         },
       })
+      createdDonations.push({ id: don.id, amount: addon.amount, paymentMethod, paidAt })
     }
   }
+  return createdDonations
 }

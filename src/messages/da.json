@@ -2633,7 +2633,8 @@
       "notePlaceholder": "Betalingsreference, detaljer…",
       "sendReceiptLabel": "Send en kvittering via e-mail",
       "sendReceiptHint": "En bekræftelsesmail sendes til donoren.",
-      "submitButton": "Registrer donationen"
+      "submitButton": "Registrer donationen",
+      "notifyResponsible": "Giv {name} besked pr. e-mail"
     },
     "formsView": {
       "columns": {
@@ -2956,6 +2957,13 @@
       "intervalYear": "en",
       "confirmButton": "Stop denne tilbagevendende donation",
       "genericError": "Der er sket en fejl. Prøv igen."
+    },
+    "responsableModal": {
+      "openButton": "Ansvarlig",
+      "title": "Ansvarlig for donationer",
+      "selectLabel": "Modtager e-mails om nye donationer",
+      "none": "Ingen",
+      "hint": "Denne person modtager en e-mail og en notifikation for hver ny donation: online når den er betalt, offline (kontant/check/overførsel) så snart den er registreret, og efter administratorens valg for en manuelt indtastet donation."
     }
   },
   "membershipForms": {

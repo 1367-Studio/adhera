@@ -9,6 +9,7 @@ import { resolveEmailBranding } from "@/lib/plan-limits"
 import { generateRecuFiscalForDon } from "@/lib/pdf/recu-fiscal"
 import { sendEmail } from "@/lib/mail"
 import { donConfirmationEmail } from "@/lib/email"
+import { notifyDonResponsable } from "@/lib/dons/notify"
 import { reportError } from "@/lib/monitoring"
 
 export const GET = withAdminAuth(async (req, ctx) => {
@@ -141,6 +142,7 @@ const manualDonSchema = z.object({
   donationFormId:   z.string().nullable().optional(),
   note:             z.string().trim().optional(),
   sendReceiptEmail: z.boolean(),
+  notifyResponsible: z.boolean().optional().default(false),
 }).refine(
   d => d.donorMode !== "member" || !!d.membreId,
   { message: "Contact requis", path: ["membreId"] },
@@ -272,6 +274,14 @@ export const POST = withAdminAuth(async (req, ctx) => {
       }, { associationId: ctx.associationId, membreId: membreId ?? undefined, source: "TRANSACTION", sourceId: don.id })
         .catch(error => reportError(error, { area: "email", action: "dons.manual-confirmation-email", extra: { associationId: ctx.associationId, donId: don.id } }))
     }
+  }
+
+  if (data.notifyResponsible) {
+    notifyDonResponsable({
+      associationId: ctx.associationId, donId: don.id,
+      donorLabel: `${firstName} ${lastName}`,
+      amount: data.amount, paymentMethod: data.paymentMethod, paidAt: true,
+    }).catch(error => reportError(error, { area: "api", action: "dons.manual.notify-responsable", extra: { associationId: ctx.associationId, donId: don.id } }))
   }
 
   return NextResponse.json(don, { status: 201 })

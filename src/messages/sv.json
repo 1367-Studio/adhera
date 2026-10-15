@@ -2633,7 +2633,8 @@
       "notePlaceholder": "Betalningsreferens, detaljer…",
       "sendReceiptLabel": "Skicka ett kvitto via e-post",
       "sendReceiptHint": "Ett bekräftelsemejl skickas till givaren.",
-      "submitButton": "Registrera donationen"
+      "submitButton": "Registrera donationen",
+      "notifyResponsible": "Meddela {name} via e-post"
     },
     "formsView": {
       "columns": {
@@ -2956,6 +2957,13 @@
       "intervalYear": "en",
       "confirmButton": "Stoppa denna återkommande donation",
       "genericError": "Ett fel har uppstått. Försök igen."
+    },
+    "responsableModal": {
+      "openButton": "Ansvarig",
+      "title": "Ansvarig för donationer",
+      "selectLabel": "Får e-post om nya donationer",
+      "none": "Ingen",
+      "hint": "Denna person får ett e-postmeddelande och en avisering för varje ny donation: online när den är betald, offline (kontant/check/överföring) så snart den registreras, och enligt administratörens val för en manuellt registrerad donation."
     }
   },
   "membershipForms": {

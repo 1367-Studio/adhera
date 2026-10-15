@@ -2633,7 +2633,8 @@
       "notePlaceholder": "Referenca plaćanja, detalji…",
       "sendReceiptLabel": "Pošalji potvrdu e-mailom",
       "sendReceiptHint": "Darovatelju će biti poslan e-mail s potvrdom.",
-      "submitButton": "Zabilježi donaciju"
+      "submitButton": "Zabilježi donaciju",
+      "notifyResponsible": "Obavijesti {name} e-poštom"
     },
     "formsView": {
       "columns": {
@@ -2956,6 +2957,13 @@
       "intervalYear": "an",
       "confirmButton": "Zaustavite ovu redovitu donaciju",
       "genericError": "Došlo je do greške. Pokušajte ponovno."
+    },
+    "responsableModal": {
+      "openButton": "Odgovorna osoba",
+      "title": "Odgovorna osoba za donacije",
+      "selectLabel": "Prima e-poštu o novim donacijama",
+      "none": "Nitko",
+      "hint": "Ova osoba prima e-poštu i obavijest za svaku novu donaciju: online nakon plaćanja, offline (gotovina/ček/transfer) odmah nakon registracije, i prema izboru administratora za ručno unesenu donaciju."
     }
   },
   "membershipForms": {
