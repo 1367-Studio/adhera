@@ -319,6 +319,7 @@ export async function POST(req: Request) {
               items:           emailItems,
               paymentStatusLabel: "Payée",
               dashboardUrl,
+              branding:        await resolveEmailBranding(commande.associationId),
             }), { associationId: commande.associationId, source: "BOUTIQUE_ADMIN_ALERT", sourceId: commande.id })
               .catch(error => reportError(error, { area: "email", action: "webhook.boutique-admin-alert-email", extra: { associationId: commande.associationId, commandeId: commande.id, stripeEventId: event.id } }))
           }

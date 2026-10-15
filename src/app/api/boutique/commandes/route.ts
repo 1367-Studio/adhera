@@ -294,6 +294,7 @@ export const POST = withAdminAuth(async (req, ctx) => {
     const paymentStatusLabel = paymentStatus === "PAID"
       ? `Payée (${manualPaymentType})`
       : "En attente de paiement"
+    const responsableBranding = await resolveEmailBranding(ctx.associationId)
     sendEmail(boutiqueNewOrderAdminEmail({
       email:              responsable.email,
       associationName:    assoc.name,
@@ -302,6 +303,7 @@ export const POST = withAdminAuth(async (req, ctx) => {
       items:              lineItemsForEmail,
       paymentStatusLabel,
       dashboardUrl:       `${APP_URL}/dashboard/boutique?tab=commandes&commandeId=${commandeId}`,
+      branding:           responsableBranding,
     }), { associationId: ctx.associationId, source: "BOUTIQUE_ADMIN_ALERT", sourceId: commandeId })
       .catch(error => reportError(error, { area: "email", action: "boutique.manual-commande.responsible-alert-email", extra: { associationId: ctx.associationId, commandeId } }))
   }
