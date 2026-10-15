@@ -8,6 +8,7 @@ import { acceptLegalDocuments, LegalConsentError } from "@/lib/legal/acceptance"
 import { writeActivityLog } from "@/lib/activity-log"
 import { sendEmail } from "@/lib/mail"
 import { boutiqueNewOrderAdminEmail, boutiquePendingOrderEmail } from "@/lib/email"
+import { resolveEmailBranding } from "@/lib/plan-limits"
 import { pusherServer } from "@/lib/pusher-server"
 import { APP_URL } from "@/lib/env"
 import { InsufficientStockError } from "@/lib/boutique/insufficient-stock-error"
@@ -218,6 +219,7 @@ export async function POST(
     await pusherServer.trigger(`private-association-${assoc.id}`, "new-notification", {}).catch(() => {})
 
     const dashboardUrl = `${APP_URL}/dashboard/boutique`
+    const branding = await resolveEmailBranding(assoc.id)
     for (const admin of admins) {
       if (!admin.email) continue
       sendEmail(boutiqueNewOrderAdminEmail({
@@ -226,6 +228,7 @@ export async function POST(
         buyerLabel:      guestName,
         totalAmount:     commande.totalAmount,
         dashboardUrl,
+        branding,
       }), { associationId: assoc.id, source: "BOUTIQUE_ADMIN_ALERT", sourceId: commande.id })
         .catch(error => reportError(error, { area: "email", action: "boutique.admin-new-order-email", extra: { associationId: assoc.id, commandeId: commande.id } }))
     }

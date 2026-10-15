@@ -1891,6 +1891,7 @@ export function boutiqueNewOrderAdminEmail(p: {
   // when omitted, the items table and payment-status line are simply skipped.
   items?:               { name: string; quantity: number; unitPrice: number }[]
   paymentStatusLabel?:  string
+  branding?:            EmailBranding
 }) {
   const totalStr = (p.totalAmount / 100).toLocaleString("fr-FR", { style: "currency", currency: "EUR" })
 
@@ -1921,9 +1922,10 @@ export function boutiqueNewOrderAdminEmail(p: {
     </table>` : ""}
     ${btn("Voir la commande", p.dashboardUrl)}`
   return {
-    to:      p.email,
-    subject: `Nouvelle vente boutique — ${totalStr}`,
-    html:    layout(APP_NAME, content),
+    to:       p.email,
+    subject:  `Nouvelle vente boutique — ${totalStr}`,
+    fromName: p.branding?.senderName ?? p.associationName,
+    html:     layout(p.associationName, content, p.branding),
   }
 }
 
