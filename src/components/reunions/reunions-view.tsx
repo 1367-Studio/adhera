@@ -46,6 +46,22 @@ function getTypeLabels(t: Translator): Record<Meeting["type"], string> {
   }
 }
 
+// DateTimeField's value has no timezone — it's read back by `new Date(...)` as wall-clock
+// local time, so reversing that on the way back means going through Date and its LOCAL
+// getters, not slicing the stored UTC ISO string directly — slicing would silently shift the
+// displayed hour by the browser's UTC offset. Same convention as dashboard/evenements/[id]'s
+// toDatetimeLocal/fromDatetimeLocal.
+function toDatetimeLocal(iso: string | null): string {
+  if (!iso) return ""
+  const d = new Date(iso)
+  const pad = (n: number) => String(n).padStart(2, "0")
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`
+}
+
+function fromDatetimeLocal(value: string | undefined): string | undefined {
+  return value ? new Date(value).toISOString() : value
+}
+
 export function ReunionsView() {
   const t = useTranslations()
   const qc = useQueryClient()
@@ -108,7 +124,7 @@ export function ReunionsView() {
 
   async function handleCreate(data: MeetingFormValues) {
     try {
-      const meeting = await createMeeting.mutateAsync(data)
+      const meeting = await createMeeting.mutateAsync({ ...data, scheduledAt: fromDatetimeLocal(data.scheduledAt) })
       toast.success(data.instant ? t("reunions.view.toasts.meetingStarted") : t("reunions.view.toasts.meetingScheduled"))
       setFormOpen(false)
       if (data.instant) setActiveMeetingId(meeting.id)
@@ -120,7 +136,7 @@ export function ReunionsView() {
   async function handleUpdate(data: MeetingFormValues) {
     if (!editTarget) return
     try {
-      await updateMeeting.mutateAsync({ id: editTarget.id, data })
+      await updateMeeting.mutateAsync({ id: editTarget.id, data: { ...data, scheduledAt: fromDatetimeLocal(data.scheduledAt) } })
       toast.success(t("reunions.view.toasts.meetingUpdated"))
       setEditTarget(null)
     } catch (e: unknown) {
@@ -234,7 +250,7 @@ export function ReunionsView() {
               title:          editTarget.title,
               description:    editTarget.description ?? undefined,
               type:           editTarget.type,
-              scheduledAt:    editTarget.scheduledAt ? editTarget.scheduledAt.slice(0, 16) : undefined,
+              scheduledAt:    editTarget.scheduledAt ? toDatetimeLocal(editTarget.scheduledAt) : undefined,
               participantIds: editTarget.participants.map((p) => p.membreId),
             }}
           />
