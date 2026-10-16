@@ -20,7 +20,7 @@ import { firstEnabledPortalPath } from "@/lib/modules"
 import { getRouteLabels } from "@/lib/route-labels"
 import { isManager, useModules } from "@/lib/user-context"
 import { cn } from "@/lib/utils"
-import { SquaresFourIcon, UserIcon } from "@phosphor-icons/react/dist/ssr"
+import { ArrowSquareOutIcon, SquaresFourIcon, UserIcon } from "@phosphor-icons/react/dist/ssr"
 import { useTranslations } from "next-intl"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
@@ -35,6 +35,7 @@ interface HeaderProps {
   showTour?:        boolean
   logoutRedirect?:  string
   associationSlug?: string
+  publicSiteUrl?:   string | null
 }
 
 function ViewSwitcher({ slug, pathname }: { slug: string; pathname: string }) {
@@ -78,7 +79,7 @@ function ViewSwitcher({ slug, pathname }: { slug: string; pathname: string }) {
   )
 }
 
-export function Header({ user, showSidebar = false, showTour = false, logoutRedirect, associationSlug }: HeaderProps) {
+export function Header({ user, showSidebar = false, showTour = false, logoutRedirect, associationSlug, publicSiteUrl }: HeaderProps) {
   const t = useTranslations()
   const modules = useModules()
   const routeLabels = getRouteLabels(t)
@@ -130,6 +131,19 @@ export function Header({ user, showSidebar = false, showTour = false, logoutRedi
           <span data-tour="view-switcher" className="flex items-center">
             <ViewSwitcher slug={associationSlug} pathname={pathname} />
           </span>
+        )}
+        {publicSiteUrl && (
+          <a
+            href={publicSiteUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-1.5 rounded-md px-2 h-8 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-colors"
+            aria-label={`${t("layout.header.publicSite")} — ${t("layout.userMenu.legalDocuments.opensNewTab")}`}
+            title={t("layout.header.publicSite")}
+          >
+            <ArrowSquareOutIcon className="size-4" />
+            <span className="hidden sm:inline">{t("layout.header.publicSite")}</span>
+          </a>
         )}
         {showTour && <HelpButton />}
         <span data-tour="notifications" className="flex items-center">

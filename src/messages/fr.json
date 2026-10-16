@@ -6209,7 +6209,8 @@
     "header": {
       "myPortal": "Mon espace",
       "myProfile": "Mon profil",
-      "management": "Gestion"
+      "management": "Gestion",
+      "publicSite": "Voir le site"
     },
     "userMenu": {
       "roleLabels": {
