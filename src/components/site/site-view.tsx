@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect, useRef } from "react"
+import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 import { useTranslations } from "next-intl"
 import { useQuery } from "@tanstack/react-query"
@@ -55,6 +56,7 @@ export function SiteView() {
 
   const { data: siteData, isLoading } = useSiteConfig()
   const saveMutation = useSaveSiteConfig()
+  const router = useRouter()
 
   const { data: assoc } = useQuery<AssocData>({
     queryKey: ["association"],
@@ -173,6 +175,10 @@ export function SiteView() {
     try {
       await saveMutation.mutateAsync({ published: next })
       setPublished(next)
+      // The header's "view public site" button comes from dashboard/layout.tsx's own
+      // server-side read of sitePublished, not this page's query — same fix as
+      // branding-settings.tsx's logoUrl save, otherwise it stays stale until a hard reload.
+      router.refresh()
       toast.success(next ? t("toasts.published") : t("toasts.unpublished"))
     } catch {
       toast.error(t("toasts.error"))
