@@ -2546,6 +2546,48 @@
         "created": "Gemaakt product",
         "createError": "Fout aanmaken"
       }
+    },
+    "manualCommandeModal": {
+      "openButton": "Handmatige aankoop toevoegen",
+      "title": "Handmatige aankoop toevoegen",
+      "submit": "Aankoop opslaan",
+      "buyerLabel": "Koper",
+      "existingContact": "Bestaand contact",
+      "externalPerson": "Externe persoon",
+      "searchPlaceholder": "Zoek een contact op naam of e-mail…",
+      "typeToSearch": "Typ minstens 2 tekens om te zoeken",
+      "noResults": "Geen contact gevonden",
+      "firstNamePlaceholder": "Voornaam",
+      "lastNamePlaceholder": "Achternaam",
+      "emailPlaceholder": "E-mail (optioneel)",
+      "scopeLabel": "Winkel of bijbehorend formulier",
+      "scopeStorefront": "Winkel",
+      "productsLabel": "Gekochte producten",
+      "productPlaceholder": "Kies een product",
+      "variantPlaceholder": "Kies een variant",
+      "quantityColumn": "Aantal",
+      "addProduct": "Product toevoegen",
+      "noProductsForScope": "Geen producten beschikbaar voor deze selectie.",
+      "outOfStock": "niet op voorraad",
+      "totalLabel": "Totaal",
+      "dateLabel": "Aankoopdatum",
+      "paymentStatusLabel": "Betaalstatus",
+      "paid": "Betaald",
+      "pending": "Wacht op betaling",
+      "noteLabel": "Notitie",
+      "sendReceiptEmail": "Stuur het bonnetje per e-mail naar de koper",
+      "sendPendingEmail": "Stuur een bevestiging per e-mail naar de koper",
+      "notifyResponsible": "{name} per e-mail op de hoogte stellen",
+      "toasts": {
+        "created": "Aankoop opgeslagen"
+      }
+    },
+    "responsableModal": {
+      "openButton": "Verantwoordelijke",
+      "title": "Verantwoordelijke van de winkel",
+      "selectLabel": "Ontvangt e-mails bij nieuwe verkopen",
+      "none": "Geen",
+      "hint": "Deze persoon ontvangt een e-mail bij elke nieuwe online verkoop (zodra deze betaald is) en, naar keuze van de beheerder, bij elke handmatig toegevoegde aankoop."
     }
   },
   "donationForms": {
@@ -4249,7 +4291,8 @@
         "materiel": "Materiaal",
         "historique": "Geschiedenis",
         "emails": "E-mails",
-        "sms": "SMS"
+        "sms": "SMS",
+        "boutique": "Winkel"
       },
       "cotisationStatus": {
         "enAttente": "In behandeling",
@@ -4319,7 +4362,14 @@
         "confirmDescription": "Dit registreert een AVG artikel 17-verzoek tot verwijdering. Het lid ontvangt een bevestigingsmail, waarna de persoonsgegevens onomkeerbaar worden geanonimiseerd bij de volgende automatische verwerking, tenzij het verzoek in de wacht wordt gezet.",
         "toastSuccess": "Wisverzoek geregistreerd",
         "requestLabel": "AVG-wissing"
-      }
+      },
+      "noCommande": "Geen winkelaankopen voor dit contact.",
+      "commandeStatus": {
+        "PENDING": "In behandeling",
+        "PAID": "Betaald",
+        "CANCELLED": "Geannuleerd"
+      },
+      "showingRecentCommandes": "De {count} meest recente aankopen van in totaal {total} worden weergegeven."
     },
     "sms": {
       "title": "Stuur een sms",

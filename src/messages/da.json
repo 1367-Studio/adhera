@@ -2546,6 +2546,48 @@
         "created": "Produkt skabt",
         "createError": "Fejloprettelse"
       }
+    },
+    "manualCommandeModal": {
+      "openButton": "Tilføj et manuelt køb",
+      "title": "Tilføj et manuelt køb",
+      "submit": "Gem køb",
+      "buyerLabel": "Køber",
+      "existingContact": "Eksisterende kontakt",
+      "externalPerson": "Ekstern person",
+      "searchPlaceholder": "Søg efter en kontakt efter navn eller e-mail…",
+      "typeToSearch": "Indtast mindst 2 tegn for at søge",
+      "noResults": "Ingen kontakt fundet",
+      "firstNamePlaceholder": "Fornavn",
+      "lastNamePlaceholder": "Efternavn",
+      "emailPlaceholder": "E-mail (valgfrit)",
+      "scopeLabel": "Butik eller tilknyttet formular",
+      "scopeStorefront": "Butik",
+      "productsLabel": "Købte produkter",
+      "productPlaceholder": "Vælg et produkt",
+      "variantPlaceholder": "Vælg en variant",
+      "quantityColumn": "Ant.",
+      "addProduct": "Tilføj et produkt",
+      "noProductsForScope": "Ingen produkter tilgængelige for dette valg.",
+      "outOfStock": "udsolgt",
+      "totalLabel": "I alt",
+      "dateLabel": "Købsdato",
+      "paymentStatusLabel": "Betalingsstatus",
+      "paid": "Betalt",
+      "pending": "Afventer betaling",
+      "noteLabel": "Note",
+      "sendReceiptEmail": "Send kvitteringen pr. e-mail til køberen",
+      "sendPendingEmail": "Send en bekræftelse pr. e-mail til køberen",
+      "notifyResponsible": "Giv {name} besked pr. e-mail",
+      "toasts": {
+        "created": "Køb gemt"
+      }
+    },
+    "responsableModal": {
+      "openButton": "Ansvarlig",
+      "title": "Butikkens ansvarlige",
+      "selectLabel": "Modtager e-mails om nye salg",
+      "none": "Ingen",
+      "hint": "Denne person modtager en e-mail for hvert nyt onlinesalg (når det er betalt) og, efter administratorens valg, for hvert manuelt tilføjet køb."
     }
   },
   "donationForms": {
@@ -4249,7 +4291,8 @@
         "materiel": "Materiale",
         "historique": "Historik",
         "emails": "E-mails",
-        "sms": "SMS"
+        "sms": "SMS",
+        "boutique": "Butik"
       },
       "cotisationStatus": {
         "enAttente": "Afventer",
@@ -4319,7 +4362,14 @@
         "confirmDescription": "Dette registrerer en GDPR artikel 17-anmodning om sletning. Medlemmet modtager en bekræftelses-e-mail, hvorefter deres personoplysninger anonymiseres uigenkaldeligt ved næste automatiske behandling, med mindre anmodningen sættes på hold.",
         "toastSuccess": "Anmodning om sletning registreret",
         "requestLabel": "GDPR-sletning"
-      }
+      },
+      "noCommande": "Ingen butikskøb for denne kontakt.",
+      "commandeStatus": {
+        "PENDING": "Afventer",
+        "PAID": "Betalt",
+        "CANCELLED": "Aflyst"
+      },
+      "showingRecentCommandes": "Viser de {count} seneste køb ud af {total}."
     },
     "sms": {
       "title": "Send en SMS",

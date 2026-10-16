@@ -7,7 +7,7 @@ import { useTranslations } from "next-intl"
 import { toast } from "sonner"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
-import { PlusIcon, ShoppingBagIcon, PackageIcon, ShoppingCartIcon, EyeIcon, ArchiveIcon, NotePencilIcon, MoneyIcon, FileArrowDownIcon, PencilSimpleIcon, ArrowCounterClockwiseIcon } from "@phosphor-icons/react/dist/ssr";
+import { PlusIcon, ShoppingBagIcon, PackageIcon, ShoppingCartIcon, EyeIcon, ArchiveIcon, NotePencilIcon, MoneyIcon, FileArrowDownIcon, PencilSimpleIcon, ArrowCounterClockwiseIcon, GearIcon, ShoppingBagOpenIcon } from "@phosphor-icons/react/dist/ssr";
 import { PageHeader } from "@/components/ui/page-header"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -20,6 +20,8 @@ import { cn } from "@/lib/utils"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { BASE_PATH } from "@/lib/env"
 import { useHasAccess, useIsAdministrator } from "@/lib/user-context"
+import { AddManualCommandeModal } from "@/components/boutique/add-manual-commande-modal"
+import { BoutiqueResponsableModal } from "@/components/boutique/boutique-responsable-modal"
 
 type Translator = ReturnType<typeof useTranslations>
 
@@ -133,6 +135,8 @@ function BoutiquePageInner() {
   const [correctedType, setCorrectedType] = useState("")
   const [refundTarget, setRefundTarget]   = useState<Commande | null>(null)
   const [refundItems, setRefundItems]     = useState<EditableItem[]>([])
+  const [addManualOpen, setAddManualOpen] = useState(false)
+  const [responsableOpen, setResponsableOpen] = useState(false)
 
   const { data: produits = [], isLoading: loadingProduits } = useQuery<Produit[]>({
     queryKey:  ["boutique-produits"],
@@ -491,11 +495,25 @@ function BoutiquePageInner() {
       <PageHeader
         title={t("view.title")}
         description={t("view.description")}
-        action={tab === "produits" && canEditBoutique ? (
-          <Button size="sm" onClick={() => router.push("/dashboard/boutique/nouveau")}>
-            <PlusIcon className="mr-1.5 size-4" />
-            {t("view.newProduct")}
-          </Button>
+        action={canEditBoutique ? (
+          <div className="flex items-center gap-2">
+            {isAdministrator && (
+              <Button variant="ghost" size="sm" onClick={() => setResponsableOpen(true)}>
+                <GearIcon className="mr-1.5 size-4" />
+                {t("responsableModal.openButton")}
+              </Button>
+            )}
+            <Button variant="outline" size="sm" onClick={() => setAddManualOpen(true)}>
+              <ShoppingBagOpenIcon className="mr-1.5 size-4" />
+              {t("manualCommandeModal.openButton")}
+            </Button>
+            {tab === "produits" && (
+              <Button size="sm" onClick={() => router.push("/dashboard/boutique/nouveau")}>
+                <PlusIcon className="mr-1.5 size-4" />
+                {t("view.newProduct")}
+              </Button>
+            )}
+          </div>
         ) : undefined}
       />
 
@@ -828,6 +846,13 @@ function BoutiquePageInner() {
           </p>
         </div>
       </Modal>
+
+      <AddManualCommandeModal
+        open={addManualOpen}
+        onOpenChange={setAddManualOpen}
+        onCreated={() => { setTab("commandes"); router.push("/dashboard/boutique?tab=commandes") }}
+      />
+      <BoutiqueResponsableModal open={responsableOpen} onOpenChange={setResponsableOpen} />
     </div>
   )
 }

@@ -2546,6 +2546,48 @@
         "created": "Produkt vytvorený",
         "createError": "Vytváranie chýb"
       }
+    },
+    "manualCommandeModal": {
+      "openButton": "Pridať ručný nákup",
+      "title": "Pridať ručný nákup",
+      "submit": "Uložiť nákup",
+      "buyerLabel": "Kupujúci",
+      "existingContact": "Existujúci kontakt",
+      "externalPerson": "Externá osoba",
+      "searchPlaceholder": "Hľadať kontakt podľa mena alebo e-mailu…",
+      "typeToSearch": "Zadajte aspoň 2 znaky na vyhľadávanie",
+      "noResults": "Nenašiel sa žiadny kontakt",
+      "firstNamePlaceholder": "Meno",
+      "lastNamePlaceholder": "Priezvisko",
+      "emailPlaceholder": "E-mail (nepovinné)",
+      "scopeLabel": "Obchod alebo súvisiaci formulár",
+      "scopeStorefront": "Obchod",
+      "productsLabel": "Zakúpené produkty",
+      "productPlaceholder": "Vyberte produkt",
+      "variantPlaceholder": "Vyberte variant",
+      "quantityColumn": "Množ.",
+      "addProduct": "Pridať produkt",
+      "noProductsForScope": "Pre tento výber nie sú k dispozícii žiadne produkty.",
+      "outOfStock": "vypredané",
+      "totalLabel": "Spolu",
+      "dateLabel": "Dátum nákupu",
+      "paymentStatusLabel": "Stav platby",
+      "paid": "Platené",
+      "pending": "Čaká na platbu",
+      "noteLabel": "Poznámka",
+      "sendReceiptEmail": "Poslať doklad e-mailom kupujúcemu",
+      "sendPendingEmail": "Poslať potvrdenie e-mailom kupujúcemu",
+      "notifyResponsible": "Upozorniť {name} e-mailom",
+      "toasts": {
+        "created": "Nákup uložený"
+      }
+    },
+    "responsableModal": {
+      "openButton": "Zodpovedná osoba",
+      "title": "Zodpovedná osoba obchodu",
+      "selectLabel": "Dostáva e-maily o nových predajoch",
+      "none": "Žiadna",
+      "hint": "Táto osoba dostáva e-mail pri každom novom online predaji (po zaplatení) a podľa výberu administrátora aj pri každom ručne pridanom nákupe."
     }
   },
   "donationForms": {
@@ -4249,7 +4291,8 @@
         "materiel": "Materiál",
         "historique": "História",
         "emails": "E-maily",
-        "sms": "SMS"
+        "sms": "SMS",
+        "boutique": "Obchod"
       },
       "cotisationStatus": {
         "enAttente": "Čaká sa",
@@ -4319,7 +4362,14 @@
         "confirmDescription": "Táto akcia zaregistruje žiadosť o vymazanie podľa čl. 17 GDPR. Člen dostane potvrdzujúci e-mail a následne budú jeho osobné údaje nenávratne anonymizované pri ďalšom automatickom spracovaní, pokiaľ žiadosť nebude pozastavená.",
         "toastSuccess": "Žiadosť o vymazanie zaregistrovaná",
         "requestLabel": "Vymazanie GDPR"
-      }
+      },
+      "noCommande": "Tento kontakt nemá žiadne nákupy v obchode.",
+      "commandeStatus": {
+        "PENDING": "Čaká sa",
+        "PAID": "Platené",
+        "CANCELLED": "Zrušené"
+      },
+      "showingRecentCommandes": "Zobrazených {count} najnovších nákupov z celkového počtu {total}."
     },
     "sms": {
       "title": "Pošlite SMS",

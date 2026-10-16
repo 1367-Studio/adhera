@@ -2648,6 +2648,48 @@
         "created": "Product created",
         "createError": "Error while creating"
       }
+    },
+    "manualCommandeModal": {
+      "openButton": "Add a manual purchase",
+      "title": "Add a manual purchase",
+      "submit": "Save purchase",
+      "buyerLabel": "Buyer",
+      "existingContact": "Existing contact",
+      "externalPerson": "External person",
+      "searchPlaceholder": "Search for a contact by name or email…",
+      "typeToSearch": "Type at least 2 characters to search",
+      "noResults": "No contact found",
+      "firstNamePlaceholder": "First name",
+      "lastNamePlaceholder": "Last name",
+      "emailPlaceholder": "Email (optional)",
+      "scopeLabel": "Shop or related form",
+      "scopeStorefront": "Shop",
+      "productsLabel": "Products purchased",
+      "productPlaceholder": "Choose a product",
+      "variantPlaceholder": "Choose a variant",
+      "quantityColumn": "Qty",
+      "addProduct": "Add a product",
+      "noProductsForScope": "No products available for this selection.",
+      "outOfStock": "out of stock",
+      "totalLabel": "Total",
+      "dateLabel": "Purchase date",
+      "paymentStatusLabel": "Payment status",
+      "paid": "Paid",
+      "pending": "Awaiting payment",
+      "noteLabel": "Note",
+      "sendReceiptEmail": "Send the receipt by email to the buyer",
+      "sendPendingEmail": "Send a confirmation by email to the buyer",
+      "notifyResponsible": "Notify {name} by email",
+      "toasts": {
+        "created": "Purchase saved"
+      }
+    },
+    "responsableModal": {
+      "openButton": "Manager",
+      "title": "Shop manager",
+      "selectLabel": "Receives new-sale emails",
+      "none": "None",
+      "hint": "This person receives an email for every new online sale (once paid) and, at the admin's choice, for every manually added purchase."
     }
   },
   "donationForms": {
@@ -4499,7 +4541,8 @@
         "materiel": "Equipment",
         "historique": "History",
         "emails": "Emails",
-        "sms": "SMS"
+        "sms": "SMS",
+        "boutique": "Shop"
       },
       "cotisationStatus": {
         "enAttente": "Pending",
@@ -4563,7 +4606,14 @@
         "rejectedToast": "Request declined",
         "rejectConfirmTitle": "Decline this request?",
         "rejectConfirmDescription": "{name} will be set to “Inactive” and won't be able to sign in. The request and their form answers are kept."
-      }
+      },
+      "noCommande": "No shop purchases for this contact.",
+      "commandeStatus": {
+        "PENDING": "Pending",
+        "PAID": "Paid",
+        "CANCELLED": "Cancelled"
+      },
+      "showingRecentCommandes": "Showing the {count} most recent purchases out of {total}."
     },
     "sms": {
       "title": "Send an SMS",

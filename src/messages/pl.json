@@ -2546,6 +2546,48 @@
         "created": "Produkt stworzony",
         "createError": "Tworzenie błędów"
       }
+    },
+    "manualCommandeModal": {
+      "openButton": "Dodaj ręczny zakup",
+      "title": "Dodaj ręczny zakup",
+      "submit": "Zapisz zakup",
+      "buyerLabel": "Kupujący",
+      "existingContact": "Istniejący kontakt",
+      "externalPerson": "Osoba zewnętrzna",
+      "searchPlaceholder": "Szukaj kontaktu po imieniu lub e-mailu…",
+      "typeToSearch": "Wpisz co najmniej 2 znaki, aby wyszukać",
+      "noResults": "Nie znaleziono kontaktu",
+      "firstNamePlaceholder": "Imię",
+      "lastNamePlaceholder": "Nazwisko",
+      "emailPlaceholder": "E-mail (opcjonalnie)",
+      "scopeLabel": "Sklep lub powiązany formularz",
+      "scopeStorefront": "Sklep",
+      "productsLabel": "Zakupione produkty",
+      "productPlaceholder": "Wybierz produkt",
+      "variantPlaceholder": "Wybierz wariant",
+      "quantityColumn": "Ilość",
+      "addProduct": "Dodaj produkt",
+      "noProductsForScope": "Brak dostępnych produktów dla tego wyboru.",
+      "outOfStock": "brak w magazynie",
+      "totalLabel": "Razem",
+      "dateLabel": "Data zakupu",
+      "paymentStatusLabel": "Status płatności",
+      "paid": "Opłacone",
+      "pending": "Oczekuje na płatność",
+      "noteLabel": "Notatka",
+      "sendReceiptEmail": "Wyślij paragon e-mailem do kupującego",
+      "sendPendingEmail": "Wyślij potwierdzenie e-mailem do kupującego",
+      "notifyResponsible": "Powiadom {name} e-mailem",
+      "toasts": {
+        "created": "Zakup zapisany"
+      }
+    },
+    "responsableModal": {
+      "openButton": "Osoba odpowiedzialna",
+      "title": "Osoba odpowiedzialna za sklep",
+      "selectLabel": "Otrzymuje e-maile o nowych sprzedażach",
+      "none": "Brak",
+      "hint": "Ta osoba otrzymuje e-mail przy każdej nowej sprzedaży online (po opłaceniu) oraz, według wyboru administratora, przy każdym ręcznie dodanym zakupie."
     }
   },
   "donationForms": {
@@ -4249,7 +4291,8 @@
         "materiel": "Materiał",
         "historique": "Historia",
         "emails": "E-maile",
-        "sms": "SMS"
+        "sms": "SMS",
+        "boutique": "Sklep"
       },
       "cotisationStatus": {
         "enAttente": "Oczekuje",
@@ -4319,7 +4362,14 @@
         "confirmDescription": "Ta czynność rejestruje wniosek o usunięcie danych na podstawie art. 17 RODO. Członek otrzyma e-mail z potwierdzeniem, a następnie jego dane osobowe zostaną nieodwracalnie zanonimizowane podczas kolejnego automatycznego przetwarzania, o ile wniosek nie zostanie wstrzymany.",
         "toastSuccess": "Wniosek o usunięcie danych zarejestrowany",
         "requestLabel": "Usunięcie RODO"
-      }
+      },
+      "noCommande": "Ten kontakt nie ma żadnych zakupów w sklepie.",
+      "commandeStatus": {
+        "PENDING": "Oczekuje",
+        "PAID": "Opłacone",
+        "CANCELLED": "Anulowane"
+      },
+      "showingRecentCommandes": "Wyświetlono {count} najnowszych zakupów z {total}."
     },
     "sms": {
       "title": "Wyślij SMS",

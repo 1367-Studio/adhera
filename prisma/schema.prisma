@@ -459,6 +459,11 @@ model Association {
   // l'écart possible entre le prix coté et le prix réel payé par l'association au moment de
   // l'affranchissement (aucune étiquette n'est achetée à la commande, voir shipping-rate.ts).
   shippingMarkupPercent          Int                 @default(0)
+  // Seule personne avertie par e-mail des nouvelles ventes Boutique (en ligne une fois payées,
+  // manuelles sur choix de l'admin qui enregistre) — voir bookBoutiqueOrderIncome et la route
+  // POST /api/boutique/commandes. Tant qu'aucun responsable n'est choisi, l'alerte en ligne
+  // retombe sur l'ancien comportement (tous les ADMIN/PRESIDENT/TRESORIER/SECRETAIRE).
+  boutiqueResponsableId          String?
   // Shown on devis/facture PDFs (below "Conditions de paiement") so the recipient knows
   // where to wire payment — distinct from BankAccount, which is for reconciliation import
   // and only ever stores a last-4, never a full IBAN.
@@ -590,48 +595,49 @@ model Association {
   updatedAt                      DateTime            @updatedAt
   deletedAt                      DateTime?
 
-  users                      User[]
-  membres                    Membre[]
-  membreTypes                MembreType[]
-  evenements                 Evenement[]
-  cotisations                Cotisation[]
-  actualites                 Actualite[]
-  messageTemplates           MessageTemplate[]
-  automationRules            AutomationRule[]
-  materials                  Material[]
-  activityLogs               ActivityLog[]
-  dons                       Don[]
-  donationForms              DonationForm[]
-  donationSubscriptions      DonationSubscription[]
-  cotisationSubscriptions    CotisationSubscription[]
-  cotisationInstallmentPlans CotisationInstallmentPlan[]
-  membershipForms            MembershipForm[]
-  membershipAddonPurchases   MembershipAddonPurchase[]
-  membershipCheckoutDrafts   MembershipCheckoutDraft[]
-  sondages                   Sondage[]
-  boutiqueProduits           BoutiqueProduit[]
-  boutiqueCommandes          BoutiqueCommande[]
-  meetings                   Meeting[]
-  exercicesComptables        ExerciceComptable[]
-  bankAccounts               BankAccount[]
-  bankTransactions           BankTransaction[]
-  financeCategories          FinanceCategory[]
-  incomes                    Income[]
-  expenses                   Expense[]
-  bankReconciliations        BankReconciliation[]
-  fournisseurs               Fournisseur[]
-  devis                      Devis[]
-  factures                   Facture[]
-  facturesRecues             FactureRecue[]
-  associationDocuments       AssociationDocument[]
-  paperFormTemplates         PaperFormTemplate[]
-  legalAcceptances           LegalAcceptance[]
-  emailMessages              EmailMessage[]
-  smsMessages                SmsMessage[]
-  supportTickets             SupportTicket[]
-  pricingOffer               PricingOffer?
-  controlAlerts              MembreControlAlert[]
-  erasureRequests            ErasureRequest[]
+  users                         User[]
+  membres                       Membre[]
+  membreTypes                   MembreType[]
+  evenements                    Evenement[]
+  cotisations                   Cotisation[]
+  actualites                    Actualite[]
+  messageTemplates              MessageTemplate[]
+  automationRules               AutomationRule[]
+  materials                     Material[]
+  activityLogs                  ActivityLog[]
+  dons                          Don[]
+  donationForms                 DonationForm[]
+  donationSubscriptions         DonationSubscription[]
+  cotisationSubscriptions       CotisationSubscription[]
+  cotisationInstallmentPlans    CotisationInstallmentPlan[]
+  membershipForms               MembershipForm[]
+  membershipAddonPurchases      MembershipAddonPurchase[]
+  membershipCheckoutDrafts      MembershipCheckoutDraft[]
+  sondages                      Sondage[]
+  boutiqueProduits              BoutiqueProduit[]
+  boutiqueCommandes             BoutiqueCommande[]
+  meetings                      Meeting[]
+  exercicesComptables           ExerciceComptable[]
+  bankAccounts                  BankAccount[]
+  bankTransactions              BankTransaction[]
+  financeCategories             FinanceCategory[]
+  incomes                       Income[]
+  expenses                      Expense[]
+  bankReconciliations           BankReconciliation[]
+  fournisseurs                  Fournisseur[]
+  devis                         Devis[]
+  factures                      Facture[]
+  facturesRecues                FactureRecue[]
+  associationDocuments          AssociationDocument[]
+  paperFormTemplates            PaperFormTemplate[]
+  legalAcceptances              LegalAcceptance[]
+  emailMessages                 EmailMessage[]
+  smsMessages                   SmsMessage[]
+  supportTickets                SupportTicket[]
+  pricingOffer                  PricingOffer?
+  controlAlerts                 MembreControlAlert[]
+  erasureRequests               ErasureRequest[]
+  boutiqueResponsable           User?                          @relation("BoutiqueResponsable", fields: [boutiqueResponsableId], references: [id], onDelete: SetNull)
 
   @@index([customDomainStatus])
 }
@@ -713,18 +719,20 @@ model User {
   twoFactorEnabled Boolean @default(false)
   twoFactorSecret  String?
 
-  association           Association?           @relation(fields: [associationId], references: [id])
-  notifications         Notification[]
-  membre                Membre?
-  passwordResetTokens   PasswordResetToken[]
-  supportTickets        SupportTicket[]
-  supportTicketMessages SupportTicketMessage[]
-  emailMessages         EmailMessage[]
-  pricingOffersCreated  PricingOffer[]
-  twoFactorBackupCodes  TwoFactorBackupCode[]
-  resolvedControlAlerts MembreControlAlert[]
-  erasureRequestsMade   ErasureRequest[]       @relation("ErasureRequestedBy")
-  erasureRequestsHeld   ErasureRequest[]       @relation("ErasureHeldBy")
+  association              Association?           @relation(fields: [associationId], references: [id])
+  notifications            Notification[]
+  membre                   Membre?
+  passwordResetTokens      PasswordResetToken[]
+  supportTickets           SupportTicket[]
+  supportTicketMessages    SupportTicketMessage[]
+  emailMessages            EmailMessage[]
+  pricingOffersCreated     PricingOffer[]
+  twoFactorBackupCodes     TwoFactorBackupCode[]
+  resolvedControlAlerts    MembreControlAlert[]
+  erasureRequestsMade      ErasureRequest[]       @relation("ErasureRequestedBy")
+  erasureRequestsHeld      ErasureRequest[]       @relation("ErasureHeldBy")
+  boutiqueResponsableFor   Association[]          @relation("BoutiqueResponsable")
+  boutiqueCommandesCreated BoutiqueCommande[]     @relation("BoutiqueCommandeCreatedBy")
 
   @@unique([email, associationId])
   @@index([associationId, role])
@@ -1633,13 +1641,13 @@ model MembershipForm {
   validationMode       MembershipValidationMode @default(IMMEDIATE)
 
   // Étape 3 — Formulaire : matrice d'exigence des champs standards
-  fieldAddress   MembershipFieldRequirement @default(HIDDEN)
-  fieldBirthDate MembershipFieldRequirement @default(HIDDEN)
-  fieldPhone     MembershipFieldRequirement @default(HIDDEN)
-  fieldMobile    MembershipFieldRequirement @default(HIDDEN)
-  fieldGender    MembershipFieldRequirement @default(HIDDEN)
-  fieldPhoto     MembershipFieldRequirement @default(HIDDEN)
-  fieldLanguage  MembershipFieldRequirement @default(HIDDEN)
+  fieldAddress         MembershipFieldRequirement @default(HIDDEN)
+  fieldBirthDate       MembershipFieldRequirement @default(HIDDEN)
+  fieldPhone           MembershipFieldRequirement @default(HIDDEN)
+  fieldMobile          MembershipFieldRequirement @default(HIDDEN)
+  fieldGender          MembershipFieldRequirement @default(HIDDEN)
+  fieldPhoto           MembershipFieldRequirement @default(HIDDEN)
+  fieldLanguage        MembershipFieldRequirement @default(HIDDEN)
   // Distinct from fieldLanguage/spokenLanguage (langue parlée) — this drives Membre.preferredLocale,
   // the language used for future member-facing email/communication localization. See the comment
   // on Membre.preferredLocale below.
@@ -2097,11 +2105,11 @@ model SupportTicketMessage {
 // l'e-mail. Volontairement séparé de Notification (src/lib/cotisation-alerts.ts) : ceci
 // est cross-association, avec son propre flux de résolution côté backoffice.
 model MembreControlAlert {
-  id            String                    @id @default(cuid())
-  membreId      String                    @unique
+  id            String                   @id @default(cuid())
+  membreId      String                   @unique
   associationId String
-  status        MembreControlAlertStatus  @default(OUVERT)
-  raisedAt      DateTime                  @default(now())
+  status        MembreControlAlertStatus @default(OUVERT)
+  raisedAt      DateTime                 @default(now())
   resolvedAt    DateTime?
   resolvedById  String?
   // True when the sweep itself closed this alert because the member no longer matches the
@@ -2109,10 +2117,10 @@ model MembreControlAlert {
   // from a human clicking "Résoudre". resolvedById stays null for an auto-resolve, but this
   // flag is what the UI actually checks: a manual resolve can just as legitimately have no
   // note, so "no resolvedById" alone would be ambiguous.
-  autoResolved  Boolean                   @default(false)
+  autoResolved  Boolean                  @default(false)
   note          String?
-  createdAt     DateTime                  @default(now())
-  updatedAt     DateTime                  @updatedAt
+  createdAt     DateTime                 @default(now())
+  updatedAt     DateTime                 @updatedAt
 
   membre      Membre      @relation(fields: [membreId], references: [id], onDelete: Cascade)
   association Association @relation(fields: [associationId], references: [id], onDelete: Cascade)
@@ -2131,10 +2139,10 @@ model MembreControlAlert {
 // @@unique here: Prisma's schema syntax can't express the WHERE clause that excludes
 // PROCESSED rows, so it only exists as hand-written SQL and isn't mirrored below.
 enum ErasureRequestStatus {
-  REVIEW    // self-service request from the portal (POST /api/portal/erasure-request) —
-            // awaiting an administrator's approval before it can reach the nightly cron
-  PENDING   // approved, queued for the nightly cron (step 3)
-  HELD      // legal hold — data frozen
+  REVIEW // self-service request from the portal (POST /api/portal/erasure-request) —
+  // awaiting an administrator's approval before it can reach the nightly cron
+  PENDING // approved, queued for the nightly cron (step 3)
+  HELD // legal hold — data frozen
   PROCESSED // anonymization executed — irreversible
 }
 
@@ -2613,6 +2621,11 @@ model BoutiqueCommande {
   // Nom du service choisi par l'acheteur parmi les options cotées (ex: "Colissimo Domicile")
   // — traçabilité pour l'admin, pas juste un montant brut.
   shippingCarrierLabel  String?
+  // Set only when an admin records the sale directly in the dashboard (POST
+  // /api/boutique/commandes) — null for every self-service order (portal/public checkout).
+  // Drives the "notifier le responsable" default (unchecked when the admin IS the
+  // responsable) and lets the UI label these rows as manually entered.
+  createdByUserId       String?
   createdAt             DateTime               @default(now())
   updatedAt             DateTime               @updatedAt
 
@@ -2620,12 +2633,14 @@ model BoutiqueCommande {
   membre        Membre?                @relation(fields: [membreId], references: [id], onDelete: SetNull)
   cotisation    Cotisation?            @relation(fields: [cotisationId], references: [id], onDelete: SetNull)
   participation Participation?         @relation(fields: [participationId], references: [id], onDelete: SetNull)
+  createdBy     User?                  @relation("BoutiqueCommandeCreatedBy", fields: [createdByUserId], references: [id], onDelete: SetNull)
   items         BoutiqueCommandeItem[]
   // One row per accounting category plus one for shipping — see Income.commandeId.
   incomes       Income[]
 
   @@unique([associationId, receiptNumber])
   @@index([associationId, status])
+  @@index([associationId, membreId])
 }
 
 model BoutiqueCommandeItem {
