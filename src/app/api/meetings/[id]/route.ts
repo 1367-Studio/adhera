@@ -5,9 +5,10 @@ import { withAdminAuth } from "@/lib/api-wrapper"
 import { hasAccess } from "@/lib/permissions"
 import { meetingUpdateSchema } from "@/lib/schemas"
 import { pusherServer } from "@/lib/pusher-server"
-import { sendEmail } from "@/lib/mail"
+import { sendEmailBulk } from "@/lib/mail"
 import { meetingInviteEmail } from "@/lib/email"
 import { resolveEmailBranding } from "@/lib/plan-limits"
+import { reportError } from "@/lib/monitoring"
 import { MEETING_WITH_PARTICIPANTS_SELECT, redactParticipantStatus } from "@/lib/meetings/select"
 import { APP_URL } from "@/lib/env"
 
@@ -93,18 +94,28 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
         ? (scheduledAt ? new Date(scheduledAt) : null)
         : existing.scheduledAt
 
-      for (const m of newMembres) {
-        if (!m.user?.email) continue
-        void sendEmail(meetingInviteEmail({
-          firstName:       m.firstName,
-          email:           m.user.email,
-          associationName: association?.name ?? "",
-          meetingTitle:    finalTitle,
-          scheduledAt:     finalScheduledAt,
-          instant:         false,
-          portalUrl:       portalBase,
-          branding,
-        }), { associationId, membreId: m.id, source: "MEETING_INVITE", sourceId: id })
+      const invitePayloads = newMembres
+        .filter(m => m.user?.email)
+        .map(m => ({
+          ...meetingInviteEmail({
+            firstName:       m.firstName,
+            email:           m.user!.email!,
+            associationName: association?.name ?? "",
+            meetingTitle:    finalTitle,
+            scheduledAt:     finalScheduledAt,
+            instant:         false,
+            portalUrl:       portalBase,
+            branding,
+          }),
+          context: { associationId, membreId: m.id, source: "MEETING_INVITE", sourceId: id },
+        }))
+      // Fire-and-forget on purpose: the participant change is already persisted, so a Resend
+      // hiccup here (resend.batch.send can reject, not just return {error}) must not turn an
+      // already-successful update into a 500 for the admin — withAdminAuth has no try/catch
+      // around the handler, so an awaited rejection here would propagate into the response.
+      if (invitePayloads.length > 0) {
+        void sendEmailBulk(invitePayloads).catch(error =>
+          reportError(error, { area: "email", action: "mail.meeting-invite-bulk", extra: { associationId, meetingId: id } }))
       }
 
       await prisma.notification.createMany({
