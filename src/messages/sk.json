@@ -2546,6 +2546,48 @@
         "created": "Produkt vytvorený",
         "createError": "Vytváranie chýb"
       }
+    },
+    "manualCommandeModal": {
+      "openButton": "Pridať ručný nákup",
+      "title": "Pridať ručný nákup",
+      "submit": "Uložiť nákup",
+      "buyerLabel": "Kupujúci",
+      "existingContact": "Existujúci kontakt",
+      "externalPerson": "Externá osoba",
+      "searchPlaceholder": "Hľadať kontakt podľa mena alebo e-mailu…",
+      "typeToSearch": "Zadajte aspoň 2 znaky na vyhľadávanie",
+      "noResults": "Nenašiel sa žiadny kontakt",
+      "firstNamePlaceholder": "Meno",
+      "lastNamePlaceholder": "Priezvisko",
+      "emailPlaceholder": "E-mail (nepovinné)",
+      "scopeLabel": "Obchod alebo súvisiaci formulár",
+      "scopeStorefront": "Obchod",
+      "productsLabel": "Zakúpené produkty",
+      "productPlaceholder": "Vyberte produkt",
+      "variantPlaceholder": "Vyberte variant",
+      "quantityColumn": "Množ.",
+      "addProduct": "Pridať produkt",
+      "noProductsForScope": "Pre tento výber nie sú k dispozícii žiadne produkty.",
+      "outOfStock": "vypredané",
+      "totalLabel": "Spolu",
+      "dateLabel": "Dátum nákupu",
+      "paymentStatusLabel": "Stav platby",
+      "paid": "Platené",
+      "pending": "Čaká na platbu",
+      "noteLabel": "Poznámka",
+      "sendReceiptEmail": "Poslať doklad e-mailom kupujúcemu",
+      "sendPendingEmail": "Poslať potvrdenie e-mailom kupujúcemu",
+      "notifyResponsible": "Upozorniť {name} e-mailom",
+      "toasts": {
+        "created": "Nákup uložený"
+      }
+    },
+    "responsableModal": {
+      "openButton": "Zodpovedná osoba",
+      "title": "Zodpovedná osoba obchodu",
+      "selectLabel": "Dostáva e-maily o nových predajoch",
+      "none": "Žiadna",
+      "hint": "Táto osoba dostáva e-mail pri každom novom online predaji (po zaplatení) a podľa výberu administrátora aj pri každom ručne pridanom nákupe."
     }
   },
   "donationForms": {
@@ -2568,6 +2610,31 @@
       "titleLabel": "Názov",
       "titlePlaceholder": "Napríklad koncoročná kampaň",
       "createButton": "Tvor"
+    },
+    "addManualDonModal": {
+      "title": "Pridať manuálny dar",
+      "donorModeMember": "Existujúci kontakt",
+      "donorModeExternal": "Externá osoba",
+      "searchPlaceholder": "Hľadať podľa mena alebo e-mailu…",
+      "typeToSearch": "Zadajte aspoň 2 znaky",
+      "noResults": "Žiadny kontakt nebol nájdený",
+      "changeContact": "Zmeniť kontakt",
+      "firstNameLabel": "Meno",
+      "lastNameLabel": "Priezvisko",
+      "emailLabel": "E-mail",
+      "emailOptional": "(nepovinné)",
+      "invalidEmail": "Zadajte platnú e-mailovú adresu",
+      "amountLabel": "Výška daru",
+      "dateLabel": "Dátum prijatia",
+      "paymentMethodLabel": "Spôsob platby",
+      "donationFormLabel": "Prepojený formulár daru",
+      "noFormOption": "Žiadny formulár",
+      "noteLabel": "Poznámka alebo platobná referencia",
+      "notePlaceholder": "Platobná referencia, podrobnosti…",
+      "sendReceiptLabel": "Odoslať potvrdenie e-mailom",
+      "sendReceiptHint": "Darcovi bude zaslaný potvrdzovací e-mail.",
+      "submitButton": "Zaznamenať dar",
+      "notifyResponsible": "Upozorniť {name} e-mailom"
     },
     "formsView": {
       "columns": {
@@ -2644,6 +2711,8 @@
       "averageLabel": "Priemerný dar",
       "pendingTitle": "Čakanie na vyzdvihnutie",
       "encaisserButton": "Hotovost",
+      "addManual": "Pridať manuálny dar",
+      "manualEntryBy": "Manuálny zápis · {name}",
       "fromMembershipForm": "Členský dar — \" {tier} »",
       "fromEvenement": "Darovanie vstupenky na podujatie: \" {evenement} »",
       "fromEvenementPrompt": "Dar po registrácii na podujatie: \" {evenement} »",
@@ -2653,15 +2722,18 @@
         "adhesion": "Členstvo",
         "evenementTicket": "Podujatie (lístok)",
         "evenementPrompt": "Podujatie (registrácia)",
-        "standalone": "Samostatná stránka"
+        "standalone": "Samostatná stránka",
+        "manual": "Manuálny zápis"
       },
       "paymentMethod": {
         "especes": "Druhy",
         "cheque": "Skontrolované",
-        "virement": "Presun"
+        "virement": "Presun",
+        "autre": "Iné"
       },
       "toasts": {
-        "encaisse": "Prijatý dar"
+        "encaisse": "Prijatý dar",
+        "manualDonAdded": "Dar bol zaznamenaný"
       }
     },
     "receiptsView": {
@@ -2885,6 +2957,13 @@
       "intervalYear": "an",
       "confirmButton": "Zastavte túto pravidelnú darcovskú činnosť",
       "genericError": "Došlo k chybe. Skúste to znova."
+    },
+    "responsableModal": {
+      "openButton": "Zodpovedná osoba",
+      "title": "Zodpovedná osoba za dary",
+      "selectLabel": "Dostáva e-maily o nových daroch",
+      "none": "Žiadna",
+      "hint": "Táto osoba dostáva e-mail a upozornenie pri každom novom dare: online po zaplatení, offline (hotovosť/šek/prevod) hneď po zaregistrovaní, a podľa výberu administrátora aj pri manuálne zadanom dare."
     }
   },
   "membershipForms": {
@@ -3216,6 +3295,8 @@
       "submittedRequestTitle": "Žiadosť odoslaná!",
       "submittedWithPayment": "Vaše členstvo je aktívne a vaša platba bola prijatá.",
       "submittedRequestBody": "Vaša žiadosť o členstvo bola prijatá. Združenie vás bude kontaktovať čo najskôr.",
+      "submittedOfflineTitle": "Žiadosť zaregistrovaná!",
+      "submittedOfflineBody": "Vybrali ste offline platbu. Vaše členstvo bude potvrdené po prijatí a overení platby združením. Po overení vám bude zaslaný potvrdzovací e-mail.",
       "toastCancelled": "Platba zrušená.",
       "errorNetwork": "Sieťová chyba. Skús to znova.",
       "productsLabel": "Produkty",
@@ -4245,9 +4326,11 @@
         "evenements": "Podujatia",
         "reunions": "Stretnutia",
         "materiel": "Materiál",
+        "dons": "Dary",
         "historique": "História",
         "emails": "E-maily",
-        "sms": "SMS"
+        "sms": "SMS",
+        "boutique": "Obchod"
       },
       "cotisationStatus": {
         "enAttente": "Čaká sa",
@@ -4290,6 +4373,11 @@
       "borrowedOn": "Požičané ďalej {date}",
       "returnedOn": " · Renderované na {date}",
       "showingRecentLoans": "Zobrazovanie {count} Najnovšie pôžičky na {total} Celkovo.",
+      "noDons": "Žiadny dar nebol zaznamenaný",
+      "donManualEntry": "Manuálny zápis",
+      "donStandalone": "Samostatný dar",
+      "donPending": "Čaká na inkaso",
+      "showingRecentDons": "Zobrazených {count} najnovších darov z celkových {total}.",
       "addCotisationTitle": "Pridajte členský poplatok",
       "editCotisationTitle": "Zmeňte členský poplatok",
       "deleteConfirmWithDependants": "Tento člen bude archivovaný a už nebude môcť pristupovať k združeniu. Bude tiež odstránený ako zákonný zástupca združenia. {count} Člen(i): {names}.",
@@ -4317,7 +4405,14 @@
         "confirmDescription": "Táto akcia zaregistruje žiadosť o vymazanie podľa čl. 17 GDPR. Člen dostane potvrdzujúci e-mail a následne budú jeho osobné údaje nenávratne anonymizované pri ďalšom automatickom spracovaní, pokiaľ žiadosť nebude pozastavená.",
         "toastSuccess": "Žiadosť o vymazanie zaregistrovaná",
         "requestLabel": "Vymazanie GDPR"
-      }
+      },
+      "noCommande": "Tento kontakt nemá žiadne nákupy v obchode.",
+      "commandeStatus": {
+        "PENDING": "Čaká sa",
+        "PAID": "Platené",
+        "CANCELLED": "Zrušené"
+      },
+      "showingRecentCommandes": "Zobrazených {count} najnovších nákupov z celkového počtu {total}."
     },
     "sms": {
       "title": "Pošlite SMS",

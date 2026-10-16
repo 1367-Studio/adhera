@@ -7,6 +7,7 @@ import { guardModule } from "@/lib/auth/require-module"
 import { withAdminAuth } from "@/lib/api-wrapper"
 import { nextBoutiqueReceiptNumber } from "@/lib/document-numbering"
 import { resolveExerciceForDate, closedExerciceGuard } from "@/lib/finance/exercice"
+import { bookBoutiqueOrderIncome } from "@/lib/boutique/book-income"
 import type { ExerciceStatus } from "@prisma/client"
 
 const updateSchema = z.object({
@@ -43,7 +44,7 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
 
   const commande = await prisma.boutiqueCommande.findFirst({
     where:  { id, associationId: ctx.associationId },
-    select: { id: true, status: true, totalAmount: true, paymentMethod: true, manualPaymentType: true, membreId: true, membre: { select: { firstName: true, lastName: true } } },
+    select: { id: true, status: true, totalAmount: true, paymentMethod: true, manualPaymentType: true, membreId: true, guestName: true, membre: { select: { firstName: true, lastName: true } } },
   })
   if (!commande) return NextResponse.json({ error: "Introuvable" }, { status: 404 })
 
@@ -188,43 +189,25 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
               select: { quantity: true, unitPrice: true, categoryId: true, produit: { select: { name: true } } },
             })
 
-            // One Income row per accounting category — a mixed-category order posts
-            // several partial rows instead of forcing one row into a single category. Grouped
-            // by the category snapshot taken when the item was ordered, not the product's
-            // current category, so recategorizing a product doesn't retroactively change how
-            // an already-placed order books once it's encaissé.
-            const byCategory = new Map<string | null, { amount: number; names: Set<string> }>()
-            for (const item of paidItems) {
-              const key   = item.categoryId
-              const group = byCategory.get(key) ?? { amount: 0, names: new Set<string>() }
-              group.amount += item.unitPrice * item.quantity
-              group.names.add(item.produit.name)
-              byCategory.set(key, group)
-            }
+            const buyerLabel          = commande.membre ? `${commande.membre.firstName} ${commande.membre.lastName}` : commande.guestName
+            const incomePaymentMethod = commande.paymentMethod === "STRIPE" ? "STRIPE" : manualPaymentType!
 
-            const buyerLabel          = commande.membre ? `${commande.membre.firstName} ${commande.membre.lastName}` : null
-            const incomePaymentMethod = commande.paymentMethod === "STRIPE" ? "STRIPE" : manualPaymentType
-
-            for (const [categoryId, group] of byCategory) {
-              const itemsLabel = [...group.names].join(", ")
-              await tx.income.create({
-                data: {
-                  associationId: ctx.associationId,
-                  exerciceId:    exercice?.id ?? null,
-                  memberId:      commande.membreId ?? undefined,
-                  commandeId:    id,
-                  amount:        group.amount / 100,
-                  categoryId:    categoryId ?? undefined,
-                  description:   buyerLabel ? `Vente boutique — ${buyerLabel} — ${itemsLabel}` : `Vente boutique — ${itemsLabel}`,
-                  paymentMethod: incomePaymentMethod,
-                  source:        "MANUAL",
-                  status:        "PAID",
-                  // Non-null: this branch only runs when status === "PAID", which is what
-                  // makes `paidAt` (declared above, keyed off the same condition) a Date.
-                  date:          paidAt!,
-                },
-              })
-            }
+            await bookBoutiqueOrderIncome(tx, {
+              associationId: ctx.associationId,
+              exerciceId:    exercice?.id ?? null,
+              membreId:      commande.membreId,
+              commandeId:    id,
+              items:         paidItems.map(item => ({ quantity: item.quantity, unitPrice: item.unitPrice, categoryId: item.categoryId, produitName: item.produit.name })),
+              // This route never booked shipping as its own Income line (pre-existing gap,
+              // unrelated to this refactor) — pass 0 to keep behavior identical.
+              shippingCost:         0,
+              shippingCarrierLabel: null,
+              buyerLabel,
+              paymentMethod: incomePaymentMethod,
+              // Non-null: this branch only runs when status === "PAID", which is what makes
+              // `paidAt` (declared above, keyed off the same condition) a Date.
+              paidAt: paidAt!,
+            })
           }
         })
         break

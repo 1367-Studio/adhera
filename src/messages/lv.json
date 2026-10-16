@@ -2546,6 +2546,48 @@
         "created": "Izveidots produkts",
         "createError": "Kļūdu radīšana"
       }
+    },
+    "manualCommandeModal": {
+      "openButton": "Pievienot manuālu pirkumu",
+      "title": "Pievienot manuālu pirkumu",
+      "submit": "Saglabāt pirkumu",
+      "buyerLabel": "Pircējs",
+      "existingContact": "Esošs kontakts",
+      "externalPerson": "Ārēja persona",
+      "searchPlaceholder": "Meklēt kontaktu pēc vārda vai e-pasta…",
+      "typeToSearch": "Ierakstiet vismaz 2 rakstzīmes, lai meklētu",
+      "noResults": "Kontakts nav atrasts",
+      "firstNamePlaceholder": "Vārds",
+      "lastNamePlaceholder": "Uzvārds",
+      "emailPlaceholder": "E-pasts (neobligāts)",
+      "scopeLabel": "Veikals vai saistītā forma",
+      "scopeStorefront": "Veikals",
+      "productsLabel": "Iegādātie produkti",
+      "productPlaceholder": "Izvēlieties produktu",
+      "variantPlaceholder": "Izvēlieties variantu",
+      "quantityColumn": "Daudz.",
+      "addProduct": "Pievienot produktu",
+      "noProductsForScope": "Šai izvēlei nav pieejamu produktu.",
+      "outOfStock": "nav noliktavā",
+      "totalLabel": "Kopā",
+      "dateLabel": "Pirkuma datums",
+      "paymentStatusLabel": "Maksājuma statuss",
+      "paid": "Apmaksāts",
+      "pending": "Gaida maksājumu",
+      "noteLabel": "Piezīme",
+      "sendReceiptEmail": "Nosūtīt čeku pircējam pa e-pastu",
+      "sendPendingEmail": "Nosūtīt apstiprinājumu pircējam pa e-pastu",
+      "notifyResponsible": "Paziņot {name} pa e-pastu",
+      "toasts": {
+        "created": "Pirkums saglabāts"
+      }
+    },
+    "responsableModal": {
+      "openButton": "Atbildīgā persona",
+      "title": "Veikala atbildīgā persona",
+      "selectLabel": "Saņem e-pastus par jauniem pārdošanas darījumiem",
+      "none": "Nav",
+      "hint": "Šī persona saņem e-pastu par katru jaunu pārdošanu tiešsaistē (kad tā ir apmaksāta) un, pēc administratora izvēles, par katru manuāli pievienotu pirkumu."
     }
   },
   "donationForms": {
@@ -2568,6 +2610,31 @@
       "titleLabel": "Nosaukums",
       "titlePlaceholder": "Piemēram, gada noslēguma kampaņa",
       "createButton": "Izveidot"
+    },
+    "addManualDonModal": {
+      "title": "Pievienot manuālu ziedojumu",
+      "donorModeMember": "Esošs kontakts",
+      "donorModeExternal": "Ārēja persona",
+      "searchPlaceholder": "Meklēt pēc vārda vai e-pasta…",
+      "typeToSearch": "Ierakstiet vismaz 2 rakstzīmes",
+      "noResults": "Kontakts netika atrasts",
+      "changeContact": "Mainīt kontaktu",
+      "firstNameLabel": "Vārds",
+      "lastNameLabel": "Uzvārds",
+      "emailLabel": "E-pasts",
+      "emailOptional": "(nav obligāti)",
+      "invalidEmail": "Ievadiet derīgu e-pasta adresi",
+      "amountLabel": "Ziedojuma summa",
+      "dateLabel": "Saņemšanas datums",
+      "paymentMethodLabel": "Maksājuma veids",
+      "donationFormLabel": "Saistītā ziedojuma forma",
+      "noFormOption": "Nav formas",
+      "noteLabel": "Piezīme vai maksājuma atsauce",
+      "notePlaceholder": "Maksājuma atsauce, detaļas…",
+      "sendReceiptLabel": "Nosūtīt kvīti pa e-pastu",
+      "sendReceiptHint": "Ziedotājam tiks nosūtīts apstiprinājuma e-pasts.",
+      "submitButton": "Reģistrēt ziedojumu",
+      "notifyResponsible": "Paziņot {name} pa e-pastu"
     },
     "formsView": {
       "columns": {
@@ -2644,6 +2711,8 @@
       "averageLabel": "Vidējais ziedojums",
       "pendingTitle": "Gaida saņemšanu",
       "encaisserButton": "Izņem naudu",
+      "addManual": "Pievienot manuālu ziedojumu",
+      "manualEntryBy": "Manuāls ieraksts · {name}",
       "fromMembershipForm": "Biedru ziedojums — \" {tier} »",
       "fromEvenement": "Pasākuma biļešu ziedojums: \" {evenement} »",
       "fromEvenementPrompt": "Ziedojums pēc reģistrācijas pasākumam: \" {evenement} »",
@@ -2653,15 +2722,18 @@
         "adhesion": "Biedrība",
         "evenementTicket": "Pasākums (biļete)",
         "evenementPrompt": "Pasākums (reģistrācija)",
-        "standalone": "Atsevišķa lapa"
+        "standalone": "Atsevišķa lapa",
+        "manual": "Manuāls ieraksts"
       },
       "paymentMethod": {
         "especes": "Sugas",
         "cheque": "Pārbaudīts",
-        "virement": "Pāreja"
+        "virement": "Pāreja",
+        "autre": "Citi"
       },
       "toasts": {
-        "encaisse": "Saņemts ziedojums"
+        "encaisse": "Saņemts ziedojums",
+        "manualDonAdded": "Ziedojums reģistrēts"
       }
     },
     "receiptsView": {
@@ -2885,6 +2957,13 @@
       "intervalYear": "an",
       "confirmButton": "Pārtrauciet šo regulāro ziedojumu",
       "genericError": "Ir notikusi kļūda. Mēģini vēlreiz."
+    },
+    "responsableModal": {
+      "openButton": "Atbildīgā persona",
+      "title": "Ziedojumu atbildīgā persona",
+      "selectLabel": "Saņem e-pastus par jauniem ziedojumiem",
+      "none": "Nav",
+      "hint": "Šī persona saņem e-pastu un paziņojumu par katru jaunu ziedojumu: tiešsaistē, kad tas ir apmaksāts, bezsaistē (skaidrā naudā/čekā/pārskaitījumā) tiklīdz tas ir reģistrēts, un pēc administratora izvēles manuāli ievadītam ziedojumam."
     }
   },
   "membershipForms": {
@@ -3216,6 +3295,8 @@
       "submittedRequestTitle": "Pieprasījums nosūtīts!",
       "submittedWithPayment": "Jūsu dalība ir aktīva un maksājums ir saņemts.",
       "submittedRequestBody": "Jūsu pieteikums dalībai ir saņemts. Asociācija sazināsies ar jums pēc iespējas ātrāk.",
+      "submittedOfflineTitle": "Pieteikums reģistrēts!",
+      "submittedOfflineBody": "Jūs izvēlējāties bezsaistes maksājumu. Jūsu dalība tiks apstiprināta pēc tam, kad biedrība būs saņēmusi un validējusi jūsu maksājumu. Apstiprinājuma e-pasts tiks jums nosūtīts, tiklīdz tas būs validēts.",
       "toastCancelled": "Maksājums atcelts.",
       "errorNetwork": "Tīkla kļūda. Mēģiniet vēlreiz.",
       "productsLabel": "Produkti",
@@ -4245,9 +4326,11 @@
         "evenements": "Notikumi",
         "reunions": "Sanāksmes",
         "materiel": "Materiāls",
+        "dons": "Ziedojumi",
         "historique": "Vēsture",
         "emails": "E-pasti",
-        "sms": "SMS"
+        "sms": "SMS",
+        "boutique": "Veikals"
       },
       "cotisationStatus": {
         "enAttente": "Gaida",
@@ -4290,6 +4373,11 @@
       "borrowedOn": "Aizņemts {date}",
       "returnedOn": " · Renderēts uz {date}",
       "showingRecentLoans": "Izstādīšana {count} Jaunākie aizdevumi {total} Kopumā.",
+      "noDons": "Nav reģistrētu ziedojumu",
+      "donManualEntry": "Manuāls ieraksts",
+      "donStandalone": "Patstāvīgs ziedojums",
+      "donPending": "Gaida iekasēšanu",
+      "showingRecentDons": "Rāda {count} jaunākos ziedojumus no kopā {total}.",
       "addCotisationTitle": "Pievieno biedra maksu",
       "editCotisationTitle": "Mainīt biedru maksu",
       "deleteConfirmWithDependants": "Šis biedrs tiks arhivēts un vairs nevarēs piekļūt asociācijai. Viņš tiks arī atcelts no asociācijas likumīgā aizbildņa amata. {count} Locekļi: {names}.",
@@ -4317,7 +4405,14 @@
         "confirmDescription": "Šī darbība reģistrē dzēšanas pieprasījumu saskaņā ar VDAR 17. pantu. Biedrs saņems apstiprinājuma e-pastu, un pēc tam viņa personas dati tiks neatgriezeniski anonimizēti nākamajā automātiskajā apstrādē, ja pieprasījums netiks aizturēts.",
         "toastSuccess": "Dzēšanas pieprasījums reģistrēts",
         "requestLabel": "VDAR dzēšana"
-      }
+      },
+      "noCommande": "Šim kontaktam nav veikala pirkumu.",
+      "commandeStatus": {
+        "PENDING": "Gaida",
+        "PAID": "Apmaksāts",
+        "CANCELLED": "Atcelts"
+      },
+      "showingRecentCommandes": "Rādīti {count} jaunākie pirkumi no {total}."
     },
     "sms": {
       "title": "Sūti SMS",

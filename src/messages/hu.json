@@ -2546,6 +2546,48 @@
         "created": "Terméket készítettek",
         "createError": "Hiba keletkezése"
       }
+    },
+    "manualCommandeModal": {
+      "openButton": "Kézi vásárlás hozzáadása",
+      "title": "Kézi vásárlás hozzáadása",
+      "submit": "Vásárlás mentése",
+      "buyerLabel": "Vásárló",
+      "existingContact": "Meglévő kapcsolat",
+      "externalPerson": "Külső személy",
+      "searchPlaceholder": "Kapcsolat keresése név vagy e-mail alapján…",
+      "typeToSearch": "Írjon be legalább 2 karaktert a kereséshez",
+      "noResults": "Nem található kapcsolat",
+      "firstNamePlaceholder": "Keresztnév",
+      "lastNamePlaceholder": "Vezetéknév",
+      "emailPlaceholder": "E-mail (nem kötelező)",
+      "scopeLabel": "Bolt vagy kapcsolódó űrlap",
+      "scopeStorefront": "Bolt",
+      "productsLabel": "Vásárolt termékek",
+      "productPlaceholder": "Válasszon terméket",
+      "variantPlaceholder": "Válasszon változatot",
+      "quantityColumn": "Menny.",
+      "addProduct": "Termék hozzáadása",
+      "noProductsForScope": "Ehhez a kiválasztáshoz nincs elérhető termék.",
+      "outOfStock": "elfogyott",
+      "totalLabel": "Összesen",
+      "dateLabel": "Vásárlás dátuma",
+      "paymentStatusLabel": "Fizetési állapot",
+      "paid": "Fizetve",
+      "pending": "Fizetésre vár",
+      "noteLabel": "Megjegyzés",
+      "sendReceiptEmail": "Nyugta küldése e-mailben a vásárlónak",
+      "sendPendingEmail": "Visszaigazolás küldése e-mailben a vásárlónak",
+      "notifyResponsible": "{name} értesítése e-mailben",
+      "toasts": {
+        "created": "Vásárlás mentve"
+      }
+    },
+    "responsableModal": {
+      "openButton": "Felelős",
+      "title": "A bolt felelőse",
+      "selectLabel": "Értesítést kap új eladásokról",
+      "none": "Nincs",
+      "hint": "Ez a személy e-mailt kap minden új online eladásról (a kifizetés után), és az adminisztrátor választása szerint minden kézzel hozzáadott vásárlásról."
     }
   },
   "donationForms": {
@@ -2568,6 +2610,31 @@
       "titleLabel": "Cím",
       "titlePlaceholder": "Például év végi kampány",
       "createButton": "Létrehozni"
+    },
+    "addManualDonModal": {
+      "title": "Manuális adomány hozzáadása",
+      "donorModeMember": "Meglévő kapcsolat",
+      "donorModeExternal": "Külső személy",
+      "searchPlaceholder": "Keresés név vagy email alapján…",
+      "typeToSearch": "Írjon be legalább 2 karaktert",
+      "noResults": "Nem található kapcsolat",
+      "changeContact": "Kapcsolat módosítása",
+      "firstNameLabel": "Keresztnév",
+      "lastNameLabel": "Vezetéknév",
+      "emailLabel": "Email",
+      "emailOptional": "(opcionális)",
+      "invalidEmail": "Adjon meg egy érvényes email címet",
+      "amountLabel": "Adomány összege",
+      "dateLabel": "Beérkezés dátuma",
+      "paymentMethodLabel": "Fizetési mód",
+      "donationFormLabel": "Kapcsolt adományűrlap",
+      "noFormOption": "Nincs űrlap",
+      "noteLabel": "Megjegyzés vagy fizetési hivatkozás",
+      "notePlaceholder": "Fizetési hivatkozás, részletek…",
+      "sendReceiptLabel": "Nyugta küldése emailben",
+      "sendReceiptHint": "Megerősítő emailt küldünk az adományozónak.",
+      "submitButton": "Adomány rögzítése",
+      "notifyResponsible": "{name} értesítése e-mailben"
     },
     "formsView": {
       "columns": {
@@ -2644,6 +2711,8 @@
       "averageLabel": "Átlagos adomány",
       "pendingTitle": "Várva a beszedésre",
       "encaisserButton": "Cash out",
+      "addManual": "Manuális adomány hozzáadása",
+      "manualEntryBy": "Manuális rögzítés · {name}",
       "fromMembershipForm": "Tagsági adomány — \" {tier} »",
       "fromEvenement": "Eseményjegy adományozás: \" {evenement} »",
       "fromEvenementPrompt": "Adomány a regisztráció után: \" {evenement} »",
@@ -2653,15 +2722,18 @@
         "adhesion": "Tagság",
         "evenementTicket": "Esemény (jegy)",
         "evenementPrompt": "Esemény (regisztráció)",
-        "standalone": "Különálló oldal"
+        "standalone": "Különálló oldal",
+        "manual": "Manuális rögzítés"
       },
       "paymentMethod": {
         "especes": "Fajok",
         "cheque": "Megvan",
-        "virement": "Átigazolás"
+        "virement": "Átigazolás",
+        "autre": "Egyéb"
       },
       "toasts": {
-        "encaisse": "Fogadott adomány"
+        "encaisse": "Fogadott adomány",
+        "manualDonAdded": "Adomány rögzítve"
       }
     },
     "receiptsView": {
@@ -2885,6 +2957,13 @@
       "intervalYear": "egy",
       "confirmButton": "Állítsák meg ezt az ismétlődő adományozást",
       "genericError": "Hiba történt. Próbáld újra."
+    },
+    "responsableModal": {
+      "openButton": "Felelős",
+      "title": "Az adományok felelőse",
+      "selectLabel": "Értesítést kap új adományokról",
+      "none": "Nincs",
+      "hint": "Ez a személy e-mailt és értesítést kap minden új adományról: online a kifizetés után, offline (készpénz/csekk/átutalás) azonnal a rögzítés után, és az adminisztrátor választása szerint egy kézzel rögzített adomány esetén."
     }
   },
   "membershipForms": {
@@ -3216,6 +3295,8 @@
       "submittedRequestTitle": "Kérés elküldve!",
       "submittedWithPayment": "A tagságod aktív és a fizetésed megérkezett.",
       "submittedRequestBody": "A tagsági kérelmed megérkezett. Az egyesület a lehető leghamarabb felveszi Önnel a kapcsolatot.",
+      "submittedOfflineTitle": "Kérelem regisztrálva!",
+      "submittedOfflineBody": "Offline fizetési módot választott. Tagságát a szervezet akkor erősíti meg, amikor megkapta és jóváhagyta a befizetését. A jóváhagyás után megerősítő e-mailt kap.",
       "toastCancelled": "Fizetés törölve.",
       "errorNetwork": "Hálózati hiba. Próbáld újra.",
       "productsLabel": "Termékek",
@@ -4245,9 +4326,11 @@
         "evenements": "Események",
         "reunions": "Találkozók",
         "materiel": "Anyagok",
+        "dons": "Adományok",
         "historique": "Előzmények",
         "emails": "E-mailek",
-        "sms": "SMS"
+        "sms": "SMS",
+        "boutique": "Bolt"
       },
       "cotisationStatus": {
         "enAttente": "Függőben",
@@ -4290,6 +4373,11 @@
       "borrowedOn": "Kölcsön {date}",
       "returnedOn": " · Renderelve {date}",
       "showingRecentLoans": "Megjelenítés {count} Legutóbbi hitelek {total} összesen.",
+      "noDons": "Nincs rögzített adomány",
+      "donManualEntry": "Manuális rögzítés",
+      "donStandalone": "Önálló adomány",
+      "donPending": "Beváltásra vár",
+      "showingRecentDons": "A {count} legutóbbi adomány megjelenítve, összesen {total}.",
       "addCotisationTitle": "Tagságdíj hozzáadása",
       "editCotisationTitle": "A tagsági díj módosítása",
       "deleteConfirmWithDependants": "Ez a tag archiválva kerül, és többé nem férhet hozzá az egyesülethez. Emellett eltávolítják a szövetség törvényes gyámjai közül. {count} Tag(ok): {names}.",
@@ -4317,7 +4405,14 @@
         "confirmDescription": "Ez a művelet a GDPR 17. cikke szerinti törlési kérelmet rögzít. A tag megerősítő e-mailt kap, majd személyes adatai a következő automatikus feldolgozás során véglegesen anonimizálásra kerülnek, kivéve ha a kérelmet felfüggesztik.",
         "toastSuccess": "Törlési kérelem rögzítve",
         "requestLabel": "GDPR-törlés"
-      }
+      },
+      "noCommande": "Ennek a kapcsolatnak nincs bolti vásárlása.",
+      "commandeStatus": {
+        "PENDING": "Függőben",
+        "PAID": "Fizetve",
+        "CANCELLED": "Törölve"
+      },
+      "showingRecentCommandes": "A {count} legutóbbi vásárlás megjelenítése összesen {total} közül."
     },
     "sms": {
       "title": "Küldj SMS-et",

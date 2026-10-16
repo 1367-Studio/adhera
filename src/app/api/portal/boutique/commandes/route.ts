@@ -5,6 +5,7 @@ import { writeActivityLog } from "@/lib/activity-log"
 import { withPortalAuth } from "@/lib/api-wrapper"
 import { sendEmail } from "@/lib/mail"
 import { boutiqueNewOrderAdminEmail } from "@/lib/email"
+import { resolveEmailBranding } from "@/lib/plan-limits"
 import { pusherServer } from "@/lib/pusher-server"
 import { APP_URL } from "@/lib/env"
 import { deliveryFieldsSchema, validateDeliveryFields } from "@/lib/boutique/delivery-schema"
@@ -168,6 +169,7 @@ export const POST = withPortalAuth(async (req, ctx) => {
       await pusherServer.trigger(`private-association-${ctx.associationId}`, "new-notification", {}).catch(() => {})
 
       const dashboardUrl = `${APP_URL}/dashboard/boutique`
+      const branding = await resolveEmailBranding(ctx.associationId)
       for (const admin of admins) {
         if (!admin.email) continue
         // Logged via `context` (status SENT/FAILED on EmailMessage) instead of a bare
@@ -179,6 +181,7 @@ export const POST = withPortalAuth(async (req, ctx) => {
           buyerLabel,
           totalAmount:     commande.totalAmount,
           dashboardUrl,
+          branding,
         }), { associationId: ctx.associationId, source: "BOUTIQUE_ADMIN_ALERT", sourceId: commande.id })
           .catch(error => reportError(error, { area: "email", action: "boutique.admin-new-order-email", extra: { associationId: ctx.associationId, commandeId: commande.id } }))
       }

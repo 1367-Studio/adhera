@@ -182,15 +182,42 @@ export type MembreDetail = {
     membershipAddonTier: { label: string } | null
   }[]
 
+  // Historique général des dons (hors ceux liés à un tier d'adhésion, déjà dans `dons`
+  // ci-dessus) — null quand le rôle ou le module Dons ne donne pas accès, pour que l'onglet
+  // reste caché plutôt que vide. Voir GET /api/membres/[id].
+  donsHistory: {
+    id:           string
+    amount:       string
+    paidAt:       string | null
+    createdByUserId: string | null
+    donationForm: { title: string } | null
+  }[] | null
+  donsHistoryTotal: number | null
+
   user: {
     role: "ADMIN" | "PRESIDENT" | "TRESORIER" | "SECRETAIRE" | "EQUIPE" | "MEMBRE"
   } | null
+
+  // Both self-service (online) and admin-recorded (manual) Boutique sales — see
+  // POST /api/boutique/commandes.
+  boutiqueCommandes: {
+    id:          string
+    status:      "PENDING" | "PAID" | "CANCELLED"
+    totalAmount: number
+    createdAt:   string
+    items: {
+      quantity: number
+      produit:  { name: string }
+      variante: { label: string }
+    }[]
+  }[]
 
   _count: {
     cotisations:    number
     participations: number
     materialLoans:  number
     meetingsAsParticipant: number
+    boutiqueCommandes: number
   }
 }
 

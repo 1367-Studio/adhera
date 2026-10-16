@@ -2546,6 +2546,48 @@
         "created": "Ustvarjen izdelek",
         "createError": "Ustvarjanje napak"
       }
+    },
+    "manualCommandeModal": {
+      "openButton": "Dodaj ročni nakup",
+      "title": "Dodaj ročni nakup",
+      "submit": "Shrani nakup",
+      "buyerLabel": "Kupec",
+      "existingContact": "Obstoječi stik",
+      "externalPerson": "Zunanja oseba",
+      "searchPlaceholder": "Iskanje stika po imenu ali e-pošti…",
+      "typeToSearch": "Vnesite vsaj 2 znaka za iskanje",
+      "noResults": "Stik ni najden",
+      "firstNamePlaceholder": "Ime",
+      "lastNamePlaceholder": "Priimek",
+      "emailPlaceholder": "E-pošta (neobvezno)",
+      "scopeLabel": "Trgovina ali povezan obrazec",
+      "scopeStorefront": "Trgovina",
+      "productsLabel": "Kupljeni izdelki",
+      "productPlaceholder": "Izberite izdelek",
+      "variantPlaceholder": "Izberite različico",
+      "quantityColumn": "Kol.",
+      "addProduct": "Dodaj izdelek",
+      "noProductsForScope": "Za to izbiro ni razpoložljivih izdelkov.",
+      "outOfStock": "ni na zalogi",
+      "totalLabel": "Skupaj",
+      "dateLabel": "Datum nakupa",
+      "paymentStatusLabel": "Status plačila",
+      "paid": "Plačano",
+      "pending": "Čaka na plačilo",
+      "noteLabel": "Opomba",
+      "sendReceiptEmail": "Pošlji potrdilo po e-pošti kupcu",
+      "sendPendingEmail": "Pošlji potrditev po e-pošti kupcu",
+      "notifyResponsible": "Obvesti {name} po e-pošti",
+      "toasts": {
+        "created": "Nakup shranjen"
+      }
+    },
+    "responsableModal": {
+      "openButton": "Odgovorna oseba",
+      "title": "Odgovorna oseba trgovine",
+      "selectLabel": "Prejema e-pošto o novih prodajah",
+      "none": "Nihče",
+      "hint": "Ta oseba prejme e-pošto ob vsaki novi spletni prodaji (ko je plačana) in po izbiri skrbnika ob vsakem ročno dodanem nakupu."
     }
   },
   "donationForms": {
@@ -2568,6 +2610,31 @@
       "titleLabel": "Naslov",
       "titlePlaceholder": "Npr. kampanja ob koncu leta",
       "createButton": "Ustvarjaj"
+    },
+    "addManualDonModal": {
+      "title": "Dodaj ročno donacijo",
+      "donorModeMember": "Obstoječi stik",
+      "donorModeExternal": "Zunanja oseba",
+      "searchPlaceholder": "Iskanje po imenu ali e-pošti…",
+      "typeToSearch": "Vnesite vsaj 2 znaka",
+      "noResults": "Stik ni bil najden",
+      "changeContact": "Spremeni stik",
+      "firstNameLabel": "Ime",
+      "lastNameLabel": "Priimek",
+      "emailLabel": "E-pošta",
+      "emailOptional": "(neobvezno)",
+      "invalidEmail": "Vnesite veljaven e-poštni naslov",
+      "amountLabel": "Znesek donacije",
+      "dateLabel": "Datum prejema",
+      "paymentMethodLabel": "Način plačila",
+      "donationFormLabel": "Povezan obrazec donacije",
+      "noFormOption": "Brez obrazca",
+      "noteLabel": "Opomba ali referenca plačila",
+      "notePlaceholder": "Referenca plačila, podrobnosti…",
+      "sendReceiptLabel": "Pošlji potrdilo po e-pošti",
+      "sendReceiptHint": "Darovalcu bo poslano potrditveno e-poštno sporočilo.",
+      "submitButton": "Zabeleži donacijo",
+      "notifyResponsible": "Obvesti {name} po e-pošti"
     },
     "formsView": {
       "columns": {
@@ -2644,6 +2711,8 @@
       "averageLabel": "Povprečna donacija",
       "pendingTitle": "Čakanje na prevzem",
       "encaisserButton": "Izplačilo denarja",
+      "addManual": "Dodaj ročno donacijo",
+      "manualEntryBy": "Ročni vnos · {name}",
       "fromMembershipForm": "Donacija članarine — \" {tier} »",
       "fromEvenement": "Donacija vstopnic za dogodek: \" {evenement} »",
       "fromEvenementPrompt": "Donacija po prijavi na dogodek: \" {evenement} »",
@@ -2653,15 +2722,18 @@
         "adhesion": "Članstvo",
         "evenementTicket": "Dogodek (vstopnica)",
         "evenementPrompt": "Dogodek (registracija)",
-        "standalone": "Samostojna stran"
+        "standalone": "Samostojna stran",
+        "manual": "Ročni vnos"
       },
       "paymentMethod": {
         "especes": "Vrste",
         "cheque": "Preverjeno",
-        "virement": "Prenos"
+        "virement": "Prenos",
+        "autre": "Drugo"
       },
       "toasts": {
-        "encaisse": "Prejeta donacija"
+        "encaisse": "Prejeta donacija",
+        "manualDonAdded": "Donacija zabeležena"
       }
     },
     "receiptsView": {
@@ -2885,6 +2957,13 @@
       "intervalYear": "an",
       "confirmButton": "Ustavite to ponavljajočo se donacijo",
       "genericError": "Prišlo je do napake. Poskusi znova."
+    },
+    "responsableModal": {
+      "openButton": "Odgovorna oseba",
+      "title": "Odgovorna oseba za donacije",
+      "selectLabel": "Prejema e-pošto o novih donacijah",
+      "none": "Nihče",
+      "hint": "Ta oseba prejme e-poštno sporočilo in obvestilo ob vsaki novi donaciji: splet takoj, ko je plačana, zunaj spleta (gotovina/ček/nakazilo) takoj, ko je registrirana, in po izbiri skrbnika za ročno vnesena donacijo."
     }
   },
   "membershipForms": {
@@ -3216,6 +3295,8 @@
       "submittedRequestTitle": "Zahteva poslana!",
       "submittedWithPayment": "Vaše članstvo je aktivno in vaše plačilo je bilo prejeto.",
       "submittedRequestBody": "Vaša prijava za članstvo je bila prejeta. Združenje vas bo kontaktiralo takoj, ko bo mogoče.",
+      "submittedOfflineTitle": "Zahtevek registriran!",
+      "submittedOfflineBody": "Izbrali ste plačilo brez povezave. Vaše članstvo bo potrjeno po prejemu in preveritvi plačila s strani društva. Ko bo plačilo preverjeno, boste prejeli potrditveno e-pošto.",
       "toastCancelled": "Plačilo preklicano.",
       "errorNetwork": "Omrežna napaka. Poskusi znova.",
       "productsLabel": "Izdelki",
@@ -4245,9 +4326,11 @@
         "evenements": "Dogodki",
         "reunions": "Sestanki",
         "materiel": "Gradivo",
+        "dons": "Donacije",
         "historique": "Zgodovina",
         "emails": "E-pošta",
-        "sms": "SMS"
+        "sms": "SMS",
+        "boutique": "Trgovina"
       },
       "cotisationStatus": {
         "enAttente": "V teku",
@@ -4290,6 +4373,11 @@
       "borrowedOn": "Izposojeno naprej {date}",
       "returnedOn": " · Upodobljeno na {date}",
       "showingRecentLoans": "Prikazovanje {count} Najnovejša posojila na {total} Skupaj.",
+      "noDons": "Ni zabeležene donacije",
+      "donManualEntry": "Ročni vnos",
+      "donStandalone": "Samostojna donacija",
+      "donPending": "Čaka na unovčitev",
+      "showingRecentDons": "Prikazanih {count} najnovejših donacij od skupno {total}.",
       "addCotisationTitle": "Dodajte članarino",
       "editCotisationTitle": "Spremeni članarino",
       "deleteConfirmWithDependants": "Ta član bo arhiviran in ne bo več mogel dostopati do združenja. Prav tako bo odstranjen kot zakoniti skrbnik združenja. {count} Član(i): {names}.",
@@ -4317,7 +4405,14 @@
         "confirmDescription": "To dejanje registrira zahtevo za brisanje v skladu s 17. členom GDPR. Član bo prejel e-poštno sporočilo s potrditvijo, nato pa bodo njegovi osebni podatki nepreklicno anonimizirani ob naslednji samodejni obdelavi, razen če je zahteva zadržana.",
         "toastSuccess": "Zahteva za brisanje registrirana",
         "requestLabel": "GDPR izbris"
-      }
+      },
+      "noCommande": "Ta stik nima nakupov v trgovini.",
+      "commandeStatus": {
+        "PENDING": "V teku",
+        "PAID": "Plačano",
+        "CANCELLED": "Preklicano"
+      },
+      "showingRecentCommandes": "Prikazanih je {count} najnovejših nakupov od skupno {total}."
     },
     "sms": {
       "title": "Pošlji SMS",

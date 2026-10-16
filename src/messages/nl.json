@@ -2546,6 +2546,48 @@
         "created": "Gemaakt product",
         "createError": "Fout aanmaken"
       }
+    },
+    "manualCommandeModal": {
+      "openButton": "Handmatige aankoop toevoegen",
+      "title": "Handmatige aankoop toevoegen",
+      "submit": "Aankoop opslaan",
+      "buyerLabel": "Koper",
+      "existingContact": "Bestaand contact",
+      "externalPerson": "Externe persoon",
+      "searchPlaceholder": "Zoek een contact op naam of e-mail…",
+      "typeToSearch": "Typ minstens 2 tekens om te zoeken",
+      "noResults": "Geen contact gevonden",
+      "firstNamePlaceholder": "Voornaam",
+      "lastNamePlaceholder": "Achternaam",
+      "emailPlaceholder": "E-mail (optioneel)",
+      "scopeLabel": "Winkel of bijbehorend formulier",
+      "scopeStorefront": "Winkel",
+      "productsLabel": "Gekochte producten",
+      "productPlaceholder": "Kies een product",
+      "variantPlaceholder": "Kies een variant",
+      "quantityColumn": "Aantal",
+      "addProduct": "Product toevoegen",
+      "noProductsForScope": "Geen producten beschikbaar voor deze selectie.",
+      "outOfStock": "niet op voorraad",
+      "totalLabel": "Totaal",
+      "dateLabel": "Aankoopdatum",
+      "paymentStatusLabel": "Betaalstatus",
+      "paid": "Betaald",
+      "pending": "Wacht op betaling",
+      "noteLabel": "Notitie",
+      "sendReceiptEmail": "Stuur het bonnetje per e-mail naar de koper",
+      "sendPendingEmail": "Stuur een bevestiging per e-mail naar de koper",
+      "notifyResponsible": "{name} per e-mail op de hoogte stellen",
+      "toasts": {
+        "created": "Aankoop opgeslagen"
+      }
+    },
+    "responsableModal": {
+      "openButton": "Verantwoordelijke",
+      "title": "Verantwoordelijke van de winkel",
+      "selectLabel": "Ontvangt e-mails bij nieuwe verkopen",
+      "none": "Geen",
+      "hint": "Deze persoon ontvangt een e-mail bij elke nieuwe online verkoop (zodra deze betaald is) en, naar keuze van de beheerder, bij elke handmatig toegevoegde aankoop."
     }
   },
   "donationForms": {
@@ -2568,6 +2610,31 @@
       "titleLabel": "Titel",
       "titlePlaceholder": "Bijvoorbeeld de eindejaarscampagne",
       "createButton": "Creëer"
+    },
+    "addManualDonModal": {
+      "title": "Handmatige donatie toevoegen",
+      "donorModeMember": "Bestaand contact",
+      "donorModeExternal": "Externe persoon",
+      "searchPlaceholder": "Zoeken op naam of e-mail…",
+      "typeToSearch": "Typ minstens 2 tekens",
+      "noResults": "Geen contact gevonden",
+      "changeContact": "Contact wijzigen",
+      "firstNameLabel": "Voornaam",
+      "lastNameLabel": "Achternaam",
+      "emailLabel": "E-mail",
+      "emailOptional": "(optioneel)",
+      "invalidEmail": "Voer een geldig e-mailadres in",
+      "amountLabel": "Donatiebedrag",
+      "dateLabel": "Ontvangstdatum",
+      "paymentMethodLabel": "Betaalmethode",
+      "donationFormLabel": "Gekoppeld donatieformulier",
+      "noFormOption": "Geen formulier",
+      "noteLabel": "Notitie of betalingsreferentie",
+      "notePlaceholder": "Betalingsreferentie, details…",
+      "sendReceiptLabel": "Stuur een bevestiging per e-mail",
+      "sendReceiptHint": "Er wordt een bevestigingsmail naar de donor gestuurd.",
+      "submitButton": "Donatie registreren",
+      "notifyResponsible": "{name} per e-mail op de hoogte stellen"
     },
     "formsView": {
       "columns": {
@@ -2644,6 +2711,8 @@
       "averageLabel": "Gemiddelde donatie",
       "pendingTitle": "Wachten op afhaling",
       "encaisserButton": "Cash out",
+      "addManual": "Handmatige donatie toevoegen",
+      "manualEntryBy": "Handmatige invoer · {name}",
       "fromMembershipForm": "Lidmaatschapsdonatie — \" {tier} »",
       "fromEvenement": "Donatie van evenementtickets: \" {evenement} »",
       "fromEvenementPrompt": "Donatie na registratie voor het evenement: \" {evenement} »",
@@ -2653,15 +2722,18 @@
         "adhesion": "Lidmaatschap",
         "evenementTicket": "Evenement (ticket)",
         "evenementPrompt": "Evenement (registratie)",
-        "standalone": "Zelfstandige pagina"
+        "standalone": "Zelfstandige pagina",
+        "manual": "Handmatige invoer"
       },
       "paymentMethod": {
         "especes": "Soorten",
         "cheque": "Check",
-        "virement": "Overdracht"
+        "virement": "Overdracht",
+        "autre": "Overig"
       },
       "toasts": {
-        "encaisse": "Donatie ontvangen"
+        "encaisse": "Donatie ontvangen",
+        "manualDonAdded": "Donatie geregistreerd"
       }
     },
     "receiptsView": {
@@ -2885,6 +2957,13 @@
       "intervalYear": "een",
       "confirmButton": "Stop deze terugkerende donatie",
       "genericError": "Er is een fout opgetreden. Probeer het opnieuw."
+    },
+    "responsableModal": {
+      "openButton": "Verantwoordelijke",
+      "title": "Verantwoordelijke voor donaties",
+      "selectLabel": "Ontvangt e-mails bij nieuwe donaties",
+      "none": "Geen",
+      "hint": "Deze persoon ontvangt een e-mail en een melding bij elke nieuwe donatie: online zodra deze betaald is, offline (contant/cheque/overschrijving) zodra ze geregistreerd is, en naar keuze van de beheerder bij een handmatig ingevoerde donatie."
     }
   },
   "membershipForms": {
@@ -3216,6 +3295,8 @@
       "submittedRequestTitle": "Verzoek verzonden!",
       "submittedWithPayment": "Je lidmaatschap is actief en je betaling is ontvangen.",
       "submittedRequestBody": "Uw aanvraag voor lidmaatschap is ontvangen. De vereniging zal zo snel mogelijk contact met u opnemen.",
+      "submittedOfflineTitle": "Aanvraag geregistreerd!",
+      "submittedOfflineBody": "U heeft gekozen voor een offline betaling. Uw lidmaatschap wordt bevestigd zodra uw betaling is ontvangen en gevalideerd door de vereniging. U ontvangt een bevestigingsmail zodra deze is gevalideerd.",
       "toastCancelled": "Betaling geannuleerd.",
       "errorNetwork": "Netwerkfout. Probeer het opnieuw.",
       "productsLabel": "Producten",
@@ -4245,9 +4326,11 @@
         "evenements": "Evenementen",
         "reunions": "Vergaderingen",
         "materiel": "Materiaal",
+        "dons": "Donaties",
         "historique": "Geschiedenis",
         "emails": "E-mails",
-        "sms": "SMS"
+        "sms": "SMS",
+        "boutique": "Winkel"
       },
       "cotisationStatus": {
         "enAttente": "In behandeling",
@@ -4290,6 +4373,11 @@
       "borrowedOn": "Geleend op {date}",
       "returnedOn": " · Weergegeven op {date}",
       "showingRecentLoans": "Tentoonstelling {count} Laatste leningen op {total} In totaal.",
+      "noDons": "Geen donatie geregistreerd",
+      "donManualEntry": "Handmatige invoer",
+      "donStandalone": "Zelfstandige donatie",
+      "donPending": "Wacht op inning",
+      "showingRecentDons": "Toont de {count} meest recente donaties van in totaal {total}.",
       "addCotisationTitle": "Voeg een lidmaatschapsbijdrage toe",
       "editCotisationTitle": "Verander het lidmaatschapsgeld",
       "deleteConfirmWithDependants": "Dit lid wordt gearchiveerd en kan niet langer toegang krijgen tot de vereniging. Hij wordt ook verwijderd als wettelijke voogd van de vereniging. {count} Leden(s): {names}.",
@@ -4317,7 +4405,14 @@
         "confirmDescription": "Dit registreert een AVG artikel 17-verzoek tot verwijdering. Het lid ontvangt een bevestigingsmail, waarna de persoonsgegevens onomkeerbaar worden geanonimiseerd bij de volgende automatische verwerking, tenzij het verzoek in de wacht wordt gezet.",
         "toastSuccess": "Wisverzoek geregistreerd",
         "requestLabel": "AVG-wissing"
-      }
+      },
+      "noCommande": "Geen winkelaankopen voor dit contact.",
+      "commandeStatus": {
+        "PENDING": "In behandeling",
+        "PAID": "Betaald",
+        "CANCELLED": "Geannuleerd"
+      },
+      "showingRecentCommandes": "De {count} meest recente aankopen van in totaal {total} worden weergegeven."
     },
     "sms": {
       "title": "Stuur een sms",

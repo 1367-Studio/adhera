@@ -2656,6 +2656,48 @@
         "created": "Produit créé",
         "createError": "Erreur lors de la création"
       }
+    },
+    "manualCommandeModal": {
+      "openButton": "Ajouter un achat manuel",
+      "title": "Ajouter un achat manuel",
+      "submit": "Enregistrer l'achat",
+      "buyerLabel": "Acheteur",
+      "existingContact": "Contact existant",
+      "externalPerson": "Personne externe",
+      "searchPlaceholder": "Rechercher un contact par nom ou e-mail…",
+      "typeToSearch": "Tapez au moins 2 caractères pour rechercher",
+      "noResults": "Aucun contact trouvé",
+      "firstNamePlaceholder": "Prénom",
+      "lastNamePlaceholder": "Nom",
+      "emailPlaceholder": "E-mail (optionnel)",
+      "scopeLabel": "Boutique ou formulaire associé",
+      "scopeStorefront": "Boutique",
+      "productsLabel": "Produits achetés",
+      "productPlaceholder": "Choisir un produit",
+      "variantPlaceholder": "Choisir une variante",
+      "quantityColumn": "Qté",
+      "addProduct": "Ajouter un produit",
+      "noProductsForScope": "Aucun produit disponible pour cette sélection.",
+      "outOfStock": "rupture de stock",
+      "totalLabel": "Total",
+      "dateLabel": "Date de l'achat",
+      "paymentStatusLabel": "Statut du paiement",
+      "paid": "Payé",
+      "pending": "En attente de paiement",
+      "noteLabel": "Note",
+      "sendReceiptEmail": "Envoyer le reçu par e-mail à l'acheteur",
+      "sendPendingEmail": "Envoyer une confirmation par e-mail à l'acheteur",
+      "notifyResponsible": "Notifier {name} par e-mail",
+      "toasts": {
+        "created": "Achat enregistré"
+      }
+    },
+    "responsableModal": {
+      "openButton": "Responsable",
+      "title": "Responsable de la boutique",
+      "selectLabel": "Reçoit les e-mails de nouvelle vente",
+      "none": "Aucun",
+      "hint": "Cette personne reçoit un e-mail à chaque nouvelle vente en ligne (une fois payée) et, sur choix de l'admin, à chaque achat ajouté manuellement."
     }
   },
   "donationForms": {
@@ -2678,6 +2720,31 @@
       "titleLabel": "Titre",
       "titlePlaceholder": "Ex. Campagne de fin d'année",
       "createButton": "Créer"
+    },
+    "addManualDonModal": {
+      "title": "Ajouter un don manuel",
+      "donorModeMember": "Contact existant",
+      "donorModeExternal": "Personne externe",
+      "searchPlaceholder": "Rechercher par nom ou email…",
+      "typeToSearch": "Tapez au moins 2 caractères",
+      "noResults": "Aucun contact trouvé",
+      "changeContact": "Changer de contact",
+      "firstNameLabel": "Prénom",
+      "lastNameLabel": "Nom",
+      "emailLabel": "Email",
+      "emailOptional": "(optionnel)",
+      "invalidEmail": "Saisissez une adresse email valide",
+      "amountLabel": "Montant du don",
+      "dateLabel": "Date de réception",
+      "paymentMethodLabel": "Moyen de paiement",
+      "donationFormLabel": "Formulaire de don associé",
+      "noFormOption": "Aucun formulaire",
+      "noteLabel": "Observation ou référence",
+      "notePlaceholder": "Référence du paiement, précisions…",
+      "sendReceiptLabel": "Envoyer un reçu par email",
+      "sendReceiptHint": "Un email de confirmation sera envoyé au donateur.",
+      "submitButton": "Enregistrer le don reçu",
+      "notifyResponsible": "Notifier {name} par e-mail"
     },
     "formsView": {
       "columns": {
@@ -2754,6 +2821,8 @@
       "averageLabel": "Don moyen",
       "pendingTitle": "En attente d'encaissement",
       "encaisserButton": "Encaisser",
+      "addManual": "Ajouter un don manuel",
+      "manualEntryBy": "Saisie manuelle · {name}",
       "fromMembershipForm": "Don lié à une adhésion — « {tier} »",
       "fromEvenement": "Don lié à un billet d'évènement : « {evenement} »",
       "fromEvenementPrompt": "Don suite à une inscription à l'évènement : « {evenement} »",
@@ -2763,15 +2832,18 @@
         "adhesion": "Adhésion",
         "evenementTicket": "Évènement (billet)",
         "evenementPrompt": "Évènement (inscription)",
-        "standalone": "Page autonome"
+        "standalone": "Page autonome",
+        "manual": "Saisie manuelle"
       },
       "paymentMethod": {
         "especes": "Espèces",
         "cheque": "Chèque",
-        "virement": "Virement"
+        "virement": "Virement",
+        "autre": "Autre"
       },
       "toasts": {
-        "encaisse": "Don encaissé"
+        "encaisse": "Don encaissé",
+        "manualDonAdded": "Don enregistré"
       }
     },
     "receiptsView": {
@@ -2996,6 +3068,13 @@
       "intervalYear": "an",
       "confirmButton": "Arrêter ce don récurrent",
       "genericError": "Une erreur est survenue. Réessayez."
+    },
+    "responsableModal": {
+      "openButton": "Responsable",
+      "title": "Responsable des dons",
+      "selectLabel": "Reçoit les e-mails de nouveau don",
+      "none": "Aucun",
+      "hint": "Cette personne reçoit un e-mail et une notification à chaque nouveau don : en ligne une fois payé, hors ligne (espèces/chèque/virement) dès l'enregistrement, et sur choix de l'admin pour un don saisi manuellement."
     }
   },
   "membershipForms": {
@@ -3332,6 +3411,8 @@
       "submittedRequestTitle": "Demande envoyée !",
       "submittedWithPayment": "Votre adhésion est active et votre paiement a bien été reçu.",
       "submittedRequestBody": "Votre demande d'adhésion a bien été reçue. L'association vous contactera dans les meilleurs délais.",
+      "submittedOfflineTitle": "Demande enregistrée !",
+      "submittedOfflineBody": "Vous avez choisi un paiement hors ligne. Votre adhésion sera confirmée après réception et validation de votre règlement par l'association. Un e-mail de confirmation vous sera envoyé dès sa validation.",
       "toastCancelled": "Paiement annulé.",
       "errorNetwork": "Erreur réseau. Réessayez.",
       "productsLabel": "Produits",
@@ -4503,9 +4584,11 @@
         "evenements": "Événements",
         "reunions": "Réunions",
         "materiel": "Matériel",
+        "dons": "Dons",
         "historique": "Historique",
         "emails": "Emails",
-        "sms": "SMS"
+        "sms": "SMS",
+        "boutique": "Boutique"
       },
       "cotisationStatus": {
         "enAttente": "En attente",
@@ -4549,6 +4632,11 @@
       "borrowedOn": "Emprunté le {date}",
       "returnedOn": " · Rendu le {date}",
       "showingRecentLoans": "Affichage des {count} prêts les plus récents sur {total} au total.",
+      "noDons": "Aucun don enregistré",
+      "donManualEntry": "Saisie manuelle",
+      "donStandalone": "Don autonome",
+      "donPending": "En attente d'encaissement",
+      "showingRecentDons": "Affichage des {count} dons les plus récents sur {total} au total.",
       "addCotisationTitle": "Ajouter une cotisation",
       "editCotisationTitle": "Modifier la cotisation",
       "deleteConfirmWithDependants": "Ce membre sera archivé et ne pourra plus accéder à l'association. Il sera aussi retiré comme responsable légal de {count} membre(s) : {names}.",
@@ -4569,7 +4657,14 @@
         "rejectedToast": "Demande refusée",
         "rejectConfirmTitle": "Refuser cette demande ?",
         "rejectConfirmDescription": "{name} passera au statut « Inactif » et ne pourra pas se connecter. La demande et ses réponses au formulaire sont conservées."
-      }
+      },
+      "noCommande": "Aucun achat boutique pour ce contact.",
+      "commandeStatus": {
+        "PENDING": "En attente",
+        "PAID": "Payée",
+        "CANCELLED": "Annulée"
+      },
+      "showingRecentCommandes": "Affichage des {count} achats les plus récents sur {total}."
     },
     "sms": {
       "title": "Envoyer un SMS",
@@ -6114,7 +6209,8 @@
     "header": {
       "myPortal": "Mon espace",
       "myProfile": "Mon profil",
-      "management": "Gestion"
+      "management": "Gestion",
+      "publicSite": "Voir le site"
     },
     "userMenu": {
       "roleLabels": {

@@ -2546,6 +2546,48 @@
         "created": "Sukurtas produktas",
         "createError": "Klaidų kūrimas"
       }
+    },
+    "manualCommandeModal": {
+      "openButton": "Pridėti rankinį pirkimą",
+      "title": "Pridėti rankinį pirkimą",
+      "submit": "Išsaugoti pirkimą",
+      "buyerLabel": "Pirkėjas",
+      "existingContact": "Esamas kontaktas",
+      "externalPerson": "Išorinis asmuo",
+      "searchPlaceholder": "Ieškoti kontakto pagal vardą ar el. paštą…",
+      "typeToSearch": "Įveskite bent 2 simbolius, kad ieškotumėte",
+      "noResults": "Kontaktas nerastas",
+      "firstNamePlaceholder": "Vardas",
+      "lastNamePlaceholder": "Pavardė",
+      "emailPlaceholder": "El. paštas (neprivaloma)",
+      "scopeLabel": "Parduotuvė arba susijusi forma",
+      "scopeStorefront": "Parduotuvė",
+      "productsLabel": "Įsigyti produktai",
+      "productPlaceholder": "Pasirinkite produktą",
+      "variantPlaceholder": "Pasirinkite variantą",
+      "quantityColumn": "Kiekis",
+      "addProduct": "Pridėti produktą",
+      "noProductsForScope": "Šiam pasirinkimui nėra prieinamų produktų.",
+      "outOfStock": "nėra sandėlyje",
+      "totalLabel": "Iš viso",
+      "dateLabel": "Pirkimo data",
+      "paymentStatusLabel": "Mokėjimo būsena",
+      "paid": "Apmokėta",
+      "pending": "Laukiama mokėjimo",
+      "noteLabel": "Pastaba",
+      "sendReceiptEmail": "Siųsti kvitą el. paštu pirkėjui",
+      "sendPendingEmail": "Siųsti patvirtinimą el. paštu pirkėjui",
+      "notifyResponsible": "Pranešti {name} el. paštu",
+      "toasts": {
+        "created": "Pirkimas išsaugotas"
+      }
+    },
+    "responsableModal": {
+      "openButton": "Atsakingas asmuo",
+      "title": "Parduotuvės atsakingas asmuo",
+      "selectLabel": "Gauna el. laiškus apie naujus pardavimus",
+      "none": "Nėra",
+      "hint": "Šis asmuo gauna el. laišką apie kiekvieną naują pardavimą internetu (kai jis apmokamas) ir, administratoriaus pasirinkimu, apie kiekvieną rankiniu būdu pridėtą pirkimą."
     }
   },
   "donationForms": {
@@ -2568,6 +2610,31 @@
       "titleLabel": "Pavadinimas",
       "titlePlaceholder": "Pvz., metų pabaigos kampanija",
       "createButton": "Sukurti"
+    },
+    "addManualDonModal": {
+      "title": "Pridėti rankinę auką",
+      "donorModeMember": "Esamas kontaktas",
+      "donorModeExternal": "Išorinis asmuo",
+      "searchPlaceholder": "Ieškoti pagal vardą arba el. paštą…",
+      "typeToSearch": "Įveskite bent 2 simbolius",
+      "noResults": "Kontaktas nerastas",
+      "changeContact": "Keisti kontaktą",
+      "firstNameLabel": "Vardas",
+      "lastNameLabel": "Pavardė",
+      "emailLabel": "El. paštas",
+      "emailOptional": "(neprivaloma)",
+      "invalidEmail": "Įveskite galiojantį el. pašto adresą",
+      "amountLabel": "Aukos suma",
+      "dateLabel": "Gavimo data",
+      "paymentMethodLabel": "Mokėjimo būdas",
+      "donationFormLabel": "Susieta aukos forma",
+      "noFormOption": "Nėra formos",
+      "noteLabel": "Pastaba ar mokėjimo nuoroda",
+      "notePlaceholder": "Mokėjimo nuoroda, informacija…",
+      "sendReceiptLabel": "Siųsti kvitą el. paštu",
+      "sendReceiptHint": "Aukotojui bus išsiųstas patvirtinimo laiškas.",
+      "submitButton": "Įrašyti auką",
+      "notifyResponsible": "Pranešti {name} el. paštu"
     },
     "formsView": {
       "columns": {
@@ -2644,6 +2711,8 @@
       "averageLabel": "Vidutinė auka",
       "pendingTitle": "Laukiu atsiėmimo",
       "encaisserButton": "Išsigrynink",
+      "addManual": "Pridėti rankinę auką",
+      "manualEntryBy": "Rankinis įrašas · {name}",
       "fromMembershipForm": "Narystės auka — \" {tier} »",
       "fromEvenement": "Renginio bilietų auka: \" {evenement} »",
       "fromEvenementPrompt": "Auka po registracijos į renginį: \" {evenement} »",
@@ -2653,15 +2722,18 @@
         "adhesion": "Narystė",
         "evenementTicket": "Renginys (bilietas)",
         "evenementPrompt": "Renginys (registracija)",
-        "standalone": "Atskiras puslapis"
+        "standalone": "Atskiras puslapis",
+        "manual": "Rankinis įrašas"
       },
       "paymentMethod": {
         "especes": "Rūšys",
         "cheque": "Patikrinta",
-        "virement": "Perkėlimas"
+        "virement": "Perkėlimas",
+        "autre": "Kita"
       },
       "toasts": {
-        "encaisse": "Gauta auka"
+        "encaisse": "Gauta auka",
+        "manualDonAdded": "Auka įrašyta"
       }
     },
     "receiptsView": {
@@ -2885,6 +2957,13 @@
       "intervalYear": "an",
       "confirmButton": "Sustabdykite šią pasikartojančią auką",
       "genericError": "Įvyko klaida. Pabandyk dar kartą."
+    },
+    "responsableModal": {
+      "openButton": "Atsakingas asmuo",
+      "title": "Aukų atsakingas asmuo",
+      "selectLabel": "Gauna el. laiškus apie naujas aukas",
+      "none": "Nėra",
+      "hint": "Šis asmuo gauna el. laišką ir pranešimą apie kiekvieną naują auką: internetu, kai ji apmokama, ne internetu (grynaisiais/čekiu/pervedimu), kai ji iškart užregistruojama, ir administratoriaus pasirinkimu, kai auka įvedama rankiniu būdu."
     }
   },
   "membershipForms": {
@@ -3216,6 +3295,8 @@
       "submittedRequestTitle": "Užklausa išsiųsta!",
       "submittedWithPayment": "Jūsų narystė aktyvi, o mokėjimas gautas.",
       "submittedRequestBody": "Jūsų paraiška narystei jau gauta. Asociacija susisieks su jumis kuo greičiau.",
+      "submittedOfflineTitle": "Prašymas užregistruotas!",
+      "submittedOfflineBody": "Pasirinkote atsiskaitymą ne internetu. Jūsų narystė bus patvirtinta, kai asociacija gaus ir patvirtins jūsų mokėjimą. Patvirtinimo el. laišką gausite, kai jis bus patvirtintas.",
       "toastCancelled": "Mokėjimas atšauktas.",
       "errorNetwork": "Tinklo klaida. Pabandyk dar kartą.",
       "productsLabel": "Produktai",
@@ -4245,9 +4326,11 @@
         "evenements": "Renginiai",
         "reunions": "Susitikimai",
         "materiel": "Medžiaga",
+        "dons": "Aukos",
         "historique": "Istorija",
         "emails": "El. laiškai",
-        "sms": "SMS"
+        "sms": "SMS",
+        "boutique": "Parduotuvė"
       },
       "cotisationStatus": {
         "enAttente": "Laukiama",
@@ -4290,6 +4373,11 @@
       "borrowedOn": "Pasiskolinta {date}",
       "returnedOn": " · Atvaizduota {date}",
       "showingRecentLoans": "Eksponavimas {count} Naujausios paskolos {total} Iš viso.",
+      "noDons": "Nėra įrašytų aukų",
+      "donManualEntry": "Rankinis įrašas",
+      "donStandalone": "Savarankiška auka",
+      "donPending": "Laukiama inkasavimo",
+      "showingRecentDons": "Rodoma {count} naujausių aukų iš {total} iš viso.",
       "addCotisationTitle": "Pridėkite narystės mokestį",
       "editCotisationTitle": "Pakeiskite narystės mokestį",
       "deleteConfirmWithDependants": "Šis narys bus archyvuotas ir nebegalės prisijungti prie asociacijos. Jis taip pat bus pašalintas iš asociacijos teisėto globėjo pareigų. {count} Narys(-iai): {names}.",
@@ -4317,7 +4405,14 @@
         "confirmDescription": "Šis veiksmas užregistruoja BDAR 17 straipsnio ištrynimo prašymą. Narys gaus patvirtinimo el. laišką, po to jo asmens duomenys bus neatšaukiamai anonimizuoti per kitą automatinį apdorojimą, jei prašymas nebus sustabdytas.",
         "toastSuccess": "Ištrynimo prašymas užregistruotas",
         "requestLabel": "BDAR ištrynimas"
-      }
+      },
+      "noCommande": "Šis kontaktas neturi pirkimų parduotuvėje.",
+      "commandeStatus": {
+        "PENDING": "Laukiama",
+        "PAID": "Apmokėta",
+        "CANCELLED": "Atšaukta"
+      },
+      "showingRecentCommandes": "Rodomi {count} naujausi pirkimai iš {total}."
     },
     "sms": {
       "title": "Siųskite SMS žinutę",

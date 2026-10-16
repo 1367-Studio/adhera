@@ -2546,6 +2546,48 @@
         "created": "Създаден продукт",
         "createError": "Създаване на грешки"
       }
+    },
+    "manualCommandeModal": {
+      "openButton": "Добавяне на ръчна покупка",
+      "title": "Добавяне на ръчна покупка",
+      "submit": "Запазване на покупката",
+      "buyerLabel": "Купувач",
+      "existingContact": "Съществуващ контакт",
+      "externalPerson": "Външно лице",
+      "searchPlaceholder": "Търсене на контакт по име или имейл…",
+      "typeToSearch": "Въведете поне 2 символа за търсене",
+      "noResults": "Няма намерен контакт",
+      "firstNamePlaceholder": "Име",
+      "lastNamePlaceholder": "Фамилия",
+      "emailPlaceholder": "Имейл (по избор)",
+      "scopeLabel": "Магазин или свързан формуляр",
+      "scopeStorefront": "Магазин",
+      "productsLabel": "Закупени продукти",
+      "productPlaceholder": "Изберете продукт",
+      "variantPlaceholder": "Изберете вариант",
+      "quantityColumn": "Кол.",
+      "addProduct": "Добавяне на продукт",
+      "noProductsForScope": "Няма налични продукти за този избор.",
+      "outOfStock": "изчерпана наличност",
+      "totalLabel": "Общо",
+      "dateLabel": "Дата на покупката",
+      "paymentStatusLabel": "Статус на плащането",
+      "paid": "Платено",
+      "pending": "Изчаква плащане",
+      "noteLabel": "Бележка",
+      "sendReceiptEmail": "Изпращане на разписка по имейл на купувача",
+      "sendPendingEmail": "Изпращане на потвърждение по имейл на купувача",
+      "notifyResponsible": "Уведомяване на {name} по имейл",
+      "toasts": {
+        "created": "Покупката е запазена"
+      }
+    },
+    "responsableModal": {
+      "openButton": "Отговорник",
+      "title": "Отговорник на магазина",
+      "selectLabel": "Получава имейли за нови продажби",
+      "none": "Няма",
+      "hint": "Този човек получава имейл при всяка нова онлайн продажба (след плащане) и, по избор на администратора, при всяка ръчно добавена покупка."
     }
   },
   "donationForms": {
@@ -2568,6 +2610,31 @@
       "titleLabel": "Заглавие",
       "titlePlaceholder": "Например кампания в края на годината",
       "createButton": "Създаване"
+    },
+    "addManualDonModal": {
+      "title": "Добавяне на ръчно дарение",
+      "donorModeMember": "Съществуващ контакт",
+      "donorModeExternal": "Външно лице",
+      "searchPlaceholder": "Търсене по име или имейл…",
+      "typeToSearch": "Въведете поне 2 символа",
+      "noResults": "Няма намерен контакт",
+      "changeContact": "Смяна на контакта",
+      "firstNameLabel": "Име",
+      "lastNameLabel": "Фамилия",
+      "emailLabel": "Имейл",
+      "emailOptional": "(незадължително)",
+      "invalidEmail": "Въведете валиден имейл адрес",
+      "amountLabel": "Сума на дарението",
+      "dateLabel": "Дата на получаване",
+      "paymentMethodLabel": "Начин на плащане",
+      "donationFormLabel": "Свързан формуляр за дарение",
+      "noFormOption": "Без формуляр",
+      "noteLabel": "Бележка или референция за плащане",
+      "notePlaceholder": "Референция на плащането, подробности…",
+      "sendReceiptLabel": "Изпращане на разписка по имейл",
+      "sendReceiptHint": "Имейл за потвърждение ще бъде изпратен на дарителя.",
+      "submitButton": "Запазване на дарението",
+      "notifyResponsible": "Уведомяване на {name} по имейл"
     },
     "formsView": {
       "columns": {
@@ -2644,6 +2711,8 @@
       "averageLabel": "Средно дарение",
       "pendingTitle": "Чакане за събиране",
       "encaisserButton": "Плащане на пари",
+      "addManual": "Добавяне на ръчно дарение",
+      "manualEntryBy": "Ръчно въвеждане · {name}",
       "fromMembershipForm": "Дарение за членство — \" {tier} »",
       "fromEvenement": "Дарение за билет за събитие: \" {evenement} »",
       "fromEvenementPrompt": "Дарение след регистрация за събитието: \" {evenement} »",
@@ -2653,15 +2722,18 @@
         "adhesion": "Членство",
         "evenementTicket": "Събитие (билет)",
         "evenementPrompt": "Събитие (регистрация)",
-        "standalone": "Самостоятелна страница"
+        "standalone": "Самостоятелна страница",
+        "manual": "Ръчно въвеждане"
       },
       "paymentMethod": {
         "especes": "Видове",
         "cheque": "Проверете",
-        "virement": "Трансфер"
+        "virement": "Трансфер",
+        "autre": "Друго"
       },
       "toasts": {
-        "encaisse": "Получено дарение"
+        "encaisse": "Получено дарение",
+        "manualDonAdded": "Дарението е записано"
       }
     },
     "receiptsView": {
@@ -2885,6 +2957,13 @@
       "intervalYear": "an",
       "confirmButton": "Спрете това повтарящо се дарение",
       "genericError": "Възникна грешка. Опитай пак."
+    },
+    "responsableModal": {
+      "openButton": "Отговорник",
+      "title": "Отговорник за даренията",
+      "selectLabel": "Получава имейли за нови дарения",
+      "none": "Няма",
+      "hint": "Този човек получава имейл и известие при всяко ново дарение: онлайн след плащане, офлайн (пари в брой/чек/банков превод) веднага след регистрирането, и по избор на администратора при ръчно въведено дарение."
     }
   },
   "membershipForms": {
@@ -3216,6 +3295,8 @@
       "submittedRequestTitle": "Заявката е изпратена!",
       "submittedWithPayment": "Членството ви е активно и плащането ви е получено.",
       "submittedRequestBody": "Вашата кандидатура за членство е получена. Асоциацията ще се свърже с вас възможно най-скоро.",
+      "submittedOfflineTitle": "Заявката е регистрирана!",
+      "submittedOfflineBody": "Избрали сте офлайн плащане. Членството ви ще бъде потвърдено след получаване и валидиране на плащането от сдружението. Ще получите имейл за потвърждение веднага след валидирането му.",
       "toastCancelled": "Плащането е отменено.",
       "errorNetwork": "Мрежова грешка. Опитай пак.",
       "productsLabel": "Продукти",
@@ -4245,9 +4326,11 @@
         "evenements": "Събития",
         "reunions": "Срещи",
         "materiel": "Материал",
+        "dons": "Дарения",
         "historique": "История",
         "emails": "Имейли",
-        "sms": "SMS"
+        "sms": "SMS",
+        "boutique": "Магазин"
       },
       "cotisationStatus": {
         "enAttente": "В процес на изчакване",
@@ -4290,6 +4373,11 @@
       "borrowedOn": "Взето назаем {date}",
       "returnedOn": " · Рендерирано на {date}",
       "showingRecentLoans": "Показване {count} Последни заеми {total} Общо.",
+      "noDons": "Няма регистрирано дарение",
+      "donManualEntry": "Ръчно въвеждане",
+      "donStandalone": "Самостоятелно дарение",
+      "donPending": "Чака осребряване",
+      "showingRecentDons": "Показани са {count} най-скорошни дарения от общо {total}.",
       "addCotisationTitle": "Добавете членска такса",
       "editCotisationTitle": "Промяна на членската такса",
       "deleteConfirmWithDependants": "Този член ще бъде архивиран и вече няма да има достъп до асоциацията. Той също така ще бъде отстранен като законен настойник на асоциацията. {count} Членове: {names}.",
@@ -4317,7 +4405,14 @@
         "confirmDescription": "Това регистрира заявка за изтриване по член 17 от ОРЗД. Членът ще получи имейл за потвърждение, след което личните му данни ще бъдат анонимизирани безвъзвратно при следващата автоматична обработка, освен ако не бъдат поставени на изчакване.",
         "toastSuccess": "Заявката за изтриване е регистрирана",
         "requestLabel": "Изтриване по ОРЗД"
-      }
+      },
+      "noCommande": "Няма покупки от магазина за този контакт.",
+      "commandeStatus": {
+        "PENDING": "Изчаква",
+        "PAID": "Платено",
+        "CANCELLED": "Отменено"
+      },
+      "showingRecentCommandes": "Показани са {count} най-скорошни покупки от общо {total}."
     },
     "sms": {
       "title": "Изпратете SMS",

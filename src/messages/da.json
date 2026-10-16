@@ -2546,6 +2546,48 @@
         "created": "Produkt skabt",
         "createError": "Fejloprettelse"
       }
+    },
+    "manualCommandeModal": {
+      "openButton": "Tilføj et manuelt køb",
+      "title": "Tilføj et manuelt køb",
+      "submit": "Gem køb",
+      "buyerLabel": "Køber",
+      "existingContact": "Eksisterende kontakt",
+      "externalPerson": "Ekstern person",
+      "searchPlaceholder": "Søg efter en kontakt efter navn eller e-mail…",
+      "typeToSearch": "Indtast mindst 2 tegn for at søge",
+      "noResults": "Ingen kontakt fundet",
+      "firstNamePlaceholder": "Fornavn",
+      "lastNamePlaceholder": "Efternavn",
+      "emailPlaceholder": "E-mail (valgfrit)",
+      "scopeLabel": "Butik eller tilknyttet formular",
+      "scopeStorefront": "Butik",
+      "productsLabel": "Købte produkter",
+      "productPlaceholder": "Vælg et produkt",
+      "variantPlaceholder": "Vælg en variant",
+      "quantityColumn": "Ant.",
+      "addProduct": "Tilføj et produkt",
+      "noProductsForScope": "Ingen produkter tilgængelige for dette valg.",
+      "outOfStock": "udsolgt",
+      "totalLabel": "I alt",
+      "dateLabel": "Købsdato",
+      "paymentStatusLabel": "Betalingsstatus",
+      "paid": "Betalt",
+      "pending": "Afventer betaling",
+      "noteLabel": "Note",
+      "sendReceiptEmail": "Send kvitteringen pr. e-mail til køberen",
+      "sendPendingEmail": "Send en bekræftelse pr. e-mail til køberen",
+      "notifyResponsible": "Giv {name} besked pr. e-mail",
+      "toasts": {
+        "created": "Køb gemt"
+      }
+    },
+    "responsableModal": {
+      "openButton": "Ansvarlig",
+      "title": "Butikkens ansvarlige",
+      "selectLabel": "Modtager e-mails om nye salg",
+      "none": "Ingen",
+      "hint": "Denne person modtager en e-mail for hvert nyt onlinesalg (når det er betalt) og, efter administratorens valg, for hvert manuelt tilføjet køb."
     }
   },
   "donationForms": {
@@ -2568,6 +2610,31 @@
       "titleLabel": "Titel",
       "titlePlaceholder": "F.eks. afslutningskampagne",
       "createButton": "Opret"
+    },
+    "addManualDonModal": {
+      "title": "Tilføj en manuel donation",
+      "donorModeMember": "Eksisterende kontakt",
+      "donorModeExternal": "Ekstern person",
+      "searchPlaceholder": "Søg efter navn eller e-mail…",
+      "typeToSearch": "Indtast mindst 2 tegn",
+      "noResults": "Ingen kontakt fundet",
+      "changeContact": "Skift kontakt",
+      "firstNameLabel": "Fornavn",
+      "lastNameLabel": "Efternavn",
+      "emailLabel": "E-mail",
+      "emailOptional": "(valgfrit)",
+      "invalidEmail": "Indtast en gyldig e-mailadresse",
+      "amountLabel": "Donationsbeløb",
+      "dateLabel": "Dato for modtagelse",
+      "paymentMethodLabel": "Betalingsmetode",
+      "donationFormLabel": "Tilknyttet donationsformular",
+      "noFormOption": "Ingen formular",
+      "noteLabel": "Note eller betalingsreference",
+      "notePlaceholder": "Betalingsreference, detaljer…",
+      "sendReceiptLabel": "Send en kvittering via e-mail",
+      "sendReceiptHint": "En bekræftelsesmail sendes til donoren.",
+      "submitButton": "Registrer donationen",
+      "notifyResponsible": "Giv {name} besked pr. e-mail"
     },
     "formsView": {
       "columns": {
@@ -2644,6 +2711,8 @@
       "averageLabel": "Gennemsnitlig donation",
       "pendingTitle": "Venter på afhentning",
       "encaisserButton": "Cash out",
+      "addManual": "Tilføj en manuel donation",
+      "manualEntryBy": "Manuel registrering · {name}",
       "fromMembershipForm": "Medlemsdonation — \" {tier} »",
       "fromEvenement": "Donation af eventbillet: \" {evenement} »",
       "fromEvenementPrompt": "Donation efter tilmelding til arrangementet: \" {evenement} »",
@@ -2653,15 +2722,18 @@
         "adhesion": "Medlemskab",
         "evenementTicket": "Arrangement (billet)",
         "evenementPrompt": "Arrangement (registrering)",
-        "standalone": "Selvstændig side"
+        "standalone": "Selvstændig side",
+        "manual": "Manuel registrering"
       },
       "paymentMethod": {
         "especes": "Arter",
         "cheque": "Tjek",
-        "virement": "Overførsel"
+        "virement": "Overførsel",
+        "autre": "Andet"
       },
       "toasts": {
-        "encaisse": "Modtaget donation"
+        "encaisse": "Modtaget donation",
+        "manualDonAdded": "Donation registreret"
       }
     },
     "receiptsView": {
@@ -2885,6 +2957,13 @@
       "intervalYear": "en",
       "confirmButton": "Stop denne tilbagevendende donation",
       "genericError": "Der er sket en fejl. Prøv igen."
+    },
+    "responsableModal": {
+      "openButton": "Ansvarlig",
+      "title": "Ansvarlig for donationer",
+      "selectLabel": "Modtager e-mails om nye donationer",
+      "none": "Ingen",
+      "hint": "Denne person modtager en e-mail og en notifikation for hver ny donation: online når den er betalt, offline (kontant/check/overførsel) så snart den er registreret, og efter administratorens valg for en manuelt indtastet donation."
     }
   },
   "membershipForms": {
@@ -3216,6 +3295,8 @@
       "submittedRequestTitle": "Anmodning sendt!",
       "submittedWithPayment": "Dit medlemskab er aktivt, og din betaling er modtaget.",
       "submittedRequestBody": "Din ansøgning om medlemskab er modtaget. Foreningen vil kontakte dig så hurtigt som muligt.",
+      "submittedOfflineTitle": "Anmodning registreret!",
+      "submittedOfflineBody": "Du har valgt en offlinebetaling. Dit medlemskab bekræftes, når din betaling er modtaget og valideret af foreningen. Du får en bekræftelsesmail, så snart det er valideret.",
       "toastCancelled": "Betaling annulleret.",
       "errorNetwork": "Netværksfejl. Prøv igen.",
       "productsLabel": "Produkter",
@@ -4245,9 +4326,11 @@
         "evenements": "Begivenheder",
         "reunions": "Møder",
         "materiel": "Materiale",
+        "dons": "Donationer",
         "historique": "Historik",
         "emails": "E-mails",
-        "sms": "SMS"
+        "sms": "SMS",
+        "boutique": "Butik"
       },
       "cotisationStatus": {
         "enAttente": "Afventer",
@@ -4290,6 +4373,11 @@
       "borrowedOn": "Lånt på {date}",
       "returnedOn": " · Renderet på {date}",
       "showingRecentLoans": "Udstilling {count} Seneste lån på {total} I alt.",
+      "noDons": "Ingen donation registreret",
+      "donManualEntry": "Manuel registrering",
+      "donStandalone": "Selvstændig donation",
+      "donPending": "Afventer indløsning",
+      "showingRecentDons": "Viser de {count} seneste donationer ud af {total} i alt.",
       "addCotisationTitle": "Tilføj et medlemsgebyr",
       "editCotisationTitle": "Ændr medlemsgebyret",
       "deleteConfirmWithDependants": "Dette medlem vil blive arkiveret og vil ikke længere kunne få adgang til foreningen. Han vil også blive fjernet som foreningens juridiske værge. {count} Medlem(e): {names}.",
@@ -4317,7 +4405,14 @@
         "confirmDescription": "Dette registrerer en GDPR artikel 17-anmodning om sletning. Medlemmet modtager en bekræftelses-e-mail, hvorefter deres personoplysninger anonymiseres uigenkaldeligt ved næste automatiske behandling, med mindre anmodningen sættes på hold.",
         "toastSuccess": "Anmodning om sletning registreret",
         "requestLabel": "GDPR-sletning"
-      }
+      },
+      "noCommande": "Ingen butikskøb for denne kontakt.",
+      "commandeStatus": {
+        "PENDING": "Afventer",
+        "PAID": "Betalt",
+        "CANCELLED": "Aflyst"
+      },
+      "showingRecentCommandes": "Viser de {count} seneste køb ud af {total}."
     },
     "sms": {
       "title": "Send en SMS",

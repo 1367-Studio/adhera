@@ -2648,6 +2648,48 @@
         "created": "Product created",
         "createError": "Error while creating"
       }
+    },
+    "manualCommandeModal": {
+      "openButton": "Add a manual purchase",
+      "title": "Add a manual purchase",
+      "submit": "Save purchase",
+      "buyerLabel": "Buyer",
+      "existingContact": "Existing contact",
+      "externalPerson": "External person",
+      "searchPlaceholder": "Search for a contact by name or email…",
+      "typeToSearch": "Type at least 2 characters to search",
+      "noResults": "No contact found",
+      "firstNamePlaceholder": "First name",
+      "lastNamePlaceholder": "Last name",
+      "emailPlaceholder": "Email (optional)",
+      "scopeLabel": "Shop or related form",
+      "scopeStorefront": "Shop",
+      "productsLabel": "Products purchased",
+      "productPlaceholder": "Choose a product",
+      "variantPlaceholder": "Choose a variant",
+      "quantityColumn": "Qty",
+      "addProduct": "Add a product",
+      "noProductsForScope": "No products available for this selection.",
+      "outOfStock": "out of stock",
+      "totalLabel": "Total",
+      "dateLabel": "Purchase date",
+      "paymentStatusLabel": "Payment status",
+      "paid": "Paid",
+      "pending": "Awaiting payment",
+      "noteLabel": "Note",
+      "sendReceiptEmail": "Send the receipt by email to the buyer",
+      "sendPendingEmail": "Send a confirmation by email to the buyer",
+      "notifyResponsible": "Notify {name} by email",
+      "toasts": {
+        "created": "Purchase saved"
+      }
+    },
+    "responsableModal": {
+      "openButton": "Manager",
+      "title": "Shop manager",
+      "selectLabel": "Receives new-sale emails",
+      "none": "None",
+      "hint": "This person receives an email for every new online sale (once paid) and, at the admin's choice, for every manually added purchase."
     }
   },
   "donationForms": {
@@ -2670,6 +2712,31 @@
       "titleLabel": "Title",
       "titlePlaceholder": "E.g. Year-end campaign",
       "createButton": "Create"
+    },
+    "addManualDonModal": {
+      "title": "Add a manual donation",
+      "donorModeMember": "Existing contact",
+      "donorModeExternal": "External person",
+      "searchPlaceholder": "Search by name or email…",
+      "typeToSearch": "Type at least 2 characters",
+      "noResults": "No contact found",
+      "changeContact": "Change contact",
+      "firstNameLabel": "First name",
+      "lastNameLabel": "Last name",
+      "emailLabel": "Email",
+      "emailOptional": "(optional)",
+      "invalidEmail": "Enter a valid email address",
+      "amountLabel": "Donation amount",
+      "dateLabel": "Date received",
+      "paymentMethodLabel": "Payment method",
+      "donationFormLabel": "Linked donation form",
+      "noFormOption": "No form",
+      "noteLabel": "Note or payment reference",
+      "notePlaceholder": "Payment reference, details…",
+      "sendReceiptLabel": "Send a receipt by email",
+      "sendReceiptHint": "A confirmation email will be sent to the donor.",
+      "submitButton": "Record the donation",
+      "notifyResponsible": "Notify {name} by email"
     },
     "formsView": {
       "columns": {
@@ -2746,6 +2813,8 @@
       "averageLabel": "Average donation",
       "pendingTitle": "Awaiting encashment",
       "encaisserButton": "Mark as received",
+      "addManual": "Add a manual donation",
+      "manualEntryBy": "Manual entry · {name}",
       "fromMembershipForm": "Linked to a membership signup — \"{tier}\"",
       "fromEvenement": "Linked to an event ticket: \"{evenement}\"",
       "fromEvenementPrompt": "Linked to an event registration: \"{evenement}\"",
@@ -2755,15 +2824,18 @@
         "adhesion": "Membership",
         "evenementTicket": "Event (ticket)",
         "evenementPrompt": "Event (registration)",
-        "standalone": "Standalone page"
+        "standalone": "Standalone page",
+        "manual": "Manual entry"
       },
       "paymentMethod": {
         "especes": "Cash",
         "cheque": "Cheque",
-        "virement": "Bank transfer"
+        "virement": "Bank transfer",
+        "autre": "Other"
       },
       "toasts": {
-        "encaisse": "Donation marked as received"
+        "encaisse": "Donation marked as received",
+        "manualDonAdded": "Donation recorded"
       }
     },
     "receiptsView": {
@@ -2988,6 +3060,13 @@
       "intervalYear": "year",
       "confirmButton": "Stop this recurring donation",
       "genericError": "Something went wrong. Please try again."
+    },
+    "responsableModal": {
+      "openButton": "Manager",
+      "title": "Donations manager",
+      "selectLabel": "Receives new-donation emails",
+      "none": "None",
+      "hint": "This person receives an email and an in-app notification for every new donation: online once paid, offline (cash/cheque/transfer) as soon as it's recorded, and at the admin's choice for a manually entered donation."
     }
   },
   "membershipForms": {
@@ -3324,6 +3403,8 @@
       "submittedRequestTitle": "Request sent!",
       "submittedWithPayment": "Your membership is active and your payment has been received.",
       "submittedRequestBody": "Your membership request has been received. The association will contact you soon.",
+      "submittedOfflineTitle": "Request received!",
+      "submittedOfflineBody": "You chose an offline payment method. Your membership will be confirmed once your payment has been received and validated by the association. A confirmation email will be sent to you once it is validated.",
       "toastCancelled": "Payment cancelled.",
       "errorNetwork": "Network error. Please try again.",
       "productsLabel": "Products",
@@ -4495,9 +4576,11 @@
         "evenements": "Events",
         "reunions": "Meetings",
         "materiel": "Equipment",
+        "dons": "Donations",
         "historique": "History",
         "emails": "Emails",
-        "sms": "SMS"
+        "sms": "SMS",
+        "boutique": "Shop"
       },
       "cotisationStatus": {
         "enAttente": "Pending",
@@ -4541,6 +4624,11 @@
       "borrowedOn": "Borrowed on {date}",
       "returnedOn": " · Returned on {date}",
       "showingRecentLoans": "Showing the {count} most recent loans out of {total} total.",
+      "noDons": "No donation recorded",
+      "donManualEntry": "Manual entry",
+      "donStandalone": "Standalone donation",
+      "donPending": "Awaiting encashment",
+      "showingRecentDons": "Showing the {count} most recent donations out of {total} total.",
       "addCotisationTitle": "Add a membership fee",
       "editCotisationTitle": "Edit membership fee",
       "deleteConfirmWithDependants": "This member will be archived and will no longer be able to access the association. They will also be removed as legal guardian of {count} member(s): {names}.",
@@ -4561,7 +4649,14 @@
         "rejectedToast": "Request declined",
         "rejectConfirmTitle": "Decline this request?",
         "rejectConfirmDescription": "{name} will be set to “Inactive” and won't be able to sign in. The request and their form answers are kept."
-      }
+      },
+      "noCommande": "No shop purchases for this contact.",
+      "commandeStatus": {
+        "PENDING": "Pending",
+        "PAID": "Paid",
+        "CANCELLED": "Cancelled"
+      },
+      "showingRecentCommandes": "Showing the {count} most recent purchases out of {total}."
     },
     "sms": {
       "title": "Send an SMS",
@@ -6106,7 +6201,8 @@
     "header": {
       "myPortal": "My space",
       "myProfile": "My profile",
-      "management": "Management"
+      "management": "Management",
+      "publicSite": "View site"
     },
     "userMenu": {
       "roleLabels": {

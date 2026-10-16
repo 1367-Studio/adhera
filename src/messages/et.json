@@ -2546,6 +2546,48 @@
         "created": "Toode loodud",
         "createError": "Vea tekitamine"
       }
+    },
+    "manualCommandeModal": {
+      "openButton": "Lisa käsitsi ost",
+      "title": "Lisa käsitsi ost",
+      "submit": "Salvesta ost",
+      "buyerLabel": "Ostja",
+      "existingContact": "Olemasolev kontakt",
+      "externalPerson": "Väline isik",
+      "searchPlaceholder": "Otsi kontakti nime või e-posti järgi…",
+      "typeToSearch": "Otsimiseks sisestage vähemalt 2 tähemärki",
+      "noResults": "Kontakti ei leitud",
+      "firstNamePlaceholder": "Eesnimi",
+      "lastNamePlaceholder": "Perekonnanimi",
+      "emailPlaceholder": "E-post (valikuline)",
+      "scopeLabel": "Pood või seotud vorm",
+      "scopeStorefront": "Pood",
+      "productsLabel": "Ostetud tooted",
+      "productPlaceholder": "Vali toode",
+      "variantPlaceholder": "Vali variant",
+      "quantityColumn": "Kogus",
+      "addProduct": "Lisa toode",
+      "noProductsForScope": "Selle valiku jaoks pole tooteid saadaval.",
+      "outOfStock": "otsas",
+      "totalLabel": "Kokku",
+      "dateLabel": "Ostu kuupäev",
+      "paymentStatusLabel": "Makse olek",
+      "paid": "Tasutud",
+      "pending": "Makse ootel",
+      "noteLabel": "Märkus",
+      "sendReceiptEmail": "Saada ostjale kviitung e-postiga",
+      "sendPendingEmail": "Saada ostjale kinnitus e-postiga",
+      "notifyResponsible": "Teavita {name} e-postiga",
+      "toasts": {
+        "created": "Ost salvestatud"
+      }
+    },
+    "responsableModal": {
+      "openButton": "Vastutav isik",
+      "title": "Poe vastutav isik",
+      "selectLabel": "Saab uute müükide e-kirju",
+      "none": "Puudub",
+      "hint": "See isik saab e-kirja iga uue veebimüügi kohta (kui see on tasutud) ja administraatori valikul iga käsitsi lisatud ostu kohta."
     }
   },
   "donationForms": {
@@ -2568,6 +2610,31 @@
       "titleLabel": "Pealkiri",
       "titlePlaceholder": "Näiteks aasta lõpu kampaania",
       "createButton": "Loo"
+    },
+    "addManualDonModal": {
+      "title": "Lisa käsitsi annetus",
+      "donorModeMember": "Olemasolev kontakt",
+      "donorModeExternal": "Väline isik",
+      "searchPlaceholder": "Otsi nime või e-posti järgi…",
+      "typeToSearch": "Sisestage vähemalt 2 tähemärki",
+      "noResults": "Kontakti ei leitud",
+      "changeContact": "Vaheta kontakti",
+      "firstNameLabel": "Eesnimi",
+      "lastNameLabel": "Perekonnanimi",
+      "emailLabel": "E-post",
+      "emailOptional": "(valikuline)",
+      "invalidEmail": "Sisestage kehtiv e-posti aadress",
+      "amountLabel": "Annetuse summa",
+      "dateLabel": "Vastuvõtmise kuupäev",
+      "paymentMethodLabel": "Makseviis",
+      "donationFormLabel": "Seotud annetusvorm",
+      "noFormOption": "Vormi pole",
+      "noteLabel": "Märkus või makse viide",
+      "notePlaceholder": "Makse viide, üksikasjad…",
+      "sendReceiptLabel": "Saada kviitung e-postiga",
+      "sendReceiptHint": "Annetajale saadetakse kinnituskiri.",
+      "submitButton": "Salvesta annetus",
+      "notifyResponsible": "Teavita {name} e-postiga"
     },
     "formsView": {
       "columns": {
@@ -2644,6 +2711,8 @@
       "averageLabel": "Keskmine annetus",
       "pendingTitle": "Ootan kogumist",
       "encaisserButton": "Raha välja võtmine",
+      "addManual": "Lisa käsitsi annetus",
+      "manualEntryBy": "Käsitsi sisestus · {name}",
       "fromMembershipForm": "Liikmeks annetamine — \" {tier} »",
       "fromEvenement": "Ürituse piletite annetus: \" {evenement} »",
       "fromEvenementPrompt": "Annetus pärast registreerimist üritusele: \" {evenement} »",
@@ -2653,15 +2722,18 @@
         "adhesion": "Liikmelisus",
         "evenementTicket": "Üritus (pilet)",
         "evenementPrompt": "Üritus (registreerimine)",
-        "standalone": "Iseseisev leht"
+        "standalone": "Iseseisev leht",
+        "manual": "Käsitsi sisestus"
       },
       "paymentMethod": {
         "especes": "Liigid",
         "cheque": "Kontroll",
-        "virement": "Ülekanne"
+        "virement": "Ülekanne",
+        "autre": "Muu"
       },
       "toasts": {
-        "encaisse": "Saadud annetus"
+        "encaisse": "Saadud annetus",
+        "manualDonAdded": "Annetus salvestatud"
       }
     },
     "receiptsView": {
@@ -2885,6 +2957,13 @@
       "intervalYear": "an",
       "confirmButton": "Lõpetage see korduv annetus",
       "genericError": "On tekkinud viga. Proovi uuesti."
+    },
+    "responsableModal": {
+      "openButton": "Vastutav isik",
+      "title": "Annetuste vastutav isik",
+      "selectLabel": "Saab uute annetuste e-kirju",
+      "none": "Puudub",
+      "hint": "See isik saab e-kirja ja teavituse iga uue annetuse kohta: veebis kohe, kui see on tasutud, mitteveebis (sularaha/tšekk/pangaülekanne) kohe pärast registreerimist ja administraatori valikul käsitsi sisestatud annetuse puhul."
     }
   },
   "membershipForms": {
@@ -3216,6 +3295,8 @@
       "submittedRequestTitle": "Taotlus saadetud!",
       "submittedWithPayment": "Teie liikmelisus on aktiivne ja teie makse on laekunud.",
       "submittedRequestBody": "Teie liikmeks saamise taotlus on vastu võetud. Ühing võtab teiega ühendust nii kiiresti kui võimalik.",
+      "submittedOfflineTitle": "Taotlus registreeritud!",
+      "submittedOfflineBody": "Valisite võrguühenduseta makse. Teie liikmestaatus kinnitatakse, kui ühing on teie makse kätte saanud ja kinnitanud. Kinnituskirja saate e-postiga pärast makse kinnitamist.",
       "toastCancelled": "Makse tühistatud.",
       "errorNetwork": "Võrguviga. Proovi uuesti.",
       "productsLabel": "Tooted",
@@ -4245,9 +4326,11 @@
         "evenements": "Sündmused",
         "reunions": "Koosolekud",
         "materiel": "Materjal",
+        "dons": "Annetused",
         "historique": "Ajalugu",
         "emails": "E-kirjad",
-        "sms": "SMS"
+        "sms": "SMS",
+        "boutique": "Pood"
       },
       "cotisationStatus": {
         "enAttente": "Ootel",
@@ -4290,6 +4373,11 @@
       "borrowedOn": "Laenatud {date}",
       "returnedOn": " · Renderdatud {date}",
       "showingRecentLoans": "Kuvamine {count} Viimased laenud {total} Kokku.",
+      "noDons": "Annetusi pole registreeritud",
+      "donManualEntry": "Käsitsi sisestus",
+      "donStandalone": "Iseseisev annetus",
+      "donPending": "Ootab sissenõudmist",
+      "showingRecentDons": "Kuvatakse {count} viimast annetust kokku {total}-st.",
       "addCotisationTitle": "Lisa liikmemaksu",
       "editCotisationTitle": "Muuda liikmemaksu",
       "deleteConfirmWithDependants": "See liige arhiveeritakse ja tal ei ole enam juurdepääsu ühingule. Ta eemaldatakse ka ühingu seadusliku eestkostja kohalt. {count} Liikme(d): {names}.",
@@ -4317,7 +4405,14 @@
         "confirmDescription": "See registreerib GDPR artikli 17 kustutamistaotluse. Liige saab kinnituskirja, misjärel tema isikuandmed anonümiseeritakse pöördumatult järgmisel automaatsel töötlemisel, välja arvatud juhul, kui taotlus seatakse ootele.",
         "toastSuccess": "Kustutamistaotlus registreeritud",
         "requestLabel": "GDPR kustutamine"
-      }
+      },
+      "noCommande": "Sellel kontaktil pole poe oste.",
+      "commandeStatus": {
+        "PENDING": "Ootel",
+        "PAID": "Tasutud",
+        "CANCELLED": "Tühistatud"
+      },
+      "showingRecentCommandes": "Kuvatakse {count} viimast ostu kokku {total}-st."
     },
     "sms": {
       "title": "Saada SMS",

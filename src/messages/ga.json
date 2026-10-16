@@ -2546,6 +2546,48 @@
         "created": "Táirge cruthaithe",
         "createError": "Earráid á chruthú"
       }
+    },
+    "manualCommandeModal": {
+      "openButton": "Cuir ceannach de láimh leis",
+      "title": "Cuir ceannach de láimh leis",
+      "submit": "Sábháil an ceannach",
+      "buyerLabel": "Ceannaitheoir",
+      "existingContact": "Teagmhálaí atá ann cheana",
+      "externalPerson": "Duine seachtrach",
+      "searchPlaceholder": "Cuardaigh teagmhálaí de réir ainm nó ríomhphoist…",
+      "typeToSearch": "Clóscríobh ar a laghad 2 charachtar chun cuardach a dhéanamh",
+      "noResults": "Níor aimsíodh aon teagmhálaí",
+      "firstNamePlaceholder": "Ainm",
+      "lastNamePlaceholder": "Sloinne",
+      "emailPlaceholder": "Ríomhphost (roghnach)",
+      "scopeLabel": "Siopa nó foirm ghaolmhar",
+      "scopeStorefront": "Siopa",
+      "productsLabel": "Táirgí ceannaithe",
+      "productPlaceholder": "Roghnaigh táirge",
+      "variantPlaceholder": "Roghnaigh leagan",
+      "quantityColumn": "Líon",
+      "addProduct": "Cuir táirge leis",
+      "noProductsForScope": "Níl aon táirgí ar fáil don roghnú seo.",
+      "outOfStock": "as stoc",
+      "totalLabel": "Iomlán",
+      "dateLabel": "Dáta an cheannaigh",
+      "paymentStatusLabel": "Stádas íocaíochta",
+      "paid": "Íoctha",
+      "pending": "Ag fanacht le híocaíocht",
+      "noteLabel": "Nóta",
+      "sendReceiptEmail": "Seol an admháil ar ríomhphost chuig an gceannaitheoir",
+      "sendPendingEmail": "Seol deimhniú ar ríomhphost chuig an gceannaitheoir",
+      "notifyResponsible": "Cuir in iúl do {name} trí ríomhphost",
+      "toasts": {
+        "created": "Ceannach sábháilte"
+      }
+    },
+    "responsableModal": {
+      "openButton": "Duine freagrach",
+      "title": "Duine freagrach as an siopa",
+      "selectLabel": "Faigheann ríomhphoist faoi dhíolacháin nua",
+      "none": "Aon cheann",
+      "hint": "Faigheann an duine seo ríomhphost gach uair a dhéantar díolachán nua ar líne (nuair a íoctar é) agus, de réir rogha an riarthóra, gach uair a chuirtear ceannach de láimh leis."
     }
   },
   "donationForms": {
@@ -2568,6 +2610,31 @@
       "titleLabel": "Teideal",
       "titlePlaceholder": "M.sh. Feachtas deireadh na bliana",
       "createButton": "Cruthaigh"
+    },
+    "addManualDonModal": {
+      "title": "Cuir síntiús láimhseáilte leis",
+      "donorModeMember": "Teagmháil atá ann cheana",
+      "donorModeExternal": "Duine seachtrach",
+      "searchPlaceholder": "Cuardaigh de réir ainm nó ríomhphoist…",
+      "typeToSearch": "Clóscríobh ar a laghad 2 charachtar",
+      "noResults": "Níor aimsíodh teagmháil",
+      "changeContact": "Athraigh teagmháil",
+      "firstNameLabel": "Ainm",
+      "lastNameLabel": "Sloinne",
+      "emailLabel": "Ríomhphost",
+      "emailOptional": "(roghnach)",
+      "invalidEmail": "Cuir isteach seoladh ríomhphoist bailí",
+      "amountLabel": "Méid an tsíntiúis",
+      "dateLabel": "Dáta a fuarthas",
+      "paymentMethodLabel": "Modh íocaíochta",
+      "donationFormLabel": "Foirm síntiúis nasctha",
+      "noFormOption": "Gan fhoirm",
+      "noteLabel": "Nóta nó tagairt íocaíochta",
+      "notePlaceholder": "Tagairt íocaíochta, sonraí…",
+      "sendReceiptLabel": "Seol admháil trí ríomhphost",
+      "sendReceiptHint": "Seolfar ríomhphost deimhnithe chuig an deontóir.",
+      "submitButton": "Taifead an síntiús",
+      "notifyResponsible": "Cuir in iúl do {name} trí ríomhphost"
     },
     "formsView": {
       "columns": {
@@ -2644,6 +2711,8 @@
       "averageLabel": "Meánbhronntanas",
       "pendingTitle": "Ag fanacht le bailiú",
       "encaisserButton": "Airgead tirim amach",
+      "addManual": "Cuir síntiús láimhseáilte leis",
+      "manualEntryBy": "Iontráil de láimh · {name}",
       "fromMembershipForm": "Síntiús Ballraíochta — \" {tier} »",
       "fromEvenement": "Síntiús Ticéad Imeachta: \" {evenement} »",
       "fromEvenementPrompt": "Síntiús tar éis clárú don ócáid: \" {evenement} »",
@@ -2653,15 +2722,18 @@
         "adhesion": "Ballraíocht",
         "evenementTicket": "Imeacht (ticéad)",
         "evenementPrompt": "Imeacht (clárú)",
-        "standalone": "Leathanach neamhspleách"
+        "standalone": "Leathanach neamhspleách",
+        "manual": "Iontráil de láimh"
       },
       "paymentMethod": {
         "especes": "Speicis",
         "cheque": "Seiceáil",
-        "virement": "Aistriú"
+        "virement": "Aistriú",
+        "autre": "Eile"
       },
       "toasts": {
-        "encaisse": "Síntiús faighte"
+        "encaisse": "Síntiús faighte",
+        "manualDonAdded": "Síntiús taifeadta"
       }
     },
     "receiptsView": {
@@ -2885,6 +2957,13 @@
       "intervalYear": "an",
       "confirmButton": "Stop an síntiús athfhillteach seo",
       "genericError": "Tharla earráid. Bain triail as arís."
+    },
+    "responsableModal": {
+      "openButton": "Duine freagrach",
+      "title": "Duine freagrach as síntiúsaí",
+      "selectLabel": "Faigheann ríomhphoist faoi shíntiúsaí nua",
+      "none": "Aon cheann",
+      "hint": "Faigheann an duine seo ríomhphost agus fógra gach uair a dhéantar síntiús nua: ar líne a luaithe a íoctar é, as líne (airgead tirim/seic/aistriú) a luaithe a chláraítear é, agus de réir rogha an riarthóra i gcás síntiús a iontráladh de láimh."
     }
   },
   "membershipForms": {
@@ -3216,6 +3295,8 @@
       "submittedRequestTitle": "Iarratas seolta!",
       "submittedWithPayment": "Tá do bhallraíocht gníomhach agus tá d'íocaíocht faighte.",
       "submittedRequestBody": "Tá d'iarratas ar bhallraíocht faighte. Rachaidh an cumann i dteagmháil leat chomh luath agus is féidir.",
+      "submittedOfflineTitle": "Iarratas cláraithe!",
+      "submittedOfflineBody": "Roghnaigh tú íocaíocht as líne. Deimhneofar do bhallraíocht nuair a bheidh d'íocaíocht faighte agus bailíochtaithe ag an gcomhlachas. Seolfar ríomhphost deimhnithe chugat a luaithe a bheidh sé bailíochtaithe.",
       "toastCancelled": "Cealaíodh an íocaíocht.",
       "errorNetwork": "Earráid líonra. Bain triail as arís.",
       "productsLabel": "Táirgí",
@@ -4245,9 +4326,11 @@
         "evenements": "Imeachtaí",
         "reunions": "Cruinnithe",
         "materiel": "Ábhar",
+        "dons": "Síntiúis",
         "historique": "Stair",
         "emails": "Ríomhphoist",
-        "sms": "SMS"
+        "sms": "SMS",
+        "boutique": "Siopa"
       },
       "cotisationStatus": {
         "enAttente": "Ar feitheamh",
@@ -4290,6 +4373,11 @@
       "borrowedOn": "Fuarthas ar iasacht ar {date}",
       "returnedOn": " · Rindreáilte ar {date}",
       "showingRecentLoans": "Ag taispeáint {count} Iasachtaí is déanaí ar {total} san iomlán.",
+      "noDons": "Níor taifeadadh aon síntiús",
+      "donManualEntry": "Iontráil de láimh",
+      "donStandalone": "Síntiús neamhspleách",
+      "donPending": "Ag feitheamh le bailiú",
+      "showingRecentDons": "Ag taispeáint na {count} síntiús is déanaí as {total} ar fad.",
       "addCotisationTitle": "Cuir táille bhallraíochta leis",
       "editCotisationTitle": "Athraigh an táille ballraíochta",
       "deleteConfirmWithDependants": "Déanfar an ball seo a chartlannú agus ní bheidh sé in ann rochtain a fháil ar an gcumann a thuilleadh. Bainfear é freisin mar chaomhnóir dlíthiúil an chumainn. {count} Comhalta(í): {names}.",
@@ -4317,7 +4405,14 @@
         "confirmDescription": "Cláraíonn an gníomh seo iarraidh scriosta faoi Airt. 17 den GDPR. Gheobhaidh an ball ríomhphost deimhnithe, agus ina dhiaidh sin déanfar a shonraí pearsanta a dhíainmniú go dochúlaithe ag an chéad phróiseáil uathoibríoch eile, ach amháin má chuirtear ar fionraí é.",
         "toastSuccess": "Cláraíodh an iarraidh scriosta",
         "requestLabel": "Scriosadh GDPR"
-      }
+      },
+      "noCommande": "Níl aon cheannacháin siopa ag an teagmhálaí seo.",
+      "commandeStatus": {
+        "PENDING": "Ar feitheamh",
+        "PAID": "Íoctha",
+        "CANCELLED": "Cealaithe"
+      },
+      "showingRecentCommandes": "Ag taispeáint na {count} ceannach is déanaí as {total} iomlán."
     },
     "sms": {
       "title": "Seol SMS",

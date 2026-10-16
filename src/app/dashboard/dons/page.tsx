@@ -11,9 +11,9 @@ import { fr } from "date-fns/locale"
 import {
   DownloadSimpleIcon, HandshakeIcon, UsersIcon, TrendUpIcon, PlusIcon,
   FileTextIcon, ReceiptIcon, NotePencilIcon, CopyIcon, ArchiveIcon,
-  CloudArrowUpIcon, CloudArrowDownIcon, TrashIcon, LinkIcon, FunnelXIcon, InfoIcon,
+  CloudArrowUpIcon, CloudArrowDownIcon, TrashIcon, LinkIcon, FunnelXIcon, InfoIcon, GearIcon,
 } from "@phosphor-icons/react/dist/ssr";
-import { useCurrentUser, useHasAccess, useModules } from "@/lib/user-context"
+import { useCurrentUser, useHasAccess, useModules, useIsAdministrator } from "@/lib/user-context"
 import { useSiteConfig } from "@/hooks/use-site-config"
 import { publishConfirmDescription } from "@/lib/dons/publish-confirm-description"
 import type { DonationFormPlacement } from "@/lib/dons/site-section-picks"
@@ -33,6 +33,8 @@ import { cn } from "@/lib/utils"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { BASE_PATH } from "@/lib/env"
 import { DonShareCard } from "@/components/dons/don-share-card"
+import { AddManualDonModal } from "@/components/dons/add-manual-don-modal"
+import { DonResponsableModal } from "@/components/dons/don-responsable-modal"
 
 type DonationForm = DonationFormPlacement & {
   imageUrl:    string | null
@@ -64,7 +66,7 @@ type Don = {
   receiptNumber: string | null
   receiptMode:   "NONE" | "FULL" | "PARTIAL" | null
   deductibleAmount: string | null
-  paymentMethod: "STRIPE" | "ESPECES" | "CHEQUE" | "VIREMENT" | null
+  paymentMethod: "STRIPE" | "ESPECES" | "CHEQUE" | "VIREMENT" | "AUTRE" | null
   answers:       Record<string, string | string[]> | null
   donationForm:  { id: string; title: string; customFields: CustomField[] } | null
   membreId:      string | null
@@ -78,6 +80,9 @@ type Don = {
   // (Don.evenementId) — a different flow from evenementTicketType above, but the same
   // "came from an event" origin from an admin's point of view.
   evenement: { id: string; title: string } | null
+  // Set only on a Don created through the "add manual donation" form — see
+  // Don.createdByUserId. Takes priority over every other origin branch below in donOrigin().
+  createdBy: { name: string | null; email: string } | null
 }
 
 type DonsResult = {
@@ -115,6 +120,7 @@ function DonsPageInner() {
   // FORM-34: a Dons reader browses forms, donations and receipts (and downloads receipts) but
   // cannot create, duplicate, publish, archive or delete a form, nor cash a pending donation.
   const canEditDons  = useHasAccess("dons", "edit")
+  const isAdministrator = useIsAdministrator()
 
   // Same "read origin at click time" reasoning as the copy-link button on the form's own
   // detail page — no need for the SSR-safe useSyncExternalStore dance DonShareCard uses,
@@ -174,6 +180,8 @@ function DonsPageInner() {
 
   // ─── Formulaires ────────────────────────────────────────────────────────
   const [newFormOpen, setNewFormOpen]   = useState(false)
+  const [manualDonOpen, setManualDonOpen] = useState(false)
+  const [responsableOpen, setResponsableOpen] = useState(false)
   const [newFormTitle, setNewFormTitle] = useState("")
   const [deleteTarget, setDeleteTarget] = useState<DonationForm | null>(null)
   const [publishTarget, setPublishTarget] = useState<{ form: DonationForm; action: "publish" | "unpublish" } | null>(null)
@@ -343,6 +351,7 @@ function DonsPageInner() {
     ESPECES:  t("donationsView.paymentMethod.especes"),
     CHEQUE:   t("donationsView.paymentMethod.cheque"),
     VIREMENT: t("donationsView.paymentMethod.virement"),
+    AUTRE:    t("donationsView.paymentMethod.autre"),
   }
 
   const ORIGIN_FILTER_LABEL: Record<string, string> = {
@@ -352,6 +361,7 @@ function DonsPageInner() {
     evenementTicket: t("donationsView.originFilter.evenementTicket"),
     evenementPrompt: t("donationsView.originFilter.evenementPrompt"),
     standalone:      t("donationsView.originFilter.standalone"),
+    manual:          t("donationsView.originFilter.manual"),
   }
 
   // Resolves the 5 mutually-exclusive origins a Don can come from (see Don.donationFormId /
@@ -361,6 +371,15 @@ function DonsPageInner() {
   // evenement are kept as two separate branches (not merged into one "event" case) so the
   // label always matches what the origin filter above would bucket the row into.
   function donOrigin(d: Don) {
+    if (d.createdBy) {
+      const adminLabel = t("donationsView.manualEntryBy", { name: d.createdBy.name ?? d.createdBy.email })
+      return (
+        <span className="text-sm text-muted-foreground truncate max-w-xs block">
+          {adminLabel}
+          {d.donationForm && <> · {d.donationForm.title}</>}
+        </span>
+      )
+    }
     if (d.donationForm) return <span className="text-sm truncate max-w-xs block">{d.donationForm.title}</span>
     if (d.membershipAddonTier) {
       const label = t("donationsView.fromMembershipForm", { tier: d.membershipAddonTier.label })
@@ -611,6 +630,19 @@ function DonsPageInner() {
             <PlusIcon className="mr-1.5 size-4" />
             {t("newForm")}
           </Button>
+        ) : tab === "dons" && canEditDons ? (
+          <div className="flex items-center gap-2">
+            {isAdministrator && (
+              <Button variant="ghost" size="sm" onClick={() => setResponsableOpen(true)}>
+                <GearIcon className="mr-1.5 size-4" />
+                {t("responsableModal.openButton")}
+              </Button>
+            )}
+            <Button size="sm" onClick={() => setManualDonOpen(true)}>
+              <PlusIcon className="mr-1.5 size-4" />
+              {t("donationsView.addManual")}
+            </Button>
+          </div>
         ) : undefined}
       />
 
@@ -815,6 +847,7 @@ function DonsPageInner() {
                 <SelectItem value="evenementTicket">{ORIGIN_FILTER_LABEL.evenementTicket}</SelectItem>
                 <SelectItem value="evenementPrompt">{ORIGIN_FILTER_LABEL.evenementPrompt}</SelectItem>
                 <SelectItem value="standalone">{ORIGIN_FILTER_LABEL.standalone}</SelectItem>
+                <SelectItem value="manual">{ORIGIN_FILTER_LABEL.manual}</SelectItem>
               </SelectContent>
             </Select>
             {hasActiveFilters && (
@@ -887,6 +920,9 @@ function DonsPageInner() {
           </div>
         )}
       </Modal>
+
+      <AddManualDonModal open={manualDonOpen} onOpenChange={setManualDonOpen} />
+      <DonResponsableModal open={responsableOpen} onOpenChange={setResponsableOpen} />
 
       {/* New form modal */}
       <Modal

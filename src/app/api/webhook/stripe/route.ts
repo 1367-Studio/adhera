@@ -8,6 +8,9 @@ import { notifyEventRegistration } from "@/lib/evenement-notify"
 import { generateRecuFiscalForDon } from "@/lib/pdf/recu-fiscal"
 import { buildDocumentPdf } from "@/lib/pdf/document-pdf"
 import { nextBoutiqueReceiptNumber } from "@/lib/document-numbering"
+import { bookBoutiqueOrderIncome } from "@/lib/boutique/book-income"
+import { resolveBoutiqueResponsable } from "@/lib/boutique/responsable"
+import { notifyDonResponsable, notifyNewAddonDonations } from "@/lib/dons/notify"
 import { pusherServer } from "@/lib/pusher-server"
 import { writeActivityLog } from "@/lib/activity-log"
 import { resolveEmailBranding, memberLimitForPlan } from "@/lib/plan-limits"
@@ -161,20 +164,6 @@ export async function POST(req: Request) {
           // land in an open period anyway (see PATCH /finances/exercices/[id]).
           const exercice = await resolveExerciceForDate(commande.associationId, paidAt)
 
-          // One Income row per accounting category — a mixed-category order posts
-          // several partial rows instead of forcing one row into a single category. Grouped
-          // by the category snapshot taken when the item was ordered, not the product's
-          // current category, so recategorizing a product doesn't retroactively change how
-          // an already-placed order books once it's encaissé.
-          const byCategory = new Map<string | null, { amount: number; names: Set<string> }>()
-          for (const item of commande.items) {
-            const key   = item.categoryId
-            const group = byCategory.get(key) ?? { amount: 0, names: new Set<string>() }
-            group.amount += item.unitPrice * item.quantity
-            group.names.add(item.produit.name)
-            byCategory.set(key, group)
-          }
-
           // Claim (PENDING → PAID), receipt numbering, and Income booking all happen inside
           // one interactive transaction so a receiptNumber collision — or any other failure —
           // rolls the status flip back too. Without this, a failure after an unprotected
@@ -195,48 +184,19 @@ export async function POST(req: Request) {
                 })
                 if (count === 0) return false
 
-                for (const [categoryId, group] of byCategory) {
-                  const itemsLabel = [...group.names].join(", ")
-                  await tx.income.create({
-                    data: {
-                      associationId: commande.associationId,
-                      exerciceId:    exercice?.status === "OUVERT" ? exercice.id : null,
-                      memberId:      commande.membreId ?? undefined,
-                      commandeId:    commande.id,
-                      amount:        group.amount / 100,
-                      categoryId:    categoryId ?? undefined,
-                      description:   buyerLabel ? `Vente boutique — ${buyerLabel} — ${itemsLabel}` : `Vente boutique — ${itemsLabel}`,
-                      paymentMethod: "STRIPE",
-                      source:        "STRIPE",
-                      status:        "PAID",
-                      date:          paidAt,
-                      reference:     paymentIntentId,
-                    },
-                  })
-                }
-
-                // Shipping is its own Income line, deliberately uncategorized (same "no
-                // category" convention as an item with a null categoryId snapshot) — it must
-                // never get silently folded into a product category's total.
-                if (commande.shippingCost > 0) {
-                  await tx.income.create({
-                    data: {
-                      associationId: commande.associationId,
-                      exerciceId:    exercice?.status === "OUVERT" ? exercice.id : null,
-                      memberId:      commande.membreId ?? undefined,
-                      commandeId:    commande.id,
-                      amount:        commande.shippingCost / 100,
-                      description:   buyerLabel
-                        ? `Frais de livraison — ${buyerLabel}${commande.shippingCarrierLabel ? ` (${commande.shippingCarrierLabel})` : ""}`
-                        : `Frais de livraison${commande.shippingCarrierLabel ? ` (${commande.shippingCarrierLabel})` : ""}`,
-                      paymentMethod: "STRIPE",
-                      source:        "STRIPE",
-                      status:        "PAID",
-                      date:          paidAt,
-                      reference:     paymentIntentId,
-                    },
-                  })
-                }
+                await bookBoutiqueOrderIncome(tx, {
+                  associationId: commande.associationId,
+                  exerciceId:    exercice?.status === "OUVERT" ? exercice.id : null,
+                  membreId:      commande.membreId,
+                  commandeId:    commande.id,
+                  items:         commande.items.map(item => ({ quantity: item.quantity, unitPrice: item.unitPrice, categoryId: item.categoryId, produitName: item.produit.name })),
+                  shippingCost:         commande.shippingCost,
+                  shippingCarrierLabel: commande.shippingCarrierLabel,
+                  buyerLabel,
+                  paymentMethod: "STRIPE",
+                  paidAt,
+                  reference:     paymentIntentId,
+                })
                 return true
               })
               receiptNumber = candidateNumber
@@ -334,22 +294,35 @@ export async function POST(req: Request) {
               skipDuplicates: true,
             })
             await pusherServer.trigger(`private-association-${commande.associationId}`, "new-notification", {}).catch(() => {})
+          }
 
-            const dashboardUrl = `${APP_URL}/dashboard/boutique`
-            for (const admin of admins) {
-              if (!admin.email) continue
-              // Logged via `context` (status SENT/FAILED on EmailMessage) instead of a bare
-              // .catch swallow — the whole point of this email is "the admin finds out", so
-              // a silent Resend failure here must stay diagnosable, not disappear.
-              sendEmail(boutiqueNewOrderAdminEmail({
-                email:           admin.email,
-                associationName: commande.association.name,
-                buyerLabel:      buyerLabel ?? "Un invité",
-                totalAmount:     commande.totalAmount,
-                dashboardUrl,
-              }), { associationId: commande.associationId, source: "BOUTIQUE_ADMIN_ALERT", sourceId: commande.id })
-                .catch(error => reportError(error, { area: "email", action: "webhook.boutique-admin-alert-email", extra: { associationId: commande.associationId, commandeId: commande.id, stripeEventId: event.id } }))
-            }
+          // Once a responsable is configured (src/app/api/boutique/settings/route.ts), only
+          // they get the e-mail alert — avoids spamming every ADMIN/PRESIDENT/TRESORIER/
+          // SECRETAIRE once an association has deliberately picked one person for this. No
+          // responsable configured yet → unchanged fallback (broadcast, same as before, hence
+          // still gated on `admins.length`). Independent of the in-app bell Notification above,
+          // which stays a broadcast either way — a configured responsable outside those 4
+          // roles must still get the e-mail even when `admins` comes back empty.
+          const dashboardUrl    = `${APP_URL}/dashboard/boutique?tab=commandes&commandeId=${commande.id}`
+          const emailItems      = commande.items.map(i => ({ name: `${i.produit.name} – ${i.variante.label}`, quantity: i.quantity, unitPrice: i.unitPrice }))
+          const responsable     = await resolveBoutiqueResponsable(commande.associationId)
+          const emailRecipients = responsable ? [{ email: responsable.email }] : admins
+          for (const recipient of emailRecipients) {
+            if (!recipient.email) continue
+            // Logged via `context` (status SENT/FAILED on EmailMessage) instead of a bare
+            // .catch swallow — the whole point of this email is "the admin finds out", so
+            // a silent Resend failure here must stay diagnosable, not disappear.
+            sendEmail(boutiqueNewOrderAdminEmail({
+              email:           recipient.email,
+              associationName: commande.association.name,
+              buyerLabel:      buyerLabel ?? "Un invité",
+              totalAmount:     commande.totalAmount,
+              items:           emailItems,
+              paymentStatusLabel: "Payée",
+              dashboardUrl,
+              branding:        await resolveEmailBranding(commande.associationId),
+            }), { associationId: commande.associationId, source: "BOUTIQUE_ADMIN_ALERT", sourceId: commande.id })
+              .catch(error => reportError(error, { area: "email", action: "webhook.boutique-admin-alert-email", extra: { associationId: commande.associationId, commandeId: commande.id, stripeEventId: event.id } }))
           }
         }
       } else if (cotisationId) {
@@ -566,14 +539,15 @@ export async function POST(req: Request) {
           // Stripe-webhook timing.
           const donations = parseEvenementDonations(sess.metadata?.donations)
           if (donations.length > 0) {
-            await prisma.$transaction(async (tx) => {
-              await createEvenementDonation(tx, {
+            const createdDonations = await prisma.$transaction(async (tx) => {
+              return createEvenementDonation(tx, {
                 associationId: evenement.associationId,
                 firstName: buyerTicket.firstName, lastName: buyerTicket.lastName, email: buyerTicket.email!,
                 donations,
                 canIssueTaxReceipts: evenement.association?.canIssueTaxReceipts ?? false,
               })
             })
+            notifyNewAddonDonations(evenement.associationId, `${buyerTicket.firstName} ${buyerTicket.lastName}`, createdDonations)
           }
 
           // Boutique products chosen alongside the ticket — only ever present for a
@@ -851,6 +825,12 @@ export async function POST(req: Request) {
           label:         don.donorType === "COMPANY" ? (don.companyName ?? don.firstName) : `${don.firstName} ${don.lastName}`,
           metadata:      { amount: Number(don.amount) },
         })
+
+        await notifyDonResponsable({
+          associationId: don.associationId, donId,
+          donorLabel: don.donorType === "COMPANY" ? (don.companyName ?? don.firstName) : `${don.firstName} ${don.lastName}`,
+          amount: Number(don.amount), paymentMethod: "STRIPE", paidAt: true,
+        }).catch(error => reportError(error, { area: "webhook", action: "webhook.don-notify-responsable", extra: { associationId: don.associationId, donId, stripeEventId: event.id } }))
       }
       break
     }

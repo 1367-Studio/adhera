@@ -2546,6 +2546,48 @@
         "created": "Δημιουργημένο προϊόν",
         "createError": "Σφάλμα κατά τη δημιουργία"
       }
+    },
+    "manualCommandeModal": {
+      "openButton": "Προσθήκη χειροκίνητης αγοράς",
+      "title": "Προσθήκη χειροκίνητης αγοράς",
+      "submit": "Αποθήκευση αγοράς",
+      "buyerLabel": "Αγοραστής",
+      "existingContact": "Υπάρχουσα επαφή",
+      "externalPerson": "Εξωτερικό άτομο",
+      "searchPlaceholder": "Αναζήτηση επαφής με όνομα ή email…",
+      "typeToSearch": "Πληκτρολογήστε τουλάχιστον 2 χαρακτήρες για αναζήτηση",
+      "noResults": "Δεν βρέθηκε επαφή",
+      "firstNamePlaceholder": "Όνομα",
+      "lastNamePlaceholder": "Επώνυμο",
+      "emailPlaceholder": "Email (προαιρετικό)",
+      "scopeLabel": "Κατάστημα ή σχετική φόρμα",
+      "scopeStorefront": "Κατάστημα",
+      "productsLabel": "Αγορασμένα προϊόντα",
+      "productPlaceholder": "Επιλέξτε προϊόν",
+      "variantPlaceholder": "Επιλέξτε παραλλαγή",
+      "quantityColumn": "Ποσ.",
+      "addProduct": "Προσθήκη προϊόντος",
+      "noProductsForScope": "Δεν υπάρχουν διαθέσιμα προϊόντα για αυτήν την επιλογή.",
+      "outOfStock": "εξαντλημένο",
+      "totalLabel": "Σύνολο",
+      "dateLabel": "Ημερομηνία αγοράς",
+      "paymentStatusLabel": "Κατάσταση πληρωμής",
+      "paid": "Πληρωμένο",
+      "pending": "Σε αναμονή πληρωμής",
+      "noteLabel": "Σημείωση",
+      "sendReceiptEmail": "Αποστολή απόδειξης με email στον αγοραστή",
+      "sendPendingEmail": "Αποστολή επιβεβαίωσης με email στον αγοραστή",
+      "notifyResponsible": "Ειδοποίηση {name} μέσω email",
+      "toasts": {
+        "created": "Η αγορά αποθηκεύτηκε"
+      }
+    },
+    "responsableModal": {
+      "openButton": "Υπεύθυνος",
+      "title": "Υπεύθυνος καταστήματος",
+      "selectLabel": "Λαμβάνει email νέων πωλήσεων",
+      "none": "Κανένας",
+      "hint": "Αυτό το άτομο λαμβάνει email για κάθε νέα online πώληση (μόλις πληρωθεί) και, κατ' επιλογή του διαχειριστή, για κάθε χειροκίνητα προστιθέμενη αγορά."
     }
   },
   "donationForms": {
@@ -2568,6 +2610,31 @@
       "titleLabel": "Τίτλος",
       "titlePlaceholder": "Π.χ. εκστρατεία τέλους έτους",
       "createButton": "Δημιουργία"
+    },
+    "addManualDonModal": {
+      "title": "Προσθήκη χειροκίνητης δωρεάς",
+      "donorModeMember": "Υπάρχουσα επαφή",
+      "donorModeExternal": "Εξωτερικό άτομο",
+      "searchPlaceholder": "Αναζήτηση με όνομα ή email…",
+      "typeToSearch": "Πληκτρολογήστε τουλάχιστον 2 χαρακτήρες",
+      "noResults": "Δεν βρέθηκε επαφή",
+      "changeContact": "Αλλαγή επαφής",
+      "firstNameLabel": "Όνομα",
+      "lastNameLabel": "Επώνυμο",
+      "emailLabel": "Email",
+      "emailOptional": "(προαιρετικό)",
+      "invalidEmail": "Εισαγάγετε μια έγκυρη διεύθυνση email",
+      "amountLabel": "Ποσό δωρεάς",
+      "dateLabel": "Ημερομηνία παραλαβής",
+      "paymentMethodLabel": "Τρόπος πληρωμής",
+      "donationFormLabel": "Συνδεδεμένη φόρμα δωρεάς",
+      "noFormOption": "Χωρίς φόρμα",
+      "noteLabel": "Σημείωση ή αναφορά πληρωμής",
+      "notePlaceholder": "Αναφορά πληρωμής, λεπτομέρειες…",
+      "sendReceiptLabel": "Αποστολή απόδειξης μέσω email",
+      "sendReceiptHint": "Θα σταλεί email επιβεβαίωσης στον δωρητή.",
+      "submitButton": "Καταχώριση της δωρεάς",
+      "notifyResponsible": "Ειδοποίηση {name} μέσω email"
     },
     "formsView": {
       "columns": {
@@ -2644,6 +2711,8 @@
       "averageLabel": "Μέση δωρεά",
       "pendingTitle": "Αναμονή για παραλαβή",
       "encaisserButton": "Εξαργύρωση",
+      "addManual": "Προσθήκη χειροκίνητης δωρεάς",
+      "manualEntryBy": "Χειροκίνητη καταχώριση · {name}",
       "fromMembershipForm": "Δωρεά μέλους — \" {tier} »",
       "fromEvenement": "Δωρεά εισιτηρίων εκδήλωσης: \" {evenement} »",
       "fromEvenementPrompt": "Δωρεά μετά την εγγραφή στην εκδήλωση: \" {evenement} »",
@@ -2653,15 +2722,18 @@
         "adhesion": "Ιδιότητα μέλους",
         "evenementTicket": "Εκδήλωση (εισιτήριο)",
         "evenementPrompt": "Εκδήλωση (εγγραφή)",
-        "standalone": "Αυτόνομη σελίδα"
+        "standalone": "Αυτόνομη σελίδα",
+        "manual": "Χειροκίνητη καταχώριση"
       },
       "paymentMethod": {
         "especes": "Είδος",
         "cheque": "Έλεγχος",
-        "virement": "Μεταφορά"
+        "virement": "Μεταφορά",
+        "autre": "Άλλο"
       },
       "toasts": {
-        "encaisse": "Η δωρεά ελήφθη"
+        "encaisse": "Η δωρεά ελήφθη",
+        "manualDonAdded": "Η δωρεά καταχωρίστηκε"
       }
     },
     "receiptsView": {
@@ -2885,6 +2957,13 @@
       "intervalYear": "ένα",
       "confirmButton": "Σταματήστε αυτήν την επαναλαμβανόμενη δωρεά",
       "genericError": "Παρουσιάστηκε σφάλμα. Προσπαθήστε ξανά."
+    },
+    "responsableModal": {
+      "openButton": "Υπεύθυνος",
+      "title": "Υπεύθυνος δωρεών",
+      "selectLabel": "Λαμβάνει email νέων δωρεών",
+      "none": "Κανένας",
+      "hint": "Αυτό το άτομο λαμβάνει email και ειδοποίηση για κάθε νέα δωρεά: online μόλις πληρωθεί, offline (μετρητά/επιταγή/τραπεζική μεταφορά) μόλις καταχωριστεί, και κατ' επιλογή του διαχειριστή για μια χειροκίνητα καταχωρισμένη δωρεά."
     }
   },
   "membershipForms": {
@@ -3216,6 +3295,8 @@
       "submittedRequestTitle": "Το αίτημα εστάλη!",
       "submittedWithPayment": "Η συνδρομή σας είναι ενεργή και η πληρωμή σας έχει ληφθεί.",
       "submittedRequestBody": "Η αίτησή σας για ένταξη έχει ληφθεί. Ο σύλλογος θα επικοινωνήσει μαζί σας το συντομότερο δυνατό.",
+      "submittedOfflineTitle": "Το αίτημα καταχωρήθηκε!",
+      "submittedOfflineBody": "Επιλέξατε εκτός σύνδεσης πληρωμή. Η συμμετοχή σας θα επιβεβαιωθεί μετά την παραλαβή και την επικύρωση της πληρωμής σας από τον σύλλογο. Θα σας αποσταλεί email επιβεβαίωσης μόλις επικυρωθεί.",
       "toastCancelled": "Η πληρωμή ακυρώθηκε.",
       "errorNetwork": "Σφάλμα δικτύου. Προσπαθήστε ξανά.",
       "productsLabel": "Προϊόντα",
@@ -4245,9 +4326,11 @@
         "evenements": "Εκδηλώσεις",
         "reunions": "Συναντήσεις",
         "materiel": "Υλικό",
+        "dons": "Δωρεές",
         "historique": "Ιστορικό",
         "emails": "Μηνύματα ηλεκτρονικού ταχυδρομείου",
-        "sms": "SMS"
+        "sms": "SMS",
+        "boutique": "Κατάστημα"
       },
       "cotisationStatus": {
         "enAttente": "Σε εκκρεμότητα",
@@ -4290,6 +4373,11 @@
       "borrowedOn": "Δανείστηκε στις {date}",
       "returnedOn": " · Απόδοση στις {date}",
       "showingRecentLoans": "Εμφάνιση {count} Τελευταία δάνεια στις {total} συνολικά.",
+      "noDons": "Δεν καταχωρίστηκε δωρεά",
+      "donManualEntry": "Χειροκίνητη καταχώριση",
+      "donStandalone": "Αυτόνομη δωρεά",
+      "donPending": "Σε αναμονή είσπραξης",
+      "showingRecentDons": "Εμφανίζονται οι {count} πιο πρόσφατες δωρεές από σύνολο {total}.",
       "addCotisationTitle": "Προσθέστε μια συνδρομή μέλους",
       "editCotisationTitle": "Αλλαγή της συνδρομής μέλους",
       "deleteConfirmWithDependants": "Αυτό το μέλος θα αρχειοθετηθεί και δεν θα μπορεί πλέον να έχει πρόσβαση στον σύλλογο. Θα αφαιρεθεί επίσης ως νόμιμος κηδεμόνας του συλλόγου. {count} Μέλος(η): {names}.",
@@ -4317,7 +4405,14 @@
         "confirmDescription": "Αυτό καταχωρεί αίτημα διαγραφής βάσει του άρθρου 17 του ΓΚΠΔ. Το μέλος θα λάβει e-mail επιβεβαίωσης και τα προσωπικά του δεδομένα θα ανωνυμοποιηθούν αμετάκλητα στην επόμενη αυτόματη επεξεργασία, εκτός αν το αίτημα τεθεί σε αναστολή.",
         "toastSuccess": "Το αίτημα διαγραφής καταχωρήθηκε",
         "requestLabel": "Διαγραφή ΓΚΠΔ"
-      }
+      },
+      "noCommande": "Καμία αγορά καταστήματος για αυτήν την επαφή.",
+      "commandeStatus": {
+        "PENDING": "Σε εκκρεμότητα",
+        "PAID": "Πληρωμένο",
+        "CANCELLED": "Ακυρώθηκε"
+      },
+      "showingRecentCommandes": "Εμφανίζονται οι {count} πιο πρόσφατες αγορές από σύνολο {total}."
     },
     "sms": {
       "title": "Στείλτε ένα SMS",

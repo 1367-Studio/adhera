@@ -21,6 +21,7 @@ import { fireEventRule } from "@/lib/fire-event-rule"
 import { addMonths } from "date-fns"
 import { consumeMembershipCheckoutDraft } from "@/lib/webhook/membership-multi"
 import { createMembershipAddonPurchases } from "@/lib/webhook/membership-addons"
+import { notifyNewAddonDonations } from "@/lib/dons/notify"
 import { notifyMembershipSignup } from "@/lib/webhook/membership-notify"
 import { eligibleReceiptAmount } from "@/lib/receipt-eligibility"
 import { isMemberCardAvailable } from "@/lib/member-card/availability"
@@ -600,9 +601,9 @@ export async function POST(
     // No Stripe object at all here — the Cotisation stays EN_ATTENTE until an admin records
     // the payment (same "encaissement" reasoning as an offline Don), but the account itself
     // is created right away so the new member can already access their portal.
-    let user, membre
+    let user, membre, donations
     try {
-      ({ user, membre } = await prisma.$transaction(async (tx) => {
+      ({ user, membre, donations } = await prisma.$transaction(async (tx) => {
         const user = await tx.user.create({
           data: {
             email, name: `${firstName} ${lastName}`, passwordHash, role: "MEMBRE", associationId: assoc.id,
@@ -644,7 +645,7 @@ export async function POST(
         // /dashboard/dons exactement comme un don payé hors ligne, jusqu'à ce qu'un admin le
         // confirme via /api/dons/[id]/encaisser. resolvedAddons ne contient ici que des
         // DONATION (le garde-fou ci-dessus a déjà rejeté tout ADDON en hors ligne).
-        await createMembershipAddonPurchases(tx, {
+        const donations = await createMembershipAddonPurchases(tx, {
           associationId: assoc.id,
           membreId:      membre.id,
           cotisationId:  cotisation.id,
@@ -654,7 +655,7 @@ export async function POST(
           donPaymentMethod: paymentMethod as "ESPECES" | "CHEQUE" | "VIREMENT",
           donPaidAt: null,
         })
-        return { user, membre }
+        return { user, membre, donations }
       }))
     } catch (err) {
       // Same race as the free-immediate branch above — no money has actually settled yet
@@ -663,6 +664,7 @@ export async function POST(
         return NextResponse.json({ error: "Cette adresse email est déjà utilisée." }, { status: 409 })
       throw err
     }
+    notifyNewAddonDonations(assoc.id, `${firstName} ${lastName}`, donations)
 
     const branding = await resolveEmailBranding(assoc.id)
     // Attendu ici : pas de carte. La cotisation reste EN_ATTENTE tant qu'un admin n'a pas

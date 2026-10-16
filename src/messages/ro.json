@@ -2546,6 +2546,48 @@
         "created": "Produs creat",
         "createError": "Crearea erorilor"
       }
+    },
+    "manualCommandeModal": {
+      "openButton": "Adaugă o achiziție manuală",
+      "title": "Adaugă o achiziție manuală",
+      "submit": "Salvează achiziția",
+      "buyerLabel": "Cumpărător",
+      "existingContact": "Contact existent",
+      "externalPerson": "Persoană externă",
+      "searchPlaceholder": "Căutați un contact după nume sau e-mail…",
+      "typeToSearch": "Introduceți cel puțin 2 caractere pentru a căuta",
+      "noResults": "Niciun contact găsit",
+      "firstNamePlaceholder": "Prenume",
+      "lastNamePlaceholder": "Nume",
+      "emailPlaceholder": "E-mail (opțional)",
+      "scopeLabel": "Magazin sau formular asociat",
+      "scopeStorefront": "Magazin",
+      "productsLabel": "Produse achiziționate",
+      "productPlaceholder": "Alegeți un produs",
+      "variantPlaceholder": "Alegeți o variantă",
+      "quantityColumn": "Cant.",
+      "addProduct": "Adaugă un produs",
+      "noProductsForScope": "Niciun produs disponibil pentru această selecție.",
+      "outOfStock": "stoc epuizat",
+      "totalLabel": "Total",
+      "dateLabel": "Data achiziției",
+      "paymentStatusLabel": "Starea plății",
+      "paid": "Plătit",
+      "pending": "Așteaptă plata",
+      "noteLabel": "Notă",
+      "sendReceiptEmail": "Trimite chitanța prin e-mail cumpărătorului",
+      "sendPendingEmail": "Trimite o confirmare prin e-mail cumpărătorului",
+      "notifyResponsible": "Notifică {name} prin e-mail",
+      "toasts": {
+        "created": "Achiziție salvată"
+      }
+    },
+    "responsableModal": {
+      "openButton": "Responsabil",
+      "title": "Responsabilul magazinului",
+      "selectLabel": "Primește e-mailuri despre vânzările noi",
+      "none": "Niciunul",
+      "hint": "Această persoană primește un e-mail pentru fiecare vânzare online nouă (odată plătită) și, la alegerea administratorului, pentru fiecare achiziție adăugată manual."
     }
   },
   "donationForms": {
@@ -2568,6 +2610,31 @@
       "titleLabel": "Titlu",
       "titlePlaceholder": "De exemplu, campania de sfârșit de an",
       "createButton": "Creează"
+    },
+    "addManualDonModal": {
+      "title": "Adaugă o donație manuală",
+      "donorModeMember": "Contact existent",
+      "donorModeExternal": "Persoană externă",
+      "searchPlaceholder": "Căutare după nume sau email…",
+      "typeToSearch": "Introduceți cel puțin 2 caractere",
+      "noResults": "Niciun contact găsit",
+      "changeContact": "Schimbă contactul",
+      "firstNameLabel": "Prenume",
+      "lastNameLabel": "Nume",
+      "emailLabel": "Email",
+      "emailOptional": "(opțional)",
+      "invalidEmail": "Introduceți o adresă de email validă",
+      "amountLabel": "Suma donației",
+      "dateLabel": "Data primirii",
+      "paymentMethodLabel": "Metodă de plată",
+      "donationFormLabel": "Formular de donație asociat",
+      "noFormOption": "Niciun formular",
+      "noteLabel": "Notă sau referință de plată",
+      "notePlaceholder": "Referință de plată, detalii…",
+      "sendReceiptLabel": "Trimite o chitanță prin email",
+      "sendReceiptHint": "Un email de confirmare va fi trimis donatorului.",
+      "submitButton": "Înregistrează donația",
+      "notifyResponsible": "Notifică {name} prin e-mail"
     },
     "formsView": {
       "columns": {
@@ -2644,6 +2711,8 @@
       "averageLabel": "Donație medie",
       "pendingTitle": "Așteptarea colectării",
       "encaisserButton": "Încasare",
+      "addManual": "Adaugă o donație manuală",
+      "manualEntryBy": "Înregistrare manuală · {name}",
       "fromMembershipForm": "Donație pentru membri — \" {tier} »",
       "fromEvenement": "Donare de bilete la eveniment: \" {evenement} »",
       "fromEvenementPrompt": "Donație după înregistrarea pentru eveniment: \" {evenement} »",
@@ -2653,15 +2722,18 @@
         "adhesion": "Calitatea de membru",
         "evenementTicket": "Eveniment (bilet)",
         "evenementPrompt": "Eveniment (înscriere)",
-        "standalone": "Pagină independentă"
+        "standalone": "Pagină independentă",
+        "manual": "Înregistrare manuală"
       },
       "paymentMethod": {
         "especes": "Specii",
         "cheque": "Bifat",
-        "virement": "Transfer"
+        "virement": "Transfer",
+        "autre": "Altul"
       },
       "toasts": {
-        "encaisse": "Donație primită"
+        "encaisse": "Donație primită",
+        "manualDonAdded": "Donație înregistrată"
       }
     },
     "receiptsView": {
@@ -2885,6 +2957,13 @@
       "intervalYear": "an",
       "confirmButton": "Oprește această donație recurentă",
       "genericError": "A apărut o eroare. Încearcă din nou."
+    },
+    "responsableModal": {
+      "openButton": "Responsabil",
+      "title": "Responsabilul donațiilor",
+      "selectLabel": "Primește e-mailuri despre donațiile noi",
+      "none": "Niciunul",
+      "hint": "Această persoană primește un e-mail și o notificare pentru fiecare donație nouă: online odată plătită, offline (numerar/cec/transfer) imediat după înregistrare și, la alegerea administratorului, pentru o donație introdusă manual."
     }
   },
   "membershipForms": {
@@ -3216,6 +3295,8 @@
       "submittedRequestTitle": "Cerere trimisă!",
       "submittedWithPayment": "Calitatea ta de membru este activă și plata a fost primită.",
       "submittedRequestBody": "Cererea dumneavoastră de membru a fost primită. Asociația vă va contacta cât mai curând posibil.",
+      "submittedOfflineTitle": "Cerere înregistrată!",
+      "submittedOfflineBody": "Ați ales o plată offline. Calitatea de membru va fi confirmată după primirea și validarea plății de către asociație. Vi se va trimite un e-mail de confirmare imediat ce aceasta este validată.",
       "toastCancelled": "Plata a fost anulată.",
       "errorNetwork": "Eroare de rețea. Încearcă din nou.",
       "productsLabel": "Produse",
@@ -4245,9 +4326,11 @@
         "evenements": "Evenimente",
         "reunions": "Întâlniri",
         "materiel": "Material",
+        "dons": "Donații",
         "historique": "Istoric",
         "emails": "Emailuri",
-        "sms": "SMS"
+        "sms": "SMS",
+        "boutique": "Magazin"
       },
       "cotisationStatus": {
         "enAttente": "În așteptare",
@@ -4290,6 +4373,11 @@
       "borrowedOn": "Împrumutat pe {date}",
       "returnedOn": " · Redat pe {date}",
       "showingRecentLoans": "Expunere {count} Ultimele împrumuturi pe {total} în total.",
+      "noDons": "Nicio donație înregistrată",
+      "donManualEntry": "Înregistrare manuală",
+      "donStandalone": "Donație independentă",
+      "donPending": "În așteptarea încasării",
+      "showingRecentDons": "Se afișează cele mai recente {count} donații din totalul de {total}.",
       "addCotisationTitle": "Adaugă o cotizație de membru",
       "editCotisationTitle": "Modifică taxa de membru",
       "deleteConfirmWithDependants": "Acest membru va fi arhivat și nu va mai putea accesa asociația. De asemenea, va fi înlăturat din funcția de tutore legal al asociației. {count} Membru(i): {names}.",
@@ -4317,7 +4405,14 @@
         "confirmDescription": "Această acțiune înregistrează o cerere de ștergere conform art. 17 din RGPD. Membrul va primi un e-mail de confirmare, apoi datele sale personale vor fi anonimizate ireversibil la următoarea procesare automată, cu excepția cazului în care cererea este suspendată.",
         "toastSuccess": "Cerere de ștergere înregistrată",
         "requestLabel": "Ștergere RGPD"
-      }
+      },
+      "noCommande": "Acest contact nu are achiziții din magazin.",
+      "commandeStatus": {
+        "PENDING": "În așteptare",
+        "PAID": "Plătit",
+        "CANCELLED": "Anulat"
+      },
+      "showingRecentCommandes": "Se afișează cele mai recente {count} achiziții din totalul de {total}."
     },
     "sms": {
       "title": "Trimite un SMS",

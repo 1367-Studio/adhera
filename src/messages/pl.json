@@ -2546,6 +2546,48 @@
         "created": "Produkt stworzony",
         "createError": "Tworzenie błędów"
       }
+    },
+    "manualCommandeModal": {
+      "openButton": "Dodaj ręczny zakup",
+      "title": "Dodaj ręczny zakup",
+      "submit": "Zapisz zakup",
+      "buyerLabel": "Kupujący",
+      "existingContact": "Istniejący kontakt",
+      "externalPerson": "Osoba zewnętrzna",
+      "searchPlaceholder": "Szukaj kontaktu po imieniu lub e-mailu…",
+      "typeToSearch": "Wpisz co najmniej 2 znaki, aby wyszukać",
+      "noResults": "Nie znaleziono kontaktu",
+      "firstNamePlaceholder": "Imię",
+      "lastNamePlaceholder": "Nazwisko",
+      "emailPlaceholder": "E-mail (opcjonalnie)",
+      "scopeLabel": "Sklep lub powiązany formularz",
+      "scopeStorefront": "Sklep",
+      "productsLabel": "Zakupione produkty",
+      "productPlaceholder": "Wybierz produkt",
+      "variantPlaceholder": "Wybierz wariant",
+      "quantityColumn": "Ilość",
+      "addProduct": "Dodaj produkt",
+      "noProductsForScope": "Brak dostępnych produktów dla tego wyboru.",
+      "outOfStock": "brak w magazynie",
+      "totalLabel": "Razem",
+      "dateLabel": "Data zakupu",
+      "paymentStatusLabel": "Status płatności",
+      "paid": "Opłacone",
+      "pending": "Oczekuje na płatność",
+      "noteLabel": "Notatka",
+      "sendReceiptEmail": "Wyślij paragon e-mailem do kupującego",
+      "sendPendingEmail": "Wyślij potwierdzenie e-mailem do kupującego",
+      "notifyResponsible": "Powiadom {name} e-mailem",
+      "toasts": {
+        "created": "Zakup zapisany"
+      }
+    },
+    "responsableModal": {
+      "openButton": "Osoba odpowiedzialna",
+      "title": "Osoba odpowiedzialna za sklep",
+      "selectLabel": "Otrzymuje e-maile o nowych sprzedażach",
+      "none": "Brak",
+      "hint": "Ta osoba otrzymuje e-mail przy każdej nowej sprzedaży online (po opłaceniu) oraz, według wyboru administratora, przy każdym ręcznie dodanym zakupie."
     }
   },
   "donationForms": {
@@ -2568,6 +2610,31 @@
       "titleLabel": "Tytuł",
       "titlePlaceholder": "Np. kampania na koniec roku",
       "createButton": "Stwórz"
+    },
+    "addManualDonModal": {
+      "title": "Dodaj darowiznę ręcznie",
+      "donorModeMember": "Istniejący kontakt",
+      "donorModeExternal": "Osoba zewnętrzna",
+      "searchPlaceholder": "Szukaj po imieniu lub e-mailu…",
+      "typeToSearch": "Wpisz co najmniej 2 znaki",
+      "noResults": "Nie znaleziono kontaktu",
+      "changeContact": "Zmień kontakt",
+      "firstNameLabel": "Imię",
+      "lastNameLabel": "Nazwisko",
+      "emailLabel": "E-mail",
+      "emailOptional": "(opcjonalnie)",
+      "invalidEmail": "Wprowadź prawidłowy adres e-mail",
+      "amountLabel": "Kwota darowizny",
+      "dateLabel": "Data otrzymania",
+      "paymentMethodLabel": "Metoda płatności",
+      "donationFormLabel": "Powiązany formularz darowizny",
+      "noFormOption": "Brak formularza",
+      "noteLabel": "Notatka lub referencja płatności",
+      "notePlaceholder": "Referencja płatności, szczegóły…",
+      "sendReceiptLabel": "Wyślij potwierdzenie e-mailem",
+      "sendReceiptHint": "Darczyńcy zostanie wysłany e-mail potwierdzający.",
+      "submitButton": "Zapisz darowiznę",
+      "notifyResponsible": "Powiadom {name} e-mailem"
     },
     "formsView": {
       "columns": {
@@ -2644,6 +2711,8 @@
       "averageLabel": "Średnia darowizna",
       "pendingTitle": "Oczekiwanie na odebranie",
       "encaisserButton": "Wypłata",
+      "addManual": "Dodaj darowiznę ręcznie",
+      "manualEntryBy": "Wpis ręczny · {name}",
       "fromMembershipForm": "Darowiznę członkowską — \" {tier} »",
       "fromEvenement": "Darowizna na bilet na wydarzenie: \" {evenement} »",
       "fromEvenementPrompt": "Darowizna po rejestracji na wydarzenie: \" {evenement} »",
@@ -2653,15 +2722,18 @@
         "adhesion": "Członkostwo",
         "evenementTicket": "Wydarzenie (bilet)",
         "evenementPrompt": "Wydarzenie (rejestracja)",
-        "standalone": "Strona osobna"
+        "standalone": "Strona osobna",
+        "manual": "Wpis ręczny"
       },
       "paymentMethod": {
         "especes": "Gatunki",
         "cheque": "Sprawdzone",
-        "virement": "Przeniesienie"
+        "virement": "Przeniesienie",
+        "autre": "Inne"
       },
       "toasts": {
-        "encaisse": "Otrzymana darowizna"
+        "encaisse": "Otrzymana darowizna",
+        "manualDonAdded": "Darowizna zapisana"
       }
     },
     "receiptsView": {
@@ -2885,6 +2957,13 @@
       "intervalYear": "an",
       "confirmButton": "Zatrzymaj tę powtarzającą się darowiznę",
       "genericError": "Wystąpił błąd. Spróbuj ponownie."
+    },
+    "responsableModal": {
+      "openButton": "Osoba odpowiedzialna",
+      "title": "Osoba odpowiedzialna za darowizny",
+      "selectLabel": "Otrzymuje e-maile o nowych darowiznach",
+      "none": "Brak",
+      "hint": "Ta osoba otrzymuje e-mail i powiadomienie przy każdej nowej darowiźnie: online po opłaceniu, offline (gotówka/czek/przelew) od razu po zarejestrowaniu, oraz według wyboru administratora przy darowiźnie wpisanej ręcznie."
     }
   },
   "membershipForms": {
@@ -3216,6 +3295,8 @@
       "submittedRequestTitle": "Prośba wysłana!",
       "submittedWithPayment": "Twoje członkostwo jest aktywne, a Twoja płatność została otrzymana.",
       "submittedRequestBody": "Twój wniosek o członkostwo został otrzymany. Stowarzyszenie skontaktuje się z Tobą tak szybko, jak to możliwe.",
+      "submittedOfflineTitle": "Zgłoszenie zarejestrowane!",
+      "submittedOfflineBody": "Wybrałeś płatność offline. Twoje członkostwo zostanie potwierdzone po otrzymaniu i zatwierdzeniu płatności przez organizację. Po zatwierdzeniu otrzymasz e-mail potwierdzający.",
       "toastCancelled": "Płatność anulowana.",
       "errorNetwork": "Błąd sieci. Spróbuj ponownie.",
       "productsLabel": "Produkty",
@@ -4245,9 +4326,11 @@
         "evenements": "Wydarzenia",
         "reunions": "Spotkania",
         "materiel": "Materiał",
+        "dons": "Darowizny",
         "historique": "Historia",
         "emails": "E-maile",
-        "sms": "SMS"
+        "sms": "SMS",
+        "boutique": "Sklep"
       },
       "cotisationStatus": {
         "enAttente": "Oczekuje",
@@ -4290,6 +4373,11 @@
       "borrowedOn": "Pożyczone {date}",
       "returnedOn": " · Renderowane na {date}",
       "showingRecentLoans": "Wyświetlanie {count} Najnowsze pożyczki na {total} w sumie.",
+      "noDons": "Brak zarejestrowanej darowizny",
+      "donManualEntry": "Wpis ręczny",
+      "donStandalone": "Samodzielna darowizna",
+      "donPending": "Oczekuje na inkaso",
+      "showingRecentDons": "Wyświetlono {count} najnowszych darowizn z {total} łącznie.",
       "addCotisationTitle": "Dodaj składkę członkowską",
       "editCotisationTitle": "Zmień składkę członkowską",
       "deleteConfirmWithDependants": "Ten członek zostanie zarchiwizowany i nie będzie mógł już korzystać ze stowarzyszenia. Zostanie również usunięty z funkcji prawnego opiekuna stowarzyszenia. {count} Członek(owie): {names}.",
@@ -4317,7 +4405,14 @@
         "confirmDescription": "Ta czynność rejestruje wniosek o usunięcie danych na podstawie art. 17 RODO. Członek otrzyma e-mail z potwierdzeniem, a następnie jego dane osobowe zostaną nieodwracalnie zanonimizowane podczas kolejnego automatycznego przetwarzania, o ile wniosek nie zostanie wstrzymany.",
         "toastSuccess": "Wniosek o usunięcie danych zarejestrowany",
         "requestLabel": "Usunięcie RODO"
-      }
+      },
+      "noCommande": "Ten kontakt nie ma żadnych zakupów w sklepie.",
+      "commandeStatus": {
+        "PENDING": "Oczekuje",
+        "PAID": "Opłacone",
+        "CANCELLED": "Anulowane"
+      },
+      "showingRecentCommandes": "Wyświetlono {count} najnowszych zakupów z {total}."
     },
     "sms": {
       "title": "Wyślij SMS",

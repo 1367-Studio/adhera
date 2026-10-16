@@ -2546,6 +2546,48 @@
         "created": "Prodotto creato",
         "createError": "Creazione di errori"
       }
+    },
+    "manualCommandeModal": {
+      "openButton": "Aggiungi un acquisto manuale",
+      "title": "Aggiungi un acquisto manuale",
+      "submit": "Salva acquisto",
+      "buyerLabel": "Acquirente",
+      "existingContact": "Contatto esistente",
+      "externalPerson": "Persona esterna",
+      "searchPlaceholder": "Cerca un contatto per nome o e-mail…",
+      "typeToSearch": "Digita almeno 2 caratteri per cercare",
+      "noResults": "Nessun contatto trovato",
+      "firstNamePlaceholder": "Nome",
+      "lastNamePlaceholder": "Cognome",
+      "emailPlaceholder": "E-mail (facoltativo)",
+      "scopeLabel": "Negozio o modulo associato",
+      "scopeStorefront": "Negozio",
+      "productsLabel": "Prodotti acquistati",
+      "productPlaceholder": "Scegli un prodotto",
+      "variantPlaceholder": "Scegli una variante",
+      "quantityColumn": "Qtà",
+      "addProduct": "Aggiungi un prodotto",
+      "noProductsForScope": "Nessun prodotto disponibile per questa selezione.",
+      "outOfStock": "esaurito",
+      "totalLabel": "Totale",
+      "dateLabel": "Data dell'acquisto",
+      "paymentStatusLabel": "Stato del pagamento",
+      "paid": "Pagato",
+      "pending": "In attesa di pagamento",
+      "noteLabel": "Nota",
+      "sendReceiptEmail": "Invia la ricevuta via e-mail all'acquirente",
+      "sendPendingEmail": "Invia una conferma via e-mail all'acquirente",
+      "notifyResponsible": "Avvisa {name} via e-mail",
+      "toasts": {
+        "created": "Acquisto salvato"
+      }
+    },
+    "responsableModal": {
+      "openButton": "Responsabile",
+      "title": "Responsabile del negozio",
+      "selectLabel": "Riceve le e-mail delle nuove vendite",
+      "none": "Nessuno",
+      "hint": "Questa persona riceve un'e-mail per ogni nuova vendita online (una volta pagata) e, a scelta dell'amministratore, per ogni acquisto aggiunto manualmente."
     }
   },
   "donationForms": {
@@ -2568,6 +2610,31 @@
       "titleLabel": "Titolo",
       "titlePlaceholder": "Ad esempio, campagna di fine anno",
       "createButton": "Crea"
+    },
+    "addManualDonModal": {
+      "title": "Aggiungi una donazione manuale",
+      "donorModeMember": "Contatto esistente",
+      "donorModeExternal": "Persona esterna",
+      "searchPlaceholder": "Cerca per nome o email…",
+      "typeToSearch": "Digita almeno 2 caratteri",
+      "noResults": "Nessun contatto trovato",
+      "changeContact": "Cambia contatto",
+      "firstNameLabel": "Nome",
+      "lastNameLabel": "Cognome",
+      "emailLabel": "Email",
+      "emailOptional": "(opzionale)",
+      "invalidEmail": "Inserisci un indirizzo email valido",
+      "amountLabel": "Importo della donazione",
+      "dateLabel": "Data di ricezione",
+      "paymentMethodLabel": "Metodo di pagamento",
+      "donationFormLabel": "Modulo di donazione collegato",
+      "noFormOption": "Nessun modulo",
+      "noteLabel": "Nota o riferimento di pagamento",
+      "notePlaceholder": "Riferimento del pagamento, dettagli…",
+      "sendReceiptLabel": "Invia una ricevuta via email",
+      "sendReceiptHint": "Un'email di conferma sarà inviata al donatore.",
+      "submitButton": "Registra la donazione",
+      "notifyResponsible": "Avvisa {name} via e-mail"
     },
     "formsView": {
       "columns": {
@@ -2644,6 +2711,8 @@
       "averageLabel": "Donazione media",
       "pendingTitle": "In attesa di riscossione",
       "encaisserButton": "Incassa",
+      "addManual": "Aggiungi una donazione manuale",
+      "manualEntryBy": "Inserimento manuale · {name}",
       "fromMembershipForm": "Donazione per l'iscrizione — \" {tier} »",
       "fromEvenement": "Donazione dei biglietti per l'evento: \" {evenement} »",
       "fromEvenementPrompt": "Donazione dopo la registrazione all'evento: \" {evenement} »",
@@ -2653,15 +2722,18 @@
         "adhesion": "Iscrizione",
         "evenementTicket": "Evento (biglietto)",
         "evenementPrompt": "Evento (iscrizione)",
-        "standalone": "Pagina autonoma"
+        "standalone": "Pagina autonoma",
+        "manual": "Inserimento manuale"
       },
       "paymentMethod": {
         "especes": "Specie",
         "cheque": "Controllo",
-        "virement": "Trasferimento"
+        "virement": "Trasferimento",
+        "autre": "Altro"
       },
       "toasts": {
-        "encaisse": "Donazione ricevuta"
+        "encaisse": "Donazione ricevuta",
+        "manualDonAdded": "Donazione registrata"
       }
     },
     "receiptsView": {
@@ -2885,6 +2957,13 @@
       "intervalYear": "un",
       "confirmButton": "Fermate questa donazione ricorrente",
       "genericError": "Si è verificato un errore. Riprova."
+    },
+    "responsableModal": {
+      "openButton": "Responsabile",
+      "title": "Responsabile delle donazioni",
+      "selectLabel": "Riceve le e-mail delle nuove donazioni",
+      "none": "Nessuno",
+      "hint": "Questa persona riceve un'e-mail e una notifica per ogni nuova donazione: online una volta pagata, offline (contanti/assegno/bonifico) non appena registrata, e a scelta dell'amministratore per una donazione inserita manualmente."
     }
   },
   "membershipForms": {
@@ -3216,6 +3295,8 @@
       "submittedRequestTitle": "Richiesta inviata!",
       "submittedWithPayment": "La tua iscrizione è attiva e il pagamento è stato ricevuto.",
       "submittedRequestBody": "La tua domanda di iscrizione è stata ricevuta. L'associazione ti contatterà il prima possibile.",
+      "submittedOfflineTitle": "Richiesta registrata!",
+      "submittedOfflineBody": "Hai scelto un pagamento offline. La tua adesione sarà confermata dopo la ricezione e la validazione del pagamento da parte dell'associazione. Riceverai un'e-mail di conferma non appena sarà validato.",
       "toastCancelled": "Pagamento annullato.",
       "errorNetwork": "Errore di rete. Riprova.",
       "productsLabel": "Prodotti",
@@ -4245,9 +4326,11 @@
         "evenements": "Eventi",
         "reunions": "Incontri",
         "materiel": "Materiale",
+        "dons": "Donazioni",
         "historique": "Cronologia",
         "emails": "Email",
-        "sms": "SMS"
+        "sms": "SMS",
+        "boutique": "Negozio"
       },
       "cotisationStatus": {
         "enAttente": "In attesa",
@@ -4290,6 +4373,11 @@
       "borrowedOn": "Preso in prestito {date}",
       "returnedOn": " · Renderizzato su {date}",
       "showingRecentLoans": "Esposizione {count} Ultimi prestiti su {total} in totale.",
+      "noDons": "Nessuna donazione registrata",
+      "donManualEntry": "Inserimento manuale",
+      "donStandalone": "Donazione autonoma",
+      "donPending": "In attesa di incasso",
+      "showingRecentDons": "Visualizzazione delle {count} donazioni più recenti su un totale di {total}.",
       "addCotisationTitle": "Aggiungi una quota associativa",
       "editCotisationTitle": "Modifica la quota associativa",
       "deleteConfirmWithDependants": "Questo membro sarà archiviato e non potrà più accedere all'associazione. Sarà inoltre rimosso dal ruolo di tutore legale dell'associazione. {count} Membro/i: {names}.",
@@ -4317,7 +4405,14 @@
         "confirmDescription": "Questa azione registra una richiesta di cancellazione ai sensi dell'art. 17 del GDPR. Il membro riceverà un'e-mail di conferma, dopodiché i suoi dati personali saranno anonimizzati in modo irreversibile durante la prossima elaborazione automatica, salvo messa in attesa.",
         "toastSuccess": "Richiesta di cancellazione registrata",
         "requestLabel": "Cancellazione GDPR"
-      }
+      },
+      "noCommande": "Nessun acquisto in negozio per questo contatto.",
+      "commandeStatus": {
+        "PENDING": "In attesa",
+        "PAID": "Pagato",
+        "CANCELLED": "Annullato"
+      },
+      "showingRecentCommandes": "Visualizzazione degli ultimi {count} acquisti su {total}."
     },
     "sms": {
       "title": "Invia un SMS",
