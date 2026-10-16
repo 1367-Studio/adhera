@@ -10,6 +10,7 @@ import { prisma } from "@/lib/prisma/client"
 import { parseModules } from "@/lib/modules"
 import { parseMemberCardSettings } from "@/lib/member-card/settings"
 import { resolveDocumentBranding } from "@/lib/plan-limits"
+import { getPublicSiteUrl } from "@/lib/public-site-url"
 import { pendingLegalDocuments } from "@/lib/legal/acceptance"
 import { LegalReacceptanceGate } from "@/components/portal/legal-reacceptance-gate"
 
@@ -47,10 +48,20 @@ export default async function PortalLayout({
         select: {
           modules: true, name: true, plan: true, customBrandingEnabled: true,
           logoUrl: true, memberCardSettings: true,
+          sitePublished: true, customDomain: true, customDomainStatus: true,
         },
       })
     : null
   const enabledModules = parseModules(assocRow?.modules)
+  const publicSiteUrl = assocRow
+    ? getPublicSiteUrl({
+        sitePublished:      assocRow.sitePublished,
+        siteModuleEnabled:  enabledModules.site,
+        slug,
+        customDomain:       assocRow.customDomain,
+        customDomainStatus: assocRow.customDomainStatus,
+      })
+    : null
   const branding = assocRow ? { name: assocRow.name, ...resolveDocumentBranding(assocRow) } : null
   // Read here rather than in the sidebar: the card is not a module, so it can't ride the
   // modules context, and this row is already being fetched. Only the flag travels — the
@@ -83,7 +94,7 @@ export default async function PortalLayout({
       <SidebarProvider className="dashboard-canvas">
         <PortalSidebar slug={slug} memberCardEnabled={memberCardEnabled} />
         <SidebarInset>
-          <Header user={session.user} showSidebar logoutRedirect={`/portal/${slug}/login`} associationSlug={slug} />
+          <Header user={session.user} showSidebar logoutRedirect={`/portal/${slug}/login`} associationSlug={slug} publicSiteUrl={publicSiteUrl} />
           <main className="flex min-h-0 flex-1 flex-col gap-4 p-4 pb-6 scroll-pt-4 md:p-6 md:scroll-pt-6 md:overflow-y-auto animate-in fade-in duration-200" style={{ animationFillMode: "both" }}>
             {children}
           </main>

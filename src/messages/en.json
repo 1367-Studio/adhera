@@ -6201,7 +6201,8 @@
     "header": {
       "myPortal": "My space",
       "myProfile": "My profile",
-      "management": "Management"
+      "management": "Management",
+      "publicSite": "View site"
     },
     "userMenu": {
       "roleLabels": {

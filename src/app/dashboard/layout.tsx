@@ -11,6 +11,7 @@ import { prisma } from "@/lib/prisma/client"
 import { parseModules, deriveModulesForPlan } from "@/lib/modules"
 import { parseMemberCardSettings } from "@/lib/member-card/settings"
 import { resolveDocumentBranding, canUseCustomBranding } from "@/lib/plan-limits"
+import { getPublicSiteUrl } from "@/lib/public-site-url"
 import { FiscalPeriodPopup } from "@/components/layout/fiscal-period-popup"
 import { ReleaseNotesPopup } from "@/components/layout/release-notes-popup"
 
@@ -41,11 +42,21 @@ export default async function DashboardLayout({ children }: { children: React.Re
         select: {
           modules: true, subscriptionStatus: true, plan: true, name: true,
           customBrandingEnabled: true, logoUrl: true, memberCardSettings: true,
+          sitePublished: true, customDomain: true, customDomainStatus: true,
         },
       })
     : null
 
   const modules  = assocRow ? deriveModulesForPlan(assocRow.plan, parseModules(assocRow.modules)) : parseModules(null)
+  const publicSiteUrl = assocRow && u.associationSlug
+    ? getPublicSiteUrl({
+        sitePublished:      assocRow.sitePublished,
+        siteModuleEnabled:  modules.site,
+        slug:               u.associationSlug,
+        customDomain:       assocRow.customDomain,
+        customDomainStatus: assocRow.customDomainStatus,
+      })
+    : null
   const branding = assocRow ? { name: assocRow.name, ...resolveDocumentBranding(assocRow) } : null
   const brandingAllowed = assocRow ? canUseCustomBranding(assocRow) : false
   // Read here for the same reason as in the portal layout: the card is not a module, so it
@@ -95,7 +106,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
         <AppSidebar />
         <SidebarInset>
           <PastDueBanner />
-          <Header user={session.user} showSidebar showTour associationSlug={u.associationSlug ?? undefined} />
+          <Header user={session.user} showSidebar showTour associationSlug={u.associationSlug ?? undefined} publicSiteUrl={publicSiteUrl} />
           <FiscalPeriodPopup show={showFiscalPeriodPopup} />
           {/* Never alongside the fiscal-period popup, so the two dialogs don't stack. */}
           <ReleaseNotesPopup enabled={!showFiscalPeriodPopup} />
