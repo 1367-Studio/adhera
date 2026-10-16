@@ -3,10 +3,11 @@ import { withAdminAuth } from "@/lib/api-wrapper"
 import { hasAccess } from "@/lib/permissions"
 import { prisma } from "@/lib/prisma/client"
 import { pusherServer } from "@/lib/pusher-server"
-import { sendEmail } from "@/lib/mail"
+import { sendEmailBulk } from "@/lib/mail"
 import { meetingInviteEmail } from "@/lib/email"
 import { writeActivityLog } from "@/lib/activity-log"
 import { resolveEmailBranding } from "@/lib/plan-limits"
+import { reportError } from "@/lib/monitoring"
 import { meetingCreateSchema } from "@/lib/schemas"
 import { MEETING_WITH_PARTICIPANTS_SELECT, redactParticipantStatus } from "@/lib/meetings/select"
 import { APP_URL } from "@/lib/env"
@@ -78,18 +79,28 @@ export const POST = withAdminAuth(async (req, ctx) => {
     const portalPath = `/portal/${association?.slug}/reunions`
     const portalBase = `${APP_URL}${portalPath}`
     const branding = association ? await resolveEmailBranding(associationId) : null
-    for (const m of membres) {
-      if (!m.user?.email) continue
-      void sendEmail(meetingInviteEmail({
-        firstName:       m.firstName,
-        email:           m.user.email,
-        associationName: association?.name ?? "",
-        meetingTitle:    title,
-        scheduledAt:     scheduledAt ? new Date(scheduledAt) : null,
-        instant:         !!instant,
-        portalUrl:       portalBase,
-        branding,
-      }), { associationId, membreId: m.id, source: "MEETING_INVITE", sourceId: meeting.id })
+    const invitePayloads = membres
+      .filter(m => m.user?.email)
+      .map(m => ({
+        ...meetingInviteEmail({
+          firstName:       m.firstName,
+          email:           m.user!.email!,
+          associationName: association?.name ?? "",
+          meetingTitle:    title,
+          scheduledAt:     scheduledAt ? new Date(scheduledAt) : null,
+          instant:         !!instant,
+          portalUrl:       portalBase,
+          branding,
+        }),
+        context: { associationId, membreId: m.id, source: "MEETING_INVITE", sourceId: meeting.id },
+      }))
+    // Fire-and-forget on purpose: the meeting is already created, so a Resend hiccup here
+    // (resend.batch.send can reject, not just return {error}) must not turn an already-
+    // successful creation into a 500 for the admin — withAdminAuth has no try/catch around
+    // the handler, so an awaited rejection here would propagate straight into the response.
+    if (invitePayloads.length > 0) {
+      void sendEmailBulk(invitePayloads).catch(error =>
+        reportError(error, { area: "email", action: "mail.meeting-invite-bulk", extra: { associationId, meetingId: meeting.id } }))
     }
 
     const notifTitle = instant
