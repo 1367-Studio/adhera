@@ -1105,6 +1105,7 @@ export function donNewDonationAdminEmail(p: {
   paymentMethodLabel: string
   statusLabel:     string
   dashboardUrl:    string
+  branding?:       EmailBranding
 }) {
   const amountStr = p.amount.toLocaleString("fr-FR", { style: "currency", currency: "EUR" })
 
@@ -1131,9 +1132,10 @@ export function donNewDonationAdminEmail(p: {
     ${btn("Voir le don", p.dashboardUrl)}`
 
   return {
-    to:      p.email,
-    subject: `Nouveau don — ${amountStr}`,
-    html:    layout(APP_NAME, content),
+    to:       p.email,
+    subject:  `Nouveau don — ${amountStr}`,
+    fromName: p.branding?.senderName ?? p.associationName,
+    html:     layout(p.associationName, content, p.branding),
   }
 }
 

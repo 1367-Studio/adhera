@@ -5,6 +5,7 @@ import { pusherServer } from "@/lib/pusher-server"
 import { reportError } from "@/lib/monitoring"
 import { APP_URL } from "@/lib/env"
 import { resolveDonResponsable } from "@/lib/dons/responsable"
+import { resolveEmailBranding } from "@/lib/plan-limits"
 
 const PAYMENT_METHOD_LABEL: Record<string, string> = {
   STRIPE: "Carte bancaire (en ligne)", ESPECES: "Espèces", CHEQUE: "Chèque", VIREMENT: "Virement", AUTRE: "Autre",
@@ -46,6 +47,8 @@ export async function notifyDonResponsable(params: {
   const assoc = await prisma.association.findUnique({ where: { id: params.associationId }, select: { name: true } })
   if (!assoc) return
 
+  const branding = await resolveEmailBranding(params.associationId)
+
   sendEmail(donNewDonationAdminEmail({
     email:              responsable.email,
     associationName:    assoc.name,
@@ -54,6 +57,7 @@ export async function notifyDonResponsable(params: {
     paymentMethodLabel: PAYMENT_METHOD_LABEL[params.paymentMethod] ?? params.paymentMethod,
     statusLabel,
     dashboardUrl:       `${APP_URL}${link}`,
+    branding,
   }), { associationId: params.associationId, source: "DON_ADMIN_ALERT", sourceId: params.donId })
     .catch(error => reportError(error, { area: "email", action: "dons.notify-responsable-email", extra: { associationId: params.associationId, donId: params.donId } }))
 }
