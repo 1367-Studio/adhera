@@ -2843,7 +2843,8 @@
       },
       "toasts": {
         "encaisse": "Don encaissé",
-        "manualDonAdded": "Don enregistré"
+        "manualDonAdded": "Don enregistré",
+        "donNotInList": "Ce don ne figure pas dans cette page. Utilisez les filtres pour le retrouver."
       }
     },
     "receiptsView": {
