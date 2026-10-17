@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server"
-import { WebhookReceiver, EgressClient, TrackType, type WebhookEvent } from "livekit-server-sdk"
+import { WebhookReceiver, EgressClient, EgressStatus, TrackType, type WebhookEvent } from "livekit-server-sdk"
 import { prisma } from "@/lib/prisma/client"
 import { writeActivityLog } from "@/lib/activity-log"
 import { pusherServer } from "@/lib/pusher-server"
@@ -20,6 +20,14 @@ type VerifyResult =
   | { ok: false; reason: "unknown_room"; roomName: string }
   | { ok: false; reason: "signature_mismatch"; roomName: string }
 
+// `room` is only populated on room_*/participant_*/track_* events. For egress_* and
+// ingress_* events (e.g. the late-joiner recording started by `recordLateJoiner` below),
+// LiveKit puts the room name on `egressInfo`/`ingressInfo` instead — checking only
+// `event.room?.name` made every egress webhook look "malformed".
+function extractRoomName(event: WebhookEvent): string | undefined {
+  return event.room?.name || event.egressInfo?.roomName || event.ingressInfo?.roomName || undefined
+}
+
 // An association can bring its own LiveKit project (BYOK, same as the Twilio/Groq
 // integrations), which means events for its meetings arrive signed with *its* key, not the
 // platform's. We can't know which key to verify with until we know which room the event is
@@ -34,7 +42,7 @@ async function verifyEvent(body: string, authHeader: string | undefined): Promis
     return { ok: false, reason: "malformed_payload" }
   }
 
-  const roomName = unverified.room?.name
+  const roomName = extractRoomName(unverified)
   if (!roomName) return { ok: false, reason: "malformed_payload" }
 
   const livekit = await getLiveKitConfigForRoom(roomName)
@@ -154,6 +162,24 @@ async function recordLateJoiner(event: WebhookEvent, roomName: string) {
   }
 }
 
+// LiveKit can abort an egress on its own (S3 upload hiccup, encoder crash, account limit) with
+// the meeting still ongoing. Nothing else in the app watches for that, so the MeetingRecording
+// row would otherwise stay "open" (endedAt null) forever: recordLateJoiner's own-dedup check
+// would then think that participant is still being recorded and never retry if they rejoin, and
+// the transcript would just silently be missing their audio. A clean EGRESS_COMPLETE needs no
+// action here — it only ever happens after our own explicit stop calls, which already set
+// endedAt themselves.
+async function closeFailedEgress(event: WebhookEvent) {
+  const info = event.egressInfo
+  if (!info) return
+  if (info.status !== EgressStatus.EGRESS_FAILED && info.status !== EgressStatus.EGRESS_ABORTED) return
+
+  await prisma.meetingRecording.updateMany({
+    where: { egressId: info.egressId, endedAt: null },
+    data:  { endedAt: new Date() },
+  })
+}
+
 export async function POST(req: Request) {
   const body = await req.text()
   const authHeader = req.headers.get("Authorization") ?? undefined
@@ -177,13 +203,17 @@ export async function POST(req: Request) {
   }
 
   const { event } = result
-  const roomName = event.room?.name
+  const roomName = extractRoomName(event)
   if (roomName && event.event === "room_finished") {
     await endMeetingByRoomName(roomName)
   }
 
   if (roomName && event.event === "track_published") {
     await recordLateJoiner(event, roomName)
+  }
+
+  if (event.event === "egress_ended") {
+    await closeFailedEgress(event)
   }
 
   return NextResponse.json({ received: true })
