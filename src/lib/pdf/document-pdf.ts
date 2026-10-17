@@ -261,7 +261,7 @@ export async function buildDocumentPdf(input: DocumentPdfInput): Promise<Buffer>
   y -= 16
   text("Total", totalsLabelX, 12, { bold: true, color: ACCENT }); textRight(fmtEUR(input.total), COL.total, 12, { bold: true, color: ACCENT }); y -= 18
   if (input.amountPaid !== undefined) {
-    text("Payé", totalsLabelX, 10, { color: GRAY }); textRight(fmtEUR(input.amountPaid), COL.total, 10); y -= 15
+    text("Montant payé", totalsLabelX, 10, { color: GRAY }); textRight(fmtEUR(input.amountPaid), COL.total, 10); y -= 15
     text("Restant dû", totalsLabelX, 10, { bold: true }); textRight(fmtEUR(input.total - input.amountPaid), COL.total, 10, { bold: true }); y -= 15
   }
   y -= 20
@@ -281,7 +281,11 @@ export async function buildDocumentPdf(input: DocumentPdfInput): Promise<Buffer>
   // ── Conditions / notes ─────────────────────────────────────────────
   if (input.paymentTerms) {
     if (y < 100) newPage()
-    text("Conditions de paiement", MARGIN, 9, { bold: true, color: GRAY }); y -= 13
+    // A BOUTIQUE receipt is for an already-settled sale, so this field holds the payment
+    // method used, not a payment condition/term — the section header reflects that. DEVIS
+    // and FACTURE use it for genuine payment terms (due date, instalments, etc.).
+    const paymentTermsLabel = input.kind === "BOUTIQUE" ? "Mode de paiement" : "Conditions de paiement"
+    text(paymentTermsLabel, MARGIN, 9, { bold: true, color: GRAY }); y -= 13
     for (const line of wrapText(input.paymentTerms, font, 9, PAGE_WIDTH - 2 * MARGIN)) { text(line, MARGIN, 9); y -= 12 }
     y -= 10
   }

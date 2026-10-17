@@ -17,6 +17,13 @@ import { buildDocumentPdf } from "@/lib/pdf/document-pdf"
 import { APP_URL } from "@/lib/env"
 import { reportError } from "@/lib/monitoring"
 
+// Same labels as the portal/admin receipt re-download routes (api/portal/boutique/commandes/
+// [id]/pdf, api/boutique/commandes/[id]/pdf) — kept local to each file rather than shared,
+// matching the existing convention there.
+const MANUAL_PAYMENT_TYPE_LABEL: Record<string, string> = {
+  ESPECES: "espèces", CHEQUE: "chèque", CB: "carte bancaire", VIREMENT: "virement",
+}
+
 export const GET = withAdminAuth(async (req, ctx) => {
   const guard = await guardModule(ctx.associationId, "boutique")
   if (guard) return guard
@@ -255,7 +262,7 @@ export const POST = withAdminAuth(async (req, ctx) => {
           total:          totalAmount / 100,
           amountPaid:     totalAmount / 100,
           notes:          note ?? null,
-          paymentTerms:   "Payé en main (enregistré manuellement).",
+          paymentTerms:   `Payé par ${MANUAL_PAYMENT_TYPE_LABEL[manualPaymentType!] ?? manualPaymentType!.toLowerCase()}.`,
         })
         pdfAttachment = { filename: `recu-${receiptNumber}.pdf`, content: pdf }
       } catch (err) {

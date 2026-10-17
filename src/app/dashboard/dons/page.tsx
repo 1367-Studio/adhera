@@ -136,7 +136,11 @@ function DonsPageInner() {
     }
   }
 
-  const initialTab = (searchParams.get("tab") as Tab) ?? "formulaires"
+  const highlightDonId = searchParams.get("donId")
+  // A donId alone implies the "dons" tab even without an explicit tab param — keeps already
+  //-sent notifications/e-mails (created before this link included &tab=dons) landing in the
+  // right place instead of silently falling back to "formulaires".
+  const initialTab = (searchParams.get("tab") as Tab) ?? (highlightDonId ? "dons" : "formulaires")
   const [tab, setTab] = useState<Tab>(["formulaires", "dons", "recus"].includes(initialTab) ? initialTab : "formulaires")
 
   // Hydrated once from the URL so a refresh or a shared link keeps the "dons" tab's filters
@@ -332,6 +336,31 @@ function DonsPageInner() {
     staleTime: 0,
   })
   const pendingDons = pendingResult?.data ?? []
+
+  // Deep-link from a donation notification (in-app or the admin alert e-mail): land on the
+  // "dons" tab and briefly highlight the row so the admin doesn't have to hunt for it in the
+  // list — same pattern as the boutique orders list (dashboard/boutique/page.tsx).
+  const missingHighlightNotifiedRef = useRef<string | null>(null)
+  useEffect(() => {
+    if (!highlightDonId || tab !== "dons" || loadingDons || loadingPending) return
+    // DataTable renders both a desktop <tr> and a mobile card sharing this data-row-id;
+    // only one is visible at a given breakpoint, so highlight whichever one is. A ring
+    // (box-shadow) doesn't paint on <tr> in most browsers, so use a background tint instead.
+    const els = [...document.querySelectorAll(`[data-row-id="${highlightDonId}"]`)] as HTMLElement[]
+    if (!els.length) {
+      // The targeted don may be on another page, filtered out by the current year/origin
+      // selection, or already paid off the pending list — guarded to fire once per donId so
+      // a background refetch (e.g. window refocus) doesn't re-toast.
+      if (missingHighlightNotifiedRef.current !== highlightDonId) {
+        missingHighlightNotifiedRef.current = highlightDonId
+        toast.info(t("donationsView.toasts.donNotInList"))
+      }
+      return
+    }
+    els.forEach(el => { el.scrollIntoView({ behavior: "smooth", block: "center" }); el.classList.add("bg-primary/10") })
+    const timeout = setTimeout(() => els.forEach(el => el.classList.remove("bg-primary/10")), 2500)
+    return () => clearTimeout(timeout)
+  }, [highlightDonId, tab, loadingDons, loadingPending, donsResult, pendingResult])
 
   const encaisserMutation = useMutation({
     mutationFn: async (donId: string) => {
