@@ -2726,6 +2726,7 @@
         "manual": "Manuálny zápis"
       },
       "paymentMethod": {
+        "stripe": "Stripe",
         "especes": "Druhy",
         "cheque": "Skontrolované",
         "virement": "Presun",

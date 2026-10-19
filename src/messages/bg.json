@@ -2726,6 +2726,7 @@
         "manual": "Ръчно въвеждане"
       },
       "paymentMethod": {
+        "stripe": "Stripe",
         "especes": "Видове",
         "cheque": "Проверете",
         "virement": "Трансфер",

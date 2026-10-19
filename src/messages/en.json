@@ -2828,6 +2828,7 @@
         "manual": "Manual entry"
       },
       "paymentMethod": {
+        "stripe": "Stripe",
         "especes": "Cash",
         "cheque": "Cheque",
         "virement": "Bank transfer",

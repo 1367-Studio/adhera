@@ -2726,6 +2726,7 @@
         "manual": "Iontráil de láimh"
       },
       "paymentMethod": {
+        "stripe": "Stripe",
         "especes": "Speicis",
         "cheque": "Seiceáil",
         "virement": "Aistriú",

@@ -2726,6 +2726,7 @@
         "manual": "Inserimento manuale"
       },
       "paymentMethod": {
+        "stripe": "Stripe",
         "especes": "Specie",
         "cheque": "Controllo",
         "virement": "Trasferimento",

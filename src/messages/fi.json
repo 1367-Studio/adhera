@@ -2726,6 +2726,7 @@
         "manual": "Manuaalinen kirjaus"
       },
       "paymentMethod": {
+        "stripe": "Stripe",
         "especes": "Lajit",
         "cheque": "Tarkista",
         "virement": "Siirto",

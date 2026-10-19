@@ -2726,6 +2726,7 @@
         "manual": "Handmatige invoer"
       },
       "paymentMethod": {
+        "stripe": "Stripe",
         "especes": "Soorten",
         "cheque": "Check",
         "virement": "Overdracht",

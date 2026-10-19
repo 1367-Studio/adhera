@@ -2726,6 +2726,7 @@
         "manual": "Ručni unos"
       },
       "paymentMethod": {
+        "stripe": "Stripe",
         "especes": "Vrste",
         "cheque": "Provjera",
         "virement": "Prijenos",
