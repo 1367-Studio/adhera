@@ -2726,6 +2726,7 @@
         "manual": "Manuell registrering"
       },
       "paymentMethod": {
+        "stripe": "Stripe",
         "especes": "Arter",
         "cheque": "Check",
         "virement": "Övergång",

@@ -2726,6 +2726,7 @@
         "manual": "Wpis ręczny"
       },
       "paymentMethod": {
+        "stripe": "Stripe",
         "especes": "Gatunki",
         "cheque": "Sprawdzone",
         "virement": "Przeniesienie",

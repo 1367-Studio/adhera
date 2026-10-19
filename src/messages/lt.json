@@ -2726,6 +2726,7 @@
         "manual": "Rankinis įrašas"
       },
       "paymentMethod": {
+        "stripe": "Stripe",
         "especes": "Rūšys",
         "cheque": "Patikrinta",
         "virement": "Perkėlimas",

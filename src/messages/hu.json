@@ -2726,6 +2726,7 @@
         "manual": "Manuális rögzítés"
       },
       "paymentMethod": {
+        "stripe": "Stripe",
         "especes": "Fajok",
         "cheque": "Megvan",
         "virement": "Átigazolás",

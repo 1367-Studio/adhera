@@ -2726,6 +2726,7 @@
         "manual": "Käsitsi sisestus"
       },
       "paymentMethod": {
+        "stripe": "Stripe",
         "especes": "Liigid",
         "cheque": "Kontroll",
         "virement": "Ülekanne",

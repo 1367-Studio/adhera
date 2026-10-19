@@ -2836,6 +2836,7 @@
         "manual": "Saisie manuelle"
       },
       "paymentMethod": {
+        "stripe": "Stripe",
         "especes": "Espèces",
         "cheque": "Chèque",
         "virement": "Virement",

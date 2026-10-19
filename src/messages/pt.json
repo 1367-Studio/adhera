@@ -2788,6 +2788,7 @@
         "manual": "Entrada manual"
       },
       "paymentMethod": {
+        "stripe": "Stripe",
         "especes": "Dinheiro",
         "cheque": "Cheque",
         "virement": "Transferência",

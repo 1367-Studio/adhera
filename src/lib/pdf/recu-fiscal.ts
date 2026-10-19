@@ -1,6 +1,6 @@
 import { PDFDocument, PDFName, PDFDict, StandardFonts } from "pdf-lib"
 import fs from "fs"
-import { Prisma, DonorType, OrganismeCategory } from "@prisma/client"
+import { Prisma, DonorType, OrganismeCategory, DonPaymentMethod } from "@prisma/client"
 import { prisma } from "@/lib/prisma/client"
 import { amountToFrenchWords } from "@/lib/pdf/french-numbers"
 import { APP_TIME_ZONE } from "@/lib/date-format"
@@ -38,6 +38,10 @@ type DonForReceipt = {
   // CERFA must show, not the full amount paid.
   receiptMode?: string | null
   deductibleAmount?: { toString(): string } | null
+  // Null = Stripe (legacy standalone /portal/[slug]/don page, created before offline
+  // donations existed — see Don.paymentMethod in schema.prisma). Drives which "mode de
+  // versement" box is ticked below (see generateRecuFiscal/generateRecuFiscalEntreprise).
+  paymentMethod?: DonPaymentMethod | null
 }
 
 // L'adresse imprimée sur le reçu, quelle que soit la forme sous laquelle le don l'a
@@ -200,8 +204,16 @@ export async function generateRecuFiscal(
 
   mark(1, 98, 440)   // "200 du CGI" (réduction d'impôt sur le revenu, pas l'IFI)
   mark(1, 290, 478)  // Forme du don : Déclaration de don manuel
-  mark(1, 34, 515)   // Nature du don : Numéraire
-  mark(1, 290, 583)  // Mode de versement : Virement, prélèvement, carte bancaire
+  mark(1, 34, 515)   // Nature du don : Numéraire (toujours cochée, quel que soit le mode de versement)
+
+  // Mode de versement — ce Cerfa n'a que ces 3 cases (contrairement au 2041-MEC-SD de
+  // l'entreprise, qui a aussi "Autre"). VIREMENT/STRIPE/null (Stripe legacy) tombent dans
+  // "Virement, prélèvement, carte bancaire" faute de case dédiée à la carte. AUTRE ne coche
+  // volontairement aucune case : aucune des 3 ne décrit fidèlement ce mode de paiement, et en
+  // cocher une par défaut affirmerait sur un document fiscal un mode de versement inexact.
+  if (don.paymentMethod === "ESPECES") mark(1, 34, 583)            // Remise d'espèces
+  else if (don.paymentMethod === "CHEQUE") mark(1, 150, 583)       // Chèque
+  else if (don.paymentMethod !== "AUTRE") mark(1, 290, 583)        // Virement, prélèvement, carte bancaire
 
   put(1, dateStr, 315, 638)
 
@@ -324,8 +336,14 @@ export async function generateRecuFiscalEntreprise(
   set("b21", dateStr)
   set("b27", dateStr)
 
-  // Le paiement passe toujours par Stripe (carte) — jamais espèces/chèque/autre.
-  form.getCheckBox("PAY_VIREMENT").check()
+  // Mode de versement — contrairement au Cerfa individuel (2041-RD), celui-ci a bien une
+  // case "Autre" dédiée ; VIREMENT/STRIPE/null (Stripe legacy) tombent tous dans PAY_VIREMENT
+  // faute de case "carte bancaire" séparée.
+  const payField = don.paymentMethod === "ESPECES" ? "PAY_ESPECES"
+    : don.paymentMethod === "CHEQUE"  ? "PAY_CHEQUE"
+    : don.paymentMethod === "AUTRE"   ? "PAY_AUTRE"
+    : "PAY_VIREMENT"
+  form.getCheckBox(payField).check()
 
   form.flatten()
   return Buffer.from(await doc.save())
