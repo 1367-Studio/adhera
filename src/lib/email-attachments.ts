@@ -1,5 +1,5 @@
 import { randomBytes } from "crypto"
-import { EXT_BY_CONTENT_TYPE, getR2ObjectSize, readR2ObjectFirstBytes } from "@/lib/r2"
+import { EXT_BY_CONTENT_TYPE, getR2ObjectSize, readR2ObjectFirstBytes, createPresignedDownloadUrl } from "@/lib/r2"
 import { FILE_SNIFF_HEADER_BYTES, sniffFileType, type SniffedFileType } from "@/lib/file-sniff"
 import { MAX_FUNCTION_UPLOAD_BYTES } from "@/lib/upload-limits"
 import { reportError } from "@/lib/monitoring"
@@ -19,6 +19,11 @@ export const EMAIL_ATTACHMENT_KEY_PREFIX       = "email-attachments"
 // Long enough for a slow connection to finish a 4 MB upload, short enough that a leaked
 // URL stops working soon after.
 export const EMAIL_ATTACHMENT_UPLOAD_URL_TTL_SECONDS = 600
+// Covers Resend's own fetch plus the full Inngest bulk-send job (up to ~600 recipients
+// chunked across multiple steps, retries included — see src/inngest/bulk-send.ts) with
+// margin, while staying clearly temporary rather than the bucket-wide public access H1
+// closed (security-audit/RELATORIO_FINAL.md) for this exact category of sensitive, ad-hoc file.
+export const EMAIL_ATTACHMENT_DOWNLOAD_URL_TTL_SECONDS = 3600
 
 export const EMAIL_ATTACHMENT_CONTENT_TYPES = [
   "image/jpeg",
@@ -164,7 +169,10 @@ export async function verifyEmailAttachments(associationId: string, references: 
       return { ok: false, error: EMAIL_ATTACHMENT_ERRORS.unsupported, status: 400 }
 
     attachments.push({
-      url:         `${process.env.R2_PUBLIC_URL}/${inspection.reference.key}`,
+      // Scoped, short-lived link, not the permanent public one — the bucket itself is
+      // private (H1 remediation), so Resend's own fetch needs its own time-boxed access
+      // instead.
+      url:         await createPresignedDownloadUrl(inspection.reference.key, EMAIL_ATTACHMENT_DOWNLOAD_URL_TTL_SECONDS),
       filename:    sanitizeAttachmentFilename(inspection.reference.filename, contentType, index + 1),
       contentType,
       size:        inspection.size ?? 0,
