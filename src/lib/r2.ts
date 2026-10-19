@@ -130,6 +130,19 @@ export async function createPresignedUploadUrl(options: {
   )
 }
 
+// Lets a one-off external fetch (Resend pulling an email attachment — see
+// src/lib/email-attachments.ts) read a single object without the bucket itself being public —
+// H1 (security-audit/RELATORIO_FINAL.md) closed broad bucket-wide public access for exactly
+// this kind of sensitive, ad-hoc file, so a short-lived scoped link replaces it instead of
+// reopening public access.
+export async function createPresignedDownloadUrl(key: string, expiresInSeconds: number): Promise<string> {
+  return getSignedUrl(
+    r2PresignClient,
+    new GetObjectCommand({ Bucket: process.env.R2_BUCKET_NAME!, Key: key }),
+    { expiresIn: expiresInSeconds },
+  )
+}
+
 // Only a 404 means "no such object" — any other failure (bad credentials, an R2 outage) is
 // rethrown by the helpers below, so a transient error isn't reported as a missing file.
 function isR2NotFound(error: unknown): boolean {

@@ -61,6 +61,9 @@ src/sanity/sanity.types.ts
 /_bf.sh
 /scripts/send-adhesion-completion-invites.ts
 /scripts/check-adhesion-completion.ts
+/scripts/backfill-les-ailes-missed-webhooks.ts
+/scripts/resend-les-ailes-welcome-emails.ts
+/scripts/check-r2-cors.ts
 
 # Security/GDPR audit report — contains real vulnerability details, never commit
 /security-audit/
