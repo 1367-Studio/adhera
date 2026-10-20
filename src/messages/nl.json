@@ -899,7 +899,16 @@
       "typeIncome": "Inkomst",
       "typeExpense": "Kosten",
       "accountingCode": "Boekhoudcode",
-      "accountingCodePlaceholder": "Voorbeeld: 70600"
+      "accountingCodePlaceholder": "Voorbeeld: 70600",
+      "accountingCodeDuplicateWarning": "Deze boekhoudcode wordt al gebruikt door een andere categorie.",
+      "section": "Sectie",
+      "sectionOptions": {
+        "OPERATING": "Operationeel",
+        "FINANCIAL": "Financieel",
+        "EXCEPTIONAL": "Uitzonderlijk",
+        "OTHER": "Overig",
+        "IN_KIND": "Bijdragen in natura"
+      }
     },
     "bankAccountForm": {
       "bankName": "Banknaam",
@@ -1289,6 +1298,90 @@
       "typeIncome": "Inkomst",
       "typeExpense": "Kosten",
       "confirm": "Valideer de bemiddeling"
+    },
+    "compteResultat": {
+      "title": "Resultatenrekening",
+      "description": "Financieel resultaat van het boekjaar, vergeleken met het voorgaande boekjaar.",
+      "exerciceLabel": "Boekjaar",
+      "noPreviousExercice": "-",
+      "export": "Exporteren",
+      "exportExcel": "Excel exporteren (gedetailleerd)",
+      "exportPdf": "PDF exporteren",
+      "products": "Opbrengsten",
+      "totalProducts": "Totale opbrengsten",
+      "expenses": "Kosten",
+      "totalExpenses": "Totale kosten",
+      "result": "Resultaat van het boekjaar",
+      "surplus": "Overschot van het boekjaar",
+      "deficit": "Tekort van het boekjaar",
+      "emptyExercice": {
+        "title": "Geen boekjaar",
+        "description": "Maak een boekjaar aan om de resultatenrekening te genereren."
+      },
+      "noPreviousExerciceMessage": "Geen vorig boekjaar beschikbaar",
+      "resultZero": "Resultaat van het boekjaar: 0 €",
+      "operationalResult": "Operationeel resultaat",
+      "uncategorized": "Te categoriseren",
+      "uncategorizedAlertIncome": "{count, plural, one {# inkomst moet worden gecategoriseerd} other {# inkomsten moeten worden gecategoriseerd}}",
+      "uncategorizedAlertExpense": "{count, plural, one {# uitgave moet worden gecategoriseerd} other {# uitgaven moeten worden gecategoriseerd}}",
+      "expandSection": "Weergeven",
+      "collapseSection": "Verbergen",
+      "noCategoriesInSection": "Geen categorie in deze sectie",
+      "sections": {
+        "FINANCIAL": "Financieel",
+        "EXCEPTIONAL": "Uitzonderlijk",
+        "OTHER": "Overig",
+        "IN_KIND": "Vrijwillige bijdragen in natura"
+      },
+      "drillDown": {
+        "date": "Datum",
+        "origin": "Herkomst",
+        "person": "Persoon",
+        "payment": "Betaling",
+        "amount": "Bedrag",
+        "categorize": "Categoriseren",
+        "categorizePlaceholder": "Kies een categorie",
+        "noTransactions": "Geen transacties",
+        "categorizeSuccess": "Transactie gecategoriseerd"
+      },
+      "pdf": {
+        "periodLabel": "Periode van {start} tot {end}",
+        "operatingIncome": "BEDRIJFSOPBRENGSTEN",
+        "operatingExpense": "BEDRIJFSKOSTEN",
+        "operatingResult": "BEDRIJFSRESULTAAT",
+        "financialIncome": "FINANCIËLE OPBRENGSTEN",
+        "financialExpense": "FINANCIËLE KOSTEN",
+        "financialResult": "FINANCIEEL RESULTAAT",
+        "exceptionalIncome": "UITZONDERLIJKE OPBRENGSTEN",
+        "exceptionalExpense": "UITZONDERLIJKE KOSTEN",
+        "exceptionalResult": "UITZONDERLIJK RESULTAAT",
+        "otherIncome": "OVERIGE OPBRENGSTEN",
+        "otherExpense": "OVERIGE KOSTEN",
+        "otherResult": "RESULTAAT UIT OVERIGE OPBRENGSTEN EN KOSTEN",
+        "inKindIncome": "VRIJWILLIGE BIJDRAGEN IN NATURA",
+        "inKindExpense": "GEBRUIK VAN DE VRIJWILLIGE BIJDRAGEN IN NATURA",
+        "inKindResult": "VRIJWILLIGE BIJDRAGEN (SALDO)",
+        "uncategorizedSection": "TE CATEGORISEREN TRANSACTIES",
+        "uncategorizedIncomeLabel": "Te categoriseren inkomsten",
+        "uncategorizedExpenseLabel": "Te categoriseren uitgaven",
+        "total": "Totaal",
+        "grandTotal": "TOTAAL"
+      },
+      "csv": {
+        "date": "Datum",
+        "type": "Type",
+        "typeIncome": "Inkomst",
+        "typeExpense": "Uitgave",
+        "category": "Categorie",
+        "uncategorized": "Te categoriseren",
+        "accountingCode": "Boekhoudcode",
+        "description": "Omschrijving",
+        "amount": "Bedrag",
+        "paymentMethod": "Betaalmethode",
+        "origin": "Herkomst",
+        "reference": "Referentie",
+        "exercice": "Boekjaar"
+      }
     }
   },
   "evenements": {

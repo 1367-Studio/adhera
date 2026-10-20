@@ -899,7 +899,16 @@
       "typeIncome": "Příjem",
       "typeExpense": "Náklady",
       "accountingCode": "Účetní kód",
-      "accountingCodePlaceholder": "Ex: 70600"
+      "accountingCodePlaceholder": "Ex: 70600",
+      "accountingCodeDuplicateWarning": "Tento účetní kód je již použit jinou kategorií.",
+      "section": "Sekce",
+      "sectionOptions": {
+        "OPERATING": "Provozní",
+        "FINANCIAL": "Finanční",
+        "EXCEPTIONAL": "Mimořádné",
+        "OTHER": "Ostatní",
+        "IN_KIND": "Věcné příspěvky"
+      }
     },
     "bankAccountForm": {
       "bankName": "Název banky",
@@ -1289,6 +1298,90 @@
       "typeIncome": "Příjem",
       "typeExpense": "Náklady",
       "confirm": "Validujte smírčí jednání"
+    },
+    "compteResultat": {
+      "title": "Výsledovka",
+      "description": "Finanční výsledek účetního období ve srovnání s předchozím obdobím.",
+      "exerciceLabel": "Účetní období",
+      "noPreviousExercice": "-",
+      "export": "Exportovat",
+      "exportExcel": "Exportovat Excel (podrobně)",
+      "exportPdf": "Exportovat PDF",
+      "products": "Výnosy",
+      "totalProducts": "Výnosy celkem",
+      "expenses": "Náklady",
+      "totalExpenses": "Náklady celkem",
+      "result": "Výsledek období",
+      "surplus": "Přebytek období",
+      "deficit": "Schodek období",
+      "emptyExercice": {
+        "title": "Žádné účetní období",
+        "description": "Vytvořte účetní období pro vygenerování výsledovky."
+      },
+      "noPreviousExerciceMessage": "Žádné předchozí účetní období není k dispozici",
+      "resultZero": "Výsledek účetního období: 0 €",
+      "operationalResult": "Provozní výsledek",
+      "uncategorized": "Ke kategorizaci",
+      "uncategorizedAlertIncome": "{count, plural, one {# příjem je třeba kategorizovat} other {# příjmy je třeba kategorizovat}}",
+      "uncategorizedAlertExpense": "{count, plural, one {# výdaj je třeba kategorizovat} other {# výdaje je třeba kategorizovat}}",
+      "expandSection": "Zobrazit",
+      "collapseSection": "Skrýt",
+      "noCategoriesInSection": "V této sekci není žádná kategorie",
+      "sections": {
+        "FINANCIAL": "Finanční",
+        "EXCEPTIONAL": "Mimořádné",
+        "OTHER": "Ostatní",
+        "IN_KIND": "Dobrovolné věcné příspěvky"
+      },
+      "drillDown": {
+        "date": "Datum",
+        "origin": "Původ",
+        "person": "Osoba",
+        "payment": "Platba",
+        "amount": "Částka",
+        "categorize": "Kategorizovat",
+        "categorizePlaceholder": "Vybrat kategorii",
+        "noTransactions": "Žádné transakce",
+        "categorizeSuccess": "Transakce kategorizována"
+      },
+      "pdf": {
+        "periodLabel": "Období od {start} do {end}",
+        "operatingIncome": "PROVOZNÍ VÝNOSY",
+        "operatingExpense": "PROVOZNÍ NÁKLADY",
+        "operatingResult": "PROVOZNÍ VÝSLEDEK",
+        "financialIncome": "FINANČNÍ VÝNOSY",
+        "financialExpense": "FINANČNÍ NÁKLADY",
+        "financialResult": "FINANČNÍ VÝSLEDEK",
+        "exceptionalIncome": "MIMOŘÁDNÉ VÝNOSY",
+        "exceptionalExpense": "MIMOŘÁDNÉ NÁKLADY",
+        "exceptionalResult": "MIMOŘÁDNÝ VÝSLEDEK",
+        "otherIncome": "OSTATNÍ VÝNOSY",
+        "otherExpense": "OSTATNÍ NÁKLADY",
+        "otherResult": "VÝSLEDEK Z OSTATNÍCH VÝNOSŮ A NÁKLADŮ",
+        "inKindIncome": "DOBROVOLNÉ VĚCNÉ PŘÍSPĚVKY",
+        "inKindExpense": "POUŽITÍ DOBROVOLNÝCH VĚCNÝCH PŘÍSPĚVKŮ",
+        "inKindResult": "DOBROVOLNÉ PŘÍSPĚVKY (SALDO)",
+        "uncategorizedSection": "TRANSAKCE KE KATEGORIZACI",
+        "uncategorizedIncomeLabel": "Příjmy ke kategorizaci",
+        "uncategorizedExpenseLabel": "Výdaje ke kategorizaci",
+        "total": "Celkem",
+        "grandTotal": "CELKEM"
+      },
+      "csv": {
+        "date": "Datum",
+        "type": "Typ",
+        "typeIncome": "Příjem",
+        "typeExpense": "Výdaj",
+        "category": "Kategorie",
+        "uncategorized": "Ke kategorizaci",
+        "accountingCode": "Účetní kód",
+        "description": "Popis",
+        "amount": "Částka",
+        "paymentMethod": "Způsob platby",
+        "origin": "Původ",
+        "reference": "Reference",
+        "exercice": "Účetní období"
+      }
     }
   },
   "evenements": {

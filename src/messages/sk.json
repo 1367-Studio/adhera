@@ -899,7 +899,16 @@
       "typeIncome": "Príjem",
       "typeExpense": "Náklady",
       "accountingCode": "Účtovný kód",
-      "accountingCodePlaceholder": "Ex: 70600"
+      "accountingCodePlaceholder": "Ex: 70600",
+      "accountingCodeDuplicateWarning": "Tento účtovný kód už používa iná kategória.",
+      "section": "Sekcia",
+      "sectionOptions": {
+        "OPERATING": "Prevádzkové",
+        "FINANCIAL": "Finančné",
+        "EXCEPTIONAL": "Mimoriadne",
+        "OTHER": "Ostatné",
+        "IN_KIND": "Vecné príspevky"
+      }
     },
     "bankAccountForm": {
       "bankName": "Názov banky",
@@ -1289,6 +1298,90 @@
       "typeIncome": "Príjem",
       "typeExpense": "Náklady",
       "confirm": "Overiť zmierenie"
+    },
+    "compteResultat": {
+      "title": "Výkaz ziskov a strát",
+      "description": "Finančný výsledok účtovného obdobia v porovnaní s predchádzajúcim obdobím.",
+      "exerciceLabel": "Účtovné obdobie",
+      "noPreviousExercice": "-",
+      "export": "Exportovať",
+      "exportExcel": "Exportovať Excel (podrobne)",
+      "exportPdf": "Exportovať PDF",
+      "products": "Výnosy",
+      "totalProducts": "Výnosy spolu",
+      "expenses": "Náklady",
+      "totalExpenses": "Náklady spolu",
+      "result": "Výsledok účtovného obdobia",
+      "surplus": "Prebytok účtovného obdobia",
+      "deficit": "Schodok účtovného obdobia",
+      "emptyExercice": {
+        "title": "Žiadne účtovné obdobie",
+        "description": "Vytvorte účtovné obdobie na vygenerovanie výkazu ziskov a strát."
+      },
+      "noPreviousExerciceMessage": "Žiadne predchádzajúce účtovné obdobie nie je k dispozícii",
+      "resultZero": "Výsledok účtovného obdobia: 0 €",
+      "operationalResult": "Prevádzkový výsledok",
+      "uncategorized": "Na kategorizáciu",
+      "uncategorizedAlertIncome": "{count, plural, one {# príjem je potrebné kategorizovať} other {# príjmy je potrebné kategorizovať}}",
+      "uncategorizedAlertExpense": "{count, plural, one {# výdavok je potrebné kategorizovať} other {# výdavky je potrebné kategorizovať}}",
+      "expandSection": "Zobraziť",
+      "collapseSection": "Skryť",
+      "noCategoriesInSection": "V tejto sekcii nie je žiadna kategória",
+      "sections": {
+        "FINANCIAL": "Finančné",
+        "EXCEPTIONAL": "Mimoriadne",
+        "OTHER": "Ostatné",
+        "IN_KIND": "Dobrovoľné vecné príspevky"
+      },
+      "drillDown": {
+        "date": "Dátum",
+        "origin": "Pôvod",
+        "person": "Osoba",
+        "payment": "Platba",
+        "amount": "Suma",
+        "categorize": "Kategorizovať",
+        "categorizePlaceholder": "Vybrať kategóriu",
+        "noTransactions": "Žiadne transakcie",
+        "categorizeSuccess": "Transakcia kategorizovaná"
+      },
+      "pdf": {
+        "periodLabel": "Obdobie od {start} do {end}",
+        "operatingIncome": "PREVÁDZKOVÉ VÝNOSY",
+        "operatingExpense": "PREVÁDZKOVÉ NÁKLADY",
+        "operatingResult": "PREVÁDZKOVÝ VÝSLEDOK",
+        "financialIncome": "FINANČNÉ VÝNOSY",
+        "financialExpense": "FINANČNÉ NÁKLADY",
+        "financialResult": "FINANČNÝ VÝSLEDOK",
+        "exceptionalIncome": "MIMORIADNE VÝNOSY",
+        "exceptionalExpense": "MIMORIADNE NÁKLADY",
+        "exceptionalResult": "MIMORIADNY VÝSLEDOK",
+        "otherIncome": "OSTATNÉ VÝNOSY",
+        "otherExpense": "OSTATNÉ NÁKLADY",
+        "otherResult": "VÝSLEDOK Z OSTATNÝCH VÝNOSOV A NÁKLADOV",
+        "inKindIncome": "DOBROVOĽNÉ VECNÉ PRÍSPEVKY",
+        "inKindExpense": "POUŽITIE DOBROVOĽNÝCH VECNÝCH PRÍSPEVKOV",
+        "inKindResult": "DOBROVOĽNÉ PRÍSPEVKY (SALDO)",
+        "uncategorizedSection": "TRANSAKCIE NA KATEGORIZÁCIU",
+        "uncategorizedIncomeLabel": "Príjmy na kategorizáciu",
+        "uncategorizedExpenseLabel": "Výdavky na kategorizáciu",
+        "total": "Spolu",
+        "grandTotal": "SPOLU"
+      },
+      "csv": {
+        "date": "Dátum",
+        "type": "Typ",
+        "typeIncome": "Príjem",
+        "typeExpense": "Výdavok",
+        "category": "Kategória",
+        "uncategorized": "Na kategorizáciu",
+        "accountingCode": "Účtovný kód",
+        "description": "Popis",
+        "amount": "Suma",
+        "paymentMethod": "Spôsob platby",
+        "origin": "Pôvod",
+        "reference": "Referencia",
+        "exercice": "Účtovné obdobie"
+      }
     }
   },
   "evenements": {

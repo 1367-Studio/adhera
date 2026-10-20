@@ -19,6 +19,8 @@ type Category = {
   name:          string
   type:          "INCOME" | "EXPENSE"
   accountingCode: string | null
+  key:           string | null
+  section:       "OPERATING" | "FINANCIAL" | "EXCEPTIONAL" | "OTHER" | "IN_KIND"
   isDefault:     boolean
   _count?:       { incomes: number; expenses: number }
 }
@@ -30,7 +32,8 @@ function CategoryList({ categories, loading, canEdit, onEdit, onDelete }: {
   onEdit:     (c: Category) => void
   onDelete:   (c: Category) => void
 }) {
-  const t = useTranslations("finances.categoriesView")
+  const t  = useTranslations("finances.categoriesView")
+  const tc = useTranslations("finances.categoryForm")
   if (loading) {
     return <div className="space-y-2">{Array.from({ length: 4 }).map((_, i) => <div key={i} className="h-10 rounded-lg bg-muted/30 animate-pulse" />)}</div>
   }
@@ -44,6 +47,7 @@ function CategoryList({ categories, loading, canEdit, onEdit, onDelete }: {
           <div className="flex items-center gap-2">
             <span className="font-medium">{c.name}</span>
             {c.accountingCode && <span className="text-xs text-muted-foreground">{c.accountingCode}</span>}
+            <span className="text-xs text-muted-foreground">{tc(`sectionOptions.${c.section}`)}</span>
             {c.isDefault && <Badge variant="outline">{t("default")}</Badge>}
           </div>
           {canEdit && (
@@ -73,6 +77,10 @@ export function CategoriesView() {
 
   const { data: incomeCategories = [], isLoading: loadingI } = useFinanceCategories("INCOME")
   const { data: expenseCategories = [], isLoading: loadingE } = useFinanceCategories("EXPENSE")
+
+  const allAccountingCodes = [...(incomeCategories as Category[]), ...(expenseCategories as Category[])]
+    .map(c => c.accountingCode)
+    .filter((code): code is string => Boolean(code))
 
   const createMutation = useCreateFinanceCategory()
   const updateMutation = useUpdateFinanceCategory(editTarget?.id ?? "")
@@ -161,6 +169,7 @@ export function CategoriesView() {
       <Modal open={createOpen} onOpenChange={setCreateOpen} title={t("finances.categoriesView.newCategoryTitle")} size="sm" dismissable={false}>
         <FinanceCategoryForm
           defaultValues={{ type: createType }}
+          takenAccountingCodes={allAccountingCodes}
           onSubmit={handleCreate}
           onCancel={() => setCreateOpen(false)}
           loading={createMutation.isPending}
@@ -169,7 +178,8 @@ export function CategoriesView() {
 
       <Modal open={!!editTarget} onOpenChange={(o) => !o && setEditTarget(null)} title={t("finances.categoriesView.editCategoryTitle")} size="sm" dismissable={false}>
         <FinanceCategoryForm
-          defaultValues={editTarget ? { name: editTarget.name, type: editTarget.type, accountingCode: editTarget.accountingCode ?? "" } : undefined}
+          defaultValues={editTarget ? { name: editTarget.name, type: editTarget.type, accountingCode: editTarget.accountingCode ?? "", section: editTarget.section } : undefined}
+          takenAccountingCodes={allAccountingCodes.filter(code => code !== editTarget?.accountingCode)}
           onSubmit={handleUpdate}
           onCancel={() => setEditTarget(null)}
           loading={updateMutation.isPending}

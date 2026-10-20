@@ -899,7 +899,16 @@
       "typeIncome": "Venit",
       "typeExpense": "Cheltuieli",
       "accountingCode": "Cod contabil",
-      "accountingCodePlaceholder": "Ex: 70600"
+      "accountingCodePlaceholder": "Ex: 70600",
+      "accountingCodeDuplicateWarning": "Acest cod contabil este deja folosit de o altă categorie.",
+      "section": "Secțiune",
+      "sectionOptions": {
+        "OPERATING": "Exploatare",
+        "FINANCIAL": "Financiar",
+        "EXCEPTIONAL": "Excepțional",
+        "OTHER": "Altele",
+        "IN_KIND": "Contribuții în natură"
+      }
     },
     "bankAccountForm": {
       "bankName": "Nume al băncii",
@@ -1289,6 +1298,90 @@
       "typeIncome": "Venit",
       "typeExpense": "Cheltuieli",
       "confirm": "Validează concilierea"
+    },
+    "compteResultat": {
+      "title": "Contul de rezultat",
+      "description": "Rezultatul financiar al exercițiului, comparat cu exercițiul precedent.",
+      "exerciceLabel": "Exercițiu",
+      "noPreviousExercice": "-",
+      "export": "Exportă",
+      "exportExcel": "Exportă Excel (detaliat)",
+      "exportPdf": "Exportă PDF",
+      "products": "Venituri",
+      "totalProducts": "Total venituri",
+      "expenses": "Cheltuieli",
+      "totalExpenses": "Total cheltuieli",
+      "result": "Rezultatul exercițiului",
+      "surplus": "Excedentul exercițiului",
+      "deficit": "Deficitul exercițiului",
+      "emptyExercice": {
+        "title": "Niciun exercițiu financiar",
+        "description": "Creați un exercițiu financiar pentru a genera contul de rezultat."
+      },
+      "noPreviousExerciceMessage": "Niciun exercițiu anterior disponibil",
+      "resultZero": "Rezultatul exercițiului: 0 €",
+      "operationalResult": "Rezultat operațional",
+      "uncategorized": "De categorisit",
+      "uncategorizedAlertIncome": "{count, plural, one {# venit trebuie categorisit} few {# venituri trebuie categorisite} other {# de venituri trebuie categorisite}}",
+      "uncategorizedAlertExpense": "{count, plural, one {# cheltuială trebuie categorisită} few {# cheltuieli trebuie categorisite} other {# de cheltuieli trebuie categorisite}}",
+      "expandSection": "Afișează",
+      "collapseSection": "Ascunde",
+      "noCategoriesInSection": "Nicio categorie în această secțiune",
+      "sections": {
+        "FINANCIAL": "Financiar",
+        "EXCEPTIONAL": "Excepțional",
+        "OTHER": "Altele",
+        "IN_KIND": "Contribuții voluntare în natură"
+      },
+      "drillDown": {
+        "date": "Dată",
+        "origin": "Origine",
+        "person": "Persoană",
+        "payment": "Plată",
+        "amount": "Sumă",
+        "categorize": "Categorisește",
+        "categorizePlaceholder": "Alege o categorie",
+        "noTransactions": "Nicio tranzacție",
+        "categorizeSuccess": "Tranzacție categorisită"
+      },
+      "pdf": {
+        "periodLabel": "Perioada {start} – {end}",
+        "operatingIncome": "VENITURI DIN EXPLOATARE",
+        "operatingExpense": "CHELTUIELI DIN EXPLOATARE",
+        "operatingResult": "REZULTATUL DIN EXPLOATARE",
+        "financialIncome": "VENITURI FINANCIARE",
+        "financialExpense": "CHELTUIELI FINANCIARE",
+        "financialResult": "REZULTATUL FINANCIAR",
+        "exceptionalIncome": "VENITURI EXCEPȚIONALE",
+        "exceptionalExpense": "CHELTUIELI EXCEPȚIONALE",
+        "exceptionalResult": "REZULTATUL EXCEPȚIONAL",
+        "otherIncome": "ALTE VENITURI",
+        "otherExpense": "ALTE CHELTUIELI",
+        "otherResult": "REZULTATUL DIN ALTE VENITURI ȘI CHELTUIELI",
+        "inKindIncome": "CONTRIBUȚII VOLUNTARE ÎN NATURĂ",
+        "inKindExpense": "UTILIZAREA CONTRIBUȚIILOR VOLUNTARE ÎN NATURĂ",
+        "inKindResult": "CONTRIBUȚII VOLUNTARE (SOLD)",
+        "uncategorizedSection": "TRANZACȚII DE CATEGORISIT",
+        "uncategorizedIncomeLabel": "Venituri de categorisit",
+        "uncategorizedExpenseLabel": "Cheltuieli de categorisit",
+        "total": "Total",
+        "grandTotal": "TOTAL"
+      },
+      "csv": {
+        "date": "Dată",
+        "type": "Tip",
+        "typeIncome": "Venit",
+        "typeExpense": "Cheltuială",
+        "category": "Categorie",
+        "uncategorized": "De categorisit",
+        "accountingCode": "Cod contabil",
+        "description": "Descriere",
+        "amount": "Sumă",
+        "paymentMethod": "Metodă de plată",
+        "origin": "Origine",
+        "reference": "Referință",
+        "exercice": "Exercițiu financiar"
+      }
     }
   },
   "evenements": {

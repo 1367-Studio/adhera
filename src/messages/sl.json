@@ -899,7 +899,16 @@
       "typeIncome": "Prihodek",
       "typeExpense": "Stroški",
       "accountingCode": "Računovodska koda",
-      "accountingCodePlaceholder": "Primer: 70600"
+      "accountingCodePlaceholder": "Primer: 70600",
+      "accountingCodeDuplicateWarning": "To računovodsko kodo že uporablja druga kategorija.",
+      "section": "Razdelek",
+      "sectionOptions": {
+        "OPERATING": "Poslovno",
+        "FINANCIAL": "Finančno",
+        "EXCEPTIONAL": "Izredno",
+        "OTHER": "Drugo",
+        "IN_KIND": "Prispevki v naravi"
+      }
     },
     "bankAccountForm": {
       "bankName": "Ime banke",
@@ -1289,6 +1298,90 @@
       "typeIncome": "Prihodek",
       "typeExpense": "Stroški",
       "confirm": "Potrdite spravo"
+    },
+    "compteResultat": {
+      "title": "Izkaz poslovnega izida",
+      "description": "Finančni rezultat poslovnega leta v primerjavi s preteklim letom.",
+      "exerciceLabel": "Poslovno leto",
+      "noPreviousExercice": "-",
+      "export": "Izvozi",
+      "exportExcel": "Izvozi Excel (podrobno)",
+      "exportPdf": "Izvozi PDF",
+      "products": "Prihodki",
+      "totalProducts": "Prihodki skupaj",
+      "expenses": "Odhodki",
+      "totalExpenses": "Odhodki skupaj",
+      "result": "Rezultat poslovnega leta",
+      "surplus": "Presežek poslovnega leta",
+      "deficit": "Primanjkljaj poslovnega leta",
+      "emptyExercice": {
+        "title": "Ni poslovnega leta",
+        "description": "Ustvarite poslovno leto za ustvarjanje izkaza poslovnega izida."
+      },
+      "noPreviousExerciceMessage": "Ni razpoložljivega predhodnega poslovnega leta",
+      "resultZero": "Rezultat poslovnega leta: 0 €",
+      "operationalResult": "Poslovni izid",
+      "uncategorized": "Za kategorizacijo",
+      "uncategorizedAlertIncome": "{count, plural, one {# prihodek je treba kategorizirati} two {# prihodka je treba kategorizirati} few {# prihodki je treba kategorizirati} other {# prihodkov je treba kategorizirati}}",
+      "uncategorizedAlertExpense": "{count, plural, one {# odhodek je treba kategorizirati} two {# odhodka je treba kategorizirati} few {# odhodki je treba kategorizirati} other {# odhodkov je treba kategorizirati}}",
+      "expandSection": "Prikaži",
+      "collapseSection": "Skrij",
+      "noCategoriesInSection": "V tem razdelku ni kategorije",
+      "sections": {
+        "FINANCIAL": "Finančno",
+        "EXCEPTIONAL": "Izredno",
+        "OTHER": "Drugo",
+        "IN_KIND": "Prostovoljni prispevki v naravi"
+      },
+      "drillDown": {
+        "date": "Datum",
+        "origin": "Izvor",
+        "person": "Oseba",
+        "payment": "Plačilo",
+        "amount": "Znesek",
+        "categorize": "Kategoriziraj",
+        "categorizePlaceholder": "Izberi kategorijo",
+        "noTransactions": "Ni transakcij",
+        "categorizeSuccess": "Transakcija kategorizirana"
+      },
+      "pdf": {
+        "periodLabel": "Obdobje od {start} do {end}",
+        "operatingIncome": "POSLOVNI PRIHODKI",
+        "operatingExpense": "POSLOVNI ODHODKI",
+        "operatingResult": "POSLOVNI IZID",
+        "financialIncome": "FINANČNI PRIHODKI",
+        "financialExpense": "FINANČNI ODHODKI",
+        "financialResult": "FINANČNI IZID",
+        "exceptionalIncome": "IZREDNI PRIHODKI",
+        "exceptionalExpense": "IZREDNI ODHODKI",
+        "exceptionalResult": "IZREDNI IZID",
+        "otherIncome": "DRUGI PRIHODKI",
+        "otherExpense": "DRUGI ODHODKI",
+        "otherResult": "IZID IZ DRUGIH PRIHODKOV IN ODHODKOV",
+        "inKindIncome": "PROSTOVOLJNI PRISPEVKI V NARAVI",
+        "inKindExpense": "UPORABA PROSTOVOLJNIH PRISPEVKOV V NARAVI",
+        "inKindResult": "PROSTOVOLJNI PRISPEVKI (SALDO)",
+        "uncategorizedSection": "TRANSAKCIJE ZA KATEGORIZACIJO",
+        "uncategorizedIncomeLabel": "Prihodki za kategorizacijo",
+        "uncategorizedExpenseLabel": "Odhodki za kategorizacijo",
+        "total": "Skupaj",
+        "grandTotal": "SKUPAJ"
+      },
+      "csv": {
+        "date": "Datum",
+        "type": "Vrsta",
+        "typeIncome": "Prihodek",
+        "typeExpense": "Odhodek",
+        "category": "Kategorija",
+        "uncategorized": "Za kategorizacijo",
+        "accountingCode": "Računovodska koda",
+        "description": "Opis",
+        "amount": "Znesek",
+        "paymentMethod": "Način plačila",
+        "origin": "Izvor",
+        "reference": "Referenca",
+        "exercice": "Poslovno leto"
+      }
     }
   },
   "evenements": {

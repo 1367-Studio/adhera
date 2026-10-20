@@ -3,6 +3,8 @@ import { prisma } from "@/lib/prisma/client"
 import { stripe, platformFeeRate, stripeFeeCents } from "@/lib/stripe"
 import { writeActivityLog } from "@/lib/activity-log"
 import { reportError } from "@/lib/monitoring"
+import { resolveExerciceForDate } from "@/lib/finance/exercice"
+import { defaultCategoryByKey } from "@/lib/finance/default-categories"
 
 // Same helper as donation-subscriptions.ts / cotisation-subscriptions.ts / membership-installments.ts
 // (duplicated locally per that convention, not shared).
@@ -96,6 +98,119 @@ async function doApplyConnectSubscriptionInvoiceFee(invoice: Stripe.Invoice): Pr
   }
 }
 
+// ─── Booking the Stripe/platform fee as a real Expense ──────────────────────────
+//
+// Income is always recorded gross (see income-statement.ts) — the money the association's
+// Stripe balance actually receives is net, Stripe's real processing fee and Formwise's own
+// commission both deducted via application_fee_amount. Left alone, that difference just
+// vanishes between the gross Income and the net payout. French accounting's principe de
+// non-compensation (Code de commerce Art. L123-19) forbids netting a charge against a product
+// and booking only the net as revenue, so this creates the fee as its own Expense instead —
+// same pattern as any real Stripe↔accounting integration (QuickBooks, Xero, AssoConnect).
+//
+// Runs every time a Connect charge settles, independent of whether reconcileConnectChargeStripeFee
+// found a shortfall to claw back below — the amount actually owed by the association is always
+// idealFeeCents, top-up or not.
+// Exported so app/api/webhook/stripe/route.ts's "charge.refunded" case can isolate exactly
+// these two auto-created lines when reversing a refund — never a user's own manually-entered
+// expense that happens to share the same `reference` by coincidence.
+export const FEE_EXPENSE_DESCRIPTIONS = { stripeFee: "Frais Stripe", commission: "Commission Formwise" } as const
+
+// This API version no longer exposes charge.invoice (see the "charge.refunded" case in
+// app/api/webhook/stripe/route.ts, which resolves the same thing the same way) — a
+// subscription/installment charge's Income.reference is always the invoice id (see
+// donation-subscriptions.ts, cotisation-subscriptions.ts, membership-installments.ts), never
+// the paymentIntent id. These Expense rows have to resolve to the SAME reference an eventual
+// charge.refunded lookup would use for the matching Income, or the two can never be found
+// together.
+async function resolveFeeExpenseReference(charge: Stripe.Charge): Promise<string | null> {
+  const paymentIntentId = typeof charge.payment_intent === "string" ? charge.payment_intent : charge.payment_intent?.id
+  if (!paymentIntentId) return null
+  const invoicePayments = await stripe.invoicePayments.list({
+    payment: { type: "payment_intent", payment_intent: paymentIntentId },
+    limit:   1,
+  })
+  const invoice   = invoicePayments.data[0]?.invoice
+  const invoiceId = typeof invoice === "string" ? invoice : invoice?.id
+  return invoiceId ?? paymentIntentId
+}
+
+async function bookConnectFeeExpense(params: {
+  associationId: string
+  charge:        Stripe.Charge
+  eventId:       string
+  realFeeCents:  number
+  idealFeeCents: number
+  chargeDate:    Date
+}): Promise<void> {
+  const { associationId, charge, eventId, realFeeCents, idealFeeCents, chargeDate } = params
+
+  // Same idempotency shape as the shortfall reversal below — a redelivered charge.succeeded
+  // must never double-book these two lines.
+  const alreadyBooked = await prisma.activityLog.findFirst({
+    where:  { associationId, action: "STRIPE_FEE_EXPENSE_BOOKED", entityId: charge.id },
+    select: { id: true },
+  })
+  if (alreadyBooked) return
+
+  const reference = await resolveFeeExpenseReference(charge)
+
+  let category = await prisma.financeCategory.findFirst({
+    where:  { associationId, key: "fraisBancaires" },
+    select: { id: true },
+  })
+  if (!category) {
+    // The seed route (api/finances/categories/seed) only runs when a treasurer visits the
+    // Finances screen for the first time — can't assume it already ran for this association.
+    const def = defaultCategoryByKey("fraisBancaires")
+    if (!def) return // Unreachable: "fraisBancaires" is a hardcoded default key.
+    category = await prisma.financeCategory.create({
+      data: { associationId, key: def.key, name: def.name, type: def.type, accountingCode: def.accountingCode, section: def.section, isDefault: true },
+      select: { id: true },
+    })
+  }
+
+  const exercice         = await resolveExerciceForDate(associationId, chargeDate)
+  const commissionCents  = idealFeeCents - realFeeCents
+
+  await prisma.$transaction(async (tx) => {
+    await tx.expense.create({
+      data: {
+        associationId, categoryId: category!.id, reference,
+        exerciceId:  exercice?.id ?? null,
+        amount:      realFeeCents / 100,
+        date:        chargeDate,
+        description: FEE_EXPENSE_DESCRIPTIONS.stripeFee,
+        status:      "VALIDATED",
+      },
+    })
+    // Associations exempt from the platform commission (TRIAL, or already on a paying plan —
+    // see platformFeeRate) must never get a 0€ "Commission Formwise" line.
+    if (commissionCents > 0) {
+      await tx.expense.create({
+        data: {
+          associationId, categoryId: category!.id, reference,
+          exerciceId:  exercice?.id ?? null,
+          amount:      commissionCents / 100,
+          date:        chargeDate,
+          description: FEE_EXPENSE_DESCRIPTIONS.commission,
+          status:      "VALIDATED",
+        },
+      })
+    }
+    // Written inside the same transaction as the Expense row(s) it guards — this IS the
+    // idempotency check above, so it must commit atomically with what it's guarding, not as a
+    // best-effort afterthought (unlike writeActivityLog's fire-and-forget rows elsewhere in
+    // this file, which aren't themselves idempotency guards).
+    await tx.activityLog.create({
+      data: {
+        associationId, action: "STRIPE_FEE_EXPENSE_BOOKED", entity: "Charge", entityId: charge.id,
+        metadata: { stripeEventId: eventId, realFeeCents, idealFeeCents, commissionCents, reference },
+      },
+    })
+  })
+}
+
 // ─── charge.succeeded ───────────────────────────────────────────────────────────
 //
 // stripeFeeCents() assumes a standard EEA card (1.5% + €0.25) — Stripe's real per-card fee is
@@ -178,6 +293,16 @@ async function doReconcileConnectChargeStripeFee(charge: Stripe.Charge, eventId:
   const idealFeeCents   = Math.round(charge.amount * platformFeeRate(association)) + realFeeCents
   const appliedFeeCents = charge.application_fee_amount ?? 0
   const shortfallCents  = idealFeeCents - appliedFeeCents
+
+  await bookConnectFeeExpense({
+    associationId: association.id,
+    charge:        fullCharge,
+    eventId,
+    realFeeCents,
+    idealFeeCents,
+    chargeDate: new Date(fullCharge.created * 1000),
+  })
+
   if (shortfallCents <= 0) return // Already fully covered upfront — standard EEA card, no commission owed, or both.
 
   const transferId = typeof fullCharge.transfer === "string" ? fullCharge.transfer : fullCharge.transfer.id

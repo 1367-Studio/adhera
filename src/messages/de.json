@@ -899,7 +899,16 @@
       "typeIncome": "Einnahme",
       "typeExpense": "Kosten",
       "accountingCode": "Buchhaltungscode",
-      "accountingCodePlaceholder": "Ex: 70600"
+      "accountingCodePlaceholder": "Ex: 70600",
+      "accountingCodeDuplicateWarning": "Diese Kontonummer wird bereits von einer anderen Kategorie verwendet.",
+      "section": "Abschnitt",
+      "sectionOptions": {
+        "OPERATING": "Betrieblich",
+        "FINANCIAL": "Finanziell",
+        "EXCEPTIONAL": "Außerordentlich",
+        "OTHER": "Sonstiges",
+        "IN_KIND": "Sachleistungen"
+      }
     },
     "bankAccountForm": {
       "bankName": "Bankname",
@@ -1289,6 +1298,90 @@
       "typeIncome": "Einnahme",
       "typeExpense": "Kosten",
       "confirm": "Validieren Sie die Schlichtung"
+    },
+    "compteResultat": {
+      "title": "Gewinn- und Verlustrechnung",
+      "description": "Finanzergebnis des Geschäftsjahres im Vergleich zum Vorjahr.",
+      "exerciceLabel": "Geschäftsjahr",
+      "noPreviousExercice": "-",
+      "export": "Exportieren",
+      "exportExcel": "Excel exportieren (detailliert)",
+      "exportPdf": "PDF exportieren",
+      "products": "Erträge",
+      "totalProducts": "Erträge gesamt",
+      "expenses": "Aufwendungen",
+      "totalExpenses": "Aufwendungen gesamt",
+      "result": "Jahresergebnis",
+      "surplus": "Jahresüberschuss",
+      "deficit": "Jahresfehlbetrag",
+      "emptyExercice": {
+        "title": "Kein Geschäftsjahr",
+        "description": "Erstellen Sie ein Geschäftsjahr, um die Gewinn- und Verlustrechnung zu erstellen."
+      },
+      "noPreviousExerciceMessage": "Kein vorheriges Geschäftsjahr verfügbar",
+      "resultZero": "Ergebnis des Geschäftsjahres: 0 €",
+      "operationalResult": "Betriebsergebnis",
+      "uncategorized": "Nicht kategorisiert",
+      "uncategorizedAlertIncome": "{count, plural, one {# Einnahme muss kategorisiert werden} other {# Einnahmen müssen kategorisiert werden}}",
+      "uncategorizedAlertExpense": "{count, plural, one {# Ausgabe muss kategorisiert werden} other {# Ausgaben müssen kategorisiert werden}}",
+      "expandSection": "Anzeigen",
+      "collapseSection": "Ausblenden",
+      "noCategoriesInSection": "Keine Kategorie in diesem Abschnitt",
+      "sections": {
+        "FINANCIAL": "Finanziell",
+        "EXCEPTIONAL": "Außerordentlich",
+        "OTHER": "Sonstiges",
+        "IN_KIND": "Freiwillige Sachleistungen"
+      },
+      "drillDown": {
+        "date": "Datum",
+        "origin": "Herkunft",
+        "person": "Person",
+        "payment": "Zahlung",
+        "amount": "Betrag",
+        "categorize": "Kategorisieren",
+        "categorizePlaceholder": "Kategorie auswählen",
+        "noTransactions": "Keine Transaktionen",
+        "categorizeSuccess": "Transaktion kategorisiert"
+      },
+      "pdf": {
+        "periodLabel": "Zeitraum vom {start} bis {end}",
+        "operatingIncome": "BETRIEBLICHE ERTRÄGE",
+        "operatingExpense": "BETRIEBLICHE AUFWENDUNGEN",
+        "operatingResult": "BETRIEBSERGEBNIS",
+        "financialIncome": "FINANZERTRÄGE",
+        "financialExpense": "FINANZAUFWENDUNGEN",
+        "financialResult": "FINANZERGEBNIS",
+        "exceptionalIncome": "AUSSERORDENTLICHE ERTRÄGE",
+        "exceptionalExpense": "AUSSERORDENTLICHE AUFWENDUNGEN",
+        "exceptionalResult": "AUSSERORDENTLICHES ERGEBNIS",
+        "otherIncome": "SONSTIGE ERTRÄGE",
+        "otherExpense": "SONSTIGE AUFWENDUNGEN",
+        "otherResult": "ERGEBNIS AUS SONSTIGEN ERTRÄGEN UND AUFWENDUNGEN",
+        "inKindIncome": "FREIWILLIGE SACHLEISTUNGEN",
+        "inKindExpense": "VERWENDUNG DER FREIWILLIGEN SACHLEISTUNGEN",
+        "inKindResult": "FREIWILLIGE SACHLEISTUNGEN (SALDO)",
+        "uncategorizedSection": "ZU KATEGORISIERENDE TRANSAKTIONEN",
+        "uncategorizedIncomeLabel": "Zu kategorisierende Einnahmen",
+        "uncategorizedExpenseLabel": "Zu kategorisierende Ausgaben",
+        "total": "Summe",
+        "grandTotal": "GESAMT"
+      },
+      "csv": {
+        "date": "Datum",
+        "type": "Typ",
+        "typeIncome": "Einnahme",
+        "typeExpense": "Ausgabe",
+        "category": "Kategorie",
+        "uncategorized": "Nicht kategorisiert",
+        "accountingCode": "Kontonummer",
+        "description": "Beschreibung",
+        "amount": "Betrag",
+        "paymentMethod": "Zahlungsmethode",
+        "origin": "Herkunft",
+        "reference": "Referenz",
+        "exercice": "Geschäftsjahr"
+      }
     }
   },
   "evenements": {

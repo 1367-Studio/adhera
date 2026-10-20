@@ -899,7 +899,16 @@
       "typeIncome": "Intäkt",
       "typeExpense": "Kostnad",
       "accountingCode": "Redovisningskod",
-      "accountingCodePlaceholder": "Ex: 70600"
+      "accountingCodePlaceholder": "Ex: 70600",
+      "accountingCodeDuplicateWarning": "Denna kontokod används redan av en annan kategori.",
+      "section": "Avsnitt",
+      "sectionOptions": {
+        "OPERATING": "Rörelse",
+        "FINANCIAL": "Finansiellt",
+        "EXCEPTIONAL": "Extraordinärt",
+        "OTHER": "Övrigt",
+        "IN_KIND": "Bidrag in natura"
+      }
     },
     "bankAccountForm": {
       "bankName": "Banknamn",
@@ -1289,6 +1298,90 @@
       "typeIncome": "Intäkt",
       "typeExpense": "Kostnad",
       "confirm": "Validera förlikningen"
+    },
+    "compteResultat": {
+      "title": "Resultaträkning",
+      "description": "Räkenskapsårets ekonomiska resultat jämfört med föregående år.",
+      "exerciceLabel": "Räkenskapsår",
+      "noPreviousExercice": "-",
+      "export": "Exportera",
+      "exportExcel": "Exportera Excel (detaljerad)",
+      "exportPdf": "Exportera PDF",
+      "products": "Intäkter",
+      "totalProducts": "Totala intäkter",
+      "expenses": "Kostnader",
+      "totalExpenses": "Totala kostnader",
+      "result": "Räkenskapsårets resultat",
+      "surplus": "Räkenskapsårets överskott",
+      "deficit": "Räkenskapsårets underskott",
+      "emptyExercice": {
+        "title": "Inget räkenskapsår",
+        "description": "Skapa ett räkenskapsår för att generera resultaträkningen."
+      },
+      "noPreviousExerciceMessage": "Inget föregående räkenskapsår tillgängligt",
+      "resultZero": "Räkenskapsårets resultat: 0 €",
+      "operationalResult": "Rörelseresultat",
+      "uncategorized": "Att kategorisera",
+      "uncategorizedAlertIncome": "{count, plural, one {# intäkt måste kategoriseras} other {# intäkter måste kategoriseras}}",
+      "uncategorizedAlertExpense": "{count, plural, one {# kostnad måste kategoriseras} other {# kostnader måste kategoriseras}}",
+      "expandSection": "Visa",
+      "collapseSection": "Dölj",
+      "noCategoriesInSection": "Ingen kategori i detta avsnitt",
+      "sections": {
+        "FINANCIAL": "Finansiellt",
+        "EXCEPTIONAL": "Extraordinärt",
+        "OTHER": "Övrigt",
+        "IN_KIND": "Frivilliga bidrag in natura"
+      },
+      "drillDown": {
+        "date": "Datum",
+        "origin": "Ursprung",
+        "person": "Person",
+        "payment": "Betalning",
+        "amount": "Belopp",
+        "categorize": "Kategorisera",
+        "categorizePlaceholder": "Välj en kategori",
+        "noTransactions": "Inga transaktioner",
+        "categorizeSuccess": "Transaktion kategoriserad"
+      },
+      "pdf": {
+        "periodLabel": "Period från {start} till {end}",
+        "operatingIncome": "RÖRELSEINTÄKTER",
+        "operatingExpense": "RÖRELSEKOSTNADER",
+        "operatingResult": "RÖRELSERESULTAT",
+        "financialIncome": "FINANSIELLA INTÄKTER",
+        "financialExpense": "FINANSIELLA KOSTNADER",
+        "financialResult": "FINANSIELLT RESULTAT",
+        "exceptionalIncome": "EXTRAORDINÄRA INTÄKTER",
+        "exceptionalExpense": "EXTRAORDINÄRA KOSTNADER",
+        "exceptionalResult": "EXTRAORDINÄRT RESULTAT",
+        "otherIncome": "ÖVRIGA INTÄKTER",
+        "otherExpense": "ÖVRIGA KOSTNADER",
+        "otherResult": "RESULTAT FRÅN ÖVRIGA INTÄKTER OCH KOSTNADER",
+        "inKindIncome": "FRIVILLIGA BIDRAG IN NATURA",
+        "inKindExpense": "ANVÄNDNING AV FRIVILLIGA BIDRAG IN NATURA",
+        "inKindResult": "FRIVILLIGA BIDRAG (NETTO)",
+        "uncategorizedSection": "TRANSAKTIONER ATT KATEGORISERA",
+        "uncategorizedIncomeLabel": "Intäkter att kategorisera",
+        "uncategorizedExpenseLabel": "Kostnader att kategorisera",
+        "total": "Summa",
+        "grandTotal": "TOTALT"
+      },
+      "csv": {
+        "date": "Datum",
+        "type": "Typ",
+        "typeIncome": "Intäkt",
+        "typeExpense": "Kostnad",
+        "category": "Kategori",
+        "uncategorized": "Att kategorisera",
+        "accountingCode": "Kontokod",
+        "description": "Beskrivning",
+        "amount": "Belopp",
+        "paymentMethod": "Betalningsmetod",
+        "origin": "Ursprung",
+        "reference": "Referens",
+        "exercice": "Räkenskapsår"
+      }
     }
   },
   "evenements": {
