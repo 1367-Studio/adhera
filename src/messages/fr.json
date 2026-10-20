@@ -2810,7 +2810,7 @@
         "message": "Message",
         "date": "Date",
         "amount": "Montant",
-        "method": "Moyen",
+        "method": "Moyen de paiement",
         "infoTooltip": "Voir les réponses"
       },
       "noDonations": "Aucun don enregistré",
