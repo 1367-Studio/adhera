@@ -2734,7 +2734,8 @@
       },
       "toasts": {
         "encaisse": "Saņemts ziedojums",
-        "manualDonAdded": "Ziedojums reģistrēts"
+        "manualDonAdded": "Ziedojums reģistrēts",
+        "donationNotInFilteredList": "Šis ziedojums nav redzams ar pašreizējiem filtriem. Atiestatiet tos, lai to atrastu."
       }
     },
     "receiptsView": {

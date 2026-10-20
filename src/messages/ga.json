@@ -2734,7 +2734,8 @@
       },
       "toasts": {
         "encaisse": "Síntiús faighte",
-        "manualDonAdded": "Síntiús taifeadta"
+        "manualDonAdded": "Síntiús taifeadta",
+        "donationNotInFilteredList": "Níl an síntiús seo le feiceáil leis na scagairí reatha. Athshocraigh iad chun é a aimsiú."
       }
     },
     "receiptsView": {

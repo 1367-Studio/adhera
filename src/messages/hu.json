@@ -2734,7 +2734,8 @@
       },
       "toasts": {
         "encaisse": "Fogadott adomány",
-        "manualDonAdded": "Adomány rögzítve"
+        "manualDonAdded": "Adomány rögzítve",
+        "donationNotInFilteredList": "Ez az adomány nem látható az aktuális szűrőkkel. Állítsa alaphelyzetbe őket a megtalálásához."
       }
     },
     "receiptsView": {

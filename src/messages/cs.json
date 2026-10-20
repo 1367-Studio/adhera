@@ -2734,7 +2734,8 @@
       },
       "toasts": {
         "encaisse": "Přijatý dar",
-        "manualDonAdded": "Dar byl zaznamenán"
+        "manualDonAdded": "Dar byl zaznamenán",
+        "donationNotInFilteredList": "Tento dar není viditelný s aktuálními filtry. Resetujte je, abyste jej našli."
       }
     },
     "receiptsView": {

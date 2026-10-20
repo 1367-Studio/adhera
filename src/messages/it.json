@@ -2734,7 +2734,8 @@
       },
       "toasts": {
         "encaisse": "Donazione ricevuta",
-        "manualDonAdded": "Donazione registrata"
+        "manualDonAdded": "Donazione registrata",
+        "donationNotInFilteredList": "Questa donazione non è visibile con i filtri attuali. Reimpostali per trovarla."
       }
     },
     "receiptsView": {
