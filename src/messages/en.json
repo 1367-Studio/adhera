@@ -2889,7 +2889,8 @@
       },
       "toasts": {
         "encaisse": "Donation marked as received",
-        "manualDonAdded": "Donation recorded"
+        "manualDonAdded": "Donation recorded",
+        "donationNotInFilteredList": "This donation isn't visible with the current filters. Reset them to find it."
       }
     },
     "receiptsView": {

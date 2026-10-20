@@ -136,7 +136,10 @@ function DonsPageInner() {
     }
   }
 
-  const initialTab = (searchParams.get("tab") as Tab) ?? "formulaires"
+  // Defaults to "dons" when a donId is present without an explicit tab — covers notification
+  // and e-mail links already sent/stored before tab=dons was added to the link (see notify.ts),
+  // not just newly-generated ones.
+  const initialTab = (searchParams.get("tab") as Tab) ?? (searchParams.get("donId") ? "dons" : "formulaires")
   const [tab, setTab] = useState<Tab>(["formulaires", "dons", "recus"].includes(initialTab) ? initialTab : "formulaires")
 
   // Hydrated once from the URL so a refresh or a shared link keeps the "dons" tab's filters
@@ -332,6 +335,43 @@ function DonsPageInner() {
     staleTime: 0,
   })
   const pendingDons = pendingResult?.data ?? []
+
+  // Deep-link from a "new donation" notification/e-mail (see notify.ts): land on the "dons"
+  // tab and briefly highlight the row so the responsable doesn't have to hunt for it in the
+  // list — same pattern as the "commandeId" highlight on the Boutique page. A don can be in
+  // either table above depending on its state (paidAt null → pending/"à recevoir" table,
+  // otherwise the main paid list — see /api/dons' paidAt filter), so this waits for both
+  // queries and searches across both.
+  const highlightDonId = searchParams.get("donId")
+  const highlightedRef = useRef<string | null>(null)
+  const missingHighlightNotifiedRef = useRef<string | null>(null)
+  useEffect(() => {
+    if (!highlightDonId || tab !== "dons" || loadingDons || loadingPending) return
+    // A background refetch (e.g. window refocus — both queries use staleTime: 0) would
+    // otherwise re-run this on every refetch and keep yanking the user's scroll back to the
+    // row. Only act once per donId; a newly-clicked notification for a different don still
+    // gets its own run since highlightDonId itself changes.
+    if (highlightedRef.current === highlightDonId) return
+    // DataTable renders both a desktop <tr> and a mobile card sharing this data-row-id;
+    // only one is visible at a given breakpoint, so highlight whichever one is. A ring
+    // (box-shadow) doesn't paint on <tr> in most browsers, so use a background tint instead.
+    const els = [...document.querySelectorAll(`[data-row-id="${highlightDonId}"]`)] as HTMLElement[]
+    if (!els.length) {
+      // The default filters (current year, no search/origin) or pagination on either table
+      // can leave the targeted don off the currently-visible list — tell the responsable
+      // instead of leaving them staring at a list with nothing highlighted. Guarded to fire
+      // once per donId.
+      if (missingHighlightNotifiedRef.current !== highlightDonId) {
+        missingHighlightNotifiedRef.current = highlightDonId
+        toast.info(t("donationsView.toasts.donationNotInFilteredList"))
+      }
+      return
+    }
+    highlightedRef.current = highlightDonId
+    els.forEach(el => { el.scrollIntoView({ behavior: "smooth", block: "center" }); el.classList.add("bg-primary/10") })
+    const highlightTimeout = setTimeout(() => els.forEach(el => el.classList.remove("bg-primary/10")), 2500)
+    return () => clearTimeout(highlightTimeout)
+  }, [highlightDonId, tab, loadingDons, loadingPending, donsResult, pendingResult, t])
 
   const encaisserMutation = useMutation({
     mutationFn: async (donId: string) => {

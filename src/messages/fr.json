@@ -2897,7 +2897,8 @@
       },
       "toasts": {
         "encaisse": "Don encaissé",
-        "manualDonAdded": "Don enregistré"
+        "manualDonAdded": "Don enregistré",
+        "donationNotInFilteredList": "Ce don n'est pas visible avec les filtres actuels. Réinitialisez-les pour le retrouver."
       }
     },
     "receiptsView": {
