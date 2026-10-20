@@ -2827,7 +2827,8 @@
       },
       "toasts": {
         "encaisse": "Donativo marcado como recebido",
-        "manualDonAdded": "Doação registada"
+        "manualDonAdded": "Doação registada",
+        "donationNotInFilteredList": "Este donativo não está visível com os filtros atuais. Reinicie-os para o encontrar."
       }
     },
     "receiptsView": {

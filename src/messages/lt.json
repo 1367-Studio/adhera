@@ -2827,7 +2827,8 @@
       },
       "toasts": {
         "encaisse": "Gauta auka",
-        "manualDonAdded": "Auka įrašyta"
+        "manualDonAdded": "Auka įrašyta",
+        "donationNotInFilteredList": "Ši auka nematoma su dabartiniais filtrais. Atstatykite juos, kad ją rastumėte."
       }
     },
     "receiptsView": {

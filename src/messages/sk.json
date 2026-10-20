@@ -2827,7 +2827,8 @@
       },
       "toasts": {
         "encaisse": "Prijatý dar",
-        "manualDonAdded": "Dar bol zaznamenaný"
+        "manualDonAdded": "Dar bol zaznamenaný",
+        "donationNotInFilteredList": "Tento dar nie je viditeľný s aktuálnymi filtrami. Vynulujte ich, aby ste ho našli."
       }
     },
     "receiptsView": {

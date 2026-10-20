@@ -2827,7 +2827,8 @@
       },
       "toasts": {
         "encaisse": "Получено дарение",
-        "manualDonAdded": "Дарението е записано"
+        "manualDonAdded": "Дарението е записано",
+        "donationNotInFilteredList": "Това дарение не се вижда с текущите филтри. Нулирайте ги, за да го намерите."
       }
     },
     "receiptsView": {
