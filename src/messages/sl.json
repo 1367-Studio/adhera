@@ -2726,6 +2726,7 @@
         "manual": "Ročni vnos"
       },
       "paymentMethod": {
+        "stripe": "Stripe",
         "especes": "Vrste",
         "cheque": "Preverjeno",
         "virement": "Prenos",

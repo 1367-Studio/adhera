@@ -2726,6 +2726,7 @@
         "manual": "Manuelle Erfassung"
       },
       "paymentMethod": {
+        "stripe": "Stripe",
         "especes": "Arten",
         "cheque": "Check",
         "virement": "Transfer",

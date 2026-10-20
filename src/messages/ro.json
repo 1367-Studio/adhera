@@ -2726,6 +2726,7 @@
         "manual": "Înregistrare manuală"
       },
       "paymentMethod": {
+        "stripe": "Stripe",
         "especes": "Specii",
         "cheque": "Bifat",
         "virement": "Transfer",

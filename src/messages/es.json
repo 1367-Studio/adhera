@@ -2726,6 +2726,7 @@
         "manual": "Entrada manual"
       },
       "paymentMethod": {
+        "stripe": "Stripe",
         "especes": "Efectivo",
         "cheque": "Cheque",
         "virement": "Transferencia",

@@ -2726,6 +2726,7 @@
         "manual": "Dħul manwali"
       },
       "paymentMethod": {
+        "stripe": "Stripe",
         "especes": "Speċi",
         "cheque": "Iċċekkja",
         "virement": "Trasferiment",

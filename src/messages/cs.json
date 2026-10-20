@@ -2726,6 +2726,7 @@
         "manual": "Manuální zadání"
       },
       "paymentMethod": {
+        "stripe": "Stripe",
         "especes": "Druhy",
         "cheque": "Zkontrolováno",
         "virement": "Přesun",

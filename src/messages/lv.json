@@ -2726,6 +2726,7 @@
         "manual": "Manuāls ieraksts"
       },
       "paymentMethod": {
+        "stripe": "Stripe",
         "especes": "Sugas",
         "cheque": "Pārbaudīts",
         "virement": "Pāreja",

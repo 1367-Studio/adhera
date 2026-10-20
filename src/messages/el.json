@@ -2726,6 +2726,7 @@
         "manual": "Χειροκίνητη καταχώριση"
       },
       "paymentMethod": {
+        "stripe": "Stripe",
         "especes": "Είδος",
         "cheque": "Έλεγχος",
         "virement": "Μεταφορά",

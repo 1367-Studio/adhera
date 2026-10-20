@@ -348,6 +348,7 @@ function DonsPageInner() {
   })
 
   const PAYMENT_METHOD_LABEL: Record<string, string> = {
+    STRIPE:   t("donationsView.paymentMethod.stripe"),
     ESPECES:  t("donationsView.paymentMethod.especes"),
     CHEQUE:   t("donationsView.paymentMethod.cheque"),
     VIREMENT: t("donationsView.paymentMethod.virement"),
@@ -435,8 +436,7 @@ function DonsPageInner() {
     {
       key:    "method",
       header: t("donationsView.columns.method"),
-      className: "w-32",
-      cell: (d) => <Badge variant="secondary">{d.paymentMethod ? PAYMENT_METHOD_LABEL[d.paymentMethod] : "—"}</Badge>,
+      cell: (d) => <span className="text-sm text-muted-foreground">{d.paymentMethod ? PAYMENT_METHOD_LABEL[d.paymentMethod] : "—"}</span>,
     },
     {
       key:       "amount",
@@ -499,6 +499,11 @@ function DonsPageInner() {
     {
       key:    "message",
       header: t("donationsView.columns.message"),
+      // Hidden on the mobile card view (not on desktop) purely to keep CardList's detail
+      // grid at 4 cells — same count DataTable's loading skeleton caps itself at — now that
+      // this table has 5 detail columns. The least essential one to drop on a small screen:
+      // often empty ("—" below), and still one tap away on desktop.
+      hideInCard: true,
       cell: (d) => d.message
         ? <p className="text-sm text-muted-foreground italic truncate max-w-xs">« {d.message} »</p>
         : <span className="text-muted-foreground/40">—</span>,
@@ -508,6 +513,11 @@ function DonsPageInner() {
       header:    t("donationsView.columns.date"),
       className: "w-28",
       cell: (d) => d.paidAt ? format(new Date(d.paidAt), "dd/MM/yyyy", { locale: fr }) : <span className="text-muted-foreground">—</span>,
+    },
+    {
+      key:    "method",
+      header: t("donationsView.columns.method"),
+      cell: (d) => <span className="text-sm text-muted-foreground">{d.paymentMethod ? PAYMENT_METHOD_LABEL[d.paymentMethod] : PAYMENT_METHOD_LABEL.STRIPE}</span>,
     },
     {
       key:       "amount",

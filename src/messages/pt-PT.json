@@ -2726,6 +2726,7 @@
         "manual": "Registo manual"
       },
       "paymentMethod": {
+        "stripe": "Stripe",
         "especes": "Numerário",
         "cheque": "Cheque",
         "virement": "Transferência",
