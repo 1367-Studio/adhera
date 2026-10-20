@@ -2827,7 +2827,8 @@
       },
       "toasts": {
         "encaisse": "Saadud annetus",
-        "manualDonAdded": "Annetus salvestatud"
+        "manualDonAdded": "Annetus salvestatud",
+        "donationNotInFilteredList": "See annetus ei ole praeguste filtritega nähtav. Lähtestage need, et see leida."
       }
     },
     "receiptsView": {

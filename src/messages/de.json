@@ -2827,7 +2827,8 @@
       },
       "toasts": {
         "encaisse": "Erhaltene Spende",
-        "manualDonAdded": "Spende erfasst"
+        "manualDonAdded": "Spende erfasst",
+        "donationNotInFilteredList": "Diese Spende ist mit den aktuellen Filtern nicht sichtbar. Setzen Sie sie zurück, um sie zu finden."
       }
     },
     "receiptsView": {

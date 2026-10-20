@@ -30,7 +30,7 @@ export async function notifyDonResponsable(params: {
   if (!responsable) return
 
   const statusLabel = params.paidAt ? "Reçu" : "À recevoir"
-  const link         = `/dashboard/dons?donId=${params.donId}`
+  const link         = `/dashboard/dons?tab=dons&donId=${params.donId}`
 
   await prisma.notification.create({
     data: {
