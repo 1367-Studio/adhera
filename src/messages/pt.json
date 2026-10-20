@@ -920,29 +920,73 @@
       "result": "Resultado do exercício",
       "surplus": "Excedente do exercício",
       "deficit": "Déficit do exercício",
-      "categories": {
-        "income": {
-          "cotisations": "Contribuições / Adesões",
-          "dons": "Doações",
-          "subventions": "Subsídios",
-          "boutique": "Loja",
-          "evenements": "Eventos",
-          "autres": "Outras receitas"
-        },
-        "expense": {
-          "assurance": "Seguro",
-          "communication": "Comunicação",
-          "materiel": "Materiais",
-          "transport": "Deslocamentos",
-          "fraisBancaires": "Tarifas bancárias",
-          "location": "Aluguel",
-          "equipement": "Equipamentos",
-          "autres": "Outras despesas"
-        }
-      },
       "emptyExercice": {
         "title": "Nenhum exercício fiscal",
         "description": "Crie um exercício fiscal para gerar a demonstração de resultados."
+      },
+      "noPreviousExerciceMessage": "Nenhum exercício anterior disponível",
+      "resultZero": "Resultado do exercício: 0 €",
+      "operationalResult": "Resultado operacional",
+      "uncategorized": "A categorizar",
+      "uncategorizedAlertIncome": "{count, plural, one {# receita precisa ser categorizada} other {# receitas precisam ser categorizadas}}",
+      "uncategorizedAlertExpense": "{count, plural, one {# despesa precisa ser categorizada} other {# despesas precisam ser categorizadas}}",
+      "expandSection": "Mostrar",
+      "collapseSection": "Ocultar",
+      "noCategoriesInSection": "Nenhuma categoria nesta seção",
+      "sections": {
+        "FINANCIAL": "Financeiro",
+        "EXCEPTIONAL": "Excecional",
+        "OTHER": "Outro",
+        "IN_KIND": "Contribuições voluntárias em espécie"
+      },
+      "drillDown": {
+        "date": "Data",
+        "origin": "Origem",
+        "person": "Pessoa",
+        "payment": "Pagamento",
+        "amount": "Valor",
+        "categorize": "Categorizar",
+        "categorizePlaceholder": "Escolher uma categoria",
+        "noTransactions": "Nenhuma transação",
+        "categorizeSuccess": "Transação categorizada"
+      },
+      "pdf": {
+        "periodLabel": "Período de {start} a {end}",
+        "operatingIncome": "RECEITAS OPERACIONAIS",
+        "operatingExpense": "DESPESAS OPERACIONAIS",
+        "operatingResult": "RESULTADO OPERACIONAL",
+        "financialIncome": "RECEITAS FINANCEIRAS",
+        "financialExpense": "DESPESAS FINANCEIRAS",
+        "financialResult": "RESULTADO FINANCEIRO",
+        "exceptionalIncome": "RECEITAS EXCECIONAIS",
+        "exceptionalExpense": "DESPESAS EXCECIONAIS",
+        "exceptionalResult": "RESULTADO EXCECIONAL",
+        "otherIncome": "OUTRAS RECEITAS",
+        "otherExpense": "OUTRAS DESPESAS",
+        "otherResult": "RESULTADO DE OUTRAS RECEITAS E DESPESAS",
+        "inKindIncome": "CONTRIBUIÇÕES VOLUNTÁRIAS EM ESPÉCIE",
+        "inKindExpense": "UTILIZAÇÃO DAS CONTRIBUIÇÕES VOLUNTÁRIAS EM ESPÉCIE",
+        "inKindResult": "CONTRIBUIÇÕES VOLUNTÁRIAS",
+        "uncategorizedSection": "TRANSAÇÕES A CATEGORIZAR",
+        "uncategorizedIncomeLabel": "Receitas a categorizar",
+        "uncategorizedExpenseLabel": "Despesas a categorizar",
+        "total": "Total",
+        "grandTotal": "TOTAL"
+      },
+      "csv": {
+        "date": "Data",
+        "type": "Tipo",
+        "typeIncome": "Receita",
+        "typeExpense": "Despesa",
+        "category": "Categoria",
+        "uncategorized": "A categorizar",
+        "accountingCode": "Código contábil",
+        "description": "Descrição",
+        "amount": "Valor",
+        "paymentMethod": "Forma de pagamento",
+        "origin": "Origem",
+        "reference": "Referência",
+        "exercice": "Exercício"
       }
     },
     "categoryForm": {
@@ -952,7 +996,16 @@
       "typeIncome": "Receita",
       "typeExpense": "Despesa",
       "accountingCode": "Código contábil",
-      "accountingCodePlaceholder": "Ex: 70600"
+      "accountingCodePlaceholder": "Ex: 70600",
+      "accountingCodeDuplicateWarning": "Este código contábil já está sendo usado por outra categoria.",
+      "section": "Seção",
+      "sectionOptions": {
+        "OPERATING": "Operacional",
+        "FINANCIAL": "Financeiro",
+        "EXCEPTIONAL": "Excecional",
+        "OTHER": "Outro",
+        "IN_KIND": "Contribuições em espécie"
+      }
     },
     "bankAccountForm": {
       "bankName": "Nome do banco",

@@ -28,9 +28,18 @@ export const financeCategorySchema = z.object({
   name:          z.string().trim().min(1, "Nom requis"),
   type:          z.enum(["INCOME", "EXPENSE"]),
   accountingCode: z.string().trim().optional().or(z.literal("")),
+  section:       z.enum(["OPERATING", "FINANCIAL", "EXCEPTIONAL", "OTHER", "IN_KIND"]).default("OPERATING"),
 })
 
-export const financeCategoryUpdateSchema = financeCategorySchema.partial()
+// Rebuilt as its own literal object instead of financeCategorySchema.partial() — same
+// .default() leak as bankAccountUpdateSchema/incomeUpdateSchema above: an omitted `section`
+// must stay undefined so Prisma leaves the existing value untouched, not reset to "OPERATING".
+export const financeCategoryUpdateSchema = z.object({
+  name:          z.string().trim().min(1, "Nom requis").optional(),
+  type:          z.enum(["INCOME", "EXPENSE"]).optional(),
+  accountingCode: z.string().trim().optional().or(z.literal("")),
+  section:       z.enum(["OPERATING", "FINANCIAL", "EXCEPTIONAL", "OTHER", "IN_KIND"]).optional(),
+})
 
 export type FinanceCategoryInput       = z.infer<typeof financeCategorySchema>
 export type FinanceCategoryUpdateInput = z.infer<typeof financeCategoryUpdateSchema>

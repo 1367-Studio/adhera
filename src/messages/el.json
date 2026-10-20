@@ -899,7 +899,16 @@
       "typeIncome": "Έσοδο",
       "typeExpense": "Έξοδα",
       "accountingCode": "Λογιστικός κωδικός",
-      "accountingCodePlaceholder": "Π.χ.: 70600"
+      "accountingCodePlaceholder": "Π.χ.: 70600",
+      "accountingCodeDuplicateWarning": "Αυτός ο λογιστικός κωδικός χρησιμοποιείται ήδη από άλλη κατηγορία.",
+      "section": "Ενότητα",
+      "sectionOptions": {
+        "OPERATING": "Λειτουργικά",
+        "FINANCIAL": "Χρηματοοικονομικά",
+        "EXCEPTIONAL": "Έκτακτα",
+        "OTHER": "Λοιπά",
+        "IN_KIND": "Εισφορές σε είδος"
+      }
     },
     "bankAccountForm": {
       "bankName": "Όνομα τράπεζας",
@@ -1289,6 +1298,90 @@
       "typeIncome": "Έσοδο",
       "typeExpense": "Έξοδα",
       "confirm": "Επικύρωση της συνδιαλλαγής"
+    },
+    "compteResultat": {
+      "title": "Κατάσταση αποτελεσμάτων",
+      "description": "Οικονομικό αποτέλεσμα της χρήσης σε σύγκριση με την προηγούμενη χρήση.",
+      "exerciceLabel": "Χρήση",
+      "noPreviousExercice": "-",
+      "export": "Εξαγωγή",
+      "exportExcel": "Εξαγωγή Excel (αναλυτικά)",
+      "exportPdf": "Εξαγωγή PDF",
+      "products": "Έσοδα",
+      "totalProducts": "Σύνολο εσόδων",
+      "expenses": "Έξοδα",
+      "totalExpenses": "Σύνολο εξόδων",
+      "result": "Αποτέλεσμα χρήσης",
+      "surplus": "Πλεόνασμα χρήσης",
+      "deficit": "Έλλειμμα χρήσης",
+      "emptyExercice": {
+        "title": "Καμία χρήση",
+        "description": "Δημιουργήστε μια χρήση για να δημιουργήσετε την κατάσταση αποτελεσμάτων."
+      },
+      "noPreviousExerciceMessage": "Δεν υπάρχει διαθέσιμη προηγούμενη χρήση",
+      "resultZero": "Αποτέλεσμα χρήσης: 0 €",
+      "operationalResult": "Λειτουργικό αποτέλεσμα",
+      "uncategorized": "Προς κατηγοριοποίηση",
+      "uncategorizedAlertIncome": "{count, plural, one {# έσοδο πρέπει να κατηγοριοποιηθεί} other {# έσοδα πρέπει να κατηγοριοποιηθούν}}",
+      "uncategorizedAlertExpense": "{count, plural, one {# έξοδο πρέπει να κατηγοριοποιηθεί} other {# έξοδα πρέπει να κατηγοριοποιηθούν}}",
+      "expandSection": "Εμφάνιση",
+      "collapseSection": "Απόκρυψη",
+      "noCategoriesInSection": "Καμία κατηγορία σε αυτήν την ενότητα",
+      "sections": {
+        "FINANCIAL": "Χρηματοοικονομικά",
+        "EXCEPTIONAL": "Έκτακτα",
+        "OTHER": "Λοιπά",
+        "IN_KIND": "Εθελοντικές εισφορές σε είδος"
+      },
+      "drillDown": {
+        "date": "Ημερομηνία",
+        "origin": "Προέλευση",
+        "person": "Άτομο",
+        "payment": "Πληρωμή",
+        "amount": "Ποσό",
+        "categorize": "Κατηγοριοποίηση",
+        "categorizePlaceholder": "Επιλέξτε κατηγορία",
+        "noTransactions": "Καμία συναλλαγή",
+        "categorizeSuccess": "Η συναλλαγή κατηγοριοποιήθηκε"
+      },
+      "pdf": {
+        "periodLabel": "Περίοδος από {start} έως {end}",
+        "operatingIncome": "ΛΕΙΤΟΥΡΓΙΚΑ ΕΣΟΔΑ",
+        "operatingExpense": "ΛΕΙΤΟΥΡΓΙΚΑ ΕΞΟΔΑ",
+        "operatingResult": "ΛΕΙΤΟΥΡΓΙΚΟ ΑΠΟΤΕΛΕΣΜΑ",
+        "financialIncome": "ΧΡΗΜΑΤΟΟΙΚΟΝΟΜΙΚΑ ΕΣΟΔΑ",
+        "financialExpense": "ΧΡΗΜΑΤΟΟΙΚΟΝΟΜΙΚΑ ΕΞΟΔΑ",
+        "financialResult": "ΧΡΗΜΑΤΟΟΙΚΟΝΟΜΙΚΟ ΑΠΟΤΕΛΕΣΜΑ",
+        "exceptionalIncome": "ΕΚΤΑΚΤΑ ΕΣΟΔΑ",
+        "exceptionalExpense": "ΕΚΤΑΚΤΑ ΕΞΟΔΑ",
+        "exceptionalResult": "ΕΚΤΑΚΤΟ ΑΠΟΤΕΛΕΣΜΑ",
+        "otherIncome": "ΛΟΙΠΑ ΕΣΟΔΑ",
+        "otherExpense": "ΛΟΙΠΑ ΕΞΟΔΑ",
+        "otherResult": "ΑΠΟΤΕΛΕΣΜΑ ΛΟΙΠΩΝ ΕΣΟΔΩΝ ΚΑΙ ΕΞΟΔΩΝ",
+        "inKindIncome": "ΕΘΕΛΟΝΤΙΚΕΣ ΕΙΣΦΟΡΕΣ ΣΕ ΕΙΔΟΣ",
+        "inKindExpense": "ΧΡΗΣΗ ΤΩΝ ΕΘΕΛΟΝΤΙΚΩΝ ΕΙΣΦΟΡΩΝ ΣΕ ΕΙΔΟΣ",
+        "inKindResult": "ΕΘΕΛΟΝΤΙΚΕΣ ΕΙΣΦΟΡΕΣ (ΥΠΟΛΟΙΠΟ)",
+        "uncategorizedSection": "ΣΥΝΑΛΛΑΓΕΣ ΠΡΟΣ ΚΑΤΗΓΟΡΙΟΠΟΙΗΣΗ",
+        "uncategorizedIncomeLabel": "Έσοδα προς κατηγοριοποίηση",
+        "uncategorizedExpenseLabel": "Έξοδα προς κατηγοριοποίηση",
+        "total": "Σύνολο",
+        "grandTotal": "ΣΥΝΟΛΟ"
+      },
+      "csv": {
+        "date": "Ημερομηνία",
+        "type": "Τύπος",
+        "typeIncome": "Έσοδο",
+        "typeExpense": "Έξοδο",
+        "category": "Κατηγορία",
+        "uncategorized": "Προς κατηγοριοποίηση",
+        "accountingCode": "Λογιστικός κωδικός",
+        "description": "Περιγραφή",
+        "amount": "Ποσό",
+        "paymentMethod": "Τρόπος πληρωμής",
+        "origin": "Προέλευση",
+        "reference": "Αναφορά",
+        "exercice": "Χρήση"
+      }
     }
   },
   "evenements": {

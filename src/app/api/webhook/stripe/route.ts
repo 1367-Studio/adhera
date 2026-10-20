@@ -44,7 +44,7 @@ import {
   tryHandleInstallmentInvoicePaymentFailed, handleMembershipInstallmentDeleted,
 } from "@/lib/webhook/membership-installments"
 import { reportError } from "@/lib/monitoring"
-import { applyConnectSubscriptionInvoiceFee, reconcileConnectChargeStripeFee } from "@/lib/webhook/connect-stripe-fee"
+import { applyConnectSubscriptionInvoiceFee, reconcileConnectChargeStripeFee, FEE_EXPENSE_DESCRIPTIONS } from "@/lib/webhook/connect-stripe-fee"
 
 // This API version moved the subscription id off Invoice's top level and onto
 // invoice.parent.subscription_details.subscription — same helper as donation-subscriptions.ts
@@ -1001,6 +1001,26 @@ export async function POST(req: Request) {
             )
           }
 
+          // Mirror the same reduction for the Stripe-fee Expense rows this charge booked (see
+          // connect-stripe-fee.ts's bookConnectFeeExpense) — same reference, same
+          // skipLedgerAdjustment guard. Unlike the Income split above (whose row total already
+          // approximates the full charge, so "this row's share of the refunded euros" is the
+          // right formula), these fee rows are tiny relative to the charge — the correct
+          // reduction is "refund the same FRACTION of the charge that was refunded", applied to
+          // each fee row's own original amount, not a share of the refunded euros themselves.
+          const feeExpenses = skipLedgerAdjustment ? [] : await prisma.expense.findMany({
+            where: { reference: paymentIntentId, status: "VALIDATED", description: { in: [FEE_EXPENSE_DESCRIPTIONS.stripeFee, FEE_EXPENSE_DESCRIPTIONS.commission] } },
+          })
+          if (feeExpenses.length) {
+            const refundFraction = charge.amount > 0 ? charge.amount_refunded / charge.amount : 1
+            await prisma.$transaction(
+              feeExpenses.map(e => prisma.expense.update({
+                where: { id: e.id },
+                data:  { amount: Math.max(0, Number(e.amount) * (1 - refundFraction)) },
+              }))
+            )
+          }
+
           // The Income rows above are Finances' system of record, but a boutique
           // commande's own totalAmount is read directly by other parts of the app (order
           // detail, receipt PDF, the income statement's "Loja" bucket via Income.commandeId)
@@ -1055,6 +1075,14 @@ export async function POST(req: Request) {
 
       await prisma.income.updateMany({
         where: { reference: paymentIntentId, status: "PAID" },
+        data:  { status: "CANCELLED" },
+      })
+
+      // Same cancellation for the Stripe-fee Expense rows this charge booked — scoped to our
+      // two auto-created lines (by description), never a user's own manual expense that
+      // happens to carry the same reference. See connect-stripe-fee.ts's bookConnectFeeExpense.
+      await prisma.expense.updateMany({
+        where: { reference: paymentIntentId, status: "VALIDATED", description: { in: [FEE_EXPENSE_DESCRIPTIONS.stripeFee, FEE_EXPENSE_DESCRIPTIONS.commission] } },
         data:  { status: "CANCELLED" },
       })
 
@@ -1224,6 +1252,15 @@ export async function POST(req: Request) {
           await removeRefundedCotisationPaymentsByReference(refundedInvoiceId, {
             paymentIntentId, invoiceId: refundedInvoiceId, stripeEventId: event.id,
           }, associationId)
+
+          // The Stripe-fee Expense rows for a subscription/installment charge are booked with
+          // this same invoice id as their reference (see connect-stripe-fee.ts's
+          // resolveFeeExpenseReference) — the unconditional paymentIntentId-keyed cancel above
+          // never finds them, only this invoice-keyed lookup does.
+          await prisma.expense.updateMany({
+            where: { reference: refundedInvoiceId, status: "VALIDATED", description: { in: [FEE_EXPENSE_DESCRIPTIONS.stripeFee, FEE_EXPENSE_DESCRIPTIONS.commission] } },
+            data:  { status: "CANCELLED" },
+          })
         }
       }
       break

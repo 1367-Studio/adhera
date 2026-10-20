@@ -23,12 +23,18 @@ export interface IncomeStatementPdfParams {
   previousLabel:    string
   rows:             IncomeStatementPdfRow[]
   fileNameSuffix:   string
+  // "Période du dd/MM/yyyy au dd/MM/yyyy" — the exercice's real fiscal period, shown under the
+  // association name/title like the reference accountant document this export is modeled on.
+  periodLabel?:     string
 }
 
 // jsPDF's built-in Helvetica font only covers WinAnsi — the narrow no-break space (U+202F)
 // fr-FR uses as a thousands separator has no glyph there and silently renders as garbage
 // (a slash). Swap it for a plain space, which does exist in the font, after formatting.
-const fmt = (n: number) => n.toLocaleString("fr-FR", { style: "currency", currency: "EUR" }).replace(/[  ]/g, " ")
+// `n === 0 ? 0 : n` strips negative zero (`-0`) before formatting — an empty expense
+// section total is `-emptySum`, which in JS is `-0`, not `0`; left alone it renders as the
+// confusing "-0,00 €" instead of "0,00 €" for a section with no expense activity.
+const fmt = (n: number) => (n === 0 ? 0 : n).toLocaleString("fr-FR", { style: "currency", currency: "EUR" }).replace(/[  ]/g, " ")
 
 export async function exportIncomeStatementPdf(params: IncomeStatementPdfParams) {
   const assocRes = await fetch(`${BASE_PATH}/api/association`)
@@ -73,6 +79,10 @@ export async function exportIncomeStatementPdf(params: IncomeStatementPdfParams)
   doc.setFontSize(8)
   doc.setFont("helvetica", "normal")
   doc.setTextColor(...ZINC)
+  if (params.periodLabel) {
+    doc.text(params.periodLabel, M, y)
+    y += 5
+  }
   doc.text(`Généré le ${today}`, M, y)
   y += 6
 

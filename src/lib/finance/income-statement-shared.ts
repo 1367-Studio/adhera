@@ -2,14 +2,10 @@
 // Split out from income-statement.ts because that module imports `prisma` (server-only) —
 // this half is safe to import from the client component that renders the report.
 
-// Fixed template — same set of lines every period, in this order, whether or not a given
-// association has any activity in a bucket (a legal/statutory report reads the same shape
-// year over year; see Estrutura do demonstrativo in the feature request).
-export const INCOME_BUCKETS  = ["cotisations", "dons", "subventions", "boutique", "evenements", "autres"] as const
-export const EXPENSE_BUCKETS = ["assurance", "communication", "materiel", "transport", "fraisBancaires", "location", "equipement", "autres"] as const
-
-export type IncomeBucket  = typeof INCOME_BUCKETS[number]
-export type ExpenseBucket = typeof EXPENSE_BUCKETS[number]
+// Mirrors the Prisma `FinanceSection` enum as a plain string union so this file stays
+// importable from client components without pulling in `@prisma/client`'s generated runtime.
+export const FINANCE_SECTIONS = ["OPERATING", "FINANCIAL", "EXCEPTIONAL", "OTHER", "IN_KIND"] as const
+export type FinanceSectionKey = typeof FINANCE_SECTIONS[number]
 
 export interface ExerciceRef {
   id:        string
@@ -18,13 +14,57 @@ export interface ExerciceRef {
   endDate:   Date
 }
 
+export interface TransactionDetail {
+  id:            string
+  type:          "INCOME" | "EXPENSE"
+  date:          string // ISO
+  amount:        number
+  paymentMethod: string | null
+  // Human-readable origin label: "Adhésion", "Don", "Boutique", "Événement", "Facture",
+  // "Saisie manuelle"... — never the raw origin id, this is for display/export only.
+  origin:        string
+  personName:    string | null
+  reference:     string | null
+  description:   string | null
+}
+
+export interface CategoryLine {
+  // null when the row is "virtual" — a system bucket (e.g. a default category the association
+  // deleted) resolved from DEFAULT_FINANCE_CATEGORIES metadata rather than a real FinanceCategory
+  // row. Never null for a custom category or a still-existing default category.
+  categoryId:     string | null
+  key:            string | null
+  name:           string
+  accountingCode: string | null
+  isDefault:      boolean
+  amount:         number
+  transactions:   TransactionDetail[]
+}
+
+export interface SectionLines {
+  income:  CategoryLine[]
+  expense: CategoryLine[]
+}
+
+export interface UncategorizedBucket {
+  amount:       number
+  count:        number
+  transactions: TransactionDetail[]
+}
+
 export interface IncomeStatementPeriod {
-  exercice:  ExerciceRef | null
-  income:    Record<IncomeBucket, number>
-  expense:   Record<ExpenseBucket, number>
-  totalIncome:  number
-  totalExpense: number
-  result:       number
+  exercice: ExerciceRef | null
+  sections: Record<FinanceSectionKey, SectionLines>
+  // Separate per type — a mixed count would be meaningless in a two-column (Receitas |
+  // Despesas) layout where each column needs its own alert.
+  uncategorizedIncome:  UncategorizedBucket
+  uncategorizedExpense: UncategorizedBucket
+  totalIncome:       number
+  totalExpense:      number
+  // Receitas - despesas da seção OPERATING somente (item 13 do pedido) — distinto de `result`,
+  // que soma todas as seções (OPERATING + FINANCIAL + EXCEPTIONAL + OTHER + IN_KIND).
+  resultOperational: number
+  result:            number
 }
 
 // Exercice labels are free text (see ExerciceComptable.label) and land directly in export

@@ -899,7 +899,16 @@
       "typeIncome": "Приход",
       "typeExpense": "Разходи",
       "accountingCode": "Счетоводен код",
-      "accountingCodePlaceholder": "Екс: 70600"
+      "accountingCodePlaceholder": "Екс: 70600",
+      "accountingCodeDuplicateWarning": "Този счетоводен код вече се използва от друга категория.",
+      "section": "Раздел",
+      "sectionOptions": {
+        "OPERATING": "Основна дейност",
+        "FINANCIAL": "Финансов",
+        "EXCEPTIONAL": "Извънреден",
+        "OTHER": "Друго",
+        "IN_KIND": "Вноски в натура"
+      }
     },
     "bankAccountForm": {
       "bankName": "Име на банка",
@@ -1289,6 +1298,90 @@
       "typeIncome": "Приход",
       "typeExpense": "Разходи",
       "confirm": "Валидирайте помирението"
+    },
+    "compteResultat": {
+      "title": "Отчет за приходите и разходите",
+      "description": "Финансов резултат за финансовата година, сравнен с предходната година.",
+      "exerciceLabel": "Финансова година",
+      "noPreviousExercice": "-",
+      "export": "Експортиране",
+      "exportExcel": "Експортиране в Excel (подробно)",
+      "exportPdf": "Експортиране в PDF",
+      "products": "Приходи",
+      "totalProducts": "Общо приходи",
+      "expenses": "Разходи",
+      "totalExpenses": "Общо разходи",
+      "result": "Резултат за годината",
+      "surplus": "Излишък за годината",
+      "deficit": "Дефицит за годината",
+      "emptyExercice": {
+        "title": "Няма финансова година",
+        "description": "Създайте финансова година, за да генерирате отчета за приходите и разходите."
+      },
+      "noPreviousExerciceMessage": "Няма предходна финансова година",
+      "resultZero": "Резултат за финансовата година: 0 €",
+      "operationalResult": "Оперативен резултат",
+      "uncategorized": "За категоризиране",
+      "uncategorizedAlertIncome": "{count, plural, one {# приход трябва да бъде категоризиран} other {# прихода трябва да бъдат категоризирани}}",
+      "uncategorizedAlertExpense": "{count, plural, one {# разход трябва да бъде категоризиран} other {# разхода трябва да бъдат категоризирани}}",
+      "expandSection": "Покажи",
+      "collapseSection": "Скрий",
+      "noCategoriesInSection": "Няма категория в този раздел",
+      "sections": {
+        "FINANCIAL": "Финансов",
+        "EXCEPTIONAL": "Извънреден",
+        "OTHER": "Друго",
+        "IN_KIND": "Доброволни вноски в натура"
+      },
+      "drillDown": {
+        "date": "Дата",
+        "origin": "Произход",
+        "person": "Лице",
+        "payment": "Плащане",
+        "amount": "Сума",
+        "categorize": "Категоризирай",
+        "categorizePlaceholder": "Изберете категория",
+        "noTransactions": "Няма транзакции",
+        "categorizeSuccess": "Транзакцията е категоризирана"
+      },
+      "pdf": {
+        "periodLabel": "Период от {start} до {end}",
+        "operatingIncome": "ПРИХОДИ ОТ ОСНОВНА ДЕЙНОСТ",
+        "operatingExpense": "РАЗХОДИ ЗА ОСНОВНА ДЕЙНОСТ",
+        "operatingResult": "РЕЗУЛТАТ ОТ ОСНОВНА ДЕЙНОСТ",
+        "financialIncome": "ФИНАНСОВИ ПРИХОДИ",
+        "financialExpense": "ФИНАНСОВИ РАЗХОДИ",
+        "financialResult": "ФИНАНСОВ РЕЗУЛТАТ",
+        "exceptionalIncome": "ИЗВЪНРЕДНИ ПРИХОДИ",
+        "exceptionalExpense": "ИЗВЪНРЕДНИ РАЗХОДИ",
+        "exceptionalResult": "ИЗВЪНРЕДЕН РЕЗУЛТАТ",
+        "otherIncome": "ДРУГИ ПРИХОДИ",
+        "otherExpense": "ДРУГИ РАЗХОДИ",
+        "otherResult": "РЕЗУЛТАТ ОТ ДРУГИ ПРИХОДИ И РАЗХОДИ",
+        "inKindIncome": "ДОБРОВОЛНИ ВНОСКИ В НАТУРА",
+        "inKindExpense": "ИЗПОЛЗВАНЕ НА ДОБРОВОЛНИТЕ ВНОСКИ В НАТУРА",
+        "inKindResult": "ДОБРОВОЛНИ ВНОСКИ (САЛДО)",
+        "uncategorizedSection": "ТРАНЗАКЦИИ ЗА КАТЕГОРИЗИРАНЕ",
+        "uncategorizedIncomeLabel": "Приходи за категоризиране",
+        "uncategorizedExpenseLabel": "Разходи за категоризиране",
+        "total": "Общо",
+        "grandTotal": "ОБЩО"
+      },
+      "csv": {
+        "date": "Дата",
+        "type": "Тип",
+        "typeIncome": "Приход",
+        "typeExpense": "Разход",
+        "category": "Категория",
+        "uncategorized": "За категоризиране",
+        "accountingCode": "Счетоводен код",
+        "description": "Описание",
+        "amount": "Сума",
+        "paymentMethod": "Начин на плащане",
+        "origin": "Произход",
+        "reference": "Референция",
+        "exercice": "Финансова година"
+      }
     }
   },
   "evenements": {

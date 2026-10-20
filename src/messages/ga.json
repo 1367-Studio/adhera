@@ -899,7 +899,16 @@
       "typeIncome": "Ioncam",
       "typeExpense": "Costas",
       "accountingCode": "Cód cuntasaíochta",
-      "accountingCodePlaceholder": "Ex: 70600"
+      "accountingCodePlaceholder": "Ex: 70600",
+      "accountingCodeDuplicateWarning": "Tá an cód cuntasaíochta seo in úsáid cheana ag catagóir eile.",
+      "section": "Rannán",
+      "sectionOptions": {
+        "OPERATING": "Oibriúchán",
+        "FINANCIAL": "Airgeadais",
+        "EXCEPTIONAL": "Eisceachtúil",
+        "OTHER": "Eile",
+        "IN_KIND": "Ranníocaíochtaí i gcineál"
+      }
     },
     "bankAccountForm": {
       "bankName": "Ainm an Bhainc",
@@ -1289,6 +1298,90 @@
       "typeIncome": "Ioncam",
       "typeExpense": "Costas",
       "confirm": "Bailíochtú an comhréitigh"
+    },
+    "compteResultat": {
+      "title": "Ráiteas Ioncaim",
+      "description": "Toradh airgeadais na bliana airgeadais, i gcomparáid leis an mbliain roimhe sin.",
+      "exerciceLabel": "Bliain airgeadais",
+      "noPreviousExercice": "-",
+      "export": "Easpórtáil",
+      "exportExcel": "Easpórtáil Excel (mionsonraithe)",
+      "exportPdf": "Easpórtáil PDF",
+      "products": "Ioncam",
+      "totalProducts": "Ioncam iomlán",
+      "expenses": "Caiteachas",
+      "totalExpenses": "Caiteachas iomlán",
+      "result": "Toradh na bliana",
+      "surplus": "Barrachas na bliana",
+      "deficit": "Easnamh na bliana",
+      "emptyExercice": {
+        "title": "Níl aon bhliain airgeadais ann",
+        "description": "Cruthaigh bliain airgeadais chun an ráiteas ioncaim a ghiniúint."
+      },
+      "noPreviousExerciceMessage": "Níl aon bhliain airgeadais roimhe seo ar fáil",
+      "resultZero": "Toradh na bliana airgeadais: 0 €",
+      "operationalResult": "Toradh oibriúcháin",
+      "uncategorized": "Le catagóiriú",
+      "uncategorizedAlertIncome": "{count, plural, one {Ní mór # ioncam a chatagóiriú} other {Ní mór # ioncam a chatagóiriú}}",
+      "uncategorizedAlertExpense": "{count, plural, one {Ní mór # chaiteachas a chatagóiriú} other {Ní mór # gcaiteachas a chatagóiriú}}",
+      "expandSection": "Taispeáin",
+      "collapseSection": "Folaigh",
+      "noCategoriesInSection": "Níl aon chatagóir sa rannán seo",
+      "sections": {
+        "FINANCIAL": "Airgeadais",
+        "EXCEPTIONAL": "Eisceachtúil",
+        "OTHER": "Eile",
+        "IN_KIND": "Ranníocaíochtaí deonacha i gcineál"
+      },
+      "drillDown": {
+        "date": "Dáta",
+        "origin": "Bunús",
+        "person": "Duine",
+        "payment": "Íocaíocht",
+        "amount": "Méid",
+        "categorize": "Catagóirigh",
+        "categorizePlaceholder": "Roghnaigh catagóir",
+        "noTransactions": "Níl aon idirbheart ann",
+        "categorizeSuccess": "Idirbheart catagóirithe"
+      },
+      "pdf": {
+        "periodLabel": "Tréimhse ó {start} go {end}",
+        "operatingIncome": "IONCAM OIBRIÚCHÁIN",
+        "operatingExpense": "CAITEACHAS OIBRIÚCHÁIN",
+        "operatingResult": "TORADH OIBRIÚCHÁIN",
+        "financialIncome": "IONCAM AIRGEADAIS",
+        "financialExpense": "CAITEACHAS AIRGEADAIS",
+        "financialResult": "TORADH AIRGEADAIS",
+        "exceptionalIncome": "IONCAM EISCEACHTÚIL",
+        "exceptionalExpense": "CAITEACHAS EISCEACHTÚIL",
+        "exceptionalResult": "TORADH EISCEACHTÚIL",
+        "otherIncome": "IONCAM EILE",
+        "otherExpense": "CAITEACHAS EILE",
+        "otherResult": "TORADH Ó IONCAM AGUS CAITEACHAS EILE",
+        "inKindIncome": "RANNÍOCAÍOCHTAÍ DEONACHA I GCINEÁL",
+        "inKindExpense": "ÚSÁID NA RANNÍOCAÍOCHTAÍ DEONACHA I GCINEÁL",
+        "inKindResult": "RANNÍOCAÍOCHTAÍ DEONACHA (IARMHÉID)",
+        "uncategorizedSection": "IDIRBHEARTA LE CATAGÓIRIÚ",
+        "uncategorizedIncomeLabel": "Ioncam le catagóiriú",
+        "uncategorizedExpenseLabel": "Caiteachas le catagóiriú",
+        "total": "Iomlán",
+        "grandTotal": "IOMLÁN"
+      },
+      "csv": {
+        "date": "Dáta",
+        "type": "Cineál",
+        "typeIncome": "Ioncam",
+        "typeExpense": "Caiteachas",
+        "category": "Catagóir",
+        "uncategorized": "Le catagóiriú",
+        "accountingCode": "Cód cuntasaíochta",
+        "description": "Cur síos",
+        "amount": "Méid",
+        "paymentMethod": "Modhíocaíochta",
+        "origin": "Bunús",
+        "reference": "Tagairt",
+        "exercice": "Bliain airgeadais"
+      }
     }
   },
   "evenements": {

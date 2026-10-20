@@ -899,7 +899,16 @@
       "typeIncome": "Tulu",
       "typeExpense": "Kulud",
       "accountingCode": "Raamatupidamiskood",
-      "accountingCodePlaceholder": "End: 70600"
+      "accountingCodePlaceholder": "End: 70600",
+      "accountingCodeDuplicateWarning": "Seda raamatupidamiskoodi kasutab juba teine kategooria.",
+      "section": "Jaotis",
+      "sectionOptions": {
+        "OPERATING": "Äritegevus",
+        "FINANCIAL": "Finants",
+        "EXCEPTIONAL": "Erakorraline",
+        "OTHER": "Muu",
+        "IN_KIND": "Mitterahalised panused"
+      }
     },
     "bankAccountForm": {
       "bankName": "Panga nimi",
@@ -1289,6 +1298,90 @@
       "typeIncome": "Tulu",
       "typeExpense": "Kulud",
       "confirm": "Kinnita lepitus"
+    },
+    "compteResultat": {
+      "title": "Kasumiaruanne",
+      "description": "Majandusaasta finantstulemus, võrreldes eelmise aastaga.",
+      "exerciceLabel": "Majandusaasta",
+      "noPreviousExercice": "-",
+      "export": "Ekspordi",
+      "exportExcel": "Ekspordi Excel (üksikasjalik)",
+      "exportPdf": "Ekspordi PDF",
+      "products": "Tulud",
+      "totalProducts": "Tulud kokku",
+      "expenses": "Kulud",
+      "totalExpenses": "Kulud kokku",
+      "result": "Majandusaasta tulemus",
+      "surplus": "Majandusaasta ülejääk",
+      "deficit": "Majandusaasta puudujääk",
+      "emptyExercice": {
+        "title": "Majandusaastat pole",
+        "description": "Looge majandusaasta kasumiaruande koostamiseks."
+      },
+      "noPreviousExerciceMessage": "Eelmine majandusaasta pole saadaval",
+      "resultZero": "Majandusaasta tulemus: 0 €",
+      "operationalResult": "Äritegevuse tulemus",
+      "uncategorized": "Kategoriseerimata",
+      "uncategorizedAlertIncome": "{count, plural, one {# tulu tuleb kategoriseerida} other {# tulu tuleb kategoriseerida}}",
+      "uncategorizedAlertExpense": "{count, plural, one {# kulu tuleb kategoriseerida} other {# kulu tuleb kategoriseerida}}",
+      "expandSection": "Näita",
+      "collapseSection": "Peida",
+      "noCategoriesInSection": "Selles jaotises pole ühtegi kategooriat",
+      "sections": {
+        "FINANCIAL": "Finants",
+        "EXCEPTIONAL": "Erakorraline",
+        "OTHER": "Muu",
+        "IN_KIND": "Vabatahtlikud mitterahalised panused"
+      },
+      "drillDown": {
+        "date": "Kuupäev",
+        "origin": "Päritolu",
+        "person": "Isik",
+        "payment": "Makse",
+        "amount": "Summa",
+        "categorize": "Kategoriseeri",
+        "categorizePlaceholder": "Vali kategooria",
+        "noTransactions": "Tehinguid pole",
+        "categorizeSuccess": "Tehing kategoriseeritud"
+      },
+      "pdf": {
+        "periodLabel": "Periood {start} – {end}",
+        "operatingIncome": "ÄRITULUD",
+        "operatingExpense": "ÄRIKULUD",
+        "operatingResult": "ÄRITEGEVUSE TULEMUS",
+        "financialIncome": "FINANTSTULUD",
+        "financialExpense": "FINANTSKULUD",
+        "financialResult": "FINANTSTULEMUS",
+        "exceptionalIncome": "ERAKORRALISED TULUD",
+        "exceptionalExpense": "ERAKORRALISED KULUD",
+        "exceptionalResult": "ERAKORRALINE TULEMUS",
+        "otherIncome": "MUUD TULUD",
+        "otherExpense": "MUUD KULUD",
+        "otherResult": "MUUDE TULUDE JA KULUDE TULEMUS",
+        "inKindIncome": "VABATAHTLIKUD MITTERAHALISED PANUSED",
+        "inKindExpense": "VABATAHTLIKE MITTERAHALISTE PANUSTE KASUTAMINE",
+        "inKindResult": "VABATAHTLIKUD PANUSED (SALDO)",
+        "uncategorizedSection": "KATEGORISEERIMATA TEHINGUD",
+        "uncategorizedIncomeLabel": "Kategoriseerimata tulud",
+        "uncategorizedExpenseLabel": "Kategoriseerimata kulud",
+        "total": "Kokku",
+        "grandTotal": "KOKKU"
+      },
+      "csv": {
+        "date": "Kuupäev",
+        "type": "Tüüp",
+        "typeIncome": "Tulu",
+        "typeExpense": "Kulu",
+        "category": "Kategooria",
+        "uncategorized": "Kategoriseerimata",
+        "accountingCode": "Raamatupidamiskood",
+        "description": "Kirjeldus",
+        "amount": "Summa",
+        "paymentMethod": "Makseviis",
+        "origin": "Päritolu",
+        "reference": "Viide",
+        "exercice": "Majandusaasta"
+      }
     }
   },
   "evenements": {

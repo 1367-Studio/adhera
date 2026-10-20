@@ -899,7 +899,16 @@
       "typeIncome": "Przychód",
       "typeExpense": "Wydatki",
       "accountingCode": "Kod księgowy",
-      "accountingCodePlaceholder": "Przykład: 70600"
+      "accountingCodePlaceholder": "Przykład: 70600",
+      "accountingCodeDuplicateWarning": "Ten kod księgowy jest już używany przez inną kategorię.",
+      "section": "Sekcja",
+      "sectionOptions": {
+        "OPERATING": "Operacyjne",
+        "FINANCIAL": "Finansowe",
+        "EXCEPTIONAL": "Nadzwyczajne",
+        "OTHER": "Inne",
+        "IN_KIND": "Świadczenia rzeczowe"
+      }
     },
     "bankAccountForm": {
       "bankName": "Nazwa banku",
@@ -1289,6 +1298,90 @@
       "typeIncome": "Przychód",
       "typeExpense": "Wydatki",
       "confirm": "Zweryfikować pojednanie"
+    },
+    "compteResultat": {
+      "title": "Rachunek wyników",
+      "description": "Wynik finansowy roku obrotowego w porównaniu z poprzednim rokiem.",
+      "exerciceLabel": "Rok obrotowy",
+      "noPreviousExercice": "-",
+      "export": "Eksportuj",
+      "exportExcel": "Eksportuj Excel (szczegółowo)",
+      "exportPdf": "Eksportuj PDF",
+      "products": "Przychody",
+      "totalProducts": "Przychody razem",
+      "expenses": "Koszty",
+      "totalExpenses": "Koszty razem",
+      "result": "Wynik roku obrotowego",
+      "surplus": "Nadwyżka roku obrotowego",
+      "deficit": "Deficyt roku obrotowego",
+      "emptyExercice": {
+        "title": "Brak roku obrotowego",
+        "description": "Utwórz rok obrotowy, aby wygenerować rachunek wyników."
+      },
+      "noPreviousExerciceMessage": "Brak dostępnego poprzedniego roku obrotowego",
+      "resultZero": "Wynik roku obrotowego: 0 €",
+      "operationalResult": "Wynik operacyjny",
+      "uncategorized": "Do skategoryzowania",
+      "uncategorizedAlertIncome": "{count, plural, one {# przychód wymaga skategoryzowania} other {# przychody wymagają skategoryzowania}}",
+      "uncategorizedAlertExpense": "{count, plural, one {# wydatek wymaga skategoryzowania} other {# wydatki wymagają skategoryzowania}}",
+      "expandSection": "Pokaż",
+      "collapseSection": "Ukryj",
+      "noCategoriesInSection": "Brak kategorii w tej sekcji",
+      "sections": {
+        "FINANCIAL": "Finansowe",
+        "EXCEPTIONAL": "Nadzwyczajne",
+        "OTHER": "Inne",
+        "IN_KIND": "Dobrowolne świadczenia rzeczowe"
+      },
+      "drillDown": {
+        "date": "Data",
+        "origin": "Pochodzenie",
+        "person": "Osoba",
+        "payment": "Płatność",
+        "amount": "Kwota",
+        "categorize": "Kategoryzuj",
+        "categorizePlaceholder": "Wybierz kategorię",
+        "noTransactions": "Brak transakcji",
+        "categorizeSuccess": "Transakcja skategoryzowana"
+      },
+      "pdf": {
+        "periodLabel": "Okres od {start} do {end}",
+        "operatingIncome": "PRZYCHODY OPERACYJNE",
+        "operatingExpense": "KOSZTY OPERACYJNE",
+        "operatingResult": "WYNIK OPERACYJNY",
+        "financialIncome": "PRZYCHODY FINANSOWE",
+        "financialExpense": "KOSZTY FINANSOWE",
+        "financialResult": "WYNIK FINANSOWY",
+        "exceptionalIncome": "PRZYCHODY NADZWYCZAJNE",
+        "exceptionalExpense": "KOSZTY NADZWYCZAJNE",
+        "exceptionalResult": "WYNIK NADZWYCZAJNY",
+        "otherIncome": "POZOSTAŁE PRZYCHODY",
+        "otherExpense": "POZOSTAŁE KOSZTY",
+        "otherResult": "WYNIK Z POZOSTAŁYCH PRZYCHODÓW I KOSZTÓW",
+        "inKindIncome": "DOBROWOLNE ŚWIADCZENIA RZECZOWE",
+        "inKindExpense": "WYKORZYSTANIE DOBROWOLNYCH ŚWIADCZEŃ RZECZOWYCH",
+        "inKindResult": "DOBROWOLNE ŚWIADCZENIA (SALDO)",
+        "uncategorizedSection": "TRANSAKCJE DO SKATEGORYZOWANIA",
+        "uncategorizedIncomeLabel": "Przychody do skategoryzowania",
+        "uncategorizedExpenseLabel": "Wydatki do skategoryzowania",
+        "total": "Razem",
+        "grandTotal": "RAZEM"
+      },
+      "csv": {
+        "date": "Data",
+        "type": "Typ",
+        "typeIncome": "Przychód",
+        "typeExpense": "Wydatek",
+        "category": "Kategoria",
+        "uncategorized": "Do skategoryzowania",
+        "accountingCode": "Kod księgowy",
+        "description": "Opis",
+        "amount": "Kwota",
+        "paymentMethod": "Metoda płatności",
+        "origin": "Pochodzenie",
+        "reference": "Odniesienie",
+        "exercice": "Rok obrotowy"
+      }
     }
   },
   "evenements": {
