@@ -297,7 +297,7 @@ export function rsvpConfirmationEmail(p: {
   const content = `
     <h2 style="margin:0 0 20px;font-size:20px;font-weight:700;">Participation confirmée</h2>
     <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
-      Bonjour ${p.firstName},<br>Votre participation à l'événement suivant a bien été enregistrée.
+      Bonjour ${p.firstName},<br><br>Votre participation à l'événement suivant a bien été enregistrée.
     </p>
     <table cellpadding="0" cellspacing="0" style="margin:0 0 24px;background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;padding:20px 24px;width:100%;box-sizing:border-box;">
       <tr><td style="padding-bottom:10px;">
@@ -345,7 +345,7 @@ export function waitlistConfirmationEmail(p: {
   const content = `
     <h2 style="margin:0 0 20px;font-size:20px;font-weight:700;">Vous êtes sur liste d'attente</h2>
     <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
-      Bonjour ${p.firstName},<br>L'événement suivant est complet. Votre demande a été ajoutée à la liste d'attente
+      Bonjour ${p.firstName},<br><br>L'événement suivant est complet. Votre demande a été ajoutée à la liste d'attente
       — nous vous contacterons si une place se libère.
     </p>
     <table cellpadding="0" cellspacing="0" style="margin:0 0 24px;background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;padding:20px 24px;width:100%;box-sizing:border-box;">
@@ -387,7 +387,7 @@ export function sondageInvitationEmail(p: {
   const content = `
     <h2 style="margin:0 0 20px;font-size:20px;font-weight:700;">Nouveau sondage</h2>
     <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
-      Bonjour ${p.firstName},<br><strong>${p.associationName}</strong> vous invite à répondre au sondage suivant.
+      Bonjour ${p.firstName},<br><br><strong>${p.associationName}</strong> vous invite à répondre au sondage suivant.
     </p>
     <table cellpadding="0" cellspacing="0" style="margin:0 0 24px;background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;padding:20px 24px;width:100%;box-sizing:border-box;">
       <tr><td style="padding-bottom:${deadlineStr ? "10px" : "0"};">
@@ -420,7 +420,7 @@ export function checkInReceiptEmail(p: {
   const content = `
     <h2 style="margin:0 0 20px;font-size:20px;font-weight:700;">Présence enregistrée ✓</h2>
     <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
-      Bonjour ${p.firstName},<br>Votre présence au <strong>${p.eventTitle}</strong> du ${dateStr} a bien été enregistrée.
+      Bonjour ${p.firstName},<br><br>Votre présence au <strong>${p.eventTitle}</strong> du ${dateStr} a bien été enregistrée.
     </p>
     <p style="margin:0;font-size:13px;color:#71717a;">
       Merci de votre participation !
@@ -457,7 +457,7 @@ export function paymentConfirmationEmail(p: {
   const content = `
     <h2 style="margin:0 0 20px;font-size:20px;font-weight:700;">Paiement reçu</h2>
     <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
-      Bonjour ${p.firstName},<br>Votre cotisation a bien été reçue. Merci !
+      Bonjour ${p.firstName},<br><br>Votre cotisation a bien été reçue. Merci !
     </p>
     <table cellpadding="0" cellspacing="0" style="margin:0 0 24px;background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;padding:20px 24px;width:100%;box-sizing:border-box;">
       ${p.period ? `<tr><td style="padding-bottom:10px;">
@@ -504,7 +504,7 @@ export function eventReminderEmail(p: {
   const content = `
     <h2 style="margin:0 0 20px;font-size:20px;font-weight:700;">Rappel — ${whenLabel}</h2>
     <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
-      Bonjour ${p.firstName},<br>Nous vous rappelons que vous participez à l'événement suivant <strong>${whenLabel}</strong>.
+      Bonjour ${p.firstName},<br><br>Nous vous rappelons que vous participez à l'événement suivant <strong>${whenLabel}</strong>.
     </p>
     <table cellpadding="0" cellspacing="0" style="margin:0 0 24px;background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;padding:20px 24px;width:100%;box-sizing:border-box;">
       <tr><td style="padding-bottom:10px;">
@@ -542,7 +542,7 @@ export function eventReviewRequestEmail(p: {
   const content = `
     <h2 style="margin:0 0 20px;font-size:20px;font-weight:700;">Votre avis compte</h2>
     <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
-      Bonjour ${p.firstName},<br>Merci d'avoir participé à <strong>${p.eventTitle}</strong> le ${dateStr}.
+      Bonjour ${p.firstName},<br><br>Merci d'avoir participé à <strong>${p.eventTitle}</strong> le ${dateStr}.
       Pouvez-vous prendre un instant pour nous donner votre avis ?
     </p>
     ${btn("Donner mon avis", p.reviewUrl)}`
@@ -836,7 +836,7 @@ export function ticketPurchaseEmail(p: {
   const content = `
     <h2 style="margin:0 0 20px;font-size:20px;font-weight:700;">Billet confirmé !</h2>
     <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
-      Bonjour ${p.firstName},<br>Votre paiement a été accepté. Voici votre confirmation de billet.
+      Bonjour ${p.firstName},<br><br>Votre paiement a été accepté. Voici votre confirmation de billet.
     </p>
     <table cellpadding="0" cellspacing="0" style="margin:0 0 24px;background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;padding:20px 24px;width:100%;box-sizing:border-box;">
       <tr><td style="padding-bottom:10px;">
@@ -888,7 +888,7 @@ export function ticketQrDeliveryEmail(p: {
   const content = `
     <h2 style="margin:0 0 20px;font-size:20px;font-weight:700;">Votre QR code d'entrée</h2>
     <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
-      Bonjour ${p.firstName},<br>Votre inscription à « ${p.eventTitle} » est bien enregistrée.
+      Bonjour ${p.firstName},<br><br>Votre inscription à « ${p.eventTitle} » est bien enregistrée.
       Voici le QR code d'entrée de votre billet — il vous sera demandé à l'entrée de l'événement.
     </p>
     <table cellpadding="0" cellspacing="0" style="margin:0 0 24px;background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;padding:20px 24px;width:100%;box-sizing:border-box;">
@@ -928,7 +928,7 @@ export function cancellationConfirmationEmail(p: {
   const content = `
     <h2 style="margin:0 0 20px;font-size:20px;font-weight:700;">Inscription annulée</h2>
     <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
-      Bonjour ${p.firstName},<br>Votre inscription à « ${p.eventTitle} » a bien été annulée.
+      Bonjour ${p.firstName},<br><br>Votre inscription à « ${p.eventTitle} » a bien été annulée.
     </p>
     ${p.refunded && amountStr ? `<p style="margin:0;font-size:14px;color:#3f3f46;">Un remboursement de <strong>${amountStr}</strong> a été initié — comptez quelques jours ouvrés pour qu'il apparaisse sur votre compte.</p>` : ""}`
   return {
@@ -960,7 +960,7 @@ export function meetingInviteEmail(p: {
   const content = `
     <h2 style="margin:0 0 20px;font-size:20px;font-weight:700;">Vous êtes invité(e) à une réunion</h2>
     <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
-      Bonjour ${p.firstName},<br><strong>${p.associationName}</strong> vous invite à participer à la réunion suivante.
+      Bonjour ${p.firstName},<br><br><strong>${p.associationName}</strong> vous invite à participer à la réunion suivante.
     </p>
     <table cellpadding="0" cellspacing="0" style="margin:0 0 24px;background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;padding:20px 24px;width:100%;box-sizing:border-box;">
       <tr><td style="padding-bottom:10px;">
@@ -1005,7 +1005,7 @@ export function donPendingEmail(p: {
   const content = `
     <h2 style="margin:0 0 20px;font-size:20px;font-weight:700;">Merci pour votre don !</h2>
     <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
-      Bonjour ${p.firstName},<br>Nous vous remercions chaleureusement pour votre don de
+      Bonjour ${p.firstName},<br><br>Nous vous remercions chaleureusement pour votre don de
       <strong>${amountStr}</strong> à <strong>${p.associationName}</strong>. Votre soutien est
       précieux et contribue aux actions et aux projets de notre association.
     </p>
@@ -1069,7 +1069,7 @@ export function donConfirmationEmail(p: {
   const content = `
     <h2 style="margin:0 0 20px;font-size:20px;font-weight:700;">Merci pour votre don !</h2>
     <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
-      Bonjour ${p.firstName},<br>Votre don à <strong>${p.associationName}</strong> a bien été reçu. Merci pour votre générosité !
+      Bonjour ${p.firstName},<br><br>Votre don à <strong>${p.associationName}</strong> a bien été reçu. Merci pour votre générosité !
     </p>
     <table cellpadding="0" cellspacing="0" style="margin:0 0 16px;background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;padding:20px 24px;width:100%;box-sizing:border-box;">
       <tr><td style="padding-bottom:10px;">
@@ -1156,7 +1156,7 @@ export function donationSubscriptionStartedEmail(p: {
   const content = `
     <h2 style="margin:0 0 20px;font-size:20px;font-weight:700;">Merci pour votre don régulier !</h2>
     <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
-      Bonjour ${p.firstName},<br>Votre don récurrent à <strong>${p.associationName}</strong> est activé. Merci pour votre soutien continu !
+      Bonjour ${p.firstName},<br><br>Votre don récurrent à <strong>${p.associationName}</strong> est activé. Merci pour votre soutien continu !
     </p>
     <table cellpadding="0" cellspacing="0" style="margin:0 0 20px;background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;padding:20px 24px;width:100%;box-sizing:border-box;">
       <tr><td>
@@ -1192,7 +1192,7 @@ export function donationSubscriptionPaymentFailedEmail(p: {
   const content = `
     <h2 style="margin:0 0 20px;font-size:20px;font-weight:700;">Le prélèvement de votre don n'a pas abouti</h2>
     <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
-      Bonjour ${p.firstName},<br>Le prélèvement de <strong>${amountStr}</strong> pour votre don récurrent à
+      Bonjour ${p.firstName},<br><br>Le prélèvement de <strong>${amountStr}</strong> pour votre don récurrent à
       <strong>${p.associationName}</strong> n'a pas pu être effectué.<br>
       ${nextAttemptStr
         ? `Un nouvel essai automatique aura lieu le <strong>${nextAttemptStr}</strong> — vérifiez que votre moyen de paiement est à jour.`
@@ -1245,7 +1245,7 @@ export function membershipSubscriptionStartedEmail(p: {
   const content = `
     <h2 style="margin:0 0 20px;font-size:20px;font-weight:700;">Bienvenue chez ${p.associationName} !</h2>
     <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
-      Bonjour ${p.firstName},<br>Votre adhésion est activée et votre premier paiement a été reçu.
+      Bonjour ${p.firstName},<br><br>Votre adhésion est activée et votre premier paiement a été reçu.
       Vous pouvez dès maintenant vous connecter à votre espace membre avec l'email et le mot
       de passe que vous avez choisis.
     </p>
@@ -1355,7 +1355,7 @@ export function membershipWelcomeEmail(p: {
   const content = `
     <h2 style="margin:0 0 20px;font-size:20px;font-weight:700;">Bienvenue chez ${p.associationName} !</h2>
     <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
-      Bonjour ${p.firstName},<br>Votre adhésion est activée${statusSentence}
+      Bonjour ${p.firstName},<br><br>Votre adhésion est activée${statusSentence}
       Vous pouvez dès maintenant vous connecter à votre espace membre avec l'email et le mot
       de passe que vous avez choisis.
     </p>
@@ -1401,7 +1401,7 @@ export function membershipPendingValidationEmail(p: {
   const content = `
     <h2 style="margin:0 0 20px;font-size:20px;font-weight:700;">Demande bien reçue</h2>
     <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
-      Bonjour ${p.firstName},<br>Votre demande d'adhésion à ${p.associationName} via « ${p.formTitle} »
+      Bonjour ${p.firstName},<br><br>Votre demande d'adhésion à ${p.associationName} via « ${p.formTitle} »
       a bien été reçue. Elle est en attente de validation par un responsable de l'association —
       vous serez prévenu(e) par email dès qu'elle sera validée.
     </p>
@@ -1434,7 +1434,7 @@ export function membershipPaymentLinkEmail(p: {
   const content = `
     <h2 style="margin:0 0 20px;font-size:20px;font-weight:700;">Finalisez votre adhésion à ${p.associationName}</h2>
     <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
-      Bonjour ${p.firstName},<br>${p.associationName} vous a inscrit(e) via « ${p.formTitle} ».
+      Bonjour ${p.firstName},<br><br>${p.associationName} vous a inscrit(e) via « ${p.formTitle} ».
       Il ne reste qu'à régler votre cotisation ${p.year} pour devenir adhérent(e) — en ligne,
       en quelques clics, sans créer de compte.
     </p>
@@ -1469,7 +1469,7 @@ export function adhesionCompletionInviteEmail(p: {
   const content = `
     <h2 style="margin:0 0 20px;font-size:20px;font-weight:700;">Complétez votre adhésion à ${p.associationName}</h2>
     <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
-      Bonjour ${p.firstName},<br>Il manque encore quelques informations et le règlement de
+      Bonjour ${p.firstName},<br><br>Il manque encore quelques informations et le règlement de
       votre cotisation pour finaliser votre adhésion à ${p.associationName}. Cela ne prend
       que quelques minutes — vos identifiants de connexion restent les mêmes.
     </p>
@@ -1496,7 +1496,7 @@ export function adhesionCompletionConfirmationEmail(p: {
   const content = `
     <h2 style="margin:0 0 20px;font-size:20px;font-weight:700;">Merci, votre adhésion est finalisée</h2>
     <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
-      Bonjour ${p.firstName},<br>Votre cotisation de ${amountStr} a bien été réglée. Votre
+      Bonjour ${p.firstName},<br><br>Votre cotisation de ${amountStr} a bien été réglée. Votre
       adhésion à ${p.associationName} est désormais complète — aucune autre action n'est
       nécessaire.
     </p>`
@@ -1656,7 +1656,7 @@ export function cotisationSubscriptionPaymentFailedEmail(p: {
   const content = `
     <h2 style="margin:0 0 20px;font-size:20px;font-weight:700;">Le prélèvement de votre cotisation n'a pas abouti</h2>
     <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
-      Bonjour ${p.firstName},<br>Le prélèvement de <strong>${amountStr}</strong> pour votre cotisation à
+      Bonjour ${p.firstName},<br><br>Le prélèvement de <strong>${amountStr}</strong> pour votre cotisation à
       <strong>${p.associationName}</strong> n'a pas pu être effectué.<br>
       ${nextAttemptStr
         ? `Un nouvel essai automatique aura lieu le <strong>${nextAttemptStr}</strong> — vérifiez que votre moyen de paiement est à jour.`
@@ -1717,7 +1717,7 @@ export function membershipInstallmentPaymentFailedEmail(p: {
   const content = `
     <h2 style="margin:0 0 20px;font-size:20px;font-weight:700;">Le prélèvement de votre mensualité n'a pas abouti</h2>
     <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
-      Bonjour ${p.firstName},<br>Le prélèvement de <strong>${amountStr}</strong>
+      Bonjour ${p.firstName},<br><br>Le prélèvement de <strong>${amountStr}</strong>
       (mensualité ${p.installmentNumber}/${p.installmentsCount}) pour votre adhésion à
       <strong>${p.associationName}</strong> n'a pas pu être effectué.<br>
       ${nextAttemptStr
@@ -1786,7 +1786,7 @@ export function boutiqueConfirmationEmail(p: {
   const content = `
     <h2 style="margin:0 0 20px;font-size:20px;font-weight:700;">Commande confirmée !</h2>
     <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
-      Bonjour ${p.firstName},<br>Votre commande auprès de <strong>${p.associationName}</strong> a bien été enregistrée.
+      Bonjour ${p.firstName},<br><br>Votre commande auprès de <strong>${p.associationName}</strong> a bien été enregistrée.
     </p>
     <table cellpadding="0" cellspacing="0" style="margin:0 0 24px;width:100%;background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;padding:16px 20px;box-sizing:border-box;">
       <thead>
@@ -1845,7 +1845,7 @@ export function boutiqueRefundEmail(p: {
   const content = `
     <h2 style="margin:0 0 20px;font-size:20px;font-weight:700;">${p.fullyCancelled ? "Commande annulée" : "Remboursement partiel"}</h2>
     <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
-      Bonjour ${p.firstName},<br>${intro}
+      Bonjour ${p.firstName},<br><br>${intro}
     </p>
     <table cellpadding="0" cellspacing="0" style="margin:0 0 24px;width:100%;background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;padding:16px 20px;box-sizing:border-box;">
       <thead>
@@ -1899,7 +1899,7 @@ export function boutiquePendingOrderEmail(p: {
   const content = `
     <h2 style="margin:0 0 20px;font-size:20px;font-weight:700;">Commande enregistrée !</h2>
     <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
-      Bonjour ${p.firstName},<br>Votre commande auprès de <strong>${p.associationName}</strong> a bien été enregistrée.
+      Bonjour ${p.firstName},<br><br>Votre commande auprès de <strong>${p.associationName}</strong> a bien été enregistrée.
       Le paiement s'effectue au retrait — l'administration vous contactera pour finaliser.
     </p>
     <table cellpadding="0" cellspacing="0" style="margin:0 0 24px;width:100%;background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;padding:16px 20px;box-sizing:border-box;">
@@ -2025,7 +2025,7 @@ export function supportTicketReplyEmail(p: {
   const content = `
     <h2 style="margin:0 0 20px;font-size:20px;font-weight:700;">Nouvelle réponse à votre demande</h2>
     <p style="margin:0 0 16px;font-size:15px;line-height:1.6;color:#3f3f46;">
-      Bonjour ${escapeHtml(p.name)},<br>L'équipe ${APP_NAME} a répondu à votre demande <strong>${escapeHtml(p.subject)}</strong> :
+      Bonjour ${escapeHtml(p.name)},<br><br>L'équipe ${APP_NAME} a répondu à votre demande <strong>${escapeHtml(p.subject)}</strong> :
     </p>
     <table cellpadding="0" cellspacing="0" width="100%" style="margin:0 0 24px;border-left:3px solid #e4e4e7;">
       <tr><td style="padding:4px 0 4px 16px;font-size:14px;line-height:1.6;color:#18181b;white-space:pre-wrap;">${escapeHtml(p.body)}</td></tr>
