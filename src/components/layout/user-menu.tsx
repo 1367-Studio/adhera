@@ -24,15 +24,15 @@ import { ProfileEditModal }        from "./profile-edit-modal"
 import { ChangePasswordModal }     from "./change-password-modal"
 import { TwoFactorSettingsModal }  from "./two-factor-settings-modal"
 
-// Adhera runs embedded under formwise.fr/app — these legal pages live on the parent
-// formwise-app site itself (single platform-wide set, not per-association), so we link
-// out instead of duplicating the content here. They sit in this menu rather than in
-// Paramètres so every role reaches them: managers, portal members and super admins.
+// Adhera runs embedded under formwise.fr/app — these legal pages live on the marketing
+// site (formwise-latest repo, Sanity-backed) instead of being duplicated here. They sit in
+// this menu rather than in Paramètres so every role reaches them: managers, portal members
+// and super admins.
 const LEGAL_LINKS = [
-  { key: "mentionsLegales",             href: "https://www.formwise.fr/mentions-legales" },
-  { key: "cgu",                         href: "https://www.formwise.fr/cgu" },
-  { key: "cgs",                         href: "https://www.formwise.fr/cgv" },
-  { key: "politiqueConfidentialite",    href: "https://www.formwise.fr/politique-de-confidentialite" },
+  { key: "mentionsLegales",             href: "https://www.formwise.fr/fr/legal-notice/" },
+  { key: "cgu",                         href: "https://www.formwise.fr/fr/terms-of-use/" },
+  { key: "cgs",                         href: "https://www.formwise.fr/fr/terms-of-service/" },
+  { key: "politiqueConfidentialite",    href: "https://www.formwise.fr/fr/privacy-policy/" },
 ] as const
 
 function getRoleLabels(t: ReturnType<typeof useTranslations>): Record<string, string> {
