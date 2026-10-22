@@ -4512,12 +4512,14 @@
         "memberDeletedWithUnlink": "Membre supprimé — retiré comme responsable légal de {count} membre(s)",
         "noMembersToExport": "Aucun membre à exporter",
         "viewSubscription": "Voir l'abonnement",
-        "roleUpdated": "Rôle mis à jour"
+        "roleUpdated": "Rôle mis à jour",
+        "configureAccess": "Configurer les accès"
       },
       "changeRoleTitle": "Modifier le rôle",
       "addViaForm": "Via un formulaire d'adhésion",
       "addManual": "Ajouter manuellement",
       "changeRoleDescription": "Rôle de {name} dans l'association.",
+      "changeRoleEquipeHint": "Ce rôle démarre sans aucun accès à la gestion. Configurez les accès par domaine dans Paramètres › Équipe et accès.",
       "pendingRequests": "{count, plural, one {# demande en attente} other {# demandes en attente}}"
     },
     "detail": {
