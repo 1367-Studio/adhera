@@ -43,7 +43,12 @@ export const DASHBOARD_ROUTE_ACCESS: Record<string, DashboardRouteRequirement> =
   "/dashboard/fournisseurs":          { area: "comptabilite" },
   "/dashboard/reunions":              { area: "reunions" },
   "/dashboard/materiel":              { area: "materiel" },
-  "/dashboard/site":                  { area: "site" },
+  // Edit, not just read: the legacy editor is discontinued and nobody should land on it — see
+  // the puck pages' own redirect to "/dashboard" for anyone without edit access to this area.
+  "/dashboard/site":                  { area: "site", level: "edit" },
+  // Read-only view of the published site, content only (Puck's <Render>, no editor chrome) —
+  // the one screen "site" read access still unlocks, since there is no read-only editor.
+  "/dashboard/site/puck/apercu":      { area: "site" },
   "/dashboard/documents-association": { area: "documents" },
   // Administrators only, as before FORM-34 (Admin + Président): billing, Stripe, bank details,
   // integrations and team access all live there.

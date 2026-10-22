@@ -1,8 +1,9 @@
-import type { Metadata } from "next"
-import { SiteView } from "@/components/site/site-view"
+import { redirect } from "next/navigation"
 
-export const metadata: Metadata = { title: "Site web" }
-
+// The legacy editor (SiteView) is discontinued — nobody is sent here anymore, not even to
+// revert to it. This route only still exists because old links/bookmarks may point at it;
+// it immediately sends everyone to the new editor (whose own guard sends anyone without
+// edit access on to "/dashboard").
 export default function SitePage() {
-  return <SiteView />
+  redirect("/dashboard/site/puck")
 }

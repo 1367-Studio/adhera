@@ -6,10 +6,14 @@ import { writeActivityLog } from "@/lib/activity-log"
 import { revalidatePublicSiteFor } from "@/lib/association/revalidate-site"
 
 // FORM-7: which builder's version visitors see — LEGACY renders siteConfig, PUCK renders
-// sitePuckPublished. Switching never touches either store, so it can be undone at any time.
+// sitePuckPublished. The legacy editor is discontinued and switching back to it is refused
+// below (even though the stores themselves are untouched by switching, so it would be
+// technically harmless) — there is no UI for it anymore and it should stay that way. Normal
+// publishing (POST /api/site-draft/publish) already switches to PUCK on its own; this route
+// only still exists for that one-off case (e.g. activating PUCK without a fresh publish).
 
 const siteBuilderSchema = z.object({
-  siteBuilder: z.enum(["LEGACY", "PUCK"]),
+  siteBuilder: z.literal("PUCK"),
 })
 
 export const PATCH = withAdminAuth(async (req, ctx) => {
@@ -27,15 +31,13 @@ export const PATCH = withAdminAuth(async (req, ctx) => {
   }
   const { siteBuilder } = parsedBody.data
 
-  if (siteBuilder === "PUCK") {
-    const association = await prisma.association.findUnique({
-      where:  { id: associationId },
-      select: { sitePuckPublished: true },
-    })
-    if (!association) return NextResponse.json({ error: "Not found" }, { status: 404 })
-    if (association.sitePuckPublished === null) {
-      return NextResponse.json({ error: "Publiez d'abord une version depuis le nouvel éditeur." }, { status: 409 })
-    }
+  const association = await prisma.association.findUnique({
+    where:  { id: associationId },
+    select: { sitePuckPublished: true },
+  })
+  if (!association) return NextResponse.json({ error: "Not found" }, { status: 404 })
+  if (association.sitePuckPublished === null) {
+    return NextResponse.json({ error: "Publiez d'abord une version depuis le nouvel éditeur." }, { status: 409 })
   }
 
   await prisma.association.update({
