@@ -23,7 +23,7 @@ import { partnersBlock } from "@/components/site/blocks/site-block-partners"
 import { galleryBlock } from "@/components/site/blocks/site-block-gallery"
 import { socialLinksBlock } from "@/components/site/blocks/site-block-social-links"
 import { translateBlock } from "@/components/site/blocks/site-block-translate"
-import { colorField, imageField, YES_NO_OPTIONS } from "@/components/site/blocks/site-block-fields"
+import { colorField, imageField, headerShowRegisterField, YES_NO_OPTIONS } from "@/components/site/blocks/site-block-fields"
 import { socialLinksField } from "@/components/site/site-social-icons"
 import {
   FORM_CTA_STYLE_DEFAULTS, FORM_CTA_STYLE_FIELDS, SiteFormCtaCentered, SiteFormCtaSplit,
@@ -113,7 +113,7 @@ export const sitePuckConfig: Config<SitePuckComponents, SitePuckRootProps> = {
         ],
       },
       headerShowMembres:  { type: "radio", label: "Bouton « Se connecter »", options: YES_NO_OPTIONS },
-      headerShowRegister: { type: "radio", label: "Bouton « Adhérer »", options: YES_NO_OPTIONS },
+      headerShowRegister: headerShowRegisterField(),
       socialLinks:        socialLinksField("Réseaux sociaux"),
       socialInHeader:     { type: "radio", label: "Réseaux sociaux dans l'en-tête", options: YES_NO_OPTIONS },
       // Replaces the old footerText / footerBgColor / footerLinks fields, which stay in the data
