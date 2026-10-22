@@ -52,10 +52,11 @@ export function useSaveSiteDraft() {
   })
 }
 
-// Saves the page as the draft and publishes it in one request.
+// Saves the page as the draft and publishes it in one request. Also switches the association
+// to the new builder (see the route) — visitors see this version right away, no separate step.
 export function usePublishSiteDraft() {
   const queryClient = useQueryClient()
-  return useMutation<{ ok: true; publishedAt: string }, Error, SitePuckData>({
+  return useMutation<{ ok: true; publishedAt: string; siteBuilder: SiteBuilder }, Error, SitePuckData>({
     mutationFn: async siteDraft => {
       const response = await fetch("/api/site-draft/publish", {
         method:  "POST",
@@ -68,8 +69,15 @@ export function usePublishSiteDraft() {
     onSuccess: (publishResult, publishedDraft) => {
       queryClient.setQueryData<SiteDraftResponse>(SITE_DRAFT_QUERY_KEY, previousResponse =>
         previousResponse
-          ? { ...previousResponse, draft: publishedDraft, publishedAt: publishResult.publishedAt }
+          ? {
+              ...previousResponse,
+              draft:       publishedDraft,
+              publishedAt: publishResult.publishedAt,
+              siteBuilder: publishResult.siteBuilder,
+            }
           : previousResponse)
+      queryClient.invalidateQueries({ queryKey: ["site-config"] })
+      queryClient.invalidateQueries({ queryKey: ["site-sections"] })
     },
   })
 }

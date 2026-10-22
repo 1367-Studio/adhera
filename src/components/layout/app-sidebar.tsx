@@ -18,6 +18,7 @@ import { useSupportTicketMessageListener } from "@/hooks/use-support-ticket-list
 import { useSupportTickets } from "@/hooks/use-support-tickets"
 import type { AssocModules } from "@/lib/modules"
 import { canAccessDashboardPath } from "@/lib/dashboard-access"
+import { hasAccess } from "@/lib/permissions"
 import { useBranding, useCurrentUser, useModules } from "@/lib/user-context"
 import { cn } from "@/lib/utils"
 import type { Icon } from "@phosphor-icons/react"
@@ -102,7 +103,7 @@ const navigationItems: NavItem[] = [
   { key: "devis",         href: "/dashboard/devis",        icon: FileTextIcon, moduleKey: "devis",        categoryKey: "finances" },
   { key: "factures",      href: "/dashboard/factures",     icon: ReceiptIcon, moduleKey: "factures",     categoryKey: "finances" },
   { key: "fournisseurs",  href: "/dashboard/fournisseurs", icon: BuildingsIcon, moduleKey: "fournisseurs", categoryKey: "finances" },
-  { key: "site",          href: "/dashboard/site",         icon: GlobeIcon, moduleKey: "site", categoryKey: "outils" },
+  { key: "site",          href: "/dashboard/site/puck",    icon: GlobeIcon, moduleKey: "site", categoryKey: "outils" },
   { key: "boutique",      href: "/dashboard/boutique",     icon: ShoppingBagIcon, moduleKey: "boutique", categoryKey: "outils" },
 
   { key: "materiel",      href: "/dashboard/materiel",     icon: PackageIcon, moduleKey: "materiel", categoryKey: "outils" },
@@ -148,7 +149,14 @@ export function AppSidebar() {
   const supportUnreadCount = supportTickets.filter(ticket => ticket.unread).length
   useSupportTicketMessageListener(() => { qc.invalidateQueries({ queryKey: ["support-tickets"] }) })
   useBulkSendListener()
-  const visible  = navigationItems.filter(item => {
+  // The new site builder (FORM-7) only works for someone who can edit the site — anyone with
+  // just "read" (e.g. a custom FORM-34 profile) is sent to the legacy page instead, so the
+  // link here never leads to a page that then bounces them back (see dashboard-access.ts).
+  const canEditSite = hasAccess(permissions, "site", "edit")
+  const resolvedNavigationItems = navigationItems.map(item =>
+    item.key === "site" && !canEditSite ? { ...item, href: "/dashboard/site" } : item
+  )
+  const visible  = resolvedNavigationItems.filter(item => {
     if (!canAccessDashboardPath(permissions, role, item.href)) return false
     if (item.moduleKey && !modules[item.moduleKey]) return false
     return true
@@ -298,7 +306,7 @@ export function AppSidebar() {
                 {leadingItems.map((item, idx) => (
                   <SidebarMenuItem
                     key={item.href}
-                    data-tour={`nav-${item.href.split("/").pop()}`}
+                    data-tour={`nav-${item.key}`}
                     style={{ animationDelay: `${30 + idx * 40}ms`, animationFillMode: "both" }}
                   >
                     <SidebarMenuButton
@@ -369,7 +377,7 @@ export function AppSidebar() {
                                 item.key === "finances" ? (
                                   <FinanceNavTree key={item.href} pathname={pathname} isFlyout={false} onNavigate={closeMobile} />
                                 ) : (
-                                  <SidebarMenuSubItem key={item.href} data-tour={`nav-${item.href.split("/").pop()}`}>
+                                  <SidebarMenuSubItem key={item.href} data-tour={`nav-${item.key}`}>
                                     <SidebarMenuSubButton
                                       render={<Link href={item.href} />}
                                       isActive={isActive(item.href, pathname)}
@@ -395,7 +403,7 @@ export function AppSidebar() {
                     {standaloneItems.map(item => (
                       <SidebarMenuItem
                         key={item.href}
-                        data-tour={`nav-${item.href.split("/").pop()}`}
+                        data-tour={`nav-${item.key}`}
                         style={{ animationDelay: `${30 + (leadingItems.length + idx) * 40}ms`, animationFillMode: "both" }}
                       >
                         <SidebarMenuButton
@@ -416,7 +424,7 @@ export function AppSidebar() {
                 {trailingItems.map((item, idx) => (
                   <SidebarMenuItem
                     key={item.href}
-                    data-tour={`nav-${item.href.split("/").pop()}`}
+                    data-tour={`nav-${item.key}`}
                     style={{ animationDelay: `${30 + (leadingItems.length + CATEGORIES.length + idx) * 40}ms`, animationFillMode: "both" }}
                   >
                     <SidebarMenuButton
@@ -447,7 +455,7 @@ export function AppSidebar() {
         {/* One list, so the footer entries share the nav's item spacing. */}
         <SidebarMenu>
           {footerItems.map(item => (
-            <SidebarMenuItem key={item.href} data-tour={`nav-${item.href.split("/").pop()}`}>
+            <SidebarMenuItem key={item.href} data-tour={`nav-${item.key}`}>
               <SidebarMenuButton
                 render={<Link href={item.href} />}
                 isActive={isActive(item.href, pathname)}

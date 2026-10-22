@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation"
 import { toast } from "sonner"
 import { useTranslations } from "next-intl"
 import { useQuery } from "@tanstack/react-query"
-import { useCurrentUser, useModules } from "@/lib/user-context"
+import { useHasAccess, useModules } from "@/lib/user-context"
 import { useSiteConfig, useSaveSiteConfig } from "@/hooks/use-site-config"
 import { useDonationForms } from "@/hooks/use-donation-forms"
 import { SiteControlsPanel } from "@/components/site/site-controls-panel"
@@ -19,8 +19,6 @@ import {
   stripDonationFormPicks,
   usesDonationForms,
 } from "@/lib/dons/site-section-picks"
-
-const ADMINS = ["ADMIN", "PRESIDENT"]
 
 type AssocData  = { name: string; slug: string; city: string | null; country: string }
 type PublicEvent = {
@@ -50,8 +48,7 @@ type SitePreviewData = {
 
 export function SiteView() {
   const t           = useTranslations("site.view")
-  const { role }    = useCurrentUser()
-  const canEdit     = ADMINS.includes(role)
+  const canEdit     = useHasAccess("site", "edit")
   const modules     = useModules()
 
   const { data: siteData, isLoading } = useSiteConfig()
