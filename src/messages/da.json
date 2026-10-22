@@ -2734,7 +2734,8 @@
       },
       "toasts": {
         "encaisse": "Modtaget donation",
-        "manualDonAdded": "Donation registreret"
+        "manualDonAdded": "Donation registreret",
+        "donationNotInFilteredList": "Denne donation er ikke synlig med de aktuelle filtre. Nulstil dem for at finde den."
       }
     },
     "receiptsView": {

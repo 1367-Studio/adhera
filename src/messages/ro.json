@@ -2734,7 +2734,8 @@
       },
       "toasts": {
         "encaisse": "Donație primită",
-        "manualDonAdded": "Donație înregistrată"
+        "manualDonAdded": "Donație înregistrată",
+        "donationNotInFilteredList": "Această donație nu este vizibilă cu filtrele actuale. Resetați-le pentru a o găsi."
       }
     },
     "receiptsView": {

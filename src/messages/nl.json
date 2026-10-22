@@ -2734,7 +2734,8 @@
       },
       "toasts": {
         "encaisse": "Donatie ontvangen",
-        "manualDonAdded": "Donatie geregistreerd"
+        "manualDonAdded": "Donatie geregistreerd",
+        "donationNotInFilteredList": "Deze donatie is niet zichtbaar met de huidige filters. Reset ze om haar te vinden."
       }
     },
     "receiptsView": {

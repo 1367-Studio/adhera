@@ -2734,7 +2734,8 @@
       },
       "toasts": {
         "encaisse": "Vastaanotettu lahjoitus",
-        "manualDonAdded": "Lahjoitus tallennettu"
+        "manualDonAdded": "Lahjoitus tallennettu",
+        "donationNotInFilteredList": "Tämä lahjoitus ei näy nykyisillä suodattimilla. Nollaa ne löytääksesi sen."
       }
     },
     "receiptsView": {

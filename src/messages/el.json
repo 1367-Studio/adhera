@@ -2734,7 +2734,8 @@
       },
       "toasts": {
         "encaisse": "Η δωρεά ελήφθη",
-        "manualDonAdded": "Η δωρεά καταχωρίστηκε"
+        "manualDonAdded": "Η δωρεά καταχωρίστηκε",
+        "donationNotInFilteredList": "Αυτή η δωρεά δεν είναι ορατή με τα τρέχοντα φίλτρα. Επαναφέρετέ τα για να τη βρείτε."
       }
     },
     "receiptsView": {

@@ -2734,7 +2734,8 @@
       },
       "toasts": {
         "encaisse": "Donazzjoni riċevuta",
-        "manualDonAdded": "Donazzjoni rreġistrata"
+        "manualDonAdded": "Donazzjoni rreġistrata",
+        "donationNotInFilteredList": "Din id-donazzjoni mhix viżibbli bil-filtri attwali. Irrisettjahom biex issibha."
       }
     },
     "receiptsView": {

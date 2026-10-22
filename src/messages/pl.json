@@ -2734,7 +2734,8 @@
       },
       "toasts": {
         "encaisse": "Otrzymana darowizna",
-        "manualDonAdded": "Darowizna zapisana"
+        "manualDonAdded": "Darowizna zapisana",
+        "donationNotInFilteredList": "Ta darowizna nie jest widoczna przy obecnych filtrach. Zresetuj je, aby ją znaleźć."
       }
     },
     "receiptsView": {

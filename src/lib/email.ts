@@ -196,7 +196,7 @@ export function welcomeEmail(p: {
   branding?:       EmailBranding
 }) {
   const content = `
-    <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">Bienvenue, ${p.firstName} !</h2>
+    <h2 style="margin:0 0 20px;font-size:20px;font-weight:700;">Bienvenue, ${p.firstName} !</h2>
     <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
       Vous avez été ajouté(e) comme membre de <strong>${p.associationName}</strong>.
       ${p.hasPortalAccess
@@ -252,7 +252,7 @@ export function invitationEmail(p: {
     ${p.cotisation.payUrl ? btn("Régler ma cotisation", p.cotisation.payUrl) : ""}` : ""
 
   const content = `
-    <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">Bienvenue, ${p.firstName} !</h2>
+    <h2 style="margin:0 0 20px;font-size:20px;font-weight:700;">Bienvenue, ${p.firstName} !</h2>
     <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">${context}</p>
     ${cotisationNote}
     ${btn(isStaff ? "Accéder à la gestion" : "Accéder à mon espace", p.loginUrl)}
@@ -295,9 +295,9 @@ export function rsvpConfirmationEmail(p: {
   const dateStr = p.eventDate.toLocaleDateString("fr-FR", { timeZone: APP_TIME_ZONE, weekday: "long", day: "numeric", month: "long", year: "numeric" })
   const timeStr = p.eventDate.toLocaleTimeString("fr-FR", { timeZone: APP_TIME_ZONE, hour: "2-digit", minute: "2-digit" })
   const content = `
-    <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">Participation confirmée</h2>
+    <h2 style="margin:0 0 20px;font-size:20px;font-weight:700;">Participation confirmée</h2>
     <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
-      Bonjour ${p.firstName},<br>votre participation à l'événement suivant a bien été enregistrée.
+      Bonjour ${p.firstName},<br><br>Votre participation à l'événement suivant a bien été enregistrée.
     </p>
     <table cellpadding="0" cellspacing="0" style="margin:0 0 24px;background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;padding:20px 24px;width:100%;box-sizing:border-box;">
       <tr><td style="padding-bottom:10px;">
@@ -343,9 +343,9 @@ export function waitlistConfirmationEmail(p: {
   const dateStr = p.eventDate.toLocaleDateString("fr-FR", { timeZone: APP_TIME_ZONE, weekday: "long", day: "numeric", month: "long", year: "numeric" })
   const timeStr = p.eventDate.toLocaleTimeString("fr-FR", { timeZone: APP_TIME_ZONE, hour: "2-digit", minute: "2-digit" })
   const content = `
-    <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">Vous êtes sur liste d'attente</h2>
+    <h2 style="margin:0 0 20px;font-size:20px;font-weight:700;">Vous êtes sur liste d'attente</h2>
     <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
-      Bonjour ${p.firstName},<br>l'événement suivant est complet. Votre demande a été ajoutée à la liste d'attente
+      Bonjour ${p.firstName},<br><br>L'événement suivant est complet. Votre demande a été ajoutée à la liste d'attente
       — nous vous contacterons si une place se libère.
     </p>
     <table cellpadding="0" cellspacing="0" style="margin:0 0 24px;background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;padding:20px 24px;width:100%;box-sizing:border-box;">
@@ -385,9 +385,9 @@ export function sondageInvitationEmail(p: {
     ? p.deadline.toLocaleDateString("fr-FR", { timeZone: APP_TIME_ZONE, weekday: "long", day: "numeric", month: "long", year: "numeric" })
     : null
   const content = `
-    <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">Nouveau sondage</h2>
+    <h2 style="margin:0 0 20px;font-size:20px;font-weight:700;">Nouveau sondage</h2>
     <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
-      Bonjour ${p.firstName},<br><strong>${p.associationName}</strong> vous invite à répondre au sondage suivant.
+      Bonjour ${p.firstName},<br><br><strong>${p.associationName}</strong> vous invite à répondre au sondage suivant.
     </p>
     <table cellpadding="0" cellspacing="0" style="margin:0 0 24px;background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;padding:20px 24px;width:100%;box-sizing:border-box;">
       <tr><td style="padding-bottom:${deadlineStr ? "10px" : "0"};">
@@ -418,9 +418,9 @@ export function checkInReceiptEmail(p: {
 }) {
   const dateStr = p.eventDate.toLocaleDateString("fr-FR", { timeZone: APP_TIME_ZONE, weekday: "long", day: "numeric", month: "long", year: "numeric" })
   const content = `
-    <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">Présence enregistrée ✓</h2>
+    <h2 style="margin:0 0 20px;font-size:20px;font-weight:700;">Présence enregistrée ✓</h2>
     <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
-      Bonjour ${p.firstName},<br>votre présence au <strong>${p.eventTitle}</strong> du ${dateStr} a bien été enregistrée.
+      Bonjour ${p.firstName},<br><br>Votre présence au <strong>${p.eventTitle}</strong> du ${dateStr} a bien été enregistrée.
     </p>
     <p style="margin:0;font-size:13px;color:#71717a;">
       Merci de votre participation !
@@ -455,9 +455,9 @@ export function paymentConfirmationEmail(p: {
   // l'email doit rester exactement celui d'avant, à l'octet près.
   const memberCardButton = p.memberCardUrl ? `\n    ${btn("Voir ma carte de membre", p.memberCardUrl)}` : ""
   const content = `
-    <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">Paiement reçu</h2>
+    <h2 style="margin:0 0 20px;font-size:20px;font-weight:700;">Paiement reçu</h2>
     <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
-      Bonjour ${p.firstName},<br>votre cotisation a bien été reçue. Merci !
+      Bonjour ${p.firstName},<br><br>Votre cotisation a bien été reçue. Merci !
     </p>
     <table cellpadding="0" cellspacing="0" style="margin:0 0 24px;background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;padding:20px 24px;width:100%;box-sizing:border-box;">
       ${p.period ? `<tr><td style="padding-bottom:10px;">
@@ -502,9 +502,9 @@ export function eventReminderEmail(p: {
   const timeStr = p.eventDate.toLocaleTimeString("fr-FR", { timeZone: APP_TIME_ZONE, hour: "2-digit", minute: "2-digit" })
   const dateStr = p.eventDate.toLocaleDateString("fr-FR", { timeZone: APP_TIME_ZONE, weekday: "long", day: "numeric", month: "long" })
   const content = `
-    <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">Rappel — ${whenLabel}</h2>
+    <h2 style="margin:0 0 20px;font-size:20px;font-weight:700;">Rappel — ${whenLabel}</h2>
     <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
-      Bonjour ${p.firstName},<br>nous vous rappelons que vous participez à l'événement suivant <strong>${whenLabel}</strong>.
+      Bonjour ${p.firstName},<br><br>Nous vous rappelons que vous participez à l'événement suivant <strong>${whenLabel}</strong>.
     </p>
     <table cellpadding="0" cellspacing="0" style="margin:0 0 24px;background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;padding:20px 24px;width:100%;box-sizing:border-box;">
       <tr><td style="padding-bottom:10px;">
@@ -540,9 +540,9 @@ export function eventReviewRequestEmail(p: {
 }) {
   const dateStr = p.eventDate.toLocaleDateString("fr-FR", { timeZone: APP_TIME_ZONE, day: "numeric", month: "long", year: "numeric" })
   const content = `
-    <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">Votre avis compte</h2>
+    <h2 style="margin:0 0 20px;font-size:20px;font-weight:700;">Votre avis compte</h2>
     <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
-      Bonjour ${p.firstName},<br>merci d'avoir participé à <strong>${p.eventTitle}</strong> le ${dateStr}.
+      Bonjour ${p.firstName},<br><br>Merci d'avoir participé à <strong>${p.eventTitle}</strong> le ${dateStr}.
       Pouvez-vous prendre un instant pour nous donner votre avis ?
     </p>
     ${btn("Donner mon avis", p.reviewUrl)}`
@@ -572,7 +572,7 @@ export function adminWelcomeEmail(p: {
         : ` Aucune carte bancaire ne vous a été demandée : pour continuer ensuite, ajoutez un moyen de paiement depuis <strong>Paramètres → Abonnement</strong> avant la fin de l'essai.`}`
     : ""
   const content = `
-    <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">Bienvenue sur ${APP_NAME}, ${p.firstName} !</h2>
+    <h2 style="margin:0 0 20px;font-size:20px;font-weight:700;">Bienvenue sur ${APP_NAME}, ${p.firstName} !</h2>
     <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
       Votre association <strong>${p.associationName}</strong> a été créée avec succès.${trialSentence}
     </p>
@@ -600,7 +600,7 @@ export function subscriptionPaymentFailedEmail(p: {
     ? p.nextAttemptAt.toLocaleDateString("fr-FR", { timeZone: APP_TIME_ZONE, day: "numeric", month: "long", year: "numeric" })
     : null
   const content = `
-    <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">Le paiement de votre abonnement a échoué</h2>
+    <h2 style="margin:0 0 20px;font-size:20px;font-weight:700;">Le paiement de votre abonnement a échoué</h2>
     <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
       Le prélèvement de <strong>${amountStr}</strong> pour l'abonnement ${APP_NAME} de
       <strong>${p.associationName}</strong> n'a pas pu être effectué${p.attemptCount > 1 ? ` (tentative n°${p.attemptCount})` : ""}.<br>
@@ -629,7 +629,7 @@ export function pricingOfferPaymentMethodReminderEmail(p: {
   billingUrl:      string
 }) {
   const content = `
-    <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">Ajoutez un moyen de paiement</h2>
+    <h2 style="margin:0 0 20px;font-size:20px;font-weight:700;">Ajoutez un moyen de paiement</h2>
     <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
       L'abonnement ${APP_NAME} de <strong>${p.associationName}</strong> va prochainement
       basculer sur une tarification standard. Ajoutez une carte bancaire dès maintenant pour
@@ -655,7 +655,7 @@ export function trialEndingNoPaymentMethodEmail(p: {
     ? p.trialEndsAt.toLocaleDateString("fr-FR", { timeZone: APP_TIME_ZONE, day: "numeric", month: "long", year: "numeric" })
     : null
   const content = `
-    <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">Votre essai gratuit se termine ${dateStr ? `le ${dateStr}` : "bientôt"}</h2>
+    <h2 style="margin:0 0 20px;font-size:20px;font-weight:700;">Votre essai gratuit se termine ${dateStr ? `le ${dateStr}` : "bientôt"}</h2>
     <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
       L'essai gratuit de <strong>${p.associationName}</strong> sur ${APP_NAME} touche à sa fin et aucun moyen de paiement n'est enregistré.<br>
       Ajoutez-en un avant cette date pour conserver l'accès à votre tableau de bord — sans cela, l'accès sera suspendu à la fin de l'essai. Vos données seront conservées.
@@ -680,7 +680,7 @@ export function trialExpiredEmail(p: {
   subscribeUrl:    string
 }) {
   const content = `
-    <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">Votre essai gratuit est terminé</h2>
+    <h2 style="margin:0 0 20px;font-size:20px;font-weight:700;">Votre essai gratuit est terminé</h2>
     <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
       L'essai gratuit de <strong>${p.associationName}</strong> sur ${APP_NAME} est arrivé à son terme sans moyen de paiement enregistré, et l'accès au tableau de bord est suspendu.<br>
       Vos données sont conservées : choisissez une formule et ajoutez un moyen de paiement pour reprendre là où vous en étiez.
@@ -702,7 +702,7 @@ export function passwordResetEmail(p: {
   accountLabel: string
 }) {
   const content = `
-    <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">Réinitialisation du mot de passe</h2>
+    <h2 style="margin:0 0 20px;font-size:20px;font-weight:700;">Réinitialisation du mot de passe</h2>
     <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
       Vous avez demandé à réinitialiser le mot de passe associé à <strong>${p.email}</strong>
       pour le compte lié à <strong>${p.accountLabel}</strong>.<br>
@@ -737,7 +737,7 @@ export function portalWelcomeEmail(p: {
       Une cotisation ${p.cotisation.year} de <strong>${p.cotisation.amount.toLocaleString("fr-FR", { style: "currency", currency: "EUR" })}</strong> vous attend — réglable directement depuis votre espace membre, onglet « Cotisation ».
     </p>` : ""
   const content = `
-    <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">Bienvenue, ${p.firstName} !</h2>
+    <h2 style="margin:0 0 20px;font-size:20px;font-weight:700;">Bienvenue, ${p.firstName} !</h2>
     <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
       Votre compte membre de <strong>${p.associationName}</strong> a été créé avec succès.<br>
       Voici vos identifiants de connexion :
@@ -834,9 +834,9 @@ export function ticketPurchaseEmail(p: {
     <span style="font-size:14px;font-weight:600;">${p.quantity}</span>
   </td></tr>` : ""
   const content = `
-    <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">Billet confirmé !</h2>
+    <h2 style="margin:0 0 20px;font-size:20px;font-weight:700;">Billet confirmé !</h2>
     <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
-      Bonjour ${p.firstName},<br>votre paiement a été accepté. Voici votre confirmation de billet.
+      Bonjour ${p.firstName},<br><br>Votre paiement a été accepté. Voici votre confirmation de billet.
     </p>
     <table cellpadding="0" cellspacing="0" style="margin:0 0 24px;background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;padding:20px 24px;width:100%;box-sizing:border-box;">
       <tr><td style="padding-bottom:10px;">
@@ -886,9 +886,9 @@ export function ticketQrDeliveryEmail(p: {
   const dateStr = p.eventDate.toLocaleDateString("fr-FR", { timeZone: APP_TIME_ZONE, weekday: "long", day: "numeric", month: "long", year: "numeric" })
   const timeStr = p.eventDate.toLocaleTimeString("fr-FR", { timeZone: APP_TIME_ZONE, hour: "2-digit", minute: "2-digit" })
   const content = `
-    <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">Votre QR code d'entrée</h2>
+    <h2 style="margin:0 0 20px;font-size:20px;font-weight:700;">Votre QR code d'entrée</h2>
     <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
-      Bonjour ${p.firstName},<br>votre inscription à « ${p.eventTitle} » est bien enregistrée.
+      Bonjour ${p.firstName},<br><br>Votre inscription à « ${p.eventTitle} » est bien enregistrée.
       Voici le QR code d'entrée de votre billet — il vous sera demandé à l'entrée de l'événement.
     </p>
     <table cellpadding="0" cellspacing="0" style="margin:0 0 24px;background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;padding:20px 24px;width:100%;box-sizing:border-box;">
@@ -926,9 +926,9 @@ export function cancellationConfirmationEmail(p: {
 }) {
   const amountStr = p.amount != null ? Number(p.amount).toLocaleString("fr-FR", { style: "currency", currency: "EUR" }) : null
   const content = `
-    <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">Inscription annulée</h2>
+    <h2 style="margin:0 0 20px;font-size:20px;font-weight:700;">Inscription annulée</h2>
     <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
-      Bonjour ${p.firstName},<br>votre inscription à « ${p.eventTitle} » a bien été annulée.
+      Bonjour ${p.firstName},<br><br>Votre inscription à « ${p.eventTitle} » a bien été annulée.
     </p>
     ${p.refunded && amountStr ? `<p style="margin:0;font-size:14px;color:#3f3f46;">Un remboursement de <strong>${amountStr}</strong> a été initié — comptez quelques jours ouvrés pour qu'il apparaisse sur votre compte.</p>` : ""}`
   return {
@@ -958,9 +958,9 @@ export function meetingInviteEmail(p: {
       : "prochainement"
 
   const content = `
-    <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">Vous êtes invité(e) à une réunion</h2>
+    <h2 style="margin:0 0 20px;font-size:20px;font-weight:700;">Vous êtes invité(e) à une réunion</h2>
     <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
-      Bonjour ${p.firstName},<br><strong>${p.associationName}</strong> vous invite à participer à la réunion suivante.
+      Bonjour ${p.firstName},<br><br><strong>${p.associationName}</strong> vous invite à participer à la réunion suivante.
     </p>
     <table cellpadding="0" cellspacing="0" style="margin:0 0 24px;background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;padding:20px 24px;width:100%;box-sizing:border-box;">
       <tr><td style="padding-bottom:10px;">
@@ -1003,9 +1003,9 @@ export function donPendingEmail(p: {
   const methodLabel = OFFLINE_PAYMENT_METHOD_LABEL[p.paymentMethod]
 
   const content = `
-    <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">Merci pour votre don !</h2>
+    <h2 style="margin:0 0 20px;font-size:20px;font-weight:700;">Merci pour votre don !</h2>
     <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
-      Bonjour ${p.firstName},<br>nous vous remercions chaleureusement pour votre don de
+      Bonjour ${p.firstName},<br><br>Nous vous remercions chaleureusement pour votre don de
       <strong>${amountStr}</strong> à <strong>${p.associationName}</strong>. Votre soutien est
       précieux et contribue aux actions et aux projets de notre association.
     </p>
@@ -1067,9 +1067,9 @@ export function donConfirmationEmail(p: {
     : ""
 
   const content = `
-    <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">Merci pour votre don !</h2>
+    <h2 style="margin:0 0 20px;font-size:20px;font-weight:700;">Merci pour votre don !</h2>
     <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
-      Bonjour ${p.firstName},<br>votre don à <strong>${p.associationName}</strong> a bien été reçu. Merci pour votre générosité !
+      Bonjour ${p.firstName},<br><br>Votre don à <strong>${p.associationName}</strong> a bien été reçu. Merci pour votre générosité !
     </p>
     <table cellpadding="0" cellspacing="0" style="margin:0 0 16px;background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;padding:20px 24px;width:100%;box-sizing:border-box;">
       <tr><td style="padding-bottom:10px;">
@@ -1110,7 +1110,7 @@ export function donNewDonationAdminEmail(p: {
   const amountStr = p.amount.toLocaleString("fr-FR", { style: "currency", currency: "EUR" })
 
   const content = `
-    <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">Nouveau don</h2>
+    <h2 style="margin:0 0 20px;font-size:20px;font-weight:700;">Nouveau don</h2>
     <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
       <strong>${escapeHtml(p.donorLabel)}</strong> vient de faire un don de <strong>${amountStr}</strong>
       à <strong>${escapeHtml(p.associationName)}</strong>.
@@ -1154,9 +1154,9 @@ export function donationSubscriptionStartedEmail(p: {
 }) {
   const amountStr = p.amount.toLocaleString("fr-FR", { style: "currency", currency: "EUR" })
   const content = `
-    <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">Merci pour votre don régulier !</h2>
+    <h2 style="margin:0 0 20px;font-size:20px;font-weight:700;">Merci pour votre don régulier !</h2>
     <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
-      Bonjour ${p.firstName},<br>votre don récurrent à <strong>${p.associationName}</strong> est activé. Merci pour votre soutien continu !
+      Bonjour ${p.firstName},<br><br>Votre don récurrent à <strong>${p.associationName}</strong> est activé. Merci pour votre soutien continu !
     </p>
     <table cellpadding="0" cellspacing="0" style="margin:0 0 20px;background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;padding:20px 24px;width:100%;box-sizing:border-box;">
       <tr><td>
@@ -1190,9 +1190,9 @@ export function donationSubscriptionPaymentFailedEmail(p: {
     ? p.nextAttemptAt.toLocaleDateString("fr-FR", { timeZone: APP_TIME_ZONE, day: "numeric", month: "long", year: "numeric" })
     : null
   const content = `
-    <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">Le prélèvement de votre don n'a pas abouti</h2>
+    <h2 style="margin:0 0 20px;font-size:20px;font-weight:700;">Le prélèvement de votre don n'a pas abouti</h2>
     <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
-      Bonjour ${p.firstName},<br>le prélèvement de <strong>${amountStr}</strong> pour votre don récurrent à
+      Bonjour ${p.firstName},<br><br>Le prélèvement de <strong>${amountStr}</strong> pour votre don récurrent à
       <strong>${p.associationName}</strong> n'a pas pu être effectué.<br>
       ${nextAttemptStr
         ? `Un nouvel essai automatique aura lieu le <strong>${nextAttemptStr}</strong> — vérifiez que votre moyen de paiement est à jour.`
@@ -1243,9 +1243,9 @@ export function membershipSubscriptionStartedEmail(p: {
       </p>`
     : ""
   const content = `
-    <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">Bienvenue chez ${p.associationName} !</h2>
+    <h2 style="margin:0 0 20px;font-size:20px;font-weight:700;">Bienvenue chez ${p.associationName} !</h2>
     <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
-      Bonjour ${p.firstName},<br>votre adhésion est activée et votre premier paiement a été reçu.
+      Bonjour ${p.firstName},<br><br>Votre adhésion est activée et votre premier paiement a été reçu.
       Vous pouvez dès maintenant vous connecter à votre espace membre avec l'email et le mot
       de passe que vous avez choisis.
     </p>
@@ -1316,7 +1316,7 @@ export function membershipWelcomeEmail(p: {
   // "le montant ci-dessous", not "votre cotisation" — that total can also carry an addon/don
   // embarqué (see addonsSentence), so it isn't always just the membership fee itself.
   const statusSentence = p.offlinePending
-    ? " Il vous reste à régler le montant ci-dessous, selon les instructions données plus bas."
+    ? ". Il vous reste à régler le montant ci-dessous, selon les instructions données plus bas."
     : p.amount > 0 ? " et votre paiement a bien été reçu." : "."
   const groupSentence = p.otherRegistrants && p.otherRegistrants.length > 0
     ? `<p style="margin:0 0 20px;font-size:14px;line-height:1.6;color:#3f3f46;">
@@ -1353,9 +1353,9 @@ export function membershipWelcomeEmail(p: {
   // est porté par le fragment, pour que l'email sans carte reste identique à l'octet près.
   const memberCardButton = p.memberCardUrl ? `\n    ${btn("Voir ma carte de membre", p.memberCardUrl)}` : ""
   const content = `
-    <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">Bienvenue chez ${p.associationName} !</h2>
+    <h2 style="margin:0 0 20px;font-size:20px;font-weight:700;">Bienvenue chez ${p.associationName} !</h2>
     <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
-      Bonjour ${p.firstName},<br>votre adhésion est activée${statusSentence}
+      Bonjour ${p.firstName},<br><br>Votre adhésion est activée${statusSentence}
       Vous pouvez dès maintenant vous connecter à votre espace membre avec l'email et le mot
       de passe que vous avez choisis.
     </p>
@@ -1399,9 +1399,9 @@ export function membershipPendingValidationEmail(p: {
       </p>`
     : ""
   const content = `
-    <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">Demande bien reçue</h2>
+    <h2 style="margin:0 0 20px;font-size:20px;font-weight:700;">Demande bien reçue</h2>
     <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
-      Bonjour ${p.firstName},<br>votre demande d'adhésion à ${p.associationName} via « ${p.formTitle} »
+      Bonjour ${p.firstName},<br><br>Votre demande d'adhésion à ${p.associationName} via « ${p.formTitle} »
       a bien été reçue. Elle est en attente de validation par un responsable de l'association —
       vous serez prévenu(e) par email dès qu'elle sera validée.
     </p>
@@ -1432,9 +1432,9 @@ export function membershipPaymentLinkEmail(p: {
 }) {
   const amountStr = p.amount.toLocaleString("fr-FR", { style: "currency", currency: "EUR" })
   const content = `
-    <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">Finalisez votre adhésion à ${p.associationName}</h2>
+    <h2 style="margin:0 0 20px;font-size:20px;font-weight:700;">Finalisez votre adhésion à ${p.associationName}</h2>
     <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
-      Bonjour ${p.firstName},<br>${p.associationName} vous a inscrit(e) via « ${p.formTitle} ».
+      Bonjour ${p.firstName},<br><br>${p.associationName} vous a inscrit(e) via « ${p.formTitle} ».
       Il ne reste qu'à régler votre cotisation ${p.year} pour devenir adhérent(e) — en ligne,
       en quelques clics, sans créer de compte.
     </p>
@@ -1467,9 +1467,9 @@ export function adhesionCompletionInviteEmail(p: {
   branding?:       EmailBranding
 }) {
   const content = `
-    <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">Complétez votre adhésion à ${p.associationName}</h2>
+    <h2 style="margin:0 0 20px;font-size:20px;font-weight:700;">Complétez votre adhésion à ${p.associationName}</h2>
     <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
-      Bonjour ${p.firstName},<br>il manque encore quelques informations et le règlement de
+      Bonjour ${p.firstName},<br><br>Il manque encore quelques informations et le règlement de
       votre cotisation pour finaliser votre adhésion à ${p.associationName}. Cela ne prend
       que quelques minutes — vos identifiants de connexion restent les mêmes.
     </p>
@@ -1494,9 +1494,9 @@ export function adhesionCompletionConfirmationEmail(p: {
 }) {
   const amountStr = p.amount.toLocaleString("fr-FR", { style: "currency", currency: "EUR" })
   const content = `
-    <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">Merci, votre adhésion est finalisée</h2>
+    <h2 style="margin:0 0 20px;font-size:20px;font-weight:700;">Merci, votre adhésion est finalisée</h2>
     <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
-      Bonjour ${p.firstName},<br>votre cotisation de ${amountStr} a bien été réglée. Votre
+      Bonjour ${p.firstName},<br><br>Votre cotisation de ${amountStr} a bien été réglée. Votre
       adhésion à ${p.associationName} est désormais complète — aucune autre action n'est
       nécessaire.
     </p>`
@@ -1539,7 +1539,7 @@ export function membershipSignupAdminNotificationEmail(p: {
     : `${escapeHtml(namesStr)} ${isGroup ? "ont rejoint" : "a rejoint"} <strong>${escapeHtml(p.associationName)}</strong>
        via le formulaire « ${escapeHtml(p.formTitle)} ».`
   const content = `
-    <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">${heading}</h2>
+    <h2 style="margin:0 0 20px;font-size:20px;font-weight:700;">${heading}</h2>
     <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
       ${bodySentence}
     </p>
@@ -1585,7 +1585,7 @@ export function evenementRegistrationAdminNotificationEmail(p: {
     ? (isGroup ? "Billets vendus" : "Billet vendu")
     : (isGroup ? "Nouvelles inscriptions" : "Nouvelle inscription")
   const content = `
-    <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">${heading}</h2>
+    <h2 style="margin:0 0 20px;font-size:20px;font-weight:700;">${heading}</h2>
     <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
       ${escapeHtml(namesStr)} ${isGroup ? "se sont inscrits" : "s'est inscrit(e)"} à
       <strong>${escapeHtml(p.eventTitle)}</strong> — ${escapeHtml(dateStr)}.
@@ -1619,7 +1619,7 @@ export function evenementReviewAdminNotificationEmail(p: {
   const dateStr = p.eventDate.toLocaleDateString("fr-FR", { timeZone: APP_TIME_ZONE, weekday: "long", day: "numeric", month: "long", year: "numeric" })
   const stars    = "★".repeat(p.rating) + "☆".repeat(5 - p.rating)
   const content = `
-    <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">Nouvel avis</h2>
+    <h2 style="margin:0 0 20px;font-size:20px;font-weight:700;">Nouvel avis</h2>
     <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
       ${escapeHtml(p.reviewerName)} a laissé un avis sur
       <strong>${escapeHtml(p.eventTitle)}</strong> — ${escapeHtml(dateStr)}.
@@ -1654,9 +1654,9 @@ export function cotisationSubscriptionPaymentFailedEmail(p: {
     ? p.nextAttemptAt.toLocaleDateString("fr-FR", { timeZone: APP_TIME_ZONE, day: "numeric", month: "long", year: "numeric" })
     : null
   const content = `
-    <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">Le prélèvement de votre cotisation n'a pas abouti</h2>
+    <h2 style="margin:0 0 20px;font-size:20px;font-weight:700;">Le prélèvement de votre cotisation n'a pas abouti</h2>
     <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
-      Bonjour ${p.firstName},<br>le prélèvement de <strong>${amountStr}</strong> pour votre cotisation à
+      Bonjour ${p.firstName},<br><br>Le prélèvement de <strong>${amountStr}</strong> pour votre cotisation à
       <strong>${p.associationName}</strong> n'a pas pu être effectué.<br>
       ${nextAttemptStr
         ? `Un nouvel essai automatique aura lieu le <strong>${nextAttemptStr}</strong> — vérifiez que votre moyen de paiement est à jour.`
@@ -1683,7 +1683,7 @@ export function cotisationSubscriptionPaymentFailedAdminEmail(p: {
 }) {
   const amountStr = p.amount.toLocaleString("fr-FR", { style: "currency", currency: "EUR" })
   const content = `
-    <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">Échec de prélèvement d'une cotisation</h2>
+    <h2 style="margin:0 0 20px;font-size:20px;font-weight:700;">Échec de prélèvement d'une cotisation</h2>
     <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
       Le prélèvement automatique de <strong>${amountStr}</strong> pour la cotisation de
       <strong>${p.memberName}</strong> n'a pas pu être effectué. Le membre a été prévenu et
@@ -1715,9 +1715,9 @@ export function membershipInstallmentPaymentFailedEmail(p: {
     ? p.nextAttemptAt.toLocaleDateString("fr-FR", { timeZone: APP_TIME_ZONE, day: "numeric", month: "long", year: "numeric" })
     : null
   const content = `
-    <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">Le prélèvement de votre mensualité n'a pas abouti</h2>
+    <h2 style="margin:0 0 20px;font-size:20px;font-weight:700;">Le prélèvement de votre mensualité n'a pas abouti</h2>
     <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
-      Bonjour ${p.firstName},<br>le prélèvement de <strong>${amountStr}</strong>
+      Bonjour ${p.firstName},<br><br>Le prélèvement de <strong>${amountStr}</strong>
       (mensualité ${p.installmentNumber}/${p.installmentsCount}) pour votre adhésion à
       <strong>${p.associationName}</strong> n'a pas pu être effectué.<br>
       ${nextAttemptStr
@@ -1746,7 +1746,7 @@ export function membershipInstallmentPaymentFailedAdminEmail(p: {
 }) {
   const amountStr = p.amount.toLocaleString("fr-FR", { style: "currency", currency: "EUR" })
   const content = `
-    <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">Échec de prélèvement d'une mensualité</h2>
+    <h2 style="margin:0 0 20px;font-size:20px;font-weight:700;">Échec de prélèvement d'une mensualité</h2>
     <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
       Le prélèvement automatique de <strong>${amountStr}</strong> (mensualité
       ${p.installmentNumber}/${p.installmentsCount}) pour l'adhésion de
@@ -1784,9 +1784,9 @@ export function boutiqueConfirmationEmail(p: {
   }).join("")
 
   const content = `
-    <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">Commande confirmée !</h2>
+    <h2 style="margin:0 0 20px;font-size:20px;font-weight:700;">Commande confirmée !</h2>
     <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
-      Bonjour ${p.firstName},<br>votre commande auprès de <strong>${p.associationName}</strong> a bien été enregistrée.
+      Bonjour ${p.firstName},<br><br>Votre commande auprès de <strong>${p.associationName}</strong> a bien été enregistrée.
     </p>
     <table cellpadding="0" cellspacing="0" style="margin:0 0 24px;width:100%;background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;padding:16px 20px;box-sizing:border-box;">
       <thead>
@@ -1839,13 +1839,13 @@ export function boutiqueRefundEmail(p: {
   }).join("")
 
   const intro = p.fullyCancelled
-    ? `votre commande auprès de <strong>${p.associationName}</strong> a été annulée et remboursée.`
-    : `une partie de votre commande auprès de <strong>${p.associationName}</strong> a été remboursée.`
+    ? `Votre commande auprès de <strong>${p.associationName}</strong> a été annulée et remboursée.`
+    : `Une partie de votre commande auprès de <strong>${p.associationName}</strong> a été remboursée.`
 
   const content = `
-    <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">${p.fullyCancelled ? "Commande annulée" : "Remboursement partiel"}</h2>
+    <h2 style="margin:0 0 20px;font-size:20px;font-weight:700;">${p.fullyCancelled ? "Commande annulée" : "Remboursement partiel"}</h2>
     <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
-      Bonjour ${p.firstName},<br>${intro}
+      Bonjour ${p.firstName},<br><br>${intro}
     </p>
     <table cellpadding="0" cellspacing="0" style="margin:0 0 24px;width:100%;background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;padding:16px 20px;box-sizing:border-box;">
       <thead>
@@ -1897,9 +1897,9 @@ export function boutiquePendingOrderEmail(p: {
   }).join("")
 
   const content = `
-    <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">Commande enregistrée !</h2>
+    <h2 style="margin:0 0 20px;font-size:20px;font-weight:700;">Commande enregistrée !</h2>
     <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
-      Bonjour ${p.firstName},<br>votre commande auprès de <strong>${p.associationName}</strong> a bien été enregistrée.
+      Bonjour ${p.firstName},<br><br>Votre commande auprès de <strong>${p.associationName}</strong> a bien été enregistrée.
       Le paiement s'effectue au retrait — l'administration vous contactera pour finaliser.
     </p>
     <table cellpadding="0" cellspacing="0" style="margin:0 0 24px;width:100%;background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;padding:16px 20px;box-sizing:border-box;">
@@ -1952,7 +1952,7 @@ export function boutiqueNewOrderAdminEmail(p: {
   }).join("") : ""
 
   const content = `
-    <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">Nouvelle vente boutique</h2>
+    <h2 style="margin:0 0 20px;font-size:20px;font-weight:700;">Nouvelle vente boutique</h2>
     <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
       <strong>${escapeHtml(p.buyerLabel)}</strong> vient de passer une commande de <strong>${totalStr}</strong>
       sur la boutique de <strong>${escapeHtml(p.associationName)}</strong>${p.paymentStatusLabel ? ` — <strong>${escapeHtml(p.paymentStatusLabel)}</strong>` : ""}.
@@ -1999,7 +1999,7 @@ export function supportTicketStaffEmail(p: {
     ? `<strong>${escapeHtml(p.authorName)}</strong> (${escapeHtml(p.associationName)}) a ouvert une nouvelle demande — objet : <strong>${escapeHtml(p.subject)}</strong>`
     : `<strong>${escapeHtml(p.authorName)}</strong> (${escapeHtml(p.associationName)}) a répondu sur la demande <strong>${escapeHtml(p.subject)}</strong> :`
   const content = `
-    <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">${heading}</h2>
+    <h2 style="margin:0 0 20px;font-size:20px;font-weight:700;">${heading}</h2>
     <p style="margin:0 0 16px;font-size:15px;line-height:1.6;color:#3f3f46;">${intro}</p>
     <table cellpadding="0" cellspacing="0" width="100%" style="margin:0 0 24px;border-left:3px solid #e4e4e7;">
       <tr><td style="padding:4px 0 4px 16px;font-size:14px;line-height:1.6;color:#18181b;white-space:pre-wrap;">${escapeHtml(p.body)}</td></tr>
@@ -2023,9 +2023,9 @@ export function supportTicketReplyEmail(p: {
   dashboardUrl: string
 }) {
   const content = `
-    <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">Nouvelle réponse à votre demande</h2>
+    <h2 style="margin:0 0 20px;font-size:20px;font-weight:700;">Nouvelle réponse à votre demande</h2>
     <p style="margin:0 0 16px;font-size:15px;line-height:1.6;color:#3f3f46;">
-      Bonjour ${escapeHtml(p.name)}, l'équipe ${APP_NAME} a répondu à votre demande <strong>${escapeHtml(p.subject)}</strong> :
+      Bonjour ${escapeHtml(p.name)},<br><br>L'équipe ${APP_NAME} a répondu à votre demande <strong>${escapeHtml(p.subject)}</strong> :
     </p>
     <table cellpadding="0" cellspacing="0" width="100%" style="margin:0 0 24px;border-left:3px solid #e4e4e7;">
       <tr><td style="padding:4px 0 4px 16px;font-size:14px;line-height:1.6;color:#18181b;white-space:pre-wrap;">${escapeHtml(p.body)}</td></tr>
@@ -2068,7 +2068,7 @@ export function membreControlAlertStaffEmail(p: {
       <td colspan="3" style="padding:8px 12px;font-size:13px;font-style:italic;color:#71717a;">+ ${remaining} de plus — voir la liste complète dans le backoffice</td>
     </tr>` : ""
   const content = `
-    <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">Contrôle adhésion — ${p.alerts.length} membre(s) sans cotisation</h2>
+    <h2 style="margin:0 0 20px;font-size:20px;font-weight:700;">Contrôle adhésion — ${p.alerts.length} membre(s) sans cotisation</h2>
     <p style="margin:0 0 16px;font-size:15px;line-height:1.6;color:#3f3f46;">
       Ces membres sont actifs depuis plus de 30 minutes sans aucune cotisation liée. Vérifiez s'il s'agit d'un cas normal ou d'un problème à corriger.
     </p>
@@ -2101,7 +2101,7 @@ export function contactSupportEmail(p: {
   message: string
 }) {
   const content = `
-    <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">Nouveau message de contact</h2>
+    <h2 style="margin:0 0 20px;font-size:20px;font-weight:700;">Nouveau message de contact</h2>
     <p style="margin:0 0 16px;font-size:15px;line-height:1.6;color:#3f3f46;">
       <strong>${escapeHtml(p.name)}</strong> (${escapeHtml(p.email)}) a envoyé un message depuis le formulaire de contact :
     </p>
@@ -2131,7 +2131,7 @@ export function erasureRequestReceivedEmail(p: {
   branding?:       EmailBranding
 }) {
   const content = `
-    <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">Demande de suppression reçue</h2>
+    <h2 style="margin:0 0 20px;font-size:20px;font-weight:700;">Demande de suppression reçue</h2>
     <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
       Nous avons bien enregistré votre demande de suppression de vos données personnelles
       auprès de ${escapeHtml(p.associationName)}, conformément à l'article 17 du RGPD.
@@ -2154,7 +2154,7 @@ export function erasureRequestHeldEmail(p: {
   branding?:       EmailBranding
 }) {
   const content = `
-    <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">Votre demande de suppression est mise en attente</h2>
+    <h2 style="margin:0 0 20px;font-size:20px;font-weight:700;">Votre demande de suppression est mise en attente</h2>
     <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
       Le traitement de votre demande de suppression auprès de ${escapeHtml(p.associationName)}
       est temporairement suspendu. Conformément à l'article 17(3) du RGPD, la suppression
@@ -2178,7 +2178,7 @@ export function erasureRequestCompletedEmail(p: {
   branding?:       EmailBranding
 }) {
   const content = `
-    <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">Suppression effectuée</h2>
+    <h2 style="margin:0 0 20px;font-size:20px;font-weight:700;">Suppression effectuée</h2>
     <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
       Votre demande de suppression de données personnelles auprès de ${escapeHtml(p.associationName)}
       a été traitée. Vos informations personnelles ont été anonymisées ou supprimées de nos
@@ -2203,7 +2203,7 @@ export function erasureRequestCancelledEmail(p: {
   branding?:       EmailBranding
 }) {
   const content = `
-    <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">Demande de suppression annulée</h2>
+    <h2 style="margin:0 0 20px;font-size:20px;font-weight:700;">Demande de suppression annulée</h2>
     <p style="margin:0;font-size:15px;line-height:1.6;color:#3f3f46;">
       Votre demande de suppression de données personnelles auprès de ${escapeHtml(p.associationName)}
       a été annulée. Vos données n'ont pas été modifiées.
@@ -2252,7 +2252,7 @@ export function erasureRequestAdminNotificationEmail(p: {
     }
   })()
   const content = `
-    <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">${heading}</h2>
+    <h2 style="margin:0 0 20px;font-size:20px;font-weight:700;">${heading}</h2>
     <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">${body}</p>
     ${btn("Voir les demandes d'effacement", p.dashboardUrl)}`
   return {
@@ -2268,7 +2268,7 @@ export function erasureRequestAdminNotificationEmail(p: {
 // every other template above gets one — same convention as passwordResetEmail etc.
 export function securityAlertEmail(p: { to: string; heading: string; body: string }) {
   const content = `
-    <h2 style="margin:0 0 8px;font-size:20px;font-weight:700;">${p.heading}</h2>
+    <h2 style="margin:0 0 20px;font-size:20px;font-weight:700;">${p.heading}</h2>
     <p style="margin:0;font-size:15px;line-height:1.6;color:#3f3f46;">${p.body}</p>`
   return {
     to:      p.to,

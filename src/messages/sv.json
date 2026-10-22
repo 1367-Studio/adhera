@@ -2734,7 +2734,8 @@
       },
       "toasts": {
         "encaisse": "Mottagen donation",
-        "manualDonAdded": "Donation registrerad"
+        "manualDonAdded": "Donation registrerad",
+        "donationNotInFilteredList": "Den här donationen är inte synlig med de aktuella filtren. Återställ dem för att hitta den."
       }
     },
     "receiptsView": {

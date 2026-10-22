@@ -11,6 +11,7 @@ import { useSeenReleaseNotes } from "@/hooks/use-seen-release-notes"
 import { openReleaseNotes } from "@/lib/help/release-notes-events"
 import { cn, stripHtml } from "@/lib/utils"
 import { getDateFnsLocale } from "@/lib/date-fns-locale"
+import { BASE_PATH } from "@/lib/env"
 import type { Locale } from "@/i18n/locales"
 
 // Unseen "What's new" entries are merged client-side into the bell's list (no notification
@@ -184,7 +185,17 @@ export function NotificationBell() {
                   onClick={() => {
                     const clickedNotification = bellItem.notification
                     if (!clickedNotification.read) markRead.mutate(clickedNotification.id)
-                    if (clickedNotification.link) { setOpen(false); router.push(clickedNotification.link) }
+                    if (clickedNotification.link) {
+                      setOpen(false)
+                      // A link pointing at the page the user is already on (e.g. a new
+                      // donation notification clicked while already sitting on /dashboard/dons)
+                      // only changes the query string — router.push wouldn't remount the page,
+                      // so any tab-switch/highlight logic driven by that page's initial state
+                      // would never re-run. A full navigation forces a fresh mount instead.
+                      const [linkPath] = clickedNotification.link.split("?")
+                      if (linkPath === pathname) window.location.href = `${BASE_PATH}${clickedNotification.link}`
+                      else router.push(clickedNotification.link)
+                    }
                   }}
                 />
               ))}

@@ -2734,7 +2734,8 @@
       },
       "toasts": {
         "encaisse": "Prejeta donacija",
-        "manualDonAdded": "Donacija zabeležena"
+        "manualDonAdded": "Donacija zabeležena",
+        "donationNotInFilteredList": "Ta donacija ni vidna s trenutnimi filtri. Ponastavite jih, da jo najdete."
       }
     },
     "receiptsView": {
