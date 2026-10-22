@@ -9,8 +9,11 @@ import { collectPuckBlockIds } from "@/lib/site-puck/site-puck-tree"
 import { liveSiteSectionIds } from "@/lib/site-puck/site-section-ids"
 
 // FORM-7: publishes the Puck page — it becomes both the saved draft and the version visitors
-// see when siteBuilder is PUCK. Blocks removed since the previous draft/publish release the
-// forms bound to them, unless the legacy siteConfig still has a section with that id.
+// see, and switches the association to the new builder (siteBuilder "PUCK") so this is the only
+// step needed to go live: no separate flip of the switch on the legacy page. Still reversible
+// from there at any time (switching builder never touches either store). Blocks removed since
+// the previous draft/publish release the forms bound to them, unless the legacy siteConfig
+// still has a section with that id.
 
 export const POST = withAdminAuth(async (req, ctx) => {
   const { associationId, userId } = ctx
@@ -32,6 +35,7 @@ export const POST = withAdminAuth(async (req, ctx) => {
         siteDraft:           parsedDraft.siteDraft,
         sitePuckPublished:   parsedDraft.siteDraft,
         sitePuckPublishedAt: publishedAt,
+        siteBuilder:         "PUCK",
       },
     })
 
@@ -65,5 +69,5 @@ export const POST = withAdminAuth(async (req, ctx) => {
     metadata: { siteBuilderEvent: "PUCK_PUBLISHED" },
   })
 
-  return NextResponse.json({ ok: true, publishedAt: publishedAt.toISOString() })
+  return NextResponse.json({ ok: true, publishedAt: publishedAt.toISOString(), siteBuilder: "PUCK" as const })
 }, { area: "site", module: "site" })

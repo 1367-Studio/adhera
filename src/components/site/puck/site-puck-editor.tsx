@@ -17,8 +17,9 @@ import { siteConfigToPuckData, type SitePuckData } from "@/lib/site-puck/site-pu
 
 // FORM-7 website builder. Opens the saved draft (Association.siteDraft) or, the first time,
 // the current site converted from siteConfig. "Enregistrer" saves the draft; "Visualiser"
-// opens it full page; "Publier" saves it and makes it the published version, which visitors
-// see once the association has switched its site to the new builder (page Site web).
+// opens it full page; "Publier" saves it, makes it the published version and switches the
+// association to the new builder — visitors see it right away. The legacy page (Site web)
+// still offers a manual switch to revert to the old builder if needed.
 
 const SITE_VIEWPORTS: Viewports = [
   { width: 390,  label: "Mobile",     icon: "Smartphone" },
@@ -158,7 +159,7 @@ function SitePuckHeaderActions({ saveState, publishedAt, siteBuilder, onSave, on
   async function handlePublish() {
     setPublishConfirmOpen(false)
     if (await onPublish(readCurrentPage())) {
-      toast.success(siteBuilder === "PUCK" ? "Site publié" : "Version publiée")
+      toast.success("Site publié")
     }
   }
 
@@ -219,7 +220,7 @@ function SitePuckHeaderActions({ saveState, publishedAt, siteBuilder, onSave, on
         title="Publier le site ?"
         description={siteBuilder === "PUCK"
           ? "Les visiteurs verront cette version immédiatement."
-          : "La version sera publiée, mais votre site affiche encore l'ancien éditeur. Activez le nouvel éditeur depuis la page Site web pour la mettre en ligne."}
+          : "Cette publication remplacera votre site actuel (ancien éditeur) par cette version, visible immédiatement par vos visiteurs."}
         confirmLabel="Publier"
         confirmVariant="default"
         loading={saveState === "saving"}
