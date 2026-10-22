@@ -2,7 +2,7 @@
 
 import { createContext, useContext } from "react"
 import { type AssocModules, DEFAULT_MODULES } from "@/lib/modules"
-import { hasAccess, type AccessArea, type ResolvedPermissions } from "@/lib/permissions"
+import { hasAccess, isStaffRole, type AccessArea, type ResolvedPermissions } from "@/lib/permissions"
 
 export type SessionUser = {
   id:               string
@@ -107,6 +107,17 @@ export function useCanUseCustomBranding(): boolean {
   return useContext(CanUseCustomBrandingContext)
 }
 
-export function isManager(role: string) {
-  return ["ADMIN", "PRESIDENT", "TRESORIER", "SECRETAIRE"].includes(role)
+// Whether this role has a dashboard identity at all, so the portal/dashboard ViewSwitcher
+// (src/components/layout/header.tsx) is worth showing — delegates to isStaffRole (the same
+// list the dashboard itself gates on, see STAFF_ROLES in permissions.ts) rather than keeping
+// a second hand-written list: EQUIPE (Membre de l'équipe) was missing from an earlier
+// hand-written version of this list, which hid the switcher for every team-member-role user
+// in both the portal and the dashboard even though they do have dashboard access.
+//
+// Named for what it checks, not "isManager" (too easy to confuse with MANAGER_ROLES in
+// src/lib/roles.ts, a deliberately narrower bureau-only list used for things like boutique
+// order notifications) — that near-miss naming is the likely reason EQUIPE got left out here
+// in the first place.
+export function hasDashboardAccess(role: string) {
+  return isStaffRole(role)
 }

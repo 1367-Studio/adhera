@@ -140,6 +140,7 @@ export function ChangeRoleModal({
   onClose: () => void
 }) {
   const t = useTranslations()
+  const router           = useRouter()
   const [role, setRole] = useState<UserRole>(membre.user?.role ?? "MEMBRE")
   const mutation        = useChangeRole()
   const currentUser     = useCurrentUser()
@@ -149,10 +150,27 @@ export function ChangeRoleModal({
     ? allRoleOptions
     : allRoleOptions.filter(o => o.value !== "ADMIN")
 
+  // EQUIPE (Membre de l'équipe) is the one role whose profile (ROLE_PROFILES in
+  // permissions.ts) grants nothing beyond "Tableau de bord: Lecture" — every other
+  // assignable role (SECRETAIRE, TRESORIER, PRESIDENT, ADMIN) already comes with a real
+  // default profile. Newly assigning it resets stored permissions to that profile
+  // server-side (see roleChanged in membres/[id]/role/route.ts), so without a nudge here
+  // the person lands in a near-empty dashboard and it looks like the role "did nothing".
+  const movingIntoEquipe = role === "EQUIPE" && role !== (membre.user?.role ?? "MEMBRE")
+
   async function handleSave() {
     try {
       await mutation.mutateAsync({ id: membre.id, role })
-      toast.success(t("membres.view.toasts.roleUpdated"))
+      if (movingIntoEquipe) {
+        toast.success(t("membres.view.toasts.roleUpdated"), {
+          action: {
+            label:   t("membres.view.toasts.configureAccess"),
+            onClick: () => router.push(`${BASE_PATH}/dashboard/parametres?tab=equipe`),
+          },
+        })
+      } else {
+        toast.success(t("membres.view.toasts.roleUpdated"))
+      }
       onClose()
     } catch (err) {
       toast.error(err instanceof Error ? err.message : t("common.error"))
@@ -175,6 +193,9 @@ export function ChangeRoleModal({
             ))}
           </SelectContent>
         </Select>
+        {movingIntoEquipe && (
+          <p className="text-sm text-muted-foreground">{t("membres.view.changeRoleEquipeHint")}</p>
+        )}
         <div className="flex justify-end gap-2 pt-1">
           <Button variant="outline" onClick={onClose} disabled={mutation.isPending}>{t("common.cancel")}</Button>
           <Button onClick={handleSave} loading={mutation.isPending}>{t("common.save")}</Button>
