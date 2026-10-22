@@ -4558,12 +4558,14 @@
         "memberDeletedWithUnlink": "Member deleted — removed as legal guardian of {count} member(s)",
         "noMembersToExport": "No members to export",
         "viewSubscription": "View subscription",
-        "roleUpdated": "Role updated"
+        "roleUpdated": "Role updated",
+        "configureAccess": "Configure access"
       },
       "changeRoleTitle": "Change role",
       "addViaForm": "Via a membership form",
       "addManual": "Add manually",
       "changeRoleDescription": "{name}'s role in the association.",
+      "changeRoleEquipeHint": "This role starts with no access to management. Configure area access in Settings › Team and access.",
       "pendingRequests": "{count, plural, one {# pending request} other {# pending requests}}"
     },
     "detail": {
