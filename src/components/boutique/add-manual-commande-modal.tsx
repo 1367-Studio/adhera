@@ -288,7 +288,7 @@ export function AddManualCommandeModal({ open, onOpenChange, onCreated }: {
             <p className="text-sm text-muted-foreground">{t("manualCommandeModal.noProductsForScope")}</p>
           ) : (
           <div className="space-y-2">
-            <div className="grid grid-cols-[1fr_1fr_70px_32px] gap-2 px-1">
+            <div className="hidden sm:grid sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_70px_32px] gap-2 px-1">
               <p className="text-xs text-muted-foreground font-medium">{t("manualCommandeModal.productPlaceholder")}</p>
               <p className="text-xs text-muted-foreground font-medium">{t("manualCommandeModal.variantPlaceholder")}</p>
               <p className="text-xs text-muted-foreground font-medium">{t("manualCommandeModal.quantityColumn")}</p>
@@ -301,53 +301,58 @@ export function AddManualCommandeModal({ open, onOpenChange, onCreated }: {
               // silently splitting one product into two rows instead of bumping the quantity.
               const usedElsewhere = new Set(lines.filter(l => l.key !== line.key).map(l => l.varianteId).filter(Boolean))
               return (
-                <div key={line.key} className="grid grid-cols-[1fr_1fr_70px_32px] gap-2 items-start">
-                  <Select
-                    value={line.produitId}
-                    onValueChange={(produitId) => {
-                      if (!produitId) return
-                      const p = catalog.find(cp => cp.id === produitId)
-                      const autoVariante = p?.variantes.length === 1 && !usedElsewhere.has(p.variantes[0].id) ? p.variantes[0].id : ""
-                      updateLine(line.key, { produitId, varianteId: autoVariante, quantity: 1 })
-                    }}
-                  >
-                    <SelectTrigger className="w-full">
-                      <SelectValue>{produit?.name ?? t("manualCommandeModal.productPlaceholder")}</SelectValue>
-                    </SelectTrigger>
-                    <SelectContent>
-                      {catalog.map(p => <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>)}
-                    </SelectContent>
-                  </Select>
-                  <Select
-                    value={line.varianteId}
-                    onValueChange={(varianteId) => { if (varianteId) updateLine(line.key, { varianteId, quantity: 1 }) }}
-                    disabled={!produit}
-                  >
-                    <SelectTrigger className="w-full">
-                      <SelectValue>{variante ? `${variante.label} — ${fmt(variante.price)} (${variante.stock})` : t("manualCommandeModal.variantPlaceholder")}</SelectValue>
-                    </SelectTrigger>
-                    <SelectContent>
-                      {(produit?.variantes ?? []).map(v => (
-                        <SelectItem key={v.id} value={v.id} disabled={v.stock === 0 || usedElsewhere.has(v.id)}>
-                          {v.label} — {fmt(v.price)} ({v.stock === 0 ? t("manualCommandeModal.outOfStock") : v.stock})
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <Input
-                    type="number" min={1} max={variante?.stock ?? 99}
-                    value={line.quantity}
-                    disabled={!variante}
-                    onChange={e => updateLine(line.key, { quantity: Math.max(1, Math.min(variante?.stock ?? 99, parseInt(e.target.value, 10) || 1)) })}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => removeLine(line.key)}
-                    disabled={lines.length === 1}
-                    className="flex items-center justify-center size-9 rounded-md border text-muted-foreground hover:text-destructive hover:border-destructive/40 disabled:opacity-30 transition-colors"
-                  >
-                    <TrashIcon className="size-3.5" />
-                  </button>
+                <div key={line.key} className="flex flex-col gap-2 border-b pb-3 last:border-0 last:pb-0 sm:grid sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_70px_32px] sm:items-start sm:border-0 sm:pb-0">
+                  <div className="flex gap-2 sm:contents">
+                    <Select
+                      value={line.produitId}
+                      onValueChange={(produitId) => {
+                        if (!produitId) return
+                        const p = catalog.find(cp => cp.id === produitId)
+                        const autoVariante = p?.variantes.length === 1 && !usedElsewhere.has(p.variantes[0].id) ? p.variantes[0].id : ""
+                        updateLine(line.key, { produitId, varianteId: autoVariante, quantity: 1 })
+                      }}
+                    >
+                      <SelectTrigger className="w-full min-w-0 flex-1 sm:order-1">
+                        <SelectValue>{produit?.name ?? t("manualCommandeModal.productPlaceholder")}</SelectValue>
+                      </SelectTrigger>
+                      <SelectContent>
+                        {catalog.map(p => <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>)}
+                      </SelectContent>
+                    </Select>
+                    <button
+                      type="button"
+                      onClick={() => removeLine(line.key)}
+                      disabled={lines.length === 1}
+                      className="flex shrink-0 items-center justify-center size-9 rounded-md border text-muted-foreground hover:text-destructive hover:border-destructive/40 disabled:opacity-30 transition-colors sm:order-4"
+                    >
+                      <TrashIcon className="size-3.5" />
+                    </button>
+                  </div>
+                  <div className="flex gap-2 sm:contents">
+                    <Select
+                      value={line.varianteId}
+                      onValueChange={(varianteId) => { if (varianteId) updateLine(line.key, { varianteId, quantity: 1 }) }}
+                      disabled={!produit}
+                    >
+                      <SelectTrigger className="w-full min-w-0 flex-1 sm:order-2">
+                        <SelectValue>{variante ? `${variante.label} — ${fmt(variante.price)} (${variante.stock})` : t("manualCommandeModal.variantPlaceholder")}</SelectValue>
+                      </SelectTrigger>
+                      <SelectContent>
+                        {(produit?.variantes ?? []).map(v => (
+                          <SelectItem key={v.id} value={v.id} disabled={v.stock === 0 || usedElsewhere.has(v.id)}>
+                            {v.label} — {fmt(v.price)} ({v.stock === 0 ? t("manualCommandeModal.outOfStock") : v.stock})
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <Input
+                      type="number" min={1} max={variante?.stock ?? 99}
+                      value={line.quantity}
+                      disabled={!variante}
+                      onChange={e => updateLine(line.key, { quantity: Math.max(1, Math.min(variante?.stock ?? 99, parseInt(e.target.value, 10) || 1)) })}
+                      className="w-20 shrink-0 sm:order-3 sm:w-full"
+                    />
+                  </div>
                 </div>
               )
             })}
