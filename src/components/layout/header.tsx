@@ -18,7 +18,7 @@ import { SidebarTrigger } from "@/components/ui/sidebar"
 import { useNotifications } from "@/hooks/use-notifications"
 import { firstEnabledPortalPath } from "@/lib/modules"
 import { getRouteLabels } from "@/lib/route-labels"
-import { isManager, useModules } from "@/lib/user-context"
+import { hasDashboardAccess, useModules } from "@/lib/user-context"
 import { cn } from "@/lib/utils"
 import { ArrowSquareOutIcon, SquaresFourIcon, UserIcon } from "@phosphor-icons/react/dist/ssr"
 import { useTranslations } from "next-intl"
@@ -127,7 +127,7 @@ export function Header({ user, showSidebar = false, showTour = false, logoutRedi
       </Breadcrumb>
 
       <div className="ml-auto flex items-center gap-2">
-        {associationSlug && isManager(user.role ?? "") && (
+        {associationSlug && hasDashboardAccess(user.role ?? "") && (
           <span data-tour="view-switcher" className="flex items-center">
             <ViewSwitcher slug={associationSlug} pathname={pathname} />
           </span>
