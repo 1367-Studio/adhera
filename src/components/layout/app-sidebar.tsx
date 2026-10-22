@@ -149,12 +149,11 @@ export function AppSidebar() {
   const supportUnreadCount = supportTickets.filter(ticket => ticket.unread).length
   useSupportTicketMessageListener(() => { qc.invalidateQueries({ queryKey: ["support-tickets"] }) })
   useBulkSendListener()
-  // The new site builder (FORM-7) only works for someone who can edit the site — anyone with
-  // just "read" (e.g. a custom FORM-34 profile) is sent to the legacy page instead, so the
-  // link here never leads to a page that then bounces them back (see dashboard-access.ts).
-  const canEditSite = hasAccess(permissions, "site", "edit")
+  // The editor (FORM-7) needs edit access; anyone with just "read" is sent to the content-only
+  // preview instead, since there is no read-only editor (see dashboard-access.ts).
+  const siteHref = hasAccess(permissions, "site", "edit") ? "/dashboard/site/puck" : "/dashboard/site/puck/apercu"
   const resolvedNavigationItems = navigationItems.map(item =>
-    item.key === "site" && !canEditSite ? { ...item, href: "/dashboard/site" } : item
+    item.key === "site" ? { ...item, href: siteHref } : item
   )
   const visible  = resolvedNavigationItems.filter(item => {
     if (!canAccessDashboardPath(permissions, role, item.href)) return false

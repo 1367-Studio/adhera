@@ -1,8 +1,10 @@
 import { requireModule } from "@/lib/auth/require-module"
-import { requireDashboardAccess } from "@/lib/auth/require-dashboard-access"
 
+// No requireDashboardAccess() here, unlike most section layouts: the three pages under this
+// one need different levels (edit for the editor, read for the preview, the legacy page
+// always redirects), which a single layout-wide check can't express — each page guards
+// itself instead (see dashboard-access.ts for both route entries).
 export default async function Layout({ children }: { children: React.ReactNode }) {
-  await requireDashboardAccess("/dashboard/site")
   await requireModule("site")
   return <>{children}</>
 }

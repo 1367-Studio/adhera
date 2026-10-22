@@ -11,18 +11,22 @@ import { parseSiteDraftRequest } from "@/lib/site-puck/site-draft-schema"
 export const GET = withAdminAuth(async (_req, ctx) => {
   const association = await prisma.association.findUnique({
     where:  { id: ctx.associationId },
-    select: { siteDraft: true, sitePuckPublishedAt: true, siteBuilder: true },
+    select: { siteDraft: true, sitePuckPublished: true, sitePuckPublishedAt: true, siteBuilder: true },
   })
   if (!association) return NextResponse.json({ error: "Not found" }, { status: 404 })
   return NextResponse.json({
-    draft:       association.siteDraft ?? null,
-    publishedAt: association.sitePuckPublishedAt?.toISOString() ?? null,
-    siteBuilder: association.siteBuilder,
+    draft:         association.siteDraft ?? null,
+    // What visitors actually see today (only meaningful once siteBuilder is PUCK) — the
+    // read-only preview (puck/apercu) renders this instead of the draft for anyone who can't
+    // edit, since they have no "work in progress" to check and should see the real site.
+    publishedData: association.sitePuckPublished ?? null,
+    publishedAt:   association.sitePuckPublishedAt?.toISOString() ?? null,
+    siteBuilder:   association.siteBuilder,
   })
-// Readable by every dashboard role that can open /dashboard/site (like GET /api/site-config):
-// the switch bar shows which version is live, read-only for non-editors. Writing needs
-// "site" edit (PUT here, publish, /api/site-builder).
-}, { module: "site" })
+// "read" (not "edit"): the switch bar shows which version is live to non-editors too, and the
+// read-only preview (puck/apercu) needs this to render anything at all. Writing needs "site"
+// edit (PUT here, publish, /api/site-builder).
+}, { area: "site", module: "site" })
 
 export const PUT = withAdminAuth(async (req, ctx) => {
   const parsedDraft = await parseSiteDraftRequest(req)
