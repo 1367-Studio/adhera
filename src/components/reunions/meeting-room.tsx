@@ -14,7 +14,7 @@ import {
   isTrackReference,
   useChat,
 } from "@livekit/components-react"
-import { ConnectionState, DisconnectReason, Track, VideoPresets } from "livekit-client"
+import { ConnectionState, DisconnectReason, Track } from "livekit-client"
 import { CircleNotchIcon, MicrophoneIcon, MicrophoneSlashIcon, VideoCameraIcon, VideoCameraSlashIcon, PhoneSlashIcon, CircleIcon, SquareIcon, ChatCircleIcon, PaperPlaneTiltIcon, UsersIcon, UserFocusIcon } from "@phosphor-icons/react/dist/ssr";
 import { useTranslations } from "next-intl"
 import { Button } from "@/components/ui/button"
@@ -582,12 +582,11 @@ export function MeetingRoom({ meetingId, onLeave, tokenEndpoint, isAdmin = false
       // participant subscribes to every other camera at full resolution regardless of tile
       // size, which is what collapses large calls once everyone's camera is on: dynacast lets
       // the SFU skip simulcast layers nobody is actually displaying, and adaptiveStream matches
-      // the requested resolution to each video tile's real rendered size. The capture
-      // resolution is also capped below the 720p default — there's no pinned/focused view in
-      // this UI (just the even grid below), so no tile is ever rendered large enough to need
-      // more, and a lower publish ceiling matters most in the exact moment everyone's camera
-      // comes on at once, before dynacast has had a chance to pause unused layers.
-      options={{ adaptiveStream: true, dynacast: true, videoCaptureDefaults: { resolution: VideoPresets.h360.resolution } }}
+      // the requested resolution to each video tile's real rendered size — e.g. a 1:1 call's
+      // single full-size tile still gets high resolution, while a tile in a crowded grid
+      // doesn't. A fixed capture resolution cap would apply to every call regardless of size,
+      // permanently hurting small calls to help large ones, so there isn't one here.
+      options={{ adaptiveStream: true, dynacast: true }}
       // One retry on the initial join is not much margin on a venue's wifi. More retries just
       // gives a flaky connection another shot at getting in, instead of surfacing a join
       // failure on the first blip.
