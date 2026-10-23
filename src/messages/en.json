@@ -2174,6 +2174,13 @@
       "liveSince": "In progress for {mins} min",
       "durationLessThanMin": "< 1 min",
       "durationMin": "{mins} min",
+      "activeMeetingWarning": {
+        "title": "{count, plural, one {A meeting is already in progress} other {# meetings are already in progress}}",
+        "description": "{count, plural, one {You started this meeting and haven't ended it yet. Rejoin it, or create a new one anyway.} other {You started these meetings and haven't ended them yet. Rejoin one, or create a new one anyway.}}",
+        "joinExisting": "Rejoin",
+        "createNew": "Create a new meeting anyway",
+        "alreadyEnded": "That meeting just ended on its own. You can create a new one."
+      },
       "toasts": {
         "meetingStarted": "Meeting started",
         "meetingScheduled": "Meeting scheduled",

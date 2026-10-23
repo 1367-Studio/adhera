@@ -2182,6 +2182,13 @@
       "liveSince": "En cours depuis {mins} min",
       "durationLessThanMin": "< 1 min",
       "durationMin": "{mins} min",
+      "activeMeetingWarning": {
+        "title": "{count, plural, one {Une réunion est déjà en cours} other {# réunions sont déjà en cours}}",
+        "description": "{count, plural, one {Vous avez démarré cette réunion et ne l'avez pas encore terminée. Rejoignez-la, ou créez-en une nouvelle quand même.} other {Vous avez démarré ces réunions et ne les avez pas encore terminées. Rejoignez-en une, ou créez-en une nouvelle quand même.}}",
+        "joinExisting": "Rejoindre",
+        "createNew": "Créer une nouvelle réunion quand même",
+        "alreadyEnded": "Cette réunion vient de se terminer toute seule. Vous pouvez créer une nouvelle réunion."
+      },
       "toasts": {
         "meetingStarted": "Réunion démarrée",
         "meetingScheduled": "Réunion planifiée",
