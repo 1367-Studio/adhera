@@ -271,8 +271,12 @@ export function AppSidebar() {
   const isBranded = !!branding?.logoUrl
   const isFlyout  = state === "collapsed" && !isMobile
 
+  // Figma dashboard mockup: flush edge-to-edge chrome, not the floating rounded-corner
+  // panel variant="inset" gives the content area (margin + rounded-xl + shadow-sm on
+  // SidebarInset, see ui/sidebar.tsx). Dropped here and in portal-sidebar.tsx; left
+  // alone on backoffice-sidebar.tsx, which isn't part of this restyle.
   return (
-    <Sidebar collapsible="icon" variant="inset">
+    <Sidebar collapsible="icon">
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem className="flex items-center gap-1 group-data-[collapsible=icon]:justify-center">
