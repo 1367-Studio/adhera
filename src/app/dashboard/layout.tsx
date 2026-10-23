@@ -102,11 +102,11 @@ export default async function DashboardLayout({ children }: { children: React.Re
   return (
     <UserProvider user={sessionUser} modules={modules} branding={branding} memberCardEnabled={memberCardEnabled} canUseCustomBranding={brandingAllowed}>
       <TopLoader />
-      <SidebarProvider className="dashboard-canvas">
+      <SidebarProvider className="dashboard-canvas dashboard-figma-restyle">
         <AppSidebar />
         <SidebarInset>
           <PastDueBanner />
-          <Header user={session.user} showSidebar showTour associationSlug={u.associationSlug ?? undefined} publicSiteUrl={publicSiteUrl} />
+          <Header user={session.user} showSidebar showSidebarTrigger={false} showBreadcrumb={false} showTour associationSlug={u.associationSlug ?? undefined} publicSiteUrl={publicSiteUrl} className="border-b-0 bg-background" />
           <FiscalPeriodPopup show={showFiscalPeriodPopup} />
           {/* Never alongside the fiscal-period popup, so the two dialogs don't stack. */}
           <ReleaseNotesPopup enabled={!showFiscalPeriodPopup} />

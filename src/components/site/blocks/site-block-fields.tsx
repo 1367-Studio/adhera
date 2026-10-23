@@ -1,10 +1,12 @@
 "use client"
 
 import { useRef, useState } from "react"
-import { FieldLabel, type CustomField, type Fields } from "@puckeditor/core"
+import Link from "next/link"
+import { AutoField, FieldLabel, type CustomField, type Fields } from "@puckeditor/core"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import { MAX_FUNCTION_UPLOAD_BYTES } from "@/lib/upload-limits"
+import { useSitePuckMetadata } from "@/components/site/puck/use-site-puck-metadata"
 
 // Reusable Puck fields for the site builder blocks.
 
@@ -12,6 +14,42 @@ export const YES_NO_OPTIONS = [
   { label: "Oui", value: true },
   { label: "Non", value: false },
 ]
+
+// Same Oui/Non control as a plain `{ type: "radio" }` field, plus a contextual warning when
+// "Oui" is picked but nothing will actually make the button appear: the header's "Adhérer"
+// link only renders once a MembershipForm is PUBLISHED and bound to a section of this site
+// (see membershipCta in site-navbar.tsx/[slug]/page.tsx) — without that, the toggle silently
+// does nothing, which is confusing on its own.
+function HeaderShowRegisterControl({
+  field, value, onChange, readOnly, id,
+}: { field: CustomField<boolean | undefined>; value: boolean | undefined; onChange: (value: boolean | undefined) => void; readOnly?: boolean; id?: string }) {
+  const metadata          = useSitePuckMetadata()
+  const showNoFormWarning = value === true && metadata !== null && metadata.membershipCta === null
+
+  return (
+    <FieldLabel label={field.label ?? "Bouton « Adhérer »"}>
+      <AutoField field={{ type: "radio", options: YES_NO_OPTIONS }} value={value} onChange={onChange} readOnly={readOnly} id={id} />
+      {showNoFormWarning && (
+        <p className="mt-1.5 text-xs text-muted-foreground">
+          Aucun formulaire d&apos;adhésion publié n&apos;est encore lié à une section de ce site — le bouton ne s&apos;affichera pas tant que ce n&apos;est pas fait.{" "}
+          <Link href="/dashboard/adhesions" className="underline hover:text-foreground">
+            Gérer les formulaires d&apos;adhésion
+          </Link>
+        </p>
+      )}
+    </FieldLabel>
+  )
+}
+
+export function headerShowRegisterField(): CustomField<boolean | undefined> {
+  return {
+    type:   "custom",
+    label:  "Bouton « Adhérer »",
+    render: ({ field, value, onChange, readOnly, id }) => (
+      <HeaderShowRegisterControl field={field} value={value} onChange={onChange} readOnly={readOnly} id={id} />
+    ),
+  }
+}
 
 export function colorField<ColorValue extends string | undefined>(label: string): CustomField<ColorValue> {
   return {

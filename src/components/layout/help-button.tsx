@@ -6,6 +6,7 @@ import { useTranslations } from "next-intl"
 import { QuestionIcon } from "@phosphor-icons/react/dist/ssr";
 import { useTour } from "@/lib/tour/use-tour"
 import { useSidebar } from "@/components/ui/sidebar"
+import { cn } from "@/lib/utils"
 
 // The panel (Portable Text renderer, assistant, tabs, accordion) only loads the first time
 // someone opens it — the header is on every dashboard page, most of which never need help.
@@ -14,7 +15,12 @@ const HelpPanel = dynamic(() => import("@/components/help/help-panel").then((mod
 /** Bump the suffix to re-show the tour to everyone after a major update. */
 const SEEN_KEY = "adhera-tour-seen-v1"
 
-export function HelpButton() {
+interface Props {
+  className?:     string
+  iconClassName?: string
+}
+
+export function HelpButton({ className, iconClassName }: Props = {}) {
   const t = useTranslations("help")
   const { start } = useTour()
   const { isMobile, setOpenMobile } = useSidebar()
@@ -72,13 +78,13 @@ export function HelpButton() {
         type="button"
         onClick={openPanel}
         data-tour="help"
-        className="flex items-center justify-center rounded-md h-8 w-8 text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-colors"
+        className={cn("flex items-center justify-center rounded-md h-8 w-8 text-foreground hover:bg-muted/60 transition-colors", className)}
         aria-label={t("buttonLabel")}
         aria-haspopup="dialog"
         aria-expanded={open}
         title={t("buttonLabel")}
       >
-        <QuestionIcon className="size-4" />
+        <QuestionIcon className={cn("size-4", iconClassName)} />
       </button>
 
       {hasOpened && (

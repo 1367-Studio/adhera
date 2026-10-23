@@ -7,7 +7,7 @@ import { UserIcon, CalendarBlankIcon, CoinsIcon, NewspaperIcon, PackageIcon, Han
 import {
   Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupContent,
   SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem,
-  SidebarRail, useSidebar,
+  SidebarRail, SidebarTrigger, useSidebar,
 } from "@/components/ui/sidebar"
 import { useModules, useBranding } from "@/lib/user-context"
 import { PORTAL_NAV_ORDER } from "@/lib/modules"
@@ -62,15 +62,16 @@ export function PortalSidebar({ slug, memberCardEnabled }: { slug: string; membe
   const associationDocumentsHref  = `/portal/${slug}/documents-association`
   const showAssociationDocuments  = associationDocumentsQuery.isSuccess && associationDocumentsQuery.data.length > 0
 
+  // Matches app-sidebar.tsx: no floating rounded-corner panel on the content area.
   return (
-    <Sidebar collapsible="icon" variant="inset">
+    <Sidebar collapsible="icon">
       <SidebarHeader>
         <SidebarMenu>
-          <SidebarMenuItem>
+          <SidebarMenuItem className="flex items-center gap-1">
             <SidebarMenuButton
               size="lg"
               render={<Link href={navItems[0]?.href ?? `/portal/${slug}/profil`} />}
-              className="hover:bg-transparent hover:text-sidebar-foreground active:bg-transparent active:text-sidebar-foreground"
+              className="min-w-0 flex-1 hover:bg-transparent hover:text-sidebar-foreground active:bg-transparent active:text-sidebar-foreground group-data-[collapsible=icon]:hidden"
             >
               <BrandLogo logoUrl={branding?.logoUrl} imgClassName="size-8 rounded object-contain" />
               <div className="flex flex-col gap-0.5 leading-none min-w-0 ml-1">
@@ -78,6 +79,11 @@ export function PortalSidebar({ slug, memberCardEnabled }: { slug: string; membe
                 <span className="text-xs text-muted-foreground">{t("mySpace")}</span>
               </div>
             </SidebarMenuButton>
+            {/* Collapse/expand toggle lives in the sidebar's own header next to the logo
+                (same as the dashboard's AppSidebar) — not in the main content topbar.
+                Collapsed, the logo above hides and this takes its place instead of
+                disappearing with it. */}
+            <SidebarTrigger className="shrink-0" />
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>

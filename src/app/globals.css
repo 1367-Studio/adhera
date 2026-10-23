@@ -191,6 +191,61 @@ header.sticky {
   border-bottom: 1px solid var(--border) !important;
 }
 
+/* Figma dashboard mockup's page background is pure white (#FFFFFF), not the app's usual
+   --background (#f8fafc, a faint blue-grey) — redeclaring the token itself here cascades
+   to every var(--background) consumer in this subtree (sidebar-inset below, header.sticky,
+   any bg-background utility) in one place instead of overriding each separately. Light
+   mode only: dark mode keeps the real --background (#000000) rather than a literal white
+   that would be unreadable here. */
+.dashboard-figma-restyle {
+  --background: #ffffff;
+}
+.dark .dashboard-figma-restyle {
+  /* Restores the real dark --background (#000000, see :root.dark above) — the light-mode
+     override above is unconditional on .dashboard-figma-restyle alone, so without this it
+     would also win in dark mode on specificity (0,2,0 vs 0,1,0) despite coming first. */
+  --background: #000000;
+}
+
+/* Figma dashboard mockup has no separate header strip — the topbar sits on the exact
+   same flat background as the page below it, no hairline between them. Scoped under
+   dashboard-figma-restyle (set only on /dashboard's SidebarProvider, not portal/backoffice,
+   which still share .dashboard-canvas) so it beats the generic header.sticky rule above
+   on specificity without touching those other screens. */
+.dashboard-figma-restyle header.sticky {
+  background: var(--background) !important;
+  border-bottom: 0 !important;
+  backdrop-filter: none;
+}
+.dark .dashboard-figma-restyle header.sticky {
+  background: var(--background) !important;
+  border-bottom: 0 !important;
+  backdrop-filter: none;
+}
+
+/* Same fix as dashboard-figma-restyle above, but portal keeps its own real --background
+   (unlike the dashboard restyle, this doesn't force white) — only the hairline goes. */
+.portal-header-no-divider header.sticky {
+  background: var(--background) !important;
+  border-bottom: 0 !important;
+  backdrop-filter: none;
+}
+.dark .portal-header-no-divider header.sticky {
+  background: var(--background) !important;
+  border-bottom: 0 !important;
+  backdrop-filter: none;
+}
+
+/* Flush edge-to-edge (no variant="inset" margin anymore, see app-sidebar.tsx/
+   portal-sidebar.tsx) read as cramped with zero breathing room above the header and
+   beside the content — a little padding on the wrapper brings that back for both the
+   header and the page content below it, without the floating rounded-corner panel
+   look the old variant="inset" margin created. */
+.dashboard-figma-restyle [data-slot="sidebar-inset"],
+.portal-header-no-divider [data-slot="sidebar-inset"] {
+  padding: 0.75rem 1rem 0;
+}
+
 [data-slot="sidebar-inset"] {
   background: var(--background) !important;
 }
@@ -221,6 +276,118 @@ header.sticky {
   background: var(--sidebar-primary) !important;
   color: var(--sidebar-primary-foreground) !important;
   font-weight: 600 !important;
+}
+
+/* Figma dashboard mockup: active item is a subtle tinted background + a left accent bar,
+   not a solid primary fill — text stays the sidebar's normal (already-accessible) color
+   instead of needing a paired foreground color, so the contrast concern the rule above
+   exists for doesn't apply here. Scoped to .dashboard-figma-restyle only, and must
+   out-specificity the rule above since both carry !important.
+   The bar is a ::before, not a full-height inset box-shadow: a flat-cornered shadow
+   against this button's rounded-md corners (see [data-sidebar="menu-button"] above)
+   poked out past the curve at top/bottom. Figma's own bar is shorter than the row
+   too (24px inside a ~44px row), not edge-to-edge. */
+/* Figma dashboard mockup: nav item text/icon are the same color whether active or not
+   (#121314 text, #000000 icon) — light mode only, since these near-black values would be
+   unreadable against the dark sidebar background in dark mode, which keeps the existing
+   --sidebar-foreground token instead. Covers both the plain and active states in one rule
+   rather than repeating per-state, including beating sidebarMenuButtonVariants' own
+   `data-active:[&_svg]:text-sidebar-primary-foreground` (white) — a child's own color
+   rule otherwise wins over an inherited parent color, which is what made the active
+   item's icon disappear (white-on-white) before this rule existed. */
+.dashboard-figma-restyle [data-sidebar="menu-button"],
+.dashboard-figma-restyle [data-sidebar="menu-sub-button"] {
+  color: #121314 !important;
+}
+.dashboard-figma-restyle [data-sidebar="menu-button"] svg,
+.dashboard-figma-restyle [data-sidebar="menu-sub-button"] svg {
+  color: #000000 !important;
+}
+.dark .dashboard-figma-restyle [data-sidebar="menu-button"],
+.dark .dashboard-figma-restyle [data-sidebar="menu-sub-button"] {
+  color: var(--sidebar-foreground) !important;
+}
+.dark .dashboard-figma-restyle [data-sidebar="menu-button"] svg,
+.dark .dashboard-figma-restyle [data-sidebar="menu-sub-button"] svg {
+  color: var(--sidebar-foreground) !important;
+}
+
+/* Sub-links (the leaf items under a category, e.g. "Membres" under "Adhérents") never
+   got the top-level active treatment above — they still carry the shared sidebar
+   primitive's own default active style, a solid primary-blue fill with white text
+   (SidebarMenuSubButton's data-active:bg-sidebar-primary, untouched by this restyle).
+   The #121314 rule above was overriding that white to dark-on-blue — unreadable — so
+   active sub-links get a higher-specificity exception back to white, in both themes. */
+.dashboard-figma-restyle [data-sidebar="menu-sub-button"][data-active="true"],
+.dashboard-figma-restyle [data-sidebar="menu-sub-button"][data-active] {
+  color: var(--sidebar-primary-foreground) !important;
+}
+.dashboard-figma-restyle [data-sidebar="menu-sub-button"][data-active="true"] svg,
+.dashboard-figma-restyle [data-sidebar="menu-sub-button"][data-active] svg {
+  color: var(--sidebar-primary-foreground) !important;
+}
+
+/* Figma dashboard mockup: active item is a subtle tinted background + a left accent bar,
+   not a solid primary fill — out-specificity the plain-fill rule above since both carry
+   !important. The bar is a ::before, not a full-height inset box-shadow: a flat-cornered
+   shadow against this button's rounded-md corners (see [data-sidebar="menu-button"]
+   above) poked out past the curve at top/bottom. Figma's own bar is shorter than the row
+   too (24px inside a ~44px row), not edge-to-edge. */
+.dashboard-figma-restyle [data-sidebar="menu-button"][data-active="true"],
+.dashboard-figma-restyle [data-sidebar="menu-button"][data-active] {
+  /* Exact Figma value, not --sidebar-accent (#f1f5f9) — close but not quite it. */
+  background: #F5F5F5 !important;
+  font-weight: 500 !important;
+  position: relative !important;
+}
+.dark .dashboard-figma-restyle [data-sidebar="menu-button"][data-active="true"],
+.dark .dashboard-figma-restyle [data-sidebar="menu-button"][data-active] {
+  /* No dark variant in the Figma mockup — falls back to the existing sidebar-accent
+     token instead of a light-mode hex that would be unreadable on a dark background. */
+  background: var(--sidebar-accent) !important;
+}
+.dashboard-figma-restyle [data-sidebar="menu-button"][data-active="true"]::before,
+.dashboard-figma-restyle [data-sidebar="menu-button"][data-active]::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 22%;
+  bottom: 22%;
+  width: 3px;
+  border-radius: 0 2px 2px 0;
+  background: var(--sidebar-primary);
+}
+
+/* Collapsed (icon-only) sidebar: the active item matches the user avatar badge in the
+   header instead of the expanded state's grey-tint + accent-bar treatment above — a
+   round, solid blue chip with a white icon. There's no row left to put a left accent
+   bar against once the label is gone, so the ::before from above is hidden here too. */
+.dashboard-figma-restyle [data-slot="sidebar"][data-collapsible="icon"] [data-sidebar="menu-button"][data-active="true"],
+.dashboard-figma-restyle [data-slot="sidebar"][data-collapsible="icon"] [data-sidebar="menu-button"][data-active] {
+  background: var(--sidebar-primary) !important;
+  border-radius: 9999px !important;
+}
+.dashboard-figma-restyle [data-slot="sidebar"][data-collapsible="icon"] [data-sidebar="menu-button"][data-active="true"]::before,
+.dashboard-figma-restyle [data-slot="sidebar"][data-collapsible="icon"] [data-sidebar="menu-button"][data-active]::before {
+  display: none;
+}
+.dashboard-figma-restyle [data-slot="sidebar"][data-collapsible="icon"] [data-sidebar="menu-button"][data-active="true"] svg,
+.dashboard-figma-restyle [data-slot="sidebar"][data-collapsible="icon"] [data-sidebar="menu-button"][data-active] svg {
+  color: #ffffff !important;
+}
+
+/* Figma dashboard mockup: category/group triggers ("Adhérents", "Communication"...) are a
+   small muted uppercase label, not a full nav-item (no icon — app-sidebar.tsx already
+   drops it for this trigger — and not the #121314 nav-item text color above). */
+.dashboard-figma-restyle .sidebar-category-trigger,
+.dashboard-figma-restyle .sidebar-category-trigger svg {
+  color: #7C7C80 !important;
+}
+.dashboard-figma-restyle .sidebar-category-trigger > span:first-child {
+  font-size: 0.625rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 
 [data-sidebar="footer"] {
@@ -483,14 +650,12 @@ header.sticky {
   --public-panel:    #141414;
 }
 
+/* Blurred background illustration + translucent floating panels removed app-wide
+   (dashboard, portal, public forms) — read as "an image underneath" the content,
+   which the new flat design direction doesn't want anywhere. The rule is kept empty
+   rather than deleted so .dashboard-canvas/.public-canvas stay valid hooks (still
+   used for the rounded-corner panel treatment below) without re-adding the image. */
 .dashboard-canvas {
-  background-image:
-    linear-gradient(var(--dashboard-veil), var(--dashboard-veil)),
-    url("/app/logo-dashboard-blur.webp");
-  background-size:       cover;
-  background-position:   center;
-  background-attachment: fixed;
-  background-repeat:     no-repeat;
 }
 
 /* Variante pour les pages publiques (formulaires d'adhésion/don), à poser EN PLUS de
@@ -510,69 +675,16 @@ header.sticky {
        .extract({left:450, top:685, width:964, height:294})
        .resize({width:1400}).blur(96).webp({quality:82}) */
 .public-canvas {
-  background-image:
-    linear-gradient(var(--dashboard-veil), var(--dashboard-veil)),
-    url("/app/logo-public-blur.webp");
 }
 
-/* Pas de parallaxe pour qui n'en veut pas : `fixed` produit un décalage au
-   défilement qui peut gêner. */
-@media (prefers-reduced-motion: reduce) {
-  .dashboard-canvas { background-attachment: scroll; }
-}
+/* sidebar-inset stays on the generic opaque `[data-slot="sidebar-inset"] { background:
+   var(--background) !important; }` rule above — no translucent panel color, now that
+   there's no background image underneath it to show through. */
 
-/* Le fond est porté par le wrapper (SidebarProvider). SidebarInset peint par-dessus
-   un `bg-background` opaque : sans le neutraliser, l'image existe mais reste
-   entièrement recouverte. On ne rend transparente QUE la zone de contenu.
-
-   La surface interne de la barre latérale garde délibérément son `bg-sidebar` : la
-   rendre transparente elle aussi posait la navigation à même l'illustration, sans
-   aucun contraste garanti derrière les libellés. La barre latérale reste donc un
-   aplat lisible, et l'image n'apparaît que dans la zone de contenu — où les cartes
-   et tableaux ont leur propre `bg-card`.
-
-   Ciblé par data-slot et scopé sous .dashboard-canvas : le portail réutilise ces
-   mêmes composants et doit conserver ses fonds opaques. */
-.dashboard-canvas [data-slot="sidebar-inset"] {
-  /* Pas totalement transparent : une surface légèrement laiteuse pose le texte brut
-     de la zone de contenu (descriptions, états vides, libellés muted) sur un fond
-     tenu, et rend surtout l'arrondi visible — un panneau transparent au-dessus de
-     la même image que le fond n'a aucun bord à arrondir. Mettre l'alpha à 0 pour
-     une image pleinement nette, au prix du contraste sur le texte. */
-  background-color: var(--dashboard-panel);
-}
-
-/* Coins arrondis : la barre latérale (variant=inset lui donne déjà un p-2, donc elle
-   flotte) et la zone de contenu deviennent deux panneaux distincts posés sur le fond.
-   Même rayon que celui que SidebarInset applique déjà en variant=inset, pour que les
-   deux angles s'accordent. */
-.dashboard-canvas [data-slot="sidebar-inner"] {
-  border-radius: var(--dashboard-panel-radius);
-}
-
-@media (min-width: 768px) {
-  .dashboard-canvas [data-slot="sidebar-inset"] {
-    border-radius: var(--dashboard-panel-radius);
-  }
-}
-
-/* Le premier enfant de la zone de contenu (le header, ou le bandeau d'impayé quand
-   il s'affiche) peint son propre aplat par-dessus les angles hauts du panneau : sans
-   ça, le haut redevient carré alors que les trois autres coins sont arrondis.
-
-   `:first-child` plutôt que de viser `header` : PastDueBanner ne rend rien du tout
-   quand l'abonnement est sain, mais passe devant le header quand il s'affiche — la
-   règle suit ce qui est réellement en tête.
-
-   Et surtout pas `overflow: hidden` sur le panneau, qui serait pourtant la solution
-   évidente : le header est `sticky top-0`, un ancêtre en overflow hidden en fait son
-   conteneur de défilement et casse le collage. */
-@media (min-width: 768px) {
-  .dashboard-canvas [data-slot="sidebar-inset"] > :first-child {
-    border-top-left-radius:  var(--dashboard-panel-radius);
-    border-top-right-radius: var(--dashboard-panel-radius);
-  }
-}
+/* Rounded-corner floating panel removed along with variant="inset" (see app-sidebar.tsx/
+   portal-sidebar.tsx) — flush edge-to-edge chrome with no gap around it has nothing for a
+   border-radius to round against, so the three rules that used to match SidebarInset's own
+   variant=inset rounding are gone too, not just neutralized. */
 
 /* Rich text rendered by the typography plugin (AI answers, help articles, editor content,
    event descriptions) uses the dashboard's own colour tokens in both themes, instead of the

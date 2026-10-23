@@ -20,6 +20,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { logout } from "@/lib/auth/actions"
 import { BASE_PATH } from "@/lib/env"
+import { cn } from "@/lib/utils"
 import { ProfileEditModal }        from "./profile-edit-modal"
 import { ChangePasswordModal }     from "./change-password-modal"
 import { TwoFactorSettingsModal }  from "./two-factor-settings-modal"
@@ -50,9 +51,11 @@ function getRoleLabels(t: ReturnType<typeof useTranslations>): Record<string, st
 interface UserMenuProps {
   user: { name?: string | null; email?: string | null; role?: string }
   logoutRedirect?: string
+  className?:      string
+  avatarClassName?: string
 }
 
-export function UserMenu({ user, logoutRedirect }: UserMenuProps) {
+export function UserMenu({ user, logoutRedirect, className, avatarClassName }: UserMenuProps) {
   const t = useTranslations("layout.userMenu")
   const roleLabels = getRoleLabels(t)
   const [modal, setModal] = useState<"profile" | "password" | "security" | null>(null)
@@ -80,9 +83,9 @@ export function UserMenu({ user, logoutRedirect }: UserMenuProps) {
   return (
     <>
       <DropdownMenu>
-        <DropdownMenuTrigger render={<Button variant="ghost" className="relative size-8 rounded-full p-0" />}>
-          <Avatar className="size-8">
-            <AvatarFallback className="text-xs">{initials}</AvatarFallback>
+        <DropdownMenuTrigger render={<Button variant="ghost" className={cn("relative size-8 rounded-full p-0", className)} />}>
+          <Avatar className={cn("size-8", avatarClassName)}>
+            <AvatarFallback className={cn("text-xs", avatarClassName && "bg-primary text-primary-foreground font-medium")}>{initials}</AvatarFallback>
           </Avatar>
         </DropdownMenuTrigger>
 

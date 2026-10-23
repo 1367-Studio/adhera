@@ -10,6 +10,7 @@ import {
   SidebarMenuButton, SidebarMenuItem, SidebarMenuSub,
   SidebarMenuSubButton,
   SidebarMenuSubItem,
+  SidebarTrigger,
   useSidebar,
 } from "@/components/ui/sidebar"
 import { APP_NAME } from "@/config/brand"
@@ -270,15 +271,19 @@ export function AppSidebar() {
   const isBranded = !!branding?.logoUrl
   const isFlyout  = state === "collapsed" && !isMobile
 
+  // Figma dashboard mockup: flush edge-to-edge chrome, not the floating rounded-corner
+  // panel variant="inset" gives the content area (margin + rounded-xl + shadow-sm on
+  // SidebarInset, see ui/sidebar.tsx). Dropped here and in portal-sidebar.tsx; left
+  // alone on backoffice-sidebar.tsx, which isn't part of this restyle.
   return (
-    <Sidebar collapsible="icon" variant="inset">
+    <Sidebar collapsible="icon">
       <SidebarHeader>
         <SidebarMenu>
-          <SidebarMenuItem>
+          <SidebarMenuItem className="flex items-center gap-1 group-data-[collapsible=icon]:justify-center">
             <SidebarMenuButton
               size="lg"
               render={<Link href="/dashboard" />}
-              className="hover:bg-transparent hover:text-sidebar-foreground active:bg-transparent active:text-sidebar-foreground"
+              className="min-w-0 flex-1 hover:bg-transparent hover:text-sidebar-foreground active:bg-transparent active:text-sidebar-foreground group-data-[collapsible=icon]:hidden"
             >
               <BrandLogo logoUrl={branding?.logoUrl} imgClassName="size-8 rounded object-contain" />
               <div className="flex flex-col gap-0.5 leading-none min-w-0 ml-1">
@@ -286,6 +291,11 @@ export function AppSidebar() {
                 {!isBranded && <span className="text-xs text-muted-foreground">{t("associations")}</span>}
               </div>
             </SidebarMenuButton>
+            {/* Figma mockup: the collapse/expand toggle lives in the sidebar's own header,
+                next to the logo — not in the main content topbar (see dashboard/layout.tsx's
+                showSidebarTrigger={false}). Collapsed, the logo above hides and this takes
+                its place instead of disappearing with it. */}
+            <SidebarTrigger className="shrink-0" />
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
@@ -356,8 +366,8 @@ export function AppSidebar() {
                             isActive={isCatActive && !isOpen}
                             aria-expanded={isOpen}
                             onClick={() => toggleCategory(cat.key)}
+                            className="sidebar-category-trigger"
                           >
-                            <NavIcon icon={cat.icon} className="size-5" />
                             <span>{t(`categories.${cat.key}`)}</span>
                             <span className="ml-auto flex items-center gap-1.5">
                               <CaretRightIcon className={cn("size-3.5 transition-transform", isOpen && "rotate-90")} />
