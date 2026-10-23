@@ -302,6 +302,21 @@ header.sticky {
   color: var(--sidebar-foreground) !important;
 }
 
+/* Sub-links (the leaf items under a category, e.g. "Membres" under "Adhérents") never
+   got the top-level active treatment above — they still carry the shared sidebar
+   primitive's own default active style, a solid primary-blue fill with white text
+   (SidebarMenuSubButton's data-active:bg-sidebar-primary, untouched by this restyle).
+   The #121314 rule above was overriding that white to dark-on-blue — unreadable — so
+   active sub-links get a higher-specificity exception back to white, in both themes. */
+.dashboard-figma-restyle [data-sidebar="menu-sub-button"][data-active="true"],
+.dashboard-figma-restyle [data-sidebar="menu-sub-button"][data-active] {
+  color: var(--sidebar-primary-foreground) !important;
+}
+.dashboard-figma-restyle [data-sidebar="menu-sub-button"][data-active="true"] svg,
+.dashboard-figma-restyle [data-sidebar="menu-sub-button"][data-active] svg {
+  color: var(--sidebar-primary-foreground) !important;
+}
+
 /* Figma dashboard mockup: active item is a subtle tinted background + a left accent bar,
    not a solid primary fill — out-specificity the plain-fill rule above since both carry
    !important. The bar is a ::before, not a full-height inset box-shadow: a flat-cornered
@@ -625,14 +640,12 @@ header.sticky {
   --public-panel:    #141414;
 }
 
+/* Blurred background illustration + translucent floating panels removed app-wide
+   (dashboard, portal, public forms) — read as "an image underneath" the content,
+   which the new flat design direction doesn't want anywhere. The rule is kept empty
+   rather than deleted so .dashboard-canvas/.public-canvas stay valid hooks (still
+   used for the rounded-corner panel treatment below) without re-adding the image. */
 .dashboard-canvas {
-  background-image:
-    linear-gradient(var(--dashboard-veil), var(--dashboard-veil)),
-    url("/app/logo-dashboard-blur.webp");
-  background-size:       cover;
-  background-position:   center;
-  background-attachment: fixed;
-  background-repeat:     no-repeat;
 }
 
 /* Variante pour les pages publiques (formulaires d'adhésion/don), à poser EN PLUS de
@@ -652,37 +665,11 @@ header.sticky {
        .extract({left:450, top:685, width:964, height:294})
        .resize({width:1400}).blur(96).webp({quality:82}) */
 .public-canvas {
-  background-image:
-    linear-gradient(var(--dashboard-veil), var(--dashboard-veil)),
-    url("/app/logo-public-blur.webp");
 }
 
-/* Pas de parallaxe pour qui n'en veut pas : `fixed` produit un décalage au
-   défilement qui peut gêner. */
-@media (prefers-reduced-motion: reduce) {
-  .dashboard-canvas { background-attachment: scroll; }
-}
-
-/* Le fond est porté par le wrapper (SidebarProvider). SidebarInset peint par-dessus
-   un `bg-background` opaque : sans le neutraliser, l'image existe mais reste
-   entièrement recouverte. On ne rend transparente QUE la zone de contenu.
-
-   La surface interne de la barre latérale garde délibérément son `bg-sidebar` : la
-   rendre transparente elle aussi posait la navigation à même l'illustration, sans
-   aucun contraste garanti derrière les libellés. La barre latérale reste donc un
-   aplat lisible, et l'image n'apparaît que dans la zone de contenu — où les cartes
-   et tableaux ont leur propre `bg-card`.
-
-   Ciblé par data-slot et scopé sous .dashboard-canvas : le portail réutilise ces
-   mêmes composants et doit conserver ses fonds opaques. */
-.dashboard-canvas [data-slot="sidebar-inset"] {
-  /* Pas totalement transparent : une surface légèrement laiteuse pose le texte brut
-     de la zone de contenu (descriptions, états vides, libellés muted) sur un fond
-     tenu, et rend surtout l'arrondi visible — un panneau transparent au-dessus de
-     la même image que le fond n'a aucun bord à arrondir. Mettre l'alpha à 0 pour
-     une image pleinement nette, au prix du contraste sur le texte. */
-  background-color: var(--dashboard-panel);
-}
+/* sidebar-inset stays on the generic opaque `[data-slot="sidebar-inset"] { background:
+   var(--background) !important; }` rule above — no translucent panel color, now that
+   there's no background image underneath it to show through. */
 
 /* Coins arrondis : la barre latérale (variant=inset lui donne déjà un p-2, donc elle
    flotte) et la zone de contenu deviennent deux panneaux distincts posés sur le fond.
