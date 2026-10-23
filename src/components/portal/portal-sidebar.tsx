@@ -62,8 +62,9 @@ export function PortalSidebar({ slug, memberCardEnabled }: { slug: string; membe
   const associationDocumentsHref  = `/portal/${slug}/documents-association`
   const showAssociationDocuments  = associationDocumentsQuery.isSuccess && associationDocumentsQuery.data.length > 0
 
+  // Matches app-sidebar.tsx: no floating rounded-corner panel on the content area.
   return (
-    <Sidebar collapsible="icon" variant="inset">
+    <Sidebar collapsible="icon">
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem className="flex items-center gap-1">
