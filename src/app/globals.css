@@ -236,6 +236,16 @@ header.sticky {
   backdrop-filter: none;
 }
 
+/* Flush edge-to-edge (no variant="inset" margin anymore, see app-sidebar.tsx/
+   portal-sidebar.tsx) read as cramped with zero breathing room above the header and
+   beside the content — a little padding on the wrapper brings that back for both the
+   header and the page content below it, without the floating rounded-corner panel
+   look the old variant="inset" margin created. */
+.dashboard-figma-restyle [data-slot="sidebar-inset"],
+.portal-header-no-divider [data-slot="sidebar-inset"] {
+  padding: 0.75rem 1rem 0;
+}
+
 [data-slot="sidebar-inset"] {
   background: var(--background) !important;
 }
@@ -671,37 +681,10 @@ header.sticky {
    var(--background) !important; }` rule above — no translucent panel color, now that
    there's no background image underneath it to show through. */
 
-/* Coins arrondis : la barre latérale (variant=inset lui donne déjà un p-2, donc elle
-   flotte) et la zone de contenu deviennent deux panneaux distincts posés sur le fond.
-   Même rayon que celui que SidebarInset applique déjà en variant=inset, pour que les
-   deux angles s'accordent. */
-.dashboard-canvas [data-slot="sidebar-inner"] {
-  border-radius: var(--dashboard-panel-radius);
-}
-
-@media (min-width: 768px) {
-  .dashboard-canvas [data-slot="sidebar-inset"] {
-    border-radius: var(--dashboard-panel-radius);
-  }
-}
-
-/* Le premier enfant de la zone de contenu (le header, ou le bandeau d'impayé quand
-   il s'affiche) peint son propre aplat par-dessus les angles hauts du panneau : sans
-   ça, le haut redevient carré alors que les trois autres coins sont arrondis.
-
-   `:first-child` plutôt que de viser `header` : PastDueBanner ne rend rien du tout
-   quand l'abonnement est sain, mais passe devant le header quand il s'affiche — la
-   règle suit ce qui est réellement en tête.
-
-   Et surtout pas `overflow: hidden` sur le panneau, qui serait pourtant la solution
-   évidente : le header est `sticky top-0`, un ancêtre en overflow hidden en fait son
-   conteneur de défilement et casse le collage. */
-@media (min-width: 768px) {
-  .dashboard-canvas [data-slot="sidebar-inset"] > :first-child {
-    border-top-left-radius:  var(--dashboard-panel-radius);
-    border-top-right-radius: var(--dashboard-panel-radius);
-  }
-}
+/* Rounded-corner floating panel removed along with variant="inset" (see app-sidebar.tsx/
+   portal-sidebar.tsx) — flush edge-to-edge chrome with no gap around it has nothing for a
+   border-radius to round against, so the three rules that used to match SidebarInset's own
+   variant=inset rounding are gone too, not just neutralized. */
 
 /* Rich text rendered by the typography plugin (AI answers, help articles, editor content,
    event descriptions) uses the dashboard's own colour tokens in both themes, instead of the
