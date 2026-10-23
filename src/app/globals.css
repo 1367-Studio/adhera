@@ -197,14 +197,22 @@ header.sticky {
    any bg-background utility) in one place instead of overriding each separately. Light
    mode only: dark mode keeps the real --background (#000000) rather than a literal white
    that would be unreadable here. */
+/* Figma dashboard mockup's card fill is #F7F7F7 — a neutral grey, not --muted (#f1f5f9),
+   which has a faint blue tint from this app's slate-based palette. bg-muted/60 over the
+   white --background above already lands close (~#F7F9FB) but isn't the exact hex, so
+   the token itself is redeclared here too, same reasoning as --background: it cascades to
+   every bg-muted use in the dashboard cards in one place, and dark mode is restored right
+   after so the override doesn't leak into bg-muted's actual dark-mode value. */
 .dashboard-figma-restyle {
   --background: #ffffff;
+  --muted: #f7f7f7;
 }
 .dark .dashboard-figma-restyle {
-  /* Restores the real dark --background (#000000, see :root.dark above) — the light-mode
-     override above is unconditional on .dashboard-figma-restyle alone, so without this it
-     would also win in dark mode on specificity (0,2,0 vs 0,1,0) despite coming first. */
+  /* Restores the real dark --background/--muted (see :root.dark above) — the light-mode
+     overrides above are unconditional on .dashboard-figma-restyle alone, so without this
+     they'd also win in dark mode on specificity (0,2,0 vs 0,1,0) despite coming first. */
   --background: #000000;
+  --muted: #1f1f1f;
 }
 
 /* Figma dashboard mockup has no separate header strip — the topbar sits on the exact
