@@ -3,6 +3,7 @@ import { AccessToken } from "livekit-server-sdk"
 import { prisma } from "@/lib/prisma/client"
 import { withPortalAuth } from "@/lib/api-wrapper"
 import { getLiveKitConfigForMeeting, LiveKitConfigError } from "@/lib/livekit/config"
+import { ensureRoomReconnectGrace } from "@/lib/livekit/room"
 
 export const POST = withPortalAuth(async (req, ctx) => {
   const { associationId, membreId } = ctx
@@ -56,6 +57,8 @@ export const POST = withPortalAuth(async (req, ctx) => {
     if (err instanceof LiveKitConfigError) return NextResponse.json({ error: err.message }, { status: 503 })
     throw err
   }
+
+  await ensureRoomReconnectGrace(livekit, participant.meeting.roomName)
 
   // Only recorded once the join is actually going to succeed — an early write here would
   // mark the meeting LIVE (and this membre as joined) even if the LiveKit config turns out

@@ -3,6 +3,7 @@ import { AccessToken } from "livekit-server-sdk"
 import { withAdminAuth } from "@/lib/api-wrapper"
 import { prisma } from "@/lib/prisma/client"
 import { getLiveKitConfigForMeeting, LiveKitConfigError } from "@/lib/livekit/config"
+import { ensureRoomReconnectGrace } from "@/lib/livekit/room"
 
 // Joining a meeting only needs to see the meetings area, not edit it (access "read", since a
 // POST would otherwise require "edit").
@@ -34,6 +35,8 @@ export const POST = withAdminAuth(async (req, ctx) => {
   if (meeting.status === "SCHEDULED") {
     await prisma.meeting.update({ where: { id: meetingId }, data: { status: "LIVE", startedAt: new Date() } })
   }
+
+  await ensureRoomReconnectGrace(livekit, meeting.roomName)
 
   const user = await prisma.user.findUnique({ where: { id: userId }, select: { name: true, email: true } })
   const identity = userId
