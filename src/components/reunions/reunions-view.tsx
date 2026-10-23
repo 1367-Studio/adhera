@@ -79,6 +79,63 @@ export function ReunionsView() {
   const [activeMeetingId, setActiveMeetingId] = useState<string | null>(null)
   const [refreshingId, setRefreshingId] = useState<string | null>(null)
   const [deleteId, setDeleteId] = useState<string | null>(null)
+  const [liveMeetingsWarning, setLiveMeetingsWarning] = useState<Meeting[] | null>(null)
+  const [checkingLiveMeetings, setCheckingLiveMeetings] = useState(false)
+
+  // Ground-truths against the actual LiveKit room (see /api/meetings/[id]/liveness) rather
+  // than trusting the cached `status: "LIVE"` on its own — that field only reflects reality
+  // as well as our webhook delivery does, and can lag behind (or never update) if a webhook
+  // was dropped. Returns true on any check failure: a LiveKit hiccup should never make this
+  // silently tell someone their meeting is over.
+  async function checkMeetingOpen(meetingId: string): Promise<boolean> {
+    try {
+      const res = await fetch(`/api/meetings/${meetingId}/liveness`)
+      if (!res.ok) return true
+      const data = await res.json() as { open: boolean }
+      return data.open
+    } catch {
+      return true
+    }
+  }
+
+  // Catches the case that led to resending invites to everyone: the host forgot a previous
+  // instant meeting was still LIVE (she just closed the tab instead of clicking "Encerrer")
+  // and was about to spin up a brand new one. Only ever warns about meetings *she* created —
+  // another admin's still-open meeting is none of this admin's business to be told about.
+  // Checks every meeting she left dangling, not just the newest one, so an older forgotten
+  // one never goes unmentioned just because a more recent one exists.
+  async function handleNewMeetingClick() {
+    const mine = meetings.filter(m => m.status === "LIVE" && m.createdById === currentUserId)
+    if (mine.length === 0) {
+      setFormOpen(true)
+      return
+    }
+    setCheckingLiveMeetings(true)
+    try {
+      const results = await Promise.all(mine.map(async m => ({ meeting: m, open: await checkMeetingOpen(m.id) })))
+      const stillOpen = results.filter(r => r.open).map(r => r.meeting)
+      if (stillOpen.length === 0) {
+        qc.invalidateQueries({ queryKey: MEETINGS_QK })
+        setFormOpen(true)
+      } else {
+        setLiveMeetingsWarning(stillOpen)
+      }
+    } finally {
+      setCheckingLiveMeetings(false)
+    }
+  }
+
+  // Re-checked at the moment of the click too, not just when the warning opened — she may
+  // have sat on the dialog for a while and the room could have closed in the meantime.
+  async function handleJoinFromWarning(meeting: Meeting) {
+    setLiveMeetingsWarning(null)
+    if (await checkMeetingOpen(meeting.id)) {
+      setActiveMeetingId(meeting.id)
+    } else {
+      toast.info(t("reunions.view.activeMeetingWarning.alreadyEnded"))
+      qc.invalidateQueries({ queryKey: MEETINGS_QK })
+    }
+  }
 
   // Cross-tab: another admin (or another tab of the same admin) ending a meeting, or the
   // LiveKit webhook auto-closing one, should refresh this list immediately too.
@@ -194,7 +251,7 @@ export function ReunionsView() {
         title={t("reunions.view.title")}
         description={t("reunions.view.description")}
         action={canEditReunions ? (
-          <Button size="sm" onClick={() => setFormOpen(true)}>
+          <Button size="sm" onClick={handleNewMeetingClick} loading={checkingLiveMeetings} disabled={checkingLiveMeetings}>
             <PlusIcon className="mr-2 h-4 w-4" />
             {t("reunions.view.newMeeting")}
           </Button>
@@ -208,7 +265,7 @@ export function ReunionsView() {
           <VideoCameraIcon className="h-10 w-10 text-muted-foreground" />
           <p className="text-sm text-muted-foreground">{t("reunions.view.noMeeting")}</p>
           {canEditReunions && (
-            <Button variant="outline" onClick={() => setFormOpen(true)}>
+            <Button variant="outline" onClick={handleNewMeetingClick} loading={checkingLiveMeetings} disabled={checkingLiveMeetings}>
               <PlusIcon className="mr-2 h-4 w-4" />
               {t("reunions.view.createMeeting")}
             </Button>
@@ -228,6 +285,34 @@ export function ReunionsView() {
           ))}
         </div>
       )}
+
+      <Modal
+        open={!!liveMeetingsWarning}
+        onOpenChange={(o) => { if (!o) setLiveMeetingsWarning(null) }}
+        title={t("reunions.view.activeMeetingWarning.title", { count: liveMeetingsWarning?.length ?? 1 })}
+        description={t("reunions.view.activeMeetingWarning.description", { count: liveMeetingsWarning?.length ?? 1 })}
+        size="sm"
+        footer={
+          <Button
+            variant="outline"
+            className="w-full"
+            onClick={() => { setLiveMeetingsWarning(null); setFormOpen(true) }}
+          >
+            {t("reunions.view.activeMeetingWarning.createNew")}
+          </Button>
+        }
+      >
+        <div className="space-y-2">
+          {liveMeetingsWarning?.map(m => (
+            <div key={m.id} className="flex items-center justify-between gap-3 rounded-lg border p-3">
+              <p className="text-sm font-medium truncate min-w-0">{m.title}</p>
+              <Button size="sm" className="shrink-0" onClick={() => handleJoinFromWarning(m)}>
+                {t("reunions.view.activeMeetingWarning.joinExisting")}
+              </Button>
+            </div>
+          ))}
+        </div>
+      </Modal>
 
       <Modal open={formOpen} onOpenChange={setFormOpen} title={t("reunions.view.createTitle")}>
         <MeetingForm
