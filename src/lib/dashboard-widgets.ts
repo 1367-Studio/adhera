@@ -54,11 +54,13 @@ export const DASHBOARD_WIDGET_META: Record<DashboardWidgetId, {
   w:         number
   h:         number
 }> = {
-  "stat-membres":         { moduleKey: null,          area: "membres",      w: 1, h: 1 },
-  "stat-evenements":      { moduleKey: "evenements",  area: "evenements",   w: 1, h: 1 },
-  "stat-cotisations":     { moduleKey: "cotisations", area: "adhesions",    w: 1, h: 1 },
-  "stat-solde":           { moduleKey: "finances",    area: "comptabilite", w: 1, h: 1 },
-  "stat-dons":            { moduleKey: "dons",        area: "dons",         w: 1, h: 1 },
+  // h:2 (not 1): Figma's KPI tiles read close to square against their column width —
+  // a single row unit left them a wide, short rectangle instead.
+  "stat-membres":         { moduleKey: null,          area: "membres",      w: 1, h: 2 },
+  "stat-evenements":      { moduleKey: "evenements",  area: "evenements",   w: 1, h: 2 },
+  "stat-cotisations":     { moduleKey: "cotisations", area: "adhesions",    w: 1, h: 2 },
+  "stat-solde":           { moduleKey: "finances",    area: "comptabilite", w: 1, h: 2 },
+  "stat-dons":            { moduleKey: "dons",        area: "dons",         w: 1, h: 2 },
   "cotisations-gauge":    { moduleKey: "cotisations", area: "adhesions",    w: 2, h: 3 },
   "income-expense-chart": { moduleKey: "finances",    area: "comptabilite", w: 2, h: 3 },
   "next-event":           { moduleKey: "evenements",  area: "evenements",   w: 2, h: 2 },
