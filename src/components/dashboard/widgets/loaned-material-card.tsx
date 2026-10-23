@@ -24,10 +24,10 @@ interface Props {
 export function LoanedMaterialCard({ materielEmpruntsListe, materielEnRetardCount, isLoading }: Props) {
   const t = useTranslations("dashboard.loanedMaterial")
   return (
-    <div className="rounded-lg border bg-card p-5 space-y-3 flex flex-col min-h-0 overflow-hidden">
+    <div className="rounded-lg bg-muted/60 p-6 space-y-3 flex flex-col min-h-0 overflow-hidden">
       <div className="flex items-center gap-2">
-        <PackageIcon className="size-4 text-muted-foreground" />
-        <span className="text-sm font-medium">{t("title")}</span>
+        <PackageIcon className="size-4.5 text-muted-foreground" />
+        <span className="text-base font-medium">{t("title")}</span>
       </div>
       {isLoading ? (
         <div className="h-12 rounded-lg bg-muted animate-pulse" />

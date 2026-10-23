@@ -24,12 +24,24 @@ function fmt(n: number) {
   return new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR", maximumFractionDigits: 0 }).format(n)
 }
 
+// Figma dashboard mockup: every chart on this page is a blue monochrome ramp, red
+// reserved for a genuine alert (overdue) — not the app's validated rainbow categorical
+// palette (usePalette, src/lib/finance-palette.ts). Local to this file and this page:
+// usePalette is shared with the Finances page's own charts and backoffice/materiel
+// charts, which aren't part of this restyle and keep their real categorical colors.
+const FIGMA_CHART = {
+  blue:      "#023D9D", // primary — darkest step
+  blueMid:   "#5C82BE",
+  blueLight: "#9EB6DB",
+  blueLighter: "#E1E9F5", // lightest step
+  red:       "#FF383C", // the one non-blue — alert/overdue only
+}
+
 // ─── Tooltips (values lead, series name follows; line-key not a box) ──────────
 
-function MonthlyTip({ active, payload, label, pal }: {
+function MonthlyTip({ active, payload, label }: {
   active?: boolean; label?: string
   payload?: { value: number; dataKey: string }[]
-  pal: ReturnType<typeof usePalette>
 }) {
   const t = useTranslations("dashboard.charts")
   if (!active || !payload?.length) return null
@@ -39,12 +51,12 @@ function MonthlyTip({ active, payload, label, pal }: {
     <div className="rounded-lg border bg-background px-3 py-2 text-xs shadow-lg space-y-1">
       <p className="font-medium">{label}</p>
       <p className="flex items-center gap-1.5">
-        <span className="inline-block h-0.5 w-3 rounded-full" style={{ background: pal.recettes }} />
+        <span className="inline-block h-0.5 w-3 rounded-full" style={{ background: FIGMA_CHART.blue }} />
         <span className="text-muted-foreground">{t("income")}</span>
         <span className="font-semibold ml-auto">{fmt(recettes)}</span>
       </p>
       <p className="flex items-center gap-1.5">
-        <span className="inline-block h-0.5 w-3 rounded-full" style={{ background: pal.depenses }} />
+        <span className="inline-block h-0.5 w-3 rounded-full" style={{ background: FIGMA_CHART.red }} />
         <span className="text-muted-foreground">{t("expense")}</span>
         <span className="font-semibold ml-auto">{fmt(depenses)}</span>
       </p>
@@ -62,27 +74,6 @@ function CategoryTip({ active, payload }: {
       <p className="font-medium">{payload[0].payload.name}</p>
       <p className="font-semibold">{fmt(payload[0].value)}</p>
     </div>
-  )
-}
-
-// Lollipop mark (thick rounded line + end dot) instead of a filled block — reads
-// lighter/more current than a solid bar. The end dot is a surface-color ring with a
-// smaller colored center (dataviz skill: "dots carry a surface-color ring so they
-// stay legible where they cross the line"), not a solid colored disc.
-function LollipopBar({ x, y, width, height, color }: {
-  x?: number; y?: number; width?: number; height?: number; color: string
-}) {
-  if (x == null || y == null || width == null || height == null) return null
-  const cy      = y + height / 2
-  const outerR  = Math.min(height / 2 + 1, 9)
-  const innerR  = outerR * 0.45
-  const x2      = Math.max(x + width - outerR, x)
-  return (
-    <g>
-      <line x1={x} y1={cy} x2={x2} y2={cy} stroke={color} strokeWidth={6} strokeLinecap="round" />
-      <circle cx={x + width} cy={cy} r={outerR} fill="var(--card)" stroke={color} strokeWidth={2} />
-      <circle cx={x + width} cy={cy} r={innerR} fill={color} />
-    </g>
   )
 }
 
@@ -118,7 +109,7 @@ export function CotisationsGaugeCard() {
   const { data, isLoading, modules } = useFinanceChartsData()
 
   if (!modules.cotisations) return null
-  if (isLoading) return <div className="h-full min-h-48 rounded-lg border bg-card animate-pulse" />
+  if (isLoading) return <div className="h-full min-h-48 rounded-lg bg-muted/60 animate-pulse" />
   if (!data?.hasCotisations) return null
 
   const cotisationTotal = data.cotisations.reduce((s, c) => s + c.amount, 0)
@@ -130,9 +121,12 @@ export function CotisationsGaugeCard() {
   // ANNULEE deliberately has no slot here — see finance-palette.ts's comment on why a 6th
   // validated categorical hue wasn't feasible, and the server excludes it from this chart's
   // data entirely (consistent with it being excluded from "collectable" amounts elsewhere).
+  // Blue ramp (darkest = fully paid) instead of usePalette's categorical hues — only
+  // EN_RETARD (genuinely overdue) breaks the ramp with red.
   const cotisationColor: Record<string, string> = {
-    PAYE: pal.payees, EN_ATTENTE: pal.enAttente, EXONERE: pal.exonerees,
-    PARTIELLEMENT_PAYEE: pal.partiellementPayee, EN_RETARD: pal.enRetard,
+    PAYE: FIGMA_CHART.blue, PARTIELLEMENT_PAYEE: FIGMA_CHART.blueMid,
+    EN_ATTENTE: FIGMA_CHART.blueLight, EXONERE: FIGMA_CHART.blueLighter,
+    EN_RETARD: FIGMA_CHART.red,
   }
   const cotisationLabelKey: Record<string, string> = {
     PAYE: "payees", EN_ATTENTE: "enAttente", EXONERE: "exonerees",
@@ -142,15 +136,15 @@ export function CotisationsGaugeCard() {
   const paidPct    = cotisationTotal > 0 ? Math.round((paidAmount / cotisationTotal) * 100) : 0
 
   return (
-    <div className="relative overflow-hidden rounded-lg border bg-card p-6 dark:border-white/10">
-      <p className="relative mb-1 text-xs font-medium text-muted-foreground">{t("dashboard.cotisations.title", { year: data.year })}</p>
+    <div className="relative overflow-hidden rounded-lg bg-muted/60 p-6">
+      <p className="relative mb-1 text-base font-medium">{t("dashboard.cotisations.title", { year: data.year })}</p>
       {/* Hero figure: % already collected — the one number a progress bar exists to
           answer, and distinct from the raw totals already listed below/elsewhere. */}
-      <p className="relative mb-4 text-3xl font-semibold">
-        {paidPct}<span className="text-lg text-muted-foreground">{t("dashboard.charts.collectedPercent")}</span>
+      <p className="relative mb-4 text-sm font-medium text-muted-foreground">
+        {paidPct}{t("dashboard.charts.collectedPercent")}
       </p>
 
-      <div className="relative flex h-3 w-full gap-0.5 overflow-hidden rounded-full">
+      <div className="relative flex h-10 w-full gap-px overflow-hidden rounded-lg">
         {data.cotisations.map((c, i) => (
           <div
             key={c.status}
@@ -184,21 +178,22 @@ export function CotisationsGaugeCard() {
   )
 }
 
-// Recettes vs Dépenses — trend over time, 2 distinct series → area chart
-// (dataviz skill: "trend over time" → line/area; bar is for comparing discrete
-// categories, not a continuous monthly progression).
+// Recettes vs Dépenses — smooth curved area chart, matching the Figma dashboard
+// mockup's own chart exactly (confirmed from its exported overlay SVG: two monotone
+// lines with a gradient fill fading to transparent, blue for paid/income, red for
+// pending/expense) — not the grouped-bar version this briefly became.
 export function IncomeExpenseChart() {
   const t   = useTranslations()
   const pal = usePalette()
   const { data, isLoading, modules } = useFinanceChartsData()
 
   if (!modules.finances) return null
-  if (isLoading) return <div className="h-full min-h-48 rounded-lg border bg-card animate-pulse" />
+  if (isLoading) return <div className="h-full min-h-48 rounded-lg bg-muted/60 animate-pulse" />
   if (!data?.hasFinances) return null
 
   return (
-    <div className="flex h-full flex-col rounded-lg border bg-card p-6 dark:border-white/10">
-      <p className="mb-4 shrink-0 text-xs font-medium text-muted-foreground">{t("dashboard.charts.trendTitle")}</p>
+    <div className="flex h-full flex-col rounded-lg bg-muted/60 p-6">
+      <p className="mb-4 shrink-0 text-base font-medium">{t("dashboard.charts.trendTitle")}</p>
       {/* Fills whatever height the widget was resized to, instead of the fixed 200px it
           used when the card's height wasn't the user's to choose. */}
       <div className="min-h-0 flex-1">
@@ -212,20 +207,18 @@ export function IncomeExpenseChart() {
               {/* Wash fill fading to fully transparent — the line itself carries the
                   series color at full strength, the fill is just a soft trend cue. */}
               <linearGradient id="fc-recettes" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%"  stopColor={pal.recettes} stopOpacity={0.35} />
-                <stop offset="100%" stopColor={pal.recettes} stopOpacity={0} />
+                <stop offset="0%"  stopColor={FIGMA_CHART.blue} stopOpacity={0.35} />
+                <stop offset="100%" stopColor={FIGMA_CHART.blue} stopOpacity={0} />
               </linearGradient>
               <linearGradient id="fc-depenses" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%"  stopColor={pal.depenses} stopOpacity={0.35} />
-                <stop offset="100%" stopColor={pal.depenses} stopOpacity={0} />
+                <stop offset="0%"  stopColor={FIGMA_CHART.red} stopOpacity={0.35} />
+                <stop offset="100%" stopColor={FIGMA_CHART.red} stopOpacity={0} />
               </linearGradient>
             </defs>
-            {/* Solid hairline, not dashed — dashing reads as a threshold/projection,
-                not a plain grid (dataviz skill anti-pattern). */}
             <CartesianGrid vertical={false} stroke={pal.grid} />
             <XAxis dataKey="label" axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: pal.axis, fontFamily: "inherit" }} />
-            <YAxis hide />
-            <Tooltip content={<MonthlyTip pal={pal} />} cursor={{ stroke: pal.grid, strokeWidth: 1 }} />
+            <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: pal.axis, fontFamily: "inherit" }} width={32} />
+            <Tooltip content={<MonthlyTip />} cursor={{ stroke: pal.grid, strokeWidth: 1 }} />
             <Legend
               iconType="plainline"
               wrapperStyle={{ fontSize: 12, color: pal.axis }}
@@ -233,16 +226,16 @@ export function IncomeExpenseChart() {
             />
             <Area
               type="monotone" dataKey="recettes" name="recettes"
-              stroke={pal.recettes} strokeWidth={2} fill="url(#fc-recettes)"
-              dot={{ r: 3, fill: pal.recettes, strokeWidth: 0 }}
-              activeDot={{ r: 5, fill: pal.recettes, stroke: "var(--card)", strokeWidth: 2 }}
+              stroke={FIGMA_CHART.blue} strokeWidth={2} fill="url(#fc-recettes)"
+              dot={{ r: 3, fill: FIGMA_CHART.blue, strokeWidth: 0 }}
+              activeDot={{ r: 5, fill: FIGMA_CHART.blue, stroke: "var(--card)", strokeWidth: 2 }}
               animationDuration={600} animationEasing="ease-out"
             />
             <Area
               type="monotone" dataKey="depenses" name="depenses"
-              stroke={pal.depenses} strokeWidth={2} fill="url(#fc-depenses)"
-              dot={{ r: 3, fill: pal.depenses, strokeWidth: 0 }}
-              activeDot={{ r: 5, fill: pal.depenses, stroke: "var(--card)", strokeWidth: 2 }}
+              stroke={FIGMA_CHART.red} strokeWidth={2} fill="url(#fc-depenses)"
+              dot={{ r: 3, fill: FIGMA_CHART.red, strokeWidth: 0 }}
+              activeDot={{ r: 5, fill: FIGMA_CHART.red, stroke: "var(--card)", strokeWidth: 2 }}
               animationDuration={600} animationEasing="ease-out"
             />
           </AreaChart>
@@ -269,39 +262,21 @@ export function IncomeByCategoryChart() {
     staleTime: 5 * 60_000,
   })
 
-  if (isLoading) return <div className="h-48 rounded-lg border bg-card animate-pulse" />
+  if (isLoading) return <div className="h-48 rounded-lg bg-muted/60 animate-pulse" />
   if (!data || !data.hasFinances || data.incomeByCategory.length === 0) return null
 
   return (
-    <div className="rounded-lg border bg-card p-6 dark:border-white/10">
-      <p className="mb-4 text-xs font-medium text-muted-foreground">{t("dashboard.charts.categoryTitle", { year: data.year })}</p>
-      <ResponsiveContainer width="100%" height={Math.max(data.incomeByCategory.length * 36, 80)} debounce={50}>
-        <BarChart
-          data={data.incomeByCategory}
-          layout="vertical"
-          barSize={20}
-          margin={{ top: 0, right: 100, bottom: 0, left: 8 }}
-        >
-          <XAxis type="number" hide />
-          <YAxis
-            type="category"
-            dataKey="name"
-            axisLine={false}
-            tickLine={false}
-            tick={{ fontSize: 12, fill: pal.axis, fontFamily: "inherit" }}
-            width={140}
-          />
+    <div className="rounded-lg bg-muted/60 p-6">
+      <p className="mb-4 text-base font-medium">{t("dashboard.charts.categoryTitle", { year: data.year })}</p>
+      <ResponsiveContainer width="100%" height={220} debounce={50}>
+        <BarChart data={data.incomeByCategory} margin={{ top: 24, right: 8, bottom: 0, left: 8 }} barCategoryGap="24%">
+          <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: pal.axis, fontFamily: "inherit" }} />
+          <YAxis hide />
           <Tooltip content={<CategoryTip />} cursor={{ fill: pal.cursor }} />
-          <Bar
-            dataKey="amount"
-            shape={(props: { x?: number; y?: number; width?: number; height?: number }) => (
-              <LollipopBar {...props} color={pal.sequential} />
-            )}
-            animationDuration={500} animationEasing="ease-out"
-          >
-            {/* Default offset assumes a flush bar end — the ring marker extends past
-                that point, so push the label out further to clear it. */}
-            <LabelList dataKey="amount" position="right" offset={16} formatter={(v: unknown) => fmt(Number(v))} style={{ fontSize: 11, fill: pal.axis, fontFamily: "inherit" }} />
+          <Bar dataKey="amount" fill={pal.sequential} radius={[8, 8, 0, 0]} animationDuration={500} animationEasing="ease-out">
+            {/* White, inside the bar near its top — reads against the solid fill
+                instead of needing room for an external label at every bar height. */}
+            <LabelList dataKey="amount" position="insideTop" offset={10} formatter={(v: unknown) => fmt(Number(v))} style={{ fontSize: 11, fill: "#fff", fontFamily: "inherit" }} />
           </Bar>
         </BarChart>
       </ResponsiveContainer>

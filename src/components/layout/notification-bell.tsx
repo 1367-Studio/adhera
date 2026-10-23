@@ -63,7 +63,12 @@ function NotificationRow({
   )
 }
 
-export function NotificationBell() {
+interface Props {
+  className?:     string
+  iconClassName?: string
+}
+
+export function NotificationBell({ className, iconClassName }: Props = {}) {
   const t = useTranslations("notifications.bell")
   const tHelp = useTranslations("help")
   const dateFnsLocale = getDateFnsLocale(useLocale() as Locale)
@@ -119,11 +124,11 @@ export function NotificationBell() {
     <div className="relative">
       <button
         onClick={() => setOpen(v => !v)}
-        className="relative flex items-center justify-center rounded-md h-8 w-8 text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-colors"
+        className={cn("relative flex items-center justify-center rounded-md h-8 w-8 text-foreground hover:bg-muted/60 transition-colors", className)}
         aria-label={t("ariaLabel")}
         aria-expanded={open}
       >
-        <BellIcon className="size-4" />
+        <BellIcon className={cn("size-4", iconClassName)} />
         {unreadCount > 0 && (
           <span className="absolute top-1 right-1 flex size-2">
             <span className="animate-ping absolute inline-flex size-full rounded-full bg-primary opacity-75" />

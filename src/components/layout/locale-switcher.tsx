@@ -13,14 +13,17 @@ import {
 import { Button } from "@/components/ui/button"
 import { setLocale } from "@/lib/i18n/actions"
 import { SUPPORTED_LOCALES, LOCALE_LABELS, type Locale } from "@/i18n/locales"
+import { cn } from "@/lib/utils"
 
 type Props = {
   // See setLocale's own comment — false on pages where switching languages previews wording
   // rather than expressing the visitor's actual preference (public form pages in preview mode).
   persistAccountLocale?: boolean
+  className?:            string
+  iconClassName?:        string
 }
 
-export function LocaleSwitcher({ persistAccountLocale = true }: Props = {}) {
+export function LocaleSwitcher({ persistAccountLocale = true, className, iconClassName }: Props = {}) {
   const locale = useLocale() as Locale
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
@@ -40,12 +43,12 @@ export function LocaleSwitcher({ persistAccountLocale = true }: Props = {}) {
           <Button
             variant="ghost"
             size="icon"
-            className="size-8"
+            className={cn("size-8", className)}
             loading={isPending}
                       />
         }
       >
-        <GlobeIcon className="size-4" />
+        <GlobeIcon className={cn("size-4", iconClassName)} />
         <span className="sr-only">{LOCALE_LABELS[locale]}</span>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
