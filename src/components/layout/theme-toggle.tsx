@@ -7,7 +7,12 @@ import { MoonIcon, SunIcon } from "@phosphor-icons/react/dist/ssr";
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 
-export function ThemeToggle() {
+interface Props {
+  className?:     string
+  iconClassName?: string
+}
+
+export function ThemeToggle({ className, iconClassName = "size-4" }: Props = {}) {
   const t = useTranslations("layout.themeToggle")
   const { theme, setTheme } = useTheme()
   const [spins, setSpins] = useState(0)
@@ -21,15 +26,15 @@ export function ThemeToggle() {
     <Button
       variant="ghost"
       size="icon"
-      className="size-8"
+      className={cn("size-8", className)}
       onClick={handleClick}
     >
       <span
         key={spins}
-        className={cn("relative flex size-4 items-center justify-center", spins > 0 && "animate-theme-toggle-spin")}
+        className={cn("relative flex items-center justify-center", iconClassName, spins > 0 && "animate-theme-toggle-spin")}
       >
-        <SunIcon weight="fill" className="size-4 rotate-0 scale-100 text-amber-500 transition-all dark:-rotate-90 dark:scale-0" />
-        <MoonIcon weight="fill" className="absolute size-4 rotate-90 scale-0 text-indigo-400 transition-all dark:rotate-0 dark:scale-100" />
+        <SunIcon className={cn(iconClassName, "rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0")} />
+        <MoonIcon className={cn(iconClassName, "absolute rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100")} />
       </span>
       <span className="sr-only">{t("changeTheme")}</span>
     </Button>

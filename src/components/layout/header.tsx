@@ -31,12 +31,26 @@ interface HeaderProps {
     email?: string | null
     role?:  string
   }
-  showSidebar?:     boolean
-  showTour?:        boolean
-  logoutRedirect?:  string
-  associationSlug?: string
-  publicSiteUrl?:   string | null
+  showSidebar?:         boolean
+  // The dashboard moves the collapse/expand toggle into the sidebar's own header, next to
+  // the logo (Figma mockup) — backoffice/portal keep it here, their default.
+  showSidebarTrigger?:  boolean
+  // The Figma dashboard mockup's topbar has no page-name/breadcrumb text at all, just the
+  // utility icons on the right — backoffice/portal keep it, their default.
+  showBreadcrumb?:      boolean
+  showTour?:            boolean
+  logoutRedirect?:      string
+  associationSlug?:     string
+  publicSiteUrl?:       string | null
+  className?:           string
 }
+
+// Figma dashboard mockup's utility buttons: 48px circular chips with a visible light
+// background, not the shared Button primitive's default 32px ghost (bg only on hover).
+// Passed as a className override to each button rather than changing their own default,
+// since all 5 are also used outside this header (boutique public pages, backoffice,
+// portal) where today's smaller ghost style stays unchanged.
+const HEADER_ICON_BTN_CLASS = "size-12 rounded-full bg-muted hover:bg-muted/70"
 
 function ViewSwitcher({ slug, pathname }: { slug: string; pathname: string }) {
   const t = useTranslations("layout.header")
@@ -79,7 +93,7 @@ function ViewSwitcher({ slug, pathname }: { slug: string; pathname: string }) {
   )
 }
 
-export function Header({ user, showSidebar = false, showTour = false, logoutRedirect, associationSlug, publicSiteUrl }: HeaderProps) {
+export function Header({ user, showSidebar = false, showSidebarTrigger = true, showBreadcrumb = true, showTour = false, logoutRedirect, associationSlug, publicSiteUrl, className }: HeaderProps) {
   const t = useTranslations()
   const modules = useModules()
   const routeLabels = getRouteLabels(t)
@@ -90,41 +104,45 @@ export function Header({ user, showSidebar = false, showTour = false, logoutRedi
   const currentLabel = routeLabels[visibleSegments[visibleSegments.length - 1] ?? ""] ?? visibleSegments[visibleSegments.length - 1] ?? ""
 
   return (
-    <header className="sticky top-0 z-40 flex radius-t h-14 shrink-0 items-center gap-2 border-b bg-sidebar px-4">
-      {showSidebar && (
+    <header className={cn("sticky top-0 z-40 flex radius-t h-14 shrink-0 items-center gap-2 border-b bg-sidebar px-4", className)}>
+      {showSidebar && showSidebarTrigger && (
         <>
           <SidebarTrigger className="-ml-1" />
           <Separator orientation="vertical" className="mr-2 h-4" />
         </>
       )}
 
-      <span className="min-w-0 flex-1 truncate text-sm font-medium sm:hidden">{currentLabel}</span>
+      {showBreadcrumb && (
+        <>
+          <span className="min-w-0 flex-1 truncate text-sm font-medium sm:hidden">{currentLabel}</span>
 
-      <Breadcrumb className="hidden sm:block">
-        <BreadcrumbList>
-          {segments.map((segment, i) => {
-            if (looksLikeId(segment)) return null
-            const isLast = i === segments.length - 1
-            const label  = routeLabels[segment] ?? segment
-            const href   = i === 0 && segment === "portal" && associationSlug
-              ? `/portal/${associationSlug}/${firstEnabledPortalPath(modules)}`
-              : "/" + segments.slice(0, i + 1).join("/")
+          <Breadcrumb className="hidden sm:block">
+            <BreadcrumbList>
+              {segments.map((segment, i) => {
+                if (looksLikeId(segment)) return null
+                const isLast = i === segments.length - 1
+                const label  = routeLabels[segment] ?? segment
+                const href   = i === 0 && segment === "portal" && associationSlug
+                  ? `/portal/${associationSlug}/${firstEnabledPortalPath(modules)}`
+                  : "/" + segments.slice(0, i + 1).join("/")
 
-            return (
-              <span key={segment} className="flex items-center gap-1.5">
-                {i > 0 && <BreadcrumbSeparator />}
-                <BreadcrumbItem>
-                  {isLast ? (
-                    <BreadcrumbPage>{label}</BreadcrumbPage>
-                  ) : (
-                    <BreadcrumbLink render={<Link href={href} />}>{label}</BreadcrumbLink>
-                  )}
-                </BreadcrumbItem>
-              </span>
-            )
-          })}
-        </BreadcrumbList>
-      </Breadcrumb>
+                return (
+                  <span key={segment} className="flex items-center gap-1.5">
+                    {i > 0 && <BreadcrumbSeparator />}
+                    <BreadcrumbItem>
+                      {isLast ? (
+                        <BreadcrumbPage>{label}</BreadcrumbPage>
+                      ) : (
+                        <BreadcrumbLink render={<Link href={href} />}>{label}</BreadcrumbLink>
+                      )}
+                    </BreadcrumbItem>
+                  </span>
+                )
+              })}
+            </BreadcrumbList>
+          </Breadcrumb>
+        </>
+      )}
 
       <div className="ml-auto flex items-center gap-2">
         {associationSlug && hasDashboardAccess(user.role ?? "") && (
@@ -145,18 +163,18 @@ export function Header({ user, showSidebar = false, showTour = false, logoutRedi
             <span className="hidden sm:inline">{t("layout.header.publicSite")}</span>
           </a>
         )}
-        {showTour && <HelpButton />}
+        {showTour && <HelpButton className={HEADER_ICON_BTN_CLASS} iconClassName="size-5" />}
         <span data-tour="notifications" className="flex items-center">
-          <NotificationBell />
+          <NotificationBell className={HEADER_ICON_BTN_CLASS} iconClassName="size-5" />
         </span>
         <span data-tour="theme-toggle" className="flex items-center">
-          <ThemeToggle />
+          <ThemeToggle className={HEADER_ICON_BTN_CLASS} iconClassName="size-5" />
         </span>
         <span className="flex items-center">
-          <LocaleSwitcher />
+          <LocaleSwitcher className={HEADER_ICON_BTN_CLASS} iconClassName="size-5" />
         </span>
         <span data-tour="user-menu" className="flex items-center">
-          <UserMenu user={user} logoutRedirect={logoutRedirect} />
+          <UserMenu user={user} logoutRedirect={logoutRedirect} className="size-12" avatarClassName="size-12" />
         </span>
       </div>
     </header>

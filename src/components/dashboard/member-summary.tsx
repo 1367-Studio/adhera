@@ -28,8 +28,8 @@ interface Props {
   activeCount: number | null
 }
 
-// Flat summary line under the page header (CLAUDE.md §8/§13): member counts as typography,
-// plan usage as a thin bar — no stat cards.
+// Member counts as a plain typography line, plan usage as a thin bar — sits right under
+// the page header, independent of the stat tiles below it.
 export function MemberSummary({ totalCount, activeCount }: Props) {
   const t = useTranslations("dashboard")
 

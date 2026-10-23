@@ -281,8 +281,8 @@ export function TableauDeBord({ initialLayout }: Props) {
     <div className="space-y-6 py-4">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">{t("dashboard.pageTitle")}</h1>
-          <p className="text-sm text-muted-foreground mt-0.5">
+          <h1 className="text-[2.5rem] leading-none font-medium tracking-tight">{t("dashboard.pageTitle")}</h1>
+          <p className="text-base text-muted-foreground mt-1.5">
             {t("dashboard.subtitle")}
           </p>
         </div>
@@ -319,7 +319,7 @@ export function TableauDeBord({ initialLayout }: Props) {
               not `grid-auto-flow: dense`: dense backfilled gaps by pulling later widgets
               forward, so a card could jump somewhere the user never dragged it. With sizes
               under the user's control, honouring their order beats auto-compacting. */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 auto-rows-[7rem] gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 auto-rows-[8rem] gap-4">
             {visibleLayout.map(({ id, w, h }) => (
               <SortableWidget
                 key={id}
