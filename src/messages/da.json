@@ -899,7 +899,16 @@
       "typeIncome": "Indtægt",
       "typeExpense": "Udgifter",
       "accountingCode": "Regnskabskode",
-      "accountingCodePlaceholder": "Eksempel: 70600"
+      "accountingCodePlaceholder": "Eksempel: 70600",
+      "accountingCodeDuplicateWarning": "Dette kontonummer bruges allerede af en anden kategori.",
+      "section": "Afsnit",
+      "sectionOptions": {
+        "OPERATING": "Drift",
+        "FINANCIAL": "Finansielt",
+        "EXCEPTIONAL": "Ekstraordinært",
+        "OTHER": "Andet",
+        "IN_KIND": "Bidrag i naturalier"
+      }
     },
     "bankAccountForm": {
       "bankName": "Banknavn",
@@ -1289,6 +1298,90 @@
       "typeIncome": "Indtægt",
       "typeExpense": "Udgifter",
       "confirm": "Valider forliget"
+    },
+    "compteResultat": {
+      "title": "Resultatopgørelse",
+      "description": "Regnskabsårets økonomiske resultat sammenlignet med det foregående år.",
+      "exerciceLabel": "Regnskabsår",
+      "noPreviousExercice": "-",
+      "export": "Eksportér",
+      "exportExcel": "Eksportér Excel (detaljeret)",
+      "exportPdf": "Eksportér PDF",
+      "products": "Indtægter",
+      "totalProducts": "Indtægter i alt",
+      "expenses": "Udgifter",
+      "totalExpenses": "Udgifter i alt",
+      "result": "Årets resultat",
+      "surplus": "Årets overskud",
+      "deficit": "Årets underskud",
+      "emptyExercice": {
+        "title": "Intet regnskabsår",
+        "description": "Opret et regnskabsår for at generere resultatopgørelsen."
+      },
+      "noPreviousExerciceMessage": "Intet tidligere regnskabsår tilgængeligt",
+      "resultZero": "Regnskabsårets resultat: 0 €",
+      "operationalResult": "Driftsresultat",
+      "uncategorized": "Skal kategoriseres",
+      "uncategorizedAlertIncome": "{count, plural, one {# indtægt skal kategoriseres} other {# indtægter skal kategoriseres}}",
+      "uncategorizedAlertExpense": "{count, plural, one {# udgift skal kategoriseres} other {# udgifter skal kategoriseres}}",
+      "expandSection": "Vis",
+      "collapseSection": "Skjul",
+      "noCategoriesInSection": "Ingen kategori i dette afsnit",
+      "sections": {
+        "FINANCIAL": "Finansielt",
+        "EXCEPTIONAL": "Ekstraordinært",
+        "OTHER": "Andet",
+        "IN_KIND": "Frivillige bidrag i naturalier"
+      },
+      "drillDown": {
+        "date": "Dato",
+        "origin": "Oprindelse",
+        "person": "Person",
+        "payment": "Betaling",
+        "amount": "Beløb",
+        "categorize": "Kategorisér",
+        "categorizePlaceholder": "Vælg en kategori",
+        "noTransactions": "Ingen transaktioner",
+        "categorizeSuccess": "Transaktion kategoriseret"
+      },
+      "pdf": {
+        "periodLabel": "Periode fra {start} til {end}",
+        "operatingIncome": "DRIFTSINDTÆGTER",
+        "operatingExpense": "DRIFTSUDGIFTER",
+        "operatingResult": "DRIFTSRESULTAT",
+        "financialIncome": "FINANSIELLE INDTÆGTER",
+        "financialExpense": "FINANSIELLE UDGIFTER",
+        "financialResult": "FINANSIELT RESULTAT",
+        "exceptionalIncome": "EKSTRAORDINÆRE INDTÆGTER",
+        "exceptionalExpense": "EKSTRAORDINÆRE UDGIFTER",
+        "exceptionalResult": "EKSTRAORDINÆRT RESULTAT",
+        "otherIncome": "ANDRE INDTÆGTER",
+        "otherExpense": "ANDRE UDGIFTER",
+        "otherResult": "RESULTAT AF ANDRE INDTÆGTER OG UDGIFTER",
+        "inKindIncome": "FRIVILLIGE BIDRAG I NATURALIER",
+        "inKindExpense": "ANVENDELSE AF FRIVILLIGE BIDRAG I NATURALIER",
+        "inKindResult": "FRIVILLIGE BIDRAG (NETTO)",
+        "uncategorizedSection": "TRANSAKTIONER DER SKAL KATEGORISERES",
+        "uncategorizedIncomeLabel": "Indtægter der skal kategoriseres",
+        "uncategorizedExpenseLabel": "Udgifter der skal kategoriseres",
+        "total": "I alt",
+        "grandTotal": "TOTAL"
+      },
+      "csv": {
+        "date": "Dato",
+        "type": "Type",
+        "typeIncome": "Indtægt",
+        "typeExpense": "Udgift",
+        "category": "Kategori",
+        "uncategorized": "Skal kategoriseres",
+        "accountingCode": "Kontonummer",
+        "description": "Beskrivelse",
+        "amount": "Beløb",
+        "paymentMethod": "Betalingsmetode",
+        "origin": "Oprindelse",
+        "reference": "Reference",
+        "exercice": "Regnskabsår"
+      }
     }
   },
   "evenements": {

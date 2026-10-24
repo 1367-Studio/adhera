@@ -899,7 +899,16 @@
       "typeIncome": "Bevétel",
       "typeExpense": "Költségek",
       "accountingCode": "Számviteli kód",
-      "accountingCodePlaceholder": "Ex: 70600"
+      "accountingCodePlaceholder": "Ex: 70600",
+      "accountingCodeDuplicateWarning": "Ezt a számviteli kódot már egy másik kategória használja.",
+      "section": "Szakasz",
+      "sectionOptions": {
+        "OPERATING": "Üzemi",
+        "FINANCIAL": "Pénzügyi",
+        "EXCEPTIONAL": "Rendkívüli",
+        "OTHER": "Egyéb",
+        "IN_KIND": "Természetbeni hozzájárulások"
+      }
     },
     "bankAccountForm": {
       "bankName": "Bank neve",
@@ -1289,6 +1298,90 @@
       "typeIncome": "Bevétel",
       "typeExpense": "Költségek",
       "confirm": "A megbékélés érvényesítése"
+    },
+    "compteResultat": {
+      "title": "Eredménykimutatás",
+      "description": "Az üzleti év pénzügyi eredménye az előző évhez képest.",
+      "exerciceLabel": "Üzleti év",
+      "noPreviousExercice": "-",
+      "export": "Exportálás",
+      "exportExcel": "Excel exportálása (részletes)",
+      "exportPdf": "PDF exportálása",
+      "products": "Bevételek",
+      "totalProducts": "Bevételek összesen",
+      "expenses": "Kiadások",
+      "totalExpenses": "Kiadások összesen",
+      "result": "Az üzleti év eredménye",
+      "surplus": "Az üzleti év többlete",
+      "deficit": "Az üzleti év hiánya",
+      "emptyExercice": {
+        "title": "Nincs üzleti év",
+        "description": "Hozzon létre egy üzleti évet az eredménykimutatás elkészítéséhez."
+      },
+      "noPreviousExerciceMessage": "Nincs elérhető korábbi üzleti év",
+      "resultZero": "Az üzleti év eredménye: 0 €",
+      "operationalResult": "Üzemi eredmény",
+      "uncategorized": "Kategorizálandó",
+      "uncategorizedAlertIncome": "{count, plural, one {# bevételt kategorizálni kell} other {# bevételt kategorizálni kell}}",
+      "uncategorizedAlertExpense": "{count, plural, one {# kiadást kategorizálni kell} other {# kiadást kategorizálni kell}}",
+      "expandSection": "Megjelenítés",
+      "collapseSection": "Elrejtés",
+      "noCategoriesInSection": "Nincs kategória ebben a szakaszban",
+      "sections": {
+        "FINANCIAL": "Pénzügyi",
+        "EXCEPTIONAL": "Rendkívüli",
+        "OTHER": "Egyéb",
+        "IN_KIND": "Önkéntes természetbeni hozzájárulások"
+      },
+      "drillDown": {
+        "date": "Dátum",
+        "origin": "Eredet",
+        "person": "Személy",
+        "payment": "Fizetés",
+        "amount": "Összeg",
+        "categorize": "Kategorizálás",
+        "categorizePlaceholder": "Válasszon kategóriát",
+        "noTransactions": "Nincsenek tranzakciók",
+        "categorizeSuccess": "Tranzakció kategorizálva"
+      },
+      "pdf": {
+        "periodLabel": "Időszak: {start} – {end}",
+        "operatingIncome": "ÜZEMI BEVÉTELEK",
+        "operatingExpense": "ÜZEMI RÁFORDÍTÁSOK",
+        "operatingResult": "ÜZEMI EREDMÉNY",
+        "financialIncome": "PÉNZÜGYI BEVÉTELEK",
+        "financialExpense": "PÉNZÜGYI RÁFORDÍTÁSOK",
+        "financialResult": "PÉNZÜGYI EREDMÉNY",
+        "exceptionalIncome": "RENDKÍVÜLI BEVÉTELEK",
+        "exceptionalExpense": "RENDKÍVÜLI RÁFORDÍTÁSOK",
+        "exceptionalResult": "RENDKÍVÜLI EREDMÉNY",
+        "otherIncome": "EGYÉB BEVÉTELEK",
+        "otherExpense": "EGYÉB RÁFORDÍTÁSOK",
+        "otherResult": "EGYÉB BEVÉTELEK ÉS RÁFORDÍTÁSOK EREDMÉNYE",
+        "inKindIncome": "ÖNKÉNTES TERMÉSZETBENI HOZZÁJÁRULÁSOK",
+        "inKindExpense": "AZ ÖNKÉNTES TERMÉSZETBENI HOZZÁJÁRULÁSOK FELHASZNÁLÁSA",
+        "inKindResult": "ÖNKÉNTES HOZZÁJÁRULÁSOK (EGYENLEG)",
+        "uncategorizedSection": "KATEGORIZÁLANDÓ TRANZAKCIÓK",
+        "uncategorizedIncomeLabel": "Kategorizálandó bevételek",
+        "uncategorizedExpenseLabel": "Kategorizálandó kiadások",
+        "total": "Összesen",
+        "grandTotal": "ÖSSZESEN"
+      },
+      "csv": {
+        "date": "Dátum",
+        "type": "Típus",
+        "typeIncome": "Bevétel",
+        "typeExpense": "Kiadás",
+        "category": "Kategória",
+        "uncategorized": "Kategorizálandó",
+        "accountingCode": "Számviteli kód",
+        "description": "Leírás",
+        "amount": "Összeg",
+        "paymentMethod": "Fizetési mód",
+        "origin": "Eredet",
+        "reference": "Hivatkozás",
+        "exercice": "Üzleti év"
+      }
     }
   },
   "evenements": {

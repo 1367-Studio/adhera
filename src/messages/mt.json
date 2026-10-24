@@ -899,7 +899,16 @@
       "typeIncome": "Dħul",
       "typeExpense": "Spejjeż",
       "accountingCode": "Kodiċi tal-kontabilità",
-      "accountingCodePlaceholder": "Ex: 70600"
+      "accountingCodePlaceholder": "Ex: 70600",
+      "accountingCodeDuplicateWarning": "Dan il-kodiċi tal-kontabilità diġà qed jintuża minn kategorija oħra.",
+      "section": "Taqsima",
+      "sectionOptions": {
+        "OPERATING": "Operattiv",
+        "FINANCIAL": "Finanzjarju",
+        "EXCEPTIONAL": "Eċċezzjonali",
+        "OTHER": "Ieħor",
+        "IN_KIND": "Kontribuzzjonijiet in natura"
+      }
     },
     "bankAccountForm": {
       "bankName": "Isem tal-Bank",
@@ -1289,6 +1298,90 @@
       "typeIncome": "Dħul",
       "typeExpense": "Spejjeż",
       "confirm": "Ivvalida l-konċiljazzjoni"
+    },
+    "compteResultat": {
+      "title": "Rendikont tad-Dħul",
+      "description": "Riżultat finanzjarju tal-eżerċizzju, imqabbel mal-eżerċizzju preċedenti.",
+      "exerciceLabel": "Eżerċizzju",
+      "noPreviousExercice": "-",
+      "export": "Esporta",
+      "exportExcel": "Esporta Excel (dettaljat)",
+      "exportPdf": "Esporta PDF",
+      "products": "Dħul",
+      "totalProducts": "Total tad-dħul",
+      "expenses": "Nfiq",
+      "totalExpenses": "Total tan-nfiq",
+      "result": "Riżultat tal-eżerċizzju",
+      "surplus": "Surplus tal-eżerċizzju",
+      "deficit": "Defiċit tal-eżerċizzju",
+      "emptyExercice": {
+        "title": "L-ebda eżerċizzju",
+        "description": "Oħloq eżerċizzju biex tiġġenera r-rendikont tad-dħul."
+      },
+      "noPreviousExerciceMessage": "L-ebda eżerċizzju preċedenti disponibbli",
+      "resultZero": "Riżultat tal-eżerċizzju: 0 €",
+      "operationalResult": "Riżultat operattiv",
+      "uncategorized": "Trid tiġi kkategorizzata",
+      "uncategorizedAlertIncome": "{count, plural, one {# dħul jeħtieġ jiġi kkategorizzat} other {# dħul jeħtieġu jiġu kkategorizzati}}",
+      "uncategorizedAlertExpense": "{count, plural, one {# nefqa teħtieġ tiġi kkategorizzata} other {# nfiq jeħtieġu jiġu kkategorizzati}}",
+      "expandSection": "Uri",
+      "collapseSection": "Aħbi",
+      "noCategoriesInSection": "L-ebda kategorija f'din it-taqsima",
+      "sections": {
+        "FINANCIAL": "Finanzjarju",
+        "EXCEPTIONAL": "Eċċezzjonali",
+        "OTHER": "Ieħor",
+        "IN_KIND": "Kontribuzzjonijiet volontarji in natura"
+      },
+      "drillDown": {
+        "date": "Data",
+        "origin": "Oriġini",
+        "person": "Persuna",
+        "payment": "Ħlas",
+        "amount": "Ammont",
+        "categorize": "Ikkategorizza",
+        "categorizePlaceholder": "Agħżel kategorija",
+        "noTransactions": "L-ebda tranżazzjoni",
+        "categorizeSuccess": "Tranżazzjoni kkategorizzata"
+      },
+      "pdf": {
+        "periodLabel": "Perjodu minn {start} sa {end}",
+        "operatingIncome": "DĦUL OPERATTIV",
+        "operatingExpense": "NFIQ OPERATTIV",
+        "operatingResult": "RIŻULTAT OPERATTIV",
+        "financialIncome": "DĦUL FINANZJARJU",
+        "financialExpense": "NFIQ FINANZJARJU",
+        "financialResult": "RIŻULTAT FINANZJARJU",
+        "exceptionalIncome": "DĦUL EĊĊEZZJONALI",
+        "exceptionalExpense": "NFIQ EĊĊEZZJONALI",
+        "exceptionalResult": "RIŻULTAT EĊĊEZZJONALI",
+        "otherIncome": "DĦUL IEĦOR",
+        "otherExpense": "NFIQ IEĦOR",
+        "otherResult": "RIŻULTAT TA' DĦUL U NFIQ IEĦOR",
+        "inKindIncome": "KONTRIBUZZJONIJIET VOLONTARJI IN NATURA",
+        "inKindExpense": "UŻU TAL-KONTRIBUZZJONIJIET VOLONTARJI IN NATURA",
+        "inKindResult": "KONTRIBUZZJONIJIET VOLONTARJI (BILANĊ)",
+        "uncategorizedSection": "TRANŻAZZJONIJIET LI JRIDU JIĠU KKATEGORIZZATI",
+        "uncategorizedIncomeLabel": "Dħul li jrid jiġi kkategorizzat",
+        "uncategorizedExpenseLabel": "Nfiq li jrid jiġi kkategorizzat",
+        "total": "Total",
+        "grandTotal": "TOTAL"
+      },
+      "csv": {
+        "date": "Data",
+        "type": "Tip",
+        "typeIncome": "Dħul",
+        "typeExpense": "Nefqa",
+        "category": "Kategorija",
+        "uncategorized": "Trid tiġi kkategorizzata",
+        "accountingCode": "Kodiċi tal-kontabilità",
+        "description": "Deskrizzjoni",
+        "amount": "Ammont",
+        "paymentMethod": "Metodu ta' ħlas",
+        "origin": "Oriġini",
+        "reference": "Referenza",
+        "exercice": "Eżerċizzju"
+      }
     }
   },
   "evenements": {

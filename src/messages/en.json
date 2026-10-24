@@ -927,29 +927,73 @@
       "result": "Result for the year",
       "surplus": "Surplus for the year",
       "deficit": "Deficit for the year",
-      "categories": {
-        "income": {
-          "cotisations": "Membership dues",
-          "dons": "Donations",
-          "subventions": "Grants",
-          "boutique": "Shop",
-          "evenements": "Events",
-          "autres": "Other revenue"
-        },
-        "expense": {
-          "assurance": "Insurance",
-          "communication": "Communication",
-          "materiel": "Supplies",
-          "transport": "Travel",
-          "fraisBancaires": "Bank fees",
-          "location": "Rent",
-          "equipement": "Equipment",
-          "autres": "Other expenses"
-        }
-      },
       "emptyExercice": {
         "title": "No fiscal year",
         "description": "Create a fiscal year to generate the income statement."
+      },
+      "noPreviousExerciceMessage": "No previous exercice available",
+      "resultZero": "Result for the period: €0",
+      "operationalResult": "Operating result",
+      "uncategorized": "Uncategorized",
+      "uncategorizedAlertIncome": "{count, plural, one {# income entry needs to be categorized} other {# income entries need to be categorized}}",
+      "uncategorizedAlertExpense": "{count, plural, one {# expense needs to be categorized} other {# expenses need to be categorized}}",
+      "expandSection": "Show",
+      "collapseSection": "Hide",
+      "noCategoriesInSection": "No category in this section",
+      "sections": {
+        "FINANCIAL": "Financial",
+        "EXCEPTIONAL": "Exceptional",
+        "OTHER": "Other",
+        "IN_KIND": "In-kind contributions"
+      },
+      "drillDown": {
+        "date": "Date",
+        "origin": "Origin",
+        "person": "Person",
+        "payment": "Payment",
+        "amount": "Amount",
+        "categorize": "Categorize",
+        "categorizePlaceholder": "Choose a category",
+        "noTransactions": "No transactions",
+        "categorizeSuccess": "Transaction categorized"
+      },
+      "pdf": {
+        "periodLabel": "Period from {start} to {end}",
+        "operatingIncome": "OPERATING INCOME",
+        "operatingExpense": "OPERATING EXPENSES",
+        "operatingResult": "OPERATING RESULT",
+        "financialIncome": "FINANCIAL INCOME",
+        "financialExpense": "FINANCIAL EXPENSES",
+        "financialResult": "FINANCIAL RESULT",
+        "exceptionalIncome": "EXCEPTIONAL INCOME",
+        "exceptionalExpense": "EXCEPTIONAL EXPENSES",
+        "exceptionalResult": "EXCEPTIONAL RESULT",
+        "otherIncome": "OTHER INCOME",
+        "otherExpense": "OTHER EXPENSES",
+        "otherResult": "RESULT FROM OTHER INCOME AND EXPENSES",
+        "inKindIncome": "IN-KIND CONTRIBUTIONS",
+        "inKindExpense": "USE OF IN-KIND CONTRIBUTIONS",
+        "inKindResult": "IN-KIND CONTRIBUTIONS (NET)",
+        "uncategorizedSection": "TRANSACTIONS TO CATEGORIZE",
+        "uncategorizedIncomeLabel": "Income to categorize",
+        "uncategorizedExpenseLabel": "Expenses to categorize",
+        "total": "Total",
+        "grandTotal": "TOTAL"
+      },
+      "csv": {
+        "date": "Date",
+        "type": "Type",
+        "typeIncome": "Income",
+        "typeExpense": "Expense",
+        "category": "Category",
+        "uncategorized": "Uncategorized",
+        "accountingCode": "Accounting code",
+        "description": "Description",
+        "amount": "Amount",
+        "paymentMethod": "Payment method",
+        "origin": "Origin",
+        "reference": "Reference",
+        "exercice": "Fiscal year"
       }
     },
     "categoryForm": {
@@ -959,7 +1003,16 @@
       "typeIncome": "Income",
       "typeExpense": "Expense",
       "accountingCode": "Accounting code",
-      "accountingCodePlaceholder": "e.g. 70600"
+      "accountingCodePlaceholder": "e.g. 70600",
+      "accountingCodeDuplicateWarning": "This accounting code is already used by another category.",
+      "section": "Section",
+      "sectionOptions": {
+        "OPERATING": "Operating",
+        "FINANCIAL": "Financial",
+        "EXCEPTIONAL": "Exceptional",
+        "OTHER": "Other",
+        "IN_KIND": "In-kind contributions"
+      }
     },
     "bankAccountForm": {
       "bankName": "Bank name",

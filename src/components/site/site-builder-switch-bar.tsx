@@ -65,15 +65,17 @@ export function SiteBuilderSwitchBar({ canEdit }: SiteBuilderSwitchBarProps) {
             : t("statusLegacy")}
           {canEdit && !isNewBuilderLive && !canSwitchOn && ` · ${t("publishFirstHint")}`}
         </span>
-        <Button
-          variant="ghost"
-          size="sm"
-          className="ml-auto"
-          nativeButton={false}
-          render={<Link href="/dashboard/site/puck" />}
-        >
-          {t("openNewBuilder")}
-        </Button>
+        {canEdit && (
+          <Button
+            variant="ghost"
+            size="sm"
+            className="ml-auto"
+            nativeButton={false}
+            render={<Link href="/dashboard/site/puck" />}
+          >
+            {t("openNewBuilder")}
+          </Button>
+        )}
       </div>
       {isNewBuilderLive && (
         <p className="mt-1 text-xs text-muted-foreground">{t("legacyEditsNotice")}</p>

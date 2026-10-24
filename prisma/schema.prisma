@@ -213,6 +213,17 @@ enum FinanceCategoryType {
   EXPENSE
 }
 
+// Compte de résultat sections (see Compte de résultat reference doc — PRODUITS/CHARGES
+// D'EXPLOITATION, FINANCIERS, EXCEPTIONNELS, AUTRES, CONTRIBUTIONS VOLONTAIRES EN NATURE).
+// Defaults to OPERATING since every seeded default category today belongs there.
+enum FinanceSection {
+  OPERATING
+  FINANCIAL
+  EXCEPTIONAL
+  OTHER
+  IN_KIND
+}
+
 enum IncomeSource {
   MANUAL
   STRIPE
@@ -2818,6 +2829,12 @@ model FinanceCategory {
   name           String
   type           FinanceCategoryType
   accountingCode String?
+  // Stable slug for the system/default categories seeded by api/finances/categories/seed
+  // (e.g. "dons", "fraisBancaires") — lets the Compte de résultat calculation resolve a
+  // bucket to its real accountingCode/section without relying on free-text name matching.
+  // Null on every custom category a treasurer creates by hand.
+  key            String?
+  section        FinanceSection      @default(OPERATING)
   isDefault      Boolean             @default(false)
   createdAt      DateTime            @default(now())
   updatedAt      DateTime            @updatedAt
@@ -2830,6 +2847,7 @@ model FinanceCategory {
   materials             Material[]
 
   @@index([associationId, type])
+  @@index([associationId, key])
 }
 
 model Income {
@@ -2896,6 +2914,14 @@ model Expense {
   internalNote   String?
   paymentMethod  String?
   status         ExpenseStatus @default(DRAFT)
+  // Idempotency/traceability key, same role as Income.reference — set to the Stripe
+  // paymentIntent/invoice id for auto-created "Frais Stripe"/"Commission Formwise" rows (see
+  // connect-stripe-fee.ts) so a redelivered webhook or a refund can find these rows again.
+  reference      String?
+  // Scaffolding only (see FORM-reformulation plan §15): distinguishes a capital asset
+  // purchase from a regular operating expense so a future depreciation/amortization module
+  // can exclude immobilisations from the exercice's full charge. No depreciation logic yet.
+  isImmobilisation Boolean     @default(false)
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt
 
@@ -2907,6 +2933,7 @@ model Expense {
 
   @@index([associationId, status])
   @@index([associationId, date])
+  @@index([associationId, reference])
 }
 
 model BankReconciliation {

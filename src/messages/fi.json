@@ -899,7 +899,16 @@
       "typeIncome": "Tulo",
       "typeExpense": "Kustannukset",
       "accountingCode": "Kirjanpitokoodi",
-      "accountingCodePlaceholder": "Entinen: 70600"
+      "accountingCodePlaceholder": "Entinen: 70600",
+      "accountingCodeDuplicateWarning": "Tämä tilinumero on jo käytössä toisella luokalla.",
+      "section": "Osio",
+      "sectionOptions": {
+        "OPERATING": "Liiketoiminta",
+        "FINANCIAL": "Rahoitus",
+        "EXCEPTIONAL": "Satunnainen",
+        "OTHER": "Muu",
+        "IN_KIND": "Luontoissuoritukset"
+      }
     },
     "bankAccountForm": {
       "bankName": "Pankin nimi",
@@ -1289,6 +1298,90 @@
       "typeIncome": "Tulo",
       "typeExpense": "Kustannukset",
       "confirm": "Vahvista sovinto"
+    },
+    "compteResultat": {
+      "title": "Tuloslaskelma",
+      "description": "Tilikauden taloudellinen tulos verrattuna edelliseen tilikauteen.",
+      "exerciceLabel": "Tilikausi",
+      "noPreviousExercice": "-",
+      "export": "Vie",
+      "exportExcel": "Vie Excel (yksityiskohtainen)",
+      "exportPdf": "Vie PDF",
+      "products": "Tuotot",
+      "totalProducts": "Tuotot yhteensä",
+      "expenses": "Kulut",
+      "totalExpenses": "Kulut yhteensä",
+      "result": "Tilikauden tulos",
+      "surplus": "Tilikauden ylijäämä",
+      "deficit": "Tilikauden alijäämä",
+      "emptyExercice": {
+        "title": "Ei tilikautta",
+        "description": "Luo tilikausi tuloslaskelman luomiseksi."
+      },
+      "noPreviousExerciceMessage": "Ei edellistä tilikautta saatavilla",
+      "resultZero": "Tilikauden tulos: 0 €",
+      "operationalResult": "Liiketoiminnan tulos",
+      "uncategorized": "Luokittelematta",
+      "uncategorizedAlertIncome": "{count, plural, one {# tulo pitää luokitella} other {# tuloa pitää luokitella}}",
+      "uncategorizedAlertExpense": "{count, plural, one {# meno pitää luokitella} other {# menoa pitää luokitella}}",
+      "expandSection": "Näytä",
+      "collapseSection": "Piilota",
+      "noCategoriesInSection": "Ei luokkia tässä osiossa",
+      "sections": {
+        "FINANCIAL": "Rahoitus",
+        "EXCEPTIONAL": "Satunnainen",
+        "OTHER": "Muu",
+        "IN_KIND": "Vapaaehtoiset luontoissuoritukset"
+      },
+      "drillDown": {
+        "date": "Päivämäärä",
+        "origin": "Alkuperä",
+        "person": "Henkilö",
+        "payment": "Maksu",
+        "amount": "Summa",
+        "categorize": "Luokittele",
+        "categorizePlaceholder": "Valitse luokka",
+        "noTransactions": "Ei tapahtumia",
+        "categorizeSuccess": "Tapahtuma luokiteltu"
+      },
+      "pdf": {
+        "periodLabel": "Ajanjakso {start}–{end}",
+        "operatingIncome": "LIIKETOIMINNAN TUOTOT",
+        "operatingExpense": "LIIKETOIMINNAN KULUT",
+        "operatingResult": "LIIKETOIMINNAN TULOS",
+        "financialIncome": "RAHOITUSTUOTOT",
+        "financialExpense": "RAHOITUSKULUT",
+        "financialResult": "RAHOITUSTULOS",
+        "exceptionalIncome": "SATUNNAISET TUOTOT",
+        "exceptionalExpense": "SATUNNAISET KULUT",
+        "exceptionalResult": "SATUNNAINEN TULOS",
+        "otherIncome": "MUUT TUOTOT",
+        "otherExpense": "MUUT KULUT",
+        "otherResult": "MUIDEN TUOTTOJEN JA KULUJEN TULOS",
+        "inKindIncome": "VAPAAEHTOISET LUONTOISSUORITUKSET",
+        "inKindExpense": "VAPAAEHTOISTEN LUONTOISSUORITUSTEN KÄYTTÖ",
+        "inKindResult": "VAPAAEHTOISET LUONTOISSUORITUKSET (NETTO)",
+        "uncategorizedSection": "LUOKITTELEMATTOMAT TAPAHTUMAT",
+        "uncategorizedIncomeLabel": "Luokittelemattomat tulot",
+        "uncategorizedExpenseLabel": "Luokittelemattomat menot",
+        "total": "Yhteensä",
+        "grandTotal": "YHTEENSÄ"
+      },
+      "csv": {
+        "date": "Päivämäärä",
+        "type": "Tyyppi",
+        "typeIncome": "Tulo",
+        "typeExpense": "Meno",
+        "category": "Luokka",
+        "uncategorized": "Luokittelematta",
+        "accountingCode": "Tilinumero",
+        "description": "Kuvaus",
+        "amount": "Summa",
+        "paymentMethod": "Maksutapa",
+        "origin": "Alkuperä",
+        "reference": "Viite",
+        "exercice": "Tilikausi"
+      }
     }
   },
   "evenements": {

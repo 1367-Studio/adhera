@@ -917,35 +917,79 @@
       "description": "Résultat financier de l'exercice, comparé à l'exercice précédent.",
       "exerciceLabel": "Exercice",
       "noPreviousExercice": "-",
+      "noPreviousExerciceMessage": "Aucun exercice antérieur disponible",
       "export": "Exporter",
-      "exportExcel": "Exporter Excel",
+      "exportExcel": "Exporter Excel (détaillé)",
       "exportPdf": "Exporter PDF",
       "products": "Produits / Recettes",
       "totalProducts": "Total des produits",
       "expenses": "Charges / Dépenses",
       "totalExpenses": "Total des charges",
       "result": "Résultat de l'exercice",
+      "resultZero": "Résultat de l'exercice : 0 €",
       "surplus": "Excédent de l'exercice",
       "deficit": "Déficit de l'exercice",
-      "categories": {
-        "income": {
-          "cotisations": "Cotisations / Adhésions",
-          "dons": "Dons",
-          "subventions": "Subventions",
-          "boutique": "Boutique",
-          "evenements": "Événements",
-          "autres": "Autres recettes"
-        },
-        "expense": {
-          "assurance": "Assurance",
-          "communication": "Communication",
-          "materiel": "Matériel",
-          "transport": "Déplacements",
-          "fraisBancaires": "Frais bancaires",
-          "location": "Location",
-          "equipement": "Équipement",
-          "autres": "Autres dépenses"
-        }
+      "operationalResult": "Résultat opérationnel",
+      "uncategorized": "À catégoriser",
+      "uncategorizedAlertIncome": "{count, plural, one {# recette doit être catégorisée} other {# recettes doivent être catégorisées}}",
+      "uncategorizedAlertExpense": "{count, plural, one {# dépense doit être catégorisée} other {# dépenses doivent être catégorisées}}",
+      "expandSection": "Afficher",
+      "collapseSection": "Masquer",
+      "noCategoriesInSection": "Aucune catégorie dans cette section",
+      "sections": {
+        "FINANCIAL": "Financier",
+        "EXCEPTIONAL": "Exceptionnel",
+        "OTHER": "Autre",
+        "IN_KIND": "Contributions volontaires en nature"
+      },
+      "drillDown": {
+        "date": "Date",
+        "origin": "Origine",
+        "person": "Personne",
+        "payment": "Paiement",
+        "amount": "Montant",
+        "categorize": "Catégoriser",
+        "categorizePlaceholder": "Choisir une catégorie",
+        "noTransactions": "Aucune transaction",
+        "categorizeSuccess": "Transaction catégorisée"
+      },
+      "pdf": {
+        "periodLabel": "Période du {start} au {end}",
+        "operatingIncome": "PRODUITS D'EXPLOITATION",
+        "operatingExpense": "CHARGES D'EXPLOITATION",
+        "operatingResult": "RESULTAT D'EXPLOITATION",
+        "financialIncome": "PRODUITS FINANCIERS",
+        "financialExpense": "CHARGES FINANCIERES",
+        "financialResult": "RESULTAT FINANCIER",
+        "exceptionalIncome": "PRODUITS EXCEPTIONNELS",
+        "exceptionalExpense": "CHARGES EXCEPTIONNELLES",
+        "exceptionalResult": "RESULTAT EXCEPTIONNEL",
+        "otherIncome": "AUTRES PRODUITS",
+        "otherExpense": "AUTRES CHARGES",
+        "otherResult": "RESULTAT AUTRES PRODUITS ET CHARGES",
+        "inKindIncome": "CONTRIBUTIONS VOLONTAIRES EN NATURE",
+        "inKindExpense": "EMPLOI DES CONTRIBUTIONS VOLONTAIRES EN NATURE",
+        "inKindResult": "CONTRIBUTIONS VOLONTAIRES",
+        "uncategorizedSection": "TRANSACTIONS À CATÉGORISER",
+        "uncategorizedIncomeLabel": "Recettes à catégoriser",
+        "uncategorizedExpenseLabel": "Dépenses à catégoriser",
+        "total": "Total",
+        "grandTotal": "TOTAL"
+      },
+      "csv": {
+        "date": "Date",
+        "type": "Type",
+        "typeIncome": "Recette",
+        "typeExpense": "Dépense",
+        "category": "Catégorie",
+        "uncategorized": "À catégoriser",
+        "accountingCode": "Code comptable",
+        "description": "Description",
+        "amount": "Montant",
+        "paymentMethod": "Mode de paiement",
+        "origin": "Origine",
+        "reference": "Référence",
+        "exercice": "Exercice"
       },
       "emptyExercice": {
         "title": "Aucun exercice fiscal",
@@ -959,7 +1003,16 @@
       "typeIncome": "Recette",
       "typeExpense": "Dépense",
       "accountingCode": "Code comptable",
-      "accountingCodePlaceholder": "Ex: 70600"
+      "accountingCodePlaceholder": "Ex: 70600",
+      "accountingCodeDuplicateWarning": "Ce code comptable est déjà utilisé par une autre catégorie.",
+      "section": "Section",
+      "sectionOptions": {
+        "OPERATING": "Exploitation",
+        "FINANCIAL": "Financier",
+        "EXCEPTIONAL": "Exceptionnel",
+        "OTHER": "Autre",
+        "IN_KIND": "Contributions en nature"
+      }
     },
     "bankAccountForm": {
       "bankName": "Nom de la banque",
@@ -1985,7 +2038,10 @@
       "notFound": "Actualité introuvable",
       "relatedEvent": "Événement associé",
       "draft": "Brouillon",
-      "previewNotice": "Mode aperçu — cette actualité n'est pas encore visible publiquement."
+      "previewNotice": "Mode aperçu — cette actualité n'est pas encore visible publiquement.",
+      "listTitle": "Actualités",
+      "listEmpty": "Aucune actualité publiée pour le moment.",
+      "associationNotFound": "Cette association est introuvable."
     }
   },
   "sondages": {

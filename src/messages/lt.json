@@ -899,7 +899,16 @@
       "typeIncome": "Pajama",
       "typeExpense": "Išlaidos",
       "accountingCode": "Apskaitos kodas",
-      "accountingCodePlaceholder": "Pvz.: 70600"
+      "accountingCodePlaceholder": "Pvz.: 70600",
+      "accountingCodeDuplicateWarning": "Šį apskaitos kodą jau naudoja kita kategorija.",
+      "section": "Skyrius",
+      "sectionOptions": {
+        "OPERATING": "Veiklos",
+        "FINANCIAL": "Finansinis",
+        "EXCEPTIONAL": "Nepaprastasis",
+        "OTHER": "Kita",
+        "IN_KIND": "Įnašai natūra"
+      }
     },
     "bankAccountForm": {
       "bankName": "Banko pavadinimas",
@@ -1289,6 +1298,90 @@
       "typeIncome": "Pajama",
       "typeExpense": "Išlaidos",
       "confirm": "Patvirtinti taikinimą"
+    },
+    "compteResultat": {
+      "title": "Pelno (nuostolių) ataskaita",
+      "description": "Finansinių metų finansinis rezultatas, palyginti su praėjusiais metais.",
+      "exerciceLabel": "Finansiniai metai",
+      "noPreviousExercice": "-",
+      "export": "Eksportuoti",
+      "exportExcel": "Eksportuoti Excel (išsamiai)",
+      "exportPdf": "Eksportuoti PDF",
+      "products": "Pajamos",
+      "totalProducts": "Pajamos iš viso",
+      "expenses": "Sąnaudos",
+      "totalExpenses": "Sąnaudos iš viso",
+      "result": "Finansinių metų rezultatas",
+      "surplus": "Finansinių metų perteklius",
+      "deficit": "Finansinių metų deficitas",
+      "emptyExercice": {
+        "title": "Nėra finansinių metų",
+        "description": "Sukurkite finansinius metus, kad būtų sugeneruota pelno (nuostolių) ataskaita."
+      },
+      "noPreviousExerciceMessage": "Nėra ankstesnių finansinių metų",
+      "resultZero": "Finansinių metų rezultatas: 0 €",
+      "operationalResult": "Veiklos rezultatas",
+      "uncategorized": "Kategorizuotina",
+      "uncategorizedAlertIncome": "{count, plural, one {# pajamą reikia kategorizuoti} few {# pajamas reikia kategorizuoti} many {# pajamos reikia kategorizuoti} other {# pajamų reikia kategorizuoti}}",
+      "uncategorizedAlertExpense": "{count, plural, one {# išlaidą reikia kategorizuoti} few {# išlaidas reikia kategorizuoti} many {# išlaidos reikia kategorizuoti} other {# išlaidų reikia kategorizuoti}}",
+      "expandSection": "Rodyti",
+      "collapseSection": "Slėpti",
+      "noCategoriesInSection": "Šiame skyriuje nėra kategorijos",
+      "sections": {
+        "FINANCIAL": "Finansinis",
+        "EXCEPTIONAL": "Nepaprastasis",
+        "OTHER": "Kita",
+        "IN_KIND": "Savanoriški įnašai natūra"
+      },
+      "drillDown": {
+        "date": "Data",
+        "origin": "Kilmė",
+        "person": "Asmuo",
+        "payment": "Mokėjimas",
+        "amount": "Suma",
+        "categorize": "Kategorizuoti",
+        "categorizePlaceholder": "Pasirinkti kategoriją",
+        "noTransactions": "Nėra operacijų",
+        "categorizeSuccess": "Operacija kategorizuota"
+      },
+      "pdf": {
+        "periodLabel": "Laikotarpis nuo {start} iki {end}",
+        "operatingIncome": "VEIKLOS PAJAMOS",
+        "operatingExpense": "VEIKLOS SĄNAUDOS",
+        "operatingResult": "VEIKLOS REZULTATAS",
+        "financialIncome": "FINANSINĖS PAJAMOS",
+        "financialExpense": "FINANSINĖS SĄNAUDOS",
+        "financialResult": "FINANSINĖS VEIKLOS REZULTATAS",
+        "exceptionalIncome": "NEPAPRASTOSIOS PAJAMOS",
+        "exceptionalExpense": "NEPAPRASTOSIOS SĄNAUDOS",
+        "exceptionalResult": "NEPAPRASTASIS REZULTATAS",
+        "otherIncome": "KITOS PAJAMOS",
+        "otherExpense": "KITOS SĄNAUDOS",
+        "otherResult": "KITŲ PAJAMŲ IR SĄNAUDŲ REZULTATAS",
+        "inKindIncome": "SAVANORIŠKI ĮNAŠAI NATŪRA",
+        "inKindExpense": "SAVANORIŠKŲ ĮNAŠŲ NATŪRA PANAUDOJIMAS",
+        "inKindResult": "SAVANORIŠKI ĮNAŠAI (LIKUTIS)",
+        "uncategorizedSection": "KATEGORIZUOTINOS OPERACIJOS",
+        "uncategorizedIncomeLabel": "Kategorizuotinos pajamos",
+        "uncategorizedExpenseLabel": "Kategorizuotinos sąnaudos",
+        "total": "Iš viso",
+        "grandTotal": "IŠ VISO"
+      },
+      "csv": {
+        "date": "Data",
+        "type": "Tipas",
+        "typeIncome": "Pajamos",
+        "typeExpense": "Sąnaudos",
+        "category": "Kategorija",
+        "uncategorized": "Kategorizuotina",
+        "accountingCode": "Apskaitos kodas",
+        "description": "Aprašymas",
+        "amount": "Suma",
+        "paymentMethod": "Mokėjimo būdas",
+        "origin": "Kilmė",
+        "reference": "Nuoroda",
+        "exercice": "Finansiniai metai"
+      }
     }
   },
   "evenements": {

@@ -578,6 +578,19 @@ export function MeetingRoom({ meetingId, onLeave, tokenEndpoint, isAdmin = false
       connect
       video
       audio
+      // adaptiveStream/dynacast both default to false in livekit-client. Without them, every
+      // participant subscribes to every other camera at full resolution regardless of tile
+      // size, which is what collapses large calls once everyone's camera is on: dynacast lets
+      // the SFU skip simulcast layers nobody is actually displaying, and adaptiveStream matches
+      // the requested resolution to each video tile's real rendered size — e.g. a 1:1 call's
+      // single full-size tile still gets high resolution, while a tile in a crowded grid
+      // doesn't. A fixed capture resolution cap would apply to every call regardless of size,
+      // permanently hurting small calls to help large ones, so there isn't one here.
+      options={{ adaptiveStream: true, dynacast: true }}
+      // One retry on the initial join is not much margin on a venue's wifi. More retries just
+      // gives a flaky connection another shot at getting in, instead of surfacing a join
+      // failure on the first blip.
+      connectOptions={{ maxRetries: 5 }}
       onDisconnected={handleDisconnected}
       style={{ display: "contents" }}
     >

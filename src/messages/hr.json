@@ -899,7 +899,16 @@
       "typeIncome": "Prihod",
       "typeExpense": "Troškovi",
       "accountingCode": "Računovodstveni kod",
-      "accountingCodePlaceholder": "Primjer: 70600"
+      "accountingCodePlaceholder": "Primjer: 70600",
+      "accountingCodeDuplicateWarning": "Ovu računovodstvenu šifru već koristi druga kategorija.",
+      "section": "Odjeljak",
+      "sectionOptions": {
+        "OPERATING": "Poslovno",
+        "FINANCIAL": "Financijsko",
+        "EXCEPTIONAL": "Izvanredno",
+        "OTHER": "Ostalo",
+        "IN_KIND": "Doprinosi u naravi"
+      }
     },
     "bankAccountForm": {
       "bankName": "Naziv banke",
@@ -1289,6 +1298,90 @@
       "typeIncome": "Prihod",
       "typeExpense": "Troškovi",
       "confirm": "Potvrdite pomirenje"
+    },
+    "compteResultat": {
+      "title": "Račun dobiti i gubitka",
+      "description": "Financijski rezultat poslovne godine u usporedbi s prethodnom godinom.",
+      "exerciceLabel": "Poslovna godina",
+      "noPreviousExercice": "-",
+      "export": "Izvezi",
+      "exportExcel": "Izvezi Excel (detaljno)",
+      "exportPdf": "Izvezi PDF",
+      "products": "Prihodi",
+      "totalProducts": "Ukupni prihodi",
+      "expenses": "Rashodi",
+      "totalExpenses": "Ukupni rashodi",
+      "result": "Rezultat poslovne godine",
+      "surplus": "Višak poslovne godine",
+      "deficit": "Manjak poslovne godine",
+      "emptyExercice": {
+        "title": "Nema poslovne godine",
+        "description": "Stvorite poslovnu godinu za generiranje računa dobiti i gubitka."
+      },
+      "noPreviousExerciceMessage": "Nema dostupne prethodne poslovne godine",
+      "resultZero": "Rezultat poslovne godine: 0 €",
+      "operationalResult": "Poslovni rezultat",
+      "uncategorized": "Za kategorizaciju",
+      "uncategorizedAlertIncome": "{count, plural, one {# prihod treba kategorizirati} few {# prihoda treba kategorizirati} other {# prihoda treba kategorizirati}}",
+      "uncategorizedAlertExpense": "{count, plural, one {# rashod treba kategorizirati} few {# rashoda treba kategorizirati} other {# rashoda treba kategorizirati}}",
+      "expandSection": "Prikaži",
+      "collapseSection": "Sakrij",
+      "noCategoriesInSection": "Nema kategorije u ovom odjeljku",
+      "sections": {
+        "FINANCIAL": "Financijsko",
+        "EXCEPTIONAL": "Izvanredno",
+        "OTHER": "Ostalo",
+        "IN_KIND": "Dobrovoljni doprinosi u naravi"
+      },
+      "drillDown": {
+        "date": "Datum",
+        "origin": "Podrijetlo",
+        "person": "Osoba",
+        "payment": "Plaćanje",
+        "amount": "Iznos",
+        "categorize": "Kategoriziraj",
+        "categorizePlaceholder": "Odaberi kategoriju",
+        "noTransactions": "Nema transakcija",
+        "categorizeSuccess": "Transakcija kategorizirana"
+      },
+      "pdf": {
+        "periodLabel": "Razdoblje od {start} do {end}",
+        "operatingIncome": "POSLOVNI PRIHODI",
+        "operatingExpense": "POSLOVNI RASHODI",
+        "operatingResult": "POSLOVNI REZULTAT",
+        "financialIncome": "FINANCIJSKI PRIHODI",
+        "financialExpense": "FINANCIJSKI RASHODI",
+        "financialResult": "FINANCIJSKI REZULTAT",
+        "exceptionalIncome": "IZVANREDNI PRIHODI",
+        "exceptionalExpense": "IZVANREDNI RASHODI",
+        "exceptionalResult": "IZVANREDNI REZULTAT",
+        "otherIncome": "OSTALI PRIHODI",
+        "otherExpense": "OSTALI RASHODI",
+        "otherResult": "REZULTAT OSTALIH PRIHODA I RASHODA",
+        "inKindIncome": "DOBROVOLJNI DOPRINOSI U NARAVI",
+        "inKindExpense": "UPORABA DOBROVOLJNIH DOPRINOSA U NARAVI",
+        "inKindResult": "DOBROVOLJNI DOPRINOSI (SALDO)",
+        "uncategorizedSection": "TRANSAKCIJE ZA KATEGORIZACIJU",
+        "uncategorizedIncomeLabel": "Prihodi za kategorizaciju",
+        "uncategorizedExpenseLabel": "Rashodi za kategorizaciju",
+        "total": "Ukupno",
+        "grandTotal": "UKUPNO"
+      },
+      "csv": {
+        "date": "Datum",
+        "type": "Vrsta",
+        "typeIncome": "Prihod",
+        "typeExpense": "Rashod",
+        "category": "Kategorija",
+        "uncategorized": "Za kategorizaciju",
+        "accountingCode": "Računovodstvena šifra",
+        "description": "Opis",
+        "amount": "Iznos",
+        "paymentMethod": "Način plaćanja",
+        "origin": "Podrijetlo",
+        "reference": "Referenca",
+        "exercice": "Poslovna godina"
+      }
     }
   },
   "evenements": {

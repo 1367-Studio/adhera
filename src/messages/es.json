@@ -899,7 +899,16 @@
       "typeIncome": "Ingreso",
       "typeExpense": "Gasto",
       "accountingCode": "Código contable",
-      "accountingCodePlaceholder": "Ej: 70600"
+      "accountingCodePlaceholder": "Ej: 70600",
+      "accountingCodeDuplicateWarning": "Este código contable ya está siendo utilizado por otra categoría.",
+      "section": "Sección",
+      "sectionOptions": {
+        "OPERATING": "Explotación",
+        "FINANCIAL": "Financiero",
+        "EXCEPTIONAL": "Excepcional",
+        "OTHER": "Otro",
+        "IN_KIND": "Contribuciones en especie"
+      }
     },
     "bankAccountForm": {
       "bankName": "Nombre del banco",
@@ -1289,6 +1298,90 @@
       "typeIncome": "Ingreso",
       "typeExpense": "Gasto",
       "confirm": "Confirmar conciliación"
+    },
+    "compteResultat": {
+      "title": "Cuenta de resultados",
+      "description": "Resultado financiero del ejercicio, comparado con el ejercicio anterior.",
+      "exerciceLabel": "Ejercicio",
+      "noPreviousExercice": "-",
+      "export": "Exportar",
+      "exportExcel": "Exportar Excel (detallado)",
+      "exportPdf": "Exportar PDF",
+      "products": "Ingresos",
+      "totalProducts": "Total de ingresos",
+      "expenses": "Gastos",
+      "totalExpenses": "Total de gastos",
+      "result": "Resultado del ejercicio",
+      "surplus": "Superávit del ejercicio",
+      "deficit": "Déficit del ejercicio",
+      "emptyExercice": {
+        "title": "Ningún ejercicio fiscal",
+        "description": "Cree un ejercicio fiscal para generar la cuenta de resultados."
+      },
+      "noPreviousExerciceMessage": "Ningún ejercicio anterior disponible",
+      "resultZero": "Resultado del ejercicio: 0 €",
+      "operationalResult": "Resultado operativo",
+      "uncategorized": "Por categorizar",
+      "uncategorizedAlertIncome": "{count, plural, one {# ingreso debe categorizarse} other {# ingresos deben categorizarse}}",
+      "uncategorizedAlertExpense": "{count, plural, one {# gasto debe categorizarse} other {# gastos deben categorizarse}}",
+      "expandSection": "Mostrar",
+      "collapseSection": "Ocultar",
+      "noCategoriesInSection": "Ninguna categoría en esta sección",
+      "sections": {
+        "FINANCIAL": "Financiero",
+        "EXCEPTIONAL": "Excepcional",
+        "OTHER": "Otro",
+        "IN_KIND": "Contribuciones voluntarias en especie"
+      },
+      "drillDown": {
+        "date": "Fecha",
+        "origin": "Origen",
+        "person": "Persona",
+        "payment": "Pago",
+        "amount": "Importe",
+        "categorize": "Categorizar",
+        "categorizePlaceholder": "Elegir una categoría",
+        "noTransactions": "Ninguna transacción",
+        "categorizeSuccess": "Transacción categorizada"
+      },
+      "pdf": {
+        "periodLabel": "Período del {start} al {end}",
+        "operatingIncome": "INGRESOS DE EXPLOTACIÓN",
+        "operatingExpense": "GASTOS DE EXPLOTACIÓN",
+        "operatingResult": "RESULTADO DE EXPLOTACIÓN",
+        "financialIncome": "INGRESOS FINANCIEROS",
+        "financialExpense": "GASTOS FINANCIEROS",
+        "financialResult": "RESULTADO FINANCIERO",
+        "exceptionalIncome": "INGRESOS EXCEPCIONALES",
+        "exceptionalExpense": "GASTOS EXCEPCIONALES",
+        "exceptionalResult": "RESULTADO EXCEPCIONAL",
+        "otherIncome": "OTROS INGRESOS",
+        "otherExpense": "OTROS GASTOS",
+        "otherResult": "RESULTADO DE OTROS INGRESOS Y GASTOS",
+        "inKindIncome": "CONTRIBUCIONES VOLUNTARIAS EN ESPECIE",
+        "inKindExpense": "EMPLEO DE LAS CONTRIBUCIONES VOLUNTARIAS EN ESPECIE",
+        "inKindResult": "CONTRIBUCIONES VOLUNTARIAS",
+        "uncategorizedSection": "TRANSACCIONES POR CATEGORIZAR",
+        "uncategorizedIncomeLabel": "Ingresos por categorizar",
+        "uncategorizedExpenseLabel": "Gastos por categorizar",
+        "total": "Total",
+        "grandTotal": "TOTAL"
+      },
+      "csv": {
+        "date": "Fecha",
+        "type": "Tipo",
+        "typeIncome": "Ingreso",
+        "typeExpense": "Gasto",
+        "category": "Categoría",
+        "uncategorized": "Por categorizar",
+        "accountingCode": "Código contable",
+        "description": "Descripción",
+        "amount": "Importe",
+        "paymentMethod": "Forma de pago",
+        "origin": "Origen",
+        "reference": "Referencia",
+        "exercice": "Ejercicio"
+      }
     }
   },
   "evenements": {

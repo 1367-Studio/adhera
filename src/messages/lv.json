@@ -899,7 +899,16 @@
       "typeIncome": "Ieņēmums",
       "typeExpense": "Izdevumi",
       "accountingCode": "Grāmatvedības kods",
-      "accountingCodePlaceholder": "Ex: 70600"
+      "accountingCodePlaceholder": "Ex: 70600",
+      "accountingCodeDuplicateWarning": "Šo grāmatvedības kodu jau izmanto cita kategorija.",
+      "section": "Sadaļa",
+      "sectionOptions": {
+        "OPERATING": "Pamatdarbība",
+        "FINANCIAL": "Finanšu",
+        "EXCEPTIONAL": "Ārkārtas",
+        "OTHER": "Cits",
+        "IN_KIND": "Ieguldījumi natūrā"
+      }
     },
     "bankAccountForm": {
       "bankName": "Bankas nosaukums",
@@ -1289,6 +1298,90 @@
       "typeIncome": "Ieņēmums",
       "typeExpense": "Izdevumi",
       "confirm": "Apstiprināt izlīgumu"
+    },
+    "compteResultat": {
+      "title": "Peļņas un zaudējumu aprēķins",
+      "description": "Pārskata gada finanšu rezultāts salīdzinājumā ar iepriekšējo gadu.",
+      "exerciceLabel": "Pārskata gads",
+      "noPreviousExercice": "-",
+      "export": "Eksportēt",
+      "exportExcel": "Eksportēt Excel (detalizēti)",
+      "exportPdf": "Eksportēt PDF",
+      "products": "Ieņēmumi",
+      "totalProducts": "Ieņēmumi kopā",
+      "expenses": "Izdevumi",
+      "totalExpenses": "Izdevumi kopā",
+      "result": "Pārskata gada rezultāts",
+      "surplus": "Pārskata gada pārpalikums",
+      "deficit": "Pārskata gada deficīts",
+      "emptyExercice": {
+        "title": "Nav pārskata gada",
+        "description": "Izveidojiet pārskata gadu, lai ģenerētu peļņas un zaudējumu aprēķinu."
+      },
+      "noPreviousExerciceMessage": "Nav pieejams iepriekšējais pārskata gads",
+      "resultZero": "Pārskata gada rezultāts: 0 €",
+      "operationalResult": "Pamatdarbības rezultāts",
+      "uncategorized": "Jākategorizē",
+      "uncategorizedAlertIncome": "{count, plural, zero {# ieņēmumu jākategorizē} one {# ieņēmums jākategorizē} other {# ieņēmumi jākategorizē}}",
+      "uncategorizedAlertExpense": "{count, plural, zero {# izdevumu jākategorizē} one {# izdevums jākategorizē} other {# izdevumi jākategorizē}}",
+      "expandSection": "Rādīt",
+      "collapseSection": "Slēpt",
+      "noCategoriesInSection": "Šajā sadaļā nav nevienas kategorijas",
+      "sections": {
+        "FINANCIAL": "Finanšu",
+        "EXCEPTIONAL": "Ārkārtas",
+        "OTHER": "Cits",
+        "IN_KIND": "Brīvprātīgie ieguldījumi natūrā"
+      },
+      "drillDown": {
+        "date": "Datums",
+        "origin": "Izcelsme",
+        "person": "Persona",
+        "payment": "Maksājums",
+        "amount": "Summa",
+        "categorize": "Kategorizēt",
+        "categorizePlaceholder": "Izvēlēties kategoriju",
+        "noTransactions": "Nav darījumu",
+        "categorizeSuccess": "Darījums kategorizēts"
+      },
+      "pdf": {
+        "periodLabel": "Periods no {start} līdz {end}",
+        "operatingIncome": "PAMATDARBĪBAS IEŅĒMUMI",
+        "operatingExpense": "PAMATDARBĪBAS IZDEVUMI",
+        "operatingResult": "PAMATDARBĪBAS REZULTĀTS",
+        "financialIncome": "FINANŠU IEŅĒMUMI",
+        "financialExpense": "FINANŠU IZDEVUMI",
+        "financialResult": "FINANŠU REZULTĀTS",
+        "exceptionalIncome": "ĀRKĀRTAS IEŅĒMUMI",
+        "exceptionalExpense": "ĀRKĀRTAS IZDEVUMI",
+        "exceptionalResult": "ĀRKĀRTAS REZULTĀTS",
+        "otherIncome": "CITI IEŅĒMUMI",
+        "otherExpense": "CITI IZDEVUMI",
+        "otherResult": "CITU IEŅĒMUMU UN IZDEVUMU REZULTĀTS",
+        "inKindIncome": "BRĪVPRĀTĪGIE IEGULDĪJUMI NATŪRĀ",
+        "inKindExpense": "BRĪVPRĀTĪGO IEGULDĪJUMU NATŪRĀ IZMANTOŠANA",
+        "inKindResult": "BRĪVPRĀTĪGIE IEGULDĪJUMI (SALDO)",
+        "uncategorizedSection": "KATEGORIZĒJAMIE DARĪJUMI",
+        "uncategorizedIncomeLabel": "Kategorizējamie ieņēmumi",
+        "uncategorizedExpenseLabel": "Kategorizējamie izdevumi",
+        "total": "Kopā",
+        "grandTotal": "KOPĀ"
+      },
+      "csv": {
+        "date": "Datums",
+        "type": "Veids",
+        "typeIncome": "Ieņēmums",
+        "typeExpense": "Izdevums",
+        "category": "Kategorija",
+        "uncategorized": "Jākategorizē",
+        "accountingCode": "Grāmatvedības kods",
+        "description": "Apraksts",
+        "amount": "Summa",
+        "paymentMethod": "Maksājuma veids",
+        "origin": "Izcelsme",
+        "reference": "Atsauce",
+        "exercice": "Pārskata gads"
+      }
     }
   },
   "evenements": {

@@ -899,7 +899,16 @@
       "typeIncome": "Receita",
       "typeExpense": "Despesa",
       "accountingCode": "Código contabilístico",
-      "accountingCodePlaceholder": "Ex.: 70600"
+      "accountingCodePlaceholder": "Ex.: 70600",
+      "accountingCodeDuplicateWarning": "Este código contabilístico já está a ser utilizado por outra categoria.",
+      "section": "Secção",
+      "sectionOptions": {
+        "OPERATING": "Operacional",
+        "FINANCIAL": "Financeiro",
+        "EXCEPTIONAL": "Excecional",
+        "OTHER": "Outro",
+        "IN_KIND": "Contribuições em espécie"
+      }
     },
     "bankAccountForm": {
       "bankName": "Nome do banco",
@@ -1289,6 +1298,90 @@
       "typeIncome": "Receita",
       "typeExpense": "Despesa",
       "confirm": "Confirmar reconciliação"
+    },
+    "compteResultat": {
+      "title": "Demonstração de resultados",
+      "description": "Resultado financeiro do exercício, comparado com o exercício anterior.",
+      "exerciceLabel": "Exercício",
+      "noPreviousExercice": "-",
+      "export": "Exportar",
+      "exportExcel": "Exportar Excel (detalhado)",
+      "exportPdf": "Exportar PDF",
+      "products": "Proveitos",
+      "totalProducts": "Total dos proveitos",
+      "expenses": "Custos",
+      "totalExpenses": "Total dos custos",
+      "result": "Resultado do exercício",
+      "surplus": "Excedente do exercício",
+      "deficit": "Défice do exercício",
+      "emptyExercice": {
+        "title": "Nenhum exercício fiscal",
+        "description": "Crie um exercício fiscal para gerar a demonstração de resultados."
+      },
+      "noPreviousExerciceMessage": "Nenhum exercício anterior disponível",
+      "resultZero": "Resultado do exercício: 0 €",
+      "operationalResult": "Resultado operacional",
+      "uncategorized": "A categorizar",
+      "uncategorizedAlertIncome": "{count, plural, one {# receita precisa de ser categorizada} other {# receitas precisam de ser categorizadas}}",
+      "uncategorizedAlertExpense": "{count, plural, one {# despesa precisa de ser categorizada} other {# despesas precisam de ser categorizadas}}",
+      "expandSection": "Mostrar",
+      "collapseSection": "Ocultar",
+      "noCategoriesInSection": "Nenhuma categoria nesta secção",
+      "sections": {
+        "FINANCIAL": "Financeiro",
+        "EXCEPTIONAL": "Excecional",
+        "OTHER": "Outro",
+        "IN_KIND": "Contribuições voluntárias em espécie"
+      },
+      "drillDown": {
+        "date": "Data",
+        "origin": "Origem",
+        "person": "Pessoa",
+        "payment": "Pagamento",
+        "amount": "Valor",
+        "categorize": "Categorizar",
+        "categorizePlaceholder": "Escolher uma categoria",
+        "noTransactions": "Nenhuma transação",
+        "categorizeSuccess": "Transação categorizada"
+      },
+      "pdf": {
+        "periodLabel": "Período de {start} a {end}",
+        "operatingIncome": "PROVEITOS OPERACIONAIS",
+        "operatingExpense": "CUSTOS OPERACIONAIS",
+        "operatingResult": "RESULTADO OPERACIONAL",
+        "financialIncome": "PROVEITOS FINANCEIROS",
+        "financialExpense": "CUSTOS FINANCEIROS",
+        "financialResult": "RESULTADO FINANCEIRO",
+        "exceptionalIncome": "PROVEITOS EXTRAORDINÁRIOS",
+        "exceptionalExpense": "CUSTOS EXTRAORDINÁRIOS",
+        "exceptionalResult": "RESULTADO EXTRAORDINÁRIO",
+        "otherIncome": "OUTROS PROVEITOS",
+        "otherExpense": "OUTROS CUSTOS",
+        "otherResult": "RESULTADO DE OUTROS PROVEITOS E CUSTOS",
+        "inKindIncome": "CONTRIBUIÇÕES VOLUNTÁRIAS EM ESPÉCIE",
+        "inKindExpense": "UTILIZAÇÃO DAS CONTRIBUIÇÕES VOLUNTÁRIAS EM ESPÉCIE",
+        "inKindResult": "CONTRIBUIÇÕES VOLUNTÁRIAS",
+        "uncategorizedSection": "TRANSAÇÕES A CATEGORIZAR",
+        "uncategorizedIncomeLabel": "Receitas a categorizar",
+        "uncategorizedExpenseLabel": "Despesas a categorizar",
+        "total": "Total",
+        "grandTotal": "TOTAL"
+      },
+      "csv": {
+        "date": "Data",
+        "type": "Tipo",
+        "typeIncome": "Receita",
+        "typeExpense": "Despesa",
+        "category": "Categoria",
+        "uncategorized": "A categorizar",
+        "accountingCode": "Código contabilístico",
+        "description": "Descrição",
+        "amount": "Valor",
+        "paymentMethod": "Forma de pagamento",
+        "origin": "Origem",
+        "reference": "Referência",
+        "exercice": "Exercício"
+      }
     }
   },
   "evenements": {
