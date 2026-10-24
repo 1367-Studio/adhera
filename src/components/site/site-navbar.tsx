@@ -7,6 +7,7 @@ import { PublicSiteLocaleSwitcher } from "@/components/site/public-site-locale-s
 import { SiteHeaderAdhesionMenu } from "@/components/site/site-header-adhesion-menu"
 import { resolveSiteHref, isExternalHref } from "@/components/site/blocks/site-block-button"
 import type { SiteLink } from "@/components/site/blocks/site-block-fields"
+import { headerPillClassName, type HeaderPillVariant, type HeaderLinkItem } from "@/components/site/site-header-link-style"
 import { SITE_UI_STRINGS, type SiteUiStrings } from "@/lib/site-puck/site-ui-strings"
 import type { Locale } from "@/i18n/locales"
 
@@ -40,15 +41,16 @@ type Props = {
   locale?:            Locale
   // Plain link buttons (internal or external — external opens in a new tab) and, separately,
   // a dropdown for associations with several membership forms (one per country, chapter…).
-  headerLinks?:          SiteLink[]
+  headerLinks?:          HeaderLinkItem[]
   adhesionMenuLabel?:    string
   adhesionMenuItems?:    SiteLink[]
+  adhesionMenuVariant?:  HeaderPillVariant
 }
 
 export function SiteNavbar({
   name, logoUrl, color, secondaryColor, portalSlug, headerBgColor, headerShowMembres = true, headerShowRegister = true,
   membershipCta = null, showName = true, socialLinks = [], ui = SITE_UI_STRINGS, showTranslate = false, locale,
-  headerLinks = [], adhesionMenuLabel, adhesionMenuItems = [],
+  headerLinks = [], adhesionMenuLabel, adhesionMenuItems = [], adhesionMenuVariant = "outline",
 }: Props) {
   const hasSocialLinks = visibleSocialLinks(socialLinks).length > 0
   const bg     = headerBgColor || "#ffffff"
@@ -96,7 +98,7 @@ export function SiteNavbar({
             )}
             {headerLinks.map((link, index) => {
               const href = resolveSiteHref(link.href, portalSlug)
-              const linkClassName = "text-sm font-medium px-3 py-1.5 rounded-lg border transition-opacity hover:opacity-80"
+              const linkClassName = headerPillClassName(link.variant)
               const linkStyle     = { color: secondaryColor ?? color, borderColor: secondaryColor ?? color }
               return isExternalHref(href) ? (
                 <a key={`${link.label}-${index}`} href={href} target="_blank" rel="noopener noreferrer" className={linkClassName} style={linkStyle}>
@@ -114,12 +116,13 @@ export function SiteNavbar({
                 items={adhesionMenuItems}
                 slug={portalSlug}
                 color={secondaryColor ?? color}
+                variant={adhesionMenuVariant}
               />
             )}
             {headerShowRegister && membershipCta && (
               <Link
                 href={membershipCta.href}
-                className="text-sm font-medium px-3 py-1.5 rounded-lg border transition-opacity hover:opacity-80"
+                className={headerPillClassName("outline")}
                 style={{ color: secondaryColor ?? color, borderColor: secondaryColor ?? color }}
               >
                 {ui.navAdherer}

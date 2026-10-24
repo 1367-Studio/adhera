@@ -10,19 +10,21 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { resolveSiteHref, isExternalHref } from "@/components/site/blocks/site-block-button"
 import type { SiteLink } from "@/components/site/blocks/site-block-fields"
+import { headerPillClassName, type HeaderPillVariant } from "@/components/site/site-header-link-style"
 
 // Header dropdown for associations with several membership forms (one per country, chapter…)
 // that would otherwise need one "Adhérer" button each — see site-navbar.tsx. Trigger styling
-// matches the existing "Adhérer" outline button so it reads as the same kind of control; items
-// reuse the Boutons block's own link resolution (internal path vs. external → new tab).
+// shares headerPillClassName with the other header controls so it's never the odd one out;
+// items reuse the Boutons block's own link resolution (internal path vs. external → new tab).
 type Props = {
   label:          string
   items:          SiteLink[]
   slug:           string
   color:          string
+  variant?:       HeaderPillVariant
 }
 
-export function SiteHeaderAdhesionMenu({ label, items, slug, color }: Props) {
+export function SiteHeaderAdhesionMenu({ label, items, slug, color, variant = "outline" }: Props) {
   if (items.length === 0) return null
 
   return (
@@ -31,7 +33,7 @@ export function SiteHeaderAdhesionMenu({ label, items, slug, color }: Props) {
         render={
           <button
             type="button"
-            className="inline-flex items-center gap-1 rounded-lg border px-3 py-1.5 text-sm font-medium transition-opacity hover:opacity-80"
+            className={`inline-flex items-center gap-1 ${headerPillClassName(variant)}`}
             style={{ color, borderColor: color }}
           />
         }

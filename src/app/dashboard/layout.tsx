@@ -14,6 +14,7 @@ import { resolveDocumentBranding, canUseCustomBranding } from "@/lib/plan-limits
 import { getPublicSiteUrl } from "@/lib/public-site-url"
 import { FiscalPeriodPopup } from "@/components/layout/fiscal-period-popup"
 import { ReleaseNotesPopup } from "@/components/layout/release-notes-popup"
+import { DashboardMain } from "@/app/dashboard/dashboard-main"
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const session = await auth()
@@ -110,9 +111,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
           <FiscalPeriodPopup show={showFiscalPeriodPopup} />
           {/* Never alongside the fiscal-period popup, so the two dialogs don't stack. */}
           <ReleaseNotesPopup enabled={!showFiscalPeriodPopup} />
-          <main className="flex min-h-0 flex-1 flex-col gap-4 p-4 scroll-pt-4 md:overflow-y-auto animate-in fade-in duration-200" style={{ animationFillMode: "both" }}>
-            {children}
-          </main>
+          <DashboardMain>{children}</DashboardMain>
         </SidebarInset>
       </SidebarProvider>
     </UserProvider>

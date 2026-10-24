@@ -24,6 +24,7 @@ import { galleryBlock } from "@/components/site/blocks/site-block-gallery"
 import { socialLinksBlock } from "@/components/site/blocks/site-block-social-links"
 import { translateBlock } from "@/components/site/blocks/site-block-translate"
 import { colorField, imageField, headerShowRegisterField, YES_NO_OPTIONS, SITE_LINK_FIELDS, type SiteLink } from "@/components/site/blocks/site-block-fields"
+import { HEADER_PILL_VARIANT_OPTIONS, type HeaderLinkItem } from "@/components/site/site-header-link-style"
 import { socialLinksField } from "@/components/site/site-social-icons"
 import {
   FORM_CTA_STYLE_DEFAULTS, FORM_CTA_STYLE_FIELDS, SiteFormCtaCentered, SiteFormCtaSplit,
@@ -118,14 +119,18 @@ export const sitePuckConfig: Config<SitePuckComponents, SitePuckRootProps> = {
       socialInHeader:     { type: "radio", label: "Réseaux sociaux dans l'en-tête", options: YES_NO_OPTIONS },
       headerShowTranslate: { type: "radio", label: "Traduction dans l'en-tête", options: YES_NO_OPTIONS },
       headerLinks: {
-        type:             "array",
-        label:            "Liens dans l'en-tête",
-        max:              4,
-        arrayFields:      SITE_LINK_FIELDS,
-        defaultItemProps: { label: "Nouveau lien", href: "https://" },
-        getItemSummary:   (item: SiteLink) => item.label || "Lien",
+        type:        "array",
+        label:       "Liens dans l'en-tête",
+        max:         4,
+        arrayFields: {
+          ...SITE_LINK_FIELDS,
+          variant: { type: "radio", label: "Style", options: HEADER_PILL_VARIANT_OPTIONS },
+        },
+        defaultItemProps: { label: "Nouveau lien", href: "https://", variant: "ghost" },
+        getItemSummary:   (item: HeaderLinkItem) => item.label || "Lien",
       },
-      headerAdhesionMenuLabel: { type: "text", label: "Menu « Adhésions » — texte du bouton" },
+      headerAdhesionMenuLabel:   { type: "text", label: "Menu « Adhésions » — texte du bouton" },
+      headerAdhesionMenuVariant: { type: "radio", label: "Menu « Adhésions » — style", options: HEADER_PILL_VARIANT_OPTIONS },
       headerAdhesionMenuItems: {
         type:             "array",
         label:            "Menu « Adhésions » — liens",

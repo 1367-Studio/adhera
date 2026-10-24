@@ -1,5 +1,6 @@
 import type { Data } from "@puckeditor/core"
 import type { SiteLink } from "@/components/site/blocks/site-block-fields"
+import type { HeaderLinkItem, HeaderPillVariant } from "@/components/site/site-header-link-style"
 import type { SectionBlockProps } from "@/components/site/blocks/site-block-section-container"
 import type { ColumnsBlockProps } from "@/components/site/blocks/site-block-columns"
 import type { SpacerBlockProps } from "@/components/site/blocks/site-block-spacer"
@@ -101,13 +102,15 @@ export type SitePuckRootProps = Omit<SiteConfig, "sections" | "footerText"> & {
   headerShowTranslate?: boolean
   // Plain external/internal link buttons in the header (e.g. a partner site, a booking page) —
   // same {label, href} shape and new-tab-for-external behaviour as the Boutons content block
-  // and the footer links, via resolveSiteHref/isExternalHref.
-  headerLinks?: SiteLink[]
+  // and the footer links, via resolveSiteHref/isExternalHref. Each has its own border/no-border
+  // style (variant); undefined = "outline", same as the pre-existing "Adhérer" button.
+  headerLinks?: HeaderLinkItem[]
   // A labelled dropdown for associations with several membership forms (e.g. one per country
   // or chapter) that would otherwise need one "Adhérer" button each. Each item is a plain
   // SiteLink: an internal form path or an external URL both work.
-  headerAdhesionMenuLabel?: string
-  headerAdhesionMenuItems?: SiteLink[]
+  headerAdhesionMenuLabel?:   string
+  headerAdhesionMenuVariant?: HeaderPillVariant
+  headerAdhesionMenuItems?:   SiteLink[]
   // New footer (logo position, columns, socials, bottom line). Missing on sites from the old
   // builder: the editor fills it from footerText / footerBgColor / footerLinks on load.
   footer?:         SiteFooterSettings

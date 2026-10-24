@@ -5,6 +5,7 @@ import { useEffect, useMemo, useRef, useState } from "react"
 import { Puck, useGetPuck, type Viewports } from "@puckeditor/core"
 import { useFormatter } from "next-intl"
 import { toast } from "sonner"
+import { SidebarSimpleIcon } from "@phosphor-icons/react/dist/ssr"
 import { sitePuckConfig } from "@/components/site/puck/site-puck-config"
 import { SITE_PUCK_DICTIONARY_FR } from "@/components/site/puck/site-puck-dictionary"
 import { useSitePuckMetadata } from "@/components/site/puck/use-site-puck-metadata"
@@ -147,6 +148,16 @@ function SitePuckHeaderActions({ saveState, publishedAt, siteBuilder, onSave, on
   const getPuck   = useGetPuck()
   const formatter = useFormatter()
   const [publishConfirmOpen, setPublishConfirmOpen] = useState(false)
+  // Puck's own left panel (Components + Outline) — local state because useGetPuck is the
+  // non-reactive escape hatch (it doesn't re-render this component), so the button's own
+  // pressed state is tracked here and kept in sync with the dispatch that actually moves it.
+  const [leftSidebarOpen, setLeftSidebarOpen] = useState(true)
+
+  function toggleLeftSidebar() {
+    const next = !leftSidebarOpen
+    getPuck().dispatch({ type: "setUi", ui: { leftSideBarVisible: next } })
+    setLeftSidebarOpen(next)
+  }
 
   function readCurrentPage(): SitePuckData {
     return getPuck().appState.data as SitePuckData
@@ -201,6 +212,16 @@ function SitePuckHeaderActions({ saveState, publishedAt, siteBuilder, onSave, on
 
   return (
     <div className="flex items-center gap-2">
+      <Button
+        variant="ghost"
+        size="icon"
+        className="size-8"
+        onClick={toggleLeftSidebar}
+        aria-label={leftSidebarOpen ? "Masquer le panneau" : "Afficher le panneau"}
+        aria-pressed={!leftSidebarOpen}
+      >
+        <SidebarSimpleIcon className="size-4" />
+      </Button>
       <span className="hidden text-xs text-muted-foreground sm:inline" aria-live="polite">
         {saveStateLabel}
         {publishedAtLabel && ` · ${publishedAtLabel}`}
