@@ -116,6 +116,7 @@ export const sitePuckConfig: Config<SitePuckComponents, SitePuckRootProps> = {
       headerShowRegister: headerShowRegisterField(),
       socialLinks:        socialLinksField("Réseaux sociaux"),
       socialInHeader:     { type: "radio", label: "Réseaux sociaux dans l'en-tête", options: YES_NO_OPTIONS },
+      headerShowTranslate: { type: "radio", label: "Traduction dans l'en-tête", options: YES_NO_OPTIONS },
       // Replaces the old footerText / footerBgColor / footerLinks fields, which stay in the data
       // only as the source the footer is first filled from (see resolveData).
       footer:             SITE_FOOTER_FIELD,

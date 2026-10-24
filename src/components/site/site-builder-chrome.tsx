@@ -70,6 +70,8 @@ export function SiteBuilderChrome({
         showName={!rootProps.logoUrl || rootProps.headerShowName === "show"}
         socialLinks={rootProps.socialInHeader ? rootProps.socialLinks : []}
         ui={ui}
+        showTranslate={rootProps.headerShowTranslate}
+        locale={locale}
       />
       <main className={mainClassName}>{children}</main>
       <SiteBuilderFooter

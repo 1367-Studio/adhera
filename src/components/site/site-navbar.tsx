@@ -3,7 +3,9 @@
 import Link from "next/link"
 import { isColorDark } from "@/lib/color"
 import { SiteSocialIcons, visibleSocialLinks, type SocialLink } from "@/components/site/site-social-icons"
+import { PublicSiteLocaleSwitcher } from "@/components/site/public-site-locale-switcher"
 import { SITE_UI_STRINGS, type SiteUiStrings } from "@/lib/site-puck/site-ui-strings"
+import type { Locale } from "@/i18n/locales"
 
 type Props = {
   name:               string
@@ -28,9 +30,14 @@ type Props = {
   // Translated "Adhérer"/"Se connecter" labels — defaults to French for the old builder's
   // callers, which don't yet resolve a visitor locale.
   ui?:                SiteUiStrings
+  // Language switcher (globe) next to the buttons — off unless both are given: the old
+  // builder's callers pass neither (it doesn't resolve a visitor locale yet), so it never
+  // renders there regardless of this flag.
+  showTranslate?:     boolean
+  locale?:            Locale
 }
 
-export function SiteNavbar({ name, logoUrl, color, secondaryColor, portalSlug, headerBgColor, headerShowMembres = true, headerShowRegister = true, membershipCta = null, showName = true, socialLinks = [], ui = SITE_UI_STRINGS }: Props) {
+export function SiteNavbar({ name, logoUrl, color, secondaryColor, portalSlug, headerBgColor, headerShowMembres = true, headerShowRegister = true, membershipCta = null, showName = true, socialLinks = [], ui = SITE_UI_STRINGS, showTranslate = false, locale }: Props) {
   const hasSocialLinks = visibleSocialLinks(socialLinks).length > 0
   const bg     = headerBgColor || "#ffffff"
   const isDark = isColorDark(bg)
@@ -64,10 +71,13 @@ export function SiteNavbar({ name, logoUrl, color, secondaryColor, portalSlug, h
           {showName && <span className="text-sm">{name}</span>}
         </Link>
 
-        {(headerShowMembres || (headerShowRegister && membershipCta) || hasSocialLinks) && (
+        {(headerShowMembres || (headerShowRegister && membershipCta) || hasSocialLinks || (showTranslate && locale)) && (
           <div className="flex items-center gap-2">
             {hasSocialLinks && (
               <SiteSocialIcons socialLinks={socialLinks} className="hidden sm:flex" />
+            )}
+            {showTranslate && locale && (
+              <PublicSiteLocaleSwitcher locale={locale} />
             )}
             {headerShowRegister && membershipCta && (
               <Link

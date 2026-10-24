@@ -94,6 +94,10 @@ export type SitePuckRootProps = Omit<SiteConfig, "sections" | "footerText"> & {
   // Entered once, shown in the header and/or the footer.
   socialLinks?:    SocialLink[]
   socialInHeader?: boolean
+  // The language switcher (PublicSiteLocaleSwitcher), next to "Adhérer" / "Se connecter" —
+  // previously only reachable as a page-content block ("Traduction"), which an association
+  // could place anywhere, including nowhere near the header it looks like it belongs in.
+  headerShowTranslate?: boolean
   // New footer (logo position, columns, socials, bottom line). Missing on sites from the old
   // builder: the editor fills it from footerText / footerBgColor / footerLinks on load.
   footer?:         SiteFooterSettings
