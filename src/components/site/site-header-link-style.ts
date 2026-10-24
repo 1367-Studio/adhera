@@ -31,3 +31,25 @@ export function headerPillStyle(variant: HeaderPillVariant, accent: string, fore
   if (variant === "outline") return { color: accent, borderColor: accent }
   return { color: accent }
 }
+
+// Separate from HeaderPillVariant: a dropdown's floating panel isn't a button, "outline"/"ghost"
+// don't mean anything for a surface that always needs to read as a panel. It defaults to
+// --site-surface/--site-text rather than the admin app's --popover/--popover-foreground tokens,
+// which the public site never defines (that's why an un-styled dropdown looked unstyled).
+export type MenuContentBackground = "light" | "primary"
+
+export const MENU_CONTENT_BACKGROUND_OPTIONS = [
+  { label: "Clair",             value: "light" },
+  { label: "Couleur principale", value: "primary" },
+]
+
+export function menuContentStyle(background: MenuContentBackground, primaryColor: string): CSSProperties {
+  return background === "primary"
+    ? { background: primaryColor, color: "var(--site-primary-foreground)" }
+    : { background: "var(--site-surface, #ffffff)", color: "var(--site-text, #111827)" }
+}
+
+// Items are a <DropdownMenuItem>'s default className; merge this in afterwards (twMerge) to
+// replace its focus:bg-accent/focus:text-accent-foreground — same admin-tokens problem as the
+// panel itself — with a tint of whatever text color menuContentStyle gave the panel.
+export const MENU_ITEM_CLASSNAME = "focus:bg-[color-mix(in_srgb,currentColor_12%,transparent)] focus:text-current"

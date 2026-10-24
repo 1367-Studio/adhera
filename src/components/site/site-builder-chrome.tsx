@@ -76,6 +76,7 @@ export function SiteBuilderChrome({
         adhesionMenuLabel={rootProps.headerAdhesionMenuLabel}
         adhesionMenuItems={rootProps.headerAdhesionMenuItems}
         adhesionMenuVariant={rootProps.headerAdhesionMenuVariant}
+        adhesionMenuContentBackground={rootProps.headerAdhesionMenuContentBackground}
         seConnecterVariant={rootProps.headerSeConnecterVariant}
       />
       <main className={mainClassName}>{children}</main>

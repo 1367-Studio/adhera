@@ -1,6 +1,6 @@
 import type { Data } from "@puckeditor/core"
 import type { SiteLink } from "@/components/site/blocks/site-block-fields"
-import type { HeaderLinkItem, HeaderPillVariant } from "@/components/site/site-header-link-style"
+import type { HeaderLinkItem, HeaderPillVariant, MenuContentBackground } from "@/components/site/site-header-link-style"
 import type { SectionBlockProps } from "@/components/site/blocks/site-block-section-container"
 import type { ColumnsBlockProps } from "@/components/site/blocks/site-block-columns"
 import type { SpacerBlockProps } from "@/components/site/blocks/site-block-spacer"
@@ -108,9 +108,10 @@ export type SitePuckRootProps = Omit<SiteConfig, "sections" | "footerText"> & {
   // A labelled dropdown for associations with several membership forms (e.g. one per country
   // or chapter) that would otherwise need one "Adhérer" button each. Each item is a plain
   // SiteLink: an internal form path or an external URL both work.
-  headerAdhesionMenuLabel?:   string
-  headerAdhesionMenuVariant?: HeaderPillVariant
-  headerAdhesionMenuItems?:   SiteLink[]
+  headerAdhesionMenuLabel?:             string
+  headerAdhesionMenuVariant?:           HeaderPillVariant
+  headerAdhesionMenuContentBackground?: MenuContentBackground
+  headerAdhesionMenuItems?:             SiteLink[]
   // "Se connecter" was always filled before this existed — undefined = "primary", its original
   // look, so no existing site changes just because the field now exists.
   headerSeConnecterVariant?: HeaderPillVariant

@@ -7,7 +7,9 @@ import { PublicSiteLocaleSwitcher } from "@/components/site/public-site-locale-s
 import { SiteHeaderAdhesionMenu } from "@/components/site/site-header-adhesion-menu"
 import { resolveSiteHref, isExternalHref } from "@/components/site/blocks/site-block-button"
 import type { SiteLink } from "@/components/site/blocks/site-block-fields"
-import { headerPillClassName, headerPillStyle, type HeaderPillVariant, type HeaderLinkItem } from "@/components/site/site-header-link-style"
+import {
+  headerPillClassName, headerPillStyle, type HeaderPillVariant, type HeaderLinkItem, type MenuContentBackground,
+} from "@/components/site/site-header-link-style"
 import { SITE_UI_STRINGS, type SiteUiStrings } from "@/lib/site-puck/site-ui-strings"
 import type { Locale } from "@/i18n/locales"
 
@@ -45,6 +47,7 @@ type Props = {
   adhesionMenuLabel?:    string
   adhesionMenuItems?:    SiteLink[]
   adhesionMenuVariant?:  HeaderPillVariant
+  adhesionMenuContentBackground?: MenuContentBackground
   // "Se connecter" was always filled before this existed — default stays "primary" so nobody's
   // header changes just because this field now exists.
   seConnecterVariant?:   HeaderPillVariant
@@ -53,7 +56,8 @@ type Props = {
 export function SiteNavbar({
   name, logoUrl, color, secondaryColor, portalSlug, headerBgColor, headerShowMembres = true, headerShowRegister = true,
   membershipCta = null, showName = true, socialLinks = [], ui = SITE_UI_STRINGS, showTranslate = false, locale,
-  headerLinks = [], adhesionMenuLabel, adhesionMenuItems = [], adhesionMenuVariant = "outline", seConnecterVariant = "primary",
+  headerLinks = [], adhesionMenuLabel, adhesionMenuItems = [], adhesionMenuVariant = "outline",
+  adhesionMenuContentBackground = "light", seConnecterVariant = "primary",
 }: Props) {
   const hasSocialLinks = visibleSocialLinks(socialLinks).length > 0
   const bg     = headerBgColor || "#ffffff"
@@ -124,6 +128,8 @@ export function SiteNavbar({
                 slug={portalSlug}
                 color={adhesionMenuVariant === "primary" ? color : (secondaryColor ?? color)}
                 variant={adhesionMenuVariant}
+                primaryColor={color}
+                contentBackground={adhesionMenuContentBackground}
               />
             )}
             {headerShowRegister && membershipCta && (
