@@ -105,9 +105,6 @@ export function SiteNavbar({
             {hasSocialLinks && (
               <SiteSocialIcons socialLinks={socialLinks} className="hidden sm:flex" />
             )}
-            {showTranslate && locale && (
-              <PublicSiteLocaleSwitcher locale={locale} />
-            )}
             {headerLinks.map((link, index) => {
               const href    = resolveSiteHref(link.href, portalSlug)
               const variant = link.variant ?? "outline"
@@ -155,6 +152,9 @@ export function SiteNavbar({
               >
                 {ui.navSeConnecter}
               </Link>
+            )}
+            {showTranslate && locale && (
+              <PublicSiteLocaleSwitcher locale={locale} />
             )}
           </div>
         )}
