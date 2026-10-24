@@ -43,9 +43,9 @@ export const MENU_CONTENT_BACKGROUND_OPTIONS = [
   { label: "Couleur principale", value: "primary" },
 ]
 
-export function menuContentStyle(background: MenuContentBackground, primaryColor: string): CSSProperties {
+export function menuContentStyle(background: MenuContentBackground, primaryColor: string, primaryForeground: string): CSSProperties {
   return background === "primary"
-    ? { background: primaryColor, color: "var(--site-primary-foreground)" }
+    ? { background: primaryColor, color: primaryForeground }
     : { background: "var(--site-surface, #ffffff)", color: "var(--site-text, #111827)" }
 }
 

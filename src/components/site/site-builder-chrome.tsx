@@ -42,6 +42,12 @@ export function SiteBuilderChrome({
   const animationLevel = isEditing ? "none" : (rootProps.animations ?? "subtle")
   const fontKey = isSiteFontKey(rootProps.fontFamily) ? rootProps.fontFamily : SITE_DEFAULT_FONT
   const font    = SITE_FONTS[fontKey]
+  // Resolved (not "var(--site-primary)") — the header's dropdown panel is portaled to
+  // document.body by its menu library, outside this div, so it can't inherit these custom
+  // properties; SiteNavbar hands the literal values on to it for exactly that case.
+  const siteColorVars = getSiteColorVars({ ...rootProps, footerText: rootProps.footerText ?? "", sections: [] }) as Record<string, string>
+  const resolvedPrimaryColor      = siteColorVars["--site-primary"]
+  const resolvedPrimaryForeground = siteColorVars["--site-primary-foreground"]
   return (
     <SiteCookieConsentProvider slug={slug} settings={rootProps.cookies} isEditing={isEditing} ui={ui}>
     <SiteAnimationsProvider level={animationLevel}>
@@ -51,7 +57,7 @@ export function SiteBuilderChrome({
       style={{
         colorScheme: "light",
         fontFamily:  font.cssVar,
-        ...getSiteColorVars({ ...rootProps, footerText: rootProps.footerText ?? "", sections: [] }),
+        ...siteColorVars,
         ...getSiteStyleVars(rootProps.cornerStyle),
       }}
     >
@@ -77,6 +83,8 @@ export function SiteBuilderChrome({
         adhesionMenuItems={rootProps.headerAdhesionMenuItems}
         adhesionMenuVariant={rootProps.headerAdhesionMenuVariant}
         adhesionMenuContentBackground={rootProps.headerAdhesionMenuContentBackground}
+        resolvedPrimaryColor={resolvedPrimaryColor}
+        resolvedPrimaryForeground={resolvedPrimaryForeground}
         seConnecterVariant={rootProps.headerSeConnecterVariant}
       />
       <main className={mainClassName}>{children}</main>

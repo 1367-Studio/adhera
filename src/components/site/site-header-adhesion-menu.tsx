@@ -30,15 +30,21 @@ type Props = {
   variant?:          HeaderPillVariant
   // The brand's true primary — independent of `color` above, which already reflects the
   // trigger's own variant choice, because the panel's "primary" background always means the
-  // real brand primary, not whatever accent the trigger happens to be using.
-  primaryColor:      string
+  // real brand primary, not whatever accent the trigger happens to be using. Resolved (a real
+  // hex/rgb), not "var(--site-primary)": the panel is portaled to document.body by the menu
+  // library, outside the element that CSS custom property is declared on, so a var() reference
+  // would resolve to nothing there — see SiteBuilderChrome's own comment on this.
+  primaryColor:       string
+  primaryForeground:  string
   contentBackground?: MenuContentBackground
 }
 
-export function SiteHeaderAdhesionMenu({ label, items, slug, color, variant = "outline", primaryColor, contentBackground = "light" }: Props) {
+export function SiteHeaderAdhesionMenu({
+  label, items, slug, color, variant = "outline", primaryColor, primaryForeground, contentBackground = "light",
+}: Props) {
   if (items.length === 0) return null
 
-  const contentStyle = menuContentStyle(contentBackground, primaryColor)
+  const contentStyle = menuContentStyle(contentBackground, primaryColor, primaryForeground)
 
   return (
     <DropdownMenu>

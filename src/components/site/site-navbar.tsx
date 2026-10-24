@@ -48,6 +48,11 @@ type Props = {
   adhesionMenuItems?:    SiteLink[]
   adhesionMenuVariant?:  HeaderPillVariant
   adhesionMenuContentBackground?: MenuContentBackground
+  // Resolved primary color/foreground (real hex, not "var(--site-primary)") — needed by the
+  // adhesion dropdown's panel specifically, since it's portaled outside this component's DOM
+  // subtree and can't inherit the custom property `color` above may just be a reference to.
+  resolvedPrimaryColor?:      string
+  resolvedPrimaryForeground?: string
   // "Se connecter" was always filled before this existed — default stays "primary" so nobody's
   // header changes just because this field now exists.
   seConnecterVariant?:   HeaderPillVariant
@@ -57,7 +62,7 @@ export function SiteNavbar({
   name, logoUrl, color, secondaryColor, portalSlug, headerBgColor, headerShowMembres = true, headerShowRegister = true,
   membershipCta = null, showName = true, socialLinks = [], ui = SITE_UI_STRINGS, showTranslate = false, locale,
   headerLinks = [], adhesionMenuLabel, adhesionMenuItems = [], adhesionMenuVariant = "outline",
-  adhesionMenuContentBackground = "light", seConnecterVariant = "primary",
+  adhesionMenuContentBackground = "light", resolvedPrimaryColor, resolvedPrimaryForeground, seConnecterVariant = "primary",
 }: Props) {
   const hasSocialLinks = visibleSocialLinks(socialLinks).length > 0
   const bg     = headerBgColor || "#ffffff"
@@ -128,7 +133,8 @@ export function SiteNavbar({
                 slug={portalSlug}
                 color={adhesionMenuVariant === "primary" ? color : (secondaryColor ?? color)}
                 variant={adhesionMenuVariant}
-                primaryColor={color}
+                primaryColor={resolvedPrimaryColor ?? color}
+                primaryForeground={resolvedPrimaryForeground ?? "var(--site-primary-foreground)"}
                 contentBackground={adhesionMenuContentBackground}
               />
             )}
