@@ -55,26 +55,31 @@ type BannerColors = { surface: CSSProperties; button: CSSProperties }
 
 // Text follows the surface (light text on dark colours); the two buttons always contrast with it
 // and stay identical to each other.
+//
+// Every var() below carries a literal fallback: SiteCookieBanner renders as a sibling of the
+// themed wrapper div (SiteBuilderChrome), not a descendant, so none of the --site-* custom
+// properties actually inherit here. Without the fallback these silently resolve to nothing —
+// not the "light"/white banner the undefined case above documents, but a transparent one.
 function bannerColors(background: SiteCookieBannerBackground, customBackground: string): BannerColors {
-  const lightButton: CSSProperties   = { background: "#ffffff", color: "var(--site-text)" }
-  const primaryButton: CSSProperties = { background: "var(--site-primary)", color: "var(--site-primary-foreground)" }
+  const lightButton: CSSProperties   = { background: "#ffffff", color: "var(--site-text, #111827)" }
+  const primaryButton: CSSProperties = { background: "var(--site-primary, #0f172a)", color: "var(--site-primary-foreground, #ffffff)" }
   switch (background) {
     case "dark":
       return { surface: { background: DARK_BANNER_SURFACE, color: "#ffffff" }, button: lightButton }
     case "primary":
-      return { surface: { background: "var(--site-primary)", color: "var(--site-primary-foreground)" }, button: lightButton }
+      return { surface: { background: "var(--site-primary, #0f172a)", color: "var(--site-primary-foreground, #ffffff)" }, button: lightButton }
     case "secondary":
-      return { surface: { background: "var(--site-secondary)", color: "var(--site-secondary-foreground)" }, button: lightButton }
+      return { surface: { background: "var(--site-secondary, #1f2937)", color: "var(--site-secondary-foreground, #ffffff)" }, button: lightButton }
     case "custom": {
       if (!customBackground) break
       const isDarkSurface = isColorDark(customBackground)
       return {
-        surface: { background: customBackground, color: isDarkSurface ? "#ffffff" : "var(--site-text)" },
+        surface: { background: customBackground, color: isDarkSurface ? "#ffffff" : "var(--site-text, #111827)" },
         button:  isDarkSurface ? lightButton : primaryButton,
       }
     }
   }
-  return { surface: { background: "var(--site-surface)", color: "var(--site-text)" }, button: primaryButton }
+  return { surface: { background: "var(--site-surface, #ffffff)", color: "var(--site-text, #111827)" }, button: primaryButton }
 }
 
 export type SiteCookieConsentValue = "accepted" | "refused" | "undecided"
