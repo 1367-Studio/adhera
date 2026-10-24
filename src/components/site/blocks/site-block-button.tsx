@@ -32,7 +32,7 @@ export function resolveSiteHref(href: string, slug: string): string {
   return trimmedHref
 }
 
-function isExternalHref(href: string): boolean {
+export function isExternalHref(href: string): boolean {
   return /^https?:\/\//.test(href)
 }
 

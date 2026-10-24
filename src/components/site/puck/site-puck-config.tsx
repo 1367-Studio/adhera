@@ -23,7 +23,7 @@ import { partnersBlock } from "@/components/site/blocks/site-block-partners"
 import { galleryBlock } from "@/components/site/blocks/site-block-gallery"
 import { socialLinksBlock } from "@/components/site/blocks/site-block-social-links"
 import { translateBlock } from "@/components/site/blocks/site-block-translate"
-import { colorField, imageField, headerShowRegisterField, YES_NO_OPTIONS } from "@/components/site/blocks/site-block-fields"
+import { colorField, imageField, headerShowRegisterField, YES_NO_OPTIONS, SITE_LINK_FIELDS, type SiteLink } from "@/components/site/blocks/site-block-fields"
 import { socialLinksField } from "@/components/site/site-social-icons"
 import {
   FORM_CTA_STYLE_DEFAULTS, FORM_CTA_STYLE_FIELDS, SiteFormCtaCentered, SiteFormCtaSplit,
@@ -117,6 +117,23 @@ export const sitePuckConfig: Config<SitePuckComponents, SitePuckRootProps> = {
       socialLinks:        socialLinksField("Réseaux sociaux"),
       socialInHeader:     { type: "radio", label: "Réseaux sociaux dans l'en-tête", options: YES_NO_OPTIONS },
       headerShowTranslate: { type: "radio", label: "Traduction dans l'en-tête", options: YES_NO_OPTIONS },
+      headerLinks: {
+        type:             "array",
+        label:            "Liens dans l'en-tête",
+        max:              4,
+        arrayFields:      SITE_LINK_FIELDS,
+        defaultItemProps: { label: "Nouveau lien", href: "https://" },
+        getItemSummary:   (item: SiteLink) => item.label || "Lien",
+      },
+      headerAdhesionMenuLabel: { type: "text", label: "Menu « Adhésions » — texte du bouton" },
+      headerAdhesionMenuItems: {
+        type:             "array",
+        label:            "Menu « Adhésions » — liens",
+        max:              10,
+        arrayFields:      SITE_LINK_FIELDS,
+        defaultItemProps: { label: "Nouvelle adhésion", href: "/" },
+        getItemSummary:   (item: SiteLink) => item.label || "Lien",
+      },
       // Replaces the old footerText / footerBgColor / footerLinks fields, which stay in the data
       // only as the source the footer is first filled from (see resolveData).
       footer:             SITE_FOOTER_FIELD,

@@ -4,6 +4,9 @@ import Link from "next/link"
 import { isColorDark } from "@/lib/color"
 import { SiteSocialIcons, visibleSocialLinks, type SocialLink } from "@/components/site/site-social-icons"
 import { PublicSiteLocaleSwitcher } from "@/components/site/public-site-locale-switcher"
+import { SiteHeaderAdhesionMenu } from "@/components/site/site-header-adhesion-menu"
+import { resolveSiteHref, isExternalHref } from "@/components/site/blocks/site-block-button"
+import type { SiteLink } from "@/components/site/blocks/site-block-fields"
 import { SITE_UI_STRINGS, type SiteUiStrings } from "@/lib/site-puck/site-ui-strings"
 import type { Locale } from "@/i18n/locales"
 
@@ -35,9 +38,18 @@ type Props = {
   // renders there regardless of this flag.
   showTranslate?:     boolean
   locale?:            Locale
+  // Plain link buttons (internal or external — external opens in a new tab) and, separately,
+  // a dropdown for associations with several membership forms (one per country, chapter…).
+  headerLinks?:          SiteLink[]
+  adhesionMenuLabel?:    string
+  adhesionMenuItems?:    SiteLink[]
 }
 
-export function SiteNavbar({ name, logoUrl, color, secondaryColor, portalSlug, headerBgColor, headerShowMembres = true, headerShowRegister = true, membershipCta = null, showName = true, socialLinks = [], ui = SITE_UI_STRINGS, showTranslate = false, locale }: Props) {
+export function SiteNavbar({
+  name, logoUrl, color, secondaryColor, portalSlug, headerBgColor, headerShowMembres = true, headerShowRegister = true,
+  membershipCta = null, showName = true, socialLinks = [], ui = SITE_UI_STRINGS, showTranslate = false, locale,
+  headerLinks = [], adhesionMenuLabel, adhesionMenuItems = [],
+}: Props) {
   const hasSocialLinks = visibleSocialLinks(socialLinks).length > 0
   const bg     = headerBgColor || "#ffffff"
   const isDark = isColorDark(bg)
@@ -71,13 +83,38 @@ export function SiteNavbar({ name, logoUrl, color, secondaryColor, portalSlug, h
           {showName && <span className="text-sm">{name}</span>}
         </Link>
 
-        {(headerShowMembres || (headerShowRegister && membershipCta) || hasSocialLinks || (showTranslate && locale)) && (
+        {(
+          headerShowMembres || (headerShowRegister && membershipCta) || hasSocialLinks
+          || (showTranslate && locale) || headerLinks.length > 0 || adhesionMenuItems.length > 0
+        ) && (
           <div className="flex items-center gap-2">
             {hasSocialLinks && (
               <SiteSocialIcons socialLinks={socialLinks} className="hidden sm:flex" />
             )}
             {showTranslate && locale && (
               <PublicSiteLocaleSwitcher locale={locale} />
+            )}
+            {headerLinks.map((link, index) => {
+              const href = resolveSiteHref(link.href, portalSlug)
+              const linkClassName = "text-sm font-medium px-3 py-1.5 rounded-lg border transition-opacity hover:opacity-80"
+              const linkStyle     = { color: secondaryColor ?? color, borderColor: secondaryColor ?? color }
+              return isExternalHref(href) ? (
+                <a key={`${link.label}-${index}`} href={href} target="_blank" rel="noopener noreferrer" className={linkClassName} style={linkStyle}>
+                  {link.label}
+                </a>
+              ) : (
+                <Link key={`${link.label}-${index}`} href={href} className={linkClassName} style={linkStyle}>
+                  {link.label}
+                </Link>
+              )
+            })}
+            {adhesionMenuItems.length > 0 && (
+              <SiteHeaderAdhesionMenu
+                label={adhesionMenuLabel || ui.navAdherer}
+                items={adhesionMenuItems}
+                slug={portalSlug}
+                color={secondaryColor ?? color}
+              />
             )}
             {headerShowRegister && membershipCta && (
               <Link

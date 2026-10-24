@@ -72,6 +72,9 @@ export function SiteBuilderChrome({
         ui={ui}
         showTranslate={rootProps.headerShowTranslate}
         locale={locale}
+        headerLinks={rootProps.headerLinks}
+        adhesionMenuLabel={rootProps.headerAdhesionMenuLabel}
+        adhesionMenuItems={rootProps.headerAdhesionMenuItems}
       />
       <main className={mainClassName}>{children}</main>
       <SiteBuilderFooter
