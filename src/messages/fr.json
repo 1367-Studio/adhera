@@ -2038,7 +2038,10 @@
       "notFound": "Actualité introuvable",
       "relatedEvent": "Événement associé",
       "draft": "Brouillon",
-      "previewNotice": "Mode aperçu — cette actualité n'est pas encore visible publiquement."
+      "previewNotice": "Mode aperçu — cette actualité n'est pas encore visible publiquement.",
+      "listTitle": "Actualités",
+      "listEmpty": "Aucune actualité publiée pour le moment.",
+      "associationNotFound": "Cette association est introuvable."
     }
   },
   "sondages": {
