@@ -7,7 +7,7 @@ import { PublicSiteLocaleSwitcher } from "@/components/site/public-site-locale-s
 import { SiteHeaderAdhesionMenu } from "@/components/site/site-header-adhesion-menu"
 import { resolveSiteHref, isExternalHref } from "@/components/site/blocks/site-block-button"
 import type { SiteLink } from "@/components/site/blocks/site-block-fields"
-import { headerPillClassName, type HeaderPillVariant, type HeaderLinkItem } from "@/components/site/site-header-link-style"
+import { headerPillClassName, headerPillStyle, type HeaderPillVariant, type HeaderLinkItem } from "@/components/site/site-header-link-style"
 import { SITE_UI_STRINGS, type SiteUiStrings } from "@/lib/site-puck/site-ui-strings"
 import type { Locale } from "@/i18n/locales"
 
@@ -45,12 +45,15 @@ type Props = {
   adhesionMenuLabel?:    string
   adhesionMenuItems?:    SiteLink[]
   adhesionMenuVariant?:  HeaderPillVariant
+  // "Se connecter" was always filled before this existed — default stays "primary" so nobody's
+  // header changes just because this field now exists.
+  seConnecterVariant?:   HeaderPillVariant
 }
 
 export function SiteNavbar({
   name, logoUrl, color, secondaryColor, portalSlug, headerBgColor, headerShowMembres = true, headerShowRegister = true,
   membershipCta = null, showName = true, socialLinks = [], ui = SITE_UI_STRINGS, showTranslate = false, locale,
-  headerLinks = [], adhesionMenuLabel, adhesionMenuItems = [], adhesionMenuVariant = "outline",
+  headerLinks = [], adhesionMenuLabel, adhesionMenuItems = [], adhesionMenuVariant = "outline", seConnecterVariant = "primary",
 }: Props) {
   const hasSocialLinks = visibleSocialLinks(socialLinks).length > 0
   const bg     = headerBgColor || "#ffffff"
@@ -97,9 +100,13 @@ export function SiteNavbar({
               <PublicSiteLocaleSwitcher locale={locale} />
             )}
             {headerLinks.map((link, index) => {
-              const href = resolveSiteHref(link.href, portalSlug)
-              const linkClassName = headerPillClassName(link.variant)
-              const linkStyle     = { color: secondaryColor ?? color, borderColor: secondaryColor ?? color }
+              const href    = resolveSiteHref(link.href, portalSlug)
+              const variant = link.variant ?? "outline"
+              // "primary" means the brand's true primary color, never the softer secondary
+              // accent the outline/ghost looks use — see headerPillStyle's own comment.
+              const accent  = variant === "primary" ? color : (secondaryColor ?? color)
+              const linkClassName = headerPillClassName(variant)
+              const linkStyle     = headerPillStyle(variant, accent)
               return isExternalHref(href) ? (
                 <a key={`${link.label}-${index}`} href={href} target="_blank" rel="noopener noreferrer" className={linkClassName} style={linkStyle}>
                   {link.label}
@@ -115,7 +122,7 @@ export function SiteNavbar({
                 label={adhesionMenuLabel || ui.navAdherer}
                 items={adhesionMenuItems}
                 slug={portalSlug}
-                color={secondaryColor ?? color}
+                color={adhesionMenuVariant === "primary" ? color : (secondaryColor ?? color)}
                 variant={adhesionMenuVariant}
               />
             )}
@@ -123,7 +130,7 @@ export function SiteNavbar({
               <Link
                 href={membershipCta.href}
                 className={headerPillClassName("outline")}
-                style={{ color: secondaryColor ?? color, borderColor: secondaryColor ?? color }}
+                style={headerPillStyle("outline", secondaryColor ?? color)}
               >
                 {ui.navAdherer}
               </Link>
@@ -131,8 +138,8 @@ export function SiteNavbar({
             {headerShowMembres && (
               <Link
                 href={`/portal/${portalSlug}/login`}
-                className="text-sm font-medium px-3 py-1.5 rounded-lg transition-opacity hover:opacity-90"
-                style={{ background: color, color: "var(--site-primary-foreground)" }}
+                className={headerPillClassName(seConnecterVariant)}
+                style={headerPillStyle(seConnecterVariant, color)}
               >
                 {ui.navSeConnecter}
               </Link>

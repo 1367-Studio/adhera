@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { resolveSiteHref, isExternalHref } from "@/components/site/blocks/site-block-button"
 import type { SiteLink } from "@/components/site/blocks/site-block-fields"
-import { headerPillClassName, type HeaderPillVariant } from "@/components/site/site-header-link-style"
+import { headerPillClassName, headerPillStyle, type HeaderPillVariant } from "@/components/site/site-header-link-style"
 
 // Header dropdown for associations with several membership forms (one per country, chapter…)
 // that would otherwise need one "Adhérer" button each — see site-navbar.tsx. Trigger styling
@@ -34,7 +34,7 @@ export function SiteHeaderAdhesionMenu({ label, items, slug, color, variant = "o
           <button
             type="button"
             className={`inline-flex items-center gap-1 ${headerPillClassName(variant)}`}
-            style={{ color, borderColor: color }}
+            style={headerPillStyle(variant, color)}
           />
         }
       >

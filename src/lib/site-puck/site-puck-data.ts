@@ -111,6 +111,9 @@ export type SitePuckRootProps = Omit<SiteConfig, "sections" | "footerText"> & {
   headerAdhesionMenuLabel?:   string
   headerAdhesionMenuVariant?: HeaderPillVariant
   headerAdhesionMenuItems?:   SiteLink[]
+  // "Se connecter" was always filled before this existed — undefined = "primary", its original
+  // look, so no existing site changes just because the field now exists.
+  headerSeConnecterVariant?: HeaderPillVariant
   // New footer (logo position, columns, socials, bottom line). Missing on sites from the old
   // builder: the editor fills it from footerText / footerBgColor / footerLinks on load.
   footer?:         SiteFooterSettings
