@@ -35,8 +35,8 @@ export const sectionBlock: ComponentConfig<SectionBlockProps> = {
     content: [],
     anchor:  "",
   },
-  render: ({ content: SectionContent, anchor, background, spacing, width }) => (
-    <SiteBlockSection id={toSectionAnchorId(anchor)} background={background} spacing={spacing} width={width}>
+  render: ({ content: SectionContent, anchor, background, textColor, spacing, width }) => (
+    <SiteBlockSection id={toSectionAnchorId(anchor)} background={background} textColor={textColor} spacing={spacing} width={width}>
       <SectionContent className="flex flex-col gap-6" minEmptyHeight={120} />
     </SiteBlockSection>
   ),

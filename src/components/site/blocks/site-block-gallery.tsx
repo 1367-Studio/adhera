@@ -68,12 +68,12 @@ export const galleryBlock: ComponentConfig<GalleryBlockProps> = {
     aspect:  "square",
     ...SECTION_STYLE_DEFAULTS,
   },
-  render: ({ title, images, columns, aspect, background, spacing, width, puck }) => {
+  render: ({ title, images, columns, aspect, background, textColor, spacing, width, puck }) => {
     const visibleImages = images.filter(galleryImage => galleryImage.image)
     const isSquare      = aspect === "square"
 
     return (
-      <SiteBlockSection background={background} spacing={spacing} width={width}>
+      <SiteBlockSection background={background} textColor={textColor} spacing={spacing} width={width}>
         {title && <h2 className="mb-8 text-2xl font-semibold tracking-tight sm:text-3xl">{title}</h2>}
 
         {visibleImages.length === 0 && puck.isEditing && (
@@ -106,7 +106,7 @@ export const galleryBlock: ComponentConfig<GalleryBlockProps> = {
                     />
                   </a>
                   {galleryImage.caption && (
-                    <figcaption className="mt-2 text-sm" style={mutedTextStyle(background)}>{galleryImage.caption}</figcaption>
+                    <figcaption className="mt-2 text-sm" style={mutedTextStyle(background, textColor)}>{galleryImage.caption}</figcaption>
                   )}
                 </figure>
               </li>

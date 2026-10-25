@@ -49,22 +49,22 @@ export const statsBlock: ComponentConfig<StatsBlockProps> = {
     ],
     ...SECTION_STYLE_DEFAULTS,
   },
-  render: ({ title, intro, items, background, spacing, width }) => {
+  render: ({ title, intro, items, background, textColor, spacing, width }) => {
     const visibleItems = (items ?? []).filter(statItem => statItem.value?.trim() || statItem.label?.trim())
     const numberColor  = isColoredBackground(background) ? undefined : "var(--site-primary)"
 
     return (
-      <SiteBlockSection background={background} spacing={spacing} width={width}>
+      <SiteBlockSection background={background} textColor={textColor} spacing={spacing} width={width}>
         {(title || intro) && (
           <div className="mx-auto mb-12 flex max-w-2xl flex-col gap-3 text-center">
             {title && <h2 className="text-3xl leading-tight font-bold tracking-tight text-balance sm:text-4xl">{title}</h2>}
-            {intro && <p className="text-base leading-relaxed text-pretty sm:text-lg" style={mutedTextStyle(background)}>{intro}</p>}
+            {intro && <p className="text-base leading-relaxed text-pretty sm:text-lg" style={mutedTextStyle(background, textColor)}>{intro}</p>}
           </div>
         )}
         <dl className={cn("grid gap-x-6 gap-y-10 text-center", gridColumnsClass(visibleItems.length))}>
           {visibleItems.map((statItem, itemIndex) => (
             <div key={`${statItem.label}-${itemIndex}`} className="flex flex-col-reverse gap-2">
-              <dt className="text-sm sm:text-base" style={mutedTextStyle(background)}>{statItem.label}</dt>
+              <dt className="text-sm sm:text-base" style={mutedTextStyle(background, textColor)}>{statItem.label}</dt>
               <dd className="text-4xl leading-none font-bold tracking-tight tabular-nums sm:text-5xl" style={{ color: numberColor }}>
                 {statItem.value}
               </dd>

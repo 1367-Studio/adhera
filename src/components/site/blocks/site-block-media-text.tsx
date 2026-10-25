@@ -57,11 +57,11 @@ export const mediaTextBlock: ComponentConfig<MediaTextBlockProps> = {
     buttons:       [{ label: "Découvrir nos actions", href: "/evenements", variant: "primary" }],
     ...SECTION_STYLE_DEFAULTS,
   },
-  render: ({ image, imageAlt, imagePosition, imageAspect, title, body, buttons, background, spacing, width, puck }) => {
+  render: ({ image, imageAlt, imagePosition, imageAspect, title, body, buttons, background, textColor, spacing, width, puck }) => {
     const { slug } = readSiteMetadata(puck.metadata)
 
     return (
-      <SiteBlockSection background={background} spacing={spacing} width={width}>
+      <SiteBlockSection background={background} textColor={textColor} spacing={spacing} width={width}>
         <SiteMediaSplit
           image={image}
           imageAlt={imageAlt}
@@ -73,7 +73,7 @@ export const mediaTextBlock: ComponentConfig<MediaTextBlockProps> = {
             {body && (
               <div
                 className="text-base leading-relaxed sm:text-lg [&_a]:underline [&_ol]:list-decimal [&_ol]:pl-5 [&_ul]:list-disc [&_ul]:pl-5 [&>*+*]:mt-4"
-                style={mutedTextStyle(background)}
+                style={mutedTextStyle(background, textColor)}
               >
                 {body}
               </div>

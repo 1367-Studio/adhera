@@ -6,7 +6,7 @@ import type { SiteLink } from "@/components/site/blocks/site-block-fields"
 // The one button of the public site builder blocks. Colours and corners come from the site
 // theme variables, never from the block itself.
 
-export type SiteButtonVariant = "primary" | "secondary" | "outline" | "light"
+export type SiteButtonVariant = "primary" | "secondary" | "outline" | "light" | "ghost"
 
 const BUTTON_STYLES: Record<SiteButtonVariant, CSSProperties> = {
   primary:   { background: "var(--site-primary)", color: "var(--site-primary-foreground)" },
@@ -14,6 +14,8 @@ const BUTTON_STYLES: Record<SiteButtonVariant, CSSProperties> = {
   outline:   { border: "1px solid currentColor", background: "transparent" },
   // For coloured or photo backgrounds.
   light:     { background: "#ffffff", color: "var(--site-text)" },
+  // No border, no fill: the text keeps the section's colour (currentColor).
+  ghost:     { background: "transparent" },
 }
 
 export const SITE_BUTTON_VARIANT_OPTIONS = [
@@ -21,6 +23,16 @@ export const SITE_BUTTON_VARIANT_OPTIONS = [
   { label: "Secondaire", value: "secondary" },
   { label: "Contour",    value: "outline" },
   { label: "Blanc",      value: "light" },
+]
+
+// The three looks of the header pills (HEADER_PILL_VARIANT_OPTIONS, same labels), for the
+// block buttons that offer a style choice: one vocabulary across the site.
+export type SiteButtonStyle = Extract<SiteButtonVariant, "primary" | "outline" | "ghost">
+
+export const SITE_BUTTON_STYLE_OPTIONS = [
+  { label: "Couleur principale", value: "primary" },
+  { label: "Contour",            value: "outline" },
+  { label: "Sans bordure",       value: "ghost" },
 ]
 
 // "/evenements" is relative to the association's site, not to the app: prefix the slug.

@@ -2,6 +2,7 @@ import Link from "next/link"
 import type { ComponentConfig } from "@puckeditor/core"
 import { cn } from "@/lib/utils"
 import { YES_NO_OPTIONS } from "@/components/site/blocks/site-block-fields"
+import { SITE_BUTTON_STYLE_OPTIONS, type SiteButtonStyle } from "@/components/site/blocks/site-block-button"
 import { readSiteMetadata, type SitePuckMetadata } from "@/components/site/blocks/site-block-types"
 import { SiteEditingPlaceholder } from "@/components/site/blocks/site-block-editing-placeholder"
 import {
@@ -27,6 +28,7 @@ export type BoutiqueBlockProps = Partial<SectionStyleProps> & {
   columns?:       BoutiqueColumns
   showPrices?:    boolean
   showAllButton?: boolean
+  showAllVariant?: SiteButtonStyle
 }
 
 const DEFAULT_LIMIT = 6
@@ -64,6 +66,7 @@ export const boutiqueBlock: ComponentConfig<BoutiqueBlockProps> = {
     },
     showPrices:    { type: "radio", label: "Afficher les prix", options: YES_NO_OPTIONS },
     showAllButton: { type: "radio", label: "Bouton « Voir la boutique »", options: YES_NO_OPTIONS },
+    showAllVariant: { type: "radio", label: "Style du bouton « Voir tout »", options: SITE_BUTTON_STYLE_OPTIONS },
     ...OPTIONAL_SECTION_STYLE_FIELDS,
   },
   defaultProps: {
@@ -73,9 +76,12 @@ export const boutiqueBlock: ComponentConfig<BoutiqueBlockProps> = {
     columns:       "3",
     showPrices:    true,
     showAllButton: true,
+    showAllVariant: "outline",
     ...SECTION_STYLE_DEFAULTS,
   },
-  render: ({ title, intro, limit, columns, showPrices, showAllButton, background, spacing, width, puck }) => {
+  render: ({
+    title, intro, limit, columns, showPrices, showAllButton, showAllVariant, background, textColor, spacing, width, puck,
+  }) => {
     const metadata          = readSiteMetadata(puck.metadata)
     const sectionBackground = background ?? "none"
     const displayedProduits = (metadata.boutiqueProduits ?? []).slice(0, resolveListingLimit(limit, DEFAULT_LIMIT))
@@ -84,13 +90,15 @@ export const boutiqueBlock: ComponentConfig<BoutiqueBlockProps> = {
     if (displayedProduits.length === 0 && !puck.isEditing) return <></>
 
     return (
-      <SiteBlockSection background={sectionBackground} spacing={spacing} width={width}>
+      <SiteBlockSection background={sectionBackground} textColor={textColor} spacing={spacing} width={width}>
         <SiteListingHeader
           title={title || metadata.ui.boutiqueDefaultTitle}
           intro={intro}
           background={sectionBackground}
+          textColor={textColor}
           showAllLabel={(showAllButton ?? true) ? metadata.ui.boutiqueSeeAll : undefined}
           showAllHref={`/${metadata.slug}/boutique`}
+          showAllVariant={showAllVariant}
           slug={metadata.slug}
         />
 

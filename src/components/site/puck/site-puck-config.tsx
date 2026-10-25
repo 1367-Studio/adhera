@@ -313,8 +313,10 @@ export const sitePuckConfig: Config<SitePuckComponents, SitePuckRootProps> = {
           href:        `/${metadata.slug}/adhesion/${membershipForm.slug}`,
           slug:        metadata.slug,
           background:  renderProps.background,
+          textColor:   renderProps.textColor,
           spacing:     renderProps.spacing,
           width:       renderProps.width,
+          buttonVariant: renderProps.buttonVariant,
         }
         if (renderProps.layout && renderProps.layout !== "centered") {
           return (
@@ -356,8 +358,10 @@ export const sitePuckConfig: Config<SitePuckComponents, SitePuckRootProps> = {
           slug:        metadata.slug,
           note:        metadata.canIssueTaxReceipts ? "Reçu fiscal envoyé automatiquement par e-mail" : undefined,
           background:  renderProps.background,
+          textColor:   renderProps.textColor,
           spacing:     renderProps.spacing,
           width:       renderProps.width,
+          buttonVariant: renderProps.buttonVariant,
         }
         if (renderProps.layout && renderProps.layout !== "centered") {
           return (

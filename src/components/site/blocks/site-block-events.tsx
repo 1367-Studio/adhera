@@ -4,11 +4,12 @@ import { CalendarBlankIcon, MapPinIcon } from "@phosphor-icons/react/dist/ssr"
 import { cn } from "@/lib/utils"
 import { cheapestAvailableTicketTypePrice } from "@/lib/ticket-types"
 import { YES_NO_OPTIONS } from "@/components/site/blocks/site-block-fields"
+import { SITE_BUTTON_STYLE_OPTIONS, type SiteButtonStyle } from "@/components/site/blocks/site-block-button"
 import { readSiteMetadata, type SitePuckMetadata } from "@/components/site/blocks/site-block-types"
 import { SiteEditingPlaceholder } from "@/components/site/blocks/site-block-editing-placeholder"
 import {
   SECTION_STYLE_DEFAULTS, SiteBlockSection, mutedTextStyle,
-  type SectionBackground, type SectionStyleProps,
+  type SectionBackground, type SectionStyleProps, type SectionTextColor,
 } from "@/components/site/blocks/site-block-section"
 import {
   LISTING_IMAGE_RADIUS, OPTIONAL_SECTION_STYLE_FIELDS, SiteListingHeader, formatLongDate, formatTime, listingAccentStyle, listingBorderColor,
@@ -32,6 +33,7 @@ export type EventsBlockProps = Partial<SectionStyleProps> & {
   columns?:       EventsColumns
   showImages?:    boolean
   showAllButton?: boolean
+  showAllVariant?: SiteButtonStyle
 }
 
 const DEFAULT_LIMIT = 6
@@ -54,14 +56,19 @@ function eventTimeLabel(siteEvent: SiteEvent, locale: string): string {
   return `${formatTime(siteEvent.date, locale)}${siteEvent.endDate ? ` — ${formatTime(siteEvent.endDate, locale)}` : ""}`
 }
 
-function EventDetails(
-  { siteEvent, background, locale, priceFromLabel }:
-  { siteEvent: SiteEvent; background: SectionBackground; locale: string; priceFromLabel: string },
-) {
+type EventDetailsProps = {
+  siteEvent:      SiteEvent
+  background:     SectionBackground
+  textColor:      SectionTextColor | undefined
+  locale:         string
+  priceFromLabel: string
+}
+
+function EventDetails({ siteEvent, background, textColor, locale, priceFromLabel }: EventDetailsProps) {
   const priceLabel = eventPriceLabel(siteEvent, priceFromLabel)
   return (
     <>
-      <div className="flex flex-col gap-1 text-sm" style={mutedTextStyle(background)}>
+      <div className="flex flex-col gap-1 text-sm" style={mutedTextStyle(background, textColor)}>
         <span className="flex items-center gap-1.5">
           <CalendarBlankIcon className="size-4 shrink-0" aria-hidden="true" />
           {eventTimeLabel(siteEvent, locale)}
@@ -96,6 +103,7 @@ export const eventsBlock: ComponentConfig<EventsBlockProps> = {
     },
     showImages:    { type: "radio", label: "Afficher les images", options: YES_NO_OPTIONS },
     showAllButton: { type: "radio", label: "Bouton « Voir tous les événements »", options: YES_NO_OPTIONS },
+    showAllVariant: { type: "radio", label: "Style du bouton « Voir tout »", options: SITE_BUTTON_STYLE_OPTIONS },
     ...OPTIONAL_SECTION_STYLE_FIELDS,
   },
   defaultProps: {
@@ -106,9 +114,12 @@ export const eventsBlock: ComponentConfig<EventsBlockProps> = {
     columns:       "3",
     showImages:    true,
     showAllButton: false,
+    showAllVariant: "outline",
     ...SECTION_STYLE_DEFAULTS,
   },
-  render: ({ title, intro, limit, layout, columns, showImages, showAllButton, background, spacing, width, puck }) => {
+  render: ({
+    title, intro, limit, layout, columns, showImages, showAllButton, showAllVariant, background, textColor, spacing, width, puck,
+  }) => {
     const metadata          = readSiteMetadata(puck.metadata)
     const sectionBackground = background ?? "none"
     const displayedEvents   = (metadata.events ?? []).slice(0, resolveListingLimit(limit, DEFAULT_LIMIT))
@@ -117,13 +128,15 @@ export const eventsBlock: ComponentConfig<EventsBlockProps> = {
     if (displayedEvents.length === 0 && !puck.isEditing) return <></>
 
     return (
-      <SiteBlockSection background={sectionBackground} spacing={spacing} width={width}>
+      <SiteBlockSection background={sectionBackground} textColor={textColor} spacing={spacing} width={width}>
         <SiteListingHeader
           title={title || metadata.ui.eventsDefaultTitle}
           intro={intro}
           background={sectionBackground}
+          textColor={textColor}
           showAllLabel={showAllButton ? metadata.ui.eventsSeeAll : undefined}
           showAllHref={`/${metadata.slug}/evenements`}
+          showAllVariant={showAllVariant}
           slug={metadata.slug}
         />
 
@@ -141,7 +154,7 @@ export const eventsBlock: ComponentConfig<EventsBlockProps> = {
                   <div className="flex min-w-0 flex-1 flex-col gap-2">
                     <h3 className="text-lg leading-snug font-semibold group-hover:underline">{siteEvent.title}</h3>
                     <EventDetails
-                      siteEvent={siteEvent} background={sectionBackground}
+                      siteEvent={siteEvent} background={sectionBackground} textColor={textColor}
                       locale={metadata.locale} priceFromLabel={metadata.ui.eventsPriceFrom}
                     />
                   </div>
@@ -180,10 +193,10 @@ export const eventsBlock: ComponentConfig<EventsBlockProps> = {
                     </time>
                     <h3 className="text-lg leading-snug font-semibold group-hover:underline">{siteEvent.title}</h3>
                     {descriptionExcerpt && (
-                      <p className="line-clamp-2 text-sm leading-relaxed" style={mutedTextStyle(sectionBackground)}>{descriptionExcerpt}</p>
+                      <p className="line-clamp-2 text-sm leading-relaxed" style={mutedTextStyle(sectionBackground, textColor)}>{descriptionExcerpt}</p>
                     )}
                     <EventDetails
-                      siteEvent={siteEvent} background={sectionBackground}
+                      siteEvent={siteEvent} background={sectionBackground} textColor={textColor}
                       locale={metadata.locale} priceFromLabel={metadata.ui.eventsPriceFrom}
                     />
                   </div>

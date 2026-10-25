@@ -42,12 +42,12 @@ export const ctaBannerBlock: ComponentConfig<CtaBannerBlockProps> = {
     ...SECTION_STYLE_DEFAULTS,
     background: "primary",
   },
-  render: ({ layout, title, text, buttons, background, spacing, width, puck }) => {
+  render: ({ layout, title, text, buttons, background, textColor, spacing, width, puck }) => {
     const { slug }  = readSiteMetadata(puck.metadata)
     const isInline  = layout === "inline"
 
     return (
-      <SiteBlockSection background={background} spacing={spacing} width={width}>
+      <SiteBlockSection background={background} textColor={textColor} spacing={spacing} width={width}>
         <div
           className={cn(
             "flex flex-col gap-6",
@@ -56,7 +56,7 @@ export const ctaBannerBlock: ComponentConfig<CtaBannerBlockProps> = {
         >
           <div className="flex flex-col gap-3">
             {title && <h2 className="text-2xl leading-tight font-bold tracking-tight text-balance sm:text-3xl">{title}</h2>}
-            {text && <p className="text-base leading-relaxed text-pretty sm:text-lg" style={mutedTextStyle(background)}>{text}</p>}
+            {text && <p className="text-base leading-relaxed text-pretty sm:text-lg" style={mutedTextStyle(background, textColor)}>{text}</p>}
           </div>
           <SiteButtonGroup buttons={buttons} slug={slug} className={cn(isInline ? "shrink-0" : "justify-center")} />
         </div>

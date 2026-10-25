@@ -48,13 +48,13 @@ export const socialLinksBlock: ComponentConfig<SocialLinksBlockProps> = {
     ...SECTION_STYLE_DEFAULTS,
     spacing: "compact",
   },
-  render: ({ links, align, background, spacing, width, puck }) => {
+  render: ({ links, align, background, textColor, spacing, width, puck }) => {
     const hasVisibleLinks = visibleSocialLinks(links).length > 0
 
     if (!hasVisibleLinks && !puck.isEditing) return <></>
 
     return (
-      <SiteBlockSection background={background} spacing={spacing} width={width}>
+      <SiteBlockSection background={background} textColor={textColor} spacing={spacing} width={width}>
         {hasVisibleLinks ? (
           <SiteSocialIcons socialLinks={links} variant="framed" className={ALIGN_CLASSES[align]} />
         ) : (

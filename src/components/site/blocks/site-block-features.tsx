@@ -62,7 +62,7 @@ export const featuresBlock: ComponentConfig<FeaturesBlockProps> = {
     itemStyle: "card",
     ...SECTION_STYLE_DEFAULTS,
   },
-  render: ({ title, intro, items, columns, itemStyle, background, spacing, width }) => {
+  render: ({ title, intro, items, columns, itemStyle, background, textColor, spacing, width }) => {
     const isCard = itemStyle === "card"
     // On a coloured section the card border follows the text colour instead of the grey token.
     const cardStyle: CSSProperties = {
@@ -71,18 +71,18 @@ export const featuresBlock: ComponentConfig<FeaturesBlockProps> = {
     }
 
     return (
-      <SiteBlockSection background={background} spacing={spacing} width={width}>
+      <SiteBlockSection background={background} textColor={textColor} spacing={spacing} width={width}>
         {(title || intro) && (
           <div className="mb-10 flex max-w-2xl flex-col gap-3">
             {title && <h2 className="text-3xl leading-tight font-bold tracking-tight text-balance sm:text-4xl">{title}</h2>}
-            {intro && <p className="text-base leading-relaxed text-pretty sm:text-lg" style={mutedTextStyle(background)}>{intro}</p>}
+            {intro && <p className="text-base leading-relaxed text-pretty sm:text-lg" style={mutedTextStyle(background, textColor)}>{intro}</p>}
           </div>
         )}
         <div className={cn("grid gap-6", isCard ? "" : "gap-y-10", COLUMN_CLASSES[columns] ?? COLUMN_CLASSES["3"])}>
           {(items ?? []).map((featureItem, itemIndex) => (
             <div key={`${featureItem.title}-${itemIndex}`} className={cn("flex flex-col gap-2", isCard && "p-6")} style={isCard ? cardStyle : undefined}>
               {featureItem.title && <h3 className="text-lg leading-snug font-semibold">{featureItem.title}</h3>}
-              {featureItem.text && <p className="leading-relaxed" style={mutedTextStyle(background)}>{featureItem.text}</p>}
+              {featureItem.text && <p className="leading-relaxed" style={mutedTextStyle(background, textColor)}>{featureItem.text}</p>}
             </div>
           ))}
         </div>

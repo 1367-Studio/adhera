@@ -2,11 +2,12 @@ import Link from "next/link"
 import type { ComponentConfig } from "@puckeditor/core"
 import { cn } from "@/lib/utils"
 import { YES_NO_OPTIONS } from "@/components/site/blocks/site-block-fields"
+import { SITE_BUTTON_STYLE_OPTIONS, type SiteButtonStyle } from "@/components/site/blocks/site-block-button"
 import { readSiteMetadata, type SitePuckMetadata } from "@/components/site/blocks/site-block-types"
 import { SiteEditingPlaceholder } from "@/components/site/blocks/site-block-editing-placeholder"
 import {
   SECTION_STYLE_DEFAULTS, SiteBlockSection, mutedTextStyle,
-  type SectionBackground, type SectionStyleProps,
+  type SectionBackground, type SectionStyleProps, type SectionTextColor,
 } from "@/components/site/blocks/site-block-section"
 import {
   LISTING_IMAGE_RADIUS, OPTIONAL_SECTION_STYLE_FIELDS, SiteListingHeader, formatLongDate, listingBadgeStyle, listingBorderColor, listingCardStyle,
@@ -29,40 +30,54 @@ export type ActualitesBlockProps = Partial<SectionStyleProps> & {
   showImages?:    boolean
   showExcerpt?:   boolean
   showAllButton?: boolean
+  showAllVariant?: SiteButtonStyle
 }
 
 const DEFAULT_LIMIT = 3
 
-function ActualiteMeta(
-  { actualite, background, locale, featuredBadgeLabel }:
-  { actualite: SiteActualite; background: SectionBackground; locale: string; featuredBadgeLabel: string },
-) {
+type ActualiteMetaProps = {
+  actualite:          SiteActualite
+  background:         SectionBackground
+  textColor:          SectionTextColor | undefined
+  locale:             string
+  featuredBadgeLabel: string
+}
+
+function ActualiteMeta({ actualite, background, textColor, locale, featuredBadgeLabel }: ActualiteMetaProps) {
   return (
     <div className="flex flex-wrap items-center gap-2">
       {actualite.pinned && (
         <span className="px-2 py-0.5 text-xs font-semibold" style={listingBadgeStyle(background)}>{featuredBadgeLabel}</span>
       )}
-      <time dateTime={actualite.publishedAt} className="text-sm" style={mutedTextStyle(background)}>
+      <time dateTime={actualite.publishedAt} className="text-sm" style={mutedTextStyle(background, textColor)}>
         {formatLongDate(actualite.publishedAt, locale)}
       </time>
     </div>
   )
 }
 
-function ActualiteExcerpt({ actualite, background, lineClampClass }: { actualite: SiteActualite; background: SectionBackground; lineClampClass: string }) {
+type ActualiteExcerptProps = {
+  actualite:      SiteActualite
+  background:     SectionBackground
+  textColor:      SectionTextColor | undefined
+  lineClampClass: string
+}
+
+function ActualiteExcerpt({ actualite, background, textColor, lineClampClass }: ActualiteExcerptProps) {
   const contentExcerpt = plainTextExcerpt(actualite.content)
   if (!contentExcerpt) return null
-  return <p className={cn("text-sm leading-relaxed", lineClampClass)} style={mutedTextStyle(background)}>{contentExcerpt}</p>
+  return <p className={cn("text-sm leading-relaxed", lineClampClass)} style={mutedTextStyle(background, textColor)}>{contentExcerpt}</p>
 }
 
 // A compact row: small thumbnail, date, title, optional excerpt. Used by "list" and by the
 // secondary items of "featured".
 function ActualiteRow({
-  actualite, href, background, withImage, withExcerpt, isCompact, locale, featuredBadgeLabel,
+  actualite, href, background, textColor, withImage, withExcerpt, isCompact, locale, featuredBadgeLabel,
 }: {
   actualite:   SiteActualite
   href:        string
   background:  SectionBackground
+  textColor:   SectionTextColor | undefined
   withImage:   boolean
   withExcerpt: boolean
   isCompact:   boolean
@@ -82,9 +97,14 @@ function ActualiteRow({
         />
       )}
       <div className="flex min-w-0 flex-1 flex-col gap-2">
-        <ActualiteMeta actualite={actualite} background={background} locale={locale} featuredBadgeLabel={featuredBadgeLabel} />
+        <ActualiteMeta
+          actualite={actualite} background={background} textColor={textColor}
+          locale={locale} featuredBadgeLabel={featuredBadgeLabel}
+        />
         <h3 className={cn("leading-snug font-semibold group-hover:underline", isCompact ? "text-base" : "text-lg")}>{actualite.title}</h3>
-        {withExcerpt && <ActualiteExcerpt actualite={actualite} background={background} lineClampClass="line-clamp-2" />}
+        {withExcerpt && (
+          <ActualiteExcerpt actualite={actualite} background={background} textColor={textColor} lineClampClass="line-clamp-2" />
+        )}
       </div>
     </Link>
   )
@@ -108,6 +128,7 @@ export const actualitesBlock: ComponentConfig<ActualitesBlockProps> = {
     showImages:    { type: "radio", label: "Afficher les images", options: YES_NO_OPTIONS },
     showExcerpt:   { type: "radio", label: "Afficher un extrait", options: YES_NO_OPTIONS },
     showAllButton: { type: "radio", label: "Bouton « Toutes les actualités »", options: YES_NO_OPTIONS },
+    showAllVariant: { type: "radio", label: "Style du bouton « Voir tout »", options: SITE_BUTTON_STYLE_OPTIONS },
     ...OPTIONAL_SECTION_STYLE_FIELDS,
   },
   defaultProps: {
@@ -118,9 +139,13 @@ export const actualitesBlock: ComponentConfig<ActualitesBlockProps> = {
     showImages:    true,
     showExcerpt:   true,
     showAllButton: false,
+    showAllVariant: "outline",
     ...SECTION_STYLE_DEFAULTS,
   },
-  render: ({ id, title, intro, limit, layout, showImages, showExcerpt, showAllButton, background, spacing, width, puck }) => {
+  render: ({
+    id, title, intro, limit, layout, showImages, showExcerpt, showAllButton, showAllVariant,
+    background, textColor, spacing, width, puck,
+  }) => {
     const metadata            = readSiteMetadata(puck.metadata)
     const sectionBackground   = background ?? "none"
     const displayedActualites = (metadata.actualites ?? []).slice(0, resolveListingLimit(limit, DEFAULT_LIMIT))
@@ -138,13 +163,15 @@ export const actualitesBlock: ComponentConfig<ActualitesBlockProps> = {
       // The detail page's "back to site" link lands on #<block id>; scroll-mt-16 keeps the
       // title clear of the sticky h-16 navbar.
       <div id={id} className="scroll-mt-16">
-        <SiteBlockSection background={sectionBackground} spacing={spacing} width={width}>
+        <SiteBlockSection background={sectionBackground} textColor={textColor} spacing={spacing} width={width}>
           <SiteListingHeader
             title={title || metadata.ui.actualitesDefaultTitle}
             intro={intro}
             background={sectionBackground}
+            textColor={textColor}
             showAllLabel={showAllButton ? metadata.ui.actualitesSeeAll : undefined}
             showAllHref={`/${metadata.slug}/actualites`}
+            showAllVariant={showAllVariant}
             slug={metadata.slug}
           />
 
@@ -158,6 +185,7 @@ export const actualitesBlock: ComponentConfig<ActualitesBlockProps> = {
                     actualite={actualite}
                     href={actualiteHref(actualite)}
                     background={sectionBackground}
+                    textColor={textColor}
                     withImage={withImages}
                     withExcerpt={withExcerpt}
                     isCompact={false}
@@ -180,14 +208,14 @@ export const actualitesBlock: ComponentConfig<ActualitesBlockProps> = {
                   />
                 )}
                 <ActualiteMeta
-                  actualite={featuredActualite} background={sectionBackground}
+                  actualite={featuredActualite} background={sectionBackground} textColor={textColor}
                   locale={metadata.locale} featuredBadgeLabel={metadata.ui.actualitesFeaturedBadge}
                 />
                 <h3 className="text-2xl leading-tight font-bold tracking-tight text-balance group-hover:underline sm:text-3xl">
                   {featuredActualite.title}
                 </h3>
                 {withExcerpt && (
-                  <p className="line-clamp-4 text-base leading-relaxed" style={mutedTextStyle(sectionBackground)}>
+                  <p className="line-clamp-4 text-base leading-relaxed" style={mutedTextStyle(sectionBackground, textColor)}>
                     {plainTextExcerpt(featuredActualite.content)}
                   </p>
                 )}
@@ -200,6 +228,7 @@ export const actualitesBlock: ComponentConfig<ActualitesBlockProps> = {
                         actualite={actualite}
                         href={actualiteHref(actualite)}
                         background={sectionBackground}
+                        textColor={textColor}
                         withImage={withImages}
                         withExcerpt={false}
                         isCompact
@@ -226,11 +255,15 @@ export const actualitesBlock: ComponentConfig<ActualitesBlockProps> = {
                   )}
                   <div className="flex flex-1 flex-col gap-3 p-5">
                     <ActualiteMeta
-                      actualite={actualite} background={sectionBackground}
+                      actualite={actualite} background={sectionBackground} textColor={textColor}
                       locale={metadata.locale} featuredBadgeLabel={metadata.ui.actualitesFeaturedBadge}
                     />
                     <h3 className="text-lg leading-snug font-semibold group-hover:underline">{actualite.title}</h3>
-                    {withExcerpt && <ActualiteExcerpt actualite={actualite} background={sectionBackground} lineClampClass="line-clamp-3" />}
+                    {withExcerpt && (
+                      <ActualiteExcerpt
+                        actualite={actualite} background={sectionBackground} textColor={textColor} lineClampClass="line-clamp-3"
+                      />
+                    )}
                   </div>
                 </Link>
               ))}

@@ -17,10 +17,11 @@ export type TestimonialsBlockProps = SectionStyleProps & {
 type TestimonialAuthorProps = {
   testimonial: TestimonialItem
   background:  SectionStyleProps["background"]
+  textColor:   SectionStyleProps["textColor"]
   centered:    boolean
 }
 
-function TestimonialAuthor({ testimonial, background, centered }: TestimonialAuthorProps) {
+function TestimonialAuthor({ testimonial, background, textColor, centered }: TestimonialAuthorProps) {
   if (!testimonial.author && !testimonial.role) return null
   return (
     <figcaption className={cn("flex items-center gap-3", centered && "justify-center")}>
@@ -30,7 +31,7 @@ function TestimonialAuthor({ testimonial, background, centered }: TestimonialAut
       )}
       <div className={cn("flex flex-col text-sm", centered ? "items-center" : "items-start")}>
         {testimonial.author && <span className="font-semibold">{testimonial.author}</span>}
-        {testimonial.role && <span style={mutedTextStyle(background)}>{testimonial.role}</span>}
+        {testimonial.role && <span style={mutedTextStyle(background, textColor)}>{testimonial.role}</span>}
       </div>
     </figcaption>
   )
@@ -73,13 +74,13 @@ export const testimonialsBlock: ComponentConfig<TestimonialsBlockProps> = {
     ],
     ...SECTION_STYLE_DEFAULTS,
   },
-  render: ({ title, layout, items, background, spacing, width }) => {
+  render: ({ title, layout, items, background, textColor, spacing, width }) => {
     const visibleItems = (items ?? []).filter(testimonial => testimonial.quote?.trim())
     const isList       = layout === "list"
     const dividerColor = isColoredBackground(background) ? "color-mix(in srgb, currentColor 25%, transparent)" : "var(--site-border)"
 
     return (
-      <SiteBlockSection background={background} spacing={spacing} width={width}>
+      <SiteBlockSection background={background} textColor={textColor} spacing={spacing} width={width}>
         {title && (
           <h2 className={cn("mb-10 text-3xl leading-tight font-bold tracking-tight text-balance sm:text-4xl", isList && "text-center")}>{title}</h2>
         )}
@@ -92,7 +93,7 @@ export const testimonialsBlock: ComponentConfig<TestimonialsBlockProps> = {
                 style={itemIndex > 0 ? { borderTop: `1px solid ${dividerColor}` } : undefined}
               >
                 <blockquote className="text-xl leading-relaxed text-pretty sm:text-2xl">« {testimonial.quote} »</blockquote>
-                <TestimonialAuthor testimonial={testimonial} background={background} centered />
+                <TestimonialAuthor testimonial={testimonial} background={background} textColor={textColor} centered />
               </figure>
             ))}
           </div>
@@ -105,7 +106,7 @@ export const testimonialsBlock: ComponentConfig<TestimonialsBlockProps> = {
                 style={{ border: `1px solid ${dividerColor}`, borderRadius: "var(--site-radius)" }}
               >
                 <blockquote className="leading-relaxed">« {testimonial.quote} »</blockquote>
-                <TestimonialAuthor testimonial={testimonial} background={background} centered={false} />
+                <TestimonialAuthor testimonial={testimonial} background={background} textColor={textColor} centered={false} />
               </figure>
             ))}
           </div>

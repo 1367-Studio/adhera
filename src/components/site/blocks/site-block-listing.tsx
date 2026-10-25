@@ -1,8 +1,9 @@
 import type { CSSProperties } from "react"
 import type { Fields } from "@puckeditor/core"
-import { SiteButton } from "@/components/site/blocks/site-block-button"
+import { SiteButton, type SiteButtonStyle } from "@/components/site/blocks/site-block-button"
 import {
-  SECTION_STYLE_FIELDS, isColoredBackground, mutedTextStyle, type SectionBackground, type SectionStyleProps,
+  SECTION_STYLE_FIELDS, isColoredBackground, mutedTextStyle,
+  type SectionBackground, type SectionStyleProps, type SectionTextColor,
 } from "@/components/site/blocks/site-block-section"
 
 // Shared pieces of the "Contenu Formwise" listing blocks (Événements, Actualités, Boutique):
@@ -65,26 +66,31 @@ type SiteListingHeaderProps = {
   title:         string
   intro:         string | undefined
   background:    SectionBackground
+  textColor?:    SectionTextColor
   showAllLabel?: string
   /** Full app path of the listing page, e.g. `/${slug}/evenements`. */
   showAllHref?:  string
   slug:          string
+  /** Style of the "see all" button; outline follows the section text colour. */
+  showAllVariant?: SiteButtonStyle
 }
 
-export function SiteListingHeader({ title, intro, background, showAllLabel, showAllHref, slug }: SiteListingHeaderProps) {
+export function SiteListingHeader({
+  title, intro, background, textColor, showAllLabel, showAllHref, slug, showAllVariant = "outline",
+}: SiteListingHeaderProps) {
   const hasShowAll = Boolean(showAllLabel && showAllHref)
   if (!title && !intro && !hasShowAll) return null
   return (
     <div className="mb-10 flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
       <div className="flex max-w-2xl flex-col gap-3">
         {title && <h2 className="text-3xl leading-tight font-bold tracking-tight text-balance sm:text-4xl">{title}</h2>}
-        {intro && <p className="text-base leading-relaxed text-pretty whitespace-pre-line sm:text-lg" style={mutedTextStyle(background)}>{intro}</p>}
+        {intro && <p className="text-base leading-relaxed text-pretty whitespace-pre-line sm:text-lg" style={mutedTextStyle(background, textColor)}>{intro}</p>}
       </div>
       {hasShowAll && (
         <SiteButton
           link={{ label: showAllLabel ?? "", href: showAllHref ?? "" }}
           slug={slug}
-          variant="outline"
+          variant={showAllVariant}
           isResolvedHref
           className="shrink-0 self-start sm:self-auto"
         />

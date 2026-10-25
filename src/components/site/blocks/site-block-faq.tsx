@@ -51,18 +51,18 @@ export const faqBlock: ComponentConfig<FaqBlockProps> = {
     ],
     ...SECTION_STYLE_DEFAULTS,
   },
-  render: ({ title, intro, items, background, spacing, width, puck }) => {
+  render: ({ title, intro, items, background, textColor, spacing, width, puck }) => {
     const visibleItems = items.filter(faqItem => faqItem.question && String(faqItem.question).trim())
     const separatorColor = isColoredBackground(background)
       ? "color-mix(in srgb, currentColor 25%, transparent)"
       : "var(--site-border)"
 
     return (
-      <SiteBlockSection background={background} spacing={spacing} width={width}>
+      <SiteBlockSection background={background} textColor={textColor} spacing={spacing} width={width}>
         {(title || intro) && (
           <div className="mb-8 max-w-2xl">
             {title && <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">{title}</h2>}
-            {intro && <p className="mt-3 whitespace-pre-line text-base" style={mutedTextStyle(background)}>{intro}</p>}
+            {intro && <p className="mt-3 whitespace-pre-line text-base" style={mutedTextStyle(background, textColor)}>{intro}</p>}
           </div>
         )}
 
@@ -95,7 +95,7 @@ export const faqBlock: ComponentConfig<FaqBlockProps> = {
                   </svg>
                 </summary>
                 {faqItem.answer && (
-                  <p className="whitespace-pre-line pb-5 pr-9 text-sm leading-relaxed sm:text-base" style={mutedTextStyle(background)}>
+                  <p className="whitespace-pre-line pb-5 pr-9 text-sm leading-relaxed sm:text-base" style={mutedTextStyle(background, textColor)}>
                     {faqItem.answer}
                   </p>
                 )}

@@ -174,7 +174,7 @@ export const partnersBlock: ComponentConfig<PartnersBlockProps> = {
   },
   render: ({
     title, partners, grayscale, display = "grid", speed = "normal", direction = "left",
-    background, spacing, width, puck,
+    background, textColor, spacing, width, puck,
   }) => {
     const visiblePartners = partners.filter(partner => partner.logo)
     const logoClass = cn(
@@ -183,7 +183,7 @@ export const partnersBlock: ComponentConfig<PartnersBlockProps> = {
     )
 
     return (
-      <SiteBlockSection background={background} spacing={spacing} width={width}>
+      <SiteBlockSection background={background} textColor={textColor} spacing={spacing} width={width}>
         {title && <h2 className="mb-10 text-center text-2xl font-semibold tracking-tight sm:text-3xl">{title}</h2>}
 
         {visiblePartners.length === 0 && puck.isEditing && (

@@ -84,18 +84,18 @@ export const teamBlock: ComponentConfig<TeamBlockProps> = {
     photoShape: "round",
     ...SECTION_STYLE_DEFAULTS,
   },
-  render: ({ title, intro, members, columns, photoShape, background, spacing, width, puck }) => {
+  render: ({ title, intro, members, columns, photoShape, background, textColor, spacing, width, puck }) => {
     const visibleMembers = members.filter(teamMember => teamMember.name?.trim() || teamMember.photo)
     const isRound        = photoShape === "round"
     const photoClass     = cn("aspect-square w-full object-cover", isRound && "rounded-full")
     const photoStyle     = isRound ? undefined : { borderRadius: "var(--site-radius)" }
 
     return (
-      <SiteBlockSection background={background} spacing={spacing} width={width}>
+      <SiteBlockSection background={background} textColor={textColor} spacing={spacing} width={width}>
         {(title || intro) && (
           <div className="mb-10 max-w-2xl">
             {title && <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">{title}</h2>}
-            {intro && <p className="mt-3 whitespace-pre-line text-base" style={mutedTextStyle(background)}>{intro}</p>}
+            {intro && <p className="mt-3 whitespace-pre-line text-base" style={mutedTextStyle(background, textColor)}>{intro}</p>}
           </div>
         )}
 
@@ -127,12 +127,12 @@ export const teamBlock: ComponentConfig<TeamBlockProps> = {
                   )}
                 </div>
                 <p className="mt-4 text-base font-semibold">{teamMember.name}</p>
-                {teamMember.role && <p className="mt-1 text-sm" style={mutedTextStyle(background)}>{teamMember.role}</p>}
+                {teamMember.role && <p className="mt-1 text-sm" style={mutedTextStyle(background, textColor)}>{teamMember.role}</p>}
                 {teamMember.email?.trim() && (
                   <a
                     href={`mailto:${teamMember.email.trim()}`}
                     className="mt-2 break-all text-sm underline-offset-4 hover:underline"
-                    style={mutedTextStyle(background)}
+                    style={mutedTextStyle(background, textColor)}
                   >
                     {teamMember.email.trim()}
                   </a>

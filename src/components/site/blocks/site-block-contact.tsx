@@ -80,7 +80,7 @@ export const contactBlock: ComponentConfig<ContactBlockProps> = {
     showMap:     true,
     ...SECTION_STYLE_DEFAULTS,
   },
-  render: ({ title, intro, showAddress, showPhone, showEmail, hours, showMap, background, spacing, width, puck }) => {
+  render: ({ title, intro, showAddress, showPhone, showEmail, hours, showMap, background, textColor, spacing, width, puck }) => {
     const metadata = readSiteMetadata(puck.metadata)
 
     // `address` is the legacy composed string (src/lib/address.ts): shown as-is, never parsed.
@@ -101,11 +101,11 @@ export const contactBlock: ComponentConfig<ContactBlockProps> = {
     if (!hasDetails && !displayMap && !puck.isEditing) return <></>
 
     return (
-      <SiteBlockSection background={background} spacing={spacing} width={width}>
+      <SiteBlockSection background={background} textColor={textColor} spacing={spacing} width={width}>
         <div className={cn("grid gap-10", displayMap && "md:grid-cols-2")}>
           <div>
             {title && <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">{title}</h2>}
-            {intro && <p className="mt-3 whitespace-pre-line text-base" style={mutedTextStyle(background)}>{intro}</p>}
+            {intro && <p className="mt-3 whitespace-pre-line text-base" style={mutedTextStyle(background, textColor)}>{intro}</p>}
 
             {!hasContactData && puck.isEditing && (
               <div
