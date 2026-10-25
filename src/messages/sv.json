@@ -2561,7 +2561,8 @@
         "status": "Status",
         "stock": "Stock",
         "prix": "Prissättning",
-        "ventes": "Försäljning"
+        "ventes": "Försäljning",
+        "revenu": "Intäkter"
       },
       "variantsCount": "{count, plural, one {# variant} other {# varianter}}",
       "actions": {

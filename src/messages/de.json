@@ -2561,7 +2561,8 @@
         "status": "Status",
         "stock": "Bestand",
         "prix": "Preisgestaltung",
-        "ventes": "Vertrieb"
+        "ventes": "Vertrieb",
+        "revenu": "Umsatz"
       },
       "variantsCount": "{count, plural, one {# variante} other {# Varianten}}",
       "actions": {

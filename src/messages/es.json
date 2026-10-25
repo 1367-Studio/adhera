@@ -2561,7 +2561,8 @@
         "status": "Estado",
         "stock": "Stock",
         "prix": "Precio",
-        "ventes": "Ventas"
+        "ventes": "Ventas",
+        "revenu": "Ingresos"
       },
       "variantsCount": "{count, plural, one {# variante} other {# variantes}}",
       "actions": {

@@ -48,14 +48,10 @@ export type TopSellingProduct = {
 
 export const TOP_SELLING_PRODUCTS_LIMIT = 4
 
-// Ranks products by units sold (tie-break: revenue, then id for a stable order). Revenue is
-// quantity × unitPrice (cents) — shipping is not attributed to any product, and there is no
-// discount feature to subtract. A line left at quantity 0 by a partial refund contributes
-// nothing, and a product with nothing left sold is dropped rather than shown as a 0 tile.
-export function rankTopSellingProducts(
-  salesGroups: ProductSalesGroup[],
-  limit: number = TOP_SELLING_PRODUCTS_LIMIT,
-): TopSellingProduct[] {
+// Units sold and revenue per product, folding the per-price groups back together. Shared by
+// the top-products tiles (rankTopSellingProducts) and the Produits table's « Ventes » /
+// « Revenu » columns, so a product shows the same figures in both places.
+export function productSalesTotals(salesGroups: ProductSalesGroup[]): Map<string, TopSellingProduct> {
   const totalsByProduct = new Map<string, TopSellingProduct>()
   for (const salesGroup of salesGroups) {
     const productTotals = totalsByProduct.get(salesGroup.produitId)
@@ -64,8 +60,18 @@ export function rankTopSellingProducts(
     productTotals.revenueCents += salesGroup.quantitySold * salesGroup.unitPrice
     totalsByProduct.set(salesGroup.produitId, productTotals)
   }
+  return totalsByProduct
+}
 
-  return [...totalsByProduct.values()]
+// Ranks products by units sold (tie-break: revenue, then id for a stable order). Revenue is
+// quantity × unitPrice (cents) — shipping is not attributed to any product, and there is no
+// discount feature to subtract. A line left at quantity 0 by a partial refund contributes
+// nothing, and a product with nothing left sold is dropped rather than shown as a 0 tile.
+export function rankTopSellingProducts(
+  salesGroups: ProductSalesGroup[],
+  limit: number = TOP_SELLING_PRODUCTS_LIMIT,
+): TopSellingProduct[] {
+  return [...productSalesTotals(salesGroups).values()]
     .filter(productTotals => productTotals.quantitySold > 0)
     .sort((first, second) =>
       second.quantitySold - first.quantitySold

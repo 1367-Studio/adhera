@@ -2561,7 +2561,8 @@
         "status": "Status",
         "stock": "Materieel",
         "prix": "Prijsstelling",
-        "ventes": "Verkoop"
+        "ventes": "Verkoop",
+        "revenu": "Omzet"
       },
       "variantsCount": "{count, plural, one {# variant} other {# varianten}}",
       "actions": {

@@ -45,8 +45,10 @@ type Produit = {
   createdAt:   string
   variantes:   Variante[]
   _count:      { commandeItems: number }
-  // Units sold on PAID commandes, net of refunds — same figure as the top-products tiles.
+  // Units sold and revenue (cents) on PAID commandes, net of refunds — same figures as the
+  // top-products tiles.
   quantitySold: number
+  revenueCents: number
 }
 
 type CommandeItem = {
@@ -411,6 +413,12 @@ function BoutiquePageInner() {
       cell: (p) => <span className="text-sm tabular-nums">{p.quantitySold}</span>,
     },
     {
+      key:    "revenu",
+      header: t("view.produitColumns.revenu"),
+      className: "text-right",
+      cell: (p) => <span className="text-sm tabular-nums">{formatEuroCents(p.revenueCents)}</span>,
+    },
+    {
       key:    "actions",
       header: "",
       className: "w-10",
@@ -536,6 +544,15 @@ function BoutiquePageInner() {
   const kpiLabelKeys   = KPI_LABEL_KEYS[statusFilter] ?? KPI_LABEL_KEYS.ALL
   const topProducts  = produitStats?.topProducts ?? []
 
+  // Keeps ?tab= in the URL so a refresh or a shared link reopens the same tab — same as the
+  // Dons page's changeTab.
+  function changeTab(nextTab: Tab) {
+    setTab(nextTab)
+    const params = new URLSearchParams(searchParams.toString())
+    params.set("tab", nextTab)
+    router.replace(`/dashboard/boutique?${params}`, { scroll: false })
+  }
+
   return (
     <div className="space-y-4">
       <PageHeader
@@ -564,7 +581,7 @@ function BoutiquePageInner() {
       />
 
       {/* Tabs */}
-      <Tabs value={tab} onValueChange={(v) => setTab(v as Tab)}>
+      <Tabs value={tab} onValueChange={(v) => changeTab(v as Tab)}>
         <TabsList>
           {([
             { key: "produits",  label: t("view.tabs.produits"),  icon: PackageIcon     },
@@ -589,7 +606,8 @@ function BoutiquePageInner() {
               value={formatEuroCents(product.revenueCents)}
               detail={t("view.unitsSold", { count: product.quantitySold })}
               icon={PackageIcon}
-              href={`/dashboard/boutique/${product.produitId}`}
+              // The tile summarises sales, so it opens the orders, not the product sheet.
+              onClick={() => changeTab("commandes")}
               isLoading={false}
             />
           ))}

@@ -2561,7 +2561,8 @@
         "status": "Statusas",
         "stock": "Gyvuliai",
         "prix": "Kainodara",
-        "ventes": "Pardavimai"
+        "ventes": "Pardavimai",
+        "revenu": "Pajamos"
       },
       "variantsCount": "{count, plural, one {# variantas} other {# variantai}}",
       "actions": {

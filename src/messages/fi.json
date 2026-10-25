@@ -2561,7 +2561,8 @@
         "status": "Tila",
         "stock": "Varasto",
         "prix": "Hinnoittelu",
-        "ventes": "Myynti"
+        "ventes": "Myynti",
+        "revenu": "Tulot"
       },
       "variantsCount": "{count, plural, one {# variantti} other {# variantit}}",
       "actions": {

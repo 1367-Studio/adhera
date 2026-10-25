@@ -2561,7 +2561,8 @@
         "status": "Статус",
         "stock": "Запаси",
         "prix": "Ценообразуване",
-        "ventes": "Продажби"
+        "ventes": "Продажби",
+        "revenu": "Приходи"
       },
       "variantsCount": "{count, plural, one {# вариант} other {# варианти}}",
       "actions": {

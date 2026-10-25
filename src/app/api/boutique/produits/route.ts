@@ -5,7 +5,7 @@ import { guardModule } from "@/lib/auth/require-module"
 import { writeActivityLog } from "@/lib/activity-log"
 import { withAdminAuth } from "@/lib/api-wrapper"
 import { assertIncomeCategory } from "@/lib/validate-finance-category"
-import { paidSalesItemWhere } from "@/lib/boutique/sales-stats"
+import { paidSalesItemWhere, productSalesTotals } from "@/lib/boutique/sales-stats"
 
 const varianteSchema = z.object({
   label:       z.string().trim().min(1).max(100),
@@ -42,19 +42,26 @@ export const GET = withAdminAuth(async (req, ctx) => {
         _count:    { select: { commandeItems: true } },
       },
     }),
+    // By unit price too, so revenue (quantity × unitPrice) can be rebuilt per product.
     prisma.boutiqueCommandeItem.groupBy({
-      by:    ["produitId"],
+      by:    ["produitId", "unitPrice"],
       where: paidSalesItemWhere(ctx.associationId),
       _sum:  { quantity: true },
     }),
   ])
 
-  // Units sold, same rule as the top-products tiles (api/boutique/produits/stats).
-  const quantitySoldById = new Map(salesGroups.map(salesGroup => [salesGroup.produitId, salesGroup._sum.quantity ?? 0]))
+  // Units sold and revenue, same rule as the top-products tiles (api/boutique/produits/stats).
+  const salesTotalsById = productSalesTotals(salesGroups.map(salesGroup => ({
+    produitId:    salesGroup.produitId,
+    unitPrice:    salesGroup.unitPrice,
+    quantitySold: salesGroup._sum.quantity ?? 0,
+  })))
 
   return NextResponse.json(produits.map(produit => ({
     ...produit,
-    quantitySold: quantitySoldById.get(produit.id) ?? 0,
+    quantitySold: salesTotalsById.get(produit.id)?.quantitySold ?? 0,
+    // Integer cents, like every other boutique amount.
+    revenueCents: salesTotalsById.get(produit.id)?.revenueCents ?? 0,
   })))
 }, { area: "boutique" })
 

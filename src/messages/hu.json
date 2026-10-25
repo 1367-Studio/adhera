@@ -2561,7 +2561,8 @@
         "status": "Státusz",
         "stock": "Készlet",
         "prix": "Árazás",
-        "ventes": "Eladások"
+        "ventes": "Eladások",
+        "revenu": "Bevétel"
       },
       "variantsCount": "{count, plural, one {# változat} other {# változatok}}",
       "actions": {

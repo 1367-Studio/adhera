@@ -2561,7 +2561,8 @@
         "status": "Status",
         "stock": "Materiel",
         "prix": "Prisfastsættelse",
-        "ventes": "Salg"
+        "ventes": "Salg",
+        "revenu": "Omsætning"
       },
       "variantsCount": "{count, plural, one {# variant} other {# varianter}}",
       "actions": {

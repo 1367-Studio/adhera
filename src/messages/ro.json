@@ -2561,7 +2561,8 @@
         "status": "Statut",
         "stock": "Stoc",
         "prix": "Prețuri",
-        "ventes": "Vânzări"
+        "ventes": "Vânzări",
+        "revenu": "Venituri"
       },
       "variantsCount": "{count, plural, one {# variantă} other {# variante}}",
       "actions": {

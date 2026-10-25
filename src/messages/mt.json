@@ -2561,7 +2561,8 @@
         "status": "Status",
         "stock": "Stock",
         "prix": "Prezzijiet",
-        "ventes": "Bejgħ"
+        "ventes": "Bejgħ",
+        "revenu": "Dħul"
       },
       "variantsCount": "{count, plural, one {# varjant} other {# varjanti}}",
       "actions": {

@@ -2561,7 +2561,8 @@
         "status": "Stádas",
         "stock": "Stoc",
         "prix": "Praghsáil",
-        "ventes": "Díolacháin"
+        "ventes": "Díolacháin",
+        "revenu": "Ioncam"
       },
       "variantsCount": "{count, plural, one {# leagan} other {# leaganacha}}",
       "actions": {

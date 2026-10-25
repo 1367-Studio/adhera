@@ -2561,7 +2561,8 @@
         "status": "Κατάσταση",
         "stock": "Στοκ",
         "prix": "Τιμοκατάλογος",
-        "ventes": "Πωλήσεις"
+        "ventes": "Πωλήσεις",
+        "revenu": "Έσοδα"
       },
       "variantsCount": "{count, plural, one {# παραλλαγή} other {# παραλλαγές}}",
       "actions": {

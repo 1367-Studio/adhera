@@ -2561,7 +2561,8 @@
         "status": "Status",
         "stock": "Zalihe",
         "prix": "Cijene",
-        "ventes": "Prodaja"
+        "ventes": "Prodaja",
+        "revenu": "Prihod"
       },
       "variantsCount": "{count, plural, one {# varijanta} other {# varijante}}",
       "actions": {

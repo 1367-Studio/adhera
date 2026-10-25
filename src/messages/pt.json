@@ -2574,7 +2574,8 @@
         "status": "Status",
         "stock": "Estoque",
         "prix": "Preço",
-        "ventes": "Vendas"
+        "ventes": "Vendas",
+        "revenu": "Receita"
       },
       "variantsCount": "{count, plural, one {# variante} other {# variantes}}",
       "actions": {

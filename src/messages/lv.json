@@ -2561,7 +2561,8 @@
         "status": "Statuss",
         "stock": "Krājumi",
         "prix": "Cenas",
-        "ventes": "Pārdošana"
+        "ventes": "Pārdošana",
+        "revenu": "Ieņēmumi"
       },
       "variantsCount": "{count, plural, one {# variants} other {# varianti}}",
       "actions": {

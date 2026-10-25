@@ -2561,7 +2561,8 @@
         "status": "Status",
         "stock": "Vozni del",
         "prix": "Določanje cen",
-        "ventes": "Prodaja"
+        "ventes": "Prodaja",
+        "revenu": "Prihodki"
       },
       "variantsCount": "{count, plural, one {# različica} other {# različice}}",
       "actions": {

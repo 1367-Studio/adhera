@@ -12,6 +12,9 @@ interface Props {
   // Without href the tile is a plain figure (e.g. the Dons page totals): same look, but no
   // link, hover or arrow — nothing to navigate to.
   href?:     string
+  // In-page action instead of navigation (e.g. switching tab) — same look as a linked tile.
+  // Takes precedence over href.
+  onClick?:  () => void
   accent?:   string | null
   alert?:    boolean
   isLoading: boolean
@@ -27,7 +30,7 @@ interface Props {
 // still reads as part of the same row instead of standing out as a different component.
 const ICON_TINT = "#023D9D"
 
-export function StatTile({ label, value, icon: Icon, href, alert, isLoading, detail }: Props) {
+export function StatTile({ label, value, icon: Icon, href, onClick, alert, isLoading, detail }: Props) {
   const valueContent = (
     <span className={cn("text-[1.75rem] leading-none font-medium tabular-nums", isLoading && "animate-pulse text-muted-foreground")}>
       {isLoading ? "…" : value}
@@ -57,17 +60,25 @@ export function StatTile({ label, value, icon: Icon, href, alert, isLoading, det
           )
           : valueContent
         }
-        {href && (
+        {(href || onClick) && (
           <ArrowRightIcon className="size-4 text-muted-foreground/40 opacity-0 transition-opacity group-hover:opacity-100" />
         )}
       </div>
     </>
   )
   const tileClassName = "flex flex-col justify-between gap-3 rounded-lg bg-muted/60 p-6"
+  const interactiveClassName = cn("group transition-colors hover:bg-muted", tileClassName)
 
+  if (onClick) {
+    return (
+      <button type="button" onClick={onClick} className={cn(interactiveClassName, "w-full text-left")}>
+        {tileContent}
+      </button>
+    )
+  }
   if (!href) return <div className={tileClassName}>{tileContent}</div>
   return (
-    <Link href={href} className={cn("group transition-colors hover:bg-muted", tileClassName)}>
+    <Link href={href} className={interactiveClassName}>
       {tileContent}
     </Link>
   )

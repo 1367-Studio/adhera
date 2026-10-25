@@ -2561,7 +2561,8 @@
         "status": "Staatus",
         "stock": "Stock",
         "prix": "Hinnakujundus",
-        "ventes": "Müük"
+        "ventes": "Müük",
+        "revenu": "Tulu"
       },
       "variantsCount": "{count, plural, one {# variant} other {# variandid}}",
       "actions": {

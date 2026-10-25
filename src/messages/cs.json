@@ -2561,7 +2561,8 @@
         "status": "Stav",
         "stock": "Vozový park",
         "prix": "Ceny",
-        "ventes": "Prodeje"
+        "ventes": "Prodeje",
+        "revenu": "Tržby"
       },
       "variantsCount": "{count, plural, one {# varianta} other {# varianty}}",
       "actions": {
