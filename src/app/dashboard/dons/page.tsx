@@ -136,10 +136,9 @@ function DonsPageInner() {
     }
   }
 
-  // Defaults to "dons" when a donId is present without an explicit tab — covers notification
-  // and e-mail links already sent/stored before tab=dons was added to the link (see notify.ts),
-  // not just newly-generated ones.
-  const initialTab = (searchParams.get("tab") as Tab) ?? (searchParams.get("donId") ? "dons" : "formulaires")
+  // "dons" (the first tab) unless the URL names another one — also covers notification and
+  // e-mail links that carry a donId but predate tab=dons (see notify.ts).
+  const initialTab = (searchParams.get("tab") as Tab) ?? "dons"
   const [tab, setTab] = useState<Tab>(["dons","formulaires",  "recus"].includes(initialTab) ? initialTab : "dons")
 
   // Hydrated once from the URL so a refresh or a shared link keeps the "dons" tab's filters
