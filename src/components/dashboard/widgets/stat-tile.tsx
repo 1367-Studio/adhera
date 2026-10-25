@@ -22,6 +22,9 @@ interface Props {
   // Optional secondary line under the value (e.g. « 12 vendus » on the Boutique top
   // products) — muted, so the value stays the tile's one figure.
   detail?:   React.ReactNode
+  // A negative amount (deficit, expenses) — the value turns destructive, the only color a
+  // figure ever takes, same rule the Finances page always had.
+  isNegative?: boolean
 }
 
 // Every tile's icon box shares this exact tint (Figma dashboard mockup: all 4 KPI
@@ -30,9 +33,13 @@ interface Props {
 // still reads as part of the same row instead of standing out as a different component.
 const ICON_TINT = "#023D9D"
 
-export function StatTile({ label, value, icon: Icon, href, onClick, alert, isLoading, detail }: Props) {
+export function StatTile({ label, value, icon: Icon, href, onClick, alert, isLoading, detail, isNegative }: Props) {
   const valueContent = (
-    <span className={cn("text-[1.75rem] leading-none font-medium tabular-nums", isLoading && "animate-pulse text-muted-foreground")}>
+    <span className={cn(
+      "text-[1.75rem] leading-none font-medium tabular-nums",
+      isNegative && !isLoading && "text-destructive",
+      isLoading && "animate-pulse text-muted-foreground",
+    )}>
       {isLoading ? "…" : value}
     </span>
   )

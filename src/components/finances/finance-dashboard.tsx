@@ -5,7 +5,10 @@ import { useQuery } from "@tanstack/react-query"
 import { useTranslations } from "next-intl"
 import { PageHeader } from "@/components/ui/page-header"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { cn } from "@/lib/utils"
+import {
+  TrendUpIcon, TrendDownIcon, ScalesIcon, PiggyBankIcon, ArrowsLeftRightIcon, ReceiptIcon,
+} from "@phosphor-icons/react/dist/ssr"
+import { StatTile } from "@/components/dashboard/widgets/stat-tile"
 
 type Stats = {
   totalIncomes:     number
@@ -54,38 +57,10 @@ async function fetchStats(year: number): Promise<Stats> {
   }
 }
 
-// Key figures as plain typography (CLAUDE.md §8): label over value, no card per statistic,
-// no icon tiles, no per-metric color families — only negative values get the destructive color.
-function StatItem({ title, value, prefix = "" }: {
-  title:   string
-  value:   number
-  prefix?: string
-}) {
-  const fmt = (n: number) => n.toLocaleString("fr-FR", { style: "currency", currency: "EUR" })
-  return (
-    <div>
-      <dt className="text-xs text-muted-foreground">{title}</dt>
-      <dd className={cn("mt-1 text-xl font-semibold tabular-nums", value < 0 && "text-destructive")}>
-        {prefix}{fmt(value)}
-      </dd>
-    </div>
-  )
-}
-
-function CountItem({ title, value, label }: {
-  title: string
-  value: number
-  label: string
-}) {
-  return (
-    <div>
-      <dt className="text-xs text-muted-foreground">{title}</dt>
-      <dd className="mt-1 flex items-baseline gap-1.5">
-        <span className="text-xl font-semibold tabular-nums">{value}</span>
-        <span className="text-xs text-muted-foreground">{label}</span>
-      </dd>
-    </div>
-  )
+// Signed amount: "+" on gains, the minus sign from toLocaleString on losses.
+function formatSignedEuros(amount: number, showPlusSign: boolean): string {
+  const formattedAmount = amount.toLocaleString("fr-FR", { style: "currency", currency: "EUR" })
+  return showPlusSign && amount >= 0 ? `+${formattedAmount}` : formattedAmount
 }
 
 export function FinanceDashboard() {
@@ -115,25 +90,57 @@ export function FinanceDashboard() {
         }
       />
 
-      {isLoading ? (
-        <div className="grid grid-cols-2 gap-x-8 gap-y-6 lg:grid-cols-3">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="space-y-2">
-              <div className="h-3 w-24 animate-pulse rounded bg-muted" />
-              <div className="h-6 w-32 animate-pulse rounded bg-muted" />
-            </div>
-          ))}
-        </div>
-      ) : (
-        <dl className="grid grid-cols-2 gap-x-8 gap-y-6 lg:grid-cols-3">
-          <StatItem title={t("incomeCard", { year })} value={s.totalIncomes} prefix="+" />
-          <StatItem title={t("expensesCard", { year })} value={-s.totalExpenses} />
-          <StatItem title={t("resultCard", { year })} value={s.result} prefix={s.result >= 0 ? "+" : ""} />
-          <StatItem title={t("cumulativeResultCard")} value={s.cumulativeResult} prefix={s.cumulativeResult >= 0 ? "+" : ""} />
-          <CountItem title={t("unmatchedTitle")} value={s.unmatched} label={t("unmatchedLabel")} />
-          <CountItem title={t("pendingReceiptsTitle")} value={s.pendingReceipts} label={t("pendingReceiptsLabel")} />
-        </dl>
-      )}
+      {/* Same StatTile as the dashboard home, Dons and Boutique — each tile opens the page
+          where that figure is worked on. Only negative amounts take a color (destructive). */}
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <StatTile
+          label={t("incomeCard", { year })}
+          value={formatSignedEuros(s.totalIncomes, true)}
+          icon={TrendUpIcon}
+          href="/dashboard/finances/recettes"
+          isLoading={isLoading}
+        />
+        <StatTile
+          label={t("expensesCard", { year })}
+          value={formatSignedEuros(-s.totalExpenses, false)}
+          icon={TrendDownIcon}
+          href="/dashboard/finances/depenses"
+          isNegative={s.totalExpenses > 0}
+          isLoading={isLoading}
+        />
+        <StatTile
+          label={t("resultCard", { year })}
+          value={formatSignedEuros(s.result, true)}
+          icon={ScalesIcon}
+          href="/dashboard/finances/rapports/compte-de-resultat"
+          isNegative={s.result < 0}
+          isLoading={isLoading}
+        />
+        <StatTile
+          label={t("cumulativeResultCard")}
+          value={formatSignedEuros(s.cumulativeResult, true)}
+          icon={PiggyBankIcon}
+          href="/dashboard/finances/rapports/bilan"
+          isNegative={s.cumulativeResult < 0}
+          isLoading={isLoading}
+        />
+        <StatTile
+          label={t("unmatchedTitle")}
+          value={s.unmatched}
+          detail={t("unmatchedLabel")}
+          icon={ArrowsLeftRightIcon}
+          href="/dashboard/finances/conciliation"
+          isLoading={isLoading}
+        />
+        <StatTile
+          label={t("pendingReceiptsTitle")}
+          value={s.pendingReceipts}
+          detail={t("pendingReceiptsLabel")}
+          icon={ReceiptIcon}
+          href="/dashboard/finances/depenses"
+          isLoading={isLoading}
+        />
+      </div>
     </div>
   )
 }
