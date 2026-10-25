@@ -99,7 +99,7 @@ const currentYear = new Date().getFullYear()
 const yearOptions = Array.from({ length: 5 }, (_, i) => currentYear - i)
 const PAGE_SIZE   = 25
 
-type Tab = "formulaires" | "dons" | "recus"
+type Tab =  "dons" | "formulaires" | "recus"
 
 export default function DonsPage() {
   return (
@@ -701,8 +701,8 @@ function DonsPageInner() {
       <Tabs value={tab} onValueChange={(v) => changeTab(v as Tab)}>
         <TabsList>
           {([
-            { key: "formulaires", label: t("tabs.forms"),     icon: FileTextIcon },
             { key: "dons",        label: t("tabs.donations"), icon: HandshakeIcon },
+            { key: "formulaires", label: t("tabs.forms"),     icon: FileTextIcon },
             { key: "recus",       label: t("tabs.receipts"),  icon: ReceiptIcon },
           ] as const).map(tabOption => (
             <TabsTrigger key={tabOption.key} value={tabOption.key} className="px-4">

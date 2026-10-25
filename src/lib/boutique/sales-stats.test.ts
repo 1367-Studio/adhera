@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest"
 import {
+  kpiStatusForFilter,
   parseCommandeStatus,
   rankTopSellingProducts,
-  salesStatusForFilter,
   type CommandeStatus,
   type ProductSalesGroup,
 } from "@/lib/boutique/sales-stats"
@@ -16,16 +16,14 @@ type CommandeFixture = {
 }
 
 // What the database does for us in production, reproduced in memory: the commandes list's
-// aggregate (count + sum of totalAmount where status = salesStatusForFilter(filter)) and the
+// aggregate (count + sum of totalAmount where status = kpiStatusForFilter(filter)) and the
 // stats route's groupBy (items of PAID commandes grouped by product and unit price).
-function aggregateSales(commandes: CommandeFixture[], statusFilter?: CommandeStatus) {
-  const salesStatus = salesStatusForFilter(statusFilter)
-  const matchingCommandes = salesStatus === null
-    ? []
-    : commandes.filter(commande => commande.status === salesStatus)
+function aggregateKpis(commandes: CommandeFixture[], statusFilter?: CommandeStatus) {
+  const kpiStatus = kpiStatusForFilter(statusFilter)
+  const matchingCommandes = commandes.filter(commande => commande.status === kpiStatus)
   return {
-    salesCount:        matchingCommandes.length,
-    revenueTotalCents: matchingCommandes.reduce((sum, commande) => sum + commande.totalAmount, 0),
+    kpiCount:       matchingCommandes.length,
+    kpiAmountCents: matchingCommandes.reduce((sum, commande) => sum + commande.totalAmount, 0),
   }
 }
 
@@ -86,15 +84,15 @@ const allOrders = [
   pendingOrder, partiallyRefundedOrder, fullyRefundedOrder,
 ]
 
-describe("salesStatusForFilter", () => {
-  it("counts PAID commandes when no status filter or the PAID filter is active", () => {
-    expect(salesStatusForFilter(undefined)).toBe("PAID")
-    expect(salesStatusForFilter("PAID")).toBe("PAID")
+describe("kpiStatusForFilter", () => {
+  it("counts PAID commandes (sales) when no status filter or the PAID filter is active", () => {
+    expect(kpiStatusForFilter(undefined)).toBe("PAID")
+    expect(kpiStatusForFilter("PAID")).toBe("PAID")
   })
 
-  it("counts nothing when the list is filtered on a non-paid status", () => {
-    expect(salesStatusForFilter("PENDING")).toBeNull()
-    expect(salesStatusForFilter("CANCELLED")).toBeNull()
+  it("follows a non-paid status filter, so the cards describe the filtered list", () => {
+    expect(kpiStatusForFilter("PENDING")).toBe("PENDING")
+    expect(kpiStatusForFilter("CANCELLED")).toBe("CANCELLED")
   })
 })
 
@@ -112,20 +110,28 @@ describe("parseCommandeStatus", () => {
 describe("commandes KPIs", () => {
   it("counts each PAID commande once and sums its net totalAmount (shipping included)", () => {
     // online + manual + multi-product + partially refunded = 4 sales.
-    expect(aggregateSales(allOrders)).toEqual({
-      salesCount:        4,
-      revenueTotalCents: 2490 + 1500 + 7000 + 1500,
+    expect(aggregateKpis(allOrders)).toEqual({
+      kpiCount:       4,
+      kpiAmountCents: 2490 + 1500 + 7000 + 1500,
     })
   })
 
-  it("intersects with the status filter", () => {
-    expect(aggregateSales(allOrders, "PAID")).toEqual(aggregateSales(allOrders))
-    expect(aggregateSales(allOrders, "PENDING")).toEqual({ salesCount: 0, revenueTotalCents: 0 })
-    expect(aggregateSales(allOrders, "CANCELLED")).toEqual({ salesCount: 0, revenueTotalCents: 0 })
+  it("gives the same sales figures with the PAID filter as with no filter", () => {
+    expect(aggregateKpis(allOrders, "PAID")).toEqual(aggregateKpis(allOrders))
+  })
+
+  it("counts and sums the listed commandes under the pending filter", () => {
+    expect(aggregateKpis(allOrders, "PENDING")).toEqual({ kpiCount: 1, kpiAmountCents: 4000 })
+  })
+
+  // Cancelled + fully refunded (CANCELLED, totalAmount lowered to 0) — the sum is exactly
+  // what the list's Total column shows for those rows.
+  it("counts and sums the listed commandes under the cancelled filter", () => {
+    expect(aggregateKpis(allOrders, "CANCELLED")).toEqual({ kpiCount: 2, kpiAmountCents: 1500 })
   })
 
   it("is 0 with no commandes", () => {
-    expect(aggregateSales([])).toEqual({ salesCount: 0, revenueTotalCents: 0 })
+    expect(aggregateKpis([])).toEqual({ kpiCount: 0, kpiAmountCents: 0 })
   })
 })
 

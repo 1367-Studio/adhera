@@ -78,13 +78,22 @@ type Commande = {
   shippingCarrierLabel: string | null
 }
 
-// Response of GET /api/boutique/commandes — the sales KPIs cover every commande matching the
-// filters, not just the rows of this page (amounts in cents, like Commande.totalAmount).
+// Response of GET /api/boutique/commandes — the card figures cover every commande matching
+// the filters, not just the rows of this page (amounts in cents, like Commande.totalAmount).
 type CommandeListResult = {
-  data:              Commande[]
-  total:             number
-  salesCount:        number
-  revenueTotalCents: number
+  data:           Commande[]
+  total:          number
+  kpiCount:       number
+  kpiAmountCents: number
+}
+
+// Card labels per status filter: sales/revenue for "Toutes" and "Payée" (both count PAID
+// commandes), otherwise what the filtered list contains — see kpiStatusForFilter.
+const KPI_LABEL_KEYS: Record<string, { count: string; amount: string }> = {
+  ALL:       { count: "view.salesCountLabel",      amount: "view.revenueTotalLabel" },
+  PAID:      { count: "view.salesCountLabel",      amount: "view.revenueTotalLabel" },
+  PENDING:   { count: "view.pendingCountLabel",    amount: "view.pendingAmountLabel" },
+  CANCELLED: { count: "view.cancelledCountLabel",  amount: "view.cancelledAmountLabel" },
 }
 
 // GET /api/boutique/produits/stats — best sellers on PAID commandes, at most 4, already ranked.
@@ -522,11 +531,9 @@ function BoutiquePageInner() {
   ]
 
   const commandes = commandeResult?.data ?? []
-  const salesCount        = commandeResult?.salesCount ?? 0
-  const revenueTotalCents = commandeResult?.revenueTotalCents ?? 0
-  // Same convention as the Dons page's originSuffix: tells the admin the KPIs are scoped to
-  // the selected status (e.g. « En attente » → 0 sales, since only PAID commandes count).
-  const statusSuffix = statusFilter !== "ALL" ? ` · ${STATUS_COMMANDE_LABEL[statusFilter as Commande["status"]]}` : ""
+  const kpiCount       = commandeResult?.kpiCount ?? 0
+  const kpiAmountCents = commandeResult?.kpiAmountCents ?? 0
+  const kpiLabelKeys   = KPI_LABEL_KEYS[statusFilter] ?? KPI_LABEL_KEYS.ALL
   const topProducts  = produitStats?.topProducts ?? []
 
   return (
@@ -601,18 +608,19 @@ function BoutiquePageInner() {
 
       {tab === "commandes" && (
         <>
-          {/* KPIs follow the status filter (the list's only filter): PAID commandes only,
-              online and manual alike, net of refunds — see salesStatusForFilter. */}
+          {/* Cards follow the status filter (the list's only filter): sales and revenue (PAID
+              commandes, online and manual alike, net of refunds) for "Toutes"/"Payée", else
+              the count and total of the commandes listed — see kpiStatusForFilter. */}
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <StatTile
-              label={`${t("view.salesCountLabel")}${statusSuffix}`}
-              value={salesCount}
+              label={t(kpiLabelKeys.count)}
+              value={kpiCount}
               icon={ShoppingCartIcon}
               isLoading={loadingCommandes}
             />
             <StatTile
-              label={`${t("view.revenueTotalLabel")}${statusSuffix}`}
-              value={formatEuroCents(revenueTotalCents)}
+              label={t(kpiLabelKeys.amount)}
+              value={formatEuroCents(kpiAmountCents)}
               icon={TrendUpIcon}
               isLoading={loadingCommandes}
             />

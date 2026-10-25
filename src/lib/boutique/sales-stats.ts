@@ -1,7 +1,7 @@
-// Boutique sales KPIs (dashboard Boutique page) — the rules both tabs share, kept pure so
-// they can be unit-tested without a database. The queries themselves live in
-// api/boutique/commandes (sales count + revenue) and api/boutique/produits/stats (top
-// products); they only feed these helpers.
+// Boutique KPIs (dashboard Boutique page) — the rules both tabs share, kept pure so they can
+// be unit-tested without a database. The queries themselves live in api/boutique/commandes
+// (Commandes tab cards) and api/boutique/produits/stats (top products); they only feed these
+// helpers.
 //
 // A "sale" is a PAID commande, online (STRIPE) or manual alike, whatever its source. Refunds
 // (api/boutique/commandes/[id]/refund) rewrite the order in place — item quantities and
@@ -22,11 +22,13 @@ export function parseCommandeStatus(value: string | null | undefined): CommandeS
   return COMMANDE_STATUSES.find(status => status === value)
 }
 
-// The KPIs only ever count PAID commandes, intersected with the list's status filter: no
-// filter or "Payée" counts the PAID ones, while "En attente"/"Annulée" leaves nothing to
-// count (null = skip the query, the KPIs are 0).
-export function salesStatusForFilter(statusFilter: CommandeStatus | undefined): "PAID" | null {
-  return statusFilter === undefined || statusFilter === "PAID" ? "PAID" : null
+// Which commandes the Commandes tab cards count (number + sum of totalAmount): the selected
+// status filter, or PAID when "Toutes" is selected. Only the PAID figures are sales and
+// revenue (« Nombre de ventes » / « Revenu total »); with "En attente" or "Annulée" the cards
+// describe what the filtered list contains (« Commandes en attente » / « Montant annulé »…),
+// so they always agree with the rows and the list's Total column.
+export function kpiStatusForFilter(statusFilter: CommandeStatus | undefined): CommandeStatus {
+  return statusFilter ?? "PAID"
 }
 
 // One row per (product, unit price) pair, as returned by a groupBy over the items of PAID
