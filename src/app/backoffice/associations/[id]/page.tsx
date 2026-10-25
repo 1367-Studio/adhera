@@ -1,6 +1,7 @@
 import { notFound }  from "next/navigation"
 import Link          from "next/link"
 import type { Metadata } from "next"
+import type { ReactNode } from "react"
 import { prisma }    from "@/lib/prisma/client"
 import { Badge }     from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -10,6 +11,7 @@ import { ModuleToggles }    from "@/components/backoffice/module-toggles"
 import { CustomMemberLimitEditor } from "@/components/backoffice/custom-member-limit-editor"
 import { CustomBrandingEditor } from "@/components/backoffice/custom-branding-editor"
 import { TwoFactorAdminReset } from "@/components/backoffice/two-factor-admin-reset"
+import { LastActivityDate } from "@/components/backoffice/last-activity-date"
 import { parseModules }     from "@/lib/modules"
 import { getPricingInfo }   from "@/lib/stripe"
 import { memberLimitForPlan } from "@/lib/plan-limits"
@@ -65,7 +67,7 @@ async function getAssociation(id: string) {
   })
 }
 
-function Row({ label, value }: { label: string; value?: string | null }) {
+function Row({ label, value }: { label: string; value?: ReactNode }) {
   return (
     <div className="flex gap-2">
       <span className="text-muted-foreground w-40 shrink-0">{label}</span>
@@ -91,14 +93,28 @@ export default async function AssociationDetailPage({ params }: { params: Promis
   const pricing       = await getPricingInfo()
   const standardLimit = memberLimitForPlan(assoc.plan, pricing)
 
+  const staffUsers = await prisma.user.findMany({
+    where:  { associationId: id, deletedAt: null, role: { not: "MEMBRE" } },
+    select: {
+      id: true, name: true, email: true, role: true, twoFactorEnabled: true,
+      lastLoginAt: true, lastSeenAt: true,
+    },
+    orderBy: { email: "asc" },
+  })
+
+  // Most recent activity of any staff user — whether the association itself is using
+  // Formwise, as opposed to its members browsing the portal.
+  const staffLastSeenAt = staffUsers.reduce<Date | null>(
+    (latest, staffUser) => staffUser.lastSeenAt && (!latest || staffUser.lastSeenAt > latest) ? staffUser.lastSeenAt : latest,
+    null,
+  )
+
   // Support recovery path for an account locked out of its own 2FA (lost authenticator +
   // exhausted backup codes) — see adminDisableTwoFactor's doc comment in
   // src/lib/auth/two-factor.ts. Only staff can have 2FA enabled in the first place.
-  const staffWithTwoFactor = await prisma.user.findMany({
-    where:  { associationId: id, deletedAt: null, role: { not: "MEMBRE" }, twoFactorEnabled: true },
-    select: { id: true, name: true, email: true, role: true },
-    orderBy: { email: "asc" },
-  })
+  const staffWithTwoFactor = staffUsers
+    .filter(staffUser => staffUser.twoFactorEnabled)
+    .map(({ id: staffUserId, name, email, role }) => ({ id: staffUserId, name, email, role }))
 
   return (
     <div className="space-y-6 mt-4">
@@ -152,6 +168,27 @@ export default async function AssociationDetailPage({ params }: { params: Promis
             <Row label="Pays"       value={assoc.country} />
             <Row label="Slug"       value={`/${assoc.slug}`} />
             <Row label="Créée le"   value={new Date(assoc.createdAt).toLocaleDateString("fr-FR")} />
+            <Row label="Dernière activité" value={<LastActivityDate date={staffLastSeenAt} />} />
+            {staffUsers.length > 0 && (
+              <Row
+                label="Équipe"
+                value={
+                  <ul className="space-y-2">
+                    {staffUsers.map(staffUser => (
+                      <li key={staffUser.id}>
+                        <p>{staffUser.name ?? staffUser.email}</p>
+                        <p className="text-xs text-muted-foreground">{staffUser.email} · {staffUser.role}</p>
+                        <p className="text-xs text-muted-foreground">
+                          Dernière connexion : <LastActivityDate date={staffUser.lastLoginAt} />
+                          {" · "}
+                          Dernière activité : <LastActivityDate date={staffUser.lastSeenAt} />
+                        </p>
+                      </li>
+                    ))}
+                  </ul>
+                }
+              />
+            )}
           </CardContent>
         </Card>
 

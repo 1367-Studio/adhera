@@ -12,7 +12,7 @@ export const GET = withSuperAdminAuth<{ id: string }>(async (_req, _ctx, { id })
   const managers = await prisma.user.findMany({
     where:   { associationId: id, role: { not: "MEMBRE" }, active: true, deletedAt: null },
     orderBy: { role: "asc" },
-    select:  { id: true, name: true, email: true, role: true },
+    select:  { id: true, name: true, email: true, role: true, lastLoginAt: true, lastSeenAt: true },
   })
 
   return NextResponse.json(managers)

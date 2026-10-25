@@ -737,6 +737,15 @@ model User {
   twoFactorEnabled Boolean @default(false)
   twoFactorSecret  String?
 
+  // Back-office visibility into who actually uses the app (see /backoffice/associations).
+  // lastLoginAt is stamped on every real sign-in (password, 2FA completion, Google) by the
+  // jwt callback in src/lib/auth/config.ts. lastSeenAt is the last authenticated request,
+  // throttled to one write per LAST_SEEN_THROTTLE_MS — needed on top of lastLoginAt because
+  // sessions are JWTs that last ~30 days, so a daily user may not "log in" again for weeks.
+  // Null = never since these columns were added (no backfill).
+  lastLoginAt DateTime?
+  lastSeenAt  DateTime?
+
   association              Association?           @relation(fields: [associationId], references: [id])
   notifications            Notification[]
   membre                   Membre?

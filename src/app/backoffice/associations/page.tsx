@@ -1,3 +1,4 @@
+import { LastActivityDate } from "@/components/backoffice/last-activity-date"
 import { Badge } from "@/components/ui/badge"
 import { APP_NAME } from "@/config/brand"
 import { APP_URL } from "@/lib/env"
@@ -16,6 +17,19 @@ const subLabel: Record<string, { label: string; variant: "default" | "secondary"
   PAST_DUE:  { label: "En retard", variant: "destructive" },
   SUSPENDED: { label: "Suspendu",  variant: "destructive" },
   CANCELLED: { label: "Annulé",    variant: "outline"     },
+}
+
+// Most recent User.lastSeenAt among each association's staff (members' portal activity
+// doesn't say whether the association itself is using Formwise). A separate groupBy because
+// the users relation is already selected above for the admin email and Prisma can't select
+// the same relation twice.
+async function getStaffLastSeenByAssociation() {
+  const rows = await prisma.user.groupBy({
+    by:    ["associationId"],
+    where: { role: { not: "MEMBRE" }, deletedAt: null, associationId: { not: null } },
+    _max:  { lastSeenAt: true },
+  })
+  return new Map(rows.map(row => [row.associationId, row._max.lastSeenAt]))
 }
 
 async function getAssociations() {
@@ -44,7 +58,10 @@ async function getAssociations() {
 }
 
 export default async function AssociationsPage() {
-  const assocs = await getAssociations()
+  const [assocs, staffLastSeenByAssociation] = await Promise.all([
+    getAssociations(),
+    getStaffLastSeenByAssociation(),
+  ])
 
   return (
     <div className="space-y-4">
@@ -65,6 +82,7 @@ export default async function AssociationsPage() {
               <th className="text-right px-4 py-2.5 font-medium">Membres</th>
               <th className="text-right px-4 py-2.5 font-medium hidden sm:table-cell">Événements</th>
               <th className="text-center px-4 py-2.5 font-medium">Abonnement</th>
+              <th className="text-left px-4 py-2.5 font-medium hidden md:table-cell">Dernière activité</th>
               <th className="text-left px-4 py-2.5 font-medium hidden lg:table-cell">Créée le</th>
             </tr>
           </thead>
@@ -118,6 +136,11 @@ export default async function AssociationsPage() {
                       <Badge variant={sub.variant}>{sub.label}</Badge>
                     </Link>
                   </td>
+                  <td className="px-0 py-0 hidden md:table-cell">
+                    <Link href={href} className="flex px-4 py-3 text-muted-foreground text-xs h-full">
+                      <LastActivityDate date={staffLastSeenByAssociation.get(assoc.id) ?? null} />
+                    </Link>
+                  </td>
                   <td className="px-0 py-0 hidden lg:table-cell">
                     <Link href={href} className="flex px-4 py-3 text-muted-foreground text-xs h-full">
                       {new Date(assoc.createdAt).toLocaleDateString("fr-FR")}
@@ -128,7 +151,7 @@ export default async function AssociationsPage() {
             })}
             {assocs.length === 0 && (
               <tr>
-                <td colSpan={7} className="px-4 py-8 text-center text-muted-foreground text-sm">
+                <td colSpan={8} className="px-4 py-8 text-center text-muted-foreground text-sm">
                   Aucune association enregistrée.
                 </td>
               </tr>

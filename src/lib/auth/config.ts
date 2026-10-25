@@ -71,6 +71,12 @@ async function buildSessionUser(user: NonNullable<CredentialsUser>) {
 // as opposed to a dashboard (staff) sign-in with no association context at all.
 export const OAUTH_PORTAL_SLUG_COOKIE = "oauth-portal-slug"
 
+// Minimum gap between two User.lastSeenAt writes for the same user. The jwt callback runs
+// on every authenticated request (proxy + each server-side auth() call), so writing on each
+// one would turn page views into DB writes; 15 minutes is precise enough for a back-office
+// "last activity" column.
+const LAST_SEEN_THROTTLE_MS = 15 * 60 * 1000
+
 function splitName(fullName: string | null | undefined): { firstName: string; lastName: string } {
   const parts = (fullName ?? "").trim().split(/\s+/)
   return { firstName: parts[0] || "Membre", lastName: parts.slice(1).join(" ") || "" }
@@ -259,6 +265,19 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         // Raw User.permissions (FORM-34) — resolved against the role by resolvePermissions().
         token.permissions      = freshUser?.permissions ?? null
 
+        // Every sign-in path (password, 2FA completion, Google) converges here, so this is
+        // the one place lastLoginAt is stamped. Purely informational (back-office), so a
+        // failed write is logged and never blocks the login itself.
+        const signedInAt = new Date()
+        try {
+          await prisma.user.update({
+            where: { id: user.id },
+            data:  { lastLoginAt: signedInAt, lastSeenAt: signedInAt },
+          })
+        } catch (error) {
+          console.error("[auth] failed to record lastLoginAt", { userId: user.id, error })
+        }
+
         // Sync the user's saved preference to the device on every fresh sign-in, so switching
         // devices/browsers shows their chosen language immediately instead of that device's
         // previous NEXT_LOCALE cookie (or lack thereof) until they open the switcher again.
@@ -271,7 +290,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           where:  { id: token.id as string },
           select: {
             role: true, associationId: true, active: true, deletedAt: true, locale: true,
-            twoFactorEnabled: true, permissions: true,
+            twoFactorEnabled: true, permissions: true, lastSeenAt: true,
             association: { select: { subscriptionStatus: true } },
           },
         })
@@ -286,6 +305,25 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         // Re-read on every request like the role, so a change made in "Équipe et accès"
         // applies on the user's next click, without signing out.
         token.permissions        = fresh.permissions ?? null
+
+        // Throttled against the DB value rather than a token field: every auth() call in this
+        // app (proxy.ts, server components, route handlers) is the argument-less form, which
+        // discards the re-issued session cookie — a timestamp written onto the token here
+        // would never reach the browser, so it would stay stuck at its sign-in value and the
+        // throttle would stop working 15 minutes after each login. Reading it in the select
+        // above costs nothing extra; concurrent auth() calls in the same request may still
+        // both write once per window, which is harmless.
+        const nowMs = Date.now()
+        if (!fresh.lastSeenAt || nowMs - fresh.lastSeenAt.getTime() > LAST_SEEN_THROTTLE_MS) {
+          try {
+            await prisma.user.update({
+              where: { id: token.id as string },
+              data:  { lastSeenAt: new Date(nowMs) },
+            })
+          } catch (error) {
+            console.error("[auth] failed to record lastSeenAt", { userId: token.id, error })
+          }
+        }
       }
       return token
     },
