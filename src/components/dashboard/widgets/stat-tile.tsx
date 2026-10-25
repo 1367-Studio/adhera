@@ -16,6 +16,9 @@ interface Props {
   alert?:    boolean
   isLoading: boolean
   dark?:     boolean
+  // Optional secondary line under the value (e.g. « 12 vendus » on the Boutique top
+  // products) — muted, so the value stays the tile's one figure.
+  detail?:   React.ReactNode
 }
 
 // Every tile's icon box shares this exact tint (Figma dashboard mockup: all 4 KPI
@@ -24,7 +27,12 @@ interface Props {
 // still reads as part of the same row instead of standing out as a different component.
 const ICON_TINT = "#023D9D"
 
-export function StatTile({ label, value, icon: Icon, href, alert, isLoading }: Props) {
+export function StatTile({ label, value, icon: Icon, href, alert, isLoading, detail }: Props) {
+  const valueContent = (
+    <span className={cn("text-[1.75rem] leading-none font-medium tabular-nums", isLoading && "animate-pulse text-muted-foreground")}>
+      {isLoading ? "…" : value}
+    </span>
+  )
   const tileContent = (
     <>
       <div className="flex items-center justify-between gap-2">
@@ -40,9 +48,15 @@ export function StatTile({ label, value, icon: Icon, href, alert, isLoading }: P
         </span>
       </div>
       <div className="flex items-end justify-between">
-        <span className={cn("text-[1.75rem] leading-none font-medium tabular-nums", isLoading && "animate-pulse text-muted-foreground")}>
-          {isLoading ? "…" : value}
-        </span>
+        {detail !== undefined && !isLoading
+          ? (
+            <div className="flex flex-col gap-1.5">
+              {valueContent}
+              <span className="text-sm text-muted-foreground">{detail}</span>
+            </div>
+          )
+          : valueContent
+        }
         {href && (
           <ArrowRightIcon className="size-4 text-muted-foreground/40 opacity-0 transition-opacity group-hover:opacity-100" />
         )}

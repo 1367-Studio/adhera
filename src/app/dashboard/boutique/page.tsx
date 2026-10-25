@@ -7,7 +7,7 @@ import { useTranslations } from "next-intl"
 import { toast } from "sonner"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
-import { PlusIcon, ShoppingBagIcon, PackageIcon, ShoppingCartIcon, EyeIcon, ArchiveIcon, NotePencilIcon, MoneyIcon, FileArrowDownIcon, PencilSimpleIcon, ArrowCounterClockwiseIcon, GearIcon, ShoppingBagOpenIcon } from "@phosphor-icons/react/dist/ssr";
+import { PlusIcon, ShoppingBagIcon, PackageIcon, ShoppingCartIcon, EyeIcon, ArchiveIcon, NotePencilIcon, MoneyIcon, FileArrowDownIcon, PencilSimpleIcon, ArrowCounterClockwiseIcon, GearIcon, ShoppingBagOpenIcon, TrendUpIcon } from "@phosphor-icons/react/dist/ssr";
 import { PageHeader } from "@/components/ui/page-header"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -22,6 +22,7 @@ import { BASE_PATH } from "@/lib/env"
 import { useHasAccess, useIsAdministrator } from "@/lib/user-context"
 import { AddManualCommandeModal } from "@/components/boutique/add-manual-commande-modal"
 import { BoutiqueResponsableModal } from "@/components/boutique/boutique-responsable-modal"
+import { StatTile } from "@/components/dashboard/widgets/stat-tile"
 
 type Translator = ReturnType<typeof useTranslations>
 
@@ -73,6 +74,27 @@ type Commande = {
   shippingCountry:      string | null
   shippingCost:         number
   shippingCarrierLabel: string | null
+}
+
+// Response of GET /api/boutique/commandes — the sales KPIs cover every commande matching the
+// filters, not just the rows of this page (amounts in cents, like Commande.totalAmount).
+type CommandeListResult = {
+  data:              Commande[]
+  total:             number
+  salesCount:        number
+  revenueTotalCents: number
+}
+
+// GET /api/boutique/produits/stats — best sellers on PAID commandes, at most 4, already ranked.
+type TopProduct = {
+  produitId:    string
+  name:         string
+  quantitySold: number
+  revenueCents: number
+}
+
+function formatEuroCents(cents: number) {
+  return (cents / 100).toLocaleString("fr-FR", { style: "currency", currency: "EUR" })
 }
 
 type EditableItem = { id: string; qty: number; originalQty: number; unitPrice: number; produitName: string; varianteLabel: string }
@@ -145,10 +167,19 @@ function BoutiquePageInner() {
   })
 
   const commandeParams = new URLSearchParams({ limit: "50", ...(statusFilter !== "ALL" ? { status: statusFilter } : {}) })
-  const { data: commandeResult, isLoading: loadingCommandes } = useQuery<{ data: Commande[]; total: number }>({
+  const { data: commandeResult, isLoading: loadingCommandes } = useQuery<CommandeListResult>({
     queryKey:  ["boutique-commandes", statusFilter],
     queryFn:   () => fetch(`/api/boutique/commandes?${commandeParams}`).then(r => r.json()),
     enabled:   tab === "commandes",
+    staleTime: 0,
+  })
+
+  // Under the "boutique-produits" key so every invalidation of the products list (delete…)
+  // refreshes the best sellers too.
+  const { data: produitStats } = useQuery<{ topProducts: TopProduct[] }>({
+    queryKey:  ["boutique-produits", "stats"],
+    queryFn:   () => fetch("/api/boutique/produits/stats").then(r => r.json()),
+    enabled:   tab === "produits",
     staleTime: 0,
   })
 
@@ -489,6 +520,12 @@ function BoutiquePageInner() {
   ]
 
   const commandes = commandeResult?.data ?? []
+  const salesCount        = commandeResult?.salesCount ?? 0
+  const revenueTotalCents = commandeResult?.revenueTotalCents ?? 0
+  // Same convention as the Dons page's originSuffix: tells the admin the KPIs are scoped to
+  // the selected status (e.g. « En attente » → 0 sales, since only PAID commandes count).
+  const statusSuffix = statusFilter !== "ALL" ? ` · ${STATUS_COMMANDE_LABEL[statusFilter as Commande["status"]]}` : ""
+  const topProducts  = produitStats?.topProducts ?? []
 
   return (
     <div className="space-y-4">
@@ -532,6 +569,24 @@ function BoutiquePageInner() {
         </TabsList>
       </Tabs>
 
+      {/* Best sellers (all-time, PAID commandes, net of refunds) — hidden entirely while
+          loading or when nothing has sold yet, rather than showing empty tiles. */}
+      {tab === "produits" && topProducts.length > 0 && (
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {topProducts.map(product => (
+            <StatTile
+              key={product.produitId}
+              label={product.name}
+              value={formatEuroCents(product.revenueCents)}
+              detail={t("view.unitsSold", { count: product.quantitySold })}
+              icon={PackageIcon}
+              href={`/dashboard/boutique/${product.produitId}`}
+              isLoading={false}
+            />
+          ))}
+        </div>
+      )}
+
       {tab === "produits" && (
         <DataTable
           columns={produitColumns}
@@ -544,6 +599,22 @@ function BoutiquePageInner() {
 
       {tab === "commandes" && (
         <>
+          {/* KPIs follow the status filter (the list's only filter): PAID commandes only,
+              online and manual alike, net of refunds — see salesStatusForFilter. */}
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <StatTile
+              label={`${t("view.salesCountLabel")}${statusSuffix}`}
+              value={salesCount}
+              icon={ShoppingCartIcon}
+              isLoading={loadingCommandes}
+            />
+            <StatTile
+              label={`${t("view.revenueTotalLabel")}${statusSuffix}`}
+              value={formatEuroCents(revenueTotalCents)}
+              icon={TrendUpIcon}
+              isLoading={loadingCommandes}
+            />
+          </div>
           <div className="flex gap-2">
             {(["ALL", "PENDING", "PAID", "CANCELLED"] as const).map(s => (
               <button

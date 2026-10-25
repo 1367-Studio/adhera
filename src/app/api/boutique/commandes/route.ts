@@ -10,6 +10,7 @@ import { nextBoutiqueReceiptNumber } from "@/lib/document-numbering"
 import { resolveExerciceForDate, closedExerciceGuard } from "@/lib/finance/exercice"
 import { bookBoutiqueOrderIncome } from "@/lib/boutique/book-income"
 import { resolveBoutiqueResponsable } from "@/lib/boutique/responsable"
+import { parseCommandeStatus, salesStatusForFilter } from "@/lib/boutique/sales-stats"
 import { sendEmail } from "@/lib/mail"
 import { boutiqueConfirmationEmail, boutiquePendingOrderEmail, boutiqueNewOrderAdminEmail } from "@/lib/email"
 import { resolveEmailBranding } from "@/lib/plan-limits"
@@ -22,18 +23,25 @@ export const GET = withAdminAuth(async (req, ctx) => {
   if (guard) return guard
 
   const { searchParams } = new URL(req.url)
-  const status   = searchParams.get("status") || undefined
+  // An unknown status value is ignored (whole list) instead of reaching Prisma as an invalid
+  // enum and failing the request.
+  const status   = parseCommandeStatus(searchParams.get("status"))
   const membreId = searchParams.get("membreId") || undefined
   const page      = Math.max(1, parseInt(searchParams.get("page")  ?? "1",  10))
   const limit     = Math.min(50, parseInt(searchParams.get("limit") ?? "25", 10))
 
   const where = {
     associationId: ctx.associationId,
-    ...(status   ? { status: status as "PENDING" | "PAID" | "CANCELLED" } : {}),
+    ...(status   ? { status } : {}),
     ...(membreId ? { membreId } : {}),
   }
 
-  const [commandes, total] = await Promise.all([
+  // Sales KPIs (Boutique page, Commandes tab) over the whole filtered set, not just this
+  // page: PAID only, intersected with the status filter — see salesStatusForFilter. There is
+  // no free-text search on this list, so unlike /api/dons nothing has to be stripped here.
+  const salesStatus = salesStatusForFilter(status)
+
+  const [commandes, total, salesAggregate] = await Promise.all([
     prisma.boutiqueCommande.findMany({
       where,
       orderBy: { createdAt: "desc" },
@@ -50,6 +58,9 @@ export const GET = withAdminAuth(async (req, ctx) => {
       },
     }),
     prisma.boutiqueCommande.count({ where }),
+    salesStatus
+      ? prisma.boutiqueCommande.aggregate({ where: { ...where, status: salesStatus }, _sum: { totalAmount: true }, _count: { id: true } })
+      : null,
   ])
 
   return NextResponse.json({
@@ -58,6 +69,10 @@ export const GET = withAdminAuth(async (req, ctx) => {
     page,
     limit,
     totalPages: Math.ceil(total / limit),
+    // Same money convention as each row's totalAmount: integer cents, shipping included,
+    // already net of refunds (the refund route lowers totalAmount in place).
+    salesCount:        salesAggregate?._count.id ?? 0,
+    revenueTotalCents: salesAggregate?._sum.totalAmount ?? 0,
   })
 }, { area: "boutique" })
 
