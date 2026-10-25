@@ -1606,7 +1606,8 @@
         "afterRefunds": "Nakon povrata",
         "reviews": "Recenzije",
         "reviewCount": "{count, plural, one {# primljena recenzija} few {# primljene recenzije} other {# primljenih recenzija}}",
-        "noReviews": "Nema recenzija"
+        "noReviews": "Nema recenzija",
+        "fullLink": "Prikaži cijeli pregled"
       }
     },
     "customFields": {
@@ -1911,7 +1912,8 @@
           "datesOrderError": "Datum zatvaranja mora biti kasniji od datuma otvaranja."
         }
       },
-      "titleRequired": "Naslov je obavezan"
+      "titleRequired": "Naslov je obavezan",
+      "bilanButton": "Pregled"
     },
     "discountCodes": {
       "title": "Promotivni kodovi",
@@ -1941,6 +1943,58 @@
       "valueRequiredError": "Redukcija mora biti veća od 0.",
       "windowInvalidError": "Datum završetka mora biti nakon datuma početka.",
       "saved": "Spremljeni promotivni kodovi"
+    },
+    "bilanPage": {
+      "metaTitle": "Pregled događaja",
+      "export": "Izvezi pregled",
+      "sectionTitle": "Pojedinosti o sudionicima",
+      "sectionSubtitle": "Prisutnost, plaćanja i recenzije na jednom mjestu",
+      "searchPlaceholder": "Pretraži sudionika…",
+      "presenceFilter": {
+        "all": "Sva prisutnost",
+        "present": "Prisutni",
+        "absent": "Odsutni"
+      },
+      "reviewFilter": {
+        "all": "Sve recenzije",
+        "with": "S recenzijom",
+        "without": "Bez recenzije"
+      },
+      "resetFilters": "Poništi",
+      "columns": {
+        "participant": "Sudionik",
+        "presence": "Prisutnost",
+        "amount": "Plaćeni iznos",
+        "payment": "Plaćanje",
+        "review": "Recenzija"
+      },
+      "presence": {
+        "present": "Prisutan",
+        "absent": "Odsutan"
+      },
+      "paymentStatus": {
+        "paid": "Plaćeno",
+        "pending": "Na čekanju",
+        "refunded": "Vraćeno",
+        "free": "Besplatno"
+      },
+      "viewReview": "Prikaži recenziju",
+      "empty": "Nema sudionika",
+      "emptyFiltered": "Nijedan sudionik ne odgovara filtrima",
+      "totalAmount": "Ukupno {amount}",
+      "participantCount": "{count, plural, one {# sudionik} few {# sudionika} other {# sudionika}}",
+      "reviewCount": "{count, plural, one {# recenzija} few {# recenzije} other {# recenzija}}",
+      "csv": {
+        "participant": "Sudionik",
+        "email": "E-pošta",
+        "presence": "Prisutnost",
+        "amount": "Plaćeni iznos (€)",
+        "paymentStatus": "Status plaćanja",
+        "paymentMethod": "Način plaćanja",
+        "rating": "Ocjena (od 5)",
+        "comment": "Komentar",
+        "total": "Ukupno"
+      }
     }
   },
   "actualites": {

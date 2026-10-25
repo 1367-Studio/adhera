@@ -1606,7 +1606,8 @@
         "afterRefunds": "Na terugbetalingen",
         "reviews": "Recensies",
         "reviewCount": "{count, plural, one {# recensie ontvangen} other {# recensies ontvangen}}",
-        "noReviews": "Geen recensies"
+        "noReviews": "Geen recensies",
+        "fullLink": "Volledig overzicht bekijken"
       }
     },
     "customFields": {
@@ -1911,7 +1912,8 @@
           "datesOrderError": "De sluitingsdatum moet later zijn dan de openingsdatum."
         }
       },
-      "titleRequired": "De titel is verplicht"
+      "titleRequired": "De titel is verplicht",
+      "bilanButton": "Overzicht"
     },
     "discountCodes": {
       "title": "Promotiecodes",
@@ -1941,6 +1943,58 @@
       "valueRequiredError": "De reductie moet groter zijn dan 0.",
       "windowInvalidError": "De einddatum moet na de begindatum zijn.",
       "saved": "Opgeslagen promotiecodes"
+    },
+    "bilanPage": {
+      "metaTitle": "Overzicht van het evenement",
+      "export": "Overzicht exporteren",
+      "sectionTitle": "Deelnemers in detail",
+      "sectionSubtitle": "Aanwezigheid, betalingen en recensies op één plek",
+      "searchPlaceholder": "Een deelnemer zoeken…",
+      "presenceFilter": {
+        "all": "Alle aanwezigheid",
+        "present": "Aanwezig",
+        "absent": "Afwezig"
+      },
+      "reviewFilter": {
+        "all": "Alle recensies",
+        "with": "Met recensie",
+        "without": "Zonder recensie"
+      },
+      "resetFilters": "Herstellen",
+      "columns": {
+        "participant": "Deelnemer",
+        "presence": "Aanwezigheid",
+        "amount": "Betaald bedrag",
+        "payment": "Betaling",
+        "review": "Recensie"
+      },
+      "presence": {
+        "present": "Aanwezig",
+        "absent": "Afwezig"
+      },
+      "paymentStatus": {
+        "paid": "Betaald",
+        "pending": "In afwachting",
+        "refunded": "Terugbetaald",
+        "free": "Gratis"
+      },
+      "viewReview": "Recensie bekijken",
+      "empty": "Geen deelnemers",
+      "emptyFiltered": "Geen deelnemers komen overeen met de filters",
+      "totalAmount": "Totaal {amount}",
+      "participantCount": "{count, plural, one {# deelnemer} other {# deelnemers}}",
+      "reviewCount": "{count, plural, one {# recensie} other {# recensies}}",
+      "csv": {
+        "participant": "Deelnemer",
+        "email": "E-mail",
+        "presence": "Aanwezigheid",
+        "amount": "Betaald bedrag (€)",
+        "paymentStatus": "Betaalstatus",
+        "paymentMethod": "Betaalmethode",
+        "rating": "Score (op 5)",
+        "comment": "Opmerking",
+        "total": "Totaal"
+      }
     }
   },
   "actualites": {

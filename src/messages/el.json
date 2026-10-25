@@ -1606,7 +1606,8 @@
         "afterRefunds": "Μετά τις επιστροφές",
         "reviews": "Κριτικές",
         "reviewCount": "{count, plural, one {# κριτική ελήφθη} other {# κριτικές ελήφθησαν}}",
-        "noReviews": "Καμία κριτική"
+        "noReviews": "Καμία κριτική",
+        "fullLink": "Προβολή πλήρους απολογισμού"
       }
     },
     "customFields": {
@@ -1911,7 +1912,8 @@
           "datesOrderError": "Η καταληκτική ημερομηνία πρέπει να είναι μεταγενέστερη της καταληκτικής ημερομηνίας."
         }
       },
-      "titleRequired": "Ο τίτλος είναι υποχρεωτικός"
+      "titleRequired": "Ο τίτλος είναι υποχρεωτικός",
+      "bilanButton": "Απολογισμός"
     },
     "discountCodes": {
       "title": "Κωδικοί προσφοράς",
@@ -1941,6 +1943,58 @@
       "valueRequiredError": "Η μείωση πρέπει να είναι μεγαλύτερη από 0.",
       "windowInvalidError": "Η ημερομηνία λήξης πρέπει να είναι μετά την ημερομηνία έναρξης.",
       "saved": "Αποθηκευμένοι κωδικοί προσφοράς"
+    },
+    "bilanPage": {
+      "metaTitle": "Απολογισμός εκδήλωσης",
+      "export": "Εξαγωγή απολογισμού",
+      "sectionTitle": "Λεπτομέρειες συμμετεχόντων",
+      "sectionSubtitle": "Παρουσίες, πληρωμές και κριτικές σε ένα σημείο",
+      "searchPlaceholder": "Αναζήτηση συμμετέχοντα…",
+      "presenceFilter": {
+        "all": "Όλες οι παρουσίες",
+        "present": "Παρόντες",
+        "absent": "Απόντες"
+      },
+      "reviewFilter": {
+        "all": "Όλες οι κριτικές",
+        "with": "Με κριτική",
+        "without": "Χωρίς κριτική"
+      },
+      "resetFilters": "Επαναφορά",
+      "columns": {
+        "participant": "Συμμετέχων",
+        "presence": "Παρουσία",
+        "amount": "Ποσό που καταβλήθηκε",
+        "payment": "Πληρωμή",
+        "review": "Κριτική"
+      },
+      "presence": {
+        "present": "Παρών",
+        "absent": "Απών"
+      },
+      "paymentStatus": {
+        "paid": "Πληρώθηκε",
+        "pending": "Σε αναμονή",
+        "refunded": "Επιστράφηκε",
+        "free": "Δωρεάν"
+      },
+      "viewReview": "Προβολή κριτικής",
+      "empty": "Κανένας συμμετέχων",
+      "emptyFiltered": "Κανένας συμμετέχων δεν ταιριάζει με τα φίλτρα",
+      "totalAmount": "Σύνολο {amount}",
+      "participantCount": "{count, plural, one {# συμμετέχων} other {# συμμετέχοντες}}",
+      "reviewCount": "{count, plural, one {# κριτική} other {# κριτικές}}",
+      "csv": {
+        "participant": "Συμμετέχων",
+        "email": "Email",
+        "presence": "Παρουσία",
+        "amount": "Ποσό που καταβλήθηκε (€)",
+        "paymentStatus": "Κατάσταση πληρωμής",
+        "paymentMethod": "Τρόπος πληρωμής",
+        "rating": "Βαθμολογία (στα 5)",
+        "comment": "Σχόλιο",
+        "total": "Σύνολο"
+      }
     }
   },
   "actualites": {

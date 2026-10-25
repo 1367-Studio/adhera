@@ -1606,7 +1606,8 @@
         "afterRefunds": "Po vračilih",
         "reviews": "Ocene",
         "reviewCount": "{count, plural, one {# prejeta ocena} two {# prejeti oceni} few {# prejete ocene} other {# prejetih ocen}}",
-        "noReviews": "Ni ocen"
+        "noReviews": "Ni ocen",
+        "fullLink": "Prikaži celoten pregled"
       }
     },
     "customFields": {
@@ -1911,7 +1912,8 @@
           "datesOrderError": "Datum zaključka mora biti kasnejši od datuma odprtja."
         }
       },
-      "titleRequired": "Naziv je obvezen"
+      "titleRequired": "Naziv je obvezen",
+      "bilanButton": "Pregled"
     },
     "discountCodes": {
       "title": "Promocijske kode",
@@ -1941,6 +1943,58 @@
       "valueRequiredError": "Zmanjšanje mora biti večje od 0.",
       "windowInvalidError": "Končni datum mora biti po začetnem datumu.",
       "saved": "Shranjene promocijske kode"
+    },
+    "bilanPage": {
+      "metaTitle": "Pregled dogodka",
+      "export": "Izvozi pregled",
+      "sectionTitle": "Podrobnosti o udeležencih",
+      "sectionSubtitle": "Prisotnost, plačila in ocene na enem mestu",
+      "searchPlaceholder": "Poišči udeleženca…",
+      "presenceFilter": {
+        "all": "Vsa prisotnost",
+        "present": "Prisotni",
+        "absent": "Odsotni"
+      },
+      "reviewFilter": {
+        "all": "Vse ocene",
+        "with": "Z oceno",
+        "without": "Brez ocene"
+      },
+      "resetFilters": "Ponastavi",
+      "columns": {
+        "participant": "Udeleženec",
+        "presence": "Prisotnost",
+        "amount": "Plačani znesek",
+        "payment": "Plačilo",
+        "review": "Ocena"
+      },
+      "presence": {
+        "present": "Prisoten",
+        "absent": "Odsoten"
+      },
+      "paymentStatus": {
+        "paid": "Plačano",
+        "pending": "V teku",
+        "refunded": "Vrnjeno",
+        "free": "Brezplačno"
+      },
+      "viewReview": "Prikaži oceno",
+      "empty": "Ni udeležencev",
+      "emptyFiltered": "Noben udeleženec ne ustreza filtrom",
+      "totalAmount": "Skupaj {amount}",
+      "participantCount": "{count, plural, one {# udeleženec} two {# udeleženca} few {# udeleženci} other {# udeležencev}}",
+      "reviewCount": "{count, plural, one {# ocena} two {# oceni} few {# ocene} other {# ocen}}",
+      "csv": {
+        "participant": "Udeleženec",
+        "email": "E-pošta",
+        "presence": "Prisotnost",
+        "amount": "Plačani znesek (€)",
+        "paymentStatus": "Stanje plačila",
+        "paymentMethod": "Način plačila",
+        "rating": "Ocena (od 5)",
+        "comment": "Komentar",
+        "total": "Skupaj"
+      }
     }
   },
   "actualites": {

@@ -1606,7 +1606,8 @@
         "afterRefunds": "Nach Erstattungen",
         "reviews": "Bewertungen",
         "reviewCount": "{count, plural, one {# Bewertung erhalten} other {# Bewertungen erhalten}}",
-        "noReviews": "Keine Bewertungen"
+        "noReviews": "Keine Bewertungen",
+        "fullLink": "Vollständige Bilanz anzeigen"
       }
     },
     "customFields": {
@@ -1911,7 +1912,8 @@
           "datesOrderError": "Das Abschlussdatum muss später als das Eröffnungsdatum liegen."
         }
       },
-      "titleRequired": "Der Titel ist verpflichtend"
+      "titleRequired": "Der Titel ist verpflichtend",
+      "bilanButton": "Bilanz"
     },
     "discountCodes": {
       "title": "Promo-Codes",
@@ -1941,6 +1943,58 @@
       "valueRequiredError": "Die Reduktion muss größer als 0 sein.",
       "windowInvalidError": "Das Enddatum muss nach dem Startdatum liegen.",
       "saved": "Gespeicherte Aktionscodes"
+    },
+    "bilanPage": {
+      "metaTitle": "Veranstaltungsbilanz",
+      "export": "Bilanz exportieren",
+      "sectionTitle": "Teilnehmende im Detail",
+      "sectionSubtitle": "Anwesenheit, Zahlungen und Bewertungen an einem Ort",
+      "searchPlaceholder": "Teilnehmende suchen…",
+      "presenceFilter": {
+        "all": "Alle Anwesenheiten",
+        "present": "Anwesend",
+        "absent": "Abwesend"
+      },
+      "reviewFilter": {
+        "all": "Alle Bewertungen",
+        "with": "Mit Bewertung",
+        "without": "Ohne Bewertung"
+      },
+      "resetFilters": "Zurücksetzen",
+      "columns": {
+        "participant": "Teilnehmende",
+        "presence": "Anwesenheit",
+        "amount": "Bezahlter Betrag",
+        "payment": "Zahlung",
+        "review": "Bewertung"
+      },
+      "presence": {
+        "present": "Anwesend",
+        "absent": "Abwesend"
+      },
+      "paymentStatus": {
+        "paid": "Bezahlt",
+        "pending": "Ausstehend",
+        "refunded": "Erstattet",
+        "free": "Kostenlos"
+      },
+      "viewReview": "Bewertung ansehen",
+      "empty": "Keine Teilnehmenden",
+      "emptyFiltered": "Keine Teilnehmenden entsprechen den Filtern",
+      "totalAmount": "Gesamt {amount}",
+      "participantCount": "{count, plural, one {# teilnehmende Person} other {# teilnehmende Personen}}",
+      "reviewCount": "{count, plural, one {# Bewertung} other {# Bewertungen}}",
+      "csv": {
+        "participant": "Teilnehmende",
+        "email": "E-Mail",
+        "presence": "Anwesenheit",
+        "amount": "Bezahlter Betrag (€)",
+        "paymentStatus": "Zahlungsstatus",
+        "paymentMethod": "Zahlungsart",
+        "rating": "Bewertung (von 5)",
+        "comment": "Kommentar",
+        "total": "Gesamt"
+      }
     }
   },
   "actualites": {

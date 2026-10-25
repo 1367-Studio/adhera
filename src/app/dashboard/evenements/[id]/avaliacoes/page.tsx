@@ -1,5 +1,6 @@
 "use client"
 
+import { useEffect } from "react"
 import { useParams } from "next/navigation"
 import { useTranslations } from "next-intl"
 import { useQuery } from "@tanstack/react-query"
@@ -51,6 +52,14 @@ export default function AvaliacoesPage() {
     queryFn:  () => fetchAvaliacoes(id),
     enabled:  !!id,
   })
+
+  // « Voir l'avis » on the bilan page links to #avis-<id>: the rows only exist once the
+  // reviews have loaded, after the browser's own hash scroll already gave up.
+  useEffect(() => {
+    if (!data) return
+    const anchorId = window.location.hash.slice(1)
+    if (anchorId) document.getElementById(anchorId)?.scrollIntoView({ block: "center" })
+  }, [data])
 
   if (loadingEvent) {
     return <DetailLoadingSkeleton />
@@ -105,7 +114,7 @@ export default function AvaliacoesPage() {
           </TableHeader>
           <TableBody>
             {avis.map(a => (
-              <TableRow key={a.id}>
+              <TableRow key={a.id} id={`avis-${a.id}`}>
                 <TableCell className="font-medium">{a.firstName} {a.lastName}</TableCell>
                 <TableCell><StarRatingDisplay value={a.rating} /></TableCell>
                 <TableCell className="text-muted-foreground max-w-md">{a.comment ?? "—"}</TableCell>

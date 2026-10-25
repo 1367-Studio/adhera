@@ -3,7 +3,7 @@ import type { EvenementInput, EvenementUpdateInput } from "@/lib/schemas"
 import type { PaginatedResult } from "@/lib/pagination"
 import { apiErrorMessage } from "@/lib/api-error"
 import type { OnSitePaymentMethod } from "@/lib/evenement-payment-methods"
-import type { EvenementBilan } from "@/lib/evenement-bilan"
+import type { EvenementBilan, EvenementBilanParticipantsResponse } from "@/lib/evenement-bilan"
 
 const QK = ["evenements"]
 
@@ -245,6 +245,23 @@ export function useEvenementBilan(evenementId: string, enabled: boolean) {
     queryKey: ["evenement-bilan", evenementId],
     queryFn:  () => fetchEvenementBilan(evenementId),
     enabled:  enabled && !!evenementId,
+  })
+}
+
+async function fetchEvenementBilanParticipants(evenementId: string) {
+  const res = await fetch(`/api/evenements/${evenementId}/bilan/participants`)
+  if (res.status === 404) return null
+  if (!res.ok) throw new Error("Erreur lors du chargement du bilan")
+  return res.json() as Promise<EvenementBilanParticipantsResponse>
+}
+
+// Full bilan page rows — null when the event doesn't exist (or belongs to another association),
+// so the page can show its DetailNotFound state instead of an error.
+export function useEvenementBilanParticipants(evenementId: string) {
+  return useQuery({
+    queryKey: ["evenement-bilan", evenementId, "participants"],
+    queryFn:  () => fetchEvenementBilanParticipants(evenementId),
+    enabled:  !!evenementId,
   })
 }
 

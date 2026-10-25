@@ -1606,7 +1606,8 @@
         "afterRefunds": "Al netto dei rimborsi",
         "reviews": "Recensioni",
         "reviewCount": "{count, plural, one {# recensione ricevuta} many {# recensioni ricevute} other {# recensioni ricevute}}",
-        "noReviews": "Nessuna recensione"
+        "noReviews": "Nessuna recensione",
+        "fullLink": "Vedi il bilancio completo"
       }
     },
     "customFields": {
@@ -1911,7 +1912,8 @@
           "datesOrderError": "La data di chiusura deve essere successiva rispetto a quella di apertura."
         }
       },
-      "titleRequired": "Il titolo è obbligatorio"
+      "titleRequired": "Il titolo è obbligatorio",
+      "bilanButton": "Bilancio"
     },
     "discountCodes": {
       "title": "Codici promozionali",
@@ -1941,6 +1943,58 @@
       "valueRequiredError": "La riduzione deve essere maggiore di 0.",
       "windowInvalidError": "La data di fine deve essere dopo quella di inizio.",
       "saved": "Codici promozionali salvati"
+    },
+    "bilanPage": {
+      "metaTitle": "Bilancio dell'evento",
+      "export": "Esporta il bilancio",
+      "sectionTitle": "Dettaglio dei partecipanti",
+      "sectionSubtitle": "Presenze, pagamenti e recensioni in un unico posto",
+      "searchPlaceholder": "Cerca un partecipante…",
+      "presenceFilter": {
+        "all": "Tutte le presenze",
+        "present": "Presenti",
+        "absent": "Assenti"
+      },
+      "reviewFilter": {
+        "all": "Tutte le recensioni",
+        "with": "Con recensione",
+        "without": "Senza recensione"
+      },
+      "resetFilters": "Reimposta",
+      "columns": {
+        "participant": "Partecipante",
+        "presence": "Presenza",
+        "amount": "Importo pagato",
+        "payment": "Pagamento",
+        "review": "Recensione"
+      },
+      "presence": {
+        "present": "Presente",
+        "absent": "Assente"
+      },
+      "paymentStatus": {
+        "paid": "Pagato",
+        "pending": "In attesa",
+        "refunded": "Rimborsato",
+        "free": "Gratuito"
+      },
+      "viewReview": "Vedi la recensione",
+      "empty": "Nessun partecipante",
+      "emptyFiltered": "Nessun partecipante corrisponde ai filtri",
+      "totalAmount": "Totale {amount}",
+      "participantCount": "{count, plural, one {# partecipante} many {# partecipanti} other {# partecipanti}}",
+      "reviewCount": "{count, plural, one {# recensione} many {# recensioni} other {# recensioni}}",
+      "csv": {
+        "participant": "Partecipante",
+        "email": "E-mail",
+        "presence": "Presenza",
+        "amount": "Importo pagato (€)",
+        "paymentStatus": "Stato del pagamento",
+        "paymentMethod": "Metodo di pagamento",
+        "rating": "Voto (su 5)",
+        "comment": "Commento",
+        "total": "Totale"
+      }
     }
   },
   "actualites": {

@@ -1606,7 +1606,8 @@
         "afterRefunds": "Pēc atmaksām",
         "reviews": "Atsauksmes",
         "reviewCount": "{count, plural, zero {# saņemtas atsauksmes} one {# saņemta atsauksme} other {# saņemtas atsauksmes}}",
-        "noReviews": "Nav atsauksmju"
+        "noReviews": "Nav atsauksmju",
+        "fullLink": "Skatīt pilnu kopsavilkumu"
       }
     },
     "customFields": {
@@ -1911,7 +1912,8 @@
           "datesOrderError": "Slēgšanas datumam jābūt vēlākam par atvēršanas datumu."
         }
       },
-      "titleRequired": "Nosaukums ir obligāts"
+      "titleRequired": "Nosaukums ir obligāts",
+      "bilanButton": "Kopsavilkums"
     },
     "discountCodes": {
       "title": "Promo kodi",
@@ -1941,6 +1943,58 @@
       "valueRequiredError": "Samazinājumam jābūt lielākam par 0.",
       "windowInvalidError": "Beigu datumam jābūt pēc sākuma datuma.",
       "saved": "Saglabātie promo kodi"
+    },
+    "bilanPage": {
+      "metaTitle": "Pasākuma kopsavilkums",
+      "export": "Eksportēt kopsavilkumu",
+      "sectionTitle": "Dalībnieku informācija",
+      "sectionSubtitle": "Apmeklējums, maksājumi un atsauksmes vienuviet",
+      "searchPlaceholder": "Meklēt dalībnieku…",
+      "presenceFilter": {
+        "all": "Viss apmeklējums",
+        "present": "Klātesošie",
+        "absent": "Prombūtnē"
+      },
+      "reviewFilter": {
+        "all": "Visas atsauksmes",
+        "with": "Ar atsauksmi",
+        "without": "Bez atsauksmes"
+      },
+      "resetFilters": "Atiestatīt",
+      "columns": {
+        "participant": "Dalībnieks",
+        "presence": "Apmeklējums",
+        "amount": "Samaksātā summa",
+        "payment": "Maksājums",
+        "review": "Atsauksme"
+      },
+      "presence": {
+        "present": "Klāt",
+        "absent": "Nav klāt"
+      },
+      "paymentStatus": {
+        "paid": "Samaksāts",
+        "pending": "Gaida",
+        "refunded": "Atmaksāts",
+        "free": "Bezmaksas"
+      },
+      "viewReview": "Skatīt atsauksmi",
+      "empty": "Nav dalībnieku",
+      "emptyFiltered": "Neviens dalībnieks neatbilst filtriem",
+      "totalAmount": "Kopā {amount}",
+      "participantCount": "{count, plural, zero {# dalībnieku} one {# dalībnieks} other {# dalībnieki}}",
+      "reviewCount": "{count, plural, zero {# atsauksmju} one {# atsauksme} other {# atsauksmes}}",
+      "csv": {
+        "participant": "Dalībnieks",
+        "email": "E-pasts",
+        "presence": "Apmeklējums",
+        "amount": "Samaksātā summa (€)",
+        "paymentStatus": "Maksājuma statuss",
+        "paymentMethod": "Maksājuma veids",
+        "rating": "Vērtējums (no 5)",
+        "comment": "Komentārs",
+        "total": "Kopā"
+      }
     }
   },
   "actualites": {

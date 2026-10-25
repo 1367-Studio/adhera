@@ -6,6 +6,7 @@ import {
   euroAmountToCents,
   presentParticipationWhere,
   registeredParticipationWhere,
+  ticketIncomeWhere,
   type EvenementBilan,
 } from "@/lib/evenement-bilan"
 
@@ -35,7 +36,7 @@ export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id: eveneme
       select: { id: true, amount: true },
     }),
     prisma.income.findMany({
-      where:  { associationId, commandeId: null, participation: { evenementId } },
+      where:  ticketIncomeWhere(associationId, evenementId),
       select: { participationId: true, amount: true, status: true },
     }),
     prisma.evenementAvis.aggregate({

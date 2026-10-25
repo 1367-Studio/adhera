@@ -1626,7 +1626,8 @@
         "afterRefunds": "After refunds",
         "reviews": "Reviews",
         "reviewCount": "{count, plural, one {# review received} other {# reviews received}}",
-        "noReviews": "No reviews"
+        "noReviews": "No reviews",
+        "fullLink": "View full summary"
       }
     },
     "customFields": {
@@ -1958,7 +1959,8 @@
       "reopenRegistrationsButton": "Reopen registrations",
       "registrationsClosedNotice": "Registrations closed",
       "closeRegistrationsConfirmTitle": "Close registrations?",
-      "closeRegistrationsConfirmDescription": "No one will be able to register online anymore. You can still add participants from the attendance list."
+      "closeRegistrationsConfirmDescription": "No one will be able to register online anymore. You can still add participants from the attendance list.",
+      "bilanButton": "Summary"
     },
     "discountCodes": {
       "title": "Promo codes",
@@ -1988,6 +1990,58 @@
       "valueRequiredError": "The discount must be greater than 0.",
       "windowInvalidError": "The end date must be after the start date.",
       "saved": "Promo codes saved"
+    },
+    "bilanPage": {
+      "metaTitle": "Event summary",
+      "export": "Export summary",
+      "sectionTitle": "Participant details",
+      "sectionSubtitle": "Attendance, payments and reviews in one place",
+      "searchPlaceholder": "Search for a participant…",
+      "presenceFilter": {
+        "all": "All attendance",
+        "present": "Present",
+        "absent": "Absent"
+      },
+      "reviewFilter": {
+        "all": "All reviews",
+        "with": "With review",
+        "without": "Without review"
+      },
+      "resetFilters": "Reset",
+      "columns": {
+        "participant": "Participant",
+        "presence": "Attendance",
+        "amount": "Amount paid",
+        "payment": "Payment",
+        "review": "Review"
+      },
+      "presence": {
+        "present": "Present",
+        "absent": "Absent"
+      },
+      "paymentStatus": {
+        "paid": "Paid",
+        "pending": "Pending",
+        "refunded": "Refunded",
+        "free": "Free"
+      },
+      "viewReview": "View review",
+      "empty": "No participants",
+      "emptyFiltered": "No participants match the filters",
+      "totalAmount": "Total {amount}",
+      "participantCount": "{count, plural, one {# participant} other {# participants}}",
+      "reviewCount": "{count, plural, one {# review} other {# reviews}}",
+      "csv": {
+        "participant": "Participant",
+        "email": "Email",
+        "presence": "Attendance",
+        "amount": "Amount paid (€)",
+        "paymentStatus": "Payment status",
+        "paymentMethod": "Payment method",
+        "rating": "Rating (out of 5)",
+        "comment": "Comment",
+        "total": "Total"
+      }
     }
   },
   "actualites": {

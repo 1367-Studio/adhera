@@ -1606,7 +1606,8 @@
         "afterRefunds": "След възстановявания",
         "reviews": "Отзиви",
         "reviewCount": "{count, plural, one {# получен отзив} other {# получени отзива}}",
-        "noReviews": "Няма отзиви"
+        "noReviews": "Няма отзиви",
+        "fullLink": "Виж пълното обобщение"
       }
     },
     "customFields": {
@@ -1911,7 +1912,8 @@
           "datesOrderError": "Крайната дата трябва да е по-късно от датата на откриване."
         }
       },
-      "titleRequired": "Заглавието е задължително"
+      "titleRequired": "Заглавието е задължително",
+      "bilanButton": "Обобщение"
     },
     "discountCodes": {
       "title": "Промо кодове",
@@ -1941,6 +1943,58 @@
       "valueRequiredError": "Редукцията трябва да е по-голяма от 0.",
       "windowInvalidError": "Крайната дата трябва да е след началната дата.",
       "saved": "Запазени промо кодове"
+    },
+    "bilanPage": {
+      "metaTitle": "Обобщение на събитието",
+      "export": "Експортирай обобщението",
+      "sectionTitle": "Подробности за участниците",
+      "sectionSubtitle": "Присъствие, плащания и отзиви на едно място",
+      "searchPlaceholder": "Търси участник…",
+      "presenceFilter": {
+        "all": "Цялото присъствие",
+        "present": "Присъстващи",
+        "absent": "Отсъстващи"
+      },
+      "reviewFilter": {
+        "all": "Всички отзиви",
+        "with": "С отзив",
+        "without": "Без отзив"
+      },
+      "resetFilters": "Нулирай",
+      "columns": {
+        "participant": "Участник",
+        "presence": "Присъствие",
+        "amount": "Платена сума",
+        "payment": "Плащане",
+        "review": "Отзив"
+      },
+      "presence": {
+        "present": "Присъства",
+        "absent": "Отсъства"
+      },
+      "paymentStatus": {
+        "paid": "Платено",
+        "pending": "Чакащо",
+        "refunded": "Възстановено",
+        "free": "Безплатно"
+      },
+      "viewReview": "Виж отзива",
+      "empty": "Няма участници",
+      "emptyFiltered": "Няма участници, отговарящи на филтрите",
+      "totalAmount": "Общо {amount}",
+      "participantCount": "{count, plural, one {# участник} other {# участници}}",
+      "reviewCount": "{count, plural, one {# отзив} other {# отзива}}",
+      "csv": {
+        "participant": "Участник",
+        "email": "Имейл",
+        "presence": "Присъствие",
+        "amount": "Платена сума (€)",
+        "paymentStatus": "Статус на плащането",
+        "paymentMethod": "Начин на плащане",
+        "rating": "Оценка (от 5)",
+        "comment": "Коментар",
+        "total": "Общо"
+      }
     }
   },
   "actualites": {

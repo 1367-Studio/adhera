@@ -1606,7 +1606,8 @@
         "afterRefunds": "Atskaičius grąžinimus",
         "reviews": "Atsiliepimai",
         "reviewCount": "{count, plural, one {# gautas atsiliepimas} few {# gauti atsiliepimai} many {# gauto atsiliepimo} other {# gautų atsiliepimų}}",
-        "noReviews": "Atsiliepimų nėra"
+        "noReviews": "Atsiliepimų nėra",
+        "fullLink": "Peržiūrėti visą suvestinę"
       }
     },
     "customFields": {
@@ -1911,7 +1912,8 @@
           "datesOrderError": "Uždarymo data turi būti vėlesnė nei atidarymo data."
         }
       },
-      "titleRequired": "Titulas yra privalomas"
+      "titleRequired": "Titulas yra privalomas",
+      "bilanButton": "Suvestinė"
     },
     "discountCodes": {
       "title": "Promo kodai",
@@ -1941,6 +1943,58 @@
       "valueRequiredError": "Redukcija turi būti didesnė nei 0.",
       "windowInvalidError": "Pabaigos data turi būti po pradžios datos.",
       "saved": "Išsaugoti promo kodai"
+    },
+    "bilanPage": {
+      "metaTitle": "Renginio suvestinė",
+      "export": "Eksportuoti suvestinę",
+      "sectionTitle": "Dalyvių informacija",
+      "sectionSubtitle": "Dalyvavimas, mokėjimai ir atsiliepimai vienoje vietoje",
+      "searchPlaceholder": "Ieškoti dalyvio…",
+      "presenceFilter": {
+        "all": "Visas dalyvavimas",
+        "present": "Dalyvavę",
+        "absent": "Nedalyvavę"
+      },
+      "reviewFilter": {
+        "all": "Visi atsiliepimai",
+        "with": "Su atsiliepimu",
+        "without": "Be atsiliepimo"
+      },
+      "resetFilters": "Atkurti",
+      "columns": {
+        "participant": "Dalyvis",
+        "presence": "Dalyvavimas",
+        "amount": "Sumokėta suma",
+        "payment": "Mokėjimas",
+        "review": "Atsiliepimas"
+      },
+      "presence": {
+        "present": "Dalyvavo",
+        "absent": "Nedalyvavo"
+      },
+      "paymentStatus": {
+        "paid": "Apmokėta",
+        "pending": "Laukiama",
+        "refunded": "Grąžinta",
+        "free": "Nemokama"
+      },
+      "viewReview": "Peržiūrėti atsiliepimą",
+      "empty": "Dalyvių nėra",
+      "emptyFiltered": "Filtrus atitinkančių dalyvių nėra",
+      "totalAmount": "Iš viso {amount}",
+      "participantCount": "{count, plural, one {# dalyvis} few {# dalyviai} many {# dalyvio} other {# dalyvių}}",
+      "reviewCount": "{count, plural, one {# atsiliepimas} few {# atsiliepimai} many {# atsiliepimo} other {# atsiliepimų}}",
+      "csv": {
+        "participant": "Dalyvis",
+        "email": "El. paštas",
+        "presence": "Dalyvavimas",
+        "amount": "Sumokėta suma (€)",
+        "paymentStatus": "Mokėjimo būsena",
+        "paymentMethod": "Mokėjimo būdas",
+        "rating": "Įvertinimas (iš 5)",
+        "comment": "Komentaras",
+        "total": "Iš viso"
+      }
     }
   },
   "actualites": {

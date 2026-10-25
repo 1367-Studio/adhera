@@ -1606,7 +1606,8 @@
         "afterRefunds": "Po vrátení peňazí",
         "reviews": "Recenzie",
         "reviewCount": "{count, plural, one {# prijatá recenzia} few {# prijaté recenzie} many {# prijatej recenzie} other {# prijatých recenzií}}",
-        "noReviews": "Žiadne recenzie"
+        "noReviews": "Žiadne recenzie",
+        "fullLink": "Zobraziť celý prehľad"
       }
     },
     "customFields": {
@@ -1911,7 +1912,8 @@
           "datesOrderError": "Dátum uzávierky musí byť neskôr, než je dátum otvorenia."
         }
       },
-      "titleRequired": "Titul je povinný"
+      "titleRequired": "Titul je povinný",
+      "bilanButton": "Prehľad"
     },
     "discountCodes": {
       "title": "Promo kódy",
@@ -1941,6 +1943,58 @@
       "valueRequiredError": "Redukcia musí byť väčšia ako 0.",
       "windowInvalidError": "Dátum ukončenia musí byť po dátume začiatku.",
       "saved": "Uložené promo kódy"
+    },
+    "bilanPage": {
+      "metaTitle": "Prehľad podujatia",
+      "export": "Exportovať prehľad",
+      "sectionTitle": "Podrobnosti o účastníkoch",
+      "sectionSubtitle": "Účasť, platby a recenzie na jednom mieste",
+      "searchPlaceholder": "Hľadať účastníka…",
+      "presenceFilter": {
+        "all": "Celá účasť",
+        "present": "Prítomní",
+        "absent": "Neprítomní"
+      },
+      "reviewFilter": {
+        "all": "Všetky recenzie",
+        "with": "S recenziou",
+        "without": "Bez recenzie"
+      },
+      "resetFilters": "Obnoviť",
+      "columns": {
+        "participant": "Účastník",
+        "presence": "Účasť",
+        "amount": "Zaplatená suma",
+        "payment": "Platba",
+        "review": "Recenzia"
+      },
+      "presence": {
+        "present": "Prítomný",
+        "absent": "Neprítomný"
+      },
+      "paymentStatus": {
+        "paid": "Zaplatené",
+        "pending": "Čaká",
+        "refunded": "Vrátené",
+        "free": "Zadarmo"
+      },
+      "viewReview": "Zobraziť recenziu",
+      "empty": "Žiadni účastníci",
+      "emptyFiltered": "Filtrom nezodpovedá žiadny účastník",
+      "totalAmount": "Spolu {amount}",
+      "participantCount": "{count, plural, one {# účastník} few {# účastníci} many {# účastníka} other {# účastníkov}}",
+      "reviewCount": "{count, plural, one {# recenzia} few {# recenzie} many {# recenzie} other {# recenzií}}",
+      "csv": {
+        "participant": "Účastník",
+        "email": "E-mail",
+        "presence": "Účasť",
+        "amount": "Zaplatená suma (€)",
+        "paymentStatus": "Stav platby",
+        "paymentMethod": "Spôsob platby",
+        "rating": "Hodnotenie (z 5)",
+        "comment": "Komentár",
+        "total": "Spolu"
+      }
     }
   },
   "actualites": {

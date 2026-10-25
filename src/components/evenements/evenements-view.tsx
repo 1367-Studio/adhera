@@ -8,7 +8,6 @@ import { PlusIcon, TrashIcon, UsersIcon, BookmarkSimpleIcon, ListIcon, CalendarD
 import Link from "next/link"
 import { ViewToggle } from "@/components/ui/view-toggle"
 import { PriceBadge } from "@/components/ui/price-badge"
-import { Badge } from "@/components/ui/badge"
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { format } from "date-fns"
@@ -21,6 +20,7 @@ import { Modal } from "@/components/ui/modal"
 import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 import { EvenementsCalendar } from "@/components/evenements/evenements-calendar"
 import { EvenementBilanPanel } from "@/components/evenements/evenement-bilan-panel"
+import { EvenementStatusBadge, type EvenementStatus } from "@/components/evenements/evenement-status-badge"
 import { Button } from "@/components/ui/button"
 import { RowActions } from "@/components/ui/row-actions"
 import { SearchInput } from "@/components/ui/search-input"
@@ -29,7 +29,6 @@ import { cheapestAvailableTicketTypePrice } from "@/lib/ticket-types"
 import { useHasAccess } from "@/lib/user-context"
 import { cn } from "@/lib/utils"
 
-type EvenementStatus = "DRAFT" | "PUBLISHED" | "ARCHIVED"
 type EvenementTicketType = { id: string; label: string; price: string; remaining: number | null; full: boolean; active: boolean }
 
 type Evenement = {
@@ -182,10 +181,6 @@ export function EvenementsView() {
     }
   }
 
-  const STATUS_LABEL   = { DRAFT: t("evenements.formStatus.draft"), PUBLISHED: t("evenements.formStatus.published"), ARCHIVED: t("evenements.formStatus.archived") }
-  const STATUS_VARIANT: Record<EvenementStatus, "secondary" | "default" | "outline"> = {
-    DRAFT: "secondary", PUBLISHED: "default", ARCHIVED: "outline",
-  }
 
   const columns: Column<Evenement>[] = [
     {
@@ -207,7 +202,7 @@ export function EvenementsView() {
             >
               {e.title}
             </Link>
-            <Badge variant={STATUS_VARIANT[e.status]}>{STATUS_LABEL[e.status]}</Badge>
+            <EvenementStatusBadge status={e.status} />
             {activeTicketTypes.length > 1
               ? <PriceBadge price={cheapestAvailableTicketTypePrice(activeTicketTypes)} fromPrice />
               : activeTicketTypes.length === 1

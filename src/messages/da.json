@@ -1606,7 +1606,8 @@
         "afterRefunds": "Efter refusioner",
         "reviews": "Anmeldelser",
         "reviewCount": "{count, plural, one {# anmeldelse modtaget} other {# anmeldelser modtaget}}",
-        "noReviews": "Ingen anmeldelser"
+        "noReviews": "Ingen anmeldelser",
+        "fullLink": "Se hele oversigten"
       }
     },
     "customFields": {
@@ -1911,7 +1912,8 @@
           "datesOrderError": "Afslutningsdatoen skal være senere end åbningsdatoen."
         }
       },
-      "titleRequired": "Titlen er obligatorisk"
+      "titleRequired": "Titlen er obligatorisk",
+      "bilanButton": "Oversigt"
     },
     "discountCodes": {
       "title": "Rabatkoder",
@@ -1941,6 +1943,58 @@
       "valueRequiredError": "Reduktionen skal være større end 0.",
       "windowInvalidError": "Slutdatoen skal være efter startdatoen.",
       "saved": "Gemte rabatkoder"
+    },
+    "bilanPage": {
+      "metaTitle": "Oversigt over arrangementet",
+      "export": "Eksportér oversigten",
+      "sectionTitle": "Deltagere i detaljer",
+      "sectionSubtitle": "Fremmøde, betalinger og anmeldelser samlet ét sted",
+      "searchPlaceholder": "Søg efter en deltager…",
+      "presenceFilter": {
+        "all": "Alt fremmøde",
+        "present": "Til stede",
+        "absent": "Fraværende"
+      },
+      "reviewFilter": {
+        "all": "Alle anmeldelser",
+        "with": "Med anmeldelse",
+        "without": "Uden anmeldelse"
+      },
+      "resetFilters": "Nulstil",
+      "columns": {
+        "participant": "Deltager",
+        "presence": "Fremmøde",
+        "amount": "Betalt beløb",
+        "payment": "Betaling",
+        "review": "Anmeldelse"
+      },
+      "presence": {
+        "present": "Til stede",
+        "absent": "Fraværende"
+      },
+      "paymentStatus": {
+        "paid": "Betalt",
+        "pending": "Afventer",
+        "refunded": "Refunderet",
+        "free": "Gratis"
+      },
+      "viewReview": "Se anmeldelsen",
+      "empty": "Ingen deltagere",
+      "emptyFiltered": "Ingen deltagere matcher filtrene",
+      "totalAmount": "I alt {amount}",
+      "participantCount": "{count, plural, one {# deltager} other {# deltagere}}",
+      "reviewCount": "{count, plural, one {# anmeldelse} other {# anmeldelser}}",
+      "csv": {
+        "participant": "Deltager",
+        "email": "E-mail",
+        "presence": "Fremmøde",
+        "amount": "Betalt beløb (€)",
+        "paymentStatus": "Betalingsstatus",
+        "paymentMethod": "Betalingsmetode",
+        "rating": "Bedømmelse (ud af 5)",
+        "comment": "Kommentar",
+        "total": "I alt"
+      }
     }
   },
   "actualites": {

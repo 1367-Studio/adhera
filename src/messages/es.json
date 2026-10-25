@@ -1606,7 +1606,8 @@
         "afterRefunds": "Tras reembolsos",
         "reviews": "Opiniones",
         "reviewCount": "{count, plural, one {# opinión recibida} many {# opiniones recibidas} other {# opiniones recibidas}}",
-        "noReviews": "Sin opiniones"
+        "noReviews": "Sin opiniones",
+        "fullLink": "Ver el balance completo"
       }
     },
     "customFields": {
@@ -1911,7 +1912,8 @@
           "datesOrderError": "La fecha de cierre debe ser posterior a la fecha de apertura."
         }
       },
-      "titleRequired": "El título es obligatorio"
+      "titleRequired": "El título es obligatorio",
+      "bilanButton": "Balance"
     },
     "discountCodes": {
       "title": "Códigos promocionales",
@@ -1941,6 +1943,58 @@
       "valueRequiredError": "El descuento debe ser mayor que 0.",
       "windowInvalidError": "La fecha de fin debe ser posterior a la fecha de inicio.",
       "saved": "Códigos promocionales guardados"
+    },
+    "bilanPage": {
+      "metaTitle": "Balance del evento",
+      "export": "Exportar el balance",
+      "sectionTitle": "Detalle de participantes",
+      "sectionSubtitle": "Asistencia, pagos y opiniones en un solo lugar",
+      "searchPlaceholder": "Buscar un participante…",
+      "presenceFilter": {
+        "all": "Toda la asistencia",
+        "present": "Presentes",
+        "absent": "Ausentes"
+      },
+      "reviewFilter": {
+        "all": "Todas las opiniones",
+        "with": "Con opinión",
+        "without": "Sin opinión"
+      },
+      "resetFilters": "Restablecer",
+      "columns": {
+        "participant": "Participante",
+        "presence": "Asistencia",
+        "amount": "Importe pagado",
+        "payment": "Pago",
+        "review": "Opinión"
+      },
+      "presence": {
+        "present": "Presente",
+        "absent": "Ausente"
+      },
+      "paymentStatus": {
+        "paid": "Pagado",
+        "pending": "Pendiente",
+        "refunded": "Reembolsado",
+        "free": "Gratuito"
+      },
+      "viewReview": "Ver la opinión",
+      "empty": "Ningún participante",
+      "emptyFiltered": "Ningún participante coincide con los filtros",
+      "totalAmount": "Total {amount}",
+      "participantCount": "{count, plural, one {# participante} many {# participantes} other {# participantes}}",
+      "reviewCount": "{count, plural, one {# opinión} many {# opiniones} other {# opiniones}}",
+      "csv": {
+        "participant": "Participante",
+        "email": "Correo electrónico",
+        "presence": "Asistencia",
+        "amount": "Importe pagado (€)",
+        "paymentStatus": "Estado del pago",
+        "paymentMethod": "Método de pago",
+        "rating": "Nota (sobre 5)",
+        "comment": "Comentario",
+        "total": "Total"
+      }
     }
   },
   "actualites": {

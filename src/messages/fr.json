@@ -1626,7 +1626,8 @@
         "afterRefunds": "Après remboursements",
         "reviews": "Avis",
         "reviewCount": "{count, plural, one {# avis reçu} other {# avis reçus}}",
-        "noReviews": "Aucun avis"
+        "noReviews": "Aucun avis",
+        "fullLink": "Voir le bilan complet"
       }
     },
     "customFields": {
@@ -1958,7 +1959,8 @@
       "reopenRegistrationsButton": "Rouvrir les inscriptions",
       "registrationsClosedNotice": "Inscriptions closes",
       "closeRegistrationsConfirmTitle": "Fermer les inscriptions ?",
-      "closeRegistrationsConfirmDescription": "Plus personne ne pourra s'inscrire en ligne. Vous pourrez toujours ajouter des participants depuis la liste des présences."
+      "closeRegistrationsConfirmDescription": "Plus personne ne pourra s'inscrire en ligne. Vous pourrez toujours ajouter des participants depuis la liste des présences.",
+      "bilanButton": "Bilan"
     },
     "discountCodes": {
       "title": "Codes promotionnels",
@@ -1988,6 +1990,58 @@
       "valueRequiredError": "La réduction doit être supérieure à 0.",
       "windowInvalidError": "La date de fin doit être après la date de début.",
       "saved": "Codes promotionnels enregistrés"
+    },
+    "bilanPage": {
+      "metaTitle": "Bilan de l'événement",
+      "export": "Exporter le bilan",
+      "sectionTitle": "Détail des participants",
+      "sectionSubtitle": "Présences, paiements et avis réunis au même endroit",
+      "searchPlaceholder": "Rechercher un participant…",
+      "presenceFilter": {
+        "all": "Toutes les présences",
+        "present": "Présents",
+        "absent": "Absents"
+      },
+      "reviewFilter": {
+        "all": "Tous les avis",
+        "with": "Avec avis",
+        "without": "Sans avis"
+      },
+      "resetFilters": "Réinitialiser",
+      "columns": {
+        "participant": "Participant",
+        "presence": "Présence",
+        "amount": "Montant payé",
+        "payment": "Paiement",
+        "review": "Avis"
+      },
+      "presence": {
+        "present": "Présent",
+        "absent": "Absent"
+      },
+      "paymentStatus": {
+        "paid": "Payé",
+        "pending": "En attente",
+        "refunded": "Remboursé",
+        "free": "Gratuit"
+      },
+      "viewReview": "Voir l'avis",
+      "empty": "Aucun participant",
+      "emptyFiltered": "Aucun participant ne correspond aux filtres",
+      "totalAmount": "Total {amount}",
+      "participantCount": "{count, plural, one {# participant} other {# participants}}",
+      "reviewCount": "{count, plural, one {# avis} other {# avis}}",
+      "csv": {
+        "participant": "Participant",
+        "email": "E-mail",
+        "presence": "Présence",
+        "amount": "Montant payé (€)",
+        "paymentStatus": "Statut du paiement",
+        "paymentMethod": "Moyen de paiement",
+        "rating": "Note (sur 5)",
+        "comment": "Commentaire",
+        "total": "Total"
+      }
     }
   },
   "actualites": {

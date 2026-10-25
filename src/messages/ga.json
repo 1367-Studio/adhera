@@ -1606,7 +1606,8 @@
         "afterRefunds": "Tar éis aisíocaíochtaí",
         "reviews": "Léirmheasanna",
         "reviewCount": "{count, plural, one {# léirmheas faighte} two {# léirmheas faighte} few {# léirmheas faighte} many {# léirmheas faighte} other {# léirmheas faighte}}",
-        "noReviews": "Gan léirmheasanna"
+        "noReviews": "Gan léirmheasanna",
+        "fullLink": "Féach ar an achoimre iomlán"
       }
     },
     "customFields": {
@@ -1911,7 +1912,8 @@
           "datesOrderError": "Caithfidh an dáta deiridh a bheith níos déanaí ná an dáta oscailte."
         }
       },
-      "titleRequired": "Tá an teideal éigeantach"
+      "titleRequired": "Tá an teideal éigeantach",
+      "bilanButton": "Achoimre"
     },
     "discountCodes": {
       "title": "Cóid Promo",
@@ -1941,6 +1943,58 @@
       "valueRequiredError": "Caithfidh an laghdú a bheith níos mó ná 0.",
       "windowInvalidError": "Caithfidh an dáta deiridh a bheith tar éis an dáta tosaigh.",
       "saved": "Cóid Promo Shábháilte"
+    },
+    "bilanPage": {
+      "metaTitle": "Achoimre an imeachta",
+      "export": "Easpórtáil an achoimre",
+      "sectionTitle": "Sonraí na rannpháirtithe",
+      "sectionSubtitle": "Tinreamh, íocaíochtaí agus léirmheasanna in aon áit amháin",
+      "searchPlaceholder": "Cuardaigh rannpháirtí…",
+      "presenceFilter": {
+        "all": "An tinreamh ar fad",
+        "present": "I láthair",
+        "absent": "As láthair"
+      },
+      "reviewFilter": {
+        "all": "Gach léirmheas",
+        "with": "Le léirmheas",
+        "without": "Gan léirmheas"
+      },
+      "resetFilters": "Athshocraigh",
+      "columns": {
+        "participant": "Rannpháirtí",
+        "presence": "Tinreamh",
+        "amount": "Méid íoctha",
+        "payment": "Íocaíocht",
+        "review": "Léirmheas"
+      },
+      "presence": {
+        "present": "I láthair",
+        "absent": "As láthair"
+      },
+      "paymentStatus": {
+        "paid": "Íoctha",
+        "pending": "Ar feitheamh",
+        "refunded": "Aisíoctha",
+        "free": "Saor in aisce"
+      },
+      "viewReview": "Féach ar an léirmheas",
+      "empty": "Gan rannpháirtithe",
+      "emptyFiltered": "Níl aon rannpháirtí ag teacht leis na scagairí",
+      "totalAmount": "Iomlán {amount}",
+      "participantCount": "{count, plural, one {# rannpháirtí} two {# rannpháirtí} few {# rannpháirtí} many {# rannpháirtí} other {# rannpháirtí}}",
+      "reviewCount": "{count, plural, one {# léirmheas} two {# léirmheas} few {# léirmheas} many {# léirmheas} other {# léirmheas}}",
+      "csv": {
+        "participant": "Rannpháirtí",
+        "email": "Ríomhphost",
+        "presence": "Tinreamh",
+        "amount": "Méid íoctha (€)",
+        "paymentStatus": "Stádas íocaíochta",
+        "paymentMethod": "Modh íocaíochta",
+        "rating": "Rátáil (as 5)",
+        "comment": "Trácht",
+        "total": "Iomlán"
+      }
     }
   },
   "actualites": {

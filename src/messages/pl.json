@@ -1606,7 +1606,8 @@
         "afterRefunds": "Po zwrotach",
         "reviews": "Opinie",
         "reviewCount": "{count, plural, one {# otrzymana opinia} few {# otrzymane opinie} many {# otrzymanych opinii} other {# otrzymanej opinii}}",
-        "noReviews": "Brak opinii"
+        "noReviews": "Brak opinii",
+        "fullLink": "Zobacz pełne podsumowanie"
       }
     },
     "customFields": {
@@ -1911,7 +1912,8 @@
           "datesOrderError": "Data zamknięcia musi być późniejsza niż data otwarcia."
         }
       },
-      "titleRequired": "Tytuł jest obowiązkowy"
+      "titleRequired": "Tytuł jest obowiązkowy",
+      "bilanButton": "Podsumowanie"
     },
     "discountCodes": {
       "title": "Kody promocyjne",
@@ -1941,6 +1943,58 @@
       "valueRequiredError": "Redukcja musi być większa niż 0.",
       "windowInvalidError": "Data zakończenia musi przypadać po dacie rozpoczęcia.",
       "saved": "Zapisane kody promocyjne"
+    },
+    "bilanPage": {
+      "metaTitle": "Podsumowanie wydarzenia",
+      "export": "Eksportuj podsumowanie",
+      "sectionTitle": "Szczegóły uczestników",
+      "sectionSubtitle": "Obecność, płatności i opinie w jednym miejscu",
+      "searchPlaceholder": "Szukaj uczestnika…",
+      "presenceFilter": {
+        "all": "Cała obecność",
+        "present": "Obecni",
+        "absent": "Nieobecni"
+      },
+      "reviewFilter": {
+        "all": "Wszystkie opinie",
+        "with": "Z opinią",
+        "without": "Bez opinii"
+      },
+      "resetFilters": "Resetuj",
+      "columns": {
+        "participant": "Uczestnik",
+        "presence": "Obecność",
+        "amount": "Zapłacona kwota",
+        "payment": "Płatność",
+        "review": "Opinia"
+      },
+      "presence": {
+        "present": "Obecny",
+        "absent": "Nieobecny"
+      },
+      "paymentStatus": {
+        "paid": "Opłacone",
+        "pending": "Oczekujące",
+        "refunded": "Zwrócone",
+        "free": "Bezpłatne"
+      },
+      "viewReview": "Zobacz opinię",
+      "empty": "Brak uczestników",
+      "emptyFiltered": "Żaden uczestnik nie pasuje do filtrów",
+      "totalAmount": "Razem {amount}",
+      "participantCount": "{count, plural, one {# uczestnik} few {# uczestników} many {# uczestników} other {# uczestnika}}",
+      "reviewCount": "{count, plural, one {# opinia} few {# opinie} many {# opinii} other {# opinii}}",
+      "csv": {
+        "participant": "Uczestnik",
+        "email": "E-mail",
+        "presence": "Obecność",
+        "amount": "Zapłacona kwota (€)",
+        "paymentStatus": "Status płatności",
+        "paymentMethod": "Metoda płatności",
+        "rating": "Ocena (na 5)",
+        "comment": "Komentarz",
+        "total": "Razem"
+      }
     }
   },
   "actualites": {

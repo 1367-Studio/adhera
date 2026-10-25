@@ -1606,7 +1606,8 @@
         "afterRefunds": "Pärast tagasimakseid",
         "reviews": "Arvustused",
         "reviewCount": "{count, plural, one {# arvustus saadud} other {# arvustust saadud}}",
-        "noReviews": "Arvustusi pole"
+        "noReviews": "Arvustusi pole",
+        "fullLink": "Vaata kogu kokkuvõtet"
       }
     },
     "customFields": {
@@ -1911,7 +1912,8 @@
           "datesOrderError": "Sulgemiskuupäev peab olema hilisem kui avamiskuupäev."
         }
       },
-      "titleRequired": "Tiitel on kohustuslik"
+      "titleRequired": "Tiitel on kohustuslik",
+      "bilanButton": "Kokkuvõte"
     },
     "discountCodes": {
       "title": "Sooduskoodid",
@@ -1941,6 +1943,58 @@
       "valueRequiredError": "Vähendus peab olema suurem kui 0.",
       "windowInvalidError": "Lõppkuupäev peab olema pärast alguskuupäeva.",
       "saved": "Salvestatud sooduskoodid"
+    },
+    "bilanPage": {
+      "metaTitle": "Ürituse kokkuvõte",
+      "export": "Ekspordi kokkuvõte",
+      "sectionTitle": "Osalejate üksikasjad",
+      "sectionSubtitle": "Kohalolek, maksed ja arvustused ühes kohas",
+      "searchPlaceholder": "Otsi osalejat…",
+      "presenceFilter": {
+        "all": "Kogu kohalolek",
+        "present": "Kohal",
+        "absent": "Puudujad"
+      },
+      "reviewFilter": {
+        "all": "Kõik arvustused",
+        "with": "Arvustusega",
+        "without": "Arvustuseta"
+      },
+      "resetFilters": "Lähtesta",
+      "columns": {
+        "participant": "Osaleja",
+        "presence": "Kohalolek",
+        "amount": "Makstud summa",
+        "payment": "Makse",
+        "review": "Arvustus"
+      },
+      "presence": {
+        "present": "Kohal",
+        "absent": "Puudub"
+      },
+      "paymentStatus": {
+        "paid": "Makstud",
+        "pending": "Ootel",
+        "refunded": "Tagastatud",
+        "free": "Tasuta"
+      },
+      "viewReview": "Vaata arvustust",
+      "empty": "Osalejaid pole",
+      "emptyFiltered": "Ükski osaleja ei vasta filtritele",
+      "totalAmount": "Kokku {amount}",
+      "participantCount": "{count, plural, one {# osaleja} other {# osalejat}}",
+      "reviewCount": "{count, plural, one {# arvustus} other {# arvustust}}",
+      "csv": {
+        "participant": "Osaleja",
+        "email": "E-post",
+        "presence": "Kohalolek",
+        "amount": "Makstud summa (€)",
+        "paymentStatus": "Makse olek",
+        "paymentMethod": "Makseviis",
+        "rating": "Hinne (5-st)",
+        "comment": "Kommentaar",
+        "total": "Kokku"
+      }
     }
   },
   "actualites": {

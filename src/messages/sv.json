@@ -1606,7 +1606,8 @@
         "afterRefunds": "Efter återbetalningar",
         "reviews": "Recensioner",
         "reviewCount": "{count, plural, one {# recension mottagen} other {# recensioner mottagna}}",
-        "noReviews": "Inga recensioner"
+        "noReviews": "Inga recensioner",
+        "fullLink": "Visa hela sammanfattningen"
       }
     },
     "customFields": {
@@ -1911,7 +1912,8 @@
           "datesOrderError": "Tillträdesdatumet måste vara senare än öppningsdatumet."
         }
       },
-      "titleRequired": "Titeln är obligatorisk"
+      "titleRequired": "Titeln är obligatorisk",
+      "bilanButton": "Sammanfattning"
     },
     "discountCodes": {
       "title": "Kampanjkoder",
@@ -1941,6 +1943,58 @@
       "valueRequiredError": "Reduktionen måste vara större än 0.",
       "windowInvalidError": "Slutdatumet måste vara efter startdatumet.",
       "saved": "Sparade kampanjkoder"
+    },
+    "bilanPage": {
+      "metaTitle": "Sammanfattning av evenemanget",
+      "export": "Exportera sammanfattningen",
+      "sectionTitle": "Deltagare i detalj",
+      "sectionSubtitle": "Närvaro, betalningar och recensioner på ett ställe",
+      "searchPlaceholder": "Sök efter en deltagare…",
+      "presenceFilter": {
+        "all": "All närvaro",
+        "present": "Närvarande",
+        "absent": "Frånvarande"
+      },
+      "reviewFilter": {
+        "all": "Alla recensioner",
+        "with": "Med recension",
+        "without": "Utan recension"
+      },
+      "resetFilters": "Återställ",
+      "columns": {
+        "participant": "Deltagare",
+        "presence": "Närvaro",
+        "amount": "Betalt belopp",
+        "payment": "Betalning",
+        "review": "Recension"
+      },
+      "presence": {
+        "present": "Närvarande",
+        "absent": "Frånvarande"
+      },
+      "paymentStatus": {
+        "paid": "Betald",
+        "pending": "Väntande",
+        "refunded": "Återbetald",
+        "free": "Gratis"
+      },
+      "viewReview": "Visa recensionen",
+      "empty": "Inga deltagare",
+      "emptyFiltered": "Inga deltagare matchar filtren",
+      "totalAmount": "Totalt {amount}",
+      "participantCount": "{count, plural, one {# deltagare} other {# deltagare}}",
+      "reviewCount": "{count, plural, one {# recension} other {# recensioner}}",
+      "csv": {
+        "participant": "Deltagare",
+        "email": "E-post",
+        "presence": "Närvaro",
+        "amount": "Betalt belopp (€)",
+        "paymentStatus": "Betalningsstatus",
+        "paymentMethod": "Betalningssätt",
+        "rating": "Betyg (av 5)",
+        "comment": "Kommentar",
+        "total": "Totalt"
+      }
     }
   },
   "actualites": {

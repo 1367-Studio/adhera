@@ -1606,7 +1606,8 @@
         "afterRefunds": "Palautusten jälkeen",
         "reviews": "Arvostelut",
         "reviewCount": "{count, plural, one {# arvostelu saatu} other {# arvostelua saatu}}",
-        "noReviews": "Ei arvosteluja"
+        "noReviews": "Ei arvosteluja",
+        "fullLink": "Näytä koko yhteenveto"
       }
     },
     "customFields": {
@@ -1911,7 +1912,8 @@
           "datesOrderError": "Sulkemispäivän on oltava myöhempi kuin avajaispäivä."
         }
       },
-      "titleRequired": "Titteli on pakollinen"
+      "titleRequired": "Titteli on pakollinen",
+      "bilanButton": "Yhteenveto"
     },
     "discountCodes": {
       "title": "Kampanjakoodit",
@@ -1941,6 +1943,58 @@
       "valueRequiredError": "Reduktion täytyy olla suurempi kuin 0.",
       "windowInvalidError": "Päättymispäivän tulee olla aloituspäivän jälkeen.",
       "saved": "Tallennetut alennuskoodit"
+    },
+    "bilanPage": {
+      "metaTitle": "Tapahtuman yhteenveto",
+      "export": "Vie yhteenveto",
+      "sectionTitle": "Osallistujien tiedot",
+      "sectionSubtitle": "Läsnäolot, maksut ja arvostelut yhdessä paikassa",
+      "searchPlaceholder": "Hae osallistujaa…",
+      "presenceFilter": {
+        "all": "Kaikki läsnäolot",
+        "present": "Paikalla",
+        "absent": "Poissa"
+      },
+      "reviewFilter": {
+        "all": "Kaikki arvostelut",
+        "with": "Arvostelun kanssa",
+        "without": "Ilman arvostelua"
+      },
+      "resetFilters": "Nollaa",
+      "columns": {
+        "participant": "Osallistuja",
+        "presence": "Läsnäolo",
+        "amount": "Maksettu summa",
+        "payment": "Maksu",
+        "review": "Arvostelu"
+      },
+      "presence": {
+        "present": "Paikalla",
+        "absent": "Poissa"
+      },
+      "paymentStatus": {
+        "paid": "Maksettu",
+        "pending": "Odottaa",
+        "refunded": "Hyvitetty",
+        "free": "Maksuton"
+      },
+      "viewReview": "Näytä arvostelu",
+      "empty": "Ei osallistujia",
+      "emptyFiltered": "Yksikään osallistuja ei vastaa suodattimia",
+      "totalAmount": "Yhteensä {amount}",
+      "participantCount": "{count, plural, one {# osallistuja} other {# osallistujaa}}",
+      "reviewCount": "{count, plural, one {# arvostelu} other {# arvostelua}}",
+      "csv": {
+        "participant": "Osallistuja",
+        "email": "Sähköposti",
+        "presence": "Läsnäolo",
+        "amount": "Maksettu summa (€)",
+        "paymentStatus": "Maksun tila",
+        "paymentMethod": "Maksutapa",
+        "rating": "Arvosana (5:stä)",
+        "comment": "Kommentti",
+        "total": "Yhteensä"
+      }
     }
   },
   "actualites": {

@@ -1606,7 +1606,8 @@
         "afterRefunds": "Wara r-rimborżi",
         "reviews": "Reviżjonijiet",
         "reviewCount": "{count, plural, one {# reviżjoni riċevuta} two {# reviżjonijiet riċevuti} few {# reviżjonijiet riċevuti} many {# reviżjonijiet riċevuti} other {# reviżjonijiet riċevuti}}",
-        "noReviews": "L-ebda reviżjoni"
+        "noReviews": "L-ebda reviżjoni",
+        "fullLink": "Ara s-sommarju sħiħ"
       }
     },
     "customFields": {
@@ -1911,7 +1912,8 @@
           "datesOrderError": "Id-data tal-għeluq trid tkun aktar tard mid-data tal-ftuħ."
         }
       },
-      "titleRequired": "It-titlu huwa obbligatorju"
+      "titleRequired": "It-titlu huwa obbligatorju",
+      "bilanButton": "Sommarju"
     },
     "discountCodes": {
       "title": "Kodiċijiet Promo",
@@ -1941,6 +1943,58 @@
       "valueRequiredError": "Ir-riduzzjoni trid tkun akbar minn 0.",
       "windowInvalidError": "Id-data tat-tmiem trid tkun wara d-data tal-bidu.",
       "saved": "Kodiċijiet Promo Salvati"
+    },
+    "bilanPage": {
+      "metaTitle": "Sommarju tal-avveniment",
+      "export": "Esporta s-sommarju",
+      "sectionTitle": "Dettalji tal-parteċipanti",
+      "sectionSubtitle": "Attendenza, ħlasijiet u reviżjonijiet f'post wieħed",
+      "searchPlaceholder": "Fittex parteċipant…",
+      "presenceFilter": {
+        "all": "L-attendenza kollha",
+        "present": "Preżenti",
+        "absent": "Assenti"
+      },
+      "reviewFilter": {
+        "all": "Ir-reviżjonijiet kollha",
+        "with": "B'reviżjoni",
+        "without": "Mingħajr reviżjoni"
+      },
+      "resetFilters": "Irrisettja",
+      "columns": {
+        "participant": "Parteċipant",
+        "presence": "Attendenza",
+        "amount": "Ammont imħallas",
+        "payment": "Ħlas",
+        "review": "Reviżjoni"
+      },
+      "presence": {
+        "present": "Preżenti",
+        "absent": "Assenti"
+      },
+      "paymentStatus": {
+        "paid": "Imħallas",
+        "pending": "Pendenti",
+        "refunded": "Rimborżat",
+        "free": "B'xejn"
+      },
+      "viewReview": "Ara r-reviżjoni",
+      "empty": "L-ebda parteċipant",
+      "emptyFiltered": "L-ebda parteċipant ma jaqbel mal-filtri",
+      "totalAmount": "Total {amount}",
+      "participantCount": "{count, plural, one {# parteċipant} two {# parteċipanti} few {# parteċipanti} many {# parteċipanti} other {# parteċipanti}}",
+      "reviewCount": "{count, plural, one {# reviżjoni} two {# reviżjonijiet} few {# reviżjonijiet} many {# reviżjonijiet} other {# reviżjonijiet}}",
+      "csv": {
+        "participant": "Parteċipant",
+        "email": "Email",
+        "presence": "Attendenza",
+        "amount": "Ammont imħallas (€)",
+        "paymentStatus": "Status tal-ħlas",
+        "paymentMethod": "Metodu tal-ħlas",
+        "rating": "Grad (minn 5)",
+        "comment": "Kumment",
+        "total": "Total"
+      }
     }
   },
   "actualites": {

@@ -1606,7 +1606,8 @@
         "afterRefunds": "După rambursări",
         "reviews": "Recenzii",
         "reviewCount": "{count, plural, one {# recenzie primită} few {# recenzii primite} other {# de recenzii primite}}",
-        "noReviews": "Nicio recenzie"
+        "noReviews": "Nicio recenzie",
+        "fullLink": "Vezi bilanțul complet"
       }
     },
     "customFields": {
@@ -1911,7 +1912,8 @@
           "datesOrderError": "Data de închidere trebuie să fie mai târzie decât data deschiderii."
         }
       },
-      "titleRequired": "Titlul este obligatoriu"
+      "titleRequired": "Titlul este obligatoriu",
+      "bilanButton": "Bilanț"
     },
     "discountCodes": {
       "title": "Coduri promoționale",
@@ -1941,6 +1943,58 @@
       "valueRequiredError": "Reducerea trebuie să fie mai mare de 0.",
       "windowInvalidError": "Data de sfârșit trebuie să fie după data de începere.",
       "saved": "Coduri promoționale salvate"
+    },
+    "bilanPage": {
+      "metaTitle": "Bilanțul evenimentului",
+      "export": "Exportă bilanțul",
+      "sectionTitle": "Detaliile participanților",
+      "sectionSubtitle": "Prezențe, plăți și recenzii într-un singur loc",
+      "searchPlaceholder": "Caută un participant…",
+      "presenceFilter": {
+        "all": "Toate prezențele",
+        "present": "Prezenți",
+        "absent": "Absenți"
+      },
+      "reviewFilter": {
+        "all": "Toate recenziile",
+        "with": "Cu recenzie",
+        "without": "Fără recenzie"
+      },
+      "resetFilters": "Resetează",
+      "columns": {
+        "participant": "Participant",
+        "presence": "Prezență",
+        "amount": "Sumă plătită",
+        "payment": "Plată",
+        "review": "Recenzie"
+      },
+      "presence": {
+        "present": "Prezent",
+        "absent": "Absent"
+      },
+      "paymentStatus": {
+        "paid": "Plătit",
+        "pending": "În așteptare",
+        "refunded": "Rambursat",
+        "free": "Gratuit"
+      },
+      "viewReview": "Vezi recenzia",
+      "empty": "Niciun participant",
+      "emptyFiltered": "Niciun participant nu corespunde filtrelor",
+      "totalAmount": "Total {amount}",
+      "participantCount": "{count, plural, one {# participant} few {# participanți} other {# de participanți}}",
+      "reviewCount": "{count, plural, one {# recenzie} few {# recenzii} other {# de recenzii}}",
+      "csv": {
+        "participant": "Participant",
+        "email": "E-mail",
+        "presence": "Prezență",
+        "amount": "Sumă plătită (€)",
+        "paymentStatus": "Starea plății",
+        "paymentMethod": "Metodă de plată",
+        "rating": "Notă (din 5)",
+        "comment": "Comentariu",
+        "total": "Total"
+      }
     }
   },
   "actualites": {
