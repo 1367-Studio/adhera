@@ -95,6 +95,15 @@ type DonsResult = {
   totalCount:  number
 }
 
+// Donor/e-mail search only reaches the database from this many characters on — 1–2 letters
+// match almost every row anyway. Same threshold as /api/dons (MIN_SEARCH_LENGTH there).
+const MIN_SEARCH_LENGTH = 3
+
+function searchTermToApply(searchInput: string): string {
+  const trimmedSearch = searchInput.trim()
+  return trimmedSearch.length >= MIN_SEARCH_LENGTH ? trimmedSearch : ""
+}
+
 const currentYear = new Date().getFullYear()
 const yearOptions = Array.from({ length: 5 }, (_, i) => currentYear - i)
 const PAGE_SIZE   = 25
@@ -274,16 +283,17 @@ function DonsPageInner() {
   }
 
   // ─── Dons reçus ─────────────────────────────────────────────────────────
+  const appliedSearch = searchTermToApply(search)
   const donsParams = new URLSearchParams({
     page:  String(page),
     limit: String(PAGE_SIZE),
     year:  String(yearFilter),
-    ...(search ? { search } : {}),
+    ...(appliedSearch ? { search: appliedSearch } : {}),
     ...(originFilter !== "all" ? { origin: originFilter } : {}),
   })
 
   const { data: donsResult, isLoading: loadingDons } = useQuery<DonsResult>({
-    queryKey:  ["dashboard-dons", page, yearFilter, search, originFilter],
+    queryKey:  ["dashboard-dons", page, yearFilter, appliedSearch, originFilter],
     queryFn:   () => fetch(`/api/dons?${donsParams}`).then(r => r.json()),
     enabled:   tab === "dons",
     staleTime: 0,
@@ -630,18 +640,20 @@ function DonsPageInner() {
 
   const hasActiveRecusFilters = Object.values(recusFilterInputs).some(filterValue => filterValue.trim() !== "")
 
+  const appliedRecusSearch = searchTermToApply(recusFilters.search)
   const recusParams = new URLSearchParams({
     page:  String(recusPage),
     limit: String(PAGE_SIZE),
     year:  String(yearFilter),
     receiptsOnly: "true",
-    ...(recusFilters.search.trim()    ? { search:    recusFilters.search.trim() }    : {}),
+    ...(appliedRecusSearch            ? { search:    appliedRecusSearch }            : {}),
     ...(recusFilters.minAmount.trim() ? { minAmount: recusFilters.minAmount.trim() } : {}),
     ...(recusFilters.maxAmount.trim() ? { maxAmount: recusFilters.maxAmount.trim() } : {}),
   })
 
   const { data: recusResult, isLoading: loadingRecus } = useQuery<DonsResult>({
-    queryKey:  ["dashboard-dons-recus", yearFilter, recusPage, recusFilters],
+    // The applied search, not the raw input: typing a 1st or 2nd letter must not refetch.
+    queryKey:  ["dashboard-dons-recus", yearFilter, recusPage, appliedRecusSearch, recusFilters.minAmount, recusFilters.maxAmount],
     queryFn:   () => fetch(`/api/dons?${recusParams}`).then(r => r.json()),
     enabled:   tab === "recus",
     staleTime: 0,

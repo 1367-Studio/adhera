@@ -12,12 +12,18 @@ import { donConfirmationEmail } from "@/lib/email"
 import { notifyDonResponsable } from "@/lib/dons/notify"
 import { reportError } from "@/lib/monitoring"
 
+// Same threshold as the dashboard Dons page's search boxes.
+const MIN_SEARCH_LENGTH = 3
+
 export const GET = withAdminAuth(async (req, ctx) => {
   const { associationId } = ctx
   const { searchParams } = new URL(req.url)
 
   const year          = searchParams.get("year")
-  const search        = searchParams.get("search")?.trim()
+  // Ignored under MIN_SEARCH_LENGTH characters (the dashboard doesn't send it either) — a
+  // 1–2 letter `contains` scan across five columns matches nearly everything anyway.
+  const rawSearch     = searchParams.get("search")?.trim() ?? ""
+  const search        = rawSearch.length >= MIN_SEARCH_LENGTH ? rawSearch : undefined
   const origin        = searchParams.get("origin") ?? undefined
   const receiptsOnly  = searchParams.get("receiptsOnly") === "true"
   // Offline dons (espèces/chèque/virement) awaiting encaissement — the one other state
