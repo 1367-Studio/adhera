@@ -2845,7 +2845,12 @@
         "issuedAt": "Išleista",
         "amount": "Suma"
       },
-      "noReceipts": "Mokesčių kvitai nebuvo išduoti"
+      "noReceipts": "Mokesčių kvitai nebuvo išduoti",
+      "searchPlaceholder": "Aukotojas arba el. paštas…",
+      "minAmount": "Min. suma (€)",
+      "maxAmount": "Maks. suma (€)",
+      "noReceiptsFiltered": "Filtrus atitinkančių kvitų nėra",
+      "count": "{count, plural, one {# kvitas} few {# kvitai} many {# kvito} other {# kvitų}}"
     },
     "detail": {
       "backToList": "Grįžtant prie aukų",

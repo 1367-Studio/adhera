@@ -2925,7 +2925,12 @@
         "issuedAt": "Émis le",
         "amount": "Montant"
       },
-      "noReceipts": "Aucun reçu fiscal émis"
+      "noReceipts": "Aucun reçu fiscal émis",
+      "searchPlaceholder": "Donateur ou e-mail…",
+      "minAmount": "Montant min (€)",
+      "maxAmount": "Montant max (€)",
+      "noReceiptsFiltered": "Aucun reçu ne correspond aux filtres",
+      "count": "{count, plural, one {# reçu} other {# reçus}}"
     },
     "detail": {
       "backToList": "Retour aux dons",

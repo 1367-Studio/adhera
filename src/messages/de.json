@@ -2845,7 +2845,12 @@
         "issuedAt": "Herausgegeben am",
         "amount": "Betrag"
       },
-      "noReceipts": "Keine Steuerbelege ausgegeben"
+      "noReceipts": "Keine Steuerbelege ausgegeben",
+      "searchPlaceholder": "Spender oder E-Mail…",
+      "minAmount": "Mindestbetrag (€)",
+      "maxAmount": "Höchstbetrag (€)",
+      "noReceiptsFiltered": "Keine Belege entsprechen den Filtern",
+      "count": "{count, plural, one {# Beleg} other {# Belege}}"
     },
     "detail": {
       "backToList": "Zurück zu den Spenden",

@@ -2845,7 +2845,12 @@
         "issuedAt": "Emitido el",
         "amount": "Importe"
       },
-      "noReceipts": "Ningún recibo fiscal emitido"
+      "noReceipts": "Ningún recibo fiscal emitido",
+      "searchPlaceholder": "Donante o correo…",
+      "minAmount": "Importe mín. (€)",
+      "maxAmount": "Importe máx. (€)",
+      "noReceiptsFiltered": "Ningún recibo coincide con los filtros",
+      "count": "{count, plural, one {# recibo} other {# recibos}}"
     },
     "detail": {
       "backToList": "Volver a donaciones",

@@ -2845,7 +2845,12 @@
         "issuedAt": "Izdano",
         "amount": "Iznos"
       },
-      "noReceipts": "Nema izdanih poreznih potvrda"
+      "noReceipts": "Nema izdanih poreznih potvrda",
+      "searchPlaceholder": "Donator ili e-pošta…",
+      "minAmount": "Min. iznos (€)",
+      "maxAmount": "Maks. iznos (€)",
+      "noReceiptsFiltered": "Nijedna potvrda ne odgovara filtrima",
+      "count": "{count, plural, one {# potvrda} few {# potvrde} other {# potvrda}}"
     },
     "detail": {
       "backToList": "Povratak na donacije",

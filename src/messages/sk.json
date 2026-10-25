@@ -2845,7 +2845,12 @@
         "issuedAt": "Vydané",
         "amount": "Množstvo"
       },
-      "noReceipts": "Nevydané žiadne daňové potvrdenia"
+      "noReceipts": "Nevydané žiadne daňové potvrdenia",
+      "searchPlaceholder": "Darca alebo e-mail…",
+      "minAmount": "Min. suma (€)",
+      "maxAmount": "Max. suma (€)",
+      "noReceiptsFiltered": "Filtrom nezodpovedá žiadne potvrdenie",
+      "count": "{count, plural, one {# potvrdenie} few {# potvrdenia} many {# potvrdenia} other {# potvrdení}}"
     },
     "detail": {
       "backToList": "Späť na dary",

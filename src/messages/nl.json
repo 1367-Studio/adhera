@@ -2845,7 +2845,12 @@
         "issuedAt": "Uitgegeven op",
         "amount": "Bedrag"
       },
-      "noReceipts": "Geen belastingbonnen uitgegeven"
+      "noReceipts": "Geen belastingbonnen uitgegeven",
+      "searchPlaceholder": "Donateur of e-mail…",
+      "minAmount": "Min. bedrag (€)",
+      "maxAmount": "Max. bedrag (€)",
+      "noReceiptsFiltered": "Geen ontvangstbewijzen komen overeen met de filters",
+      "count": "{count, plural, one {# ontvangstbewijs} other {# ontvangstbewijzen}}"
     },
     "detail": {
       "backToList": "Terug naar donaties",

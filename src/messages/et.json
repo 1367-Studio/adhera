@@ -2845,7 +2845,12 @@
         "issuedAt": "Välja antud",
         "amount": "Kogus"
       },
-      "noReceipts": "Maksukviitungeid ei väljastata"
+      "noReceipts": "Maksukviitungeid ei väljastata",
+      "searchPlaceholder": "Annetaja või e-post…",
+      "minAmount": "Min summa (€)",
+      "maxAmount": "Max summa (€)",
+      "noReceiptsFiltered": "Filtritele ei vasta ükski kviitung",
+      "count": "{count, plural, one {# kviitung} other {# kviitungit}}"
     },
     "detail": {
       "backToList": "Tagasi annetuste juurde",

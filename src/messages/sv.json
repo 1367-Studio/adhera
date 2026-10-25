@@ -2845,7 +2845,12 @@
         "issuedAt": "Utfärdad den",
         "amount": "Belopp"
       },
-      "noReceipts": "Inga skattekvitton utfärdas"
+      "noReceipts": "Inga skattekvitton utfärdas",
+      "searchPlaceholder": "Givare eller e-post…",
+      "minAmount": "Min. belopp (€)",
+      "maxAmount": "Max. belopp (€)",
+      "noReceiptsFiltered": "Inga kvitton matchar filtren",
+      "count": "{count, plural, one {# kvitto} other {# kvitton}}"
     },
     "detail": {
       "backToList": "Tillbaka till donationer",

@@ -602,15 +602,46 @@ function DonsPageInner() {
   const hasActiveFilters = !!search || originFilter !== "all"
 
   // ─── Reçus fiscaux ──────────────────────────────────────────────────────
+  // Own filters, separate from the "dons" tab's search (only the year is shared): finding a
+  // receipt for one donor shouldn't leave the donations list silently filtered. What's typed
+  // is applied after a short pause, like the donations search, so the list doesn't refetch on
+  // every keystroke of an amount.
+  const emptyRecusFilters = { search: "", minAmount: "", maxAmount: "" }
+  const [recusFilterInputs, setRecusFilterInputs] = useState(emptyRecusFilters)
+  const [recusFilters, setRecusFilters]           = useState(emptyRecusFilters)
+  const [recusPage, setRecusPage]                 = useState(1)
+  const recusDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  useEffect(() => () => { if (recusDebounceRef.current) clearTimeout(recusDebounceRef.current) }, [])
+
+  function handleRecusFilterChange(filterName: keyof typeof emptyRecusFilters, filterValue: string) {
+    const nextFilters = { ...recusFilterInputs, [filterName]: filterValue }
+    setRecusFilterInputs(nextFilters)
+    if (recusDebounceRef.current) clearTimeout(recusDebounceRef.current)
+    recusDebounceRef.current = setTimeout(() => { setRecusFilters(nextFilters); setRecusPage(1) }, 300)
+  }
+
+  function resetRecusFilters() {
+    if (recusDebounceRef.current) clearTimeout(recusDebounceRef.current)
+    setRecusFilterInputs(emptyRecusFilters)
+    setRecusFilters(emptyRecusFilters)
+    setRecusPage(1)
+  }
+
+  const hasActiveRecusFilters = Object.values(recusFilterInputs).some(filterValue => filterValue.trim() !== "")
+
   const recusParams = new URLSearchParams({
-    page:  "1",
-    limit: "100",
+    page:  String(recusPage),
+    limit: String(PAGE_SIZE),
     year:  String(yearFilter),
     receiptsOnly: "true",
+    ...(recusFilters.search.trim()    ? { search:    recusFilters.search.trim() }    : {}),
+    ...(recusFilters.minAmount.trim() ? { minAmount: recusFilters.minAmount.trim() } : {}),
+    ...(recusFilters.maxAmount.trim() ? { maxAmount: recusFilters.maxAmount.trim() } : {}),
   })
 
   const { data: recusResult, isLoading: loadingRecus } = useQuery<DonsResult>({
-    queryKey:  ["dashboard-dons-recus", yearFilter],
+    queryKey:  ["dashboard-dons-recus", yearFilter, recusPage, recusFilters],
     queryFn:   () => fetch(`/api/dons?${recusParams}`).then(r => r.json()),
     enabled:   tab === "recus",
     staleTime: 0,
@@ -927,19 +958,64 @@ function DonsPageInner() {
       {tab === "recus" && (
         <>
           <div className="flex flex-wrap gap-2">
-            <Select value={String(yearFilter)} onValueChange={v => { if (v) setYearFilter(parseInt(v)) }}>
+            <SearchInput
+              value={recusFilterInputs.search}
+              onValueChange={searchValue => handleRecusFilterChange("search", searchValue)}
+              onClear={() => handleRecusFilterChange("search", "")}
+              placeholder={t("receiptsView.searchPlaceholder")}
+              containerClassName="w-60"
+            />
+            <Select value={String(yearFilter)} onValueChange={v => { if (v) { setYearFilter(parseInt(v)); setRecusPage(1) } }}>
               <SelectTrigger className="w-36"><SelectValue>{String(yearFilter)}</SelectValue></SelectTrigger>
               <SelectContent>
                 {yearOptions.map(y => <SelectItem key={y} value={String(y)}>{String(y)}</SelectItem>)}
               </SelectContent>
             </Select>
+            <Input
+              type="number"
+              inputMode="decimal"
+              min={0}
+              step="0.01"
+              value={recusFilterInputs.minAmount}
+              onChange={event => handleRecusFilterChange("minAmount", event.target.value)}
+              placeholder={t("receiptsView.minAmount")}
+              aria-label={t("receiptsView.minAmount")}
+              className="w-36"
+            />
+            <Input
+              type="number"
+              inputMode="decimal"
+              min={0}
+              step="0.01"
+              value={recusFilterInputs.maxAmount}
+              onChange={event => handleRecusFilterChange("maxAmount", event.target.value)}
+              placeholder={t("receiptsView.maxAmount")}
+              aria-label={t("receiptsView.maxAmount")}
+              className="w-36"
+            />
+            {hasActiveRecusFilters && (
+              <Button variant="ghost" onClick={resetRecusFilters} className="text-muted-foreground">
+                <FunnelXIcon className="size-3.5" />
+                {t("donationsView.resetFilters")}
+              </Button>
+            )}
+            <span className="self-center text-sm text-muted-foreground">
+              {t("receiptsView.count", { count: recusResult?.total ?? 0 })}
+            </span>
           </div>
           <DataTable
             columns={recuColumns}
             data={recus}
             loading={loadingRecus}
             keyExtractor={(d) => d.id}
-            empty={t("receiptsView.noReceipts")}
+            empty={hasActiveRecusFilters ? t("receiptsView.noReceiptsFiltered") : t("receiptsView.noReceipts")}
+            pagination={recusResult ? {
+              page:         recusResult.page,
+              totalPages:   recusResult.totalPages,
+              total:        recusResult.total,
+              limit:        recusResult.limit,
+              onPageChange: (nextPage) => setRecusPage(nextPage),
+            } : undefined}
           />
         </>
       )}

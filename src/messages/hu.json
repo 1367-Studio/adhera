@@ -2845,7 +2845,12 @@
         "issuedAt": "Kiadva",
         "amount": "Összeg"
       },
-      "noReceipts": "Adóbeszámoló nem kiadott"
+      "noReceipts": "Adóbeszámoló nem kiadott",
+      "searchPlaceholder": "Adományozó vagy e-mail…",
+      "minAmount": "Min. összeg (€)",
+      "maxAmount": "Max. összeg (€)",
+      "noReceiptsFiltered": "Egy nyugta sem felel meg a szűrőknek",
+      "count": "{count, plural, one {# nyugta} other {# nyugta}}"
     },
     "detail": {
       "backToList": "Vissza az adományokhoz",

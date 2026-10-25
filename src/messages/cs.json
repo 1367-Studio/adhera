@@ -2845,7 +2845,12 @@
         "issuedAt": "Vydáno",
         "amount": "Množství"
       },
-      "noReceipts": "Nevydány žádné daňové potvrzení"
+      "noReceipts": "Nevydány žádné daňové potvrzení",
+      "searchPlaceholder": "Dárce nebo e-mail…",
+      "minAmount": "Min. částka (€)",
+      "maxAmount": "Max. částka (€)",
+      "noReceiptsFiltered": "Filtrům neodpovídá žádné potvrzení",
+      "count": "{count, plural, one {# potvrzení} few {# potvrzení} many {# potvrzení} other {# potvrzení}}"
     },
     "detail": {
       "backToList": "Zpět k darům",

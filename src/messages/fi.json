@@ -2845,7 +2845,12 @@
         "issuedAt": "Julkaistu",
         "amount": "Määrä"
       },
-      "noReceipts": "Verokuitteja ei myönnetty"
+      "noReceipts": "Verokuitteja ei myönnetty",
+      "searchPlaceholder": "Lahjoittaja tai sähköposti…",
+      "minAmount": "Vähimmäissumma (€)",
+      "maxAmount": "Enimmäissumma (€)",
+      "noReceiptsFiltered": "Mikään kuitti ei vastaa suodattimia",
+      "count": "{count, plural, one {# kuitti} other {# kuittia}}"
     },
     "detail": {
       "backToList": "Takaisin lahjoituksiin",

@@ -81,6 +81,17 @@ export const GET = withAdminAuth(async (req, ctx) => {
   // Admin-typed via the "add manual donation" form (POST below) — see Don.createdByUserId.
   if (origin === "manual") where.createdByUserId = { not: null }
 
+  // Amount range in euros, either bound optional (the "Reçus fiscaux" tab filter). A plain
+  // field condition like origin above, so the KPI totals keep following it too.
+  const minAmount = parseFloat(searchParams.get("minAmount") ?? "")
+  const maxAmount = parseFloat(searchParams.get("maxAmount") ?? "")
+  if (!Number.isNaN(minAmount) || !Number.isNaN(maxAmount)) {
+    where.amount = {
+      ...(!Number.isNaN(minAmount) ? { gte: minAmount } : {}),
+      ...(!Number.isNaN(maxAmount) ? { lte: maxAmount } : {}),
+    }
+  }
+
   // KPI totals intentionally ignore `search` — they summarize the year, not the filtered
   // list, so typing in the search box doesn't make the summary cards jump around.
   const aggregateWhere = { ...where }

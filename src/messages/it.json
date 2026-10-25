@@ -2845,7 +2845,12 @@
         "issuedAt": "Pubblicato il",
         "amount": "Importo"
       },
-      "noReceipts": "Nessuna ricevuta fiscale rilasciata"
+      "noReceipts": "Nessuna ricevuta fiscale rilasciata",
+      "searchPlaceholder": "Donatore o e-mail…",
+      "minAmount": "Importo min (€)",
+      "maxAmount": "Importo max (€)",
+      "noReceiptsFiltered": "Nessuna ricevuta corrisponde ai filtri",
+      "count": "{count, plural, one {# ricevuta} other {# ricevute}}"
     },
     "detail": {
       "backToList": "Torniamo alle donazioni",

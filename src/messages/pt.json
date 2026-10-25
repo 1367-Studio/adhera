@@ -2867,7 +2867,12 @@
         "issuedAt": "Emitido em",
         "amount": "Valor"
       },
-      "noReceipts": "Nenhum recibo fiscal emitido"
+      "noReceipts": "Nenhum recibo fiscal emitido",
+      "searchPlaceholder": "Doador ou e-mail…",
+      "minAmount": "Valor mín. (€)",
+      "maxAmount": "Valor máx. (€)",
+      "noReceiptsFiltered": "Nenhum recibo corresponde aos filtros",
+      "count": "{count, plural, one {# recibo} other {# recibos}}"
     },
     "detail": {
       "backToList": "Voltar para doações",

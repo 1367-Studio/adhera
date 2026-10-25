@@ -2845,7 +2845,12 @@
         "issuedAt": "Εκδόθηκε στις",
         "amount": "Ποσό"
       },
-      "noReceipts": "Δεν εκδόθηκαν φορολογικές αποδείξεις"
+      "noReceipts": "Δεν εκδόθηκαν φορολογικές αποδείξεις",
+      "searchPlaceholder": "Δωρητής ή email…",
+      "minAmount": "Ελάχ. ποσό (€)",
+      "maxAmount": "Μέγ. ποσό (€)",
+      "noReceiptsFiltered": "Καμία απόδειξη δεν ταιριάζει με τα φίλτρα",
+      "count": "{count, plural, one {# απόδειξη} other {# αποδείξεις}}"
     },
     "detail": {
       "backToList": "Επιστροφή στις δωρεές",

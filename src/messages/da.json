@@ -2845,7 +2845,12 @@
         "issuedAt": "Udstedt den",
         "amount": "Beløb"
       },
-      "noReceipts": "Ingen skattekvitteringer udstedt"
+      "noReceipts": "Ingen skattekvitteringer udstedt",
+      "searchPlaceholder": "Donor eller e-mail…",
+      "minAmount": "Min. beløb (€)",
+      "maxAmount": "Maks. beløb (€)",
+      "noReceiptsFiltered": "Ingen kvitteringer matcher filtrene",
+      "count": "{count, plural, one {# kvittering} other {# kvitteringer}}"
     },
     "detail": {
       "backToList": "Tilbage til donationer",

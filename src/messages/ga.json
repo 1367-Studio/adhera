@@ -2845,7 +2845,12 @@
         "issuedAt": "Eisithe ar",
         "amount": "Méid"
       },
-      "noReceipts": "Níl aon admhálacha cánach eisithe"
+      "noReceipts": "Níl aon admhálacha cánach eisithe",
+      "searchPlaceholder": "Deontóir nó ríomhphost…",
+      "minAmount": "Íosmhéid (€)",
+      "maxAmount": "Uasmhéid (€)",
+      "noReceiptsFiltered": "Níl aon admháil ag teacht leis na scagairí",
+      "count": "{count, plural, one {# admháil} two {# admháil} few {# admháil} many {# admháil} other {# admháil}}"
     },
     "detail": {
       "backToList": "Ar ais chuig síntiúis",

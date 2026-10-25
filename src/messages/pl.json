@@ -2845,7 +2845,12 @@
         "issuedAt": "Wydane w dniu",
         "amount": "Ilość"
       },
-      "noReceipts": "Nie wydawano żadnych pokwitów podatkowych"
+      "noReceipts": "Nie wydawano żadnych pokwitów podatkowych",
+      "searchPlaceholder": "Darczyńca lub e-mail…",
+      "minAmount": "Kwota min. (€)",
+      "maxAmount": "Kwota maks. (€)",
+      "noReceiptsFiltered": "Żadne pokwitowanie nie pasuje do filtrów",
+      "count": "{count, plural, one {# pokwitowanie} few {# pokwitowania} many {# pokwitowań} other {# pokwitowania}}"
     },
     "detail": {
       "backToList": "Powrót do darowizn",

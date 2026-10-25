@@ -2845,7 +2845,12 @@
         "issuedAt": "Izdano",
         "amount": "Znesek"
       },
-      "noReceipts": "Ni bilo izdanih davčnih potrdil"
+      "noReceipts": "Ni bilo izdanih davčnih potrdil",
+      "searchPlaceholder": "Donator ali e-pošta…",
+      "minAmount": "Najmanjši znesek (€)",
+      "maxAmount": "Največji znesek (€)",
+      "noReceiptsFiltered": "Nobeno potrdilo ne ustreza filtrom",
+      "count": "{count, plural, one {# potrdilo} two {# potrdili} few {# potrdila} other {# potrdil}}"
     },
     "detail": {
       "backToList": "Nazaj na donacije",

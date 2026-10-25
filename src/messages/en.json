@@ -2914,7 +2914,12 @@
         "issuedAt": "Issued on",
         "amount": "Amount"
       },
-      "noReceipts": "No tax receipts issued"
+      "noReceipts": "No tax receipts issued",
+      "searchPlaceholder": "Donor or email…",
+      "minAmount": "Min amount (€)",
+      "maxAmount": "Max amount (€)",
+      "noReceiptsFiltered": "No receipts match the filters",
+      "count": "{count, plural, one {# receipt} other {# receipts}}"
     },
     "detail": {
       "backToList": "Back to donations",

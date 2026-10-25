@@ -2845,7 +2845,12 @@
         "issuedAt": "Издадено на",
         "amount": "Количество"
       },
-      "noReceipts": "Не са издавани данъчни разписки"
+      "noReceipts": "Не са издавани данъчни разписки",
+      "searchPlaceholder": "Дарител или имейл…",
+      "minAmount": "Мин. сума (€)",
+      "maxAmount": "Макс. сума (€)",
+      "noReceiptsFiltered": "Няма разписки, отговарящи на филтрите",
+      "count": "{count, plural, one {# разписка} other {# разписки}}"
     },
     "detail": {
       "backToList": "Обратно към даренията",

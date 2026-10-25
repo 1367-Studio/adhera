@@ -2845,7 +2845,12 @@
         "issuedAt": "Izlaists",
         "amount": "Summa"
       },
-      "noReceipts": "Nav izsniegtas nodokļu kvītis"
+      "noReceipts": "Nav izsniegtas nodokļu kvītis",
+      "searchPlaceholder": "Ziedotājs vai e-pasts…",
+      "minAmount": "Min. summa (€)",
+      "maxAmount": "Maks. summa (€)",
+      "noReceiptsFiltered": "Neviena kvīts neatbilst filtriem",
+      "count": "{count, plural, zero {# kvīšu} one {# kvīts} other {# kvītis}}"
     },
     "detail": {
       "backToList": "Atpakaļ pie ziedojumiem",

@@ -2845,7 +2845,12 @@
         "issuedAt": "Ippubblikat fuq",
         "amount": "Ammont"
       },
-      "noReceipts": "L-ebda riċevuti tat-taxxa maħruġa"
+      "noReceipts": "L-ebda riċevuti tat-taxxa maħruġa",
+      "searchPlaceholder": "Donatur jew email…",
+      "minAmount": "Ammont minimu (€)",
+      "maxAmount": "Ammont massimu (€)",
+      "noReceiptsFiltered": "L-ebda irċevuta ma taqbel mal-filtri",
+      "count": "{count, plural, one {# irċevuta} few {# irċevuti} many {# irċevuti} other {# irċevuti}}"
     },
     "detail": {
       "backToList": "Lura għad-donazzjonijiet",

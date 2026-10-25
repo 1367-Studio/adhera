@@ -2845,7 +2845,12 @@
         "issuedAt": "Distribuit la",
         "amount": "Sumă"
       },
-      "noReceipts": "Nu se emit chitanțe fiscale"
+      "noReceipts": "Nu se emit chitanțe fiscale",
+      "searchPlaceholder": "Donator sau e-mail…",
+      "minAmount": "Sumă min. (€)",
+      "maxAmount": "Sumă max. (€)",
+      "noReceiptsFiltered": "Nicio chitanță nu corespunde filtrelor",
+      "count": "{count, plural, one {# chitanță} few {# chitanțe} other {# de chitanțe}}"
     },
     "detail": {
       "backToList": "Înapoi la donații",
