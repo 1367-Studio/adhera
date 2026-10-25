@@ -24,7 +24,9 @@ import { galleryBlock } from "@/components/site/blocks/site-block-gallery"
 import { socialLinksBlock } from "@/components/site/blocks/site-block-social-links"
 import { translateBlock } from "@/components/site/blocks/site-block-translate"
 import { colorField, imageField, headerShowRegisterField, YES_NO_OPTIONS, SITE_LINK_FIELDS, type SiteLink } from "@/components/site/blocks/site-block-fields"
-import { HEADER_PILL_VARIANT_OPTIONS, MENU_CONTENT_BACKGROUND_OPTIONS, type HeaderLinkItem } from "@/components/site/site-header-link-style"
+import {
+  HEADER_MENU_BUTTON_COLOR_OPTIONS, HEADER_PILL_VARIANT_OPTIONS, MENU_CONTENT_BACKGROUND_OPTIONS, type HeaderLinkItem,
+} from "@/components/site/site-header-link-style"
 import { socialLinksField } from "@/components/site/site-social-icons"
 import {
   FORM_CTA_STYLE_DEFAULTS, FORM_CTA_STYLE_FIELDS, SiteFormCtaCentered, SiteFormCtaSplit,
@@ -142,6 +144,18 @@ export const sitePuckConfig: Config<SitePuckComponents, SitePuckRootProps> = {
         arrayFields:      SITE_LINK_FIELDS,
         defaultItemProps: { label: "Nouvelle adhésion", href: "/" },
         getItemSummary:   (item: SiteLink) => item.label || "Lien",
+      },
+      // Below lg the header controls move into a drawer opened by a burger button.
+      headerMenuButtonVariant: {
+        type: "radio", label: "Menu sur mobile et tablette — style du bouton", options: HEADER_PILL_VARIANT_OPTIONS,
+      },
+      headerMenuBackground:    {
+        type: "radio", label: "Menu sur mobile et tablette — fond", options: MENU_CONTENT_BACKGROUND_OPTIONS,
+      },
+      headerMenuButtonColor:   {
+        type:    "radio",
+        label:   "Menu sur mobile et tablette — couleur des boutons (si fond = couleur principale)",
+        options: HEADER_MENU_BUTTON_COLOR_OPTIONS,
       },
       // Replaces the old footerText / footerBgColor / footerLinks fields, which stay in the data
       // only as the source the footer is first filled from (see resolveData).

@@ -16,8 +16,10 @@ export const HEADER_PILL_VARIANT_OPTIONS = [
 // "primary" is a filled CTA (dims on hover/active, like any solid button); "outline" keeps a
 // border, "ghost" has none — both of those tint toward the link's own color (currentColor)
 // instead of a flat opacity fade, so the control still reads against busy header backgrounds.
+// The focus ring is the control's own color too: the global outline is the admin blue at 50%,
+// invisible on many brand colors.
 export function headerPillClassName(variant: HeaderPillVariant = "outline"): string {
-  const base = "text-sm font-medium px-3 py-1.5 rounded-lg transition-colors"
+  const base = "text-sm font-medium px-3 py-1.5 rounded-lg transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-current"
   if (variant === "primary") return `${base} hover:opacity-90 active:opacity-80`
   const tinted = `${base} hover:bg-[color-mix(in_srgb,currentColor_8%,transparent)] active:bg-[color-mix(in_srgb,currentColor_16%,transparent)]`
   return variant === "outline" ? `${tinted} border` : tinted
@@ -47,6 +49,35 @@ export function menuContentStyle(background: MenuContentBackground, primaryColor
   return background === "primary"
     ? { background: primaryColor, color: primaryForeground }
     : { background: "var(--site-surface, #ffffff)", color: "var(--site-text, #111827)" }
+}
+
+// Mobile/tablet header drawer (below lg): on a "primary" drawer background, the filled buttons
+// either contrast with it (--site-primary-foreground, which getSiteColorVars already picks to
+// stay readable on that primary) or use the brand's secondary color. Ignored on "light".
+export type HeaderMenuButtonColor = "contrast" | "secondary"
+
+export const HEADER_MENU_BUTTON_COLOR_OPTIONS = [
+  { label: "Automatique (texte lisible)",         value: "contrast" },
+  { label: "Couleur secondaire (boutons pleins)", value: "secondary" },
+]
+
+// `accent`/`foreground` feed headerPillStyle for one button in the drawer. A light drawer
+// always uses the brand primary (white drawer → buttons in the main color); a primary drawer
+// can't — primary on primary would vanish. There, outline/ghost buttons always take
+// --site-primary-foreground (secondary text on the primary background isn't guaranteed to be
+// readable); only filled buttons follow buttonColor, since they bring their own background.
+// Plain var() references are fine: the drawer is portaled inside the site chrome div that
+// declares them.
+export function menuDrawerButtonColors(
+  background: MenuContentBackground,
+  buttonColor: HeaderMenuButtonColor,
+  variant: HeaderPillVariant,
+): { accent: string; foreground: string } {
+  if (background === "light") return { accent: "var(--site-primary)", foreground: "var(--site-primary-foreground)" }
+  if (variant === "primary" && buttonColor === "secondary") {
+    return { accent: "var(--site-secondary)", foreground: "var(--site-secondary-foreground)" }
+  }
+  return { accent: "var(--site-primary-foreground)", foreground: "var(--site-primary)" }
 }
 
 // Items are a <DropdownMenuItem>'s default className; merge this in afterwards (twMerge) to

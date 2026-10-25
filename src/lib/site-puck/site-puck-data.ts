@@ -1,6 +1,8 @@
 import type { Data } from "@puckeditor/core"
 import type { SiteLink } from "@/components/site/blocks/site-block-fields"
-import type { HeaderLinkItem, HeaderPillVariant, MenuContentBackground } from "@/components/site/site-header-link-style"
+import type {
+  HeaderLinkItem, HeaderMenuButtonColor, HeaderPillVariant, MenuContentBackground,
+} from "@/components/site/site-header-link-style"
 import type { SectionBlockProps } from "@/components/site/blocks/site-block-section-container"
 import type { ColumnsBlockProps } from "@/components/site/blocks/site-block-columns"
 import type { SpacerBlockProps } from "@/components/site/blocks/site-block-spacer"
@@ -115,6 +117,13 @@ export type SitePuckRootProps = Omit<SiteConfig, "sections" | "footerText"> & {
   // "Se connecter" was always filled before this existed — undefined = "primary", its original
   // look, so no existing site changes just because the field now exists.
   headerSeConnecterVariant?: HeaderPillVariant
+  // Mobile/tablet only (below lg, where every header control moves into a side drawer opened
+  // by a burger button): the burger's style, the drawer's background, and — on a "primary"
+  // background only — whether its buttons contrast with it or use the secondary color.
+  // undefined = "ghost" / "light" / "contrast", so existing sites get a sensible drawer.
+  headerMenuButtonVariant?: HeaderPillVariant
+  headerMenuBackground?:    MenuContentBackground
+  headerMenuButtonColor?:   HeaderMenuButtonColor
   // New footer (logo position, columns, socials, bottom line). Missing on sites from the old
   // builder: the editor fills it from footerText / footerBgColor / footerLinks on load.
   footer?:         SiteFooterSettings

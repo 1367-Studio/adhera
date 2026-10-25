@@ -11,6 +11,9 @@
 export const SITE_UI_STRINGS = {
   navAdherer:             "Adhérer",
   navSeConnecter:         "Se connecter",
+  navMenu:                "Menu",
+  navClose:               "Fermer",
+  navLanguage:            "Langue",
   footerRights:           "Tous droits réservés.",
   footerPoweredBy:        "Propulsé par",
   footerAriaLabel:        "Pied de page",

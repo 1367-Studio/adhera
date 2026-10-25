@@ -86,6 +86,9 @@ export function SiteBuilderChrome({
         resolvedPrimaryColor={resolvedPrimaryColor}
         resolvedPrimaryForeground={resolvedPrimaryForeground}
         seConnecterVariant={rootProps.headerSeConnecterVariant}
+        menuButtonVariant={rootProps.headerMenuButtonVariant}
+        menuBackground={rootProps.headerMenuBackground}
+        menuButtonColor={rootProps.headerMenuButtonColor}
       />
       <main className={mainClassName}>{children}</main>
       <SiteBuilderFooter
