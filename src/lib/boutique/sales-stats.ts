@@ -8,6 +8,13 @@
 // totalAmount go down, a full refund flips it to CANCELLED — so the current PAID rows are
 // already net of refunds and nothing here has to subtract them again.
 
+// Order lines that count as sold: on a PAID commande of this association, and not refunded
+// down to 0. Shared by the top-products tiles and the Produits table's « Ventes » column, so
+// the two always show the same number for a product.
+export function paidSalesItemWhere(associationId: string) {
+  return { quantity: { gt: 0 }, commande: { associationId, status: "PAID" as const } }
+}
+
 export const COMMANDE_STATUSES = ["PENDING", "PAID", "CANCELLED"] as const
 export type CommandeStatus = (typeof COMMANDE_STATUSES)[number]
 

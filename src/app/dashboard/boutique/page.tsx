@@ -45,6 +45,8 @@ type Produit = {
   createdAt:   string
   variantes:   Variante[]
   _count:      { commandeItems: number }
+  // Units sold on PAID commandes, net of refunds — same figure as the top-products tiles.
+  quantitySold: number
 }
 
 type CommandeItem = {
@@ -397,7 +399,7 @@ function BoutiquePageInner() {
       key:    "ventes",
       header: t("view.produitColumns.ventes"),
       className: "text-right",
-      cell: (p) => <span className="text-sm tabular-nums">{p._count.commandeItems}</span>,
+      cell: (p) => <span className="text-sm tabular-nums">{p.quantitySold}</span>,
     },
     {
       key:    "actions",

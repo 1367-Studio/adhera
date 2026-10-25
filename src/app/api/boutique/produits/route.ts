@@ -5,6 +5,7 @@ import { guardModule } from "@/lib/auth/require-module"
 import { writeActivityLog } from "@/lib/activity-log"
 import { withAdminAuth } from "@/lib/api-wrapper"
 import { assertIncomeCategory } from "@/lib/validate-finance-category"
+import { paidSalesItemWhere } from "@/lib/boutique/sales-stats"
 
 const varianteSchema = z.object({
   label:       z.string().trim().min(1).max(100),
@@ -30,16 +31,31 @@ export const GET = withAdminAuth(async (req, ctx) => {
   const guard = await guardModule(ctx.associationId, "boutique")
   if (guard) return guard
 
-  const produits = await prisma.boutiqueProduit.findMany({
-    where:   { associationId: ctx.associationId },
-    orderBy: { createdAt: "desc" },
-    include: {
-      variantes: { orderBy: { createdAt: "asc" } },
-      _count:    { select: { commandeItems: true } },
-    },
-  })
+  const [produits, salesGroups] = await Promise.all([
+    prisma.boutiqueProduit.findMany({
+      where:   { associationId: ctx.associationId },
+      orderBy: { createdAt: "desc" },
+      include: {
+        variantes: { orderBy: { createdAt: "asc" } },
+        // Any order line, whatever its status — only used to block deleting an ordered
+        // product, never shown as a sales figure.
+        _count:    { select: { commandeItems: true } },
+      },
+    }),
+    prisma.boutiqueCommandeItem.groupBy({
+      by:    ["produitId"],
+      where: paidSalesItemWhere(ctx.associationId),
+      _sum:  { quantity: true },
+    }),
+  ])
 
-  return NextResponse.json(produits)
+  // Units sold, same rule as the top-products tiles (api/boutique/produits/stats).
+  const quantitySoldById = new Map(salesGroups.map(salesGroup => [salesGroup.produitId, salesGroup._sum.quantity ?? 0]))
+
+  return NextResponse.json(produits.map(produit => ({
+    ...produit,
+    quantitySold: quantitySoldById.get(produit.id) ?? 0,
+  })))
 }, { area: "boutique" })
 
 export const POST = withAdminAuth(async (req, ctx) => {

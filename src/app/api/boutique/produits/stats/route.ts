@@ -2,7 +2,7 @@ import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma/client"
 import { guardModule } from "@/lib/auth/require-module"
 import { withAdminAuth } from "@/lib/api-wrapper"
-import { rankTopSellingProducts } from "@/lib/boutique/sales-stats"
+import { paidSalesItemWhere, rankTopSellingProducts } from "@/lib/boutique/sales-stats"
 
 // Best-selling products for the Boutique page's Produits tab, all-time (that tab has no
 // period filter). Only items of PAID commandes count — online and manual alike, net of
@@ -16,7 +16,7 @@ export const GET = withAdminAuth(async (req, ctx) => {
   // number of groups stays small (products × distinct prices), whatever the order volume.
   const salesGroups = await prisma.boutiqueCommandeItem.groupBy({
     by:    ["produitId", "unitPrice"],
-    where: { quantity: { gt: 0 }, commande: { associationId: ctx.associationId, status: "PAID" } },
+    where: paidSalesItemWhere(ctx.associationId),
     _sum:  { quantity: true },
   })
 
