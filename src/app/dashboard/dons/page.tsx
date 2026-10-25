@@ -140,7 +140,7 @@ function DonsPageInner() {
   // and e-mail links already sent/stored before tab=dons was added to the link (see notify.ts),
   // not just newly-generated ones.
   const initialTab = (searchParams.get("tab") as Tab) ?? (searchParams.get("donId") ? "dons" : "formulaires")
-  const [tab, setTab] = useState<Tab>(["formulaires", "dons", "recus"].includes(initialTab) ? initialTab : "formulaires")
+  const [tab, setTab] = useState<Tab>(["dons","formulaires",  "recus"].includes(initialTab) ? initialTab : "dons")
 
   // Hydrated once from the URL so a refresh or a shared link keeps the "dons" tab's filters
   // (search/year/origin/page) instead of silently resetting them — mirrors how `tab` itself
