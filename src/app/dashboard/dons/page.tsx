@@ -29,10 +29,10 @@ import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 import { RowActions } from "@/components/ui/row-actions"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { SearchInput } from "@/components/ui/search-input"
-import { cn } from "@/lib/utils"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { BASE_PATH } from "@/lib/env"
 import { DonShareCard } from "@/components/dons/don-share-card"
+import { StatTile } from "@/components/dashboard/widgets/stat-tile"
 import { AddManualDonModal } from "@/components/dons/add-manual-don-modal"
 import { DonResponsableModal } from "@/components/dons/don-responsable-modal"
 
@@ -596,6 +596,7 @@ function DonsPageInner() {
   const totalAmount = donsResult?.totalAmount ?? 0
   const totalCount  = donsResult?.totalCount ?? 0
   const avgAmount   = totalCount > 0 ? totalAmount / totalCount : 0
+  const originSuffix = originFilter !== "all" ? ` · ${ORIGIN_FILTER_LABEL[originFilter]}` : ""
   // `year` is the page's primary scope (always set, not a "filter" in the everyday sense),
   // so only search/origin count here — same reasoning as the reset button and the
   // no-results-vs-no-matches empty state below.
@@ -808,6 +809,36 @@ function DonsPageInner() {
 
       {tab === "dons" && (
         <>
+          {/* Right under the tabs: the public link/QR is what admins come here to grab. */}
+          <DonShareCard />
+
+          {/* KPI totals follow `year` AND `origin` (both deliberate, sticky selections) but
+              ignore the free-text `search` (see aggregateWhere in /api/dons) so typing
+              doesn't make the cards jump around. The origin suffix below is what tells the
+              admin the numbers are currently scoped to one origin, not the association's
+              whole year — without it, a filtered "Total 2026" reads as the full-year total. */}
+          {/* Same StatTile as the dashboard home, so a total looks the same everywhere. */}
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+            <StatTile
+              label={`${t("donationsView.totalLabel", { year: yearFilter })}${originSuffix}`}
+              value={totalAmount.toLocaleString("fr-FR", { style: "currency", currency: "EUR" })}
+              icon={TrendUpIcon}
+              isLoading={loadingDons}
+            />
+            <StatTile
+              label={`${t("donationsView.donorsLabel")}${originSuffix}`}
+              value={totalCount}
+              icon={UsersIcon}
+              isLoading={loadingDons}
+            />
+            <StatTile
+              label={`${t("donationsView.averageLabel")}${originSuffix}`}
+              value={avgAmount.toLocaleString("fr-FR", { style: "currency", currency: "EUR" })}
+              icon={HandshakeIcon}
+              isLoading={loadingDons}
+            />
+          </div>
+
           {/* Gated on the total count, not this page's rows — otherwise paging to an
               empty last page (e.g. right after encaissing the only item on it) would hide
               the whole section instead of just showing an empty table. */}
@@ -830,44 +861,6 @@ function DonsPageInner() {
               />
             </div>
           )}
-
-          <DonShareCard />
-
-          {/* KPI totals follow `year` AND `origin` (both deliberate, sticky selections) but
-              ignore the free-text `search` (see aggregateWhere in /api/dons) so typing
-              doesn't make the cards jump around. The origin suffix below is what tells the
-              admin the numbers are currently scoped to one origin, not the association's
-              whole year — without it, a filtered "Total 2026" reads as the full-year total. */}
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-            <div className="rounded-lg border bg-card p-4 space-y-1">
-              <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                <TrendUpIcon className="size-3.5" />
-                {t("donationsView.totalLabel", { year: yearFilter })}
-                {originFilter !== "all" && <span>· {ORIGIN_FILTER_LABEL[originFilter]}</span>}
-              </div>
-              <p className={cn("text-xl font-bold", totalAmount > 0 ? "text-green-600 dark:text-green-400" : "")}>
-                {totalAmount.toLocaleString("fr-FR", { style: "currency", currency: "EUR" })}
-              </p>
-            </div>
-            <div className="rounded-lg border bg-card p-4 space-y-1">
-              <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                <UsersIcon className="size-3.5" />
-                {t("donationsView.donorsLabel")}
-                {originFilter !== "all" && <span>· {ORIGIN_FILTER_LABEL[originFilter]}</span>}
-              </div>
-              <p className="text-xl font-bold">{totalCount}</p>
-            </div>
-            <div className="rounded-lg border bg-card p-4 space-y-1">
-              <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                <HandshakeIcon className="size-3.5" />
-                {t("donationsView.averageLabel")}
-                {originFilter !== "all" && <span>· {ORIGIN_FILTER_LABEL[originFilter]}</span>}
-              </div>
-              <p className="text-xl font-bold">
-                {avgAmount.toLocaleString("fr-FR", { style: "currency", currency: "EUR" })}
-              </p>
-            </div>
-          </div>
 
           <div className="flex flex-wrap gap-2">
             <SearchInput
