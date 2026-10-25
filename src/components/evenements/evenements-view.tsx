@@ -4,7 +4,8 @@ import { useState, useEffect, useRef } from "react"
 import { toast } from "sonner"
 import { useTranslations } from "next-intl"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { PlusIcon, TrashIcon, UsersIcon, BookmarkSimpleIcon, ListIcon, CalendarDotsIcon, MapPinIcon, LinkIcon, StarIcon, NotePencilIcon, CloudArrowUpIcon, CloudArrowDownIcon, CopyIcon, ArchiveIcon } from "@phosphor-icons/react/dist/ssr";
+import { PlusIcon, TrashIcon, UsersIcon, BookmarkSimpleIcon, ListIcon, CalendarDotsIcon, MapPinIcon, LinkIcon, StarIcon, NotePencilIcon, CloudArrowUpIcon, CloudArrowDownIcon, CopyIcon, ArchiveIcon, CaretDownIcon } from "@phosphor-icons/react/dist/ssr";
+import Link from "next/link"
 import { ViewToggle } from "@/components/ui/view-toggle"
 import { PriceBadge } from "@/components/ui/price-badge"
 import { Badge } from "@/components/ui/badge"
@@ -19,12 +20,14 @@ import { DataTable, type Column } from "@/components/ui/data-table"
 import { Modal } from "@/components/ui/modal"
 import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 import { EvenementsCalendar } from "@/components/evenements/evenements-calendar"
+import { EvenementBilanPanel } from "@/components/evenements/evenement-bilan-panel"
 import { Button } from "@/components/ui/button"
 import { RowActions } from "@/components/ui/row-actions"
 import { SearchInput } from "@/components/ui/search-input"
 import { BASE_PATH } from "@/lib/env"
 import { cheapestAvailableTicketTypePrice } from "@/lib/ticket-types"
 import { useHasAccess } from "@/lib/user-context"
+import { cn } from "@/lib/utils"
 
 type EvenementStatus = "DRAFT" | "PUBLISHED" | "ARCHIVED"
 type EvenementTicketType = { id: string; label: string; price: string; remaining: number | null; full: boolean; active: boolean }
@@ -55,6 +58,12 @@ function dateToDatetimeLocal(d: Date) {
 
 type ViewMode = "list" | "calendar"
 
+// aria-controls target of a row's « Voir le bilan » button — the desktop table copy of the
+// expanded panel (the mobile card copy carries no id, see DataTable's renderExpandedRow).
+function bilanRegionId(evenementId: string) {
+  return `evenement-bilan-${evenementId}`
+}
+
 const PAGE_SIZE = 20
 
 export function EvenementsView() {
@@ -71,12 +80,18 @@ export function EvenementsView() {
   const [newTitle, setNewTitle]           = useState("")
   const [newDate, setNewDate]             = useState<string>("")
   const [deleteTarget, setDeleteTarget]   = useState<Evenement | null>(null)
+  // One bilan open at a time: opening another row's closes the previous one.
+  const [expandedEvenementId, setExpandedEvenementId] = useState<string | null>(null)
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   function openCreate(date?: Date) {
     setNewDate(date ? dateToDatetimeLocal(date) : dateToDatetimeLocal(new Date(Date.now() + 86400000)))
     setNewTitle("")
     setCreateOpen(true)
+  }
+
+  function toggleBilan(evenementId: string) {
+    setExpandedEvenementId(currentId => currentId === evenementId ? null : evenementId)
   }
 
   function handleCalendarPresencesClick(ev: { id: string }) { router.push(`/dashboard/evenements/${ev.id}/presences`) }
@@ -184,7 +199,14 @@ export function EvenementsView() {
         return (
         <div className="space-y-0.5">
           <div className="flex items-center gap-2">
-            <p className="font-medium">{e.title}</p>
+            {/* The row itself now toggles the bilan — the title is the way to the event. */}
+            <Link
+              href={`/dashboard/evenements/${e.id}`}
+              onClick={ev => ev.stopPropagation()}
+              className="font-medium underline-offset-4 hover:underline"
+            >
+              {e.title}
+            </Link>
             <Badge variant={STATUS_VARIANT[e.status]}>{STATUS_LABEL[e.status]}</Badge>
             {activeTicketTypes.length > 1
               ? <PriceBadge price={cheapestAvailableTicketTypePrice(activeTicketTypes)} fromPrice />
@@ -247,6 +269,29 @@ export function EvenementsView() {
           </button>
         )
       },
+      hideInCard: true,
+    },
+    {
+      key: "bilan",
+      header: t("evenements.view.columns.bilan"),
+      className: "w-px whitespace-nowrap",
+      cell: (e) => {
+        const isExpanded = expandedEvenementId === e.id
+        return (
+          <Button
+            type="button"
+            size="sm"
+            variant={isExpanded ? "ghost" : "outline"}
+            aria-expanded={isExpanded}
+            aria-controls={isExpanded ? bilanRegionId(e.id) : undefined}
+            onClick={(ev) => { ev.stopPropagation(); toggleBilan(e.id) }}
+          >
+            {isExpanded ? t("evenements.view.bilan.hide") : t("evenements.view.bilan.show")}
+            <CaretDownIcon className={cn("size-3.5 transition-transform", isExpanded && "rotate-180")} />
+          </Button>
+        )
+      },
+      // Mobile: tapping the card toggles the same panel (DataTable marks it aria-expanded).
       hideInCard: true,
     },
     {
@@ -327,7 +372,11 @@ export function EvenementsView() {
             data={evenements}
             loading={isLoading}
             keyExtractor={(e) => e.id}
-            onRowClick={(e) => router.push(`/dashboard/evenements/${e.id}`)}
+            onRowClick={(e) => toggleBilan(e.id)}
+            expandedRowId={expandedEvenementId}
+            renderExpandedRow={(e, layout) => (
+              <EvenementBilanPanel evenementId={e.id} regionId={layout === "table" ? bilanRegionId(e.id) : undefined} />
+            )}
             empty={search ? t("evenements.view.noResultsFor", { search }) : t("evenements.view.noEvent")}
             pagination={result ? {
               page:         result.page,

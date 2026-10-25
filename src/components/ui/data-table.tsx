@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react"
+import { Fragment, useEffect, useRef } from "react"
 import { useTranslations } from "next-intl"
 import { CaretRightIcon } from "@phosphor-icons/react/dist/ssr";
 import {
@@ -33,6 +33,14 @@ export interface DataTableSelection<T> {
   isSelectable?: (row: T) => boolean
 }
 
+// Opt-in inline expansion — entirely additive like `selection`. The row whose key matches
+// `expandedRowId` gets `renderExpandedRow`'s content right under it: a full-width row in the
+// desktop table, a block under the card on mobile. The caller owns the state (typically
+// toggled from onRowClick), so it decides whether one or several rows can be open. `layout`
+// tells the renderer which of the two copies it is drawing — both are mounted, one hidden by
+// CSS — so it can keep element ids unique (e.g. an aria-controls target on the table copy only).
+export type DataTableLayout = "card" | "table"
+
 interface DataTableProps<T> {
   columns: Column<T>[]
   data: T[]
@@ -41,6 +49,8 @@ interface DataTableProps<T> {
   onRowClick?: (row: T) => void
   empty?: React.ReactNode
   selection?: DataTableSelection<T>
+  expandedRowId?: string | null
+  renderExpandedRow?: (row: T, layout: DataTableLayout) => React.ReactNode
   pagination?: {
     page: number
     totalPages: number
@@ -143,7 +153,9 @@ function CardList<T>({
   onRowClick,
   empty,
   selection,
-}: Pick<DataTableProps<T>, "columns" | "data" | "keyExtractor" | "onRowClick" | "empty" | "selection">) {
+  expandedRowId,
+  renderExpandedRow,
+}: Pick<DataTableProps<T>, "columns" | "data" | "keyExtractor" | "onRowClick" | "empty" | "selection" | "expandedRowId" | "renderExpandedRow">) {
   const t = useTranslations("common")
   const primaryCol = columns.find((c) => !isActionsCol(c) && !c.hideInCard)
   const actionsCol = columns.find(isActionsCol)
@@ -163,9 +175,10 @@ function CardList<T>({
       {data.map((row) => {
         const id = keyExtractor(row)
         const canSelect = !selection || (selection.isSelectable?.(row) ?? true)
+        const isExpanded = !!renderExpandedRow && expandedRowId === id
         return (
+        <Fragment key={id}>
         <div
-          key={id}
           data-row-id={id}
           className={cn(
             "rounded-lg border bg-card p-4 space-y-3",
@@ -173,6 +186,7 @@ function CardList<T>({
           )}
           tabIndex={isClickable ? 0 : undefined}
           role={isClickable ? "button" : undefined}
+          aria-expanded={isClickable && renderExpandedRow ? isExpanded : undefined}
           onClick={() => { if (!hasTextSelection()) onRowClick?.(row) }}
           onKeyDown={(e) => handleActivateKeyDown(e, row, onRowClick)}
         >
@@ -212,6 +226,10 @@ function CardList<T>({
             </div>
           )}
         </div>
+        {/* A sibling of the card, not a child: a click inside the expanded content must
+            not bubble up to the card's onRowClick and collapse it. */}
+        {isExpanded && <div>{renderExpandedRow(row, "card")}</div>}
+        </Fragment>
         )
       })}
     </div>
@@ -226,6 +244,8 @@ export function DataTable<T>({
   onRowClick,
   empty,
   selection,
+  expandedRowId,
+  renderExpandedRow,
   pagination,
 }: DataTableProps<T>) {
   const t = useTranslations("common")
@@ -311,6 +331,8 @@ export function DataTable<T>({
         onRowClick={onRowClick}
         empty={empty}
         selection={selection}
+        expandedRowId={expandedRowId}
+        renderExpandedRow={renderExpandedRow}
       />
 
       <div data-slot="table-wrapper" className="hidden md:block overflow-hidden">
@@ -337,12 +359,14 @@ export function DataTable<T>({
             {data.map((row) => {
               const id = keyExtractor(row)
               const canSelect = !selection || (selection.isSelectable?.(row) ?? true)
+              const isExpanded = !!renderExpandedRow && expandedRowId === id
               return (
+              <Fragment key={id}>
               <TableRow
-                key={id}
                 data-row-id={id}
-                className={cn(onRowClick && cn("cursor-pointer", clickableRowFocusRing))}
+                className={cn(onRowClick && cn("cursor-pointer", clickableRowFocusRing), isExpanded && "border-b-0")}
                 tabIndex={onRowClick ? 0 : undefined}
+                aria-expanded={onRowClick && renderExpandedRow ? isExpanded : undefined}
                 onClick={() => { if (!hasTextSelection()) onRowClick?.(row) }}
                 onKeyDown={(e) => handleActivateKeyDown(e, row, onRowClick)}
               >
@@ -362,6 +386,16 @@ export function DataTable<T>({
                   </TableCell>
                 ))}
               </TableRow>
+              {/* Its own row (not part of the clickable one above), so clicks inside the
+                  expanded content never reach onRowClick, and no hover tint. */}
+              {isExpanded && (
+                <TableRow className="hover:bg-transparent dark:hover:bg-transparent">
+                  <TableCell colSpan={colCount} className="px-2 pt-1 pb-4">
+                    {renderExpandedRow(row, "table")}
+                  </TableCell>
+                </TableRow>
+              )}
+              </Fragment>
               )
             })}
           </TableBody>

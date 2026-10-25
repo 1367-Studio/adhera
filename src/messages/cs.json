@@ -1555,7 +1555,8 @@
       "columns": {
         "event": "Událost",
         "date": "Datum",
-        "presences": "Účast"
+        "presences": "Účast",
+        "bilan": "Přehled"
       },
       "presentCount": "{count, plural, one {# přítomen} other {# přítomen}}",
       "reservedCount": "{count, plural, one {# rezervováno} other {# rezervováno}}",
@@ -1594,6 +1595,18 @@
         "titlePlaceholder": "Valné shromáždění 2026",
         "dateLabel": "Datum začátku",
         "createButton": "Vytvořit"
+      },
+      "bilan": {
+        "show": "Zobrazit přehled",
+        "hide": "Skrýt přehled",
+        "participants": "Účastníci",
+        "registeredCount": "{count, plural, one {# přihlášený} few {# přihlášení} many {# přihlášeného} other {# přihlášených}}",
+        "presentCount": "{count, plural, one {# přítomný} few {# přítomní} many {# přítomného} other {# přítomných}}",
+        "revenue": "Inkasované příjmy",
+        "afterRefunds": "Po vrácení peněz",
+        "reviews": "Recenze",
+        "reviewCount": "{count, plural, one {# přijatá recenze} few {# přijaté recenze} many {# přijaté recenze} other {# přijatých recenzí}}",
+        "noReviews": "Žádné recenze"
       }
     },
     "customFields": {

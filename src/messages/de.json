@@ -1555,7 +1555,8 @@
       "columns": {
         "event": "Veranstaltung",
         "date": "Datum",
-        "presences": "Anwesenheit"
+        "presences": "Anwesenheit",
+        "bilan": "Bilanz"
       },
       "presentCount": "{count, plural, one {# anwesend} other {# anwesend}}",
       "reservedCount": "{count, plural, one {# gebucht} other {# gebucht}}",
@@ -1594,6 +1595,18 @@
         "titlePlaceholder": "Generalversammlung 2026",
         "dateLabel": "Startdatum",
         "createButton": "Erstellen"
+      },
+      "bilan": {
+        "show": "Bilanz anzeigen",
+        "hide": "Bilanz ausblenden",
+        "participants": "Teilnehmende",
+        "registeredCount": "{count, plural, one {# angemeldet} other {# angemeldet}}",
+        "presentCount": "{count, plural, one {# anwesend} other {# anwesend}}",
+        "revenue": "Vereinnahmte Einnahmen",
+        "afterRefunds": "Nach Erstattungen",
+        "reviews": "Bewertungen",
+        "reviewCount": "{count, plural, one {# Bewertung erhalten} other {# Bewertungen erhalten}}",
+        "noReviews": "Keine Bewertungen"
       }
     },
     "customFields": {

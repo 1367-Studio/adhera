@@ -3,6 +3,7 @@ import type { EvenementInput, EvenementUpdateInput } from "@/lib/schemas"
 import type { PaginatedResult } from "@/lib/pagination"
 import { apiErrorMessage } from "@/lib/api-error"
 import type { OnSitePaymentMethod } from "@/lib/evenement-payment-methods"
+import type { EvenementBilan } from "@/lib/evenement-bilan"
 
 const QK = ["evenements"]
 
@@ -229,6 +230,21 @@ export function useParticipations(evenementId: string, options?: { refetchInterv
     enabled:         !!evenementId,
     refetchInterval: options?.refetchInterval,
     staleTime:       0,
+  })
+}
+
+async function fetchEvenementBilan(evenementId: string) {
+  const res = await fetch(`/api/evenements/${evenementId}/bilan`)
+  if (!res.ok) throw new Error("Erreur lors du chargement du bilan")
+  return res.json() as Promise<EvenementBilan>
+}
+
+// Lazy: the events list only asks for an event's bilan once its row is expanded.
+export function useEvenementBilan(evenementId: string, enabled: boolean) {
+  return useQuery({
+    queryKey: ["evenement-bilan", evenementId],
+    queryFn:  () => fetchEvenementBilan(evenementId),
+    enabled:  enabled && !!evenementId,
   })
 }
 

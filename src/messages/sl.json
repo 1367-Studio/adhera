@@ -1555,7 +1555,8 @@
       "columns": {
         "event": "Dogodek",
         "date": "Datum",
-        "presences": "Obisk"
+        "presences": "Obisk",
+        "bilan": "Pregled"
       },
       "presentCount": "{count, plural, one {# prisotni} other {# prisotni}}",
       "reservedCount": "{count, plural, one {# rezervirano} other {# rezervirano}}",
@@ -1594,6 +1595,18 @@
         "titlePlaceholder": "Generalna skupščina 2026",
         "dateLabel": "Datum začetka",
         "createButton": "Ustvarjaj"
+      },
+      "bilan": {
+        "show": "Prikaži pregled",
+        "hide": "Skrij pregled",
+        "participants": "Udeleženci",
+        "registeredCount": "{count, plural, one {# prijavljen} two {# prijavljena} few {# prijavljeni} other {# prijavljenih}}",
+        "presentCount": "{count, plural, one {# prisoten} two {# prisotna} few {# prisotni} other {# prisotnih}}",
+        "revenue": "Prejeti prihodki",
+        "afterRefunds": "Po vračilih",
+        "reviews": "Ocene",
+        "reviewCount": "{count, plural, one {# prejeta ocena} two {# prejeti oceni} few {# prejete ocene} other {# prejetih ocen}}",
+        "noReviews": "Ni ocen"
       }
     },
     "customFields": {

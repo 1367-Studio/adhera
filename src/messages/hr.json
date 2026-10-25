@@ -1555,7 +1555,8 @@
       "columns": {
         "event": "Događaj",
         "date": "Datum",
-        "presences": "Prisutnost"
+        "presences": "Prisutnost",
+        "bilan": "Pregled"
       },
       "presentCount": "{count, plural, one {# prisutni} other {# prisutni}}",
       "reservedCount": "{count, plural, one {# rezerviran} other {# rezerviran}}",
@@ -1594,6 +1595,18 @@
         "titlePlaceholder": "Opća skupština 2026.",
         "dateLabel": "Datum početka",
         "createButton": "Stvori"
+      },
+      "bilan": {
+        "show": "Prikaži pregled",
+        "hide": "Sakrij pregled",
+        "participants": "Sudionici",
+        "registeredCount": "{count, plural, one {# prijavljen} few {# prijavljena} other {# prijavljenih}}",
+        "presentCount": "{count, plural, one {# prisutan} few {# prisutna} other {# prisutnih}}",
+        "revenue": "Naplaćeni prihodi",
+        "afterRefunds": "Nakon povrata",
+        "reviews": "Recenzije",
+        "reviewCount": "{count, plural, one {# primljena recenzija} few {# primljene recenzije} other {# primljenih recenzija}}",
+        "noReviews": "Nema recenzija"
       }
     },
     "customFields": {

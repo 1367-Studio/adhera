@@ -1555,7 +1555,8 @@
       "columns": {
         "event": "Esemény",
         "date": "Dátum",
-        "presences": "Jelenlét"
+        "presences": "Jelenlét",
+        "bilan": "Összesítő"
       },
       "presentCount": "{count, plural, one {# jelen} other {# jelen}}",
       "reservedCount": "{count, plural, one {# foglalva} other {# foglalva}}",
@@ -1594,6 +1595,18 @@
         "titlePlaceholder": "Közgyűlés 2026",
         "dateLabel": "Kezdeti dátum",
         "createButton": "Létrehozni"
+      },
+      "bilan": {
+        "show": "Összesítő megjelenítése",
+        "hide": "Összesítő elrejtése",
+        "participants": "Résztvevők",
+        "registeredCount": "{count, plural, one {# regisztrált} other {# regisztrált}}",
+        "presentCount": "{count, plural, one {# jelen lévő} other {# jelen lévő}}",
+        "revenue": "Beszedett bevételek",
+        "afterRefunds": "Visszatérítések után",
+        "reviews": "Értékelések",
+        "reviewCount": "{count, plural, one {# beérkezett értékelés} other {# beérkezett értékelés}}",
+        "noReviews": "Nincs értékelés"
       }
     },
     "customFields": {

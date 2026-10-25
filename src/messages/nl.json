@@ -1555,7 +1555,8 @@
       "columns": {
         "event": "Evenement",
         "date": "Datum",
-        "presences": "Aanwezigheid"
+        "presences": "Aanwezigheid",
+        "bilan": "Overzicht"
       },
       "presentCount": "{count, plural, one {# aanwezig} other {# aanwezig}}",
       "reservedCount": "{count, plural, one {# geboekt} other {# geboekt}}",
@@ -1594,6 +1595,18 @@
         "titlePlaceholder": "Algemene Vergadering 2026",
         "dateLabel": "Startdatum",
         "createButton": "Creëer"
+      },
+      "bilan": {
+        "show": "Overzicht tonen",
+        "hide": "Overzicht verbergen",
+        "participants": "Deelnemers",
+        "registeredCount": "{count, plural, one {# ingeschreven} other {# ingeschreven}}",
+        "presentCount": "{count, plural, one {# aanwezig} other {# aanwezig}}",
+        "revenue": "Ontvangen inkomsten",
+        "afterRefunds": "Na terugbetalingen",
+        "reviews": "Recensies",
+        "reviewCount": "{count, plural, one {# recensie ontvangen} other {# recensies ontvangen}}",
+        "noReviews": "Geen recensies"
       }
     },
     "customFields": {

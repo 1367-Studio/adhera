@@ -1555,7 +1555,8 @@
       "columns": {
         "event": "Εκδήλωση",
         "date": "Ημερομηνία",
-        "presences": "Προσέλευση"
+        "presences": "Προσέλευση",
+        "bilan": "Απολογισμός"
       },
       "presentCount": "{count, plural, one {# παρόν} other {# παρόν}}",
       "reservedCount": "{count, plural, one {# κρατήσεις} other {# κρατήσεις}}",
@@ -1594,6 +1595,18 @@
         "titlePlaceholder": "Γενική Συνέλευση 2026",
         "dateLabel": "Ημερομηνία έναρξης",
         "createButton": "Δημιουργία"
+      },
+      "bilan": {
+        "show": "Εμφάνιση απολογισμού",
+        "hide": "Απόκρυψη απολογισμού",
+        "participants": "Συμμετέχοντες",
+        "registeredCount": "{count, plural, one {# εγγεγραμμένος} other {# εγγεγραμμένοι}}",
+        "presentCount": "{count, plural, one {# παρών} other {# παρόντες}}",
+        "revenue": "Εισπραχθέντα έσοδα",
+        "afterRefunds": "Μετά τις επιστροφές",
+        "reviews": "Κριτικές",
+        "reviewCount": "{count, plural, one {# κριτική ελήφθη} other {# κριτικές ελήφθησαν}}",
+        "noReviews": "Καμία κριτική"
       }
     },
     "customFields": {

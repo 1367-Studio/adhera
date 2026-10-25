@@ -1555,7 +1555,8 @@
       "columns": {
         "event": "Wydarzenie",
         "date": "Data",
-        "presences": "Frekwencja"
+        "presences": "Frekwencja",
+        "bilan": "Podsumowanie"
       },
       "presentCount": "{count, plural, one {# obecności} other {# obecności}}",
       "reservedCount": "{count, plural, one {# zarezerwowane} other {# zarezerwowane}}",
@@ -1594,6 +1595,18 @@
         "titlePlaceholder": "Zgromadzenie Ogólne 2026",
         "dateLabel": "Data rozpoczęcia",
         "createButton": "Stwórz"
+      },
+      "bilan": {
+        "show": "Pokaż podsumowanie",
+        "hide": "Ukryj podsumowanie",
+        "participants": "Uczestnicy",
+        "registeredCount": "{count, plural, one {# osoba zapisana} few {# osoby zapisane} many {# osób zapisanych} other {# osoby zapisanej}}",
+        "presentCount": "{count, plural, one {# osoba obecna} few {# osoby obecne} many {# osób obecnych} other {# osoby obecnej}}",
+        "revenue": "Zainkasowane przychody",
+        "afterRefunds": "Po zwrotach",
+        "reviews": "Opinie",
+        "reviewCount": "{count, plural, one {# otrzymana opinia} few {# otrzymane opinie} many {# otrzymanych opinii} other {# otrzymanej opinii}}",
+        "noReviews": "Brak opinii"
       }
     },
     "customFields": {

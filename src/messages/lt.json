@@ -1555,7 +1555,8 @@
       "columns": {
         "event": "Renginys",
         "date": "Data",
-        "presences": "Dalyvavimas"
+        "presences": "Dalyvavimas",
+        "bilan": "Suvestinė"
       },
       "presentCount": "{count, plural, one {# dalyvauja} other {# dalyvauja}}",
       "reservedCount": "{count, plural, one {# rezervuotas} other {# rezervuotas}}",
@@ -1594,6 +1595,18 @@
         "titlePlaceholder": "Generalinė Asamblėja 2026",
         "dateLabel": "Pradžios data",
         "createButton": "Sukurti"
+      },
+      "bilan": {
+        "show": "Rodyti suvestinę",
+        "hide": "Slėpti suvestinę",
+        "participants": "Dalyviai",
+        "registeredCount": "{count, plural, one {# užsiregistravęs} few {# užsiregistravę} many {# užsiregistravusio} other {# užsiregistravusių}}",
+        "presentCount": "{count, plural, one {# dalyvavęs} few {# dalyvavę} many {# dalyvavusio} other {# dalyvavusių}}",
+        "revenue": "Surinktos pajamos",
+        "afterRefunds": "Atskaičius grąžinimus",
+        "reviews": "Atsiliepimai",
+        "reviewCount": "{count, plural, one {# gautas atsiliepimas} few {# gauti atsiliepimai} many {# gauto atsiliepimo} other {# gautų atsiliepimų}}",
+        "noReviews": "Atsiliepimų nėra"
       }
     },
     "customFields": {

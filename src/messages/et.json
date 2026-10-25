@@ -1555,7 +1555,8 @@
       "columns": {
         "event": "Sündmus",
         "date": "Kuupäev",
-        "presences": "Osalejate arv"
+        "presences": "Osalejate arv",
+        "bilan": "Kokkuvõte"
       },
       "presentCount": "{count, plural, one {# kohal} other {# kohal}}",
       "reservedCount": "{count, plural, one {# broneeritud} other {# broneeritud}}",
@@ -1594,6 +1595,18 @@
         "titlePlaceholder": "Üldassamblee 2026",
         "dateLabel": "Alguskuupäev",
         "createButton": "Loo"
+      },
+      "bilan": {
+        "show": "Näita kokkuvõtet",
+        "hide": "Peida kokkuvõte",
+        "participants": "Osalejad",
+        "registeredCount": "{count, plural, one {# registreerunud} other {# registreerunut}}",
+        "presentCount": "{count, plural, one {# kohal} other {# kohal}}",
+        "revenue": "Laekunud tulu",
+        "afterRefunds": "Pärast tagasimakseid",
+        "reviews": "Arvustused",
+        "reviewCount": "{count, plural, one {# arvustus saadud} other {# arvustust saadud}}",
+        "noReviews": "Arvustusi pole"
       }
     },
     "customFields": {

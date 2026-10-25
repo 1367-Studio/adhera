@@ -1575,7 +1575,8 @@
       "columns": {
         "event": "Event",
         "date": "Date",
-        "presences": "Attendance"
+        "presences": "Attendance",
+        "bilan": "Summary"
       },
       "presentCount": "{count, plural, one {# attendee} other {# attendees}}",
       "reservedCount": "{count, plural, one {# reserved} other {# reserved}}",
@@ -1614,6 +1615,18 @@
         "titlePlaceholder": "Annual general meeting 2026",
         "dateLabel": "Start date",
         "createButton": "Create"
+      },
+      "bilan": {
+        "show": "Show summary",
+        "hide": "Hide summary",
+        "participants": "Participants",
+        "registeredCount": "{count, plural, one {# registered} other {# registered}}",
+        "presentCount": "{count, plural, one {# present} other {# present}}",
+        "revenue": "Revenue collected",
+        "afterRefunds": "After refunds",
+        "reviews": "Reviews",
+        "reviewCount": "{count, plural, one {# review received} other {# reviews received}}",
+        "noReviews": "No reviews"
       }
     },
     "customFields": {

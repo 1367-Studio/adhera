@@ -1555,7 +1555,8 @@
       "columns": {
         "event": "Eveniment",
         "date": "Data",
-        "presences": "Prezență"
+        "presences": "Prezență",
+        "bilan": "Bilanț"
       },
       "presentCount": "{count, plural, one {# prezent} other {# prezent}}",
       "reservedCount": "{count, plural, one {# rezervat} other {# rezervat}}",
@@ -1594,6 +1595,18 @@
         "titlePlaceholder": "Adunarea Generală 2026",
         "dateLabel": "Data începerii",
         "createButton": "Creează"
+      },
+      "bilan": {
+        "show": "Vezi bilanțul",
+        "hide": "Ascunde bilanțul",
+        "participants": "Participanți",
+        "registeredCount": "{count, plural, one {# înscris} few {# înscriși} other {# de înscriși}}",
+        "presentCount": "{count, plural, one {# prezent} few {# prezenți} other {# de prezenți}}",
+        "revenue": "Venituri încasate",
+        "afterRefunds": "După rambursări",
+        "reviews": "Recenzii",
+        "reviewCount": "{count, plural, one {# recenzie primită} few {# recenzii primite} other {# de recenzii primite}}",
+        "noReviews": "Nicio recenzie"
       }
     },
     "customFields": {

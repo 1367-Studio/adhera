@@ -1555,7 +1555,8 @@
       "columns": {
         "event": "Evenemang",
         "date": "Datum",
-        "presences": "Närvaro"
+        "presences": "Närvaro",
+        "bilan": "Sammanfattning"
       },
       "presentCount": "{count, plural, one {# närvarande} other {# närvarande}}",
       "reservedCount": "{count, plural, one {# bokad} other {# bokad}}",
@@ -1594,6 +1595,18 @@
         "titlePlaceholder": "Generalförsamlingen 2026",
         "dateLabel": "Startdatum",
         "createButton": "Skapa"
+      },
+      "bilan": {
+        "show": "Visa sammanfattning",
+        "hide": "Dölj sammanfattning",
+        "participants": "Deltagare",
+        "registeredCount": "{count, plural, one {# anmäld} other {# anmälda}}",
+        "presentCount": "{count, plural, one {# närvarande} other {# närvarande}}",
+        "revenue": "Inkasserade intäkter",
+        "afterRefunds": "Efter återbetalningar",
+        "reviews": "Recensioner",
+        "reviewCount": "{count, plural, one {# recension mottagen} other {# recensioner mottagna}}",
+        "noReviews": "Inga recensioner"
       }
     },
     "customFields": {

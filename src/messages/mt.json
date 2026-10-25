@@ -1555,7 +1555,8 @@
       "columns": {
         "event": "Avveniment",
         "date": "Data",
-        "presences": "Attendenza"
+        "presences": "Attendenza",
+        "bilan": "Sommarju"
       },
       "presentCount": "{count, plural, one {# preżenti} other {# preżenti}}",
       "reservedCount": "{count, plural, one {# imħallas} other {# imħallas}}",
@@ -1594,6 +1595,18 @@
         "titlePlaceholder": "Assemblea Ġenerali 2026",
         "dateLabel": "Data tal-bidu",
         "createButton": "Oħloq"
+      },
+      "bilan": {
+        "show": "Uri s-sommarju",
+        "hide": "Aħbi s-sommarju",
+        "participants": "Parteċipanti",
+        "registeredCount": "{count, plural, one {# reġistrat} two {# reġistrati} few {# reġistrati} many {# reġistrati} other {# reġistrati}}",
+        "presentCount": "{count, plural, one {# preżenti} two {# preżenti} few {# preżenti} many {# preżenti} other {# preżenti}}",
+        "revenue": "Dħul miġbur",
+        "afterRefunds": "Wara r-rimborżi",
+        "reviews": "Reviżjonijiet",
+        "reviewCount": "{count, plural, one {# reviżjoni riċevuta} two {# reviżjonijiet riċevuti} few {# reviżjonijiet riċevuti} many {# reviżjonijiet riċevuti} other {# reviżjonijiet riċevuti}}",
+        "noReviews": "L-ebda reviżjoni"
       }
     },
     "customFields": {

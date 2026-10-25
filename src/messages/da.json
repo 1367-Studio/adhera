@@ -1555,7 +1555,8 @@
       "columns": {
         "event": "Begivenhed",
         "date": "Dato",
-        "presences": "Fremmøde"
+        "presences": "Fremmøde",
+        "bilan": "Oversigt"
       },
       "presentCount": "{count, plural, one {# til stede} other {# til stede}}",
       "reservedCount": "{count, plural, one {# booket} other {# booket}}",
@@ -1594,6 +1595,18 @@
         "titlePlaceholder": "Generalforsamling 2026",
         "dateLabel": "Startdato",
         "createButton": "Opret"
+      },
+      "bilan": {
+        "show": "Vis oversigt",
+        "hide": "Skjul oversigt",
+        "participants": "Deltagere",
+        "registeredCount": "{count, plural, one {# tilmeldt} other {# tilmeldte}}",
+        "presentCount": "{count, plural, one {# til stede} other {# til stede}}",
+        "revenue": "Indkasserede indtægter",
+        "afterRefunds": "Efter refusioner",
+        "reviews": "Anmeldelser",
+        "reviewCount": "{count, plural, one {# anmeldelse modtaget} other {# anmeldelser modtaget}}",
+        "noReviews": "Ingen anmeldelser"
       }
     },
     "customFields": {

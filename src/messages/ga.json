@@ -1555,7 +1555,8 @@
       "columns": {
         "event": "Teagmhas",
         "date": "Dáta",
-        "presences": "Tinreamh"
+        "presences": "Tinreamh",
+        "bilan": "Achoimre"
       },
       "presentCount": "{count, plural, one {# i láthair} other {# i láthair}}",
       "reservedCount": "{count, plural, one {# curtha in áirithe} other {# curtha in áirithe}}",
@@ -1594,6 +1595,18 @@
         "titlePlaceholder": "Comhthionól Ginearálta 2026",
         "dateLabel": "Dáta tosaigh",
         "createButton": "Cruthaigh"
+      },
+      "bilan": {
+        "show": "Taispeáin an achoimre",
+        "hide": "Folaigh an achoimre",
+        "participants": "Rannpháirtithe",
+        "registeredCount": "{count, plural, one {# cláraithe} two {# cláraithe} few {# cláraithe} many {# cláraithe} other {# cláraithe}}",
+        "presentCount": "{count, plural, one {# i láthair} two {# i láthair} few {# i láthair} many {# i láthair} other {# i láthair}}",
+        "revenue": "Ioncam bailithe",
+        "afterRefunds": "Tar éis aisíocaíochtaí",
+        "reviews": "Léirmheasanna",
+        "reviewCount": "{count, plural, one {# léirmheas faighte} two {# léirmheas faighte} few {# léirmheas faighte} many {# léirmheas faighte} other {# léirmheas faighte}}",
+        "noReviews": "Gan léirmheasanna"
       }
     },
     "customFields": {

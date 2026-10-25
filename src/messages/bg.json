@@ -1555,7 +1555,8 @@
       "columns": {
         "event": "Събитие",
         "date": "Дата",
-        "presences": "Присъствие"
+        "presences": "Присъствие",
+        "bilan": "Обобщение"
       },
       "presentCount": "{count, plural, one {# присъстващ} other {# присъстващ}}",
       "reservedCount": "{count, plural, one {# резервиран} other {# резервиран}}",
@@ -1594,6 +1595,18 @@
         "titlePlaceholder": "Общо събрание 2026",
         "dateLabel": "Начална дата",
         "createButton": "Създаване"
+      },
+      "bilan": {
+        "show": "Покажи обобщението",
+        "hide": "Скрий обобщението",
+        "participants": "Участници",
+        "registeredCount": "{count, plural, one {# записан} other {# записани}}",
+        "presentCount": "{count, plural, one {# присъстващ} other {# присъстващи}}",
+        "revenue": "Събрани приходи",
+        "afterRefunds": "След възстановявания",
+        "reviews": "Отзиви",
+        "reviewCount": "{count, plural, one {# получен отзив} other {# получени отзива}}",
+        "noReviews": "Няма отзиви"
       }
     },
     "customFields": {

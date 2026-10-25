@@ -1555,7 +1555,8 @@
       "columns": {
         "event": "Evento",
         "date": "Data",
-        "presences": "Presenças"
+        "presences": "Presenças",
+        "bilan": "Balanço"
       },
       "presentCount": "{count, plural, one {# presente} other {# presentes}}",
       "reservedCount": "{count, plural, one {# reservado} other {# reservados}}",
@@ -1594,6 +1595,18 @@
         "titlePlaceholder": "Assembleia geral 2026",
         "dateLabel": "Data de início",
         "createButton": "Criar"
+      },
+      "bilan": {
+        "show": "Ver o balanço",
+        "hide": "Ocultar o balanço",
+        "participants": "Participantes",
+        "registeredCount": "{count, plural, one {# inscrito} many {# inscritos} other {# inscritos}}",
+        "presentCount": "{count, plural, one {# presente} many {# presentes} other {# presentes}}",
+        "revenue": "Receitas cobradas",
+        "afterRefunds": "Após reembolsos",
+        "reviews": "Avaliações",
+        "reviewCount": "{count, plural, one {# avaliação recebida} many {# avaliações recebidas} other {# avaliações recebidas}}",
+        "noReviews": "Nenhuma avaliação"
       }
     },
     "customFields": {

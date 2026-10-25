@@ -1555,7 +1555,8 @@
       "columns": {
         "event": "Tapahtuma",
         "date": "Päivämäärä",
-        "presences": "Osallistujamäärä"
+        "presences": "Osallistujamäärä",
+        "bilan": "Yhteenveto"
       },
       "presentCount": "{count, plural, one {# läsnä} other {# läsnä}}",
       "reservedCount": "{count, plural, one {# varattu} other {# varattu}}",
@@ -1594,6 +1595,18 @@
         "titlePlaceholder": "Yleiskokous 2026",
         "dateLabel": "Aloituspäivä",
         "createButton": "Luo"
+      },
+      "bilan": {
+        "show": "Näytä yhteenveto",
+        "hide": "Piilota yhteenveto",
+        "participants": "Osallistujat",
+        "registeredCount": "{count, plural, one {# ilmoittautunut} other {# ilmoittautunutta}}",
+        "presentCount": "{count, plural, one {# paikalla} other {# paikalla}}",
+        "revenue": "Kertyneet tulot",
+        "afterRefunds": "Palautusten jälkeen",
+        "reviews": "Arvostelut",
+        "reviewCount": "{count, plural, one {# arvostelu saatu} other {# arvostelua saatu}}",
+        "noReviews": "Ei arvosteluja"
       }
     },
     "customFields": {

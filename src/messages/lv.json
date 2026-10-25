@@ -1555,7 +1555,8 @@
       "columns": {
         "event": "Pasākums",
         "date": "Datums",
-        "presences": "Apmeklējums"
+        "presences": "Apmeklējums",
+        "bilan": "Kopsavilkums"
       },
       "presentCount": "{count, plural, one {# klāt} other {# klāt}}",
       "reservedCount": "{count, plural, one {# rezervēts} other {# rezervēts}}",
@@ -1594,6 +1595,18 @@
         "titlePlaceholder": "Ģenerālā asambleja 2026",
         "dateLabel": "Sākuma datums",
         "createButton": "Izveidot"
+      },
+      "bilan": {
+        "show": "Rādīt kopsavilkumu",
+        "hide": "Paslēpt kopsavilkumu",
+        "participants": "Dalībnieki",
+        "registeredCount": "{count, plural, zero {# reģistrējušies} one {# reģistrējies} other {# reģistrējušies}}",
+        "presentCount": "{count, plural, zero {# klātesoši} one {# klātesošs} other {# klātesoši}}",
+        "revenue": "Iekasētie ieņēmumi",
+        "afterRefunds": "Pēc atmaksām",
+        "reviews": "Atsauksmes",
+        "reviewCount": "{count, plural, zero {# saņemtas atsauksmes} one {# saņemta atsauksme} other {# saņemtas atsauksmes}}",
+        "noReviews": "Nav atsauksmju"
       }
     },
     "customFields": {

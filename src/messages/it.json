@@ -1555,7 +1555,8 @@
       "columns": {
         "event": "Evento",
         "date": "Data",
-        "presences": "Presenze"
+        "presences": "Presenze",
+        "bilan": "Bilancio"
       },
       "presentCount": "{count, plural, one {# presente} other {# presente}}",
       "reservedCount": "{count, plural, one {# prenotato} other {# prenotato}}",
@@ -1594,6 +1595,18 @@
         "titlePlaceholder": "Assemblea Generale 2026",
         "dateLabel": "Data di inizio",
         "createButton": "Crea"
+      },
+      "bilan": {
+        "show": "Vedi il bilancio",
+        "hide": "Nascondi il bilancio",
+        "participants": "Partecipanti",
+        "registeredCount": "{count, plural, one {# iscritto} many {# iscritti} other {# iscritti}}",
+        "presentCount": "{count, plural, one {# presente} many {# presenti} other {# presenti}}",
+        "revenue": "Entrate incassate",
+        "afterRefunds": "Al netto dei rimborsi",
+        "reviews": "Recensioni",
+        "reviewCount": "{count, plural, one {# recensione ricevuta} many {# recensioni ricevute} other {# recensioni ricevute}}",
+        "noReviews": "Nessuna recensione"
       }
     },
     "customFields": {

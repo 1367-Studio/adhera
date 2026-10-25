@@ -1555,7 +1555,8 @@
       "columns": {
         "event": "Podujatie",
         "date": "Dátum",
-        "presences": "Účasť"
+        "presences": "Účasť",
+        "bilan": "Prehľad"
       },
       "presentCount": "{count, plural, one {# prítomní} other {# prítomní}}",
       "reservedCount": "{count, plural, one {# rezervované} other {# rezervované}}",
@@ -1594,6 +1595,18 @@
         "titlePlaceholder": "Valné zhromaždenie 2026",
         "dateLabel": "Dátum začiatku",
         "createButton": "Tvor"
+      },
+      "bilan": {
+        "show": "Zobraziť prehľad",
+        "hide": "Skryť prehľad",
+        "participants": "Účastníci",
+        "registeredCount": "{count, plural, one {# prihlásený} few {# prihlásení} many {# prihláseného} other {# prihlásených}}",
+        "presentCount": "{count, plural, one {# prítomný} few {# prítomní} many {# prítomného} other {# prítomných}}",
+        "revenue": "Inkasované príjmy",
+        "afterRefunds": "Po vrátení peňazí",
+        "reviews": "Recenzie",
+        "reviewCount": "{count, plural, one {# prijatá recenzia} few {# prijaté recenzie} many {# prijatej recenzie} other {# prijatých recenzií}}",
+        "noReviews": "Žiadne recenzie"
       }
     },
     "customFields": {
