@@ -4353,6 +4353,7 @@
       "exportPdf": "PDF (.pdf)",
       "count": "{count, plural, one {# cotisation} other {# cotisations}}",
       "totalCollected": " · {amount} encaissé",
+      "totalCollectedTooltip": "Inclut les cotisations payées par des membres supprimés depuis — ce total peut donc dépasser la somme des lignes affichées ci-dessous.",
       "exercise": "Exercice {year}",
       "columns": {
         "member": "Membre",

@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react"
 import { useSearchParams } from "next/navigation"
 import { toast } from "sonner"
 import { useTranslations } from "next-intl"
-import { PlusIcon, PencilSimpleIcon, TrashIcon, DownloadSimpleIcon, CaretDownIcon, BellIcon, MoneyIcon, ClockCounterClockwiseIcon } from "@phosphor-icons/react/dist/ssr";
+import { PlusIcon, PencilSimpleIcon, TrashIcon, DownloadSimpleIcon, CaretDownIcon, BellIcon, MoneyIcon, ClockCounterClockwiseIcon, InfoIcon } from "@phosphor-icons/react/dist/ssr";
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import { useCotisationsPaginated, useCreateCotisation, useUpdateCotisation, useDeleteCotisation } from "@/hooks/use-cotisations"
@@ -421,7 +421,28 @@ export function CotisationsView() {
     <div className="space-y-4">
       <PageHeader
         title={t("cotisations.view.title")}
-        description={t("cotisations.view.count", { count: result?.total ?? 0 }) + (totalPaye > 0 ? t("cotisations.view.totalCollected", { amount: totalPaye.toLocaleString("fr-FR", { style: "currency", currency: "EUR" }) }) : "")}
+        description={
+          <span className="inline-flex items-center gap-1">
+            {t("cotisations.view.count", { count: result?.total ?? 0 })}
+            {totalPaye > 0 && (
+              <>
+                {t("cotisations.view.totalCollected", { amount: totalPaye.toLocaleString("fr-FR", { style: "currency", currency: "EUR" }) })}
+                {/* This sum can exceed the visible rows' total — it also counts cotisations
+                    of members deleted since paying. */}
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger className="text-muted-foreground hover:text-foreground" render={<span className="inline-flex" />}>
+                      <InfoIcon className="size-3.5" />
+                    </TooltipTrigger>
+                    <TooltipContent side="top" className="max-w-64 whitespace-normal text-left">
+                      {t("cotisations.view.totalCollectedTooltip")}
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </>
+            )}
+          </span>
+        }
         action={
           <div className="flex items-center gap-2">
             {canReadMembres && (
