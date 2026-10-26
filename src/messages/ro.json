@@ -1555,7 +1555,8 @@
       "columns": {
         "event": "Eveniment",
         "date": "Data",
-        "presences": "Prezență"
+        "presences": "Prezență",
+        "bilan": "Bilanț"
       },
       "presentCount": "{count, plural, one {# prezent} other {# prezent}}",
       "reservedCount": "{count, plural, one {# rezervat} other {# rezervat}}",
@@ -1594,6 +1595,19 @@
         "titlePlaceholder": "Adunarea Generală 2026",
         "dateLabel": "Data începerii",
         "createButton": "Creează"
+      },
+      "bilan": {
+        "show": "Vezi bilanțul",
+        "hide": "Ascunde bilanțul",
+        "participants": "Participanți",
+        "registeredCount": "{count, plural, one {# înscris} few {# înscriși} other {# de înscriși}}",
+        "presentCount": "{count, plural, one {# prezent} few {# prezenți} other {# de prezenți}}",
+        "revenue": "Venituri încasate",
+        "afterRefunds": "După rambursări",
+        "reviews": "Recenzii",
+        "reviewCount": "{count, plural, one {# recenzie primită} few {# recenzii primite} other {# de recenzii primite}}",
+        "noReviews": "Nicio recenzie",
+        "fullLink": "Vezi bilanțul complet"
       }
     },
     "customFields": {
@@ -1898,7 +1912,8 @@
           "datesOrderError": "Data de închidere trebuie să fie mai târzie decât data deschiderii."
         }
       },
-      "titleRequired": "Titlul este obligatoriu"
+      "titleRequired": "Titlul este obligatoriu",
+      "bilanButton": "Bilanț"
     },
     "discountCodes": {
       "title": "Coduri promoționale",
@@ -1928,6 +1943,58 @@
       "valueRequiredError": "Reducerea trebuie să fie mai mare de 0.",
       "windowInvalidError": "Data de sfârșit trebuie să fie după data de începere.",
       "saved": "Coduri promoționale salvate"
+    },
+    "bilanPage": {
+      "metaTitle": "Bilanțul evenimentului",
+      "export": "Exportă bilanțul",
+      "sectionTitle": "Detaliile participanților",
+      "sectionSubtitle": "Prezențe, plăți și recenzii într-un singur loc",
+      "searchPlaceholder": "Caută un participant…",
+      "presenceFilter": {
+        "all": "Toate prezențele",
+        "present": "Prezenți",
+        "absent": "Absenți"
+      },
+      "reviewFilter": {
+        "all": "Toate recenziile",
+        "with": "Cu recenzie",
+        "without": "Fără recenzie"
+      },
+      "resetFilters": "Resetează",
+      "columns": {
+        "participant": "Participant",
+        "presence": "Prezență",
+        "amount": "Sumă plătită",
+        "payment": "Plată",
+        "review": "Recenzie"
+      },
+      "presence": {
+        "present": "Prezent",
+        "absent": "Absent"
+      },
+      "paymentStatus": {
+        "paid": "Plătit",
+        "pending": "În așteptare",
+        "refunded": "Rambursat",
+        "free": "Gratuit"
+      },
+      "viewReview": "Vezi recenzia",
+      "empty": "Niciun participant",
+      "emptyFiltered": "Niciun participant nu corespunde filtrelor",
+      "totalAmount": "Total {amount}",
+      "participantCount": "{count, plural, one {# participant} few {# participanți} other {# de participanți}}",
+      "reviewCount": "{count, plural, one {# recenzie} few {# recenzii} other {# de recenzii}}",
+      "csv": {
+        "participant": "Participant",
+        "email": "E-mail",
+        "presence": "Prezență",
+        "amount": "Sumă plătită (€)",
+        "paymentStatus": "Starea plății",
+        "paymentMethod": "Metodă de plată",
+        "rating": "Notă (din 5)",
+        "comment": "Comentariu",
+        "total": "Total"
+      }
     }
   },
   "actualites": {
@@ -2548,7 +2615,8 @@
         "status": "Statut",
         "stock": "Stoc",
         "prix": "Prețuri",
-        "ventes": "Vânzări"
+        "ventes": "Vânzări",
+        "revenu": "Venituri"
       },
       "variantsCount": "{count, plural, one {# variantă} other {# variante}}",
       "actions": {
@@ -2573,6 +2641,13 @@
       },
       "othersCount": "{count, plural, one {+# altele} other {+# altele}}",
       "statusFilterAll": "Toate",
+      "salesCountLabel": "Număr de vânzări",
+      "revenueTotalLabel": "Venit total",
+      "unitsSold": "{count, plural, one {# bucată vândută} few {# bucăți vândute} other {# de bucăți vândute}}",
+      "pendingCountLabel": "Comenzi în așteptare",
+      "pendingAmountLabel": "Sumă în așteptare",
+      "cancelledCountLabel": "Comenzi anulate",
+      "cancelledAmountLabel": "Sumă anulată",
       "deleteProduitTitle": "Îndepărtează produsul",
       "deleteProduitDescription": "Șterge \" {name} » ? Această acțiune este ireversibilă.",
       "cancelOrderTitle": "Să anuleze comanda?",
@@ -2838,7 +2913,12 @@
         "issuedAt": "Distribuit la",
         "amount": "Sumă"
       },
-      "noReceipts": "Nu se emit chitanțe fiscale"
+      "noReceipts": "Nu se emit chitanțe fiscale",
+      "searchPlaceholder": "Donator sau e-mail…",
+      "minAmount": "Sumă min. (€)",
+      "maxAmount": "Sumă max. (€)",
+      "noReceiptsFiltered": "Nicio chitanță nu corespunde filtrelor",
+      "count": "{count, plural, one {# chitanță} few {# chitanțe} other {# de chitanțe}}"
     },
     "detail": {
       "backToList": "Înapoi la donații",

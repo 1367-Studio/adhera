@@ -1555,7 +1555,8 @@
       "columns": {
         "event": "Begivenhed",
         "date": "Dato",
-        "presences": "Fremmøde"
+        "presences": "Fremmøde",
+        "bilan": "Oversigt"
       },
       "presentCount": "{count, plural, one {# til stede} other {# til stede}}",
       "reservedCount": "{count, plural, one {# booket} other {# booket}}",
@@ -1594,6 +1595,19 @@
         "titlePlaceholder": "Generalforsamling 2026",
         "dateLabel": "Startdato",
         "createButton": "Opret"
+      },
+      "bilan": {
+        "show": "Vis oversigt",
+        "hide": "Skjul oversigt",
+        "participants": "Deltagere",
+        "registeredCount": "{count, plural, one {# tilmeldt} other {# tilmeldte}}",
+        "presentCount": "{count, plural, one {# til stede} other {# til stede}}",
+        "revenue": "Indkasserede indtægter",
+        "afterRefunds": "Efter refusioner",
+        "reviews": "Anmeldelser",
+        "reviewCount": "{count, plural, one {# anmeldelse modtaget} other {# anmeldelser modtaget}}",
+        "noReviews": "Ingen anmeldelser",
+        "fullLink": "Se hele oversigten"
       }
     },
     "customFields": {
@@ -1898,7 +1912,8 @@
           "datesOrderError": "Afslutningsdatoen skal være senere end åbningsdatoen."
         }
       },
-      "titleRequired": "Titlen er obligatorisk"
+      "titleRequired": "Titlen er obligatorisk",
+      "bilanButton": "Oversigt"
     },
     "discountCodes": {
       "title": "Rabatkoder",
@@ -1928,6 +1943,58 @@
       "valueRequiredError": "Reduktionen skal være større end 0.",
       "windowInvalidError": "Slutdatoen skal være efter startdatoen.",
       "saved": "Gemte rabatkoder"
+    },
+    "bilanPage": {
+      "metaTitle": "Oversigt over arrangementet",
+      "export": "Eksportér oversigten",
+      "sectionTitle": "Deltagere i detaljer",
+      "sectionSubtitle": "Fremmøde, betalinger og anmeldelser samlet ét sted",
+      "searchPlaceholder": "Søg efter en deltager…",
+      "presenceFilter": {
+        "all": "Alt fremmøde",
+        "present": "Til stede",
+        "absent": "Fraværende"
+      },
+      "reviewFilter": {
+        "all": "Alle anmeldelser",
+        "with": "Med anmeldelse",
+        "without": "Uden anmeldelse"
+      },
+      "resetFilters": "Nulstil",
+      "columns": {
+        "participant": "Deltager",
+        "presence": "Fremmøde",
+        "amount": "Betalt beløb",
+        "payment": "Betaling",
+        "review": "Anmeldelse"
+      },
+      "presence": {
+        "present": "Til stede",
+        "absent": "Fraværende"
+      },
+      "paymentStatus": {
+        "paid": "Betalt",
+        "pending": "Afventer",
+        "refunded": "Refunderet",
+        "free": "Gratis"
+      },
+      "viewReview": "Se anmeldelsen",
+      "empty": "Ingen deltagere",
+      "emptyFiltered": "Ingen deltagere matcher filtrene",
+      "totalAmount": "I alt {amount}",
+      "participantCount": "{count, plural, one {# deltager} other {# deltagere}}",
+      "reviewCount": "{count, plural, one {# anmeldelse} other {# anmeldelser}}",
+      "csv": {
+        "participant": "Deltager",
+        "email": "E-mail",
+        "presence": "Fremmøde",
+        "amount": "Betalt beløb (€)",
+        "paymentStatus": "Betalingsstatus",
+        "paymentMethod": "Betalingsmetode",
+        "rating": "Bedømmelse (ud af 5)",
+        "comment": "Kommentar",
+        "total": "I alt"
+      }
     }
   },
   "actualites": {
@@ -2548,7 +2615,8 @@
         "status": "Status",
         "stock": "Materiel",
         "prix": "Prisfastsættelse",
-        "ventes": "Salg"
+        "ventes": "Salg",
+        "revenu": "Omsætning"
       },
       "variantsCount": "{count, plural, one {# variant} other {# varianter}}",
       "actions": {
@@ -2573,6 +2641,13 @@
       },
       "othersCount": "{count, plural, one {+# andet} other {+# andre}}",
       "statusFilterAll": "Alle",
+      "salesCountLabel": "Antal salg",
+      "revenueTotalLabel": "Samlet omsætning",
+      "unitsSold": "{count, plural, one {# solgt} other {# solgt}}",
+      "pendingCountLabel": "Afventende ordrer",
+      "pendingAmountLabel": "Afventende beløb",
+      "cancelledCountLabel": "Annullerede ordrer",
+      "cancelledAmountLabel": "Annulleret beløb",
       "deleteProduitTitle": "Fjern produktet",
       "deleteProduitDescription": "Slet \" {name} » ? Denne handling er uigenkaldelig.",
       "cancelOrderTitle": "Annullere ordren?",
@@ -2838,7 +2913,12 @@
         "issuedAt": "Udstedt den",
         "amount": "Beløb"
       },
-      "noReceipts": "Ingen skattekvitteringer udstedt"
+      "noReceipts": "Ingen skattekvitteringer udstedt",
+      "searchPlaceholder": "Donor eller e-mail…",
+      "minAmount": "Min. beløb (€)",
+      "maxAmount": "Maks. beløb (€)",
+      "noReceiptsFiltered": "Ingen kvitteringer matcher filtrene",
+      "count": "{count, plural, one {# kvittering} other {# kvitteringer}}"
     },
     "detail": {
       "backToList": "Tilbage til donationer",

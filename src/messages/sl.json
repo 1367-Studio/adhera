@@ -1555,7 +1555,8 @@
       "columns": {
         "event": "Dogodek",
         "date": "Datum",
-        "presences": "Obisk"
+        "presences": "Obisk",
+        "bilan": "Pregled"
       },
       "presentCount": "{count, plural, one {# prisotni} other {# prisotni}}",
       "reservedCount": "{count, plural, one {# rezervirano} other {# rezervirano}}",
@@ -1594,6 +1595,19 @@
         "titlePlaceholder": "Generalna skupščina 2026",
         "dateLabel": "Datum začetka",
         "createButton": "Ustvarjaj"
+      },
+      "bilan": {
+        "show": "Prikaži pregled",
+        "hide": "Skrij pregled",
+        "participants": "Udeleženci",
+        "registeredCount": "{count, plural, one {# prijavljen} two {# prijavljena} few {# prijavljeni} other {# prijavljenih}}",
+        "presentCount": "{count, plural, one {# prisoten} two {# prisotna} few {# prisotni} other {# prisotnih}}",
+        "revenue": "Prejeti prihodki",
+        "afterRefunds": "Po vračilih",
+        "reviews": "Ocene",
+        "reviewCount": "{count, plural, one {# prejeta ocena} two {# prejeti oceni} few {# prejete ocene} other {# prejetih ocen}}",
+        "noReviews": "Ni ocen",
+        "fullLink": "Prikaži celoten pregled"
       }
     },
     "customFields": {
@@ -1898,7 +1912,8 @@
           "datesOrderError": "Datum zaključka mora biti kasnejši od datuma odprtja."
         }
       },
-      "titleRequired": "Naziv je obvezen"
+      "titleRequired": "Naziv je obvezen",
+      "bilanButton": "Pregled"
     },
     "discountCodes": {
       "title": "Promocijske kode",
@@ -1928,6 +1943,58 @@
       "valueRequiredError": "Zmanjšanje mora biti večje od 0.",
       "windowInvalidError": "Končni datum mora biti po začetnem datumu.",
       "saved": "Shranjene promocijske kode"
+    },
+    "bilanPage": {
+      "metaTitle": "Pregled dogodka",
+      "export": "Izvozi pregled",
+      "sectionTitle": "Podrobnosti o udeležencih",
+      "sectionSubtitle": "Prisotnost, plačila in ocene na enem mestu",
+      "searchPlaceholder": "Poišči udeleženca…",
+      "presenceFilter": {
+        "all": "Vsa prisotnost",
+        "present": "Prisotni",
+        "absent": "Odsotni"
+      },
+      "reviewFilter": {
+        "all": "Vse ocene",
+        "with": "Z oceno",
+        "without": "Brez ocene"
+      },
+      "resetFilters": "Ponastavi",
+      "columns": {
+        "participant": "Udeleženec",
+        "presence": "Prisotnost",
+        "amount": "Plačani znesek",
+        "payment": "Plačilo",
+        "review": "Ocena"
+      },
+      "presence": {
+        "present": "Prisoten",
+        "absent": "Odsoten"
+      },
+      "paymentStatus": {
+        "paid": "Plačano",
+        "pending": "V teku",
+        "refunded": "Vrnjeno",
+        "free": "Brezplačno"
+      },
+      "viewReview": "Prikaži oceno",
+      "empty": "Ni udeležencev",
+      "emptyFiltered": "Noben udeleženec ne ustreza filtrom",
+      "totalAmount": "Skupaj {amount}",
+      "participantCount": "{count, plural, one {# udeleženec} two {# udeleženca} few {# udeleženci} other {# udeležencev}}",
+      "reviewCount": "{count, plural, one {# ocena} two {# oceni} few {# ocene} other {# ocen}}",
+      "csv": {
+        "participant": "Udeleženec",
+        "email": "E-pošta",
+        "presence": "Prisotnost",
+        "amount": "Plačani znesek (€)",
+        "paymentStatus": "Stanje plačila",
+        "paymentMethod": "Način plačila",
+        "rating": "Ocena (od 5)",
+        "comment": "Komentar",
+        "total": "Skupaj"
+      }
     }
   },
   "actualites": {
@@ -2548,7 +2615,8 @@
         "status": "Status",
         "stock": "Vozni del",
         "prix": "Določanje cen",
-        "ventes": "Prodaja"
+        "ventes": "Prodaja",
+        "revenu": "Prihodki"
       },
       "variantsCount": "{count, plural, one {# različica} other {# različice}}",
       "actions": {
@@ -2573,6 +2641,13 @@
       },
       "othersCount": "{count, plural, one {+# drugo} other {+# drugih}}",
       "statusFilterAll": "Vsi",
+      "salesCountLabel": "Število prodaj",
+      "revenueTotalLabel": "Skupni prihodki",
+      "unitsSold": "{count, plural, one {# prodan} two {# prodana} few {# prodani} other {# prodanih}}",
+      "pendingCountLabel": "Naročila v čakanju",
+      "pendingAmountLabel": "Znesek v čakanju",
+      "cancelledCountLabel": "Preklicana naročila",
+      "cancelledAmountLabel": "Preklicani znesek",
       "deleteProduitTitle": "Odstrani izdelek",
       "deleteProduitDescription": "Izbriši \" {name} » ? To dejanje je nepovratno.",
       "cancelOrderTitle": "Prekliči naročilo?",
@@ -2838,7 +2913,12 @@
         "issuedAt": "Izdano",
         "amount": "Znesek"
       },
-      "noReceipts": "Ni bilo izdanih davčnih potrdil"
+      "noReceipts": "Ni bilo izdanih davčnih potrdil",
+      "searchPlaceholder": "Donator ali e-pošta…",
+      "minAmount": "Najmanjši znesek (€)",
+      "maxAmount": "Največji znesek (€)",
+      "noReceiptsFiltered": "Nobeno potrdilo ne ustreza filtrom",
+      "count": "{count, plural, one {# potrdilo} two {# potrdili} few {# potrdila} other {# potrdil}}"
     },
     "detail": {
       "backToList": "Nazaj na donacije",

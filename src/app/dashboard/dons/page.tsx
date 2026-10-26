@@ -29,10 +29,10 @@ import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 import { RowActions } from "@/components/ui/row-actions"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { SearchInput } from "@/components/ui/search-input"
-import { cn } from "@/lib/utils"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { BASE_PATH } from "@/lib/env"
 import { DonShareCard } from "@/components/dons/don-share-card"
+import { StatTile } from "@/components/dashboard/widgets/stat-tile"
 import { AddManualDonModal } from "@/components/dons/add-manual-don-modal"
 import { DonResponsableModal } from "@/components/dons/don-responsable-modal"
 
@@ -95,11 +95,20 @@ type DonsResult = {
   totalCount:  number
 }
 
+// Donor/e-mail search only reaches the database from this many characters on — 1–2 letters
+// match almost every row anyway. Same threshold as /api/dons (MIN_SEARCH_LENGTH there).
+const MIN_SEARCH_LENGTH = 3
+
+function searchTermToApply(searchInput: string): string {
+  const trimmedSearch = searchInput.trim()
+  return trimmedSearch.length >= MIN_SEARCH_LENGTH ? trimmedSearch : ""
+}
+
 const currentYear = new Date().getFullYear()
 const yearOptions = Array.from({ length: 5 }, (_, i) => currentYear - i)
 const PAGE_SIZE   = 25
 
-type Tab = "formulaires" | "dons" | "recus"
+type Tab =  "dons" | "formulaires" | "recus"
 
 export default function DonsPage() {
   return (
@@ -136,11 +145,10 @@ function DonsPageInner() {
     }
   }
 
-  // Defaults to "dons" when a donId is present without an explicit tab — covers notification
-  // and e-mail links already sent/stored before tab=dons was added to the link (see notify.ts),
-  // not just newly-generated ones.
-  const initialTab = (searchParams.get("tab") as Tab) ?? (searchParams.get("donId") ? "dons" : "formulaires")
-  const [tab, setTab] = useState<Tab>(["formulaires", "dons", "recus"].includes(initialTab) ? initialTab : "formulaires")
+  // "dons" (the first tab) unless the URL names another one — also covers notification and
+  // e-mail links that carry a donId but predate tab=dons (see notify.ts).
+  const initialTab = (searchParams.get("tab") as Tab) ?? "dons"
+  const [tab, setTab] = useState<Tab>(["dons","formulaires",  "recus"].includes(initialTab) ? initialTab : "dons")
 
   // Hydrated once from the URL so a refresh or a shared link keeps the "dons" tab's filters
   // (search/year/origin/page) instead of silently resetting them — mirrors how `tab` itself
@@ -275,16 +283,17 @@ function DonsPageInner() {
   }
 
   // ─── Dons reçus ─────────────────────────────────────────────────────────
+  const appliedSearch = searchTermToApply(search)
   const donsParams = new URLSearchParams({
     page:  String(page),
     limit: String(PAGE_SIZE),
     year:  String(yearFilter),
-    ...(search ? { search } : {}),
+    ...(appliedSearch ? { search: appliedSearch } : {}),
     ...(originFilter !== "all" ? { origin: originFilter } : {}),
   })
 
   const { data: donsResult, isLoading: loadingDons } = useQuery<DonsResult>({
-    queryKey:  ["dashboard-dons", page, yearFilter, search, originFilter],
+    queryKey:  ["dashboard-dons", page, yearFilter, appliedSearch, originFilter],
     queryFn:   () => fetch(`/api/dons?${donsParams}`).then(r => r.json()),
     enabled:   tab === "dons",
     staleTime: 0,
@@ -596,21 +605,55 @@ function DonsPageInner() {
   const totalAmount = donsResult?.totalAmount ?? 0
   const totalCount  = donsResult?.totalCount ?? 0
   const avgAmount   = totalCount > 0 ? totalAmount / totalCount : 0
+  const originSuffix = originFilter !== "all" ? ` · ${ORIGIN_FILTER_LABEL[originFilter]}` : ""
   // `year` is the page's primary scope (always set, not a "filter" in the everyday sense),
   // so only search/origin count here — same reasoning as the reset button and the
   // no-results-vs-no-matches empty state below.
   const hasActiveFilters = !!search || originFilter !== "all"
 
   // ─── Reçus fiscaux ──────────────────────────────────────────────────────
+  // Own filters, separate from the "dons" tab's search (only the year is shared): finding a
+  // receipt for one donor shouldn't leave the donations list silently filtered. What's typed
+  // is applied after a short pause, like the donations search, so the list doesn't refetch on
+  // every keystroke of an amount.
+  const emptyRecusFilters = { search: "", minAmount: "", maxAmount: "" }
+  const [recusFilterInputs, setRecusFilterInputs] = useState(emptyRecusFilters)
+  const [recusFilters, setRecusFilters]           = useState(emptyRecusFilters)
+  const [recusPage, setRecusPage]                 = useState(1)
+  const recusDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  useEffect(() => () => { if (recusDebounceRef.current) clearTimeout(recusDebounceRef.current) }, [])
+
+  function handleRecusFilterChange(filterName: keyof typeof emptyRecusFilters, filterValue: string) {
+    const nextFilters = { ...recusFilterInputs, [filterName]: filterValue }
+    setRecusFilterInputs(nextFilters)
+    if (recusDebounceRef.current) clearTimeout(recusDebounceRef.current)
+    recusDebounceRef.current = setTimeout(() => { setRecusFilters(nextFilters); setRecusPage(1) }, 300)
+  }
+
+  function resetRecusFilters() {
+    if (recusDebounceRef.current) clearTimeout(recusDebounceRef.current)
+    setRecusFilterInputs(emptyRecusFilters)
+    setRecusFilters(emptyRecusFilters)
+    setRecusPage(1)
+  }
+
+  const hasActiveRecusFilters = Object.values(recusFilterInputs).some(filterValue => filterValue.trim() !== "")
+
+  const appliedRecusSearch = searchTermToApply(recusFilters.search)
   const recusParams = new URLSearchParams({
-    page:  "1",
-    limit: "100",
+    page:  String(recusPage),
+    limit: String(PAGE_SIZE),
     year:  String(yearFilter),
     receiptsOnly: "true",
+    ...(appliedRecusSearch            ? { search:    appliedRecusSearch }            : {}),
+    ...(recusFilters.minAmount.trim() ? { minAmount: recusFilters.minAmount.trim() } : {}),
+    ...(recusFilters.maxAmount.trim() ? { maxAmount: recusFilters.maxAmount.trim() } : {}),
   })
 
   const { data: recusResult, isLoading: loadingRecus } = useQuery<DonsResult>({
-    queryKey:  ["dashboard-dons-recus", yearFilter],
+    // The applied search, not the raw input: typing a 1st or 2nd letter must not refetch.
+    queryKey:  ["dashboard-dons-recus", yearFilter, recusPage, appliedRecusSearch, recusFilters.minAmount, recusFilters.maxAmount],
     queryFn:   () => fetch(`/api/dons?${recusParams}`).then(r => r.json()),
     enabled:   tab === "recus",
     staleTime: 0,
@@ -700,8 +743,8 @@ function DonsPageInner() {
       <Tabs value={tab} onValueChange={(v) => changeTab(v as Tab)}>
         <TabsList>
           {([
-            { key: "formulaires", label: t("tabs.forms"),     icon: FileTextIcon },
             { key: "dons",        label: t("tabs.donations"), icon: HandshakeIcon },
+            { key: "formulaires", label: t("tabs.forms"),     icon: FileTextIcon },
             { key: "recus",       label: t("tabs.receipts"),  icon: ReceiptIcon },
           ] as const).map(tabOption => (
             <TabsTrigger key={tabOption.key} value={tabOption.key} className="px-4">
@@ -808,6 +851,36 @@ function DonsPageInner() {
 
       {tab === "dons" && (
         <>
+          {/* Right under the tabs: the public link/QR is what admins come here to grab. */}
+          <DonShareCard />
+
+          {/* KPI totals follow `year` AND `origin` (both deliberate, sticky selections) but
+              ignore the free-text `search` (see aggregateWhere in /api/dons) so typing
+              doesn't make the cards jump around. The origin suffix below is what tells the
+              admin the numbers are currently scoped to one origin, not the association's
+              whole year — without it, a filtered "Total 2026" reads as the full-year total. */}
+          {/* Same StatTile as the dashboard home, so a total looks the same everywhere. */}
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+            <StatTile
+              label={`${t("donationsView.totalLabel", { year: yearFilter })}${originSuffix}`}
+              value={totalAmount.toLocaleString("fr-FR", { style: "currency", currency: "EUR" })}
+              icon={TrendUpIcon}
+              isLoading={loadingDons}
+            />
+            <StatTile
+              label={`${t("donationsView.donorsLabel")}${originSuffix}`}
+              value={totalCount}
+              icon={UsersIcon}
+              isLoading={loadingDons}
+            />
+            <StatTile
+              label={`${t("donationsView.averageLabel")}${originSuffix}`}
+              value={avgAmount.toLocaleString("fr-FR", { style: "currency", currency: "EUR" })}
+              icon={HandshakeIcon}
+              isLoading={loadingDons}
+            />
+          </div>
+
           {/* Gated on the total count, not this page's rows — otherwise paging to an
               empty last page (e.g. right after encaissing the only item on it) would hide
               the whole section instead of just showing an empty table. */}
@@ -830,44 +903,6 @@ function DonsPageInner() {
               />
             </div>
           )}
-
-          <DonShareCard />
-
-          {/* KPI totals follow `year` AND `origin` (both deliberate, sticky selections) but
-              ignore the free-text `search` (see aggregateWhere in /api/dons) so typing
-              doesn't make the cards jump around. The origin suffix below is what tells the
-              admin the numbers are currently scoped to one origin, not the association's
-              whole year — without it, a filtered "Total 2026" reads as the full-year total. */}
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-            <div className="rounded-lg border bg-card p-4 space-y-1">
-              <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                <TrendUpIcon className="size-3.5" />
-                {t("donationsView.totalLabel", { year: yearFilter })}
-                {originFilter !== "all" && <span>· {ORIGIN_FILTER_LABEL[originFilter]}</span>}
-              </div>
-              <p className={cn("text-xl font-bold", totalAmount > 0 ? "text-green-600 dark:text-green-400" : "")}>
-                {totalAmount.toLocaleString("fr-FR", { style: "currency", currency: "EUR" })}
-              </p>
-            </div>
-            <div className="rounded-lg border bg-card p-4 space-y-1">
-              <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                <UsersIcon className="size-3.5" />
-                {t("donationsView.donorsLabel")}
-                {originFilter !== "all" && <span>· {ORIGIN_FILTER_LABEL[originFilter]}</span>}
-              </div>
-              <p className="text-xl font-bold">{totalCount}</p>
-            </div>
-            <div className="rounded-lg border bg-card p-4 space-y-1">
-              <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                <HandshakeIcon className="size-3.5" />
-                {t("donationsView.averageLabel")}
-                {originFilter !== "all" && <span>· {ORIGIN_FILTER_LABEL[originFilter]}</span>}
-              </div>
-              <p className="text-xl font-bold">
-                {avgAmount.toLocaleString("fr-FR", { style: "currency", currency: "EUR" })}
-              </p>
-            </div>
-          </div>
 
           <div className="flex flex-wrap gap-2">
             <SearchInput
@@ -935,19 +970,64 @@ function DonsPageInner() {
       {tab === "recus" && (
         <>
           <div className="flex flex-wrap gap-2">
-            <Select value={String(yearFilter)} onValueChange={v => { if (v) setYearFilter(parseInt(v)) }}>
+            <SearchInput
+              value={recusFilterInputs.search}
+              onValueChange={searchValue => handleRecusFilterChange("search", searchValue)}
+              onClear={() => handleRecusFilterChange("search", "")}
+              placeholder={t("receiptsView.searchPlaceholder")}
+              containerClassName="w-60"
+            />
+            <Select value={String(yearFilter)} onValueChange={v => { if (v) { setYearFilter(parseInt(v)); setRecusPage(1) } }}>
               <SelectTrigger className="w-36"><SelectValue>{String(yearFilter)}</SelectValue></SelectTrigger>
               <SelectContent>
                 {yearOptions.map(y => <SelectItem key={y} value={String(y)}>{String(y)}</SelectItem>)}
               </SelectContent>
             </Select>
+            <Input
+              type="number"
+              inputMode="decimal"
+              min={0}
+              step="0.01"
+              value={recusFilterInputs.minAmount}
+              onChange={event => handleRecusFilterChange("minAmount", event.target.value)}
+              placeholder={t("receiptsView.minAmount")}
+              aria-label={t("receiptsView.minAmount")}
+              className="w-36"
+            />
+            <Input
+              type="number"
+              inputMode="decimal"
+              min={0}
+              step="0.01"
+              value={recusFilterInputs.maxAmount}
+              onChange={event => handleRecusFilterChange("maxAmount", event.target.value)}
+              placeholder={t("receiptsView.maxAmount")}
+              aria-label={t("receiptsView.maxAmount")}
+              className="w-36"
+            />
+            {hasActiveRecusFilters && (
+              <Button variant="ghost" onClick={resetRecusFilters} className="text-muted-foreground">
+                <FunnelXIcon className="size-3.5" />
+                {t("donationsView.resetFilters")}
+              </Button>
+            )}
+            <span className="self-center text-sm text-muted-foreground">
+              {t("receiptsView.count", { count: recusResult?.total ?? 0 })}
+            </span>
           </div>
           <DataTable
             columns={recuColumns}
             data={recus}
             loading={loadingRecus}
             keyExtractor={(d) => d.id}
-            empty={t("receiptsView.noReceipts")}
+            empty={hasActiveRecusFilters ? t("receiptsView.noReceiptsFiltered") : t("receiptsView.noReceipts")}
+            pagination={recusResult ? {
+              page:         recusResult.page,
+              totalPages:   recusResult.totalPages,
+              total:        recusResult.total,
+              limit:        recusResult.limit,
+              onPageChange: (nextPage) => setRecusPage(nextPage),
+            } : undefined}
           />
         </>
       )}

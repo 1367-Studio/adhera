@@ -1555,7 +1555,8 @@
       "columns": {
         "event": "Događaj",
         "date": "Datum",
-        "presences": "Prisutnost"
+        "presences": "Prisutnost",
+        "bilan": "Pregled"
       },
       "presentCount": "{count, plural, one {# prisutni} other {# prisutni}}",
       "reservedCount": "{count, plural, one {# rezerviran} other {# rezerviran}}",
@@ -1594,6 +1595,19 @@
         "titlePlaceholder": "Opća skupština 2026.",
         "dateLabel": "Datum početka",
         "createButton": "Stvori"
+      },
+      "bilan": {
+        "show": "Prikaži pregled",
+        "hide": "Sakrij pregled",
+        "participants": "Sudionici",
+        "registeredCount": "{count, plural, one {# prijavljen} few {# prijavljena} other {# prijavljenih}}",
+        "presentCount": "{count, plural, one {# prisutan} few {# prisutna} other {# prisutnih}}",
+        "revenue": "Naplaćeni prihodi",
+        "afterRefunds": "Nakon povrata",
+        "reviews": "Recenzije",
+        "reviewCount": "{count, plural, one {# primljena recenzija} few {# primljene recenzije} other {# primljenih recenzija}}",
+        "noReviews": "Nema recenzija",
+        "fullLink": "Prikaži cijeli pregled"
       }
     },
     "customFields": {
@@ -1898,7 +1912,8 @@
           "datesOrderError": "Datum zatvaranja mora biti kasniji od datuma otvaranja."
         }
       },
-      "titleRequired": "Naslov je obavezan"
+      "titleRequired": "Naslov je obavezan",
+      "bilanButton": "Pregled"
     },
     "discountCodes": {
       "title": "Promotivni kodovi",
@@ -1928,6 +1943,58 @@
       "valueRequiredError": "Redukcija mora biti veća od 0.",
       "windowInvalidError": "Datum završetka mora biti nakon datuma početka.",
       "saved": "Spremljeni promotivni kodovi"
+    },
+    "bilanPage": {
+      "metaTitle": "Pregled događaja",
+      "export": "Izvezi pregled",
+      "sectionTitle": "Pojedinosti o sudionicima",
+      "sectionSubtitle": "Prisutnost, plaćanja i recenzije na jednom mjestu",
+      "searchPlaceholder": "Pretraži sudionika…",
+      "presenceFilter": {
+        "all": "Sva prisutnost",
+        "present": "Prisutni",
+        "absent": "Odsutni"
+      },
+      "reviewFilter": {
+        "all": "Sve recenzije",
+        "with": "S recenzijom",
+        "without": "Bez recenzije"
+      },
+      "resetFilters": "Poništi",
+      "columns": {
+        "participant": "Sudionik",
+        "presence": "Prisutnost",
+        "amount": "Plaćeni iznos",
+        "payment": "Plaćanje",
+        "review": "Recenzija"
+      },
+      "presence": {
+        "present": "Prisutan",
+        "absent": "Odsutan"
+      },
+      "paymentStatus": {
+        "paid": "Plaćeno",
+        "pending": "Na čekanju",
+        "refunded": "Vraćeno",
+        "free": "Besplatno"
+      },
+      "viewReview": "Prikaži recenziju",
+      "empty": "Nema sudionika",
+      "emptyFiltered": "Nijedan sudionik ne odgovara filtrima",
+      "totalAmount": "Ukupno {amount}",
+      "participantCount": "{count, plural, one {# sudionik} few {# sudionika} other {# sudionika}}",
+      "reviewCount": "{count, plural, one {# recenzija} few {# recenzije} other {# recenzija}}",
+      "csv": {
+        "participant": "Sudionik",
+        "email": "E-pošta",
+        "presence": "Prisutnost",
+        "amount": "Plaćeni iznos (€)",
+        "paymentStatus": "Status plaćanja",
+        "paymentMethod": "Način plaćanja",
+        "rating": "Ocjena (od 5)",
+        "comment": "Komentar",
+        "total": "Ukupno"
+      }
     }
   },
   "actualites": {
@@ -2548,7 +2615,8 @@
         "status": "Status",
         "stock": "Zalihe",
         "prix": "Cijene",
-        "ventes": "Prodaja"
+        "ventes": "Prodaja",
+        "revenu": "Prihod"
       },
       "variantsCount": "{count, plural, one {# varijanta} other {# varijante}}",
       "actions": {
@@ -2573,6 +2641,13 @@
       },
       "othersCount": "{count, plural, one {+# ostalo} other {+# drugih}}",
       "statusFilterAll": "Svi",
+      "salesCountLabel": "Broj prodaja",
+      "revenueTotalLabel": "Ukupni prihod",
+      "unitsSold": "{count, plural, one {# prodan} few {# prodana} other {# prodanih}}",
+      "pendingCountLabel": "Narudžbe na čekanju",
+      "pendingAmountLabel": "Iznos na čekanju",
+      "cancelledCountLabel": "Otkazane narudžbe",
+      "cancelledAmountLabel": "Otkazani iznos",
       "deleteProduitTitle": "Uklonite proizvod",
       "deleteProduitDescription": "Obriši \" {name} » ? Ova radnja je nepovratna.",
       "cancelOrderTitle": "Otkazati narudžbu?",
@@ -2838,7 +2913,12 @@
         "issuedAt": "Izdano",
         "amount": "Iznos"
       },
-      "noReceipts": "Nema izdanih poreznih potvrda"
+      "noReceipts": "Nema izdanih poreznih potvrda",
+      "searchPlaceholder": "Donator ili e-pošta…",
+      "minAmount": "Min. iznos (€)",
+      "maxAmount": "Maks. iznos (€)",
+      "noReceiptsFiltered": "Nijedna potvrda ne odgovara filtrima",
+      "count": "{count, plural, one {# potvrda} few {# potvrde} other {# potvrda}}"
     },
     "detail": {
       "backToList": "Povratak na donacije",

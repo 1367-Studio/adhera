@@ -1555,7 +1555,8 @@
       "columns": {
         "event": "Tapahtuma",
         "date": "Päivämäärä",
-        "presences": "Osallistujamäärä"
+        "presences": "Osallistujamäärä",
+        "bilan": "Yhteenveto"
       },
       "presentCount": "{count, plural, one {# läsnä} other {# läsnä}}",
       "reservedCount": "{count, plural, one {# varattu} other {# varattu}}",
@@ -1594,6 +1595,19 @@
         "titlePlaceholder": "Yleiskokous 2026",
         "dateLabel": "Aloituspäivä",
         "createButton": "Luo"
+      },
+      "bilan": {
+        "show": "Näytä yhteenveto",
+        "hide": "Piilota yhteenveto",
+        "participants": "Osallistujat",
+        "registeredCount": "{count, plural, one {# ilmoittautunut} other {# ilmoittautunutta}}",
+        "presentCount": "{count, plural, one {# paikalla} other {# paikalla}}",
+        "revenue": "Kertyneet tulot",
+        "afterRefunds": "Palautusten jälkeen",
+        "reviews": "Arvostelut",
+        "reviewCount": "{count, plural, one {# arvostelu saatu} other {# arvostelua saatu}}",
+        "noReviews": "Ei arvosteluja",
+        "fullLink": "Näytä koko yhteenveto"
       }
     },
     "customFields": {
@@ -1898,7 +1912,8 @@
           "datesOrderError": "Sulkemispäivän on oltava myöhempi kuin avajaispäivä."
         }
       },
-      "titleRequired": "Titteli on pakollinen"
+      "titleRequired": "Titteli on pakollinen",
+      "bilanButton": "Yhteenveto"
     },
     "discountCodes": {
       "title": "Kampanjakoodit",
@@ -1928,6 +1943,58 @@
       "valueRequiredError": "Reduktion täytyy olla suurempi kuin 0.",
       "windowInvalidError": "Päättymispäivän tulee olla aloituspäivän jälkeen.",
       "saved": "Tallennetut alennuskoodit"
+    },
+    "bilanPage": {
+      "metaTitle": "Tapahtuman yhteenveto",
+      "export": "Vie yhteenveto",
+      "sectionTitle": "Osallistujien tiedot",
+      "sectionSubtitle": "Läsnäolot, maksut ja arvostelut yhdessä paikassa",
+      "searchPlaceholder": "Hae osallistujaa…",
+      "presenceFilter": {
+        "all": "Kaikki läsnäolot",
+        "present": "Paikalla",
+        "absent": "Poissa"
+      },
+      "reviewFilter": {
+        "all": "Kaikki arvostelut",
+        "with": "Arvostelun kanssa",
+        "without": "Ilman arvostelua"
+      },
+      "resetFilters": "Nollaa",
+      "columns": {
+        "participant": "Osallistuja",
+        "presence": "Läsnäolo",
+        "amount": "Maksettu summa",
+        "payment": "Maksu",
+        "review": "Arvostelu"
+      },
+      "presence": {
+        "present": "Paikalla",
+        "absent": "Poissa"
+      },
+      "paymentStatus": {
+        "paid": "Maksettu",
+        "pending": "Odottaa",
+        "refunded": "Hyvitetty",
+        "free": "Maksuton"
+      },
+      "viewReview": "Näytä arvostelu",
+      "empty": "Ei osallistujia",
+      "emptyFiltered": "Yksikään osallistuja ei vastaa suodattimia",
+      "totalAmount": "Yhteensä {amount}",
+      "participantCount": "{count, plural, one {# osallistuja} other {# osallistujaa}}",
+      "reviewCount": "{count, plural, one {# arvostelu} other {# arvostelua}}",
+      "csv": {
+        "participant": "Osallistuja",
+        "email": "Sähköposti",
+        "presence": "Läsnäolo",
+        "amount": "Maksettu summa (€)",
+        "paymentStatus": "Maksun tila",
+        "paymentMethod": "Maksutapa",
+        "rating": "Arvosana (5:stä)",
+        "comment": "Kommentti",
+        "total": "Yhteensä"
+      }
     }
   },
   "actualites": {
@@ -2548,7 +2615,8 @@
         "status": "Tila",
         "stock": "Varasto",
         "prix": "Hinnoittelu",
-        "ventes": "Myynti"
+        "ventes": "Myynti",
+        "revenu": "Tulot"
       },
       "variantsCount": "{count, plural, one {# variantti} other {# variantit}}",
       "actions": {
@@ -2573,6 +2641,13 @@
       },
       "othersCount": "{count, plural, one {+# muuta} other {+# muita}}",
       "statusFilterAll": "Kaikki",
+      "salesCountLabel": "Myyntien määrä",
+      "revenueTotalLabel": "Kokonaistulot",
+      "unitsSold": "{count, plural, one {# myyty} other {# myyty}}",
+      "pendingCountLabel": "Odottavat tilaukset",
+      "pendingAmountLabel": "Odottava summa",
+      "cancelledCountLabel": "Peruutetut tilaukset",
+      "cancelledAmountLabel": "Peruutettu summa",
       "deleteProduitTitle": "Poista tuote",
       "deleteProduitDescription": "Poista \" {name} » ? Tämä teko on peruuttamaton.",
       "cancelOrderTitle": "Perua tilaus?",
@@ -2838,7 +2913,12 @@
         "issuedAt": "Julkaistu",
         "amount": "Määrä"
       },
-      "noReceipts": "Verokuitteja ei myönnetty"
+      "noReceipts": "Verokuitteja ei myönnetty",
+      "searchPlaceholder": "Lahjoittaja tai sähköposti…",
+      "minAmount": "Vähimmäissumma (€)",
+      "maxAmount": "Enimmäissumma (€)",
+      "noReceiptsFiltered": "Mikään kuitti ei vastaa suodattimia",
+      "count": "{count, plural, one {# kuitti} other {# kuittia}}"
     },
     "detail": {
       "backToList": "Takaisin lahjoituksiin",

@@ -4,10 +4,10 @@ import { useState, useEffect, useRef } from "react"
 import { toast } from "sonner"
 import { useTranslations } from "next-intl"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { PlusIcon, TrashIcon, UsersIcon, BookmarkSimpleIcon, ListIcon, CalendarDotsIcon, MapPinIcon, LinkIcon, StarIcon, NotePencilIcon, CloudArrowUpIcon, CloudArrowDownIcon, CopyIcon, ArchiveIcon } from "@phosphor-icons/react/dist/ssr";
+import { PlusIcon, TrashIcon, UsersIcon, BookmarkSimpleIcon, ListIcon, CalendarDotsIcon, MapPinIcon, LinkIcon, StarIcon, NotePencilIcon, CloudArrowUpIcon, CloudArrowDownIcon, CopyIcon, ArchiveIcon, ChartBarIcon } from "@phosphor-icons/react/dist/ssr";
+import Link from "next/link"
 import { ViewToggle } from "@/components/ui/view-toggle"
 import { PriceBadge } from "@/components/ui/price-badge"
-import { Badge } from "@/components/ui/badge"
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { format } from "date-fns"
@@ -19,6 +19,7 @@ import { DataTable, type Column } from "@/components/ui/data-table"
 import { Modal } from "@/components/ui/modal"
 import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 import { EvenementsCalendar } from "@/components/evenements/evenements-calendar"
+import { EvenementStatusBadge, type EvenementStatus } from "@/components/evenements/evenement-status-badge"
 import { Button } from "@/components/ui/button"
 import { RowActions } from "@/components/ui/row-actions"
 import { SearchInput } from "@/components/ui/search-input"
@@ -26,7 +27,6 @@ import { BASE_PATH } from "@/lib/env"
 import { cheapestAvailableTicketTypePrice } from "@/lib/ticket-types"
 import { useHasAccess } from "@/lib/user-context"
 
-type EvenementStatus = "DRAFT" | "PUBLISHED" | "ARCHIVED"
 type EvenementTicketType = { id: string; label: string; price: string; remaining: number | null; full: boolean; active: boolean }
 
 type Evenement = {
@@ -167,10 +167,6 @@ export function EvenementsView() {
     }
   }
 
-  const STATUS_LABEL   = { DRAFT: t("evenements.formStatus.draft"), PUBLISHED: t("evenements.formStatus.published"), ARCHIVED: t("evenements.formStatus.archived") }
-  const STATUS_VARIANT: Record<EvenementStatus, "secondary" | "default" | "outline"> = {
-    DRAFT: "secondary", PUBLISHED: "default", ARCHIVED: "outline",
-  }
 
   const columns: Column<Evenement>[] = [
     {
@@ -184,8 +180,14 @@ export function EvenementsView() {
         return (
         <div className="space-y-0.5">
           <div className="flex items-center gap-2">
-            <p className="font-medium">{e.title}</p>
-            <Badge variant={STATUS_VARIANT[e.status]}>{STATUS_LABEL[e.status]}</Badge>
+            <Link
+              href={`/dashboard/evenements/${e.id}/bilan`}
+              onClick={ev => ev.stopPropagation()}
+              className="font-medium underline-offset-4 hover:underline"
+            >
+              {e.title}
+            </Link>
+            <EvenementStatusBadge status={e.status} />
             {activeTicketTypes.length > 1
               ? <PriceBadge price={cheapestAvailableTicketTypePrice(activeTicketTypes)} fromPrice />
               : activeTicketTypes.length === 1
@@ -250,6 +252,24 @@ export function EvenementsView() {
       hideInCard: true,
     },
     {
+      key: "bilan",
+      header: t("evenements.view.columns.bilan"),
+      className: "w-px whitespace-nowrap",
+      // Opens the event's full bilan page (tiles + per-participant detail).
+      cell: (e) => (
+        <Button
+          type="button"
+          size="sm"
+          variant="outline"
+          onClick={(ev) => { ev.stopPropagation(); router.push(`/dashboard/evenements/${e.id}/bilan`) }}
+        >
+          {t("evenements.view.bilan.show")}
+        </Button>
+      ),
+      // Mobile: reachable from the card's « … » menu instead (« Bilan »).
+      hideInCard: true,
+    },
+    {
       key: "actions",
       header: "",
       className: "w-10",
@@ -258,6 +278,7 @@ export function EvenementsView() {
           { label: t("evenements.view.actions.open"), icon: <NotePencilIcon className="size-3.5" />, onClick: () => router.push(`/dashboard/evenements/${e.id}`) },
           { label: t("evenements.view.actions.presences"), icon: <UsersIcon className="size-3.5" />,  onClick: () => router.push(`/dashboard/evenements/${e.id}/presences`) },
           { label: t("evenements.view.actions.avaliacoes"), icon: <StarIcon className="size-3.5" />,  onClick: () => router.push(`/dashboard/evenements/${e.id}/avaliacoes`) },
+          { label: t("evenements.detail.bilanButton"), icon: <ChartBarIcon className="size-3.5" />,  onClick: () => router.push(`/dashboard/evenements/${e.id}/bilan`) },
           ...(e.status === "PUBLISHED"
             ? [{ label: t("evenements.view.actions.copyLink"), icon: <LinkIcon className="size-3.5" />, disabled: !assoc?.slug, onClick: () => handleCopyLink(e.slug ?? e.id), separator: true }]
             : []),
@@ -327,7 +348,7 @@ export function EvenementsView() {
             data={evenements}
             loading={isLoading}
             keyExtractor={(e) => e.id}
-            onRowClick={(e) => router.push(`/dashboard/evenements/${e.id}`)}
+            onRowClick={(e) => router.push(`/dashboard/evenements/${e.id}/bilan`)}
             empty={search ? t("evenements.view.noResultsFor", { search }) : t("evenements.view.noEvent")}
             pagination={result ? {
               page:         result.page,

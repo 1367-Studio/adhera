@@ -1555,7 +1555,8 @@
       "columns": {
         "event": "Esemény",
         "date": "Dátum",
-        "presences": "Jelenlét"
+        "presences": "Jelenlét",
+        "bilan": "Összesítő"
       },
       "presentCount": "{count, plural, one {# jelen} other {# jelen}}",
       "reservedCount": "{count, plural, one {# foglalva} other {# foglalva}}",
@@ -1594,6 +1595,19 @@
         "titlePlaceholder": "Közgyűlés 2026",
         "dateLabel": "Kezdeti dátum",
         "createButton": "Létrehozni"
+      },
+      "bilan": {
+        "show": "Összesítő megjelenítése",
+        "hide": "Összesítő elrejtése",
+        "participants": "Résztvevők",
+        "registeredCount": "{count, plural, one {# regisztrált} other {# regisztrált}}",
+        "presentCount": "{count, plural, one {# jelen lévő} other {# jelen lévő}}",
+        "revenue": "Beszedett bevételek",
+        "afterRefunds": "Visszatérítések után",
+        "reviews": "Értékelések",
+        "reviewCount": "{count, plural, one {# beérkezett értékelés} other {# beérkezett értékelés}}",
+        "noReviews": "Nincs értékelés",
+        "fullLink": "Teljes összesítő megtekintése"
       }
     },
     "customFields": {
@@ -1898,7 +1912,8 @@
           "datesOrderError": "A zárási dátumnak későbbnek kell lennie, mint a nyitás."
         }
       },
-      "titleRequired": "A cím kötelező"
+      "titleRequired": "A cím kötelező",
+      "bilanButton": "Összesítő"
     },
     "discountCodes": {
       "title": "Promóciós kódok",
@@ -1928,6 +1943,58 @@
       "valueRequiredError": "A redukciónak nagyobbnak kell lennie, mint 0.",
       "windowInvalidError": "A lezárási dátumnak a kezdési dátum után kell lennie.",
       "saved": "Mentett promóciós kódok"
+    },
+    "bilanPage": {
+      "metaTitle": "Az esemény összesítője",
+      "export": "Összesítő exportálása",
+      "sectionTitle": "Résztvevők részletei",
+      "sectionSubtitle": "Jelenlét, fizetések és értékelések egy helyen",
+      "searchPlaceholder": "Résztvevő keresése…",
+      "presenceFilter": {
+        "all": "Minden jelenlét",
+        "present": "Jelen lévők",
+        "absent": "Hiányzók"
+      },
+      "reviewFilter": {
+        "all": "Minden értékelés",
+        "with": "Értékeléssel",
+        "without": "Értékelés nélkül"
+      },
+      "resetFilters": "Visszaállítás",
+      "columns": {
+        "participant": "Résztvevő",
+        "presence": "Jelenlét",
+        "amount": "Fizetett összeg",
+        "payment": "Fizetés",
+        "review": "Értékelés"
+      },
+      "presence": {
+        "present": "Jelen",
+        "absent": "Hiányzik"
+      },
+      "paymentStatus": {
+        "paid": "Fizetve",
+        "pending": "Függőben",
+        "refunded": "Visszatérítve",
+        "free": "Ingyenes"
+      },
+      "viewReview": "Értékelés megtekintése",
+      "empty": "Nincs résztvevő",
+      "emptyFiltered": "Egyetlen résztvevő sem felel meg a szűrőknek",
+      "totalAmount": "Összesen {amount}",
+      "participantCount": "{count, plural, one {# résztvevő} other {# résztvevő}}",
+      "reviewCount": "{count, plural, one {# értékelés} other {# értékelés}}",
+      "csv": {
+        "participant": "Résztvevő",
+        "email": "E-mail",
+        "presence": "Jelenlét",
+        "amount": "Fizetett összeg (€)",
+        "paymentStatus": "Fizetési állapot",
+        "paymentMethod": "Fizetési mód",
+        "rating": "Értékelés (5-ből)",
+        "comment": "Megjegyzés",
+        "total": "Összesen"
+      }
     }
   },
   "actualites": {
@@ -2548,7 +2615,8 @@
         "status": "Státusz",
         "stock": "Készlet",
         "prix": "Árazás",
-        "ventes": "Eladások"
+        "ventes": "Eladások",
+        "revenu": "Bevétel"
       },
       "variantsCount": "{count, plural, one {# változat} other {# változatok}}",
       "actions": {
@@ -2573,6 +2641,13 @@
       },
       "othersCount": "{count, plural, one {+# egyéb} other {+# más}}",
       "statusFilterAll": "Mind",
+      "salesCountLabel": "Eladások száma",
+      "revenueTotalLabel": "Teljes bevétel",
+      "unitsSold": "{count, plural, one {# eladva} other {# eladva}}",
+      "pendingCountLabel": "Függőben lévő rendelések",
+      "pendingAmountLabel": "Függőben lévő összeg",
+      "cancelledCountLabel": "Törölt rendelések",
+      "cancelledAmountLabel": "Törölt összeg",
       "deleteProduitTitle": "Termék eltávolítása",
       "deleteProduitDescription": "Töröld \" {name} » ? Ez a cselekedet visszafordíthatatlan.",
       "cancelOrderTitle": "Lemondani a rendelést?",
@@ -2838,7 +2913,12 @@
         "issuedAt": "Kiadva",
         "amount": "Összeg"
       },
-      "noReceipts": "Adóbeszámoló nem kiadott"
+      "noReceipts": "Adóbeszámoló nem kiadott",
+      "searchPlaceholder": "Adományozó vagy e-mail…",
+      "minAmount": "Min. összeg (€)",
+      "maxAmount": "Max. összeg (€)",
+      "noReceiptsFiltered": "Egy nyugta sem felel meg a szűrőknek",
+      "count": "{count, plural, one {# nyugta} other {# nyugta}}"
     },
     "detail": {
       "backToList": "Vissza az adományokhoz",

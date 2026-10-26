@@ -1555,7 +1555,8 @@
       "columns": {
         "event": "Evenemang",
         "date": "Datum",
-        "presences": "Närvaro"
+        "presences": "Närvaro",
+        "bilan": "Sammanfattning"
       },
       "presentCount": "{count, plural, one {# närvarande} other {# närvarande}}",
       "reservedCount": "{count, plural, one {# bokad} other {# bokad}}",
@@ -1594,6 +1595,19 @@
         "titlePlaceholder": "Generalförsamlingen 2026",
         "dateLabel": "Startdatum",
         "createButton": "Skapa"
+      },
+      "bilan": {
+        "show": "Visa sammanfattning",
+        "hide": "Dölj sammanfattning",
+        "participants": "Deltagare",
+        "registeredCount": "{count, plural, one {# anmäld} other {# anmälda}}",
+        "presentCount": "{count, plural, one {# närvarande} other {# närvarande}}",
+        "revenue": "Inkasserade intäkter",
+        "afterRefunds": "Efter återbetalningar",
+        "reviews": "Recensioner",
+        "reviewCount": "{count, plural, one {# recension mottagen} other {# recensioner mottagna}}",
+        "noReviews": "Inga recensioner",
+        "fullLink": "Visa hela sammanfattningen"
       }
     },
     "customFields": {
@@ -1898,7 +1912,8 @@
           "datesOrderError": "Tillträdesdatumet måste vara senare än öppningsdatumet."
         }
       },
-      "titleRequired": "Titeln är obligatorisk"
+      "titleRequired": "Titeln är obligatorisk",
+      "bilanButton": "Sammanfattning"
     },
     "discountCodes": {
       "title": "Kampanjkoder",
@@ -1928,6 +1943,58 @@
       "valueRequiredError": "Reduktionen måste vara större än 0.",
       "windowInvalidError": "Slutdatumet måste vara efter startdatumet.",
       "saved": "Sparade kampanjkoder"
+    },
+    "bilanPage": {
+      "metaTitle": "Sammanfattning av evenemanget",
+      "export": "Exportera sammanfattningen",
+      "sectionTitle": "Deltagare i detalj",
+      "sectionSubtitle": "Närvaro, betalningar och recensioner på ett ställe",
+      "searchPlaceholder": "Sök efter en deltagare…",
+      "presenceFilter": {
+        "all": "All närvaro",
+        "present": "Närvarande",
+        "absent": "Frånvarande"
+      },
+      "reviewFilter": {
+        "all": "Alla recensioner",
+        "with": "Med recension",
+        "without": "Utan recension"
+      },
+      "resetFilters": "Återställ",
+      "columns": {
+        "participant": "Deltagare",
+        "presence": "Närvaro",
+        "amount": "Betalt belopp",
+        "payment": "Betalning",
+        "review": "Recension"
+      },
+      "presence": {
+        "present": "Närvarande",
+        "absent": "Frånvarande"
+      },
+      "paymentStatus": {
+        "paid": "Betald",
+        "pending": "Väntande",
+        "refunded": "Återbetald",
+        "free": "Gratis"
+      },
+      "viewReview": "Visa recensionen",
+      "empty": "Inga deltagare",
+      "emptyFiltered": "Inga deltagare matchar filtren",
+      "totalAmount": "Totalt {amount}",
+      "participantCount": "{count, plural, one {# deltagare} other {# deltagare}}",
+      "reviewCount": "{count, plural, one {# recension} other {# recensioner}}",
+      "csv": {
+        "participant": "Deltagare",
+        "email": "E-post",
+        "presence": "Närvaro",
+        "amount": "Betalt belopp (€)",
+        "paymentStatus": "Betalningsstatus",
+        "paymentMethod": "Betalningssätt",
+        "rating": "Betyg (av 5)",
+        "comment": "Kommentar",
+        "total": "Totalt"
+      }
     }
   },
   "actualites": {
@@ -2548,7 +2615,8 @@
         "status": "Status",
         "stock": "Stock",
         "prix": "Prissättning",
-        "ventes": "Försäljning"
+        "ventes": "Försäljning",
+        "revenu": "Intäkter"
       },
       "variantsCount": "{count, plural, one {# variant} other {# varianter}}",
       "actions": {
@@ -2573,6 +2641,13 @@
       },
       "othersCount": "{count, plural, one {+# andra} other {+# andra}}",
       "statusFilterAll": "Alla",
+      "salesCountLabel": "Antal försäljningar",
+      "revenueTotalLabel": "Total intäkt",
+      "unitsSold": "{count, plural, one {# såld} other {# sålda}}",
+      "pendingCountLabel": "Väntande beställningar",
+      "pendingAmountLabel": "Väntande belopp",
+      "cancelledCountLabel": "Avbrutna beställningar",
+      "cancelledAmountLabel": "Avbrutet belopp",
       "deleteProduitTitle": "Ta bort produkten",
       "deleteProduitDescription": "Radera \" {name} » ? Denna åtgärd är oåterkallelig.",
       "cancelOrderTitle": "Avboka beställningen?",
@@ -2838,7 +2913,12 @@
         "issuedAt": "Utfärdad den",
         "amount": "Belopp"
       },
-      "noReceipts": "Inga skattekvitton utfärdas"
+      "noReceipts": "Inga skattekvitton utfärdas",
+      "searchPlaceholder": "Givare eller e-post…",
+      "minAmount": "Min. belopp (€)",
+      "maxAmount": "Max. belopp (€)",
+      "noReceiptsFiltered": "Inga kvitton matchar filtren",
+      "count": "{count, plural, one {# kvitto} other {# kvitton}}"
     },
     "detail": {
       "backToList": "Tillbaka till donationer",

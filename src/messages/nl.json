@@ -1555,7 +1555,8 @@
       "columns": {
         "event": "Evenement",
         "date": "Datum",
-        "presences": "Aanwezigheid"
+        "presences": "Aanwezigheid",
+        "bilan": "Overzicht"
       },
       "presentCount": "{count, plural, one {# aanwezig} other {# aanwezig}}",
       "reservedCount": "{count, plural, one {# geboekt} other {# geboekt}}",
@@ -1594,6 +1595,19 @@
         "titlePlaceholder": "Algemene Vergadering 2026",
         "dateLabel": "Startdatum",
         "createButton": "Creëer"
+      },
+      "bilan": {
+        "show": "Overzicht tonen",
+        "hide": "Overzicht verbergen",
+        "participants": "Deelnemers",
+        "registeredCount": "{count, plural, one {# ingeschreven} other {# ingeschreven}}",
+        "presentCount": "{count, plural, one {# aanwezig} other {# aanwezig}}",
+        "revenue": "Ontvangen inkomsten",
+        "afterRefunds": "Na terugbetalingen",
+        "reviews": "Recensies",
+        "reviewCount": "{count, plural, one {# recensie ontvangen} other {# recensies ontvangen}}",
+        "noReviews": "Geen recensies",
+        "fullLink": "Volledig overzicht bekijken"
       }
     },
     "customFields": {
@@ -1898,7 +1912,8 @@
           "datesOrderError": "De sluitingsdatum moet later zijn dan de openingsdatum."
         }
       },
-      "titleRequired": "De titel is verplicht"
+      "titleRequired": "De titel is verplicht",
+      "bilanButton": "Overzicht"
     },
     "discountCodes": {
       "title": "Promotiecodes",
@@ -1928,6 +1943,58 @@
       "valueRequiredError": "De reductie moet groter zijn dan 0.",
       "windowInvalidError": "De einddatum moet na de begindatum zijn.",
       "saved": "Opgeslagen promotiecodes"
+    },
+    "bilanPage": {
+      "metaTitle": "Overzicht van het evenement",
+      "export": "Overzicht exporteren",
+      "sectionTitle": "Deelnemers in detail",
+      "sectionSubtitle": "Aanwezigheid, betalingen en recensies op één plek",
+      "searchPlaceholder": "Een deelnemer zoeken…",
+      "presenceFilter": {
+        "all": "Alle aanwezigheid",
+        "present": "Aanwezig",
+        "absent": "Afwezig"
+      },
+      "reviewFilter": {
+        "all": "Alle recensies",
+        "with": "Met recensie",
+        "without": "Zonder recensie"
+      },
+      "resetFilters": "Herstellen",
+      "columns": {
+        "participant": "Deelnemer",
+        "presence": "Aanwezigheid",
+        "amount": "Betaald bedrag",
+        "payment": "Betaling",
+        "review": "Recensie"
+      },
+      "presence": {
+        "present": "Aanwezig",
+        "absent": "Afwezig"
+      },
+      "paymentStatus": {
+        "paid": "Betaald",
+        "pending": "In afwachting",
+        "refunded": "Terugbetaald",
+        "free": "Gratis"
+      },
+      "viewReview": "Recensie bekijken",
+      "empty": "Geen deelnemers",
+      "emptyFiltered": "Geen deelnemers komen overeen met de filters",
+      "totalAmount": "Totaal {amount}",
+      "participantCount": "{count, plural, one {# deelnemer} other {# deelnemers}}",
+      "reviewCount": "{count, plural, one {# recensie} other {# recensies}}",
+      "csv": {
+        "participant": "Deelnemer",
+        "email": "E-mail",
+        "presence": "Aanwezigheid",
+        "amount": "Betaald bedrag (€)",
+        "paymentStatus": "Betaalstatus",
+        "paymentMethod": "Betaalmethode",
+        "rating": "Score (op 5)",
+        "comment": "Opmerking",
+        "total": "Totaal"
+      }
     }
   },
   "actualites": {
@@ -2548,7 +2615,8 @@
         "status": "Status",
         "stock": "Materieel",
         "prix": "Prijsstelling",
-        "ventes": "Verkoop"
+        "ventes": "Verkoop",
+        "revenu": "Omzet"
       },
       "variantsCount": "{count, plural, one {# variant} other {# varianten}}",
       "actions": {
@@ -2573,6 +2641,13 @@
       },
       "othersCount": "{count, plural, one {+# andere} other {+# anderen}}",
       "statusFilterAll": "Allemaal",
+      "salesCountLabel": "Aantal verkopen",
+      "revenueTotalLabel": "Totale omzet",
+      "unitsSold": "{count, plural, one {# verkocht} other {# verkocht}}",
+      "pendingCountLabel": "Openstaande bestellingen",
+      "pendingAmountLabel": "Openstaand bedrag",
+      "cancelledCountLabel": "Geannuleerde bestellingen",
+      "cancelledAmountLabel": "Geannuleerd bedrag",
       "deleteProduitTitle": "Verwijder het product",
       "deleteProduitDescription": "Verwijderen \" {name} » ? Deze handeling is onomkeerbaar.",
       "cancelOrderTitle": "De bestelling annuleren?",
@@ -2838,7 +2913,12 @@
         "issuedAt": "Uitgegeven op",
         "amount": "Bedrag"
       },
-      "noReceipts": "Geen belastingbonnen uitgegeven"
+      "noReceipts": "Geen belastingbonnen uitgegeven",
+      "searchPlaceholder": "Donateur of e-mail…",
+      "minAmount": "Min. bedrag (€)",
+      "maxAmount": "Max. bedrag (€)",
+      "noReceiptsFiltered": "Geen ontvangstbewijzen komen overeen met de filters",
+      "count": "{count, plural, one {# ontvangstbewijs} other {# ontvangstbewijzen}}"
     },
     "detail": {
       "backToList": "Terug naar donaties",

@@ -1555,7 +1555,8 @@
       "columns": {
         "event": "Sündmus",
         "date": "Kuupäev",
-        "presences": "Osalejate arv"
+        "presences": "Osalejate arv",
+        "bilan": "Kokkuvõte"
       },
       "presentCount": "{count, plural, one {# kohal} other {# kohal}}",
       "reservedCount": "{count, plural, one {# broneeritud} other {# broneeritud}}",
@@ -1594,6 +1595,19 @@
         "titlePlaceholder": "Üldassamblee 2026",
         "dateLabel": "Alguskuupäev",
         "createButton": "Loo"
+      },
+      "bilan": {
+        "show": "Näita kokkuvõtet",
+        "hide": "Peida kokkuvõte",
+        "participants": "Osalejad",
+        "registeredCount": "{count, plural, one {# registreerunud} other {# registreerunut}}",
+        "presentCount": "{count, plural, one {# kohal} other {# kohal}}",
+        "revenue": "Laekunud tulu",
+        "afterRefunds": "Pärast tagasimakseid",
+        "reviews": "Arvustused",
+        "reviewCount": "{count, plural, one {# arvustus saadud} other {# arvustust saadud}}",
+        "noReviews": "Arvustusi pole",
+        "fullLink": "Vaata kogu kokkuvõtet"
       }
     },
     "customFields": {
@@ -1898,7 +1912,8 @@
           "datesOrderError": "Sulgemiskuupäev peab olema hilisem kui avamiskuupäev."
         }
       },
-      "titleRequired": "Tiitel on kohustuslik"
+      "titleRequired": "Tiitel on kohustuslik",
+      "bilanButton": "Kokkuvõte"
     },
     "discountCodes": {
       "title": "Sooduskoodid",
@@ -1928,6 +1943,58 @@
       "valueRequiredError": "Vähendus peab olema suurem kui 0.",
       "windowInvalidError": "Lõppkuupäev peab olema pärast alguskuupäeva.",
       "saved": "Salvestatud sooduskoodid"
+    },
+    "bilanPage": {
+      "metaTitle": "Ürituse kokkuvõte",
+      "export": "Ekspordi kokkuvõte",
+      "sectionTitle": "Osalejate üksikasjad",
+      "sectionSubtitle": "Kohalolek, maksed ja arvustused ühes kohas",
+      "searchPlaceholder": "Otsi osalejat…",
+      "presenceFilter": {
+        "all": "Kogu kohalolek",
+        "present": "Kohal",
+        "absent": "Puudujad"
+      },
+      "reviewFilter": {
+        "all": "Kõik arvustused",
+        "with": "Arvustusega",
+        "without": "Arvustuseta"
+      },
+      "resetFilters": "Lähtesta",
+      "columns": {
+        "participant": "Osaleja",
+        "presence": "Kohalolek",
+        "amount": "Makstud summa",
+        "payment": "Makse",
+        "review": "Arvustus"
+      },
+      "presence": {
+        "present": "Kohal",
+        "absent": "Puudub"
+      },
+      "paymentStatus": {
+        "paid": "Makstud",
+        "pending": "Ootel",
+        "refunded": "Tagastatud",
+        "free": "Tasuta"
+      },
+      "viewReview": "Vaata arvustust",
+      "empty": "Osalejaid pole",
+      "emptyFiltered": "Ükski osaleja ei vasta filtritele",
+      "totalAmount": "Kokku {amount}",
+      "participantCount": "{count, plural, one {# osaleja} other {# osalejat}}",
+      "reviewCount": "{count, plural, one {# arvustus} other {# arvustust}}",
+      "csv": {
+        "participant": "Osaleja",
+        "email": "E-post",
+        "presence": "Kohalolek",
+        "amount": "Makstud summa (€)",
+        "paymentStatus": "Makse olek",
+        "paymentMethod": "Makseviis",
+        "rating": "Hinne (5-st)",
+        "comment": "Kommentaar",
+        "total": "Kokku"
+      }
     }
   },
   "actualites": {
@@ -2548,7 +2615,8 @@
         "status": "Staatus",
         "stock": "Stock",
         "prix": "Hinnakujundus",
-        "ventes": "Müük"
+        "ventes": "Müük",
+        "revenu": "Tulu"
       },
       "variantsCount": "{count, plural, one {# variant} other {# variandid}}",
       "actions": {
@@ -2573,6 +2641,13 @@
       },
       "othersCount": "{count, plural, one {+# muud} other {+# teised}}",
       "statusFilterAll": "Kõik",
+      "salesCountLabel": "Müükide arv",
+      "revenueTotalLabel": "Kogutulu",
+      "unitsSold": "{count, plural, one {# müüdud} other {# müüdud}}",
+      "pendingCountLabel": "Ootel tellimused",
+      "pendingAmountLabel": "Ootel summa",
+      "cancelledCountLabel": "Tühistatud tellimused",
+      "cancelledAmountLabel": "Tühistatud summa",
       "deleteProduitTitle": "Eemalda toode",
       "deleteProduitDescription": "Kustuta \" {name} » ? See tegevus on pöördumatu.",
       "cancelOrderTitle": "Tellimus tühistada?",
@@ -2838,7 +2913,12 @@
         "issuedAt": "Välja antud",
         "amount": "Kogus"
       },
-      "noReceipts": "Maksukviitungeid ei väljastata"
+      "noReceipts": "Maksukviitungeid ei väljastata",
+      "searchPlaceholder": "Annetaja või e-post…",
+      "minAmount": "Min summa (€)",
+      "maxAmount": "Max summa (€)",
+      "noReceiptsFiltered": "Filtritele ei vasta ükski kviitung",
+      "count": "{count, plural, one {# kviitung} other {# kviitungit}}"
     },
     "detail": {
       "backToList": "Tagasi annetuste juurde",

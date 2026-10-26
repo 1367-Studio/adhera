@@ -1555,7 +1555,8 @@
       "columns": {
         "event": "Pasākums",
         "date": "Datums",
-        "presences": "Apmeklējums"
+        "presences": "Apmeklējums",
+        "bilan": "Kopsavilkums"
       },
       "presentCount": "{count, plural, one {# klāt} other {# klāt}}",
       "reservedCount": "{count, plural, one {# rezervēts} other {# rezervēts}}",
@@ -1594,6 +1595,19 @@
         "titlePlaceholder": "Ģenerālā asambleja 2026",
         "dateLabel": "Sākuma datums",
         "createButton": "Izveidot"
+      },
+      "bilan": {
+        "show": "Rādīt kopsavilkumu",
+        "hide": "Paslēpt kopsavilkumu",
+        "participants": "Dalībnieki",
+        "registeredCount": "{count, plural, zero {# reģistrējušies} one {# reģistrējies} other {# reģistrējušies}}",
+        "presentCount": "{count, plural, zero {# klātesoši} one {# klātesošs} other {# klātesoši}}",
+        "revenue": "Iekasētie ieņēmumi",
+        "afterRefunds": "Pēc atmaksām",
+        "reviews": "Atsauksmes",
+        "reviewCount": "{count, plural, zero {# saņemtas atsauksmes} one {# saņemta atsauksme} other {# saņemtas atsauksmes}}",
+        "noReviews": "Nav atsauksmju",
+        "fullLink": "Skatīt pilnu kopsavilkumu"
       }
     },
     "customFields": {
@@ -1898,7 +1912,8 @@
           "datesOrderError": "Slēgšanas datumam jābūt vēlākam par atvēršanas datumu."
         }
       },
-      "titleRequired": "Nosaukums ir obligāts"
+      "titleRequired": "Nosaukums ir obligāts",
+      "bilanButton": "Kopsavilkums"
     },
     "discountCodes": {
       "title": "Promo kodi",
@@ -1928,6 +1943,58 @@
       "valueRequiredError": "Samazinājumam jābūt lielākam par 0.",
       "windowInvalidError": "Beigu datumam jābūt pēc sākuma datuma.",
       "saved": "Saglabātie promo kodi"
+    },
+    "bilanPage": {
+      "metaTitle": "Pasākuma kopsavilkums",
+      "export": "Eksportēt kopsavilkumu",
+      "sectionTitle": "Dalībnieku informācija",
+      "sectionSubtitle": "Apmeklējums, maksājumi un atsauksmes vienuviet",
+      "searchPlaceholder": "Meklēt dalībnieku…",
+      "presenceFilter": {
+        "all": "Viss apmeklējums",
+        "present": "Klātesošie",
+        "absent": "Prombūtnē"
+      },
+      "reviewFilter": {
+        "all": "Visas atsauksmes",
+        "with": "Ar atsauksmi",
+        "without": "Bez atsauksmes"
+      },
+      "resetFilters": "Atiestatīt",
+      "columns": {
+        "participant": "Dalībnieks",
+        "presence": "Apmeklējums",
+        "amount": "Samaksātā summa",
+        "payment": "Maksājums",
+        "review": "Atsauksme"
+      },
+      "presence": {
+        "present": "Klāt",
+        "absent": "Nav klāt"
+      },
+      "paymentStatus": {
+        "paid": "Samaksāts",
+        "pending": "Gaida",
+        "refunded": "Atmaksāts",
+        "free": "Bezmaksas"
+      },
+      "viewReview": "Skatīt atsauksmi",
+      "empty": "Nav dalībnieku",
+      "emptyFiltered": "Neviens dalībnieks neatbilst filtriem",
+      "totalAmount": "Kopā {amount}",
+      "participantCount": "{count, plural, zero {# dalībnieku} one {# dalībnieks} other {# dalībnieki}}",
+      "reviewCount": "{count, plural, zero {# atsauksmju} one {# atsauksme} other {# atsauksmes}}",
+      "csv": {
+        "participant": "Dalībnieks",
+        "email": "E-pasts",
+        "presence": "Apmeklējums",
+        "amount": "Samaksātā summa (€)",
+        "paymentStatus": "Maksājuma statuss",
+        "paymentMethod": "Maksājuma veids",
+        "rating": "Vērtējums (no 5)",
+        "comment": "Komentārs",
+        "total": "Kopā"
+      }
     }
   },
   "actualites": {
@@ -2548,7 +2615,8 @@
         "status": "Statuss",
         "stock": "Krājumi",
         "prix": "Cenas",
-        "ventes": "Pārdošana"
+        "ventes": "Pārdošana",
+        "revenu": "Ieņēmumi"
       },
       "variantsCount": "{count, plural, one {# variants} other {# varianti}}",
       "actions": {
@@ -2573,6 +2641,13 @@
       },
       "othersCount": "{count, plural, one {+# cits} other {+# citi}}",
       "statusFilterAll": "Visi",
+      "salesCountLabel": "Pārdošanu skaits",
+      "revenueTotalLabel": "Kopējie ieņēmumi",
+      "unitsSold": "{count, plural, zero {# pārdoti} one {# pārdots} other {# pārdoti}}",
+      "pendingCountLabel": "Gaidošie pasūtījumi",
+      "pendingAmountLabel": "Gaidošā summa",
+      "cancelledCountLabel": "Atceltie pasūtījumi",
+      "cancelledAmountLabel": "Atceltā summa",
       "deleteProduitTitle": "Noņemt produktu",
       "deleteProduitDescription": "Dzēst \" {name} » ? Šī rīcība ir neatgriezeniska.",
       "cancelOrderTitle": "Atcelt pasūtījumu?",
@@ -2838,7 +2913,12 @@
         "issuedAt": "Izlaists",
         "amount": "Summa"
       },
-      "noReceipts": "Nav izsniegtas nodokļu kvītis"
+      "noReceipts": "Nav izsniegtas nodokļu kvītis",
+      "searchPlaceholder": "Ziedotājs vai e-pasts…",
+      "minAmount": "Min. summa (€)",
+      "maxAmount": "Maks. summa (€)",
+      "noReceiptsFiltered": "Neviena kvīts neatbilst filtriem",
+      "count": "{count, plural, zero {# kvīšu} one {# kvīts} other {# kvītis}}"
     },
     "detail": {
       "backToList": "Atpakaļ pie ziedojumiem",

@@ -45,9 +45,10 @@ export function StarRatingDisplay({
   size = "sm",
 }: {
   value: number
-  size?: "sm" | "md"
+  // xs: inline in a dense table cell (e.g. the event bilan's « Avis » column).
+  size?: "xs" | "sm" | "md"
 }) {
-  const iconSize = size === "sm" ? "size-4" : "size-5"
+  const iconSize = size === "xs" ? "size-3.5" : size === "sm" ? "size-4" : "size-5"
   return (
     <div className="flex gap-0.5">
       {[1, 2, 3, 4, 5].map((star) => {

@@ -1,7 +1,11 @@
 "use client"
 
 import { useState, useMemo, useEffect } from "react"
-import { PlusIcon, PackageIcon, MapPinIcon, ClockIcon, CheckIcon, XIcon, WarningCircleIcon } from "@phosphor-icons/react/dist/ssr";
+import {
+  PlusIcon, PackageIcon, MapPinIcon, ClockIcon, CheckIcon, XIcon, WarningCircleIcon,
+  CheckCircleIcon, HandshakeIcon, CalendarCheckIcon, WrenchIcon,
+} from "@phosphor-icons/react/dist/ssr";
+import { StatTile } from "@/components/dashboard/widgets/stat-tile"
 import { toast } from "sonner"
 import { useTranslations } from "next-intl"
 import { useMateriel, useConfirmLoan, useRefuseLoan, type Material, type MaterialStatus, type PendingDemande } from "@/hooks/use-materiel"
@@ -25,6 +29,15 @@ function getStatusConfig(t: Translator): Record<MaterialStatus, { label: string;
     HORS_SERVICE:   { label: t("materiel.form.status.horsService"), dot: "bg-gray-400",  variant: "secondary" },
     PERDU:          { label: t("materiel.form.status.perdu"),       dot: "bg-red-500",   variant: "destructive" },
   }
+}
+
+// The status chips' rule — also what the stat tiles count, so a tile and its filter agree.
+function matchesStatusFilter(material: Material, filterValue: string): boolean {
+  if (filterValue === "ALL")        return true
+  if (filterValue === "EN_USE")     return material.status === "EN_USE" || material.loanedQty > material.reservedQty
+  if (filterValue === "RESERVE")    return material.reservedQty > 0
+  if (filterValue === "DISPONIBLE") return material.status === "DISPONIBLE" && material.availableQty > 0
+  return material.status === filterValue
 }
 
 function getFilterOptions(t: Translator) {
@@ -189,23 +202,24 @@ export function MaterielView() {
 
   const { data: materials = [], isLoading } = useMateriel(search || undefined)
 
-  const filtered = useMemo(() => {
-    return materials.filter(m => {
-      if (statusFilter === "ALL")         return true
-      if (statusFilter === "EN_USE")      return m.status === "EN_USE" || m.loanedQty > m.reservedQty
-      if (statusFilter === "RESERVE")     return m.reservedQty > 0
-      if (statusFilter === "DISPONIBLE")  return m.status === "DISPONIBLE" && m.availableQty > 0
-      return m.status === statusFilter
-    })
-  }, [materials, statusFilter])
+  const filtered = useMemo(
+    () => materials.filter(material => matchesStatusFilter(material, statusFilter)),
+    [materials, statusFilter],
+  )
 
-  const stats = useMemo(() => ({
-    total:       materials.length,
-    disponible:  materials.filter(m => m.status === "DISPONIBLE").length,
-    enPret:      materials.filter(m => m.loanedQty > m.reservedQty).length,
-    reserve:     materials.filter(m => m.reservedQty > 0).length,
-    maintenance: materials.filter(m => m.status === "EN_MAINTENANCE").length,
-  }), [materials])
+  // Counted with the same rule as the filter each tile applies, so clicking « 3 Disponibles »
+  // always lists exactly 3 articles.
+  const stats = useMemo(() => {
+    const countMatching = (filterValue: string) =>
+      materials.filter(material => matchesStatusFilter(material, filterValue)).length
+    return {
+      total:       materials.length,
+      disponible:  countMatching("DISPONIBLE"),
+      enPret:      countMatching("EN_USE"),
+      reserve:     countMatching("RESERVE"),
+      maintenance: countMatching("EN_MAINTENANCE"),
+    }
+  }, [materials])
 
   function openDetail(m: Material) {
     setSelected(m)
@@ -224,20 +238,25 @@ export function MaterielView() {
         ) : undefined}
       />
 
-      {/* Stats */}
+      {/* Same StatTile as the dashboard, Dons, Boutique and Finances. Each tile applies its
+          status filter to the list below. */}
       {!isLoading && materials.length > 0 && (
-        <div className="flex flex-wrap items-center gap-x-5 gap-y-1.5 text-sm">
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
           {[
-            { label: t("materiel.view.statsLabels.articles"),    value: stats.total       },
-            { label: t("materiel.view.statsLabels.disponibles"), value: stats.disponible  },
-            { label: t("materiel.view.statsLabels.enPret"),      value: stats.enPret      },
-            { label: t("materiel.view.statsLabels.reserves"),    value: stats.reserve     },
-            { label: t("materiel.view.statsLabels.maintenance"), value: stats.maintenance },
-          ].map(s => (
-            <span key={s.label} className="inline-flex items-baseline gap-1.5 whitespace-nowrap">
-              <span className="font-medium tabular-nums">{s.value}</span>
-              <span className="text-muted-foreground">{s.label}</span>
-            </span>
+            { filterValue: "ALL",            label: t("materiel.view.statsLabels.articles"),    value: stats.total,       icon: PackageIcon },
+            { filterValue: "DISPONIBLE",     label: t("materiel.view.statsLabels.disponibles"), value: stats.disponible,  icon: CheckCircleIcon },
+            { filterValue: "EN_USE",         label: t("materiel.view.statsLabels.enPret"),      value: stats.enPret,      icon: HandshakeIcon },
+            { filterValue: "RESERVE",        label: t("materiel.view.statsLabels.reserves"),    value: stats.reserve,     icon: CalendarCheckIcon },
+            { filterValue: "EN_MAINTENANCE", label: t("materiel.view.statsLabels.maintenance"), value: stats.maintenance, icon: WrenchIcon },
+          ].map(statTile => (
+            <StatTile
+              key={statTile.filterValue}
+              label={statTile.label}
+              value={statTile.value}
+              icon={statTile.icon}
+              onClick={() => setStatusFilter(statTile.filterValue)}
+              isLoading={false}
+            />
           ))}
         </div>
       )}

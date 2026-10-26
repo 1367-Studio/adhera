@@ -1555,7 +1555,8 @@
       "columns": {
         "event": "Εκδήλωση",
         "date": "Ημερομηνία",
-        "presences": "Προσέλευση"
+        "presences": "Προσέλευση",
+        "bilan": "Απολογισμός"
       },
       "presentCount": "{count, plural, one {# παρόν} other {# παρόν}}",
       "reservedCount": "{count, plural, one {# κρατήσεις} other {# κρατήσεις}}",
@@ -1594,6 +1595,19 @@
         "titlePlaceholder": "Γενική Συνέλευση 2026",
         "dateLabel": "Ημερομηνία έναρξης",
         "createButton": "Δημιουργία"
+      },
+      "bilan": {
+        "show": "Εμφάνιση απολογισμού",
+        "hide": "Απόκρυψη απολογισμού",
+        "participants": "Συμμετέχοντες",
+        "registeredCount": "{count, plural, one {# εγγεγραμμένος} other {# εγγεγραμμένοι}}",
+        "presentCount": "{count, plural, one {# παρών} other {# παρόντες}}",
+        "revenue": "Εισπραχθέντα έσοδα",
+        "afterRefunds": "Μετά τις επιστροφές",
+        "reviews": "Κριτικές",
+        "reviewCount": "{count, plural, one {# κριτική ελήφθη} other {# κριτικές ελήφθησαν}}",
+        "noReviews": "Καμία κριτική",
+        "fullLink": "Προβολή πλήρους απολογισμού"
       }
     },
     "customFields": {
@@ -1898,7 +1912,8 @@
           "datesOrderError": "Η καταληκτική ημερομηνία πρέπει να είναι μεταγενέστερη της καταληκτικής ημερομηνίας."
         }
       },
-      "titleRequired": "Ο τίτλος είναι υποχρεωτικός"
+      "titleRequired": "Ο τίτλος είναι υποχρεωτικός",
+      "bilanButton": "Απολογισμός"
     },
     "discountCodes": {
       "title": "Κωδικοί προσφοράς",
@@ -1928,6 +1943,58 @@
       "valueRequiredError": "Η μείωση πρέπει να είναι μεγαλύτερη από 0.",
       "windowInvalidError": "Η ημερομηνία λήξης πρέπει να είναι μετά την ημερομηνία έναρξης.",
       "saved": "Αποθηκευμένοι κωδικοί προσφοράς"
+    },
+    "bilanPage": {
+      "metaTitle": "Απολογισμός εκδήλωσης",
+      "export": "Εξαγωγή απολογισμού",
+      "sectionTitle": "Λεπτομέρειες συμμετεχόντων",
+      "sectionSubtitle": "Παρουσίες, πληρωμές και κριτικές σε ένα σημείο",
+      "searchPlaceholder": "Αναζήτηση συμμετέχοντα…",
+      "presenceFilter": {
+        "all": "Όλες οι παρουσίες",
+        "present": "Παρόντες",
+        "absent": "Απόντες"
+      },
+      "reviewFilter": {
+        "all": "Όλες οι κριτικές",
+        "with": "Με κριτική",
+        "without": "Χωρίς κριτική"
+      },
+      "resetFilters": "Επαναφορά",
+      "columns": {
+        "participant": "Συμμετέχων",
+        "presence": "Παρουσία",
+        "amount": "Ποσό που καταβλήθηκε",
+        "payment": "Πληρωμή",
+        "review": "Κριτική"
+      },
+      "presence": {
+        "present": "Παρών",
+        "absent": "Απών"
+      },
+      "paymentStatus": {
+        "paid": "Πληρώθηκε",
+        "pending": "Σε αναμονή",
+        "refunded": "Επιστράφηκε",
+        "free": "Δωρεάν"
+      },
+      "viewReview": "Προβολή κριτικής",
+      "empty": "Κανένας συμμετέχων",
+      "emptyFiltered": "Κανένας συμμετέχων δεν ταιριάζει με τα φίλτρα",
+      "totalAmount": "Σύνολο {amount}",
+      "participantCount": "{count, plural, one {# συμμετέχων} other {# συμμετέχοντες}}",
+      "reviewCount": "{count, plural, one {# κριτική} other {# κριτικές}}",
+      "csv": {
+        "participant": "Συμμετέχων",
+        "email": "Email",
+        "presence": "Παρουσία",
+        "amount": "Ποσό που καταβλήθηκε (€)",
+        "paymentStatus": "Κατάσταση πληρωμής",
+        "paymentMethod": "Τρόπος πληρωμής",
+        "rating": "Βαθμολογία (στα 5)",
+        "comment": "Σχόλιο",
+        "total": "Σύνολο"
+      }
     }
   },
   "actualites": {
@@ -2548,7 +2615,8 @@
         "status": "Κατάσταση",
         "stock": "Στοκ",
         "prix": "Τιμοκατάλογος",
-        "ventes": "Πωλήσεις"
+        "ventes": "Πωλήσεις",
+        "revenu": "Έσοδα"
       },
       "variantsCount": "{count, plural, one {# παραλλαγή} other {# παραλλαγές}}",
       "actions": {
@@ -2573,6 +2641,13 @@
       },
       "othersCount": "{count, plural, one {+# άλλο} other {+# άλλα}}",
       "statusFilterAll": "Όλα",
+      "salesCountLabel": "Αριθμός πωλήσεων",
+      "revenueTotalLabel": "Συνολικά έσοδα",
+      "unitsSold": "{count, plural, one {# πωλήθηκε} other {# πωλήθηκαν}}",
+      "pendingCountLabel": "Εκκρεμείς παραγγελίες",
+      "pendingAmountLabel": "Εκκρεμές ποσό",
+      "cancelledCountLabel": "Ακυρωμένες παραγγελίες",
+      "cancelledAmountLabel": "Ακυρωμένο ποσό",
       "deleteProduitTitle": "Αφαίρεση προϊόντος",
       "deleteProduitDescription": "Διαγραφή \" {name} » ? Αυτή η ενέργεια είναι μη αναστρέψιμη.",
       "cancelOrderTitle": "Ακύρωση της παραγγελίας;",
@@ -2838,7 +2913,12 @@
         "issuedAt": "Εκδόθηκε στις",
         "amount": "Ποσό"
       },
-      "noReceipts": "Δεν εκδόθηκαν φορολογικές αποδείξεις"
+      "noReceipts": "Δεν εκδόθηκαν φορολογικές αποδείξεις",
+      "searchPlaceholder": "Δωρητής ή email…",
+      "minAmount": "Ελάχ. ποσό (€)",
+      "maxAmount": "Μέγ. ποσό (€)",
+      "noReceiptsFiltered": "Καμία απόδειξη δεν ταιριάζει με τα φίλτρα",
+      "count": "{count, plural, one {# απόδειξη} other {# αποδείξεις}}"
     },
     "detail": {
       "backToList": "Επιστροφή στις δωρεές",

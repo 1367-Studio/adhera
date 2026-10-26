@@ -1568,7 +1568,8 @@
       "columns": {
         "event": "Evento",
         "date": "Data",
-        "presences": "Presenças"
+        "presences": "Presenças",
+        "bilan": "Balanço"
       },
       "presentCount": "{count, plural, one {# presente} other {# presentes}}",
       "reservedCount": "{count, plural, one {# reservado} other {# reservados}}",
@@ -1607,6 +1608,19 @@
         "titlePlaceholder": "Assembleia geral 2026",
         "dateLabel": "Data de início",
         "createButton": "Criar"
+      },
+      "bilan": {
+        "show": "Ver o balanço",
+        "hide": "Ocultar o balanço",
+        "participants": "Participantes",
+        "registeredCount": "{count, plural, one {# inscrito} many {# inscritos} other {# inscritos}}",
+        "presentCount": "{count, plural, one {# presente} many {# presentes} other {# presentes}}",
+        "revenue": "Receitas recebidas",
+        "afterRefunds": "Após reembolsos",
+        "reviews": "Avaliações",
+        "reviewCount": "{count, plural, one {# avaliação recebida} many {# avaliações recebidas} other {# avaliações recebidas}}",
+        "noReviews": "Nenhuma avaliação",
+        "fullLink": "Ver o balanço completo"
       }
     },
     "customFields": {
@@ -1911,7 +1925,8 @@
           "datesOrderError": "A data de fechamento deve ser posterior à data de abertura."
         }
       },
-      "titleRequired": "O título é obrigatório"
+      "titleRequired": "O título é obrigatório",
+      "bilanButton": "Balanço"
     },
     "discountCodes": {
       "title": "Códigos promocionais",
@@ -1941,6 +1956,58 @@
       "valueRequiredError": "O desconto deve ser maior que 0.",
       "windowInvalidError": "A data de término deve ser posterior à data de início.",
       "saved": "Códigos promocionais salvos"
+    },
+    "bilanPage": {
+      "metaTitle": "Balanço do evento",
+      "export": "Exportar o balanço",
+      "sectionTitle": "Detalhe dos participantes",
+      "sectionSubtitle": "Presenças, pagamentos e avaliações num só lugar",
+      "searchPlaceholder": "Pesquisar um participante…",
+      "presenceFilter": {
+        "all": "Todas as presenças",
+        "present": "Presentes",
+        "absent": "Ausentes"
+      },
+      "reviewFilter": {
+        "all": "Todas as avaliações",
+        "with": "Com avaliação",
+        "without": "Sem avaliação"
+      },
+      "resetFilters": "Redefinir",
+      "columns": {
+        "participant": "Participante",
+        "presence": "Presença",
+        "amount": "Valor pago",
+        "payment": "Pagamento",
+        "review": "Avaliação"
+      },
+      "presence": {
+        "present": "Presente",
+        "absent": "Ausente"
+      },
+      "paymentStatus": {
+        "paid": "Pago",
+        "pending": "Pendente",
+        "refunded": "Reembolsado",
+        "free": "Gratuito"
+      },
+      "viewReview": "Ver a avaliação",
+      "empty": "Nenhum participante",
+      "emptyFiltered": "Nenhum participante corresponde aos filtros",
+      "totalAmount": "Total {amount}",
+      "participantCount": "{count, plural, one {# participante} many {# participantes} other {# participantes}}",
+      "reviewCount": "{count, plural, one {# avaliação} many {# avaliações} other {# avaliações}}",
+      "csv": {
+        "participant": "Participante",
+        "email": "E-mail",
+        "presence": "Presença",
+        "amount": "Valor pago (€)",
+        "paymentStatus": "Status do pagamento",
+        "paymentMethod": "Forma de pagamento",
+        "rating": "Nota (de 5)",
+        "comment": "Comentário",
+        "total": "Total"
+      }
     }
   },
   "actualites": {
@@ -2561,7 +2628,8 @@
         "status": "Status",
         "stock": "Estoque",
         "prix": "Preço",
-        "ventes": "Vendas"
+        "ventes": "Vendas",
+        "revenu": "Receita"
       },
       "variantsCount": "{count, plural, one {# variante} other {# variantes}}",
       "actions": {
@@ -2587,6 +2655,13 @@
       },
       "othersCount": "{count, plural, one {+# outro} other {+# outros}}",
       "statusFilterAll": "Todos",
+      "salesCountLabel": "Número de vendas",
+      "revenueTotalLabel": "Receita total",
+      "unitsSold": "{count, plural, one {# vendido} other {# vendidos}}",
+      "pendingCountLabel": "Pedidos pendentes",
+      "pendingAmountLabel": "Valor pendente",
+      "cancelledCountLabel": "Pedidos cancelados",
+      "cancelledAmountLabel": "Valor cancelado",
       "deleteProduitTitle": "Excluir o produto",
       "deleteProduitDescription": "Excluir \"{name}\"? Esta ação é irreversível.",
       "cancelOrderTitle": "Cancelar o pedido?",
@@ -2860,7 +2935,12 @@
         "issuedAt": "Emitido em",
         "amount": "Valor"
       },
-      "noReceipts": "Nenhum recibo fiscal emitido"
+      "noReceipts": "Nenhum recibo fiscal emitido",
+      "searchPlaceholder": "Doador ou e-mail…",
+      "minAmount": "Valor mín. (€)",
+      "maxAmount": "Valor máx. (€)",
+      "noReceiptsFiltered": "Nenhum recibo corresponde aos filtros",
+      "count": "{count, plural, one {# recibo} other {# recibos}}"
     },
     "detail": {
       "backToList": "Voltar para doações",

@@ -1555,7 +1555,8 @@
       "columns": {
         "event": "Teagmhas",
         "date": "Dáta",
-        "presences": "Tinreamh"
+        "presences": "Tinreamh",
+        "bilan": "Achoimre"
       },
       "presentCount": "{count, plural, one {# i láthair} other {# i láthair}}",
       "reservedCount": "{count, plural, one {# curtha in áirithe} other {# curtha in áirithe}}",
@@ -1594,6 +1595,19 @@
         "titlePlaceholder": "Comhthionól Ginearálta 2026",
         "dateLabel": "Dáta tosaigh",
         "createButton": "Cruthaigh"
+      },
+      "bilan": {
+        "show": "Taispeáin an achoimre",
+        "hide": "Folaigh an achoimre",
+        "participants": "Rannpháirtithe",
+        "registeredCount": "{count, plural, one {# cláraithe} two {# cláraithe} few {# cláraithe} many {# cláraithe} other {# cláraithe}}",
+        "presentCount": "{count, plural, one {# i láthair} two {# i láthair} few {# i láthair} many {# i láthair} other {# i láthair}}",
+        "revenue": "Ioncam bailithe",
+        "afterRefunds": "Tar éis aisíocaíochtaí",
+        "reviews": "Léirmheasanna",
+        "reviewCount": "{count, plural, one {# léirmheas faighte} two {# léirmheas faighte} few {# léirmheas faighte} many {# léirmheas faighte} other {# léirmheas faighte}}",
+        "noReviews": "Gan léirmheasanna",
+        "fullLink": "Féach ar an achoimre iomlán"
       }
     },
     "customFields": {
@@ -1898,7 +1912,8 @@
           "datesOrderError": "Caithfidh an dáta deiridh a bheith níos déanaí ná an dáta oscailte."
         }
       },
-      "titleRequired": "Tá an teideal éigeantach"
+      "titleRequired": "Tá an teideal éigeantach",
+      "bilanButton": "Achoimre"
     },
     "discountCodes": {
       "title": "Cóid Promo",
@@ -1928,6 +1943,58 @@
       "valueRequiredError": "Caithfidh an laghdú a bheith níos mó ná 0.",
       "windowInvalidError": "Caithfidh an dáta deiridh a bheith tar éis an dáta tosaigh.",
       "saved": "Cóid Promo Shábháilte"
+    },
+    "bilanPage": {
+      "metaTitle": "Achoimre an imeachta",
+      "export": "Easpórtáil an achoimre",
+      "sectionTitle": "Sonraí na rannpháirtithe",
+      "sectionSubtitle": "Tinreamh, íocaíochtaí agus léirmheasanna in aon áit amháin",
+      "searchPlaceholder": "Cuardaigh rannpháirtí…",
+      "presenceFilter": {
+        "all": "An tinreamh ar fad",
+        "present": "I láthair",
+        "absent": "As láthair"
+      },
+      "reviewFilter": {
+        "all": "Gach léirmheas",
+        "with": "Le léirmheas",
+        "without": "Gan léirmheas"
+      },
+      "resetFilters": "Athshocraigh",
+      "columns": {
+        "participant": "Rannpháirtí",
+        "presence": "Tinreamh",
+        "amount": "Méid íoctha",
+        "payment": "Íocaíocht",
+        "review": "Léirmheas"
+      },
+      "presence": {
+        "present": "I láthair",
+        "absent": "As láthair"
+      },
+      "paymentStatus": {
+        "paid": "Íoctha",
+        "pending": "Ar feitheamh",
+        "refunded": "Aisíoctha",
+        "free": "Saor in aisce"
+      },
+      "viewReview": "Féach ar an léirmheas",
+      "empty": "Gan rannpháirtithe",
+      "emptyFiltered": "Níl aon rannpháirtí ag teacht leis na scagairí",
+      "totalAmount": "Iomlán {amount}",
+      "participantCount": "{count, plural, one {# rannpháirtí} two {# rannpháirtí} few {# rannpháirtí} many {# rannpháirtí} other {# rannpháirtí}}",
+      "reviewCount": "{count, plural, one {# léirmheas} two {# léirmheas} few {# léirmheas} many {# léirmheas} other {# léirmheas}}",
+      "csv": {
+        "participant": "Rannpháirtí",
+        "email": "Ríomhphost",
+        "presence": "Tinreamh",
+        "amount": "Méid íoctha (€)",
+        "paymentStatus": "Stádas íocaíochta",
+        "paymentMethod": "Modh íocaíochta",
+        "rating": "Rátáil (as 5)",
+        "comment": "Trácht",
+        "total": "Iomlán"
+      }
     }
   },
   "actualites": {
@@ -2548,7 +2615,8 @@
         "status": "Stádas",
         "stock": "Stoc",
         "prix": "Praghsáil",
-        "ventes": "Díolacháin"
+        "ventes": "Díolacháin",
+        "revenu": "Ioncam"
       },
       "variantsCount": "{count, plural, one {# leagan} other {# leaganacha}}",
       "actions": {
@@ -2573,6 +2641,13 @@
       },
       "othersCount": "{count, plural, one {+# eile} other {+# daoine eile}}",
       "statusFilterAll": "Gach rud",
+      "salesCountLabel": "Líon díolachán",
+      "revenueTotalLabel": "Ioncam iomlán",
+      "unitsSold": "{count, plural, one {# díolta} other {# díolta}}",
+      "pendingCountLabel": "Orduithe ar feitheamh",
+      "pendingAmountLabel": "Méid ar feitheamh",
+      "cancelledCountLabel": "Orduithe cealaithe",
+      "cancelledAmountLabel": "Méid cealaithe",
       "deleteProduitTitle": "Bain Táirge",
       "deleteProduitDescription": "Scrios \" {name} » ? Tá an gníomh seo dochúlaithe.",
       "cancelOrderTitle": "An t-ordú a chealú?",
@@ -2838,7 +2913,12 @@
         "issuedAt": "Eisithe ar",
         "amount": "Méid"
       },
-      "noReceipts": "Níl aon admhálacha cánach eisithe"
+      "noReceipts": "Níl aon admhálacha cánach eisithe",
+      "searchPlaceholder": "Deontóir nó ríomhphost…",
+      "minAmount": "Íosmhéid (€)",
+      "maxAmount": "Uasmhéid (€)",
+      "noReceiptsFiltered": "Níl aon admháil ag teacht leis na scagairí",
+      "count": "{count, plural, one {# admháil} two {# admháil} few {# admháil} many {# admháil} other {# admháil}}"
     },
     "detail": {
       "backToList": "Ar ais chuig síntiúis",

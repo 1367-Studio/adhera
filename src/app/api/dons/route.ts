@@ -12,12 +12,18 @@ import { donConfirmationEmail } from "@/lib/email"
 import { notifyDonResponsable } from "@/lib/dons/notify"
 import { reportError } from "@/lib/monitoring"
 
+// Same threshold as the dashboard Dons page's search boxes.
+const MIN_SEARCH_LENGTH = 3
+
 export const GET = withAdminAuth(async (req, ctx) => {
   const { associationId } = ctx
   const { searchParams } = new URL(req.url)
 
   const year          = searchParams.get("year")
-  const search        = searchParams.get("search")?.trim()
+  // Ignored under MIN_SEARCH_LENGTH characters (the dashboard doesn't send it either) — a
+  // 1–2 letter `contains` scan across five columns matches nearly everything anyway.
+  const rawSearch     = searchParams.get("search")?.trim() ?? ""
+  const search        = rawSearch.length >= MIN_SEARCH_LENGTH ? rawSearch : undefined
   const origin        = searchParams.get("origin") ?? undefined
   const receiptsOnly  = searchParams.get("receiptsOnly") === "true"
   // Offline dons (espèces/chèque/virement) awaiting encaissement — the one other state
@@ -80,6 +86,17 @@ export const GET = withAdminAuth(async (req, ctx) => {
   }
   // Admin-typed via the "add manual donation" form (POST below) — see Don.createdByUserId.
   if (origin === "manual") where.createdByUserId = { not: null }
+
+  // Amount range in euros, either bound optional (the "Reçus fiscaux" tab filter). A plain
+  // field condition like origin above, so the KPI totals keep following it too.
+  const minAmount = parseFloat(searchParams.get("minAmount") ?? "")
+  const maxAmount = parseFloat(searchParams.get("maxAmount") ?? "")
+  if (!Number.isNaN(minAmount) || !Number.isNaN(maxAmount)) {
+    where.amount = {
+      ...(!Number.isNaN(minAmount) ? { gte: minAmount } : {}),
+      ...(!Number.isNaN(maxAmount) ? { lte: maxAmount } : {}),
+    }
+  }
 
   // KPI totals intentionally ignore `search` — they summarize the year, not the filtered
   // list, so typing in the search box doesn't make the summary cards jump around.

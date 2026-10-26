@@ -1575,7 +1575,8 @@
       "columns": {
         "event": "Événement",
         "date": "Date",
-        "presences": "Présences"
+        "presences": "Présences",
+        "bilan": "Bilan"
       },
       "presentCount": "{count, plural, one {# présent} other {# présents}}",
       "reservedCount": "{count, plural, one {# réservé} other {# réservés}}",
@@ -1591,7 +1592,7 @@
         "unpublish": "Dépublier",
         "archive": "Archiver",
         "duplicate": "Dupliquer",
-        "open": "Ouvrir"
+        "open": "Modifier"
       },
       "searchPlaceholder": "Rechercher un événement…",
       "noResultsFor": "Aucun résultat pour « {search} »",
@@ -1614,6 +1615,19 @@
         "titlePlaceholder": "Assemblée générale 2026",
         "dateLabel": "Date de début",
         "createButton": "Créer"
+      },
+      "bilan": {
+        "show": "Voir le bilan",
+        "hide": "Masquer le bilan",
+        "participants": "Participants",
+        "registeredCount": "{count, plural, one {# inscrit} other {# inscrits}}",
+        "presentCount": "{count, plural, one {# présent} other {# présents}}",
+        "revenue": "Revenus encaissés",
+        "afterRefunds": "Après remboursements",
+        "reviews": "Avis",
+        "reviewCount": "{count, plural, one {# avis reçu} other {# avis reçus}}",
+        "noReviews": "Aucun avis",
+        "fullLink": "Voir le bilan complet"
       }
     },
     "customFields": {
@@ -1945,7 +1959,8 @@
       "reopenRegistrationsButton": "Rouvrir les inscriptions",
       "registrationsClosedNotice": "Inscriptions closes",
       "closeRegistrationsConfirmTitle": "Fermer les inscriptions ?",
-      "closeRegistrationsConfirmDescription": "Plus personne ne pourra s'inscrire en ligne. Vous pourrez toujours ajouter des participants depuis la liste des présences."
+      "closeRegistrationsConfirmDescription": "Plus personne ne pourra s'inscrire en ligne. Vous pourrez toujours ajouter des participants depuis la liste des présences.",
+      "bilanButton": "Bilan"
     },
     "discountCodes": {
       "title": "Codes promotionnels",
@@ -1975,6 +1990,58 @@
       "valueRequiredError": "La réduction doit être supérieure à 0.",
       "windowInvalidError": "La date de fin doit être après la date de début.",
       "saved": "Codes promotionnels enregistrés"
+    },
+    "bilanPage": {
+      "metaTitle": "Bilan de l'événement",
+      "export": "Exporter le bilan",
+      "sectionTitle": "Détail des participants",
+      "sectionSubtitle": "Présences, paiements et avis réunis au même endroit",
+      "searchPlaceholder": "Rechercher un participant…",
+      "presenceFilter": {
+        "all": "Toutes les présences",
+        "present": "Présents",
+        "absent": "Absents"
+      },
+      "reviewFilter": {
+        "all": "Tous les avis",
+        "with": "Avec avis",
+        "without": "Sans avis"
+      },
+      "resetFilters": "Réinitialiser",
+      "columns": {
+        "participant": "Participant",
+        "presence": "Présence",
+        "amount": "Montant payé",
+        "payment": "Paiement",
+        "review": "Avis"
+      },
+      "presence": {
+        "present": "Présent",
+        "absent": "Absent"
+      },
+      "paymentStatus": {
+        "paid": "Payé",
+        "pending": "En attente",
+        "refunded": "Remboursé",
+        "free": "Gratuit"
+      },
+      "viewReview": "Voir l'avis",
+      "empty": "Aucun participant",
+      "emptyFiltered": "Aucun participant ne correspond aux filtres",
+      "totalAmount": "Total {amount}",
+      "participantCount": "{count, plural, one {# participant} other {# participants}}",
+      "reviewCount": "{count, plural, one {# avis} other {# avis}}",
+      "csv": {
+        "participant": "Participant",
+        "email": "E-mail",
+        "presence": "Présence",
+        "amount": "Montant payé (€)",
+        "paymentStatus": "Statut du paiement",
+        "paymentMethod": "Moyen de paiement",
+        "rating": "Note (sur 5)",
+        "comment": "Commentaire",
+        "total": "Total"
+      }
     }
   },
   "actualites": {
@@ -2617,7 +2684,8 @@
         "status": "Statut",
         "stock": "Stock",
         "prix": "Prix",
-        "ventes": "Ventes"
+        "ventes": "Ventes",
+        "revenu": "Revenu"
       },
       "variantsCount": "{count, plural, one {# variante} other {# variantes}}",
       "actions": {
@@ -2644,6 +2712,13 @@
       },
       "othersCount": "{count, plural, one {+# autre} other {+# autres}}",
       "statusFilterAll": "Toutes",
+      "salesCountLabel": "Nombre de ventes",
+      "revenueTotalLabel": "Revenu total",
+      "unitsSold": "{count, plural, one {# vendu} other {# vendus}}",
+      "pendingCountLabel": "Commandes en attente",
+      "pendingAmountLabel": "Montant en attente",
+      "cancelledCountLabel": "Commandes annulées",
+      "cancelledAmountLabel": "Montant annulé",
       "deleteProduitTitle": "Supprimer le produit",
       "deleteProduitDescription": "Supprimer « {name} » ? Cette action est irréversible.",
       "cancelOrderTitle": "Annuler la commande ?",
@@ -2918,7 +2993,12 @@
         "issuedAt": "Émis le",
         "amount": "Montant"
       },
-      "noReceipts": "Aucun reçu fiscal émis"
+      "noReceipts": "Aucun reçu fiscal émis",
+      "searchPlaceholder": "Donateur ou e-mail…",
+      "minAmount": "Montant min (€)",
+      "maxAmount": "Montant max (€)",
+      "noReceiptsFiltered": "Aucun reçu ne correspond aux filtres",
+      "count": "{count, plural, one {# reçu} other {# reçus}}"
     },
     "detail": {
       "backToList": "Retour aux dons",

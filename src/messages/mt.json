@@ -1555,7 +1555,8 @@
       "columns": {
         "event": "Avveniment",
         "date": "Data",
-        "presences": "Attendenza"
+        "presences": "Attendenza",
+        "bilan": "Sommarju"
       },
       "presentCount": "{count, plural, one {# preżenti} other {# preżenti}}",
       "reservedCount": "{count, plural, one {# imħallas} other {# imħallas}}",
@@ -1594,6 +1595,19 @@
         "titlePlaceholder": "Assemblea Ġenerali 2026",
         "dateLabel": "Data tal-bidu",
         "createButton": "Oħloq"
+      },
+      "bilan": {
+        "show": "Uri s-sommarju",
+        "hide": "Aħbi s-sommarju",
+        "participants": "Parteċipanti",
+        "registeredCount": "{count, plural, one {# reġistrat} two {# reġistrati} few {# reġistrati} many {# reġistrati} other {# reġistrati}}",
+        "presentCount": "{count, plural, one {# preżenti} two {# preżenti} few {# preżenti} many {# preżenti} other {# preżenti}}",
+        "revenue": "Dħul miġbur",
+        "afterRefunds": "Wara r-rimborżi",
+        "reviews": "Reviżjonijiet",
+        "reviewCount": "{count, plural, one {# reviżjoni riċevuta} two {# reviżjonijiet riċevuti} few {# reviżjonijiet riċevuti} many {# reviżjonijiet riċevuti} other {# reviżjonijiet riċevuti}}",
+        "noReviews": "L-ebda reviżjoni",
+        "fullLink": "Ara s-sommarju sħiħ"
       }
     },
     "customFields": {
@@ -1898,7 +1912,8 @@
           "datesOrderError": "Id-data tal-għeluq trid tkun aktar tard mid-data tal-ftuħ."
         }
       },
-      "titleRequired": "It-titlu huwa obbligatorju"
+      "titleRequired": "It-titlu huwa obbligatorju",
+      "bilanButton": "Sommarju"
     },
     "discountCodes": {
       "title": "Kodiċijiet Promo",
@@ -1928,6 +1943,58 @@
       "valueRequiredError": "Ir-riduzzjoni trid tkun akbar minn 0.",
       "windowInvalidError": "Id-data tat-tmiem trid tkun wara d-data tal-bidu.",
       "saved": "Kodiċijiet Promo Salvati"
+    },
+    "bilanPage": {
+      "metaTitle": "Sommarju tal-avveniment",
+      "export": "Esporta s-sommarju",
+      "sectionTitle": "Dettalji tal-parteċipanti",
+      "sectionSubtitle": "Attendenza, ħlasijiet u reviżjonijiet f'post wieħed",
+      "searchPlaceholder": "Fittex parteċipant…",
+      "presenceFilter": {
+        "all": "L-attendenza kollha",
+        "present": "Preżenti",
+        "absent": "Assenti"
+      },
+      "reviewFilter": {
+        "all": "Ir-reviżjonijiet kollha",
+        "with": "B'reviżjoni",
+        "without": "Mingħajr reviżjoni"
+      },
+      "resetFilters": "Irrisettja",
+      "columns": {
+        "participant": "Parteċipant",
+        "presence": "Attendenza",
+        "amount": "Ammont imħallas",
+        "payment": "Ħlas",
+        "review": "Reviżjoni"
+      },
+      "presence": {
+        "present": "Preżenti",
+        "absent": "Assenti"
+      },
+      "paymentStatus": {
+        "paid": "Imħallas",
+        "pending": "Pendenti",
+        "refunded": "Rimborżat",
+        "free": "B'xejn"
+      },
+      "viewReview": "Ara r-reviżjoni",
+      "empty": "L-ebda parteċipant",
+      "emptyFiltered": "L-ebda parteċipant ma jaqbel mal-filtri",
+      "totalAmount": "Total {amount}",
+      "participantCount": "{count, plural, one {# parteċipant} two {# parteċipanti} few {# parteċipanti} many {# parteċipanti} other {# parteċipanti}}",
+      "reviewCount": "{count, plural, one {# reviżjoni} two {# reviżjonijiet} few {# reviżjonijiet} many {# reviżjonijiet} other {# reviżjonijiet}}",
+      "csv": {
+        "participant": "Parteċipant",
+        "email": "Email",
+        "presence": "Attendenza",
+        "amount": "Ammont imħallas (€)",
+        "paymentStatus": "Status tal-ħlas",
+        "paymentMethod": "Metodu tal-ħlas",
+        "rating": "Grad (minn 5)",
+        "comment": "Kumment",
+        "total": "Total"
+      }
     }
   },
   "actualites": {
@@ -2548,7 +2615,8 @@
         "status": "Status",
         "stock": "Stock",
         "prix": "Prezzijiet",
-        "ventes": "Bejgħ"
+        "ventes": "Bejgħ",
+        "revenu": "Dħul"
       },
       "variantsCount": "{count, plural, one {# varjant} other {# varjanti}}",
       "actions": {
@@ -2573,6 +2641,13 @@
       },
       "othersCount": "{count, plural, one {+# oħrajn} other {+# oħrajn}}",
       "statusFilterAll": "Kollha",
+      "salesCountLabel": "Numru ta' bejgħ",
+      "revenueTotalLabel": "Dħul totali",
+      "unitsSold": "{count, plural, one {# mibjugħ} other {# mibjugħa}}",
+      "pendingCountLabel": "Ordnijiet pendenti",
+      "pendingAmountLabel": "Ammont pendenti",
+      "cancelledCountLabel": "Ordnijiet ikkanċellati",
+      "cancelledAmountLabel": "Ammont ikkanċellat",
       "deleteProduitTitle": "Neħħi l-Prodott",
       "deleteProduitDescription": "Ħassar \" {name} » ? Din l-azzjoni hija irreversibbli.",
       "cancelOrderTitle": "Tħassar l-ordni?",
@@ -2838,7 +2913,12 @@
         "issuedAt": "Ippubblikat fuq",
         "amount": "Ammont"
       },
-      "noReceipts": "L-ebda riċevuti tat-taxxa maħruġa"
+      "noReceipts": "L-ebda riċevuti tat-taxxa maħruġa",
+      "searchPlaceholder": "Donatur jew email…",
+      "minAmount": "Ammont minimu (€)",
+      "maxAmount": "Ammont massimu (€)",
+      "noReceiptsFiltered": "L-ebda irċevuta ma taqbel mal-filtri",
+      "count": "{count, plural, one {# irċevuta} few {# irċevuti} many {# irċevuti} other {# irċevuti}}"
     },
     "detail": {
       "backToList": "Lura għad-donazzjonijiet",

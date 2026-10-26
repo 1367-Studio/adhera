@@ -1555,7 +1555,8 @@
       "columns": {
         "event": "Podujatie",
         "date": "Dátum",
-        "presences": "Účasť"
+        "presences": "Účasť",
+        "bilan": "Prehľad"
       },
       "presentCount": "{count, plural, one {# prítomní} other {# prítomní}}",
       "reservedCount": "{count, plural, one {# rezervované} other {# rezervované}}",
@@ -1594,6 +1595,19 @@
         "titlePlaceholder": "Valné zhromaždenie 2026",
         "dateLabel": "Dátum začiatku",
         "createButton": "Tvor"
+      },
+      "bilan": {
+        "show": "Zobraziť prehľad",
+        "hide": "Skryť prehľad",
+        "participants": "Účastníci",
+        "registeredCount": "{count, plural, one {# prihlásený} few {# prihlásení} many {# prihláseného} other {# prihlásených}}",
+        "presentCount": "{count, plural, one {# prítomný} few {# prítomní} many {# prítomného} other {# prítomných}}",
+        "revenue": "Inkasované príjmy",
+        "afterRefunds": "Po vrátení peňazí",
+        "reviews": "Recenzie",
+        "reviewCount": "{count, plural, one {# prijatá recenzia} few {# prijaté recenzie} many {# prijatej recenzie} other {# prijatých recenzií}}",
+        "noReviews": "Žiadne recenzie",
+        "fullLink": "Zobraziť celý prehľad"
       }
     },
     "customFields": {
@@ -1898,7 +1912,8 @@
           "datesOrderError": "Dátum uzávierky musí byť neskôr, než je dátum otvorenia."
         }
       },
-      "titleRequired": "Titul je povinný"
+      "titleRequired": "Titul je povinný",
+      "bilanButton": "Prehľad"
     },
     "discountCodes": {
       "title": "Promo kódy",
@@ -1928,6 +1943,58 @@
       "valueRequiredError": "Redukcia musí byť väčšia ako 0.",
       "windowInvalidError": "Dátum ukončenia musí byť po dátume začiatku.",
       "saved": "Uložené promo kódy"
+    },
+    "bilanPage": {
+      "metaTitle": "Prehľad podujatia",
+      "export": "Exportovať prehľad",
+      "sectionTitle": "Podrobnosti o účastníkoch",
+      "sectionSubtitle": "Účasť, platby a recenzie na jednom mieste",
+      "searchPlaceholder": "Hľadať účastníka…",
+      "presenceFilter": {
+        "all": "Celá účasť",
+        "present": "Prítomní",
+        "absent": "Neprítomní"
+      },
+      "reviewFilter": {
+        "all": "Všetky recenzie",
+        "with": "S recenziou",
+        "without": "Bez recenzie"
+      },
+      "resetFilters": "Obnoviť",
+      "columns": {
+        "participant": "Účastník",
+        "presence": "Účasť",
+        "amount": "Zaplatená suma",
+        "payment": "Platba",
+        "review": "Recenzia"
+      },
+      "presence": {
+        "present": "Prítomný",
+        "absent": "Neprítomný"
+      },
+      "paymentStatus": {
+        "paid": "Zaplatené",
+        "pending": "Čaká",
+        "refunded": "Vrátené",
+        "free": "Zadarmo"
+      },
+      "viewReview": "Zobraziť recenziu",
+      "empty": "Žiadni účastníci",
+      "emptyFiltered": "Filtrom nezodpovedá žiadny účastník",
+      "totalAmount": "Spolu {amount}",
+      "participantCount": "{count, plural, one {# účastník} few {# účastníci} many {# účastníka} other {# účastníkov}}",
+      "reviewCount": "{count, plural, one {# recenzia} few {# recenzie} many {# recenzie} other {# recenzií}}",
+      "csv": {
+        "participant": "Účastník",
+        "email": "E-mail",
+        "presence": "Účasť",
+        "amount": "Zaplatená suma (€)",
+        "paymentStatus": "Stav platby",
+        "paymentMethod": "Spôsob platby",
+        "rating": "Hodnotenie (z 5)",
+        "comment": "Komentár",
+        "total": "Spolu"
+      }
     }
   },
   "actualites": {
@@ -2548,7 +2615,8 @@
         "status": "Stav",
         "stock": "Vozový park",
         "prix": "Cenotvorba",
-        "ventes": "Predaj"
+        "ventes": "Predaj",
+        "revenu": "Tržby"
       },
       "variantsCount": "{count, plural, one {# variant} other {# varianty}}",
       "actions": {
@@ -2573,6 +2641,13 @@
       },
       "othersCount": "{count, plural, one {+# iné} other {+# ďalších}}",
       "statusFilterAll": "Všetko",
+      "salesCountLabel": "Počet predajov",
+      "revenueTotalLabel": "Celkové tržby",
+      "unitsSold": "{count, plural, one {# predaný kus} few {# predané kusy} many {# predaného kusu} other {# predaných kusov}}",
+      "pendingCountLabel": "Čakajúce objednávky",
+      "pendingAmountLabel": "Čakajúca suma",
+      "cancelledCountLabel": "Zrušené objednávky",
+      "cancelledAmountLabel": "Zrušená suma",
       "deleteProduitTitle": "Odstrániť produkt",
       "deleteProduitDescription": "Vymazať \" {name} » ? Tento čin je nezvratný.",
       "cancelOrderTitle": "Zrušiť objednávku?",
@@ -2838,7 +2913,12 @@
         "issuedAt": "Vydané",
         "amount": "Množstvo"
       },
-      "noReceipts": "Nevydané žiadne daňové potvrdenia"
+      "noReceipts": "Nevydané žiadne daňové potvrdenia",
+      "searchPlaceholder": "Darca alebo e-mail…",
+      "minAmount": "Min. suma (€)",
+      "maxAmount": "Max. suma (€)",
+      "noReceiptsFiltered": "Filtrom nezodpovedá žiadne potvrdenie",
+      "count": "{count, plural, one {# potvrdenie} few {# potvrdenia} many {# potvrdenia} other {# potvrdení}}"
     },
     "detail": {
       "backToList": "Späť na dary",

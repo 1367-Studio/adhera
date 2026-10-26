@@ -5,10 +5,10 @@ import { EvenementTicketTypesEditor, type EvenementTicketTypesEditorHandle, type
 import { EvenementDiscountCodesEditor, type EvenementDiscountCodesEditorHandle } from "@/components/evenements/evenement-discount-codes-editor"
 import { EvenementProductsEditor, type EvenementProductsEditorHandle } from "@/components/evenements/evenement-products-editor"
 import { RegistrationsClosedNotice, RegistrationsToggleButton } from "@/components/evenements/registrations-toggle-button"
+import { EvenementStatusBadge } from "@/components/evenements/evenement-status-badge"
 import { FormTermsEditor, revealFormTermsError, useTermsContentRequiredMessage } from "@/components/forms/form-terms-editor"
 import { Accordion, AccordionItem, AccordionPanel, AccordionTrigger } from "@/components/ui/accordion"
 import { BackLink } from "@/components/ui/back-link"
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { CheckboxField } from "@/components/ui/checkbox-field"
 import { ConfirmDialog } from "@/components/ui/confirm-dialog"
@@ -31,6 +31,7 @@ import { cn } from "@/lib/utils"
 import { useCurrentUser, useHasAccess } from "@/lib/user-context"
 import {
   ArchiveIcon,
+  ChartBarIcon,
   CheckIcon,
   CloudArrowDownIcon,
   CloudArrowUpIcon,
@@ -478,10 +479,6 @@ export default function EvenementDetailPage() {
     )
   }
 
-  const STATUS_LABEL   = { DRAFT: t("formStatus.draft"), PUBLISHED: t("formStatus.published"), ARCHIVED: t("formStatus.archived") }
-  const STATUS_VARIANT: Record<EvenementStatus, "secondary" | "default" | "outline"> = {
-    DRAFT: "secondary", PUBLISHED: "default", ARCHIVED: "outline",
-  }
   const canDelete = (participations ?? []).length === 0
 
   const requirementOptions = [
@@ -625,7 +622,7 @@ export default function EvenementDetailPage() {
         title={evenement.title}
         description={
           <span className="flex flex-wrap items-center gap-2">
-            <Badge variant={STATUS_VARIANT[evenement.status]}>{STATUS_LABEL[evenement.status]}</Badge>
+            <EvenementStatusBadge status={evenement.status} />
             {evenement.status === "DRAFT" && (
               <span className="text-xs text-muted-foreground">{t("detail.draftNotice")}</span>
             )}
@@ -665,6 +662,10 @@ export default function EvenementDetailPage() {
             <Button size="sm" variant="ghost" onClick={() => router.push(`/dashboard/evenements/${id}/avaliacoes`)}>
               <StarIcon className="mr-1.5 size-4" />
               {t("detail.avaliacoesButton")}
+            </Button>
+            <Button size="sm" variant="ghost" onClick={() => router.push(`/dashboard/evenements/${id}/bilan`)}>
+              <ChartBarIcon className="mr-1.5 size-4" />
+              {t("detail.bilanButton")}
             </Button>
             {canEditEvenements && evenement.status !== "ARCHIVED" && (
               <Button size="sm" variant="ghost" onClick={() => publishMutation.mutate("archive")} loading={publishMutation.isPending}>

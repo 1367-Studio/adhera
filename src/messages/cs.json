@@ -1555,7 +1555,8 @@
       "columns": {
         "event": "Událost",
         "date": "Datum",
-        "presences": "Účast"
+        "presences": "Účast",
+        "bilan": "Přehled"
       },
       "presentCount": "{count, plural, one {# přítomen} other {# přítomen}}",
       "reservedCount": "{count, plural, one {# rezervováno} other {# rezervováno}}",
@@ -1594,6 +1595,19 @@
         "titlePlaceholder": "Valné shromáždění 2026",
         "dateLabel": "Datum začátku",
         "createButton": "Vytvořit"
+      },
+      "bilan": {
+        "show": "Zobrazit přehled",
+        "hide": "Skrýt přehled",
+        "participants": "Účastníci",
+        "registeredCount": "{count, plural, one {# přihlášený} few {# přihlášení} many {# přihlášeného} other {# přihlášených}}",
+        "presentCount": "{count, plural, one {# přítomný} few {# přítomní} many {# přítomného} other {# přítomných}}",
+        "revenue": "Inkasované příjmy",
+        "afterRefunds": "Po vrácení peněz",
+        "reviews": "Recenze",
+        "reviewCount": "{count, plural, one {# přijatá recenze} few {# přijaté recenze} many {# přijaté recenze} other {# přijatých recenzí}}",
+        "noReviews": "Žádné recenze",
+        "fullLink": "Zobrazit celý přehled"
       }
     },
     "customFields": {
@@ -1898,7 +1912,8 @@
           "datesOrderError": "Termín uzavření musí být pozdější než datum otevření."
         }
       },
-      "titleRequired": "Titul je povinný"
+      "titleRequired": "Titul je povinný",
+      "bilanButton": "Přehled"
     },
     "discountCodes": {
       "title": "Promo kódy",
@@ -1928,6 +1943,58 @@
       "valueRequiredError": "Redukce musí být větší než 0.",
       "windowInvalidError": "Datum ukončení musí být po datu nástupu.",
       "saved": "Uložené promo kódy"
+    },
+    "bilanPage": {
+      "metaTitle": "Přehled akce",
+      "export": "Exportovat přehled",
+      "sectionTitle": "Podrobnosti o účastnících",
+      "sectionSubtitle": "Účast, platby a recenze na jednom místě",
+      "searchPlaceholder": "Hledat účastníka…",
+      "presenceFilter": {
+        "all": "Veškerá účast",
+        "present": "Přítomní",
+        "absent": "Nepřítomní"
+      },
+      "reviewFilter": {
+        "all": "Všechny recenze",
+        "with": "S recenzí",
+        "without": "Bez recenze"
+      },
+      "resetFilters": "Obnovit",
+      "columns": {
+        "participant": "Účastník",
+        "presence": "Účast",
+        "amount": "Zaplacená částka",
+        "payment": "Platba",
+        "review": "Recenze"
+      },
+      "presence": {
+        "present": "Přítomen",
+        "absent": "Nepřítomen"
+      },
+      "paymentStatus": {
+        "paid": "Zaplaceno",
+        "pending": "Čeká",
+        "refunded": "Vráceno",
+        "free": "Zdarma"
+      },
+      "viewReview": "Zobrazit recenzi",
+      "empty": "Žádní účastníci",
+      "emptyFiltered": "Filtrům neodpovídá žádný účastník",
+      "totalAmount": "Celkem {amount}",
+      "participantCount": "{count, plural, one {# účastník} few {# účastníci} many {# účastníka} other {# účastníků}}",
+      "reviewCount": "{count, plural, one {# recenze} few {# recenze} many {# recenze} other {# recenzí}}",
+      "csv": {
+        "participant": "Účastník",
+        "email": "E-mail",
+        "presence": "Účast",
+        "amount": "Zaplacená částka (€)",
+        "paymentStatus": "Stav platby",
+        "paymentMethod": "Způsob platby",
+        "rating": "Hodnocení (z 5)",
+        "comment": "Komentář",
+        "total": "Celkem"
+      }
     }
   },
   "actualites": {
@@ -2548,7 +2615,8 @@
         "status": "Stav",
         "stock": "Vozový park",
         "prix": "Ceny",
-        "ventes": "Prodeje"
+        "ventes": "Prodeje",
+        "revenu": "Tržby"
       },
       "variantsCount": "{count, plural, one {# varianta} other {# varianty}}",
       "actions": {
@@ -2573,6 +2641,13 @@
       },
       "othersCount": "{count, plural, one {+# ostatní} other {+# ostatní}}",
       "statusFilterAll": "Všichni",
+      "salesCountLabel": "Počet prodejů",
+      "revenueTotalLabel": "Celkové tržby",
+      "unitsSold": "{count, plural, one {# prodaný kus} few {# prodané kusy} many {# prodaného kusu} other {# prodaných kusů}}",
+      "pendingCountLabel": "Čekající objednávky",
+      "pendingAmountLabel": "Čekající částka",
+      "cancelledCountLabel": "Zrušené objednávky",
+      "cancelledAmountLabel": "Zrušená částka",
       "deleteProduitTitle": "Odstraňte produkt",
       "deleteProduitDescription": "Smazat \" {name} » ? Tento čin je nevratný.",
       "cancelOrderTitle": "Zrušit objednávku?",
@@ -2838,7 +2913,12 @@
         "issuedAt": "Vydáno",
         "amount": "Množství"
       },
-      "noReceipts": "Nevydány žádné daňové potvrzení"
+      "noReceipts": "Nevydány žádné daňové potvrzení",
+      "searchPlaceholder": "Dárce nebo e-mail…",
+      "minAmount": "Min. částka (€)",
+      "maxAmount": "Max. částka (€)",
+      "noReceiptsFiltered": "Filtrům neodpovídá žádné potvrzení",
+      "count": "{count, plural, one {# potvrzení} few {# potvrzení} many {# potvrzení} other {# potvrzení}}"
     },
     "detail": {
       "backToList": "Zpět k darům",

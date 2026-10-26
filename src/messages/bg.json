@@ -1555,7 +1555,8 @@
       "columns": {
         "event": "Събитие",
         "date": "Дата",
-        "presences": "Присъствие"
+        "presences": "Присъствие",
+        "bilan": "Обобщение"
       },
       "presentCount": "{count, plural, one {# присъстващ} other {# присъстващ}}",
       "reservedCount": "{count, plural, one {# резервиран} other {# резервиран}}",
@@ -1594,6 +1595,19 @@
         "titlePlaceholder": "Общо събрание 2026",
         "dateLabel": "Начална дата",
         "createButton": "Създаване"
+      },
+      "bilan": {
+        "show": "Покажи обобщението",
+        "hide": "Скрий обобщението",
+        "participants": "Участници",
+        "registeredCount": "{count, plural, one {# записан} other {# записани}}",
+        "presentCount": "{count, plural, one {# присъстващ} other {# присъстващи}}",
+        "revenue": "Събрани приходи",
+        "afterRefunds": "След възстановявания",
+        "reviews": "Отзиви",
+        "reviewCount": "{count, plural, one {# получен отзив} other {# получени отзива}}",
+        "noReviews": "Няма отзиви",
+        "fullLink": "Виж пълното обобщение"
       }
     },
     "customFields": {
@@ -1898,7 +1912,8 @@
           "datesOrderError": "Крайната дата трябва да е по-късно от датата на откриване."
         }
       },
-      "titleRequired": "Заглавието е задължително"
+      "titleRequired": "Заглавието е задължително",
+      "bilanButton": "Обобщение"
     },
     "discountCodes": {
       "title": "Промо кодове",
@@ -1928,6 +1943,58 @@
       "valueRequiredError": "Редукцията трябва да е по-голяма от 0.",
       "windowInvalidError": "Крайната дата трябва да е след началната дата.",
       "saved": "Запазени промо кодове"
+    },
+    "bilanPage": {
+      "metaTitle": "Обобщение на събитието",
+      "export": "Експортирай обобщението",
+      "sectionTitle": "Подробности за участниците",
+      "sectionSubtitle": "Присъствие, плащания и отзиви на едно място",
+      "searchPlaceholder": "Търси участник…",
+      "presenceFilter": {
+        "all": "Цялото присъствие",
+        "present": "Присъстващи",
+        "absent": "Отсъстващи"
+      },
+      "reviewFilter": {
+        "all": "Всички отзиви",
+        "with": "С отзив",
+        "without": "Без отзив"
+      },
+      "resetFilters": "Нулирай",
+      "columns": {
+        "participant": "Участник",
+        "presence": "Присъствие",
+        "amount": "Платена сума",
+        "payment": "Плащане",
+        "review": "Отзив"
+      },
+      "presence": {
+        "present": "Присъства",
+        "absent": "Отсъства"
+      },
+      "paymentStatus": {
+        "paid": "Платено",
+        "pending": "Чакащо",
+        "refunded": "Възстановено",
+        "free": "Безплатно"
+      },
+      "viewReview": "Виж отзива",
+      "empty": "Няма участници",
+      "emptyFiltered": "Няма участници, отговарящи на филтрите",
+      "totalAmount": "Общо {amount}",
+      "participantCount": "{count, plural, one {# участник} other {# участници}}",
+      "reviewCount": "{count, plural, one {# отзив} other {# отзива}}",
+      "csv": {
+        "participant": "Участник",
+        "email": "Имейл",
+        "presence": "Присъствие",
+        "amount": "Платена сума (€)",
+        "paymentStatus": "Статус на плащането",
+        "paymentMethod": "Начин на плащане",
+        "rating": "Оценка (от 5)",
+        "comment": "Коментар",
+        "total": "Общо"
+      }
     }
   },
   "actualites": {
@@ -2548,7 +2615,8 @@
         "status": "Статус",
         "stock": "Запаси",
         "prix": "Ценообразуване",
-        "ventes": "Продажби"
+        "ventes": "Продажби",
+        "revenu": "Приходи"
       },
       "variantsCount": "{count, plural, one {# вариант} other {# варианти}}",
       "actions": {
@@ -2573,6 +2641,13 @@
       },
       "othersCount": "{count, plural, one {+# други} other {+# други}}",
       "statusFilterAll": "Всички",
+      "salesCountLabel": "Брой продажби",
+      "revenueTotalLabel": "Общи приходи",
+      "unitsSold": "{count, plural, one {# продаден} other {# продадени}}",
+      "pendingCountLabel": "Чакащи поръчки",
+      "pendingAmountLabel": "Чакаща сума",
+      "cancelledCountLabel": "Анулирани поръчки",
+      "cancelledAmountLabel": "Анулирана сума",
       "deleteProduitTitle": "Премахване на продукта",
       "deleteProduitDescription": "Изтрий \" {name} » ? Това действие е необратимо.",
       "cancelOrderTitle": "Да отменя поръчката?",
@@ -2838,7 +2913,12 @@
         "issuedAt": "Издадено на",
         "amount": "Количество"
       },
-      "noReceipts": "Не са издавани данъчни разписки"
+      "noReceipts": "Не са издавани данъчни разписки",
+      "searchPlaceholder": "Дарител или имейл…",
+      "minAmount": "Мин. сума (€)",
+      "maxAmount": "Макс. сума (€)",
+      "noReceiptsFiltered": "Няма разписки, отговарящи на филтрите",
+      "count": "{count, plural, one {# разписка} other {# разписки}}"
     },
     "detail": {
       "backToList": "Обратно към даренията",

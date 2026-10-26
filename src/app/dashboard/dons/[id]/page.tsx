@@ -418,7 +418,7 @@ export default function DonationFormDetailPage() {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["donation-forms"] })
       toast.success(t("formsView.toasts.deleted"))
-      router.push("/dashboard/dons")
+      router.push("/dashboard/dons?tab=formulaires")
     },
     onError: (err) => toast.error(err instanceof Error ? err.message : t("formsView.toasts.deleteError")),
   })
@@ -480,7 +480,7 @@ export default function DonationFormDetailPage() {
     return (
       <DetailNotFound
         message={t("detail.notFound")}
-        backHref="/dashboard/dons"
+        backHref="/dashboard/dons?tab=formulaires"
         backLabel={t("detail.backToList")}
       />
     )
@@ -625,7 +625,7 @@ export default function DonationFormDetailPage() {
   async function handleSaveAndLeave() {
     setLeaveSaving(true)
     try {
-      if (await saveAll()) router.push("/dashboard/dons")
+      if (await saveAll()) router.push("/dashboard/dons?tab=formulaires")
     } finally {
       setLeaveSaving(false)
     }
@@ -661,7 +661,7 @@ export default function DonationFormDetailPage() {
   return (
     <div className="space-y-4">
       <BackLink
-        href="/dashboard/dons"
+        href="/dashboard/dons?tab=formulaires"
         onClick={event => { if (isDirty) { event.preventDefault(); setLeaveConfirm(true) } }}
       >
         {t("detail.backToList")}
@@ -1002,7 +1002,7 @@ export default function DonationFormDetailPage() {
             <Button variant="outline" onClick={() => setLeaveConfirm(false)} disabled={leaveSaving}>
               {tCommon("cancel")}
             </Button>
-            <Button variant="destructive" onClick={() => router.push("/dashboard/dons")} disabled={leaveSaving}>
+            <Button variant="destructive" onClick={() => router.push("/dashboard/dons?tab=formulaires")} disabled={leaveSaving}>
               {t("detail.leaveWarning.discard")}
             </Button>
             <Button onClick={handleSaveAndLeave} loading={leaveSaving}>

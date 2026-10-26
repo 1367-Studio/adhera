@@ -7,7 +7,7 @@ import { useTranslations } from "next-intl"
 import { toast } from "sonner"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
-import { PlusIcon, ShoppingBagIcon, PackageIcon, ShoppingCartIcon, EyeIcon, ArchiveIcon, NotePencilIcon, MoneyIcon, FileArrowDownIcon, PencilSimpleIcon, ArrowCounterClockwiseIcon, GearIcon, ShoppingBagOpenIcon } from "@phosphor-icons/react/dist/ssr";
+import { PlusIcon, ShoppingBagIcon, PackageIcon, ShoppingCartIcon, EyeIcon, ArchiveIcon, NotePencilIcon, MoneyIcon, FileArrowDownIcon, PencilSimpleIcon, ArrowCounterClockwiseIcon, GearIcon, ShoppingBagOpenIcon, TrendUpIcon } from "@phosphor-icons/react/dist/ssr";
 import { PageHeader } from "@/components/ui/page-header"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -22,6 +22,7 @@ import { BASE_PATH } from "@/lib/env"
 import { useHasAccess, useIsAdministrator } from "@/lib/user-context"
 import { AddManualCommandeModal } from "@/components/boutique/add-manual-commande-modal"
 import { BoutiqueResponsableModal } from "@/components/boutique/boutique-responsable-modal"
+import { StatTile } from "@/components/dashboard/widgets/stat-tile"
 
 type Translator = ReturnType<typeof useTranslations>
 
@@ -44,6 +45,10 @@ type Produit = {
   createdAt:   string
   variantes:   Variante[]
   _count:      { commandeItems: number }
+  // Units sold and revenue (cents) on PAID commandes, net of refunds — same figures as the
+  // top-products tiles.
+  quantitySold: number
+  revenueCents: number
 }
 
 type CommandeItem = {
@@ -73,6 +78,36 @@ type Commande = {
   shippingCountry:      string | null
   shippingCost:         number
   shippingCarrierLabel: string | null
+}
+
+// Response of GET /api/boutique/commandes — the card figures cover every commande matching
+// the filters, not just the rows of this page (amounts in cents, like Commande.totalAmount).
+type CommandeListResult = {
+  data:           Commande[]
+  total:          number
+  kpiCount:       number
+  kpiAmountCents: number
+}
+
+// Card labels per status filter: sales/revenue for "Toutes" and "Payée" (both count PAID
+// commandes), otherwise what the filtered list contains — see kpiStatusForFilter.
+const KPI_LABEL_KEYS: Record<string, { count: string; amount: string }> = {
+  ALL:       { count: "view.salesCountLabel",      amount: "view.revenueTotalLabel" },
+  PAID:      { count: "view.salesCountLabel",      amount: "view.revenueTotalLabel" },
+  PENDING:   { count: "view.pendingCountLabel",    amount: "view.pendingAmountLabel" },
+  CANCELLED: { count: "view.cancelledCountLabel",  amount: "view.cancelledAmountLabel" },
+}
+
+// GET /api/boutique/produits/stats — best sellers on PAID commandes, at most 4, already ranked.
+type TopProduct = {
+  produitId:    string
+  name:         string
+  quantitySold: number
+  revenueCents: number
+}
+
+function formatEuroCents(cents: number) {
+  return (cents / 100).toLocaleString("fr-FR", { style: "currency", currency: "EUR" })
 }
 
 type EditableItem = { id: string; qty: number; originalQty: number; unitPrice: number; produitName: string; varianteLabel: string }
@@ -145,10 +180,19 @@ function BoutiquePageInner() {
   })
 
   const commandeParams = new URLSearchParams({ limit: "50", ...(statusFilter !== "ALL" ? { status: statusFilter } : {}) })
-  const { data: commandeResult, isLoading: loadingCommandes } = useQuery<{ data: Commande[]; total: number }>({
+  const { data: commandeResult, isLoading: loadingCommandes } = useQuery<CommandeListResult>({
     queryKey:  ["boutique-commandes", statusFilter],
     queryFn:   () => fetch(`/api/boutique/commandes?${commandeParams}`).then(r => r.json()),
     enabled:   tab === "commandes",
+    staleTime: 0,
+  })
+
+  // Under the "boutique-produits" key so every invalidation of the products list (delete…)
+  // refreshes the best sellers too.
+  const { data: produitStats } = useQuery<{ topProducts: TopProduct[] }>({
+    queryKey:  ["boutique-produits", "stats"],
+    queryFn:   () => fetch("/api/boutique/produits/stats").then(r => r.json()),
+    enabled:   tab === "produits",
     staleTime: 0,
   })
 
@@ -366,7 +410,13 @@ function BoutiquePageInner() {
       key:    "ventes",
       header: t("view.produitColumns.ventes"),
       className: "text-right",
-      cell: (p) => <span className="text-sm tabular-nums">{p._count.commandeItems}</span>,
+      cell: (p) => <span className="text-sm tabular-nums">{p.quantitySold}</span>,
+    },
+    {
+      key:    "revenu",
+      header: t("view.produitColumns.revenu"),
+      className: "text-right",
+      cell: (p) => <span className="text-sm tabular-nums">{formatEuroCents(p.revenueCents)}</span>,
     },
     {
       key:    "actions",
@@ -489,6 +539,19 @@ function BoutiquePageInner() {
   ]
 
   const commandes = commandeResult?.data ?? []
+  const kpiCount       = commandeResult?.kpiCount ?? 0
+  const kpiAmountCents = commandeResult?.kpiAmountCents ?? 0
+  const kpiLabelKeys   = KPI_LABEL_KEYS[statusFilter] ?? KPI_LABEL_KEYS.ALL
+  const topProducts  = produitStats?.topProducts ?? []
+
+  // Keeps ?tab= in the URL so a refresh or a shared link reopens the same tab — same as the
+  // Dons page's changeTab.
+  function changeTab(nextTab: Tab) {
+    setTab(nextTab)
+    const params = new URLSearchParams(searchParams.toString())
+    params.set("tab", nextTab)
+    router.replace(`/dashboard/boutique?${params}`, { scroll: false })
+  }
 
   return (
     <div className="space-y-4">
@@ -518,7 +581,7 @@ function BoutiquePageInner() {
       />
 
       {/* Tabs */}
-      <Tabs value={tab} onValueChange={(v) => setTab(v as Tab)}>
+      <Tabs value={tab} onValueChange={(v) => changeTab(v as Tab)}>
         <TabsList>
           {([
             { key: "produits",  label: t("view.tabs.produits"),  icon: PackageIcon     },
@@ -532,6 +595,25 @@ function BoutiquePageInner() {
         </TabsList>
       </Tabs>
 
+      {/* Best sellers (all-time, PAID commandes, net of refunds) — hidden entirely while
+          loading or when nothing has sold yet, rather than showing empty tiles. */}
+      {tab === "produits" && topProducts.length > 0 && (
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {topProducts.map(product => (
+            <StatTile
+              key={product.produitId}
+              label={product.name}
+              value={formatEuroCents(product.revenueCents)}
+              detail={t("view.unitsSold", { count: product.quantitySold })}
+              icon={PackageIcon}
+              // The tile summarises sales, so it opens the orders, not the product sheet.
+              onClick={() => changeTab("commandes")}
+              isLoading={false}
+            />
+          ))}
+        </div>
+      )}
+
       {tab === "produits" && (
         <DataTable
           columns={produitColumns}
@@ -544,6 +626,23 @@ function BoutiquePageInner() {
 
       {tab === "commandes" && (
         <>
+          {/* Cards follow the status filter (the list's only filter): sales and revenue (PAID
+              commandes, online and manual alike, net of refunds) for "Toutes"/"Payée", else
+              the count and total of the commandes listed — see kpiStatusForFilter. */}
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <StatTile
+              label={t(kpiLabelKeys.count)}
+              value={kpiCount}
+              icon={ShoppingCartIcon}
+              isLoading={loadingCommandes}
+            />
+            <StatTile
+              label={t(kpiLabelKeys.amount)}
+              value={formatEuroCents(kpiAmountCents)}
+              icon={TrendUpIcon}
+              isLoading={loadingCommandes}
+            />
+          </div>
           <div className="flex gap-2">
             {(["ALL", "PENDING", "PAID", "CANCELLED"] as const).map(s => (
               <button

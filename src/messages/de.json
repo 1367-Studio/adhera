@@ -1555,7 +1555,8 @@
       "columns": {
         "event": "Veranstaltung",
         "date": "Datum",
-        "presences": "Anwesenheit"
+        "presences": "Anwesenheit",
+        "bilan": "Bilanz"
       },
       "presentCount": "{count, plural, one {# anwesend} other {# anwesend}}",
       "reservedCount": "{count, plural, one {# gebucht} other {# gebucht}}",
@@ -1594,6 +1595,19 @@
         "titlePlaceholder": "Generalversammlung 2026",
         "dateLabel": "Startdatum",
         "createButton": "Erstellen"
+      },
+      "bilan": {
+        "show": "Bilanz anzeigen",
+        "hide": "Bilanz ausblenden",
+        "participants": "Teilnehmende",
+        "registeredCount": "{count, plural, one {# angemeldet} other {# angemeldet}}",
+        "presentCount": "{count, plural, one {# anwesend} other {# anwesend}}",
+        "revenue": "Vereinnahmte Einnahmen",
+        "afterRefunds": "Nach Erstattungen",
+        "reviews": "Bewertungen",
+        "reviewCount": "{count, plural, one {# Bewertung erhalten} other {# Bewertungen erhalten}}",
+        "noReviews": "Keine Bewertungen",
+        "fullLink": "Vollständige Bilanz anzeigen"
       }
     },
     "customFields": {
@@ -1898,7 +1912,8 @@
           "datesOrderError": "Das Abschlussdatum muss später als das Eröffnungsdatum liegen."
         }
       },
-      "titleRequired": "Der Titel ist verpflichtend"
+      "titleRequired": "Der Titel ist verpflichtend",
+      "bilanButton": "Bilanz"
     },
     "discountCodes": {
       "title": "Promo-Codes",
@@ -1928,6 +1943,58 @@
       "valueRequiredError": "Die Reduktion muss größer als 0 sein.",
       "windowInvalidError": "Das Enddatum muss nach dem Startdatum liegen.",
       "saved": "Gespeicherte Aktionscodes"
+    },
+    "bilanPage": {
+      "metaTitle": "Veranstaltungsbilanz",
+      "export": "Bilanz exportieren",
+      "sectionTitle": "Teilnehmende im Detail",
+      "sectionSubtitle": "Anwesenheit, Zahlungen und Bewertungen an einem Ort",
+      "searchPlaceholder": "Teilnehmende suchen…",
+      "presenceFilter": {
+        "all": "Alle Anwesenheiten",
+        "present": "Anwesend",
+        "absent": "Abwesend"
+      },
+      "reviewFilter": {
+        "all": "Alle Bewertungen",
+        "with": "Mit Bewertung",
+        "without": "Ohne Bewertung"
+      },
+      "resetFilters": "Zurücksetzen",
+      "columns": {
+        "participant": "Teilnehmende",
+        "presence": "Anwesenheit",
+        "amount": "Bezahlter Betrag",
+        "payment": "Zahlung",
+        "review": "Bewertung"
+      },
+      "presence": {
+        "present": "Anwesend",
+        "absent": "Abwesend"
+      },
+      "paymentStatus": {
+        "paid": "Bezahlt",
+        "pending": "Ausstehend",
+        "refunded": "Erstattet",
+        "free": "Kostenlos"
+      },
+      "viewReview": "Bewertung ansehen",
+      "empty": "Keine Teilnehmenden",
+      "emptyFiltered": "Keine Teilnehmenden entsprechen den Filtern",
+      "totalAmount": "Gesamt {amount}",
+      "participantCount": "{count, plural, one {# teilnehmende Person} other {# teilnehmende Personen}}",
+      "reviewCount": "{count, plural, one {# Bewertung} other {# Bewertungen}}",
+      "csv": {
+        "participant": "Teilnehmende",
+        "email": "E-Mail",
+        "presence": "Anwesenheit",
+        "amount": "Bezahlter Betrag (€)",
+        "paymentStatus": "Zahlungsstatus",
+        "paymentMethod": "Zahlungsart",
+        "rating": "Bewertung (von 5)",
+        "comment": "Kommentar",
+        "total": "Gesamt"
+      }
     }
   },
   "actualites": {
@@ -2548,7 +2615,8 @@
         "status": "Status",
         "stock": "Bestand",
         "prix": "Preisgestaltung",
-        "ventes": "Vertrieb"
+        "ventes": "Vertrieb",
+        "revenu": "Umsatz"
       },
       "variantsCount": "{count, plural, one {# variante} other {# Varianten}}",
       "actions": {
@@ -2573,6 +2641,13 @@
       },
       "othersCount": "{count, plural, one {+# andere} other {+# anderen}}",
       "statusFilterAll": "Alle",
+      "salesCountLabel": "Anzahl der Verkäufe",
+      "revenueTotalLabel": "Gesamtumsatz",
+      "unitsSold": "{count, plural, one {# verkauft} other {# verkauft}}",
+      "pendingCountLabel": "Ausstehende Bestellungen",
+      "pendingAmountLabel": "Ausstehender Betrag",
+      "cancelledCountLabel": "Stornierte Bestellungen",
+      "cancelledAmountLabel": "Stornierter Betrag",
       "deleteProduitTitle": "Produkt entfernen",
       "deleteProduitDescription": "Löschen \" {name} » ? Diese Maßnahme ist unumkehrbar.",
       "cancelOrderTitle": "Bestellung stornieren?",
@@ -2838,7 +2913,12 @@
         "issuedAt": "Herausgegeben am",
         "amount": "Betrag"
       },
-      "noReceipts": "Keine Steuerbelege ausgegeben"
+      "noReceipts": "Keine Steuerbelege ausgegeben",
+      "searchPlaceholder": "Spender oder E-Mail…",
+      "minAmount": "Mindestbetrag (€)",
+      "maxAmount": "Höchstbetrag (€)",
+      "noReceiptsFiltered": "Keine Belege entsprechen den Filtern",
+      "count": "{count, plural, one {# Beleg} other {# Belege}}"
     },
     "detail": {
       "backToList": "Zurück zu den Spenden",

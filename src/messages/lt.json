@@ -1555,7 +1555,8 @@
       "columns": {
         "event": "Renginys",
         "date": "Data",
-        "presences": "Dalyvavimas"
+        "presences": "Dalyvavimas",
+        "bilan": "Suvestinė"
       },
       "presentCount": "{count, plural, one {# dalyvauja} other {# dalyvauja}}",
       "reservedCount": "{count, plural, one {# rezervuotas} other {# rezervuotas}}",
@@ -1594,6 +1595,19 @@
         "titlePlaceholder": "Generalinė Asamblėja 2026",
         "dateLabel": "Pradžios data",
         "createButton": "Sukurti"
+      },
+      "bilan": {
+        "show": "Rodyti suvestinę",
+        "hide": "Slėpti suvestinę",
+        "participants": "Dalyviai",
+        "registeredCount": "{count, plural, one {# užsiregistravęs} few {# užsiregistravę} many {# užsiregistravusio} other {# užsiregistravusių}}",
+        "presentCount": "{count, plural, one {# dalyvavęs} few {# dalyvavę} many {# dalyvavusio} other {# dalyvavusių}}",
+        "revenue": "Surinktos pajamos",
+        "afterRefunds": "Atskaičius grąžinimus",
+        "reviews": "Atsiliepimai",
+        "reviewCount": "{count, plural, one {# gautas atsiliepimas} few {# gauti atsiliepimai} many {# gauto atsiliepimo} other {# gautų atsiliepimų}}",
+        "noReviews": "Atsiliepimų nėra",
+        "fullLink": "Peržiūrėti visą suvestinę"
       }
     },
     "customFields": {
@@ -1898,7 +1912,8 @@
           "datesOrderError": "Uždarymo data turi būti vėlesnė nei atidarymo data."
         }
       },
-      "titleRequired": "Titulas yra privalomas"
+      "titleRequired": "Titulas yra privalomas",
+      "bilanButton": "Suvestinė"
     },
     "discountCodes": {
       "title": "Promo kodai",
@@ -1928,6 +1943,58 @@
       "valueRequiredError": "Redukcija turi būti didesnė nei 0.",
       "windowInvalidError": "Pabaigos data turi būti po pradžios datos.",
       "saved": "Išsaugoti promo kodai"
+    },
+    "bilanPage": {
+      "metaTitle": "Renginio suvestinė",
+      "export": "Eksportuoti suvestinę",
+      "sectionTitle": "Dalyvių informacija",
+      "sectionSubtitle": "Dalyvavimas, mokėjimai ir atsiliepimai vienoje vietoje",
+      "searchPlaceholder": "Ieškoti dalyvio…",
+      "presenceFilter": {
+        "all": "Visas dalyvavimas",
+        "present": "Dalyvavę",
+        "absent": "Nedalyvavę"
+      },
+      "reviewFilter": {
+        "all": "Visi atsiliepimai",
+        "with": "Su atsiliepimu",
+        "without": "Be atsiliepimo"
+      },
+      "resetFilters": "Atkurti",
+      "columns": {
+        "participant": "Dalyvis",
+        "presence": "Dalyvavimas",
+        "amount": "Sumokėta suma",
+        "payment": "Mokėjimas",
+        "review": "Atsiliepimas"
+      },
+      "presence": {
+        "present": "Dalyvavo",
+        "absent": "Nedalyvavo"
+      },
+      "paymentStatus": {
+        "paid": "Apmokėta",
+        "pending": "Laukiama",
+        "refunded": "Grąžinta",
+        "free": "Nemokama"
+      },
+      "viewReview": "Peržiūrėti atsiliepimą",
+      "empty": "Dalyvių nėra",
+      "emptyFiltered": "Filtrus atitinkančių dalyvių nėra",
+      "totalAmount": "Iš viso {amount}",
+      "participantCount": "{count, plural, one {# dalyvis} few {# dalyviai} many {# dalyvio} other {# dalyvių}}",
+      "reviewCount": "{count, plural, one {# atsiliepimas} few {# atsiliepimai} many {# atsiliepimo} other {# atsiliepimų}}",
+      "csv": {
+        "participant": "Dalyvis",
+        "email": "El. paštas",
+        "presence": "Dalyvavimas",
+        "amount": "Sumokėta suma (€)",
+        "paymentStatus": "Mokėjimo būsena",
+        "paymentMethod": "Mokėjimo būdas",
+        "rating": "Įvertinimas (iš 5)",
+        "comment": "Komentaras",
+        "total": "Iš viso"
+      }
     }
   },
   "actualites": {
@@ -2548,7 +2615,8 @@
         "status": "Statusas",
         "stock": "Gyvuliai",
         "prix": "Kainodara",
-        "ventes": "Pardavimai"
+        "ventes": "Pardavimai",
+        "revenu": "Pajamos"
       },
       "variantsCount": "{count, plural, one {# variantas} other {# variantai}}",
       "actions": {
@@ -2573,6 +2641,13 @@
       },
       "othersCount": "{count, plural, one {+# kitas} other {+# kiti}}",
       "statusFilterAll": "Visi",
+      "salesCountLabel": "Pardavimų skaičius",
+      "revenueTotalLabel": "Bendros pajamos",
+      "unitsSold": "{count, plural, one {# parduotas} few {# parduoti} many {# parduoto} other {# parduotų}}",
+      "pendingCountLabel": "Laukiantys užsakymai",
+      "pendingAmountLabel": "Laukiama suma",
+      "cancelledCountLabel": "Atšaukti užsakymai",
+      "cancelledAmountLabel": "Atšaukta suma",
       "deleteProduitTitle": "Pašalinti produktą",
       "deleteProduitDescription": "Ištrinti \" {name} » ? Šis veiksmas yra negrįžtamas.",
       "cancelOrderTitle": "Atšaukti užsakymą?",
@@ -2838,7 +2913,12 @@
         "issuedAt": "Išleista",
         "amount": "Suma"
       },
-      "noReceipts": "Mokesčių kvitai nebuvo išduoti"
+      "noReceipts": "Mokesčių kvitai nebuvo išduoti",
+      "searchPlaceholder": "Aukotojas arba el. paštas…",
+      "minAmount": "Min. suma (€)",
+      "maxAmount": "Maks. suma (€)",
+      "noReceiptsFiltered": "Filtrus atitinkančių kvitų nėra",
+      "count": "{count, plural, one {# kvitas} few {# kvitai} many {# kvito} other {# kvitų}}"
     },
     "detail": {
       "backToList": "Grįžtant prie aukų",
