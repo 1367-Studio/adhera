@@ -4,6 +4,7 @@ import { cotisationPaymentSchema } from "@/lib/schemas"
 import { writeActivityLog } from "@/lib/activity-log"
 import { withAdminAuth } from "@/lib/api-wrapper"
 import { recordCotisationPayment, sendCotisationPaymentConfirmation, CotisationOverpaymentError } from "@/lib/cotisation-payments"
+import { resolveExerciceForDate, closedExerciceGuard } from "@/lib/finance/exercice"
 
 
 export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
@@ -22,6 +23,11 @@ export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   }
 
   const { amount, method, paidAt, note } = parsed.data
+  const paymentDate = paidAt ? new Date(paidAt) : new Date()
+
+  const exercice = await resolveExerciceForDate(associationId, paymentDate)
+  const guard = closedExerciceGuard(exercice?.status)
+  if (guard) return guard
 
   try {
     const cotisation = await prisma.$transaction((tx) => recordCotisationPayment(tx, {
@@ -29,8 +35,9 @@ export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
       cotisationId: id,
       amount,
       method,
-      paidAt: paidAt ? new Date(paidAt) : undefined,
+      paidAt: paymentDate,
       note,
+      exerciceId: exercice?.id ?? null,
     }))
 
     await writeActivityLog({

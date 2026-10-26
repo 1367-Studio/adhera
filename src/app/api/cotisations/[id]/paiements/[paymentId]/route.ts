@@ -4,6 +4,7 @@ import { withAdminAuth } from "@/lib/api-wrapper"
 import { prisma } from "@/lib/prisma/client"
 import { writeActivityLog } from "@/lib/activity-log"
 import { removeCotisationPayment } from "@/lib/cotisation-payments"
+import { closedExerciceGuard } from "@/lib/finance/exercice"
 
 
 export const DELETE = withAdminAuth<{ id: string; paymentId: string }>(async (_req, ctx, { id, paymentId }) => {
@@ -14,6 +15,13 @@ export const DELETE = withAdminAuth<{ id: string; paymentId: string }>(async (_r
 
   const payment = await prisma.cotisationPayment.findFirst({ where: { id: paymentId, cotisationId: id } })
   if (!payment) return NextResponse.json({ error: "Paiement introuvable" }, { status: 404 })
+
+  const linkedIncomePreview = await prisma.income.findFirst({
+    where:  { cotisationPaymentId: paymentId },
+    select: { exercice: { select: { status: true } } },
+  })
+  const closedGuard = closedExerciceGuard(linkedIncomePreview?.exercice?.status)
+  if (closedGuard) return closedGuard
 
   try {
     const updated = await prisma.$transaction((tx) => removeCotisationPayment(tx, id, paymentId))
