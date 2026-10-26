@@ -45,11 +45,30 @@ export const GET = withAdminAuth(async (req, ctx) => {
     return NextResponse.json(data)
   }
 
+  // "Total collected" must count every euro actually received, even for a membre deleted
+  // after paying — unlike the list/count above, which only shows rows for members still
+  // around to act on. Otherwise this stat silently drifts below the Compte de resultat
+  // report (which has no such filter) the moment a paid member gets deleted. Name search is
+  // the exception: a deleted membre can never appear in a search result here, so letting one
+  // contribute to the total would show a non-zero amount next to an empty, unexplainable
+  // list — keep deletedAt: null whenever `search` narrows the match.
+  const aggregateWhere: Record<string, unknown> = { associationId, status: "PAYE" }
+  if (year)   aggregateWhere.year = parseInt(year)
+  if (search) {
+    aggregateWhere.membre = {
+      deletedAt: null,
+      OR: [
+        { firstName: { contains: search, mode: "insensitive" } },
+        { lastName:  { contains: search, mode: "insensitive" } },
+      ],
+    }
+  }
+
   const { page, limit, skip } = parsePagination(searchParams)
   const [data, total, aggregate] = await Promise.all([
     prisma.cotisation.findMany({ where, include, orderBy, skip, take: limit }),
     prisma.cotisation.count({ where }),
-    prisma.cotisation.aggregate({ where: { ...where, status: "PAYE" }, _sum: { amount: true } }),
+    prisma.cotisation.aggregate({ where: aggregateWhere, _sum: { amount: true } }),
   ])
   const totalPaye = Number(aggregate._sum.amount ?? 0)
   return NextResponse.json({ data, total, page, limit, totalPages: Math.ceil(total / limit), totalPaye })
