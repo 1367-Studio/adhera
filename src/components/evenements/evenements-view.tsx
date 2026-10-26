@@ -181,7 +181,7 @@ export function EvenementsView() {
         <div className="space-y-0.5">
           <div className="flex items-center gap-2">
             <Link
-              href={`/dashboard/evenements/${e.id}`}
+              href={`/dashboard/evenements/${e.id}/bilan`}
               onClick={ev => ev.stopPropagation()}
               className="font-medium underline-offset-4 hover:underline"
             >

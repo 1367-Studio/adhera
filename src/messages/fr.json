@@ -1592,7 +1592,7 @@
         "unpublish": "Dépublier",
         "archive": "Archiver",
         "duplicate": "Dupliquer",
-        "open": "Ouvrir"
+        "open": "Voir l'événement"
       },
       "searchPlaceholder": "Rechercher un événement…",
       "noResultsFor": "Aucun résultat pour « {search} »",
