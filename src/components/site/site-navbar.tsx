@@ -53,6 +53,11 @@ type Props = {
   adhesionMenuItems?:    SiteLink[]
   adhesionMenuVariant?:  HeaderPillVariant
   adhesionMenuContentBackground?: MenuContentBackground
+  // Published custom pages (FORM-7 "Pages") flagged for the nav and grouped into one of the
+  // association's own named dropdown menus (same component as the adhesion menu) rather than
+  // one button per page, so the header stays compact no matter how many pages pile up. Each
+  // menu with no visible page inside is already filtered out upstream (site-page-nav.ts).
+  pagesMenus?:           { id: string; label: string; items: SiteLink[] }[]
   // Resolved primary color/foreground (real hex, not "var(--site-primary)") — needed by the
   // adhesion dropdown's panel specifically, since it's portaled outside this component's DOM
   // subtree and can't inherit the custom property `color` above may just be a reference to.
@@ -81,6 +86,7 @@ export function SiteNavbar({
   headerLinks = [], adhesionMenuLabel, adhesionMenuItems = [], adhesionMenuVariant = "outline",
   adhesionMenuContentBackground = "light", resolvedPrimaryColor, resolvedPrimaryForeground, seConnecterVariant = "primary",
   menuButtonVariant = "ghost", menuBackground = "light", menuButtonColor = "contrast",
+  pagesMenus = [],
 }: Props) {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   // The drawer's portal target: an empty sibling of <nav>, inside the site chrome div that
@@ -94,7 +100,7 @@ export function SiteNavbar({
   const hasSocialLinks = visibleSocialLinks(socialLinks).length > 0
   const hasLocaleSwitcher = showTranslate && !!locale
   const hasHeaderControls = headerShowMembres || (headerShowRegister && !!membershipCta) || hasSocialLinks
-    || hasLocaleSwitcher || headerLinks.length > 0 || adhesionMenuItems.length > 0
+    || hasLocaleSwitcher || headerLinks.length > 0 || adhesionMenuItems.length > 0 || pagesMenus.length > 0
   const bg     = headerBgColor || "#ffffff"
   const isDark = isColorDark(bg)
   const textColor = isDark ? "#fff" : "#111827"
@@ -176,6 +182,19 @@ export function SiteNavbar({
                   contentBackground={adhesionMenuContentBackground}
                 />
               )}
+              {pagesMenus.map(menu => (
+                <SiteHeaderAdhesionMenu
+                  key={menu.id}
+                  label={menu.label}
+                  items={menu.items}
+                  slug={portalSlug}
+                  color={secondaryColor ?? color}
+                  variant="outline"
+                  primaryColor={resolvedPrimaryColor ?? color}
+                  primaryForeground={resolvedPrimaryForeground ?? "var(--site-primary-foreground)"}
+                  contentBackground="light"
+                />
+              ))}
               {headerShowRegister && membershipCta && (
                 <Link
                   href={membershipCta.href}
@@ -308,6 +327,37 @@ export function SiteNavbar({
                         })}
                       </>
                     )}
+                    {pagesMenus.map(menu => (
+                      <div key={menu.id} className="contents">
+                        <p className={DRAWER_HEADING_CLASSNAME}>{menu.label}</p>
+                        {menu.items.map((item, index) => {
+                          const href = resolveSiteHref(item.href, portalSlug)
+                          return isExternalHref(href) ? (
+                            <a
+                              key={`${item.label}-${index}`}
+                              href={href}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              onClick={closeMenu}
+                              className={drawerPillClassName("outline")}
+                              style={drawerPillStyle("outline")}
+                            >
+                              {item.label}
+                            </a>
+                          ) : (
+                            <Link
+                              key={`${item.label}-${index}`}
+                              href={href}
+                              onClick={closeMenu}
+                              className={drawerPillClassName("outline")}
+                              style={drawerPillStyle("outline")}
+                            >
+                              {item.label}
+                            </Link>
+                          )
+                        })}
+                      </div>
+                    ))}
                     {headerShowRegister && membershipCta && (
                       <Link
                         href={membershipCta.href}

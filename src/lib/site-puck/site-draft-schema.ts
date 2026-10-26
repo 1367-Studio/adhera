@@ -10,8 +10,10 @@ export const MAX_SITE_DRAFT_BYTES = 1_000_000
 const MAX_TOP_LEVEL_BLOCKS = 200
 
 // Puck Data's outer shape only: block props are free-form per block type and are rendered
-// through React (escaped), so they are not validated field by field here.
-const puckBlockSchema = z.object({
+// through React (escaped), so they are not validated field by field here. Exported: the
+// site-page schema (src/lib/site-puck/site-page-schema.ts) reuses it for custom pages' own
+// {content, zones}, which share the exact same block shape as the home page's.
+export const puckBlockSchema = z.object({
   type:  z.string().min(1).max(64),
   props: z.record(z.string(), z.unknown()),
 }).passthrough()

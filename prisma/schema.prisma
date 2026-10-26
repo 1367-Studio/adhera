@@ -433,6 +433,13 @@ enum SiteBuilder {
   PUCK
 }
 
+// Custom pages (beyond the single home page) added to the new builder's site. DRAFT pages are
+// never reachable at their public URL — see SitePage below.
+enum SitePageStatus {
+  DRAFT
+  PUBLISHED
+}
+
 model Association {
   id                             String              @id @default(cuid())
   name                           String
@@ -628,6 +635,8 @@ model Association {
   cotisationSubscriptions       CotisationSubscription[]
   cotisationInstallmentPlans    CotisationInstallmentPlan[]
   membershipForms               MembershipForm[]
+  sitePages                     SitePage[]
+  siteNavMenus                  SiteNavMenu[]
   membershipAddonPurchases      MembershipAddonPurchase[]
   membershipCheckoutDrafts      MembershipCheckoutDraft[]
   sondages                      Sondage[]
@@ -1730,6 +1739,62 @@ model MembershipForm {
 
   @@unique([associationId, slug])
   @@index([associationId, status])
+}
+
+// FORM-7: an extra page on the new builder's site, beyond the single home page
+// (Association.siteDraft/sitePuckPublished). Draft/published are kept separate exactly like
+// the home page, so in-progress edits never reach visitors until "Publier" — see
+// /api/site-pages/[id]/publish. draftContent/publishedContent only ever hold Puck's
+// {content, zones}: header/footer/theme stay the single site-wide root (sitePuckPublished.root),
+// never duplicated per page.
+model SitePage {
+  id               String         @id @default(cuid())
+  associationId    String
+  title            String
+  slug             String
+  status           SitePageStatus @default(DRAFT)
+  draftContent     Json
+  publishedContent Json?
+  publishedAt      DateTime?
+  // Search engines and link previews for this page specifically — the home page's equivalent
+  // (seo.title/description) lives in the shared root instead, see SitePuckRootProps.seo.
+  seoTitle         String?
+  seoDescription   String?
+  // Placement in the header/mobile-drawer nav, alongside the existing headerLinks — see
+  // SiteBuilderChrome. Only PUBLISHED pages with showInNav true ever appear there.
+  showInNav        Boolean        @default(false)
+  navLabel         String?
+  navPosition      Int            @default(0)
+  // Which named dropdown (SiteNavMenu) this page is grouped into — null means its own header
+  // button instead, like the existing headerLinks (see site-page-nav.ts). Deleting the menu
+  // falls the page back to a plain button rather than leaving it orphaned.
+  navMenuId        String?
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+
+  association Association @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  navMenu     SiteNavMenu? @relation(fields: [navMenuId], references: [id], onDelete: SetNull)
+
+  @@unique([associationId, slug])
+  @@index([associationId, status])
+  @@index([navMenuId])
+}
+
+// A named dropdown menu in the header/mobile drawer (e.g. "À propos", "Ressources") an
+// association creates to group several custom pages (SitePage.navMenuId) instead of giving each
+// its own header button. Ordered the same way as SitePage.navPosition — see site-page-nav.ts.
+model SiteNavMenu {
+  id            String   @id @default(cuid())
+  associationId String
+  label         String
+  position      Int      @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  association Association @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  sitePages   SitePage[]
+
+  @@index([associationId])
 }
 
 // Holds a multi-registrant MembershipForm submission (N>1 "Adhérent" blocks in the same

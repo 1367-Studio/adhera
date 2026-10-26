@@ -7,6 +7,7 @@ import { getSiteStyleVars } from "@/components/site/blocks/site-block-theme"
 import { getSiteColorVars } from "@/lib/site-theme"
 import { SITE_DEFAULT_FONT, SITE_FONTS, isSiteFontKey } from "@/lib/site-fonts"
 import type { SitePuckRootProps } from "@/lib/site-puck/site-puck-data"
+import type { SitePageNavLinks } from "@/lib/site-puck/site-page-nav"
 import { cn } from "@/lib/utils"
 import { SiteAnimationsProvider } from "@/components/site/site-animations"
 import { SiteCookieConsentProvider, SiteCookieSettingsLink } from "@/components/site/site-cookie-consent"
@@ -32,12 +33,18 @@ type SiteBuilderChromeProps = {
   mainClassName?:  string
   /** Inside the Puck editor: no reveal animations (blocks must stay visible) and no cookie banner. */
   isEditing?:      boolean
+  // Published custom pages (FORM-7 "Pages") flagged for the nav, already ordered and split into
+  // plain buttons vs. the association's own named dropdown menus, per each page's own choice.
+  navPages?:       SitePageNavLinks
   children:        ReactNode
 }
 
 export function SiteBuilderChrome({
-  rootProps, associationName, slug, membershipCta, locale, ui, className, mainClassName, isEditing = false, children,
+  rootProps, associationName, slug, membershipCta, locale, ui, className, mainClassName, isEditing = false,
+  navPages, children,
 }: SiteBuilderChromeProps) {
+  const navPageButtons = navPages?.buttons ?? []
+  const navPageMenus   = navPages?.menus ?? []
   // "Discrètes" unless the association turned them off; never while editing.
   const animationLevel = isEditing ? "none" : (rootProps.animations ?? "subtle")
   const fontKey = isSiteFontKey(rootProps.fontFamily) ? rootProps.fontFamily : SITE_DEFAULT_FONT
@@ -78,11 +85,12 @@ export function SiteBuilderChrome({
         ui={ui}
         showTranslate={rootProps.headerShowTranslate}
         locale={locale}
-        headerLinks={rootProps.headerLinks}
+        headerLinks={[...(rootProps.headerLinks ?? []), ...navPageButtons]}
         adhesionMenuLabel={rootProps.headerAdhesionMenuLabel}
         adhesionMenuItems={rootProps.headerAdhesionMenuItems}
         adhesionMenuVariant={rootProps.headerAdhesionMenuVariant}
         adhesionMenuContentBackground={rootProps.headerAdhesionMenuContentBackground}
+        pagesMenus={navPageMenus}
         resolvedPrimaryColor={resolvedPrimaryColor}
         resolvedPrimaryForeground={resolvedPrimaryForeground}
         seConnecterVariant={rootProps.headerSeConnecterVariant}

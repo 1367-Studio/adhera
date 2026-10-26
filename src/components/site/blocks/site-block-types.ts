@@ -2,6 +2,7 @@ import type { ComponentProps } from "react"
 import type { SiteActualitesSection } from "@/components/site/sections/site-actualites-section"
 import type { SiteBoutiqueSection } from "@/components/site/sections/site-boutique-section"
 import type { SiteEventsSection } from "@/components/site/sections/site-events-section"
+import type { SitePageNavLinks } from "@/lib/site-puck/site-page-nav"
 import type { Locale } from "@/i18n/locales"
 import type { SiteUiStrings } from "@/lib/site-puck/site-ui-strings"
 
@@ -31,6 +32,10 @@ export type SitePuckMetadata = {
   usesDonationForms:       boolean
   membershipCta:           { href: string } | null
   canIssueTaxReceipts:     boolean
+  // Published custom pages (FORM-7 "Pages") flagged to appear in the header/mobile drawer,
+  // already ordered by their navPosition and split into plain buttons vs. the association's
+  // own named dropdown menus, per each page's own choice — see SiteBuilderChrome.
+  navPages:                SitePageNavLinks
   // The visitor's chosen page language (src/lib/i18n/public-locale.ts) and the matching
   // translation of the fixed UI chrome around live data (site-ui-strings.ts) — blocks/chrome
   // read these instead of hardcoding French, for anything that isn't association-authored
