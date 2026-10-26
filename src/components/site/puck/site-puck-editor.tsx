@@ -1,17 +1,16 @@
 "use client"
 
-import "@puckeditor/core/puck.css"
 import { useEffect, useMemo, useRef, useState } from "react"
-import { Puck, useGetPuck, type Viewports } from "@puckeditor/core"
+import { useRouter } from "next/navigation"
+import { useGetPuck } from "@puckeditor/core"
 import { useFormatter } from "next-intl"
 import { toast } from "sonner"
-import { SidebarSimpleIcon } from "@phosphor-icons/react/dist/ssr"
+import { SidebarSimpleIcon, FilesIcon } from "@phosphor-icons/react/dist/ssr"
 import { sitePuckConfig } from "@/components/site/puck/site-puck-config"
-import { SITE_PUCK_DICTIONARY_FR } from "@/components/site/puck/site-puck-dictionary"
+import { SitePuckBuilderShell, type SaveState } from "@/components/site/puck/site-puck-builder-shell"
 import { useSitePuckMetadata } from "@/components/site/puck/use-site-puck-metadata"
 import { Button } from "@/components/ui/button"
 import { ConfirmDialog } from "@/components/ui/confirm-dialog"
-import { Skeleton } from "@/components/ui/skeleton"
 import { useSiteConfig } from "@/hooks/use-site-config"
 import { usePublishSiteDraft, useSaveSiteDraft, useSiteDraft, type SiteBuilder } from "@/hooks/use-site-draft"
 import { siteConfigToPuckData, type SitePuckData } from "@/lib/site-puck/site-puck-data"
@@ -21,17 +20,6 @@ import { siteConfigToPuckData, type SitePuckData } from "@/lib/site-puck/site-pu
 // opens it full page; "Publier" saves it, makes it the published version and switches the
 // association to the new builder — visitors see it right away. The legacy page (Site web)
 // still offers a manual switch to revert to the old builder if needed.
-
-const SITE_VIEWPORTS: Viewports = [
-  { width: 390,  label: "Mobile",     icon: "Smartphone" },
-  { width: 768,  label: "Tablette",   icon: "Tablet" },
-  { width: 1280, label: "Ordinateur", icon: "Monitor" },
-]
-
-// Same height as the current builder: the dashboard header stays visible above the editor.
-const EDITOR_HEIGHT = "calc(100dvh - 3.5rem)"
-
-type SaveState = "saved" | "unsaved" | "saving"
 
 export function SitePuckEditor() {
   const siteConfigQuery = useSiteConfig()
@@ -95,42 +83,24 @@ export function SitePuckEditor() {
     setSaveState("unsaved")
   }
 
-  if (siteDraftQuery.isError) {
-    return <p className="p-6 text-sm text-destructive">Impossible de charger le brouillon du site. Rechargez la page.</p>
-  }
-
-  if (!initialPuckData || !metadata) {
-    return (
-      <div className="space-y-3 p-6">
-        <Skeleton className="h-9 w-64" />
-        <Skeleton className="h-96 w-full" />
-      </div>
-    )
-  }
-
   return (
-    <Puck
+    <SitePuckBuilderShell
       config={sitePuckConfig}
-      data={initialPuckData}
+      initialData={initialPuckData}
       metadata={metadata}
-      onChange={handleChange}
-      viewports={SITE_VIEWPORTS}
-      iframe={{ enabled: true, waitForStyles: true }}
-      height={EDITOR_HEIGHT}
       headerTitle="Site web"
-      dictionary={SITE_PUCK_DICTIONARY_FR}
-      overrides={{
-        // Replaces Puck's own "Publier" button with ours (save state, preview, publish).
-        headerActions: () => (
-          <SitePuckHeaderActions
-            saveState={saveState}
-            publishedAt={siteDraftQuery.data?.publishedAt ?? null}
-            siteBuilder={siteDraftQuery.data?.siteBuilder ?? "LEGACY"}
-            onSave={saveDraft}
-            onPublish={publishDraft}
-          />
-        ),
-      }}
+      onChange={handleChange}
+      loadError={siteDraftQuery.isError}
+      loadErrorMessage="Impossible de charger le brouillon du site. Rechargez la page."
+      headerActions={() => (
+        <SitePuckHeaderActions
+          saveState={saveState}
+          publishedAt={siteDraftQuery.data?.publishedAt ?? null}
+          siteBuilder={siteDraftQuery.data?.siteBuilder ?? "LEGACY"}
+          onSave={saveDraft}
+          onPublish={publishDraft}
+        />
+      )}
     />
   )
 }
@@ -146,6 +116,7 @@ type SitePuckHeaderActionsProps = {
 // Rendered inside <Puck>, so it can read the page being edited at the moment of the click.
 function SitePuckHeaderActions({ saveState, publishedAt, siteBuilder, onSave, onPublish }: SitePuckHeaderActionsProps) {
   const getPuck   = useGetPuck()
+  const router    = useRouter()
   const formatter = useFormatter()
   const [publishConfirmOpen, setPublishConfirmOpen] = useState(false)
   // Puck's own left panel (Components + Outline) — local state because useGetPuck is the
@@ -221,6 +192,14 @@ function SitePuckHeaderActions({ saveState, publishedAt, siteBuilder, onSave, on
         aria-pressed={!leftSidebarOpen}
       >
         <SidebarSimpleIcon className="size-4" />
+      </Button>
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={() => router.push("/dashboard/site/pages")}
+      >
+        <FilesIcon className="size-4" />
+        Pages
       </Button>
       <span className="hidden text-xs text-muted-foreground sm:inline" aria-live="polite">
         {saveStateLabel}

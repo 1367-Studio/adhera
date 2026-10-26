@@ -5,6 +5,7 @@ import type { SiteConfig, SiteSection } from "@/types/site-config"
 import { DEFAULT_LOCALE } from "@/i18n/locales"
 import { SITE_UI_STRINGS } from "@/lib/site-puck/site-ui-strings"
 import { listPuckBlocksOfType, puckBlockId } from "@/lib/site-puck/site-puck-tree"
+import { liveSitePageNavLinks } from "@/lib/site-puck/site-page-nav"
 
 // The membership block ids of a Puck tree (draft or published) — same lookup page.tsx's
 // buildSitePuckMetadata uses for the real public site.
@@ -30,7 +31,7 @@ export const GET = withAdminAuth(async (req, ctx) => {
   if (!assoc) return NextResponse.json({ error: "Not found" }, { status: 404 })
 
   const now = new Date()
-  const [actualites, boutiqueProduits, membershipForms, donationForms, liveDonationFormCount] = await Promise.all([
+  const [actualites, boutiqueProduits, membershipForms, donationForms, liveDonationFormCount, navPages] = await Promise.all([
     prisma.actualite.findMany({
       where:   { associationId, publishedAt: { not: null, lte: now }, recipientMode: "ALL" },
       orderBy: [{ pinned: "desc" }, { publishedAt: "desc" }],
@@ -56,6 +57,7 @@ export const GET = withAdminAuth(async (req, ctx) => {
     prisma.donationForm.count({
       where: { associationId, status: { in: ["PUBLISHED", "ARCHIVED"] } },
     }),
+    liveSitePageNavLinks(associationId),
   ])
 
   const membershipFormBySection: Record<string, { slug: string; title: string }> =
@@ -88,6 +90,7 @@ export const GET = withAdminAuth(async (req, ctx) => {
     usesDonationForms: liveDonationFormCount > 0,
     membershipCta:firstBoundMembershipForm ? { href: "#" } : null,
     canIssueTaxReceipts: assoc.canIssueTaxReceipts,
+    navPages,
     // The editor/preview always shows the admin's own authoring language (French), regardless
     // of what a real visitor might later choose on the public page — see SitePuckMetadata.
     locale: DEFAULT_LOCALE,
