@@ -24,6 +24,7 @@ import { SortableWidget } from "@/components/dashboard/sortable-widget"
 import { StatTile } from "@/components/dashboard/widgets/stat-tile"
 import { NextEventCard } from "@/components/dashboard/widgets/next-event-card"
 import { CotisationsSummaryCard } from "@/components/dashboard/widgets/cotisations-summary-card"
+import { PENDING_COTISATION_STATUSES } from "@/lib/cotisation-filters"
 import { RecentOrdersCard } from "@/components/dashboard/widgets/recent-orders-card"
 import { RecentDonationsCard } from "@/components/dashboard/widgets/recent-donations-card"
 import { LoanedMaterialCard } from "@/components/dashboard/widgets/loaned-material-card"
@@ -173,7 +174,10 @@ export function TableauDeBord({ initialLayout }: Props) {
         label={t("dashboard.stats.cotisationsPending")}
         value={data?.cotisationsEnAttente ?? "—"}
         icon={CoinsIcon}
-        href="/dashboard/cotisations"
+        // Le compteur additionne EN_ATTENTE + PARTIELLEMENT_PAYEE + EN_RETARD ; sans ce
+        // filtre, le lien atterrissait sur la liste non filtrée et l'utilisateur
+        // sélectionnait ensuite "En attente" seul, qui n'en montre qu'une partie.
+        href={`/dashboard/cotisations?status=${PENDING_COTISATION_STATUSES}`}
         accent={cotisationsAlert ? pal.enAttente : null}
         alert={cotisationsAlert}
         isLoading={isLoading}

@@ -61,7 +61,9 @@ export const GET = withAdminAuth(async (req, ctx) => {
     prisma.evenement.count({ where: { associationId, date: { gte: startMonth, lte: endMonth } } }),
     // A partially-paid or already-late cotisation still owes something — counts as pending
     // here too (EN_RETARD is exactly "still pending, past due", not a separate bucket).
-    prisma.cotisation.count({ where: { associationId, status: { in: ["EN_ATTENTE", "PARTIELLEMENT_PAYEE", "EN_RETARD"] }, year } }),
+    // membre.deletedAt: null mirrors /api/cotisations so this count never exceeds what the
+    // cotisations list can actually show.
+    prisma.cotisation.count({ where: { associationId, status: { in: ["EN_ATTENTE", "PARTIELLEMENT_PAYEE", "EN_RETARD"] }, year, membre: { deletedAt: null } } }),
     prisma.cotisation.aggregate({
       where: { associationId, status: "PAYE", year },
       _sum: { amount: true },

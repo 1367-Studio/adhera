@@ -31,10 +31,13 @@ export const GET = withAdminAuth(async (_req, ctx) => {
     // ANNULEE excluded — it was never really "collectable" for this year (consistent with
     // it being excluded from remaining-balance/pay-now displays elsewhere), and there's no
     // 6th validated categorical hue for it to render as here anyway (see finance-palette.ts).
+    // membre.deletedAt: null mirrors /api/cotisations and the dashboard's own
+    // cotisationsEnAttente tile — otherwise a soft-deleted member's row (of any status)
+    // skews the gauge's percentages against a population the admin can't actually see.
     canSeeCotisations
       ? prisma.cotisation.groupBy({
           by: ["status"],
-          where: { associationId, year, status: { not: "ANNULEE" } },
+          where: { associationId, year, status: { not: "ANNULEE" }, membre: { deletedAt: null } },
           _count: { _all: true },
           _sum:   { amount: true },
         })
