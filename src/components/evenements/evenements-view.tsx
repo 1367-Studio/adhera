@@ -348,7 +348,7 @@ export function EvenementsView() {
             data={evenements}
             loading={isLoading}
             keyExtractor={(e) => e.id}
-            onRowClick={(e) => router.push(`/dashboard/evenements/${e.id}`)}
+            onRowClick={(e) => router.push(`/dashboard/evenements/${e.id}/bilan`)}
             empty={search ? t("evenements.view.noResultsFor", { search }) : t("evenements.view.noEvent")}
             pagination={result ? {
               page:         result.page,
