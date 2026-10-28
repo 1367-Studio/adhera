@@ -3,7 +3,7 @@ import type { EvenementInput, EvenementUpdateInput } from "@/lib/schemas"
 import type { PaginatedResult } from "@/lib/pagination"
 import { apiErrorMessage } from "@/lib/api-error"
 import type { OnSitePaymentMethod } from "@/lib/evenement-payment-methods"
-import type { EvenementBilan, EvenementBilanParticipantsResponse } from "@/lib/evenement-bilan"
+import type { EvenementBilan, EvenementBilanParticipantsResponse, EvenementsSummary } from "@/lib/evenement-bilan"
 
 const QK = ["evenements"]
 
@@ -220,6 +220,21 @@ export function useEvenementsPaginated(page: number, limit = 20, search?: string
     queryKey:  [...QK, "paginated", page, limit, search],
     queryFn:   () => fetchEvenementsPaginated(page, limit, search),
     staleTime: 0,
+  })
+}
+
+async function fetchEvenementsSummary() {
+  const res = await fetch("/api/evenements/summary")
+  if (!res.ok) throw new Error("Erreur lors du chargement du résumé")
+  return res.json() as Promise<EvenementsSummary>
+}
+
+// The 4 KPI cards on top of the events list — one figure for the whole association's current
+// period, independent of the list's own pagination/search.
+export function useEvenementsSummary() {
+  return useQuery({
+    queryKey: [...QK, "summary"],
+    queryFn:  fetchEvenementsSummary,
   })
 }
 

@@ -98,8 +98,8 @@ export function PlanPicker({
 
   const tiers: { id: PlanTier; label: string; limit: number; highlighted?: boolean }[] = [
     { id: "starter",   label: "Starter",   limit: pricing.plans.starter.memberLimit },
-    { id: "essential", label: "Essentiel", limit: pricing.plans.essential.memberLimit },
-    { id: "pro",       label: "Pro",       limit: pricing.plans.pro.memberLimit, highlighted: true },
+    { id: "essential", label: "Essentiel", limit: pricing.plans.essential.memberLimit, highlighted: true },
+    { id: "pro",       label: "Pro",       limit: pricing.plans.pro.memberLimit },
   ]
 
   return (

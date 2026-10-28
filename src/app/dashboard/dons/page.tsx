@@ -33,6 +33,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { BASE_PATH } from "@/lib/env"
 import { DonShareCard } from "@/components/dons/don-share-card"
 import { StatTile } from "@/components/dashboard/widgets/stat-tile"
+import { formatPeriodLabel } from "@/lib/finance/period-label"
 import { AddManualDonModal } from "@/components/dons/add-manual-don-modal"
 import { DonResponsableModal } from "@/components/dons/don-responsable-modal"
 
@@ -93,6 +94,8 @@ type DonsResult = {
   totalPages:  number
   totalAmount: number
   totalCount:  number
+  // Only meaningful while viewing the current year — see resolveCurrentPeriod.
+  period:      { kind: "exercice" | "calendar"; startYear: number; endYear: number }
 }
 
 // Donor/e-mail search only reaches the database from this many characters on — 1–2 letters
@@ -606,6 +609,12 @@ function DonsPageInner() {
   const totalCount  = donsResult?.totalCount ?? 0
   const avgAmount   = totalCount > 0 ? totalAmount / totalCount : 0
   const originSuffix = originFilter !== "all" ? ` · ${ORIGIN_FILTER_LABEL[originFilter]}` : ""
+  // donsResult.period always describes the association's *current* exercice/year — only valid
+  // as this heading while yearFilter is that same current year. A past year picked from the
+  // dropdown has no configured exercice to resolve from just its label, so it shows plainly.
+  const periodLabel = donsResult?.period && yearFilter === currentYear
+    ? formatPeriodLabel(tCommon, donsResult.period)
+    : String(yearFilter)
   // `year` is the page's primary scope (always set, not a "filter" in the everyday sense),
   // so only search/origin count here — same reasoning as the reset button and the
   // no-results-vs-no-matches empty state below.
@@ -858,11 +867,12 @@ function DonsPageInner() {
               ignore the free-text `search` (see aggregateWhere in /api/dons) so typing
               doesn't make the cards jump around. The origin suffix below is what tells the
               admin the numbers are currently scoped to one origin, not the association's
-              whole year — without it, a filtered "Total 2026" reads as the full-year total. */}
+              whole year — without it, a plain "Total" would read as the full-year total. */}
+          <p className="text-sm font-medium">{periodLabel}</p>
           {/* Same StatTile as the dashboard home, so a total looks the same everywhere. */}
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
             <StatTile
-              label={`${t("donationsView.totalLabel", { year: yearFilter })}${originSuffix}`}
+              label={`${t("donationsView.totalLabel")}${originSuffix}`}
               value={totalAmount.toLocaleString("fr-FR", { style: "currency", currency: "EUR" })}
               icon={TrendUpIcon}
               isLoading={loadingDons}

@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react"
 import { toast } from "sonner"
 import { useTranslations } from "next-intl"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { PlusIcon, TrashIcon, UsersIcon, BookmarkSimpleIcon, ListIcon, CalendarDotsIcon, MapPinIcon, LinkIcon, StarIcon, NotePencilIcon, CloudArrowUpIcon, CloudArrowDownIcon, CopyIcon, ArchiveIcon, ChartBarIcon } from "@phosphor-icons/react/dist/ssr";
+import { PlusIcon, TrashIcon, UsersIcon, BookmarkSimpleIcon, ListIcon, CalendarDotsIcon, MapPinIcon, LinkIcon, StarIcon, NotePencilIcon, CloudArrowUpIcon, CloudArrowDownIcon, CopyIcon, ArchiveIcon, ChartBarIcon, CurrencyEurIcon } from "@phosphor-icons/react/dist/ssr";
 import Link from "next/link"
 import { ViewToggle } from "@/components/ui/view-toggle"
 import { PriceBadge } from "@/components/ui/price-badge"
@@ -13,8 +13,10 @@ import { Input } from "@/components/ui/input"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import { useRouter } from "next/navigation"
-import { useEvenementsPaginated, useDeleteEvenement } from "@/hooks/use-evenements"
+import { useEvenementsPaginated, useEvenementsSummary, useDeleteEvenement } from "@/hooks/use-evenements"
 import { PageHeader } from "@/components/ui/page-header"
+import { StatTile } from "@/components/dashboard/widgets/stat-tile"
+import { formatPeriodLabel } from "@/lib/finance/period-label"
 import { DataTable, type Column } from "@/components/ui/data-table"
 import { Modal } from "@/components/ui/modal"
 import { ConfirmDialog } from "@/components/ui/confirm-dialog"
@@ -48,6 +50,12 @@ type Evenement = {
   confirmedCount: number
 }
 
+const RATING_FORMAT = new Intl.NumberFormat("fr-FR", { minimumFractionDigits: 1, maximumFractionDigits: 1 })
+
+function formatEuroCents(amountCents: number) {
+  return (amountCents / 100).toLocaleString("fr-FR", { style: "currency", currency: "EUR" })
+}
+
 function dateToDatetimeLocal(d: Date) {
   const pad = (n: number) => String(n).padStart(2, "0")
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`
@@ -59,6 +67,7 @@ const PAGE_SIZE = 20
 
 export function EvenementsView() {
   const t = useTranslations()
+  const tCommon = useTranslations("common")
   const router = useRouter()
   const qc = useQueryClient()
   // FORM-34: a "read" user browses events, attendance and reviews but changes nothing.
@@ -91,6 +100,7 @@ export function EvenementsView() {
 
   const { data: result, isLoading } = useEvenementsPaginated(page, PAGE_SIZE, search || undefined)
   const evenements = (result?.data ?? []) as Evenement[]
+  const { data: summary, isLoading: loadingSummary } = useEvenementsSummary()
 
   // Only need the slug to build the public registration link — reuses the same
   // query key as parametres-view.tsx so react-query can dedupe it when both are cached.
@@ -321,6 +331,41 @@ export function EvenementsView() {
           </div>
         }
       />
+
+      {summary && (
+        <p className="text-sm font-medium">{formatPeriodLabel(tCommon, summary.period)}</p>
+      )}
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <StatTile
+          label={t("evenements.view.summary.eventCount")}
+          value={summary?.eventCount ?? 0}
+          icon={CalendarDotsIcon}
+          isLoading={loadingSummary}
+        />
+        <StatTile
+          label={t("evenements.view.summary.participants")}
+          value={t("evenements.view.bilan.registeredCount", { count: summary?.registeredCount ?? 0 })}
+          detail={t("evenements.view.bilan.presentCount", { count: summary?.presentCount ?? 0 })}
+          icon={UsersIcon}
+          isLoading={loadingSummary}
+        />
+        <StatTile
+          label={t("evenements.view.bilan.revenue")}
+          value={formatEuroCents(summary?.revenueCents ?? 0)}
+          detail={t("evenements.view.bilan.afterRefunds")}
+          icon={CurrencyEurIcon}
+          isLoading={loadingSummary}
+        />
+        <StatTile
+          label={t("evenements.view.bilan.reviews")}
+          value={summary?.averageRating != null ? `${RATING_FORMAT.format(summary.averageRating)} / 5` : "—"}
+          detail={(summary?.reviewCount ?? 0) > 0
+            ? t("evenements.view.bilan.reviewCount", { count: summary?.reviewCount ?? 0 })
+            : t("evenements.view.bilan.noReviews")}
+          icon={StarIcon}
+          isLoading={loadingSummary}
+        />
+      </div>
 
       {view === "calendar" ? (
         <EvenementsCalendar
