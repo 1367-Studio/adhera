@@ -1000,6 +1000,112 @@
         "description": "Créez un exercice fiscal pour générer le compte de résultat."
       }
     },
+    "previsionnel": {
+      "title": "Budget prévisionnel",
+      "description": "Comparez le budget prévu et réalisé, par catégorie et par projet.",
+      "exerciceLabel": "Exercice",
+      "emptyExercice": {
+        "title": "Aucun exercice comptable",
+        "description": "Créez un exercice comptable pour préparer son budget prévisionnel."
+      },
+      "tabs": {
+        "global": "Budget global",
+        "projects": "Par projet"
+      },
+      "income": "Recettes",
+      "expense": "Dépenses",
+      "result": "Résultat",
+      "card": {
+        "previsto": "Prévu",
+        "diff": "Écart",
+        "percent": "réalisé"
+      },
+      "columns": {
+        "category": "Catégorie",
+        "previsto": "Prévu",
+        "realizado": "Réalisé",
+        "diffPercent": "Écart / % réalisé",
+        "total": "Total"
+      },
+      "noCategories": "Aucune catégorie.",
+      "uncategorized": "À catégoriser",
+      "noProject": "Sans projet",
+      "addCategory": "Ajouter une catégorie",
+      "addCategoryModalTitle": "Ajouter une catégorie",
+      "exportFileNameGlobal": "budget-previsionnel-global",
+      "export": {
+        "action": "Exporter",
+        "excel": "Exporter Excel",
+        "pdf": "Exporter PDF",
+        "diffColumn": "Écart (€)",
+        "percentColumn": "% réalisé",
+        "associationLabel": "Association",
+        "exerciceLabel": "Exercice"
+      },
+      "toasts": {
+        "categoryCreated": "Catégorie créée.",
+        "updateError": "Erreur lors de la mise à jour."
+      },
+      "copyBudget": {
+        "action": "Copier le budget précédent",
+        "modalTitle": "Copier le budget précédent",
+        "modalDescription": "Copie les prévisions de {previous} vers {target}. Seules les prévisions sont copiées, jamais les montants réalisés.",
+        "allProjects": "Tous les projets",
+        "noProjects": "Aucun projet.",
+        "archived": "archivé",
+        "noProjectAlwaysCopied": "Les prévisions sans projet sont toujours copiées.",
+        "copy": "Copier",
+        "confirmOverwriteTitle": "Remplacer les prévisions existantes ?",
+        "confirmOverwriteDescription": "Cet exercice a déjà des prévisions non nulles pour certaines catégories. Les copier depuis l'exercice précédent remplacera ces valeurs.",
+        "confirmOverwriteAction": "Remplacer",
+        "toasts": {
+          "copied": "{count, plural, one {# prévision copiée.} other {# prévisions copiées.}}",
+          "error": "Erreur lors de la copie."
+        }
+      },
+      "projectsTab": {
+        "count": "{count, plural, one {# projet} other {# projets}}",
+        "createProject": "Créer un projet",
+        "createModalTitle": "Créer un projet",
+        "editProject": "Modifier",
+        "editModalTitle": "Modifier le projet",
+        "name": "Nom du projet",
+        "namePlaceholder": "Ex: Voyage annuel",
+        "description": "Description",
+        "descriptionPlaceholder": "Description facultative",
+        "archive": "Archiver",
+        "unarchive": "Désarchiver",
+        "archived": "archivé",
+        "showArchived": "Afficher les projets archivés ({count})",
+        "hideArchived": "Masquer les projets archivés",
+        "noProjects": {
+          "title": "Aucun projet",
+          "description": "Créez un projet pour suivre son budget séparément de l'ensemble de l'association."
+        },
+        "addCategoryToProject": "Ajouter une catégorie au projet",
+        "addCategoryModalTitle": "Ajouter une catégorie au projet",
+        "type": "Type",
+        "typeIncome": "Recette",
+        "typeExpense": "Dépense",
+        "category": "Catégorie",
+        "selectCategoryPlaceholder": "Sélectionner une catégorie",
+        "createNewCategory": "+ Créer une nouvelle catégorie",
+        "noAvailableCategories": "Toutes les catégories de ce type sont déjà ajoutées à ce projet.",
+        "removeCategoryFromProject": "Retirer du projet",
+        "removeCategoryConfirmTitle": "Retirer cette catégorie du projet ?",
+        "removeCategoryConfirmDescription": "« {category} » sera retirée du budget de ce projet. Si des recettes ou dépenses y sont déjà liées, la catégorie réapparaîtra automatiquement avec leur montant réalisé.",
+        "toasts": {
+          "created": "Projet créé.",
+          "updated": "Projet mis à jour.",
+          "archived": "Projet archivé.",
+          "unarchived": "Projet désarchivé.",
+          "categoryAdded": "Catégorie ajoutée au projet.",
+          "categoryRemoved": "Catégorie retirée du projet.",
+          "createError": "Erreur lors de la création.",
+          "updateError": "Erreur lors de la mise à jour."
+        }
+      }
+    },
     "categoryForm": {
       "name": "Nom",
       "namePlaceholder": "Ex: Cotisations",
@@ -1053,6 +1159,8 @@
       "date": "Date",
       "category": "Catégorie",
       "noCategory": "Aucune catégorie",
+      "project": "Projet",
+      "noProject": "Aucun projet",
       "paymentMethodLabel": "Mode de paiement",
       "reference": "Référence",
       "referencePlaceholder": "Ex: VIR-2024-001",

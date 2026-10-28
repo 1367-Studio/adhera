@@ -11,6 +11,7 @@ import { SelectField } from "@/components/ui/select-field"
 import { CurrencyField } from "@/components/ui/currency-field"
 import { Button } from "@/components/ui/button"
 import { useFinanceCategories } from "@/hooks/use-finance-categories"
+import { useBudgetProjects } from "@/hooks/use-budget"
 
 interface IncomeFormProps {
   defaultValues?: Partial<IncomeInput>
@@ -45,6 +46,16 @@ export function IncomeForm({ defaultValues, onSubmit, onCancel, loading, locked 
   const categoryOptions = [
     { value: "", label: t("finances.incomeForm.noCategory") },
     ...categories.map((c: { id: string; name: string }) => ({ value: c.id, label: c.name })),
+  ]
+
+  // Includes archived projects (not just active ones) — otherwise editing an existing
+  // income already linked to a since-archived project would show this field as blank (its
+  // value wouldn't match any option), which could lead someone to "fix" the blank by
+  // picking "Aucun projet" and unintentionally unlinking a real record from its project.
+  const { data: projects = [] } = useBudgetProjects(true)
+  const projectOptions = [
+    { value: "", label: t("finances.incomeForm.noProject") },
+    ...projects.map(p => ({ value: p.id, label: p.archivedAt ? `${p.name} (${t("finances.previsionnel.projectsTab.archived")})` : p.name })),
   ]
 
   const { register, control, handleSubmit, reset, formState: { errors } } = useForm<IncomeInput>({
@@ -87,12 +98,19 @@ export function IncomeForm({ defaultValues, onSubmit, onCancel, loading, locked 
         />
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-3 gap-4">
         <Controller
           name="categoryId"
           control={control}
           render={({ field }) => (
             <SelectField label={t("finances.incomeForm.category")} options={categoryOptions} value={field.value ?? ""} onValueChange={field.onChange} error={errors.categoryId?.message} />
+          )}
+        />
+        <Controller
+          name="projectId"
+          control={control}
+          render={({ field }) => (
+            <SelectField label={t("finances.incomeForm.project")} options={projectOptions} value={field.value ?? ""} onValueChange={field.onChange} />
           )}
         />
         <Controller

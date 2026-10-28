@@ -649,6 +649,8 @@ model Association {
   financeCategories             FinanceCategory[]
   incomes                       Income[]
   expenses                      Expense[]
+  budgetProjects                BudgetProject[]
+  budgetLines                   BudgetLine[]
   bankReconciliations           BankReconciliation[]
   fournisseurs                  Fournisseur[]
   devis                         Devis[]
@@ -2847,6 +2849,7 @@ model ExerciceComptable {
   incomes          Income[]
   expenses         Expense[]
   bankTransactions BankTransaction[]
+  budgetLines      BudgetLine[]
 
   @@index([associationId, status])
   @@index([associationId, startDate])
@@ -2919,9 +2922,62 @@ model FinanceCategory {
   boutiqueProduits      BoutiqueProduit[]
   boutiqueCommandeItems BoutiqueCommandeItem[]
   materials             Material[]
+  budgetLines           BudgetLine[]
 
   @@index([associationId, type])
   @@index([associationId, key])
+}
+
+// ─── Orçamento previsto (budget prévisionnel) ────────────────────────────────
+
+// An optional activity/project (e.g. "Voyage annuel", "Recherche ROS1") an association can
+// track separately from its global budget. A project is tracked across multiple exercices —
+// each exercice gets its own BudgetLine forecasts — so the project itself carries no
+// exercice-specific data, only identity. Archiving (not deleting) is the only way to retire
+// one: deleting would force a choice between orphaning real Income/Expense rows or losing
+// historical forecasts, and the feature spec explicitly asks to preserve history.
+model BudgetProject {
+  id            String    @id @default(cuid())
+  associationId String
+  name          String
+  description   String?
+  archivedAt    DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  association Association  @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  budgetLines BudgetLine[]
+  incomes     Income[]
+  expenses    Expense[]
+
+  @@index([associationId, archivedAt])
+}
+
+// One forecast amount for one FinanceCategory in one ExerciceComptable, optionally scoped to
+// a BudgetProject. `projectId = null` is the "sans projet" part of a category's forecast —
+// the only part directly editable from the global budget tab (see src/lib/finance/budget.ts);
+// the project-scoped rows are edited from their own project's tab, and the global forecast is
+// always their sum, never stored separately (see the two partial unique indexes in the
+// add_budget_previsionnel migration — a plain @@unique([exerciceId, categoryId, projectId])
+// would NOT stop two "sans projet" rows from coexisting, since Postgres treats NULL as
+// distinct in a regular unique index).
+model BudgetLine {
+  id            String   @id @default(cuid())
+  associationId String
+  exerciceId    String
+  categoryId    String
+  projectId     String?
+  amount        Decimal  @db.Decimal(10, 2)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  association Association       @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  exercice    ExerciceComptable @relation(fields: [exerciceId], references: [id], onDelete: Cascade)
+  category    FinanceCategory   @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  project     BudgetProject?    @relation(fields: [projectId], references: [id], onDelete: SetNull)
+
+  @@index([associationId, exerciceId])
+  @@index([exerciceId, projectId])
 }
 
 model Income {
@@ -2946,6 +3002,12 @@ model Income {
   commandeId          String?
   amount              Decimal      @db.Decimal(10, 2)
   categoryId          String?
+  // Optional link to a "Orçamento previsto" project/activity (e.g. "Voyage annuel") — lets
+  // this same Income be counted both in the global budget's category total AND in the
+  // project's own budget, without ever being double-counted (see computeBudgetPeriod in
+  // src/lib/finance/budget.ts). Losing the project (BudgetProject deleted) must never delete
+  // the Income itself, so this is SetNull, not Cascade.
+  projectId           String?
   paymentMethod       String?
   date                DateTime
   description         String?
@@ -2964,6 +3026,7 @@ model Income {
   don               Don?                 @relation(fields: [donId], references: [id], onDelete: SetNull)
   commande          BoutiqueCommande?    @relation(fields: [commandeId], references: [id], onDelete: SetNull)
   category          FinanceCategory?     @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  project           BudgetProject?       @relation(fields: [projectId], references: [id], onDelete: SetNull)
   reconciliations   BankReconciliation[]
 
   @@index([associationId, status])
@@ -2972,6 +3035,7 @@ model Income {
   // d'idempotence, voir isReferenceAlreadyRecorded) et à chaque remboursement — sans index,
   // chaque appel scannait toute la table Income de la plateforme.
   @@index([associationId, reference])
+  @@index([associationId, projectId])
 }
 
 model Expense {
@@ -2981,6 +3045,8 @@ model Expense {
   factureRecueId String?       @unique // set when this row was auto-created from a FactureRecue marked PAYEE — see FactureRecue.expense
   amount         Decimal       @db.Decimal(10, 2)
   categoryId     String?
+  // See Income.projectId — same "Orçamento previsto" project link, same SetNull reasoning.
+  projectId      String?
   date           DateTime
   vendor         String?
   description    String?
@@ -3003,11 +3069,13 @@ model Expense {
   exercice        ExerciceComptable?   @relation(fields: [exerciceId], references: [id], onDelete: SetNull)
   factureRecue    FactureRecue?        @relation(fields: [factureRecueId], references: [id], onDelete: SetNull)
   category        FinanceCategory?     @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  project         BudgetProject?       @relation(fields: [projectId], references: [id], onDelete: SetNull)
   reconciliations BankReconciliation[]
 
   @@index([associationId, status])
   @@index([associationId, date])
   @@index([associationId, reference])
+  @@index([associationId, projectId])
 }
 
 model BankReconciliation {
