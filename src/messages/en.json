@@ -2943,7 +2943,6 @@
       "noDonations": "No donations recorded",
       "noDonationsFiltered": "No donations match these filters.",
       "resetFilters": "Reset",
-      "totalLabel": "Total {year}",
       "donorsLabel": "Donors",
       "averageLabel": "Average donation",
       "pendingTitle": "Awaiting encashment",

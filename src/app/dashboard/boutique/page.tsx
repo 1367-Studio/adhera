@@ -23,6 +23,7 @@ import { useHasAccess, useIsAdministrator } from "@/lib/user-context"
 import { AddManualCommandeModal } from "@/components/boutique/add-manual-commande-modal"
 import { BoutiqueResponsableModal } from "@/components/boutique/boutique-responsable-modal"
 import { StatTile } from "@/components/dashboard/widgets/stat-tile"
+import { formatPeriodLabel } from "@/lib/finance/period-label"
 
 type Translator = ReturnType<typeof useTranslations>
 
@@ -87,6 +88,8 @@ type CommandeListResult = {
   total:          number
   kpiCount:       number
   kpiAmountCents: number
+  // Set only when the cards show the PAID sales/revenue figures — see resolveCurrentPeriod.
+  period:         { kind: "exercice" | "calendar"; startYear: number; endYear: number } | null
 }
 
 // Card labels per status filter: sales/revenue for "Toutes" and "Payée" (both count PAID
@@ -627,8 +630,12 @@ function BoutiquePageInner() {
       {tab === "commandes" && (
         <>
           {/* Cards follow the status filter (the list's only filter): sales and revenue (PAID
-              commandes, online and manual alike, net of refunds) for "Toutes"/"Payée", else
-              the count and total of the commandes listed — see kpiStatusForFilter. */}
+              commandes, online and manual alike, net of refunds), scoped to the current period,
+              for "Toutes"/"Payée" — else the all-time count and total of the commandes listed —
+              see kpiStatusForFilter. */}
+          {commandeResult?.period && (
+            <p className="text-sm font-medium">{formatPeriodLabel(tCommon, commandeResult.period)}</p>
+          )}
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <StatTile
               label={t(kpiLabelKeys.count)}

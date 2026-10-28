@@ -7,7 +7,7 @@ import { guardModule } from "@/lib/auth/require-module"
 import { withAdminAuth } from "@/lib/api-wrapper"
 import { writeActivityLog } from "@/lib/activity-log"
 import { nextBoutiqueReceiptNumber } from "@/lib/document-numbering"
-import { resolveExerciceForDate, closedExerciceGuard } from "@/lib/finance/exercice"
+import { resolveExerciceForDate, closedExerciceGuard, resolveCurrentPeriod, exclusiveEndOfDay } from "@/lib/finance/exercice"
 import { bookBoutiqueOrderIncome } from "@/lib/boutique/book-income"
 import { resolveBoutiqueResponsable } from "@/lib/boutique/responsable"
 import { kpiStatusForFilter, parseCommandeStatus } from "@/lib/boutique/sales-stats"
@@ -41,6 +41,12 @@ export const GET = withAdminAuth(async (req, ctx) => {
   // this list, so unlike /api/dons nothing has to be stripped here.
   const kpiStatus = kpiStatusForFilter(status)
 
+  // The sales/revenue figures (kpiStatus PAID) are scoped to the current period — the
+  // association's exercice covering today, else the calendar year, same rule as
+  // Événements/Dons (see resolveCurrentPeriod). PENDING/CANCELLED have no paidAt to filter on
+  // and aren't "revenue" in the ticket's sense, so they stay all-time.
+  const period = kpiStatus === "PAID" ? await resolveCurrentPeriod(ctx.associationId) : null
+
   const [commandes, total, kpiAggregate] = await Promise.all([
     prisma.boutiqueCommande.findMany({
       where,
@@ -58,7 +64,15 @@ export const GET = withAdminAuth(async (req, ctx) => {
       },
     }),
     prisma.boutiqueCommande.count({ where }),
-    prisma.boutiqueCommande.aggregate({ where: { ...where, status: kpiStatus }, _sum: { totalAmount: true }, _count: { id: true } }),
+    prisma.boutiqueCommande.aggregate({
+      where: {
+        ...where,
+        status: kpiStatus,
+        ...(period ? { paidAt: { gte: period.startDate, lt: exclusiveEndOfDay(period.endDate) } } : {}),
+      },
+      _sum:   { totalAmount: true },
+      _count: { id: true },
+    }),
   ])
 
   return NextResponse.json({
@@ -73,6 +87,8 @@ export const GET = withAdminAuth(async (req, ctx) => {
     kpiStatus,
     kpiCount:       kpiAggregate._count.id,
     kpiAmountCents: kpiAggregate._sum.totalAmount ?? 0,
+    // Only set (and only meaningful) when kpiStatus is PAID — the heading above the cards.
+    period: period ? { kind: period.kind, startYear: period.startYear, endYear: period.endYear } : null,
   })
 }, { area: "boutique" })
 

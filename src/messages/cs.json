@@ -2874,7 +2874,6 @@
       "noDonations": "Žádné dary nejsou zaznamenány",
       "noDonationsFiltered": "Žádné dary se těmto filtrům nevyrovnají.",
       "resetFilters": "Reset",
-      "totalLabel": "Celkem {year}",
       "donorsLabel": "Dárci",
       "averageLabel": "Průměrný dar",
       "pendingTitle": "Čekání na vyzvednutí",

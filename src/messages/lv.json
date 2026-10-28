@@ -2874,7 +2874,6 @@
       "noDonations": "Ziedojumi nav reģistrēti",
       "noDonationsFiltered": "Neviens ziedojums neatbilst šiem filtriem.",
       "resetFilters": "Atiestatīt",
-      "totalLabel": "Kopumā {year}",
       "donorsLabel": "Ziedotāji",
       "averageLabel": "Vidējais ziedojums",
       "pendingTitle": "Gaida saņemšanu",

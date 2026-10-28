@@ -2874,7 +2874,6 @@
       "noDonations": "Ingen donationer registreret",
       "noDonationsFiltered": "Ingen donationer matcher disse filtre.",
       "resetFilters": "Nulstil",
-      "totalLabel": "Total {year}",
       "donorsLabel": "Donorer",
       "averageLabel": "Gennemsnitlig donation",
       "pendingTitle": "Venter på afhentning",

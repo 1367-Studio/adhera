@@ -2874,7 +2874,6 @@
       "noDonations": "Nem regisztráltak adományokat",
       "noDonationsFiltered": "Egyetlen adomány sem éri meg ezeket a szűrőket.",
       "resetFilters": "Reset",
-      "totalLabel": "Összesen {year}",
       "donorsLabel": "Donorok",
       "averageLabel": "Átlagos adomány",
       "pendingTitle": "Várva a beszedésre",
