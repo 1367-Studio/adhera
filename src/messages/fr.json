@@ -50,7 +50,11 @@
     "dismissTip": "Ignorer l'astuce",
     "addressPlaceholder": "Salle des fêtes, 12 rue de la Paix, Paris…",
     "viewOnGoogleMaps": "Voir sur Google Maps",
-    "backToSite": "Retour au site"
+    "backToSite": "Retour au site",
+    "period": {
+      "exercice": "Exercice {year}",
+      "exerciceRange": "Exercice {startYear}–{endYear}"
+    }
   },
   "address": {
     "street": "Adresse",
@@ -1616,6 +1620,10 @@
         "dateLabel": "Date de début",
         "createButton": "Créer"
       },
+      "summary": {
+        "eventCount": "Nombre d'événements",
+        "participants": "Participants"
+      },
       "bilan": {
         "show": "Voir le bilan",
         "hide": "Masquer le bilan",
@@ -2954,7 +2962,7 @@
       "noDonations": "Aucun don enregistré",
       "noDonationsFiltered": "Aucun don ne correspond à ces filtres.",
       "resetFilters": "Réinitialiser",
-      "totalLabel": "Total {year}",
+      "totalLabel": "Total",
       "donorsLabel": "Donateurs",
       "averageLabel": "Don moyen",
       "pendingTitle": "En attente d'encaissement",

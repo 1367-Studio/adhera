@@ -31,6 +31,45 @@ export async function resolveExerciceForDate(
   })
 }
 
+// "What period are we in right now" for the summary KPI cards on Événements/Dons/Boutique —
+// the association's exercice covering today if one is configured (open or closed, this is just
+// "which one is current", not a write permission), else the plain calendar year. Returns raw
+// bounds/years rather than a formatted label: the label ("Exercice 2026" vs "Exercice
+// 2026–2027" vs "2026") is locale text, built client-side by formatPeriodLabel so it goes
+// through next-intl like everything else in the app.
+export type CurrentPeriod = {
+  startDate: Date
+  endDate:   Date
+  kind:      "exercice" | "calendar"
+  startYear: number
+  endYear:   number
+}
+
+export async function resolveCurrentPeriod(associationId: string, now: Date = new Date()): Promise<CurrentPeriod> {
+  const day = dayFloorUTC(now)
+  const exercice = await prisma.exerciceComptable.findFirst({
+    where:  { associationId, startDate: { lte: day }, endDate: { gte: day } },
+    select: { startDate: true, endDate: true },
+  })
+  if (exercice) {
+    return {
+      startDate: exercice.startDate,
+      endDate:   exercice.endDate,
+      kind:      "exercice",
+      startYear: exercice.startDate.getUTCFullYear(),
+      endYear:   exercice.endDate.getUTCFullYear(),
+    }
+  }
+  const year = day.getUTCFullYear()
+  return {
+    startDate: new Date(Date.UTC(year, 0, 1)),
+    endDate:   new Date(Date.UTC(year, 11, 31)),
+    kind:      "calendar",
+    startYear: year,
+    endYear:   year,
+  }
+}
+
 export interface ExerciceRange {
   id:        string
   label:     string

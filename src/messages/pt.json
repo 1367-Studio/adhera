@@ -2896,7 +2896,6 @@
       "noDonations": "Nenhuma doação registrada",
       "noDonationsFiltered": "Nenhuma doação corresponde a esses filtros.",
       "resetFilters": "Redefinir",
-      "totalLabel": "Total {year}",
       "donorsLabel": "Doadores",
       "averageLabel": "Doação média",
       "pendingTitle": "Aguardando encaixe",

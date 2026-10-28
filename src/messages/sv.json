@@ -2874,7 +2874,6 @@
       "noDonations": "Inga donationer registrerade",
       "noDonationsFiltered": "Inga donationer matchar dessa filter.",
       "resetFilters": "Återställ",
-      "totalLabel": "Totalt {year}",
       "donorsLabel": "Donatorer",
       "averageLabel": "Genomsnittlig donation",
       "pendingTitle": "Väntar på insamling",

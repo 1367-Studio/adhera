@@ -2874,7 +2874,6 @@
       "noDonations": "Annetusi ei registreeritud",
       "noDonationsFiltered": "Ükski annetus ei vasta nendele filtritele.",
       "resetFilters": "Lähtestamine",
-      "totalLabel": "Kokku {year}",
       "donorsLabel": "Annetajad",
       "averageLabel": "Keskmine annetus",
       "pendingTitle": "Ootan kogumist",

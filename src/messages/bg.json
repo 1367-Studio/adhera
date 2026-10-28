@@ -2874,7 +2874,6 @@
       "noDonations": "Няма регистрирани дарения",
       "noDonationsFiltered": "Никакви дарения не съответстват на тези филтри.",
       "resetFilters": "Нулиране",
-      "totalLabel": "Total {year}",
       "donorsLabel": "Дарители",
       "averageLabel": "Средно дарение",
       "pendingTitle": "Чакане за събиране",

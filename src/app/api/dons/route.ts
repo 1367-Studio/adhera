@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma/client"
 import { parsePagination } from "@/lib/pagination"
 import { withAdminAuth } from "@/lib/api-wrapper"
 import { writeActivityLog } from "@/lib/activity-log"
-import { resolveExerciceForDate } from "@/lib/finance/exercice"
+import { resolveExerciceForDate, resolveCurrentPeriod, exclusiveEndOfDay } from "@/lib/finance/exercice"
 import { resolveEmailBranding } from "@/lib/plan-limits"
 import { generateRecuFiscalForDon } from "@/lib/pdf/recu-fiscal"
 import { sendEmail } from "@/lib/mail"
@@ -39,13 +39,18 @@ export const GET = withAdminAuth(async (req, ctx) => {
         ...(receiptsOnly ? { receiptNumber: { not: null } } : {}),
       }
 
+  // The current year gets the exercice-aware range (the association's exercice covering today,
+  // else the plain calendar year) — same rule as Événements/Boutique, see resolveCurrentPeriod.
+  // A year picked explicitly from the dropdown (anything else) stays plain calendar-year: there
+  // is no reliable way to map a past exercice from just its label's leading year number.
+  const currentYear = new Date().getFullYear()
+  const period = await resolveCurrentPeriod(associationId)
   if (year && !pendingOnly) {
     const y = parseInt(year)
     if (!Number.isNaN(y)) {
-      where.paidAt = {
-        gte: new Date(`${y}-01-01`),
-        lt:  new Date(`${y + 1}-01-01`),
-      }
+      where.paidAt = y === currentYear
+        ? { gte: period.startDate, lt: exclusiveEndOfDay(period.endDate) }
+        : { gte: new Date(`${y}-01-01`), lt: new Date(`${y + 1}-01-01`) }
     }
   }
 
@@ -99,8 +104,11 @@ export const GET = withAdminAuth(async (req, ctx) => {
   }
 
   // KPI totals intentionally ignore `search` — they summarize the year, not the filtered
-  // list, so typing in the search box doesn't make the summary cards jump around.
-  const aggregateWhere = { ...where }
+  // list, so typing in the search box doesn't make the summary cards jump around. They also
+  // exclude refunded dons even though the list below still shows them (Don.refundedAt is set by
+  // the Stripe webhook on a refund, see stripe/route.ts — paidAt is never cleared, so without
+  // this the total kept counting money that was given back).
+  const aggregateWhere: Record<string, unknown> = { ...where, refundedAt: null }
   delete aggregateWhere.OR
 
   const orderBy = { paidAt: "desc" as const }
@@ -144,6 +152,10 @@ export const GET = withAdminAuth(async (req, ctx) => {
     totalPages: Math.ceil(total / limit),
     totalAmount: Number(aggregate._sum.amount ?? 0),
     totalCount:  aggregate._count.id,
+    // Only meaningful when the request's `year` is the current one — the dashboard shows a
+    // period heading ("Exercice 2026" / "2026") above the KPI cards only in that case, see
+    // resolveCurrentPeriod.
+    period: { kind: period.kind, startYear: period.startYear, endYear: period.endYear },
   })
 }, { area: "dons" })
 

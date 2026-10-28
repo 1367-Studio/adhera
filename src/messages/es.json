@@ -2874,7 +2874,6 @@
       "noDonations": "Ninguna donación registrada",
       "noDonationsFiltered": "Ninguna donación coincide con estos filtros.",
       "resetFilters": "Restablecer",
-      "totalLabel": "Total {year}",
       "donorsLabel": "Donantes",
       "averageLabel": "Donación media",
       "pendingTitle": "Pendiente de cobro",
