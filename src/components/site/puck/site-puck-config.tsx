@@ -71,20 +71,220 @@ function sectionFieldsOf<RenderProps extends object>(renderProps: RenderProps): 
   ) as Omit<RenderProps, "id" | "puck" | "editMode">
 }
 
-export const sitePuckConfig: Config<SitePuckComponents, SitePuckRootProps> = {
-  categories: {
-    layout:    { title: "Mise en page", components: ["section", "columns", "spacer"] },
-    content:   { title: "Contenu", components: ["heading", "text", "image", "buttons", "translate", "video", "mediaText"] },
-    highlight: { title: "Mise en avant", components: ["banner", "ctaBanner", "stats", "features", "testimonials"] },
-    association: {
-      title:      "Association",
-      components: ["team", "faq", "contactInfo", "map", "partners", "gallery", "socialLinks"],
-    },
-    formwise:  { title: "Contenu Formwise", components: ["events", "actualites", "dons", "boutique"] },
-    // The old sections (hero, about, contact) stay renderable for existing sites but are no
-    // longer offered; membership blocks are created from a membership form's Publication step.
-    other:     { visible: false },
+// Shared by both Puck configs below (home page and custom pages): every content block a site
+// author can place, and the categories they're grouped under in the left panel.
+const siteBlockCategories: Config<SitePuckComponents, SitePuckRootProps>["categories"] = {
+  layout:    { title: "Mise en page", components: ["section", "columns", "spacer"] },
+  content:   { title: "Contenu", components: ["heading", "text", "image", "buttons", "translate", "video", "mediaText"] },
+  highlight: { title: "Mise en avant", components: ["banner", "ctaBanner", "stats", "features", "testimonials"] },
+  association: {
+    title:      "Association",
+    components: ["team", "faq", "contactInfo", "map", "partners", "gallery", "socialLinks"],
   },
+  formwise:  { title: "Contenu Formwise", components: ["events", "actualites", "dons", "boutique"] },
+  // The old sections (hero, about, contact) stay renderable for existing sites but are no
+  // longer offered; membership blocks are created from a membership form's Publication step.
+  other:     { visible: false },
+}
+
+// Wraps the page's blocks in the site's real header/footer chrome — shared by the home page
+// config and the custom-page config (sitePageConfig below), so both editors and both public
+// renders wear the exact same chrome. Reads the root props from whichever config loaded them:
+// the home page's own (editable) root, or a custom page's borrowed (read-only) copy of it — see
+// sitePageConfig's comment.
+const siteChromeRootRender: NonNullable<Config<SitePuckComponents, SitePuckRootProps>["root"]>["render"] = (
+  { children, puck, ...rootProps },
+) => {
+  const metadata = readMetadata(puck.metadata)
+  return (
+    <SiteBuilderChrome
+      rootProps={rootProps}
+      associationName={metadata.associationName}
+      slug={metadata.slug}
+      membershipCta={metadata.membershipCta}
+      locale={metadata.locale}
+      ui={metadata.ui}
+      navPages={metadata.navPages}
+      className="min-h-full bg-white text-gray-900"
+      isEditing={puck.isEditing}
+    >
+      {children}
+    </SiteBuilderChrome>
+  )
+}
+
+const siteBlockComponents: Config<SitePuckComponents, SitePuckRootProps>["components"] = {
+  section: sectionBlock,
+  columns: columnsBlock,
+  spacer: spacerBlock,
+  heading: headingBlock,
+  text: textBlock,
+  image: imageBlock,
+  buttons: buttonsBlock,
+  translate: translateBlock,
+  video: videoBlock,
+  mediaText: mediaTextBlock,
+  banner: bannerBlock,
+  ctaBanner: ctaBannerBlock,
+  stats: statsBlock,
+  features: featuresBlock,
+  testimonials: testimonialsBlock,
+  team: teamBlock,
+  faq: faqBlock,
+  contactInfo: contactBlock,
+  map: mapBlock,
+  partners: partnersBlock,
+  gallery: galleryBlock,
+  socialLinks: socialLinksBlock,
+
+  hero: {
+    label:        "Bannière (ancienne)",
+    defaultProps: { title: "Bienvenue", subtitle: "", heroHeight: "full" },
+    fields: {
+      title:      { type: "text", label: "Titre", contentEditable: true },
+      subtitle:   { type: "textarea", label: "Sous-titre", contentEditable: true },
+      image:      imageField("Image"),
+      bgColor:    colorField("Couleur de fond"),
+      heroHeight: {
+        type:    "radio",
+        label:   "Hauteur",
+        options: [{ label: "Plein écran", value: "full" }, { label: "Demi-écran", value: "half" }],
+      },
+    },
+    render: renderProps => (
+      <SiteHeroSection section={{ id: renderProps.id, type: "hero", ...sectionFieldsOf(renderProps) }} color={SITE_PRIMARY_COLOR} />
+    ),
+  },
+
+  about: {
+    label:        "Présentation (ancienne)",
+    defaultProps: { title: "Qui sommes-nous ?", content: "" },
+    fields: {
+      title:   { type: "text", label: "Titre", contentEditable: true },
+      // Plain textarea for the trial; the stored content is HTML (see toHtml). A richtext
+      // field returns a ReactNode while editing, which SiteAboutSection cannot take yet.
+      content: { type: "textarea", label: "Texte" },
+    },
+    render: renderProps => (
+      <SiteAboutSection section={{ id: renderProps.id, type: "about", ...sectionFieldsOf(renderProps) }} />
+    ),
+  },
+
+  // Formwise content: styled blocks reading live association data (keys kept from the old
+  // sections so existing sites map onto them; new options are optional and defaulted).
+  events:     eventsBlock,
+  actualites: actualitesBlock,
+  boutique:   boutiqueBlock,
+
+  membership: {
+    label:        "Adhésion",
+    defaultProps: { title: "Devenir membre", body: "", ...FORM_CTA_STYLE_DEFAULTS },
+    fields: {
+      title: { type: "text", label: "Titre", contentEditable: true },
+      // Stored HTML, rendered through toHtml(): canvas editing would pass a ReactNode instead.
+      body:  { type: "textarea", label: "Texte" },
+      ...FORM_CTA_STYLE_FIELDS,
+    },
+    render: renderProps => {
+      const metadata       = readMetadata(renderProps.puck.metadata)
+      const membershipForm = metadata.membershipFormBySection[renderProps.id]
+        ?? (renderProps.puck.isEditing ? PREVIEW_MEMBERSHIP_FORM : null)
+      // Same rule as the public site: no bound membership form, nothing to show.
+      if (!membershipForm) return <></>
+      const sharedProps = {
+        id:          "adhesion",
+        title:       renderProps.title || "Rejoindre l'association",
+        body:        renderProps.body,
+        buttonLabel: membershipForm.title,
+        href:        `/${metadata.slug}/adhesion/${membershipForm.slug}`,
+        slug:        metadata.slug,
+        background:  renderProps.background,
+        textColor:   renderProps.textColor,
+        spacing:     renderProps.spacing,
+        width:       renderProps.width,
+        buttonVariant: renderProps.buttonVariant,
+      }
+      if (renderProps.layout && renderProps.layout !== "centered") {
+        return (
+          <SiteFormCtaSplit
+            {...sharedProps}
+            layout={renderProps.layout}
+            image={renderProps.image}
+            imageAlt={renderProps.imageAlt}
+            isEditing={renderProps.puck.isEditing}
+          />
+        )
+      }
+      return <SiteFormCtaCentered {...sharedProps} icon={<IdentificationCardIcon className="size-10" />} />
+    },
+  },
+
+  dons: {
+    label:        "Dons",
+    defaultProps: { title: "Soutenez-nous", body: "", buttonLabel: "", ...FORM_CTA_STYLE_DEFAULTS },
+    fields: {
+      title:       { type: "text", label: "Titre", contentEditable: true },
+      // Stored HTML, rendered through toHtml(): canvas editing would pass a ReactNode instead.
+      body:        { type: "textarea", label: "Texte" },
+      buttonLabel: { type: "text", label: "Texte du bouton" },
+      ...FORM_CTA_STYLE_FIELDS,
+    },
+    render: renderProps => {
+      const metadata     = readMetadata(renderProps.puck.metadata)
+      // Same rules as the public site: a site that uses donation forms shows nothing without a
+      // bound form; older associations fall back to the standalone donation page.
+      const donationForm = metadata.donationFormBySection[renderProps.id]
+        ?? (renderProps.puck.isEditing && metadata.usesDonationForms ? PREVIEW_DONATION_FORM : null)
+      if (!donationForm && metadata.usesDonationForms) return <></>
+      const sharedProps = {
+        title:       renderProps.title || "Faire un don",
+        body:        renderProps.body,
+        buttonLabel: renderProps.buttonLabel?.trim() || "Faire un don",
+        href:        donationForm ? `/${metadata.slug}/dons/${donationForm.slug}` : `/portal/${metadata.slug}/don`,
+        slug:        metadata.slug,
+        note:        metadata.canIssueTaxReceipts ? "Reçu fiscal envoyé automatiquement par e-mail" : undefined,
+        background:  renderProps.background,
+        textColor:   renderProps.textColor,
+        spacing:     renderProps.spacing,
+        width:       renderProps.width,
+        buttonVariant: renderProps.buttonVariant,
+      }
+      if (renderProps.layout && renderProps.layout !== "centered") {
+        return (
+          <SiteFormCtaSplit
+            {...sharedProps}
+            layout={renderProps.layout}
+            image={renderProps.image}
+            imageAlt={renderProps.imageAlt}
+            isEditing={renderProps.puck.isEditing}
+          />
+        )
+      }
+      return <SiteFormCtaCentered {...sharedProps} icon={<HandshakeIcon className="size-10" />} />
+    },
+  },
+
+  contact: {
+    label:        "Contact (ancien)",
+    defaultProps: { title: "Nous contacter" },
+    fields: {
+      title: { type: "text", label: "Titre", contentEditable: true },
+    },
+    render: renderProps => {
+      const metadata = readMetadata(renderProps.puck.metadata)
+      return (
+        <SiteContactSection
+          section={{ id: renderProps.id, type: "contact", ...sectionFieldsOf(renderProps) }}
+          city={metadata.city}
+          country={metadata.country}
+        />
+      )
+    },
+  },
+}
+
+export const sitePuckConfig: Config<SitePuckComponents, SitePuckRootProps> = {
+  categories: siteBlockCategories,
 
   root: {
     fields: {
@@ -145,6 +345,8 @@ export const sitePuckConfig: Config<SitePuckComponents, SitePuckRootProps> = {
         defaultItemProps: { label: "Nouvelle adhésion", href: "/" },
         getItemSummary:   (item: SiteLink) => item.label || "Lien",
       },
+      // The pages themselves, their order, and the dropdown menus grouping them (each with its
+      // own label) are all managed from the "Pages" admin screen, not here.
       // Below lg the header controls move into a drawer opened by a burger button.
       headerMenuButtonVariant: {
         type: "radio", label: "Menu sur mobile et tablette — style du bouton", options: HEADER_PILL_VARIANT_OPTIONS,
@@ -208,192 +410,21 @@ export const sitePuckConfig: Config<SitePuckComponents, SitePuckRootProps> = {
 
       return resolvedProps === rootProps ? rootData : { ...rootData, props: resolvedProps }
     },
-    render: ({ children, puck, ...rootProps }) => {
-      const metadata = readMetadata(puck.metadata)
-      return (
-        <SiteBuilderChrome
-          rootProps={rootProps}
-          associationName={metadata.associationName}
-          slug={metadata.slug}
-          membershipCta={metadata.membershipCta}
-          locale={metadata.locale}
-          ui={metadata.ui}
-          className="min-h-full bg-white text-gray-900"
-          isEditing={puck.isEditing}
-        >
-          {children}
-        </SiteBuilderChrome>
-      )
-    },
+    render: siteChromeRootRender,
   },
 
-  components: {
-    section: sectionBlock,
-    columns: columnsBlock,
-    spacer: spacerBlock,
-    heading: headingBlock,
-    text: textBlock,
-    image: imageBlock,
-    buttons: buttonsBlock,
-    translate: translateBlock,
-    video: videoBlock,
-    mediaText: mediaTextBlock,
-    banner: bannerBlock,
-    ctaBanner: ctaBannerBlock,
-    stats: statsBlock,
-    features: featuresBlock,
-    testimonials: testimonialsBlock,
-    team: teamBlock,
-    faq: faqBlock,
-    contactInfo: contactBlock,
-    map: mapBlock,
-    partners: partnersBlock,
-    gallery: galleryBlock,
-    socialLinks: socialLinksBlock,
-
-    hero: {
-      label:        "Bannière (ancienne)",
-      defaultProps: { title: "Bienvenue", subtitle: "", heroHeight: "full" },
-      fields: {
-        title:      { type: "text", label: "Titre", contentEditable: true },
-        subtitle:   { type: "textarea", label: "Sous-titre", contentEditable: true },
-        image:      imageField("Image"),
-        bgColor:    colorField("Couleur de fond"),
-        heroHeight: {
-          type:    "radio",
-          label:   "Hauteur",
-          options: [{ label: "Plein écran", value: "full" }, { label: "Demi-écran", value: "half" }],
-        },
-      },
-      render: renderProps => (
-        <SiteHeroSection section={{ id: renderProps.id, type: "hero", ...sectionFieldsOf(renderProps) }} color={SITE_PRIMARY_COLOR} />
-      ),
-    },
-
-    about: {
-      label:        "Présentation (ancienne)",
-      defaultProps: { title: "Qui sommes-nous ?", content: "" },
-      fields: {
-        title:   { type: "text", label: "Titre", contentEditable: true },
-        // Plain textarea for the trial; the stored content is HTML (see toHtml). A richtext
-        // field returns a ReactNode while editing, which SiteAboutSection cannot take yet.
-        content: { type: "textarea", label: "Texte" },
-      },
-      render: renderProps => (
-        <SiteAboutSection section={{ id: renderProps.id, type: "about", ...sectionFieldsOf(renderProps) }} />
-      ),
-    },
-
-    // Formwise content: styled blocks reading live association data (keys kept from the old
-    // sections so existing sites map onto them; new options are optional and defaulted).
-    events:     eventsBlock,
-    actualites: actualitesBlock,
-    boutique:   boutiqueBlock,
-
-    membership: {
-      label:        "Adhésion",
-      defaultProps: { title: "Devenir membre", body: "", ...FORM_CTA_STYLE_DEFAULTS },
-      fields: {
-        title: { type: "text", label: "Titre", contentEditable: true },
-        // Stored HTML, rendered through toHtml(): canvas editing would pass a ReactNode instead.
-        body:  { type: "textarea", label: "Texte" },
-        ...FORM_CTA_STYLE_FIELDS,
-      },
-      render: renderProps => {
-        const metadata       = readMetadata(renderProps.puck.metadata)
-        const membershipForm = metadata.membershipFormBySection[renderProps.id]
-          ?? (renderProps.puck.isEditing ? PREVIEW_MEMBERSHIP_FORM : null)
-        // Same rule as the public site: no bound membership form, nothing to show.
-        if (!membershipForm) return <></>
-        const sharedProps = {
-          id:          "adhesion",
-          title:       renderProps.title || "Rejoindre l'association",
-          body:        renderProps.body,
-          buttonLabel: membershipForm.title,
-          href:        `/${metadata.slug}/adhesion/${membershipForm.slug}`,
-          slug:        metadata.slug,
-          background:  renderProps.background,
-          textColor:   renderProps.textColor,
-          spacing:     renderProps.spacing,
-          width:       renderProps.width,
-          buttonVariant: renderProps.buttonVariant,
-        }
-        if (renderProps.layout && renderProps.layout !== "centered") {
-          return (
-            <SiteFormCtaSplit
-              {...sharedProps}
-              layout={renderProps.layout}
-              image={renderProps.image}
-              imageAlt={renderProps.imageAlt}
-              isEditing={renderProps.puck.isEditing}
-            />
-          )
-        }
-        return <SiteFormCtaCentered {...sharedProps} icon={<IdentificationCardIcon className="size-10" />} />
-      },
-    },
-
-    dons: {
-      label:        "Dons",
-      defaultProps: { title: "Soutenez-nous", body: "", buttonLabel: "", ...FORM_CTA_STYLE_DEFAULTS },
-      fields: {
-        title:       { type: "text", label: "Titre", contentEditable: true },
-        // Stored HTML, rendered through toHtml(): canvas editing would pass a ReactNode instead.
-        body:        { type: "textarea", label: "Texte" },
-        buttonLabel: { type: "text", label: "Texte du bouton" },
-        ...FORM_CTA_STYLE_FIELDS,
-      },
-      render: renderProps => {
-        const metadata     = readMetadata(renderProps.puck.metadata)
-        // Same rules as the public site: a site that uses donation forms shows nothing without a
-        // bound form; older associations fall back to the standalone donation page.
-        const donationForm = metadata.donationFormBySection[renderProps.id]
-          ?? (renderProps.puck.isEditing && metadata.usesDonationForms ? PREVIEW_DONATION_FORM : null)
-        if (!donationForm && metadata.usesDonationForms) return <></>
-        const sharedProps = {
-          title:       renderProps.title || "Faire un don",
-          body:        renderProps.body,
-          buttonLabel: renderProps.buttonLabel?.trim() || "Faire un don",
-          href:        donationForm ? `/${metadata.slug}/dons/${donationForm.slug}` : `/portal/${metadata.slug}/don`,
-          slug:        metadata.slug,
-          note:        metadata.canIssueTaxReceipts ? "Reçu fiscal envoyé automatiquement par e-mail" : undefined,
-          background:  renderProps.background,
-          textColor:   renderProps.textColor,
-          spacing:     renderProps.spacing,
-          width:       renderProps.width,
-          buttonVariant: renderProps.buttonVariant,
-        }
-        if (renderProps.layout && renderProps.layout !== "centered") {
-          return (
-            <SiteFormCtaSplit
-              {...sharedProps}
-              layout={renderProps.layout}
-              image={renderProps.image}
-              imageAlt={renderProps.imageAlt}
-              isEditing={renderProps.puck.isEditing}
-            />
-          )
-        }
-        return <SiteFormCtaCentered {...sharedProps} icon={<HandshakeIcon className="size-10" />} />
-      },
-    },
-
-    contact: {
-      label:        "Contact (ancien)",
-      defaultProps: { title: "Nous contacter" },
-      fields: {
-        title: { type: "text", label: "Titre", contentEditable: true },
-      },
-      render: renderProps => {
-        const metadata = readMetadata(renderProps.puck.metadata)
-        return (
-          <SiteContactSection
-            section={{ id: renderProps.id, type: "contact", ...sectionFieldsOf(renderProps) }}
-            city={metadata.city}
-            country={metadata.country}
-          />
-        )
-      },
-    },
-  },
+  components: siteBlockComponents,
 }
+
+// A custom page's own config (FORM-7 "Pages"): same content blocks and the same chrome around
+// them as the home page, but no `fields`/`resolveData` — a custom page has no root settings panel
+// of its own (theme/header/footer/SEO stay the single site-wide root, edited only from the home
+// page's editor). Its `<Puck>` instance is constructed with `data.root.props` pre-filled from
+// the association's live chrome, purely so the preview renders correctly; that root is never
+// read back on save (see site-page-editor.tsx).
+export const sitePageConfig: Config<SitePuckComponents, SitePuckRootProps> = {
+  categories: siteBlockCategories,
+  root:       { render: siteChromeRootRender },
+  components: siteBlockComponents,
+}
+
