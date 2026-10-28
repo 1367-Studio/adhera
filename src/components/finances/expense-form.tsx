@@ -13,6 +13,7 @@ import { CurrencyField } from "@/components/ui/currency-field"
 import { DocumentUpload } from "@/components/ui/document-upload"
 import { Button } from "@/components/ui/button"
 import { useFinanceCategories } from "@/hooks/use-finance-categories"
+import { useBudgetProjects } from "@/hooks/use-budget"
 
 interface ExpenseFormProps {
   defaultValues?: Partial<ExpenseInput>
@@ -47,6 +48,14 @@ export function ExpenseForm({ defaultValues, onSubmit, onCancel, loading, locked
   const categoryOptions = [
     { value: "", label: t("finances.incomeForm.noCategory") },
     ...categories.map((c: { id: string; name: string }) => ({ value: c.id, label: c.name })),
+  ]
+
+  // See income-form.tsx — includes archived projects so an expense already linked to one
+  // doesn't render this field as a misleading blank.
+  const { data: projects = [] } = useBudgetProjects(true)
+  const projectOptions = [
+    { value: "", label: t("finances.incomeForm.noProject") },
+    ...projects.map(p => ({ value: p.id, label: p.archivedAt ? `${p.name} (${t("finances.previsionnel.projectsTab.archived")})` : p.name })),
   ]
 
   const { register, control, handleSubmit, reset, watch, setValue, formState: { errors } } = useForm<ExpenseInput>({
@@ -122,12 +131,19 @@ export function ExpenseForm({ defaultValues, onSubmit, onCancel, loading, locked
         />
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-3 gap-4">
         <Controller
           name="categoryId"
           control={control}
           render={({ field }) => (
             <SelectField label={t("finances.incomeForm.category")} options={categoryOptions} value={field.value ?? ""} onValueChange={field.onChange} />
+          )}
+        />
+        <Controller
+          name="projectId"
+          control={control}
+          render={({ field }) => (
+            <SelectField label={t("finances.incomeForm.project")} options={projectOptions} value={field.value ?? ""} onValueChange={field.onChange} />
           )}
         />
         <FormField label={t("finances.expenseForm.vendor")} placeholder={t("finances.expenseForm.vendorPlaceholder")} disabled={locked} error={errors.vendor?.message} {...register("vendor")} />

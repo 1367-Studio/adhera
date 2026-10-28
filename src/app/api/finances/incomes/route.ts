@@ -68,7 +68,7 @@ export const POST = withAdminAuth(async (req, ctx) => {
     return NextResponse.json({ error: parsed.error.issues }, { status: 422 })
   }
 
-  const { date, categoryId, memberId, paymentMethod, description, reference, ...rest } = parsed.data
+  const { date, categoryId, projectId, memberId, paymentMethod, description, reference, ...rest } = parsed.data
   const incomeDate = new Date(date)
 
   const exercice = await resolveExerciceForDate(associationId, incomeDate)
@@ -82,6 +82,7 @@ export const POST = withAdminAuth(async (req, ctx) => {
       exerciceId:    exercice?.id ?? null,
       date:          incomeDate,
       categoryId:    categoryId    || null,
+      projectId:     projectId     || null,
       memberId:      memberId      || null,
       paymentMethod: paymentMethod || null,
       description:   description   || null,

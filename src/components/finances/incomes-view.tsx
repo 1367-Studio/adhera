@@ -33,6 +33,8 @@ type Income = {
   paymentMethod:    string | null
   facturePaymentId: string | null
   exerciceId:       string | null
+  categoryId:       string | null
+  projectId:        string | null
   category:         { name: string } | null
   membre:           { id: string; firstName: string; lastName: string } | null
   reconciliations:  { id: string; bankTransaction: { bankAccount: { accountName: string } } }[]
@@ -254,11 +256,11 @@ export function IncomesView() {
         pagination={result ? { page: result.page, totalPages: result.totalPages, total: result.total, limit: result.limit, onPageChange: setPage } : undefined}
       />
 
-      <Modal open={createOpen} onOpenChange={setCreateOpen} title={t("finances.incomesView.newTitle")} size="md" dismissable={false}>
+      <Modal open={createOpen} onOpenChange={setCreateOpen} title={t("finances.incomesView.newTitle")} size="lg" dismissable={false}>
         <IncomeForm onSubmit={handleCreate} onCancel={() => setCreateOpen(false)} loading={createMutation.isPending} />
       </Modal>
 
-      <Modal open={!!editTarget} onOpenChange={(o) => !o && setEditTarget(null)} title={t("finances.incomesView.editTitle")} size="md" dismissable={false}>
+      <Modal open={!!editTarget} onOpenChange={(o) => !o && setEditTarget(null)} title={t("finances.incomesView.editTitle")} size="lg" dismissable={false}>
         <IncomeForm
           defaultValues={editTarget ? {
             amount:        parseFloat(editTarget.amount),
@@ -268,6 +270,8 @@ export function IncomesView() {
             source:        editTarget.source as "MANUAL" | "STRIPE" | "BANK_IMPORT",
             reference:     editTarget.reference ?? "",
             paymentMethod: editTarget.paymentMethod ?? "",
+            categoryId:    editTarget.categoryId ?? "",
+            projectId:     editTarget.projectId ?? "",
           } : undefined}
           onSubmit={handleUpdate}
           onCancel={() => setEditTarget(null)}

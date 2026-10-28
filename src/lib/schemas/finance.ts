@@ -47,6 +47,7 @@ export type FinanceCategoryUpdateInput = z.infer<typeof financeCategoryUpdateSch
 export const incomeSchema = z.object({
   amount:        z.number().positive("Montant doit être positif"),
   categoryId:    z.string().optional().or(z.literal("")),
+  projectId:     z.string().optional().or(z.literal("")),
   memberId:      z.string().optional().or(z.literal("")),
   paymentMethod: z.string().optional().or(z.literal("")),
   date:          z.string().min(1, "Date requise"),
@@ -62,6 +63,7 @@ export const incomeSchema = z.object({
 export const incomeUpdateSchema = z.object({
   amount:        z.number().positive("Montant doit être positif").optional(),
   categoryId:    z.string().optional().or(z.literal("")),
+  projectId:     z.string().optional().or(z.literal("")),
   memberId:      z.string().optional().or(z.literal("")),
   paymentMethod: z.string().optional().or(z.literal("")),
   date:          z.string().min(1, "Date requise").optional(),
@@ -77,6 +79,7 @@ export type IncomeUpdateInput = z.infer<typeof incomeUpdateSchema>
 export const expenseSchema = z.object({
   amount:        z.number().positive("Montant doit être positif"),
   categoryId:    z.string().optional().or(z.literal("")),
+  projectId:     z.string().optional().or(z.literal("")),
   date:          z.string().min(1, "Date requise"),
   vendor:        z.string().trim().optional().or(z.literal("")),
   description:   z.string().trim().optional().or(z.literal("")),
@@ -90,6 +93,7 @@ export const expenseSchema = z.object({
 export const expenseUpdateSchema = z.object({
   amount:        z.number().positive("Montant doit être positif").optional(),
   categoryId:    z.string().optional().or(z.literal("")),
+  projectId:     z.string().optional().or(z.literal("")),
   date:          z.string().min(1, "Date requise").optional(),
   vendor:        z.string().trim().optional().or(z.literal("")),
   description:   z.string().trim().optional().or(z.literal("")),
