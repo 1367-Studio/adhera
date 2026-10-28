@@ -2874,7 +2874,6 @@
       "noDonations": "Lahjoituksia ei ole kirjattu",
       "noDonationsFiltered": "Lahjoitukset eivät vastaa näitä suodattimia.",
       "resetFilters": "Nollaus",
-      "totalLabel": "Yhteensä {year}",
       "donorsLabel": "Lahjoittajat",
       "averageLabel": "Keskimääräinen lahjoitus",
       "pendingTitle": "Odotan noutoa",

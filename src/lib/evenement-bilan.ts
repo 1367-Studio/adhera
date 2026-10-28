@@ -12,6 +12,14 @@ export type EvenementBilan = {
   averageRating:   number | null
 }
 
+// The 4 KPI cards on top of the dashboard events list (GET /api/evenements/summary) — same
+// shape as EvenementBilan plus eventCount and the resolved period, since it summarizes every
+// considered event at once instead of one.
+export type EvenementsSummary = EvenementBilan & {
+  period:     { kind: "exercice" | "calendar"; startYear: number; endYear: number }
+  eventCount: number
+}
+
 // Same rule as the events list's « réservés » (confirmedCount in GET /api/evenements) and the
 // presences page's reservedCount: a seat that is paid, or held as confirmed. Waitlisted,
 // declined and cancelled/refunded seats (every refund path clears ticketPaidAt and rsvp)

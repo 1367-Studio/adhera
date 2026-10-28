@@ -2874,7 +2874,6 @@
       "noDonations": "Keine Spenden verzeichnet",
       "noDonationsFiltered": "Keine Spenden passen zu diesen Filtern.",
       "resetFilters": "Reset",
-      "totalLabel": "Gesamt {year}",
       "donorsLabel": "Spender",
       "averageLabel": "Durchschnittliche Spende",
       "pendingTitle": "Wartet auf Abholung",
