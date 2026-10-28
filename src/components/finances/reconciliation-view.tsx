@@ -305,7 +305,7 @@ export function ReconciliationView() {
 
       {/* Create income from transaction */}
       {incomeModal && (
-        <Modal open={!!incomeModal} onOpenChange={(o) => !o && setIncomeModal(null)} title={t("finances.reconciliationView.createIncomeTitle")} size="md" dismissable={false}>
+        <Modal open={!!incomeModal} onOpenChange={(o) => !o && setIncomeModal(null)} title={t("finances.reconciliationView.createIncomeTitle")} size="lg" dismissable={false}>
           <p className="text-sm text-muted-foreground mb-4">{t("finances.reconciliationView.transactionLabel")} <strong>{incomeModal.label}</strong> · +{fmt(incomeModal.amount)}</p>
           <IncomeForm
             defaultValues={{
@@ -323,7 +323,7 @@ export function ReconciliationView() {
 
       {/* Create expense from transaction */}
       {expenseModal && (
-        <Modal open={!!expenseModal} onOpenChange={(o) => !o && setExpenseModal(null)} title={t("finances.reconciliationView.createExpenseTitle")} size="md" dismissable={false}>
+        <Modal open={!!expenseModal} onOpenChange={(o) => !o && setExpenseModal(null)} title={t("finances.reconciliationView.createExpenseTitle")} size="lg" dismissable={false}>
           <p className="text-sm text-muted-foreground mb-4">{t("finances.reconciliationView.transactionLabel")} <strong>{expenseModal.label}</strong> · −{fmt(expenseModal.amount)}</p>
           <ExpenseForm
             defaultValues={{
