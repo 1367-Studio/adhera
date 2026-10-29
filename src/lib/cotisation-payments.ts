@@ -7,6 +7,7 @@ import { deriveCotisationStatus } from "@/lib/cotisation-status"
 import { isMemberCardAvailable } from "@/lib/member-card/availability"
 import { APP_URL } from "@/lib/env"
 import { reportError } from "@/lib/monitoring"
+import { getOrCreateDefaultCategory } from "@/lib/finance/resolve-default-category"
 
 type TxClient = Prisma.TransactionClient
 
@@ -70,7 +71,7 @@ export async function recordCotisationPayment(tx: TxClient, params: {
     where:  { id: params.cotisationId },
     select: {
       year: true, membreId: true, membre: { select: { firstName: true, lastName: true } },
-      status: true, amount: true, dueDate: true,
+      status: true, amount: true, dueDate: true, receiptMode: true,
       installments: { select: { amount: true, dueDate: true, order: true } },
     },
   })
@@ -108,12 +109,27 @@ export async function recordCotisationPayment(tx: TxClient, params: {
     installments:  existing.installments.map(i => ({ amount: Number(i.amount), dueDate: i.dueDate, order: i.order })),
   })
 
+  // "Avec contrepartie" (7562) vs "sans contrepartie" (7561, the default) — Cotisation.receiptMode
+  // is the existing snapshot of MembershipTier.receiptMode at creation time (see its doc
+  // comment in schema.prisma): PARTIAL means part of this cotisation's amount is a documented,
+  // non-deductible contrepartie (revue, événement...), which is exactly what 7562 is for. No
+  // other signal exists to make this distinction automatically (see the category-standardization
+  // plan) — a tier without that split (NONE/FULL) defaults to the ordinary 7561 bucket.
+  const cotisationCategoryKey = existing.receiptMode === "PARTIAL" ? "cotisationsAvecContrepartie" : "cotisations"
+  // Resolved via the plain `prisma` client, deliberately NOT `tx` — getOrCreateDefaultCategory's
+  // P2002-race retry re-reads with a second query, which would itself fail if the first one's
+  // failure had already aborted this transaction (see that function's doc comment). Safe to run
+  // on a separate connection here: nothing above this line can still throw before tx.income.create,
+  // so there's no risk of this write surviving a rollback of the rest of the payment.
+  const categoryId = await getOrCreateDefaultCategory(prisma, params.associationId, cotisationCategoryKey)
+
   await tx.income.create({
     data: {
       associationId:       params.associationId,
       exerciceId:          params.exerciceId ?? null,
       memberId:            existing.membreId,
       cotisationPaymentId: payment.id,
+      categoryId,
       amount:              params.amount,
       paymentMethod:       params.method,
       date:                paymentDate,

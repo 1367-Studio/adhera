@@ -222,6 +222,11 @@ enum FinanceSection {
   EXCEPTIONAL
   OTHER
   IN_KIND
+  // Capital-asset purchases and depreciation/amortization (classe 2 / 68 du PCG) — informational
+  // only, excluded from totalIncome/totalExpense/result in both the Compte de résultat and the
+  // Orçamento previsto (see RESULT_SECTIONS in income-statement-shared.ts). No depreciation
+  // schedule yet — see the FORM category-standardization plan's explicit scope limit.
+  IMMOBILISATION
 }
 
 enum IncomeSource {
@@ -2905,6 +2910,11 @@ model FinanceCategory {
   associationId  String
   name           String
   type           FinanceCategoryType
+  // Required at the application layer (see financeCategorySchema), validated against the
+  // controlled list in src/lib/finance/chart-of-accounts.ts — never free text. Stays nullable
+  // at the DB level until the production backfill script confirms no existing row is left
+  // without a code (see scripts/backfill-finance-category-accounting-codes.ts); only then does
+  // a follow-up migration add NOT NULL.
   accountingCode String?
   // Stable slug for the system/default categories seeded by api/finances/categories/seed
   // (e.g. "dons", "fraisBancaires") — lets the Compte de résultat calculation resolve a
@@ -2913,6 +2923,11 @@ model FinanceCategory {
   key            String?
   section        FinanceSection      @default(OPERATING)
   isDefault      Boolean             @default(false)
+  // Set instead of deleting a category that already has Income/Expense/BudgetLine/Boutique/
+  // Material history — see DELETE /api/finances/categories/[id]. An archived category keeps
+  // resolving correctly on every historical report (lines are created lazily by categoryId,
+  // see income-statement.ts), it just stops being offered for new transactions.
+  archivedAt     DateTime?
   createdAt      DateTime            @default(now())
   updatedAt      DateTime            @updatedAt
 
@@ -2925,6 +2940,17 @@ model FinanceCategory {
   budgetLines           BudgetLine[]
 
   @@index([associationId, type])
+  // Real constraint against the default-category reseed, or a race, ever creating two ACTIVE
+  // rows with the same key for one association — hand-written as a partial unique index (see
+  // the finance_category_key_partial_unique migration) rather than Prisma's own @@unique,
+  // because it needs a WHERE archivedAt IS NULL clause Prisma's schema syntax can't express.
+  // Partial (not plain unique) is what lets DELETE archive a keyed default WITHOUT having to
+  // null its key to free the slot: an archived row's key no longer counts, so
+  // ensureDefaultFinanceCategories can recreate a fresh active one under the same key, AND —
+  // the reason this must be partial rather than a one-time-null-on-archive trick — reactivating
+  // the original row later still correctly re-claims its own key (P2002 if a replacement was
+  // created meanwhile, handled by the PATCH route's existing catch), instead of coming back
+  // forever keyless and unreachable by getOrCreateDefaultCategory/resolveIncomeCategory.
   @@index([associationId, key])
 }
 

@@ -1,9 +1,8 @@
 "use client"
 
 import { Fragment, useState } from "react"
-import { useQuery, useMutation, useQueryClient, keepPreviousData } from "@tanstack/react-query"
+import { useQuery, keepPreviousData } from "@tanstack/react-query"
 import { useTranslations } from "next-intl"
-import { toast } from "sonner"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import * as XLSX from "xlsx"
@@ -13,14 +12,12 @@ import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { EmptyState } from "@/components/ui/empty-state"
-import { Modal } from "@/components/ui/modal"
-import { apiErrorMessage } from "@/lib/api-error"
-import { useFinanceCategories } from "@/hooks/use-finance-categories"
 import {
   FINANCE_SECTIONS, sanitizeForFilename,
-  type IncomeStatementPeriod, type CategoryLine, type TransactionDetail, type FinanceSectionKey,
+  type IncomeStatementPeriod, type CategoryLine, type FinanceSectionKey,
 } from "@/lib/finance/income-statement-shared"
 import { exportIncomeStatementPdf, type IncomeStatementPdfRow } from "@/lib/pdf/income-statement-pdf-client"
+import { TransactionDrillDownModal, type DrillDown as ImportedDrillDown } from "@/components/finances/transaction-drill-down"
 
 type ExerciceOption = { id: string; label: string; startDate: string; endDate: string }
 
@@ -56,114 +53,7 @@ function lineIdentity(line: CategoryLine): string {
   return line.categoryId ?? `key:${line.key}`
 }
 
-type DrillDown = {
-  title:         string
-  transactions:  TransactionDetail[]
-  type:          "INCOME" | "EXPENSE"
-  categorizable: boolean
-}
-
-function CategorizeSelect({ transaction, type, onDone }: {
-  transaction: TransactionDetail
-  type:        "INCOME" | "EXPENSE"
-  onDone:      (transactionId: string) => void
-}) {
-  const t  = useTranslations("finances.compteResultat.drillDown")
-  const qc = useQueryClient()
-  const { data: categories = [] } = useFinanceCategories(type)
-
-  const mutation = useMutation({
-    mutationFn: async (categoryId: string) => {
-      const endpoint = type === "INCOME" ? "incomes" : "expenses"
-      const res = await fetch(`/api/finances/${endpoint}/${transaction.id}`, {
-        method:  "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body:    JSON.stringify({ categoryId }),
-      })
-      if (!res.ok) throw new Error(await apiErrorMessage(res, "Erreur lors de la mise à jour"))
-      return res.json()
-    },
-    onSuccess: () => {
-      toast.success(t("categorizeSuccess"))
-      qc.invalidateQueries({ queryKey: ["compte-resultat"] })
-      onDone(transaction.id)
-    },
-    onError: (err) => toast.error(err instanceof Error ? err.message : "Erreur"),
-  })
-
-  return (
-    <Select value="" onValueChange={(v) => v && mutation.mutate(v)} disabled={mutation.isPending}>
-      <SelectTrigger size="sm" className="h-8 w-44">
-        <SelectValue>{t("categorizePlaceholder")}</SelectValue>
-      </SelectTrigger>
-      <SelectContent>
-        {categories.map((c: { id: string; name: string }) => (
-          <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
-        ))}
-      </SelectContent>
-    </Select>
-  )
-}
-
-function DrillDownModal({ drillDown, onClose }: { drillDown: DrillDown | null; onClose: () => void }) {
-  const t = useTranslations("finances.compteResultat.drillDown")
-  const [hidden, setHidden] = useState<Set<string>>(new Set())
-  const [trackedTitle, setTrackedTitle] = useState(drillDown?.title)
-
-  // Reset the locally-hidden (just categorized) rows whenever a different line is opened —
-  // adjusted during render (React's recommended pattern) rather than in an effect, so this
-  // doesn't cost an extra render pass every time the modal opens.
-  if (drillDown?.title !== trackedTitle) {
-    setTrackedTitle(drillDown?.title)
-    setHidden(new Set())
-  }
-
-  if (!drillDown) return null
-  const visible = drillDown.transactions.filter(tx => !hidden.has(tx.id))
-
-  return (
-    <Modal open={!!drillDown} onOpenChange={(open) => !open && onClose()} title={drillDown.title} size="4xl">
-      {visible.length === 0 ? (
-        <p className="text-sm text-muted-foreground py-6 text-center">{t("noTransactions")}</p>
-      ) : (
-        <div className="overflow-x-auto -mx-1">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b">
-                <th className="py-2 px-3 text-left font-medium text-muted-foreground">{t("date")}</th>
-                <th className="py-2 px-3 text-left font-medium text-muted-foreground">{t("origin")}</th>
-                <th className="py-2 px-3 text-left font-medium text-muted-foreground">{t("person")}</th>
-                <th className="py-2 px-3 text-left font-medium text-muted-foreground">{t("payment")}</th>
-                <th className="py-2 px-3 text-right font-medium text-muted-foreground">{t("amount")}</th>
-                {drillDown.categorizable && <th className="py-2 px-3 text-right font-medium text-muted-foreground">{t("categorize")}</th>}
-              </tr>
-            </thead>
-            <tbody>
-              {visible.map(tx => (
-                <tr key={tx.id} className="border-b last:border-0">
-                  <td className="py-2 px-3 whitespace-nowrap">{format(new Date(tx.date), "dd/MM/yyyy", { locale: fr })}</td>
-                  <td className="py-2 px-3 text-muted-foreground">{tx.origin}</td>
-                  <td className="py-2 px-3 text-muted-foreground">{tx.personName ?? "—"}</td>
-                  <td className="py-2 px-3 text-muted-foreground">{tx.paymentMethod ?? "—"}</td>
-                  <td className="py-2 px-3 text-right tabular-nums">{fmt(tx.amount)}</td>
-                  {drillDown.categorizable && (
-                    <td className="py-2 px-3 text-right">
-                      <CategorizeSelect
-                        transaction={tx}
-                        type={drillDown.type}
-                        onDone={(id) => setHidden(prev => new Set(prev).add(id))}
-                      />
-                    </td>
-                  )}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
-    </Modal>
-  )
-}
+type DrillDown = ImportedDrillDown
 
 function previousAmountFor(previous: IncomeStatementPeriod | null, line: CategoryLine, type: "income" | "expense"): number {
   if (!previous) return 0
@@ -255,8 +145,15 @@ function Column({ type, current, previous, hasPrevious, previousLabel, selectedE
                 <Fragment key={section}>
                   {!isOperating && (
                     <tr className="border-b">
-                      <td colSpan={3} className="pt-3 pb-1 pl-4 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                        {t(`finances.compteResultat.sections.${section}`)}
+                      <td colSpan={3} className="pt-3 pb-1 pl-4">
+                        <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                          {t(`finances.compteResultat.sections.${section}`)}
+                        </div>
+                        {section === "IMMOBILISATION" && (
+                          <div className="text-xs text-muted-foreground font-normal normal-case mt-0.5">
+                            {t("finances.compteResultat.immobilisationNote")}
+                          </div>
+                        )}
                       </td>
                     </tr>
                   )}
@@ -416,15 +313,20 @@ export function ReportsView() {
     const rows: IncomeStatementPdfRow[] = []
     const pdfT = (key: string) => t(`finances.compteResultat.pdf.${key}`)
     const sectionLabels: Record<FinanceSectionKey, { income: string; expense: string; result: string }> = {
-      OPERATING:   { income: pdfT("operatingIncome"),   expense: pdfT("operatingExpense"),   result: pdfT("operatingResult") },
-      FINANCIAL:   { income: pdfT("financialIncome"),   expense: pdfT("financialExpense"),   result: pdfT("financialResult") },
-      EXCEPTIONAL: { income: pdfT("exceptionalIncome"), expense: pdfT("exceptionalExpense"), result: pdfT("exceptionalResult") },
-      OTHER:       { income: pdfT("otherIncome"),       expense: pdfT("otherExpense"),       result: pdfT("otherResult") },
-      IN_KIND:     { income: pdfT("inKindIncome"),      expense: pdfT("inKindExpense"),      result: pdfT("inKindResult") },
+      OPERATING:      { income: pdfT("operatingIncome"),   expense: pdfT("operatingExpense"),   result: pdfT("operatingResult") },
+      FINANCIAL:      { income: pdfT("financialIncome"),   expense: pdfT("financialExpense"),   result: pdfT("financialResult") },
+      EXCEPTIONAL:    { income: pdfT("exceptionalIncome"), expense: pdfT("exceptionalExpense"), result: pdfT("exceptionalResult") },
+      OTHER:          { income: pdfT("otherIncome"),       expense: pdfT("otherExpense"),       result: pdfT("otherResult") },
+      IN_KIND:        { income: pdfT("inKindIncome"),      expense: pdfT("inKindExpense"),      result: pdfT("inKindResult") },
+      // Informational only — rendered below as its own block, outside this loop, so it never
+      // feeds into incomeTotal/expenseTotal/the per-section "result" row the loop below
+      // computes for every other section (see RESULT_SECTIONS in income-statement-shared.ts).
+      IMMOBILISATION: { income: pdfT("immobilisationIncome"), expense: pdfT("immobilisationExpense"), result: pdfT("immobilisationResult") },
     }
     const lineLabel = (line: CategoryLine) => line.accountingCode ? `${line.accountingCode} - ${line.name}` : line.name
 
     for (const section of FINANCE_SECTIONS) {
+      if (section === "IMMOBILISATION") continue
       const labels = sectionLabels[section]
       const incomeLines = current.sections[section].income
       const expenseLines = current.sections[section].expense
@@ -446,6 +348,21 @@ export function ReportsView() {
       rows.push({ label: pdfT("total"), current: -expenseTotal, previous: prevOrBlank(-expenseTotalPrev), bold: true })
 
       rows.push({ label: labels.result, current: incomeTotal - expenseTotal, previous: prevOrBlank(incomeTotalPrev - expenseTotalPrev), bold: true })
+    }
+
+    // Immobilisations (capital assets/depreciation) — informational block, outside the
+    // statutory income/expense/result loop above: never summed into totalIncome/totalExpense/
+    // result (see RESULT_SECTIONS). Only printed when there's something to show.
+    const immoIncome  = current.sections.IMMOBILISATION.income
+    const immoExpense = current.sections.IMMOBILISATION.expense
+    if (immoIncome.length > 0 || immoExpense.length > 0) {
+      rows.push({ label: pdfT("immobilisationSection"), current: null, previous: null, bold: true })
+      for (const line of immoIncome) {
+        rows.push({ label: lineLabel(line), current: line.amount, previous: prevOrBlank(previousAmountFor(previous, line, "income")) })
+      }
+      for (const line of immoExpense) {
+        rows.push({ label: lineLabel(line), current: -line.amount, previous: prevOrBlank(-previousAmountFor(previous, line, "expense")) })
+      }
     }
 
     if (current.uncategorizedIncome.count > 0 || current.uncategorizedExpense.count > 0) {
@@ -637,7 +554,13 @@ export function ReportsView() {
         </>
       )}
 
-      <DrillDownModal drillDown={drillDown} onClose={() => setDrillDown(null)} />
+      {/* Also invalidates the Orçamento previsto queries: categorizing here changes the exact
+          same categoryId column computeBudgetPeriod reads, so a cached budget screen must go
+          stale too, not just this report's own query. */}
+      <TransactionDrillDownModal
+        drillDown={drillDown} onClose={() => setDrillDown(null)}
+        invalidateKeys={[["compte-resultat"], ["budget-global"], ["budget-project"]]}
+      />
     </div>
   )
 }

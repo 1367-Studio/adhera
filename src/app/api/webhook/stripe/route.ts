@@ -21,6 +21,7 @@ import { deriveCotisationStatus } from "@/lib/cotisation-status"
 // Stripe.errors to tell a genuinely missing resource from a transient API failure.
 import Stripe from "stripe"
 import { resolveExerciceForDate } from "@/lib/finance/exercice"
+import { getOrCreateDefaultCategory } from "@/lib/finance/resolve-default-category"
 import { eligibleReceiptAmount } from "@/lib/receipt-eligibility"
 import { APP_URL } from "@/lib/env"
 import {
@@ -607,12 +608,14 @@ export async function POST(req: Request) {
 
           // One Income row per seat (not a single lump sum) so cancelling a single
           // companion later can remove just that seat's revenue without touching the rest.
+          const ticketCategoryId = await getOrCreateDefaultCategory(prisma, evenement.associationId, "evenements")
           await prisma.income.createMany({
             data: tickets.map(t => ({
               associationId:   evenement.associationId,
               exerciceId:      exercice?.status === "OUVERT" ? exercice.id : null,
               memberId:        t.membreId,
               participationId: t.id,
+              categoryId:      ticketCategoryId,
               amount:          ticketAmounts.get(t.id)!,
               description:     `Billet (Stripe) — ${evenement.title} — ${t.firstName} ${t.lastName}`,
               paymentMethod:   "STRIPE",
@@ -736,12 +739,18 @@ export async function POST(req: Request) {
 
         // Best-effort exercice link — never blocks, same reasoning as the other branches.
         const exercice = await resolveExerciceForDate(don.associationId, paidAt)
+        // No signal distinguishes mécénat (7542) / parrainage avec contrepartie (7063) from an
+        // ordinary cash donation today — every automatically-created Don defaults to "dons"
+        // (75411); a treasurer reclassifies manually when a specific gift is actually one of
+        // those (see the category-standardization plan).
+        const donCategoryId = await getOrCreateDefaultCategory(prisma, don.associationId, "dons")
 
         await prisma.income.create({
           data: {
             associationId: don.associationId,
             exerciceId:    exercice?.status === "OUVERT" ? exercice.id : null,
             donId:         don.id,
+            categoryId:    donCategoryId,
             amount:        don.amount,
             // "anonymous" ne masque qu'un éventuel futur affichage public, jamais la
             // comptabilité interne — l'association doit toujours savoir qui a donné.
