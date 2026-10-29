@@ -8,14 +8,15 @@ import { reportError } from "@/lib/monitoring"
 import { rateLimit } from "@/lib/rate-limit"
 
 const schema = z.object({
-  action:      z.enum(["generate", "improve", "rephrase", "summarize"]),
+  action:      z.enum(["generate", "improve", "rephrase", "summarize", "fix", "translate"]),
   instruction: z.string().max(500).optional(),
   currentText: z.string().max(10000).optional(),
 })
 
 const SYSTEM_PROMPT =
   "Tu es un assistant d'écriture pour associations françaises loi 1901. " +
-  "Rédige des textes formels, clairs et professionnels en français. " +
+  "Rédige des textes formels, clairs et professionnels en français, sauf lorsque la demande est " +
+  "explicitement une traduction vers une autre langue : réponds alors uniquement dans cette langue. " +
   "Réponds UNIQUEMENT avec le texte demandé, sans commentaires ni explications. " +
   "Le texte est inséré tel quel dans un éditeur HTML : réponds exclusivement en HTML, " +
   "en utilisant uniquement les balises <p>, <strong>, <em>, <u>, <h2>, <h3>, <ul>, <ol>, <li>, " +
@@ -33,6 +34,10 @@ function buildUserPrompt(action: string, instruction?: string, currentText?: str
       return `Reformule ce texte en conservant le sens${instruction ? ` (${instruction})` : ""} :\n\n${text}`
     case "summarize":
       return `Résume ce texte en conservant les points essentiels :\n\n${text}`
+    case "fix":
+      return `Corrige l'orthographe, la grammaire et la ponctuation de ce texte, sans changer son sens, son ton ni sa mise en forme :\n\n${text}`
+    case "translate":
+      return `Traduis ce texte en ${instruction?.trim() || "anglais"}, en conservant la mise en forme HTML :\n\n${text}`
     default:
       return instruction ?? ""
   }
@@ -62,11 +67,16 @@ export const POST = withAdminAuth(async (req, ctx) => {
   }
 
   try {
+    // "fix" and "translate" are meant to preserve the original as faithfully as possible —
+    // a lower temperature than the creative-writing actions keeps the model from "helpfully"
+    // rephrasing or adding content while it corrects or translates.
+    const temperature = action === "fix" || action === "translate" ? 0.3 : 0.7
+
     const raw = await completeText(aiConfig, {
-      system:      SYSTEM_PROMPT,
-      user:        buildUserPrompt(action, instruction, currentText),
-      temperature: 0.7,
-      maxTokens:   1500,
+      system: SYSTEM_PROMPT,
+      user:   buildUserPrompt(action, instruction, currentText),
+      temperature,
+      maxTokens: 1500,
     })
 
     const text = normalizeAiHtml(raw)

@@ -3,6 +3,7 @@
 import { Component, Suspense, type ErrorInfo, type ReactNode } from "react"
 import { Render } from "@puckeditor/core"
 import { sitePuckConfig } from "@/components/site/puck/site-puck-config"
+import { RICH_TEXT_STYLES } from "@/components/site/puck/site-puck-rich-text-styles"
 import type { SitePuckMetadata } from "@/components/site/blocks/site-block-types"
 import type { SitePuckData } from "@/lib/site-puck/site-puck-data"
 
@@ -12,18 +13,6 @@ import type { SitePuckData } from "@/lib/site-puck/site-puck-data"
 // Any failure while rendering falls back to `legacyFallback` — the old builder's page, rendered
 // on the server — never to an error page. A server-side render error stays inside the Suspense
 // boundary (React then retries on the client), where the error boundary catches it.
-
-// Puck's richtext output (the "Texte" block) is styled by puck.css, which also carries the
-// whole editor stylesheet and an external font import. Only the rules that shape the rendered
-// text are kept here, scoped to the page; React hoists this <style> into <head> once.
-const RICH_TEXT_STYLES = `
-[data-site-puck-page] .rich-text * { white-space: pre-wrap; }
-[data-site-puck-page] .rich-text p:empty::before { content: "\\a0"; }
-[data-site-puck-page] .rich-text > *:first-child,
-[data-site-puck-page] .rich-text * p:first-of-type { margin-top: 0; }
-[data-site-puck-page] .rich-text > *:last-child,
-[data-site-puck-page] .rich-text * p:last-of-type { margin-bottom: 0; }
-`
 
 type RenderErrorBoundaryProps = { fallback: ReactNode; children: ReactNode }
 
