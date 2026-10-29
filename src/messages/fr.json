@@ -944,7 +944,8 @@
         "FINANCIAL": "Financier",
         "EXCEPTIONAL": "Exceptionnel",
         "OTHER": "Autre",
-        "IN_KIND": "Contributions volontaires en nature"
+        "IN_KIND": "Contributions volontaires en nature",
+        "IMMOBILISATION": "Immobilisations"
       },
       "drillDown": {
         "date": "Date",
@@ -978,7 +979,11 @@
         "uncategorizedIncomeLabel": "Recettes à catégoriser",
         "uncategorizedExpenseLabel": "Dépenses à catégoriser",
         "total": "Total",
-        "grandTotal": "TOTAL"
+        "grandTotal": "TOTAL",
+        "immobilisationIncome": "Immobilisations (produits)",
+        "immobilisationExpense": "Immobilisations (charges)",
+        "immobilisationResult": "Solde immobilisations",
+        "immobilisationSection": "Immobilisations — hors résultat courant"
       },
       "csv": {
         "date": "Date",
@@ -998,7 +1003,8 @@
       "emptyExercice": {
         "title": "Aucun exercice fiscal",
         "description": "Créez un exercice fiscal pour générer le compte de résultat."
-      }
+      },
+      "immobilisationNote": "Achats d'immobilisations et amortissements — à titre informatif, non inclus dans le résultat de l'exercice."
     },
     "previsionnel": {
       "title": "Budget prévisionnel",
@@ -1121,8 +1127,11 @@
         "FINANCIAL": "Financier",
         "EXCEPTIONAL": "Exceptionnel",
         "OTHER": "Autre",
-        "IN_KIND": "Contributions en nature"
-      }
+        "IN_KIND": "Contributions en nature",
+        "IMMOBILISATION": "Immobilisation"
+      },
+      "accountingCodeLegacyOption": "{code} — (ancien code, à mettre à jour)",
+      "accountingCodeLegacyWarning": "Ce code comptable n'existe plus dans la liste contrôlée — choisissez un compte valide avant d'enregistrer."
     },
     "bankAccountForm": {
       "bankName": "Nom de la banque",
@@ -1270,13 +1279,21 @@
       "newCategoryTitle": "Nouvelle catégorie",
       "editCategoryTitle": "Modifier la catégorie",
       "deleteConfirmTitle": "Supprimer cette catégorie ?",
-      "deleteConfirmInUse": "« {name} » est utilisée par {count, plural, one {# recette/dépense} other {# recettes/dépenses}}. Ces entrées passeront en « Non catégorisé ».",
       "toasts": {
         "created": "Catégorie créée",
         "updated": "Catégorie mise à jour",
         "deleted": "Catégorie supprimée",
-        "seeded": "{count, plural, one {# catégorie initialisée} other {# catégories initialisées}}"
-      }
+        "seeded": "{count, plural, one {# catégorie initialisée} other {# catégories initialisées}}",
+        "archived": "Catégorie archivée",
+        "reactivated": "Catégorie réactivée"
+      },
+      "archived": "Archivée",
+      "reactivate": "Réactiver",
+      "showArchived": "Afficher les catégories archivées",
+      "transferLimitationNote": "Les virements entre comptes bancaires de l'association (trésorerie interne) ne doivent jamais être saisis comme une recette ou une dépense — ce cas n'est pas encore pris en charge.",
+      "archiveConfirmTitle": "Archiver cette catégorie ?",
+      "archiveConfirmInUse": "« {name} » est utilisée par {count, plural, one {# recette/dépense} other {# recettes/dépenses}}. Elle sera archivée (son historique est conservé) et ne pourra plus être choisie pour de nouvelles opérations.",
+      "archive": "Archiver"
     },
     "incomesView": {
       "title": "Recettes",

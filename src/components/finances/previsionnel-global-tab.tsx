@@ -13,6 +13,7 @@ import { Modal } from "@/components/ui/modal"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { FinanceCategoryForm } from "@/components/finances/finance-category-form"
 import { BudgetStatTile } from "@/components/finances/budget-stat-tile"
+import { TransactionDrillDownModal, type DrillDown } from "@/components/finances/transaction-drill-down"
 import { useGlobalBudget, useUpsertBudgetLine } from "@/hooks/use-budget"
 import { useCreateFinanceCategory } from "@/hooks/use-finance-categories"
 import { budgetLineTone, budgetResultTone } from "@/lib/finance/budget-format"
@@ -21,7 +22,7 @@ import { buildBudgetExportRows } from "@/lib/finance/budget-export-shared"
 import { sanitizeForFilename } from "@/lib/finance/income-statement-shared"
 import { exportBudgetPdf } from "@/lib/pdf/budget-pdf-client"
 import { BASE_PATH } from "@/lib/env"
-import type { BudgetCategoryLine, BudgetPeriod } from "@/lib/finance/budget-shared"
+import type { BudgetCategoryLine, BudgetPeriod, BudgetUncategorizedBucket } from "@/lib/finance/budget-shared"
 import type { FinanceCategoryInput } from "@/lib/schemas"
 import { cn } from "@/lib/utils"
 
@@ -126,13 +127,14 @@ function CategoryRow({ line, type, exerciceId }: {
   )
 }
 
-function CategorySection({ type, lines, uncategorized, total, exerciceId, onAddCategory }: {
+function CategorySection({ type, lines, uncategorized, total, exerciceId, onAddCategory, onOpenUncategorized }: {
   type:          "income" | "expense"
   lines:         BudgetCategoryLine[]
-  uncategorized: { realizado: number; count: number }
+  uncategorized: BudgetUncategorizedBucket
   total:         { previsto: number; realizado: number }
   exerciceId:    string
   onAddCategory: () => void
+  onOpenUncategorized: () => void
 }) {
   const t = useTranslations("finances.previsionnel")
   const titleKey  = type === "income" ? "income" : "expense"
@@ -166,7 +168,11 @@ function CategorySection({ type, lines, uncategorized, total, exerciceId, onAddC
                 {lines.map(line => <CategoryRow key={line.categoryId} line={line} type={type} exerciceId={exerciceId} />)}
                 {uncategorized.count > 0 && (
                   <tr className="border-b last:border-0 text-muted-foreground">
-                    <td className="py-2 pl-4 pr-3">{t("uncategorized")}</td>
+                    <td className="py-2 pl-4 pr-3">
+                      <button type="button" onClick={onOpenUncategorized} className="hover:text-foreground hover:underline">
+                        {t("uncategorized")} ({uncategorized.count})
+                      </button>
+                    </td>
                     <td className="py-2 px-3 text-right w-32">—</td>
                     <td className="py-2 px-3 text-right w-32 tabular-nums">{fmt(uncategorized.realizado)}</td>
                     <td className="py-2 pr-4 pl-3" />
@@ -191,7 +197,9 @@ function CategorySection({ type, lines, uncategorized, total, exerciceId, onAddC
 
 export function PrevisionnelGlobalTab({ exerciceId }: { exerciceId: string }) {
   const t = useTranslations("finances.previsionnel")
+  const tr = useTranslations("finances.compteResultat")
   const [addCategoryType, setAddCategoryType] = useState<"INCOME" | "EXPENSE" | null>(null)
+  const [drillDown, setDrillDown] = useState<DrillDown | null>(null)
 
   const { data, isLoading } = useGlobalBudget(exerciceId)
   const budget = data?.budget ?? null
@@ -288,10 +296,12 @@ export function PrevisionnelGlobalTab({ exerciceId }: { exerciceId: string }) {
         <CategorySection
           type="income" lines={budget.income} uncategorized={budget.uncategorizedIncome} total={budget.totals.income}
           exerciceId={exerciceId} onAddCategory={() => setAddCategoryType("INCOME")}
+          onOpenUncategorized={() => setDrillDown({ title: tr("uncategorized"), transactions: budget.uncategorizedIncome.transactions, type: "INCOME", categorizable: true })}
         />
         <CategorySection
           type="expense" lines={budget.expense} uncategorized={budget.uncategorizedExpense} total={budget.totals.expense}
           exerciceId={exerciceId} onAddCategory={() => setAddCategoryType("EXPENSE")}
+          onOpenUncategorized={() => setDrillDown({ title: tr("uncategorized"), transactions: budget.uncategorizedExpense.transactions, type: "EXPENSE", categorizable: true })}
         />
       </div>
 
@@ -303,6 +313,15 @@ export function PrevisionnelGlobalTab({ exerciceId }: { exerciceId: string }) {
           loading={createCategory.isPending}
         />
       </Modal>
+
+      <TransactionDrillDownModal
+        drillDown={drillDown}
+        onClose={() => setDrillDown(null)}
+        // Every prefix that reads this same categoryId column, not just this tab's own key —
+        // "Por projeto" (same exercice, a row can be project-linked) and the Compte de résultat
+        // (now resolved identically, see category-resolution.ts) must all go stale together.
+        invalidateKeys={[["budget-global"], ["budget-project"], ["compte-resultat"]]}
+      />
     </div>
   )
 }

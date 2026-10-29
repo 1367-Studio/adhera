@@ -1,4 +1,6 @@
 import { Prisma } from "@prisma/client"
+import { prisma } from "@/lib/prisma/client"
+import { getOrCreateDefaultCategory } from "@/lib/finance/resolve-default-category"
 
 type TxClient = Prisma.TransactionClient
 
@@ -35,6 +37,18 @@ export async function bookBoutiqueOrderIncome(tx: TxClient, params: {
     byCategory.set(key, group)
   }
 
+  // A BoutiqueProduit with no accounting category of its own falls back to the "boutique"
+  // default bucket (707) instead of staying fully uncategorized — a product-level category,
+  // when set, still wins (see the groupBy above, keyed on each item's own snapshot).
+  // Resolved via the plain `prisma` client, deliberately not `tx` — the caller's transaction is
+  // already open by the time this function runs, and getOrCreateDefaultCategory's P2002-race
+  // retry needs a connection that isn't already aborted by a prior failed statement in it (see
+  // that function's doc comment). Nothing above this line can throw, so there's no risk of this
+  // write surviving a rollback of the Income rows below.
+  const fallbackCategoryId = [...byCategory.keys()].some(k => k === null)
+    ? await getOrCreateDefaultCategory(prisma, associationId, "boutique")
+    : null
+
   for (const [categoryId, group] of byCategory) {
     const itemsLabel = [...group.names].join(", ")
     await tx.income.create({
@@ -44,7 +58,7 @@ export async function bookBoutiqueOrderIncome(tx: TxClient, params: {
         memberId:      membreId ?? undefined,
         commandeId,
         amount:        group.amount / 100,
-        categoryId:    categoryId ?? undefined,
+        categoryId:    categoryId ?? fallbackCategoryId ?? undefined,
         description:   buyerLabel ? `Vente boutique — ${buyerLabel} — ${itemsLabel}` : `Vente boutique — ${itemsLabel}`,
         paymentMethod,
         source:        paymentMethod === "STRIPE" ? "STRIPE" : "MANUAL",

@@ -4,8 +4,17 @@
 
 // Mirrors the Prisma `FinanceSection` enum as a plain string union so this file stays
 // importable from client components without pulling in `@prisma/client`'s generated runtime.
-export const FINANCE_SECTIONS = ["OPERATING", "FINANCIAL", "EXCEPTIONAL", "OTHER", "IN_KIND"] as const
+export const FINANCE_SECTIONS = ["OPERATING", "FINANCIAL", "EXCEPTIONAL", "OTHER", "IN_KIND", "IMMOBILISATION"] as const
 export type FinanceSectionKey = typeof FINANCE_SECTIONS[number]
+
+// IMMOBILISATION holds capital-asset purchases and depreciation/amortization (classe 2 / 68
+// du PCG) — informational only. It's never summed into totalIncome/totalExpense/result (see
+// computeIncomeStatementPeriod/computeBudgetPeriod): a capital purchase isn't a current
+// operating charge, and this first version doesn't implement depreciation schedules (see
+// FORM-reformulation plan). Internal treasury transfers between an association's own bank
+// accounts are a separate, still-unmodeled limitation — see the help text on the categories
+// admin screen; they must never be entered as an Income/Expense at all, in any section.
+export const RESULT_SECTIONS = FINANCE_SECTIONS.filter(s => s !== "IMMOBILISATION")
 
 export interface ExerciceRef {
   id:        string

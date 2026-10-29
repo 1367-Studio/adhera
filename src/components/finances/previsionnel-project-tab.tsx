@@ -16,6 +16,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { BudgetStatTile } from "@/components/finances/budget-stat-tile"
 import { BudgetProjectForm } from "@/components/finances/budget-project-form"
 import { AddCategoryToProjectModal } from "@/components/finances/add-category-to-project-modal"
+import { TransactionDrillDownModal, type DrillDown } from "@/components/finances/transaction-drill-down"
 import { fmtBudgetCurrency as fmt, DiffPercentCell, InlineAmountCell } from "@/components/finances/budget-table-cells"
 import { exportBudgetExcel } from "@/components/finances/previsionnel-global-tab"
 import { buildBudgetExportRows } from "@/lib/finance/budget-export-shared"
@@ -26,7 +27,7 @@ import {
   type BudgetProjectSummary,
 } from "@/hooks/use-budget"
 import { budgetLineTone, budgetResultTone } from "@/lib/finance/budget-format"
-import type { BudgetCategoryLine, BudgetPeriod } from "@/lib/finance/budget-shared"
+import type { BudgetCategoryLine, BudgetPeriod, BudgetUncategorizedBucket } from "@/lib/finance/budget-shared"
 import type { BudgetProjectInput } from "@/lib/schemas"
 import { cn } from "@/lib/utils"
 
@@ -92,13 +93,14 @@ function ProjectCategoryRow({ line, type, exerciceId, projectId }: {
   )
 }
 
-function ProjectCategorySection({ type, lines, uncategorized, total, exerciceId, projectId }: {
+function ProjectCategorySection({ type, lines, uncategorized, total, exerciceId, projectId, onOpenUncategorized }: {
   type:          "income" | "expense"
   lines:         BudgetCategoryLine[]
-  uncategorized: { realizado: number; count: number }
+  uncategorized: BudgetUncategorizedBucket
   total:         { previsto: number; realizado: number }
   exerciceId:    string
   projectId:     string
+  onOpenUncategorized: () => void
 }) {
   const t = useTranslations("finances.previsionnel")
   const titleColor = type === "income" ? "text-green-700 dark:text-green-400" : "text-red-700 dark:text-red-400"
@@ -126,7 +128,11 @@ function ProjectCategorySection({ type, lines, uncategorized, total, exerciceId,
                 {lines.map(line => <ProjectCategoryRow key={line.categoryId} line={line} type={type} exerciceId={exerciceId} projectId={projectId} />)}
                 {uncategorized.count > 0 && (
                   <tr className="border-b last:border-0 text-muted-foreground">
-                    <td className="py-2 pl-4 pr-3">{t("uncategorized")}</td>
+                    <td className="py-2 pl-4 pr-3">
+                      <button type="button" onClick={onOpenUncategorized} className="hover:text-foreground hover:underline">
+                        {t("uncategorized")} ({uncategorized.count})
+                      </button>
+                    </td>
                     <td className="py-2 px-3 text-right w-32">—</td>
                     <td className="py-2 px-3 text-right w-32 tabular-nums">{fmt(uncategorized.realizado)}</td>
                     <td className="py-2 pr-2 pl-3" />
@@ -156,10 +162,12 @@ function ProjectCategorySection({ type, lines, uncategorized, total, exerciceId,
 function ProjectBlock({ project, exerciceId }: { project: BudgetProjectSummary; exerciceId: string }) {
   const t  = useTranslations("finances.previsionnel.projectsTab")
   const tg = useTranslations("finances.previsionnel")
+  const tr = useTranslations("finances.compteResultat")
 
   const [expanded, setExpanded]               = useState(false)
   const [editOpen, setEditOpen]               = useState(false)
   const [addCategoryOpen, setAddCategoryOpen] = useState(false)
+  const [drillDown, setDrillDown]             = useState<DrillDown | null>(null)
 
   // `enabled: expanded` — a collapsed project never fetches its budget, since the spec keeps
   // every block collapsed by default and most associations will have several projects.
@@ -288,8 +296,14 @@ function ProjectBlock({ project, exerciceId }: { project: BudgetProjectSummary; 
               </div>
 
               <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-                <ProjectCategorySection type="income" lines={budget.income} uncategorized={budget.uncategorizedIncome} total={budget.totals.income} exerciceId={exerciceId} projectId={project.id} />
-                <ProjectCategorySection type="expense" lines={budget.expense} uncategorized={budget.uncategorizedExpense} total={budget.totals.expense} exerciceId={exerciceId} projectId={project.id} />
+                <ProjectCategorySection
+                  type="income" lines={budget.income} uncategorized={budget.uncategorizedIncome} total={budget.totals.income} exerciceId={exerciceId} projectId={project.id}
+                  onOpenUncategorized={() => setDrillDown({ title: tr("uncategorized"), transactions: budget.uncategorizedIncome.transactions, type: "INCOME", categorizable: true })}
+                />
+                <ProjectCategorySection
+                  type="expense" lines={budget.expense} uncategorized={budget.uncategorizedExpense} total={budget.totals.expense} exerciceId={exerciceId} projectId={project.id}
+                  onOpenUncategorized={() => setDrillDown({ title: tr("uncategorized"), transactions: budget.uncategorizedExpense.transactions, type: "EXPENSE", categorizable: true })}
+                />
               </div>
             </>
           )}
@@ -314,6 +328,14 @@ function ProjectBlock({ project, exerciceId }: { project: BudgetProjectSummary; 
           existingCategoryIds={existingCategoryIds}
         />
       )}
+
+      <TransactionDrillDownModal
+        drillDown={drillDown}
+        onClose={() => setDrillDown(null)}
+        // Every prefix that reads this same categoryId column — see the matching comment in
+        // previsionnel-global-tab.tsx.
+        invalidateKeys={[["budget-project"], ["budget-global"], ["compte-resultat"]]}
+      />
     </div>
   )
 }

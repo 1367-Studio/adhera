@@ -944,7 +944,8 @@
         "FINANCIAL": "Financial",
         "EXCEPTIONAL": "Exceptional",
         "OTHER": "Other",
-        "IN_KIND": "In-kind contributions"
+        "IN_KIND": "In-kind contributions",
+        "IMMOBILISATION": "Capital assets"
       },
       "drillDown": {
         "date": "Date",
@@ -978,7 +979,11 @@
         "uncategorizedIncomeLabel": "Income to categorize",
         "uncategorizedExpenseLabel": "Expenses to categorize",
         "total": "Total",
-        "grandTotal": "TOTAL"
+        "grandTotal": "TOTAL",
+        "immobilisationIncome": "Capital assets (income)",
+        "immobilisationExpense": "Capital assets (expense)",
+        "immobilisationResult": "Capital assets balance",
+        "immobilisationSection": "Capital assets — outside the current result"
       },
       "csv": {
         "date": "Date",
@@ -994,7 +999,8 @@
         "origin": "Origin",
         "reference": "Reference",
         "exercice": "Fiscal year"
-      }
+      },
+      "immobilisationNote": "Capital asset purchases and depreciation — informational only, not included in the exercice's result."
     },
     "categoryForm": {
       "name": "Name",
@@ -1011,8 +1017,11 @@
         "FINANCIAL": "Financial",
         "EXCEPTIONAL": "Exceptional",
         "OTHER": "Other",
-        "IN_KIND": "In-kind contributions"
-      }
+        "IN_KIND": "In-kind contributions",
+        "IMMOBILISATION": "Capital asset"
+      },
+      "accountingCodeLegacyOption": "{code} — (legacy code, needs updating)",
+      "accountingCodeLegacyWarning": "This accounting code is no longer in the controlled list — choose a valid account before saving."
     },
     "bankAccountForm": {
       "bankName": "Bank name",
@@ -1158,13 +1167,21 @@
       "newCategoryTitle": "New category",
       "editCategoryTitle": "Edit category",
       "deleteConfirmTitle": "Delete this category?",
-      "deleteConfirmInUse": "\"{name}\" is used by {count, plural, one {# income/expense entry} other {# income/expense entries}}. These entries will be reassigned to \"Uncategorized\".",
       "toasts": {
         "created": "Category created",
         "updated": "Category updated",
         "deleted": "Category deleted",
-        "seeded": "{count, plural, one {# category initialized} other {# categories initialized}}"
-      }
+        "seeded": "{count, plural, one {# category initialized} other {# categories initialized}}",
+        "archived": "Category archived",
+        "reactivated": "Category reactivated"
+      },
+      "archived": "Archived",
+      "reactivate": "Reactivate",
+      "showArchived": "Show archived categories",
+      "transferLimitationNote": "Transfers between the association's own bank accounts (internal treasury) must never be entered as an income or expense — this case isn't supported yet.",
+      "archiveConfirmTitle": "Archive this category?",
+      "archiveConfirmInUse": "\"{name}\" is used by {count, plural, one {# income/expense entry} other {# income/expense entries}}. It will be archived (its history is kept) and won't be offered for new transactions anymore.",
+      "archive": "Archive"
     },
     "incomesView": {
       "title": "Income",

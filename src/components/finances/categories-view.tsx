@@ -4,13 +4,14 @@ import { useState } from "react"
 import { toast } from "sonner"
 import { useTranslations } from "next-intl"
 import { PlusIcon, PencilSimpleIcon, TrashIcon, SparkleIcon } from "@phosphor-icons/react/dist/ssr";
-import { useFinanceCategories, useCreateFinanceCategory, useUpdateFinanceCategory, useDeleteFinanceCategory, useSeedFinanceCategories } from "@/hooks/use-finance-categories"
+import { useFinanceCategories, useCreateFinanceCategory, useUpdateFinanceCategory, useDeleteFinanceCategory, useReactivateFinanceCategory, useSeedFinanceCategories } from "@/hooks/use-finance-categories"
 import type { FinanceCategoryInput } from "@/lib/schemas"
 import { PageHeader } from "@/components/ui/page-header"
 import { Modal } from "@/components/ui/modal"
 import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
+import { CheckboxField } from "@/components/ui/checkbox-field"
 import { FinanceCategoryForm } from "@/components/finances/finance-category-form"
 import { useHasAccess } from "@/lib/user-context"
 
@@ -20,17 +21,19 @@ type Category = {
   type:          "INCOME" | "EXPENSE"
   accountingCode: string | null
   key:           string | null
-  section:       "OPERATING" | "FINANCIAL" | "EXCEPTIONAL" | "OTHER" | "IN_KIND"
+  section:       "OPERATING" | "FINANCIAL" | "EXCEPTIONAL" | "OTHER" | "IN_KIND" | "IMMOBILISATION"
   isDefault:     boolean
-  _count?:       { incomes: number; expenses: number }
+  archivedAt:    string | null
+  _count?:       { incomes: number; expenses: number; budgetLines: number; boutiqueProduits: number; boutiqueCommandeItems: number; materials: number }
 }
 
-function CategoryList({ categories, loading, canEdit, onEdit, onDelete }: {
+function CategoryList({ categories, loading, canEdit, onEdit, onDelete, onReactivate }: {
   categories: Category[]
   loading:    boolean
   canEdit:    boolean
   onEdit:     (c: Category) => void
   onDelete:   (c: Category) => void
+  onReactivate: (c: Category) => void
 }) {
   const t  = useTranslations("finances.categoriesView")
   const tc = useTranslations("finances.categoryForm")
@@ -45,19 +48,26 @@ function CategoryList({ categories, loading, canEdit, onEdit, onDelete }: {
       {categories.map(c => (
         <li key={c.id} className="flex items-center justify-between rounded-lg border px-3 py-2 text-sm">
           <div className="flex items-center gap-2">
-            <span className="font-medium">{c.name}</span>
+            <span className={c.archivedAt ? "font-medium text-muted-foreground" : "font-medium"}>{c.name}</span>
             {c.accountingCode && <span className="text-xs text-muted-foreground">{c.accountingCode}</span>}
             <span className="text-xs text-muted-foreground">{tc(`sectionOptions.${c.section}`)}</span>
             {c.isDefault && <Badge variant="outline">{t("default")}</Badge>}
+            {c.archivedAt && <span className="text-xs text-muted-foreground">{t("archived")}</span>}
           </div>
           {canEdit && (
             <div className="flex items-center gap-1">
-              <Button size="icon-sm" variant="ghost" onClick={() => onEdit(c)}>
-                <PencilSimpleIcon className="size-3.5" />
-              </Button>
-              <Button size="icon-sm" variant="ghost" className="text-destructive hover:text-destructive" onClick={() => onDelete(c)}>
-                <TrashIcon className="size-3.5" />
-              </Button>
+              {c.archivedAt ? (
+                <Button size="sm" variant="ghost" onClick={() => onReactivate(c)}>{t("reactivate")}</Button>
+              ) : (
+                <>
+                  <Button size="icon-sm" variant="ghost" onClick={() => onEdit(c)}>
+                    <PencilSimpleIcon className="size-3.5" />
+                  </Button>
+                  <Button size="icon-sm" variant="ghost" className="text-destructive hover:text-destructive" onClick={() => onDelete(c)}>
+                    <TrashIcon className="size-3.5" />
+                  </Button>
+                </>
+              )}
             </div>
           )}
         </li>
@@ -74,18 +84,23 @@ export function CategoriesView() {
   const [createType, setCreateType]         = useState<"INCOME" | "EXPENSE">("INCOME")
   const [editTarget, setEditTarget]         = useState<Category | null>(null)
   const [deleteTarget, setDeleteTarget]     = useState<Category | null>(null)
+  const [showArchived, setShowArchived]     = useState(false)
 
-  const { data: incomeCategories = [], isLoading: loadingI } = useFinanceCategories("INCOME")
-  const { data: expenseCategories = [], isLoading: loadingE } = useFinanceCategories("EXPENSE")
+  const { data: incomeCategories = [], isLoading: loadingI } = useFinanceCategories("INCOME", showArchived)
+  const { data: expenseCategories = [], isLoading: loadingE } = useFinanceCategories("EXPENSE", showArchived)
 
+  // Archived categories excluded even when "mostrar arquivadas" is on — an archived category
+  // isn't really "in use" going forward, so warning about reusing its code would be misleading.
   const allAccountingCodes = [...(incomeCategories as Category[]), ...(expenseCategories as Category[])]
+    .filter(c => !c.archivedAt)
     .map(c => c.accountingCode)
     .filter((code): code is string => Boolean(code))
 
-  const createMutation = useCreateFinanceCategory()
-  const updateMutation = useUpdateFinanceCategory(editTarget?.id ?? "")
-  const deleteMutation = useDeleteFinanceCategory()
-  const seedMutation   = useSeedFinanceCategories()
+  const createMutation     = useCreateFinanceCategory()
+  const updateMutation     = useUpdateFinanceCategory(editTarget?.id ?? "")
+  const deleteMutation     = useDeleteFinanceCategory()
+  const reactivateMutation = useReactivateFinanceCategory()
+  const seedMutation       = useSeedFinanceCategories()
 
   async function handleCreate(data: FinanceCategoryInput) {
     try {
@@ -110,9 +125,18 @@ export function CategoriesView() {
   async function handleDelete() {
     if (!deleteTarget) return
     try {
-      await deleteMutation.mutateAsync(deleteTarget.id)
-      toast.success(t("finances.categoriesView.toasts.deleted"))
+      const { archived } = await deleteMutation.mutateAsync(deleteTarget.id)
+      toast.success(archived ? t("finances.categoriesView.toasts.archived") : t("finances.categoriesView.toasts.deleted"))
       setDeleteTarget(null)
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : t("common.error"))
+    }
+  }
+
+  async function handleReactivate(category: Category) {
+    try {
+      await reactivateMutation.mutateAsync(category.id)
+      toast.success(t("finances.categoriesView.toasts.reactivated"))
     } catch (err) {
       toast.error(err instanceof Error ? err.message : t("common.error"))
     }
@@ -140,6 +164,12 @@ export function CategoriesView() {
         )}
       />
 
+      <CheckboxField
+        label={t("finances.categoriesView.showArchived")}
+        checked={showArchived}
+        onChange={e => setShowArchived(e.target.checked)}
+      />
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="rounded-lg border bg-card p-4 space-y-3">
           <div className="flex items-center justify-between">
@@ -150,7 +180,7 @@ export function CategoriesView() {
               </Button>
             )}
           </div>
-          <CategoryList categories={incomeCategories as Category[]} loading={loadingI} canEdit={canEditComptabilite} onEdit={setEditTarget} onDelete={setDeleteTarget} />
+          <CategoryList categories={incomeCategories as Category[]} loading={loadingI} canEdit={canEditComptabilite} onEdit={setEditTarget} onDelete={setDeleteTarget} onReactivate={handleReactivate} />
         </div>
 
         <div className="rounded-lg border bg-card p-4 space-y-3">
@@ -162,9 +192,11 @@ export function CategoriesView() {
               </Button>
             )}
           </div>
-          <CategoryList categories={expenseCategories as Category[]} loading={loadingE} canEdit={canEditComptabilite} onEdit={setEditTarget} onDelete={setDeleteTarget} />
+          <CategoryList categories={expenseCategories as Category[]} loading={loadingE} canEdit={canEditComptabilite} onEdit={setEditTarget} onDelete={setDeleteTarget} onReactivate={handleReactivate} />
         </div>
       </div>
+
+      <p className="text-xs text-muted-foreground">{t("finances.categoriesView.transferLimitationNote")}</p>
 
       <Modal open={createOpen} onOpenChange={setCreateOpen} title={t("finances.categoriesView.newCategoryTitle")} size="sm" dismissable={false}>
         <FinanceCategoryForm
@@ -189,14 +221,20 @@ export function CategoriesView() {
       <ConfirmDialog
         open={!!deleteTarget}
         onOpenChange={(o) => !o && setDeleteTarget(null)}
-        title={t("finances.categoriesView.deleteConfirmTitle")}
+        title={(() => {
+          const uses = Object.values(deleteTarget?._count ?? {}).reduce((sum, n) => sum + n, 0)
+          return uses > 0 ? t("finances.categoriesView.archiveConfirmTitle") : t("finances.categoriesView.deleteConfirmTitle")
+        })()}
         description={(() => {
-          const uses = (deleteTarget?._count?.incomes ?? 0) + (deleteTarget?._count?.expenses ?? 0)
+          const uses = Object.values(deleteTarget?._count ?? {}).reduce((sum, n) => sum + n, 0)
           return uses > 0
-            ? t("finances.categoriesView.deleteConfirmInUse", { name: deleteTarget?.name ?? "", count: uses })
+            ? t("finances.categoriesView.archiveConfirmInUse", { name: deleteTarget?.name ?? "", count: uses })
             : deleteTarget?.name ?? ""
         })()}
-        confirmLabel={t("common.delete")}
+        confirmLabel={(() => {
+          const uses = Object.values(deleteTarget?._count ?? {}).reduce((sum, n) => sum + n, 0)
+          return uses > 0 ? t("finances.categoriesView.archive") : t("common.delete")
+        })()}
         loading={deleteMutation.isPending}
         onConfirm={handleDelete}
       />
