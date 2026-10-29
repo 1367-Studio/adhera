@@ -6,12 +6,14 @@ import { cn } from "@/lib/utils";
 import { ArrowElbowDownLeftIcon, ArrowsClockwiseIcon, SparkleIcon, XIcon } from "@phosphor-icons/react/dist/ssr";
 import { useState } from "react";
 
-type Action = "generate" | "improve" | "rephrase" | "summarize"
+type Action = "generate" | "improve" | "rephrase" | "summarize" | "fix" | "translate"
 
 const ACTIONS: { value: Action; label: string; needsText: boolean }[] = [
   { value: "generate",  label: "Générer",    needsText: false },
   { value: "improve",   label: "Améliorer",  needsText: true  },
   { value: "rephrase",  label: "Reformuler", needsText: true  },
+  { value: "fix",       label: "Corriger",   needsText: true  },
+  { value: "translate", label: "Traduire",   needsText: true  },
   { value: "summarize", label: "Résumer",    needsText: true  },
 ]
 
@@ -68,7 +70,7 @@ export function AiWriter({ currentText, onInsert, onReplace, onClose }: AiWriter
       </div>
 
       {/* Action tabs */}
-      <div className="flex gap-1">
+      <div className="flex flex-wrap gap-1">
         {ACTIONS.map(a => (
           <button
             key={a.value}
@@ -94,9 +96,10 @@ export function AiWriter({ currentText, onInsert, onReplace, onClose }: AiWriter
           onChange={e => setInstruction(e.target.value)}
           onKeyDown={e => { if (e.key === "Enter" && canGenerate && !loading) handleGenerate() }}
           placeholder={
-            action === "generate"
-              ? "Ex : convocation à l'AG du 15 janvier…"
-              : "Instruction optionnelle (ex : rend plus formel)…"
+            action === "generate"  ? "Ex : convocation à l'AG du 15 janvier…"
+            : action === "translate" ? "Langue cible (ex : anglais, espagnol)…"
+            : action === "fix"        ? "Instruction optionnelle…"
+            : "Instruction optionnelle (ex : rend plus formel)…"
           }
           className="flex-1 rounded-md border border-input bg-background px-3 py-1.5 text-sm outline-none focus:ring-1 focus:ring-ring"
         />
