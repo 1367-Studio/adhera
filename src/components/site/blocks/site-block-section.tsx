@@ -133,7 +133,7 @@ export function SiteBlockSection({
     ? { ...BACKGROUND_STYLES[background], color: textColorOverride }
     : BACKGROUND_STYLES[background]
   return (
-    <section id={id} className={cn("px-4", SPACING_CLASSES[spacing])} style={sectionStyle}>
+    <section id={id} className={cn("px-4 sm:px-6 lg:px-8", SPACING_CLASSES[spacing])} style={sectionStyle}>
       <SiteReveal className={cn("mx-auto", WIDTH_CLASSES[width], className)}>{children}</SiteReveal>
     </section>
   )

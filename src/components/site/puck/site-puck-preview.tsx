@@ -4,6 +4,7 @@ import "@puckeditor/core/puck.css"
 import Link from "next/link"
 import { Render } from "@puckeditor/core"
 import { sitePuckConfig } from "@/components/site/puck/site-puck-config"
+import { RICH_TEXT_STYLES } from "@/components/site/puck/site-puck-rich-text-styles"
 import { useSitePuckMetadata } from "@/components/site/puck/use-site-puck-metadata"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -67,7 +68,10 @@ export function SitePuckPreview({ canEdit }: SitePuckPreviewProps) {
             <Skeleton className="h-40 w-full" />
           </div>
         ) : (
-          <Render config={sitePuckConfig} data={pageData} metadata={metadata} />
+          <div data-site-puck-page="">
+            <style href="site-puck-rich-text" precedence="default">{RICH_TEXT_STYLES}</style>
+            <Render config={sitePuckConfig} data={pageData} metadata={metadata} />
+          </div>
         )}
       </div>
     </div>
