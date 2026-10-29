@@ -68,9 +68,17 @@ export function ExpenseForm({ defaultValues, onSubmit, onCancel, loading, locked
     mode: "onSubmit",
   })
 
+  // Keyed on the serialized CONTENT of defaultValues, not the object reference — same fix as
+  // finance-category-form.tsx. Callers pass a fresh object literal on every one of THEIR
+  // re-renders (e.g. the modal's `loading={mutation.isPending}` flips the instant Guardar is
+  // clicked, well before the request resolves), which re-fired this effect on every one of
+  // those renders and wiped in-progress edits — including a just-selected receipt file/
+  // categoryId/projectId — back to the original values while the save was still in flight.
+  const defaultValuesKey = JSON.stringify(defaultValues ?? {})
   useEffect(() => {
     reset({ date: new Date().toISOString().split("T")[0], status: "DRAFT", ...defaultValues })
-  }, [defaultValues, reset])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [defaultValuesKey, reset])
 
   const receiptUrl = watch("receiptUrl")
   const pendingFileRef = useRef<{ file: File; prefix: string } | null>(null)

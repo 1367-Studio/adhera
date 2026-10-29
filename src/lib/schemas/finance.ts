@@ -1,4 +1,5 @@
 import { z } from "zod"
+import { REFERENCE_ACCOUNTS, isValidAccountingCode } from "@/lib/finance/chart-of-accounts"
 
 export const bankAccountSchema = z.object({
   bankName:       z.string().trim().min(1, "Nom de la banque requis"),
@@ -24,21 +25,40 @@ export const bankAccountUpdateSchema = z.object({
 export type BankAccountInput       = z.infer<typeof bankAccountSchema>
 export type BankAccountUpdateInput = z.infer<typeof bankAccountUpdateSchema>
 
+// accountingCode is required and restricted to the controlled reference list (chart-of-accounts.ts)
+// — no more free text. The cross-field .refine below is what actually enforces "valid for this
+// type": a code that's a real account but belongs to the other type (e.g. an EXPENSE code on an
+// INCOME category) must still fail.
 export const financeCategorySchema = z.object({
   name:          z.string().trim().min(1, "Nom requis"),
   type:          z.enum(["INCOME", "EXPENSE"]),
-  accountingCode: z.string().trim().optional().or(z.literal("")),
-  section:       z.enum(["OPERATING", "FINANCIAL", "EXCEPTIONAL", "OTHER", "IN_KIND"]).default("OPERATING"),
+  accountingCode: z.string().trim().min(1, "Compte comptable requis"),
+  section:       z.enum(["OPERATING", "FINANCIAL", "EXCEPTIONAL", "OTHER", "IN_KIND", "IMMOBILISATION"]).default("OPERATING"),
+}).refine(data => isValidAccountingCode(data.accountingCode, data.type), {
+  message: "Compte comptable invalide pour ce type",
+  path:    ["accountingCode"],
 })
 
 // Rebuilt as its own literal object instead of financeCategorySchema.partial() — same
 // .default() leak as bankAccountUpdateSchema/incomeUpdateSchema above: an omitted `section`
 // must stay undefined so Prisma leaves the existing value untouched, not reset to "OPERATING".
+// accountingCode can no longer be cleared to "" (see financeCategorySchema) — a PATCH that
+// touches it must supply a real code from the controlled list. When `type` isn't part of the
+// same PATCH, validate against the full reference list instead of one type's subset (the
+// route can't know the category's persisted type at parse time); the UI form always submits
+// both together, so this fallback only matters for a direct API caller.
 export const financeCategoryUpdateSchema = z.object({
   name:          z.string().trim().min(1, "Nom requis").optional(),
   type:          z.enum(["INCOME", "EXPENSE"]).optional(),
-  accountingCode: z.string().trim().optional().or(z.literal("")),
-  section:       z.enum(["OPERATING", "FINANCIAL", "EXCEPTIONAL", "OTHER", "IN_KIND"]).optional(),
+  accountingCode: z.string().trim().min(1, "Compte comptable requis").optional(),
+  section:       z.enum(["OPERATING", "FINANCIAL", "EXCEPTIONAL", "OTHER", "IN_KIND", "IMMOBILISATION"]).optional(),
+}).refine(data => {
+  if (!data.accountingCode) return true
+  if (data.type) return isValidAccountingCode(data.accountingCode, data.type)
+  return REFERENCE_ACCOUNTS.some(a => a.code === data.accountingCode)
+}, {
+  message: "Compte comptable invalide pour ce type",
+  path:    ["accountingCode"],
 })
 
 export type FinanceCategoryInput       = z.infer<typeof financeCategorySchema>
