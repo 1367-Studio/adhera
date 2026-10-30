@@ -34,9 +34,12 @@ export const translateBlock: ComponentConfig<TranslateBlockProps> = {
     },
   },
   defaultProps: { align: "left" },
-  render: ({ align, puck }) => (
-    <div className={cn("flex", ALIGN_CLASSES[align])}>
-      <PublicSiteLocaleSwitcher locale={readSiteMetadata(puck.metadata).locale} />
-    </div>
-  ),
+  render: ({ align, puck }) => {
+    const metadata = readSiteMetadata(puck.metadata)
+    return (
+      <div className={cn("flex", ALIGN_CLASSES[align])}>
+        <PublicSiteLocaleSwitcher locale={metadata.locale} ui={metadata.ui} />
+      </div>
+    )
+  },
 }

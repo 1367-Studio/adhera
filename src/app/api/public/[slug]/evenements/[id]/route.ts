@@ -71,6 +71,9 @@ export async function GET(
   // visitors on the fly (cached per locale) rather than asking associations to
   // maintain multiple copies. Location is a street address, not content, so it's
   // left as-is — translating it would garble the "open in Google Maps" query.
+  // Deliberately always automatic by locale, unlike the site pages/actualités opt-in
+  // (wantsContentTranslation, src/lib/i18n/public-locale.ts): a visitor mid-registration
+  // should never be stuck reading French while deciding whether/how much to pay.
   const locale = await resolvePublicLocale()
   const [translated]  = await translateFields(
     [{ title: evenement.title, description: evenement.description, conditions: evenement.conditions }],

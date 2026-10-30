@@ -45,12 +45,21 @@ export function ActualiteDetailView({ slug, id }: Props) {
   const format        = useFormatter()
   const searchParams  = useSearchParams()
   const isPreview     = searchParams.get("preview") === "1"
+  // Mirrors the "Traduire cette page" toggle (PublicSiteLocaleSwitcher) on this page's own URL —
+  // the admin's original text is shown until the visitor explicitly asks for a translation.
+  const isTranslate   = searchParams.get("translate") === "1"
 
   // Never throws on a non-2xx — a 404 still carries `site` in its body, which the render
   // below needs to keep the page's chrome up even when the post itself can't be found.
   const { data, isLoading } = useQuery<ApiResponse>({
-    queryKey: ["public-actualite", slug, id, isPreview],
-    queryFn:  () => fetch(`/api/public/${slug}/actualites/${id}${isPreview ? "?preview=1" : ""}`).then(r => r.json()),
+    queryKey: ["public-actualite", slug, id, isPreview, isTranslate],
+    queryFn:  () => {
+      const query = new URLSearchParams()
+      if (isPreview)   query.set("preview", "1")
+      if (isTranslate) query.set("translate", "1")
+      const qs = query.toString()
+      return fetch(`/api/public/${slug}/actualites/${id}${qs ? `?${qs}` : ""}`).then(r => r.json())
+    },
   })
 
   if (isLoading || !data) {

@@ -10,7 +10,7 @@ import {
 } from "@/lib/site-puck/site-public-data"
 import { translateSitePuckData, translateSitePuckSeo } from "@/lib/site-puck/site-puck-translate"
 import { translateSiteUiStrings } from "@/lib/site-puck/site-ui-strings-translate"
-import { resolvePublicLocale } from "@/lib/i18n/public-locale"
+import { resolvePublicLocale, wantsContentTranslation } from "@/lib/i18n/public-locale"
 
 // FORM-7 custom pages: one more page on the new builder's site, reachable at
 // /{slug}/{pageSlug}. A sibling of the hand-built sub-routes (actualites/[id], evenements/[id],
@@ -51,6 +51,9 @@ export async function generateMetadata(
   if (!sitePage) return { title: data.name }
 
   try {
+    // Deliberately not gated behind the visitor's "Traduire cette page" click (see
+    // wantsContentTranslation) — crawlers and link-preview bots never click anything, and a
+    // <title>/description always in French for them would defeat having a translated site.
     const locale        = await resolvePublicLocale()
     const translatedRoot = await translateSitePuckSeo(homePage, locale, data.id)
     return sitePuckPageMetadata(data, translatedRoot, `/${data.slug}/${pageSlug}`, {
@@ -64,9 +67,10 @@ export async function generateMetadata(
 }
 
 export default async function PublicSiteCustomPage(
-  { params }: { params: Promise<RouteParams> },
+  { params, searchParams }: { params: Promise<RouteParams>; searchParams: Promise<{ translate?: string }> },
 ) {
   const { slug, pageSlug } = await params
+  const { translate }      = await searchParams
   const rawData = await getSiteData(slug)
   if (!rawData) notFound()
 
@@ -82,13 +86,16 @@ export default async function PublicSiteCustomPage(
   if (!pageData) notFound()
 
   const locale = await resolvePublicLocale()
-  const data   = await translateListings(rawData, locale)
+  // Association-authored content only translates on the visitor's explicit "Traduire cette
+  // page" click — same gate as src/app/[slug]/page.tsx, see wantsContentTranslation.
+  const shouldTranslate = wantsContentTranslation(translate, locale)
+  const data = shouldTranslate ? await translateListings(rawData, locale) : rawData
 
   let translatedPage: SitePuckData | null = null
   let metadata: SitePuckMetadata | null = null
   try {
     const [translated, ui] = await Promise.all([
-      translateSitePuckData(pageData, locale, data.id),
+      shouldTranslate ? translateSitePuckData(pageData, locale, data.id) : Promise.resolve(pageData),
       translateSiteUiStrings(locale, data.id),
     ])
     translatedPage = translated
