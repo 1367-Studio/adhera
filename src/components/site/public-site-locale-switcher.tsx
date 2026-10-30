@@ -1,17 +1,27 @@
 "use client"
 
 import { useId, useTransition } from "react"
-import { useRouter } from "next/navigation"
-import { GlobeIcon } from "@phosphor-icons/react/dist/ssr"
+import { usePathname, useRouter, useSearchParams } from "next/navigation"
+import { GlobeIcon, TranslateIcon } from "@phosphor-icons/react/dist/ssr"
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button"
 import { setSiteLocale } from "@/lib/i18n/actions"
-import { SUPPORTED_LOCALES, LOCALE_LABELS, type Locale } from "@/i18n/locales"
+import { SUPPORTED_LOCALES, LOCALE_LABELS, DEFAULT_LOCALE, type Locale } from "@/i18n/locales"
+import { SITE_UI_STRINGS, type SiteUiStrings } from "@/lib/site-puck/site-ui-strings"
+
+// "translate" search param on the current page's own URL (never a cookie): association-authored
+// content (articles, blocks, buttons — see translateSitePuckData/translateFields call sites)
+// only translates on this explicit per-page opt-in, so it's naturally scoped to one page view —
+// navigating away and back starts over in the original language until clicked again. The fixed
+// UI chrome around it (this switcher's own labels, nav, footer — site-ui-strings.ts) stays on
+// the always-automatic locale-based pipeline; only the TRANSLATE_PARAM below is page-scoped.
+const TRANSLATE_PARAM = "translate"
 
 // Public-site equivalent of src/components/layout/locale-switcher.tsx — same look (a ghost
 // icon button inherits whatever text colour the surrounding section already resolved to, so
@@ -27,6 +37,10 @@ type Props = {
   // one layer too many, and 25 plain rows made the drawer far taller than a phone screen.
   layout?:    "menu" | "list"
   listLabel?: string
+  // Labels for the translate-this-page toggle, already in the visitor's own locale. Optional:
+  // callers that render this switcher before SitePuckMetadata exists (there are none left, but
+  // keeping it optional avoids a forced prop everywhere) fall back to the French defaults.
+  ui?:        SiteUiStrings
 }
 
 // The native options list is drawn by the browser/OS, and on some platforms (Chrome on
@@ -35,10 +49,16 @@ type Props = {
 // site tokens as the drawer's "light" background (menuContentStyle).
 const NATIVE_OPTION_STYLE = { background: "var(--site-surface, #ffffff)", color: "var(--site-text, #111827)" }
 
-export function PublicSiteLocaleSwitcher({ locale, layout = "menu", listLabel }: Props) {
-  const router = useRouter()
+export function PublicSiteLocaleSwitcher({ locale, layout = "menu", listLabel, ui = SITE_UI_STRINGS }: Props) {
+  const router       = useRouter()
+  const pathname     = usePathname()
+  const searchParams = useSearchParams()
   const [isPending, startTransition] = useTransition()
   const selectId = useId()
+
+  // Only a non-French locale has anything to translate — picking French never shows the toggle.
+  const canTranslate = locale !== DEFAULT_LOCALE
+  const isTranslated = canTranslate && searchParams.get(TRANSLATE_PARAM) === "1"
 
   function handleSelect(next: Locale) {
     if (next === locale) return
@@ -46,6 +66,16 @@ export function PublicSiteLocaleSwitcher({ locale, layout = "menu", listLabel }:
       await setSiteLocale(next)
       router.refresh()
     })
+  }
+
+  // Toggles ?translate=1 on THIS page's own URL — never a cookie — so the opt-in stays scoped
+  // to the page being viewed (see the TRANSLATE_PARAM comment above).
+  function toggleTranslate() {
+    const next = new URLSearchParams(searchParams.toString())
+    if (isTranslated) next.delete(TRANSLATE_PARAM)
+    else next.set(TRANSLATE_PARAM, "1")
+    const query = next.toString()
+    startTransition(() => router.push(query ? `${pathname}?${query}` : pathname))
   }
 
   if (layout === "list") {
@@ -67,6 +97,17 @@ export function PublicSiteLocaleSwitcher({ locale, layout = "menu", listLabel }:
             </option>
           ))}
         </select>
+        {canTranslate && (
+          <button
+            type="button"
+            onClick={toggleTranslate}
+            disabled={isPending}
+            className="flex items-center gap-1.5 text-left text-xs font-medium opacity-70 hover:opacity-100"
+          >
+            <TranslateIcon className="size-3.5" />
+            {isTranslated ? ui.showOriginalAction : ui.translatePageAction}
+          </button>
+        )}
       </div>
     )
   }
@@ -92,6 +133,15 @@ export function PublicSiteLocaleSwitcher({ locale, layout = "menu", listLabel }:
             {LOCALE_LABELS[code]}
           </DropdownMenuItem>
         ))}
+        {canTranslate && (
+          <>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={toggleTranslate}>
+              <TranslateIcon className="size-4" />
+              {isTranslated ? ui.showOriginalAction : ui.translatePageAction}
+            </DropdownMenuItem>
+          </>
+        )}
       </DropdownMenuContent>
     </DropdownMenu>
   )

@@ -20,7 +20,7 @@ import {
 } from "@/lib/site-puck/site-public-data"
 import { translateSitePuckData, translateSitePuckSeo } from "@/lib/site-puck/site-puck-translate"
 import { translateSiteUiStrings } from "@/lib/site-puck/site-ui-strings-translate"
-import { resolvePublicLocale } from "@/lib/i18n/public-locale"
+import { resolvePublicLocale, wantsContentTranslation } from "@/lib/i18n/public-locale"
 
 export async function generateMetadata(
   { params }: { params: Promise<{ slug: string }> },
@@ -31,6 +31,9 @@ export async function generateMetadata(
   const publishedData = livePuckPage(data)
   if (publishedData) {
     try {
+      // Deliberately not gated behind the visitor's "Traduire cette page" click (see
+      // wantsContentTranslation) — crawlers and link-preview bots never click anything, and a
+      // <title>/description always in French for them would defeat having a translated site.
       const locale        = await resolvePublicLocale()
       const translatedPage = await translateSitePuckSeo(publishedData, locale, data.id)
       return sitePuckPageMetadata(data, translatedPage, `/${data.slug}`)
@@ -42,14 +45,20 @@ export async function generateMetadata(
 }
 
 export default async function PublicSitePage(
-  { params }: { params: Promise<{ slug: string }> },
+  { params, searchParams }: { params: Promise<{ slug: string }>; searchParams: Promise<{ translate?: string }> },
 ) {
-  const { slug } = await params
+  const { slug }     = await params
+  const { translate } = await searchParams
   const rawData = await getSiteData(slug)
   if (!rawData) notFound()
 
   const locale = await resolvePublicLocale()
-  const data   = await translateListings(rawData, locale)
+  // Association-authored page content (listings, blocks, buttons) only translates on the
+  // visitor's explicit "Traduire cette page" click — never automatically just because a
+  // non-French locale is active. The fixed UI chrome (translateSiteUiStrings below) and the
+  // SEO metadata above are separate, always-automatic concerns — see wantsContentTranslation.
+  const shouldTranslate = wantsContentTranslation(translate, locale)
+  const data = shouldTranslate ? await translateListings(rawData, locale) : rawData
 
   const legacyPage = renderLegacySitePage(data, slug)
 
@@ -61,7 +70,7 @@ export default async function PublicSitePage(
     let metadata: SitePuckMetadata | null = null
     try {
       const [translated, ui] = await Promise.all([
-        translateSitePuckData(publishedData, locale, data.id),
+        shouldTranslate ? translateSitePuckData(publishedData, locale, data.id) : Promise.resolve(publishedData),
         translateSiteUiStrings(locale, data.id),
       ])
       translatedPage = translated

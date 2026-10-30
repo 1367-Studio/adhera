@@ -27,3 +27,17 @@ export async function resolvePublicLocale(): Promise<Locale> {
   const acceptLanguage = (await headers()).get("accept-language")
   return localeFromAcceptLanguage(acceptLanguage) ?? DEFAULT_LOCALE
 }
+
+// Shared opt-in gate for translating association-authored content (site pages, actualités):
+// a visitor only sees it translated after explicitly clicking "Traduire cette page"
+// (PublicSiteLocaleSwitcher, which toggles a `translate=1` param on the page's own URL — see
+// its own comment for why that's a URL param and not a cookie). Every call site that decides
+// whether to run translateSitePuckData/translateListings/translateFields for that content
+// shares this one check, rather than re-deriving it, so the policy can't drift between them.
+// Deliberately NOT used by generateMetadata (SEO title/description always translate by locale
+// alone, for crawlers/share-preview — see the comment there) or by the évenements/adhésion/dons
+// checkout routes (those stay automatic by locale, so a visitor mid-payment is never stuck
+// reading French — a deliberate product decision, not an oversight).
+export function wantsContentTranslation(translateParam: string | null | undefined, locale: Locale): boolean {
+  return translateParam === "1" && locale !== DEFAULT_LOCALE
+}
