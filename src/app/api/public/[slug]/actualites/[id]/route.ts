@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma/client"
 import { parseModules } from "@/lib/modules"
 import { translateFields } from "@/lib/i18n/translate"
 import { canPreviewForm } from "@/lib/form-preview"
+import { wantsContentTranslation } from "@/lib/i18n/public-locale"
 import type { Locale } from "@/i18n/locales"
 
 export async function GET(
@@ -49,15 +50,19 @@ export async function GET(
   })
   if (!actualite) return NextResponse.json({ error: "Not found", site }, { status: 404 })
 
-  // The admin always writes this content in their own language — translate it for visitors
-  // on the fly (cached per locale), same pattern as the evenements public detail route.
+  // The admin always writes this content in their own language — only translate it when the
+  // visitor explicitly clicked "Traduire cette page" (PublicSiteLocaleSwitcher); otherwise the
+  // original text is returned as-is.
   const locale = (await getLocale()) as Locale
-  const [translated] = await translateFields(
-    [{ title: actualite.title, content: actualite.content }],
-    ["title", "content"],
-    locale,
-    assoc.id,
-  )
+  const shouldTranslate = wantsContentTranslation(new URL(req.url).searchParams.get("translate"), locale)
+  const [translated] = shouldTranslate
+    ? await translateFields(
+        [{ title: actualite.title, content: actualite.content }],
+        ["title", "content"],
+        locale,
+        assoc.id,
+      )
+    : [{ title: actualite.title, content: actualite.content }]
 
   // Don't link to an event that's since gone back to DRAFT or PRIVATE — same visibility gate
   // as the public events list, otherwise the "related event" card leads to a dead 404.

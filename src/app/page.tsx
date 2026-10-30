@@ -17,9 +17,11 @@ import PublicSitePage from "./[slug]/page"
 // prefixes the slug a *second* time (`/app/{slug}/{slug}`, a real 404 — this exact bug is
 // what production testing caught). Rendering in place keeps the whole thing to one request,
 // with the browser's address bar staying on the custom domain root as expected.
-export default async function HomePage() {
+export default async function HomePage(
+  { searchParams }: { searchParams: Promise<{ translate?: string }> },
+) {
   const host = (await headers()).get("host")?.split(":")[0] ?? ""
   const slug = await resolveAssociationSlugByHost(host)
-  if (slug) return <PublicSitePage params={Promise.resolve({ slug })} />
+  if (slug) return <PublicSitePage params={Promise.resolve({ slug })} searchParams={searchParams} />
   redirect("/dashboard")
 }

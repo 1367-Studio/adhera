@@ -14,6 +14,8 @@ export const SITE_UI_STRINGS = {
   navMenu:                "Menu",
   navClose:               "Fermer",
   navLanguage:            "Langue",
+  translatePageAction:    "Traduire cette page",
+  showOriginalAction:     "Voir le texte original",
   footerRights:           "Tous droits réservés.",
   footerPoweredBy:        "Propulsé par",
   footerAriaLabel:        "Pied de page",

@@ -1,6 +1,7 @@
 "use client"
 
 import Link from "next/link"
+import { useSearchParams } from "next/navigation"
 import { useQuery } from "@tanstack/react-query"
 import { useLocale, useTranslations } from "next-intl"
 import { PushPinIcon } from "@phosphor-icons/react/dist/ssr"
@@ -24,12 +25,15 @@ const LOADING_ROW_KEYS = ["first", "second", "third"]
 export function PublicActualitesListView({ slug }: { slug: string }) {
   const t      = useTranslations("actualites.publicView")
   const locale = useLocale()
+  // Mirrors the "Traduire cette page" toggle (PublicSiteLocaleSwitcher) on this page's own
+  // URL — the admin's original text is shown until the visitor explicitly asks for a translation.
+  const isTranslate = useSearchParams().get("translate") === "1"
 
   // BASE_PATH prefix: the app is served under /app, and a bare "/api/…" from the browser
   // resolves against the origin root, where Next has no route.
   const { data, isLoading } = useQuery<ApiResponse>({
-    queryKey: ["public-association-actualites", slug],
-    queryFn:  () => fetch(`${BASE_PATH}/api/public/${slug}/actualites`).then(response => response.json()),
+    queryKey: ["public-association-actualites", slug, isTranslate],
+    queryFn:  () => fetch(`${BASE_PATH}/api/public/${slug}/actualites${isTranslate ? "?translate=1" : ""}`).then(response => response.json()),
   })
 
   const site       = data?.site ?? { name: "", config: null }
