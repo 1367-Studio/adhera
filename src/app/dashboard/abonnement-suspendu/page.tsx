@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation"
 import { auth } from "@/lib/auth/config"
 import { prisma } from "@/lib/prisma/client"
+import { getPricingInfo } from "@/lib/stripe"
 import { SuspendedSubscriptionView } from "@/components/parametres/suspended-subscription-view"
 
 export default async function AbonnementSuspenduPage() {
@@ -10,7 +11,7 @@ export default async function AbonnementSuspenduPage() {
 
   const assoc = await prisma.association.findUnique({
     where:  { id: u.associationId },
-    select: { subscriptionStatus: true, suspendedAt: true, trialExpiredAt: true },
+    select: { subscriptionStatus: true, suspendedAt: true, trialExpiredAt: true, subscriptionAmountCents: true },
   })
 
   // Authoritative guard read straight from the DB: without this, any admin could reach
@@ -21,12 +22,22 @@ export default async function AbonnementSuspenduPage() {
 
   const canEdit = u.role === "ADMIN" || u.role === "PRESIDENT"
 
+  // A negotiated PricingOffer still billing 0€ whose subscriptionGracePeriodEndsAt
+  // deadline passed (subscription-grace-period-sweep cron) — unlike a normal payment
+  // failure, there was never an invoice for the Stripe billing portal to collect, so the
+  // generic "Réactiver mon abonnement" -> portal flow leaves her stuck with no way back
+  // in. SuspendedSubscriptionView needs the real plan pricing to offer the same in-place
+  // checkout as SubscriptionUpgradeModal instead, when this case applies.
+  const isFreeOfferGracePeriodExpired = assoc.subscriptionStatus === "SUSPENDED" && assoc.subscriptionAmountCents === 0
+  const essentialPricing = isFreeOfferGracePeriodExpired ? (await getPricingInfo()).plans.essential : null
+
   return (
     <SuspendedSubscriptionView
       canEdit={canEdit}
       subscriptionStatus={assoc.subscriptionStatus as "SUSPENDED" | "CANCELLED"}
       suspendedAt={assoc.suspendedAt?.toISOString() ?? null}
       trialExpired={!!assoc.trialExpiredAt}
+      essentialPricing={essentialPricing}
     />
   )
 }

@@ -15,6 +15,8 @@ import { getPublicSiteUrl } from "@/lib/public-site-url"
 import { FiscalPeriodPopup } from "@/components/layout/fiscal-period-popup"
 import { ReleaseNotesPopup } from "@/components/layout/release-notes-popup"
 import { DashboardMain } from "@/app/dashboard/dashboard-main"
+import { SubscriptionUpgradeModal } from "@/components/billing/subscription-upgrade-modal"
+import { getPricingInfo } from "@/lib/stripe"
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const session = await auth()
@@ -44,6 +46,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
           modules: true, subscriptionStatus: true, plan: true, name: true,
           customBrandingEnabled: true, logoUrl: true, memberCardSettings: true,
           sitePublished: true, customDomain: true, customDomainStatus: true,
+          subscriptionAmountCents: true, subscriptionGracePeriodEndsAt: true,
         },
       })
     : null
@@ -98,7 +101,35 @@ export default async function DashboardLayout({ children }: { children: React.Re
   const popupSeenThisLogin = !!popupUser?.fiscalPeriodPopupSeenAt
     && (loginAt === undefined || popupUser.fiscalPeriodPopupSeenAt.getTime() >= loginAt)
 
-  const showFiscalPeriodPopup = canManageFinance && modules.finances && exerciceCount === 0 && !popupSeenThisLogin
+  // Only relevant for a negotiated PricingOffer still billing 0€ with a staff-set
+  // deadline to convert (see subscriptionGracePeriodEndsAt's comment in schema.prisma) —
+  // same ADMIN/PRESIDENT gate as the standby screen's canEdit, since other roles have no
+  // billing action available anyway. Computed before the other two popups below because
+  // it outranks both of them (see their own guards against it).
+  const canManageBilling = sessionUser.role === "ADMIN" || sessionUser.role === "PRESIDENT"
+  // Presence only, not compared against now: the sweep cron that actually enforces this
+  // deadline only runs once a day, so gating the modal on "still before the deadline"
+  // left a silent window — up to ~24h — between the deadline passing and the next sweep,
+  // where she'd see neither this nudge nor the standby screen. Showing it for as long as
+  // she isn't SUSPENDED yet (that early-return above already excludes SUSPENDED/CANCELLED)
+  // closes that gap; `gracePeriodOverdue` just switches the copy once it's passed.
+  const showSubscriptionUpgradeModal = !!(
+    canManageBilling
+    && assocRow?.subscriptionAmountCents === 0
+    && assocRow.subscriptionGracePeriodEndsAt
+  )
+  const gracePeriodOverdue = showSubscriptionUpgradeModal
+    && assocRow!.subscriptionGracePeriodEndsAt!.getTime() <= Date.now()
+  const essentialPricing = showSubscriptionUpgradeModal
+    ? (await getPricingInfo()).plans.essential
+    : null
+
+  // Neither informational popup may appear alongside the subscription gate above: both
+  // are plain Dialogs with their own open-delay timers (1.5s / 10s), so without this they
+  // render on top of the gate's "locked" modal a moment after it mounts, burying an
+  // un-skippable billing block under a dismissable "what's new" dialog.
+  const showFiscalPeriodPopup = canManageFinance && modules.finances && exerciceCount === 0
+    && !popupSeenThisLogin && !showSubscriptionUpgradeModal
 
   return (
     <UserProvider user={sessionUser} modules={modules} branding={branding} memberCardEnabled={memberCardEnabled} canUseCustomBranding={brandingAllowed}>
@@ -109,8 +140,10 @@ export default async function DashboardLayout({ children }: { children: React.Re
           <PastDueBanner />
           <Header user={session.user} showSidebar showSidebarTrigger={false} showBreadcrumb={false} showTour associationSlug={u.associationSlug ?? undefined} publicSiteUrl={publicSiteUrl} className="border-b-0 bg-background" />
           <FiscalPeriodPopup show={showFiscalPeriodPopup} />
-          {/* Never alongside the fiscal-period popup, so the two dialogs don't stack. */}
-          <ReleaseNotesPopup enabled={!showFiscalPeriodPopup} />
+          {/* Never alongside the fiscal-period popup, so the two dialogs don't stack — nor
+              alongside the subscription gate below, which outranks both. */}
+          <ReleaseNotesPopup enabled={!showFiscalPeriodPopup && !showSubscriptionUpgradeModal} />
+          {essentialPricing && <SubscriptionUpgradeModal show={showSubscriptionUpgradeModal} essentialPricing={essentialPricing} overdue={gracePeriodOverdue} />}
           <DashboardMain>{children}</DashboardMain>
         </SidebarInset>
       </SidebarProvider>

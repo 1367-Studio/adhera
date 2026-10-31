@@ -2276,3 +2276,40 @@ export function securityAlertEmail(p: { to: string; heading: string; body: strin
     html:    layout(APP_NAME, content),
   }
 }
+
+// Platform-level billing notification — not tied to the paying association's own
+// branding, same convention as securityAlertEmail above. Fired once per confirmed
+// subscription invoice (see the invoice.paid webhook case), never for the historical
+// 0€ PricingOffer phase.
+export function formwiseSubscriptionPaymentConfirmedEmail(p: {
+  to:               string
+  associationName:  string
+  cycleLabel:       string
+  amount:           number
+  paidAt:           Date
+  invoiceReference: string
+}) {
+  const row = (label: string, value: string) => `
+    <tr><td style="padding-bottom:10px;">
+      <span style="font-size:13px;color:#6b7280;display:block;margin-bottom:2px;">${label}</span>
+      <span style="font-size:16px;font-weight:700;">${value}</span>
+    </td></tr>`
+  const content = `
+    <h2 style="margin:0 0 20px;font-size:20px;font-weight:700;">Paiement d'abonnement confirmé</h2>
+    <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
+      L'association <strong>${escapeHtml(p.associationName)}</strong> vient de régler son abonnement Formwise.
+    </p>
+    <table style="width:100%;border-collapse:collapse;">
+      ${row("Association", escapeHtml(p.associationName))}
+      ${row("Formule", escapeHtml(p.cycleLabel))}
+      ${row("Montant", `${p.amount.toFixed(2)} €`)}
+      ${row("Date", p.paidAt.toLocaleDateString("fr-FR"))}
+      ${row("Référence", escapeHtml(p.invoiceReference))}
+      ${row("Statut", "Actif")}
+    </table>`
+  return {
+    to:      p.to,
+    subject: `[Formwise] Paiement d'abonnement confirmé — ${p.associationName}`,
+    html:    layout(APP_NAME, content),
+  }
+}

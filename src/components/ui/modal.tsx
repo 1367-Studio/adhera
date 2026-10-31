@@ -30,7 +30,16 @@ interface ModalProps {
   title: string
   description?: string
   size?: keyof typeof sizes
+  // Blocks only an accidental backdrop click while a form has unsaved input — Escape and
+  // the X still close it. This is the dozens of existing create/edit modals across the
+  // app (bank accounts, cotisations, factures, membres…); don't change its meaning here,
+  // add a new prop instead (see `locked`).
   dismissable?: boolean
+  // Blocks EVERY dismissal path — backdrop, Escape, and the X button — leaving only an
+  // explicit in-content action (which calls the caller's own onOpenChange/setOpen
+  // directly, bypassing this entirely) as a way out. For a hard gate like the Formwise
+  // subscription modal, never for an ordinary form the user should be able to back out of.
+  locked?: boolean
   footer?: React.ReactNode
   children?: React.ReactNode
 }
@@ -42,16 +51,20 @@ export function Modal({
   description,
   size = "md",
   dismissable = true,
+  locked = false,
   footer,
   children,
 }: ModalProps) {
   return (
     <Dialog
       open={open}
-      onOpenChange={onOpenChange}
-      disablePointerDismissal={!dismissable}
+      onOpenChange={next => {
+        if (locked && !next) return
+        onOpenChange(next)
+      }}
+      disablePointerDismissal={locked || !dismissable}
     >
-      <DialogContent className={cn(sizes[size])}>
+      <DialogContent className={cn(sizes[size])} showCloseButton={!locked}>
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
           {description && <DialogDescription>{description}</DialogDescription>}
