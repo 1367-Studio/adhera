@@ -11,6 +11,7 @@ import { PRIVACY_URL, TERMS_URL } from "@/lib/consent"
 import { BASE_PATH } from "@/lib/env"
 import type { OfferPhase } from "@/lib/pricing-offers"
 import { registerSchema, type RegisterInput } from "@/lib/schemas"
+import { attributionFromSearchParams, readSignupAttribution, storeSignupAttribution } from "@/lib/signup-attribution"
 import type { PlanTier, PricingInfo } from "@/lib/stripe"
 import { cn } from "@/lib/utils"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -140,6 +141,7 @@ function StepInfo({
             acceptedTerms:   info.acceptedTerms,
             locale:          loc,
             offerToken:      offer.token,
+            attribution:     readSignupAttribution(),
           }),
         })
         const json = await res.json()
@@ -173,6 +175,7 @@ function StepInfo({
             plan,
             tier,
             locale:          loc,
+            attribution:     readSignupAttribution(),
           }),
         })
         const json = await res.json()
@@ -367,6 +370,7 @@ function PaymentForm({
           paymentMethodId,
           locale:          loc,
           offerToken:      offer.token,
+          attribution:     readSignupAttribution(),
         }),
       })
       const data = await res.json()
@@ -505,6 +509,16 @@ function RegisterFormInner({ pricing, header, footer }: RegisterFormProps) {
       .catch(() => { if (!cancelled) setOffer("invalid") })
       .finally(() => { if (!cancelled) setOfferLoading(false) })
     return () => { cancelled = true }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  // Marketing attribution (utm_*, gclid…, fw_click/fw_ref — see src/lib/signup-attribution.ts)
+  // the website appended to its CTA link: stashed on arrival because the URL doesn't always
+  // survive until submit (the Google prefill below replaces it with a bare /register). Runs
+  // before that effect; both read the same initial searchParams anyway.
+  useEffect(() => {
+    const attribution = attributionFromSearchParams(searchParams)
+    if (attribution) storeSignupAttribution(attribution)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 

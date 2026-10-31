@@ -15,7 +15,26 @@ import { writeActivityLog } from "@/lib/activity-log"
 import { SUPPORTED_LOCALES } from "@/i18n/locales"
 import { reportError } from "@/lib/monitoring"
 import { planFromTier } from "@/lib/plan-tier"
+import { recordSignupInSheet } from "@/lib/signup-sheet"
 import type { AssociationPlan } from "@prisma/client"
+
+const attributionValue = z.string().max(300).optional()
+
+// Marketing attribution forwarded by the register form (see src/lib/signup-attribution.ts),
+// only used for the founder's signup sheet. `.catch(undefined)`: a malformed or oversized
+// value just drops the attribution instead of failing the whole registration with a 422.
+const attributionSchema = z.object({
+  utm_source:   attributionValue,
+  utm_medium:   attributionValue,
+  utm_campaign: attributionValue,
+  utm_term:     attributionValue,
+  utm_content:  attributionValue,
+  gclid:        attributionValue,
+  gbraid:       attributionValue,
+  wbraid:       attributionValue,
+  fw_click:     attributionValue,
+  fw_ref:       attributionValue,
+}).optional().catch(undefined)
 
 const schema = z.object({
   associationName: z.string().min(2),
@@ -38,6 +57,7 @@ const schema = z.object({
   tier:            z.enum(["starter", "essential", "pro"]).optional(),
   offerToken:      z.string().optional(),
   locale:          z.enum(SUPPORTED_LOCALES).optional(),
+  attribution:     attributionSchema,
 }).refine(
   d => (d.offerToken != null) !== (d.plan != null && d.tier != null),
   { message: "Choisissez soit un plan, soit un lien d'offre, pas les deux." },
@@ -54,7 +74,7 @@ export async function POST(req: Request) {
   const parsed = schema.safeParse(body)
   if (!parsed.success) return NextResponse.json({ error: "Données invalides" }, { status: 422 })
 
-  const { associationName, city, firstName, lastName, email, password, customerId: browserCustomerId, paymentMethodId, plan, tier, offerToken, locale } = parsed.data
+  const { associationName, city, firstName, lastName, email, password, customerId: browserCustomerId, paymentMethodId, plan, tier, offerToken, locale, attribution } = parsed.data
   const acceptedIp = consentIp(req)
 
   // Custom-pricing signup link: claimed atomically (PENDING → USED) before anything else
@@ -258,6 +278,22 @@ export async function POST(req: Request) {
     // promise here silently never sends on Vercel's serverless runtime.
     await sendEmail(adminWelcomeEmail({ firstName, email: email.toLowerCase(), associationName, loginUrl, trialDays: offer ? 0 : TRIAL_DAYS, hasPaymentMethod })).catch((error: unknown) => {
       reportError(error, { area: "email", action: "register.welcome-email", extra: { associationId: association.id } })
+    })
+
+    // Founder's signup sheet (who signed up, from which ad/keyword). Awaited for the same
+    // serverless reason as the email above; bounded by a short timeout and never throws —
+    // see src/lib/signup-sheet.ts.
+    await recordSignupInSheet({
+      associationId:   association.id,
+      associationName,
+      city,
+      firstName,
+      lastName,
+      email:           email.toLowerCase(),
+      tier:            offer ? "offre" : tier!,
+      plan:            offer ? "offre" : plan!,
+      locale,
+      attribution,
     })
 
     return NextResponse.json({ ok: true })
