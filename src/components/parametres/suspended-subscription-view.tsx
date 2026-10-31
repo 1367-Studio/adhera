@@ -10,6 +10,8 @@ import { WarningCircleIcon, DownloadSimpleIcon, ArrowClockwiseIcon, SignOutIcon 
 import { Button } from "@/components/ui/button"
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card"
 import { ConfirmDialog } from "@/components/ui/confirm-dialog"
+import { SubscriptionUpgradeCheckout } from "@/components/billing/subscription-upgrade-modal"
+import type { PlanPricing } from "@/lib/stripe"
 import { apiErrorMessage } from "@/lib/api-error"
 import { BASE_PATH } from "@/lib/env"
 
@@ -22,6 +24,7 @@ export function SuspendedSubscriptionView({
   subscriptionStatus,
   suspendedAt,
   trialExpired,
+  essentialPricing,
 }: {
   canEdit:             boolean
   subscriptionStatus:  "SUSPENDED" | "CANCELLED"
@@ -30,6 +33,12 @@ export function SuspendedSubscriptionView({
   // Association.trialExpiredAt) — same screen, but "your trial ended" wording rather
   // than "your subscription was cancelled", which the admin never did.
   trialExpired:        boolean
+  // Non-null only for a negotiated 0€ PricingOffer whose subscriptionGracePeriodEndsAt
+  // deadline passed (see the page's own comment) — that case gets the same in-place
+  // Stripe checkout as SubscriptionUpgradeModal instead of the generic "Réactiver mon
+  // abonnement" -> billing-portal button below, which has no invoice to collect on a
+  // subscription that was never actually billed.
+  essentialPricing:    PlanPricing | null
 }) {
   const t                    = useTranslations("parametres.suspended")
   const tCommon              = useTranslations("common")
@@ -55,6 +64,11 @@ export function SuspendedSubscriptionView({
 
   const status = data?.subscriptionStatus ?? subscriptionStatus
   const isCancelled = status === "CANCELLED"
+  // essentialPricing is only ever passed for this exact case (see the page's comment) —
+  // status is re-derived from the polling query above, but that query only ever reports
+  // SUSPENDED/CANCELLED/something-else, never a reason, so essentialPricing's presence is
+  // the only signal for which SUSPENDED sub-case this is.
+  const isFreeOfferGracePeriodExpired = status === "SUSPENDED" && essentialPricing !== null
 
   useEffect(() => {
     if (status !== "SUSPENDED" && status !== "CANCELLED") {
@@ -117,6 +131,11 @@ export function SuspendedSubscriptionView({
     ? new Date(data.suspendedAt).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })
     : null
 
+  function handleUpgradeSuccess() {
+    toast.success("Votre abonnement Formwise est maintenant actif.")
+    router.push("/dashboard")
+  }
+
   return (
     <div className="min-h-screen flex items-center justify-center p-4">
       <Card className="max-w-lg w-full">
@@ -134,6 +153,12 @@ export function SuspendedSubscriptionView({
               t("trialExpiredDesc", { action: canEdit ? t("trialExpiredDescCanEdit") : t("trialExpiredDescCannotEdit") })
             ) : isCancelled ? (
               t("cancelledDesc", { action: canEdit ? t("cancelledDescCanEdit") : t("cancelledDescCannotEdit") })
+            ) : isFreeOfferGracePeriodExpired ? (
+              // Distinct from the generic payment-failure wording below: nothing was ever
+              // billed here, so "les derniers prélèvements ont échoué" would be false —
+              // this association simply didn't convert off its negotiated free offer
+              // before the staff-set deadline (see subscriptionGracePeriodEndsAt).
+              "Le délai accordé pour souscrire à un abonnement payant est dépassé et l'accès à Formwise est suspendu. Choisissez une formule ci-dessous pour le rétablir immédiatement."
             ) : (
               <>
                 {suspendedSinceLabel
@@ -153,7 +178,9 @@ export function SuspendedSubscriptionView({
 
         {canEdit && (
           <CardContent className="flex flex-col gap-2">
-            {isCancelled ? (
+            {isFreeOfferGracePeriodExpired ? (
+              <SubscriptionUpgradeCheckout essentialPricing={essentialPricing} onSuccess={handleUpgradeSuccess} />
+            ) : isCancelled ? (
               <Button onClick={() => router.push("/dashboard/reactiver-abonnement")}>
                 <ArrowClockwiseIcon className="mr-2 size-4" />
                 {trialExpired ? t("subscribe") : t("resubscribe")}
