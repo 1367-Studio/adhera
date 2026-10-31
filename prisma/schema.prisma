@@ -589,6 +589,14 @@ model Association {
   // in src/lib/stripe.ts. Null before the first sync (e.g. still on TRIAL with no Stripe
   // subscription at all yet).
   subscriptionAmountCents        Int?
+  // Staff-set deadline to regularize a negotiated PricingOffer still billing 0€ (see
+  // subscriptionAmountCents above) onto real catalog pricing. Read by the
+  // subscription-grace-period-sweep cron (src/app/api/cron/subscription-grace-period-sweep),
+  // which force-suspends the association if this date has passed and it's still unpaid —
+  // independent of Stripe's own dunning, since a €0 subscription never naturally fails an
+  // invoice. Cleared once the association converts to a real price (see
+  // /api/billing/upgrade-from-offer) or has no pending deadline.
+  subscriptionGracePeriodEndsAt  DateTime?
   trialEndsAt                    DateTime?
   // Stamped by the Stripe webhook when a card-free trial (see /api/register) reached its
   // end with still no payment method on file and Stripe cancelled the subscription — as

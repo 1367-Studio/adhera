@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server"
 import { Prisma } from "@prisma/client"
-import { stripe, toSubscriptionStatus, subscriptionPeriodEnd, tierForPriceId, getPricingInfo } from "@/lib/stripe"
+import { stripe, toSubscriptionStatus, subscriptionPeriodEnd, tierForPriceId, getPricingInfo, priceIdFor } from "@/lib/stripe"
 import { prisma } from "@/lib/prisma/client"
 import { sendEmail } from "@/lib/mail"
-import { donConfirmationEmail, boutiqueConfirmationEmail, boutiqueNewOrderAdminEmail, ticketPurchaseEmail, subscriptionPaymentFailedEmail } from "@/lib/email"
+import { donConfirmationEmail, boutiqueConfirmationEmail, boutiqueNewOrderAdminEmail, ticketPurchaseEmail, subscriptionPaymentFailedEmail, formwiseSubscriptionPaymentConfirmedEmail } from "@/lib/email"
 import { notifyEventRegistration } from "@/lib/evenement-notify"
 import { generateRecuFiscalForDon } from "@/lib/pdf/recu-fiscal"
 import { buildDocumentPdf } from "@/lib/pdf/document-pdf"
@@ -55,6 +55,10 @@ function invoiceSubscriptionId(invoice: Stripe.Invoice): string | null {
   const sub = invoice.parent?.subscription_details?.subscription
   return typeof sub === "string" ? sub : sub?.id ?? null
 }
+
+// Fixed platform-level inbox, not per-association — same convention as
+// SECURITY_ALERT_EMAIL in src/lib/security-alerts.ts.
+const FORMWISE_BILLING_NOTIFICATION_EMAIL = process.env.FORMWISE_BILLING_NOTIFICATION_EMAIL
 
 export const dynamic = "force-dynamic"
 
@@ -1506,6 +1510,56 @@ export async function POST(req: Request) {
       // invoice never carries their discriminating metadata, so there's no overlap.
       const platformSubId = invoiceSubscriptionId(invoice)
       if (platformSubId && invoice.amount_paid > 0) {
+        // Tell the Formwise team whenever an association's OWN subscription invoice gets
+        // paid against the real Essentiel catalog price — distinguishes a genuine
+        // conversion from the historical 0€ PricingOffer phase (a different, custom
+        // price_data price that never matches either catalog id here).
+        const lineItem      = invoice.lines.data[0]
+        const linePriceId   = lineItem?.pricing?.price_details?.price
+        const linePriceIdStr = typeof linePriceId === "string" ? linePriceId : linePriceId?.id ?? null
+        const paidCycle = linePriceIdStr === priceIdFor("essential", "monthly") ? "Mensuel"
+          : linePriceIdStr === priceIdFor("essential", "yearly") ? "Annuel"
+          : null
+        if (paidCycle && FORMWISE_BILLING_NOTIFICATION_EMAIL) {
+          const notifyAssoc = await prisma.association.findFirst({
+            where:  { stripeSubscriptionId: platformSubId },
+            select: { id: true, name: true },
+          })
+          if (notifyAssoc) {
+            // Scoped to the association, not this invoice/event: the point is a one-time
+            // "she converted off the free offer" notice, not a running log of every
+            // monthly/annual renewal — so any PRIOR notification for this association
+            // (any invoice) blocks sending again, not just a redelivery of this same one.
+            const alreadyNotified = await prisma.activityLog.findFirst({
+              where: {
+                associationId: notifyAssoc.id,
+                action:        "SUBSCRIPTION_PAYMENT_CONFIRMED_NOTIFIED",
+              },
+              select: { id: true },
+            })
+            if (!alreadyNotified) {
+              await writeActivityLog({
+                associationId: notifyAssoc.id,
+                action:        "SUBSCRIPTION_PAYMENT_CONFIRMED_NOTIFIED",
+                entity:        "Invoice",
+                entityId:      invoice.id ?? null,
+                metadata:      { stripeEventId: event.id },
+              })
+              const paidAt = invoice.status_transitions?.paid_at
+                ? new Date(invoice.status_transitions.paid_at * 1000)
+                : new Date()
+              sendEmail(formwiseSubscriptionPaymentConfirmedEmail({
+                to:               FORMWISE_BILLING_NOTIFICATION_EMAIL,
+                associationName:  notifyAssoc.name,
+                cycleLabel:       paidCycle,
+                amount:           invoice.amount_paid / 100,
+                paidAt,
+                invoiceReference: invoice.id ?? "",
+              })).catch(error => reportError(error, { area: "email", action: "webhook.subscription-payment-confirmed-email", extra: { associationId: notifyAssoc.id, stripeEventId: event.id } }))
+            }
+          }
+        }
+
         const pendingAssoc = await prisma.association.findFirst({
           where:  { stripeSubscriptionId: platformSubId, stripeSchedulePendingReleaseAt: { not: null } },
           select: { id: true, stripeSubscriptionScheduleId: true },
