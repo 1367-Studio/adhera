@@ -1268,6 +1268,33 @@
         "deleted": "Compte supprimé"
       }
     },
+    "transferForm": {
+      "fromAccount": "Compte source",
+      "toAccount": "Compte destination",
+      "amount": "Montant",
+      "date": "Date",
+      "note": "Note",
+      "notePlaceholder": "Ex: virement d'épargne",
+      "toasts": {
+        "created": "Transfert enregistré",
+        "updated": "Transfert mis à jour",
+        "deleted": "Transfert supprimé"
+      }
+    },
+    "transfersView": {
+      "title": "Transferts internes",
+      "add": "Transférer",
+      "newTransferTitle": "Nouveau transfert entre comptes",
+      "editTransferTitle": "Modifier le transfert",
+      "deleteConfirmTitle": "Supprimer ce transfert ?",
+      "noTransfers": "Aucun transfert enregistré",
+      "columns": {
+        "accounts": "Comptes",
+        "amount": "Montant",
+        "date": "Date",
+        "note": "Note"
+      }
+    },
     "categoriesView": {
       "title": "Catégories",
       "description": "Gérez les catégories de recettes et de dépenses.",
@@ -1290,7 +1317,7 @@
       "archived": "Archivée",
       "reactivate": "Réactiver",
       "showArchived": "Afficher les catégories archivées",
-      "transferLimitationNote": "Les virements entre comptes bancaires de l'association (trésorerie interne) ne doivent jamais être saisis comme une recette ou une dépense — ce cas n'est pas encore pris en charge.",
+      "transferLimitationNote": "Les virements entre comptes bancaires de l'association (trésorerie interne) ne doivent jamais être saisis comme une recette ou une dépense — enregistrez-les depuis Comptabilité → Comptes.",
       "archiveConfirmTitle": "Archiver cette catégorie ?",
       "archiveConfirmInUse": "« {name} » est utilisée par {count, plural, one {# recette/dépense} other {# recettes/dépenses}}. Elle sera archivée (son historique est conservé) et ne pourra plus être choisie pour de nouvelles opérations.",
       "archive": "Archiver"
@@ -1498,6 +1525,7 @@
         "actions": "Actions"
       },
       "reconciledFallback": "Concilié",
+      "transferLabel": "Transfert interne — {from} → {to}",
       "allAccounts": "Tous les comptes",
       "noTransactions": "Aucune transaction à afficher",
       "actions": {
@@ -1530,6 +1558,7 @@
       "suggestedMatches": "Correspondances suggérées",
       "typeIncome": "Recette",
       "typeExpense": "Dépense",
+      "typeTransfer": "Transfert interne",
       "confirm": "Valider la conciliation"
     }
   },

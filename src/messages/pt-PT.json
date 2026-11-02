@@ -1043,6 +1043,33 @@
         "deleted": "Conta eliminada"
       }
     },
+    "transferForm": {
+      "fromAccount": "Conta de origem",
+      "toAccount": "Conta de destino",
+      "amount": "Montante",
+      "date": "Data",
+      "note": "Nota",
+      "notePlaceholder": "Ex.: transferência para poupança",
+      "toasts": {
+        "created": "Transferência registada",
+        "updated": "Transferência atualizada",
+        "deleted": "Transferência eliminada"
+      }
+    },
+    "transfersView": {
+      "title": "Transferências internas",
+      "add": "Transferir",
+      "newTransferTitle": "Nova transferência entre contas",
+      "editTransferTitle": "Editar transferência",
+      "deleteConfirmTitle": "Eliminar esta transferência?",
+      "noTransfers": "Nenhuma transferência registada",
+      "columns": {
+        "accounts": "Contas",
+        "amount": "Montante",
+        "date": "Data",
+        "note": "Nota"
+      }
+    },
     "categoriesView": {
       "title": "Categorias",
       "description": "Faça a gestão das categorias de receitas e despesas.",
@@ -1265,6 +1292,7 @@
         "actions": "Ações"
       },
       "reconciledFallback": "Reconciliada",
+      "transferLabel": "Transferência interna — {from} → {to}",
       "allAccounts": "Todas as contas",
       "noTransactions": "Nenhuma transação a mostrar",
       "actions": {
@@ -1297,6 +1325,7 @@
       "suggestedMatches": "Correspondências sugeridas",
       "typeIncome": "Receita",
       "typeExpense": "Despesa",
+      "typeTransfer": "Transferência interna",
       "confirm": "Confirmar reconciliação"
     },
     "compteResultat": {
