@@ -39,6 +39,10 @@
       "schedule": "0 7 * * *"
     },
     {
+      "path": "/api/cron/subscription-grace-period-sweep",
+      "schedule": "0 8 * * *"
+    },
+    {
       "path": "/api/cron/custom-domain-verification-sweep",
       "schedule": "*/15 * * * *"
     },
