@@ -1279,13 +1279,17 @@
       "note": "Note",
       "notePlaceholder": "Ex: virement d'épargne",
       "toasts": {
-        "created": "Transfert enregistré"
+        "created": "Transfert enregistré",
+        "updated": "Transfert mis à jour",
+        "deleted": "Transfert supprimé"
       }
     },
     "transfersView": {
       "title": "Transferts internes",
       "add": "Transférer",
       "newTransferTitle": "Nouveau transfert entre comptes",
+      "editTransferTitle": "Modifier le transfert",
+      "deleteConfirmTitle": "Supprimer ce transfert ?",
       "noTransfers": "Aucun transfert enregistré",
       "columns": {
         "accounts": "Comptes",
@@ -1524,6 +1528,7 @@
         "actions": "Actions"
       },
       "reconciledFallback": "Concilié",
+      "transferLabel": "Transfert interne — {from} → {to}",
       "allAccounts": "Tous les comptes",
       "noTransactions": "Aucune transaction à afficher",
       "actions": {
@@ -1556,6 +1561,7 @@
       "suggestedMatches": "Correspondances suggérées",
       "typeIncome": "Recette",
       "typeExpense": "Dépense",
+      "typeTransfer": "Transfert interne",
       "confirm": "Valider la conciliation"
     }
   },

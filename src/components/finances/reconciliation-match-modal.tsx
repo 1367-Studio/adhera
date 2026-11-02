@@ -13,13 +13,17 @@ type Suggestion  = {
   type:   "income" | "expense"
   score:  number
   entity: { id: string; amount: string; description?: string | null; vendor?: string | null; date: string; membre?: { firstName: string; lastName: string } | null }
+} | {
+  type:   "transfer"
+  score:  number
+  entity: { id: string; amount: string; date: string; fromAccount: { accountName: string; bankName: string }; toAccount: { accountName: string; bankName: string } }
 }
 
 interface Props {
   transaction: Transaction
   open:        boolean
   onOpenChange: (o: boolean) => void
-  onMatch:     (ids: { incomeId?: string; expenseId?: string }) => Promise<void>
+  onMatch:     (ids: { incomeId?: string; expenseId?: string; transferId?: string }) => Promise<void>
 }
 
 function ScoreBadge({ score }: { score: number }) {
@@ -52,7 +56,11 @@ export function ReconciliationMatchModal({ transaction, open, onOpenChange, onMa
     if (!sug) return
     setLoading(true)
     try {
-      await onMatch(sug.type === "income" ? { incomeId: selected } : { expenseId: selected })
+      await onMatch(
+        sug.type === "income"   ? { incomeId: selected }
+        : sug.type === "expense" ? { expenseId: selected }
+        : { transferId: selected },
+      )
     } finally {
       setLoading(false)
     }
@@ -86,15 +94,21 @@ export function ReconciliationMatchModal({ transaction, open, onOpenChange, onMa
               >
                 <div className="flex items-center justify-between mb-1">
                   <div className="flex items-center gap-2">
-                    <Badge variant={s.type === "income" ? "default" : "secondary"} className="text-xs">
-                      {s.type === "income" ? t("finances.reconciliationMatchModal.typeIncome") : t("finances.reconciliationMatchModal.typeExpense")}
+                    <Badge variant={s.type === "income" ? "default" : s.type === "expense" ? "secondary" : "outline"} className="text-xs">
+                      {s.type === "income" ? t("finances.reconciliationMatchModal.typeIncome")
+                        : s.type === "expense" ? t("finances.reconciliationMatchModal.typeExpense")
+                        : t("finances.reconciliationMatchModal.typeTransfer")}
                     </Badge>
                     <ScoreBadge score={s.score} />
                   </div>
                   <span className="font-semibold tabular-nums text-sm">{fmt(s.entity.amount)}</span>
                 </div>
-                <p className="text-sm">{s.entity.description || (s.entity as { vendor?: string }).vendor || (s.entity.membre ? `${s.entity.membre.firstName} ${s.entity.membre.lastName}` : "—")}</p>
-                <p className="text-xs text-muted-foreground">{new Date(s.entity.date).toLocaleDateString("fr-FR")}</p>
+                <p className="text-sm">
+                  {s.type === "transfer"
+                    ? `${s.entity.fromAccount.accountName} → ${s.entity.toAccount.accountName}`
+                    : s.entity.description || (s.entity as { vendor?: string }).vendor || (s.entity.membre ? `${s.entity.membre.firstName} ${s.entity.membre.lastName}` : "—")}
+                </p>
+                <p className="text-xs text-muted-foreground">{new Date(s.entity.date).toLocaleDateString("fr-FR", { timeZone: "UTC" })}</p>
               </button>
             ))}
           </div>

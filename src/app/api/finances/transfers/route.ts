@@ -5,7 +5,8 @@ import { writeActivityLog } from "@/lib/activity-log"
 import { withAdminAuth } from "@/lib/api-wrapper"
 import { resolveExerciceForDate, closedExerciceGuard } from "@/lib/finance/exercice"
 
-const accountSelect = { id: true, accountName: true, bankName: true } as const
+const accountSelect = { id: true, accountName: true, bankName: true, currency: true } as const
+const accountSelectWithStatus = { ...accountSelect, isActive: true } as const
 
 export const GET = withAdminAuth(async (_req, ctx) => {
   const { associationId } = ctx
@@ -30,11 +31,18 @@ export const POST = withAdminAuth(async (req, ctx) => {
   const date = new Date(parsed.data.date)
 
   const [fromAccount, toAccount] = await Promise.all([
-    prisma.bankAccount.findFirst({ where: { id: fromAccountId, associationId }, select: accountSelect }),
-    prisma.bankAccount.findFirst({ where: { id: toAccountId, associationId }, select: accountSelect }),
+    prisma.bankAccount.findFirst({ where: { id: fromAccountId, associationId }, select: accountSelectWithStatus }),
+    prisma.bankAccount.findFirst({ where: { id: toAccountId, associationId }, select: accountSelectWithStatus }),
   ])
   if (!fromAccount) return NextResponse.json({ error: "Compte source introuvable" }, { status: 404 })
   if (!toAccount) return NextResponse.json({ error: "Compte destination introuvable" }, { status: 404 })
+  if (!fromAccount.isActive) return NextResponse.json({ error: "Le compte source est inactif" }, { status: 422 })
+  if (!toAccount.isActive) return NextResponse.json({ error: "Le compte destination est inactif" }, { status: 422 })
+  // No FX conversion exists on AccountTransfer (a single `amount` with no rate) — a
+  // cross-currency transfer would silently misrepresent the amount on one side.
+  if (fromAccount.currency !== toAccount.currency) {
+    return NextResponse.json({ error: `Les comptes source et destination doivent avoir la même devise (${fromAccount.currency} / ${toAccount.currency})` }, { status: 422 })
+  }
 
   const exercice = await resolveExerciceForDate(associationId, date)
   const exerciceGuard = closedExerciceGuard(exercice?.status)
