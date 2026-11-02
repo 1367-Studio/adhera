@@ -185,8 +185,13 @@ export function ReleaseNotesPopup({ enabled }: { enabled: boolean }) {
     setOpen(false)
   }
 
-  function handleOpenChange(nextOpen: boolean) {
-    if (!nextOpen) closeMarkingViewed()
+  // Closes only via the X button (reason "close-press") — backdrop clicks, Escape, and the
+  // close-watcher gesture are all ignored, matching the fiscal-period popup's Modal
+  // `closeOnlyViaButton` behavior for this family of app-wide notification pop-ups.
+  function handleOpenChange(nextOpen: boolean, eventDetails: { reason: string }) {
+    if (nextOpen) return
+    if (eventDetails.reason !== "close-press") return
+    closeMarkingViewed()
   }
 
   function handleKeyDown(event: KeyboardEvent<HTMLDivElement>) {
@@ -205,7 +210,7 @@ export function ReleaseNotesPopup({ enabled }: { enabled: boolean }) {
   }
 
   return (
-    <Dialog open={open} onOpenChange={handleOpenChange}>
+    <Dialog open={open} onOpenChange={handleOpenChange} disablePointerDismissal>
       <DialogContent className="sm:max-w-md" initialFocus={primaryButtonRef} onKeyDown={handleKeyDown}>
         <DialogHeader className="pr-8">
           <DialogTitle className="text-base font-medium">{t("title")}</DialogTitle>

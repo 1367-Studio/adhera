@@ -42,6 +42,7 @@ export function FiscalPeriodPopup({ show }: { show: boolean }) {
       onOpenChange={setOpen}
       title={t("title")}
       size="lg"
+      closeOnlyViaButton
       footer={
         <div className="flex w-full justify-end gap-2">
           <Button type="button" variant="outline" onClick={() => setOpen(false)}>{t("later")}</Button>
