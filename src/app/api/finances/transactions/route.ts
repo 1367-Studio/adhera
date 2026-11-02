@@ -28,8 +28,9 @@ export const GET = withAdminAuth(async (req, ctx) => {
     bankAccount:     { select: { accountName: true, bankName: true } },
     reconciliations: {
       include: {
-        income:  { select: { id: true, description: true, amount: true, memberId: true, membre: { select: { firstName: true, lastName: true } } } },
-        expense: { select: { id: true, description: true, vendor: true, amount: true } },
+        income:   { select: { id: true, description: true, amount: true, memberId: true, membre: { select: { firstName: true, lastName: true } } } },
+        expense:  { select: { id: true, description: true, vendor: true, amount: true } },
+        transfer: { select: { id: true, amount: true, fromAccount: { select: { accountName: true } }, toAccount: { select: { accountName: true } } } },
       },
     },
   }

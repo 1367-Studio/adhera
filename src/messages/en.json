@@ -1164,13 +1164,17 @@
       "note": "Note",
       "notePlaceholder": "E.g. savings transfer",
       "toasts": {
-        "created": "Transfer recorded"
+        "created": "Transfer recorded",
+        "updated": "Transfer updated",
+        "deleted": "Transfer deleted"
       }
     },
     "transfersView": {
       "title": "Internal transfers",
       "add": "Transfer",
       "newTransferTitle": "New transfer between accounts",
+      "editTransferTitle": "Edit transfer",
+      "deleteConfirmTitle": "Delete this transfer?",
       "noTransfers": "No transfer recorded",
       "columns": {
         "accounts": "Accounts",
@@ -1409,6 +1413,7 @@
         "actions": "Actions"
       },
       "reconciledFallback": "Matched",
+      "transferLabel": "Internal transfer — {from} → {to}",
       "allAccounts": "All accounts",
       "noTransactions": "No transactions to display",
       "actions": {
@@ -1441,6 +1446,7 @@
       "suggestedMatches": "Suggested matches",
       "typeIncome": "Income",
       "typeExpense": "Expense",
+      "typeTransfer": "Internal transfer",
       "confirm": "Confirm match"
     }
   },

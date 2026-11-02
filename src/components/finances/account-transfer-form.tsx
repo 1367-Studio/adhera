@@ -15,31 +15,45 @@ interface AccountOption {
   id: string
   accountName: string
   bankName: string
+  currency: string
 }
 
 interface AccountTransferFormProps {
-  accounts:  AccountOption[]
-  onSubmit:  (data: AccountTransferInput) => Promise<void>
-  onCancel:  () => void
-  loading?:  boolean
+  accounts:       AccountOption[]
+  defaultValues?: Partial<AccountTransferInput>
+  onSubmit:       (data: AccountTransferInput) => Promise<void>
+  onCancel:       () => void
+  loading?:       boolean
 }
 
-export function AccountTransferForm({ accounts, onSubmit, onCancel, loading }: AccountTransferFormProps) {
+export function AccountTransferForm({ accounts, defaultValues, onSubmit, onCancel, loading }: AccountTransferFormProps) {
   const t = useTranslations()
 
+  const accountsById = new Map(accounts.map(a => [a.id, a]))
   const accountOptions = accounts.map(a => ({ value: a.id, label: `${a.accountName} — ${a.bankName}` }))
+
+  const initialValues = { date: new Date().toISOString().split("T")[0], amount: 0, ...defaultValues }
 
   const { register, control, handleSubmit, reset, formState: { errors } } = useForm<AccountTransferInput>({
     resolver: zodResolver(accountTransferSchema) as Resolver<AccountTransferInput>,
-    defaultValues: { date: new Date().toISOString().split("T")[0], amount: 0 },
+    defaultValues: initialValues,
     mode: "onSubmit",
   })
 
   useEffect(() => {
-    reset({ date: new Date().toISOString().split("T")[0], amount: 0 })
-  }, [reset])
+    reset({ date: new Date().toISOString().split("T")[0], amount: 0, ...defaultValues })
+  }, [defaultValues, reset])
 
   const fromAccountId = useWatch({ control, name: "fromAccountId" })
+  // Only an account sharing the source's currency can be the destination — AccountTransfer
+  // carries a single amount with no FX conversion, so a cross-currency pick would silently
+  // misrepresent the amount on one side. See schema.prisma's AccountTransfer doc comment.
+  const fromCurrency = fromAccountId ? accountsById.get(fromAccountId)?.currency : undefined
+  const toAccountOptions = accountOptions.filter(o => {
+    if (o.value === fromAccountId) return false
+    if (!fromCurrency) return true
+    return accountsById.get(o.value)?.currency === fromCurrency
+  })
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
@@ -57,7 +71,7 @@ export function AccountTransferForm({ accounts, onSubmit, onCancel, loading }: A
           render={({ field }) => (
             <SelectField
               label={t("finances.transferForm.toAccount")} required
-              options={accountOptions.filter(o => o.value !== fromAccountId)}
+              options={toAccountOptions}
               value={field.value ?? ""} onValueChange={field.onChange} error={errors.toAccountId?.message}
             />
           )}

@@ -1148,13 +1148,17 @@
       "note": "Nota",
       "notePlaceholder": "Ex.: transferência para poupança",
       "toasts": {
-        "created": "Transferência registrada"
+        "created": "Transferência registrada",
+        "updated": "Transferência atualizada",
+        "deleted": "Transferência excluída"
       }
     },
     "transfersView": {
       "title": "Transferências internas",
       "add": "Transferir",
       "newTransferTitle": "Nova transferência entre contas",
+      "editTransferTitle": "Editar transferência",
+      "deleteConfirmTitle": "Excluir esta transferência?",
       "noTransfers": "Nenhuma transferência registrada",
       "columns": {
         "accounts": "Contas",
@@ -1385,6 +1389,7 @@
         "actions": "Ações"
       },
       "reconciledFallback": "Conciliada",
+      "transferLabel": "Transferência interna — {from} → {to}",
       "allAccounts": "Todas as contas",
       "noTransactions": "Nenhuma transação para exibir",
       "actions": {
@@ -1417,6 +1422,7 @@
       "suggestedMatches": "Correspondências sugeridas",
       "typeIncome": "Receita",
       "typeExpense": "Despesa",
+      "typeTransfer": "Transferência interna",
       "confirm": "Confirmar conciliação"
     }
   },

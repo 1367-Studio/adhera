@@ -22,7 +22,7 @@ export const GET = withAdminAuth(async (req, ctx) => {
   const dateTo = new Date(tx.transactionDate)
   dateTo.setDate(dateTo.getDate() + 7)
 
-  const [incomes, expenses] = await Promise.all([
+  const [incomes, expenses, transfers] = await Promise.all([
     tx.type === "CREDIT"
       ? prisma.income.findMany({
           where: {
@@ -46,6 +46,25 @@ export const GET = withAdminAuth(async (req, ctx) => {
           take: 20,
         })
       : Promise.resolve([]),
+    // A transfer has two legs matched independently (BankReconciliation.transferId isn't
+    // unique — see its doc comment in schema.prisma), so "already suggested" has to mean
+    // "this specific account's leg is already matched", not "the transfer has any match at
+    // all" — otherwise matching the first leg would hide the transfer from the second
+    // account's own suggestions. Direction matters too: a DEBIT (money leaving this account)
+    // can only be this transfer's fromAccount leg, a CREDIT only its toAccount leg.
+    prisma.accountTransfer.findMany({
+      where: {
+        associationId,
+        date: { gte: dateFrom, lte: dateTo },
+        ...(tx.type === "DEBIT" ? { fromAccountId: tx.bankAccountId } : { toAccountId: tx.bankAccountId }),
+        reconciliations: { none: { bankTransaction: { bankAccountId: tx.bankAccountId } } },
+      },
+      include: {
+        fromAccount: { select: { accountName: true, bankName: true } },
+        toAccount:   { select: { accountName: true, bankName: true } },
+      },
+      take: 20,
+    }),
   ])
 
   const incomeSuggestions = incomes.map(income => ({
@@ -66,7 +85,16 @@ export const GET = withAdminAuth(async (req, ctx) => {
     ) / 120) * 100)),
   }))
 
-  const suggestions = [...incomeSuggestions, ...expenseSuggestions]
+  const transferSuggestions = transfers.map(transfer => ({
+    type:   "transfer" as const,
+    entity: transfer,
+    score:  Math.min(100, Math.round((computeMatchScore(
+      { amount: tx.amount, transactionDate: tx.transactionDate, label: tx.label },
+      { amount: transfer.amount, date: transfer.date },
+    ) / 120) * 100)),
+  }))
+
+  const suggestions = [...incomeSuggestions, ...expenseSuggestions, ...transferSuggestions]
     .filter(s => s.score >= 25)
     .sort((a, b) => b.score - a.score)
     .slice(0, 5)
