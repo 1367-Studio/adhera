@@ -14,7 +14,7 @@ const AUTOPLAY_DELAY_MS = 4000
 // in a new tab; no lightbox JS.
 
 export type GalleryImage = { image: string; alt: string; caption: string }
-export type GalleryColumns = "2" | "3" | "4"
+export type GalleryColumns = "1" | "2" | "3" | "4"
 export type GalleryAspect = "square" | "original"
 export type GalleryDisplayMode = "grid" | "carousel"
 
@@ -24,17 +24,20 @@ export type GalleryBlockProps = SectionStyleProps & {
   displayMode: GalleryDisplayMode
   columns:     GalleryColumns
   aspect:      GalleryAspect
-  // Optional: resolveFields below hides this control (and so never sends it back) in grid mode.
+  // Optional: resolveFields below hides these controls (and so never sends them back) in grid mode.
   autoplay?:   boolean
+  loop?:       boolean
 }
 
 const GRID_CLASSES: Record<GalleryColumns, string> = {
+  "1": "grid-cols-1",
   "2": "grid-cols-1 sm:grid-cols-2",
   "3": "grid-cols-2 md:grid-cols-3",
   "4": "grid-cols-2 md:grid-cols-3 lg:grid-cols-4",
 }
 
 const CAROUSEL_BASIS_CLASSES: Record<GalleryColumns, string> = {
+  "1": "basis-full",
   "2": "basis-full sm:basis-1/2",
   "3": "basis-1/2 md:basis-1/3",
   "4": "basis-1/2 md:basis-1/3 lg:basis-1/4",
@@ -81,17 +84,32 @@ const GALLERY_FIELDS: Fields<GalleryBlockProps> = {
     ],
   },
   autoplay: { type: "radio", label: "Défilement automatique", options: YES_NO_OPTIONS },
+  loop:     { type: "radio", label: "Boucle infinie", options: YES_NO_OPTIONS },
   ...SECTION_STYLE_FIELDS,
+}
+
+// Carousel mode shows fewer, larger photos at once (1-3) instead of the grid's column count (2-4).
+const CAROUSEL_COLUMNS_FIELD: Fields<GalleryBlockProps>["columns"] = {
+  type:    "radio",
+  label:   "Photos visibles",
+  options: [
+    { label: "1", value: "1" },
+    { label: "2", value: "2" },
+    { label: "3", value: "3" },
+  ],
 }
 
 export const galleryBlock: ComponentConfig<GalleryBlockProps> = {
   label:  "Galerie",
   fields: GALLERY_FIELDS,
-  // "Défilement automatique" only means something in carousel mode — hide it in grid mode.
+  // "Défilement automatique"/"Boucle infinie" and the columns options only make sense per mode.
   resolveFields: galleryData => {
-    if (galleryData.props.displayMode === "carousel") return GALLERY_FIELDS
+    if (galleryData.props.displayMode === "carousel") {
+      return { ...GALLERY_FIELDS, columns: CAROUSEL_COLUMNS_FIELD }
+    }
     const visibleFields = { ...GALLERY_FIELDS }
     delete visibleFields.autoplay
+    delete visibleFields.loop
     return visibleFields
   },
   defaultProps: {
@@ -101,9 +119,10 @@ export const galleryBlock: ComponentConfig<GalleryBlockProps> = {
     columns:     "3",
     aspect:      "square",
     autoplay:    false,
+    loop:        false,
     ...SECTION_STYLE_DEFAULTS,
   },
-  render: ({ title, images, displayMode, columns, aspect, autoplay = false, background, textColor, spacing, width, puck }) => {
+  render: ({ title, images, displayMode, columns, aspect, autoplay = false, loop = false, background, textColor, spacing, width, puck }) => {
     const visibleImages = images.filter(galleryImage => galleryImage.image)
     const isSquare       = aspect === "square"
     const isCarousel     = displayMode === "carousel"
@@ -114,7 +133,7 @@ export const galleryBlock: ComponentConfig<GalleryBlockProps> = {
           href={galleryImage.image}
           target="_blank"
           rel="noopener noreferrer"
-          className="block overflow-hidden"
+          className={cn("block w-full overflow-hidden", isCarousel && "h-64 sm:h-72 md:h-80")}
           style={{ borderRadius: "var(--site-radius)" }}
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -122,7 +141,12 @@ export const galleryBlock: ComponentConfig<GalleryBlockProps> = {
             src={galleryImage.image}
             alt={galleryImage.alt || galleryImage.caption || ""}
             loading="lazy"
-            className={cn("w-full transition-opacity hover:opacity-90", isSquare ? "aspect-square object-cover" : "h-auto object-contain")}
+            className={cn(
+              "transition-opacity hover:opacity-90",
+              isCarousel
+                ? cn("h-full w-full", isSquare ? "object-cover" : "object-contain")
+                : cn("w-full", isSquare ? "aspect-square object-cover" : "h-auto object-contain"),
+            )}
           />
         </a>
         {galleryImage.caption && (
@@ -146,7 +170,7 @@ export const galleryBlock: ComponentConfig<GalleryBlockProps> = {
 
         {visibleImages.length > 0 && isCarousel && (
           <Carousel
-            opts={{ align: "start", watchDrag: !puck.isEditing }}
+            opts={{ align: "start", watchDrag: !puck.isEditing, loop: loop && visibleImages.length > 1 }}
             plugins={autoplay && visibleImages.length > 1 ? [Autoplay({ delay: AUTOPLAY_DELAY_MS, stopOnInteraction: true })] : undefined}
             className={visibleImages.length > 1 ? "px-10" : undefined}
           >
