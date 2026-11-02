@@ -1045,6 +1045,29 @@
         "deleted": "Conta eliminada"
       }
     },
+    "transferForm": {
+      "fromAccount": "Conta de origem",
+      "toAccount": "Conta de destino",
+      "amount": "Montante",
+      "date": "Data",
+      "note": "Nota",
+      "notePlaceholder": "Ex.: transferência para poupança",
+      "toasts": {
+        "created": "Transferência registada"
+      }
+    },
+    "transfersView": {
+      "title": "Transferências internas",
+      "add": "Transferir",
+      "newTransferTitle": "Nova transferência entre contas",
+      "noTransfers": "Nenhuma transferência registada",
+      "columns": {
+        "accounts": "Contas",
+        "amount": "Montante",
+        "date": "Data",
+        "note": "Nota"
+      }
+    },
     "categoriesView": {
       "title": "Categorias",
       "description": "Faça a gestão das categorias de receitas e despesas.",

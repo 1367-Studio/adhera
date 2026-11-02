@@ -160,7 +160,7 @@ export function BankAccountsView() {
       key: "date",
       header: t("finances.transfersView.columns.date"),
       className: "w-28",
-      cell: (tr) => new Date(tr.date).toLocaleDateString("fr-FR"),
+      cell: (tr) => new Date(tr.date).toLocaleDateString("fr-FR", { timeZone: "UTC" }),
     },
     {
       key: "note",

@@ -1142,6 +1142,29 @@
         "deleted": "Conta excluída"
       }
     },
+    "transferForm": {
+      "fromAccount": "Conta de origem",
+      "toAccount": "Conta de destino",
+      "amount": "Valor",
+      "date": "Data",
+      "note": "Nota",
+      "notePlaceholder": "Ex.: transferência para poupança",
+      "toasts": {
+        "created": "Transferência registrada"
+      }
+    },
+    "transfersView": {
+      "title": "Transferências internas",
+      "add": "Transferir",
+      "newTransferTitle": "Nova transferência entre contas",
+      "noTransfers": "Nenhuma transferência registrada",
+      "columns": {
+        "accounts": "Contas",
+        "amount": "Valor",
+        "date": "Data",
+        "note": "Nota"
+      }
+    },
     "categoriesView": {
       "title": "Categorias",
       "description": "Gerencie as categorias de receitas e despesas.",
