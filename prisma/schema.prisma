@@ -665,6 +665,7 @@ model Association {
   budgetProjects                BudgetProject[]
   budgetLines                   BudgetLine[]
   bankReconciliations           BankReconciliation[]
+  accountTransfers              AccountTransfer[]
   fournisseurs                  Fournisseur[]
   devis                         Devis[]
   factures                      Facture[]
@@ -2862,6 +2863,7 @@ model ExerciceComptable {
   incomes          Income[]
   expenses         Expense[]
   bankTransactions BankTransaction[]
+  accountTransfers AccountTransfer[]
   budgetLines      BudgetLine[]
 
   @@index([associationId, status])
@@ -2883,8 +2885,47 @@ model BankAccount {
 
   association  Association       @relation(fields: [associationId], references: [id], onDelete: Cascade)
   transactions BankTransaction[]
+  transfersOut AccountTransfer[] @relation("TransferFromAccount")
+  transfersIn  AccountTransfer[] @relation("TransferToAccount")
 
   @@index([associationId])
+}
+
+// A movement of money between two of the association's OWN bank accounts — never a receipt
+// from outside (that's an Income) and never a payment to someone else (that's an Expense). Kept
+// entirely separate from FinanceCategory/Income/Expense by construction, not by a filter: a
+// transfer has no FinanceCategoryType to belong to, so it can never leak into either total in
+// computeBudgetPeriod/computeIncomeStatementPeriod just because someone forgot a WHERE clause.
+// See the FORM 78 fluxo-financeiro audit — "transferências devem ter classificação própria, sem
+// serem tratadas como receita ou despesa".
+model AccountTransfer {
+  id            String   @id @default(cuid())
+  associationId String
+  // Best-effort, same convention as BankTransaction.exerciceId — a transfer has no accounting
+  // result of its own to scope to an exercice, this is purely for filtering/reporting by period.
+  exerciceId    String?
+  fromAccountId String
+  toAccountId   String
+  amount        Decimal  @db.Decimal(10, 2)
+  date          DateTime
+  note          String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  association     Association          @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  exercice        ExerciceComptable?   @relation(fields: [exerciceId], references: [id], onDelete: SetNull)
+  // Restrict, not Cascade/SetNull — losing which two accounts money moved between is a worse
+  // outcome than blocking a delete. Same posture as src/app/api/finances/bank-accounts/[id]/
+  // route.ts's own app-level guard against deleting an account that still has BankTransaction
+  // rows (that guard is extended to also check this relation — see its doc comment).
+  fromAccount     BankAccount          @relation("TransferFromAccount", fields: [fromAccountId], references: [id], onDelete: Restrict)
+  toAccount       BankAccount          @relation("TransferToAccount", fields: [toAccountId], references: [id], onDelete: Restrict)
+  reconciliations BankReconciliation[]
+
+  @@index([associationId])
+  @@index([associationId, date])
+  @@index([fromAccountId])
+  @@index([toAccountId])
 }
 
 model BankTransaction {
@@ -3118,6 +3159,12 @@ model BankReconciliation {
   bankTransactionId String    @unique
   incomeId          String?   @unique
   expenseId         String?   @unique
+  // NOT @unique, unlike incomeId/expenseId — a single AccountTransfer has two legs (the debit
+  // in fromAccount, the credit in toAccount), each its own imported BankTransaction, so the SAME
+  // transferId legitimately appears on up to two BankReconciliation rows. Exactly one of
+  // incomeId/expenseId/transferId is set per row — enforced in src/app/api/finances/reconcile/
+  // route.ts, same place the incomeId/expenseId XOR already was.
+  transferId        String?
   matchScore        Int       @default(0)
   matchedBy         MatchedBy @default(AUTO)
   matchedAt         DateTime  @default(now())
@@ -3125,12 +3172,14 @@ model BankReconciliation {
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @updatedAt
 
-  association     Association     @relation(fields: [associationId], references: [id], onDelete: Cascade)
-  bankTransaction BankTransaction @relation(fields: [bankTransactionId], references: [id], onDelete: Cascade)
-  income          Income?         @relation(fields: [incomeId], references: [id], onDelete: SetNull)
-  expense         Expense?        @relation(fields: [expenseId], references: [id], onDelete: SetNull)
+  association     Association      @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  bankTransaction BankTransaction  @relation(fields: [bankTransactionId], references: [id], onDelete: Cascade)
+  income          Income?          @relation(fields: [incomeId], references: [id], onDelete: SetNull)
+  expense         Expense?         @relation(fields: [expenseId], references: [id], onDelete: SetNull)
+  transfer        AccountTransfer? @relation(fields: [transferId], references: [id], onDelete: SetNull)
 
   @@index([associationId])
+  @@index([transferId])
 }
 
 enum FournisseurStatus {

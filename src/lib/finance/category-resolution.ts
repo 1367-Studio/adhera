@@ -56,11 +56,17 @@ export function toResolved(cat: CategoryRow): ResolvedCategory {
 // The origin ids are authoritative (set by the exact code path that created the row) — the
 // description regexes only cover Income rows written before those ids existed. Order matters:
 // an id match always wins over a text match.
-export function incomeOriginKey(row: { cotisationPaymentId: string | null; donId: string | null; commandeId: string | null; participationId: string | null; description: string | null }): string | null {
+export function incomeOriginKey(row: { cotisationPaymentId: string | null; donId: string | null; commandeId: string | null; participationId: string | null; facturePaymentId: string | null; description: string | null }): string | null {
   if (row.cotisationPaymentId) return "cotisations"
   if (row.donId) return "dons"
   if (row.commandeId) return "boutique"
   if (row.participationId) return "evenements"
+  // A FacturePayment already carries its own category when the Facture is linked to a
+  // MaterialLoan (see factures/[id]/paiements/route.ts, which sets categoryId explicitly in
+  // that case and wins via the categoryId check above before this function ever runs) — this
+  // origin-key fallback only ever fires for the Facture rows that have no such explicit
+  // category, same "generic bucket" treatment commandeId/participationId already get.
+  if (row.facturePaymentId) return "factures"
   if (row.description) {
     if (LEGACY_DON_DESCRIPTION.test(row.description)) return "dons"
     if (LEGACY_BOUTIQUE_DESCRIPTION.test(row.description)) return "boutique"
@@ -76,7 +82,7 @@ export function incomeOriginKey(row: { cotisationPaymentId: string | null; donId
 // created it. Only once there's no explicit categoryId do we fall back to origin ids, then
 // legacy description regexes, then give up (null = "à catégoriser").
 export function resolveIncomeCategory(
-  row: { categoryId: string | null; cotisationPaymentId: string | null; donId: string | null; commandeId: string | null; participationId: string | null; description: string | null },
+  row: { categoryId: string | null; cotisationPaymentId: string | null; donId: string | null; commandeId: string | null; participationId: string | null; facturePaymentId: string | null; description: string | null },
   categoriesById: Map<string, CategoryRow>,
   categoriesByKey: Map<string, CategoryRow>,
 ): ResolvedCategory | null {
