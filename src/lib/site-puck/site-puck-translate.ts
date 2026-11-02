@@ -61,6 +61,15 @@ const ALL_ARRAY_ITEM_KEYS = [...new Set(
   Object.values(BLOCK_TRANSLATABLE_FIELDS).flatMap(fieldMap => Object.values(fieldMap.arrays ?? {}).flat()),
 )]
 
+// Some blocks fall back to a hardcoded French string at render time when the association
+// leaves a field empty (e.g. the Dons block's "Faire un don" button/title — see
+// site-puck-config.tsx's dons.render). translateFields skips empty strings, so that fallback
+// text would otherwise never reach translation. Seeding the real default in here, before
+// translation, makes the translated value win over the render-time fallback instead.
+const FLAT_FIELD_DEFAULTS: Record<string, Partial<Record<string, string>>> = {
+  dons: { title: "Faire un don", buttonLabel: "Faire un don" },
+}
+
 async function translateRoot(
   root: SitePuckData["root"],
   locale: Locale,
@@ -70,6 +79,83 @@ async function translateRoot(
   if (!rootProps?.seo || (!rootProps.seo.title && !rootProps.seo.description)) return root
   const [seo] = await translateFields([rootProps.seo], ["title", "description"], locale, associationId)
   return { ...root, props: { ...rootProps, seo } }
+}
+
+// The rest of root.props's association-authored text — the custom header links, the
+// "Adhésions" dropdown, and the footer — none of which BLOCK_TRANSLATABLE_FIELDS can reach (it
+// only walks data.content/data.zones), and none of which is in SITE_UI_STRINGS either (that
+// dictionary is fixed chrome text, not admin-typed labels). Kept out of translateRoot/
+// translateSitePuckSeo: generateMetadata never renders the navbar or footer, so translating
+// them there too would double the Translation cache reads on every non-French page view. Each
+// piece is skipped individually when empty, so an association that never touched
+// headerLinks/footer doesn't cost an extra translateFields call.
+async function translateRootChrome(
+  root: SitePuckData["root"],
+  locale: Locale,
+  associationId: string,
+): Promise<SitePuckData["root"]> {
+  const rootProps = root.props as SitePuckRootProps | undefined
+  if (!rootProps) return root
+  let props = rootProps
+
+  if (props.headerAdhesionMenuLabel?.trim()) {
+    const [header] = await translateFields(
+      [{ headerAdhesionMenuLabel: props.headerAdhesionMenuLabel }], ["headerAdhesionMenuLabel"], locale, associationId,
+    )
+    props = { ...props, headerAdhesionMenuLabel: header.headerAdhesionMenuLabel }
+  }
+  if (props.headerLinks?.length) {
+    props = { ...props, headerLinks: await translateFields(props.headerLinks, ["label"], locale, associationId) }
+  }
+  if (props.headerAdhesionMenuItems?.length) {
+    props = {
+      ...props,
+      headerAdhesionMenuItems: await translateFields(props.headerAdhesionMenuItems, ["label"], locale, associationId),
+    }
+  }
+
+  if (props.footer) {
+    props = { ...props, footer: await translateFooter(props.footer, locale, associationId) }
+  }
+
+  return { ...root, props }
+}
+
+// Footer text comes in three shapes: two flat strings, a flat array of columns (title), and —
+// nested inside each column — an array of links (label). The column links are flattened into
+// one batched translateFields call across every column, same trick as translateSitePuckData's
+// array pass, rather than one call per column.
+async function translateFooter(
+  footer: NonNullable<SitePuckRootProps["footer"]>,
+  locale: Locale,
+  associationId: string,
+): Promise<NonNullable<SitePuckRootProps["footer"]>> {
+  let translated = footer
+  if (footer.description?.trim() || footer.bottomText?.trim()) {
+    const [text] = await translateFields([footer], ["description", "bottomText"], locale, associationId)
+    translated = { ...translated, description: text.description, bottomText: text.bottomText }
+  }
+
+  if (footer.columns?.length) {
+    const columns = await translateFields(footer.columns, ["title"], locale, associationId)
+    const linkJobs: { index: number; start: number; length: number }[] = []
+    const allLinks: { label: string; href: string }[] = []
+    columns.forEach((column, index) => {
+      if (column.links?.length) {
+        linkJobs.push({ index, start: allLinks.length, length: column.links.length })
+        allLinks.push(...column.links)
+      }
+    })
+    if (allLinks.length > 0) {
+      const translatedLinks = await translateFields(allLinks, ["label"], locale, associationId)
+      for (const job of linkJobs) {
+        columns[job.index] = { ...columns[job.index], links: translatedLinks.slice(job.start, job.start + job.length) }
+      }
+    }
+    translated = { ...translated, columns }
+  }
+
+  return translated
 }
 
 // Translates only the SEO title/description of a published Puck page — for generateMetadata,
@@ -105,10 +191,21 @@ export async function translateSitePuckData(
     : []
   const allBlocks = [...contentBlocks, ...zoneEntries.flatMap(([, blocks]) => blocks)]
 
-  // Pass 1: every block's own flat string fields, batched into one call.
+  // Pass 1: every block's own flat string fields, batched into one call. Fields with a known
+  // render-time fallback (FLAT_FIELD_DEFAULTS) are seeded with that fallback first, when left
+  // empty by the association, so the fallback text itself gets translated.
   const flatBlocks = allBlocks.filter(block => BLOCK_TRANSLATABLE_FIELDS[block.type]?.flat?.length)
   if (flatBlocks.length > 0) {
-    const translatedProps = await translateFields(flatBlocks.map(block => block.props), ALL_FLAT_KEYS, locale, associationId)
+    const seededProps = flatBlocks.map(block => {
+      const defaults = FLAT_FIELD_DEFAULTS[block.type]
+      if (!defaults) return block.props
+      const seeded = { ...block.props }
+      for (const [key, fallback] of Object.entries(defaults)) {
+        if (typeof seeded[key] !== "string" || (seeded[key] as string).trim() === "") seeded[key] = fallback
+      }
+      return seeded
+    })
+    const translatedProps = await translateFields(seededProps, ALL_FLAT_KEYS, locale, associationId)
     flatBlocks.forEach((block, i) => { block.props = translatedProps[i] })
   }
 
@@ -141,7 +238,10 @@ export async function translateSitePuckData(
     : undefined
 
   const root = await translateCookieMessage(
-    await translateRoot(data.root, locale, associationId), locale, associationId,
+    await translateRootChrome(
+      await translateRoot(data.root, locale, associationId), locale, associationId,
+    ),
+    locale, associationId,
   )
 
   return { ...data, content, zones, root } as SitePuckData
