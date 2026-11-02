@@ -173,6 +173,23 @@ export const reconcileActionSchema = z.object({
   action:            z.enum(["MATCH", "IGNORE", "DUPLICATE", "UNMATCH"]),
   incomeId:          z.string().optional(),
   expenseId:         z.string().optional(),
+  transferId:        z.string().optional(),
 })
 
 export type ReconcileActionInput = z.infer<typeof reconcileActionSchema>
+
+// A movement of money between two of the association's own BankAccount rows — never an Income
+// (money from outside) or an Expense (money to someone else). See AccountTransfer's doc comment
+// in schema.prisma.
+export const accountTransferSchema = z.object({
+  fromAccountId: z.string().min(1, "Compte source requis"),
+  toAccountId:   z.string().min(1, "Compte destination requis"),
+  amount:        z.number().positive("Le montant doit être positif"),
+  date:          z.string().min(1, "Date requise"),
+  note:          z.string().trim().max(500).optional().or(z.literal("")),
+}).refine(data => data.fromAccountId !== data.toAccountId, {
+  message: "Le compte source et le compte destination doivent être différents",
+  path:    ["toAccountId"],
+})
+
+export type AccountTransferInput = z.infer<typeof accountTransferSchema>

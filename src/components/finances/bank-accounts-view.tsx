@@ -3,9 +3,10 @@
 import { useState } from "react"
 import { toast } from "sonner"
 import { useTranslations } from "next-intl"
-import { PlusIcon, PencilSimpleIcon, TrashIcon } from "@phosphor-icons/react/dist/ssr";
+import { PlusIcon, PencilSimpleIcon, TrashIcon, ArrowsLeftRightIcon } from "@phosphor-icons/react/dist/ssr";
 import { useBankAccounts, useCreateBankAccount, useUpdateBankAccount, useDeleteBankAccount } from "@/hooks/use-bank-accounts"
-import type { BankAccountInput } from "@/lib/schemas"
+import { useAccountTransfers, useCreateAccountTransfer } from "@/hooks/use-account-transfers"
+import type { BankAccountInput, AccountTransferInput } from "@/lib/schemas"
 import { PageHeader } from "@/components/ui/page-header"
 import { DataTable, type Column } from "@/components/ui/data-table"
 import { Modal } from "@/components/ui/modal"
@@ -14,6 +15,7 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { RowActions } from "@/components/ui/row-actions"
 import { BankAccountForm } from "@/components/finances/bank-account-form"
+import { AccountTransferForm } from "@/components/finances/account-transfer-form"
 import { useHasAccess } from "@/lib/user-context"
 
 type Account = {
@@ -27,6 +29,15 @@ type Account = {
   isActive:       boolean
 }
 
+type Transfer = {
+  id:          string
+  amount:      string
+  date:        string
+  note:        string | null
+  fromAccount: { accountName: string; bankName: string }
+  toAccount:   { accountName: string; bankName: string }
+}
+
 export function BankAccountsView() {
   const t = useTranslations()
   // FORM-34: a Comptabilité reader browses and filters but cannot add, edit or delete.
@@ -34,12 +45,15 @@ export function BankAccountsView() {
   const [createOpen, setCreateOpen]     = useState(false)
   const [editTarget, setEditTarget]     = useState<Account | null>(null)
   const [deleteTarget, setDeleteTarget] = useState<Account | null>(null)
+  const [transferOpen, setTransferOpen] = useState(false)
 
   const { data: accounts = [], isLoading } = useBankAccounts()
+  const { data: transfers = [], isLoading: transfersLoading } = useAccountTransfers()
 
   const createMutation = useCreateBankAccount()
   const updateMutation = useUpdateBankAccount(editTarget?.id ?? "")
   const deleteMutation = useDeleteBankAccount()
+  const transferMutation = useCreateAccountTransfer()
 
   async function handleCreate(data: BankAccountInput) {
     try {
@@ -56,6 +70,16 @@ export function BankAccountsView() {
       await updateMutation.mutateAsync(data)
       toast.success(t("finances.accountsView.toasts.updated"))
       setEditTarget(null)
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : t("common.error"))
+    }
+  }
+
+  async function handleTransfer(data: AccountTransferInput) {
+    try {
+      await transferMutation.mutateAsync(data)
+      toast.success(t("finances.transferForm.toasts.created"))
+      setTransferOpen(false)
     } catch (err) {
       toast.error(err instanceof Error ? err.message : t("common.error"))
     }
@@ -116,16 +140,53 @@ export function BankAccountsView() {
     }] : []),
   ]
 
+  const transferColumns: Column<Transfer>[] = [
+    {
+      key: "accounts",
+      header: t("finances.transfersView.columns.accounts"),
+      cell: (tr) => (
+        <span className="text-sm">
+          {tr.fromAccount.accountName} <ArrowsLeftRightIcon className="mx-1 inline size-3.5 text-muted-foreground" /> {tr.toAccount.accountName}
+        </span>
+      ),
+    },
+    {
+      key: "amount",
+      header: t("finances.transfersView.columns.amount"),
+      className: "w-32 text-right",
+      cell: (tr) => <span className="font-semibold tabular-nums">{fmt(tr.amount)}</span>,
+    },
+    {
+      key: "date",
+      header: t("finances.transfersView.columns.date"),
+      className: "w-28",
+      cell: (tr) => new Date(tr.date).toLocaleDateString("fr-FR"),
+    },
+    {
+      key: "note",
+      header: t("finances.transfersView.columns.note"),
+      cell: (tr) => <span className="text-xs text-muted-foreground">{tr.note ?? ""}</span>,
+    },
+  ]
+
   return (
     <div className="space-y-4">
       <PageHeader
         title={t("finances.accountsView.title")}
         description={t("finances.accountsView.description")}
         action={canEditComptabilite && (
-          <Button size="sm" onClick={() => setCreateOpen(true)}>
-            <PlusIcon className="mr-1.5 size-4" />
-            {t("finances.accountsView.add")}
-          </Button>
+          <div className="flex gap-2">
+            {accounts.length >= 2 && (
+              <Button size="sm" variant="outline" onClick={() => setTransferOpen(true)}>
+                <ArrowsLeftRightIcon className="mr-1.5 size-4" />
+                {t("finances.transfersView.add")}
+              </Button>
+            )}
+            <Button size="sm" onClick={() => setCreateOpen(true)}>
+              <PlusIcon className="mr-1.5 size-4" />
+              {t("finances.accountsView.add")}
+            </Button>
+          </div>
         )}
       />
 
@@ -137,8 +198,25 @@ export function BankAccountsView() {
         empty={t("finances.accountsView.noAccounts")}
       />
 
+      {accounts.length >= 2 && (
+        <div className="space-y-2 pt-4">
+          <h3 className="text-sm font-medium">{t("finances.transfersView.title")}</h3>
+          <DataTable
+            columns={transferColumns}
+            data={transfers as Transfer[]}
+            loading={transfersLoading}
+            keyExtractor={(tr) => tr.id}
+            empty={t("finances.transfersView.noTransfers")}
+          />
+        </div>
+      )}
+
       <Modal open={createOpen} onOpenChange={setCreateOpen} title={t("finances.accountsView.newAccountTitle")} size="md" dismissable={false}>
         <BankAccountForm onSubmit={handleCreate} onCancel={() => setCreateOpen(false)} loading={createMutation.isPending} />
+      </Modal>
+
+      <Modal open={transferOpen} onOpenChange={setTransferOpen} title={t("finances.transfersView.newTransferTitle")} size="md" dismissable={false}>
+        <AccountTransferForm accounts={accounts as Account[]} onSubmit={handleTransfer} onCancel={() => setTransferOpen(false)} loading={transferMutation.isPending} />
       </Modal>
 
       <Modal open={!!editTarget} onOpenChange={(o) => !o && setEditTarget(null)} title={t("finances.accountsView.editAccountTitle")} size="md" dismissable={false}>

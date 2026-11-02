@@ -1159,6 +1159,29 @@
         "deleted": "Account deleted"
       }
     },
+    "transferForm": {
+      "fromAccount": "Source account",
+      "toAccount": "Destination account",
+      "amount": "Amount",
+      "date": "Date",
+      "note": "Note",
+      "notePlaceholder": "E.g. savings transfer",
+      "toasts": {
+        "created": "Transfer recorded"
+      }
+    },
+    "transfersView": {
+      "title": "Internal transfers",
+      "add": "Transfer",
+      "newTransferTitle": "New transfer between accounts",
+      "noTransfers": "No transfer recorded",
+      "columns": {
+        "accounts": "Accounts",
+        "amount": "Amount",
+        "date": "Date",
+        "note": "Note"
+      }
+    },
     "categoriesView": {
       "title": "Categories",
       "description": "Manage income and expense categories.",
@@ -1181,7 +1204,7 @@
       "archived": "Archived",
       "reactivate": "Reactivate",
       "showArchived": "Show archived categories",
-      "transferLimitationNote": "Transfers between the association's own bank accounts (internal treasury) must never be entered as an income or expense — this case isn't supported yet.",
+      "transferLimitationNote": "Transfers between the association's own bank accounts (internal treasury) must never be entered as an income or expense — record them from Accounting → Accounts instead.",
       "archiveConfirmTitle": "Archive this category?",
       "archiveConfirmInUse": "\"{name}\" is used by {count, plural, one {# income/expense entry} other {# income/expense entries}}. It will be archived (its history is kept) and won't be offered for new transactions anymore.",
       "archive": "Archive"

@@ -37,6 +37,14 @@ export const DEFAULT_FINANCE_CATEGORIES: DefaultFinanceCategory[] = [
   { key: "boutique",                     name: "Boutique",                                       type: "INCOME", accountingCode: "707",   section: "OPERATING" },
   { key: "subventions",                  name: "Subventions de fonctionnement",                 type: "INCOME", accountingCode: "741",   section: "OPERATING" },
   { key: "autresRecettes",               name: "Autres recettes",                                type: "INCOME", accountingCode: "758",   section: "OPERATING" },
+  // Generic bucket for a Facture payment with no more specific signal — a Facture carries no
+  // type/nature field to classify by (unlike Cotisation/Don/Commande/Participation, which all
+  // have one), so every Facture not linked to a MaterialLoan (which keeps its material's own
+  // category — see recordCotisationPayment's sibling in factures/[id]/paiements/route.ts) falls
+  // here via the "factures" origin key in category-resolution.ts. Same 706 reference account as
+  // "evenements" — chart-of-accounts.ts documents multiple categories legitimately sharing one
+  // PCG code.
+  { key: "factures",                     name: "Prestations facturées",                          type: "INCOME", accountingCode: "706",   section: "OPERATING" },
 
   // Despesas / Charges d'exploitation
   { key: "eauEnergie",         name: "Eau et énergie",                               type: "EXPENSE", accountingCode: "6061", section: "OPERATING" },
