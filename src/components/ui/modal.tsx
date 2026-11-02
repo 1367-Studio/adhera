@@ -40,6 +40,11 @@ interface ModalProps {
   // directly, bypassing this entirely) as a way out. For a hard gate like the Formwise
   // subscription modal, never for an ordinary form the user should be able to back out of.
   locked?: boolean
+  // Blocks backdrop clicks, Escape, and the close-watcher gesture, but keeps the X button
+  // working — unlike `locked`, which also hides the X. For app-wide notification popups
+  // (release notes, the fiscal-period nudge) that must only close via an explicit click
+  // inside them, X included.
+  closeOnlyViaButton?: boolean
   footer?: React.ReactNode
   children?: React.ReactNode
 }
@@ -52,17 +57,19 @@ export function Modal({
   size = "md",
   dismissable = true,
   locked = false,
+  closeOnlyViaButton = false,
   footer,
   children,
 }: ModalProps) {
   return (
     <Dialog
       open={open}
-      onOpenChange={next => {
+      onOpenChange={(next, eventDetails) => {
         if (locked && !next) return
+        if (closeOnlyViaButton && !next && eventDetails.reason !== "close-press") return
         onOpenChange(next)
       }}
-      disablePointerDismissal={locked || !dismissable}
+      disablePointerDismissal={locked || !dismissable || closeOnlyViaButton}
     >
       <DialogContent className={cn(sizes[size])} showCloseButton={!locked}>
         <DialogHeader>
