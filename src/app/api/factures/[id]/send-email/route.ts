@@ -63,6 +63,7 @@ export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
     amountPaid:     Number(facture.amountPaid),
     notes:          facture.notes,
     paymentTerms:   facture.paymentTerms,
+    paymentMethod:  facture.paymentMethod,
   })
 
   const subject  = `Facture ${facture.number} — ${association.name}`

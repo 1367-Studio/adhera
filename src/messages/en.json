@@ -328,6 +328,7 @@
     "vat": "VAT",
     "totalDiscount": "Total discount",
     "total": "Total",
+    "paymentMethod": "Payment method",
     "paymentTerms": "Payment terms",
     "paymentTermsPlaceholder": "e.g. Payment within 30 days",
     "notes": "Notes",

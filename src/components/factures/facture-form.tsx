@@ -7,6 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useTranslations } from "next-intl"
 import { PlusIcon, TrashIcon } from "@phosphor-icons/react/dist/ssr";
 import { factureSchema, type FactureInput } from "@/lib/schemas"
+import { methodOptions } from "@/components/factures/facture-payment-modal"
 import { useFournisseursList } from "@/hooks/use-fournisseurs"
 import { buildFournisseurOptions } from "@/lib/fournisseur-options"
 import { computeDocumentTotals } from "@/lib/devis-calc"
@@ -18,6 +19,8 @@ import { Button } from "@/components/ui/button"
 import { useModules } from "@/lib/user-context"
 
 const emptyItem = { description: "", quantity: 1, unitPrice: 0, vatRate: 20, discount: 0 }
+
+const paymentMethodOptions = [{ value: "", label: "—" }, ...methodOptions]
 
 const fmt = (n: number) => n.toLocaleString("fr-FR", { style: "currency", currency: "EUR" })
 
@@ -251,12 +254,27 @@ export function FactureForm({ defaultValues, onSubmit, onCancel, loading, locked
         </div>
       </div>
 
-      <FormField
-        label={t("documents.paymentTerms")}
-        placeholder={t("documents.paymentTermsPlaceholder")}
-        error={errors.paymentTerms?.message}
-        {...register("paymentTerms")}
-      />
+      <div className="grid grid-cols-2 gap-4">
+        <Controller
+          name="paymentMethod"
+          control={control}
+          render={({ field }) => (
+            <SelectField
+              label={t("documents.paymentMethod")}
+              options={paymentMethodOptions}
+              value={field.value ?? ""}
+              onValueChange={field.onChange}
+              error={errors.paymentMethod?.message}
+            />
+          )}
+        />
+        <FormField
+          label={t("documents.paymentTerms")}
+          placeholder={t("documents.paymentTermsPlaceholder")}
+          error={errors.paymentTerms?.message}
+          {...register("paymentTerms")}
+        />
+      </div>
 
       <TextareaField
         label={t("documents.notes")}
