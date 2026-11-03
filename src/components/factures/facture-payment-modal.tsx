@@ -15,7 +15,7 @@ export const methodOptions = [
   { value: "Virement",    label: "Virement"     },
   { value: "Espèces",     label: "Espèces"      },
   { value: "Chèque",      label: "Chèque"       },
-  { value: "Carte",       label: "Carte"        },
+  { value: "Carte bancaire", label: "Carte bancaire" },
   { value: "Prélèvement", label: "Prélèvement"  },
   { value: "Autre",       label: "Autre"        },
 ]
