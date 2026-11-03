@@ -11,6 +11,7 @@ const factureObjectSchema = z.object({
   dueDate:       z.string().optional().or(z.literal("")),
   notes:         z.string().trim().optional().or(z.literal("")),
   paymentTerms:  z.string().trim().optional().or(z.literal("")),
+  paymentMethod: z.string().trim().optional().or(z.literal("")),
   items:         z.array(factureItemSchema).min(1, "Au moins un article requis"),
 })
 

@@ -73,7 +73,7 @@ export const POST = withAdminAuth(async (req, ctx) => {
     return NextResponse.json({ error: parsed.error.issues }, { status: 422 })
   }
 
-  const { fournisseurId, devisId, status, issueDate, dueDate, notes, paymentTerms, items } = parsed.data
+  const { fournisseurId, devisId, status, issueDate, dueDate, notes, paymentTerms, paymentMethod, items } = parsed.data
 
   if (fournisseurId) {
     const fournisseur = await prisma.fournisseur.findFirst({ where: { id: fournisseurId, associationId, deletedAt: null } })
@@ -103,11 +103,12 @@ export const POST = withAdminAuth(async (req, ctx) => {
           fournisseurId: fournisseurId || null,
           devisId:       devisId       || null,
           number,
-          status:       resolvedStatus,
-          issueDate:    new Date(issueDate),
-          dueDate:      dueDate ? new Date(dueDate) : null,
-          notes:        notes        || null,
-          paymentTerms: paymentTerms || null,
+          status:        resolvedStatus,
+          issueDate:     new Date(issueDate),
+          dueDate:       dueDate ? new Date(dueDate) : null,
+          notes:         notes         || null,
+          paymentTerms:  paymentTerms  || null,
+          paymentMethod: paymentMethod || null,
           ...totals,
           items: {
             create: items.map((item, order) => ({

@@ -3302,6 +3302,7 @@ model Facture {
   amountPaid     Decimal       @default(0) @db.Decimal(10, 2)
   notes          String?
   paymentTerms   String?
+  paymentMethod  String?
   pdfUrl         String?
   sentAt         DateTime?
   createdAt      DateTime      @default(now())
