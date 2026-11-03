@@ -12,6 +12,7 @@ import { openReleaseNotes } from "@/lib/help/release-notes-events"
 import { cn, stripHtml } from "@/lib/utils"
 import { getDateFnsLocale } from "@/lib/date-fns-locale"
 import { BASE_PATH } from "@/lib/env"
+import { useCurrentUser } from "@/lib/user-context"
 import type { Locale } from "@/i18n/locales"
 
 // Unseen "What's new" entries are merged client-side into the bell's list (no notification
@@ -75,6 +76,7 @@ export function NotificationBell({ className, iconClassName }: Props = {}) {
   const [open, setOpen] = useState(false)
   const router = useRouter()
   const pathname = usePathname()
+  const { id: currentUserId } = useCurrentUser()
   const scope = pathname.startsWith("/portal/") ? "MEMBRE" : "GESTION"
   const { data: notifications = [] } = useNotifications(scope)
   const markRead    = useMarkRead()
@@ -84,7 +86,7 @@ export function NotificationBell({ className, iconClassName }: Props = {}) {
   // which has no association context for the release-notes route).
   const showReleaseNotes = scope === "GESTION" && pathname.startsWith("/dashboard")
   const { data: releaseNotes = [] } = useReleaseNotes({ enabled: showReleaseNotes })
-  const { seenIds, markSeen } = useSeenReleaseNotes()
+  const { seenIds, markSeen } = useSeenReleaseNotes(currentUserId)
 
   const unread = notifications.filter(n => !n.read)
   // Only unseen entries are listed — seen ones live in the help panel's changelog, so the
