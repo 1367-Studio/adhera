@@ -48,6 +48,7 @@ export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
     amountPaid:     Number(facture.amountPaid),
     notes:          facture.notes,
     paymentTerms:   facture.paymentTerms,
+    paymentMethod:  facture.paymentMethod,
   })
 
   return new NextResponse(new Uint8Array(pdf), {
