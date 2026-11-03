@@ -84,7 +84,7 @@ export async function GET(
     assoc.id,
   )
   const tiers        = await translateFields(form.tiers, ["label"], locale, assoc.id)
-  const customFields = await translateFields(form.customFields, ["label"], locale, assoc.id)
+  const customFields = await translateFields(form.customFields, ["label", "options"], locale, assoc.id)
 
   // Only what actually exists reaches the page: empty editor markup is no text, and a form
   // "required" with nothing to accept (saved before the rule) shows no checkbox.

@@ -95,5 +95,6 @@ export const GET = withAdminAuth(async (req, ctx) => {
     // of what a real visitor might later choose on the public page — see SitePuckMetadata.
     locale: DEFAULT_LOCALE,
     ui:     SITE_UI_STRINGS,
+    translateQuery: "",
   })
 })

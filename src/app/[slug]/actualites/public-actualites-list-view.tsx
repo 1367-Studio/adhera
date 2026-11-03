@@ -66,7 +66,7 @@ export function PublicActualitesListView({ slug }: { slug: string }) {
               {actualites.map(actualite => (
                 <Link
                   key={actualite.id}
-                  href={`/${slug}/actualites/${actualite.id}`}
+                  href={`/${slug}/actualites/${actualite.id}${isTranslate ? "?translate=1" : ""}`}
                   className="flex items-start gap-4 py-5 transition-colors hover:bg-gray-50"
                 >
                   {actualite.imageUrl && (

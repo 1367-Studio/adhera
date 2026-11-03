@@ -99,7 +99,7 @@ export default async function PublicSiteCustomPage(
       translateSiteUiStrings(locale, data.id),
     ])
     translatedPage = translated
-    metadata       = buildSitePuckMetadata(data, translatedPage, locale, ui)
+    metadata       = buildSitePuckMetadata(data, translatedPage, locale, ui, shouldTranslate)
   } catch (metadataError) {
     console.error("[public-site] custom page data failed", metadataError)
   }

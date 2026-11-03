@@ -222,7 +222,7 @@ export function livePuckPage(data: SiteData): SitePuckData | null {
 // content for a custom page) — the "Adhérer" CTA looks at whichever page it is being asked
 // about, not always the home page's.
 export function buildSitePuckMetadata(
-  data: SiteData, blockSource: SitePuckData, locale: Locale, ui: SiteUiStrings,
+  data: SiteData, blockSource: SitePuckData, locale: Locale, ui: SiteUiStrings, shouldTranslate: boolean,
 ): SitePuckMetadata {
   // The header's single "Adhérer" button: the first membership block of the page, in reading
   // order, that has a published form bound to it (same rule as the old builder's sections).
@@ -256,6 +256,7 @@ export function buildSitePuckMetadata(
     navPages:                data.navPages,
     locale,
     ui,
+    translateQuery:          shouldTranslate ? "?translate=1" : "",
   }
 }
 

@@ -74,7 +74,7 @@ export default async function PublicSitePage(
         translateSiteUiStrings(locale, data.id),
       ])
       translatedPage = translated
-      metadata       = buildSitePuckMetadata(data, translatedPage, locale, ui)
+      metadata       = buildSitePuckMetadata(data, translatedPage, locale, ui, shouldTranslate)
     } catch (metadataError) {
       console.error("[public-site] new builder data failed, showing the old builder's page", metadataError)
     }
