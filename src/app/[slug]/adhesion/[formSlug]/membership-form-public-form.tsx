@@ -23,6 +23,7 @@ import { FormTermsSection } from "@/components/public/form-terms-section"
 import { publicFormTerms } from "@/lib/form-terms"
 import { LegalConsent, type RequiredLegalDocument } from "@/components/public/legal-consent"
 import { PublicFormSkeleton } from "@/components/public/public-form-skeleton"
+import { PublicFormSplitLayout } from "@/components/public/public-form-split-layout"
 import { FormDraftNotice } from "@/components/public/form-draft-notice"
 import { useFormDraft } from "@/hooks/use-form-draft"
 import { spokenLanguageOptions } from "@/lib/languages"
@@ -948,19 +949,21 @@ function MembershipFormPublicFormInner({ slug, formSlug, legalDocuments }: Props
   return (
     <>
       {showInAppBrowserBanner && <InAppBrowserBanner>{t("inAppBrowserWarning")}</InAppBrowserBanner>}
-      <div className="dashboard-canvas public-canvas min-h-screen p-3">
-        <div className="min-h-[calc(100vh-1.5rem)] rounded-[10px] bg-public-panel flex items-start justify-center py-12 px-4">
-          <div className="w-full max-w-md space-y-6">
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <div>
-                {/* Admin filling this in on a member's behalf is at their own dashboard
-                    session, not a public visitor — "Voltar ao site" would just be a confusing
-                    exit, so it's left out entirely in this mode (same spirit as the other
-                    isAdminFill-gated features above: this mode is deliberately stripped down). */}
-                {!isAdminFill && <BackToSiteLink slug={slug} sitePublished={form.sitePublished} website={form.website} />}
-              </div>
-              <PublicSiteLocaleSwitcher locale={loc as Locale} />
+      <PublicFormSplitLayout
+        header={
+          <>
+            <div>
+              {/* Admin filling this in on a member's behalf is at their own dashboard
+                  session, not a public visitor — "Voltar ao site" would just be a confusing
+                  exit, so it's left out entirely in this mode (same spirit as the other
+                  isAdminFill-gated features above: this mode is deliberately stripped down). */}
+              {!isAdminFill && <BackToSiteLink slug={slug} sitePublished={form.sitePublished} website={form.website} />}
             </div>
+            <PublicSiteLocaleSwitcher locale={loc as Locale} />
+          </>
+        }
+        banners={
+          <>
             {isPreview && (
               <p className="rounded-md border border-dashed px-3 py-2 text-center text-xs text-muted-foreground">
                 {t("previewNotice")}
@@ -972,7 +975,10 @@ function MembershipFormPublicFormInner({ slug, formSlug, legalDocuments }: Props
                 {t("adminFillNotice")}
               </p>
             )}
-
+          </>
+        }
+        left={
+          <>
             {form.imageUrl && (
               // eslint-disable-next-line @next/next/no-img-element
               <img src={form.imageUrl} alt={form.title} className="w-full max-h-64 object-cover rounded-lg" />
@@ -992,6 +998,32 @@ function MembershipFormPublicFormInner({ slug, formSlug, legalDocuments }: Props
               </div>
             )}
 
+            {/* Renseignées à l'étape 1 de l'éditeur, sous « Informations de contact à destination
+                des adhérents », dont le hint promet noir sur blanc « Les coordonnées apparaissent
+                sur le formulaire en ligne ». Rendu ici, dans le panneau de présentation, plutôt
+                qu'après le formulaire : c'est justement quand le formulaire est fermé, pas encore
+                ouvert ou sans tarif que le visiteur a besoin de joindre quelqu'un, et ce panneau
+                reste visible quel que soit l'état du panneau de droite. */}
+            {(form.contactEmail || form.contactPhone) && (
+              <p className="text-center text-xs text-muted-foreground">
+                {t("contactHelp")}{" "}
+                {form.contactEmail && (
+                  <a href={`mailto:${form.contactEmail}`} className="underline underline-offset-2 hover:text-foreground">
+                    {form.contactEmail}
+                  </a>
+                )}
+                {form.contactEmail && form.contactPhone && <span aria-hidden> · </span>}
+                {form.contactPhone && (
+                  <a href={`tel:${form.contactPhone.replace(/\s/g, "")}`} className="underline underline-offset-2 hover:text-foreground">
+                    {form.contactPhone}
+                  </a>
+                )}
+              </p>
+            )}
+          </>
+        }
+        right={
+          <>
             {outcome ? (
               <div className="rounded-lg border bg-card p-6 text-center text-sm space-y-1">
                 <p className="font-medium">
@@ -1038,6 +1070,27 @@ function MembershipFormPublicFormInner({ slug, formSlug, legalDocuments }: Props
                 </div>
 
                 {isDraftRestored && <FormDraftNotice onDiscard={discardDraft} />}
+
+                {/* Remonté en haut du formulaire (au lieu du bas, sous tous les champs) : le
+                    visiteur voit l'action principale sans avoir à dérouler toute la liste de
+                    champs. Le bouton reste désactivé tant que le formulaire est incomplet, et un
+                    bouton désactivé n'émet aucun clic — c'est ce conteneur qui le reçoit (Button
+                    porte `disabled:pointer-events-none`, le clic le traverse) et fait rougir
+                    d'un coup tout ce qui manque, y compris les champs jamais visités. */}
+                <div onClick={() => { if (!canSubmit) setShowAllErrors(true) }}>
+                  <Button type="submit" className="w-full" disabled={!canSubmit} loading={loading}>
+                    {isAdminFill
+                      ? t("adminSubmitSendLink", { amount: amount.toLocaleString(loc, { style: "currency", currency: "EUR" }) })
+                      : !needsPayment
+                      ? (form.validationMode === "IMMEDIATE" ? t("submitImmediateFree") : t("submitFree"))
+                      : t("submitPay", {
+                          amount: `${amount.toLocaleString(loc, { style: "currency", currency: "EUR" })}${selectedTier?.free ? "" : selectedTier?.kind === "RECURRING" ? ` ${recurringSuffix(selectedTier)}` : payInInstallments ? ` ${t("firstInstallmentSuffix")}` : ""}`,
+                        })}
+                  </Button>
+                </div>
+                {!loading && blockingReason && (
+                  <p className="text-xs text-destructive text-center">{blockingReason}</p>
+                )}
 
                 <div className="space-y-2">
                   {isMulti && <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{t("registrantLabel", { number: 1 })}</p>}
@@ -1636,52 +1689,11 @@ function MembershipFormPublicFormInner({ slug, formSlug, legalDocuments }: Props
                   </p>
                 )}
 
-                {!loading && blockingReason && (
-                  <p className="text-xs text-destructive text-center">{blockingReason}</p>
-                )}
-
-                {/* Le bouton est désactivé tant que le formulaire est incomplet, et un bouton
-                    désactivé n'émet aucun clic — c'est ce conteneur qui le reçoit (Button porte
-                    `disabled:pointer-events-none`, le clic le traverse) et fait rougir d'un coup
-                    tout ce qui manque, y compris les champs jamais visités. */}
-                <div onClick={() => { if (!canSubmit) setShowAllErrors(true) }}>
-                  <Button type="submit" className="w-full" disabled={!canSubmit} loading={loading}>
-                    {isAdminFill
-                      ? t("adminSubmitSendLink", { amount: amount.toLocaleString(loc, { style: "currency", currency: "EUR" }) })
-                      : !needsPayment
-                      ? (form.validationMode === "IMMEDIATE" ? t("submitImmediateFree") : t("submitFree"))
-                      : t("submitPay", {
-                          amount: `${amount.toLocaleString(loc, { style: "currency", currency: "EUR" })}${selectedTier?.free ? "" : selectedTier?.kind === "RECURRING" ? ` ${recurringSuffix(selectedTier)}` : payInInstallments ? ` ${t("firstInstallmentSuffix")}` : ""}`,
-                        })}
-                  </Button>
-                </div>
               </form>
             )}
-
-            {/* Renseignées à l'étape 1 de l'éditeur, sous « Informations de contact à destination
-                des adhérents », dont le hint promet noir sur blanc « Les coordonnées apparaissent
-                sur le formulaire en ligne ». L'API les envoyait déjà ; personne ne les affichait.
-                Placées hors du bloc conditionnel : c'est justement quand le formulaire est fermé,
-                pas encore ouvert ou sans tarif que le visiteur a besoin de joindre quelqu'un. */}
-            {(form.contactEmail || form.contactPhone) && (
-              <p className="text-center text-xs text-muted-foreground">
-                {t("contactHelp")}{" "}
-                {form.contactEmail && (
-                  <a href={`mailto:${form.contactEmail}`} className="underline underline-offset-2 hover:text-foreground">
-                    {form.contactEmail}
-                  </a>
-                )}
-                {form.contactEmail && form.contactPhone && <span aria-hidden> · </span>}
-                {form.contactPhone && (
-                  <a href={`tel:${form.contactPhone.replace(/\s/g, "")}`} className="underline underline-offset-2 hover:text-foreground">
-                    {form.contactPhone}
-                  </a>
-                )}
-              </p>
-            )}
-          </div>
-        </div>
-      </div>
+          </>
+        }
+      />
     </>
   )
 }
