@@ -19,6 +19,7 @@ import { useSeenReleaseNotes } from "@/hooks/use-seen-release-notes"
 import type { Locale } from "@/i18n/locales"
 import { getDateFnsLocale } from "@/lib/date-fns-locale"
 import { OPEN_RELEASE_NOTES_EVENT, type OpenReleaseNotesDetail } from "@/lib/help/release-notes-events"
+import { useCurrentUser } from "@/lib/user-context"
 import { cn } from "@/lib/utils"
 
 // Set by the first-run guided tour (help-button.tsx). Until it exists the tour owns the
@@ -68,7 +69,8 @@ export function ReleaseNotesPopup({ enabled }: { enabled: boolean }) {
   const t = useTranslations("help.releaseNotes")
   const tHelp = useTranslations("help")
   const locale = useLocale() as Locale
-  const { seenIds, markSeen } = useSeenReleaseNotes()
+  const { id: currentUserId } = useCurrentUser()
+  const { seenIds, markSeen } = useSeenReleaseNotes(currentUserId)
   const queryClient = useQueryClient()
   // Read once at mount, on purpose: the tour sets its key a moment after a first visit's
   // mount, and re-reading it later would pop this up on top of the running tour.
