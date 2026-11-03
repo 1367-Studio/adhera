@@ -81,7 +81,7 @@ export async function GET(
     locale,
     assoc.id,
   )
-  const customFields  = await translateFields(evenement.customFields, ["label"], locale, assoc.id)
+  const customFields  = await translateFields(evenement.customFields, ["label", "options"], locale, assoc.id)
   const allTicketTypes = await translateFields(evenement.ticketTypes, ["label"], locale, assoc.id)
   // DONATION rows are optional extras alongside the ticket, never a tier a participant picks
   // one of — kept out of `ticketTypes`/`hasTicketTypes` entirely so an event that only offers

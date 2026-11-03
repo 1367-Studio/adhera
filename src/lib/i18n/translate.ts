@@ -250,9 +250,11 @@ async function batchTranslate(
   return results
 }
 
-// Translates the named string fields across a list of items in one batched call —
-// pass a single-item array to translate one object's fields. No-op for the default
-// locale (source language) and for null/empty field values.
+// Translates the named fields across a list of items in one batched call — pass a
+// single-item array to translate one object's fields. A field may be a plain string
+// (title, label) or a string array (e.g. CustomField.options, the SELECT/RADIO/CHECKBOX_MULTI
+// choice list) — every other shape is left untouched. No-op for the default locale (source
+// language) and for null/empty field values.
 export async function translateFields<T extends Record<string, unknown>>(
   items: T[],
   keys: (keyof T & string)[],
@@ -265,7 +267,13 @@ export async function translateFields<T extends Record<string, unknown>>(
   for (const item of items) {
     for (const key of keys) {
       const value = item[key]
-      if (typeof value === "string" && value.trim() !== "") texts.add(value)
+      if (typeof value === "string" && value.trim() !== "") {
+        texts.add(value)
+      } else if (Array.isArray(value)) {
+        for (const entry of value) {
+          if (typeof entry === "string" && entry.trim() !== "") texts.add(entry)
+        }
+      }
     }
   }
   if (texts.size === 0) return items
@@ -280,6 +288,10 @@ export async function translateFields<T extends Record<string, unknown>>(
       const value = item[key]
       if (typeof value === "string" && translationMap.has(value)) {
         clone[key] = translationMap.get(value) as T[typeof key]
+      } else if (Array.isArray(value)) {
+        clone[key] = value.map((entry) =>
+          typeof entry === "string" && translationMap.has(entry) ? translationMap.get(entry) : entry,
+        ) as T[typeof key]
       }
     }
     return clone
