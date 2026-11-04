@@ -15,8 +15,8 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import {
   HELP_ERROR_CODES, HELP_SEARCH_MIN_LENGTH,
-  useHelpArticle, useHelpChangelog, useHelpContent, useHelpSearch,
-  type ChangelogEntry, type FaqEntry, type HelpArticleSummary, type HelpSearchHit,
+  useHelpArticle, useHelpChangelog, useHelpContent, useHelpNews, useHelpSearch,
+  type ChangelogEntry, type FaqEntry, type HelpArticleSummary, type HelpSearchHit, type NewsEntry,
 } from "@/hooks/use-help"
 import type { Locale } from "@/i18n/locales"
 import { ApiError } from "@/lib/api-error"
@@ -37,7 +37,7 @@ const SEARCH_DEBOUNCE_MS  = 300
 const SEARCH_MAX_LENGTH   = 200
 const DATE_FORMAT         = "d MMM yyyy"
 
-type HelpTabKey = "guide" | "assistant" | "changelog"
+type HelpTabKey = "guide" | "assistant" | "changelog" | "news"
 
 // The Aide tab is either browsing/searching the list, or reading one piece of content.
 type HelpGuideView =
@@ -133,6 +133,7 @@ export function HelpPanel({ open, onOpenChange, onStartTour, onCloseComplete }: 
               <TabsTrigger value="guide">{t("tabs.guide")}</TabsTrigger>
               <TabsTrigger value="assistant">{t("tabs.assistant")}</TabsTrigger>
               <TabsTrigger value="changelog">{t("tabs.changelog")}</TabsTrigger>
+              <TabsTrigger value="news">{t("tabs.news")}</TabsTrigger>
             </TabsList>
           </SheetHeader>
 
@@ -163,6 +164,10 @@ export function HelpPanel({ open, onOpenChange, onStartTour, onCloseComplete }: 
 
           <TabsContent value="changelog" className="min-h-0 flex-1 overflow-y-auto">
             <HelpChangelogTab />
+          </TabsContent>
+
+          <TabsContent value="news" className="min-h-0 flex-1 overflow-y-auto">
+            <HelpNewsTab />
           </TabsContent>
 
           <SheetFooter className="shrink-0 flex-row items-center justify-between border-t px-4 py-2">
@@ -587,6 +592,113 @@ function HelpChangelogAccordion({ entries, isPinned = false, className }: HelpCh
                   <span aria-hidden>·</span>
                   <span>{t(`changelog.kind.${entry.kind}`)}</span>
                 </span>
+                <span className="flex min-w-0 items-center gap-2">
+                  <span className="min-w-0 text-sm font-medium text-foreground">{entry.title}</span>
+                  {isPinned && <Badge>{t("newBadge")}</Badge>}
+                </span>
+              </span>
+            </AccordionTrigger>
+            {hasBody && (
+              <AccordionPanel>
+                <HelpArticleView value={entry.body} />
+              </AccordionPanel>
+            )}
+          </AccordionItem>
+        )
+      })}
+    </Accordion>
+  )
+}
+
+/* ----------------------------------------------------------- Actualités tab */
+
+function HelpNewsTab() {
+  const t = useTranslations("help")
+
+  const newsQuery = useHelpNews()
+
+  if (newsQuery.isPending) {
+    return (
+      <div>
+        {[0, 1, 2].map(row => (
+          <div key={row} className="space-y-2 px-4 py-3">
+            <Skeleton className="h-3 w-32" />
+            <Skeleton className="h-4 w-3/4" />
+          </div>
+        ))}
+      </div>
+    )
+  }
+
+  if (newsQuery.isError) {
+    return (
+      <div className="flex flex-col items-start gap-2 px-4 py-6">
+        <p className="text-sm text-destructive">{t("news.loadError")}</p>
+        <Button variant="ghost" size="sm" onClick={() => newsQuery.refetch()}>{t("retry")}</Button>
+      </div>
+    )
+  }
+
+  const entries = newsQuery.data
+  if (entries.length === 0) {
+    return <p className="px-4 py-6 text-sm text-muted-foreground">{t("news.empty")}</p>
+  }
+
+  // Pinned entries lead (the query already sorts them first); without any, the tab is the
+  // plain list with no section labels.
+  const pinnedEntries = entries.filter(entry => entry.pinned)
+  const latestEntries = entries.filter(entry => !entry.pinned)
+  if (pinnedEntries.length === 0) return <HelpNewsAccordion entries={latestEntries} />
+
+  return (
+    <div className="flex flex-col gap-5 py-4">
+      <div>
+        <p className="px-4 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+          {t("pinnedSection")}
+        </p>
+        <HelpNewsAccordion entries={pinnedEntries} isPinned className="mt-1" />
+      </div>
+      {latestEntries.length > 0 && (
+        <div>
+          <p className="px-4 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+            {t("news.latestSection")}
+          </p>
+          <HelpNewsAccordion entries={latestEntries} className="mt-1" />
+        </div>
+      )}
+    </div>
+  )
+}
+
+interface HelpNewsAccordionProps {
+  entries:    NewsEntry[]
+  /** Pinned entries: tinted rows and a "Nouveau" badge after the title. */
+  isPinned?:  boolean
+  className?: string
+}
+
+function HelpNewsAccordion({ entries, isPinned = false, className }: HelpNewsAccordionProps) {
+  const t      = useTranslations("help")
+  const locale = useLocale() as Locale
+
+  return (
+    <Accordion multiple variant="plain" className={className}>
+      {entries.map(entry => {
+        const hasBody = !!entry.body && entry.body.length > 0
+        return (
+          <AccordionItem key={entry.id} value={entry.id} className={isPinned ? "bg-muted/40" : undefined}>
+            {/* An entry with no body cannot expand: the caret would promise a panel that
+                never opens, so it is hidden and the trigger disabled. */}
+            <AccordionTrigger
+              disabled={!hasBody}
+              className={cn(!hasBody && "[&>svg]:hidden", isPinned && "hover:bg-muted/70")}
+            >
+              <span className="flex min-w-0 flex-1 flex-col gap-1">
+                {/* `publishedAt` is a date-only value: parseISO keeps it on the editor's calendar
+                    day instead of shifting it through UTC midnight for viewers west of UTC. */}
+                <time dateTime={entry.publishedAt} className="text-xs font-normal text-muted-foreground">
+                  {format(parseISO(entry.publishedAt), DATE_FORMAT, { locale: getDateFnsLocale(locale) })}
+                </time>
                 <span className="flex min-w-0 items-center gap-2">
                   <span className="min-w-0 text-sm font-medium text-foreground">{entry.title}</span>
                   {isPinned && <Badge>{t("newBadge")}</Badge>}

@@ -13,7 +13,7 @@ import { parseMemberCardSettings } from "@/lib/member-card/settings"
 import { resolveDocumentBranding, canUseCustomBranding } from "@/lib/plan-limits"
 import { getPublicSiteUrl } from "@/lib/public-site-url"
 import { FiscalPeriodPopup } from "@/components/layout/fiscal-period-popup"
-import { ReleaseNotesPopup } from "@/components/layout/release-notes-popup"
+import { HelpPopupQueue } from "@/components/layout/help-popup-queue"
 import { DashboardMain } from "@/app/dashboard/dashboard-main"
 import { SubscriptionUpgradeModal } from "@/components/billing/subscription-upgrade-modal"
 import { getPricingInfo } from "@/lib/stripe"
@@ -141,8 +141,9 @@ export default async function DashboardLayout({ children }: { children: React.Re
           <Header user={session.user} showSidebar showSidebarTrigger={false} showBreadcrumb={false} showTour associationSlug={u.associationSlug ?? undefined} publicSiteUrl={publicSiteUrl} className="border-b-0 bg-background" />
           <FiscalPeriodPopup show={showFiscalPeriodPopup} />
           {/* Never alongside the fiscal-period popup, so the two dialogs don't stack — nor
-              alongside the subscription gate below, which outranks both. */}
-          <ReleaseNotesPopup enabled={!showFiscalPeriodPopup && !showSubscriptionUpgradeModal} />
+              alongside the subscription gate below, which outranks both. Sequences Nouveautés,
+              Notícias and FAQ pop-ups one at a time (see help-popup-queue.tsx). */}
+          <HelpPopupQueue enabled={!showFiscalPeriodPopup && !showSubscriptionUpgradeModal} />
           {essentialPricing && <SubscriptionUpgradeModal show={showSubscriptionUpgradeModal} essentialPricing={essentialPricing} overdue={gracePeriodOverdue} />}
           <DashboardMain>{children}</DashboardMain>
         </SidebarInset>
