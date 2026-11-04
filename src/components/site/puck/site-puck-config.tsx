@@ -242,7 +242,7 @@ const siteBlockComponents: Config<SitePuckComponents, SitePuckRootProps>["compon
         buttonLabel: renderProps.buttonLabel?.trim() || "Faire un don",
         href:        donationForm ? `/${metadata.slug}/dons/${donationForm.slug}` : `/portal/${metadata.slug}/don`,
         slug:        metadata.slug,
-        note:        metadata.canIssueTaxReceipts ? "Reçu fiscal envoyé automatiquement par e-mail" : undefined,
+        note:        metadata.canIssueTaxReceipts ? metadata.ui.donsTaxReceiptNote : undefined,
         background:  renderProps.background,
         textColor:   renderProps.textColor,
         spacing:     renderProps.spacing,
@@ -277,6 +277,7 @@ const siteBlockComponents: Config<SitePuckComponents, SitePuckRootProps>["compon
           section={{ id: renderProps.id, type: "contact", ...sectionFieldsOf(renderProps) }}
           city={metadata.city}
           country={metadata.country}
+          ui={metadata.ui}
         />
       )
     },

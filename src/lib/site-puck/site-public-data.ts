@@ -194,12 +194,56 @@ export type SiteData = NonNullable<Awaited<ReturnType<typeof getSiteData>>>
 // here.
 export async function translateListings(data: SiteData, locale: Locale): Promise<SiteData> {
   if (locale === DEFAULT_LOCALE) return data
-  const [events, actualites, boutiqueProduits] = await Promise.all([
+  const [events, actualites, boutiqueProduits, navPages, membershipFormBySection, donationFormBySection] = await Promise.all([
     translateFields(data.events, ["title", "description"], locale, data.id),
     translateFields(data.actualites, ["title", "content"], locale, data.id),
     translateFields(data.boutiqueProduits, ["name"], locale, data.id),
+    translateSitePageNavLinks(data.navPages, locale, data.id),
+    translateFormTitles(data.membershipFormBySection, locale, data.id),
+    translateFormTitles(data.donationFormBySection, locale, data.id),
   ])
-  return { ...data, events, actualites, boutiqueProduits }
+  return { ...data, events, actualites, boutiqueProduits, navPages, membershipFormBySection, donationFormBySection }
+}
+
+// The bound form's own title — the membership block renders it directly as its CTA button text
+// (site-puck-config.tsx's membership.render: `buttonLabel: membershipForm.title`, no separate
+// admin-editable button field like dons/other blocks have), so it's visible association-authored
+// text just like any block field, even though it's keyed by Puck block id rather than stored in
+// Puck JSON.
+async function translateFormTitles<T extends Record<string, { slug: string; title: string }>>(
+  formBySection: T, locale: Locale, associationId: string,
+): Promise<T> {
+  const entries = Object.entries(formBySection)
+  if (entries.length === 0) return formBySection
+  const translated = await translateFields(entries.map(([, form]) => form), ["title"], locale, associationId)
+  return Object.fromEntries(entries.map(([sectionId], i) => [sectionId, translated[i]])) as T
+}
+
+// The nav's own labels — a published custom page's title/navLabel and the association's named
+// dropdown menus (SiteNavMenu) grouping them — are association-authored text like any other
+// listing above, just assembled live by liveSitePageNavLinks rather than stored in Puck JSON.
+async function translateSitePageNavLinks(
+  navPages: SiteData["navPages"], locale: Locale, associationId: string,
+): Promise<SiteData["navPages"]> {
+  const buttons = await translateFields(navPages.buttons, ["label"], locale, associationId)
+
+  const menus = await translateFields(navPages.menus, ["label"], locale, associationId)
+  const linkJobs: { index: number; start: number; length: number }[] = []
+  const allLinks: typeof menus[number]["items"] = []
+  menus.forEach((menu, index) => {
+    if (menu.items.length > 0) {
+      linkJobs.push({ index, start: allLinks.length, length: menu.items.length })
+      allLinks.push(...menu.items)
+    }
+  })
+  if (allLinks.length > 0) {
+    const translatedLinks = await translateFields(allLinks, ["label"], locale, associationId)
+    for (const job of linkJobs) {
+      menus[job.index] = { ...menus[job.index], items: translatedLinks.slice(job.start, job.start + job.length) }
+    }
+  }
+
+  return { buttons, menus }
 }
 
 // The published home page when the new builder is the live version, else null (old builder, or
