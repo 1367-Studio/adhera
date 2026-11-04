@@ -57,5 +57,6 @@ export const structure: StructureResolver = (structureBuilder) =>
       structureBuilder.divider(),
       structureBuilder.documentTypeListItem("faqEntry").title("FAQ"),
       structureBuilder.documentTypeListItem("changelogEntry").title("Nouveautés"),
+      structureBuilder.documentTypeListItem("newsEntry").title("Actualités"),
       structureBuilder.documentTypeListItem("legalDocument").title("Documents légaux"),
     ])
