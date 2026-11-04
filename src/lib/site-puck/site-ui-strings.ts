@@ -33,6 +33,9 @@ export const SITE_UI_STRINGS = {
   actualitesDefaultTitle: "Actualités",
   boutiqueDefaultTitle:   "Boutique",
   boutiqueSeeAll:         "Voir la boutique",
+  donsTaxReceiptNote:     "Reçu fiscal envoyé automatiquement par e-mail",
+  contactDefaultTitle:    "Contact",
+  contactCityMissing:     "Ville non renseignée dans les Paramètres.",
 } as const
 
 export type SiteUiStringKey = keyof typeof SITE_UI_STRINGS
