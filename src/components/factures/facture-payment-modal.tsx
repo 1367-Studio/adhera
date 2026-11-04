@@ -11,11 +11,11 @@ import { SelectField } from "@/components/ui/select-field"
 import { FormField } from "@/components/ui/form-field"
 import { Button } from "@/components/ui/button"
 
-const methodOptions = [
+export const methodOptions = [
   { value: "Virement",    label: "Virement"     },
   { value: "Espèces",     label: "Espèces"      },
   { value: "Chèque",      label: "Chèque"       },
-  { value: "Carte",       label: "Carte"        },
+  { value: "Carte bancaire", label: "Carte bancaire" },
   { value: "Prélèvement", label: "Prélèvement"  },
   { value: "Autre",       label: "Autre"        },
 ]

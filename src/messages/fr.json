@@ -332,6 +332,7 @@
     "vat": "TVA",
     "totalDiscount": "Remise totale",
     "total": "Total",
+    "paymentMethod": "Mode de paiement",
     "paymentTerms": "Conditions de paiement",
     "paymentTermsPlaceholder": "ex: Paiement à 30 jours",
     "notes": "Notes",

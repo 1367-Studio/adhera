@@ -8,7 +8,7 @@ import { deriveFactureStatus, resolveManualStatus, type FactureStatus } from "@/
 
 // Comptabilité area (FORM-34). The old GET/DELETE allowlists also let the Secrétaire in, although
 // the sidebar never showed her this screen and every write was finance-only; she now has no access here.
-const FACTURE_FIELDS = ["status", "issueDate", "dueDate", "notes", "paymentTerms", "fournisseurId"] as const
+const FACTURE_FIELDS = ["status", "issueDate", "dueDate", "notes", "paymentTerms", "paymentMethod", "fournisseurId"] as const
 
 function withDerivedStatus<T extends { status: string; dueDate: Date | string | null }>(f: T): T {
   return { ...f, status: deriveFactureStatus(f.status as FactureStatus, f.dueDate) }
@@ -50,7 +50,7 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
     return NextResponse.json({ error: "Cette facture a été payée — confirmez la modification.", code: "REQUIRES_CONFIRMATION" }, { status: 409 })
   }
 
-  const { fournisseurId, status, issueDate, dueDate, notes, paymentTerms, items } = parsed.data
+  const { fournisseurId, status, issueDate, dueDate, notes, paymentTerms, paymentMethod, items } = parsed.data
 
   // Items on a Facture generated from a Devis conversion must stay identical to the
   // source Devis. The edit form always submits the full `items` array (disabled inputs
@@ -102,6 +102,7 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
         ...(dueDate         !== undefined ? { dueDate: dueDate ? new Date(dueDate) : null } : {}),
         ...(notes          !== undefined ? { notes: notes || null } : {}),
         ...(paymentTerms   !== undefined ? { paymentTerms: paymentTerms || null } : {}),
+        ...(paymentMethod  !== undefined ? { paymentMethod: paymentMethod || null } : {}),
         ...(fournisseurId  !== undefined ? { fournisseurId: fournisseurId || null } : {}),
         ...(resolvedStatus === "EN_ATTENTE" && existing.status !== "EN_ATTENTE" ? { sentAt: new Date() } : {}),
         ...(totals ?? {}),
