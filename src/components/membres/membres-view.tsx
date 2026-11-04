@@ -569,6 +569,9 @@ export function MembresView() {
                       </DropdownMenuItem>
                     </>
                   )}
+                  <DropdownMenuItem onClick={() => router.push("/dashboard/membres/duplicates")}>
+                    {t("membreDuplicates.list.menuItem")}
+                  </DropdownMenuItem>
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
                 </>

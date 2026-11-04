@@ -6383,7 +6383,8 @@
       "pricingOffers": "Pricing offers",
       "support": "Support",
       "controlAlerts": "Control Alerts",
-      "signOut": "Sign out"
+      "signOut": "Sign out",
+      "membreDuplicates": "Duplicates"
     },
     "themeToggle": {
       "changeTheme": "Change theme"
@@ -6963,5 +6964,121 @@
   },
   "formTermsEditor": {
     "contentRequired": "You must fill in the “{conditionsLabel}” field or upload a document."
+  },
+  "membreDuplicates": {
+    "list": {
+      "title": "Potential duplicates",
+      "subtitle": "Members that look like the same person — review before merging them.",
+      "menuItem": "Duplicates",
+      "scanAction": "Scan for duplicates",
+      "scanSuccess": "{count, plural, =0 {No duplicates pending} one {1 duplicate pending} other {# duplicates pending}}",
+      "scanError": "Error scanning for duplicates",
+      "searchPlaceholder": "Search a member…",
+      "matchedFields": {
+        "EMAIL": "Email",
+        "NAME": "Name"
+      },
+      "columns": {
+        "membreA": "Member A",
+        "membreB": "Member B",
+        "matchedFields": "Matched criteria",
+        "detectedAt": "Detected",
+        "status": "Status"
+      },
+      "status": {
+        "PENDING": "Pending",
+        "DISMISSED": "Dismissed",
+        "MERGED": "Merged"
+      },
+      "autoDismissedLabel": "(auto)",
+      "compareAction": "Compare",
+      "dismissAction": "Dismiss",
+      "empty": "No duplicates.",
+      "emptyForSearch": "No results for \"{search}\".",
+      "restoreAction": "Restore"
+    },
+    "merge": {
+      "backLink": "Back",
+      "title": "Compare and merge",
+      "subtitle": "Choose which member to keep and, for each differing field, which value to keep.",
+      "alreadyMerged": "This duplicate has already been merged.",
+      "keepAsPrimary": "Keep as primary",
+      "fieldsTitle": "Differing fields",
+      "fields": {
+        "firstName": "First name",
+        "lastName": "Last name",
+        "email": "Email",
+        "phone": "Phone",
+        "birthDate": "Date of birth",
+        "civilite": "Title",
+        "address": "Address",
+        "addressStreet": "Street",
+        "addressComplement": "Address line 2",
+        "postalCode": "Postal code",
+        "city": "City",
+        "country": "Country",
+        "groupeSanguin": "Blood type",
+        "sexe": "Gender",
+        "allergies": "Allergies",
+        "photoUrl": "Photo",
+        "preferredLocale": "Preferred language",
+        "spokenLanguage": "Spoken language",
+        "possedeTshirt": "Has a t-shirt",
+        "tailleTshirt": "T-shirt size",
+        "typeId": "Member type",
+        "notes": "Notes",
+        "guardianName": "Guardian name",
+        "guardianPhone": "Guardian phone",
+        "secondGuardianName": "Second guardian name",
+        "secondGuardianPhone": "Second guardian phone",
+        "imageRightsConsent": "Image rights consent",
+        "imageRightsConsentAt": "Image rights consent date"
+      },
+      "relatedDataTitle": "Related data",
+      "relations": {
+        "cotisations": "Membership fees",
+        "participations": "Event registrations",
+        "dons": "Donations",
+        "membershipAddonPurchases": "Membership add-ons purchased",
+        "automationLogs": "Automations triggered",
+        "emailMessages": "Emails sent",
+        "smsMessages": "SMS sent",
+        "incomes": "Income entries",
+        "materialLoans": "Equipment loans",
+        "boutiqueCommandes": "Shop orders",
+        "actualiteRecipients": "News post recipients",
+        "sondageRecipients": "Survey recipients",
+        "sondageReponses": "Survey responses",
+        "meetingParticipants": "Meeting participations",
+        "erasureRequests": "Erasure requests",
+        "dependants": "Linked members (dependants)",
+        "cotisationSubscription": "Active membership-fee subscription",
+        "controlAlert": "Active control alert"
+      },
+      "relatedDataCounts": "{primary} → {secondary}",
+      "conflictWarning": "⚠ {reason}",
+      "dismissAction": "Dismiss this duplicate",
+      "mergeAction": "Merge",
+      "mergeConfirmTitle": "Merge these two members?",
+      "mergeConfirmDescription": "All of the secondary member's related data will be transferred to the primary member. This action cannot be undone from the interface.",
+      "mergeConfirmDescriptionWithPortalWarning": "Both members have a portal account — the secondary member's account will be deactivated. All other related data will be transferred to the primary member. This action cannot be undone from the interface.",
+      "mergeConfirmDescriptionAdoptsPortal": "The secondary member's portal account will be taken over by the primary member. All other related data will be transferred. This action cannot be undone from the interface.",
+      "mergeSuccess": "{count, plural, =0 {Merge complete} one {Merge complete — 1 item transferred} other {Merge complete — # items transferred}}",
+      "mergeError": "Error merging members",
+      "relatedDataEmpty": "No related data on either member."
+    },
+    "backoffice": {
+      "title": "Member duplicates",
+      "subtitle": "Potential duplicates detected across every association.",
+      "columns": {
+        "association": "Association"
+      },
+      "changeAssociation": "Change association",
+      "associationSearchPlaceholder": "Search an association…",
+      "typeToSearch": "Type to search…",
+      "loading": "Loading…",
+      "noResults": "No results.",
+      "scanAction": "Scan"
+    }
   }
 }

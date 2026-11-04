@@ -3,7 +3,7 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { useTranslations } from "next-intl"
-import { SquaresFourIcon, BuildingsIcon, SignOutIcon, LifebuoyIcon, TagIcon, WarningCircleIcon } from "@phosphor-icons/react/dist/ssr";
+import { SquaresFourIcon, BuildingsIcon, SignOutIcon, LifebuoyIcon, TagIcon, WarningCircleIcon, CopySimpleIcon } from "@phosphor-icons/react/dist/ssr";
 import {
   Sidebar, SidebarContent, SidebarFooter, SidebarGroup,
   SidebarGroupContent, SidebarHeader, SidebarMenu,
@@ -17,6 +17,7 @@ import { LogoMark } from "@/components/layout/logo-mark"
 import { useBackofficeSupportTickets } from "@/hooks/use-backoffice-support-tickets"
 import { useSupportStaffTicketListener } from "@/hooks/use-support-ticket-listener"
 import { useBackofficeControlAlerts } from "@/hooks/use-backoffice-control-alerts"
+import { useMembreDuplicates } from "@/hooks/use-membre-duplicates"
 import { useQueryClient } from "@tanstack/react-query"
 
 const navItems = [
@@ -25,6 +26,7 @@ const navItems = [
   { key: "pricingOffers", href: "/backoffice/pricing-offers", icon: TagIcon     },
   { key: "support",      href: "/backoffice/support",      icon: LifebuoyIcon   },
   { key: "controlAlerts", href: "/backoffice/control-alerts", icon: WarningCircleIcon },
+  { key: "membreDuplicates", href: "/backoffice/membre-duplicates", icon: CopySimpleIcon },
 ]
 
 function isActive(href: string, pathname: string) {
@@ -49,6 +51,9 @@ export function BackofficeSidebar() {
   // total, never the rows — `total` comes from the paginated response regardless of page size.
   const { data: openControlAlerts } = useBackofficeControlAlerts({ status: "OUVERT", limit: 1 })
   const openControlAlertsCount = openControlAlerts?.total ?? 0
+
+  const { data: pendingDuplicates } = useMembreDuplicates("/api/backoffice/membre-duplicates", { status: "PENDING", limit: 1 })
+  const pendingDuplicatesCount = pendingDuplicates?.total ?? 0
 
   return (
     <Sidebar collapsible="icon" variant="inset">
@@ -88,6 +93,11 @@ export function BackofficeSidebar() {
                     {item.key === "controlAlerts" && openControlAlertsCount > 0 && (
                       <span className="ml-auto flex size-4.5 shrink-0 items-center justify-center rounded-full bg-destructive text-[10px] font-semibold text-destructive-foreground tabular-nums">
                         {openControlAlertsCount > 9 ? "9+" : openControlAlertsCount}
+                      </span>
+                    )}
+                    {item.key === "membreDuplicates" && pendingDuplicatesCount > 0 && (
+                      <span className="ml-auto flex size-4.5 shrink-0 items-center justify-center rounded-full bg-destructive text-[10px] font-semibold text-destructive-foreground tabular-nums">
+                        {pendingDuplicatesCount > 9 ? "9+" : pendingDuplicatesCount}
                       </span>
                     )}
                   </SidebarMenuButton>
