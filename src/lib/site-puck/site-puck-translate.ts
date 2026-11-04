@@ -67,7 +67,8 @@ const ALL_ARRAY_ITEM_KEYS = [...new Set(
 // text would otherwise never reach translation. Seeding the real default in here, before
 // translation, makes the translated value win over the render-time fallback instead.
 const FLAT_FIELD_DEFAULTS: Record<string, Partial<Record<string, string>>> = {
-  dons: { title: "Faire un don", buttonLabel: "Faire un don" },
+  dons:       { title: "Faire un don", buttonLabel: "Faire un don" },
+  membership: { title: "Rejoindre l'association" },
 }
 
 async function translateRoot(

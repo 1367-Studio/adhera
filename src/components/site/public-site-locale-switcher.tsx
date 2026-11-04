@@ -17,10 +17,14 @@ import { SITE_UI_STRINGS, type SiteUiStrings } from "@/lib/site-puck/site-ui-str
 
 // "translate" search param on the current page's own URL (never a cookie): association-authored
 // content (articles, blocks, buttons — see translateSitePuckData/translateFields call sites)
-// only translates on this explicit per-page opt-in, so it's naturally scoped to one page view —
-// navigating away and back starts over in the original language until clicked again. The fixed
-// UI chrome around it (this switcher's own labels, nav, footer — site-ui-strings.ts) stays on
-// the always-automatic locale-based pipeline; only the TRANSLATE_PARAM below is page-scoped.
+// translates on this per-page flag, so it's naturally scoped to one page view — navigating away
+// and back starts over in the original language. handleSelect below turns it on automatically
+// whenever a visitor picks a non-French language, so the common case (change language → see a
+// translated page) is one click; "Traduzir esta página"/"Voir le texte original" stays as a
+// manual override for a visitor who already is on a non-French locale (e.g. from their browser's
+// Accept-Language) and wants to toggle translation without re-picking the language. The fixed UI
+// chrome around it (this switcher's own labels, nav, footer — site-ui-strings.ts) stays on the
+// always-automatic locale-based pipeline regardless of this param.
 const TRANSLATE_PARAM = "translate"
 
 // Public-site equivalent of src/components/layout/locale-switcher.tsx — same look (a ghost
@@ -64,7 +68,13 @@ export function PublicSiteLocaleSwitcher({ locale, layout = "menu", listLabel, u
     if (next === locale) return
     startTransition(async () => {
       await setSiteLocale(next)
-      router.refresh()
+      // Picking a language also opts this page view into content translation (or back out, for
+      // French) — see the TRANSLATE_PARAM comment above for why this isn't just always-on.
+      const params = new URLSearchParams(searchParams.toString())
+      if (next === DEFAULT_LOCALE) params.delete(TRANSLATE_PARAM)
+      else params.set(TRANSLATE_PARAM, "1")
+      const query = params.toString()
+      router.push(query ? `${pathname}?${query}` : pathname)
     })
   }
 
