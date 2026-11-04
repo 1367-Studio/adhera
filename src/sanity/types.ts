@@ -61,6 +61,24 @@ export type ReleaseNote = Omit<ChangelogEntry, "modules" | "pinned"> & {
   image: ReleaseNoteImage | null
 }
 
+export type NewsEntry = {
+  id:          string
+  title:       string
+  publishedAt: string
+  pinned:      boolean
+  body:        PortableTextBlock[] | null
+}
+
+export type NewsPopupEntry = Omit<NewsEntry, "pinned"> & {
+  image: ReleaseNoteImage | null
+}
+
+export type FaqPopupEntry = {
+  id:       string
+  question: string
+  answer:   PortableTextBlock[]
+}
+
 export type HelpSearchHit = {
   id:      string
   type:    HelpContentType

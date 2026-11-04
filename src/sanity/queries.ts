@@ -78,6 +78,45 @@ export const HELP_RELEASE_NOTES_QUERY = defineQuery(`*[_type == "changelogEntry"
     }, null)
   }`)
 
+// Pinned entries first, then the latest, newest first — 20 in all. $locale.
+export const HELP_NEWS_QUERY = defineQuery(`*[_type == "newsEntry" && defined(publishedAt)]
+  | order(coalesce(pinned, false) desc, publishedAt desc, _createdAt desc) [0...20] {
+    "id": _id,
+    "title": ${LOCALIZED_TITLE},
+    publishedAt,
+    "pinned": coalesce(pinned, false),
+    "body": ${LOCALIZED_BODY}
+  }`)
+
+// "Notícias" pop-up: opt-in (a missing showInPopup counts as off, unlike the changelog
+// pop-up) and published on or after $since (YYYY-MM-DD), newest first, at most 10.
+// $locale, $since.
+export const HELP_NEWS_POPUP_QUERY = defineQuery(`*[_type == "newsEntry" && showInPopup == true && defined(publishedAt) && publishedAt >= $since]
+  | order(publishedAt desc, _createdAt desc) [0...10] {
+    "id": _id,
+    "title": ${LOCALIZED_TITLE},
+    publishedAt,
+    "body": ${LOCALIZED_BODY},
+    "image": select(defined(image.asset) => {
+      "url": image.asset->url,
+      "alt": image.alt,
+      "width": image.asset->metadata.dimensions.width,
+      "height": image.asset->metadata.dimensions.height
+    }, null)
+  }`)
+
+// FAQ pop-up: opt-in only (showInPopup must be explicitly true), ordered the same way as the
+// FAQ list itself. FAQ entries have no publication date to age off like changelog/news does, so
+// this uses the immutable _createdAt instead (editing an entry never bumps it, unlike
+// _updatedAt, which would keep resetting the window) — otherwise a `showInPopup` left checked
+// by mistake would keep popping up for every new user forever. $locale, $since (ISO datetime).
+export const HELP_FAQ_POPUP_QUERY = defineQuery(`*[_type == "faqEntry" && showInPopup == true && _createdAt >= $since]
+  | order(coalesce(order, 100) asc, _createdAt asc) [0...10] {
+    "id": _id,
+    "question": ${LOCALIZED_QUESTION},
+    "answer": coalesce(${LOCALIZED_ANSWER}, [])
+  }`)
+
 // Search / AI retrieval share one result shape: `text` is the flattened localised body or
 // answer (the search snippet and the AI passage are both cut from it in JS — GROQ has no
 // substring function) and `score` is the score() total.
