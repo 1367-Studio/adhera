@@ -45,12 +45,16 @@ interface HeaderProps {
   className?:           string
 }
 
-// Figma dashboard mockup's utility buttons: 48px circular chips with a visible light
+// Figma dashboard mockup's utility buttons: circular chips with a visible light
 // background, not the shared Button primitive's default 32px ghost (bg only on hover).
-// Passed as a className override to each button rather than changing their own default,
-// since all 5 are also used outside this header (boutique public pages, backoffice,
-// portal) where today's smaller ghost style stays unchanged.
-const HEADER_ICON_BTN_CLASS = "size-12 rounded-full bg-muted hover:bg-muted/70"
+// 36px below sm, 48px at sm+ — five of these plus the sidebar trigger overflow a
+// phone-width header at the full desktop size (measured ~457px needed vs. 430px on an
+// iPhone 15 Pro Max). Passed as a className override to each button rather than changing
+// their own default, since all 5 are also used outside this header (boutique public
+// pages, backoffice, portal) where today's fixed ghost style stays unchanged.
+const HEADER_ICON_BTN_CLASS   = "size-9 rounded-full bg-muted hover:bg-muted/70 sm:size-12"
+const HEADER_ICON_CLASS       = "size-4 sm:size-5"
+const HEADER_AVATAR_SIZE_CLASS = "size-9 sm:size-12"
 
 function ViewSwitcher({ slug, pathname }: { slug: string; pathname: string }) {
   const t = useTranslations("layout.header")
@@ -149,7 +153,7 @@ export function Header({ user, showSidebar = false, showSidebarTrigger = true, s
         </>
       )}
 
-      <div className="ml-auto flex items-center gap-2">
+      <div className="ml-auto flex items-center gap-1 sm:gap-2">
         {associationSlug && hasDashboardAccess(user.role ?? "") && (
           <span data-tour="view-switcher" className="flex items-center">
             <ViewSwitcher slug={associationSlug} pathname={pathname} />
@@ -168,18 +172,18 @@ export function Header({ user, showSidebar = false, showSidebarTrigger = true, s
             <span className="hidden sm:inline">{t("layout.header.publicSite")}</span>
           </a>
         )}
-        {showTour && <HelpButton className={HEADER_ICON_BTN_CLASS} iconClassName="size-5" />}
+        {showTour && <HelpButton className={HEADER_ICON_BTN_CLASS} iconClassName={HEADER_ICON_CLASS} />}
         <span data-tour="notifications" className="flex items-center">
-          <NotificationBell className={HEADER_ICON_BTN_CLASS} iconClassName="size-5" />
+          <NotificationBell className={HEADER_ICON_BTN_CLASS} iconClassName={HEADER_ICON_CLASS} />
         </span>
         <span data-tour="theme-toggle" className="flex items-center">
-          <ThemeToggle className={HEADER_ICON_BTN_CLASS} iconClassName="size-5" />
+          <ThemeToggle className={HEADER_ICON_BTN_CLASS} iconClassName={HEADER_ICON_CLASS} />
         </span>
         <span className="flex items-center">
-          <LocaleSwitcher className={HEADER_ICON_BTN_CLASS} iconClassName="size-5" />
+          <LocaleSwitcher className={HEADER_ICON_BTN_CLASS} iconClassName={HEADER_ICON_CLASS} />
         </span>
         <span data-tour="user-menu" className="flex items-center">
-          <UserMenu user={user} logoutRedirect={logoutRedirect} className="size-12" avatarClassName="size-12" />
+          <UserMenu user={user} logoutRedirect={logoutRedirect} className={HEADER_AVATAR_SIZE_CLASS} avatarClassName={HEADER_AVATAR_SIZE_CLASS} />
         </span>
       </div>
     </header>
