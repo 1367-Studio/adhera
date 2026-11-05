@@ -182,7 +182,17 @@ async function batchTranslate(
     // Own AI first (BYOK) — never the platform's shared Groq fallback, only a real own key.
     // Anthropic keys are skipped: a reasoning model with no JSON mode inside the timeout
     // budget below would mostly time out and log a spurious failure — Azure serves those directly.
-    const aiConfig = await getCachedAiConfig(associationId)
+    // Resolving it can itself throw (e.g. a stored BYOK key that fails to decrypt under the
+    // current ENCRYPTION_KEY) — caught here so a broken own-AI config falls through to Azure
+    // like every other failure in this function, instead of crashing the whole page. This
+    // matters more now that translation runs automatically for every non-French visitor
+    // rather than only after an explicit "Traduire cette page" click.
+    let aiConfig: ResolvedAnyAiConfig | null = null
+    try {
+      aiConfig = await getCachedAiConfig(associationId)
+    } catch (err) {
+      reportError(err, { area: "ai", action: "translate.resolve-config", extra: { associationId, locale } })
+    }
     if (aiConfig && !aiConfig.usingPlatform && aiConfig.kind === "openai-compatible") {
       const totalChars = missTexts.reduce((sum, t) => sum + t.length, 0)
       // Both checks below are silent, expected skips (not failures) — an oversized batch or

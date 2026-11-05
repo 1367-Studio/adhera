@@ -20,7 +20,7 @@ import {
 } from "@/lib/site-puck/site-public-data"
 import { translateSitePuckData, translateSitePuckSeo } from "@/lib/site-puck/site-puck-translate"
 import { translateSiteUiStrings } from "@/lib/site-puck/site-ui-strings-translate"
-import { resolvePublicLocale, wantsContentTranslation } from "@/lib/i18n/public-locale"
+import { resolvePublicLocale } from "@/lib/i18n/public-locale"
 
 export async function generateMetadata(
   { params }: { params: Promise<{ slug: string }> },
@@ -31,9 +31,6 @@ export async function generateMetadata(
   const publishedData = livePuckPage(data)
   if (publishedData) {
     try {
-      // Deliberately not gated behind the visitor's "Traduire cette page" click (see
-      // wantsContentTranslation) — crawlers and link-preview bots never click anything, and a
-      // <title>/description always in French for them would defeat having a translated site.
       const locale        = await resolvePublicLocale()
       const translatedPage = await translateSitePuckSeo(publishedData, locale, data.id)
       return sitePuckPageMetadata(data, translatedPage, `/${data.slug}`)
@@ -45,20 +42,18 @@ export async function generateMetadata(
 }
 
 export default async function PublicSitePage(
-  { params, searchParams }: { params: Promise<{ slug: string }>; searchParams: Promise<{ translate?: string }> },
+  { params }: { params: Promise<{ slug: string }> },
 ) {
-  const { slug }     = await params
-  const { translate } = await searchParams
+  const { slug } = await params
   const rawData = await getSiteData(slug)
   if (!rawData) notFound()
 
+  // Association-authored page content (listings, blocks, buttons) translates automatically
+  // whenever the visitor's resolved locale isn't French — same always-on-by-locale policy as
+  // the dons/adhésion/évenements checkout routes (translateListings/translateSitePuckData
+  // already no-op for DEFAULT_LOCALE internally, so this is never a wasted call).
   const locale = await resolvePublicLocale()
-  // Association-authored page content (listings, blocks, buttons) only translates on the
-  // visitor's explicit "Traduire cette page" click — never automatically just because a
-  // non-French locale is active. The fixed UI chrome (translateSiteUiStrings below) and the
-  // SEO metadata above are separate, always-automatic concerns — see wantsContentTranslation.
-  const shouldTranslate = wantsContentTranslation(translate, locale)
-  const data = shouldTranslate ? await translateListings(rawData, locale) : rawData
+  const data = await translateListings(rawData, locale)
 
   const legacyPage = renderLegacySitePage(data, slug)
 
@@ -70,11 +65,11 @@ export default async function PublicSitePage(
     let metadata: SitePuckMetadata | null = null
     try {
       const [translated, ui] = await Promise.all([
-        shouldTranslate ? translateSitePuckData(publishedData, locale, data.id) : Promise.resolve(publishedData),
+        translateSitePuckData(publishedData, locale, data.id),
         translateSiteUiStrings(locale, data.id),
       ])
       translatedPage = translated
-      metadata       = buildSitePuckMetadata(data, translatedPage, locale, ui, shouldTranslate)
+      metadata       = buildSitePuckMetadata(data, translatedPage, locale, ui)
     } catch (metadataError) {
       console.error("[public-site] new builder data failed, showing the old builder's page", metadataError)
     }

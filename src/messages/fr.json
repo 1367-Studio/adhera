@@ -2107,17 +2107,6 @@
         "unpublished": "Actualité dépubliée",
         "published": "« {title} » publiée — membres notifiés"
       }
-    },
-    "publicView": {
-      "backToSite": "Retour au site",
-      "pinned": "À la une",
-      "notFound": "Actualité introuvable",
-      "relatedEvent": "Événement associé",
-      "draft": "Brouillon",
-      "previewNotice": "Mode aperçu — cette actualité n'est pas encore visible publiquement.",
-      "listTitle": "Actualités",
-      "listEmpty": "Aucune actualité publiée pour le moment.",
-      "associationNotFound": "Cette association est introuvable."
     }
   },
   "sondages": {

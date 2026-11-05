@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma/client"
 import { parseModules } from "@/lib/modules"
+import { resolvePublicLocale } from "@/lib/i18n/public-locale"
+import { translateFields } from "@/lib/i18n/translate"
 
 export async function GET(
   req: Request,
@@ -32,5 +34,12 @@ export async function GET(
   // both sitePublished AND the "site" module, so a boutique can be live with neither.
   const sitePublished = assoc.sitePublished && modules.site
 
-  return NextResponse.json({ ...produit, sitePublished, website: assoc.website })
+  // The admin always writes this content in their own language — translateFields translates it
+  // automatically whenever the visitor's resolved locale isn't French (no-ops for French), same
+  // policy as every other public form route (e.g. dons/[formSlug]/route.ts).
+  const locale = await resolvePublicLocale()
+  const [translatedProduit] = await translateFields([produit], ["name", "description"], locale, assoc.id)
+  const translatedVariantes = await translateFields(produit.variantes, ["label"], locale, assoc.id)
+
+  return NextResponse.json({ ...translatedProduit, variantes: translatedVariantes, sitePublished, website: assoc.website })
 }

@@ -3,6 +3,8 @@ import { prisma } from "@/lib/prisma/client"
 import { parseModules } from "@/lib/modules"
 import { connectAccountChargesEnabled } from "@/lib/stripe"
 import { reportError } from "@/lib/monitoring"
+import { resolvePublicLocale } from "@/lib/i18n/public-locale"
+import { translateFields } from "@/lib/i18n/translate"
 
 export async function GET(
   req: Request,
@@ -47,5 +49,21 @@ export async function GET(
   // both sitePublished AND the "site" module, so a boutique can be live with neither.
   const sitePublished = assoc.sitePublished && modules.site
 
-  return NextResponse.json({ associationName: assoc.name, produits, paymentEnabled, sitePublished, website: assoc.website })
+  // The admin always writes this content in their own language — translateFields translates it
+  // automatically whenever the visitor's resolved locale isn't French (no-ops for French), same
+  // policy as every other public form route. translateFields only maps the top-level string
+  // keys it's given — it doesn't recurse into nested arrays — so variante labels need their own
+  // batched call across every product, same pattern as ticket-type labels in
+  // enrichPortalEvenements (src/lib/portal-evenements.ts).
+  const locale = await resolvePublicLocale()
+  const translatedProduits   = await translateFields(produits, ["name", "description"], locale, assoc.id)
+  const flatVariantes        = produits.flatMap(produit => produit.variantes)
+  const translatedVariantes  = await translateFields(flatVariantes, ["label"], locale, assoc.id)
+  const translatedLabelById  = new Map(translatedVariantes.map(variante => [variante.id, variante.label]))
+  const translated = translatedProduits.map((produit, i) => ({
+    ...produit,
+    variantes: produits[i].variantes.map(variante => ({ ...variante, label: translatedLabelById.get(variante.id) ?? variante.label })),
+  }))
+
+  return NextResponse.json({ associationName: assoc.name, produits: translated, paymentEnabled, sitePublished, website: assoc.website })
 }

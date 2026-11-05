@@ -13,7 +13,8 @@ import { Label } from "@/components/ui/label"
 import { SelectField } from "@/components/ui/select-field"
 import { CheckboxField } from "@/components/ui/checkbox-field"
 import { CurrencyField } from "@/components/ui/currency-field"
-import { LocaleSwitcher } from "@/components/layout/locale-switcher"
+import { PublicSiteLocaleSwitcher } from "@/components/site/public-site-locale-switcher"
+import type { Locale } from "@/i18n/locales"
 import { BackToSiteLink } from "@/components/public/back-to-site-link"
 import { RichTextView } from "@/components/ui/rich-text-view"
 import { FormTermsSection } from "@/components/public/form-terms-section"
@@ -399,7 +400,7 @@ function DonationFormPublicFormInner({ slug, formSlug, legalDocuments }: Props) 
         {showInAppBrowserBanner && <InAppBrowserBanner>{t("inAppBrowserWarning")}</InAppBrowserBanner>}
         <div className="min-h-screen flex flex-col items-center justify-center text-center px-4 gap-4">
           <p className="text-muted-foreground">{t("notFound")}</p>
-          <LocaleSwitcher persistAccountLocale={!isPreview} />
+          <PublicSiteLocaleSwitcher locale={loc as Locale} />
         </div>
       </>
     )
@@ -412,7 +413,7 @@ function DonationFormPublicFormInner({ slug, formSlug, legalDocuments }: Props) 
         <div className="w-full max-w-md space-y-6">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <BackToSiteLink slug={slug} sitePublished={form.sitePublished} website={form.website} />
-            <LocaleSwitcher persistAccountLocale={!isPreview} />
+            <PublicSiteLocaleSwitcher locale={loc as Locale} />
           </div>
 
           {isPreview && (
