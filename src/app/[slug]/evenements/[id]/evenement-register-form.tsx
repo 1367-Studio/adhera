@@ -1129,25 +1129,6 @@ function EvenementRegisterFormInner({ slug, id, legalDocuments }: Props) {
 
                   {isDraftRestored && <FormDraftNotice onDiscard={discardDraft} />}
 
-                  {/* Remonté en haut du formulaire (au lieu du bas, sous tous les champs) : le
-                      visiteur voit l'action principale sans avoir à dérouler toute la liste de
-                      champs. Même convention que membership-form-public-form.tsx. */}
-                  <Button
-                    type="submit"
-                    disabled={!canSubmit}
-                    loading={loading}
-                    className="w-full"
-                  >
-                    <TicketIcon className="size-4 mr-2" />
-                    {isPaid
-                      ? t("pay", { amount: total.toLocaleString(loc, { style: "currency", currency: "EUR" }) })
-                      : t("submit")}
-                  </Button>
-                  <div className="flex gap-2 text-xs text-muted-foreground">
-                    <ShieldCheckIcon className="size-3.5 shrink-0 mt-0.5" />
-                    <p>{t("privacyNote")}</p>
-                  </div>
-
                   {maxAttendees > 1 && (
                     <QuantityStepper value={attendeeCount} onChange={setQuantity} max={maxAttendees} label={t("attendeesCountLabel")} />
                   )}
@@ -1379,6 +1360,22 @@ function EvenementRegisterFormInner({ slug, id, legalDocuments }: Props) {
                     checked={legalAccepted}
                     onChange={setLegalAccepted}
                   />
+
+                  <Button
+                    type="submit"
+                    disabled={!canSubmit}
+                    loading={loading}
+                    className="w-full"
+                  >
+                    <TicketIcon className="size-4 mr-2" />
+                    {isPaid
+                      ? t("pay", { amount: total.toLocaleString(loc, { style: "currency", currency: "EUR" }) })
+                      : t("submit")}
+                  </Button>
+                  <div className="flex gap-2 text-xs text-muted-foreground">
+                    <ShieldCheckIcon className="size-3.5 shrink-0 mt-0.5" />
+                    <p>{t("privacyNote")}</p>
+                  </div>
                 </form>
             )}
           </>

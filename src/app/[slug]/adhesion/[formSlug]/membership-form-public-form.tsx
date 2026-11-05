@@ -1071,27 +1071,6 @@ function MembershipFormPublicFormInner({ slug, formSlug, legalDocuments }: Props
 
                 {isDraftRestored && <FormDraftNotice onDiscard={discardDraft} />}
 
-                {/* Remonté en haut du formulaire (au lieu du bas, sous tous les champs) : le
-                    visiteur voit l'action principale sans avoir à dérouler toute la liste de
-                    champs. Le bouton reste désactivé tant que le formulaire est incomplet, et un
-                    bouton désactivé n'émet aucun clic — c'est ce conteneur qui le reçoit (Button
-                    porte `disabled:pointer-events-none`, le clic le traverse) et fait rougir
-                    d'un coup tout ce qui manque, y compris les champs jamais visités. */}
-                <div onClick={() => { if (!canSubmit) setShowAllErrors(true) }}>
-                  <Button type="submit" className="w-full" disabled={!canSubmit} loading={loading}>
-                    {isAdminFill
-                      ? t("adminSubmitSendLink", { amount: amount.toLocaleString(loc, { style: "currency", currency: "EUR" }) })
-                      : !needsPayment
-                      ? (form.validationMode === "IMMEDIATE" ? t("submitImmediateFree") : t("submitFree"))
-                      : t("submitPay", {
-                          amount: `${amount.toLocaleString(loc, { style: "currency", currency: "EUR" })}${selectedTier?.free ? "" : selectedTier?.kind === "RECURRING" ? ` ${recurringSuffix(selectedTier)}` : payInInstallments ? ` ${t("firstInstallmentSuffix")}` : ""}`,
-                        })}
-                  </Button>
-                </div>
-                {!loading && blockingReason && (
-                  <p className="text-xs text-destructive text-center">{blockingReason}</p>
-                )}
-
                 <div className="space-y-2">
                   {isMulti && <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{t("registrantLabel", { number: 1 })}</p>}
                   <p className="text-sm font-medium">{t("amountLabel")}</p>
@@ -1689,6 +1668,24 @@ function MembershipFormPublicFormInner({ slug, formSlug, legalDocuments }: Props
                   </p>
                 )}
 
+                {/* Le bouton reste désactivé tant que le formulaire est incomplet, et un bouton
+                    désactivé n'émet aucun clic — c'est ce conteneur qui le reçoit (Button porte
+                    `disabled:pointer-events-none`, le clic le traverse) et fait rougir d'un coup
+                    tout ce qui manque, y compris les champs jamais visités. */}
+                <div onClick={() => { if (!canSubmit) setShowAllErrors(true) }}>
+                  <Button type="submit" className="w-full" disabled={!canSubmit} loading={loading}>
+                    {isAdminFill
+                      ? t("adminSubmitSendLink", { amount: amount.toLocaleString(loc, { style: "currency", currency: "EUR" }) })
+                      : !needsPayment
+                      ? (form.validationMode === "IMMEDIATE" ? t("submitImmediateFree") : t("submitFree"))
+                      : t("submitPay", {
+                          amount: `${amount.toLocaleString(loc, { style: "currency", currency: "EUR" })}${selectedTier?.free ? "" : selectedTier?.kind === "RECURRING" ? ` ${recurringSuffix(selectedTier)}` : payInInstallments ? ` ${t("firstInstallmentSuffix")}` : ""}`,
+                        })}
+                  </Button>
+                </div>
+                {!loading && blockingReason && (
+                  <p className="text-xs text-destructive text-center">{blockingReason}</p>
+                )}
               </form>
             )}
           </>
