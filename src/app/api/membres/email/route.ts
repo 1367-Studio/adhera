@@ -20,13 +20,17 @@ const schema = z.object({
     key:      z.string(),
     filename: z.string().min(1).max(255),
   })).max(MAX_EMAIL_ATTACHMENTS_COUNT, EMAIL_ATTACHMENT_ERRORS.tooMany).optional(),
-  // When true, subject/bodyHtml are treated as the source (French) version and each member
-  // gets it auto-translated into their own Membre.preferredLocale — see bulkSendMembresEmail's
-  // "translate" step. External emails have no Membre record, so they always get the source.
+  // When true, subject/bodyHtml are treated as the source version (written in whatever
+  // language the admin composed it in) and each member gets it auto-translated into their own
+  // Membre.preferredLocale — see bulkSendMembresEmail's "translate" step, which detects the
+  // source language and skips it for any locale that already matches. External emails have
+  // no Membre record, so they always get the source.
   autoLocalize:   z.boolean().optional(),
   // Locales the admin already reviewed/edited in SendEmailModal's auto-preview dialog — sent
   // as-is instead of being re-translated server-side. Only meaningful alongside autoLocalize.
-  translationOverrides: z.record(z.enum(SUPPORTED_LOCALES), z.object({
+  // partialRecord, not record: zod v4's z.record(enum, ...) requires every enum member as a
+  // key, but this only ever carries the handful of locales the admin actually previewed.
+  translationOverrides: z.partialRecord(z.enum(SUPPORTED_LOCALES), z.object({
     subject:  z.string().min(1).max(200),
     bodyHtml: z.string().min(1),
   })).optional(),

@@ -5,7 +5,7 @@ import { sendEmailBatch } from "@/lib/mail"
 import { sendSmsBatch } from "@/lib/sms"
 import { eventReminderEmail, customEmail } from "@/lib/email"
 import { substituteVars, buildVars, parseRecipients, computeNextRunAt, isBirthdayToday } from "@/lib/automation"
-import { translateEmailContent } from "@/lib/i18n/translate"
+import { translateEmailContent, detectEmailSourceLanguage } from "@/lib/i18n/translate"
 import { DEFAULT_LOCALE, type Locale } from "@/i18n/locales"
 import { getDateFnsLocale } from "@/lib/date-fns-locale"
 import { parseModules } from "@/lib/modules"
@@ -19,10 +19,13 @@ import { reportError } from "@/lib/monitoring"
 
 const BATCH_SIZE = 100
 
-// One translateEmailContent call per distinct Membre.preferredLocale actually present among
-// this run's email-reachable targets (never per member — see the identical reasoning in
-// src/inngest/bulk-send.ts, which this mirrors). Returns an empty map (no-op downstream) when
-// every target is on the default locale or has none set, without making any network/DB call.
+// One translateEmailContent call per distinct effective locale actually present among this
+// run's email-reachable targets (never per member — see the identical reasoning in
+// src/inngest/bulk-send.ts, which this mirrors; a target with no preferredLocale set targets
+// DEFAULT_LOCALE, same as everywhere else this field is read). The source language is
+// detected once for the whole run, and translateEmailContent skips any locale that already
+// matches it — so a template already written in French still costs nothing extra for its
+// (common) French targets.
 async function localizeTemplateContent(
   associationId: string,
   subject:       string,
@@ -30,12 +33,13 @@ async function localizeTemplateContent(
   emailJobs:     { membre: { preferredLocale: string | null } }[],
 ): Promise<Map<string, { subject: string; body: string }>> {
   const locales = [...new Set(
-    emailJobs.map(j => j.membre.preferredLocale).filter((l): l is Locale => !!l && l !== DEFAULT_LOCALE)
+    emailJobs.map(j => (j.membre.preferredLocale as Locale | null) ?? DEFAULT_LOCALE)
   )]
   if (locales.length === 0) return new Map()
 
+  const sourceLanguage = await detectEmailSourceLanguage(subject, body)
   const entries = await Promise.all(locales.map(async (locale) => {
-    const result = await translateEmailContent(subject, body, locale, associationId)
+    const result = await translateEmailContent(subject, body, locale, associationId, sourceLanguage)
     return [locale, { subject: result.subject, body: result.bodyHtml }] as const
   }))
   return new Map(entries)
@@ -212,7 +216,7 @@ export async function processRule(rule: RuleWithRelations, now: Date): Promise<n
     const translations  = await localizeTemplateContent(rule.associationId, rule.template.subject, rule.template.body, emailTargets)
     const emailJobs = emailTargets
       .map(j => {
-        const content = (j.membre.preferredLocale && translations.get(j.membre.preferredLocale)) || { subject: rule.template.subject, body: rule.template.body }
+        const content = translations.get((j.membre.preferredLocale as Locale | null) ?? DEFAULT_LOCALE) || { subject: rule.template.subject, body: rule.template.body }
         return {
           membreId: j.membreId,
           payload: {
@@ -346,7 +350,7 @@ async function processBirthday(
     const translations  = await localizeTemplateContent(rule.associationId, rule.template.subject, rule.template.body, emailTargets)
     const emailJobs = emailTargets
       .map(j => {
-        const content = (j.membre.preferredLocale && translations.get(j.membre.preferredLocale)) || { subject: rule.template.subject, body: rule.template.body }
+        const content = translations.get((j.membre.preferredLocale as Locale | null) ?? DEFAULT_LOCALE) || { subject: rule.template.subject, body: rule.template.body }
         return {
           membreId: j.membreId,
           payload: {
@@ -482,7 +486,7 @@ async function processAdherentLapsed(
     const translations  = await localizeTemplateContent(rule.associationId, rule.template.subject, rule.template.body, emailTargets)
     const emailJobs = emailTargets
       .map(j => {
-        const content = (j.membre.preferredLocale && translations.get(j.membre.preferredLocale)) || { subject: rule.template.subject, body: rule.template.body }
+        const content = translations.get((j.membre.preferredLocale as Locale | null) ?? DEFAULT_LOCALE) || { subject: rule.template.subject, body: rule.template.body }
         return {
           membreId: j.membreId,
           payload: {
@@ -695,7 +699,7 @@ async function processMembershipExpiring(
     const translations  = await localizeTemplateContent(rule.associationId, rule.template.subject, rule.template.body, emailTargets)
     const emailJobs = emailTargets
       .map(j => {
-        const content = (j.membre.preferredLocale && translations.get(j.membre.preferredLocale)) || { subject: rule.template.subject, body: rule.template.body }
+        const content = translations.get((j.membre.preferredLocale as Locale | null) ?? DEFAULT_LOCALE) || { subject: rule.template.subject, body: rule.template.body }
         return {
           cotisationId: j.cotisationId,
           membreId:     j.membreId,
