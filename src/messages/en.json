@@ -6691,7 +6691,8 @@
       "title": "Frequently asked question"
     },
     "popupCarousel": {
-      "dontRemind": "Don't remind me",
+      "remindLater": "Remind me later",
+      "remindLaterToast": "We'll remind you again next time you sign in.",
       "previous": "Previous",
       "next": "Next",
       "finish": "Done",

@@ -6701,7 +6701,8 @@
       "title": "Question fréquente"
     },
     "popupCarousel": {
-      "dontRemind": "Ne plus me rappeler",
+      "remindLater": "Me le rappeler plus tard",
+      "remindLaterToast": "Nous vous le rappellerons à votre prochaine connexion.",
       "previous": "Précédent",
       "next": "Suivant",
       "finish": "Terminer",
