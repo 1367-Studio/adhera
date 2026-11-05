@@ -582,12 +582,10 @@ header.sticky {
   animation-delay: var(--delay);
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .animate-auth-arch,
-  .animate-auth-speed-line {
-    animation: none !important;
-  }
-}
+/* Deliberately not guarded behind prefers-reduced-motion, unlike this file's
+   other custom animations: this is the only on-screen feedback during the
+   post-login wait, so stopping it would leave that gap looking frozen again
+   for anyone with reduced motion enabled instead of just toning it down. */
 
 /* ── Guided tour (driver.js) — themed to match the app ─────────────────── */
 .driver-popover.adhera-tour {
