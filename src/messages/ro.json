@@ -87,6 +87,7 @@
         "passwordLabel": "Parolă",
         "forgotPassword": "Ai uitat parola?",
         "submit": "Conectează-te",
+        "connecting": "Se conectează…",
         "or": "sau",
         "continueWithGoogle": "Continuă cu Google"
       }

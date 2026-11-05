@@ -87,6 +87,7 @@
         "passwordLabel": "Geslo",
         "forgotPassword": "Si pozabil geslo?",
         "submit": "Prijava",
+        "connecting": "Prijavljanje…",
         "or": "ali",
         "continueWithGoogle": "Nadaljujte z Googlom"
       }

@@ -87,6 +87,7 @@
         "passwordLabel": "Palavra-passe",
         "forgotPassword": "Esqueceu-se da palavra-passe?",
         "submit": "Iniciar sessão",
+        "connecting": "A iniciar sessão…",
         "or": "ou",
         "continueWithGoogle": "Continuar com o Google"
       }

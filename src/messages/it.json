@@ -87,6 +87,7 @@
         "passwordLabel": "Password",
         "forgotPassword": "Hai dimenticato la password?",
         "submit": "Accedi",
+        "connecting": "Accesso in corso…",
         "or": "oppure",
         "continueWithGoogle": "Continua con Google"
       }

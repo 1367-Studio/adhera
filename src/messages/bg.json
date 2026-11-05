@@ -87,6 +87,7 @@
         "passwordLabel": "Парола",
         "forgotPassword": "Забравихте паролата си?",
         "submit": "Влез",
+        "connecting": "Влизане…",
         "or": "или",
         "continueWithGoogle": "Продължете с Google"
       }
