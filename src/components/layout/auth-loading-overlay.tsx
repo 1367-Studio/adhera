@@ -42,15 +42,17 @@ export function AuthLoadingOverlay({ active, label }: AuthLoadingOverlayProps) {
             />
           )
         })}
-        <svg
-          className="animate-auth-arch absolute top-1/2 left-1/2 size-28 -translate-x-1/2 -translate-y-1/2"
-          viewBox="0 0 765 765"
-          role="img"
-          aria-hidden
-          focusable="false"
-        >
-          <path d={ARCH_PATH} fill="var(--primary)" />
-        </svg>
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+          <svg
+            className="animate-auth-arch size-28"
+            viewBox="0 0 765 765"
+            role="img"
+            aria-hidden
+            focusable="false"
+          >
+            <path d={ARCH_PATH} className="fill-primary" />
+          </svg>
+        </div>
       </div>
       <p className="text-sm text-muted-foreground">{label}</p>
     </div>
