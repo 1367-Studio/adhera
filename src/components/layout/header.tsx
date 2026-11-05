@@ -105,10 +105,15 @@ export function Header({ user, showSidebar = false, showSidebarTrigger = true, s
 
   return (
     <header className={cn("sticky top-0 z-40 flex radius-t h-14 shrink-0 items-center gap-2 border-b bg-sidebar px-4", className)}>
-      {showSidebar && showSidebarTrigger && (
+      {showSidebar && (
         <>
-          <SidebarTrigger className="-ml-1" />
-          <Separator orientation="vertical" className="mr-2 h-4" />
+          {/* The dashboard/portal Figma mockup moves the desktop toggle into the sidebar's
+              own header (see app-sidebar.tsx), but that trigger sits inside the mobile Sheet
+              that only mounts once it's already open — nothing outside it can open it. Keep
+              a trigger here below md regardless of showSidebarTrigger so mobile always has
+              a way to open the sidebar. */}
+          <SidebarTrigger className={cn("-ml-1", !showSidebarTrigger && "md:hidden")} />
+          <Separator orientation="vertical" className={cn("mr-2 h-4", !showSidebarTrigger && "md:hidden")} />
         </>
       )}
 
