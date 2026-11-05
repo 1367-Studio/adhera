@@ -3,10 +3,11 @@
 import Link from "next/link"
 import { useSearchParams } from "next/navigation"
 import { useQuery } from "@tanstack/react-query"
-import { useTranslations, useFormatter } from "next-intl"
+import { useFormatter, useLocale } from "next-intl"
 import { ArrowLeftIcon, CalendarBlankIcon, PushPinIcon } from "@phosphor-icons/react/dist/ssr";
 import { RichTextView } from "@/components/ui/rich-text-view"
 import { SitePublicChrome } from "@/components/site/site-public-chrome"
+import { SITE_UI_STRINGS, type SiteUiStrings } from "@/lib/site-puck/site-ui-strings"
 import type { SiteConfig } from "@/types/site-config"
 
 type EvenementRef = { id: string; title: string; date: string }
@@ -27,7 +28,7 @@ type SiteInfo = { name: string; config: SiteConfig | null }
 // The route always returns `site` when the association/site itself is reachable, even when
 // the specific actualite 404s — so a stale/bad link can still render the site's nav/footer
 // around a "not found" message instead of stranding the visitor on a bare page.
-type ApiResponse = { actualite?: ActualiteDetail; site?: SiteInfo; error?: string; previewMode?: boolean }
+type ApiResponse = { actualite?: ActualiteDetail; site?: SiteInfo; ui?: SiteUiStrings; error?: string; previewMode?: boolean }
 
 type Props = { slug: string; id: string }
 
@@ -41,25 +42,18 @@ function backHref(slug: string, site?: SiteInfo) {
 }
 
 export function ActualiteDetailView({ slug, id }: Props) {
-  const t             = useTranslations("actualites.publicView")
   const format        = useFormatter()
+  const locale        = useLocale()
   const searchParams  = useSearchParams()
   const isPreview     = searchParams.get("preview") === "1"
-  // Mirrors the "Traduire cette page" toggle (PublicSiteLocaleSwitcher) on this page's own URL —
-  // the admin's original text is shown until the visitor explicitly asks for a translation.
-  const isTranslate   = searchParams.get("translate") === "1"
 
-  // Never throws on a non-2xx — a 404 still carries `site` in its body, which the render
-  // below needs to keep the page's chrome up even when the post itself can't be found.
+  // Never throws on a non-2xx — a 404 still carries `site` (and `ui`) in its body, which the
+  // render below needs to keep the page's chrome up even when the post itself can't be found.
+  // The API translates content and this page's own fixed chrome automatically by the
+  // visitor's resolved locale (SITE_LOCALE).
   const { data, isLoading } = useQuery<ApiResponse>({
-    queryKey: ["public-actualite", slug, id, isPreview, isTranslate],
-    queryFn:  () => {
-      const query = new URLSearchParams()
-      if (isPreview)   query.set("preview", "1")
-      if (isTranslate) query.set("translate", "1")
-      const qs = query.toString()
-      return fetch(`/api/public/${slug}/actualites/${id}${qs ? `?${qs}` : ""}`).then(r => r.json())
-    },
+    queryKey: ["public-actualite", slug, id, isPreview, locale],
+    queryFn:  () => fetch(`/api/public/${slug}/actualites/${id}${isPreview ? "?preview=1" : ""}`).then(r => r.json()),
   })
 
   if (isLoading || !data) {
@@ -81,14 +75,15 @@ export function ActualiteDetailView({ slug, id }: Props) {
   }
 
   const { actualite: post, site } = data
+  const ui = data.ui ?? SITE_UI_STRINGS
 
   if (!post) {
     const notFoundBody = (
       <div className="flex flex-col items-center justify-center text-center px-4 py-24 gap-4">
-        <p className="text-lg font-semibold">{t("notFound")}</p>
+        <p className="text-lg font-semibold">{ui.actualitesNotFound}</p>
         <Link href={backHref(slug, site)} className="inline-flex items-center gap-1.5 text-sm font-medium hover:underline">
           <ArrowLeftIcon className="size-3.5" />
-          {t("backToSite")}
+          {ui.actualitesBackToSite}
         </Link>
       </div>
     )
@@ -108,12 +103,12 @@ export function ActualiteDetailView({ slug, id }: Props) {
           className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-900 transition-colors"
         >
           <ArrowLeftIcon className="size-3.5" />
-          {t("backToSite")}
+          {ui.actualitesBackToSite}
         </Link>
 
         {data.previewMode && (
           <p className="rounded-md border border-dashed border-gray-300 px-3 py-2 text-center text-xs text-gray-500">
-            {t("previewNotice")}
+            {ui.actualitesPreviewNotice}
           </p>
         )}
 
@@ -130,7 +125,7 @@ export function ActualiteDetailView({ slug, id }: Props) {
           <div className="flex flex-wrap items-center gap-2">
             {post.pinned && (
               <span className="inline-flex items-center gap-1.5 bg-orange-500/80 text-white rounded-md px-2 py-0.5 text-xs font-medium">
-                <PushPinIcon className="size-2.5" /> {t("pinned")}
+                <PushPinIcon className="size-2.5" /> {ui.actualitesFeaturedBadge}
               </span>
             )}
             {post.publishedAt ? (
@@ -138,7 +133,7 @@ export function ActualiteDetailView({ slug, id }: Props) {
                 {format.dateTime(new Date(post.publishedAt), { day: "numeric", month: "long", year: "numeric" })}
               </time>
             ) : (
-              <span className="text-xs text-gray-400">{t("draft")}</span>
+              <span className="text-xs text-gray-400">{ui.actualitesDraft}</span>
             )}
           </div>
           <h1 className="text-2xl font-bold leading-snug text-gray-900">{post.title}</h1>
@@ -153,7 +148,7 @@ export function ActualiteDetailView({ slug, id }: Props) {
           >
             <p className="text-xs font-semibold uppercase tracking-wider flex items-center gap-1.5" style={{ color }}>
               <CalendarBlankIcon className="size-3.5" />
-              {t("relatedEvent")}
+              {ui.actualitesRelatedEvent}
             </p>
             <p className="font-semibold text-gray-900">{ev.title}</p>
             <p className="text-xs text-gray-500">

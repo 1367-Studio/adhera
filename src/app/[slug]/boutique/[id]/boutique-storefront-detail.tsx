@@ -3,11 +3,13 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { useQuery } from "@tanstack/react-query"
-import { useTranslations } from "next-intl"
+import { useTranslations, useLocale } from "next-intl"
 import { toast } from "sonner"
 import { ArrowLeftIcon, ShoppingBagIcon, ShoppingCartIcon, MinusIcon, PlusIcon } from "@phosphor-icons/react/dist/ssr";
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
+import { PublicSiteLocaleSwitcher } from "@/components/site/public-site-locale-switcher"
+import type { Locale } from "@/i18n/locales"
 import { useCart } from "@/lib/hooks/use-cart"
 import { cn } from "@/lib/utils"
 import { RichTextView } from "@/components/ui/rich-text-view"
@@ -29,6 +31,7 @@ type Props = { slug: string; id: string }
 export function BoutiqueStorefrontDetail({ slug, id }: Props) {
   const t       = useTranslations("portalMembre.boutique")
   const tCommon = useTranslations("common")
+  const loc     = useLocale()
   const router  = useRouter()
   const { addItem, count } = useCart(slug)
 
@@ -36,7 +39,9 @@ export function BoutiqueStorefrontDetail({ slug, id }: Props) {
   const [quantity, setQuantity] = useState(1)
 
   const { data: produit, isLoading, error } = useQuery<Produit>({
-    queryKey: ["public-boutique-produit", slug, id],
+    // locale in the key: the API translates name/description/variant labels by locale, so a
+    // language switch must refetch, not just re-render with stale-language product data.
+    queryKey: ["public-boutique-produit", slug, id, loc],
     queryFn:  () => fetch(`/api/public/${slug}/boutique/${id}`).then(async r => {
       if (!r.ok) throw new Error((await r.json()).error ?? tCommon("error"))
       return r.json()
@@ -113,16 +118,19 @@ export function BoutiqueStorefrontDetail({ slug, id }: Props) {
             {canBackToSite && <span className="text-muted-foreground/30">·</span>}
             <BackToSiteLink slug={slug} sitePublished={produit.sitePublished} website={produit.website} />
           </div>
-          {count > 0 && (
-            <button
-              type="button"
-              onClick={() => router.push(`/${slug}/boutique/panier`)}
-              className="inline-flex items-center gap-1.5 rounded-md border px-3 h-9 text-sm font-medium hover:bg-muted transition-colors"
-            >
-              <ShoppingCartIcon className="size-4" />
-              {t("cart", { count })}
-            </button>
-          )}
+          <div className="flex items-center gap-2">
+            <PublicSiteLocaleSwitcher locale={loc as Locale} />
+            {count > 0 && (
+              <button
+                type="button"
+                onClick={() => router.push(`/${slug}/boutique/panier`)}
+                className="inline-flex items-center gap-1.5 rounded-md border px-3 h-9 text-sm font-medium hover:bg-muted transition-colors"
+              >
+                <ShoppingCartIcon className="size-4" />
+                {t("cart", { count })}
+              </button>
+            )}
+          </div>
         </div>
 
         <div className="grid md:grid-cols-2 gap-6">

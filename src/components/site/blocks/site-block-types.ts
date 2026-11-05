@@ -42,11 +42,6 @@ export type SitePuckMetadata = {
   // content (which is translated separately, before this metadata is even built).
   locale:                  Locale
   ui:                      SiteUiStrings
-  // "?translate=1" when the visitor opted into translation on this page view, "" otherwise —
-  // appended by blocks that link to another opt-in-translated page (e.g. the Actualités
-  // block's links into the article detail page) so the choice isn't lost on navigation. See
-  // the TRANSLATE_PARAM comment on PublicSiteLocaleSwitcher for why this is a URL param.
-  translateQuery:          string
 }
 
 export function readSiteMetadata(metadata: unknown): SitePuckMetadata {
