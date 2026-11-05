@@ -28,7 +28,9 @@ const schema = z.object({
   autoLocalize:   z.boolean().optional(),
   // Locales the admin already reviewed/edited in SendEmailModal's auto-preview dialog — sent
   // as-is instead of being re-translated server-side. Only meaningful alongside autoLocalize.
-  translationOverrides: z.record(z.enum(SUPPORTED_LOCALES), z.object({
+  // partialRecord, not record: zod v4's z.record(enum, ...) requires every enum member as a
+  // key, but this only ever carries the handful of locales the admin actually previewed.
+  translationOverrides: z.partialRecord(z.enum(SUPPORTED_LOCALES), z.object({
     subject:  z.string().min(1).max(200),
     bodyHtml: z.string().min(1),
   })).optional(),
