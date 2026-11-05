@@ -71,6 +71,9 @@ export async function GET(
   // visitors on the fly (cached per locale) rather than asking associations to
   // maintain multiple copies. Location is a street address, not content, so it's
   // left as-is — translating it would garble the "open in Google Maps" query.
+  // Deliberately always automatic by locale, unlike the site pages/actualités opt-in
+  // (wantsContentTranslation, src/lib/i18n/public-locale.ts): a visitor mid-registration
+  // should never be stuck reading French while deciding whether/how much to pay.
   const locale = await resolvePublicLocale()
   const [translated]  = await translateFields(
     [{ title: evenement.title, description: evenement.description, conditions: evenement.conditions }],
@@ -78,7 +81,7 @@ export async function GET(
     locale,
     assoc.id,
   )
-  const customFields  = await translateFields(evenement.customFields, ["label"], locale, assoc.id)
+  const customFields  = await translateFields(evenement.customFields, ["label", "options"], locale, assoc.id)
   const allTicketTypes = await translateFields(evenement.ticketTypes, ["label"], locale, assoc.id)
   // DONATION rows are optional extras alongside the ticket, never a tier a participant picks
   // one of — kept out of `ticketTypes`/`hasTicketTypes` entirely so an event that only offers

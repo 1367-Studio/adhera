@@ -3,13 +3,14 @@ import { getLocale } from "next-intl/server"
 import { prisma } from "@/lib/prisma/client"
 import { parseModules } from "@/lib/modules"
 import { translateFields } from "@/lib/i18n/translate"
+import { wantsContentTranslation } from "@/lib/i18n/public-locale"
 import type { Locale } from "@/i18n/locales"
 
 // The "Voir tout" destination for the site's Actualités block — same gating, ordering and
 // recipient filter as the homepage's own list (src/app/[slug]/page.tsx) and the detail route,
 // so the full list is never out of step with the section a visitor clicked through from.
 export async function GET(
-  _req: Request,
+  req: Request,
   { params }: { params: Promise<{ slug: string }> },
 ) {
   const { slug } = await params
@@ -39,15 +40,19 @@ export async function GET(
     select:  { id: true, title: true, content: true, imageUrl: true, pinned: true, publishedAt: true },
   })
 
-  // The admin always writes this content in their own language — translate it for visitors on
-  // the fly, same pattern as the detail route and the homepage's own list.
+  // The admin always writes this content in their own language — only translate it when the
+  // visitor explicitly clicked "Traduire cette page" (PublicSiteLocaleSwitcher), same opt-in
+  // gate as the homepage's own list and the detail route; otherwise the original text is sent.
   const locale = (await getLocale()) as Locale
-  const translated = await translateFields(
-    actualites.map(a => ({ title: a.title, content: a.content })),
-    ["title", "content"],
-    locale,
-    assoc.id,
-  )
+  const shouldTranslate = wantsContentTranslation(new URL(req.url).searchParams.get("translate"), locale)
+  const translated = shouldTranslate
+    ? await translateFields(
+        actualites.map(a => ({ title: a.title, content: a.content })),
+        ["title", "content"],
+        locale,
+        assoc.id,
+      )
+    : actualites.map(a => ({ title: a.title, content: a.content }))
 
   return NextResponse.json({
     actualites: actualites.map((a, i) => ({ ...a, title: translated[i].title, content: translated[i].content })),
