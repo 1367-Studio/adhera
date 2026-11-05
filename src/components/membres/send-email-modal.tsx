@@ -48,7 +48,9 @@ type RecipientMode = "all" | "type" | "manual"
 // auto-translated into their own preferredLocale at send time (see bulk-send.ts).
 type LanguageMode = "original" | "translated" | "auto"
 
-type EmailTranslationResult = { subject: string; bodyHtml: string; translated: boolean }
+// skipped: true means the source was already detected as the target's language — nothing to
+// review. skipped: false with translated: false means a translation was attempted and failed.
+type EmailTranslationResult = { subject: string; bodyHtml: string; translated: boolean; skipped: boolean }
 
 // "uploading" pushes the attachments to R2, "queuing" is the send request itself (which only
 // queues the background job) — a send without attachments goes straight to "queuing".
@@ -1043,11 +1045,15 @@ export function SendEmailModal({ open, onOpenChange }: SendEmailModalProps) {
       autoLocaleCounts.set(locale, (autoLocaleCounts.get(locale) ?? 0) + 1)
     }
   }
-  const autoDistinctNonDefaultLocales = [...autoLocaleCounts.keys()].filter(l => l !== DEFAULT_LOCALE)
+  // Every distinct effective locale among current targets, default included — the server may
+  // still translate into the default locale if the composed text isn't actually French (see
+  // translateEmailContent's source-language detection), so it's no longer safe to assume that
+  // locale never needs a preview.
+  const autoDistinctLocales = [...autoLocaleCounts.keys()]
 
   async function openAutoPreview() {
     setAutoPreviewOpen(true)
-    if (autoDistinctNonDefaultLocales.length === 0) return
+    if (autoDistinctLocales.length === 0) return
     // Always refetches rather than reusing a previous preview — the composed subject/bodyHtml
     // may have changed (or the recipient set, and so the distinct locale list, may have) since
     // the last time this was opened, and translateEmailContent's own DB cache already makes an
@@ -1059,7 +1065,7 @@ export function SendEmailModal({ open, onOpenChange }: SendEmailModalProps) {
       const res  = await fetch("/api/ai/translate-email", {
         method:  "POST",
         headers: { "Content-Type": "application/json" },
-        body:    JSON.stringify({ subject, bodyHtml, locales: autoDistinctNonDefaultLocales }),
+        body:    JSON.stringify({ subject, bodyHtml, locales: autoDistinctLocales }),
       })
       const data = await res.json().catch(() => null) as { results?: Record<string, EmailTranslationResult> } | null
       if (!res.ok || !data?.results) { setAutoPreviewError(true); return }
@@ -1480,12 +1486,6 @@ export function SendEmailModal({ open, onOpenChange }: SendEmailModalProps) {
                         {[...autoLocaleCounts.entries()].map(([locale, count]) => `${LOCALE_LABELS[locale as EuLocale] ?? locale} (${count})`).join(" · ")}
                       </p>
                     )}
-                    {/* Every current target is on the default locale (or there are none yet) —
-                        without this, toggling "auto" here silently does nothing observable.
-                        Held back while member data is still loading to avoid a false flash. */}
-                    {!loadingMembres && autoDistinctNonDefaultLocales.length === 0 && (
-                      <p className="text-xs text-amber-600 dark:text-amber-400">{t("membres.email.language.autoNoEffect")}</p>
-                    )}
                   </div>
                 )}
 
@@ -1621,7 +1621,7 @@ export function SendEmailModal({ open, onOpenChange }: SendEmailModalProps) {
                       ...(externalEmails.length > 0 ? [t("membres.email.language.autoExternalNote", { count: externalEmails.length })] : []),
                     ].join(" · ")}
                   </p>
-                  {autoDistinctNonDefaultLocales.length > 0 && (
+                  {autoDistinctLocales.length > 0 && (
                     <button type="button" onClick={openAutoPreview} className="text-xs text-primary hover:underline">
                       {t("membres.email.language.previewTranslations")}
                     </button>
@@ -1761,8 +1761,13 @@ export function SendEmailModal({ open, onOpenChange }: SendEmailModalProps) {
                 <RichTextView content={bodyHtml} />
               </div>
             </div>
-            {autoDistinctNonDefaultLocales.map(locale => {
+            {autoDistinctLocales.map(locale => {
               const preview = autoPreviewByLocale[locale]
+              // Nothing to review: the source was already detected as this locale's own
+              // language (the common case for the default locale, now that it's no longer
+              // assumed to always be the source) — showing an identical, non-editable tab
+              // here would just be clutter.
+              if (preview?.skipped) return null
               return (
                 <div key={locale} className="space-y-1.5">
                   <div className="flex items-center gap-1.5">
@@ -1770,8 +1775,8 @@ export function SendEmailModal({ open, onOpenChange }: SendEmailModalProps) {
                       {LOCALE_LABELS[locale as EuLocale] ?? locale}
                     </p>
                     {/* Without this, a failed translation is indistinguishable from a
-                        successful one here — both just show the French text unchanged. */}
-                    {preview && !preview.translated && (
+                        successful one here — both just show the original text unchanged. */}
+                    {preview && !preview.translated && !preview.skipped && (
                       <span className="inline-flex items-center gap-1 text-xs font-normal normal-case text-amber-600 dark:text-amber-400">
                         <WarningCircleIcon className="size-3" aria-hidden />
                         {t("membres.email.language.translateUnavailable")}

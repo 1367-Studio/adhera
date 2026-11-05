@@ -4,7 +4,7 @@ import { sendEmailBulk, sendEmailBatch, sendEmailsWithAttachments } from "@/lib/
 import { sendSmsBatch } from "@/lib/sms"
 import { customEmail, sondageInvitationEmail, type EmailBranding } from "@/lib/email"
 import { substituteVars, buildVars } from "@/lib/automation"
-import { translateEmailContent } from "@/lib/i18n/translate"
+import { translateEmailContent, detectEmailSourceLanguage } from "@/lib/i18n/translate"
 import { DEFAULT_LOCALE, type Locale } from "@/i18n/locales"
 import { writeActivityLog } from "@/lib/activity-log"
 import { prisma } from "@/lib/prisma/client"
@@ -87,9 +87,11 @@ export const bulkSendMembresEmail = inngest.createFunction(
       // Set by src/app/api/membres/email/route.ts only once every file was verified in R2 —
       // metadata only (Resend fetches each file from its URL), absent when there are none.
       attachments?: VerifiedEmailAttachment[]
-      // subject/bodyHtml above are the source (French) version; when true each member with a
-      // non-default Membre.preferredLocale gets that version instead — see the "translate"
-      // step below. External emails always get the source, since they have no Membre record.
+      // subject/bodyHtml above are the source version, written in whatever language the admin
+      // composed it in; when true each member gets it auto-translated into their own
+      // Membre.preferredLocale (defaulting to DEFAULT_LOCALE when unset) — see the "translate"
+      // step below, which detects the source language and skips any locale that already
+      // matches it. External emails always get the source, since they have no Membre record.
       autoLocalize?: boolean
       // Locales the admin already reviewed/edited in SendEmailModal's auto-preview dialog —
       // used as-is, skipping the live translation call for those locales entirely.
@@ -103,17 +105,20 @@ export const bulkSendMembresEmail = inngest.createFunction(
     // One translateEmailContent call per distinct target locale actually present among the
     // recipients (never per member) — a member-by-member loop would fire duplicate concurrent
     // translations for the same (text, locale) pair, since the DB cache check races before the
-    // first write lands. Locales already covered by translationOverrides are skipped entirely.
-    // Computed once, before either send path below.
+    // first write lands. A member with no preferredLocale set targets DEFAULT_LOCALE, same as
+    // everywhere else this field is read. Locales already covered by translationOverrides are
+    // skipped entirely. Computed once, before either send path below.
     const localesNeeded = autoLocalize
-      ? [...new Set(members.map(m => m.preferredLocale).filter((l): l is Locale =>
-          !!l && l !== DEFAULT_LOCALE && !translationOverrides[l]
-        ))]
+      ? [...new Set(members.map(m => (m.preferredLocale as Locale | null) ?? DEFAULT_LOCALE))]
+          .filter(l => !translationOverrides[l])
       : []
     const computedTranslations: Record<string, { subject: string; bodyHtml: string }> = localesNeeded.length
       ? await step.run("translate", async () => {
+          // Detected once for the whole send, not per locale — the source language doesn't
+          // change per recipient, only the target does.
+          const sourceLanguage = await detectEmailSourceLanguage(subject, bodyHtml)
           const entries = await Promise.all(localesNeeded.map(async (locale) => {
-            const result = await translateEmailContent(subject, bodyHtml, locale, associationId)
+            const result = await translateEmailContent(subject, bodyHtml, locale, associationId, sourceLanguage)
             return [locale, { subject: result.subject, bodyHtml: result.bodyHtml }] as const
           }))
           return Object.fromEntries(entries)
@@ -126,7 +131,7 @@ export const bulkSendMembresEmail = inngest.createFunction(
     // rendering every recipient's email up here would be repeated on each of those re-runs.
     const buildMemberPayload = (member: MembresEmailMember) => {
       const vars    = buildVars({ prenom: member.firstName, nom: member.lastName, email: member.email, association: associationName, slug })
-      const content = (member.preferredLocale && translationsByLocale[member.preferredLocale]) || { subject, bodyHtml }
+      const content = translationsByLocale[(member.preferredLocale as Locale | null) ?? DEFAULT_LOCALE] || { subject, bodyHtml }
       return {
         ...customEmail({ associationName, subject: substituteVars(content.subject, vars), bodyHtml: substituteVars(content.bodyHtml, vars), recipientEmail: member.email, branding }),
         context: { associationId, membreId: member.id, source: "BULK_MESSAGE" },

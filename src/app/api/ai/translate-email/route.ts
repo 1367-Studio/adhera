@@ -2,7 +2,7 @@ import { NextResponse } from "next/server"
 import { z } from "zod"
 import { withAdminAuth } from "@/lib/api-wrapper"
 import { rateLimit } from "@/lib/rate-limit"
-import { translateEmailContent } from "@/lib/i18n/translate"
+import { translateEmailContent, detectEmailSourceLanguage } from "@/lib/i18n/translate"
 import { SUPPORTED_LOCALES } from "@/i18n/locales"
 
 // Preview/translate an admin-composed email (SendEmailModal, TemplateModal) into one or more
@@ -27,10 +27,11 @@ export const POST = withAdminAuth(async (req, ctx) => {
     return NextResponse.json({ error: "Trop de requêtes, réessayez plus tard." }, { status: 429 })
   }
 
-  const uniqueLocales = [...new Set(locales)]
+  const uniqueLocales  = [...new Set(locales)]
+  const sourceLanguage = await detectEmailSourceLanguage(subject, bodyHtml)
   const entries = await Promise.all(
     uniqueLocales.map(async (locale) => {
-      const result = await translateEmailContent(subject, bodyHtml, locale, ctx.associationId)
+      const result = await translateEmailContent(subject, bodyHtml, locale, ctx.associationId, sourceLanguage)
       return [locale, result] as const
     })
   )

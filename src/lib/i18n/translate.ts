@@ -104,6 +104,93 @@ function hashText(text: string): string {
   return crypto.createHash("md5").update(text).digest("hex").slice(0, 16)
 }
 
+const AZURE_DETECT_ENDPOINT = "https://api.cognitive.microsofttranslator.com/detect?api-version=3.0"
+
+// Caps what's sent to the detect endpoint — a short sample is enough to identify the
+// language reliably and keeps the call fast even for a long email body.
+const DETECT_SAMPLE_MAX_CHARS = 1_000
+
+// Below this confidence, treat the detection as unknown rather than trust it. A wrong "it's
+// already in the target language" guess ships the wrong language straight to a real
+// recipient with no review step; the fallback (treat as unknown, translate anyway) costs at
+// most one redundant/no-op translation call. Short, ambiguous subjects (common for a quick
+// reminder) are exactly the case this guards — Azure's own score drops noticeably on those.
+const DETECT_CONFIDENCE_THRESHOLD = 0.5
+
+// Returns the BCP-47/ISO code Azure detects (e.g. "fr", "pt", "en"), or null when detection
+// is unavailable (no Azure credentials), fails, or comes back under-confident — callers must
+// treat null as "unknown" and fall through to translating anyway, the same safe default this
+// feature had before detection existed.
+async function azureDetectLanguage(text: string): Promise<string | null> {
+  const key    = process.env.AZURE_TRANSLATOR_KEY
+  const region = process.env.AZURE_TRANSLATOR_REGION
+  const sample = text.trim().slice(0, DETECT_SAMPLE_MAX_CHARS)
+  if (!key || !region || !sample) return null
+
+  try {
+    const response = await fetch(AZURE_DETECT_ENDPOINT, {
+      method:  "POST",
+      headers: {
+        "Ocp-Apim-Subscription-Key":    key,
+        "Ocp-Apim-Subscription-Region": region,
+        "Content-Type":                 "application/json",
+      },
+      body: JSON.stringify([{ text: sample }]),
+    })
+    if (!response.ok) return null
+
+    const data   = (await response.json()) as { language: string; score: number }[]
+    const result = data[0]
+    if (!result || result.score < DETECT_CONFIDENCE_THRESHOLD) return null
+    return result.language
+  } catch {
+    return null
+  }
+}
+
+// Reserved pseudo-locale under which a detected source language is cached in the same
+// Translation table real translations use — never a real BCP-47 tag, so it can't collide
+// with an actual translation row for the same text.
+const DETECTED_LANGUAGE_CACHE_LOCALE = "__detected_lang__"
+
+// Detects the language an admin-composed email was actually written in — plain text only,
+// so HTML tags/attributes don't skew the result. Exported so callers that fire one
+// translateEmailContent per target locale (bulk-send.ts, automation-processor.ts) can detect
+// once up front and pass the result to every call, instead of re-detecting per locale.
+// Cached by exact text hash, same as a real translation would be: an AutomationRule's
+// template is static between scheduled runs, so without this every run would re-spend an
+// Azure /detect call identifying a source language that never changed.
+export async function detectEmailSourceLanguage(subject: string, bodyHtml: string): Promise<string | null> {
+  const plainBody = bodyHtml.replace(/<[^>]+>/g, " ")
+  const sample     = `${subject}\n${plainBody}`.trim()
+  if (!sample) return null
+
+  const hash   = hashText(sample)
+  const cached = await prisma.translation.findUnique({
+    where: { hash_locale: { hash, locale: DETECTED_LANGUAGE_CACHE_LOCALE } },
+  })
+  if (cached) return cached.translated
+
+  const detected = await azureDetectLanguage(sample)
+  if (detected) {
+    // Best-effort: a failed cache write still returns the real result to this call, just
+    // without saving the next one a round trip.
+    await prisma.translation.upsert({
+      where:  { hash_locale: { hash, locale: DETECTED_LANGUAGE_CACHE_LOCALE } },
+      create: { hash, locale: DETECTED_LANGUAGE_CACHE_LOCALE, translated: detected },
+      update: {},
+    }).catch(() => {})
+  }
+  return detected
+}
+
+// Compares only the base language (before any "-REGION" suffix) — Azure's detector doesn't
+// distinguish "pt" from "pt-PT", so a strict tag match would never recognize a Brazilian
+// Portuguese email as already matching a pt-PT recipient (or vice versa).
+function sameBaseLanguage(a: string, b: string): boolean {
+  return a.split("-")[0].toLowerCase() === b.split("-")[0].toLowerCase()
+}
+
 async function azureTranslate(texts: string[], targetLang: string): Promise<string[]> {
   const key    = process.env.AZURE_TRANSLATOR_KEY
   const region = process.env.AZURE_TRANSLATOR_REGION
@@ -161,7 +248,7 @@ async function aiTranslate(texts: string[], targetLang: string, aiConfig: Resolv
 // text → new hash → cache miss).
 async function batchTranslate(
   texts: string[],
-  locale: Exclude<Locale, typeof DEFAULT_LOCALE>,
+  locale: Locale,
   associationId: string,
 ): Promise<string[]> {
   const hashes = texts.map(hashText)
@@ -264,14 +351,18 @@ async function batchTranslate(
 // single-item array to translate one object's fields. A field may be a plain string
 // (title, label) or a string array (e.g. CustomField.options, the SELECT/RADIO/CHECKBOX_MULTI
 // choice list) — every other shape is left untouched. No-op for the default locale (source
-// language) and for null/empty field values.
+// language) and for null/empty field values — every caller except translateEmailContent
+// authors content in French, so DEFAULT_LOCALE as a target never needs translating. Pass
+// allowDefaultLocaleTarget when the source language isn't guaranteed to be French (admin-
+// composed email content, which can be written in any language).
 export async function translateFields<T extends Record<string, unknown>>(
   items: T[],
   keys: (keyof T & string)[],
   locale: Locale,
   associationId: string,
+  options?: { allowDefaultLocaleTarget?: boolean },
 ): Promise<T[]> {
-  if (locale === DEFAULT_LOCALE || items.length === 0 || keys.length === 0) return items
+  if ((locale === DEFAULT_LOCALE && !options?.allowDefaultLocaleTarget) || items.length === 0 || keys.length === 0) return items
 
   const texts = new Set<string>()
   for (const item of items) {
@@ -289,7 +380,7 @@ export async function translateFields<T extends Record<string, unknown>>(
   if (texts.size === 0) return items
 
   const uniqueTexts     = [...texts]
-  const translated      = await batchTranslate(uniqueTexts, locale as Exclude<Locale, typeof DEFAULT_LOCALE>, associationId)
+  const translated      = await batchTranslate(uniqueTexts, locale, associationId)
   const translationMap  = new Map(uniqueTexts.map((t, i) => [t, translated[i]]))
 
   return items.map((item) => {
@@ -347,22 +438,36 @@ function restoreVarTokens(text: string, tokens: string[]): { text: string; allRe
 export type EmailTranslationResult = {
   subject:         string
   bodyHtml:        string
-  // False means translation for this locale is unusable (Azure/AI down, or a {{var}} token
-  // got mangled) — subject/bodyHtml are then the untranslated originals, same fail-safe
-  // fallback convention as translateFields itself.
+  // False covers two different situations — see `skipped` to tell them apart. subject/
+  // bodyHtml are the untranslated originals either way.
   translated:      boolean
+  // True when no translation was attempted because the detected source language already
+  // matches the target locale (the expected, common case — nothing to review). False
+  // alongside translated:false means a translation WAS attempted and failed (Azure/AI down,
+  // or a {{var}} token got mangled) — same fail-safe fallback convention as translateFields.
+  skipped:         boolean
 }
 
 // Admin-authored email content (SendEmailModal, MessageTemplate) has {{prenom}}-style merge
 // tags that translateFields' plain string translation doesn't know to protect — this wraps
 // it with the token-preservation + fail-safe-to-original guarantee those callers need.
+//
+// Unlike translateFields' other callers, the source language here isn't assumed to be
+// French — the admin can write the email in any supported language. sourceLanguage lets a
+// caller that's about to fire this once per distinct target locale (bulk-send.ts,
+// automation-processor.ts) detect it a single time and pass the result to every call; leave
+// it undefined to have this function detect it itself (e.g. the single-locale preview route).
 export async function translateEmailContent(
   subject: string,
   bodyHtml: string,
   locale: Locale,
   associationId: string,
+  sourceLanguage?: string | null,
 ): Promise<EmailTranslationResult> {
-  if (locale === DEFAULT_LOCALE) return { subject, bodyHtml, translated: false }
+  const detectedLanguage = sourceLanguage !== undefined ? sourceLanguage : await detectEmailSourceLanguage(subject, bodyHtml)
+  if (detectedLanguage && sameBaseLanguage(detectedLanguage, locale)) {
+    return { subject, bodyHtml, translated: false, skipped: true }
+  }
 
   const subjectProtected = protectVarTokens(subject)
   const bodyProtected    = protectVarTokens(bodyHtml)
@@ -372,6 +477,7 @@ export async function translateEmailContent(
     ["subject", "bodyHtml"],
     locale,
     associationId,
+    { allowDefaultLocaleTarget: true },
   )
 
   const subjectRestored = restoreVarTokens(result.subject, subjectProtected.tokens)
@@ -381,8 +487,8 @@ export async function translateEmailContent(
   // lands here as translated:false, which is correct — nothing was actually translated.
   const changed = result.subject !== subjectProtected.text || result.bodyHtml !== bodyProtected.text
   if (!changed || !subjectRestored.allRestored || !bodyRestored.allRestored) {
-    return { subject, bodyHtml, translated: false }
+    return { subject, bodyHtml, translated: false, skipped: false }
   }
 
-  return { subject: subjectRestored.text, bodyHtml: bodyRestored.text, translated: true }
+  return { subject: subjectRestored.text, bodyHtml: bodyRestored.text, translated: true, skipped: false }
 }
