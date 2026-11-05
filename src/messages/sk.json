@@ -87,6 +87,7 @@
         "passwordLabel": "Heslo",
         "forgotPassword": "Zabudol si heslo?",
         "submit": "Prihlásiť sa",
+        "connecting": "Prihlasovanie…",
         "or": "alebo",
         "continueWithGoogle": "Pokračovať s Google"
       }

@@ -87,6 +87,7 @@
         "passwordLabel": "Heslo",
         "forgotPassword": "Zapomněli jste heslo?",
         "submit": "Přihlásit se",
+        "connecting": "Přihlašování…",
         "or": "nebo",
         "continueWithGoogle": "Pokračujte s Googlem"
       }
