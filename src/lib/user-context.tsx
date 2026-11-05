@@ -11,6 +11,10 @@ export type SessionUser = {
   role:             string
   associationId?:   string | null
   associationSlug?: string | null
+  // Stamped once at sign-in (see auth/config.ts's jwt callback) — a refresh/new tab keeps the
+  // same value, while an actual relogin gets a fresh one. Used to gate "remind me later" on
+  // app-wide notification pop-ups (see use-remind-later.ts) to the current login only.
+  loginAt?:         number
   // Effective per-area access (FORM-34), resolved by the dashboard layout.
   permissions:      ResolvedPermissions
 }

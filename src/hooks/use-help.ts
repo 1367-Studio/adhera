@@ -3,11 +3,14 @@ import { apiError } from "@/lib/api-error"
 import type {
   ChangelogEntry,
   FaqEntry,
+  FaqPopupEntry,
   HelpArticle,
   HelpArticleSummary,
   HelpContent,
   HelpSearchHit,
   HelpSource,
+  NewsEntry,
+  NewsPopupEntry,
   ReleaseNote,
   SupportReplySuggestion,
 } from "@/sanity/types"
@@ -15,11 +18,14 @@ import type {
 export type {
   ChangelogEntry,
   FaqEntry,
+  FaqPopupEntry,
   HelpArticle,
   HelpArticleSummary,
   HelpContent,
   HelpSearchHit,
   HelpSource,
+  NewsEntry,
+  NewsPopupEntry,
   ReleaseNote,
   SupportReplySuggestion,
 }
@@ -73,6 +79,24 @@ async function fetchHelpChangelog(): Promise<ChangelogEntry[]> {
 
 async function fetchReleaseNotes(): Promise<ReleaseNote[]> {
   const res = await fetch("/api/help/release-notes")
+  if (!res.ok) throw await apiError(res, "Erreur lors du chargement")
+  return res.json()
+}
+
+async function fetchHelpNews(): Promise<NewsEntry[]> {
+  const res = await fetch("/api/help/news")
+  if (!res.ok) throw await apiError(res, "Erreur lors du chargement")
+  return res.json()
+}
+
+async function fetchNewsPopups(): Promise<NewsPopupEntry[]> {
+  const res = await fetch("/api/help/news-popups")
+  if (!res.ok) throw await apiError(res, "Erreur lors du chargement")
+  return res.json()
+}
+
+async function fetchFaqPopups(): Promise<FaqPopupEntry[]> {
+  const res = await fetch("/api/help/faq-popups")
   if (!res.ok) throw await apiError(res, "Erreur lors du chargement")
   return res.json()
 }
@@ -138,6 +162,36 @@ export const releaseNotesQueryOptions = queryOptions({
 
 export function useReleaseNotes({ enabled }: { enabled: boolean }) {
   return useQuery({ ...releaseNotesQueryOptions, enabled })
+}
+
+// Refetched on every mount for the same reason as useHelpChangelog (a new pin shows on open).
+export function useHelpNews() {
+  return useQuery({
+    queryKey:       [...QK, "news"],
+    queryFn:        fetchHelpNews,
+    staleTime:      HELP_CONTENT_STALE_TIME,
+    refetchOnMount: "always",
+  })
+}
+
+export const newsPopupsQueryOptions = queryOptions({
+  queryKey:  [...QK, "news-popups"],
+  queryFn:   fetchNewsPopups,
+  staleTime: HELP_CONTENT_STALE_TIME,
+})
+
+export function useNewsPopups({ enabled }: { enabled: boolean }) {
+  return useQuery({ ...newsPopupsQueryOptions, enabled })
+}
+
+export const faqPopupsQueryOptions = queryOptions({
+  queryKey:  [...QK, "faq-popups"],
+  queryFn:   fetchFaqPopups,
+  staleTime: HELP_CONTENT_STALE_TIME,
+})
+
+export function useFaqPopups({ enabled }: { enabled: boolean }) {
+  return useQuery({ ...faqPopupsQueryOptions, enabled })
 }
 
 export function useSuggestSupportReply(ticketId: string) {

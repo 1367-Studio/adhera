@@ -3,6 +3,7 @@ import { defineField, defineType } from "sanity"
 
 import { HELP_MODULES, helpModuleTitle } from "../shared/help-modules"
 import { pickDefaultLanguageValue } from "../shared/localized-value"
+import { createPopupCapWarning } from "../shared/popup-cap-validation"
 
 export const faqEntry = defineType({
   name: "faqEntry",
@@ -36,6 +37,15 @@ export const faqEntry = defineType({
       description: "Tri croissant (100 par défaut).",
       initialValue: 100,
       validation: (rule) => rule.integer(),
+    }),
+    defineField({
+      name: "showInPopup",
+      title: "Afficher dans une pop-up",
+      description:
+        "S'affiche une fois dans une pop-up à l'ouverture de l'application, pour les utilisateurs qui ne l'ont pas encore vue. Désactivé par défaut : il faut cocher explicitement cette case pour déclencher la pop-up.",
+      type: "boolean",
+      initialValue: false,
+      validation: (rule) => rule.custom(createPopupCapWarning("faqEntry")).warning(),
     }),
   ],
   orderings: [

@@ -6594,7 +6594,8 @@
     "tabs": {
       "guide": "Help",
       "assistant": "Assistant",
-      "changelog": "What's new"
+      "changelog": "What's new",
+      "news": "News"
     },
     "searchPlaceholder": "Search the help…",
     "searchResultsCount": "{count, plural, one {# result} other {# results}}",
@@ -6678,13 +6679,25 @@
       }
     },
     "releaseNotes": {
-      "title": "What's new",
-      "dontRemind": "Don't remind me",
+      "title": "What's new"
+    },
+    "news": {
+      "latestSection": "Latest news",
+      "empty": "Nothing new yet.",
+      "loadError": "Couldn't load the news.",
+      "popupTitle": "News"
+    },
+    "faqPopup": {
+      "title": "Frequently asked question"
+    },
+    "popupCarousel": {
+      "remindLater": "Remind me later",
+      "remindLaterToast": "We'll remind you again next time you sign in.",
       "previous": "Previous",
       "next": "Next",
       "finish": "Done",
-      "position": "Update {current} of {total}",
-      "goTo": "Go to update {index}"
+      "position": "Item {current} of {total}",
+      "goTo": "Go to item {index}"
     },
     "footer": {
       "tour": "Guided tour",

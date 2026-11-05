@@ -6604,7 +6604,8 @@
     "tabs": {
       "guide": "Aide",
       "assistant": "Assistant",
-      "changelog": "Nouveautés"
+      "changelog": "Nouveautés",
+      "news": "Actualités"
     },
     "searchPlaceholder": "Rechercher dans l'aide…",
     "searchResultsCount": "{count, plural, one {# résultat} other {# résultats}}",
@@ -6688,13 +6689,25 @@
       }
     },
     "releaseNotes": {
-      "title": "Nouveautés",
-      "dontRemind": "Ne plus me rappeler",
+      "title": "Nouveautés"
+    },
+    "news": {
+      "latestSection": "Dernières actualités",
+      "empty": "Aucune actualité pour l'instant.",
+      "loadError": "Impossible de charger les actualités.",
+      "popupTitle": "Actualités"
+    },
+    "faqPopup": {
+      "title": "Question fréquente"
+    },
+    "popupCarousel": {
+      "remindLater": "Me le rappeler plus tard",
+      "remindLaterToast": "Nous vous le rappellerons à votre prochaine connexion.",
       "previous": "Précédent",
       "next": "Suivant",
       "finish": "Terminer",
-      "position": "Nouveauté {current} sur {total}",
-      "goTo": "Aller à la nouveauté {index}"
+      "position": "Élément {current} sur {total}",
+      "goTo": "Aller à l'élément {index}"
     },
     "footer": {
       "tour": "Visite guidée",
