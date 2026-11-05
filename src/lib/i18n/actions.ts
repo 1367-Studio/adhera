@@ -12,16 +12,18 @@ type SessionUser = { id?: string }
 // `persistAccountLocale` defaults to true (the normal "change my own language" case). Pass
 // false from a context where switching the page's language isn't the visitor expressing a
 // personal preference — e.g. a manager previewing a public form in another locale to check
-// its wording, who would otherwise find their whole admin dashboard silently switched too.
+// its wording, who would otherwise find their whole admin dashboard silently switched too. That
+// guard has to cover the NEXT_LOCALE cookie too, not just the User.locale row: the cookie is
+// what src/i18n/request.ts actually reads, so leaving it unconditional would still flip the
+// admin's own next dashboard page even with the DB write skipped.
 export async function setLocale(locale: string, persistAccountLocale = true) {
   if (!isSupportedLocale(locale)) return
+  if (!persistAccountLocale) return
 
-  if (persistAccountLocale) {
-    const session = await auth()
-    const userId = (session?.user as SessionUser | undefined)?.id
-    if (userId) {
-      await prisma.user.update({ where: { id: userId }, data: { locale } })
-    }
+  const session = await auth()
+  const userId = (session?.user as SessionUser | undefined)?.id
+  if (userId) {
+    await prisma.user.update({ where: { id: userId }, data: { locale } })
   }
 
   await setLocaleCookie(locale)

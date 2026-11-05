@@ -1,12 +1,12 @@
 "use client"
 
 import Link from "next/link"
-import { useSearchParams } from "next/navigation"
 import { useQuery } from "@tanstack/react-query"
-import { useLocale, useTranslations } from "next-intl"
+import { useLocale } from "next-intl"
 import { PushPinIcon } from "@phosphor-icons/react/dist/ssr"
 import { SitePublicChrome, type PublicSiteInfo } from "@/components/site/site-public-chrome"
 import { plainTextExcerpt, formatLongDate } from "@/components/site/blocks/site-block-listing"
+import { SITE_UI_STRINGS, type SiteUiStrings } from "@/lib/site-puck/site-ui-strings"
 import { BASE_PATH } from "@/lib/env"
 
 type PublicActualiteSummary = {
@@ -18,26 +18,28 @@ type PublicActualiteSummary = {
   publishedAt: string
 }
 
-type ApiResponse = { actualites?: PublicActualiteSummary[]; site?: PublicSiteInfo; error?: string }
+type ApiResponse = { actualites?: PublicActualiteSummary[]; site?: PublicSiteInfo; ui?: SiteUiStrings; error?: string }
 
 const LOADING_ROW_KEYS = ["first", "second", "third"]
 
 export function PublicActualitesListView({ slug }: { slug: string }) {
-  const t      = useTranslations("actualites.publicView")
   const locale = useLocale()
-  // Mirrors the "Traduire cette page" toggle (PublicSiteLocaleSwitcher) on this page's own
-  // URL — the admin's original text is shown until the visitor explicitly asks for a translation.
-  const isTranslate = useSearchParams().get("translate") === "1"
 
   // BASE_PATH prefix: the app is served under /app, and a bare "/api/…" from the browser
-  // resolves against the origin root, where Next has no route.
+  // resolves against the origin root, where Next has no route. The API translates content
+  // (and this page's own fixed chrome, via `ui`) automatically by the visitor's resolved
+  // locale (SITE_LOCALE), no query param needed.
   const { data, isLoading } = useQuery<ApiResponse>({
-    queryKey: ["public-association-actualites", slug, isTranslate],
-    queryFn:  () => fetch(`${BASE_PATH}/api/public/${slug}/actualites${isTranslate ? "?translate=1" : ""}`).then(response => response.json()),
+    queryKey: ["public-association-actualites", slug, locale],
+    queryFn:  () => fetch(`${BASE_PATH}/api/public/${slug}/actualites`).then(response => response.json()),
   })
 
   const site       = data?.site ?? { name: "", config: null }
   const actualites = data?.actualites ?? []
+  // Default French chrome while loading (or for the rare case the association itself can't be
+  // found at all, so there's no associationId to translate against) — same fallback convention
+  // as every other SiteUiStrings consumer.
+  const ui = data?.ui ?? SITE_UI_STRINGS
   // The route answers without `site` when the slug matches no association (or the site/module
   // is off) — without this check that reads as "published nothing", a confusing state to debug.
   const associationMissing = !isLoading && !data?.site
@@ -45,11 +47,11 @@ export function PublicActualitesListView({ slug }: { slug: string }) {
   return (
     <SitePublicChrome site={site} slug={slug}>
       <div className="mx-auto w-full max-w-3xl px-4 py-12">
-        <h1 className="text-2xl font-bold tracking-tight">{t("listTitle")}</h1>
+        <h1 className="text-2xl font-bold tracking-tight">{ui.actualitesDefaultTitle}</h1>
 
         <div className="mt-8">
           {associationMissing ? (
-            <p className="text-sm text-gray-500">{t("associationNotFound")}</p>
+            <p className="text-sm text-gray-500">{ui.actualitesAssociationNotFound}</p>
           ) : isLoading ? (
             <div className="divide-y divide-gray-200 border-y border-gray-200">
               {LOADING_ROW_KEYS.map(rowKey => (
@@ -60,13 +62,13 @@ export function PublicActualitesListView({ slug }: { slug: string }) {
               ))}
             </div>
           ) : actualites.length === 0 ? (
-            <p className="text-sm text-gray-500">{t("listEmpty")}</p>
+            <p className="text-sm text-gray-500">{ui.actualitesListEmpty}</p>
           ) : (
             <div className="divide-y divide-gray-200 border-y border-gray-200">
               {actualites.map(actualite => (
                 <Link
                   key={actualite.id}
-                  href={`/${slug}/actualites/${actualite.id}${isTranslate ? "?translate=1" : ""}`}
+                  href={`/${slug}/actualites/${actualite.id}`}
                   className="flex items-start gap-4 py-5 transition-colors hover:bg-gray-50"
                 >
                   {actualite.imageUrl && (
@@ -82,7 +84,7 @@ export function PublicActualitesListView({ slug }: { slug: string }) {
                     <div className="flex flex-wrap items-center gap-2">
                       {actualite.pinned && (
                         <span className="inline-flex items-center gap-1 rounded-md bg-orange-500/80 px-2 py-0.5 text-xs font-medium text-white">
-                          <PushPinIcon className="size-2.5" /> {t("pinned")}
+                          <PushPinIcon className="size-2.5" /> {ui.actualitesFeaturedBadge}
                         </span>
                       )}
                       <time className="text-xs text-gray-400">{formatLongDate(actualite.publishedAt, locale)}</time>

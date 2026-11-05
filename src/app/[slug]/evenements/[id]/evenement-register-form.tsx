@@ -8,7 +8,8 @@ import { CalendarBlankIcon, MapPinIcon, TicketIcon, ShieldCheckIcon, MinusIcon, 
 import { Button } from "@/components/ui/button"
 import { Modal } from "@/components/ui/modal"
 import { ImageThumbnail } from "@/components/ui/image-thumbnail"
-import { LocaleSwitcher } from "@/components/layout/locale-switcher"
+import { PublicSiteLocaleSwitcher } from "@/components/site/public-site-locale-switcher"
+import type { Locale } from "@/i18n/locales"
 import { BackToSiteLink } from "@/components/public/back-to-site-link"
 import { RichTextView } from "@/components/ui/rich-text-view"
 import { InAppBrowserBanner } from "@/components/ui/in-app-browser-banner"
@@ -780,7 +781,7 @@ function EvenementRegisterFormInner({ slug, id, legalDocuments }: Props) {
   }, [showOfflineChoice, paymentMethod])
 
   // Guards against showing the redirect toast again if the effect re-runs for an unrelated
-  // reason (e.g. `t` getting a new identity when the visitor switches language via LocaleSwitcher).
+  // reason (e.g. `t` getting a new identity when the visitor switches language via PublicSiteLocaleSwitcher).
   const shownTicketToast = useRef<string | null>(null)
   useEffect(() => {
     const p = searchParams.get("ticket")
@@ -975,7 +976,7 @@ function EvenementRegisterFormInner({ slug, id, legalDocuments }: Props) {
         {showInAppBrowserBanner && <InAppBrowserBanner>{t("inAppBrowserWarning")}</InAppBrowserBanner>}
         <div className="min-h-screen flex flex-col items-center justify-center text-center px-4 gap-4">
           <p className="text-muted-foreground">{t("notFound")}</p>
-          <LocaleSwitcher />
+          <PublicSiteLocaleSwitcher locale={loc as Locale} />
         </div>
       </>
     )
@@ -990,7 +991,7 @@ function EvenementRegisterFormInner({ slug, id, legalDocuments }: Props) {
         header={
           <>
             <BackToSiteLink slug={slug} sitePublished={event.sitePublished} website={event.website} />
-            <LocaleSwitcher />
+            <PublicSiteLocaleSwitcher locale={loc as Locale} />
           </>
         }
         left={

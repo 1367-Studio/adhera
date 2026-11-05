@@ -3,12 +3,13 @@
 import { useState, useEffect, useRef, Suspense } from "react"
 import { useParams, useRouter, useSearchParams, usePathname } from "next/navigation"
 import { useMutation, useQuery } from "@tanstack/react-query"
-import { useTranslations } from "next-intl"
+import { useTranslations, useLocale } from "next-intl"
 import { toast } from "sonner"
 import { ArrowLeftIcon, ShoppingCartIcon, TrashIcon, MinusIcon, PlusIcon, CheckCircleIcon, CreditCardIcon, HandCoinsIcon, TruckIcon, StorefrontIcon } from "@phosphor-icons/react/dist/ssr";
 import { Button } from "@/components/ui/button"
 import { FormField } from "@/components/ui/form-field"
-import { LocaleSwitcher } from "@/components/layout/locale-switcher"
+import { PublicSiteLocaleSwitcher } from "@/components/site/public-site-locale-switcher"
+import type { Locale } from "@/i18n/locales"
 import { LegalConsent, type RequiredLegalDocument } from "@/components/public/legal-consent"
 import { BackToSiteLink } from "@/components/public/back-to-site-link"
 import { useCart } from "@/lib/hooks/use-cart"
@@ -23,6 +24,7 @@ function PanierContent({ legalDocuments }: Props) {
   const tPublic  = useTranslations("donationForms.public")
   const tCommon  = useTranslations("common")
   const tShip    = useTranslations("boutiqueShipping")
+  const loc      = useLocale()
   const { slug } = useParams<{ slug: string }>()
   const router   = useRouter()
   const pathname = usePathname()
@@ -277,7 +279,7 @@ function PanierContent({ legalDocuments }: Props) {
             </Button>
             <h1 className="text-xl font-semibold tracking-tight">{t("myCart")}</h1>
           </div>
-          <LocaleSwitcher persistAccountLocale={false} />
+          <PublicSiteLocaleSwitcher locale={loc as Locale} />
         </div>
 
         <div className="grid lg:grid-cols-3 gap-5">
