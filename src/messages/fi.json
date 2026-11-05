@@ -87,6 +87,7 @@
         "passwordLabel": "Salasana",
         "forgotPassword": "Unohditko salasanasi?",
         "submit": "Kirjaudu sisään",
+        "connecting": "Kirjaudutaan…",
         "or": "tai",
         "continueWithGoogle": "Jatka Googlella"
       }

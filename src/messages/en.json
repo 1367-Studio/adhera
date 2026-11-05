@@ -89,6 +89,7 @@
         "passwordLabel": "Password",
         "forgotPassword": "Forgot your password?",
         "submit": "Sign in",
+        "connecting": "Signing in…",
         "or": "or",
         "continueWithGoogle": "Continue with Google"
       },

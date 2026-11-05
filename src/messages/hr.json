@@ -87,6 +87,7 @@
         "passwordLabel": "Lozinka",
         "forgotPassword": "Zaboravili ste lozinku?",
         "submit": "Prijavite se",
+        "connecting": "Prijavljivanje…",
         "or": "ili",
         "continueWithGoogle": "Nastavite s Googleom"
       }

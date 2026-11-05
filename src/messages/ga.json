@@ -87,6 +87,7 @@
         "passwordLabel": "Pasfhocal",
         "forgotPassword": "An bhfuil do phasfhocal dearmadta?",
         "submit": "Logáil isteach",
+        "connecting": "Ag síniú isteach…",
         "or": "nó",
         "continueWithGoogle": "Lean ar aghaidh le Google"
       }

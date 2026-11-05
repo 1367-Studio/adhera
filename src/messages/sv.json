@@ -87,6 +87,7 @@
         "passwordLabel": "Lösenord",
         "forgotPassword": "Glömt ditt lösenord?",
         "submit": "Logga in",
+        "connecting": "Loggar in…",
         "or": "eller",
         "continueWithGoogle": "Fortsätt med Google"
       }

@@ -87,6 +87,7 @@
         "passwordLabel": "Slaptažodis",
         "forgotPassword": "Pamiršai savo slaptažodį?",
         "submit": "Prisijungti, prisijunk",
+        "connecting": "Prisijungiama…",
         "or": "arba",
         "continueWithGoogle": "Tęskite paieškas Google"
       }
