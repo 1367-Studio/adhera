@@ -87,6 +87,7 @@
         "passwordLabel": "Jelszó",
         "forgotPassword": "Elfelejtetted a jelszavadat?",
         "submit": "Bejelentkezés",
+        "connecting": "Bejelentkezés…",
         "or": "vagy",
         "continueWithGoogle": "Folytasd a Google-t"
       }

@@ -1,6 +1,7 @@
 "use client"
 
 import { GoogleIcon } from "@/components/icons/google-icon"
+import { AuthLoadingOverlay } from "@/components/layout/auth-loading-overlay"
 import { TwoFactorChallengeForm } from "@/components/layout/two-factor-challenge-form"
 import { Button } from "@/components/ui/button"
 import { FormField } from "@/components/ui/form-field"
@@ -16,6 +17,7 @@ import { toast } from "sonner"
 export function LoginForm({ callbackUrl }: { callbackUrl?: string }) {
   const t = useTranslations("auth.login.form")
   const [googleLoading, setGoogleLoading] = useState(false)
+  const [isAuthenticating, setIsAuthenticating] = useState(false)
   const [pendingToken, setPendingToken] = useState<string | null>(null)
   const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<LoginInput>({
     resolver: zodResolver(loginSchema),
@@ -28,20 +30,31 @@ export function LoginForm({ callbackUrl }: { callbackUrl?: string }) {
     formData.append("password", data.password)
     if (callbackUrl) formData.append("callbackUrl", callbackUrl)
 
+    setIsAuthenticating(true)
     const result = await authenticate(undefined, formData)
     if (result?.requires2FA && result.pendingToken) {
+      setIsAuthenticating(false)
       setPendingToken(result.pendingToken)
       return
     }
-    if (result?.error) toast.error(result.error)
+    if (result?.error) {
+      setIsAuthenticating(false)
+      toast.error(result.error)
+    }
+    // On success `authenticate` never resolves here: signIn's redirectTo
+    // unwinds the server action via Next's redirect, so the overlay stays
+    // mounted (isAuthenticating left true) until the browser actually
+    // navigates away.
   }
 
   async function handleGoogle() {
     setGoogleLoading(true)
+    setIsAuthenticating(true)
     try {
       await signInWithGoogleDashboard()
     } finally {
       setGoogleLoading(false)
+      setIsAuthenticating(false)
     }
   }
 
@@ -50,60 +63,63 @@ export function LoginForm({ callbackUrl }: { callbackUrl?: string }) {
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6" noValidate>
-      <FormField
-        label={t("emailLabel")}
-        type="email"
-        placeholder={t("emailPlaceholder")}
-        autoComplete="email"
-        autoFocus
-        required
-        error={errors.email?.message}
-        {...register("email")}
-      />
+    <>
+      <AuthLoadingOverlay active={isAuthenticating} label={t("connecting")} />
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6" noValidate>
+        <FormField
+          label={t("emailLabel")}
+          type="email"
+          placeholder={t("emailPlaceholder")}
+          autoComplete="email"
+          autoFocus
+          required
+          error={errors.email?.message}
+          {...register("email")}
+        />
 
-      <FormField
-        label={t("passwordLabel")}
-        type="password"
-        placeholder="••••••••"
-        autoComplete="current-password"
-        required
-        error={errors.password?.message}
-        labelAction={
-          <Link
-            href="/forgot-password"
-            className="hover:text-foreground transition-colors"
-          >
-            {t("forgotPassword")}
-          </Link>
-        }
-        {...register("password")}
-      />
+        <FormField
+          label={t("passwordLabel")}
+          type="password"
+          placeholder="••••••••"
+          autoComplete="current-password"
+          required
+          error={errors.password?.message}
+          labelAction={
+            <Link
+              href="/forgot-password"
+              className="hover:text-foreground transition-colors"
+            >
+              {t("forgotPassword")}
+            </Link>
+          }
+          {...register("password")}
+        />
 
-      <Button type="submit" className="w-full mt-2" disabled={isSubmitting}>
-        {isSubmitting && <CircleNotchIcon className="mr-2 size-4 animate-spin" />}
-        {t("submit")}
-      </Button>
+        <Button type="submit" className="w-full mt-2" disabled={isSubmitting}>
+          {isSubmitting && <CircleNotchIcon className="mr-2 size-4 animate-spin" />}
+          {t("submit")}
+        </Button>
 
-      <div className="relative flex items-center gap-2 py-1">
-        <div className="flex-1 h-px bg-border" />
-        <span className="text-xs text-muted-foreground/60 shrink-0">{t("or")}</span>
-        <div className="flex-1 h-px bg-border" />
-      </div>
+        <div className="relative flex items-center gap-2 py-1">
+          <div className="flex-1 h-px bg-border" />
+          <span className="text-xs text-muted-foreground/60 shrink-0">{t("or")}</span>
+          <div className="flex-1 h-px bg-border" />
+        </div>
 
-      <Button
-        type="button"
-        variant="outline"
-        className="w-full"
-        disabled={googleLoading}
-        onClick={handleGoogle}
-      >
-        {googleLoading
-          ? <CircleNotchIcon className="mr-2 size-4 animate-spin" />
-          : <GoogleIcon className="mr-2 size-4" />
-        }
-        {t("continueWithGoogle")}
-      </Button>
-    </form>
+        <Button
+          type="button"
+          variant="outline"
+          className="w-full"
+          disabled={googleLoading}
+          onClick={handleGoogle}
+        >
+          {googleLoading
+            ? <CircleNotchIcon className="mr-2 size-4 animate-spin" />
+            : <GoogleIcon className="mr-2 size-4" />
+          }
+          {t("continueWithGoogle")}
+        </Button>
+      </form>
+    </>
   )
 }

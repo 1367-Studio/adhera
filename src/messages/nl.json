@@ -87,6 +87,7 @@
         "passwordLabel": "Wachtwoord",
         "forgotPassword": "Wachtwoord vergeten?",
         "submit": "Log in",
+        "connecting": "Bezig met inloggen…",
         "or": "of",
         "continueWithGoogle": "Ga verder met Google"
       }

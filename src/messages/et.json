@@ -87,6 +87,7 @@
         "passwordLabel": "Parool",
         "forgotPassword": "Unustasid parooli?",
         "submit": "Logi sisse",
+        "connecting": "Sisselogimine…",
         "or": "või",
         "continueWithGoogle": "Jätka Google'iga"
       }

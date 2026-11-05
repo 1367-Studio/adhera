@@ -87,6 +87,7 @@
         "passwordLabel": "Κωδικός πρόσβασης",
         "forgotPassword": "Ξεχάσατε τον κωδικό πρόσβασής σας;",
         "submit": "Σύνδεση",
+        "connecting": "Σύνδεση…",
         "or": "ή",
         "continueWithGoogle": "Συνεχίστε με το Google"
       }

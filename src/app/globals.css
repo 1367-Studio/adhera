@@ -550,6 +550,43 @@ header.sticky {
   }
 }
 
+/* ── Auth loading overlay — brand mark tunnel while the post-submit
+   redirect/session work (NextAuth jwt callback, destination page data) runs
+   with no other indicator on screen ──────────────────────────────────── */
+
+/* One mark at a time: it snaps into existence at a fixed small size dead
+   center (5%), grows fully opaque the whole time it's visible so it never
+   blends with a sibling copy, cuts out again (80%), then the frame stays
+   empty until 100% — the next cycle only starts after this one is
+   completely gone, instead of several overlapping translucent copies. */
+@keyframes auth-arch-approach {
+  0%   { transform: scale(0.08); opacity: 0; }
+  5%   { transform: scale(0.1);  opacity: 1; }
+  68%  { transform: scale(1.85); opacity: 1; }
+  80%  { transform: scale(2.2);  opacity: 0; }
+  100% { transform: scale(2.2);  opacity: 0; }
+}
+
+.animate-auth-arch {
+  animation: auth-arch-approach 3s cubic-bezier(.33, 0, .68, 1) infinite;
+}
+
+@keyframes auth-speed-line {
+  0%   { transform: translate(-50%, 0) rotate(var(--angle)) scaleY(0.15); opacity: 0; }
+  25%  { opacity: 0.38; }
+  100% { transform: translate(-50%, 0) rotate(var(--angle)) scaleY(1); opacity: 0; }
+}
+
+.animate-auth-speed-line {
+  animation: auth-speed-line 2s linear infinite;
+  animation-delay: var(--delay);
+}
+
+/* Deliberately not guarded behind prefers-reduced-motion, unlike this file's
+   other custom animations: this is the only on-screen feedback during the
+   post-login wait, so stopping it would leave that gap looking frozen again
+   for anyone with reduced motion enabled instead of just toning it down. */
+
 /* ── Guided tour (driver.js) — themed to match the app ─────────────────── */
 .driver-popover.adhera-tour {
   background-color: var(--popover);

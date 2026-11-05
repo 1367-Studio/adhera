@@ -87,6 +87,7 @@
         "passwordLabel": "Adgangskode",
         "forgotPassword": "Glemt din adgangskode?",
         "submit": "Log ind",
+        "connecting": "Logger ind…",
         "or": "eller",
         "continueWithGoogle": "Fortsæt med Google"
       }
