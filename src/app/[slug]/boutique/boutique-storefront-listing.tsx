@@ -2,10 +2,11 @@
 
 import { useRouter } from "next/navigation"
 import { useQuery } from "@tanstack/react-query"
-import { useTranslations } from "next-intl"
+import { useTranslations, useLocale } from "next-intl"
 import { ShoppingBagIcon, ShoppingCartIcon } from "@phosphor-icons/react/dist/ssr";
 import { Badge } from "@/components/ui/badge"
-import { LocaleSwitcher } from "@/components/layout/locale-switcher"
+import { PublicSiteLocaleSwitcher } from "@/components/site/public-site-locale-switcher"
+import type { Locale } from "@/i18n/locales"
 import { BackToSiteLink } from "@/components/public/back-to-site-link"
 import { useCart } from "@/lib/hooks/use-cart"
 
@@ -22,11 +23,14 @@ type Props = { slug: string }
 
 export function BoutiqueStorefrontListing({ slug }: Props) {
   const t      = useTranslations("portalMembre.boutique")
+  const loc    = useLocale()
   const router = useRouter()
   const { count } = useCart(slug)
 
   const { data, isLoading, error } = useQuery<{ associationName: string; produits: Produit[]; sitePublished: boolean; website: string | null }>({
-    queryKey: ["public-boutique", slug],
+    // locale in the key: the API translates name/description/variant labels by locale, so a
+    // language switch must refetch, not just re-render with stale-language product data.
+    queryKey: ["public-boutique", slug, loc],
     queryFn:  () => fetch(`/api/public/${slug}/boutique`).then(async r => {
       if (!r.ok) throw new Error("not-found")
       return r.json()
@@ -69,7 +73,7 @@ export function BoutiqueStorefrontListing({ slug }: Props) {
             {data?.associationName && <p className="text-sm text-muted-foreground">{data.associationName}</p>}
           </div>
           <div className="flex items-center gap-2">
-            <LocaleSwitcher persistAccountLocale={false} />
+            <PublicSiteLocaleSwitcher locale={loc as Locale} />
             {count > 0 && (
               <button
                 type="button"

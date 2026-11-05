@@ -214,7 +214,7 @@ export function SiteNavbar({
                 </Link>
               )}
               {showTranslate && locale && (
-                <PublicSiteLocaleSwitcher locale={locale} ui={ui} />
+                <PublicSiteLocaleSwitcher locale={locale} />
               )}
             </div>
           )}
@@ -384,7 +384,7 @@ export function SiteNavbar({
                     <div className="mt-auto border-t border-current/10 px-4 py-4 flex flex-col gap-4">
                       {hasSocialLinks && <SiteSocialIcons socialLinks={socialLinks} />}
                       {showTranslate && locale && (
-                        <PublicSiteLocaleSwitcher locale={locale} layout="list" listLabel={ui.navLanguage} ui={ui} />
+                        <PublicSiteLocaleSwitcher locale={locale} layout="list" listLabel={ui.navLanguage} />
                       )}
                     </div>
                   )}

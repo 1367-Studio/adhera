@@ -38,18 +38,22 @@ export default getRequestConfig(async () => {
 
   if (!locale) locale = DEFAULT_LOCALE
 
+  return { locale, messages: await loadMessagesForLocale(locale) }
+})
+
+type Messages = Record<string, unknown>
+
+// Shared by getRequestConfig above (NEXT_LOCALE-driven, portal/dashboard) and by
+// src/app/[slug]/layout.tsx's own nested NextIntlClientProvider (SITE_LOCALE-driven, public
+// site) — one place that knows how to load+merge a locale's catalogue, so the two never drift
+// into loading messages differently for the same locale.
+export async function loadMessagesForLocale(locale: Locale): Promise<Messages> {
   // French is the source catalogue (scripts/generate-locale.ts derives the others from it), so
   // a key that a locale has not been generated for yet renders in French rather than as a raw
   // key path — new features ship fr + en first and the remaining catalogues catch up.
   const frenchMessages = (await import("../messages/fr.json")).default as Messages
-  const messages = locale === DEFAULT_LOCALE
-    ? frenchMessages
-    : await mergedMessagesFor(locale, frenchMessages)
-
-  return { locale, messages }
-})
-
-type Messages = Record<string, unknown>
+  return locale === DEFAULT_LOCALE ? frenchMessages : mergedMessagesFor(locale, frenchMessages)
+}
 
 // Both catalogues are static JSON, so the merge is computed once per locale per process —
 // not on every request. The warning is the one signal that a catalogue lags the French

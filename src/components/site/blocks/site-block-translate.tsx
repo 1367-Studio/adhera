@@ -38,7 +38,7 @@ export const translateBlock: ComponentConfig<TranslateBlockProps> = {
     const metadata = readSiteMetadata(puck.metadata)
     return (
       <div className={cn("flex", ALIGN_CLASSES[align])}>
-        <PublicSiteLocaleSwitcher locale={metadata.locale} ui={metadata.ui} />
+        <PublicSiteLocaleSwitcher locale={metadata.locale} />
       </div>
     )
   },

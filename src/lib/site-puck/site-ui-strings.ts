@@ -14,8 +14,6 @@ export const SITE_UI_STRINGS = {
   navMenu:                "Menu",
   navClose:               "Fermer",
   navLanguage:            "Langue",
-  translatePageAction:    "Traduire cette page",
-  showOriginalAction:     "Voir le texte original",
   footerRights:           "Tous droits réservés.",
   footerPoweredBy:        "Propulsé par",
   footerAriaLabel:        "Pied de page",
@@ -31,6 +29,19 @@ export const SITE_UI_STRINGS = {
   actualitesFeaturedBadge: "À la une",
   actualitesSeeAll:       "Toutes les actualités",
   actualitesDefaultTitle: "Actualités",
+  // The standalone /actualites list + /actualites/[id] detail pages (public-actualites-list-view.tsx,
+  // actualite-detail-view.tsx) — previously a separate next-intl "actualites.publicView" catalogue
+  // namespace that was never translated into any of the 24 non-French locales (static next-intl
+  // catalogues need a translator to run ahead of time). Moved here so it rides the same dynamic,
+  // on-demand BYOK-then-Azure pipeline as the rest of this file, cached after the first visitor
+  // in a given locale instead of needing a batch translation run.
+  actualitesListEmpty:          "Aucune actualité publiée pour le moment.",
+  actualitesAssociationNotFound: "Cette association est introuvable.",
+  actualitesBackToSite:         "Retour au site",
+  actualitesNotFound:           "Actualité introuvable",
+  actualitesRelatedEvent:       "Événement associé",
+  actualitesDraft:              "Brouillon",
+  actualitesPreviewNotice:      "Mode aperçu — cette actualité n'est pas encore visible publiquement.",
   boutiqueDefaultTitle:   "Boutique",
   boutiqueSeeAll:         "Voir la boutique",
   donsTaxReceiptNote:     "Reçu fiscal envoyé automatiquement par e-mail",

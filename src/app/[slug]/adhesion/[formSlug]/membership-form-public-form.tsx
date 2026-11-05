@@ -16,7 +16,7 @@ import { CurrencyField } from "@/components/ui/currency-field"
 import { PasswordRequirements, PASSWORD_MIN_LENGTH } from "@/components/ui/password-requirements"
 import { ImageUpload } from "@/components/ui/image-upload"
 import { ImageThumbnail } from "@/components/ui/image-thumbnail"
-import { LocaleSwitcher } from "@/components/layout/locale-switcher"
+import { PublicSiteLocaleSwitcher } from "@/components/site/public-site-locale-switcher"
 import { BackToSiteLink } from "@/components/public/back-to-site-link"
 import { RichTextView } from "@/components/ui/rich-text-view"
 import { FormTermsSection } from "@/components/public/form-terms-section"
@@ -26,7 +26,7 @@ import { PublicFormSkeleton } from "@/components/public/public-form-skeleton"
 import { FormDraftNotice } from "@/components/public/form-draft-notice"
 import { useFormDraft } from "@/hooks/use-form-draft"
 import { spokenLanguageOptions } from "@/lib/languages"
-import { SUPPORTED_LOCALES, LOCALE_LABELS } from "@/i18n/locales"
+import { SUPPORTED_LOCALES, LOCALE_LABELS, type Locale } from "@/i18n/locales"
 import { EMPTY_ADDRESS_FORM_VALUES, type AddressFormValues } from "@/lib/address"
 import { InAppBrowserBanner } from "@/components/ui/in-app-browser-banner"
 import { useInAppBrowserEscape } from "@/hooks/use-in-app-browser-escape"
@@ -922,7 +922,7 @@ function MembershipFormPublicFormInner({ slug, formSlug, legalDocuments }: Props
         <div className="dashboard-canvas public-canvas min-h-screen p-3">
           <div className="min-h-[calc(100vh-1.5rem)] rounded-[10px] bg-public-panel flex flex-col items-center justify-center text-center px-4 gap-4">
             <p className="text-muted-foreground">{t("notFound")}</p>
-            <LocaleSwitcher persistAccountLocale={!isPreview} />
+            <PublicSiteLocaleSwitcher locale={loc as Locale} />
           </div>
         </div>
       </>
@@ -938,7 +938,7 @@ function MembershipFormPublicFormInner({ slug, formSlug, legalDocuments }: Props
         <div className="dashboard-canvas public-canvas min-h-screen p-3">
           <div className="min-h-[calc(100vh-1.5rem)] rounded-[10px] bg-public-panel flex flex-col items-center justify-center text-center px-4 gap-4">
             <p className="text-muted-foreground">{t("adminAccessDenied")}</p>
-            <LocaleSwitcher persistAccountLocale={!isPreview} />
+            <PublicSiteLocaleSwitcher locale={loc as Locale} />
           </div>
         </div>
       </>
@@ -959,9 +959,8 @@ function MembershipFormPublicFormInner({ slug, formSlug, legalDocuments }: Props
                     isAdminFill-gated features above: this mode is deliberately stripped down). */}
                 {!isAdminFill && <BackToSiteLink slug={slug} sitePublished={form.sitePublished} website={form.website} />}
               </div>
-              <LocaleSwitcher persistAccountLocale={!isPreview} />
+              <PublicSiteLocaleSwitcher locale={loc as Locale} />
             </div>
-
             {isPreview && (
               <p className="rounded-md border border-dashed px-3 py-2 text-center text-xs text-muted-foreground">
                 {t("previewNotice")}

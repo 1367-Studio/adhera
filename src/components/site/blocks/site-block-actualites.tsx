@@ -153,7 +153,7 @@ export const actualitesBlock: ComponentConfig<ActualitesBlockProps> = {
     const withExcerpt         = showExcerpt ?? true
     const selectedLayout      = layout ?? "grid"
     const borderColor         = listingBorderColor(sectionBackground)
-    const actualiteHref       = (actualite: SiteActualite) => `/${metadata.slug}/actualites/${actualite.id}${metadata.translateQuery}`
+    const actualiteHref       = (actualite: SiteActualite) => `/${metadata.slug}/actualites/${actualite.id}`
 
     if (displayedActualites.length === 0 && !puck.isEditing) return <></>
 
@@ -170,7 +170,7 @@ export const actualitesBlock: ComponentConfig<ActualitesBlockProps> = {
             background={sectionBackground}
             textColor={textColor}
             showAllLabel={showAllButton ? metadata.ui.actualitesSeeAll : undefined}
-            showAllHref={`/${metadata.slug}/actualites${metadata.translateQuery}`}
+            showAllHref={`/${metadata.slug}/actualites`}
             showAllVariant={showAllVariant}
             slug={metadata.slug}
           />
