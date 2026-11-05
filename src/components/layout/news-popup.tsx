@@ -5,6 +5,7 @@ import { useLocale, useTranslations } from "next-intl"
 import { format, parseISO } from "date-fns"
 import { ContentPopupCarousel, type PopupCarouselSlide } from "@/components/layout/content-popup-carousel"
 import { useNewsPopups, type NewsPopupEntry } from "@/hooks/use-help"
+import { useRemindLater } from "@/hooks/use-remind-later"
 import { useSeenNewsPopups } from "@/hooks/use-seen-news-popups"
 import type { Locale } from "@/i18n/locales"
 import { getDateFnsLocale } from "@/lib/date-fns-locale"
@@ -15,6 +16,9 @@ import { useCurrentUser } from "@/lib/user-context"
 const TOUR_SEEN_KEY  = "adhera-tour-seen-v1"
 const POPUP_DELAY_MS = 1500
 const DATE_FORMAT    = "d MMM yyyy"
+// "Remind me later" storage is separate from the seen-list above: it only suppresses
+// re-opening until the next real login (see useRemindLater), never marks anything seen.
+const REMIND_LATER_KEY_PREFIX = "adhera-news-popups-remind-later-v1"
 
 function readTourSeen() {
   if (typeof window === "undefined") return false
@@ -55,8 +59,9 @@ type NewsPopupProps = {
 export function NewsPopup({ enabled, onHasContent, onClose, openDelayMs = POPUP_DELAY_MS }: NewsPopupProps) {
   const t = useTranslations("help.news")
   const locale = useLocale() as Locale
-  const { id: currentUserId } = useCurrentUser()
+  const { id: currentUserId, loginAt } = useCurrentUser()
   const { seenIds, markSeen } = useSeenNewsPopups(currentUserId)
+  const { remindLater, isRemindedThisLogin } = useRemindLater(REMIND_LATER_KEY_PREFIX, currentUserId)
   const [tourSeen] = useState(readTourSeen)
   const [forceMode] = useState(readForceMode)
   const [slides, setSlides] = useState<NewsPopupEntry[] | null>(null)
@@ -69,6 +74,7 @@ export function NewsPopup({ enabled, onHasContent, onClose, openDelayMs = POPUP_
   const shouldShow = forceMode || (enabled && tourSeen && seenIds !== null)
   const newsQuery = useNewsPopups({ enabled: shouldShow })
   const news = newsQuery.data
+  const remindedThisLogin = isRemindedThisLogin(loginAt)
 
   const openWithSlides = useCallback((nextSlides: NewsPopupEntry[]) => {
     setSlides(nextSlides)
@@ -80,20 +86,29 @@ export function NewsPopup({ enabled, onHasContent, onClose, openDelayMs = POPUP_
   useEffect(() => {
     if (!shouldShow || !news || slides !== null) return
     const unseenNews = forceMode ? news : news.filter((entry) => !seenIds?.includes(entry.id))
+    // Reported as "nothing to show" while remembered-for-later, even though unseen entries
+    // still exist, so the queue moves on to the next kind instead of waiting on this one.
+    const hasContentToShow = unseenNews.length > 0 && (forceMode || !remindedThisLogin)
     if (reportedHasContentForRef.current !== news) {
       reportedHasContentForRef.current = news
-      onHasContent?.(unseenNews.length > 0)
+      onHasContent?.(hasContentToShow)
     }
-    if (unseenNews.length === 0) return
+    if (!hasContentToShow) return
 
     const openTimer = window.setTimeout(() => openWithSlides(unseenNews), openDelayMs)
     return () => window.clearTimeout(openTimer)
-  }, [shouldShow, forceMode, seenIds, news, slides, openWithSlides, onHasContent, openDelayMs])
+  }, [shouldShow, forceMode, seenIds, news, slides, openWithSlides, onHasContent, openDelayMs, remindedThisLogin])
 
   if (!slides || slides.length === 0) return null
 
   function handleCarouselClose(viewedIds: string[]) {
     markSeen(viewedIds)
+    setOpen(false)
+    onClose?.()
+  }
+
+  function handleRemindLater() {
+    remindLater(loginAt)
     setOpen(false)
     onClose?.()
   }
@@ -112,6 +127,7 @@ export function NewsPopup({ enabled, onHasContent, onClose, openDelayMs = POPUP_
       openKey={openKey}
       dialogTitle={t("popupTitle")}
       onClose={handleCarouselClose}
+      onRemindLater={handleRemindLater}
     />
   )
 }

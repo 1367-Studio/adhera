@@ -26,6 +26,8 @@ export default async function DashboardLayout({ children }: { children: React.Re
   if (u.role === "SUPER_ADMIN") redirect("/backoffice")
   if (u.role === "MEMBRE")      redirect(u.associationSlug ? `/portal/${u.associationSlug}` : "/login")
 
+  const loginAt = (session.user as { loginAt?: number }).loginAt
+
   const sessionUser: SessionUser = {
     id:               u.id,
     name:             u.name,
@@ -33,6 +35,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
     role:             u.role ?? "MEMBRE",
     associationId:    u.associationId,
     associationSlug:  u.associationSlug,
+    loginAt,
     permissions:      resolvePermissions(u.role, (session.user as { permissions?: unknown }).permissions),
   }
   // Creating the fiscal period is a Comptabilité change — same people as before for the
@@ -97,7 +100,6 @@ export default async function DashboardLayout({ children }: { children: React.Re
       ])
     : [null, 0]
 
-  const loginAt = (session.user as { loginAt?: number }).loginAt
   const popupSeenThisLogin = !!popupUser?.fiscalPeriodPopupSeenAt
     && (loginAt === undefined || popupUser.fiscalPeriodPopupSeenAt.getTime() >= loginAt)
 

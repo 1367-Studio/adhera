@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState, type FocusEvent, type KeyboardEvent, type ReactNode } from "react"
 import { useTranslations } from "next-intl"
 import type { PortableTextBlock } from "@portabletext/react"
+import { toast } from "sonner"
 import { HelpArticleView } from "@/components/help/help-article-view"
 import { Button } from "@/components/ui/button"
 import {
@@ -56,17 +57,18 @@ type ContentPopupCarouselProps = {
   // re-seeds the active slide and viewed-ids tracking.
   openKey: number
   dialogTitle: string
-  // Called with the ids of every slide the user actually viewed (arrived at via navigation,
-  // not just the one it opened on) — on every way of closing: the X button, "Ne plus me
-  // rappeler", and "Terminer" on the last slide. Backdrop clicks, Escape, and the close-watcher
-  // gesture are all ignored instead of closing.
-  //
-  // Only the viewed slides, deliberately, even for "Ne plus me rappeler": a batch can mix
-  // unrelated items (several FAQ tips flagged for pop-up at once), and marking an unseen one as
-  // seen would silently bury it — it stays pending and surfaces next time instead. This has no
-  // effect on "Terminer", which is only reachable after navigating through every slide, so by
-  // definition every slide is already viewed by then.
+  // Called only on "Terminer" (reachable after navigating through every slide — so by
+  // definition every slide is already viewed by then) and with the ids of every slide actually
+  // viewed. This is the permanent dismissal: the caller marks those ids seen for good (see
+  // markSeen in news-popup.tsx/faq-popup.tsx/release-notes-popup.tsx), so this exact batch never
+  // pops up again for this account, even across logins.
   onClose: (viewedIds: string[]) => void
+  // Called by the X button and "Me le rappeler plus tard" — every other way of closing.
+  // Backdrop clicks, Escape, and the close-watcher gesture are all ignored instead of closing.
+  // Deliberately never marks anything seen: the caller (see useRemindLater) only suppresses
+  // re-opening for the rest of this login, so the full batch reappears next time regardless of
+  // which slides were viewed before clicking it.
+  onRemindLater: () => void
   // Off for content meant to be read at the user's own pace (FAQ answers) rather than skimmed
   // (short Nouveautés/Notícias blurbs). Default true.
   autoplay?: boolean
@@ -79,6 +81,7 @@ export function ContentPopupCarousel({
   openKey,
   dialogTitle,
   onClose,
+  onRemindLater,
   autoplay = true,
 }: ContentPopupCarouselProps) {
   const t = useTranslations("help.popupCarousel")
@@ -147,13 +150,22 @@ export function ContentPopupCarousel({
   const hasHiddenDotsBefore = dotWindowStart > 0
   const hasHiddenDotsAfter = dotWindowEnd < slides.length - 1
 
+  // Shared by the X button and the footer button below — the only two ways to trigger a
+  // "remind later". A toast confirms it was understood as a deferral, not a permanent
+  // dismissal, since the dialog itself gives no other sign of which one just happened.
+  function handleRemindLaterClick() {
+    toast.success(t("remindLaterToast"))
+    onRemindLater()
+  }
+
   // Closes only via the X button (reason "close-press") — backdrop clicks, Escape, and the
   // close-watcher gesture are all ignored, matching the fiscal-period popup's Modal
-  // `closeOnlyViaButton` behavior for this family of app-wide notification pop-ups.
+  // `closeOnlyViaButton` behavior for this family of app-wide notification pop-ups. The X
+  // button is a "remind later", not a permanent dismissal — same as the footer button below.
   function handleOpenChange(nextOpen: boolean, eventDetails: { reason: string }) {
     if (nextOpen) return
     if (eventDetails.reason !== "close-press") return
-    onClose([...viewedIdsRef.current])
+    handleRemindLaterClick()
   }
 
   function handleKeyDown(event: KeyboardEvent<HTMLDivElement>) {
@@ -257,9 +269,9 @@ export function ContentPopupCarousel({
                 type="button"
                 variant="ghost"
                 className="order-last basis-full sm:order-none sm:basis-auto"
-                onClick={() => onClose([...viewedIdsRef.current])}
+                onClick={handleRemindLaterClick}
               >
-                {t("dontRemind")}
+                {t("remindLater")}
               </Button>
               {/* Always rendered so the mobile button row keeps the same shape on every slide:
                   on the first slide it is invisible on mobile (keeps its space) and gone from sm up. */}

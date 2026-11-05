@@ -6,6 +6,7 @@ import { format, parseISO } from "date-fns"
 import { useQueryClient } from "@tanstack/react-query"
 import { ContentPopupCarousel, type PopupCarouselSlide } from "@/components/layout/content-popup-carousel"
 import { releaseNotesQueryOptions, useReleaseNotes, type ReleaseNote } from "@/hooks/use-help"
+import { useRemindLater } from "@/hooks/use-remind-later"
 import { useSeenReleaseNotes } from "@/hooks/use-seen-release-notes"
 import type { Locale } from "@/i18n/locales"
 import { getDateFnsLocale } from "@/lib/date-fns-locale"
@@ -17,6 +18,9 @@ import { useCurrentUser } from "@/lib/user-context"
 const TOUR_SEEN_KEY  = "adhera-tour-seen-v1"
 const POPUP_DELAY_MS = 1500
 const DATE_FORMAT    = "d MMM yyyy"
+// "Remind me later" storage is separate from the seen-list above: it only suppresses
+// re-opening until the next real login (see useRemindLater), never marks anything seen.
+const REMIND_LATER_KEY_PREFIX = "adhera-release-notes-remind-later-v1"
 
 // False on the server; the pop-up renders nothing until it has slides, so hydration still matches.
 function readTourSeen() {
@@ -71,8 +75,9 @@ export function ReleaseNotesPopup({ enabled, onHasContent, onClose, openDelayMs 
   const t = useTranslations("help.releaseNotes")
   const tHelp = useTranslations("help")
   const locale = useLocale() as Locale
-  const { id: currentUserId } = useCurrentUser()
+  const { id: currentUserId, loginAt } = useCurrentUser()
   const { seenIds, markSeen } = useSeenReleaseNotes(currentUserId)
+  const { remindLater, isRemindedThisLogin } = useRemindLater(REMIND_LATER_KEY_PREFIX, currentUserId)
   const queryClient = useQueryClient()
   // Read once at mount, on purpose: the tour sets its key a moment after a first visit's
   // mount, and re-reading it later would pop this up on top of the running tour.
@@ -94,6 +99,7 @@ export function ReleaseNotesPopup({ enabled, onHasContent, onClose, openDelayMs 
   const shouldShow = forceMode || (enabled && tourSeen && seenIds !== null)
   const releaseNotesQuery = useReleaseNotes({ enabled: shouldShow })
   const releaseNotes = releaseNotesQuery.data
+  const remindedThisLogin = isRemindedThisLogin(loginAt)
 
   const openWithSlides = useCallback((nextSlides: ReleaseNote[], nextStartIndex: number) => {
     setStartIndex(nextStartIndex)
@@ -126,20 +132,29 @@ export function ReleaseNotesPopup({ enabled, onHasContent, onClose, openDelayMs 
     const unseenNotes = forceMode
       ? releaseNotes
       : releaseNotes.filter((releaseNote) => !seenIds?.includes(releaseNote.id))
+    // Reported as "nothing to show" while remembered-for-later, even though unseen entries
+    // still exist, so the queue moves on to the next kind instead of waiting on this one.
+    const hasContentToShow = unseenNotes.length > 0 && (forceMode || !remindedThisLogin)
     if (reportedHasContentForRef.current !== releaseNotes) {
       reportedHasContentForRef.current = releaseNotes
-      onHasContent?.(unseenNotes.length > 0)
+      onHasContent?.(hasContentToShow)
     }
-    if (unseenNotes.length === 0) return
+    if (!hasContentToShow) return
 
     const openTimer = window.setTimeout(() => openWithSlides(unseenNotes, 0), openDelayMs)
     return () => window.clearTimeout(openTimer)
-  }, [shouldShow, forceMode, seenIds, releaseNotes, slides, openWithSlides, onHasContent, openDelayMs])
+  }, [shouldShow, forceMode, seenIds, releaseNotes, slides, openWithSlides, onHasContent, openDelayMs, remindedThisLogin])
 
   if (!slides || slides.length === 0) return null
 
   function handleCarouselClose(viewedIds: string[]) {
     markSeen(viewedIds)
+    setOpen(false)
+    onClose?.()
+  }
+
+  function handleRemindLater() {
+    remindLater(loginAt)
     setOpen(false)
     onClose?.()
   }
@@ -159,6 +174,7 @@ export function ReleaseNotesPopup({ enabled, onHasContent, onClose, openDelayMs 
       openKey={openKey}
       dialogTitle={t("title")}
       onClose={handleCarouselClose}
+      onRemindLater={handleRemindLater}
     />
   )
 }
