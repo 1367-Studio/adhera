@@ -6347,7 +6347,8 @@
       "pricingOffers": "Offres tarifaires",
       "support": "Support",
       "controlAlerts": "Alertes de contrôle",
-      "signOut": "Se déconnecter"
+      "signOut": "Se déconnecter",
+      "membreDuplicates": "Doublons"
     },
     "themeToggle": {
       "changeTheme": "Changer le thème"
@@ -6915,5 +6916,121 @@
   },
   "formTermsEditor": {
     "contentRequired": "Vous devez remplir le champ « {conditionsLabel} » ou importer un document."
+  },
+  "membreDuplicates": {
+    "list": {
+      "title": "Doublons potentiels",
+      "subtitle": "Membres qui semblent être la même personne — à vérifier avant de les fusionner.",
+      "menuItem": "Doublons",
+      "scanAction": "Rechercher les doublons",
+      "scanSuccess": "{count, plural, =0 {Aucun doublon en attente} one {1 doublon en attente} other {# doublons en attente}}",
+      "scanError": "Erreur lors de la recherche de doublons",
+      "searchPlaceholder": "Rechercher un membre…",
+      "matchedFields": {
+        "EMAIL": "Email",
+        "NAME": "Nom"
+      },
+      "columns": {
+        "membreA": "Membre A",
+        "membreB": "Membre B",
+        "matchedFields": "Critères correspondants",
+        "detectedAt": "Détecté",
+        "status": "Statut"
+      },
+      "status": {
+        "PENDING": "En attente",
+        "DISMISSED": "Ignoré",
+        "MERGED": "Fusionné"
+      },
+      "autoDismissedLabel": "(auto)",
+      "compareAction": "Comparer",
+      "dismissAction": "Ignorer",
+      "empty": "Aucun doublon.",
+      "emptyForSearch": "Aucun résultat pour « {search} ».",
+      "restoreAction": "Restaurer"
+    },
+    "merge": {
+      "backLink": "Retour",
+      "title": "Comparer et fusionner",
+      "subtitle": "Choisissez quel membre conserver et, pour chaque champ différent, quelle valeur garder.",
+      "alreadyMerged": "Ce doublon a déjà été fusionné.",
+      "keepAsPrimary": "Garder comme principal",
+      "fieldsTitle": "Champs différents",
+      "fields": {
+        "firstName": "Prénom",
+        "lastName": "Nom",
+        "email": "Email",
+        "phone": "Téléphone",
+        "birthDate": "Date de naissance",
+        "civilite": "Civilité",
+        "address": "Adresse",
+        "addressStreet": "Voie",
+        "addressComplement": "Complément d'adresse",
+        "postalCode": "Code postal",
+        "city": "Ville",
+        "country": "Pays",
+        "groupeSanguin": "Groupe sanguin",
+        "sexe": "Sexe",
+        "allergies": "Allergies",
+        "photoUrl": "Photo",
+        "preferredLocale": "Langue préférée",
+        "spokenLanguage": "Langue parlée",
+        "possedeTshirt": "Possède un t-shirt",
+        "tailleTshirt": "Taille de t-shirt",
+        "typeId": "Type de membre",
+        "notes": "Notes",
+        "guardianName": "Nom du responsable légal",
+        "guardianPhone": "Téléphone du responsable légal",
+        "secondGuardianName": "Nom du second responsable légal",
+        "secondGuardianPhone": "Téléphone du second responsable légal",
+        "imageRightsConsent": "Droit à l'image",
+        "imageRightsConsentAt": "Date du consentement (droit à l'image)"
+      },
+      "relatedDataTitle": "Données liées",
+      "relations": {
+        "cotisations": "Cotisations",
+        "participations": "Inscriptions aux événements",
+        "dons": "Dons",
+        "membershipAddonPurchases": "Options d'adhésion achetées",
+        "automationLogs": "Automatisations déclenchées",
+        "emailMessages": "Emails envoyés",
+        "smsMessages": "SMS envoyés",
+        "incomes": "Encaissements",
+        "materialLoans": "Prêts de matériel",
+        "boutiqueCommandes": "Commandes boutique",
+        "actualiteRecipients": "Destinataires d'actualités",
+        "sondageRecipients": "Destinataires de sondages",
+        "sondageReponses": "Réponses aux sondages",
+        "meetingParticipants": "Participations aux réunions",
+        "erasureRequests": "Demandes d'effacement",
+        "dependants": "Membres rattachés (dépendants)",
+        "cotisationSubscription": "Abonnement de cotisation actif",
+        "controlAlert": "Alerte de contrôle active"
+      },
+      "relatedDataCounts": "{primary} → {secondary}",
+      "conflictWarning": "⚠ {reason}",
+      "dismissAction": "Ignorer ce doublon",
+      "mergeAction": "Fusionner",
+      "mergeConfirmTitle": "Fusionner ces deux membres ?",
+      "mergeConfirmDescription": "Toutes les données liées du membre secondaire seront transférées vers le membre principal. Cette action ne peut pas être annulée depuis l'interface.",
+      "mergeConfirmDescriptionWithPortalWarning": "Les deux membres ont un compte portail — celui du membre secondaire sera désactivé. Toutes les autres données liées seront transférées vers le membre principal. Cette action ne peut pas être annulée depuis l'interface.",
+      "mergeConfirmDescriptionAdoptsPortal": "Le compte portail du membre secondaire sera repris par le membre principal. Toutes les autres données liées seront transférées. Cette action ne peut pas être annulée depuis l'interface.",
+      "mergeSuccess": "{count, plural, =0 {Fusion effectuée} one {Fusion effectuée — 1 élément transféré} other {Fusion effectuée — # éléments transférés}}",
+      "mergeError": "Erreur lors de la fusion",
+      "relatedDataEmpty": "Aucune donnée liée sur l'un ou l'autre membre."
+    },
+    "backoffice": {
+      "title": "Doublons de membres",
+      "subtitle": "Doublons potentiels détectés dans toutes les associations.",
+      "columns": {
+        "association": "Association"
+      },
+      "changeAssociation": "Changer d'association",
+      "associationSearchPlaceholder": "Rechercher une association…",
+      "typeToSearch": "Tapez pour rechercher…",
+      "loading": "Chargement…",
+      "noResults": "Aucun résultat.",
+      "scanAction": "Scanner"
+    }
   }
 }

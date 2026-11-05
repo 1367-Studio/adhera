@@ -671,6 +671,8 @@ model Association {
   pricingOffer                  PricingOffer?
   controlAlerts                 MembreControlAlert[]
   erasureRequests               ErasureRequest[]
+  membreDuplicateMatches        MembreDuplicateMatch[]
+  membreMergeLogs               MembreMergeLog[]
   boutiqueResponsable           User?                          @relation("BoutiqueResponsable", fields: [boutiqueResponsableId], references: [id], onDelete: SetNull)
   donResponsable                User?                          @relation("DonResponsable", fields: [donResponsableId], references: [id], onDelete: SetNull)
 
@@ -775,6 +777,9 @@ model User {
   resolvedControlAlerts    MembreControlAlert[]
   erasureRequestsMade      ErasureRequest[]       @relation("ErasureRequestedBy")
   erasureRequestsHeld      ErasureRequest[]       @relation("ErasureHeldBy")
+  dismissedDuplicateMatches MembreDuplicateMatch[]
+  membreMergesPerformed    MembreMergeLog[]
+  membresMerged            Membre[]               @relation("MembreMergedBy")
   boutiqueResponsableFor   Association[]          @relation("BoutiqueResponsable")
   boutiqueCommandesCreated BoutiqueCommande[]     @relation("BoutiqueCommandeCreatedBy")
   donsCreatedManually      Don[]
@@ -921,6 +926,16 @@ model Membre {
   secondGuardianName  String?
   secondGuardianPhone String?
 
+  // Set when an admin merges this Membre into another one (see src/lib/membre-merge.ts).
+  // mergedIntoId points at the surviving record — this row is never hard-deleted, only
+  // soft-deleted via deletedAt (set in the same operation) so every historical row that
+  // couldn't be reassigned because of a unique-constraint collision (e.g. a Cotisation
+  // for a year the primary already has) stays intact and queryable here. Null for every
+  // Membre that has never been merged away.
+  mergedIntoId String?
+  mergedAt     DateTime?
+  mergedById   String?
+
   association              Association               @relation(fields: [associationId], references: [id])
   user                     User?                     @relation(fields: [userId], references: [id])
   type                     MembreType?               @relation(fields: [typeId], references: [id])
@@ -928,6 +943,9 @@ model Membre {
   adhesionCompletionForm   MembershipForm?           @relation("MembreAdhesionCompletionForm", fields: [adhesionCompletionFormId], references: [id], onDelete: SetNull)
   responsable              Membre?                   @relation("MembreResponsable", fields: [responsableId], references: [id], onDelete: SetNull)
   dependants               Membre[]                  @relation("MembreResponsable")
+  mergedInto               Membre?                   @relation("MembreMergedInto", fields: [mergedIntoId], references: [id], onDelete: SetNull)
+  mergedFrom               Membre[]                  @relation("MembreMergedInto")
+  mergedBy                 User?                     @relation("MembreMergedBy", fields: [mergedById], references: [id], onDelete: SetNull)
   cotisations              Cotisation[]
   participations           Participation[]
   actualiteRecipients      ActualiteRecipient[]
@@ -945,10 +963,13 @@ model Membre {
   cotisationSubscription   CotisationSubscription?
   controlAlert             MembreControlAlert?
   erasureRequests          ErasureRequest[]
+  duplicateMatchesAsA      MembreDuplicateMatch[]    @relation("MembreDuplicateMatchA")
+  duplicateMatchesAsB      MembreDuplicateMatch[]    @relation("MembreDuplicateMatchB")
 
   @@index([associationId, deletedAt])
   @@index([associationId, status])
   @@index([associationId, externalId])
+  @@index([associationId, mergedIntoId])
 }
 
 model Evenement {
@@ -2286,6 +2307,73 @@ model ErasureRequest {
 
   @@index([associationId, status])
   @@index([membreId])
+}
+
+enum MembreDuplicateMatchStatus {
+  PENDING
+  DISMISSED
+  MERGED
+}
+
+// A candidate pair of Membre records that look like the same person (see
+// src/lib/membre-duplicates.ts) — raised by an on-demand scan, never automatically merged.
+// membreAId/membreBId are canonically ordered (A < B by id string compare) so a rescan can
+// upsert on @@unique([membreAId, membreBId]) instead of creating a reversed duplicate row.
+model MembreDuplicateMatch {
+  id              String                     @id @default(cuid())
+  associationId   String
+  membreAId       String
+  membreBId       String
+  // "EMAIL" and/or "NAME" — union of every criterion that has ever matched across rescans.
+  matchedFields   String[]
+  status          MembreDuplicateMatchStatus @default(PENDING)
+  firstDetectedAt DateTime                   @default(now())
+  // Bumped by every scan that still finds this pair — lets the detection sweep tell "still a
+  // candidate" apart from "no longer matches, stale" without deleting history.
+  lastSeenAt      DateTime                   @default(now())
+  dismissedAt     DateTime?
+  dismissedById   String?
+  // True when a rescan closed this row itself (no longer matches, or the other side was
+  // merged away) rather than an admin clicking "Ignorer" — same convention as
+  // MembreControlAlert.autoResolved.
+  autoDismissed   Boolean                    @default(false)
+  createdAt       DateTime                   @default(now())
+  updatedAt       DateTime                   @updatedAt
+
+  association Association @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  membreA     Membre      @relation("MembreDuplicateMatchA", fields: [membreAId], references: [id], onDelete: Cascade)
+  membreB     Membre      @relation("MembreDuplicateMatchB", fields: [membreBId], references: [id], onDelete: Cascade)
+  dismissedBy User?       @relation(fields: [dismissedById], references: [id], onDelete: SetNull)
+
+  @@unique([membreAId, membreBId])
+  @@index([associationId, status])
+}
+
+// Audit trail of a completed Membre merge (see src/lib/membre-merge.ts) — the merged-away
+// Membre itself stays in the database (soft-deleted, mergedIntoId set), so this log isn't
+// needed to recover data, only to answer "who merged what, and what got left behind" without
+// re-deriving it from mergedIntoId pointers scattered across every related table.
+model MembreMergeLog {
+  id                 String   @id @default(cuid())
+  associationId      String
+  primaryMembreId    String
+  secondaryMembreId  String
+  performedById      String
+  // { fieldName: "PRIMARY" | "SECONDARY" } — which side's value won for each scalar field
+  // that differed between the two records.
+  fieldResolutions   Json
+  // { "cotisations": 3, "dons": 1, ... } — rows reassigned to the primary, per relation.
+  relationCounts     Json
+  // [{ table, id, reason }] — rows left attached to the (now soft-deleted) secondary because
+  // reassigning them would have collided with a unique constraint on the primary's side.
+  conflicts          Json
+  createdAt          DateTime @default(now())
+
+  association Association @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  performedBy User        @relation(fields: [performedById], references: [id])
+
+  @@index([associationId])
+  @@index([primaryMembreId])
 }
 
 model Actualite {
