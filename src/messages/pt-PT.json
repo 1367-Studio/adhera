@@ -909,7 +909,18 @@
         "EXCEPTIONAL": "Excecional",
         "OTHER": "Outro",
         "IN_KIND": "Contribuições em espécie"
-      }
+      },
+      "accountingCodeFormwiseNote": "Subconta sugerida pela Formwise para rastreamento separado — não é um número oficial obrigatório.",
+      "suggestedAccounts": "Relatos sugeridos",
+      "seeOtherAccounts": "Ver as outras contas",
+      "description": "Descrição",
+      "descriptionPlaceholder": "Ex: Venda de bilhetes para uma atividade ou evento.",
+      "sectionAutoNote": "A secção é determinada automaticamente a partir da conta contabilística.",
+      "sectionManualNote": "Secção definida manualmente.",
+      "sectionUnverifiedNote": "Esta conta não é reconhecida — verifique a secção ou escolha-a entre as opções avançadas.",
+      "sectionToVerify": "Secção a verificar",
+      "advancedOptions": "Opções avançadas",
+      "revertToAutoSection": "De volta à secção automática"
     },
     "bankAccountForm": {
       "bankName": "Nome do banco",
@@ -1088,7 +1099,11 @@
         "updated": "Categoria atualizada",
         "deleted": "Categoria eliminada",
         "seeded": "{count, plural, one {# categoria inicializada} other {# categorias inicializadas}}"
-      }
+      },
+      "chooseTemplateTitle": "Escolha um tipo de categoria",
+      "customCategory": "Criar uma categoria personalizada",
+      "alreadyExists": "Já configurado",
+      "archivedReactivateHint": "Arquivado — clique para reativar"
     },
     "incomesView": {
       "title": "Receitas",

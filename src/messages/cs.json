@@ -909,7 +909,18 @@
         "EXCEPTIONAL": "Mimořádné",
         "OTHER": "Ostatní",
         "IN_KIND": "Věcné příspěvky"
-      }
+      },
+      "accountingCodeFormwiseNote": "Podúčet navržený Formwise pro samostatné sledování — není to povinné oficiální číslo.",
+      "suggestedAccounts": "Navrhované verze",
+      "seeOtherAccounts": "Viz ostatní zprávy",
+      "description": "Popis",
+      "descriptionPlaceholder": "Například: prodej vstupenek na aktivitu nebo akci.",
+      "sectionAutoNote": "Sekce určená automaticky z účetního účtu.",
+      "sectionManualNote": "Ručně definovaná sekce.",
+      "sectionUnverifiedNote": "Tento účet není rozpoznán — zkontrolujte sekci nebo jej vyberte z pokročilých možností.",
+      "sectionToVerify": "Sekce k ověření",
+      "advancedOptions": "Pokročilé možnosti",
+      "revertToAutoSection": "Zpět k automatické části"
     },
     "bankAccountForm": {
       "bankName": "Název banky",
@@ -1061,7 +1072,11 @@
         "updated": "Aktualizovaná kategorie",
         "deleted": "Kategorie odstraněna",
         "seeded": "{count, plural, one {# inicializovaná kategorie} other {# kategorie inicializované}}"
-      }
+      },
+      "chooseTemplateTitle": "Vyberte typ kategorie",
+      "customCategory": "Vytvořte vlastní kategorii",
+      "alreadyExists": "Již nakonfigurováno",
+      "archivedReactivateHint": "Archivováno — klikněte pro opětovnou aktivaci"
     },
     "incomesView": {
       "title": "Příjmy",

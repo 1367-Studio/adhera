@@ -909,7 +909,18 @@
         "EXCEPTIONAL": "Извънреден",
         "OTHER": "Друго",
         "IN_KIND": "Вноски в натура"
-      }
+      },
+      "accountingCodeFormwiseNote": "Подакаунт, предложен от Formwise за отделно проследяване — не е задължителен официален номер.",
+      "suggestedAccounts": "Предложени разкази",
+      "seeOtherAccounts": "Вижте другите разкази",
+      "description": "Описание",
+      "descriptionPlaceholder": "Например: Продажба на билети за дейност или събитие.",
+      "sectionAutoNote": "Секцията се определя автоматично от счетоводна сметка.",
+      "sectionManualNote": "Ръчно дефинирана секция.",
+      "sectionUnverifiedNote": "Този акаунт не е разпознат — проверете секцията или го изберете от разширените опции.",
+      "sectionToVerify": "Секция за проверка",
+      "advancedOptions": "Разширени опции",
+      "revertToAutoSection": "Връщаме се към автоматичната секция"
     },
     "bankAccountForm": {
       "bankName": "Име на банка",
@@ -1061,7 +1072,11 @@
         "updated": "Актуализирана категория",
         "deleted": "Категорията е изтрита",
         "seeded": "{count, plural, one {# инициализирана категория} other {# категории инициализирани}}"
-      }
+      },
+      "chooseTemplateTitle": "Изберете тип категория",
+      "customCategory": "Създайте персонализирана категория",
+      "alreadyExists": "Вече конфигурирано",
+      "archivedReactivateHint": "Архивирано — кликнете, за да активирате отново."
     },
     "incomesView": {
       "title": "Приходи",

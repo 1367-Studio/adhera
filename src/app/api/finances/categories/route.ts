@@ -2,6 +2,7 @@ import { NextResponse } from "next/server"
 import { Prisma } from "@prisma/client"
 import { prisma } from "@/lib/prisma/client"
 import { financeCategorySchema } from "@/lib/schemas"
+import { sectionForAccountCode } from "@/lib/finance/chart-of-accounts"
 import { writeActivityLog } from "@/lib/activity-log"
 import { withAdminAuth } from "@/lib/api-wrapper"
 
@@ -29,10 +30,15 @@ export const POST = withAdminAuth(async (req, ctx) => {
     return NextResponse.json({ error: parsed.error.issues }, { status: 422 })
   }
 
+  // Normal path never sends `section` at all — it's derived from the chosen account here
+  // (single source of truth: chart-of-accounts.ts). Only present when a user deliberately
+  // overrode it via the form's "Options avancées".
+  const section = parsed.data.section ?? sectionForAccountCode(parsed.data.accountingCode) ?? "OTHER"
+
   let category
   try {
     category = await prisma.financeCategory.create({
-      data: { ...parsed.data, associationId },
+      data: { ...parsed.data, associationId, section, description: parsed.data.description || null },
     })
   } catch (error) {
     // Either unique constraint (associationId, key) or (associationId, type, lower(name))

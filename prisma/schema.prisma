@@ -3058,6 +3058,10 @@ model FinanceCategory {
   // bucket to its real accountingCode/section without relying on free-text name matching.
   // Null on every custom category a treasurer creates by hand.
   key            String?
+  // Short French sentence explaining what to classify here — shown under the name in the
+  // Comptabilité > Catégories list. Pre-filled from DEFAULT_FINANCE_CATEGORIES for default
+  // categories; optional free text for a custom one.
+  description    String?
   section        FinanceSection      @default(OPERATING)
   isDefault      Boolean             @default(false)
   // Set instead of deleting a category that already has Income/Expense/BudgetLine/Boutique/

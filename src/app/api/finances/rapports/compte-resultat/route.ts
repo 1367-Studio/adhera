@@ -2,7 +2,7 @@ import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma/client"
 import { withAdminAuth } from "@/lib/api-wrapper"
 import { computeIncomeStatementPeriod, findPreviousExercice, reconcileCustomCategoryLines } from "@/lib/finance/income-statement"
-import { ensureDefaultFinanceCategories } from "@/lib/finance/default-categories"
+import { ensureDefaultFinanceCategories } from "@/lib/finance/ensure-default-categories"
 
 // ?exerciceId — defaults to the most recent exercice (open or not) when omitted, mirroring
 // how the exercices list itself already sorts (startDate asc, so the last entry is latest).

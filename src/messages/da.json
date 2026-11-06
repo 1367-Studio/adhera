@@ -909,7 +909,18 @@
         "EXCEPTIONAL": "Ekstraordinært",
         "OTHER": "Andet",
         "IN_KIND": "Bidrag i naturalier"
-      }
+      },
+      "accountingCodeFormwiseNote": "Underkonto foreslået af Formwise til separat sporing — ikke et obligatorisk officielt nummer.",
+      "suggestedAccounts": "Foreslåede konti",
+      "seeOtherAccounts": "Se de andre beretninger",
+      "description": "Beskrivelse",
+      "descriptionPlaceholder": "F.eks.: Billetsalg til en aktivitet eller begivenhed.",
+      "sectionAutoNote": "Afsnit automatisk fastlagt fra regnskabskontoen.",
+      "sectionManualNote": "Manuelt defineret sektion.",
+      "sectionUnverifiedNote": "Denne konto genkendes ikke — tjek sektionen eller vælg den fra de avancerede muligheder.",
+      "sectionToVerify": "Afsnit for at tjekke",
+      "advancedOptions": "Avancerede muligheder",
+      "revertToAutoSection": "Tilbage til den automatiske sektion"
     },
     "bankAccountForm": {
       "bankName": "Banknavn",
@@ -1061,7 +1072,11 @@
         "updated": "Opdateret kategori",
         "deleted": "Kategori slettet",
         "seeded": "{count, plural, one {# initialiseret kategori} other {# initialiserede kategorier}}"
-      }
+      },
+      "chooseTemplateTitle": "Vælg en kategoritype",
+      "customCategory": "Opret en brugerdefineret kategori",
+      "alreadyExists": "Allerede konfigureret",
+      "archivedReactivateHint": "Arkiveret — klik for at genaktivere"
     },
     "incomesView": {
       "title": "Indtægter",

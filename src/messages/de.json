@@ -909,7 +909,18 @@
         "EXCEPTIONAL": "Außerordentlich",
         "OTHER": "Sonstiges",
         "IN_KIND": "Sachleistungen"
-      }
+      },
+      "accountingCodeFormwiseNote": "Von Formwise vorgeschlagenes Unterkonto für eine separate Verfolgung – keine verpflichtende offizielle Nummer.",
+      "suggestedAccounts": "Vorgeschlagene Accounts",
+      "seeOtherAccounts": "Siehe die anderen Berichte",
+      "description": "Beschreibung",
+      "descriptionPlaceholder": "Zum Beispiel: Ticketverkäufe für eine Aktivität oder Veranstaltung.",
+      "sectionAutoNote": "Abschnitt automatisch aus dem Buchhaltungskonto ermittelt.",
+      "sectionManualNote": "Manuell definierter Abschnitt.",
+      "sectionUnverifiedNote": "Dieses Konto wird nicht erkannt – prüfen Sie den Abschnitt oder wählen Sie es aus den erweiterten Optionen aus.",
+      "sectionToVerify": "Abschnitt zu überprüfen",
+      "advancedOptions": "Erweiterte Optionen",
+      "revertToAutoSection": "Zurück zum automatischen Abschnitt"
     },
     "bankAccountForm": {
       "bankName": "Bankname",
@@ -1061,7 +1072,11 @@
         "updated": "Aktualisierte Kategorie",
         "deleted": "Kategorie gelöscht",
         "seeded": "{count, plural, one {# initialisierte Kategorie} other {# initialisierte Kategorien}}"
-      }
+      },
+      "chooseTemplateTitle": "Wähle einen Kategorietyp",
+      "customCategory": "Erstelle einer benutzerdefinierten Kategorie",
+      "alreadyExists": "Bereits konfiguriert",
+      "archivedReactivateHint": "Archiviert — klicken Sie zum Reaktivieren"
     },
     "incomesView": {
       "title": "Einnahmen",

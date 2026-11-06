@@ -909,7 +909,18 @@
         "EXCEPTIONAL": "Excepțional",
         "OTHER": "Altele",
         "IN_KIND": "Contribuții în natură"
-      }
+      },
+      "accountingCodeFormwiseNote": "Subcont sugerat de Formwise pentru urmărire separată — nu un număr oficial obligatoriu.",
+      "suggestedAccounts": "Relatări sugerate",
+      "seeOtherAccounts": "Vezi celelalte relatări",
+      "description": "Descriere",
+      "descriptionPlaceholder": "Ex: Vânzarea biletelor pentru o activitate sau un eveniment.",
+      "sectionAutoNote": "Secțiunea este determinată automat din contul contabil.",
+      "sectionManualNote": "Secțiune definită manual.",
+      "sectionUnverifiedNote": "Acest cont nu este recunoscut — verifică secțiunea sau alege-l din opțiunile avansate.",
+      "sectionToVerify": "Secțiune de verificat",
+      "advancedOptions": "Opțiuni avansate",
+      "revertToAutoSection": "Înapoi la secțiunea automată"
     },
     "bankAccountForm": {
       "bankName": "Nume al băncii",
@@ -1061,7 +1072,11 @@
         "updated": "Categorie actualizată",
         "deleted": "Categorie ștearsă",
         "seeded": "{count, plural, one {# categorie inițializată} other {# categorii inițializate}}"
-      }
+      },
+      "chooseTemplateTitle": "Alege un tip de categorie",
+      "customCategory": "Creează o categorie personalizată",
+      "alreadyExists": "Deja configurat",
+      "archivedReactivateHint": "Arhivat — click pentru a reactiva"
     },
     "incomesView": {
       "title": "Venituri",
