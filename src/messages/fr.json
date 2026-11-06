@@ -1547,7 +1547,8 @@
       "discountCodeRemove": "Retirer",
       "discountCodeInvalid": "Ce code n'est pas valide.",
       "discountCodeNotApplicable": "Ce code ne s'applique pas au tarif sélectionné.",
-      "discountAmountLabel": "Réduction :"
+      "discountAmountLabel": "Réduction :",
+      "fieldRequired": "Ce champ est requis."
     },
     "scanner": {
       "openButton": "Scanner les billets",
@@ -3200,7 +3201,8 @@
       "submittedTitle": "Merci pour votre don !",
       "submittedWithEmail": "Un e-mail de confirmation vous a été envoyé.",
       "toastCancelled": "Paiement annulé.",
-      "errorNetwork": "Erreur réseau. Réessayez."
+      "errorNetwork": "Erreur réseau. Réessayez.",
+      "fieldRequired": "Ce champ est requis."
     },
     "cancelSubscription": {
       "invalidLink": "Ce lien d'annulation est invalide.",

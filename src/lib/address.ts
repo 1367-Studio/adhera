@@ -174,22 +174,24 @@ const ADDRESS_PAYLOAD_KEYS = ["address", "addressStreet", "addressComplement", "
 
 // Le champ « Adresse » d'une matrice de champs standards (adhésion, don, événement) est
 // satisfait de deux façons : par une adresse structurée complète (voie + code postal +
-// ville — exactement ce que le formulaire public rend obligatoire), ou par la seule
+// ville + pays — exactement ce que le formulaire public rend obligatoire), ou par la seule
 // adresse héritée en texte libre — un onglet resté ouvert sur l'ancien formulaire ne poste
-// que celle-là et ne doit pas se voir refuser. Le complément et le pays ne comptent jamais :
-// ils restent facultatifs des deux côtés. Un seul endroit pour cette règle plutôt qu'une
-// copie par route : les routes qui la réimplémentaient localement avaient fini par diverger
-// (voir l'historique de ce fichier).
+// que celle-là et ne doit pas se voir refuser. Le complément ne compte jamais : il reste
+// facultatif des deux côtés. Un seul endroit pour cette règle plutôt qu'une copie par
+// route : les routes qui la réimplémentaient localement avaient fini par diverger (voir
+// l'historique de ce fichier).
 export type SubmittedAddress = {
   address?:       string
   addressStreet?: string
   postalCode?:    string
   city?:          string
+  country?:       string
 }
 
 export function addressIsFilled(submitted: SubmittedAddress): boolean {
   const hasStructuredAddress =
-    !!submitted.addressStreet?.trim() && !!submitted.postalCode?.trim() && !!submitted.city?.trim()
+    !!submitted.addressStreet?.trim() && !!submitted.postalCode?.trim() &&
+    !!submitted.city?.trim() && !!submitted.country?.trim()
   return hasStructuredAddress || !!submitted.address?.trim()
 }
 

@@ -1522,7 +1522,8 @@
       "discountCodeRemove": "Pašalinti",
       "discountCodeInvalid": "Šis kodas yra neteisingas.",
       "discountCodeNotApplicable": "Šis kodas netaikomas pasirinktam bilietui.",
-      "discountAmountLabel": "Sumažinimas:"
+      "discountAmountLabel": "Sumažinimas:",
+      "fieldRequired": "Šis laukas yra privalomas."
     },
     "scanner": {
       "openButton": "Skenuoti bilietus",
@@ -3120,7 +3121,8 @@
       "submittedTitle": "Ačiū už jūsų auką!",
       "submittedWithEmail": "Jums išsiųstas patvirtinimo el. laiškas.",
       "toastCancelled": "Mokėjimas atšauktas.",
-      "errorNetwork": "Tinklo klaida. Pabandyk dar kartą."
+      "errorNetwork": "Tinklo klaida. Pabandyk dar kartą.",
+      "fieldRequired": "Šis laukas yra privalomas."
     },
     "cancelSubscription": {
       "invalidLink": "Ši atšaukimo nuoroda yra neteisinga.",

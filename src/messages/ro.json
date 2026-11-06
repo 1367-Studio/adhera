@@ -1522,7 +1522,8 @@
       "discountCodeRemove": "Îndepărtează",
       "discountCodeInvalid": "Acest cod este invalid.",
       "discountCodeNotApplicable": "Acest cod nu se aplică tarifului selectat.",
-      "discountAmountLabel": "Reducere:"
+      "discountAmountLabel": "Reducere:",
+      "fieldRequired": "Acest domeniu este obligatoriu."
     },
     "scanner": {
       "openButton": "Bilete de scanare",
@@ -3120,7 +3121,8 @@
       "submittedTitle": "Mulțumesc pentru donație!",
       "submittedWithEmail": "Ți-a fost trimis un email de confirmare.",
       "toastCancelled": "Plata a fost anulată.",
-      "errorNetwork": "Eroare de rețea. Încearcă din nou."
+      "errorNetwork": "Eroare de rețea. Încearcă din nou.",
+      "fieldRequired": "Acest domeniu este obligatoriu."
     },
     "cancelSubscription": {
       "invalidLink": "Acest link de anulare este invalid.",

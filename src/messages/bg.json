@@ -1522,7 +1522,8 @@
       "discountCodeRemove": "Премахване",
       "discountCodeInvalid": "Този код е невалиден.",
       "discountCodeNotApplicable": "Този код не се прилага за избраната тарифа.",
-      "discountAmountLabel": "Редукция:"
+      "discountAmountLabel": "Редукция:",
+      "fieldRequired": "Тази област е задължителна."
     },
     "scanner": {
       "openButton": "Сканиращи билети",
@@ -3120,7 +3121,8 @@
       "submittedTitle": "Благодарим ви за дарението!",
       "submittedWithEmail": "Изпратен ви е имейл за потвърждение.",
       "toastCancelled": "Плащането е отменено.",
-      "errorNetwork": "Мрежова грешка. Опитай пак."
+      "errorNetwork": "Мрежова грешка. Опитай пак.",
+      "fieldRequired": "Тази област е задължителна."
     },
     "cancelSubscription": {
       "invalidLink": "Този линк за анулиране е невалиден.",

@@ -1522,7 +1522,8 @@
       "discountCodeRemove": "Bain",
       "discountCodeInvalid": "Tá an cód seo neamhbhailí.",
       "discountCodeNotApplicable": "Ní bhaineann an cód seo leis an táille roghnaithe.",
-      "discountAmountLabel": "Laghdú:"
+      "discountAmountLabel": "Laghdú:",
+      "fieldRequired": "Tá an réimse seo riachtanach."
     },
     "scanner": {
       "openButton": "Ticéid scanadh",
@@ -3120,7 +3121,8 @@
       "submittedTitle": "Dúradh Is Maith Liom É Go raibh maith agat!",
       "submittedWithEmail": "Tá ríomhphost dearbhaithe seolta chugat.",
       "toastCancelled": "Cealaíodh an íocaíocht.",
-      "errorNetwork": "Earráid líonra. Bain triail as arís."
+      "errorNetwork": "Earráid líonra. Bain triail as arís.",
+      "fieldRequired": "Tá an réimse seo riachtanach."
     },
     "cancelSubscription": {
       "invalidLink": "Tá an nasc cealaithe seo neamhbhailí.",
