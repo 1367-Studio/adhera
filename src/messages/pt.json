@@ -816,9 +816,9 @@
         "title": "Mensalidades",
         "description": "Acompanhe as mensalidades anuais de cada membro: quem pagou, quem ainda precisa ser lembrado. Defina o valor e exporte o acompanhamento quando quiser."
       },
-      "tresorerie": {
-        "title": "Tesouraria",
-        "description": "Registre receitas e despesas por categoria para acompanhar o saldo da associação. Adicione uma operação com o botão dedicado no topo da página."
+      "finances": {
+        "title": "Finanças",
+        "description": "Acompanhe receitas e despesas, gerencie suas contas e veja relatórios financeiros. Abra esta seção para visão geral, transações, contabilidade e relatórios."
       },
       "dons": {
         "title": "Doações",

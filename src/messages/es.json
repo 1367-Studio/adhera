@@ -803,9 +803,9 @@
         "title": "Cuotas",
         "description": "Siga las cuotas anuales de cada miembro: quién ha pagado, a quién le queda recordar. Defina el importe y exporte el seguimiento cuando lo desee."
       },
-      "tresorerie": {
-        "title": "Tesorería",
-        "description": "Registre ingresos y gastos por categoría para seguir el saldo de la asociación. Añada una operación con el botón dedicado en la parte superior de la página."
+      "finances": {
+        "title": "Finanzas",
+        "description": "Registra ingresos y gastos, gestiona tus cuentas y consulta informes financieros. Abre esta sección para ver el resumen, las transacciones, la contabilidad y los informes."
       },
       "dons": {
         "title": "Donaciones",

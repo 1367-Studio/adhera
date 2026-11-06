@@ -803,9 +803,9 @@
         "title": "Quotas",
         "description": "Acompanhe as quotas anuais de cada membro: quem pagou, quem ainda precisa de ser lembrado. Defina o valor e exporte o acompanhamento quando quiser."
       },
-      "tresorerie": {
-        "title": "Tesouraria",
-        "description": "Registe receitas e despesas por categoria para acompanhar o saldo da associação. Adicione um movimento com o botão dedicado no topo da página."
+      "finances": {
+        "title": "Finanças",
+        "description": "Acompanhe receitas e despesas, faça a gestão das suas contas e consulte relatórios financeiros. Abra esta secção para a visão geral, transações, contabilidade e relatórios."
       },
       "dons": {
         "title": "Doações",

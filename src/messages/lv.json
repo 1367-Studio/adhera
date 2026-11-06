@@ -803,9 +803,9 @@
         "title": "Ieguldījums",
         "description": "Sekojiet katra biedra gada biedra maksām: kurš ir samaksājis, kurš vēl jāatsauc. Definējiet summu un eksportējiet turpmāko informāciju jebkurā laikā, kad vēlaties."
       },
-      "tresorerie": {
-        "title": "Naudas plūsma",
-        "description": "Uzskaitiet ienākumus un izdevumus pēc kategorijām, lai sekotu asociācijas bilancei. Pievienojiet darījumu ar īpašu pogu lapas augšpusē."
+      "finances": {
+        "title": "Finanses",
+        "description": "Sekojiet ienākumiem un izdevumiem, pārvaldiet savus kontus un skatiet finanšu pārskatus. Atveriet šo sadaļu, lai redzētu pārskatu, darījumus, grāmatvedību un atskaites."
       },
       "dons": {
         "title": "Ziedojumi",
