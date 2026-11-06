@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma/client"
 import { withAdminAuth } from "@/lib/api-wrapper"
 import { fetchModules } from "@/lib/auth/require-module"
 import { hasAccess } from "@/lib/permissions"
+import { type CategoryRow, resolveIncomeCategory } from "@/lib/finance/category-resolution"
 
 function monthLabel(d: Date, locale: string): string {
   return d.toLocaleDateString(locale, { month: "short" }).replace(".", "")
@@ -27,7 +28,7 @@ export const GET = withAdminAuth(async (_req, ctx) => {
   const yearEnd     = new Date(`${year + 1}-01-01`)
   const sixMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 5, 1)
 
-  const [cotisationsByStatus, incomeByCategory, monthlyIncomes, monthlyExpenses] = await Promise.all([
+  const [cotisationsByStatus, incomeRowsForCategories, categories, monthlyIncomes, monthlyExpenses] = await Promise.all([
     // ANNULEE excluded — it was never really "collectable" for this year (consistent with
     // it being excluded from remaining-balance/pay-now displays elsewhere), and there's no
     // 6th validated categorical hue for it to render as here anyway (see finance-palette.ts).
@@ -43,11 +44,26 @@ export const GET = withAdminAuth(async (_req, ctx) => {
         })
       : Promise.resolve([]),
 
+    // A plain `groupBy(categoryId)` would miss every Income row whose category was never
+    // written at creation time (e.g. a manual don encaissement or ticket payment) and only
+    // resolves via its origin id (donId/participationId/commandeId/...) — see
+    // resolveIncomeCategory in category-resolution.ts, the same logic the Compte de résultat
+    // and Orçamento reports rely on so this chart agrees with them instead of dumping most of
+    // the year's recettes into "Non catégorisé".
     canSeeFinances
-      ? prisma.income.groupBy({
-          by: ["categoryId"],
+      ? prisma.income.findMany({
           where: { associationId, status: "PAID", date: { gte: yearStart, lt: yearEnd } },
-          _sum: { amount: true },
+          select: {
+            amount: true, categoryId: true, cotisationPaymentId: true, donId: true,
+            commandeId: true, participationId: true, facturePaymentId: true, description: true,
+          },
+        })
+      : Promise.resolve([]),
+
+    canSeeFinances
+      ? prisma.financeCategory.findMany({
+          where:  { associationId },
+          select: { id: true, key: true, name: true, accountingCode: true, section: true, isDefault: true, type: true },
         })
       : Promise.resolve([]),
 
@@ -66,15 +82,24 @@ export const GET = withAdminAuth(async (_req, ctx) => {
       : Promise.resolve([]),
   ])
 
-  // Category names for the income breakdown — fetched separately since groupBy can't join.
-  const categoryIds = incomeByCategory.map(c => c.categoryId).filter((id): id is string => !!id)
-  const categories  = categoryIds.length
-    ? await prisma.financeCategory.findMany({ where: { id: { in: categoryIds } }, select: { id: true, name: true } })
-    : []
-  const categoryName = (id: string | null) => (id && categories.find(c => c.id === id)?.name) || t("uncategorized")
+  const categoriesById  = new Map(categories.map(c => [c.id, c as CategoryRow]))
+  const categoriesByKey = new Map(categories.filter(c => c.key).map(c => [c.key as string, c as CategoryRow]))
 
-  const incomeCategoryRows = incomeByCategory
-    .map(c => ({ name: categoryName(c.categoryId), amount: Number(c._sum.amount ?? 0) }))
+  // Bucketed by a stable id, NOT by display name — two distinct categories can share the same
+  // name (nothing stops a treasurer renaming a custom category to match another one's label),
+  // and grouping by name would silently merge their amounts into one bar. Mirrors the
+  // `mapKey` pattern in income-statement.ts's getOrCreateLine for the same reason.
+  const incomeByCategoryId = new Map<string, { name: string; amount: number }>()
+  for (const row of incomeRowsForCategories) {
+    const resolved = resolveIncomeCategory(row, categoriesById, categoriesByKey)
+    const bucketKey = resolved ? (resolved.categoryId ?? `virtual:${resolved.key}`) : "uncategorized"
+    const name = resolved?.name ?? t("uncategorized")
+    const existing = incomeByCategoryId.get(bucketKey)
+    if (existing) existing.amount += Number(row.amount)
+    else incomeByCategoryId.set(bucketKey, { name, amount: Number(row.amount) })
+  }
+
+  const incomeCategoryRows = Array.from(incomeByCategoryId.values())
     .filter(c => c.amount > 0)
     .sort((a, b) => b.amount - a.amount)
     .slice(0, 6)
