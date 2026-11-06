@@ -1537,7 +1537,8 @@
       "discountCodeRemove": "Odstranit",
       "discountCodeInvalid": "Tento kód je neplatný.",
       "discountCodeNotApplicable": "Tento kód se na vybrané jízdné nevztahuje.",
-      "discountAmountLabel": "Redukce:"
+      "discountAmountLabel": "Redukce:",
+      "fieldRequired": "Tento obor je povinný."
     },
     "scanner": {
       "openButton": "Skenovat vstupenky",
@@ -3135,7 +3136,8 @@
       "submittedTitle": "Děkujeme za váš příspěvek!",
       "submittedWithEmail": "Byl vám zaslán potvrzovací e-mail.",
       "toastCancelled": "Platba zrušena.",
-      "errorNetwork": "Chyba sítě. Zkus to znovu."
+      "errorNetwork": "Chyba sítě. Zkus to znovu.",
+      "fieldRequired": "Tento obor je povinný."
     },
     "cancelSubscription": {
       "invalidLink": "Tento odkaz na zrušení je neplatný.",

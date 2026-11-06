@@ -1537,7 +1537,8 @@
       "discountCodeRemove": "Fjern",
       "discountCodeInvalid": "Denne kode er ugyldig.",
       "discountCodeNotApplicable": "Denne kode gælder ikke for den valgte billet.",
-      "discountAmountLabel": "Reduktion:"
+      "discountAmountLabel": "Reduktion:",
+      "fieldRequired": "Dette felt er påkrævet."
     },
     "scanner": {
       "openButton": "Scan billetter",
@@ -3135,7 +3136,8 @@
       "submittedTitle": "Tak for din donation!",
       "submittedWithEmail": "En bekræftelsesmail er blevet sendt til dig.",
       "toastCancelled": "Betaling annulleret.",
-      "errorNetwork": "Netværksfejl. Prøv igen."
+      "errorNetwork": "Netværksfejl. Prøv igen.",
+      "fieldRequired": "Dette felt er påkrævet."
     },
     "cancelSubscription": {
       "invalidLink": "Dette annulleringslink er ugyldigt.",

@@ -1537,7 +1537,8 @@
       "discountCodeRemove": "Eemalda",
       "discountCodeInvalid": "See kood on kehtetu.",
       "discountCodeNotApplicable": "See kood ei kehti valitud piletile.",
-      "discountAmountLabel": "Vähendamine:"
+      "discountAmountLabel": "Vähendamine:",
+      "fieldRequired": "See väli on kohustuslik."
     },
     "scanner": {
       "openButton": "Piletite skaneerimine",
@@ -3135,7 +3136,8 @@
       "submittedTitle": "Aitäh annetuse eest!",
       "submittedWithEmail": "Sulle on saadetud kinnituskiri.",
       "toastCancelled": "Makse tühistatud.",
-      "errorNetwork": "Võrguviga. Proovi uuesti."
+      "errorNetwork": "Võrguviga. Proovi uuesti.",
+      "fieldRequired": "See väli on kohustuslik."
     },
     "cancelSubscription": {
       "invalidLink": "See tühistamislink on kehtetu.",

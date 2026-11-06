@@ -1537,7 +1537,8 @@
       "discountCodeRemove": "Entfernen",
       "discountCodeInvalid": "Dieser Code ist ungültig.",
       "discountCodeNotApplicable": "Dieser Code gilt nicht für den ausgewählten Fahrpreis.",
-      "discountAmountLabel": "Reduktion:"
+      "discountAmountLabel": "Reduktion:",
+      "fieldRequired": "Dieses Feld ist verpflichtend."
     },
     "scanner": {
       "openButton": "Tickets scannen",
@@ -3135,7 +3136,8 @@
       "submittedTitle": "Vielen Dank für Ihre Spende!",
       "submittedWithEmail": "Ihnen wurde eine Bestätigungs-E-Mail zugesandt.",
       "toastCancelled": "Zahlung storniert.",
-      "errorNetwork": "Netzwerkfehler. Versuchen Sie es erneut."
+      "errorNetwork": "Netzwerkfehler. Versuchen Sie es erneut.",
+      "fieldRequired": "Dieses Feld ist verpflichtend."
     },
     "cancelSubscription": {
       "invalidLink": "Dieser Kündigungslink ist ungültig.",

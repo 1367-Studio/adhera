@@ -133,7 +133,7 @@ export default function CompletarAdesaoPage() {
 
   const selectedTier = data?.tiers.find(t => t.id === tierId)
   const addressRequired = data?.fieldAddress === "REQUIRED"
-  const addressFilled = !!addressValues.addressStreet.trim() && !!addressValues.postalCode.trim() && !!addressValues.city.trim()
+  const addressFilled = !!addressValues.addressStreet.trim() && !!addressValues.postalCode.trim() && !!addressValues.city.trim() && !!addressValues.country.trim()
 
   // Empty editor markup or a "required" flag with nothing to accept must not block the visitor.
   const requiresTermsAcceptance = !!data && publicFormTerms({
@@ -316,7 +316,13 @@ export default function CompletarAdesaoPage() {
           {data.fieldAddress !== "HIDDEN" && (
             <AddressFields
               value={addressValues} onChange={patch => setAddressValues(v => ({ ...v, ...patch }))}
-              required={addressRequired} errors={touched.address && addressRequired && !addressFilled ? { addressStreet: "Requis" } : undefined}
+              required={addressRequired}
+              errors={touched.address && addressRequired && !addressFilled ? {
+                addressStreet: !addressValues.addressStreet.trim() ? "Requis" : undefined,
+                postalCode:    !addressValues.postalCode.trim()    ? "Requis" : undefined,
+                city:          !addressValues.city.trim()          ? "Requis" : undefined,
+                country:       !addressValues.country.trim()       ? "Requis" : undefined,
+              } : undefined}
             />
           )}
           {data.fieldBirthDate !== "HIDDEN" && (

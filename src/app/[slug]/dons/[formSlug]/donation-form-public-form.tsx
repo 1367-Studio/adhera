@@ -157,6 +157,12 @@ function DonationFormPublicFormInner({ slug, formSlug, legalDocuments }: Props) 
   const acceptedLegalRevisionIds = legalAccepted ? legalDocuments.map(document => document.revisionId) : []
   const [answers, setAnswers]       = useState<Record<string, AnswerValue>>({})
   const [website, setWebsite]       = useState("") // honeypot
+  // A disabled submit button never fires a native "please fill this field" prompt, and none
+  // of the fields below have their own blur handler — so without this, a missing required
+  // field (easy to miss on País/Pays, which sits last and looks least important) leaves the
+  // button permanently greyed out with no indication why. Revealed only after a failed
+  // submit attempt, same as the adhesion form's own showAllErrors.
+  const [showAllErrors, setShowAllErrors] = useState(false)
 
   // Restored once the form is loaded, so a tier, custom field or option it no longer offers is
   // dropped instead of being sent back to the server.
@@ -270,6 +276,18 @@ function DonationFormPublicFormInner({ slug, formSlug, legalDocuments }: Props) 
   const hasAnyPaymentMethod = !!form && (form.paymentEnabled || (selectedTier?.kind === "ONE_OFF" && offlineMethods.length > 0))
 
   const emailValid = (v: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)
+  const requiredError = (value: string, required: boolean) =>
+    required && !value.trim() && showAllErrors ? t("fieldRequired") : undefined
+  // AddressFields has no blur of its own (see requiredError above) — errors only appear once
+  // showAllErrors is set, same timing as every other field's.
+  const addressErrors = form?.fieldAddress === "REQUIRED" && showAllErrors
+    ? {
+        addressStreet: requiredError(addressValues.addressStreet, true),
+        postalCode:    requiredError(addressValues.postalCode,    true),
+        city:          requiredError(addressValues.city,          true),
+        country:       requiredError(addressValues.country,       true),
+      }
+    : undefined
   // Below Stripe's charge floor — mirrors the server check in checkout/route.ts. Only
   // applies online: a small cash/cheque/transfer gift has no such constraint.
   const belowMinimum = paymentMethod === "STRIPE" && amount > 0 && amount < MIN_DONATION_AMOUNT
@@ -306,9 +324,9 @@ function DonationFormPublicFormInner({ slug, formSlug, legalDocuments }: Props) 
     firstName.trim() && lastName.trim() && emailValid(email) &&
     (donorType !== "COMPANY" || (companyName.trim() && siret.trim())) &&
     // Une adresse « requise » est une adresse postale complète : la voie seule ne permet
-    // ni d'acheminer un courrier ni d'établir un reçu fiscal. Le complément et le pays
-    // restent facultatifs (voir AddressFields).
-    (form.fieldAddress   !== "REQUIRED" || (addressValues.addressStreet.trim() && addressValues.postalCode.trim() && addressValues.city.trim())) &&
+    // ni d'acheminer un courrier ni d'établir un reçu fiscal. Le complément reste
+    // facultatif (voir AddressFields).
+    (form.fieldAddress   !== "REQUIRED" || (addressValues.addressStreet.trim() && addressValues.postalCode.trim() && addressValues.city.trim() && addressValues.country.trim())) &&
     (form.fieldBirthDate !== "REQUIRED" || birthDate.trim()) &&
     (form.fieldPhone     !== "REQUIRED" || phone.trim()) &&
     (form.fieldMobile    !== "REQUIRED" || mobile.trim()) &&
@@ -554,36 +572,40 @@ function DonationFormPublicFormInner({ slug, formSlug, legalDocuments }: Props) 
               </div>
 
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                <FormField label={t("firstNameLabel")} placeholder={t("firstNamePlaceholder")} required value={firstName} onChange={e => setFirstName(e.target.value)} />
-                <FormField label={t("lastNameLabel")} placeholder={t("lastNamePlaceholder")} required value={lastName} onChange={e => setLastName(e.target.value)} />
+                <FormField label={t("firstNameLabel")} placeholder={t("firstNamePlaceholder")} required value={firstName} onChange={e => setFirstName(e.target.value)} error={requiredError(firstName, true)} />
+                <FormField label={t("lastNameLabel")} placeholder={t("lastNamePlaceholder")} required value={lastName} onChange={e => setLastName(e.target.value)} error={requiredError(lastName, true)} />
               </div>
               {donorType === "COMPANY" && (
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                  <FormField label={t("companyNameLabel")} placeholder={t("companyNamePlaceholder")} required value={companyName} onChange={e => setCompanyName(e.target.value)} />
-                  <FormField label={t("siretLabel")} placeholder={t("siretPlaceholder")} required value={siret} onChange={e => setSiret(e.target.value)} />
+                  <FormField label={t("companyNameLabel")} placeholder={t("companyNamePlaceholder")} required value={companyName} onChange={e => setCompanyName(e.target.value)} error={requiredError(companyName, true)} />
+                  <FormField label={t("siretLabel")} placeholder={t("siretPlaceholder")} required value={siret} onChange={e => setSiret(e.target.value)} error={requiredError(siret, true)} />
                 </div>
               )}
-              <FormField label={t("emailLabel")} type="email" placeholder={t("emailPlaceholder")} required value={email} onChange={e => setEmail(e.target.value)} />
+              <FormField
+                label={t("emailLabel")} type="email" placeholder={t("emailPlaceholder")} required value={email} onChange={e => setEmail(e.target.value)}
+                error={showAllErrors && !emailValid(email) ? t("fieldRequired") : undefined}
+              />
 
               {form.fieldAddress !== "HIDDEN" && (
                 <AddressFields
                   value={addressValues}
                   onChange={patch => setAddressValues(previousValues => ({ ...previousValues, ...patch }))}
                   required={form.fieldAddress === "REQUIRED"}
+                  errors={addressErrors}
                 />
               )}
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 {form.fieldBirthDate !== "HIDDEN" && (
-                  <DateField label={t("birthDateLabel")} required={form.fieldBirthDate === "REQUIRED"} value={birthDate} onChange={setBirthDate} />
+                  <DateField label={t("birthDateLabel")} required={form.fieldBirthDate === "REQUIRED"} value={birthDate} onChange={setBirthDate} error={requiredError(birthDate, form.fieldBirthDate === "REQUIRED")} />
                 )}
                 {form.fieldGender !== "HIDDEN" && (
-                  <FormField label={t("genderLabel")} placeholder={t("genderPlaceholder")} required={form.fieldGender === "REQUIRED"} value={gender} onChange={e => setGender(e.target.value)} />
+                  <FormField label={t("genderLabel")} placeholder={t("genderPlaceholder")} required={form.fieldGender === "REQUIRED"} value={gender} onChange={e => setGender(e.target.value)} error={requiredError(gender, form.fieldGender === "REQUIRED")} />
                 )}
                 {form.fieldPhone !== "HIDDEN" && (
-                  <FormField label={t("phoneLabel")} placeholder={t("phonePlaceholder")} required={form.fieldPhone === "REQUIRED"} value={phone} onChange={e => setPhone(e.target.value)} />
+                  <FormField label={t("phoneLabel")} placeholder={t("phonePlaceholder")} required={form.fieldPhone === "REQUIRED"} value={phone} onChange={e => setPhone(e.target.value)} error={requiredError(phone, form.fieldPhone === "REQUIRED")} />
                 )}
                 {form.fieldMobile !== "HIDDEN" && (
-                  <FormField label={t("mobileLabel")} placeholder={t("mobilePlaceholder")} required={form.fieldMobile === "REQUIRED"} value={mobile} onChange={e => setMobile(e.target.value)} />
+                  <FormField label={t("mobileLabel")} placeholder={t("mobilePlaceholder")} required={form.fieldMobile === "REQUIRED"} value={mobile} onChange={e => setMobile(e.target.value)} error={requiredError(mobile, form.fieldMobile === "REQUIRED")} />
                 )}
               </div>
 
@@ -597,6 +619,7 @@ function DonationFormPublicFormInner({ slug, formSlug, legalDocuments }: Props) 
                   return Array.isArray(v) ? v : []
                 }
                 const setAnswer = (value: AnswerValue) => setAnswers(prev => ({ ...prev, [field.id]: value }))
+                const customFieldError = (filled: boolean) => field.required && !filled && showAllErrors ? t("fieldRequired") : undefined
 
                 if (field.type === "SELECT") return (
                   <SelectField
@@ -606,6 +629,7 @@ function DonationFormPublicFormInner({ slug, formSlug, legalDocuments }: Props) 
                     options={(field.options ?? []).map(o => ({ value: o, label: o }))}
                     value={stringValue()}
                     onValueChange={setAnswer}
+                    error={customFieldError(!!stringValue())}
                   />
                 )
                 if (field.type === "RADIO") return (
@@ -619,6 +643,7 @@ function DonationFormPublicFormInner({ slug, formSlug, legalDocuments }: Props) 
                         </label>
                       ))}
                     </div>
+                    {customFieldError(!!stringValue()) && <p className="text-xs text-destructive">{customFieldError(!!stringValue())}</p>}
                   </div>
                 )
                 if (field.type === "CHECKBOX_MULTI") return (
@@ -639,6 +664,7 @@ function DonationFormPublicFormInner({ slug, formSlug, legalDocuments }: Props) 
                         )
                       })}
                     </div>
+                    {customFieldError(arrayValue().length > 0) && <p className="text-xs text-destructive">{customFieldError(arrayValue().length > 0)}</p>}
                   </div>
                 )
                 return (
@@ -649,6 +675,7 @@ function DonationFormPublicFormInner({ slug, formSlug, legalDocuments }: Props) 
                     type={field.type === "NUMBER" ? "number" : "text"}
                     value={stringValue()}
                     onChange={e => setAnswer(e.target.value)}
+                    error={requiredError(stringValue(), field.required)}
                   />
                 )
               })}
@@ -685,13 +712,18 @@ function DonationFormPublicFormInner({ slug, formSlug, legalDocuments }: Props) 
                 onChange={setLegalAccepted}
               />
 
-              <Button type="submit" className="w-full" disabled={!canSubmit} loading={loading}>
-                {amount > 0
-                  ? t("submitWithAmount", {
-                      amount: `${amount.toLocaleString(loc, { style: "currency", currency: "EUR" })}${selectedTier?.kind === "RECURRING" ? ` ${intervalSuffix(selectedTier.interval)}` : ""}`,
-                    })
-                  : t("submitWithAmount", { amount: "" })}
-              </Button>
+              {/* A disabled <button> never fires a click of its own, but the wrapping div still
+                  sees the click bubble up — this is what reveals the per-field errors above
+                  instead of leaving a permanently greyed-out button with no explanation. */}
+              <div onClick={() => { if (!canSubmit) setShowAllErrors(true) }}>
+                <Button type="submit" className="w-full" disabled={!canSubmit} loading={loading}>
+                  {amount > 0
+                    ? t("submitWithAmount", {
+                        amount: `${amount.toLocaleString(loc, { style: "currency", currency: "EUR" })}${selectedTier?.kind === "RECURRING" ? ` ${intervalSuffix(selectedTier.interval)}` : ""}`,
+                      })
+                    : t("submitWithAmount", { amount: "" })}
+                </Button>
+              </div>
             </form>
           )}
 

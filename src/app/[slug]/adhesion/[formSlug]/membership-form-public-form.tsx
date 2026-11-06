@@ -138,11 +138,11 @@ type RegistrantDraft = {
 }
 
 // Le champ « Adresse » de la matrice de champs standards est satisfait dès que la voie, le
-// code postal et la ville sont saisis. Le complément et le pays ne sont jamais obligatoires
-// (voir AddressFields) : le premier est facultatif par nature, le second est vide pour la
-// quasi-totalité des adresses françaises. Le checkout applique exactement la même règle.
+// code postal, la ville et le pays sont saisis. Le complément n'est jamais obligatoire
+// (voir AddressFields) : il est facultatif par nature. Le checkout applique exactement la
+// même règle.
 function addressIsComplete(values: AddressFormValues): boolean {
-  return !!values.addressStreet.trim() && !!values.postalCode.trim() && !!values.city.trim()
+  return !!values.addressStreet.trim() && !!values.postalCode.trim() && !!values.city.trim() && !!values.country.trim()
 }
 
 // Les cinq champs d'adresse tels qu'ils partent au serveur : trimés, et omis quand ils sont
@@ -665,14 +665,15 @@ function MembershipFormPublicFormInner({ slug, formSlug, legalDocuments }: Props
 
   // Même raison que les deux erreurs ci-dessus : AddressFields n'expose pas de blur, ces
   // erreurs n'apparaissent donc qu'après une tentative d'envoi (showAllErrors) — précisément
-  // le moment où le visiteur cherche ce qui manque. Seuls la voie, le code postal et la ville
-  // peuvent être en erreur, le complément et le pays restant toujours facultatifs.
+  // le moment où le visiteur cherche ce qui manque. Seuls la voie, le code postal, la ville
+  // et le pays peuvent être en erreur, le complément restant toujours facultatif.
   const addressErrors = (fieldPrefix: string, values: AddressFormValues) =>
     form?.fieldAddress === "REQUIRED"
       ? {
           addressStreet: requiredError(`${fieldPrefix}.addressStreet`, values.addressStreet),
           postalCode:    requiredError(`${fieldPrefix}.postalCode`,    values.postalCode),
           city:          requiredError(`${fieldPrefix}.city`,          values.city),
+          country:       requiredError(`${fieldPrefix}.country`,       values.country),
         }
       : undefined
 

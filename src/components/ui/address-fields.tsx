@@ -7,9 +7,8 @@ import type { AddressFormValues } from "@/lib/address"
 type Props = {
   value:     AddressFormValues
   onChange:  (patch: Partial<AddressFormValues>) => void
-  // Rend la voie, le code postal et la ville obligatoires. Le complément et le pays ne le
-  // sont jamais : le premier est facultatif par nature, le second est vide pour la quasi-
-  // totalité des adresses françaises (formatAddress omet simplement la ligne).
+  // Rend la voie, le code postal, la ville et le pays obligatoires. Le complément ne l'est
+  // jamais : il est facultatif par nature.
   required?: boolean
   disabled?: boolean
   errors?:   Partial<Record<keyof AddressFormValues, string>>
@@ -98,6 +97,7 @@ export function AddressFields({ value, onChange, required, disabled, errors, idP
         <FormField
           id={fieldId("country")}
           label={t("country")}
+          required={required}
           disabled={disabled}
           autoComplete="country-name"
           list={countryListId}
