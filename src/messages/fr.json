@@ -824,9 +824,9 @@
         "title": "Cotisations",
         "description": "Suivez les cotisations annuelles de chaque membre : qui a payé, qui reste à relancer. Définissez le montant et exportez le suivi quand vous le souhaitez."
       },
-      "tresorerie": {
-        "title": "Trésorerie",
-        "description": "Enregistrez recettes et dépenses par catégorie pour suivre le solde de l'association. Ajoutez une opération avec le bouton dédié en haut de la page."
+      "finances": {
+        "title": "Finances",
+        "description": "Suivez les recettes et dépenses, gérez vos comptes et consultez vos rapports financiers. Ouvrez la section pour accéder à la synthèse, aux transactions, à la comptabilité et aux rapports."
       },
       "dons": {
         "title": "Dons",

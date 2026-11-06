@@ -803,9 +803,9 @@
         "title": "Hozzájárulások",
         "description": "Kövesd nyomon az egyes tagok éves tagsági díját: ki fizetett, kit kell még visszahívni. Határozd meg az összeget, és exportáld a követőt, amikor csak szeretnéd."
       },
-      "tresorerie": {
-        "title": "Készpénzáramlás",
-        "description": "Jegyzed fel a jövedelmet és kiadásokat kategóriák szerint, hogy nyomon kövesd az egyesület egyenlegét. Adj hozzá tranzakciót az oldal tetején található dedikált gombbal."
+      "finances": {
+        "title": "Pénzügyek",
+        "description": "Kövesse nyomon a bevételeket és kiadásokat, kezelje számláit, és tekintse meg a pénzügyi jelentéseket. Nyissa meg ezt a szakaszt az áttekintéshez, a tranzakciókhoz, a könyveléshez és a jelentésekhez."
       },
       "dons": {
         "title": "Adományok",

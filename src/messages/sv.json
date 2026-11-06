@@ -803,9 +803,9 @@
         "title": "Bidrag",
         "description": "Följ varje medlems årliga medlemsavgifter: vem som har betalat, vem som ännu inte ska återkallas. Definiera beloppet och exportera uppföljningen när du vill."
       },
-      "tresorerie": {
-        "title": "Kassaflöde",
-        "description": "Registrera intäkter och utgifter per kategori för att följa föreningens saldo. Lägg till en transaktion med den dedikerade knappen högst upp på sidan."
+      "finances": {
+        "title": "Ekonomi",
+        "description": "Håll koll på intäkter och utgifter, hantera dina konton och se finansiella rapporter. Öppna den här sektionen för översikt, transaktioner, bokföring och rapporter."
       },
       "dons": {
         "title": "Donationer",

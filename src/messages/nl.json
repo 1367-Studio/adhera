@@ -803,9 +803,9 @@
         "title": "Bijdragen",
         "description": "Houd de jaarlijkse lidmaatschapsbijdragen van elk lid bij: wie heeft betaald, wie nog moet worden teruggeroepen. Bepaal het bedrag en exporteer de vervolg wanneer je wilt."
       },
-      "tresorerie": {
-        "title": "Kasstroom",
-        "description": "Noteer inkomsten en uitgaven per categorie om het saldo van de vereniging bij te houden. Voeg een transactie toe met de speciale knop bovenaan de pagina."
+      "finances": {
+        "title": "Financiën",
+        "description": "Houd inkomsten en uitgaven bij, beheer je rekeningen en bekijk financiële rapporten. Open dit onderdeel voor het overzicht, transacties, boekhouding en rapporten."
       },
       "dons": {
         "title": "Donaties",

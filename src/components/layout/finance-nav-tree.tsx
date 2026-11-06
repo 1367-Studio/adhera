@@ -96,7 +96,7 @@ export function FinanceNavTree({ pathname, isFlyout, onNavigate }: FinanceNavTre
   }
 
   return (
-    <SidebarMenuSubItem className="p-0" data-tour="nav-finances">
+    <SidebarMenuSubItem className="p-0">
       <ul className="flex w-full flex-col gap-1">
         {visibleFinanceNav.map(group => {
           const isOpen        = openGroups.has(group.key)

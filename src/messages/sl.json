@@ -803,9 +803,9 @@
         "title": "Prispevki",
         "description": "Spremljajte letne članarine vsakega člana: kdo je plačal, kdo še ni odpoklican. Določite znesek in kadarkoli želite izvoziti nadaljnje informacije."
       },
-      "tresorerie": {
-        "title": "Denarni tok",
-        "description": "Beležite prihodke in odhodke po kategorijah, da spremljate stanje združenja. Dodajte transakcijo z namenskim gumbom na vrhu strani."
+      "finances": {
+        "title": "Finance",
+        "description": "Spremljajte prihodke in odhodke, upravljajte svoje račune in si oglejte finančna poročila. Odprite ta razdelek za pregled, transakcije, računovodstvo in poročila."
       },
       "dons": {
         "title": "Donacije",
