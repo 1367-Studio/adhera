@@ -1024,7 +1024,18 @@
         "IMMOBILISATION": "Capital asset"
       },
       "accountingCodeLegacyOption": "{code} — (legacy code, needs updating)",
-      "accountingCodeLegacyWarning": "This accounting code is no longer in the controlled list — choose a valid account before saving."
+      "accountingCodeLegacyWarning": "This accounting code is no longer in the controlled list — choose a valid account before saving.",
+      "accountingCodeFormwiseNote": "Subaccount suggested by Formwise for separate tracking — not a mandatory official number.",
+      "suggestedAccounts": "Suggested accounts",
+      "seeOtherAccounts": "See other accounts",
+      "description": "Description",
+      "descriptionPlaceholder": "e.g. Selling tickets for an activity or event.",
+      "sectionAutoNote": "Section determined automatically from the accounting code.",
+      "sectionManualNote": "Section set manually.",
+      "sectionUnverifiedNote": "This account isn't recognized — verify the section or choose it under advanced options.",
+      "sectionToVerify": "Section to verify",
+      "advancedOptions": "Advanced options",
+      "revertToAutoSection": "Revert to automatic section"
     },
     "bankAccountForm": {
       "bankName": "Bank name",
@@ -1211,7 +1222,11 @@
       "transferLimitationNote": "Transfers between the association's own bank accounts (internal treasury) must never be entered as an income or expense — record them from Accounting → Accounts instead.",
       "archiveConfirmTitle": "Archive this category?",
       "archiveConfirmInUse": "\"{name}\" is used by {count, plural, one {# income/expense entry} other {# income/expense entries}}. It will be archived (its history is kept) and won't be offered for new transactions anymore.",
-      "archive": "Archive"
+      "archive": "Archive",
+      "chooseTemplateTitle": "Choose a category type",
+      "customCategory": "Create a custom category",
+      "alreadyExists": "Already set up",
+      "archivedReactivateHint": "Archived — click to reactivate"
     },
     "incomesView": {
       "title": "Income",

@@ -1,5 +1,5 @@
 import { z } from "zod"
-import { REFERENCE_ACCOUNTS, isValidAccountingCode } from "@/lib/finance/chart-of-accounts"
+import { REFERENCE_ACCOUNTS, isValidAccountingCode, normalizeAccountingCode } from "@/lib/finance/chart-of-accounts"
 
 export const bankAccountSchema = z.object({
   bankName:       z.string().trim().min(1, "Nom de la banque requis"),
@@ -28,12 +28,18 @@ export type BankAccountUpdateInput = z.infer<typeof bankAccountUpdateSchema>
 // accountingCode is required and restricted to the controlled reference list (chart-of-accounts.ts)
 // — no more free text. The cross-field .refine below is what actually enforces "valid for this
 // type": a code that's a real account but belongs to the other type (e.g. an EXPENSE code on an
-// INCOME category) must still fail.
+// INCOME category) must still fail. Normalized to its 6-digit form before validation, so a
+// legacy short spelling ("706") and today's full spelling ("706000") are always the same code.
+//
+// `section` is optional here on purpose: the normal path never sends it at all — the create/
+// update API routes derive it from accountingCode via sectionForAccountCode. It's only present
+// in a submission when a user deliberately expanded "Options avancées" to override it by hand.
 export const financeCategorySchema = z.object({
   name:          z.string().trim().min(1, "Nom requis"),
   type:          z.enum(["INCOME", "EXPENSE"]),
-  accountingCode: z.string().trim().min(1, "Compte comptable requis"),
-  section:       z.enum(["OPERATING", "FINANCIAL", "EXCEPTIONAL", "OTHER", "IN_KIND", "IMMOBILISATION"]).default("OPERATING"),
+  accountingCode: z.string().trim().min(1, "Compte comptable requis").transform(normalizeAccountingCode),
+  description:   z.string().trim().max(200).optional().or(z.literal("")),
+  section:       z.enum(["OPERATING", "FINANCIAL", "EXCEPTIONAL", "OTHER", "IN_KIND", "IMMOBILISATION"]).optional(),
 }).refine(data => isValidAccountingCode(data.accountingCode, data.type), {
   message: "Compte comptable invalide pour ce type",
   path:    ["accountingCode"],
@@ -50,7 +56,8 @@ export const financeCategorySchema = z.object({
 export const financeCategoryUpdateSchema = z.object({
   name:          z.string().trim().min(1, "Nom requis").optional(),
   type:          z.enum(["INCOME", "EXPENSE"]).optional(),
-  accountingCode: z.string().trim().min(1, "Compte comptable requis").optional(),
+  accountingCode: z.string().trim().min(1, "Compte comptable requis").transform(normalizeAccountingCode).optional(),
+  description:   z.string().trim().max(200).optional().or(z.literal("")),
   section:       z.enum(["OPERATING", "FINANCIAL", "EXCEPTIONAL", "OTHER", "IN_KIND", "IMMOBILISATION"]).optional(),
 }).refine(data => {
   if (!data.accountingCode) return true

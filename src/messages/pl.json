@@ -910,7 +910,18 @@
         "EXCEPTIONAL": "Nadzwyczajne",
         "OTHER": "Inne",
         "IN_KIND": "Świadczenia rzeczowe"
-      }
+      },
+      "accountingCodeFormwiseNote": "Podkonto sugerowane przez Formwise do osobnego śledzenia — nie jest to obowiązkowy numer oficjalny.",
+      "suggestedAccounts": "Sugerowane relacje",
+      "seeOtherAccounts": "Zobacz inne relacje",
+      "description": "Opis",
+      "descriptionPlaceholder": "Np.: sprzedaż biletów na jakąś aktywność lub wydarzenie.",
+      "sectionAutoNote": "Sekcja ustalana automatycznie z rachunku księgowego.",
+      "sectionManualNote": "Ręcznie zdefiniowana sekcja.",
+      "sectionUnverifiedNote": "To konto nie jest rozpoznawane — sprawdź sekcję lub wybierz ją spośród zaawansowanych opcji.",
+      "sectionToVerify": "Sekcja do sprawdzenia",
+      "advancedOptions": "Opcje zaawansowane",
+      "revertToAutoSection": "Powrót do sekcji automatycznej"
     },
     "bankAccountForm": {
       "bankName": "Nazwa banku",
@@ -1062,7 +1073,11 @@
         "updated": "Zaktualizowana kategoria",
         "deleted": "Kategoria usunięta",
         "seeded": "{count, plural, one {# kategoria inicjalizowana} other {# kategorie zainicjowane}}"
-      }
+      },
+      "chooseTemplateTitle": "Wybierz typ kategorii",
+      "customCategory": "Stwórz niestandardową kategorię",
+      "alreadyExists": "Już skonfigurowane",
+      "archivedReactivateHint": "Archiwum — kliknij, aby ponownie aktywować"
     },
     "incomesView": {
       "title": "Przychody",

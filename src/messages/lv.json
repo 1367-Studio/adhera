@@ -910,7 +910,18 @@
         "EXCEPTIONAL": "Ārkārtas",
         "OTHER": "Cits",
         "IN_KIND": "Ieguldījumi natūrā"
-      }
+      },
+      "accountingCodeFormwiseNote": "Apakškonts, ko ieteica Formwise atsevišķai izsekošanai — nav obligāts oficiāls numurs.",
+      "suggestedAccounts": "Ieteiktie konti",
+      "seeOtherAccounts": "Skatīt citus aprakstus",
+      "description": "Apraksts",
+      "descriptionPlaceholder": "Piemēram: biļešu pārdošana aktivitātei vai pasākumam.",
+      "sectionAutoNote": "Sadaļa tiek noteikta automātiski no grāmatvedības konta.",
+      "sectionManualNote": "Manuāli definēta sadaļa.",
+      "sectionUnverifiedNote": "Šis konts netiek atpazīts — pārbaudiet sadaļu vai izvēlieties to no paplašinātajām opcijām.",
+      "sectionToVerify": "Sadaļa, ko pārbaudīt",
+      "advancedOptions": "Paplašinātās opcijas",
+      "revertToAutoSection": "Atpakaļ uz automātisko sadaļu"
     },
     "bankAccountForm": {
       "bankName": "Bankas nosaukums",
@@ -1062,7 +1073,11 @@
         "updated": "Atjauninātā kategorija",
         "deleted": "Kategorija dzēsta",
         "seeded": "{count, plural, one {# inicializētā kategorija} other {# kategorijas inicializētas}}"
-      }
+      },
+      "chooseTemplateTitle": "Izvēlieties kategorijas tipu",
+      "customCategory": "Izveido pielāgotu kategoriju",
+      "alreadyExists": "Jau konfigurēts",
+      "archivedReactivateHint": "Arhivēts — klikšķiniet, lai aktivizētu"
     },
     "incomesView": {
       "title": "Ieņēmumi",

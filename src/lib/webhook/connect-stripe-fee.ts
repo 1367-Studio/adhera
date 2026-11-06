@@ -160,11 +160,12 @@ async function bookConnectFeeExpense(params: {
   // Resolved with the plain `prisma` client, outside the transaction below — see
   // getOrCreateDefaultCategory's doc comment: its P2002-race retry needs a fresh connection to
   // recover, which a `tx` can't give it once one of its own statements has already failed.
-  // Stripe's own processing fee is a real bank/card-processing charge → fraisBancaires (6278).
-  // Formwise's platform commission is NOT a bank fee — it's a service/platform commission (see
-  // the task's explicit "don't classify everything as a bank fee" rule) → its own category,
-  // commissionFormwise (6226, Honoraires).
-  const stripeFeeCategoryId = await getOrCreateDefaultCategory(prisma, associationId, "fraisBancaires")
+  // Stripe's own processing fee is NOT a generic bank fee — it gets its own category,
+  // fraisStripe (627800), separate from fraisBancaires (627000, real bank charges only; this
+  // used to be mis-booked there before this fix — see scripts/review-frais-bancaires-stripe-split.ts
+  // for the historical rows that need manual review). Formwise's platform commission is its
+  // own category too, commissionFormwise (622200) — not fraisStripe, not Honoraires (622600).
+  const stripeFeeCategoryId = await getOrCreateDefaultCategory(prisma, associationId, "fraisStripe")
   const commissionCategoryId = commissionCents > 0
     ? await getOrCreateDefaultCategory(prisma, associationId, "commissionFormwise")
     : null

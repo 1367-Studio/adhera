@@ -910,7 +910,18 @@
         "EXCEPTIONAL": "Satunnainen",
         "OTHER": "Muu",
         "IN_KIND": "Luontoissuoritukset"
-      }
+      },
+      "accountingCodeFormwiseNote": "Formwisen suosittelema alitili erillistä seurantaa varten — ei pakollinen virallinen numero.",
+      "suggestedAccounts": "Ehdotetut kertomukset",
+      "seeOtherAccounts": "Katso muut kertomukset",
+      "description": "Kuvaus",
+      "descriptionPlaceholder": "Esim. Lipunmyynti johonkin aktiviteettiin tai tapahtumaan.",
+      "sectionAutoNote": "Osio määräytyy automaattisesti kirjanpitotilistä.",
+      "sectionManualNote": "Manuaalisesti määritelty osio.",
+      "sectionUnverifiedNote": "Tätä tiliä ei tunnisteta — tarkista osio tai valitse se edistyneistä vaihtoehdoista.",
+      "sectionToVerify": "Tarkistettava osio",
+      "advancedOptions": "Edistyneet vaihtoehdot",
+      "revertToAutoSection": "Takaisin automaattiosastolle"
     },
     "bankAccountForm": {
       "bankName": "Pankin nimi",
@@ -1062,7 +1073,11 @@
         "updated": "Päivitetty kategoria",
         "deleted": "Kategoria poistettu",
         "seeded": "{count, plural, one {# alustettu kategoria} other {# alustetut kategoriat}}"
-      }
+      },
+      "chooseTemplateTitle": "Valitse kategoriatyyppi",
+      "customCategory": "Luo oma kategoria",
+      "alreadyExists": "Jo konfiguroitu",
+      "archivedReactivateHint": "Arkistoitu — klikkaa aktivoidaksesi uudelleen"
     },
     "incomesView": {
       "title": "Tulot",

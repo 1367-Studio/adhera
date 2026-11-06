@@ -910,7 +910,18 @@
         "EXCEPTIONAL": "Izvanredno",
         "OTHER": "Ostalo",
         "IN_KIND": "Doprinosi u naravi"
-      }
+      },
+      "accountingCodeFormwiseNote": "Podračun koji je predložio Formwise za zasebno praćenje — nije obavezni službeni broj.",
+      "suggestedAccounts": "Predloženi prikazi",
+      "seeOtherAccounts": "Pogledajte ostale izvještaje",
+      "description": "Opis",
+      "descriptionPlaceholder": "Primjer: Prodaja ulaznica za neku aktivnost ili događaj.",
+      "sectionAutoNote": "Odjeljak se automatski određuje iz računovodstvenog računa.",
+      "sectionManualNote": "Ručno definirani odjeljak.",
+      "sectionUnverifiedNote": "Ovaj račun nije priznat — provjerite odjeljak ili ga odaberite iz naprednih opcija.",
+      "sectionToVerify": "Sekcija za provjeru",
+      "advancedOptions": "Napredne opcije",
+      "revertToAutoSection": "Povratak na automatski dio"
     },
     "bankAccountForm": {
       "bankName": "Naziv banke",
@@ -1062,7 +1073,11 @@
         "updated": "Ažurirana kategorija",
         "deleted": "Kategorija izbrisana",
         "seeded": "{count, plural, one {# inicijalizirana kategorija} other {# inicijalizirane kategorije}}"
-      }
+      },
+      "chooseTemplateTitle": "Odaberite tip kategorije",
+      "customCategory": "Kreiraj prilagođenu kategoriju",
+      "alreadyExists": "Već konfigurirano",
+      "archivedReactivateHint": "Arhivirano — kliknite za ponovnu aktivaciju"
     },
     "incomesView": {
       "title": "Prihodi",

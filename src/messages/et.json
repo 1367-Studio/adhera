@@ -910,7 +910,18 @@
         "EXCEPTIONAL": "Erakorraline",
         "OTHER": "Muu",
         "IN_KIND": "Mitterahalised panused"
-      }
+      },
+      "accountingCodeFormwiseNote": "Formwise'i soovitatud alamkonto eraldi jälgimiseks — see ei ole kohustuslik ametlik number.",
+      "suggestedAccounts": "Soovitatud kirjeldused",
+      "seeOtherAccounts": "Vaata teisi kirjeldusi",
+      "description": "Kirjeldus",
+      "descriptionPlaceholder": "Näiteks: piletimüük mingile tegevusele või üritusele.",
+      "sectionAutoNote": "Sektsioon määratakse automaatselt raamatupidamiskontolt.",
+      "sectionManualNote": "Käsitsi määratletud osa.",
+      "sectionUnverifiedNote": "See konto ei ole tunnustatud — vaata sektsiooni või vali see edasijõudnute valikutest.",
+      "sectionToVerify": "Osa kontrollimiseks",
+      "advancedOptions": "Täiustatud valikud",
+      "revertToAutoSection": "Tagasi automaatsektsiooni."
     },
     "bankAccountForm": {
       "bankName": "Panga nimi",
@@ -1062,7 +1073,11 @@
         "updated": "Uuendatud kategooria",
         "deleted": "Kategooria kustutatud",
         "seeded": "{count, plural, one {# initsialiseeritud kategooria} other {# kategooriad initsialiseeritud}}"
-      }
+      },
+      "chooseTemplateTitle": "Vali kategooriatüüp",
+      "customCategory": "Loo kohandatud kategooria",
+      "alreadyExists": "Juba seadistatud",
+      "archivedReactivateHint": "Arhiveeritud — klõpsa taasaktiveerimiseks"
     },
     "incomesView": {
       "title": "Tulud",

@@ -910,7 +910,18 @@
         "EXCEPTIONAL": "Rendkívüli",
         "OTHER": "Egyéb",
         "IN_KIND": "Természetbeni hozzájárulások"
-      }
+      },
+      "accountingCodeFormwiseNote": "A Formwise által javasolt alfiók külön követésre — nem kötelező hivatalos szám.",
+      "suggestedAccounts": "Javasolt beszámolók",
+      "seeOtherAccounts": "Lásd a többi beszámolót",
+      "description": "Leírás",
+      "descriptionPlaceholder": "Például: jegyértékesítés egy tevékenységre vagy eseményre.",
+      "sectionAutoNote": "A szakasz automatikusan a számviteli számlából származik.",
+      "sectionManualNote": "Manuálisan definiált szakasz.",
+      "sectionUnverifiedNote": "Ez a fiók nem ismerhető fel — nézd meg a részt, vagy válaszd ki a haladó opciók közül.",
+      "sectionToVerify": "A szakasz, amit ellenőrizni kell",
+      "advancedOptions": "Fejlett opciók",
+      "revertToAutoSection": "Vissza az automatikus szakaszhoz"
     },
     "bankAccountForm": {
       "bankName": "Bank neve",
@@ -1062,7 +1073,11 @@
         "updated": "Frissített kategória",
         "deleted": "Kategória törölve",
         "seeded": "{count, plural, one {# inicializált kategória} other {# kategóriák inicializáltak}}"
-      }
+      },
+      "chooseTemplateTitle": "Válassz kategóriatípust",
+      "customCategory": "Hozzon létre egy egyedi kategóriát",
+      "alreadyExists": "Már konfigurálva",
+      "archivedReactivateHint": "Archiválva — kattints az újraaktiváláshoz"
     },
     "incomesView": {
       "title": "Bevételek",

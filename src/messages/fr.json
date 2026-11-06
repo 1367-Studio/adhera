@@ -1134,7 +1134,18 @@
         "IMMOBILISATION": "Immobilisation"
       },
       "accountingCodeLegacyOption": "{code} — (ancien code, à mettre à jour)",
-      "accountingCodeLegacyWarning": "Ce code comptable n'existe plus dans la liste contrôlée — choisissez un compte valide avant d'enregistrer."
+      "accountingCodeLegacyWarning": "Ce code comptable n'existe plus dans la liste contrôlée — choisissez un compte valide avant d'enregistrer.",
+      "accountingCodeFormwiseNote": "Sous-compte suggéré par Formwise pour un suivi séparé — pas un numéro officiel obligatoire.",
+      "suggestedAccounts": "Comptes suggérés",
+      "seeOtherAccounts": "Voir les autres comptes",
+      "description": "Description",
+      "descriptionPlaceholder": "Ex : Vente de places pour une activité ou un événement.",
+      "sectionAutoNote": "Section déterminée automatiquement à partir du compte comptable.",
+      "sectionManualNote": "Section définie manuellement.",
+      "sectionUnverifiedNote": "Ce compte n'est pas reconnu — vérifiez la section ou choisissez-la dans les options avancées.",
+      "sectionToVerify": "Section à vérifier",
+      "advancedOptions": "Options avancées",
+      "revertToAutoSection": "Revenir à la section automatique"
     },
     "bankAccountForm": {
       "bankName": "Nom de la banque",
@@ -1323,7 +1334,11 @@
       "transferLimitationNote": "Les virements entre comptes bancaires de l'association (trésorerie interne) ne doivent jamais être saisis comme une recette ou une dépense — enregistrez-les depuis Comptabilité → Comptes.",
       "archiveConfirmTitle": "Archiver cette catégorie ?",
       "archiveConfirmInUse": "« {name} » est utilisée par {count, plural, one {# recette/dépense} other {# recettes/dépenses}}. Elle sera archivée (son historique est conservé) et ne pourra plus être choisie pour de nouvelles opérations.",
-      "archive": "Archiver"
+      "archive": "Archiver",
+      "chooseTemplateTitle": "Choisissez un type de catégorie",
+      "customCategory": "Créer une catégorie personnalisée",
+      "alreadyExists": "Déjà configurée",
+      "archivedReactivateHint": "Archivée — cliquez pour réactiver"
     },
     "incomesView": {
       "title": "Recettes",

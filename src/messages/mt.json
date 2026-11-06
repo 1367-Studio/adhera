@@ -910,7 +910,18 @@
         "EXCEPTIONAL": "Eċċezzjonali",
         "OTHER": "Ieħor",
         "IN_KIND": "Kontribuzzjonijiet in natura"
-      }
+      },
+      "accountingCodeFormwiseNote": "Subkont suġġerit minn Formwise għal traċċar separat — mhux numru uffiċjali obbligatorju.",
+      "suggestedAccounts": "Kontijiet suġġeriti",
+      "seeOtherAccounts": "Ara l-kontijiet l-oħra",
+      "description": "Deskrizzjoni",
+      "descriptionPlaceholder": "Eż.: Bejgħ ta' biljetti għal attività jew avveniment.",
+      "sectionAutoNote": "Sezzjoni determinata awtomatikament mill-kont kontabilità.",
+      "sectionManualNote": "Sezzjoni definita manwalment.",
+      "sectionUnverifiedNote": "Dan il-kont mhuwiex rikonoxxut — iċċekkja s-sezzjoni jew agħżelha mill-għażliet avvanzati.",
+      "sectionToVerify": "Sezzjoni biex tiġi ċċekkjata",
+      "advancedOptions": "Għażliet avvanzati",
+      "revertToAutoSection": "Lura għas-sezzjoni awtomatika"
     },
     "bankAccountForm": {
       "bankName": "Isem tal-Bank",
@@ -1062,7 +1073,11 @@
         "updated": "Kategorija aġġornata",
         "deleted": "Kategorija mħassra",
         "seeded": "{count, plural, one {# -kategorija inizjalizzata} other {# kategoriji inizjalizzati}}"
-      }
+      },
+      "chooseTemplateTitle": "Agħżel tip ta' kategorija",
+      "customCategory": "Oħloq kategorija personalizzata",
+      "alreadyExists": "Diġà kkonfigurata",
+      "archivedReactivateHint": "Arkivjat — ikklikkja biex terġa' tattiva"
     },
     "incomesView": {
       "title": "Dħul",

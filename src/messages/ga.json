@@ -910,7 +910,18 @@
         "EXCEPTIONAL": "Eisceachtúil",
         "OTHER": "Eile",
         "IN_KIND": "Ranníocaíochtaí i gcineál"
-      }
+      },
+      "accountingCodeFormwiseNote": "Fo-chuntas a mhol Formwise le haghaidh rianú ar leithligh - ní uimhir oifigiúil éigeantach.",
+      "suggestedAccounts": "Cuntais mholta",
+      "seeOtherAccounts": "Féach na cuntais eile",
+      "description": "Cur síos",
+      "descriptionPlaceholder": "Ex: Díolachán ticéad le haghaidh gníomhaíochta nó imeachta.",
+      "sectionAutoNote": "Alt arna chinneadh go huathoibríoch ón gcuntas cuntasaíochta.",
+      "sectionManualNote": "Alt sainmhínithe de láimh.",
+      "sectionUnverifiedNote": "Ní aithnítear an cuntas seo - seiceáil an t-alt nó roghnaigh é ó na roghanna casta.",
+      "sectionToVerify": "Rannóg le seiceáil",
+      "advancedOptions": "Ardroghanna",
+      "revertToAutoSection": "Ar ais go dtí an rannóg uathoibríoch"
     },
     "bankAccountForm": {
       "bankName": "Ainm an Bhainc",
@@ -1062,7 +1073,11 @@
         "updated": "Catagóir nuashonraithe",
         "deleted": "Catagóir scriosta",
         "seeded": "{count, plural, one {# catagóir tosaithe} other {# catagóirí tosaithe}}"
-      }
+      },
+      "chooseTemplateTitle": "Roghnaigh cineál catagóire",
+      "customCategory": "Cruthaigh catagóir saincheaptha",
+      "alreadyExists": "Cumraithe cheana féin",
+      "archivedReactivateHint": "Cartlainne - cliceáil chun athghníomhachtú a dhéanamh"
     },
     "incomesView": {
       "title": "Ioncam",
