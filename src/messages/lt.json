@@ -803,9 +803,9 @@
         "title": "Indėlis",
         "description": "Sekite kiekvieno nario metinius narystės mokesčius: kas sumokėjo, kas dar turi būti atšauktas. Nustatykite sumą ir eksportuokite tolesnį įrašą kada tik norite."
       },
-      "tresorerie": {
-        "title": "Pinigų srautas",
-        "description": "Fiksuokite pajamas ir išlaidas pagal kategorijas, kad stebėtumėte asociacijos likutį. Pridėkite sandorį specialiu mygtuku puslapio viršuje."
+      "finances": {
+        "title": "Finansai",
+        "description": "Stebėkite pajamas ir išlaidas, tvarkykite sąskaitas ir peržiūrėkite finansines ataskaitas. Atidarykite šį skyrių, kad pamatytumėte apžvalgą, operacijas, apskaitą ir ataskaitas."
       },
       "dons": {
         "title": "Aukos",

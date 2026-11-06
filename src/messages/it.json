@@ -803,9 +803,9 @@
         "title": "Contributi",
         "description": "Monitora le quote annuali di ogni membro: chi ha pagato, chi deve ancora essere richiamato. Definisci l'importo ed esporta il follow-up quando vuoi."
       },
-      "tresorerie": {
-        "title": "Flusso di cassa",
-        "description": "Registra entrate e spese per categoria per monitorare il saldo dell'associazione. Aggiungi una transazione con il pulsante dedicato in alto alla pagina."
+      "finances": {
+        "title": "Finanze",
+        "description": "Tieni traccia di entrate e uscite, gestisci i tuoi conti e consulta i report finanziari. Apri questa sezione per la panoramica, le transazioni, la contabilità e i report."
       },
       "dons": {
         "title": "Donazioni",

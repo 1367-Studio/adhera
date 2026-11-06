@@ -4,6 +4,7 @@ import { useCallback } from "react"
 import { useTranslations } from "next-intl"
 import { driver } from "driver.js"
 import "driver.js/dist/driver.css"
+import { useSidebar } from "@/components/ui/sidebar"
 import { getDashboardTour, type TourStepDef } from "./steps"
 
 /**
@@ -15,6 +16,7 @@ import { getDashboardTour, type TourStepDef } from "./steps"
 export function useTour() {
   const t          = useTranslations("tour")
   const tourSteps  = useTranslations("tour.steps")
+  const { isMobile, setOpenMobile } = useSidebar()
 
   const start = useCallback((steps?: TourStepDef[]) => {
     if (typeof document === "undefined") return
@@ -51,12 +53,34 @@ export function useTour() {
             side:        s.side,
             align:       s.align,
           },
+          onHighlightStarted: () => {
+            // On mobile the sidebar is a Sheet that visually covers the header while
+            // open, and is unmounted (its nav items gone from the DOM) while closed —
+            // put it in whichever state the upcoming step needs before it's highlighted.
+            if (isMobile) {
+              if (s.headerStep) {
+                setOpenMobile(false)
+              } else {
+                setOpenMobile(true)
+                window.dispatchEvent(new Event("adhera:expand-all-nav"))
+              }
+            }
+            // driver.js's own auto-scroll (smoothScroll) only checks the element against
+            // the window's viewport — it never accounts for clipping by an ancestor's own
+            // overflow (the sidebar's nav list scrolls independently), so a target below
+            // that inner fold is left clipped even though it's technically "within the
+            // window". Scroll it into view ourselves first, synchronously (instant, not
+            // smooth) so driver.js reads the post-scroll position on the same tick.
+            if (s.selector) {
+              document.querySelector(s.selector)?.scrollIntoView({ block: "center", inline: "nearest" })
+            }
+          },
         })),
       })
 
       driverObj.drive()
     }, 50)
-  }, [t, tourSteps])
+  }, [t, tourSteps, isMobile, setOpenMobile])
 
   return { start }
 }

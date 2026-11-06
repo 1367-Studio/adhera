@@ -803,9 +803,9 @@
         "title": "Beiträge",
         "description": "Verfolgen Sie die jährlichen Mitgliedsbeiträge jedes Mitglieds: wer bezahlt hat, wer noch zurückgerufen werden muss. Definieren Sie den Betrag und exportieren Sie die Nachverfolgung, wann immer Sie möchten."
       },
-      "tresorerie": {
-        "title": "Cashflow",
-        "description": "Erfassen Sie Einnahmen und Ausgaben nach Kategorie, um den Saldo der Vereinigung zu verfolgen. Fügen Sie eine Transaktion mit dem speziellen Button oben auf der Seite hinzu."
+      "finances": {
+        "title": "Finanzen",
+        "description": "Behalten Sie Einnahmen und Ausgaben im Blick, verwalten Sie Ihre Konten und sehen Sie Finanzberichte ein. Öffnen Sie diesen Bereich für Übersicht, Transaktionen, Buchhaltung und Berichte."
       },
       "dons": {
         "title": "Spenden",

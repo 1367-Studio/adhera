@@ -803,9 +803,9 @@
         "title": "Kontribuzzjonijiet",
         "description": "Segwi l-miżati annwali tal-membri ta' kull membru: min ħallas, min għadu ma ġiex imħassar. Iddefinixxi l-ammont u esporta s-segwitu kull meta trid."
       },
-      "tresorerie": {
-        "title": "Fluss tal-flus",
-        "description": "Irreġistra dħul u spejjeż skont il-kategorija biex issegwi l-bilanċ tal-assoċjazzjoni. Żid transazzjoni bil-buttuna ddedikata fil-quċċata tal-paġna."
+      "finances": {
+        "title": "Finanzi",
+        "description": "Segwi d-dħul u l-infiq, immaniġġja l-kontijiet tiegħek u ara r-rapporti finanzjarji. Iftaħ din it-taqsima għal ħarsa ġenerali, tranżazzjonijiet, kontabbiltà u rapporti."
       },
       "dons": {
         "title": "Donazzjonijiet",

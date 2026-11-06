@@ -13,6 +13,10 @@ export interface TourStepDef {
   description: string
   side?:  "top" | "bottom" | "left" | "right"
   align?: "start" | "center" | "end"
+  // True for the header's utility icons (view switcher, help, notifications, theme,
+  // profile) — on mobile the sidebar renders as a full-screen Sheet that covers the
+  // header while open, so these steps need it closed first (see use-tour.ts).
+  headerStep?: true
 }
 
 /** Main dashboard walkthrough — explains each feature and how to get started. */
@@ -38,13 +42,6 @@ export function getDashboardTour(t: ReturnType<typeof useTranslations>): TourSte
       align: "start",
     },
     {
-      selector: '[data-tour="nav-evenements"]',
-      title: t("evenements.title"),
-      description: t("evenements.description"),
-      side: "right",
-      align: "start",
-    },
-    {
       selector: '[data-tour="nav-cotisations"]',
       title: t("cotisations.title"),
       description: t("cotisations.description"),
@@ -52,16 +49,23 @@ export function getDashboardTour(t: ReturnType<typeof useTranslations>): TourSte
       align: "start",
     },
     {
-      selector: '[data-tour="nav-tresorerie"]',
-      title: t("tresorerie.title"),
-      description: t("tresorerie.description"),
+      selector: '[data-tour="nav-dons"]',
+      title: t("dons.title"),
+      description: t("dons.description"),
       side: "right",
       align: "start",
     },
     {
-      selector: '[data-tour="nav-dons"]',
-      title: t("dons.title"),
-      description: t("dons.description"),
+      selector: '[data-tour="nav-evenements"]',
+      title: t("evenements.title"),
+      description: t("evenements.description"),
+      side: "right",
+      align: "start",
+    },
+    {
+      selector: '[data-tour="nav-messages"]',
+      title: t("messages.title"),
+      description: t("messages.description"),
       side: "right",
       align: "start",
     },
@@ -80,13 +84,6 @@ export function getDashboardTour(t: ReturnType<typeof useTranslations>): TourSte
       align: "start",
     },
     {
-      selector: '[data-tour="nav-boutique"]',
-      title: t("boutique.title"),
-      description: t("boutique.description"),
-      side: "right",
-      align: "start",
-    },
-    {
       selector: '[data-tour="nav-actualites"]',
       title: t("actualites.title"),
       description: t("actualites.description"),
@@ -94,16 +91,14 @@ export function getDashboardTour(t: ReturnType<typeof useTranslations>): TourSte
       align: "start",
     },
     {
-      selector: '[data-tour="nav-messages"]',
-      title: t("messages.title"),
-      description: t("messages.description"),
-      side: "right",
-      align: "start",
-    },
-    {
-      selector: '[data-tour="nav-materiel"]',
-      title: t("materiel.title"),
-      description: t("materiel.description"),
+      // Targets the category trigger (single row, like every other nav step) rather
+      // than the inner nav-finances wrapper, which spans the whole expanded group
+      // tree (Synthèse/Transactions/Comptabilité/Rapports) and highlighted as an
+      // oversized block. The trigger only renders when the association has at least
+      // one enabled Finances-category item, so this stays per-association correct.
+      selector: '[data-tour="nav-category-finances"]',
+      title: t("finances.title"),
+      description: t("finances.description"),
       side: "right",
       align: "start",
     },
@@ -111,6 +106,20 @@ export function getDashboardTour(t: ReturnType<typeof useTranslations>): TourSte
       selector: '[data-tour="nav-site"]',
       title: t("site.title"),
       description: t("site.description"),
+      side: "right",
+      align: "start",
+    },
+    {
+      selector: '[data-tour="nav-boutique"]',
+      title: t("boutique.title"),
+      description: t("boutique.description"),
+      side: "right",
+      align: "start",
+    },
+    {
+      selector: '[data-tour="nav-materiel"]',
+      title: t("materiel.title"),
+      description: t("materiel.description"),
       side: "right",
       align: "start",
     },
@@ -134,27 +143,7 @@ export function getDashboardTour(t: ReturnType<typeof useTranslations>): TourSte
       description: t("viewSwitcher.description"),
       side: "bottom",
       align: "end",
-    },
-    {
-      selector: '[data-tour="notifications"]',
-      title: t("notifications.title"),
-      description: t("notifications.description"),
-      side: "bottom",
-      align: "end",
-    },
-    {
-      selector: '[data-tour="theme-toggle"]',
-      title: t("themeToggle.title"),
-      description: t("themeToggle.description"),
-      side: "bottom",
-      align: "end",
-    },
-    {
-      selector: '[data-tour="user-menu"]',
-      title: t("userMenu.title"),
-      description: t("userMenu.description"),
-      side: "bottom",
-      align: "end",
+      headerStep: true,
     },
     {
       selector: '[data-tour="help"]',
@@ -162,6 +151,31 @@ export function getDashboardTour(t: ReturnType<typeof useTranslations>): TourSte
       description: t("help.description"),
       side: "bottom",
       align: "end",
+      headerStep: true,
+    },
+    {
+      selector: '[data-tour="notifications"]',
+      title: t("notifications.title"),
+      description: t("notifications.description"),
+      side: "bottom",
+      align: "end",
+      headerStep: true,
+    },
+    {
+      selector: '[data-tour="theme-toggle"]',
+      title: t("themeToggle.title"),
+      description: t("themeToggle.description"),
+      side: "bottom",
+      align: "end",
+      headerStep: true,
+    },
+    {
+      selector: '[data-tour="user-menu"]',
+      title: t("userMenu.title"),
+      description: t("userMenu.description"),
+      side: "bottom",
+      align: "end",
+      headerStep: true,
     },
   ]
 }
