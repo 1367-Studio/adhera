@@ -1537,7 +1537,8 @@
       "discountCodeRemove": "Noņemt",
       "discountCodeInvalid": "Šis kods ir nederīgs.",
       "discountCodeNotApplicable": "Šis kods neattiecas uz izvēlēto maksu.",
-      "discountAmountLabel": "Samazināšana:"
+      "discountAmountLabel": "Samazināšana:",
+      "fieldRequired": "Šī joma ir obligāta."
     },
     "scanner": {
       "openButton": "Skenēt biļetes",
@@ -3135,7 +3136,8 @@
       "submittedTitle": "Paldies par jūsu ziedojumu!",
       "submittedWithEmail": "Jums ir nosūtīts apstiprinājuma e-pasts.",
       "toastCancelled": "Maksājums atcelts.",
-      "errorNetwork": "Tīkla kļūda. Mēģiniet vēlreiz."
+      "errorNetwork": "Tīkla kļūda. Mēģiniet vēlreiz.",
+      "fieldRequired": "Šī joma ir obligāta."
     },
     "cancelSubscription": {
       "invalidLink": "Šī atcelšanas saite ir nederīga.",

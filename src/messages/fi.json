@@ -1537,7 +1537,8 @@
       "discountCodeRemove": "Poista",
       "discountCodeInvalid": "Tämä koodi on virheellinen.",
       "discountCodeNotApplicable": "Tämä koodi ei koske valittua lippua.",
-      "discountAmountLabel": "Reduktio:"
+      "discountAmountLabel": "Reduktio:",
+      "fieldRequired": "Tämä kenttä on pakollinen."
     },
     "scanner": {
       "openButton": "Skannaa liput",
@@ -3135,7 +3136,8 @@
       "submittedTitle": "Kiitos lahjoituksestasi!",
       "submittedWithEmail": "Sinulle on lähetetty vahvistussähköposti.",
       "toastCancelled": "Maksu peruttu.",
-      "errorNetwork": "Verkkovirhe. Yritä uudestaan."
+      "errorNetwork": "Verkkovirhe. Yritä uudestaan.",
+      "fieldRequired": "Tämä kenttä on pakollinen."
     },
     "cancelSubscription": {
       "invalidLink": "Tämä peruutuslinkki on virheellinen.",

@@ -1604,7 +1604,8 @@
       "discountCodeRemove": "Remove",
       "discountCodeInvalid": "This code is not valid.",
       "discountCodeNotApplicable": "This code doesn't apply to the selected tariff.",
-      "discountAmountLabel": "Discount:"
+      "discountAmountLabel": "Discount:",
+      "fieldRequired": "This field is required."
     },
     "scanner": {
       "openButton": "Scan tickets",
@@ -3252,7 +3253,8 @@
       "submittedTitle": "Thank you for your donation!",
       "submittedWithEmail": "A confirmation email has been sent to you.",
       "toastCancelled": "Payment cancelled.",
-      "errorNetwork": "Network error. Please try again."
+      "errorNetwork": "Network error. Please try again.",
+      "fieldRequired": "This field is required."
     },
     "cancelSubscription": {
       "invalidLink": "This cancellation link is invalid.",

@@ -1566,7 +1566,8 @@
       "discountCodeRemove": "Remover",
       "discountCodeInvalid": "Este código não é válido.",
       "discountCodeNotApplicable": "Este código não se aplica à tarifa selecionada.",
-      "discountAmountLabel": "Desconto:"
+      "discountAmountLabel": "Desconto:",
+      "fieldRequired": "Este campo é obrigatório."
     },
     "scanner": {
       "openButton": "Validar bilhetes",
@@ -3164,7 +3165,8 @@
       "submittedTitle": "Obrigado pelo seu donativo!",
       "submittedWithEmail": "Foi enviado um e-mail de confirmação.",
       "toastCancelled": "Pagamento cancelado.",
-      "errorNetwork": "Erro de rede. Tente novamente."
+      "errorNetwork": "Erro de rede. Tente novamente.",
+      "fieldRequired": "Este campo é obrigatório."
     },
     "cancelSubscription": {
       "invalidLink": "Este link de cancelamento é inválido.",

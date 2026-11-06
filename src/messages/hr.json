@@ -1537,7 +1537,8 @@
       "discountCodeRemove": "Uklonite",
       "discountCodeInvalid": "Ovaj kod nije valjan.",
       "discountCodeNotApplicable": "Ovaj kod se ne odnosi na odabranu tarifu.",
-      "discountAmountLabel": "Smanjenje:"
+      "discountAmountLabel": "Smanjenje:",
+      "fieldRequired": "Ovo područje je obavezno."
     },
     "scanner": {
       "openButton": "Skeniranje ulaznica",
@@ -3135,7 +3136,8 @@
       "submittedTitle": "Hvala na vašoj donaciji!",
       "submittedWithEmail": "Poslali su vam potvrdu putem e-maila.",
       "toastCancelled": "Plaćanje otkazano.",
-      "errorNetwork": "Greška mreže. Pokušaj ponovno."
+      "errorNetwork": "Greška mreže. Pokušaj ponovno.",
+      "fieldRequired": "Ovo područje je obavezno."
     },
     "cancelSubscription": {
       "invalidLink": "Ova poveznica za otkazivanje je nevažeća.",

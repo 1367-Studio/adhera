@@ -1537,7 +1537,8 @@
       "discountCodeRemove": "Odstranite",
       "discountCodeInvalid": "Ta koda je neveljavno.",
       "discountCodeNotApplicable": "Ta koda ne velja za izbrano vozovnico.",
-      "discountAmountLabel": "Zmanjšanje:"
+      "discountAmountLabel": "Zmanjšanje:",
+      "fieldRequired": "To področje je obvezno."
     },
     "scanner": {
       "openButton": "Skeniranje vstopnic",
@@ -3135,7 +3136,8 @@
       "submittedTitle": "Hvala za vašo donacijo!",
       "submittedWithEmail": "Poslali so vam potrditveno e-pošto.",
       "toastCancelled": "Plačilo preklicano.",
-      "errorNetwork": "Omrežna napaka. Poskusi znova."
+      "errorNetwork": "Omrežna napaka. Poskusi znova.",
+      "fieldRequired": "To področje je obvezno."
     },
     "cancelSubscription": {
       "invalidLink": "Ta povezava za preklic ni velveličastna.",
