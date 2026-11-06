@@ -29,6 +29,7 @@ import { EMPTY_ADDRESS_FORM_VALUES } from "@/lib/address"
 import { cheapestAvailableTicketTypePrice } from "@/lib/ticket-types"
 import { MAX_FUNCTION_UPLOAD_BYTES } from "@/lib/upload-limits"
 import { acceptedOnSitePaymentMethods, type OnSitePaymentMethod } from "@/lib/evenement-payment-methods"
+import { cn } from "@/lib/utils"
 
 const MAX_QUANTITY = 10
 
@@ -232,6 +233,7 @@ function AttendeeFields({
   fieldGender,
   fieldMobile,
   showHeading,
+  showAllErrors,
   t,
   loc,
   slug,
@@ -248,6 +250,10 @@ function AttendeeFields({
   fieldGender:    FieldRequirement
   fieldMobile:    FieldRequirement
   showHeading:  boolean
+  // Revealed only once the visitor tries to submit with something missing — see the
+  // submit button's wrapping div in EvenementRegisterFormInner for why this can't simply
+  // be each input's own blur handler (none of them have one).
+  showAllErrors: boolean
   t:            ReturnType<typeof useTranslations>
   loc:          string
   slug:         string
@@ -260,6 +266,20 @@ function AttendeeFields({
   const fieldLabel = (requirement: FieldRequirement, label: string) =>
     requirement === "REQUIRED" ? t("customFieldRequired", { label }) : t("customFieldOptional", { label })
   const tCommon = useTranslations("common")
+  const fieldError = (value: string, required: boolean) =>
+    required && !value.trim() && showAllErrors ? t("fieldRequired") : undefined
+  const inputCls = (error: string | undefined) => cn(
+    "h-9 w-full rounded-md border bg-background px-3 text-sm outline-none focus:ring-1 focus:ring-ring",
+    error ? "border-destructive focus:ring-destructive/30" : "border-input",
+  )
+  const addressErrors = fieldAddress === "REQUIRED" && showAllErrors
+    ? {
+        addressStreet: fieldError(attendee.addressStreet, true),
+        postalCode:    fieldError(attendee.postalCode,    true),
+        city:          fieldError(attendee.city,          true),
+        country:       fieldError(attendee.country,       true),
+      }
+    : undefined
 
   return (
     <div className={showHeading ? "space-y-3 border-t pt-4 first:border-t-0 first:pt-0" : "space-y-3"}>
@@ -273,15 +293,17 @@ function AttendeeFields({
           <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{t("firstNameLabel")}</label>
           <input
             type="text" required value={attendee.firstName} onChange={e => onChange({ firstName: e.target.value })}
-            className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm outline-none focus:ring-1 focus:ring-ring"
+            className={inputCls(fieldError(attendee.firstName, true))}
           />
+          {fieldError(attendee.firstName, true) && <p className="text-xs text-destructive">{fieldError(attendee.firstName, true)}</p>}
         </div>
         <div className="space-y-1.5">
           <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{t("lastNameLabel")}</label>
           <input
             type="text" required value={attendee.lastName} onChange={e => onChange({ lastName: e.target.value })}
-            className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm outline-none focus:ring-1 focus:ring-ring"
+            className={inputCls(fieldError(attendee.lastName, true))}
           />
+          {fieldError(attendee.lastName, true) && <p className="text-xs text-destructive">{fieldError(attendee.lastName, true)}</p>}
         </div>
       </div>
 
@@ -289,8 +311,9 @@ function AttendeeFields({
         <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{t("emailLabel")}</label>
         <input
           type="email" required value={attendee.email} onChange={e => onChange({ email: e.target.value })}
-          className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm outline-none focus:ring-1 focus:ring-ring"
+          className={inputCls(showAllErrors && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(attendee.email) ? t("fieldRequired") : undefined)}
         />
+        {showAllErrors && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(attendee.email) && <p className="text-xs text-destructive">{t("fieldRequired")}</p>}
       </div>
 
       {ticketTypes.length > 0 && (
@@ -335,8 +358,9 @@ function AttendeeFields({
           <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{fieldLabel(fieldPhone, t("phoneLabel"))}</label>
           <input
             type="tel" required={fieldPhone === "REQUIRED"} value={attendee.phone} onChange={e => onChange({ phone: e.target.value })}
-            className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm outline-none focus:ring-1 focus:ring-ring"
+            className={inputCls(fieldError(attendee.phone, fieldPhone === "REQUIRED"))}
           />
+          {fieldError(attendee.phone, fieldPhone === "REQUIRED") && <p className="text-xs text-destructive">{fieldError(attendee.phone, fieldPhone === "REQUIRED")}</p>}
         </div>
       )}
 
@@ -355,6 +379,7 @@ function AttendeeFields({
             country:           attendee.country,
           }}
           onChange={onChange}
+          errors={addressErrors}
         />
       )}
 
@@ -363,8 +388,9 @@ function AttendeeFields({
           <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{fieldLabel(fieldMobile, t("mobileLabel"))}</label>
           <input
             type="tel" required={fieldMobile === "REQUIRED"} placeholder={t("mobilePlaceholder")} value={attendee.mobile} onChange={e => onChange({ mobile: e.target.value })}
-            className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm outline-none focus:ring-1 focus:ring-ring"
+            className={inputCls(fieldError(attendee.mobile, fieldMobile === "REQUIRED"))}
           />
+          {fieldError(attendee.mobile, fieldMobile === "REQUIRED") && <p className="text-xs text-destructive">{fieldError(attendee.mobile, fieldMobile === "REQUIRED")}</p>}
         </div>
       )}
 
@@ -373,8 +399,9 @@ function AttendeeFields({
           <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{fieldLabel(fieldBirthDate, t("birthDateLabel"))}</label>
           <input
             type="date" required={fieldBirthDate === "REQUIRED"} value={attendee.birthDate} onChange={e => onChange({ birthDate: e.target.value })}
-            className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm outline-none focus:ring-1 focus:ring-ring"
+            className={inputCls(fieldError(attendee.birthDate, fieldBirthDate === "REQUIRED"))}
           />
+          {fieldError(attendee.birthDate, fieldBirthDate === "REQUIRED") && <p className="text-xs text-destructive">{fieldError(attendee.birthDate, fieldBirthDate === "REQUIRED")}</p>}
         </div>
       )}
 
@@ -383,7 +410,7 @@ function AttendeeFields({
           <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{fieldLabel(fieldGender, t("genderLabel"))}</label>
           <select
             required={fieldGender === "REQUIRED"} value={attendee.gender} onChange={e => onChange({ gender: e.target.value as Attendee["gender"] })}
-            className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm outline-none focus:ring-1 focus:ring-ring"
+            className={inputCls(fieldGender === "REQUIRED" && !attendee.gender && showAllErrors ? t("fieldRequired") : undefined)}
           >
             <option value="" disabled={fieldGender === "REQUIRED"} hidden={fieldGender === "REQUIRED"}>
               {fieldGender === "REQUIRED" ? tCommon("choosePlaceholder") : t("genderNone")}
@@ -391,6 +418,7 @@ function AttendeeFields({
             <option value="HOMME">{t("genderHomme")}</option>
             <option value="FEMME">{t("genderFemme")}</option>
           </select>
+          {fieldGender === "REQUIRED" && !attendee.gender && showAllErrors && <p className="text-xs text-destructive">{t("fieldRequired")}</p>}
         </div>
       )}
 
@@ -405,6 +433,10 @@ function AttendeeFields({
         }
         const setAnswer = (value: AnswerValue) => onChange({ answers: { ...attendee.answers, [field.id]: value } })
         const labelText = field.required ? t("customFieldRequired", { label: field.label }) : t("customFieldOptional", { label: field.label })
+        const customError = (filled: boolean) => field.required && !filled && showAllErrors ? t("fieldRequired") : undefined
+        const textError = customError(stringValue().trim() !== "")
+        const choiceError = customError(stringValue() !== "")
+        const multiError = customError(arrayValue().length > 0)
 
         return (
         <div key={field.id} className="space-y-1.5">
@@ -423,33 +455,45 @@ function AttendeeFields({
               t={t}
             />
           ) : field.type === "LONG_TEXT" ? (
-            <textarea
-              required={field.required}
-              rows={3}
-              value={stringValue()}
-              onChange={e => setAnswer(e.target.value)}
-              className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-1 focus:ring-ring"
-            />
+            <>
+              <textarea
+                required={field.required}
+                rows={3}
+                value={stringValue()}
+                onChange={e => setAnswer(e.target.value)}
+                className={cn(
+                  "w-full rounded-md border bg-background px-3 py-2 text-sm outline-none focus:ring-1 focus:ring-ring",
+                  textError ? "border-destructive focus:ring-destructive/30" : "border-input",
+                )}
+              />
+              {textError && <p className="text-xs text-destructive">{textError}</p>}
+            </>
           ) : field.type === "DATE" ? (
-            <input
-              type="date" required={field.required}
-              value={stringValue()}
-              onChange={e => setAnswer(e.target.value)}
-              className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm outline-none focus:ring-1 focus:ring-ring"
-            />
+            <>
+              <input
+                type="date" required={field.required}
+                value={stringValue()}
+                onChange={e => setAnswer(e.target.value)}
+                className={inputCls(textError)}
+              />
+              {textError && <p className="text-xs text-destructive">{textError}</p>}
+            </>
           ) : field.type === "BOOLEAN" ? (
-            <div className="flex h-9 items-center gap-4">
-              {(["true", "false"] as const).map(v => (
-                <label key={v} className="flex items-center gap-1.5 text-sm">
-                  <input
-                    type="radio" name={`bool-${index}-${field.id}`} required={field.required}
-                    checked={stringValue() === v}
-                    onChange={() => setAnswer(v)}
-                  />
-                  {v === "true" ? t("booleanYes") : t("booleanNo")}
-                </label>
-              ))}
-            </div>
+            <>
+              <div className="flex h-9 items-center gap-4">
+                {(["true", "false"] as const).map(v => (
+                  <label key={v} className="flex items-center gap-1.5 text-sm">
+                    <input
+                      type="radio" name={`bool-${index}-${field.id}`} required={field.required}
+                      checked={stringValue() === v}
+                      onChange={() => setAnswer(v)}
+                    />
+                    {v === "true" ? t("booleanYes") : t("booleanNo")}
+                  </label>
+                ))}
+              </div>
+              {choiceError && <p className="text-xs text-destructive">{choiceError}</p>}
+            </>
           ) : field.type === "SELECT" ? (
             <SelectField
               id={`custom-${index}-${field.id}`}
@@ -458,47 +502,57 @@ function AttendeeFields({
               value={stringValue() || undefined}
               onValueChange={v => setAnswer(v)}
               options={(field.options ?? []).map(o => ({ value: o, label: o }))}
+              error={choiceError}
             />
           ) : field.type === "RADIO" ? (
-            <div className="flex flex-col gap-1.5">
-              {(field.options ?? []).map(o => (
-                <label key={o} className="flex items-center gap-1.5 text-sm">
-                  <input
-                    type="radio" name={`radio-${index}-${field.id}`} required={field.required}
-                    checked={stringValue() === o}
-                    onChange={() => setAnswer(o)}
-                  />
-                  {o}
-                </label>
-              ))}
-            </div>
-          ) : field.type === "CHECKBOX_MULTI" ? (
-            <div className="flex flex-col gap-1.5">
-              {(field.options ?? []).map(o => {
-                const checked = arrayValue().includes(o)
-                return (
+            <>
+              <div className="flex flex-col gap-1.5">
+                {(field.options ?? []).map(o => (
                   <label key={o} className="flex items-center gap-1.5 text-sm">
                     <input
-                      type="checkbox"
-                      checked={checked}
-                      onChange={e => setAnswer(e.target.checked ? [...arrayValue(), o] : arrayValue().filter(v => v !== o))}
+                      type="radio" name={`radio-${index}-${field.id}`} required={field.required}
+                      checked={stringValue() === o}
+                      onChange={() => setAnswer(o)}
                     />
                     {o}
                   </label>
-                )
-              })}
-            </div>
+                ))}
+              </div>
+              {choiceError && <p className="text-xs text-destructive">{choiceError}</p>}
+            </>
+          ) : field.type === "CHECKBOX_MULTI" ? (
+            <>
+              <div className="flex flex-col gap-1.5">
+                {(field.options ?? []).map(o => {
+                  const checked = arrayValue().includes(o)
+                  return (
+                    <label key={o} className="flex items-center gap-1.5 text-sm">
+                      <input
+                        type="checkbox"
+                        checked={checked}
+                        onChange={e => setAnswer(e.target.checked ? [...arrayValue(), o] : arrayValue().filter(v => v !== o))}
+                      />
+                      {o}
+                    </label>
+                  )
+                })}
+              </div>
+              {multiError && <p className="text-xs text-destructive">{multiError}</p>}
+            </>
           ) : (
-            <input
-              type={field.type === "NUMBER" ? "number" : "text"}
-              min={field.type === "NUMBER" ? 0 : undefined}
-              step={field.type === "NUMBER" ? 1 : undefined}
-              inputMode={field.type === "NUMBER" ? "numeric" : undefined}
-              required={field.required}
-              value={stringValue()}
-              onChange={e => setAnswer(e.target.value)}
-              className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm outline-none focus:ring-1 focus:ring-ring"
-            />
+            <>
+              <input
+                type={field.type === "NUMBER" ? "number" : "text"}
+                min={field.type === "NUMBER" ? 0 : undefined}
+                step={field.type === "NUMBER" ? 1 : undefined}
+                inputMode={field.type === "NUMBER" ? "numeric" : undefined}
+                required={field.required}
+                value={stringValue()}
+                onChange={e => setAnswer(e.target.value)}
+                className={inputCls(textError)}
+              />
+              {textError && <p className="text-xs text-destructive">{textError}</p>}
+            </>
           )}
         </div>
         )
@@ -560,6 +614,12 @@ function EvenementRegisterFormInner({ slug, id, legalDocuments }: Props) {
   // premier rendu, pour qu'une requête en échec ne puisse pas produire un formulaire sans elle.
   const [legalAccepted, setLegalAccepted] = useState(false)
   const acceptedLegalRevisionIds = legalAccepted ? legalDocuments.map(document => document.revisionId) : []
+  // A disabled submit button never fires a native "please fill this field" prompt, and none
+  // of AttendeeFields' raw inputs have a blur handler of their own — so without this, a
+  // missing required field (easy to miss on Pays, the least prominent of the address inputs)
+  // leaves the button permanently greyed out with no indication why. Revealed only after a
+  // failed submit attempt, same timing as the adhesion form's own showAllErrors.
+  const [showAllErrors, setShowAllErrors] = useState(false)
   // Un seul par commande, comme les dons/produits ci-dessus — voir le commentaire du champ
   // ticketTypeIds dans schema.prisma : ne s'applique jamais aux dons ni à la boutique.
   const [discountCodeInput, setDiscountCodeInput] = useState("")
@@ -837,9 +897,9 @@ function EvenementRegisterFormInner({ slug, id, legalDocuments }: Props) {
         return !!tt && isTicketTypeAvailable(tt)
       })()) &&
       (event.fieldPhone     !== "REQUIRED" || a.phone.trim()     !== "") &&
-      // Une adresse obligatoire l'est sur les trois parties qui la rendent postalement
-      // utilisable — le complément et le pays restent facultatifs, comme dans AddressFields.
-      (event.fieldAddress   !== "REQUIRED" || (a.addressStreet.trim() !== "" && a.postalCode.trim() !== "" && a.city.trim() !== "")) &&
+      // Une adresse obligatoire l'est sur les quatre parties qui la rendent postalement
+      // utilisable — le complément reste facultatif, comme dans AddressFields.
+      (event.fieldAddress   !== "REQUIRED" || (a.addressStreet.trim() !== "" && a.postalCode.trim() !== "" && a.city.trim() !== "" && a.country.trim() !== "")) &&
       (event.fieldMobile    !== "REQUIRED" || a.mobile.trim()    !== "") &&
       (event.fieldBirthDate !== "REQUIRED" || a.birthDate.trim() !== "") &&
       (event.fieldGender    !== "REQUIRED" || a.gender !== "") &&
@@ -1147,6 +1207,7 @@ function EvenementRegisterFormInner({ slug, id, legalDocuments }: Props) {
                       fieldGender={event.fieldGender}
                       fieldMobile={event.fieldMobile}
                       showHeading={visibleAttendees.length > 1}
+                      showAllErrors={showAllErrors}
                       t={t}
                       loc={loc}
                       slug={slug}
@@ -1361,17 +1422,23 @@ function EvenementRegisterFormInner({ slug, id, legalDocuments }: Props) {
                     onChange={setLegalAccepted}
                   />
 
-                  <Button
-                    type="submit"
-                    disabled={!canSubmit}
-                    loading={loading}
-                    className="w-full"
-                  >
-                    <TicketIcon className="size-4 mr-2" />
-                    {isPaid
-                      ? t("pay", { amount: total.toLocaleString(loc, { style: "currency", currency: "EUR" }) })
-                      : t("submit")}
-                  </Button>
+                  {/* A disabled <button> never fires a click of its own, but the wrapping div
+                      still sees the click bubble up — this is what reveals the per-field
+                      errors above instead of leaving a permanently greyed-out button with no
+                      explanation. */}
+                  <div onClick={() => { if (!canSubmit) setShowAllErrors(true) }}>
+                    <Button
+                      type="submit"
+                      disabled={!canSubmit}
+                      loading={loading}
+                      className="w-full"
+                    >
+                      <TicketIcon className="size-4 mr-2" />
+                      {isPaid
+                        ? t("pay", { amount: total.toLocaleString(loc, { style: "currency", currency: "EUR" }) })
+                        : t("submit")}
+                    </Button>
+                  </div>
                   <div className="flex gap-2 text-xs text-muted-foreground">
                     <ShieldCheckIcon className="size-3.5 shrink-0 mt-0.5" />
                     <p>{t("privacyNote")}</p>

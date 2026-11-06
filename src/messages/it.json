@@ -1522,7 +1522,8 @@
       "discountCodeRemove": "Rimuovere",
       "discountCodeInvalid": "Questo codice è invalido.",
       "discountCodeNotApplicable": "Questo codice non si applica alla tariffa selezionata.",
-      "discountAmountLabel": "Riduzione:"
+      "discountAmountLabel": "Riduzione:",
+      "fieldRequired": "Questo campo è obbligatorio."
     },
     "scanner": {
       "openButton": "Biglietti di scansione",
@@ -3120,7 +3121,8 @@
       "submittedTitle": "Grazie per la tua donazione!",
       "submittedWithEmail": "Ti è stata inviata un'email di conferma.",
       "toastCancelled": "Pagamento annullato.",
-      "errorNetwork": "Errore di rete. Riprova."
+      "errorNetwork": "Errore di rete. Riprova.",
+      "fieldRequired": "Questo campo è obbligatorio."
     },
     "cancelSubscription": {
       "invalidLink": "Questo link per la cancellazione non è valido.",

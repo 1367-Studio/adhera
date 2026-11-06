@@ -1522,7 +1522,8 @@
       "discountCodeRemove": "Távolítsd el",
       "discountCodeInvalid": "Ez a kód érvénytelen.",
       "discountCodeNotApplicable": "Ez a kód nem vonatkozik a kiválasztott viteldíjra.",
-      "discountAmountLabel": "Csökkentés:"
+      "discountAmountLabel": "Csökkentés:",
+      "fieldRequired": "Ez a terület kötelező."
     },
     "scanner": {
       "openButton": "Szkennelési jegyek",
@@ -3120,7 +3121,8 @@
       "submittedTitle": "Köszönöm az adományodat!",
       "submittedWithEmail": "Megerősítő e-mailt küldtek neked.",
       "toastCancelled": "Fizetés törölve.",
-      "errorNetwork": "Hálózati hiba. Próbáld újra."
+      "errorNetwork": "Hálózati hiba. Próbáld újra.",
+      "fieldRequired": "Ez a terület kötelező."
     },
     "cancelSubscription": {
       "invalidLink": "Ez a törlési link érvénytelen.",

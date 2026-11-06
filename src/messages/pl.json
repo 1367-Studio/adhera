@@ -1522,7 +1522,8 @@
       "discountCodeRemove": "Usuń",
       "discountCodeInvalid": "Ten kod jest nieprawidłowy.",
       "discountCodeNotApplicable": "Ten kod nie dotyczy wybranej taryfy.",
-      "discountAmountLabel": "Redukcja:"
+      "discountAmountLabel": "Redukcja:",
+      "fieldRequired": "Ta dziedzina jest wymagana."
     },
     "scanner": {
       "openButton": "Bilety skanujące",
@@ -3120,7 +3121,8 @@
       "submittedTitle": "Dziękujemy za darowiznę!",
       "submittedWithEmail": "Wysłano do Ciebie maila potwierdzającego.",
       "toastCancelled": "Płatność anulowana.",
-      "errorNetwork": "Błąd sieci. Spróbuj ponownie."
+      "errorNetwork": "Błąd sieci. Spróbuj ponownie.",
+      "fieldRequired": "Ta dziedzina jest wymagana."
     },
     "cancelSubscription": {
       "invalidLink": "Ten link do anulowania jest nieprawidłowy.",
