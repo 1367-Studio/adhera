@@ -909,7 +909,18 @@
         "EXCEPTIONAL": "Extraordinärt",
         "OTHER": "Övrigt",
         "IN_KIND": "Bidrag in natura"
-      }
+      },
+      "accountingCodeFormwiseNote": "Underkonto föreslagits av Formwise för separat spårning — inte ett obligatoriskt officiellt nummer.",
+      "suggestedAccounts": "Föreslagna konton",
+      "seeOtherAccounts": "Se de andra kontona",
+      "description": "Beskrivning",
+      "descriptionPlaceholder": "Exempel: Biljettförsäljning till en aktivitet eller ett evenemang.",
+      "sectionAutoNote": "Avsnitt som automatiskt bestäms från redovisningskontot.",
+      "sectionManualNote": "Manuellt definierad sektion.",
+      "sectionUnverifiedNote": "Detta konto känns inte igen – kontrollera avsnittet eller välj det från de avancerade alternativen.",
+      "sectionToVerify": "Sektion att kontrollera",
+      "advancedOptions": "Avancerade alternativ",
+      "revertToAutoSection": "Tillbaka till den automatiska sektionen"
     },
     "bankAccountForm": {
       "bankName": "Banknamn",
@@ -1061,7 +1072,11 @@
         "updated": "Uppdaterad kategori",
         "deleted": "Kategori borttagen",
         "seeded": "{count, plural, one {# initierad kategori} other {# initiala kategorier}}"
-      }
+      },
+      "chooseTemplateTitle": "Välj en kategorityp",
+      "customCategory": "Skapa en anpassad kategori",
+      "alreadyExists": "Redan konfigurerad",
+      "archivedReactivateHint": "Arkiverad — klicka för att återaktivera"
     },
     "incomesView": {
       "title": "Intäkter",

@@ -2,7 +2,7 @@ import { NextResponse } from "next/server"
 import { Prisma } from "@prisma/client"
 import { prisma } from "@/lib/prisma/client"
 import { financeCategoryUpdateSchema } from "@/lib/schemas"
-import { isValidAccountingCode } from "@/lib/finance/chart-of-accounts"
+import { isValidAccountingCode, sectionForAccountCode } from "@/lib/finance/chart-of-accounts"
 import { writeActivityLog } from "@/lib/activity-log"
 import { withAdminAuth } from "@/lib/api-wrapper"
 
@@ -45,11 +45,21 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
     return NextResponse.json({ error: "Compte comptable invalide pour ce type" }, { status: 422 })
   }
 
+  // Re-derive section only when the account actually changed AND the caller didn't explicitly
+  // override it (the "Options avancées" path) — leaving it `undefined` otherwise means Prisma
+  // leaves the existing persisted value untouched (see the .default() leak note above).
+  const section = parsed.data.section ?? (parsed.data.accountingCode ? sectionForAccountCode(parsed.data.accountingCode) ?? "OTHER" : undefined)
+
   let category
   try {
     category = await prisma.financeCategory.update({
       where: { id },
-      data:  { ...parsed.data, accountingCode: parsed.data.accountingCode ?? undefined },
+      data:  {
+        ...parsed.data,
+        accountingCode: parsed.data.accountingCode ?? undefined,
+        section,
+        description: parsed.data.description !== undefined ? (parsed.data.description || null) : undefined,
+      },
     })
   } catch (error) {
     if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {

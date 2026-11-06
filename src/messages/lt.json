@@ -909,7 +909,18 @@
         "EXCEPTIONAL": "Nepaprastasis",
         "OTHER": "Kita",
         "IN_KIND": "Įnašai natūra"
-      }
+      },
+      "accountingCodeFormwiseNote": "Subpaskyra, kurią Formwise pasiūlė atskiram sekimui – ne privalomas oficialus numeris.",
+      "suggestedAccounts": "Siūlomos paskyros",
+      "seeOtherAccounts": "Žr. kitus pasakojimus",
+      "description": "Aprašymas",
+      "descriptionPlaceholder": "Pvz.: bilietų pardavimas veiklai ar renginiui.",
+      "sectionAutoNote": "Skyrius automatiškai nustatomas iš apskaitos sąskaitos.",
+      "sectionManualNote": "Rankiniu būdu apibrėžtas skyrius.",
+      "sectionUnverifiedNote": "Ši paskyra nėra atpažįstama — patikrinkite skiltį arba pasirinkite ją iš išplėstinių parinkčių.",
+      "sectionToVerify": "Skyrius, kurį reikia patikrinti",
+      "advancedOptions": "Išplėstinės parinktys",
+      "revertToAutoSection": "Grįžti į automatinę sekciją"
     },
     "bankAccountForm": {
       "bankName": "Banko pavadinimas",
@@ -1061,7 +1072,11 @@
         "updated": "Atnaujinta kategorija",
         "deleted": "Kategorija ištrinta",
         "seeded": "{count, plural, one {# inicializuota kategorija} other {# kategorijos inicializuotos}}"
-      }
+      },
+      "chooseTemplateTitle": "Pasirinkite kategorijos tipą",
+      "customCategory": "Sukurkite individualią kategoriją",
+      "alreadyExists": "Jau sukonfigūruota",
+      "archivedReactivateHint": "Archyvuota — spustelėkite, kad vėl aktyvuotumėte"
     },
     "incomesView": {
       "title": "Pajamos",

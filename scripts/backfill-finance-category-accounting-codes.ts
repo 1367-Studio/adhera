@@ -30,6 +30,16 @@ const RETIRED_KEY_REMAP: Record<string, string> = {
   materiel: "fournituresAdmin",
 }
 
+// Known-wrong codes already SET on a row (as opposed to the null/empty rows the main pass
+// below handles) — a real bug found while standardizing the default catalog:
+// "commissionFormwise" used to point at 6226/622600 (Honoraires) instead of 622200
+// (Commissions et courtages sur ventes). Same-key, unambiguous 1:1 correction, so it's safe to
+// auto-fix rather than leave for manual review.
+const KNOWN_WRONG_CODE_FIXES: { key: string; from: string; to: string }[] = [
+  { key: "commissionFormwise", from: "6226",   to: "622200" },
+  { key: "commissionFormwise", from: "622600", to: "622200" },
+]
+
 async function main() {
   const dbUrl = process.env.DATABASE_URL ?? ""
   if (!dbUrl.includes("rycxfxzubzdqvkqtnmes") && !execute) {
@@ -78,15 +88,31 @@ async function main() {
   console.log(`\nNeeds manual review — real custom categories, no reliable signal to auto-assign: ${needsReview.length}`)
   for (const r of needsReview) console.log(`  ${r.associationId} — "${r.name}" (${r.type}, key=${r.key ?? "null"}, isDefault=${r.isDefault})`)
 
+  console.log(`\n--- Known-wrong-code corrections (rows that already HAVE a code, just the wrong one) ---`)
+  let wrongCodeTotal = 0
+  for (const wrong of KNOWN_WRONG_CODE_FIXES) {
+    const wrongRows = await prisma.financeCategory.findMany({
+      where:  { key: wrong.key, accountingCode: wrong.from },
+      select: { id: true, associationId: true, name: true },
+    })
+    if (wrongRows.length === 0) continue
+    wrongCodeTotal += wrongRows.length
+    console.log(`key="${wrong.key}" ${wrong.from} -> ${wrong.to}: ${wrongRows.length} row(s)`)
+    for (const row of wrongRows) console.log(`  ${row.associationId} — "${row.name}"`)
+    if (execute) {
+      await prisma.financeCategory.updateMany({ where: { id: { in: wrongRows.map(r => r.id) } }, data: { accountingCode: wrong.to } })
+    }
+  }
+
   if (!execute) {
-    console.log(`\nDry run — would set accountingCode on ${autoFixable.length} row(s). Re-run with --execute to write. The ${legacyNoKeyDefault.length + needsReview.length} row(s) above always require a manual decision, with or without --execute.`)
+    console.log(`\nDry run — would set accountingCode on ${autoFixable.length} row(s) and correct ${wrongCodeTotal} known-wrong-code row(s). Re-run with --execute to write. The ${legacyNoKeyDefault.length + needsReview.length} row(s) above always require a manual decision, with or without --execute.`)
     return
   }
 
   for (const fix of autoFixable) {
     await prisma.financeCategory.update({ where: { id: fix.id }, data: { accountingCode: fix.code } })
   }
-  console.log(`\nUpdated ${autoFixable.length} row(s).`)
+  console.log(`\nUpdated ${autoFixable.length} row(s); corrected ${wrongCodeTotal} known-wrong-code row(s).`)
 
   await prisma.$disconnect()
 }

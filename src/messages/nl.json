@@ -909,7 +909,18 @@
         "EXCEPTIONAL": "Uitzonderlijk",
         "OTHER": "Overig",
         "IN_KIND": "Bijdragen in natura"
-      }
+      },
+      "accountingCodeFormwiseNote": "Subaccount voorgesteld door Formwise voor aparte tracking — geen verplicht officieel nummer.",
+      "suggestedAccounts": "Voorgestelde accounts",
+      "seeOtherAccounts": "Zie de andere verslagen",
+      "description": "Beschrijving",
+      "descriptionPlaceholder": "Bijvoorbeeld: kaartverkoop voor een activiteit of evenement.",
+      "sectionAutoNote": "Sectie automatisch bepaald vanuit de boekhoudrekening.",
+      "sectionManualNote": "Handmatig gedefinieerde sectie.",
+      "sectionUnverifiedNote": "Dit account wordt niet herkend — controleer de sectie of kies het uit de geavanceerde opties.",
+      "sectionToVerify": "Sectie om te controleren",
+      "advancedOptions": "Geavanceerde opties",
+      "revertToAutoSection": "Terug naar het automatische gedeelte"
     },
     "bankAccountForm": {
       "bankName": "Banknaam",
@@ -1061,7 +1072,11 @@
         "updated": "Bijgewerkte categorie",
         "deleted": "Categorie verwijderd",
         "seeded": "{count, plural, one {# geïnitialiseerde categorie} other {# categorieën geïnitialiseerd}}"
-      }
+      },
+      "chooseTemplateTitle": "Kies een categorietype",
+      "customCategory": "Maak een aangepaste categorie aan",
+      "alreadyExists": "Al geconfigureerd",
+      "archivedReactivateHint": "Gearchiveerd — klik om te heractiveren"
     },
     "incomesView": {
       "title": "Inkomsten",

@@ -1,6 +1,6 @@
 // src/lib/finance/budget.ts
 import { prisma } from "@/lib/prisma/client"
-import { ensureDefaultFinanceCategories } from "@/lib/finance/default-categories"
+import { ensureDefaultFinanceCategories } from "@/lib/finance/ensure-default-categories"
 import { type CategoryRow, resolveIncomeCategory, resolveExpenseCategory } from "@/lib/finance/category-resolution"
 import {
   emptyBudgetPeriod,
