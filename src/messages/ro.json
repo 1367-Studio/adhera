@@ -803,9 +803,9 @@
         "title": "Contribuții",
         "description": "Urmărește cotizațiile anuale de membru ale fiecărui membru: cine a plătit, cine rămâne de retras. Definește suma și exportă urmărirea oricând dorești."
       },
-      "tresorerie": {
-        "title": "Flux de numerar",
-        "description": "Înregistrează veniturile și cheltuielile pe categorii pentru a urmări soldul asociației. Adaugă o tranzacție cu butonul dedicat din partea de sus a paginii."
+      "finances": {
+        "title": "Finanțe",
+        "description": "Urmărește veniturile și cheltuielile, gestionează-ți conturile și consultă rapoartele financiare. Deschide această secțiune pentru prezentare generală, tranzacții, contabilitate și rapoarte."
       },
       "dons": {
         "title": "Donații",

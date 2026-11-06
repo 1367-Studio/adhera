@@ -820,9 +820,9 @@
         "title": "Membership fees",
         "description": "Track each member's annual membership fee: who has paid, who still needs a reminder. Set the amount and export tracking whenever you like."
       },
-      "tresorerie": {
-        "title": "Treasury",
-        "description": "Record income and expenses by category to track your association's balance. Add a transaction with the dedicated button at the top of the page."
+      "finances": {
+        "title": "Finances",
+        "description": "Track income and expenses, manage your accounts, and view financial reports. Open this section for the overview, transactions, accounting and reports."
       },
       "dons": {
         "title": "Donations",

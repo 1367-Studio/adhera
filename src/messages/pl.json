@@ -803,9 +803,9 @@
         "title": "Wkład",
         "description": "Śledź roczne składki członkowskie każdego członka: kto zapłacił, kto jeszcze nie został odwołany. Określ kwotę i eksportuj follow-up kiedy tylko chcesz."
       },
-      "tresorerie": {
-        "title": "Przepływy pieniężne",
-        "description": "Rejestruj dochody i wydatki według kategorii, aby śledzić saldo stowarzyszenia. Dodaj transakcję za pomocą dedykowanego przycisku na górze strony."
+      "finances": {
+        "title": "Finanse",
+        "description": "Śledź przychody i wydatki, zarządzaj swoimi kontami i przeglądaj raporty finansowe. Otwórz tę sekcję, aby zobaczyć podsumowanie, transakcje, księgowość i raporty."
       },
       "dons": {
         "title": "Darowizny",

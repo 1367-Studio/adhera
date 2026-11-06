@@ -803,9 +803,9 @@
         "title": "Panused",
         "description": "Jälgi iga liikme aastaseid liikmemaksusid: kes on maksnud, keda veel tagasi kutsutakse. Määra summa ja ekspordi järeltellimus millal iganes soovid."
       },
-      "tresorerie": {
-        "title": "Rahavoog",
-        "description": "Registreeri tulu ja kulud kategooriate kaupa, et jälgida ühistu saldo. Lisa tehing lehe ülaosas oleva spetsiaalse nupuga."
+      "finances": {
+        "title": "Rahandus",
+        "description": "Jälgi tulusid ja kulusid, halda oma kontosid ning vaata finantsaruandeid. Ava see jaotis, et näha ülevaadet, tehinguid, raamatupidamist ja aruandeid."
       },
       "dons": {
         "title": "Annetused",

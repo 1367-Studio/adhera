@@ -803,9 +803,9 @@
         "title": "Ranníocaíochtaí",
         "description": "Rianaigh táillí ballraíochta bliantúla gach ball: cé a d'íoc, cé atá fós le cuimhneamh. Sainmhínigh an méid agus easpórtáil an obair leantach aon uair is mian leat."
       },
-      "tresorerie": {
-        "title": "Sreabhadh airgid",
-        "description": "Ioncam agus costais a thaifeadadh de réir catagóire chun iarmhéid an chumainn a rianú. Cuir idirbheart leis an gcnaipe tiomnaithe ag barr an leathanaigh."
+      "finances": {
+        "title": "Airgeadas",
+        "description": "Coinnigh súil ar ioncam agus caiteachas, bainistigh do chuntais, agus féach ar thuarascálacha airgeadais. Oscail an rannán seo le haghaidh an fhorbhreathnaithe, na n-idirbheart, na cuntasaíochta agus na dtuarascálacha."
       },
       "dons": {
         "title": "Síntiúis",

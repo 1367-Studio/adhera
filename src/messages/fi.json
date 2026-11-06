@@ -803,9 +803,9 @@
         "title": "Panokset",
         "description": "Seuraa kunkin jäsenen vuosimaksuja: kuka on maksanut, ketkä vielä kutsutaan takaisin. Määritä summa ja vie jatkomaksu milloin haluat."
       },
-      "tresorerie": {
-        "title": "Kassavirta",
-        "description": "Kirjaa tulot ja menot kategorioittain seurataksesi yhdistyksen saldoa. Lisää tapahtuma sivun yläosassa olevalla omistetun painikkeen avulla."
+      "finances": {
+        "title": "Talous",
+        "description": "Seuraa tuloja ja menoja, hallinnoi tilejäsi ja tarkastele talousraportteja. Avaa tämä osio nähdäksesi yhteenvedon, tapahtumat, kirjanpidon ja raportit."
       },
       "dons": {
         "title": "Lahjoitukset",

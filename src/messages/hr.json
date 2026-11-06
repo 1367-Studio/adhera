@@ -803,9 +803,9 @@
         "title": "Doprinosi",
         "description": "Pratite godišnje članarine svakog člana: tko je platio, tko još nije pozvan. Definirajte iznos i izvezite nastavak kad god želite."
       },
-      "tresorerie": {
-        "title": "Novčani tok",
-        "description": "Zabilježite prihode i rashode po kategorijama kako biste pratili stanje udruge. Dodajte transakciju pomoću posebnog gumba na vrhu stranice."
+      "finances": {
+        "title": "Financije",
+        "description": "Pratite prihode i rashode, upravljajte svojim računima i pregledajte financijska izvješća. Otvorite ovaj odjeljak za pregled, transakcije, računovodstvo i izvješća."
       },
       "dons": {
         "title": "Donacije",

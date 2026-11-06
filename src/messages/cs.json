@@ -803,9 +803,9 @@
         "title": "Příspěvky",
         "description": "Sledujte roční členské příspěvky každého člena: kdo zaplatil, kdo ještě není svolán. Definujte částku a exportujte následné příspěvky kdykoli chcete."
       },
-      "tresorerie": {
-        "title": "Peněžní tok",
-        "description": "Zaznamenávejte příjmy a výdaje podle kategorií, abyste sledovali zůstatek asociace. Přidejte transakci pomocí vyhrazeného tlačítka v horní části stránky."
+      "finances": {
+        "title": "Finance",
+        "description": "Sledujte příjmy a výdaje, spravujte své účty a prohlížejte finanční přehledy. Otevřete tuto sekci pro přehled, transakce, účetnictví a výkazy."
       },
       "dons": {
         "title": "Dary",

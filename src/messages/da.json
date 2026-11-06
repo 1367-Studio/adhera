@@ -803,9 +803,9 @@
         "title": "Bidrag",
         "description": "Følg de årlige medlemsgebyrer for hvert medlem: hvem der har betalt, hvem der stadig skal tilbagekaldes. Definer beløbet og eksporter opfølgningen, når du vil."
       },
-      "tresorerie": {
-        "title": "Pengestrøm",
-        "description": "Registrer indtægter og udgifter efter kategori for at følge foreningens saldo. Tilføj en transaktion med den dedikerede knap øverst på siden."
+      "finances": {
+        "title": "Økonomi",
+        "description": "Hold styr på indtægter og udgifter, administrer dine konti, og se finansielle rapporter. Åbn denne sektion for oversigt, transaktioner, bogføring og rapporter."
       },
       "dons": {
         "title": "Donationer",
