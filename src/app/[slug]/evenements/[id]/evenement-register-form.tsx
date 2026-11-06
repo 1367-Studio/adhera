@@ -19,6 +19,7 @@ import { FormField } from "@/components/ui/form-field"
 import { AddressFields } from "@/components/ui/address-fields"
 import { QuantityStepper } from "@/components/ui/quantity-stepper"
 import { FormDraftNotice } from "@/components/public/form-draft-notice"
+import { PublicFormSplitLayout } from "@/components/public/public-form-split-layout"
 import { useFormDraft } from "@/hooks/use-form-draft"
 import { EventDonationPrompt } from "@/components/public/event-donation-prompt"
 import { FormTermsSection } from "@/components/public/form-terms-section"
@@ -517,12 +518,6 @@ function EvenementRegisterFormInner({ slug, id, legalDocuments }: Props) {
   const [event, setEvent]     = useState<EventInfo | null>(null)
   const [loadingEvent, setLoadingEvent] = useState(true)
   const [notFound, setNotFound] = useState(false)
-  // Portrait covers pair naturally with the form in a two-column layout (similar
-  // heights); a landscape cover left in that layout leaves a tall dead gap under it
-  // since it's short and the form is tall, so those instead run full-width above the
-  // form like a banner. Null (still loading) falls back to the banner treatment, since
-  // most event covers are landscape.
-  const [isPortrait, setIsPortrait] = useState<boolean | null>(null)
 
   // One ticket = one attendee, even within a single order — every submission carries a
   // list, starting at 1. `attendees` can hold more entries than `attendeeCount` — lowering
@@ -992,421 +987,400 @@ function EvenementRegisterFormInner({ slug, id, legalDocuments }: Props) {
   return (
     <>
       {showInAppBrowserBanner && <InAppBrowserBanner>{t("inAppBrowserWarning")}</InAppBrowserBanner>}
-      <div className="min-h-screen bg-gradient-to-b from-primary/5 to-background flex items-start justify-center py-12 px-4">
-        <div className={`w-full space-y-6 ${event.imageUrl && isPortrait ? "max-w-5xl" : "max-w-md"}`}>
-          <div className="flex flex-wrap items-center justify-between gap-3">
+      <PublicFormSplitLayout
+        header={
+          <>
             <BackToSiteLink slug={slug} sitePublished={event.sitePublished} website={event.website} />
             <PublicSiteLocaleSwitcher locale={loc as Locale} />
-          </div>
-
-          <div className={event.imageUrl && isPortrait ? "grid gap-8 lg:grid-cols-2 items-start" : "space-y-6"}>
+          </>
+        }
+        left={
+          <>
             {event.imageUrl && (
               // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={event.imageUrl}
-                alt={event.title}
-                onLoad={e => setIsPortrait(e.currentTarget.naturalHeight > e.currentTarget.naturalWidth)}
-                className={
-                  isPortrait
-                    ? "w-auto h-auto max-w-full max-h-[32rem] mx-auto block rounded-lg lg:sticky lg:top-12"
-                    : "w-auto h-auto max-w-full max-h-[26rem] rounded-lg"
-                }
-              />
+              <img src={event.imageUrl} alt={event.title} className="w-full max-h-64 object-cover rounded-lg" />
             )}
-            <div className="space-y-6">
-              {/* Header */}
-              <div className="text-center space-y-2">
-                <div className="inline-flex items-center justify-center size-12 rounded-full bg-primary/10 dark:bg-primary/20 mb-2">
-                  <TicketIcon className="size-6 text-primary" />
-                </div>
-                <h1 className="text-2xl font-bold tracking-tight">{event.title}</h1>
-                <p className="text-muted-foreground text-sm">{event.associationName}</p>
-              </div>
 
-              {/* Détails */}
-              <div className="rounded-lg border bg-card p-4 space-y-2 text-sm">
+            <div className="text-center space-y-2">
+              <div className="inline-flex items-center justify-center size-12 rounded-full bg-primary/10 dark:bg-primary/20 mb-2">
+                <TicketIcon className="size-6 text-primary" />
+              </div>
+              <h1 className="text-2xl font-bold tracking-tight">{event.title}</h1>
+              <p className="text-muted-foreground text-sm">{event.associationName}</p>
+            </div>
+
+            <div className="rounded-lg border bg-card p-4 space-y-2 text-sm">
+              <div className="flex items-center gap-2 text-muted-foreground">
+                <CalendarBlankIcon className="size-4 shrink-0" />
+                <span>
+                  {dateObj.toLocaleDateString(loc, { day: "numeric", month: "long", year: "numeric" })}
+                  {" "}
+                  {dateObj.toLocaleTimeString(loc, { hour: "2-digit", minute: "2-digit" })}
+                </span>
+              </div>
+              {event.location && (
                 <div className="flex items-center gap-2 text-muted-foreground">
-                  <CalendarBlankIcon className="size-4 shrink-0" />
-                  <span>
-                    {dateObj.toLocaleDateString(loc, { day: "numeric", month: "long", year: "numeric" })}
-                    {" "}
-                    {dateObj.toLocaleTimeString(loc, { hour: "2-digit", minute: "2-digit" })}
-                  </span>
+                  <MapPinIcon className="size-4 shrink-0" />
+                  <span>{event.location}</span>
                 </div>
-                {event.location && (
-                  <div className="flex items-center gap-2 text-muted-foreground">
-                    <MapPinIcon className="size-4 shrink-0" />
-                    <span>{event.location}</span>
-                  </div>
-                )}
-                {event.description && <RichTextView content={event.description} className="pt-1 text-foreground/90" />}
-                {hasTicketTypes ? (
-                  <p className="pt-1 font-semibold text-muted-foreground">
-                    {event.ticketTypes.length > 1 ? (
-                      t("ticketTypeFromPrice", {
-                        amount: cheapestAvailableTicketTypePrice(event.ticketTypes).toLocaleString(loc, { style: "currency", currency: "EUR" }),
-                      })
-                    ) : (
-                      <>
-                        {event.ticketTypes[0].priceBeforeDiscount && (
-                          <span className="mr-1.5 font-normal line-through">
-                            {Number(event.ticketTypes[0].priceBeforeDiscount).toLocaleString(loc, { style: "currency", currency: "EUR" })}
-                          </span>
-                        )}
-                        {Number(event.ticketTypes[0].price).toLocaleString(loc, { style: "currency", currency: "EUR" })}
-                      </>
-                    )}
-                  </p>
-                ) : event.price && Number(event.price) > 0 && (
-                  <p className="pt-1 font-semibold text-muted-foreground">{Number(event.price).toLocaleString(loc, { style: "currency", currency: "EUR" })}</p>
-                )}
-              </div>
+              )}
+              {event.description && <RichTextView content={event.description} className="pt-1 text-foreground/90" />}
+              {hasTicketTypes ? (
+                <p className="pt-1 font-semibold text-muted-foreground">
+                  {event.ticketTypes.length > 1 ? (
+                    t("ticketTypeFromPrice", {
+                      amount: cheapestAvailableTicketTypePrice(event.ticketTypes).toLocaleString(loc, { style: "currency", currency: "EUR" }),
+                    })
+                  ) : (
+                    <>
+                      {event.ticketTypes[0].priceBeforeDiscount && (
+                        <span className="mr-1.5 font-normal line-through">
+                          {Number(event.ticketTypes[0].priceBeforeDiscount).toLocaleString(loc, { style: "currency", currency: "EUR" })}
+                        </span>
+                      )}
+                      {Number(event.ticketTypes[0].price).toLocaleString(loc, { style: "currency", currency: "EUR" })}
+                    </>
+                  )}
+                </p>
+              ) : event.price && Number(event.price) > 0 && (
+                <p className="pt-1 font-semibold text-muted-foreground">{Number(event.price).toLocaleString(loc, { style: "currency", currency: "EUR" })}</p>
+              )}
+            </div>
 
-              {waitlisted ? (
-                <div className="rounded-lg border bg-card p-6 text-center text-sm space-y-1">
-                  <p className="font-medium">{t("waitlistedTitle")}</p>
-                  <p className="text-muted-foreground">{t("waitlistedBody")}</p>
-                </div>
-              ) : submitted || paidSuccess ? (
-                <div className="rounded-lg border bg-card p-6 text-center text-sm space-y-3">
-                  <div className="space-y-1">
-                    <p className="font-medium">{t("submittedTitle")}</p>
-                    {event.confirmationMessage ? (
-                      <RichTextView content={event.confirmationMessage} className="text-muted-foreground" />
-                    ) : (
-                      <p className="text-muted-foreground">{t("submittedWithEmail")}</p>
-                    )}
-                  </div>
-                  {event.donationsEnabled && (
-                    <EventDonationPrompt
-                      slug={slug}
-                      evenementId={event.id}
-                      associationName={event.associationName}
-                      canIssueTaxReceipts={event.canIssueTaxReceipts}
-                      inAppBrowser={showInAppBrowserBanner}
-                      donationCompleted={donationCompleted}
-                      locale={loc}
-                      t={t}
-                      // A single known attendee is silently assumed to be the donor (frictionless
-                      // for the common case) — with more than one, or none (paid path returning
-                      // from Stripe with no attendee data left in memory), the identity fields are
-                      // shown instead of guessing who's actually donating.
-                      donor={
-                        submitted && visibleAttendees[0]
-                          ? { firstName: visibleAttendees[0].firstName, lastName: visibleAttendees[0].lastName, email: visibleAttendees[0].email }
-                          : null
-                      }
-                      showIdentityFields={!(submitted && visibleAttendees.length === 1 && visibleAttendees[0])}
-                    />
+            {/* Même emplacement que dans membership-form-public-form.tsx : visible quel que soit
+                l'état du panneau de droite (complet, fermé, passé...), puisque c'est justement
+                alors que le visiteur a le plus besoin de joindre quelqu'un. */}
+            {(event.contactEmail || event.contactPhone) && (
+              <p className="text-center text-xs text-muted-foreground">
+                {t("contactHelp")}{" "}
+                {event.contactEmail && (
+                  <a href={`mailto:${event.contactEmail}`} className="underline underline-offset-2 hover:text-foreground">
+                    {event.contactEmail}
+                  </a>
+                )}
+                {event.contactEmail && event.contactPhone && <span aria-hidden> · </span>}
+                {event.contactPhone && (
+                  <a href={`tel:${event.contactPhone.replace(/\s/g, "")}`} className="underline underline-offset-2 hover:text-foreground">
+                    {event.contactPhone}
+                  </a>
+                )}
+              </p>
+            )}
+          </>
+        }
+        right={
+          <>
+            {waitlisted ? (
+              <div className="rounded-lg border bg-card p-6 text-center text-sm space-y-1">
+                <p className="font-medium">{t("waitlistedTitle")}</p>
+                <p className="text-muted-foreground">{t("waitlistedBody")}</p>
+              </div>
+            ) : submitted || paidSuccess ? (
+              <div className="rounded-lg border bg-card p-6 text-center text-sm space-y-3">
+                <div className="space-y-1">
+                  <p className="font-medium">{t("submittedTitle")}</p>
+                  {event.confirmationMessage ? (
+                    <RichTextView content={event.confirmationMessage} className="text-muted-foreground" />
+                  ) : (
+                    <p className="text-muted-foreground">{t("submittedWithEmail")}</p>
                   )}
                 </div>
-              ) : event.notOpenYet ? (
-                <div className="rounded-lg border border-dashed p-6 text-center text-sm text-muted-foreground">
-                  {t("notOpenYet")}
+                {event.donationsEnabled && (
+                  <EventDonationPrompt
+                    slug={slug}
+                    evenementId={event.id}
+                    associationName={event.associationName}
+                    canIssueTaxReceipts={event.canIssueTaxReceipts}
+                    inAppBrowser={showInAppBrowserBanner}
+                    donationCompleted={donationCompleted}
+                    locale={loc}
+                    t={t}
+                    // A single known attendee is silently assumed to be the donor (frictionless
+                    // for the common case) — with more than one, or none (paid path returning
+                    // from Stripe with no attendee data left in memory), the identity fields are
+                    // shown instead of guessing who's actually donating.
+                    donor={
+                      submitted && visibleAttendees[0]
+                        ? { firstName: visibleAttendees[0].firstName, lastName: visibleAttendees[0].lastName, email: visibleAttendees[0].email }
+                        : null
+                    }
+                    showIdentityFields={!(submitted && visibleAttendees.length === 1 && visibleAttendees[0])}
+                  />
+                )}
+              </div>
+            ) : event.notOpenYet ? (
+              <p className="text-center text-sm text-muted-foreground">{t("notOpenYet")}</p>
+            ) : event.closed ? (
+              <p className="text-center text-sm text-muted-foreground">{t("registrationClosed")}</p>
+            ) : event.past ? (
+              <p className="text-center text-sm text-muted-foreground">{t("past")}</p>
+            ) : event.full || allTicketTypesFull ? (
+              <p className="text-center text-sm text-muted-foreground">{t("full")}</p>
+            ) : isPaid && !event.paymentEnabled && !showOfflineChoice ? (
+              <p className="text-center text-sm text-muted-foreground">{t("paymentDisabled")}</p>
+            ) : (
+              <form onSubmit={handleSubmit} className="rounded-lg border bg-card p-4 space-y-4">
+                {/* Honeypot — visually and semantically hidden from real visitors/screen readers,
+                    but present in the DOM for bots that blindly fill every input they find. */}
+                <div className="absolute -left-[9999px] w-px h-px overflow-hidden" aria-hidden="true">
+                  <label htmlFor="website">{t("honeypotLabel")}</label>
+                  <input id="website" type="text" tabIndex={-1} autoComplete="off" value={website} onChange={e => setWebsite(e.target.value)} />
                 </div>
-              ) : event.closed ? (
-                <div className="rounded-lg border border-dashed p-6 text-center text-sm text-muted-foreground">
-                  {t("registrationClosed")}
-                </div>
-              ) : event.past ? (
-                <div className="rounded-lg border border-dashed p-6 text-center text-sm text-muted-foreground">
-                  {t("past")}
-                </div>
-              ) : event.full || allTicketTypesFull ? (
-                <div className="rounded-lg border border-dashed p-6 text-center text-sm text-muted-foreground">
-                  {t("full")}
-                </div>
-              ) : (
-                <div className="rounded-lg border bg-card p-6 space-y-4">
-                  {isPaid && !event.paymentEnabled && !showOfflineChoice ? (
-                    <p className="text-center text-sm text-muted-foreground py-2">{t("paymentDisabled")}</p>
-                  ) : (
-                  <form onSubmit={handleSubmit} className="space-y-4">
-                    {/* Honeypot — visually and semantically hidden from real visitors/screen readers,
-                        but present in the DOM for bots that blindly fill every input they find. */}
-                    <div className="absolute -left-[9999px] w-px h-px overflow-hidden" aria-hidden="true">
-                      <label htmlFor="website">{t("honeypotLabel")}</label>
-                      <input id="website" type="text" tabIndex={-1} autoComplete="off" value={website} onChange={e => setWebsite(e.target.value)} />
-                    </div>
 
-                    {isDraftRestored && <FormDraftNotice onDiscard={discardDraft} />}
+                  {isDraftRestored && <FormDraftNotice onDiscard={discardDraft} />}
 
-                    {maxAttendees > 1 && (
-                      <QuantityStepper value={attendeeCount} onChange={setQuantity} max={maxAttendees} label={t("attendeesCountLabel")} />
-                    )}
+                  {maxAttendees > 1 && (
+                    <QuantityStepper value={attendeeCount} onChange={setQuantity} max={maxAttendees} label={t("attendeesCountLabel")} />
+                  )}
 
-                    {visibleAttendees.map((a, i) => (
-                      <AttendeeFields
-                        key={i}
-                        index={i}
-                        attendee={a}
-                        onChange={patch => updateAttendee(i, patch)}
-                        ticketTypes={event.ticketTypes}
-                        customFields={event.customFields}
-                        fieldPhone={event.fieldPhone}
-                        fieldAddress={event.fieldAddress}
-                        fieldBirthDate={event.fieldBirthDate}
-                        fieldGender={event.fieldGender}
-                        fieldMobile={event.fieldMobile}
-                        showHeading={visibleAttendees.length > 1}
-                        t={t}
-                        loc={loc}
-                        slug={slug}
-                        id={id}
-                      />
-                    ))}
+                  {visibleAttendees.map((a, i) => (
+                    <AttendeeFields
+                      key={i}
+                      index={i}
+                      attendee={a}
+                      onChange={patch => updateAttendee(i, patch)}
+                      ticketTypes={event.ticketTypes}
+                      customFields={event.customFields}
+                      fieldPhone={event.fieldPhone}
+                      fieldAddress={event.fieldAddress}
+                      fieldBirthDate={event.fieldBirthDate}
+                      fieldGender={event.fieldGender}
+                      fieldMobile={event.fieldMobile}
+                      showHeading={visibleAttendees.length > 1}
+                      t={t}
+                      loc={loc}
+                      slug={slug}
+                      id={id}
+                    />
+                  ))}
 
-                    {donationExtras.length > 0 && (
-                      <div className="space-y-3 border-t pt-3">
-                        <p className="text-sm font-medium">{t("donationExtrasLabel")}</p>
-                        {donationExtras.map(d => {
-                          const checked = !!donationSelections[d.id]
-                          const amount  = donationAmounts[d.id] ?? Number(d.minAmount)
-                          const belowMinimum = checked && amount < Number(d.minAmount)
-                          return (
-                            <div key={d.id} className="space-y-1">
-                              <label className="flex items-center gap-1.5 text-sm">
+                  {donationExtras.length > 0 && (
+                    <div className="space-y-3 border-t pt-3">
+                      <p className="text-sm font-medium">{t("donationExtrasLabel")}</p>
+                      {donationExtras.map(d => {
+                        const checked = !!donationSelections[d.id]
+                        const amount  = donationAmounts[d.id] ?? Number(d.minAmount)
+                        const belowMinimum = checked && amount < Number(d.minAmount)
+                        return (
+                          <div key={d.id} className="space-y-1">
+                            <label className="flex items-center gap-1.5 text-sm">
+                              <input
+                                type="checkbox" checked={checked}
+                                onChange={e => setDonationSelections(prev => ({ ...prev, [d.id]: e.target.checked }))}
+                              />
+                              {d.label}
+                            </label>
+                            {checked && (
+                              <div className="pl-6 space-y-1">
                                 <input
-                                  type="checkbox" checked={checked}
-                                  onChange={e => setDonationSelections(prev => ({ ...prev, [d.id]: e.target.checked }))}
+                                  type="number" min={Number(d.minAmount)} step="0.01"
+                                  value={amount}
+                                  onChange={e => setDonationAmounts(prev => ({ ...prev, [d.id]: Number(e.target.value) }))}
+                                  className="h-9 w-32 rounded-md border border-input bg-background px-3 text-sm outline-none focus:ring-1 focus:ring-ring"
                                 />
-                                {d.label}
-                              </label>
-                              {checked && (
-                                <div className="pl-6 space-y-1">
-                                  <input
-                                    type="number" min={Number(d.minAmount)} step="0.01"
-                                    value={amount}
-                                    onChange={e => setDonationAmounts(prev => ({ ...prev, [d.id]: Number(e.target.value) }))}
-                                    className="h-9 w-32 rounded-md border border-input bg-background px-3 text-sm outline-none focus:ring-1 focus:ring-ring"
-                                  />
-                                  {belowMinimum && (
-                                    <p className="text-xs text-destructive">
-                                      {t("belowDonationMinimum", { amount: Number(d.minAmount).toLocaleString(loc, { style: "currency", currency: "EUR" }) })}
-                                    </p>
-                                  )}
+                                {belowMinimum && (
+                                  <p className="text-xs text-destructive">
+                                    {t("belowDonationMinimum", { amount: Number(d.minAmount).toLocaleString(loc, { style: "currency", currency: "EUR" }) })}
+                                  </p>
+                                )}
+                              </div>
+                            )}
+                          </div>
+                        )
+                      })}
+                    </div>
+                  )}
+
+                  {offeredProducts.length > 0 && (
+                    <div className="space-y-2 border-t pt-4">
+                      <p className="text-sm font-medium">{t("productsLabel")}</p>
+                      <div className="space-y-2">
+                        {offeredProducts.map(product => {
+                          const quantity = productQuantities[product.varianteId] ?? 0
+                          return (
+                            <div key={product.id} className="flex items-center justify-between gap-2 rounded-md border px-3 py-2 text-sm">
+                              <div className="flex items-center gap-3 min-w-0">
+                                {product.productImageUrl && (
+                                  <ImageThumbnail src={product.productImageUrl} alt={product.productName} />
+                                )}
+                                <div className="min-w-0">
+                                  <div className="truncate">{product.productName} — {product.variantLabel}</div>
+                                  <div className="text-xs text-muted-foreground">
+                                    {(product.price / 100).toLocaleString(loc, { style: "currency", currency: "EUR" })}
+                                  </div>
+                                </div>
+                              </div>
+                              {product.stock === 0 ? (
+                                <span className="text-xs text-muted-foreground">{t("outOfStock")}</span>
+                              ) : (
+                                <div className="flex items-center gap-2">
+                                  <Button
+                                    type="button"
+                                    variant="outline"
+                                    size="icon-sm"
+                                    disabled={quantity === 0}
+                                    aria-label={t("decreaseQuantityLabel")}
+                                    onClick={() => setProductQuantities(prev => ({ ...prev, [product.varianteId]: Math.max(0, quantity - 1) }))}
+                                  >
+                                    <MinusIcon className="size-3.5" />
+                                  </Button>
+                                  <span className="w-4 text-center tabular-nums">{quantity}</span>
+                                  <Button
+                                    type="button"
+                                    variant="outline"
+                                    size="icon-sm"
+                                    disabled={quantity >= product.stock}
+                                    aria-label={t("increaseQuantityLabel")}
+                                    onClick={() => setProductQuantities(prev => ({ ...prev, [product.varianteId]: Math.min(product.stock, quantity + 1) }))}
+                                  >
+                                    <PlusIcon className="size-3.5" />
+                                  </Button>
                                 </div>
                               )}
                             </div>
                           )
                         })}
                       </div>
-                    )}
-
-                    {offeredProducts.length > 0 && (
-                      <div className="space-y-2 border-t pt-4">
-                        <p className="text-sm font-medium">{t("productsLabel")}</p>
-                        <div className="space-y-2">
-                          {offeredProducts.map(product => {
-                            const quantity = productQuantities[product.varianteId] ?? 0
-                            return (
-                              <div key={product.id} className="flex items-center justify-between gap-2 rounded-md border px-3 py-2 text-sm">
-                                <div className="flex items-center gap-3 min-w-0">
-                                  {product.productImageUrl && (
-                                    <ImageThumbnail src={product.productImageUrl} alt={product.productName} />
-                                  )}
-                                  <div className="min-w-0">
-                                    <div className="truncate">{product.productName} — {product.variantLabel}</div>
-                                    <div className="text-xs text-muted-foreground">
-                                      {(product.price / 100).toLocaleString(loc, { style: "currency", currency: "EUR" })}
-                                    </div>
-                                  </div>
-                                </div>
-                                {product.stock === 0 ? (
-                                  <span className="text-xs text-muted-foreground">{t("outOfStock")}</span>
-                                ) : (
-                                  <div className="flex items-center gap-2">
-                                    <Button
-                                      type="button"
-                                      variant="outline"
-                                      size="icon-sm"
-                                      disabled={quantity === 0}
-                                      aria-label={t("decreaseQuantityLabel")}
-                                      onClick={() => setProductQuantities(prev => ({ ...prev, [product.varianteId]: Math.max(0, quantity - 1) }))}
-                                    >
-                                      <MinusIcon className="size-3.5" />
-                                    </Button>
-                                    <span className="w-4 text-center tabular-nums">{quantity}</span>
-                                    <Button
-                                      type="button"
-                                      variant="outline"
-                                      size="icon-sm"
-                                      disabled={quantity >= product.stock}
-                                      aria-label={t("increaseQuantityLabel")}
-                                      onClick={() => setProductQuantities(prev => ({ ...prev, [product.varianteId]: Math.min(product.stock, quantity + 1) }))}
-                                    >
-                                      <PlusIcon className="size-3.5" />
-                                    </Button>
-                                  </div>
-                                )}
-                              </div>
-                            )
-                          })}
-                        </div>
-                      </div>
-                    )}
-
-                    {attendeeCount === 1 && (
-                      <div className="space-y-1.5 border-t pt-3">
-                        {appliedDiscount ? (
-                          <div className="flex items-center justify-between gap-2 text-sm">
-                            <span className="text-muted-foreground">
-                              {t("discountCodeApplied", { code: appliedDiscount.code })}
-                            </span>
-                            <button type="button" onClick={handleRemoveDiscountCode} className="text-xs text-muted-foreground underline underline-offset-2 hover:text-foreground">
-                              {t("discountCodeRemove")}
-                            </button>
-                          </div>
-                        ) : (
-                          <div className="flex items-end gap-2">
-                            <div className="flex-1 space-y-1.5">
-                              <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{t("discountCodeLabel")}</label>
-                              <input
-                                type="text"
-                                value={discountCodeInput}
-                                onChange={e => { setDiscountCodeInput(e.target.value.toUpperCase()); setDiscountCodeStatus("idle") }}
-                                className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm outline-none focus:ring-1 focus:ring-ring"
-                              />
-                            </div>
-                            <Button type="button" variant="outline" size="sm" disabled={!discountCodeInput.trim() || discountCodeStatus === "checking"} onClick={handleApplyDiscountCode}>
-                              {t("discountCodeApply")}
-                            </Button>
-                          </div>
-                        )}
-                        {discountCodeStatus === "invalid" && (
-                          <p className="text-xs text-destructive">{t("discountCodeInvalid")}</p>
-                        )}
-                        {discountCodeStatus === "notApplicable" && (
-                          <p className="text-xs text-destructive">{t("discountCodeNotApplicable")}</p>
-                        )}
-                      </div>
-                    )}
-
-                    {(visibleAttendees.length > 1 || donationsTotal > 0 || productsTotal > 0 || discountAmount > 0) && (
-                      <div className="space-y-1 border-t pt-3">
-                        {discountAmount > 0 && (
-                          <div className="flex items-center justify-between text-sm">
-                            <span className="text-muted-foreground">{t("discountAmountLabel")}</span>
-                            <span className="tabular-nums">-{discountAmount.toLocaleString(loc, { style: "currency", currency: "EUR" })}</span>
-                          </div>
-                        )}
-                        <div className="flex items-center justify-between text-sm">
-                          <span className="text-muted-foreground">{t("totalLabel")}</span>
-                          <span className="font-semibold tabular-nums">{total.toLocaleString(loc, { style: "currency", currency: "EUR" })}</span>
-                        </div>
-                      </div>
-                    )}
-
-                    {showOfflineChoice && (
-                      <div className="space-y-2">
-                        <p className="text-sm font-medium">{t("paymentMethodLabel")}</p>
-                        <div className="flex flex-wrap gap-3 text-sm">
-                          {event.paymentEnabled && (
-                            <label className="flex items-center gap-1.5">
-                              <input type="radio" checked={paymentMethod === "STRIPE"} onChange={() => setPaymentMethod("STRIPE")} />
-                              {t("paymentMethodStripe")}
-                            </label>
-                          )}
-                          {offlineMethods.map(method => (
-                            <label key={method} className="flex items-center gap-1.5">
-                              <input type="radio" checked={paymentMethod === method} onChange={() => setPaymentMethod(method)} />
-                              {method === "ESPECES" ? t("paymentMethodCash") : method === "CHEQUE" ? t("paymentMethodCheque") : t("paymentMethodTransfer")}
-                            </label>
-                          ))}
-                        </div>
-                        {paymentMethod !== "STRIPE" && event.offlineInstructions && (
-                          <p className="text-xs text-muted-foreground">{event.offlineInstructions}</p>
-                        )}
-                      </div>
-                    )}
-                    {forcedOnlineByMultipleAttendees && (
-                      <p className="text-sm font-medium">
-                        {t("paymentMethodLabel")}
-                        <span className="font-normal text-muted-foreground"> — {t("paymentMethodOnlineOnlyMultipleAttendees")}</span>
-                      </p>
-                    )}
-                    {forcedOnlineByProducts && (
-                      <p className="text-sm font-medium">
-                        {t("paymentMethodLabel")}
-                        <span className="font-normal text-muted-foreground"> — {t("paymentMethodOnlineOnlyProducts")}</span>
-                      </p>
-                    )}
-
-                    <FormTermsSection
-                      conditions={event.conditions}
-                      attachments={event.attachments}
-                      requireCguvSignature={event.requireCguvSignature}
-                      accepted={conditionsAgreed}
-                      onAcceptedChange={setConditionsAgreed}
-                      labels={{
-                        viewConditions:   t("viewConditionsLabel"),
-                        conditionsTitle:  t("conditionsModalTitle"),
-                        acceptConditions: t("conditionsAgreeLabel"),
-                      }}
-                      acceptanceExtra={
-                        <FormField
-                          label={t("signedNameLabel")}
-                          required
-                          value={signedName}
-                          onChange={event => setSignedName(event.target.value)}
-                        />
-                      }
-                    />
-
-                    {/* Documents de l'association — affichés quel que soit requireCguvSignature, qui
-                        ne concerne que les conditions propres à l'événement ci-dessus. Ne rend rien
-                        quand l'association n'impose aucun document (voir LegalConsent). */}
-                    <LegalConsent
-                      slug={slug}
-                      documents={legalDocuments}
-                      checked={legalAccepted}
-                      onChange={setLegalAccepted}
-                    />
-
-                    <Button
-                      type="submit"
-                      disabled={!canSubmit}
-                      loading={loading}
-                      className="w-full"
-                    >
-                      <TicketIcon className="size-4 mr-2" />
-                      {isPaid
-                        ? t("pay", { amount: total.toLocaleString(loc, { style: "currency", currency: "EUR" }) })
-                        : t("submit")}
-                    </Button>
-
-                    <div className="flex gap-2 text-xs text-muted-foreground">
-                      <ShieldCheckIcon className="size-3.5 shrink-0 mt-0.5" />
-                      <p>{t("privacyNote")}</p>
                     </div>
-                  </form>
                   )}
-                </div>
-              )}
-              {/* Outside the conditional above on purpose — a visitor who hits notOpenYet/
-                  closed/full/past needs a way to reach someone precisely then, not just once
-                  the form itself is showing. Same placement convention as
-                  membership-form-public-form.tsx's own contact block. */}
-              {(event.contactEmail || event.contactPhone) && (
-                <p className="pt-2 text-center text-xs text-muted-foreground">
-                  {t("contactHelp")}{" "}
-                  {event.contactEmail && (
-                    <a href={`mailto:${event.contactEmail}`} className="underline underline-offset-2 hover:text-foreground">
-                      {event.contactEmail}
-                    </a>
+
+                  {attendeeCount === 1 && (
+                    <div className="space-y-1.5 border-t pt-3">
+                      {appliedDiscount ? (
+                        <div className="flex items-center justify-between gap-2 text-sm">
+                          <span className="text-muted-foreground">
+                            {t("discountCodeApplied", { code: appliedDiscount.code })}
+                          </span>
+                          <button type="button" onClick={handleRemoveDiscountCode} className="text-xs text-muted-foreground underline underline-offset-2 hover:text-foreground">
+                            {t("discountCodeRemove")}
+                          </button>
+                        </div>
+                      ) : (
+                        <div className="flex items-end gap-2">
+                          <div className="flex-1 space-y-1.5">
+                            <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{t("discountCodeLabel")}</label>
+                            <input
+                              type="text"
+                              value={discountCodeInput}
+                              onChange={e => { setDiscountCodeInput(e.target.value.toUpperCase()); setDiscountCodeStatus("idle") }}
+                              className="h-9 w-full rounded-md border border-input bg-background px-3 text-sm outline-none focus:ring-1 focus:ring-ring"
+                            />
+                          </div>
+                          <Button type="button" variant="outline" size="sm" disabled={!discountCodeInput.trim() || discountCodeStatus === "checking"} onClick={handleApplyDiscountCode}>
+                            {t("discountCodeApply")}
+                          </Button>
+                        </div>
+                      )}
+                      {discountCodeStatus === "invalid" && (
+                        <p className="text-xs text-destructive">{t("discountCodeInvalid")}</p>
+                      )}
+                      {discountCodeStatus === "notApplicable" && (
+                        <p className="text-xs text-destructive">{t("discountCodeNotApplicable")}</p>
+                      )}
+                    </div>
                   )}
-                  {event.contactEmail && event.contactPhone && <span aria-hidden> · </span>}
-                  {event.contactPhone && (
-                    <a href={`tel:${event.contactPhone.replace(/\s/g, "")}`} className="underline underline-offset-2 hover:text-foreground">
-                      {event.contactPhone}
-                    </a>
+
+                  {(visibleAttendees.length > 1 || donationsTotal > 0 || productsTotal > 0 || discountAmount > 0) && (
+                    <div className="space-y-1 border-t pt-3">
+                      {discountAmount > 0 && (
+                        <div className="flex items-center justify-between text-sm">
+                          <span className="text-muted-foreground">{t("discountAmountLabel")}</span>
+                          <span className="tabular-nums">-{discountAmount.toLocaleString(loc, { style: "currency", currency: "EUR" })}</span>
+                        </div>
+                      )}
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="text-muted-foreground">{t("totalLabel")}</span>
+                        <span className="font-semibold tabular-nums">{total.toLocaleString(loc, { style: "currency", currency: "EUR" })}</span>
+                      </div>
+                    </div>
                   )}
-                </p>
-              )}
-            </div>
-          </div>
-        </div>
-      </div>
+
+                  {showOfflineChoice && (
+                    <div className="space-y-2">
+                      <p className="text-sm font-medium">{t("paymentMethodLabel")}</p>
+                      <div className="flex flex-wrap gap-3 text-sm">
+                        {event.paymentEnabled && (
+                          <label className="flex items-center gap-1.5">
+                            <input type="radio" checked={paymentMethod === "STRIPE"} onChange={() => setPaymentMethod("STRIPE")} />
+                            {t("paymentMethodStripe")}
+                          </label>
+                        )}
+                        {offlineMethods.map(method => (
+                          <label key={method} className="flex items-center gap-1.5">
+                            <input type="radio" checked={paymentMethod === method} onChange={() => setPaymentMethod(method)} />
+                            {method === "ESPECES" ? t("paymentMethodCash") : method === "CHEQUE" ? t("paymentMethodCheque") : t("paymentMethodTransfer")}
+                          </label>
+                        ))}
+                      </div>
+                      {paymentMethod !== "STRIPE" && event.offlineInstructions && (
+                        <p className="text-xs text-muted-foreground">{event.offlineInstructions}</p>
+                      )}
+                    </div>
+                  )}
+                  {forcedOnlineByMultipleAttendees && (
+                    <p className="text-sm font-medium">
+                      {t("paymentMethodLabel")}
+                      <span className="font-normal text-muted-foreground"> — {t("paymentMethodOnlineOnlyMultipleAttendees")}</span>
+                    </p>
+                  )}
+                  {forcedOnlineByProducts && (
+                    <p className="text-sm font-medium">
+                      {t("paymentMethodLabel")}
+                      <span className="font-normal text-muted-foreground"> — {t("paymentMethodOnlineOnlyProducts")}</span>
+                    </p>
+                  )}
+
+                  <FormTermsSection
+                    conditions={event.conditions}
+                    attachments={event.attachments}
+                    requireCguvSignature={event.requireCguvSignature}
+                    accepted={conditionsAgreed}
+                    onAcceptedChange={setConditionsAgreed}
+                    labels={{
+                      viewConditions:   t("viewConditionsLabel"),
+                      conditionsTitle:  t("conditionsModalTitle"),
+                      acceptConditions: t("conditionsAgreeLabel"),
+                    }}
+                    acceptanceExtra={
+                      <FormField
+                        label={t("signedNameLabel")}
+                        required
+                        value={signedName}
+                        onChange={event => setSignedName(event.target.value)}
+                      />
+                    }
+                  />
+
+                  {/* Documents de l'association — affichés quel que soit requireCguvSignature, qui
+                      ne concerne que les conditions propres à l'événement ci-dessus. Ne rend rien
+                      quand l'association n'impose aucun document (voir LegalConsent). */}
+                  <LegalConsent
+                    slug={slug}
+                    documents={legalDocuments}
+                    checked={legalAccepted}
+                    onChange={setLegalAccepted}
+                  />
+
+                  <Button
+                    type="submit"
+                    disabled={!canSubmit}
+                    loading={loading}
+                    className="w-full"
+                  >
+                    <TicketIcon className="size-4 mr-2" />
+                    {isPaid
+                      ? t("pay", { amount: total.toLocaleString(loc, { style: "currency", currency: "EUR" }) })
+                      : t("submit")}
+                  </Button>
+                  <div className="flex gap-2 text-xs text-muted-foreground">
+                    <ShieldCheckIcon className="size-3.5 shrink-0 mt-0.5" />
+                    <p>{t("privacyNote")}</p>
+                  </div>
+                </form>
+            )}
+          </>
+        }
+      />
 
       <Modal
         open={thankYouOpen}
