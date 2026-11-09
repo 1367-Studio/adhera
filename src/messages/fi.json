@@ -4465,7 +4465,10 @@
         "birthDateFrom": "Syntynyt sen jälkeen",
         "birthDateTo": "Syntynyt ennen",
         "apply": "Hae",
-        "reset": "Nollaus"
+        "reset": "Nollaus",
+        "country": "Maa",
+        "countryPlaceholder": "Kaikki maat",
+        "countryLoadError": "Ei voi ladata maita. Yritä uudelleen hetken kuluttua."
       },
       "statusOptions": {
         "pending": "Vireillä",

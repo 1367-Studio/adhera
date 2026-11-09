@@ -4465,7 +4465,10 @@
         "birthDateFrom": "Nato dopo",
         "birthDateTo": "Nato prima",
         "apply": "Candidati",
-        "reset": "Reset"
+        "reset": "Reset",
+        "country": "Paese",
+        "countryPlaceholder": "Tutti i paesi",
+        "countryLoadError": "Impossibile caricare i paesi. Riprova tra un attimo."
       },
       "statusOptions": {
         "pending": "In attesa",

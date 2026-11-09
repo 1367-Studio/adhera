@@ -234,6 +234,7 @@ export type MembresFilters = {
   firstName?:     string
   lastName?:      string
   address?:       string
+  country?:       string
   birthDateFrom?: string
   birthDateTo?:   string
   // Ordre de la liste, pas un filtre : "recent" (derniers adhérents) ou "oldest" (premiers).
@@ -250,6 +251,24 @@ export function membresFilterParams(filters: MembresFilters): URLSearchParams {
     if (value) params.set(key, value)
   }
   return params
+}
+
+async function fetchMembreCountryOptions(): Promise<string[]> {
+  const res = await fetch("/api/membres/country-options")
+  // Throws rather than falling back to [] — a failed request must read as an error, not as
+  // "this association has no countries recorded", which is also a legitimate, common state.
+  if (!res.ok) throw new Error("Erreur lors du chargement des pays")
+  const data = await res.json()
+  return data.countries as string[]
+}
+
+// Feeds the "Pays" dropdown in the Membres page's "Filtres" popover — real distinct values,
+// not a static list (see /api/membres/country-options).
+export function useMembreCountryOptions() {
+  return useQuery({
+    queryKey: ["membres", "country-options"],
+    queryFn:  fetchMembreCountryOptions,
+  })
 }
 
 async function fetchMembresPaginated(page: number, limit: number, filters: MembresFilters) {

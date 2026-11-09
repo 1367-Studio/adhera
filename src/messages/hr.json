@@ -4465,7 +4465,10 @@
         "birthDateFrom": "Rođeni nakon",
         "birthDateTo": "Rođeni prije",
         "apply": "Prijavite se",
-        "reset": "Reset"
+        "reset": "Reset",
+        "country": "Zemlja",
+        "countryPlaceholder": "Sve zemlje",
+        "countryLoadError": "Ne mogu učitati zemlje. Pokušajte ponovno za trenutak."
       },
       "statusOptions": {
         "pending": "Na čekanju",

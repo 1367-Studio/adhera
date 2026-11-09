@@ -4465,7 +4465,10 @@
         "birthDateFrom": "Născută după",
         "birthDateTo": "Născut înainte",
         "apply": "Aplică",
-        "reset": "Resetare"
+        "reset": "Resetare",
+        "country": "Țară",
+        "countryPlaceholder": "Toate țările",
+        "countryLoadError": "Nu se pot încărca țările. Încearcă din nou imediat."
       },
       "statusOptions": {
         "pending": "În așteptare",

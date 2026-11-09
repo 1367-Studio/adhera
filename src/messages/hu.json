@@ -4465,7 +4465,10 @@
         "birthDateFrom": "Születés után",
         "birthDateTo": "Születés előtt",
         "apply": "Jelentkezz",
-        "reset": "Reset"
+        "reset": "Reset",
+        "country": "Country",
+        "countryPlaceholder": "Minden ország",
+        "countryLoadError": "Nem tudom betölteni országokat. Próbáld meg újra mindjárt."
       },
       "statusOptions": {
         "pending": "Függőben",
