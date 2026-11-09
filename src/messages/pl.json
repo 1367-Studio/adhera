@@ -920,7 +920,8 @@
       "sectionUnverifiedNote": "To konto nie jest rozpoznawane — sprawdź sekcję lub wybierz ją spośród zaawansowanych opcji.",
       "sectionToVerify": "Sekcja do sprawdzenia",
       "advancedOptions": "Opcje zaawansowane",
-      "revertToAutoSection": "Powrót do sekcji automatycznej"
+      "revertToAutoSection": "Powrót do sekcji automatycznej",
+      "noMatchingCategory": "Brak kategorii dopasowania"
     },
     "bankAccountForm": {
       "bankName": "Nazwa banku",

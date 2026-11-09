@@ -920,7 +920,8 @@
       "sectionUnverifiedNote": "Šis konts netiek atpazīts — pārbaudiet sadaļu vai izvēlieties to no paplašinātajām opcijām.",
       "sectionToVerify": "Sadaļa, ko pārbaudīt",
       "advancedOptions": "Paplašinātās opcijas",
-      "revertToAutoSection": "Atpakaļ uz automātisko sadaļu"
+      "revertToAutoSection": "Atpakaļ uz automātisko sadaļu",
+      "noMatchingCategory": "Nav atbilstības kategorijas"
     },
     "bankAccountForm": {
       "bankName": "Bankas nosaukums",

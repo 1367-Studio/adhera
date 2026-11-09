@@ -1007,6 +1007,7 @@
     "categoryForm": {
       "name": "Name",
       "namePlaceholder": "e.g. Membership fees",
+      "noMatchingCategory": "No matching category",
       "type": "Type",
       "typeIncome": "Income",
       "typeExpense": "Expense",
