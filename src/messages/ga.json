@@ -4465,7 +4465,10 @@
         "birthDateFrom": "Rugadh tar éis",
         "birthDateTo": "Rugadh roimhe seo",
         "apply": "Déan iarratas",
-        "reset": "Athshocraigh"
+        "reset": "Athshocraigh",
+        "country": "Tír",
+        "countryPlaceholder": "Gach tír",
+        "countryLoadError": "Ní féidir tíortha a luchtú. Bain triail as arís i gceann nóiméad."
       },
       "statusOptions": {
         "pending": "Ar feitheamh",

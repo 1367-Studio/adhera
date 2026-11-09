@@ -4465,7 +4465,10 @@
         "birthDateFrom": "Imwielda wara",
         "birthDateTo": "Twieldet qabel",
         "apply": "Applika",
-        "reset": "Reset"
+        "reset": "Reset",
+        "country": "Pajjiż",
+        "countryPlaceholder": "Il-pajjiżi kollha",
+        "countryLoadError": "Ma nistgħux nħaddmu pajjiżi. Ipprova mill-ġdid f'mument."
       },
       "statusOptions": {
         "pending": "Pendenti",
