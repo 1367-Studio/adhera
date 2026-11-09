@@ -4218,22 +4218,45 @@
         "manual": "Manuaalinen"
       },
       "summary": {
-        "aPagar": " · {amount} maksettavaa",
+        "aPagar": " · {amount} yhteensä",
         "recebido": " · {amount} saatu",
         "saldo": " · {amount} maksamatta"
       },
       "distribution": {
         "show": "Näytä jakauma",
         "hide": "Piilota jakauma",
-        "category": "Kategoria",
+        "category": "Jäsenyyskategoria",
         "renewal": "Uusiminen",
-        "count": "Lukumäärä",
-        "aPagar": "Yhteensä maksettavaa",
-        "recebido": "Saatu",
-        "saldo": "Maksamaton saldo",
+        "count": "Panosten määrä",
+        "aPagar": "Kokonaismäärä",
+        "recebido": "Saatu summa",
+        "saldo": "Jäljellä oleva saldo",
         "total": "Yhteensä",
         "noCategory": "Ei kategoriaa",
         "empty": "Mikään jäsenmaksu ei vastaa näitä suodattimia."
+      },
+      "mergeTiers": {
+        "filterOption": "Yhdistä kaksoisluokkat",
+        "title": "Yhdistä kaksoisluokkat",
+        "description": "Kategoriat, joiden nimet eroavat vain sijan, aksenttien tai välilyöntien osalta. Mikään ei yhdistetä automaattisesti.",
+        "empty": "Yhtään kaksoiskappaletta ei havaittu.",
+        "groupSummary": "{count} kategorioita nimeltä \"{label}\"",
+        "groupTitle": "Yhdistä muotoon \"{label}\"",
+        "backAction": "Takaisin",
+        "cancelAction": "Peruuta",
+        "keepAsPrimary": "Säilytettävä kategoria",
+        "mergeIntoPrimary": "Kategoriat, jotka yhdistetään siihen",
+        "tierCounts": "{cotisationCount} Jäsenmaksu(t) · {membreCount} Jäsen(t)",
+        "mergeAction": "Yhdistyminen",
+        "confirmTitle": "Vahvista yhdistyminen",
+        "confirmDescription": "{count} kategoria(t) yhdistetään muotoon \"{primaryLabel}\". {cotisationCount} Jäsenmaksu(t) ja {membreCount} jäsen(t) siirretään. Tämä toimenpide on peruuttamaton, mutta säilyttää kaikki uusimishistorian ja asetukset.",
+        "mergeSuccess": "{count} yhdistetyt kategoriat.",
+        "loadError": "Kaksoiskappaleita ei voi ladata. Yritä uudelleen hetken kuluttua.",
+        "activeSubscriptionWarning": "{count} aktiiviset tilaukset siirtyvät — jo käynnissä oleva Stripe-laskutus ei muutu automaattisesti.",
+        "priceFree": "Vapaa",
+        "priceFreeAmount": "Ilmainen määrä",
+        "priceFreeAmountFrom": "Ilmainen summa osoitteesta {amount}",
+        "priceRecurring": "{amount}/vuosi"
       }
     },
     "reminderModal": {

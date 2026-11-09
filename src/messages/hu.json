@@ -4218,22 +4218,45 @@
         "manual": "Manuális"
       },
       "summary": {
-        "aPagar": " · {amount} fizetendő",
+        "aPagar": " · {amount} összesen",
         "recebido": " · {amount} beérkezett",
         "saldo": " · {amount} hátralék"
       },
       "distribution": {
         "show": "Megoszlás megtekintése",
         "hide": "Megoszlás elrejtése",
-        "category": "Kategória",
+        "category": "Tagsági kategória",
         "renewal": "Megújítás",
-        "count": "Darabszám",
-        "aPagar": "Fizetendő összesen",
-        "recebido": "Beérkezett",
+        "count": "Hozzájárulások száma",
+        "aPagar": "Teljes összeg",
+        "recebido": "A kapott összeg",
         "saldo": "Fennmaradó egyenleg",
         "total": "Összesen",
         "noCategory": "Nincs kategória",
         "empty": "Egyetlen tagdíj sem felel meg ezeknek a szűrőknek."
+      },
+      "mergeTiers": {
+        "filterOption": "Duplikált kategóriák egyesítése",
+        "title": "Duplikált kategóriák egyesítése",
+        "description": "Olyan kategóriák, amelyek neve csak esetben, akcentusokban vagy szóközekben különböznek egymástól. Semmi sem kerül automatikusan összeolvadva.",
+        "empty": "Nem észleltek másolatokat.",
+        "groupSummary": "{count} kategóriák \"{label}\" néven",
+        "groupTitle": "Merge \"{label}\"",
+        "backAction": "Hátra",
+        "cancelAction": "Törlés",
+        "keepAsPrimary": "Tartandó kategória",
+        "mergeIntoPrimary": "Kategóriák, amiket be lehet olvasztani",
+        "tierCounts": "{cotisationCount} Tagsági díj(ok) · {membreCount} Tag(ok)",
+        "mergeAction": "Egyesülés",
+        "confirmTitle": "Erősítse meg az egyesülést",
+        "confirmDescription": "a {count} kategória(k) összeolvadnak a \"{primaryLabel}\" kategóriába. {cotisationCount} Tagsági díj(ok) és a {membreCount} tag(ok) átkerülnek. Ez az intézkedés visszafordíthatatlan, de megőrzi minden megújítási előzményt és konfigurációt.",
+        "mergeSuccess": "{count} egyesített kategória(k).",
+        "loadError": "A duplikátumokat nem lehet feltölteni. Próbáld meg újra mindjárt.",
+        "activeSubscriptionWarning": "{count} aktív előfizetés(ek) átkerülnek — A már folyamatban lévő Stripe számlázás nem változik automatikusan.",
+        "priceFree": "Szabad",
+        "priceFreeAmount": "Ingyenes összeg",
+        "priceFreeAmountFrom": "Ingyenes összeg a {amount}",
+        "priceRecurring": "{amount}/év"
       }
     },
     "reminderModal": {

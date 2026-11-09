@@ -65,19 +65,19 @@ export const GET = withAdminAuth(async (req, ctx) => {
 
   const distributionRows = [
     ...distribution.groups.map(g => ({
-      Catégorie:            sanitizeCell(g.tierLabel ?? "Sans catégorie"),
-      Renouvellement:       RENEWAL_LABELS[g.renewalMode],
-      "Quantité":           g.count,
-      "Total à payer":      g.aPagar,
-      "Reçu":               g.recebido,
-      "Solde à payer":      g.saldo,
+      "Catégorie d'adhésion":   sanitizeCell(g.tierLabel ?? "Sans catégorie"),
+      Renouvellement:           RENEWAL_LABELS[g.renewalMode],
+      "Nombre de cotisations": g.count,
+      "Montant total":          g.aPagar,
+      "Montant reçu":           g.recebido,
+      "Solde restant":          g.saldo,
     })),
     {
-      Catégorie: "Total", Renouvellement: "",
-      "Quantité": distribution.total.count,
-      "Total à payer": distribution.total.aPagar,
-      "Reçu": distribution.total.recebido,
-      "Solde à payer": distribution.total.saldo,
+      "Catégorie d'adhésion": "Total", Renouvellement: "",
+      "Nombre de cotisations": distribution.total.count,
+      "Montant total": distribution.total.aPagar,
+      "Montant reçu": distribution.total.recebido,
+      "Solde restant": distribution.total.saldo,
     },
   ]
 

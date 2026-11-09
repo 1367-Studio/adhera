@@ -4218,22 +4218,45 @@
         "manual": "Käsitsi"
       },
       "summary": {
-        "aPagar": " · {amount} tasumisele",
+        "aPagar": " · {amount} kokku",
         "recebido": " · {amount} laekunud",
         "saldo": " · {amount} tasumata"
       },
       "distribution": {
         "show": "Vaata jaotust",
         "hide": "Peida jaotus",
-        "category": "Kategooria",
+        "category": "Liikmelisuse kategooria",
         "renewal": "Uuendamine",
-        "count": "Arv",
-        "aPagar": "Kokku tasumisele",
-        "recebido": "Laekunud",
-        "saldo": "Tasumata jääk",
+        "count": "Panuste arv",
+        "aPagar": "Kogusumma",
+        "recebido": "Saadud summa",
+        "saldo": "Allesjäänud saldo",
         "total": "Kokku",
         "noCategory": "Kategooriata",
         "empty": "Ükski liikmemaks ei vasta neile filtritele."
+      },
+      "mergeTiers": {
+        "filterOption": "Ühenda duplikaatkategooriad",
+        "title": "Ühenda duplikaatkategooriad",
+        "description": "Kategooriad, mille nimed erinevad ainult juhtumite, aktsentide või tühikute poolest. Midagi ei liideta automaatselt.",
+        "empty": "Duplikaate ei tuvastatud.",
+        "groupSummary": "{count} kategooriad nimega \"{label}\"",
+        "groupTitle": "Ühenda \"{label}\"",
+        "backAction": "Tagasi",
+        "cancelAction": "Tühista",
+        "keepAsPrimary": "Kategooria, mida hoida",
+        "mergeIntoPrimary": "Kategooriad, millega sellega liituda",
+        "tierCounts": "{cotisationCount} Liikmemaksu(d) · {membreCount} Liikme(d) liikme(d)",
+        "mergeAction": "Ühinemine",
+        "confirmTitle": "Kinnita ühinemine",
+        "confirmDescription": "{count} kategooria(d) liidetakse \"{primaryLabel}\"-ks. {cotisationCount} Liikmetasu(d) ja {membreCount} liikme(d) kantakse üle. See tegevus on pöördumatu, kuid säilitab kogu uuendamise ajaloo ja konfiguratsioonid.",
+        "mergeSuccess": "{count} ühendatud kategooria(d).",
+        "loadError": "Duplikaate ei saa üles laadida. Proovi kohe uuesti.",
+        "activeSubscriptionWarning": "{count} aktiivsed tellimus(id) kantakse üle — Stripe'i arveldus, mis on juba käimas, ei muutu automaatselt.",
+        "priceFree": "Vaba",
+        "priceFreeAmount": "Tasuta summa",
+        "priceFreeAmountFrom": "Tasuta summa aadressilt {amount}",
+        "priceRecurring": "{amount}/aasta"
       }
     },
     "reminderModal": {

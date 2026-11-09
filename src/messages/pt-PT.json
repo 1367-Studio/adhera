@@ -4249,22 +4249,45 @@
         "manual": "Manual"
       },
       "summary": {
-        "aPagar": " · {amount} a receber",
+        "aPagar": " · {amount} total",
         "recebido": " · {amount} recebidos",
         "saldo": " · {amount} pendente"
       },
       "distribution": {
         "show": "Ver a distribuição",
         "hide": "Ocultar a distribuição",
-        "category": "Categoria",
+        "category": "Categoria de Membros",
         "renewal": "Renovação",
-        "count": "Quantidade",
-        "aPagar": "Total a receber",
-        "recebido": "Recebido",
-        "saldo": "Saldo a pagar",
+        "count": "Número de contribuições",
+        "aPagar": "Montante total",
+        "recebido": "Valor recebido",
+        "saldo": "Saldo remanescente",
         "total": "Total",
         "noCategory": "Sem categoria",
         "empty": "Nenhuma quota corresponde a estes filtros."
+      },
+      "mergeTiers": {
+        "filterOption": "Fusão de categorias duplicadas",
+        "title": "Fusão de categorias duplicadas",
+        "description": "Categorias cujos nomes diferem apenas em maiúsculos, acentos ou espaços. Nada é automaticamente fundido.",
+        "empty": "Não foram detetados duplicados.",
+        "groupSummary": "{count} categorias denominadas \"{label}\"",
+        "groupTitle": "Fusão em \"{label}\"",
+        "backAction": "Voltar",
+        "cancelAction": "Cancelar",
+        "keepAsPrimary": "Categoria a manter",
+        "mergeIntoPrimary": "Categorias a fundir nele",
+        "tierCounts": "{cotisationCount} quota(s) · {membreCount} membro(s)",
+        "mergeAction": "Fusão",
+        "confirmTitle": "Confirmar a fusão",
+        "confirmDescription": "{count} categoria(s) serão fundidas em \"{primaryLabel}\". {cotisationCount} quota(s) e {membreCount} membro(s) serão transferidos. Esta ação é irreversível, mas preserva todo o histórico e as configurações de renovação.",
+        "mergeSuccess": "{count} categoria(s) fundida(s).",
+        "loadError": "Duplicados não podem ser carregados. Tente novamente daqui a pouco.",
+        "activeSubscriptionWarning": "{count} as subscrições ativas serão transferidas — A faturação Stripe que já está em curso não muda automaticamente.",
+        "priceFree": "Grátis",
+        "priceFreeAmount": "Valor gratuito",
+        "priceFreeAmountFrom": "Valor gratuito de {amount}",
+        "priceRecurring": "{amount}/ano"
       }
     },
     "reminderModal": {

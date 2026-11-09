@@ -18,6 +18,7 @@ export const GET = withAdminAuth(async (_req, ctx) => {
       free:       false,
       freeAmount: false,
       amount:     { not: null },
+      archivedAt: null,
       form:       { associationId: ctx.associationId, status: "PUBLISHED" },
     },
     orderBy: [{ form: { createdAt: "desc" } }, { order: "asc" }],

@@ -1,10 +1,12 @@
 "use client"
 
+import { Fragment } from "react"
 import { useTranslations } from "next-intl"
 import {
   Select,
   SelectContent,
   SelectItem,
+  SelectSeparator,
   SelectTrigger,
 } from "@/components/ui/select"
 import { cn } from "@/lib/utils"
@@ -12,6 +14,10 @@ import { cn } from "@/lib/utils"
 interface FilterOption {
   value: string
   label: string
+  // Renders a separator above this option — for a trailing action mixed into an otherwise
+  // plain list of filter values (e.g. "Fusionner les catégories en double" on the Cotisations
+  // page's tier filter), so it doesn't read as just another selectable category.
+  separatorBefore?: boolean
 }
 
 interface FilterSelectProps {
@@ -45,7 +51,10 @@ export function FilterSelect({
       <SelectContent>
         <SelectItem value="__all__">{effectivePlaceholder}</SelectItem>
         {options.map(o => (
-          <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>
+          <Fragment key={o.value}>
+            {o.separatorBefore && <SelectSeparator />}
+            <SelectItem value={o.value}>{o.label}</SelectItem>
+          </Fragment>
         ))}
       </SelectContent>
     </Select>

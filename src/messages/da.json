@@ -4218,22 +4218,45 @@
         "manual": "Manuel"
       },
       "summary": {
-        "aPagar": " · {amount} at betale",
+        "aPagar": " · {amount} total",
         "recebido": " · {amount} modtaget",
         "saldo": " · {amount} udestående"
       },
       "distribution": {
         "show": "Se fordeling",
         "hide": "Skjul fordeling",
-        "category": "Kategori",
+        "category": "Medlemskategori",
         "renewal": "Fornyelse",
-        "count": "Antal",
-        "aPagar": "I alt at betale",
-        "recebido": "Modtaget",
-        "saldo": "Saldo at betale",
+        "count": "Antal bidrag",
+        "aPagar": "Samlet beløb",
+        "recebido": "Modtaget beløb",
+        "saldo": "Resterende saldo",
         "total": "I alt",
         "noCategory": "Ingen kategori",
         "empty": "Ingen kontingenter matcher disse filtre."
+      },
+      "mergeTiers": {
+        "filterOption": "Sammenlægning af duplikerede kategorier",
+        "title": "Sammenlægning af duplikerede kategorier",
+        "description": "Kategorier, hvis navne kun adskiller sig i kasus, accenter eller mellemrum. Intet bliver automatisk slået sammen.",
+        "empty": "Ingen dubletter registreret.",
+        "groupSummary": "{count} kategorier kaldet \"{label}\"",
+        "groupTitle": "Merge til \"{label}\"",
+        "backAction": "Tilbage",
+        "cancelAction": "Annuller",
+        "keepAsPrimary": "Kategori at beholde",
+        "mergeIntoPrimary": "Kategorier til at fusionere ind i den",
+        "tierCounts": "{cotisationCount} Medlemskontingent(e) · {membreCount} Medlem(er)",
+        "mergeAction": "Sammenlægning",
+        "confirmTitle": "Bekræft sammenlægningen",
+        "confirmDescription": "{count}-kategori(er) vil blive slået sammen med \"{primaryLabel}\". {cotisationCount} Medlemsgebyr(er) og {membreCount}-medlemmer(e) vil blive overført. Denne handling er irreversibel, men bevarer al fornyelseshistorik og konfigurationer.",
+        "mergeSuccess": "{count} sammenslået kategori(er).",
+        "loadError": "Dubletter kan ikke uploades. Prøv igen om et øjeblik.",
+        "activeSubscriptionWarning": "{count} aktive abonnementer vil blive overført — Stripe-fakturering, der allerede er i gang, ændres ikke automatisk.",
+        "priceFree": "Gratis",
+        "priceFreeAmount": "Gratis beløb",
+        "priceFreeAmountFrom": "Gratis beløb fra {amount}",
+        "priceRecurring": "{amount}/år"
       }
     },
     "reminderModal": {
