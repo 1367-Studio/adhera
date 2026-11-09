@@ -24,7 +24,7 @@ interface CategoryTemplatePickerProps {
 
 export function CategoryTemplatePicker({ type, categoriesByKey, onSelectTemplate, onSelectExisting, onReactivate, onSelectCustom }: CategoryTemplatePickerProps) {
   const t = useTranslations("finances.categoriesView")
-  const templates = DEFAULT_FINANCE_CATEGORIES.filter(c => c.type === type)
+  const templates = DEFAULT_FINANCE_CATEGORIES.filter(c => c.type === type).sort((a, b) => a.name.localeCompare(b.name))
 
   return (
     <div className="space-y-3">

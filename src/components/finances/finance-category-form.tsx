@@ -6,7 +6,8 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useTranslations } from "next-intl"
 import type { FinanceSection } from "@prisma/client"
 import { financeCategorySchema, type FinanceCategoryInput } from "@/lib/schemas"
-import { referenceAccountsForType, sectionForAccountCode } from "@/lib/finance/chart-of-accounts"
+import { referenceAccountsForType, sectionForAccountCode, labelForAccountCode } from "@/lib/finance/chart-of-accounts"
+import { searchDefaultCategories, type DefaultFinanceCategory } from "@/lib/finance/default-categories"
 import { FormField } from "@/components/ui/form-field"
 import { SelectField } from "@/components/ui/select-field"
 import { Button } from "@/components/ui/button"
@@ -65,6 +66,12 @@ export function FinanceCategoryForm({ defaultValues, takenAccountingCodes = [], 
   // open whenever that category already carries an active override, so the override isn't
   // hidden behind a click a treasurer has no reason to make.
   const [openAccordionItems, setOpenAccordionItems] = useState<string[]>([])
+  // A template's alternative accounts (e.g. evenements' 706000) are offered as chips alongside
+  // the primary one — normally seeded from `suggestedAccountingCodes` (the dedicated template
+  // picker flow), but picking the SAME template through the inline name-search below (see
+  // applySuggestion) must offer the exact same chips, not silently drop them just because of
+  // which entry point was used. Reset together with the other defaultValues-keyed state below.
+  const [activeSuggestedCodes, setActiveSuggestedCodes] = useState(suggestedAccountingCodes)
 
   // Keyed on the serialized CONTENT of defaultValues, not the object reference — every caller
   // (categories-view.tsx, previsionnel-global-tab.tsx, add-category-to-project-modal.tsx)
@@ -93,6 +100,7 @@ export function FinanceCategoryForm({ defaultValues, takenAccountingCodes = [], 
     setManualOverride(initialOverride)
     setManualSection((defaultValues?.section as FinanceSection) ?? "OPERATING")
     setOpenAccordionItems(initialOverride ? ["advanced"] : [])
+    setActiveSuggestedCodes(suggestedAccountingCodes)
   }
 
   useEffect(() => {
@@ -102,6 +110,27 @@ export function FinanceCategoryForm({ defaultValues, takenAccountingCodes = [], 
 
   const type = useWatch({ control, name: "type" })
   const accountingCode = useWatch({ control, name: "accountingCode" })
+  const name = useWatch({ control, name: "name" }) ?? ""
+
+  // Name-field autocomplete against the reference catalog (3+ letters, accent/case-insensitive
+  // — see searchDefaultCategories). Opens only as a RESULT OF TYPING (onChange), never on plain
+  // focus — editing an existing category whose name already matches a catalog entry (the common
+  // case: most default categories' names match themselves) would otherwise pop the dropdown the
+  // instant a treasurer clicks into the field to fix something unrelated, before they've typed a
+  // single character. Closed on blur (delayed so a suggestion's onClick still fires first), on
+  // Escape, or once one is picked.
+  const [suggestionsOpen, setSuggestionsOpen] = useState(false)
+  const nameMatches = searchDefaultCategories(type, name)
+  const showSuggestions = suggestionsOpen && name.trim().length >= 3
+
+  function applySuggestion(template: DefaultFinanceCategory) {
+    setValue("name", template.name)
+    setValue("accountingCode", template.accountingCode)
+    setValue("description", template.description)
+    setManualOverride(false)
+    setActiveSuggestedCodes([template.accountingCode, ...(template.alternativeAccountingCodes ?? [])])
+    setSuggestionsOpen(false)
+  }
 
   const referenceOptions = referenceAccountsForType(type).map(a => ({ value: a.code, label: `${a.code} — ${a.label}` }))
   // An existing category created before accountingCode became a controlled list (or just
@@ -123,15 +152,52 @@ export function FinanceCategoryForm({ defaultValues, takenAccountingCodes = [], 
   // Type after picking a template (evenements/EXPENSE has no INCOME-only suggestions left to
   // show) must hide the whole "Comptes suggérés" block, not leave its heading dangling above an
   // empty chip row.
-  const visibleSuggestions = suggestedAccountingCodes.filter(code => referenceOptions.some(o => o.value === code))
+  const visibleSuggestions = activeSuggestedCodes.filter(code => referenceOptions.some(o => o.value === code))
 
   async function handleFormSubmit(data: FinanceCategoryInput) {
     await onSubmit({ ...data, section: manualOverride ? manualSection : undefined })
   }
 
+  const nameField = register("name")
+
   return (
     <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4" noValidate>
-      <FormField label={t("finances.categoryForm.name")} required placeholder={t("finances.categoryForm.namePlaceholder")} error={errors.name?.message} {...register("name")} />
+      <div className="relative">
+        <FormField
+          label={t("finances.categoryForm.name")} required placeholder={t("finances.categoryForm.namePlaceholder")}
+          error={errors.name?.message}
+          autoComplete="off"
+          {...nameField}
+          onChange={e => { nameField.onChange(e); setSuggestionsOpen(true) }}
+          onBlur={e => { nameField.onBlur(e); setTimeout(() => setSuggestionsOpen(false), 150) }}
+          onKeyDown={e => { if (e.key === "Escape") setSuggestionsOpen(false) }}
+        />
+        {showSuggestions && (
+          <div className="absolute z-10 mt-1 w-full rounded-md border bg-popover shadow-sm">
+            {nameMatches.length > 0 ? (
+              <ul className="max-h-56 overflow-y-auto py-1">
+                {nameMatches.map(match => {
+                  const label = labelForAccountCode(match.accountingCode)
+                  return (
+                    <li key={match.key}>
+                      <button
+                        type="button"
+                        onClick={() => applySuggestion(match)}
+                        className="flex w-full flex-col items-start gap-0.5 px-3 py-1.5 text-left text-sm hover:bg-muted/40"
+                      >
+                        <span className="font-medium">{match.name}</span>
+                        <span className="text-xs text-muted-foreground">{match.accountingCode}{label ? ` — ${label}` : ""}</span>
+                      </button>
+                    </li>
+                  )
+                })}
+              </ul>
+            ) : (
+              <p className="px-3 py-2 text-xs text-muted-foreground">{tc("noMatchingCategory")}</p>
+            )}
+          </div>
+        )}
+      </div>
 
       <FormField
         label={t("finances.categoryForm.description")}

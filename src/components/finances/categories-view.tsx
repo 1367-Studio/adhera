@@ -7,7 +7,7 @@ import { PlusIcon, PencilSimpleIcon, TrashIcon, ArrowCounterClockwiseIcon, Spark
 import { useFinanceCategories, useCreateFinanceCategory, useUpdateFinanceCategory, useDeleteFinanceCategory, useReactivateFinanceCategory, useSeedFinanceCategories } from "@/hooks/use-finance-categories"
 import type { FinanceCategoryInput } from "@/lib/schemas"
 import type { DefaultFinanceCategory } from "@/lib/finance/default-categories"
-import { REFERENCE_ACCOUNTS, normalizeAccountingCode } from "@/lib/finance/chart-of-accounts"
+import { normalizeAccountingCode, labelForAccountCode } from "@/lib/finance/chart-of-accounts"
 import { PageHeader } from "@/components/ui/page-header"
 import { Modal } from "@/components/ui/modal"
 import { ConfirmDialog } from "@/components/ui/confirm-dialog"
@@ -32,12 +32,6 @@ export type Category = {
   _count?:       { incomes: number; expenses: number; budgetLines: number; boutiqueProduits: number; boutiqueCommandeItems: number; materials: number }
 }
 
-function accountLabel(code: string | null): string | null {
-  if (!code) return null
-  const normalized = normalizeAccountingCode(code)
-  return REFERENCE_ACCOUNTS.find(a => a.code === normalized)?.label ?? null
-}
-
 function CategoryList({ categories, loading, canEdit, onEdit, onDelete, onReactivate }: {
   categories: Category[]
   loading:    boolean
@@ -59,18 +53,24 @@ function CategoryList({ categories, loading, canEdit, onEdit, onDelete, onReacti
     <ul className="space-y-1">
       {categories.map(c => {
         const code  = c.accountingCode ? normalizeAccountingCode(c.accountingCode) : null
-        const label = accountLabel(c.accountingCode)
+        const label = c.accountingCode ? labelForAccountCode(c.accountingCode) : null
         return (
           <li key={c.id} className="flex items-start justify-between gap-3 rounded-lg border px-3 py-2 text-sm">
             <div className="min-w-0 space-y-0.5">
               <div className="flex items-center gap-2">
                 <span className={c.archivedAt ? "font-medium text-muted-foreground" : "font-medium"}>{c.name}</span>
-                <Badge variant="outline">{tc(`sectionOptions.${c.section}`)}</Badge>
+                {/* OPERATING is the default/expected section for virtually every current-use
+                    category (the two IMMOBILISATION defaults were deliberately removed from
+                    the standard catalog — see default-categories.ts) — badging it on every
+                    single row is pure repetition, not a semantic signal. Only a genuinely
+                    exceptional section (a custom category pointing at FINANCIAL/EXCEPTIONAL/
+                    IMMOBILISATION/IN_KIND/OTHER) is worth calling out. */}
+                {c.section !== "OPERATING" && <Badge variant="outline">{tc(`sectionOptions.${c.section}`)}</Badge>}
                 {c.isDefault && <span className="text-xs text-muted-foreground">{t("default")}</span>}
                 {c.archivedAt && <span className="text-xs text-muted-foreground">{t("archived")}</span>}
               </div>
-              {c.description && <p className="text-xs text-muted-foreground">{c.description}</p>}
               {code && <p className="text-xs text-muted-foreground">{code}{label ? ` — ${label}` : ""}</p>}
+              {c.description && <p className="text-xs text-muted-foreground">{c.description}</p>}
             </div>
             {canEdit && (
               <RowActions actions={

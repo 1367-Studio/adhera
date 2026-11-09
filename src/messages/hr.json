@@ -920,7 +920,8 @@
       "sectionUnverifiedNote": "Ovaj račun nije priznat — provjerite odjeljak ili ga odaberite iz naprednih opcija.",
       "sectionToVerify": "Sekcija za provjeru",
       "advancedOptions": "Napredne opcije",
-      "revertToAutoSection": "Povratak na automatski dio"
+      "revertToAutoSection": "Povratak na automatski dio",
+      "noMatchingCategory": "Nema podudaranja kategorije"
     },
     "bankAccountForm": {
       "bankName": "Naziv banke",

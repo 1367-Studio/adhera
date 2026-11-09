@@ -920,7 +920,8 @@
       "sectionUnverifiedNote": "Tätä tiliä ei tunnisteta — tarkista osio tai valitse se edistyneistä vaihtoehdoista.",
       "sectionToVerify": "Tarkistettava osio",
       "advancedOptions": "Edistyneet vaihtoehdot",
-      "revertToAutoSection": "Takaisin automaattiosastolle"
+      "revertToAutoSection": "Takaisin automaattiosastolle",
+      "noMatchingCategory": "Ei yhteensopivuuskategoriaa"
     },
     "bankAccountForm": {
       "bankName": "Pankin nimi",
