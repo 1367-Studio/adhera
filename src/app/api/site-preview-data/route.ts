@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma/client"
 import type { SiteConfig, SiteSection } from "@/types/site-config"
 import { DEFAULT_LOCALE } from "@/i18n/locales"
 import { SITE_UI_STRINGS } from "@/lib/site-puck/site-ui-strings"
+import { eventReviewDisplayName } from "@/components/site/blocks/site-block-types"
 import { listPuckBlocksOfType, puckBlockId } from "@/lib/site-puck/site-puck-tree"
 import { liveSitePageNavLinks } from "@/lib/site-puck/site-page-nav"
 
@@ -31,7 +32,7 @@ export const GET = withAdminAuth(async (req, ctx) => {
   if (!assoc) return NextResponse.json({ error: "Not found" }, { status: 404 })
 
   const now = new Date()
-  const [actualites, boutiqueProduits, membershipForms, donationForms, liveDonationFormCount, navPages] = await Promise.all([
+  const [actualites, boutiqueProduits, eventReviews, membershipForms, donationForms, liveDonationFormCount, navPages] = await Promise.all([
     prisma.actualite.findMany({
       where:   { associationId, publishedAt: { not: null, lte: now }, recipientMode: "ALL" },
       orderBy: [{ pinned: "desc" }, { publishedAt: "desc" }],
@@ -43,6 +44,16 @@ export const GET = withAdminAuth(async (req, ctx) => {
       orderBy: { createdAt: "desc" },
       take:    20,
       select:  { id: true, name: true, imageUrl: true, variantes: { select: { price: true } } },
+    }),
+    prisma.evenementAvis.findMany({
+      where:   { featuredOnSite: true, publicationAgreedAt: { not: null }, evenement: { associationId } },
+      orderBy: [{ evenement: { date: "desc" } }, { createdAt: "desc" }],
+      take:    100,
+      select:  {
+        id: true, rating: true, comment: true, anonymous: true,
+        evenement:     { select: { id: true, title: true, date: true, status: true, visibility: true } },
+        participation: { select: { firstName: true, lastName: true } },
+      },
     }),
     prisma.membershipForm.findMany({
       where:  { associationId, status: "PUBLISHED", visibility: "SITE", siteSectionId: { not: null } },
@@ -83,6 +94,17 @@ export const GET = withAdminAuth(async (req, ctx) => {
   return NextResponse.json({
     actualites: actualites.map(a => ({ ...a, publishedAt: a.publishedAt!.toISOString() })),
     boutiqueProduits,
+    eventReviews: eventReviews.map(a => ({
+      id:        a.id,
+      eventId:   a.evenement.id,
+      eventTitle: a.evenement.title,
+      eventDate: a.evenement.date.toISOString(),
+      rating:    a.rating,
+      comment:   a.comment,
+      displayName: eventReviewDisplayName(a.participation.firstName, a.participation.lastName, a.anonymous, SITE_UI_STRINGS.eventReviewsAnonymous),
+      eventStatus:     a.evenement.status,
+      eventVisibility: a.evenement.visibility,
+    })),
     membershipFormBySection,
     donationFormBySection,
     // Decides whether an unbound "dons" section is hidden (true) or keeps the legacy generic

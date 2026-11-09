@@ -16,7 +16,7 @@ async function findByToken(token: string) {
     where:  { reviewToken: token },
     include: {
       evenement: { select: { title: true, date: true, associationId: true, adminNotificationEmail: true } },
-      avis:      { select: { id: true } },
+      avis:      { select: { id: true, publicationAgreedAt: true, anonymous: true } },
     },
   })
 }
@@ -39,12 +39,18 @@ export async function GET(
     firstName:       participation.firstName,
     eligible:        participation.present,
     alreadySubmitted: !!participation.avis,
+    // Only meaningful once alreadySubmitted — lets the page offer to change/revoke the
+    // publication choice later instead of it being a one-time, unrevisable decision.
+    publicationAgreed: !!participation.avis?.publicationAgreedAt,
+    anonymous:         participation.avis?.anonymous ?? false,
   })
 }
 
 const bodySchema = z.object({
-  rating:  z.number().int().min(1).max(5),
-  comment: z.string().trim().max(2000).optional(),
+  rating:            z.number().int().min(1).max(5),
+  comment:           z.string().trim().max(2000).optional(),
+  publicationAgreed: z.boolean(),
+  anonymous:         z.boolean().optional(),
 })
 
 export async function POST(
@@ -65,7 +71,7 @@ export async function POST(
 
   const parsed = bodySchema.safeParse(await req.json())
   if (!parsed.success) return NextResponse.json({ error: parsed.error.issues }, { status: 422 })
-  const { rating, comment } = parsed.data
+  const { rating, comment, publicationAgreed, anonymous } = parsed.data
 
   try {
     await prisma.evenementAvis.create({
@@ -74,6 +80,10 @@ export async function POST(
         participationId: participation.id,
         rating,
         comment: comment || null,
+        // Consentement posé server-side au moment de la soumission — jamais repris tel quel
+        // du client pour l'horodatage, même logique que cguvAgreedAt ailleurs.
+        publicationAgreedAt: publicationAgreed ? new Date() : null,
+        anonymous:           publicationAgreed ? !!anonymous : false,
       },
     })
   } catch {
@@ -91,6 +101,48 @@ export async function POST(
     comment,
     adminNotificationEmail: participation.evenement.adminNotificationEmail,
   }).catch(error => reportError(error, { area: "public", action: "public.evenement.review.notify-admins", extra: { associationId: participation.evenement.associationId, evenementId: participation.evenementId, participationId: participation.id } }))
+
+  return NextResponse.json({ ok: true })
+}
+
+const consentBodySchema = z.object({
+  publicationAgreed: z.boolean(),
+  anonymous:         z.boolean().optional(),
+})
+
+// Lets a participant revisit their own review link later to change or withdraw their
+// publication consent — the one-time POST above has no other way back once submitted. Never
+// touches rating/comment, only the publication choice. Revoking (publicationAgreed: false)
+// also force-clears featuredOnSite: the review must stop being eligible immediately (not just
+// wait for an admin to notice), and re-consenting later must never silently re-publish it
+// without the admin choosing to feature it again — same "no automatic publication" rule as the
+// original submission.
+export async function PATCH(
+  req: Request,
+  { params }: { params: Promise<{ token: string }> },
+) {
+  if (!(await rateLimit(`review-update:${requestIp(req)}`, 20, 10 * 60_000))) {
+    return NextResponse.json({ error: "Trop de tentatives, réessayez plus tard." }, { status: 429 })
+  }
+
+  const { token } = await params
+  const participation = await findByToken(token)
+  if (!participation) return NextResponse.json({ error: "Lien invalide" }, { status: 404 })
+  if (!participation.avis)
+    return NextResponse.json({ error: "Aucun avis à mettre à jour." }, { status: 422 })
+
+  const parsed = consentBodySchema.safeParse(await req.json())
+  if (!parsed.success) return NextResponse.json({ error: parsed.error.issues }, { status: 422 })
+  const { publicationAgreed, anonymous } = parsed.data
+
+  await prisma.evenementAvis.update({
+    where: { id: participation.avis.id },
+    data:  {
+      publicationAgreedAt: publicationAgreed ? new Date() : null,
+      anonymous:           publicationAgreed ? !!anonymous : false,
+      ...(publicationAgreed ? {} : { featuredOnSite: false }),
+    },
+  })
 
   return NextResponse.json({ ok: true })
 }
