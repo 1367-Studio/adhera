@@ -4400,7 +4400,10 @@
         "birthDateFrom": "Роден след",
         "birthDateTo": "Роден преди",
         "apply": "Кандидатствайте",
-        "reset": "Нулиране"
+        "reset": "Нулиране",
+        "country": "Кънтри",
+        "countryPlaceholder": "Всички държави",
+        "countryLoadError": "Не може да се заредят държави. Опитайте отново след малко."
       },
       "statusOptions": {
         "pending": "В процес на изчакване",

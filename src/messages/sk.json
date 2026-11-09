@@ -4400,7 +4400,10 @@
         "birthDateFrom": "Narodení po",
         "birthDateTo": "Narodený pred",
         "apply": "Prihláste sa",
-        "reset": "Reset"
+        "reset": "Reset",
+        "country": "Krajina",
+        "countryPlaceholder": "Všetky krajiny",
+        "countryLoadError": "Nie je možné načítať krajiny. Skúste to znova o chvíľu."
       },
       "statusOptions": {
         "pending": "Čaká sa",

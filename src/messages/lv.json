@@ -4400,7 +4400,10 @@
         "birthDateFrom": "Dzimis pēc",
         "birthDateTo": "Dzimis agrāk",
         "apply": "Piesakies",
-        "reset": "Atiestatīt"
+        "reset": "Atiestatīt",
+        "country": "Kantrī",
+        "countryPlaceholder": "Visas valstis",
+        "countryLoadError": "Valstis ielādējas nevar. Mēģiniet vēlreiz pēc brīža."
       },
       "statusOptions": {
         "pending": "Gaida",

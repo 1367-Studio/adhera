@@ -4400,7 +4400,10 @@
         "birthDateFrom": "Født efter",
         "birthDateTo": "Født før",
         "apply": "Ansøg",
-        "reset": "Nulstil"
+        "reset": "Nulstil",
+        "country": "Land",
+        "countryPlaceholder": "Alle lande",
+        "countryLoadError": "Kan ikke indlæse lande. Prøv igen om et øjeblik."
       },
       "statusOptions": {
         "pending": "Afventer",

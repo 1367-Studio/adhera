@@ -4400,7 +4400,10 @@
         "birthDateFrom": "Geboren danach",
         "birthDateTo": "Geboren davor",
         "apply": "Bewerben Sie sich",
-        "reset": "Reset"
+        "reset": "Reset",
+        "country": "Land",
+        "countryPlaceholder": "Alle Länder",
+        "countryLoadError": "Länder können nicht geladen werden. Versuchen Sie es gleich nochmal."
       },
       "statusOptions": {
         "pending": "Ausstehend",

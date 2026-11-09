@@ -21,9 +21,10 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { RowActions } from "@/components/ui/row-actions"
 import { SearchInput } from "@/components/ui/search-input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { SelectField } from "@/components/ui/select-field"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { useMembreTypes } from "@/hooks/use-membre-types"
-import { useChangeRole, useCreateAccess, useCreateMembre, useDeleteMembre, useMembre, useMembresPaginated, useResendPaymentLink, useUpdateMembre, membresFilterParams, type MembresFilters } from "@/hooks/use-membres"
+import { useChangeRole, useCreateAccess, useCreateMembre, useDeleteMembre, useMembre, useMembresPaginated, useMembreCountryOptions, useResendPaymentLink, useUpdateMembre, membresFilterParams, type MembresFilters } from "@/hooks/use-membres"
 import { ApiError } from "@/lib/api-error"
 import { MEMBER_LIMIT_ERROR_CODE } from "@/lib/api-error-codes"
 import { BASE_PATH } from "@/lib/env"
@@ -112,12 +113,16 @@ function getRoleOptions(t: Translator): { value: UserRole; label: string }[] {
   ]
 }
 
-// The five per-field filters that live behind the "Filtres" popover. Kept out of the toolbar
+// The per-field filters that live behind the "Filtres" popover. Kept out of the toolbar
 // itself: eight controls in a row stops being a toolbar and starts being a form.
 type AdvancedFilters = {
   firstName?:     string
   lastName?:      string
   address?:       string
+  // Separate from `address` above: an exact match against real stored values (see
+  // useMembreCountryOptions), not a substring search — picking "France" shouldn't also match
+  // every row whose street happens to contain the word.
+  country?:       string
   birthDateFrom?: string
   birthDateTo?:   string
 }
@@ -291,6 +296,7 @@ export function MembresView() {
   }
 
   const { data: types = [] } = useMembreTypes()
+  const { data: countryOptions = [], isError: countryOptionsError } = useMembreCountryOptions()
   const { data: result, isLoading } = useMembresPaginated(page, PAGE_SIZE, filters)
   const { data: stats } = useQuery<MembresStats>({
     queryKey: ["membres", "stats"],
@@ -720,6 +726,14 @@ export function MembresView() {
               label={t("membres.view.filters.address")}
               value={advancedDraft.address ?? ""}
               onChange={e => setAdvancedDraft(d => ({ ...d, address: e.target.value }))}
+            />
+            <SelectField
+              label={t("membres.view.filters.country")}
+              value={advancedDraft.country ?? ""}
+              onValueChange={v => setAdvancedDraft(d => ({ ...d, country: v }))}
+              options={countryOptions.map(c => ({ value: c, label: c }))}
+              placeholder={t("membres.view.filters.countryPlaceholder")}
+              error={countryOptionsError ? t("membres.view.filters.countryLoadError") : undefined}
             />
             <div className="grid grid-cols-2 gap-2">
               <DateField

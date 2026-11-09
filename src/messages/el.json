@@ -4400,7 +4400,10 @@
         "birthDateFrom": "Γεννημένοι μετά",
         "birthDateTo": "Γεννημένος πριν",
         "apply": "Εφαρμογή",
-        "reset": "Επαναφορά"
+        "reset": "Επαναφορά",
+        "country": "Χώρα",
+        "countryPlaceholder": "Όλες οι χώρες",
+        "countryLoadError": "Δεν είναι δυνατή η φόρτωση χωρών. Δοκιμάστε ξανά σε λίγο."
       },
       "statusOptions": {
         "pending": "Σε εκκρεμότητα",

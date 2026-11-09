@@ -4400,7 +4400,10 @@
         "birthDateFrom": "Gimę po",
         "birthDateTo": "Gimęs anksčiau",
         "apply": "Pateikite paraišką",
-        "reset": "Atstatymas"
+        "reset": "Atstatymas",
+        "country": "Kantri",
+        "countryPlaceholder": "Visos šalys",
+        "countryLoadError": "Nepavyksta įkelti šalių. Pabandykite dar kartą po akimirkos."
       },
       "statusOptions": {
         "pending": "Laukiama",

@@ -4400,7 +4400,10 @@
         "birthDateFrom": "Rojeni po",
         "birthDateTo": "Rojeni pred",
         "apply": "Prijavite se",
-        "reset": "Ponastavitev"
+        "reset": "Ponastavitev",
+        "country": "Država",
+        "countryPlaceholder": "Vse države",
+        "countryLoadError": "Ni mogoče naložiti držav. Poskusi znova čez trenutek."
       },
       "statusOptions": {
         "pending": "V teku",

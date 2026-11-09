@@ -4400,7 +4400,10 @@
         "birthDateFrom": "Född efter",
         "birthDateTo": "Född före",
         "apply": "Ansök",
-        "reset": "Återställ"
+        "reset": "Återställ",
+        "country": "Land",
+        "countryPlaceholder": "Alla länder",
+        "countryLoadError": "Kan inte ladda länder. Försök igen om en stund."
       },
       "statusOptions": {
         "pending": "Väntar",

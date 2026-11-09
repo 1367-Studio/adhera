@@ -40,6 +40,11 @@ export const GET = withAdminAuth(async (req, ctx) => {
   const firstName = searchParams.get("firstName")?.trim()
   const lastName  = searchParams.get("lastName")?.trim()
   const address   = searchParams.get("address")?.trim()
+  // Separate from `address` above on purpose — exact match against the real stored value (see
+  // /api/membres/country-options), not a substring search mixed into the free-text address
+  // filter. An admin picking "France" from the dropdown wants exactly that, not every row whose
+  // street/city/postal code happens to also contain the word "france".
+  const country   = searchParams.get("country")?.trim()
 
   const where: Record<string, unknown> = { associationId, deletedAt: null }
   if (status) where.status = status
@@ -47,6 +52,10 @@ export const GET = withAdminAuth(async (req, ctx) => {
   if (excludeId) where.id = { not: excludeId }
   if (firstName) where.firstName = { contains: firstName, mode: "insensitive" }
   if (lastName)  where.lastName  = { contains: lastName,  mode: "insensitive" }
+  // Insensitive: the dropdown that feeds this (see /api/membres/country-options) collapses
+  // case variants of the same country into one entry — an exact match here would silently
+  // drop every row spelled differently than whichever variant happened to win that dedup.
+  if (country)   where.country   = { equals: country, mode: "insensitive" }
   if (search) {
     where.OR = [
       { firstName: { contains: search, mode: "insensitive" } },

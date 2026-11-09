@@ -4424,7 +4424,10 @@
         "birthDateFrom": "Nascido após",
         "birthDateTo": "Nascido antes de",
         "apply": "Aplicar",
-        "reset": "Repor"
+        "reset": "Repor",
+        "country": "País",
+        "countryPlaceholder": "Todos os países",
+        "countryLoadError": "Não é possível carregar países. Tente novamente em um momento."
       },
       "statusOptions": {
         "pending": "Pendente",
