@@ -34,6 +34,7 @@ import type { FormCtaStyleProps } from "@/components/site/blocks/site-block-form
 import type { EventsBlockProps } from "@/components/site/blocks/site-block-events"
 import type { ActualitesBlockProps } from "@/components/site/blocks/site-block-actualites"
 import type { BoutiqueBlockProps } from "@/components/site/blocks/site-block-boutique"
+import type { EventReviewsBlockProps } from "@/components/site/blocks/site-block-event-reviews"
 import {
   DEFAULT_SITE_CONFIG,
   type AboutSection, type ContactSection,
@@ -83,6 +84,7 @@ export type SitePuckComponents = {
   gallery:      GalleryBlockProps
   socialLinks:  SocialLinksBlockProps
   translate:    TranslateBlockProps
+  eventReviews: EventReviewsBlockProps
 }
 
 // Everything in SiteConfig that is not a section (theme, header, footer), plus the new
