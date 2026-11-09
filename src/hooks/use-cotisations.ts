@@ -5,16 +5,53 @@ import { apiErrorMessage, apiError } from "@/lib/api-error"
 
 const QK = ["cotisations"]
 
-type Filters = { year?: number; status?: string; search?: string }
+export type RenewalMode = "AUTO" | "MANUAL"
+type Filters = { year?: number; status?: string; search?: string; tierId?: string; renewalMode?: RenewalMode }
+
+export type CotisationsSummary = { count: number; aPagar: number; recebido: number; saldo: number }
+
+function filtersToParams(filters: Filters): URLSearchParams {
+  const params = new URLSearchParams()
+  if (filters.year)        params.set("year",        String(filters.year))
+  if (filters.status)      params.set("status",      filters.status)
+  if (filters.search)      params.set("search",      filters.search)
+  if (filters.tierId)      params.set("tierId",      filters.tierId)
+  if (filters.renewalMode) params.set("renewalMode", filters.renewalMode)
+  return params
+}
 
 async function fetchCotisationsPaginated(page: number, limit: number, filters: Filters) {
-  const params = new URLSearchParams({ page: String(page), limit: String(limit) })
-  if (filters.year)   params.set("year",   String(filters.year))
-  if (filters.status) params.set("status", filters.status)
-  if (filters.search) params.set("search", filters.search)
+  const params = filtersToParams(filters)
+  params.set("page",  String(page))
+  params.set("limit", String(limit))
   const res = await fetch(`/api/cotisations?${params}`)
   if (!res.ok) throw new Error("Erreur lors du chargement des cotisations")
-  return res.json() as Promise<PaginatedResult<unknown> & { totalPaye: number }>
+  return res.json() as Promise<PaginatedResult<unknown> & { summary: CotisationsSummary }>
+}
+
+export type DistributionGroup = {
+  tierId:      string | null
+  tierLabel:   string | null
+  renewalMode: RenewalMode
+  count:       number
+  aPagar:      number
+  recebido:    number
+  saldo:       number
+}
+
+async function fetchCotisationsDistribution(filters: Filters) {
+  const res = await fetch(`/api/cotisations/distribution?${filtersToParams(filters)}`)
+  if (!res.ok) throw new Error("Erreur lors du chargement de la répartition")
+  return res.json() as Promise<{ groups: DistributionGroup[]; total: CotisationsSummary }>
+}
+
+export type CotisationTierOption = { id: string; label: string }
+
+async function fetchCotisationTierOptions() {
+  const res = await fetch("/api/cotisations/tier-options")
+  if (!res.ok) return { tiers: [] as CotisationTierOption[], hasUncategorized: false }
+  const data = await res.json()
+  return { tiers: data.tiers as CotisationTierOption[], hasUncategorized: !!data.hasUncategorized }
 }
 
 async function createCotisation(data: CotisationInput) {
@@ -69,6 +106,24 @@ export function useCotisationsPaginated(page: number, limit = 20, filters: Filte
     queryKey:  [...QK, "paginated", page, limit, filters],
     queryFn:   () => fetchCotisationsPaginated(page, limit, filters),
     staleTime: 0,
+  })
+}
+
+// Only fetched while "Voir la répartition" is expanded — the breakdown isn't needed on first
+// paint, and refetching it on every filter change while collapsed would be wasted work.
+export function useCotisationsDistribution(filters: Filters, enabled: boolean) {
+  return useQuery({
+    queryKey:  [...QK, "distribution", filters],
+    queryFn:   () => fetchCotisationsDistribution(filters),
+    enabled,
+    staleTime: 0,
+  })
+}
+
+export function useCotisationTierOptions() {
+  return useQuery({
+    queryKey: [...QK, "tier-options"],
+    queryFn:  fetchCotisationTierOptions,
   })
 }
 

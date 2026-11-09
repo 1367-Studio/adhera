@@ -4161,11 +4161,7 @@
       "selectedCount": "{count, plural, one {# magħżula} other {# magħżula}}",
       "deselectAll": "Deselect",
       "sendReminder": "Ibgħat tfakkira",
-      "exportMembers": "Membri tal-Esportazzjoni",
-      "exportExcel": "Excel (.xlsx)",
-      "exportPdf": "PDF (.pdf)",
       "count": "{count, plural, one {# Ħlas tal-Membri} other {# Kontribuzzjonijiet}}",
-      "totalCollected": " · {amount} Cashed in",
       "exercise": "Sena Finanzjarja {year}",
       "columns": {
         "member": "Membru",
@@ -4209,7 +4205,36 @@
         "editCancelled": "Il-bidla tal-membri kkanċellati"
       },
       "selectAllTruncated": "Aktar minn 500 kontribuzzjoni jaqblu mal-filtri — ġew magħżula biss l-aqwa 500.",
-      "remaining": "Mistrieħ {amount}"
+      "remaining": "Mistrieħ {amount}",
+      "export": "Esporta",
+      "exportCotisationsExcel": "Ħlasijiet (Excel)",
+      "exportMembresExcel": "Membri (Excel)",
+      "exportMembresPdf": "Membri (PDF)",
+      "allCategories": "Il-kategoriji kollha",
+      "allRenewals": "It-tiġdid kollu",
+      "resetFilters": "Reset",
+      "renewal": {
+        "automatic": "Awtomatiku",
+        "manual": "Manwali"
+      },
+      "summary": {
+        "aPagar": " · {amount} dovut",
+        "recebido": " · {amount} riċevut",
+        "saldo": " · {amount} dovut fadal"
+      },
+      "distribution": {
+        "show": "Ara t-tqassim",
+        "hide": "Aħbi t-tqassim",
+        "category": "Kategorija",
+        "renewal": "Tiġdid",
+        "count": "Numru",
+        "aPagar": "Total dovut",
+        "recebido": "Riċevut",
+        "saldo": "Bilanċ dovut",
+        "total": "Total",
+        "noCategory": "Mingħajr kategorija",
+        "empty": "L-ebda ħlas ma jaqbel ma' dawn il-filtri."
+      }
     },
     "reminderModal": {
       "title": "Ibgħat Twissija ta' Kontribuzzjoni",

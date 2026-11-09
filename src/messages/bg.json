@@ -4161,11 +4161,7 @@
       "selectedCount": "{count, plural, one {# избран} other {# избран}}",
       "deselectAll": "Премахване на селекциите",
       "sendReminder": "Изпратете напомняне",
-      "exportMembers": "Експортни членове",
-      "exportExcel": "Excel (.xlsx)",
-      "exportPdf": "PDF (.pdf)",
       "count": "{count, plural, one {# Членска такса} other {# Приноси}}",
-      "totalCollected": " · {amount} Осребрени",
       "exercise": "Фискална година {year}",
       "columns": {
         "member": "Член",
@@ -4209,7 +4205,36 @@
         "editCancelled": "Промяна на анулираното членство"
       },
       "selectAllTruncated": "Повече от 500 приноса отговаряха на филтрите — само топ 500 бяха избрани.",
-      "remaining": "Почивка {amount}"
+      "remaining": "Почивка {amount}",
+      "export": "Експортиране",
+      "exportCotisationsExcel": "Такси (Excel)",
+      "exportMembresExcel": "Членове (Excel)",
+      "exportMembresPdf": "Членове (PDF)",
+      "allCategories": "Всички категории",
+      "allRenewals": "Всички подновявания",
+      "resetFilters": "Нулиране",
+      "renewal": {
+        "automatic": "Автоматично",
+        "manual": "Ръчно"
+      },
+      "summary": {
+        "aPagar": " · {amount} дължимо",
+        "recebido": " · {amount} получено",
+        "saldo": " · {amount} остатък"
+      },
+      "distribution": {
+        "show": "Преглед на разпределението",
+        "hide": "Скриване на разпределението",
+        "category": "Категория",
+        "renewal": "Подновяване",
+        "count": "Брой",
+        "aPagar": "Общо дължимо",
+        "recebido": "Получено",
+        "saldo": "Остатък за плащане",
+        "total": "Общо",
+        "noCategory": "Без категория",
+        "empty": "Нито една такса не отговаря на тези филтри."
+      }
     },
     "reminderModal": {
       "title": "Изпратете напомняне за дарение",

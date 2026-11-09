@@ -4161,11 +4161,7 @@
       "selectedCount": "{count, plural, one {# izvēlēts} other {# izvēlēts}}",
       "deselectAll": "Deselect",
       "sendReminder": "Sūti atgādinājumu",
-      "exportMembers": "Eksporta biedri",
-      "exportExcel": "Excel (.xlsx)",
-      "exportPdf": "PDF (.pdf)",
       "count": "{count, plural, one {# Dalības maksa} other {# Ieguldījums}}",
-      "totalCollected": " · {amount} Izņemts",
       "exercise": "Fiskālais gads {year}",
       "columns": {
         "member": "Loceklis",
@@ -4209,7 +4205,36 @@
         "editCancelled": "Atceltās dalības maiņa"
       },
       "selectAllTruncated": "Vairāk nekā 500 iesniegumu atbilst filtriem — tika izvēlēti tikai top 500.",
-      "remaining": "Atpūta {amount}"
+      "remaining": "Atpūta {amount}",
+      "export": "Eksportēt",
+      "exportCotisationsExcel": "Dalības maksas (Excel)",
+      "exportMembresExcel": "Biedri (Excel)",
+      "exportMembresPdf": "Biedri (PDF)",
+      "allCategories": "Visas kategorijas",
+      "allRenewals": "Visi atjaunojumi",
+      "resetFilters": "Atiestatīt",
+      "renewal": {
+        "automatic": "Automātiska",
+        "manual": "Manuāla"
+      },
+      "summary": {
+        "aPagar": " · {amount} jāmaksā",
+        "recebido": " · {amount} saņemts",
+        "saldo": " · {amount} atlikums"
+      },
+      "distribution": {
+        "show": "Skatīt sadalījumu",
+        "hide": "Slēpt sadalījumu",
+        "category": "Kategorija",
+        "renewal": "Atjaunošana",
+        "count": "Skaits",
+        "aPagar": "Kopā jāmaksā",
+        "recebido": "Saņemts",
+        "saldo": "Atlikums",
+        "total": "Kopā",
+        "noCategory": "Bez kategorijas",
+        "empty": "Neviena dalības maksa neatbilst šiem filtriem."
+      }
     },
     "reminderModal": {
       "title": "Sūtīt atgādinājumu par ziedojumu",

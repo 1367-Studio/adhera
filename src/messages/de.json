@@ -4161,11 +4161,7 @@
       "selectedCount": "{count, plural, one {# ausgewählt} other {# ausgewählt}}",
       "deselectAll": "Deselect",
       "sendReminder": "Sende eine Erinnerung",
-      "exportMembers": "Exportmitglieder",
-      "exportExcel": "Excel (.xlsx)",
-      "exportPdf": "PDF (.pdf)",
       "count": "{count, plural, one {# Mitgliedsbeitrag} other {# Beiträge}}",
-      "totalCollected": " · {amount} Eingelöst",
       "exercise": "Haushaltsjahr {year}",
       "columns": {
         "member": "Mitglied",
@@ -4209,7 +4205,36 @@
         "editCancelled": "Änderung der gekündigten Mitgliedschaft"
       },
       "selectAllTruncated": "Mehr als 500 Beiträge passten in die Filter – nur die Top 500 wurden ausgewählt.",
-      "remaining": "Ruhe {amount}"
+      "remaining": "Ruhe {amount}",
+      "export": "Exportieren",
+      "exportCotisationsExcel": "Beiträge (Excel)",
+      "exportMembresExcel": "Mitglieder (Excel)",
+      "exportMembresPdf": "Mitglieder (PDF)",
+      "allCategories": "Alle Kategorien",
+      "allRenewals": "Alle Verlängerungen",
+      "resetFilters": "Reset",
+      "renewal": {
+        "automatic": "Automatisch",
+        "manual": "Manuell"
+      },
+      "summary": {
+        "aPagar": " · {amount} fällig",
+        "recebido": " · {amount} erhalten",
+        "saldo": " · {amount} ausstehend"
+      },
+      "distribution": {
+        "show": "Aufschlüsselung anzeigen",
+        "hide": "Aufschlüsselung ausblenden",
+        "category": "Kategorie",
+        "renewal": "Verlängerung",
+        "count": "Anzahl",
+        "aPagar": "Gesamt fällig",
+        "recebido": "Erhalten",
+        "saldo": "Offener Saldo",
+        "total": "Gesamt",
+        "noCategory": "Keine Kategorie",
+        "empty": "Keine Beiträge entsprechen diesen Filtern."
+      }
     },
     "reminderModal": {
       "title": "Sende eine Spendenerinnerung",

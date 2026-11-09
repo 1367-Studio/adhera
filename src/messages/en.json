@@ -4402,11 +4402,7 @@
       "selectedCount": "{count, plural, one {# selected} other {# selected}}",
       "deselectAll": "Deselect",
       "sendReminder": "Send reminder",
-      "exportMembers": "Export members",
-      "exportExcel": "Excel (.xlsx)",
-      "exportPdf": "PDF (.pdf)",
       "count": "{count, plural, one {# membership fee} other {# membership fees}}",
-      "totalCollected": " · {amount} collected",
       "exercise": "Fiscal year {year}",
       "columns": {
         "member": "Member",
@@ -4451,7 +4447,36 @@
         "editCancelled": "Edit the cancelled membership fee"
       },
       "selectAllTruncated": "More than 500 cotisations match the filters — only the first 500 were selected.",
-      "remaining": "{amount} remaining"
+      "remaining": "{amount} remaining",
+      "export": "Export",
+      "exportCotisationsExcel": "Cotisations (Excel)",
+      "exportMembresExcel": "Members (Excel)",
+      "exportMembresPdf": "Members (PDF)",
+      "allCategories": "All categories",
+      "allRenewals": "All renewals",
+      "resetFilters": "Reset",
+      "renewal": {
+        "automatic": "Automatic",
+        "manual": "Manual"
+      },
+      "summary": {
+        "aPagar": " · {amount} due",
+        "recebido": " · {amount} received",
+        "saldo": " · {amount} outstanding"
+      },
+      "distribution": {
+        "show": "View breakdown",
+        "hide": "Hide breakdown",
+        "category": "Category",
+        "renewal": "Renewal",
+        "count": "Count",
+        "aPagar": "Total due",
+        "recebido": "Received",
+        "saldo": "Balance due",
+        "total": "Total",
+        "noCategory": "No category",
+        "empty": "No cotisations match these filters."
+      }
     },
     "reminderModal": {
       "title": "Send a cotisation reminder",
