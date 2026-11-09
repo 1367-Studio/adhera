@@ -4161,11 +4161,7 @@
       "selectedCount": "{count, plural, one {# geselecteerd} other {# geselecteerd}}",
       "deselectAll": "Deselecteren",
       "sendReminder": "Stuur een herinnering",
-      "exportMembers": "Exportleden",
-      "exportExcel": "Excel (.xlsx)",
-      "exportPdf": "PDF (.pdf)",
       "count": "{count, plural, one {# Lidmaatschapsbijdrage} other {# Bijdragen}}",
-      "totalCollected": " · {amount} Ingelost",
       "exercise": "Fiscaal jaar {year}",
       "columns": {
         "member": "Lid",
@@ -4209,7 +4205,36 @@
         "editCancelled": "Het Ingetrokken Lidmaatschap wijzigen"
       },
       "selectAllTruncated": "Meer dan 500 bijdragen pasten in de filters — alleen de top 500 werden geselecteerd.",
-      "remaining": "Rust {amount}"
+      "remaining": "Rust {amount}",
+      "export": "Exporteren",
+      "exportCotisationsExcel": "Bijdragen (Excel)",
+      "exportMembresExcel": "Leden (Excel)",
+      "exportMembresPdf": "Leden (PDF)",
+      "allCategories": "Alle categorieën",
+      "allRenewals": "Alle verlengingen",
+      "resetFilters": "Reset",
+      "renewal": {
+        "automatic": "Automatisch",
+        "manual": "Handmatig"
+      },
+      "summary": {
+        "aPagar": " · {amount} te innen",
+        "recebido": " · {amount} ontvangen",
+        "saldo": " · {amount} openstaand"
+      },
+      "distribution": {
+        "show": "Verdeling bekijken",
+        "hide": "Verdeling verbergen",
+        "category": "Categorie",
+        "renewal": "Verlenging",
+        "count": "Aantal",
+        "aPagar": "Totaal te innen",
+        "recebido": "Ontvangen",
+        "saldo": "Openstaand saldo",
+        "total": "Totaal",
+        "noCategory": "Geen categorie",
+        "empty": "Geen bijdragen komen overeen met deze filters."
+      }
     },
     "reminderModal": {
       "title": "Stuur een bijdrageherinnering",

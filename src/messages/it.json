@@ -4161,11 +4161,7 @@
       "selectedCount": "{count, plural, one {# selezionato} other {# selezionato}}",
       "deselectAll": "Deselezione",
       "sendReminder": "Invia un promemoria",
-      "exportMembers": "Membri esportatori",
-      "exportExcel": "Excel (.xlsx)",
-      "exportPdf": "PDF (.pdf)",
       "count": "{count, plural, one {# Quota associativa} other {# Contributi}}",
-      "totalCollected": " · {amount} Incassati",
       "exercise": "Esercizio {year}",
       "columns": {
         "member": "Membro",
@@ -4209,7 +4205,36 @@
         "editCancelled": "Cambio dell'iscrizione annullata"
       },
       "selectAllTruncated": "Più di 500 contributi rientravano nei filtri — solo i primi 500 sono stati selezionati.",
-      "remaining": "Riposo {amount}"
+      "remaining": "Riposo {amount}",
+      "export": "Esporta",
+      "exportCotisationsExcel": "Contributi (Excel)",
+      "exportMembresExcel": "Membri (Excel)",
+      "exportMembresPdf": "Membri (PDF)",
+      "allCategories": "Tutte le categorie",
+      "allRenewals": "Tutti i rinnovi",
+      "resetFilters": "Reset",
+      "renewal": {
+        "automatic": "Automatico",
+        "manual": "Manuale"
+      },
+      "summary": {
+        "aPagar": " · {amount} da incassare",
+        "recebido": " · {amount} incassati",
+        "saldo": " · {amount} da saldare"
+      },
+      "distribution": {
+        "show": "Vedi la ripartizione",
+        "hide": "Nascondi la ripartizione",
+        "category": "Categoria",
+        "renewal": "Rinnovo",
+        "count": "Quantità",
+        "aPagar": "Totale da incassare",
+        "recebido": "Incassato",
+        "saldo": "Saldo da pagare",
+        "total": "Totale",
+        "noCategory": "Nessuna categoria",
+        "empty": "Nessun contributo corrisponde a questi filtri."
+      }
     },
     "reminderModal": {
       "title": "Invia un promemoria per la donazione",

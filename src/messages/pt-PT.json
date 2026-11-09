@@ -4192,11 +4192,7 @@
       "selectedCount": "{count, plural, one {# selecionada} other {# selecionadas}}",
       "deselectAll": "Desmarcar",
       "sendReminder": "Enviar lembrete",
-      "exportMembers": "Exportar membros",
-      "exportExcel": "Excel (.xlsx)",
-      "exportPdf": "PDF (.pdf)",
       "count": "{count, plural, one {# quota} other {# quotas}}",
-      "totalCollected": " · {amount} cobrado",
       "exercise": "Exercício {year}",
       "columns": {
         "member": "Membro",
@@ -4240,7 +4236,36 @@
         "editCancelled": "Edição da quota cancelada"
       },
       "selectAllTruncated": "Mais de 500 quotas correspondem aos filtros — apenas as primeiras 500 foram selecionadas.",
-      "remaining": "Faltam {amount}"
+      "remaining": "Faltam {amount}",
+      "export": "Exportar",
+      "exportCotisationsExcel": "Quotas (Excel)",
+      "exportMembresExcel": "Membros (Excel)",
+      "exportMembresPdf": "Membros (PDF)",
+      "allCategories": "Todas as categorias",
+      "allRenewals": "Todas as renovações",
+      "resetFilters": "Repor",
+      "renewal": {
+        "automatic": "Automática",
+        "manual": "Manual"
+      },
+      "summary": {
+        "aPagar": " · {amount} a receber",
+        "recebido": " · {amount} recebidos",
+        "saldo": " · {amount} pendente"
+      },
+      "distribution": {
+        "show": "Ver a distribuição",
+        "hide": "Ocultar a distribuição",
+        "category": "Categoria",
+        "renewal": "Renovação",
+        "count": "Quantidade",
+        "aPagar": "Total a receber",
+        "recebido": "Recebido",
+        "saldo": "Saldo a pagar",
+        "total": "Total",
+        "noCategory": "Sem categoria",
+        "empty": "Nenhuma quota corresponde a estes filtros."
+      }
     },
     "reminderModal": {
       "title": "Enviar um lembrete de quota",

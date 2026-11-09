@@ -4161,11 +4161,7 @@
       "selectedCount": "{count, plural, one {# odabrani} other {# odabrani}}",
       "deselectAll": "Deselectati",
       "sendReminder": "Pošalji podsjetnik",
-      "exportMembers": "Izvozni članovi",
-      "exportExcel": "Excel (.xlsx)",
-      "exportPdf": "PDF (.pdf)",
       "count": "{count, plural, one {# Članarina} other {# Doprinosi}}",
-      "totalCollected": " · {amount} unovčio",
       "exercise": "Fiskalna godina {year}",
       "columns": {
         "member": "Član",
@@ -4209,7 +4205,36 @@
         "editCancelled": "Promjena otkazanog članstva"
       },
       "selectAllTruncated": "Više od 500 priloga zadovoljilo je kriterije — odabrano je samo prvih 500.",
-      "remaining": "Odmor {amount}"
+      "remaining": "Odmor {amount}",
+      "export": "Izvezi",
+      "exportCotisationsExcel": "Članarine (Excel)",
+      "exportMembresExcel": "Članovi (Excel)",
+      "exportMembresPdf": "Članovi (PDF)",
+      "allCategories": "Sve kategorije",
+      "allRenewals": "Sve obnove",
+      "resetFilters": "Reset",
+      "renewal": {
+        "automatic": "Automatsko",
+        "manual": "Ručno"
+      },
+      "summary": {
+        "aPagar": " · {amount} za naplatu",
+        "recebido": " · {amount} primljeno",
+        "saldo": " · {amount} preostaje za naplatu"
+      },
+      "distribution": {
+        "show": "Prikaži raspodjelu",
+        "hide": "Sakrij raspodjelu",
+        "category": "Kategorija",
+        "renewal": "Obnova",
+        "count": "Broj",
+        "aPagar": "Ukupno za naplatu",
+        "recebido": "Primljeno",
+        "saldo": "Preostali iznos",
+        "total": "Ukupno",
+        "noCategory": "Bez kategorije",
+        "empty": "Nijedan doprinos ne odgovara ovim filterima."
+      }
     },
     "reminderModal": {
       "title": "Pošaljite podsjetnik za doprinos",
