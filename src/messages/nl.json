@@ -921,7 +921,8 @@
       "sectionUnverifiedNote": "Dit account wordt niet herkend — controleer de sectie of kies het uit de geavanceerde opties.",
       "sectionToVerify": "Sectie om te controleren",
       "advancedOptions": "Geavanceerde opties",
-      "revertToAutoSection": "Terug naar het automatische gedeelte"
+      "revertToAutoSection": "Terug naar het automatische gedeelte",
+      "noMatchingCategory": "Geen overeenkomende categorie"
     },
     "bankAccountForm": {
       "bankName": "Banknaam",

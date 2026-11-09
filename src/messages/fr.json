@@ -1118,6 +1118,7 @@
     "categoryForm": {
       "name": "Nom",
       "namePlaceholder": "Ex: Cotisations",
+      "noMatchingCategory": "Aucune catégorie correspondante",
       "type": "Type",
       "typeIncome": "Recette",
       "typeExpense": "Dépense",

@@ -921,7 +921,8 @@
       "sectionUnverifiedNote": "Dan il-kont mhuwiex rikonoxxut — iċċekkja s-sezzjoni jew agħżelha mill-għażliet avvanzati.",
       "sectionToVerify": "Sezzjoni biex tiġi ċċekkjata",
       "advancedOptions": "Għażliet avvanzati",
-      "revertToAutoSection": "Lura għas-sezzjoni awtomatika"
+      "revertToAutoSection": "Lura għas-sezzjoni awtomatika",
+      "noMatchingCategory": "L-ebda kategorija ta' tqabbil"
     },
     "bankAccountForm": {
       "bankName": "Isem tal-Bank",

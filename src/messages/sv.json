@@ -921,7 +921,8 @@
       "sectionUnverifiedNote": "Detta konto känns inte igen – kontrollera avsnittet eller välj det från de avancerade alternativen.",
       "sectionToVerify": "Sektion att kontrollera",
       "advancedOptions": "Avancerade alternativ",
-      "revertToAutoSection": "Tillbaka till den automatiska sektionen"
+      "revertToAutoSection": "Tillbaka till den automatiska sektionen",
+      "noMatchingCategory": "Ingen matchningskategori"
     },
     "bankAccountForm": {
       "bankName": "Banknamn",

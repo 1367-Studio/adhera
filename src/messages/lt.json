@@ -921,7 +921,8 @@
       "sectionUnverifiedNote": "Ši paskyra nėra atpažįstama — patikrinkite skiltį arba pasirinkite ją iš išplėstinių parinkčių.",
       "sectionToVerify": "Skyrius, kurį reikia patikrinti",
       "advancedOptions": "Išplėstinės parinktys",
-      "revertToAutoSection": "Grįžti į automatinę sekciją"
+      "revertToAutoSection": "Grįžti į automatinę sekciją",
+      "noMatchingCategory": "Kategorijoje nėra atitikmenų"
     },
     "bankAccountForm": {
       "bankName": "Banko pavadinimas",

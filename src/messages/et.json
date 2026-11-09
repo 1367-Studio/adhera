@@ -921,7 +921,8 @@
       "sectionUnverifiedNote": "See konto ei ole tunnustatud — vaata sektsiooni või vali see edasijõudnute valikutest.",
       "sectionToVerify": "Osa kontrollimiseks",
       "advancedOptions": "Täiustatud valikud",
-      "revertToAutoSection": "Tagasi automaatsektsiooni."
+      "revertToAutoSection": "Tagasi automaatsektsiooni.",
+      "noMatchingCategory": "Sobivuskategooria puudub"
     },
     "bankAccountForm": {
       "bankName": "Panga nimi",

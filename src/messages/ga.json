@@ -921,7 +921,8 @@
       "sectionUnverifiedNote": "Ní aithnítear an cuntas seo - seiceáil an t-alt nó roghnaigh é ó na roghanna casta.",
       "sectionToVerify": "Rannóg le seiceáil",
       "advancedOptions": "Ardroghanna",
-      "revertToAutoSection": "Ar ais go dtí an rannóg uathoibríoch"
+      "revertToAutoSection": "Ar ais go dtí an rannóg uathoibríoch",
+      "noMatchingCategory": "Gan aon chatagóir meaitseála"
     },
     "bankAccountForm": {
       "bankName": "Ainm an Bhainc",

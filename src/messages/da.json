@@ -921,7 +921,8 @@
       "sectionUnverifiedNote": "Denne konto genkendes ikke — tjek sektionen eller vælg den fra de avancerede muligheder.",
       "sectionToVerify": "Afsnit for at tjekke",
       "advancedOptions": "Avancerede muligheder",
-      "revertToAutoSection": "Tilbage til den automatiske sektion"
+      "revertToAutoSection": "Tilbage til den automatiske sektion",
+      "noMatchingCategory": "Ingen matchende kategori"
     },
     "bankAccountForm": {
       "bankName": "Banknavn",

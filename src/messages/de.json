@@ -921,7 +921,8 @@
       "sectionUnverifiedNote": "Dieses Konto wird nicht erkannt – prüfen Sie den Abschnitt oder wählen Sie es aus den erweiterten Optionen aus.",
       "sectionToVerify": "Abschnitt zu überprüfen",
       "advancedOptions": "Erweiterte Optionen",
-      "revertToAutoSection": "Zurück zum automatischen Abschnitt"
+      "revertToAutoSection": "Zurück zum automatischen Abschnitt",
+      "noMatchingCategory": "Keine Matching-Kategorie"
     },
     "bankAccountForm": {
       "bankName": "Bankname",

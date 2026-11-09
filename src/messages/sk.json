@@ -921,7 +921,8 @@
       "sectionUnverifiedNote": "Tento účet nie je uznávaný — skontrolujte sekciu alebo si ho vyberte z pokročilých možností.",
       "sectionToVerify": "Sekcia na kontrolu",
       "advancedOptions": "Pokročilé možnosti",
-      "revertToAutoSection": "Späť k automatickej sekcii"
+      "revertToAutoSection": "Späť k automatickej sekcii",
+      "noMatchingCategory": "Žiadna kategória párovania"
     },
     "bankAccountForm": {
       "bankName": "Názov banky",

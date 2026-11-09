@@ -921,7 +921,8 @@
       "sectionUnverifiedNote": "Esta cuenta no es reconocida — revisa la sección o elígela entre las opciones avanzadas.",
       "sectionToVerify": "Sección a revisar",
       "advancedOptions": "Opciones avanzadas",
-      "revertToAutoSection": "Volviendo a la sección automática"
+      "revertToAutoSection": "Volviendo a la sección automática",
+      "noMatchingCategory": "No hay categoría de coincidencia"
     },
     "bankAccountForm": {
       "bankName": "Nombre del banco",

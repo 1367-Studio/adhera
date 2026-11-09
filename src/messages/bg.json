@@ -921,7 +921,8 @@
       "sectionUnverifiedNote": "Този акаунт не е разпознат — проверете секцията или го изберете от разширените опции.",
       "sectionToVerify": "Секция за проверка",
       "advancedOptions": "Разширени опции",
-      "revertToAutoSection": "Връщаме се към автоматичната секция"
+      "revertToAutoSection": "Връщаме се към автоматичната секция",
+      "noMatchingCategory": "Няма съвпадение на категория"
     },
     "bankAccountForm": {
       "bankName": "Име на банка",

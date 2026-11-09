@@ -921,7 +921,8 @@
       "sectionUnverifiedNote": "Acest cont nu este recunoscut — verifică secțiunea sau alege-l din opțiunile avansate.",
       "sectionToVerify": "Secțiune de verificat",
       "advancedOptions": "Opțiuni avansate",
-      "revertToAutoSection": "Înapoi la secțiunea automată"
+      "revertToAutoSection": "Înapoi la secțiunea automată",
+      "noMatchingCategory": "Nicio categorie de potrivire"
     },
     "bankAccountForm": {
       "bankName": "Nume al băncii",

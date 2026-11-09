@@ -921,7 +921,8 @@
       "sectionUnverifiedNote": "Αυτός ο λογαριασμός δεν αναγνωρίζεται — ελέγξτε την ενότητα ή επιλέξτε τον από τις σύνθετες επιλογές.",
       "sectionToVerify": "Ενότητα για έλεγχο",
       "advancedOptions": "Προχωρημένες επιλογές",
-      "revertToAutoSection": "Επιστροφή στην αυτόματη ενότητα"
+      "revertToAutoSection": "Επιστροφή στην αυτόματη ενότητα",
+      "noMatchingCategory": "Δεν υπάρχει αντίστοιχη κατηγορία"
     },
     "bankAccountForm": {
       "bankName": "Όνομα τράπεζας",
