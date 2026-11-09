@@ -4218,22 +4218,45 @@
         "manual": "De láimh"
       },
       "summary": {
-        "aPagar": " · {amount} dlite",
+        "aPagar": " · {amount} iomlán",
         "recebido": " · {amount} faighte",
         "saldo": " · {amount} fágtha"
       },
       "distribution": {
         "show": "Féach ar an miondealú",
         "hide": "Folaigh an miondealú",
-        "category": "Catagóir",
+        "category": "Catagóir Ballraíochta",
         "renewal": "Athnuachan",
-        "count": "Líon",
-        "aPagar": "Iomlán dlite",
-        "recebido": "Faighte",
-        "saldo": "Iarmhéid dlite",
+        "count": "Líon na ranníocaíochtaí",
+        "aPagar": "Méid iomlán",
+        "recebido": "Méid a fuarthas",
+        "saldo": "Iarmhéid atá fágtha",
         "total": "Iomlán",
         "noCategory": "Gan chatagóir",
         "empty": "Níl aon ranníocaíocht ag teacht leis na scagairí seo."
+      },
+      "mergeTiers": {
+        "filterOption": "Cumaisc catagóirí dúblacha",
+        "title": "Cumaisc catagóirí dúblacha",
+        "description": "Catagóirí nach bhfuil a n-ainmneacha difriúil ach i gcás, accents, nó spásanna. Ní dhéantar aon rud a chumasc go huathoibríoch.",
+        "empty": "Níor aimsíodh aon dúbailt.",
+        "groupSummary": "{count} catagóirí darb ainm \"{label}\"",
+        "groupTitle": "Cumaisc isteach i \"{label}\"",
+        "backAction": "Ar ais",
+        "cancelAction": "Cuir ar ceal",
+        "keepAsPrimary": "Catagóir le coinneáil",
+        "mergeIntoPrimary": "Catagóirí le cumasc isteach ann",
+        "tierCounts": "{cotisationCount} Táille Ballraíochta · {membreCount} Ball (í)",
+        "mergeAction": "Cumaisc",
+        "confirmTitle": "Deimhnigh an cumasc",
+        "confirmDescription": "Déanfar catagóir(í) {count} a chumasc i \"{primaryLabel}\". {cotisationCount} Aistreofar táille(í) ballraíochta agus ball(í) {membreCount}. Tá an gníomh seo dochúlaithe ach caomhnaíonn sé gach stair agus cumraíocht athnuachana.",
+        "mergeSuccess": "{count} catagóir (í) cumaiscthe.",
+        "loadError": "Ní féidir dúbailtí a uaslódáil. Bain triail as arís i gceann tamaill.",
+        "activeSubscriptionWarning": "{count} abonnement(s) actif(s) seront transférés — la facturation Stripe déjà en cours ne change pas automatiquement.",
+        "priceFree": "Saor in Aisce",
+        "priceFreeAmount": "Méid saor in aisce",
+        "priceFreeAmountFrom": "Méid saor in aisce ó {amount}",
+        "priceRecurring": "{amount} / bliain"
       }
     },
     "reminderModal": {

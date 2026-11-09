@@ -4218,22 +4218,45 @@
         "manual": "Rankinis"
       },
       "summary": {
-        "aPagar": " · {amount} mokėtina",
+        "aPagar": " · {amount} iš viso",
         "recebido": " · {amount} gauta",
         "saldo": " · {amount} liko sumokėti"
       },
       "distribution": {
         "show": "Peržiūrėti pasiskirstymą",
         "hide": "Slėpti pasiskirstymą",
-        "category": "Kategorija",
+        "category": "Narystės kategorija",
         "renewal": "Atnaujinimas",
-        "count": "Kiekis",
-        "aPagar": "Iš viso mokėtina",
-        "recebido": "Gauta",
-        "saldo": "Mokėtinas likutis",
+        "count": "Indėlių skaičius",
+        "aPagar": "Bendra suma",
+        "recebido": "Gauta suma",
+        "saldo": "Likęs balansas",
         "total": "Iš viso",
         "noCategory": "Be kategorijos",
         "empty": "Joks mokestis neatitinka šių filtrų."
+      },
+      "mergeTiers": {
+        "filterOption": "Sujungti dublikatines kategorijas",
+        "title": "Sujungti dublikatines kategorijas",
+        "description": "Kategorijos, kurių pavadinimai skiriasi tik linksniais, akcentais ar tarpais. Niekas automatiškai nesujungiama.",
+        "empty": "Dublikatų nerasta.",
+        "groupSummary": "{count} kategorijos pavadinimu \"{label}\"",
+        "groupTitle": "Sujungti į \"{label}\"",
+        "backAction": "Atgal",
+        "cancelAction": "Atšaukti",
+        "keepAsPrimary": "Kategorija, kurią verta išlaikyti",
+        "mergeIntoPrimary": "Kategorijos, kurias galima į ją sujungti",
+        "tierCounts": "{cotisationCount} Narystės mokestis(-ai) · {membreCount} Narys(-ai)",
+        "mergeAction": "Susijungimas",
+        "confirmTitle": "Patvirtinkite susijungimą",
+        "confirmDescription": "{count} kategorija(-ės) bus sujungtos į \"{primaryLabel}\". {cotisationCount} Narystės mokestis(-iai) ir {membreCount} narys(-iai) bus perkelti. Šis veiksmas yra negrįžtamas, bet išsaugo visą atnaujinimo istoriją ir konfigūracijas.",
+        "mergeSuccess": "{count} sujungta kategorija(-ės).",
+        "loadError": "Dublikatų įkelti negalima. Pabandykite dar kartą po akimirkos.",
+        "activeSubscriptionWarning": "{count} aktyvi prenumerata(-os) bus perkelta — Jau vykdomas Stripe atsiskaitymas automatiškai nesikeičia.",
+        "priceFree": "Laisvas",
+        "priceFreeAmount": "Nemokama suma",
+        "priceFreeAmountFrom": "Nemokama suma iš {amount}",
+        "priceRecurring": "{amount}/metai"
       }
     },
     "reminderModal": {

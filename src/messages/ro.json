@@ -4218,22 +4218,45 @@
         "manual": "Manuală"
       },
       "summary": {
-        "aPagar": " · {amount} de încasat",
+        "aPagar": " · {amount} total",
         "recebido": " · {amount} încasat",
         "saldo": " · {amount} rămas de plată"
       },
       "distribution": {
         "show": "Vezi distribuția",
         "hide": "Ascunde distribuția",
-        "category": "Categorie",
+        "category": "Categoria de membru",
         "renewal": "Reînnoire",
-        "count": "Cantitate",
-        "aPagar": "Total de încasat",
-        "recebido": "Încasat",
-        "saldo": "Sold de plată",
+        "count": "Numărul contribuțiilor",
+        "aPagar": "Suma totală",
+        "recebido": "Suma primită",
+        "saldo": "Soldul rămas",
         "total": "Total",
         "noCategory": "Fără categorie",
         "empty": "Nicio taxă nu corespunde acestor filtre."
+      },
+      "mergeTiers": {
+        "filterOption": "Fuzionarea categoriilor duplicate",
+        "title": "Fuzionarea categoriilor duplicate",
+        "description": "Categorii ale căror nume diferă doar prin majuscule, accente sau spații. Nimic nu este combinat automat.",
+        "empty": "Nu s-au detectat duplicate.",
+        "groupSummary": "{count} categorii denumite \"{label}\"",
+        "groupTitle": "Fuzionează în \"{label}\"",
+        "backAction": "Înapoi",
+        "cancelAction": "Anulează",
+        "keepAsPrimary": "Categorie de păstrat",
+        "mergeIntoPrimary": "Categorii care urmează să fie integrate în el",
+        "tierCounts": "{cotisationCount} Taxă(e) de membru · {membreCount} Membru(i)",
+        "mergeAction": "Fuziunea",
+        "confirmTitle": "Confirmă fuziunea",
+        "confirmDescription": "{count} catégorie(s) seront fusionnées dans « {primaryLabel} ». {cotisationCount} cotisation(s) et {membreCount} adhérent(s) seront transférés. Cette action est irréversible mais préserve tout l'historique et les configurations de renouvellement.",
+        "mergeSuccess": "{count} categorii fuzionate.",
+        "loadError": "Duplicatele nu pot fi încărcate. Încearcă din nou imediat.",
+        "activeSubscriptionWarning": "{count} abonamentele active vor fi transferate — facturarea Stripe deja în curs nu se modifică automat.",
+        "priceFree": "Gratuit",
+        "priceFreeAmount": "Suma gratuită",
+        "priceFreeAmountFrom": "Sumă gratuită din {amount}",
+        "priceRecurring": "{amount}/an"
       }
     },
     "reminderModal": {

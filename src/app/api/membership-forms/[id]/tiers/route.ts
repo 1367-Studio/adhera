@@ -101,7 +101,7 @@ export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
   const form = await prisma.membershipForm.findFirst({ where: { id, associationId: ctx.associationId }, select: { id: true } })
   if (!form) return NextResponse.json({ error: "Introuvable" }, { status: 404 })
 
-  const tiers = await prisma.membershipTier.findMany({ where: { formId: id }, orderBy: { order: "asc" } })
+  const tiers = await prisma.membershipTier.findMany({ where: { formId: id, archivedAt: null }, orderBy: { order: "asc" } })
   return NextResponse.json(tiers)
 }, { area: "adhesions", access: "edit", module: "cotisations" })
 
@@ -128,7 +128,7 @@ export const PUT = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   // Cotisation), donc supprimer une tier ADDON déjà achetée détruirait tout son historique
   // d'achat. Les deux cas sont bloqués ici, avant toute écriture.
   const existingTiersForTypeCheck = await prisma.membershipTier.findMany({
-    where:  { formId: id },
+    where:  { formId: id, archivedAt: null },
     select: { id: true, itemType: true, label: true, fixedPeriodEnd: true },
   })
   const existingTierById = new Map(existingTiersForTypeCheck.map(t => [t.id, t]))
@@ -200,8 +200,13 @@ export const PUT = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
 
   const tiers = await prisma.$transaction(async tx => {
     // Même convention d'upsert-par-id que DonationTier — préserve les Cotisation.tierId déjà
-    // émis plutôt que de tout recréer.
-    const existing    = await tx.membershipTier.findMany({ where: { formId: id }, select: { id: true } })
+    // émis plutôt que de tout recréer. `archivedAt: null` : un tier archivé (fusion de
+    // catégories en double, voir MembershipTierMergeLog) est totalement invisible à cet
+    // éditeur — absent de `existing`, il n'entre jamais dans le calcul de `toDelete` et
+    // n'est donc jamais supprimé par la logique "upsert par id, suppression de ce qui
+    // manque" ci-dessous, alors qu'il n'a plus aucune raison d'apparaître dans le payload
+    // envoyé par le client (qui ne liste que les tiers actifs renvoyés par le GET).
+    const existing    = await tx.membershipTier.findMany({ where: { formId: id, archivedAt: null }, select: { id: true } })
     const existingIds = new Set(existing.map(t => t.id))
     const incomingIds = new Set(parsed.data.filter(t => t.id).map(t => t.id))
 

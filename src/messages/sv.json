@@ -4218,22 +4218,45 @@
         "manual": "Manuell"
       },
       "summary": {
-        "aPagar": " · {amount} att betala",
+        "aPagar": " · {amount} totalt",
         "recebido": " · {amount} mottaget",
         "saldo": " · {amount} kvarstående"
       },
       "distribution": {
         "show": "Visa fördelning",
         "hide": "Dölj fördelning",
-        "category": "Kategori",
+        "category": "Medlemskategori",
         "renewal": "Förnyelse",
-        "count": "Antal",
-        "aPagar": "Totalt att betala",
-        "recebido": "Mottaget",
-        "saldo": "Saldo att betala",
+        "count": "Antal bidrag",
+        "aPagar": "Totalt belopp",
+        "recebido": "Mottaget belopp",
+        "saldo": "Återstående saldo",
         "total": "Totalt",
         "noCategory": "Ingen kategori",
         "empty": "Inga avgifter matchar dessa filter."
+      },
+      "mergeTiers": {
+        "filterOption": "Slå ihop dubblettkategorier",
+        "title": "Slå ihop dubblettkategorier",
+        "description": "Kategorier vars namn endast skiljer sig i kasus, accenter eller mellanslag. Inget slås automatiskt samman.",
+        "empty": "Inga dubbletter upptäckta.",
+        "groupSummary": "{count} kategorier med namnet \"{label}\"",
+        "groupTitle": "Slå ihop med \"{label}\"",
+        "backAction": "Tillbaka",
+        "cancelAction": "Avbryt",
+        "keepAsPrimary": "Kategori att behålla",
+        "mergeIntoPrimary": "Kategorier att slå ihop med den",
+        "tierCounts": "{cotisationCount} Medlemsavgift(ar) · {membreCount} Medlem(ar)",
+        "mergeAction": "Sammanslagning",
+        "confirmTitle": "Bekräfta sammanslagningen",
+        "confirmDescription": "{count}-kategori(er) kommer att slås ihop med \"{primaryLabel}\". {cotisationCount} Medlemsavgift(er) och {membreCount}-medlemmar(ar) kommer att överföras. Denna åtgärd är irreversibel men bevarar all förnyelsehistorik och konfigurationer.",
+        "mergeSuccess": "{count} sammanslagen kategori(er).",
+        "loadError": "Dubbletter kan inte laddas upp. Försök igen om en stund.",
+        "activeSubscriptionWarning": "{count} aktiva prenumerationer kommer att överföras — Stripe-fakturering som redan pågår ändras inte automatiskt.",
+        "priceFree": "Gratis",
+        "priceFreeAmount": "Gratis belopp",
+        "priceFreeAmountFrom": "Gratis belopp från {amount}",
+        "priceRecurring": "{amount}/år"
       }
     },
     "reminderModal": {

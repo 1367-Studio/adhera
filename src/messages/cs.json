@@ -4218,22 +4218,45 @@
         "manual": "Ruční"
       },
       "summary": {
-        "aPagar": " · {amount} k úhradě",
+        "aPagar": " · {amount} celkem",
         "recebido": " · {amount} přijato",
         "saldo": " · {amount} zbývá uhradit"
       },
       "distribution": {
         "show": "Zobrazit rozdělení",
         "hide": "Skrýt rozdělení",
-        "category": "Kategorie",
+        "category": "Kategorie členství",
         "renewal": "Obnovení",
-        "count": "Počet",
-        "aPagar": "Celkem k úhradě",
-        "recebido": "Přijato",
-        "saldo": "Zůstatek k úhradě",
+        "count": "Počet příspěvků",
+        "aPagar": "Celková částka",
+        "recebido": "Obdržela částka",
+        "saldo": "Zbývající zůstatek",
         "total": "Celkem",
         "noCategory": "Bez kategorie",
         "empty": "Žádný příspěvek neodpovídá těmto filtrům."
+      },
+      "mergeTiers": {
+        "filterOption": "Sloučení duplicitních kategorií",
+        "title": "Sloučení duplicitních kategorií",
+        "description": "Kategorie, jejichž názvy se liší pouze pádem, přízvuky nebo mezerami. Nic se automaticky nespojuje.",
+        "empty": "Nebyly zjištěny žádné duplikáty.",
+        "groupSummary": "{count} kategorií s názvem \"{label}\"",
+        "groupTitle": "Sloučení do \"{label}\"",
+        "backAction": "Zpět",
+        "cancelAction": "Zrušit",
+        "keepAsPrimary": "Kategorie, kterou si zachovat",
+        "mergeIntoPrimary": "Kategorie, které lze do něj sloučit",
+        "tierCounts": "{cotisationCount} Členský poplatek(y) · {membreCount} Člen(s)",
+        "mergeAction": "Sloučení",
+        "confirmTitle": "Potvrďte sloučení",
+        "confirmDescription": "{count} kategorií(y) budou sloučeny do \"{primaryLabel}\". {cotisationCount} Členský poplatek(y) a {membreCount} člen(i) budou převedeny. Tato akce je nevratná, ale zachovává veškerou historii obnovení a konfigurace.",
+        "mergeSuccess": "{count} sloučené kategorie.",
+        "loadError": "Duplikáty nelze nahrát. Zkuste to za chvíli znovu.",
+        "activeSubscriptionWarning": "{count} aktivní předplatné bude převedeno — Fakturace Stripe, která již probíhá, se automaticky nemění.",
+        "priceFree": "Zdarma",
+        "priceFreeAmount": "Volná částka",
+        "priceFreeAmountFrom": "Zdarma částka z {amount}",
+        "priceRecurring": "{amount}/rok"
       }
     },
     "reminderModal": {

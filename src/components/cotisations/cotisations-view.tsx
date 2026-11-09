@@ -23,6 +23,7 @@ import { CotisationPaymentModal } from "@/components/cotisations/cotisation-paym
 import { PENDING_COTISATION_STATUSES, NO_CATEGORY_FILTER } from "@/lib/cotisation-filters"
 import { CotisationPaymentsModal } from "@/components/cotisations/cotisation-payments-modal"
 import { CotisationsDistribution } from "@/components/cotisations/cotisations-distribution"
+import { MergeDuplicateTiersModal } from "@/components/cotisations/merge-duplicate-tiers-modal"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { RowActions } from "@/components/ui/row-actions"
@@ -81,6 +82,11 @@ const yearOptions = Array.from({ length: 5 }, (_, i) => currentYear - i)
 
 const PAGE_SIZE = 25
 
+// Sentinel injected into the tier FilterSelect's own options — intercepted in its
+// onValueChange before setTierFilter, so picking it opens the merge modal instead of
+// filtering (see MergeDuplicateTiersModal). Never sent to the API, unlike NO_CATEGORY_FILTER.
+const MERGE_DUPLICATE_TIERS_OPTION = "__merge_duplicate_tiers__"
+
 export function CotisationsView() {
   const searchParams = useSearchParams()
   const t = useTranslations()
@@ -99,6 +105,7 @@ export function CotisationsView() {
   const [tierFilter, setTierFilter]         = useState("")
   const [renewalFilter, setRenewalFilter]   = useState<RenewalMode | "">("")
   const [distributionOpen, setDistributionOpen] = useState(false)
+  const [mergeTiersOpen, setMergeTiersOpen] = useState(false)
   const [createOpen, setCreateOpen]     = useState(false)
   const [editTarget, setEditTarget]     = useState<Cotisation | null>(null)
   const [deleteTarget, setDeleteTarget] = useState<Cotisation | null>(null)
@@ -539,10 +546,15 @@ export function CotisationsView() {
 
         <FilterSelect
           value={tierFilter}
-          onValueChange={v => { setTierFilter(v); setPage(1) }}
+          onValueChange={v => {
+            if (v === MERGE_DUPLICATE_TIERS_OPTION) { setMergeTiersOpen(true); return }
+            setTierFilter(v)
+            setPage(1)
+          }}
           options={[
             ...tierOptions.map(tier => ({ value: tier.id, label: tier.label })),
             ...(hasUncategorized ? [{ value: NO_CATEGORY_FILTER, label: t("cotisations.view.distribution.noCategory") }] : []),
+            ...(canEditAdhesions ? [{ value: MERGE_DUPLICATE_TIERS_OPTION, label: t("cotisations.view.mergeTiers.filterOption"), separatorBefore: true }] : []),
           ]}
           placeholder={t("cotisations.view.allCategories")}
           width="w-40"
@@ -633,6 +645,18 @@ export function CotisationsView() {
         onOpenChange={setReminderOpen}
         cotisations={Array.from(selected.values())}
         onSent={() => { setReminderOpen(false); clearSelection() }}
+      />
+
+      <MergeDuplicateTiersModal
+        open={mergeTiersOpen}
+        onOpenChange={setMergeTiersOpen}
+        onMerged={(mergedAwayIds, primaryTierId) => {
+          // The active "Catégorie" filter can be pointing at a tier that was just archived —
+          // left alone, the table would silently show zero results with no explanation, since
+          // nothing references that tierId anymore. Follow the filter onto the tier it merged
+          // into instead of just clearing it, so the admin keeps looking at the same category.
+          if (mergedAwayIds.includes(tierFilter)) { setTierFilter(primaryTierId); setPage(1) }
+        }}
       />
 
       {paymentTarget && (

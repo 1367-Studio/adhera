@@ -681,6 +681,7 @@ model Association {
   erasureRequests               ErasureRequest[]
   membreDuplicateMatches        MembreDuplicateMatch[]
   membreMergeLogs               MembreMergeLog[]
+  membershipTierMergeLogs       MembershipTierMergeLog[]
   boutiqueResponsable           User?                          @relation("BoutiqueResponsable", fields: [boutiqueResponsableId], references: [id], onDelete: SetNull)
   donResponsable                User?                          @relation("DonResponsable", fields: [donResponsableId], references: [id], onDelete: SetNull)
 
@@ -788,6 +789,7 @@ model User {
   dismissedDuplicateMatches MembreDuplicateMatch[]
   membreMergesPerformed    MembreMergeLog[]
   membresMerged            Membre[]               @relation("MembreMergedBy")
+  membershipTierMergesPerformed MembershipTierMergeLog[]
   boutiqueResponsableFor   Association[]          @relation("BoutiqueResponsable")
   boutiqueCommandesCreated BoutiqueCommande[]     @relation("BoutiqueCommandeCreatedBy")
   donsCreatedManually      Don[]
@@ -1968,6 +1970,14 @@ model MembershipTier {
   // aujourd'hui totalement indépendant du prix choisi sur le formulaire public actuel.
   // Seulement pertinent pour itemType MEMBERSHIP.
   membreTypeId String?
+  // Posé par la fusion de catégories en double (voir MembershipTierMergeLog) : ce tier a été
+  // conservé en base (jamais supprimé — MembershipAddonPurchase.tier est onDelete: Cascade et
+  // non-nullable, une suppression détruirait son historique d'achats) mais toutes ses relations
+  // ont été réassignées vers le tier primaire choisi. Doit être exclu de tout picker/formulaire
+  // actif (éditeur de tarifs, formulaire public, pickers de paiement) via `archivedAt: null` —
+  // mais jamais filtré dans les requêtes historiques/reporting (distribution des cotisations,
+  // export), qui doivent continuer à le retrouver pour les lignes déjà existantes.
+  archivedAt   DateTime?
 
   form           MembershipForm            @relation(fields: [formId], references: [id], onDelete: Cascade)
   membreType     MembreType?               @relation(fields: [membreTypeId], references: [id], onDelete: SetNull)
@@ -1980,6 +1990,29 @@ model MembershipTier {
 
   @@index([formId])
   @@index([membreTypeId])
+}
+
+// Trace d'audit d'une fusion de catégories d'adhésion dupliquées (voir archivedAt sur
+// MembershipTier ci-dessus) — même forme que MembreMergeLog, en plus simple : aucune FK vers
+// MembershipTier n'est contrainte par un @@unique, donc une fusion ne peut jamais produire de
+// conflit de réassignation (pas de champ `conflicts`), et un tier n'a pas de notion de "valeur
+// gagnante" comparable à celle de deux Membre (pas de `fieldResolutions`).
+model MembershipTierMergeLog {
+  id              String   @id @default(cuid())
+  associationId   String
+  primaryTierId   String
+  secondaryTierId String
+  performedById   String
+  // { "cotisations": 3, "subscriptions": 1, ... } — lignes réassignées vers le tier primaire,
+  // par relation.
+  relationCounts  Json
+  createdAt       DateTime @default(now())
+
+  association Association @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  performedBy User        @relation(fields: [performedById], references: [id])
+
+  @@index([associationId])
+  @@index([primaryTierId])
 }
 
 // Un produit Boutique proposé à la vente en fin de MembershipForm — l'admin choisit
