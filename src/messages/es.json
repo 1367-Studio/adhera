@@ -4220,22 +4220,45 @@
         "manual": "Manual"
       },
       "summary": {
-        "aPagar": " · {amount} a cobrar",
+        "aPagar": " · {amount} total",
         "recebido": " · {amount} recibidos",
         "saldo": " · {amount} pendiente"
       },
       "distribution": {
         "show": "Ver el desglose",
         "hide": "Ocultar el desglose",
-        "category": "Categoría",
+        "category": "Categoría de membresía",
         "renewal": "Renovación",
-        "count": "Cantidad",
-        "aPagar": "Total a cobrar",
-        "recebido": "Recibido",
-        "saldo": "Saldo pendiente",
+        "count": "Número de contribuciones",
+        "aPagar": "Cantidad total",
+        "recebido": "Cantidad recibida",
+        "saldo": "Saldo restante",
         "total": "Total",
         "noCategory": "Sin categoría",
         "empty": "Ninguna cuota coincide con estos filtros."
+      },
+      "mergeTiers": {
+        "filterOption": "Fusionar categorías duplicadas",
+        "title": "Fusionar categorías duplicadas",
+        "description": "Categorías cuyos nombres solo difieren en mayúsculas, acentos o espacios. Nada se fusiona automáticamente.",
+        "empty": "No se detectaron duplicados.",
+        "groupSummary": "{count} categorías llamadas \"{label}\"",
+        "groupTitle": "Fusionar en \"{label}\"",
+        "backAction": "Atrás",
+        "cancelAction": "Cancelar",
+        "keepAsPrimary": "Categoría a mantener",
+        "mergeIntoPrimary": "Categorías que se fusionarán en él",
+        "tierCounts": "{cotisationCount} Cuota(s) de Membresía · {membreCount} Miembro(s)",
+        "mergeAction": "Fusión",
+        "confirmTitle": "Confirma la fusión",
+        "confirmDescription": "{count} categoría(s) se fusionarán en \"{primaryLabel}\". {cotisationCount} Las cuotas de membresía y {membreCount} serán transferidos. Esta acción es irreversible pero preserva todo el historial y configuraciones de renovaciones.",
+        "mergeSuccess": "{count} categoría(s) fusionada(s).",
+        "loadError": "No se pueden subir duplicados. Inténtalo de nuevo en un momento.",
+        "activeSubscriptionWarning": "{count} suscripción(s) activa(s) se transferirán — La facturación de Stripe que ya está en curso no cambia automáticamente.",
+        "priceFree": "Gratis",
+        "priceFreeAmount": "Cantidad gratuita",
+        "priceFreeAmountFrom": "Cantidad gratuita de {amount}",
+        "priceRecurring": "{amount}/año"
       }
     },
     "reminderModal": {

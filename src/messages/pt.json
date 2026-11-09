@@ -4273,22 +4273,45 @@
         "manual": "Manual"
       },
       "summary": {
-        "aPagar": " · {amount} a receber",
+        "aPagar": " · {amount} total",
         "recebido": " · {amount} recebidos",
         "saldo": " · {amount} pendente"
       },
       "distribution": {
         "show": "Ver a distribuição",
         "hide": "Ocultar a distribuição",
-        "category": "Categoria",
+        "category": "Categoria de Membros",
         "renewal": "Renovação",
-        "count": "Quantidade",
-        "aPagar": "Total a receber",
-        "recebido": "Recebido",
-        "saldo": "Saldo a pagar",
+        "count": "Número de contribuições",
+        "aPagar": "Valor total",
+        "recebido": "Valor recebido",
+        "saldo": "Saldo restante",
         "total": "Total",
         "noCategory": "Sem categoria",
         "empty": "Nenhuma mensalidade corresponde a estes filtros."
+      },
+      "mergeTiers": {
+        "filterOption": "Mesclar categorias duplicadas",
+        "title": "Mesclar categorias duplicadas",
+        "description": "Categorias cujos nomes diferem apenas em maiúsculas, acentos ou espaços. Nada é automaticamente mesclado.",
+        "empty": "Nenhum duplicado detectado.",
+        "groupSummary": "{count} categorias chamadas \"{label}\"",
+        "groupTitle": "Fusão em \"{label}\"",
+        "backAction": "Voltar",
+        "cancelAction": "Cancelar",
+        "keepAsPrimary": "Categoria a manter",
+        "mergeIntoPrimary": "Categorias a serem fundidas nele",
+        "tierCounts": "{cotisationCount} mensalidade(s) · {membreCount} membro(s)",
+        "mergeAction": "Fusão",
+        "confirmTitle": "Confirme a fusão",
+        "confirmDescription": "{count} categoria(s) serão fundidas em \"{primaryLabel}\". {cotisationCount} mensalidade(s) e {membreCount} membro(s) serão transferidos. Essa ação é irreversível, mas preserva todo o histórico e as configurações de renovação.",
+        "mergeSuccess": "{count} categoria(s) fundida(s).",
+        "loadError": "Duplicatas não podem ser enviadas. Tente novamente em um instante.",
+        "activeSubscriptionWarning": "{count} de assinaturas ativas serão transferidas — A faturação do Stripe que já está em andamento não muda automaticamente.",
+        "priceFree": "Grátis",
+        "priceFreeAmount": "Valor gratuito",
+        "priceFreeAmountFrom": "Valor grátis de {amount}",
+        "priceRecurring": "{amount}/ano"
       }
     },
     "reminderModal": {

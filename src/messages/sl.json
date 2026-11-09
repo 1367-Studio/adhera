@@ -4220,22 +4220,45 @@
         "manual": "Ročno"
       },
       "summary": {
-        "aPagar": " · {amount} za plačilo",
+        "aPagar": " · {amount} skupaj",
         "recebido": " · {amount} prejeto",
         "saldo": " · {amount} preostane za plačilo"
       },
       "distribution": {
         "show": "Prikaži porazdelitev",
         "hide": "Skrij porazdelitev",
-        "category": "Kategorija",
+        "category": "Kategorija članstva",
         "renewal": "Obnovitev",
-        "count": "Število",
-        "aPagar": "Skupaj za plačilo",
-        "recebido": "Prejeto",
-        "saldo": "Preostanek za plačilo",
+        "count": "Število prispevkov",
+        "aPagar": "Skupni znesek",
+        "recebido": "Prejeti znesek",
+        "saldo": "Preostalo stanje",
         "total": "Skupaj",
         "noCategory": "Brez kategorije",
         "empty": "Noben prispevek ne ustreza tem filtrom."
+      },
+      "mergeTiers": {
+        "filterOption": "Združite podvojene kategorije",
+        "title": "Združite podvojene kategorije",
+        "description": "Kategorije, katerih imena se razlikujejo le po sklonu, naglasih ali presledkih. Nič se samodejno ne združi.",
+        "empty": "Ni bilo zaznanih podvojenih kopij.",
+        "groupSummary": "{count} kategorije z imenom \"{label}\"",
+        "groupTitle": "Združi v \"{label}\"",
+        "backAction": "Nazaj",
+        "cancelAction": "Prekliči",
+        "keepAsPrimary": "Kategorija, ki jo je treba obdržati",
+        "mergeIntoPrimary": "Kategorije, ki jih je treba združiti vanj",
+        "tierCounts": "{cotisationCount} Članarina · {membreCount} Član(i)",
+        "mergeAction": "Združitev",
+        "confirmTitle": "Potrdite združitev",
+        "confirmDescription": "{count} kategorije(e) bodo združene v \"{primaryLabel}\". {cotisationCount} Članarina in {membreCount} član(i) bodo preneseni. Ta ukrep je nepopravljiv, vendar ohranja vso zgodovino in konfiguracije obnov.",
+        "mergeSuccess": "{count} združene kategorije.",
+        "loadError": "Podvojenih datotek ni mogoče naložiti. Poskusi čez trenutek znova.",
+        "activeSubscriptionWarning": "{count} aktivne naročnine bodo prenesene — Stripe obračunavanje, ki je že v teku, se samodejno ne spremeni.",
+        "priceFree": "Brezplačno",
+        "priceFreeAmount": "Brezplačna količina",
+        "priceFreeAmountFrom": "Brezplačen znesek od {amount}",
+        "priceRecurring": "{amount}/leto"
       }
     },
     "reminderModal": {

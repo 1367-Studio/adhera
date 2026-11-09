@@ -4220,22 +4220,45 @@
         "manual": "Manuāla"
       },
       "summary": {
-        "aPagar": " · {amount} jāmaksā",
+        "aPagar": " · {amount} kopējā",
         "recebido": " · {amount} saņemts",
         "saldo": " · {amount} atlikums"
       },
       "distribution": {
         "show": "Skatīt sadalījumu",
         "hide": "Slēpt sadalījumu",
-        "category": "Kategorija",
+        "category": "Dalības kategorija",
         "renewal": "Atjaunošana",
-        "count": "Skaits",
-        "aPagar": "Kopā jāmaksā",
-        "recebido": "Saņemts",
-        "saldo": "Atlikums",
+        "count": "Ieguldījumu skaits",
+        "aPagar": "Kopējā summa",
+        "recebido": "Saņemtā summa",
+        "saldo": "Atlikušais līdzsvars",
         "total": "Kopā",
         "noCategory": "Bez kategorijas",
         "empty": "Neviena dalības maksa neatbilst šiem filtriem."
+      },
+      "mergeTiers": {
+        "filterOption": "Apvienot dublikātu kategorijas",
+        "title": "Apvienot dublikātu kategorijas",
+        "description": "Kategorijas, kuru nosaukumi atšķiras tikai ar locījumiem, akcentiem vai atstarpēm. Nekas netiek automātiski apvienots.",
+        "empty": "Dublikāti netika konstatēti.",
+        "groupSummary": "{count} kategorijas ar nosaukumu \"{label}\"",
+        "groupTitle": "Apvienot uz \"{label}\"",
+        "backAction": "Atpakaļ",
+        "cancelAction": "Atcelt",
+        "keepAsPrimary": "Kategorija, ko saglabāt",
+        "mergeIntoPrimary": "Kategorijas, ko tajā apvienot",
+        "tierCounts": "{cotisationCount} Dalības maksa(s) · {membreCount} Biedrs(i)",
+        "mergeAction": "Apvienošana",
+        "confirmTitle": "Apstiprini apvienošanos",
+        "confirmDescription": "{count} kategorija(-es) tiks apvienotas ar \"{primaryLabel}\". {cotisationCount} biedru maksa(-es) un {membreCount} biedrs(-i) tiks pārcelts. Šī darbība ir neatgriezeniska, bet saglabā visu atjaunošanas vēsturi un konfigurācijas.",
+        "mergeSuccess": "{count} apvienotā kategorija(-as).",
+        "loadError": "Dublikātus nevar augšupielādēt. Mēģiniet vēlreiz pēc brīža.",
+        "activeSubscriptionWarning": "{count} Aktīvais abonements(-i) tiks pārnests — Jau notiekošā Stripe rēķinu apmaksa automātiski nemainās.",
+        "priceFree": "Bezmaksas",
+        "priceFreeAmount": "Bezmaksas summa",
+        "priceFreeAmountFrom": "Bezmaksas summa no {amount}",
+        "priceRecurring": "{amount}/gads"
       }
     },
     "reminderModal": {

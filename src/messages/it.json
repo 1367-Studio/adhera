@@ -4220,22 +4220,45 @@
         "manual": "Manuale"
       },
       "summary": {
-        "aPagar": " · {amount} da incassare",
+        "aPagar": " · {amount} totale",
         "recebido": " · {amount} incassati",
         "saldo": " · {amount} da saldare"
       },
       "distribution": {
         "show": "Vedi la ripartizione",
         "hide": "Nascondi la ripartizione",
-        "category": "Categoria",
+        "category": "Categoria di appartenenza",
         "renewal": "Rinnovo",
-        "count": "Quantità",
-        "aPagar": "Totale da incassare",
-        "recebido": "Incassato",
-        "saldo": "Saldo da pagare",
+        "count": "Numero di contributi",
+        "aPagar": "Importo totale",
+        "recebido": "Importo ricevuto",
+        "saldo": "Saldo residuo",
         "total": "Totale",
         "noCategory": "Nessuna categoria",
         "empty": "Nessun contributo corrisponde a questi filtri."
+      },
+      "mergeTiers": {
+        "filterOption": "Unisci le categorie duplicate",
+        "title": "Unisci le categorie duplicate",
+        "description": "Categorie i cui nomi differiscono solo per caso, accenti o spazi. Nulla viene automaticamente fuso.",
+        "empty": "Nessun duplicato rilevato.",
+        "groupSummary": "{count} categorie chiamate \"{label}\"",
+        "groupTitle": "Unisci in \"{label}\"",
+        "backAction": "Indietro",
+        "cancelAction": "Cancella",
+        "keepAsPrimary": "Categoria da mantenere",
+        "mergeIntoPrimary": "Categorie da integrare",
+        "tierCounts": "{cotisationCount} Quota(e) · {membreCount} Membro(i)",
+        "mergeAction": "Fusione",
+        "confirmTitle": "Conferma la fusione",
+        "confirmDescription": "{count} categoria(e) saranno unite in \"{primaryLabel}\". {cotisationCount} La quota/i di iscrizione e {membreCount} saranno trasferiti. Questa azione è irreversibile ma preserva tutta la cronologia e le configurazioni dei rinnovi.",
+        "mergeSuccess": "{count} categoria/e fusa.",
+        "loadError": "I duplicati non possono essere caricati. Riprova tra un attimo.",
+        "activeSubscriptionWarning": "{count} l'abbonamento attivo verrà trasferito — La fatturazione Stripe già in corso non cambia automaticamente.",
+        "priceFree": "Gratis",
+        "priceFreeAmount": "Importo gratuito",
+        "priceFreeAmountFrom": "Importo gratuito da {amount}",
+        "priceRecurring": "{amount}/anno"
       }
     },
     "reminderModal": {

@@ -4220,22 +4220,45 @@
         "manual": "Manuell"
       },
       "summary": {
-        "aPagar": " · {amount} fällig",
+        "aPagar": " · {amount} insgesamt",
         "recebido": " · {amount} erhalten",
         "saldo": " · {amount} ausstehend"
       },
       "distribution": {
         "show": "Aufschlüsselung anzeigen",
         "hide": "Aufschlüsselung ausblenden",
-        "category": "Kategorie",
+        "category": "Mitgliedschaftskategorie",
         "renewal": "Verlängerung",
-        "count": "Anzahl",
-        "aPagar": "Gesamt fällig",
-        "recebido": "Erhalten",
-        "saldo": "Offener Saldo",
+        "count": "Anzahl der Beiträge",
+        "aPagar": "Gesamtsumme",
+        "recebido": "Eingenommener Betrag",
+        "saldo": "Verbleibender Saldo",
         "total": "Gesamt",
         "noCategory": "Keine Kategorie",
         "empty": "Keine Beiträge entsprechen diesen Filtern."
+      },
+      "mergeTiers": {
+        "filterOption": "Doppelte Kategorien zusammenführen",
+        "title": "Doppelte Kategorien zusammenführen",
+        "description": "Kategorien, deren Namen sich nur in Kasus, Akzenten oder Leerzeichen unterscheiden. Nichts wird automatisch verschmolzen.",
+        "empty": "Keine Duplikate festgestellt.",
+        "groupSummary": "{count} Kategorien mit dem Namen \"{label}\"",
+        "groupTitle": "Merge in \"{label}\"",
+        "backAction": "Zurück",
+        "cancelAction": "Stornieren",
+        "keepAsPrimary": "Kategorie zu behalten",
+        "mergeIntoPrimary": "Kategorien, in die man einfügen kann",
+        "tierCounts": "{cotisationCount} Mitgliedsbeitrag(e) · {membreCount} Mitglied",
+        "mergeAction": "Zusammenführung",
+        "confirmTitle": "Bestätigen Sie die Zusammenführung",
+        "confirmDescription": "{count}-Kategorien(e) werden in \"{primaryLabel}\" eingegliedert. {cotisationCount} Mitgliedsbeiträge und {membreCount}-Mitglieder werden übertragen. Diese Maßnahme ist irreversibel, bewahrt jedoch alle Verlängerungsgeschichte und -konfigurationen.",
+        "mergeSuccess": "{count} zusammengeführte Kategorie(n).",
+        "loadError": "Duplikate können nicht hochgeladen werden. Versuchen Sie es gleich noch einmal.",
+        "activeSubscriptionWarning": "{count} aktive Abonnements werden übertragen – Stripe-Abrechnungen, die bereits laufen, ändert sich nicht automatisch.",
+        "priceFree": "Kostenlos",
+        "priceFreeAmount": "Freibetrag",
+        "priceFreeAmountFrom": "Kostenloser Betrag von {amount}",
+        "priceRecurring": "{amount}/Jahr"
       }
     },
     "reminderModal": {

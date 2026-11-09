@@ -4220,22 +4220,45 @@
         "manual": "Handmatig"
       },
       "summary": {
-        "aPagar": " · {amount} te innen",
+        "aPagar": " · {amount} totaal",
         "recebido": " · {amount} ontvangen",
         "saldo": " · {amount} openstaand"
       },
       "distribution": {
         "show": "Verdeling bekijken",
         "hide": "Verdeling verbergen",
-        "category": "Categorie",
+        "category": "Lidmaatschapscategorie",
         "renewal": "Verlenging",
-        "count": "Aantal",
-        "aPagar": "Totaal te innen",
-        "recebido": "Ontvangen",
-        "saldo": "Openstaand saldo",
+        "count": "Aantal bijdragen",
+        "aPagar": "Totaal bedrag",
+        "recebido": "Ontvangen bedrag",
+        "saldo": "Resterende saldo",
         "total": "Totaal",
         "noCategory": "Geen categorie",
         "empty": "Geen bijdragen komen overeen met deze filters."
+      },
+      "mergeTiers": {
+        "filterOption": "Dubbele categorieën samenvoegen",
+        "title": "Dubbele categorieën samenvoegen",
+        "description": "Categorieën waarvan de namen alleen verschillen in naamval, accenten of spaties. Niets wordt automatisch samengevoegd.",
+        "empty": "Geen duplicaten gedetecteerd.",
+        "groupSummary": "{count} categorieën genaamd \"{label}\"",
+        "groupTitle": "Samenvoegen met \"{label}\"",
+        "backAction": "Achteruit",
+        "cancelAction": "Annuleren",
+        "keepAsPrimary": "Categorie om te behouden",
+        "mergeIntoPrimary": "Categorieën om erin te integreren",
+        "tierCounts": "{cotisationCount} Lidmaatschapsbijdrage(s) · {membreCount} Lid(s)",
+        "mergeAction": "Fuseren",
+        "confirmTitle": "Bevestig de samenvoeging",
+        "confirmDescription": "{count} categorieën(en) worden samengevoegd met \"{primaryLabel}\". {cotisationCount} Lidmaatschapsbijdrage en {membreCount} lid(en) worden overgedragen. Deze actie is onomkeerbaar maar behoudt alle verlengingsgeschiedenis en configuraties.",
+        "mergeSuccess": "{count} samengevoegde categorie(en).",
+        "loadError": "Duplicaten kunnen niet worden geüpload. Probeer het zo opnieuw.",
+        "activeSubscriptionWarning": "{count} actieve abonnement(en) worden overgedragen — Stripe-facturering die al in uitvoering is, verandert niet automatisch.",
+        "priceFree": "Gratis",
+        "priceFreeAmount": "Gratis bedrag",
+        "priceFreeAmountFrom": "Gratis bedrag van {amount}",
+        "priceRecurring": "{amount}/jaar"
       }
     },
     "reminderModal": {

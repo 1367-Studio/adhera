@@ -4220,22 +4220,45 @@
         "manual": "Ръчно"
       },
       "summary": {
-        "aPagar": " · {amount} дължимо",
+        "aPagar": " · {amount} общо",
         "recebido": " · {amount} получено",
         "saldo": " · {amount} остатък"
       },
       "distribution": {
         "show": "Преглед на разпределението",
         "hide": "Скриване на разпределението",
-        "category": "Категория",
+        "category": "Категория членство",
         "renewal": "Подновяване",
-        "count": "Брой",
-        "aPagar": "Общо дължимо",
-        "recebido": "Получено",
-        "saldo": "Остатък за плащане",
+        "count": "Брой приноси",
+        "aPagar": "Обща сума",
+        "recebido": "Получена сума",
+        "saldo": "Остатъчен баланс",
         "total": "Общо",
         "noCategory": "Без категория",
         "empty": "Нито една такса не отговаря на тези филтри."
+      },
+      "mergeTiers": {
+        "filterOption": "Обединяване на дублиращи се категории",
+        "title": "Обединяване на дублиращи се категории",
+        "description": "Категории, чиито имена се различават само по падеж, акценти или интервали. Нищо не се слива автоматично.",
+        "empty": "Не са открити дубликати.",
+        "groupSummary": "{count} категории, наречени \"{label}\"",
+        "groupTitle": "Сливане в \"{label}\"",
+        "backAction": "Назад",
+        "cancelAction": "Отмени",
+        "keepAsPrimary": "Категория за запазване",
+        "mergeIntoPrimary": "Категории за сливане",
+        "tierCounts": "{cotisationCount} Членска такса(и) · {membreCount} Член(и)",
+        "mergeAction": "Сливане",
+        "confirmTitle": "Потвърдете сливането",
+        "confirmDescription": "{count} категории(и) ще бъдат обединени в \"{primaryLabel}\". {cotisationCount} Членски такса(и) и {membreCount} ще бъдат прехвърлени. Това действие е необратимо, но запазва цялата история на подновяване и конфигурации.",
+        "mergeSuccess": "{count} обединени категории(и).",
+        "loadError": "Дубликати не могат да бъдат качени. Опитай пак след малко.",
+        "activeSubscriptionWarning": "{count} активен абонамент(и) ще бъде прехвърлен — Stripe таксуването, което вече е в ход, не се променя автоматично.",
+        "priceFree": "Безплатно",
+        "priceFreeAmount": "Безплатна сума",
+        "priceFreeAmountFrom": "Свободна сума от {amount}",
+        "priceRecurring": "{amount}/година"
       }
     },
     "reminderModal": {

@@ -205,3 +205,58 @@ export function useRemoveCotisationPayment(id: string) {
     onSuccess:  () => invalidateAll(qc),
   })
 }
+
+export type DuplicateTierCandidate = {
+  id:                      string
+  label:                   string
+  formId:                  string
+  formTitle:               string
+  kind:                    "ONE_OFF" | "RECURRING"
+  amount:                  string | null
+  free:                    boolean
+  freeAmount:              boolean
+  cotisationCount:         number
+  membreCount:             number
+  subscriptionCount:       number
+  activeSubscriptionCount: number
+}
+export type DuplicateTierGroup = { normalizedLabel: string; tiers: DuplicateTierCandidate[] }
+
+async function fetchMembershipTierDuplicates() {
+  const res = await fetch("/api/membership-tiers/duplicates")
+  if (!res.ok) throw new Error("Erreur lors de la recherche de doublons")
+  const data = await res.json()
+  return data.groups as DuplicateTierGroup[]
+}
+
+// Only fetched when the "Fusionner les catégories en double" entry is opened — scanning every
+// tier's label on every page load would be wasted work for the common case of no duplicates.
+export function useMembershipTierDuplicates(enabled: boolean) {
+  return useQuery({
+    queryKey: [...QK, "tier-duplicates"],
+    queryFn:  fetchMembershipTierDuplicates,
+    enabled,
+  })
+}
+
+async function mergeMembershipTiers(primaryTierId: string, secondaryTierId: string) {
+  const res = await fetch("/api/membership-tiers/duplicates/merge", {
+    method:  "POST",
+    headers: { "Content-Type": "application/json" },
+    body:    JSON.stringify({ primaryTierId, secondaryTierId }),
+  })
+  if (!res.ok) throw new Error(await apiErrorMessage(res, "Erreur lors de la fusion"))
+  return res.json()
+}
+
+export function useMergeMembershipTiers() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: ({ primaryTierId, secondaryTierId }: { primaryTierId: string; secondaryTierId: string }) =>
+      mergeMembershipTiers(primaryTierId, secondaryTierId),
+    onSuccess: () => Promise.all([
+      invalidateAll(qc),
+      qc.invalidateQueries({ queryKey: ["membership-form"] }),
+    ]),
+  })
+}

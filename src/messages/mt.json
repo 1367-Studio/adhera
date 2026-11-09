@@ -4220,22 +4220,45 @@
         "manual": "Manwali"
       },
       "summary": {
-        "aPagar": " · {amount} dovut",
+        "aPagar": " · {amount} totali",
         "recebido": " · {amount} riċevut",
         "saldo": " · {amount} dovut fadal"
       },
       "distribution": {
         "show": "Ara t-tqassim",
         "hide": "Aħbi t-tqassim",
-        "category": "Kategorija",
+        "category": "Kategorija ta' Membri",
         "renewal": "Tiġdid",
-        "count": "Numru",
-        "aPagar": "Total dovut",
-        "recebido": "Riċevut",
-        "saldo": "Bilanċ dovut",
+        "count": "Numru ta' kontribuzzjonijiet",
+        "aPagar": "Ammont totali",
+        "recebido": "Ammont riċevut",
+        "saldo": "Bilanċ li jibqa'",
         "total": "Total",
         "noCategory": "Mingħajr kategorija",
         "empty": "L-ebda ħlas ma jaqbel ma' dawn il-filtri."
+      },
+      "mergeTiers": {
+        "filterOption": "Għaqqad kategoriji duplikati",
+        "title": "Għaqqad kategoriji duplikati",
+        "description": "Kategoriji li l-ismijiet tagħhom jvarjaw biss fil-każ, l-aċċenti, jew l-ispazji. Xejn ma jingħaqad awtomatikament.",
+        "empty": "Ma nstabux duplikati.",
+        "groupSummary": "{count} kategoriji msejħa \"{label}\"",
+        "groupTitle": "Merge f'\"{label}\"",
+        "backAction": "Lura",
+        "cancelAction": "Ikkanċellazzjoni",
+        "keepAsPrimary": "Kategorija li trid tinżamm",
+        "mergeIntoPrimary": "Kategoriji biex jingħaqdu fih",
+        "tierCounts": "{cotisationCount} Miżata tal-Membri · {membreCount} Membri",
+        "mergeAction": "Merġa",
+        "confirmTitle": "Ikkonferma l-merġa",
+        "confirmDescription": "{count} il-kategoriji se jiġu mħallta f'\"{primaryLabel}\". {cotisationCount} Il-miżata tal-membri u l-membri {membreCount} se jiġu trasferiti. Din l-azzjoni hija irreversibbli iżda tippreserva l-istorja u l-konfigurazzjonijiet kollha tar-rinnovament.",
+        "mergeSuccess": "{count} Kategoriji magħquda.",
+        "loadError": "Id-duplikati ma jistgħux jittellgħu. Ipprova mill-ġdid f'mument.",
+        "activeSubscriptionWarning": "{count} abbonament(i) attivi jiġu trasferiti — Il-billing ta' Stripe li diġà għaddej ma jinbidilx awtomatikament.",
+        "priceFree": "B'xejn",
+        "priceFreeAmount": "Ammont b'xejn",
+        "priceFreeAmountFrom": "Ammont ħieles minn {amount}",
+        "priceRecurring": "{amount}/sena"
       }
     },
     "reminderModal": {

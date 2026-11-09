@@ -4220,22 +4220,45 @@
         "manual": "Ručno"
       },
       "summary": {
-        "aPagar": " · {amount} za naplatu",
+        "aPagar": " · {amount} ukupno",
         "recebido": " · {amount} primljeno",
         "saldo": " · {amount} preostaje za naplatu"
       },
       "distribution": {
         "show": "Prikaži raspodjelu",
         "hide": "Sakrij raspodjelu",
-        "category": "Kategorija",
+        "category": "Kategorija članstva",
         "renewal": "Obnova",
-        "count": "Broj",
-        "aPagar": "Ukupno za naplatu",
-        "recebido": "Primljeno",
-        "saldo": "Preostali iznos",
+        "count": "Broj doprinosa",
+        "aPagar": "Ukupni iznos",
+        "recebido": "Primljeni iznos",
+        "saldo": "Preostali balans",
         "total": "Ukupno",
         "noCategory": "Bez kategorije",
         "empty": "Nijedan doprinos ne odgovara ovim filterima."
+      },
+      "mergeTiers": {
+        "filterOption": "Spajanje duplikatnih kategorija",
+        "title": "Spajanje duplikatnih kategorija",
+        "description": "Kategorije čija se imena razlikuju samo po padežu, naglascima ili razmacima. Ništa se automatski ne spaja.",
+        "empty": "Nisu otkriveni duplikati.",
+        "groupSummary": "{count} kategorije nazvane \"{label}\"",
+        "groupTitle": "Spajanje u \"{label}\"",
+        "backAction": "Natrag",
+        "cancelAction": "Otkaži",
+        "keepAsPrimary": "Kategorija koju treba zadržati",
+        "mergeIntoPrimary": "Kategorije za spajanje u njega",
+        "tierCounts": "{cotisationCount} Članarina · {membreCount} Član(i)",
+        "mergeAction": "Spajanje",
+        "confirmTitle": "Potvrdite spajanje",
+        "confirmDescription": "{count} kategorije bit će spojene u \"{primaryLabel}\". {cotisationCount} Članarina i {membreCount} članovi bit će preneseni. Ova radnja je nepovratna, ali čuva svu povijest i konfiguracije obnove.",
+        "mergeSuccess": "{count} spojene kategorije.",
+        "loadError": "Duplikati se ne mogu učitati. Pokušajte ponovno za trenutak.",
+        "activeSubscriptionWarning": "{count} aktivne pretplate će biti prenesene — Stripe naplata koja je već u tijeku ne mijenja se automatski.",
+        "priceFree": "Besplatno",
+        "priceFreeAmount": "Besplatna količina",
+        "priceFreeAmountFrom": "Besplatan iznos od {amount}",
+        "priceRecurring": "{amount}/godina"
       }
     },
     "reminderModal": {
