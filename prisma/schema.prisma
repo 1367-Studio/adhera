@@ -1343,6 +1343,18 @@ model EvenementAvis {
   rating          Int
   comment         String?
   createdAt       DateTime @default(now())
+  // Preuve de consentement à la publication sur le site/réseaux sociaux — posée server-side à
+  // la soumission, jamais reprise du client seul. Null = jamais demandé ou refusé. Mirroir exact
+  // de Participation.cguvAgreedAt/Don.cguvAgreedAt : pas de rétroactivité, un avis déjà soumis
+  // avant cette fonctionnalité ne peut donc jamais être sélectionné pour le site.
+  publicationAgreedAt DateTime?
+  // Choix d'identification quand publicationAgreedAt est posé — même convention que
+  // Don.anonymous/DonationSubscription.anonymous. Sans objet si publicationAgreedAt est null.
+  anonymous           Boolean  @default(false)
+  // Sélection éditoriale de l'association — indépendante du consentement : consentir ne publie
+  // jamais automatiquement, un admin doit explicitement le choisir depuis la page avaliações de
+  // l'événement. Ne peut être vrai que si publicationAgreedAt est posé (vérifié côté API).
+  featuredOnSite      Boolean  @default(false)
 
   evenement     Evenement     @relation(fields: [evenementId], references: [id], onDelete: Cascade)
   participation Participation @relation(fields: [participationId], references: [id], onDelete: Cascade)

@@ -4,7 +4,7 @@ import { evenementNotOverWhere } from "@/lib/evenement-timing"
 import { prisma } from "@/lib/prisma/client"
 import { parseModules } from "@/lib/modules"
 import { APP_URL } from "@/lib/env"
-import type { SitePuckMetadata } from "@/components/site/blocks/site-block-types"
+import { eventReviewDisplayName, type SitePuckMetadata } from "@/components/site/blocks/site-block-types"
 import type { SitePuckData } from "@/lib/site-puck/site-puck-data"
 import { publishedRootProps, readPublishedPuckData } from "@/lib/site-puck/site-puck-published"
 import { listPuckBlocksOfType, puckBlockId } from "@/lib/site-puck/site-puck-tree"
@@ -34,6 +34,16 @@ export type PublicBoutiqueProduit = {
   variantes: { price: number }[]
 }
 
+// Raw shape returned by getSiteData — firstName/lastName/anonymous only get resolved into a
+// display name once a locale/ui is known, in buildSitePuckMetadata (see eventReviewDisplayName).
+export type PublicEventReview = {
+  id: string; eventId: string; eventTitle: string; eventDate: string
+  rating: number; comment: string | null
+  firstName: string; lastName: string; anonymous: boolean
+  eventStatus: "DRAFT" | "PUBLISHED" | "ARCHIVED"
+  eventVisibility: "LINK" | "PRIVATE"
+}
+
 export async function getSiteData(slug: string) {
   const assoc = await prisma.association.findUnique({
     where:  { slug },
@@ -52,7 +62,7 @@ export async function getSiteData(slug: string) {
   if (!mods.site) return null
 
   const now = new Date()
-  const [events, actualites, boutiqueProduits, navPages] = await Promise.all([
+  const [events, actualites, boutiqueProduits, eventReviews, navPages] = await Promise.all([
     mods.evenements
       ? prisma.evenement.findMany({
           where:   { association: { slug }, status: "PUBLISHED", visibility: { not: "PRIVATE" }, ...evenementNotOverWhere(now) },
@@ -79,6 +89,18 @@ export async function getSiteData(slug: string) {
           orderBy: { createdAt: "desc" },
           take:    20,
           select:  { id: true, name: true, imageUrl: true, variantes: { select: { price: true } } },
+        })
+      : Promise.resolve([]),
+    mods.evenements
+      ? prisma.evenementAvis.findMany({
+          where:   { featuredOnSite: true, publicationAgreedAt: { not: null }, evenement: { association: { slug } } },
+          orderBy: [{ evenement: { date: "desc" } }, { createdAt: "desc" }],
+          take:    100,
+          select:  {
+            id: true, rating: true, comment: true, anonymous: true,
+            evenement:     { select: { id: true, title: true, date: true, status: true, visibility: true } },
+            participation: { select: { firstName: true, lastName: true } },
+          },
         })
       : Promise.resolve([]),
     liveSitePageNavLinks(assoc.id),
@@ -175,6 +197,19 @@ export async function getSiteData(slug: string) {
       publishedAt: a.publishedAt!.toISOString(),
     })) satisfies PublicActualite[],
     boutiqueProduits: boutiqueProduits satisfies PublicBoutiqueProduit[],
+    eventReviews: eventReviews.map(a => ({
+      id:        a.id,
+      eventId:   a.evenement.id,
+      eventTitle: a.evenement.title,
+      eventDate: a.evenement.date.toISOString(),
+      rating:    a.rating,
+      comment:   a.comment,
+      firstName: a.participation.firstName,
+      lastName:  a.participation.lastName,
+      anonymous: a.anonymous,
+      eventStatus:     a.evenement.status,
+      eventVisibility: a.evenement.visibility,
+    })) satisfies PublicEventReview[],
     siteBuilder:       assoc.siteBuilder,
     sitePuckPublished: assoc.sitePuckPublished,
     address:           assoc.address,
@@ -194,15 +229,16 @@ export type SiteData = NonNullable<Awaited<ReturnType<typeof getSiteData>>>
 // here.
 export async function translateListings(data: SiteData, locale: Locale): Promise<SiteData> {
   if (locale === DEFAULT_LOCALE) return data
-  const [events, actualites, boutiqueProduits, navPages, membershipFormBySection, donationFormBySection] = await Promise.all([
+  const [events, actualites, boutiqueProduits, eventReviews, navPages, membershipFormBySection, donationFormBySection] = await Promise.all([
     translateFields(data.events, ["title", "description"], locale, data.id),
     translateFields(data.actualites, ["title", "content"], locale, data.id),
     translateFields(data.boutiqueProduits, ["name"], locale, data.id),
+    translateFields(data.eventReviews, ["comment"], locale, data.id),
     translateSitePageNavLinks(data.navPages, locale, data.id),
     translateFormTitles(data.membershipFormBySection, locale, data.id),
     translateFormTitles(data.donationFormBySection, locale, data.id),
   ])
-  return { ...data, events, actualites, boutiqueProduits, navPages, membershipFormBySection, donationFormBySection }
+  return { ...data, events, actualites, boutiqueProduits, eventReviews, navPages, membershipFormBySection, donationFormBySection }
 }
 
 // The bound form's own title — the membership block renders it directly as its CTA button text
@@ -287,6 +323,10 @@ export function buildSitePuckMetadata(
     events:                  data.events,
     actualites:              data.actualites,
     boutiqueProduits:        data.boutiqueProduits,
+    eventReviews: data.eventReviews.map(({ firstName, lastName, anonymous, ...review }) => ({
+      ...review,
+      displayName: eventReviewDisplayName(firstName, lastName, anonymous, ui.eventReviewsAnonymous),
+    })),
     membershipFormBySection: data.membershipFormBySection,
     donationFormBySection:   data.donationFormBySection,
     // The Dons block shows nothing without a bound form once this is true. With the dons

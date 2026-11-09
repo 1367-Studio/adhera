@@ -25,12 +25,15 @@ export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id: eveneme
     average: aggregate._avg.rating,
     count:   aggregate._count._all,
     avis: avis.map(a => ({
-      id:        a.id,
-      firstName: a.participation.firstName,
-      lastName:  a.participation.lastName,
-      rating:    a.rating,
-      comment:   a.comment,
-      createdAt: a.createdAt,
+      id:                  a.id,
+      firstName:           a.participation.firstName,
+      lastName:            a.participation.lastName,
+      rating:              a.rating,
+      comment:             a.comment,
+      createdAt:           a.createdAt,
+      publicationAgreedAt: a.publicationAgreedAt,
+      anonymous:           a.anonymous,
+      featuredOnSite:      a.featuredOnSite,
     })),
   })
 }, { area: "evenements" })
