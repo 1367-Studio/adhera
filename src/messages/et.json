@@ -4163,11 +4163,7 @@
       "selectedCount": "{count, plural, one {# valitud} other {# valitud}}",
       "deselectAll": "Deselect",
       "sendReminder": "Saada meeldetuletus",
-      "exportMembers": "Ekspordiliikmed",
-      "exportExcel": "Excel (.xlsx)",
-      "exportPdf": "PDF (.pdf)",
       "count": "{count, plural, one {# Liikmemaksu} other {# Panused}}",
-      "totalCollected": " · {amount} Lunastatud",
       "exercise": "Eelarveaasta {year}",
       "columns": {
         "member": "Liige",
@@ -4211,7 +4207,36 @@
         "editCancelled": "Tühistatud liikmelisuse muutmine"
       },
       "selectAllTruncated": "Rohkem kui 500 panust sobib filtritesse — valiti välja ainult 500 parimat.",
-      "remaining": "Puhkus {amount}"
+      "remaining": "Puhkus {amount}",
+      "export": "Ekspordi",
+      "exportCotisationsExcel": "Liikmemaksud (Excel)",
+      "exportMembresExcel": "Liikmed (Excel)",
+      "exportMembresPdf": "Liikmed (PDF)",
+      "allCategories": "Kõik kategooriad",
+      "allRenewals": "Kõik uuendamised",
+      "resetFilters": "Lähtestamine",
+      "renewal": {
+        "automatic": "Automaatne",
+        "manual": "Käsitsi"
+      },
+      "summary": {
+        "aPagar": " · {amount} tasumisele",
+        "recebido": " · {amount} laekunud",
+        "saldo": " · {amount} tasumata"
+      },
+      "distribution": {
+        "show": "Vaata jaotust",
+        "hide": "Peida jaotus",
+        "category": "Kategooria",
+        "renewal": "Uuendamine",
+        "count": "Arv",
+        "aPagar": "Kokku tasumisele",
+        "recebido": "Laekunud",
+        "saldo": "Tasumata jääk",
+        "total": "Kokku",
+        "noCategory": "Kategooriata",
+        "empty": "Ükski liikmemaks ei vasta neile filtritele."
+      }
     },
     "reminderModal": {
       "title": "Saada panuse meeldetuletus",

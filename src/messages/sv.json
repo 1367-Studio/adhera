@@ -4163,11 +4163,7 @@
       "selectedCount": "{count, plural, one {# utvalda} other {# utvalda}}",
       "deselectAll": "Avmarkera",
       "sendReminder": "Skicka en påminnelse",
-      "exportMembers": "Exportmedlemmar",
-      "exportExcel": "Excel (.xlsx)",
-      "exportPdf": "PDF (.pdf)",
       "count": "{count, plural, one {# Medlemsavgift} other {# Bidrag}}",
-      "totalCollected": " · {amount} Löste in",
       "exercise": "Räkenskapsår {year}",
       "columns": {
         "member": "Ledamot",
@@ -4211,7 +4207,36 @@
         "editCancelled": "Att ändra det avbrutna medlemskapet"
       },
       "selectAllTruncated": "Mer än 500 bidrag passade filtren — endast de 500 bästa valdes ut.",
-      "remaining": "Vila {amount}"
+      "remaining": "Vila {amount}",
+      "export": "Exportera",
+      "exportCotisationsExcel": "Avgifter (Excel)",
+      "exportMembresExcel": "Medlemmar (Excel)",
+      "exportMembresPdf": "Medlemmar (PDF)",
+      "allCategories": "Alla kategorier",
+      "allRenewals": "Alla förnyelser",
+      "resetFilters": "Återställ",
+      "renewal": {
+        "automatic": "Automatisk",
+        "manual": "Manuell"
+      },
+      "summary": {
+        "aPagar": " · {amount} att betala",
+        "recebido": " · {amount} mottaget",
+        "saldo": " · {amount} kvarstående"
+      },
+      "distribution": {
+        "show": "Visa fördelning",
+        "hide": "Dölj fördelning",
+        "category": "Kategori",
+        "renewal": "Förnyelse",
+        "count": "Antal",
+        "aPagar": "Totalt att betala",
+        "recebido": "Mottaget",
+        "saldo": "Saldo att betala",
+        "total": "Totalt",
+        "noCategory": "Ingen kategori",
+        "empty": "Inga avgifter matchar dessa filter."
+      }
     },
     "reminderModal": {
       "title": "Skicka en bidragspåminnelse",

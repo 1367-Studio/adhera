@@ -4163,11 +4163,7 @@
       "selectedCount": "{count, plural, one {# atrinktas} other {# atrinktas}}",
       "deselectAll": "Atšaukti pasirinkimą",
       "sendReminder": "Siųskite priminimą",
-      "exportMembers": "Eksporto nariai",
-      "exportExcel": "Excel (.xlsx)",
-      "exportPdf": "PDF (.pdf)",
       "count": "{count, plural, one {# Narystės mokestis} other {# Indėlis}}",
-      "totalCollected": " · {amount} Išgryninta",
       "exercise": "Finansiniai metai {year}",
       "columns": {
         "member": "Narys",
@@ -4211,7 +4207,36 @@
         "editCancelled": "Atšauktos narystės keitimas"
       },
       "selectAllTruncated": "Daugiau nei 500 indėlių atitiko filtrus – buvo atrinkti tik geriausi 500.",
-      "remaining": "Poilsis {amount}"
+      "remaining": "Poilsis {amount}",
+      "export": "Eksportuoti",
+      "exportCotisationsExcel": "Mokesčiai (Excel)",
+      "exportMembresExcel": "Nariai (Excel)",
+      "exportMembresPdf": "Nariai (PDF)",
+      "allCategories": "Visos kategorijos",
+      "allRenewals": "Visi atnaujinimai",
+      "resetFilters": "Atstatymas",
+      "renewal": {
+        "automatic": "Automatinis",
+        "manual": "Rankinis"
+      },
+      "summary": {
+        "aPagar": " · {amount} mokėtina",
+        "recebido": " · {amount} gauta",
+        "saldo": " · {amount} liko sumokėti"
+      },
+      "distribution": {
+        "show": "Peržiūrėti pasiskirstymą",
+        "hide": "Slėpti pasiskirstymą",
+        "category": "Kategorija",
+        "renewal": "Atnaujinimas",
+        "count": "Kiekis",
+        "aPagar": "Iš viso mokėtina",
+        "recebido": "Gauta",
+        "saldo": "Mokėtinas likutis",
+        "total": "Iš viso",
+        "noCategory": "Be kategorijos",
+        "empty": "Joks mokestis neatitinka šių filtrų."
+      }
     },
     "reminderModal": {
       "title": "Siųsti priminimą apie auką",

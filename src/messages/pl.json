@@ -4163,11 +4163,7 @@
       "selectedCount": "{count, plural, one {# wybrany} other {# wybrany}}",
       "deselectAll": "Odznacz",
       "sendReminder": "Wyślij przypomnienie",
-      "exportMembers": "Członkowie eksportowi",
-      "exportExcel": "Excel (.xlsx)",
-      "exportPdf": "PDF (.pdf)",
       "count": "{count, plural, one {# Składka członkowska} other {# Wkład}}",
-      "totalCollected": " · {amount} spieniężyli",
       "exercise": "Rok fiskalny {year}",
       "columns": {
         "member": "Członek",
@@ -4211,7 +4207,36 @@
         "editCancelled": "Zmiana anulowanego członkostwa"
       },
       "selectAllTruncated": "Ponad 500 tekstów spełniło kryteria — wybrano tylko 500 najlepszych.",
-      "remaining": "Odpoczynek {amount}"
+      "remaining": "Odpoczynek {amount}",
+      "export": "Eksportuj",
+      "exportCotisationsExcel": "Składki (Excel)",
+      "exportMembresExcel": "Członkowie (Excel)",
+      "exportMembresPdf": "Członkowie (PDF)",
+      "allCategories": "Wszystkie kategorie",
+      "allRenewals": "Wszystkie odnowienia",
+      "resetFilters": "Reset",
+      "renewal": {
+        "automatic": "Automatyczne",
+        "manual": "Ręczne"
+      },
+      "summary": {
+        "aPagar": " · {amount} do zapłaty",
+        "recebido": " · {amount} otrzymano",
+        "saldo": " · {amount} do dopłaty"
+      },
+      "distribution": {
+        "show": "Zobacz podział",
+        "hide": "Ukryj podział",
+        "category": "Kategoria",
+        "renewal": "Odnowienie",
+        "count": "Liczba",
+        "aPagar": "Razem do zapłaty",
+        "recebido": "Otrzymano",
+        "saldo": "Saldo do zapłaty",
+        "total": "Razem",
+        "noCategory": "Brak kategorii",
+        "empty": "Żadna składka nie pasuje do tych filtrów."
+      }
     },
     "reminderModal": {
       "title": "Wyślij przypomnienie o wpłatach",

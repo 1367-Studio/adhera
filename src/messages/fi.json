@@ -4163,11 +4163,7 @@
       "selectedCount": "{count, plural, one {# valittu} other {# valittu}}",
       "deselectAll": "Poista valinta",
       "sendReminder": "Lähetä muistutus",
-      "exportMembers": "Vientijäsenet",
-      "exportExcel": "Excel (.xlsx)",
-      "exportPdf": "PDF (.pdf)",
       "count": "{count, plural, one {# Jäsenmaksu} other {# Panokset}}",
-      "totalCollected": " · {amount} Lunastettu",
       "exercise": "Tilikausi {year}",
       "columns": {
         "member": "Jäsen",
@@ -4211,7 +4207,36 @@
         "editCancelled": "Peruutetun jäsenyyden muuttaminen"
       },
       "selectAllTruncated": "Yli 500 panosta sopii suodattimiin — vain 500 parasta valittiin.",
-      "remaining": "Lepoa {amount}"
+      "remaining": "Lepoa {amount}",
+      "export": "Vie",
+      "exportCotisationsExcel": "Jäsenmaksut (Excel)",
+      "exportMembresExcel": "Jäsenet (Excel)",
+      "exportMembresPdf": "Jäsenet (PDF)",
+      "allCategories": "Kaikki kategoriat",
+      "allRenewals": "Kaikki uusimiset",
+      "resetFilters": "Nollaus",
+      "renewal": {
+        "automatic": "Automaattinen",
+        "manual": "Manuaalinen"
+      },
+      "summary": {
+        "aPagar": " · {amount} maksettavaa",
+        "recebido": " · {amount} saatu",
+        "saldo": " · {amount} maksamatta"
+      },
+      "distribution": {
+        "show": "Näytä jakauma",
+        "hide": "Piilota jakauma",
+        "category": "Kategoria",
+        "renewal": "Uusiminen",
+        "count": "Lukumäärä",
+        "aPagar": "Yhteensä maksettavaa",
+        "recebido": "Saatu",
+        "saldo": "Maksamaton saldo",
+        "total": "Yhteensä",
+        "noCategory": "Ei kategoriaa",
+        "empty": "Mikään jäsenmaksu ei vastaa näitä suodattimia."
+      }
     },
     "reminderModal": {
       "title": "Lähetä lahjoitusmuistutus",

@@ -4163,11 +4163,7 @@
       "selectedCount": "{count, plural, one {# udvalgt} other {# udvalgt}}",
       "deselectAll": "Fjern fravalg",
       "sendReminder": "Send en påmindelse",
-      "exportMembers": "Eksportmedlemmer",
-      "exportExcel": "Excel (.xlsx)",
-      "exportPdf": "PDF (.pdf)",
       "count": "{count, plural, one {# Medlemskontingent} other {# Bidrag}}",
-      "totalCollected": " · {amount} indløste",
       "exercise": "Regnskabsår {year}",
       "columns": {
         "member": "Medlem",
@@ -4211,7 +4207,36 @@
         "editCancelled": "Ændring af det annullerede medlemskab"
       },
       "selectAllTruncated": "Mere end 500 bidrag passede til filtrene — kun de 500 bedste blev udvalgt.",
-      "remaining": "Hvile {amount}"
+      "remaining": "Hvile {amount}",
+      "export": "Eksporter",
+      "exportCotisationsExcel": "Kontingenter (Excel)",
+      "exportMembresExcel": "Medlemmer (Excel)",
+      "exportMembresPdf": "Medlemmer (PDF)",
+      "allCategories": "Alle kategorier",
+      "allRenewals": "Alle fornyelser",
+      "resetFilters": "Nulstil",
+      "renewal": {
+        "automatic": "Automatisk",
+        "manual": "Manuel"
+      },
+      "summary": {
+        "aPagar": " · {amount} at betale",
+        "recebido": " · {amount} modtaget",
+        "saldo": " · {amount} udestående"
+      },
+      "distribution": {
+        "show": "Se fordeling",
+        "hide": "Skjul fordeling",
+        "category": "Kategori",
+        "renewal": "Fornyelse",
+        "count": "Antal",
+        "aPagar": "I alt at betale",
+        "recebido": "Modtaget",
+        "saldo": "Saldo at betale",
+        "total": "I alt",
+        "noCategory": "Ingen kategori",
+        "empty": "Ingen kontingenter matcher disse filtre."
+      }
     },
     "reminderModal": {
       "title": "Send en bidragspåmindelse",

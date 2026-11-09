@@ -4521,12 +4521,7 @@
       "selectedCount": "{count, plural, one {# sélectionnée} other {# sélectionnées}}",
       "deselectAll": "Désélectionner",
       "sendReminder": "Envoyer un rappel",
-      "exportMembers": "Exporter les membres",
-      "exportExcel": "Excel (.xlsx)",
-      "exportPdf": "PDF (.pdf)",
       "count": "{count, plural, one {# cotisation} other {# cotisations}}",
-      "totalCollected": " · {amount} encaissé",
-      "totalCollectedTooltip": "Inclut les cotisations payées par des membres supprimés depuis — ce total peut donc dépasser la somme des lignes affichées ci-dessous.",
       "exercise": "Exercice {year}",
       "columns": {
         "member": "Membre",
@@ -4571,7 +4566,36 @@
         "editCancelled": "Modifier la cotisation annulée"
       },
       "selectAllTruncated": "Plus de 500 cotisations correspondent aux filtres — seules les 500 premières ont été sélectionnées.",
-      "remaining": "Reste {amount}"
+      "remaining": "Reste {amount}",
+      "export": "Exporter",
+      "exportCotisationsExcel": "Cotisations (Excel)",
+      "exportMembresExcel": "Membres (Excel)",
+      "exportMembresPdf": "Membres (PDF)",
+      "allCategories": "Toutes les catégories",
+      "allRenewals": "Tous les renouvellements",
+      "resetFilters": "Réinitialiser",
+      "renewal": {
+        "automatic": "Automatique",
+        "manual": "Manuel"
+      },
+      "summary": {
+        "aPagar": " · {amount} à régler",
+        "recebido": " · {amount} encaissés",
+        "saldo": " · {amount} restant à payer"
+      },
+      "distribution": {
+        "show": "Voir la répartition",
+        "hide": "Masquer la répartition",
+        "category": "Catégorie",
+        "renewal": "Renouvellement",
+        "count": "Quantité",
+        "aPagar": "Total à payer",
+        "recebido": "Reçu",
+        "saldo": "Solde à payer",
+        "total": "Total",
+        "noCategory": "Sans catégorie",
+        "empty": "Aucune cotisation ne correspond à ces filtres."
+      }
     },
     "reminderModal": {
       "title": "Envoyer un rappel de cotisation",

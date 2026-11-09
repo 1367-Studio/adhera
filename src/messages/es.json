@@ -4163,11 +4163,7 @@
       "selectedCount": "{count, plural, one {# seleccionada} other {# seleccionadas}}",
       "deselectAll": "Deseleccionar",
       "sendReminder": "Enviar recordatorio",
-      "exportMembers": "Exportar miembros",
-      "exportExcel": "Excel (.xlsx)",
-      "exportPdf": "PDF (.pdf)",
       "count": "{count, plural, one {# cuota} other {# cuotas}}",
-      "totalCollected": " · {amount} recaudado",
       "exercise": "Ejercicio {year}",
       "columns": {
         "member": "Miembro",
@@ -4211,7 +4207,36 @@
         "editCancelled": "Editar la cuota cancelada"
       },
       "selectAllTruncated": "Hay más de 500 cuotas que coinciden con los filtros — solo se seleccionaron las primeras 500.",
-      "remaining": "Quedan {amount}"
+      "remaining": "Quedan {amount}",
+      "export": "Exportar",
+      "exportCotisationsExcel": "Cuotas (Excel)",
+      "exportMembresExcel": "Miembros (Excel)",
+      "exportMembresPdf": "Miembros (PDF)",
+      "allCategories": "Todas las categorías",
+      "allRenewals": "Todas las renovaciones",
+      "resetFilters": "Restablecer",
+      "renewal": {
+        "automatic": "Automática",
+        "manual": "Manual"
+      },
+      "summary": {
+        "aPagar": " · {amount} a cobrar",
+        "recebido": " · {amount} recibidos",
+        "saldo": " · {amount} pendiente"
+      },
+      "distribution": {
+        "show": "Ver el desglose",
+        "hide": "Ocultar el desglose",
+        "category": "Categoría",
+        "renewal": "Renovación",
+        "count": "Cantidad",
+        "aPagar": "Total a cobrar",
+        "recebido": "Recibido",
+        "saldo": "Saldo pendiente",
+        "total": "Total",
+        "noCategory": "Sin categoría",
+        "empty": "Ninguna cuota coincide con estos filtros."
+      }
     },
     "reminderModal": {
       "title": "Enviar un recordatorio de cuota",

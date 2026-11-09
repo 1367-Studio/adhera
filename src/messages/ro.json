@@ -4163,11 +4163,7 @@
       "selectedCount": "{count, plural, one {# selectat} other {# selectat}}",
       "deselectAll": "Deselectare",
       "sendReminder": "Trimite un memento",
-      "exportMembers": "Membri Export",
-      "exportExcel": "Excel (.xlsx)",
-      "exportPdf": "PDF (.pdf)",
       "count": "{count, plural, one {# Taxa de membru} other {# Contribuții}}",
-      "totalCollected": " · {amount} A încasat",
       "exercise": "Exercițiu {year}",
       "columns": {
         "member": "Membru",
@@ -4211,7 +4207,36 @@
         "editCancelled": "Schimbarea abonamentului anulat"
       },
       "selectAllTruncated": "Peste 500 de contribuții se încadrează în filtre — doar primele 500 au fost selectate.",
-      "remaining": "Odihnește-te {amount}"
+      "remaining": "Odihnește-te {amount}",
+      "export": "Exportă",
+      "exportCotisationsExcel": "Taxe (Excel)",
+      "exportMembresExcel": "Membri (Excel)",
+      "exportMembresPdf": "Membri (PDF)",
+      "allCategories": "Toate categoriile",
+      "allRenewals": "Toate reînnoirile",
+      "resetFilters": "Resetare",
+      "renewal": {
+        "automatic": "Automată",
+        "manual": "Manuală"
+      },
+      "summary": {
+        "aPagar": " · {amount} de încasat",
+        "recebido": " · {amount} încasat",
+        "saldo": " · {amount} rămas de plată"
+      },
+      "distribution": {
+        "show": "Vezi distribuția",
+        "hide": "Ascunde distribuția",
+        "category": "Categorie",
+        "renewal": "Reînnoire",
+        "count": "Cantitate",
+        "aPagar": "Total de încasat",
+        "recebido": "Încasat",
+        "saldo": "Sold de plată",
+        "total": "Total",
+        "noCategory": "Fără categorie",
+        "empty": "Nicio taxă nu corespunde acestor filtre."
+      }
     },
     "reminderModal": {
       "title": "Trimite un memento de contribuție",

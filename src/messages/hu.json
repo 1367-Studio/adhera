@@ -4163,11 +4163,7 @@
       "selectedCount": "{count, plural, one {# kiválasztva} other {# kiválasztva}}",
       "deselectAll": "Kiválasztás törlése",
       "sendReminder": "Küldj emlékeztetőt",
-      "exportMembers": "Export tagok",
-      "exportExcel": "Excel (.xlsx)",
-      "exportPdf": "PDF (.pdf)",
       "count": "{count, plural, one {# Tagságdíj} other {# Hozzájárulások}}",
-      "totalCollected": " · {amount} bevált",
       "exercise": "Pénzügyi év {year}",
       "columns": {
         "member": "Tag",
@@ -4211,7 +4207,36 @@
         "editCancelled": "A törölt tagság megváltoztatása"
       },
       "selectAllTruncated": "Több mint 500 hozzájárulás illeszkedik a szűrőkbe — csak a legjobb 500-at választották ki.",
-      "remaining": "Pihenés {amount}"
+      "remaining": "Pihenés {amount}",
+      "export": "Exportálás",
+      "exportCotisationsExcel": "Tagdíjak (Excel)",
+      "exportMembresExcel": "Tagok (Excel)",
+      "exportMembresPdf": "Tagok (PDF)",
+      "allCategories": "Minden kategória",
+      "allRenewals": "Minden megújítás",
+      "resetFilters": "Reset",
+      "renewal": {
+        "automatic": "Automatikus",
+        "manual": "Manuális"
+      },
+      "summary": {
+        "aPagar": " · {amount} fizetendő",
+        "recebido": " · {amount} beérkezett",
+        "saldo": " · {amount} hátralék"
+      },
+      "distribution": {
+        "show": "Megoszlás megtekintése",
+        "hide": "Megoszlás elrejtése",
+        "category": "Kategória",
+        "renewal": "Megújítás",
+        "count": "Darabszám",
+        "aPagar": "Fizetendő összesen",
+        "recebido": "Beérkezett",
+        "saldo": "Fennmaradó egyenleg",
+        "total": "Összesen",
+        "noCategory": "Nincs kategória",
+        "empty": "Egyetlen tagdíj sem felel meg ezeknek a szűrőknek."
+      }
     },
     "reminderModal": {
       "title": "Küldj hozzájárulási emlékeztetőt",

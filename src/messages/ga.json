@@ -4163,11 +4163,7 @@
       "selectedCount": "{count, plural, one {# roghnaithe} other {# roghnaithe}}",
       "deselectAll": "Díroghnaigh",
       "sendReminder": "Seol meabhrúchán",
-      "exportMembers": "Easpórtáil Baill",
-      "exportExcel": "Excel (.xlsx)",
-      "exportPdf": "PDF (.pdf)",
       "count": "{count, plural, one {# Táille ballraíochta} other {# Ranníocaíochtaí}}",
-      "totalCollected": " · {amount} airgead tirim isteach",
       "exercise": "Bliain fhioscach {year}",
       "columns": {
         "member": "Comhalta",
@@ -4211,7 +4207,36 @@
         "editCancelled": "Ballraíocht Cealaithe a Athrú"
       },
       "selectAllTruncated": "Oireann níos mó ná 500 ranníocaíocht do na scagairí - níor roghnaíodh ach an 500 is fearr.",
-      "remaining": "Scíth a ligean {amount}"
+      "remaining": "Scíth a ligean {amount}",
+      "export": "Easpórtáil",
+      "exportCotisationsExcel": "Táillí (Excel)",
+      "exportMembresExcel": "Baill (Excel)",
+      "exportMembresPdf": "Baill (PDF)",
+      "allCategories": "Gach catagóir",
+      "allRenewals": "Gach athnuachan",
+      "resetFilters": "Athshocraigh",
+      "renewal": {
+        "automatic": "Uathoibríoch",
+        "manual": "De láimh"
+      },
+      "summary": {
+        "aPagar": " · {amount} dlite",
+        "recebido": " · {amount} faighte",
+        "saldo": " · {amount} fágtha"
+      },
+      "distribution": {
+        "show": "Féach ar an miondealú",
+        "hide": "Folaigh an miondealú",
+        "category": "Catagóir",
+        "renewal": "Athnuachan",
+        "count": "Líon",
+        "aPagar": "Iomlán dlite",
+        "recebido": "Faighte",
+        "saldo": "Iarmhéid dlite",
+        "total": "Iomlán",
+        "noCategory": "Gan chatagóir",
+        "empty": "Níl aon ranníocaíocht ag teacht leis na scagairí seo."
+      }
     },
     "reminderModal": {
       "title": "Seol Meabhrúchán Ranníocaíochta",

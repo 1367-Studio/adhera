@@ -4163,11 +4163,7 @@
       "selectedCount": "{count, plural, one {# vybraný} other {# vybraný}}",
       "deselectAll": "Zrušiť výber",
       "sendReminder": "Pošlite pripomienku",
-      "exportMembers": "Exportní členovia",
-      "exportExcel": "Excel (.xlsx)",
-      "exportPdf": "PDF (.pdf)",
       "count": "{count, plural, one {# Členský poplatok} other {# Príspevky}}",
-      "totalCollected": " · {amount} Hotovo",
       "exercise": "Fiškálny rok {year}",
       "columns": {
         "member": "Člen",
@@ -4211,7 +4207,36 @@
         "editCancelled": "Zmena zrušeného členstva"
       },
       "selectAllTruncated": "Viac ako 500 príspevkov zodpovedalo filtrom — vybrali sa len top 500.",
-      "remaining": "Odpočinok {amount}"
+      "remaining": "Odpočinok {amount}",
+      "export": "Exportovať",
+      "exportCotisationsExcel": "Príspevky (Excel)",
+      "exportMembresExcel": "Členovia (Excel)",
+      "exportMembresPdf": "Členovia (PDF)",
+      "allCategories": "Všetky kategórie",
+      "allRenewals": "Všetky obnovenia",
+      "resetFilters": "Reset",
+      "renewal": {
+        "automatic": "Automatické",
+        "manual": "Ručné"
+      },
+      "summary": {
+        "aPagar": " · {amount} na úhradu",
+        "recebido": " · {amount} prijaté",
+        "saldo": " · {amount} zostáva uhradiť"
+      },
+      "distribution": {
+        "show": "Zobraziť rozdelenie",
+        "hide": "Skryť rozdelenie",
+        "category": "Kategória",
+        "renewal": "Obnovenie",
+        "count": "Počet",
+        "aPagar": "Celkom na úhradu",
+        "recebido": "Prijaté",
+        "saldo": "Zostatok na úhradu",
+        "total": "Celkom",
+        "noCategory": "Bez kategórie",
+        "empty": "Žiadny príspevok nezodpovedá týmto filtrom."
+      }
     },
     "reminderModal": {
       "title": "Pošlite pripomienku na príspevok",

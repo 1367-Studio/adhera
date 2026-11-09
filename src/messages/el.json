@@ -4163,11 +4163,7 @@
       "selectedCount": "{count, plural, one {# επιλεγμένο} other {# επιλεγμένο}}",
       "deselectAll": "Αποεπιλογή",
       "sendReminder": "Αποστολή υπενθύμισης",
-      "exportMembers": "Μέλη εξαγωγής",
-      "exportExcel": "Το Excel (.xlsx)",
-      "exportPdf": "PDF (.pdf)",
       "count": "{count, plural, one {# Συνδρομή μέλους} other {# Συνεισφορές}}",
-      "totalCollected": " · {amount} εισπράχθηκαν",
       "exercise": "Οικονομικό έτος {year}",
       "columns": {
         "member": "Μέλος",
@@ -4211,7 +4207,36 @@
         "editCancelled": "Αλλαγή της ακυρωμένης συνδρομής"
       },
       "selectAllTruncated": "Περισσότερες από 500 συνεισφορές ταιριάζουν στα φίλτρα — επιλέχθηκαν μόνο οι 500 κορυφαίες.",
-      "remaining": "Υπόλοιπο {amount}"
+      "remaining": "Υπόλοιπο {amount}",
+      "export": "Εξαγωγή",
+      "exportCotisationsExcel": "Συνδρομές (Excel)",
+      "exportMembresExcel": "Μέλη (Excel)",
+      "exportMembresPdf": "Μέλη (PDF)",
+      "allCategories": "Όλες οι κατηγορίες",
+      "allRenewals": "Όλες οι ανανεώσεις",
+      "resetFilters": "Επαναφορά",
+      "renewal": {
+        "automatic": "Αυτόματη",
+        "manual": "Χειροκίνητη"
+      },
+      "summary": {
+        "aPagar": " · {amount} προς είσπραξη",
+        "recebido": " · {amount} εισπράχθηκαν",
+        "saldo": " · {amount} εκκρεμές"
+      },
+      "distribution": {
+        "show": "Προβολή κατανομής",
+        "hide": "Απόκρυψη κατανομής",
+        "category": "Κατηγορία",
+        "renewal": "Ανανέωση",
+        "count": "Πλήθος",
+        "aPagar": "Σύνολο προς είσπραξη",
+        "recebido": "Εισπράχθηκαν",
+        "saldo": "Υπόλοιπο προς πληρωμή",
+        "total": "Σύνολο",
+        "noCategory": "Χωρίς κατηγορία",
+        "empty": "Καμία συνδρομή δεν ταιριάζει με αυτά τα φίλτρα."
+      }
     },
     "reminderModal": {
       "title": "Στείλτε μια υπενθύμιση συνεισφοράς",
