@@ -38,6 +38,13 @@ export const SelectField = forwardRef<HTMLButtonElement, SelectFieldProps>(
     const t = useTranslations("common")
     const fieldId     = id ?? label.toLowerCase().replace(/\s+/g, "-")
     const selectedLabel = options.find((o) => o.value === value)?.label
+    // Base UI's Select can't establish an initial highlighted item with zero <SelectItem>s,
+    // so it silently refuses to open — clicking the trigger does nothing, with no error and
+    // no visual difference from a working select (see FORM-102: the Membres "Pays" filter on
+    // an association with no country on file yet). A disabled trigger would read as "this is
+    // broken", not "there's nothing to pick" — so keep it clickable and open onto a single
+    // disabled row explaining why, same as a real empty-results state would.
+    const isEmpty = options.length === 0
 
     return (
       // flex+gap, not space-y: Base UI's Select renders a visually-hidden <input> after the
@@ -67,11 +74,18 @@ export const SelectField = forwardRef<HTMLButtonElement, SelectFieldProps>(
             </span>
           </SelectTrigger>
           <SelectContent>
-            {options.map((opt) => (
-              <SelectItem key={opt.value} value={opt.value} disabled={opt.disabled}>
-                {opt.label}
-              </SelectItem>
-            ))}
+            {isEmpty ? (
+              // Reuse the caller's error message here when there is one — "Nenhuma opção
+              // disponível" would otherwise contradict the red text already shown below the
+              // field, which explains this is a failed fetch, not a genuinely empty result.
+              <SelectItem value="__empty__" disabled>{error ?? t("noOptionsPlaceholder")}</SelectItem>
+            ) : (
+              options.map((opt) => (
+                <SelectItem key={opt.value} value={opt.value} disabled={opt.disabled}>
+                  {opt.label}
+                </SelectItem>
+              ))
+            )}
           </SelectContent>
         </Select>
         {error && (

@@ -50,7 +50,8 @@
     "dismissTip": "Ħalli l-parir",
     "addressPlaceholder": "Salle des fêtes, 12 rue de la Paix, Pariġi...",
     "viewOnGoogleMaps": "Ara fuq Google Maps",
-    "backToSite": "Lura għas-sit"
+    "backToSite": "Lura għas-sit",
+    "noOptionsPlaceholder": "L-ebda għażliet disponibbli"
   },
   "address": {
     "street": "Indirizz",

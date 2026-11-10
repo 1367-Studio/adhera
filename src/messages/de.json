@@ -50,7 +50,8 @@
     "dismissTip": "Überspringe den Tipp",
     "addressPlaceholder": "Salle des fêtes, 12 rue de la Paix, Paris...",
     "viewOnGoogleMaps": "Siehe auf Google Maps",
-    "backToSite": "Zurück zur Website"
+    "backToSite": "Zurück zur Website",
+    "noOptionsPlaceholder": "Keine Optionen verfügbar"
   },
   "address": {
     "street": "Adresse",

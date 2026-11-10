@@ -50,7 +50,8 @@
     "dismissTip": "Παραλείψτε την άκρη",
     "addressPlaceholder": "Salle des fêtes, 12 rue de la Paix, Παρίσι...",
     "viewOnGoogleMaps": "Δείτε στο Google Maps",
-    "backToSite": "Επιστροφή στον ιστότοπο"
+    "backToSite": "Επιστροφή στον ιστότοπο",
+    "noOptionsPlaceholder": "Δεν υπάρχουν διαθέσιμες επιλογές"
   },
   "address": {
     "street": "Διεύθυνση",

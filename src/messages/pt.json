@@ -41,6 +41,7 @@
     "location": "Local",
     "choosePlaceholder": "Escolher…",
     "allPlaceholder": "Todos",
+    "noOptionsPlaceholder": "Nenhuma opção disponível",
     "previousPage": "Página anterior",
     "nextPage": "Próxima página",
     "paginationRange": "{from}–{to} de {total}",
