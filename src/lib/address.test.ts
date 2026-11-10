@@ -177,6 +177,19 @@ describe("addressColumnsPatch", () => {
     })
   })
 
+  // Le vrai formulaire d'édition (MembreForm) ne soumet jamais `address` — seulement les cinq
+  // champs structurés, même vides. Avant ce test, ce cas-là recyclait le texte composé encore
+  // en base plutôt que de le vider : effacer un pays (ou toute adresse) ne se voyait jamais
+  // reflété sur la fiche une fois rouvert.
+  it("clears the whole address even when the request never mentions the legacy field at all", () => {
+    expect(addressColumnsPatch(
+      { addressStreet: "", addressComplement: "", postalCode: "", city: "", country: "" },
+      existing,
+    )).toEqual({
+      addressStreet: null, addressComplement: null, postalCode: null, city: null, country: null, address: null,
+    })
+  })
+
   // Une fiche encore en texte libre que l'on complète : les colonnes structurées prennent
   // la main et la colonne héritée est recomposée à partir d'elles.
   it("migrates a legacy record that gets structured fields", () => {

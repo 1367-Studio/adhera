@@ -217,7 +217,14 @@ export function MembreForm({ defaultValues, onSubmit, onCancel, loading, isCreat
       ]
     : [{ value: "", label: t("membres.form.noAdultResponsable") }]
 
-  async function submit(data: MembreCreateInput) {
+  async function submit({ address: _legacyAddress, ...data }: MembreCreateInput) {
+    // `address` (texte hérité) n'a jamais de champ dans ce formulaire — seuls les 5 champs
+    // structurés d'AddressFields le sont — mais react-hook-form le retient quand même dans
+    // `defaultValues` (voir plus haut) et le renvoie inchangé à chaque enregistrement. Sans
+    // l'exclure ici, l'ancien texte composé revenait toujours tel quel côté serveur, empêchant
+    // addressColumnsPatch de jamais le recalculer à zéro quand l'adresse structurée est vidée
+    // (FORM-103 — un pays enregistré ne se laissait plus jamais effacer).
+    void _legacyAddress
     // Only the answers actually changed in this session — never the whole set. A required
     // field the member never answered (added to the form after they joined, say) must not
     // block an edit that has nothing to do with it: sending it unchanged would fail the

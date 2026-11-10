@@ -225,15 +225,21 @@ export function addressColumnsPatch(payload: AddressPayload, existing: AddressPa
   const touchesAddress = ADDRESS_PAYLOAD_KEYS.some(key => payload[key] !== undefined)
   if (!touchesAddress) return {}
 
-  const merged = (key: typeof ADDRESS_PAYLOAD_KEYS[number]) =>
+  const mergedStructured = (key: Exclude<typeof ADDRESS_PAYLOAD_KEYS[number], "address">) =>
     payload[key] !== undefined ? payload[key] : existing[key]
 
   return addressColumns({
-    street:     merged("addressStreet"),
-    complement: merged("addressComplement"),
-    postalCode: merged("postalCode"),
-    city:       merged("city"),
-    country:    merged("country"),
-    legacy:     merged("address"),
+    street:     mergedStructured("addressStreet"),
+    complement: mergedStructured("addressComplement"),
+    postalCode: mergedStructured("postalCode"),
+    city:       mergedStructured("city"),
+    country:    mergedStructured("country"),
+    // Contrairement aux cinq colonnes structurées, `address` n'est jamais recyclé depuis la
+    // base : le formulaire d'édition soumet toujours le bloc structuré en entier mais ne
+    // renvoie jamais ce champ, donc le recycler masquait silencieusement un « tout effacer »
+    // derrière l'ancien texte composé — le pays ne se laissait plus jamais effacer une fois
+    // enregistré (FORM-103). Un appelant qui ne touche qu'à l'adresse héritée (`address` seul
+    // dans le payload) passe toujours sa propre valeur ici, donc rien n'est perdu pour lui.
+    legacy: payload.address,
   })
 }
