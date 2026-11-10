@@ -296,7 +296,7 @@ export function MembresView() {
   }
 
   const { data: types = [] } = useMembreTypes()
-  const { data: countryOptions = [], isError: countryOptionsError } = useMembreCountryOptions()
+  const { data: countryOptions = [], isError: countryOptionsError, isLoading: countryOptionsLoading } = useMembreCountryOptions()
   const { data: result, isLoading } = useMembresPaginated(page, PAGE_SIZE, filters)
   const { data: stats } = useQuery<MembresStats>({
     queryKey: ["membres", "stats"],
@@ -734,6 +734,11 @@ export function MembresView() {
               options={countryOptions.map(c => ({ value: c, label: c }))}
               placeholder={t("membres.view.filters.countryPlaceholder")}
               error={countryOptionsError ? t("membres.view.filters.countryLoadError") : undefined}
+              // While the fetch is in flight, `options` is still the [] default — without this
+              // the field would briefly open onto "no options available" (real answer: unknown
+              // yet) before the real list lands. Disabling reads as "wait", which is accurate;
+              // the empty-options state below should only ever mean "asked, got zero".
+              disabled={countryOptionsLoading}
             />
             <div className="grid grid-cols-2 gap-2">
               <DateField

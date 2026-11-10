@@ -50,7 +50,8 @@
     "dismissTip": "Preskoči nasvet",
     "addressPlaceholder": "Salle des fêtes, 12 rue de la Paix, Pariz...",
     "viewOnGoogleMaps": "Oglejte si na Google Maps",
-    "backToSite": "Nazaj na spletno mesto"
+    "backToSite": "Nazaj na spletno mesto",
+    "noOptionsPlaceholder": "Ni na voljo nobenih možnosti"
   },
   "address": {
     "street": "Naslov",

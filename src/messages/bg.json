@@ -50,7 +50,8 @@
     "dismissTip": "Пропуснете съвета",
     "addressPlaceholder": "Salle des fêtes, 12 rue de la Paix, Париж...",
     "viewOnGoogleMaps": "Вижте в Google Maps",
-    "backToSite": "Назад към сайта"
+    "backToSite": "Назад към сайта",
+    "noOptionsPlaceholder": "Няма налични опции"
   },
   "address": {
     "street": "Адрес",
