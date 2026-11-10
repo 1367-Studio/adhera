@@ -1314,7 +1314,6 @@
       "description": "Gérez les catégories de recettes et de dépenses.",
       "seedButton": "Initialiser les catégories par défaut",
       "noCategories": "Aucune catégorie",
-      "default": "Défaut",
       "income": "Recettes",
       "expenses": "Dépenses",
       "newCategoryTitle": "Nouvelle catégorie",
@@ -1338,7 +1337,8 @@
       "chooseTemplateTitle": "Choisissez un type de catégorie",
       "customCategory": "Créer une catégorie personnalisée",
       "alreadyExists": "Déjà configurée",
-      "archivedReactivateHint": "Archivée — cliquez pour réactiver"
+      "archivedReactivateHint": "Archivée — cliquez pour réactiver",
+      "custom": "Personnalisée"
     },
     "incomesView": {
       "title": "Recettes",

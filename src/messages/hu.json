@@ -1061,7 +1061,6 @@
       "description": "Kezeld a bevételi és költségkategóriákat.",
       "seedButton": "Inicializáld az alapértelmezett kategóriákat",
       "noCategories": "Nincs kategória",
-      "default": "Alapértelmezés",
       "income": "Bevételek",
       "expenses": "Költségek",
       "newCategoryTitle": "Új kategória",
@@ -1077,7 +1076,8 @@
       "chooseTemplateTitle": "Válassz kategóriatípust",
       "customCategory": "Hozzon létre egy egyedi kategóriát",
       "alreadyExists": "Már konfigurálva",
-      "archivedReactivateHint": "Archiválva — kattints az újraaktiváláshoz"
+      "archivedReactivateHint": "Archiválva — kattints az újraaktiváláshoz",
+      "custom": "Testreszabott"
     },
     "incomesView": {
       "title": "Bevételek",
