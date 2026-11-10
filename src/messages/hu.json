@@ -50,7 +50,8 @@
     "dismissTip": "Hagyd ki a tippet",
     "addressPlaceholder": "Salle des fêtes, 12 rue de la Paix, Párizs...",
     "viewOnGoogleMaps": "Lásd a Google Térképen",
-    "backToSite": "Vissza az oldalra"
+    "backToSite": "Vissza az oldalra",
+    "noOptionsPlaceholder": "Nincs lehetőség"
   },
   "address": {
     "street": "Cím",

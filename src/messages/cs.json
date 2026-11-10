@@ -50,7 +50,8 @@
     "dismissTip": "Přeskočte tip",
     "addressPlaceholder": "Salle des fêtes, 12 rue de la Paix, Paříž...",
     "viewOnGoogleMaps": "Podívejte se na Google Maps",
-    "backToSite": "Zpět na web"
+    "backToSite": "Zpět na web",
+    "noOptionsPlaceholder": "Žádné možnosti nejsou k dispozici"
   },
   "address": {
     "street": "Adresa",

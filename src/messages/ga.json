@@ -50,7 +50,8 @@
     "dismissTip": "Scipeáil an leid",
     "addressPlaceholder": "Salle des fêtes, 12 rue de la Paix, Páras...",
     "viewOnGoogleMaps": "Féach ar Google Maps",
-    "backToSite": "Ar ais go dtí an suíomh"
+    "backToSite": "Ar ais go dtí an suíomh",
+    "noOptionsPlaceholder": "Níl aon roghanna ar fáil"
   },
   "address": {
     "street": "Seoladh",

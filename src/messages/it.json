@@ -50,7 +50,8 @@
     "dismissTip": "Salta la mancia",
     "addressPlaceholder": "Salle des fêtes, 12 rue de la Paix, Parigi...",
     "viewOnGoogleMaps": "Vedi su Google Maps",
-    "backToSite": "Torna al sito"
+    "backToSite": "Torna al sito",
+    "noOptionsPlaceholder": "Nessuna opzione disponibile"
   },
   "address": {
     "street": "Indirizzo",
