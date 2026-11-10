@@ -68,15 +68,18 @@ describe("formatAddressLines", () => {
 })
 
 describe("country alone", () => {
-  // Un formulaire qui pré-remplit "France" et que le visiteur laisse vide ne doit pas
-  // créer une adresse fantôme sur une fiche qui n'en a pas.
-  it("is not an address", () => {
-    expect(formatAddress({ country: "France" })).toBeNull()
-    expect(addressColumns({ country: "France" }).country).toBeNull()
-    expect(addressColumns({ country: "France" }).address).toBeNull()
+  // Il n'y a pas de pays pré-rempli par défaut dans les formulaires : un pays seul a donc
+  // forcément été saisi volontairement, et doit s'afficher plutôt que disparaître
+  // silencieusement (voir FORM-103 — un admin qui ajoutait un pays le voyait ignoré).
+  it("is an address on its own", () => {
+    expect(formatAddress({ country: "France" })).toBe("France")
+    expect(addressColumns({ country: "France" }).country).toBe("France")
+    expect(addressColumns({ country: "France" }).address).toBe("France")
   })
 
-  it("does not hide a legacy address", () => {
+  // Un texte libre hérité reste presque toujours plus riche qu'un pays saisi à côté sans
+  // voie/complément/localité : il continue à l'emporter plutôt que d'être masqué par lui.
+  it("does not hide a richer legacy address", () => {
     expect(formatAddress({ country: "France", legacy: "12 rue de la Paix, 75002 Paris" }))
       .toBe("12 rue de la Paix, 75002 Paris")
   })
@@ -134,6 +137,15 @@ describe("addressFormValues", () => {
   it("returns empty strings for a record with no address and for no record at all", () => {
     expect(addressFormValues({})).toEqual(EMPTY_ADDRESS_FORM_VALUES)
     expect(addressFormValues(null)).toEqual(EMPTY_ADDRESS_FORM_VALUES)
+  })
+
+  // Un enregistrement country-only (voir FORM-103) a sa colonne `address` recomposée au même
+  // pays par addressColumns — sans ce cas, ce texte se faisait prendre pour une adresse héritée
+  // et se retrouvait dupliqué dans le champ Rue au prochain réenregistrement.
+  it("does not dump the composed country back into the street field", () => {
+    expect(addressFormValues({ country: "France", address: "France" })).toEqual({
+      addressStreet: "", addressComplement: "", postalCode: "", city: "", country: "France",
+    })
   })
 })
 
@@ -212,5 +224,11 @@ describe("addressWasMigratedFromLegacy", () => {
     expect(addressWasMigratedFromLegacy(null)).toBe(false)
     expect(addressWasMigratedFromLegacy({})).toBe(false)
     expect(addressWasMigratedFromLegacy({ address: "   " })).toBe(false)
+  })
+
+  // Même raison que le test équivalent sur addressFormValues : le pays seul est un champ
+  // structuré comme un autre, pas un reliquat du texte libre qu'il a lui-même produit.
+  it("is false for a country-only record, even though its composed address equals the country", () => {
+    expect(addressWasMigratedFromLegacy({ country: "France", address: "France" })).toBe(false)
   })
 })
