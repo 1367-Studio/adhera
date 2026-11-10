@@ -3959,7 +3959,8 @@
         "active": "Aktivno",
         "pastDue": "Kašnjenje u plaćanju",
         "suspended": "Suspendiran",
-        "cancelled": "Otkazano"
+        "cancelled": "Otkazano",
+        "paymentPending": "Plaćanje u tijeku"
       },
       "planLabel": "Formula {tier}",
       "membersCount": "{count} / {limit} Članovi",

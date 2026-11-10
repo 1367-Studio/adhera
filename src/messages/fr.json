@@ -4291,6 +4291,7 @@
       "status": {
         "trial": "Essai gratuit",
         "active": "Actif",
+        "paymentPending": "Paiement en cours",
         "pastDue": "Paiement en retard",
         "suspended": "Suspendu",
         "cancelled": "Annulé"

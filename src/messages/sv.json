@@ -3959,7 +3959,8 @@
         "active": "Aktiv",
         "pastDue": "Sen betalning",
         "suspended": "Avstängd",
-        "cancelled": "Nedlagd"
+        "cancelled": "Nedlagd",
+        "paymentPending": "Betalning pågår"
       },
       "planLabel": "Formel {tier}",
       "membersCount": "{count} / {limit} Medlemmar",

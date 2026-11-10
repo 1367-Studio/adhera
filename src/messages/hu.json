@@ -3959,7 +3959,8 @@
         "active": "Aktív",
         "pastDue": "Késedelmes fizetés",
         "suspended": "Felfüggesztve",
-        "cancelled": "Törölve"
+        "cancelled": "Törölve",
+        "paymentPending": "Fizetés folyamatban"
       },
       "planLabel": "Formula {tier}",
       "membersCount": "{count} / {limit} Tagok",

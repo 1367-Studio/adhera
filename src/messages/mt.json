@@ -3959,7 +3959,8 @@
         "active": "Attiv",
         "pastDue": "Ħlas tard",
         "suspended": "Sospiż",
-        "cancelled": "Ikkanċellat"
+        "cancelled": "Ikkanċellat",
+        "paymentPending": "Ħlas għaddej"
       },
       "planLabel": "Formula {tier}",
       "membersCount": "{count} / {limit} Membri",

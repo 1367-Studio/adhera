@@ -16,7 +16,7 @@ export const POST = withAdminAuth(async (_req, ctx) => {
 
   const setupIntent = await stripe.setupIntents.create({
     customer:             assoc.stripeCustomerId,
-    payment_method_types: ["card"],
+    payment_method_types: ["card", "sepa_debit"],
     usage:                "off_session",
   })
 

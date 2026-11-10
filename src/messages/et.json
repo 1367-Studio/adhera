@@ -3959,7 +3959,8 @@
         "active": "Aktiivne",
         "pastDue": "Hilinenud makse",
         "suspended": "Peatatud",
-        "cancelled": "Tühistatud"
+        "cancelled": "Tühistatud",
+        "paymentPending": "Makse käimas"
       },
       "planLabel": "Valem {tier}",
       "membersCount": "{count} / {limit} Liikmed",
