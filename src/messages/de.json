@@ -1062,7 +1062,6 @@
       "description": "Verwalten Sie Umsatz- und Ausgabenkategorien.",
       "seedButton": "Initialisieren von Standardkategorien",
       "noCategories": "Keine Kategorie",
-      "default": "Default",
       "income": "Einnahmen",
       "expenses": "Ausgaben",
       "newCategoryTitle": "Neue Kategorie",
@@ -1078,7 +1077,8 @@
       "chooseTemplateTitle": "Wähle einen Kategorietyp",
       "customCategory": "Erstelle einer benutzerdefinierten Kategorie",
       "alreadyExists": "Bereits konfiguriert",
-      "archivedReactivateHint": "Archiviert — klicken Sie zum Reaktivieren"
+      "archivedReactivateHint": "Archiviert — klicken Sie zum Reaktivieren",
+      "custom": "Angepasst"
     },
     "incomesView": {
       "title": "Einnahmen",

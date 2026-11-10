@@ -1062,7 +1062,6 @@
       "description": "Gestionează categoriile de venituri și cheltuieli.",
       "seedButton": "Inițializarea categoriilor implicite",
       "noCategories": "Fără categorie",
-      "default": "Implicit",
       "income": "Venituri",
       "expenses": "Cheltuieli",
       "newCategoryTitle": "Categorie nouă",
@@ -1078,7 +1077,8 @@
       "chooseTemplateTitle": "Alege un tip de categorie",
       "customCategory": "Creează o categorie personalizată",
       "alreadyExists": "Deja configurat",
-      "archivedReactivateHint": "Arhivat — click pentru a reactiva"
+      "archivedReactivateHint": "Arhivat — click pentru a reactiva",
+      "custom": "Personalizată"
     },
     "incomesView": {
       "title": "Venituri",

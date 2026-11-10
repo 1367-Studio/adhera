@@ -1062,7 +1062,6 @@
       "description": "Hallinnoi tulo- ja kulukategorioita.",
       "seedButton": "Aloita oletuskategoriat",
       "noCategories": "Ei kategoriaa",
-      "default": "Oletus",
       "income": "Tulot",
       "expenses": "Kulut",
       "newCategoryTitle": "Uusi kategoria",
@@ -1078,7 +1077,8 @@
       "chooseTemplateTitle": "Valitse kategoriatyyppi",
       "customCategory": "Luo oma kategoria",
       "alreadyExists": "Jo konfiguroitu",
-      "archivedReactivateHint": "Arkistoitu — klikkaa aktivoidaksesi uudelleen"
+      "archivedReactivateHint": "Arkistoitu — klikkaa aktivoidaksesi uudelleen",
+      "custom": "Räätälöity"
     },
     "incomesView": {
       "title": "Tulot",

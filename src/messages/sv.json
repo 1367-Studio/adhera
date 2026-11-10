@@ -1062,7 +1062,6 @@
       "description": "Hantera intäkts- och kostnadskategorier.",
       "seedButton": "Initiera standardkategorier",
       "noCategories": "Ingen kategori",
-      "default": "Standard",
       "income": "Intäkter",
       "expenses": "Utgifter",
       "newCategoryTitle": "Ny kategori",
@@ -1078,7 +1077,8 @@
       "chooseTemplateTitle": "Välj en kategorityp",
       "customCategory": "Skapa en anpassad kategori",
       "alreadyExists": "Redan konfigurerad",
-      "archivedReactivateHint": "Arkiverad — klicka för att återaktivera"
+      "archivedReactivateHint": "Arkiverad — klicka för att återaktivera",
+      "custom": "Anpassad"
     },
     "incomesView": {
       "title": "Intäkter",

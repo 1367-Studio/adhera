@@ -1089,7 +1089,6 @@
       "description": "Faça a gestão das categorias de receitas e despesas.",
       "seedButton": "Inicializar categorias predefinidas",
       "noCategories": "Nenhuma categoria",
-      "default": "Predefinida",
       "income": "Receitas",
       "expenses": "Despesas",
       "newCategoryTitle": "Nova categoria",
@@ -1105,7 +1104,8 @@
       "chooseTemplateTitle": "Escolha um tipo de categoria",
       "customCategory": "Criar uma categoria personalizada",
       "alreadyExists": "Já configurado",
-      "archivedReactivateHint": "Arquivado — clique para reativar"
+      "archivedReactivateHint": "Arquivado — clique para reativar",
+      "custom": "Personalizada"
     },
     "incomesView": {
       "title": "Receitas",

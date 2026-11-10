@@ -1062,7 +1062,6 @@
       "description": "Styr omsætnings- og udgiftskategorier.",
       "seedButton": "Initialiser standardkategorier",
       "noCategories": "Ingen kategori",
-      "default": "Default",
       "income": "Indtægter",
       "expenses": "Udgifter",
       "newCategoryTitle": "Ny kategori",
@@ -1078,7 +1077,8 @@
       "chooseTemplateTitle": "Vælg en kategoritype",
       "customCategory": "Opret en brugerdefineret kategori",
       "alreadyExists": "Allerede konfigureret",
-      "archivedReactivateHint": "Arkiveret — klik for at genaktivere"
+      "archivedReactivateHint": "Arkiveret — klik for at genaktivere",
+      "custom": "Tilpasset"
     },
     "incomesView": {
       "title": "Indtægter",

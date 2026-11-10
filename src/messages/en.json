@@ -1203,7 +1203,6 @@
       "description": "Manage income and expense categories.",
       "seedButton": "Set up default categories",
       "noCategories": "No categories",
-      "default": "Default",
       "income": "Income",
       "expenses": "Expenses",
       "newCategoryTitle": "New category",
@@ -1227,7 +1226,8 @@
       "chooseTemplateTitle": "Choose a category type",
       "customCategory": "Create a custom category",
       "alreadyExists": "Already set up",
-      "archivedReactivateHint": "Archived — click to reactivate"
+      "archivedReactivateHint": "Archived — click to reactivate",
+      "custom": "Custom"
     },
     "incomesView": {
       "title": "Income",

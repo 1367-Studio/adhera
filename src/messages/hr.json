@@ -1062,7 +1062,6 @@
       "description": "Upravljajte kategorijama prihoda i rashoda.",
       "seedButton": "Inicijalizirajte zadane kategorije",
       "noCategories": "Nema kategorije",
-      "default": "Zadano stanje",
       "income": "Prihodi",
       "expenses": "Troškovi",
       "newCategoryTitle": "Nova kategorija",
@@ -1078,7 +1077,8 @@
       "chooseTemplateTitle": "Odaberite tip kategorije",
       "customCategory": "Kreiraj prilagođenu kategoriju",
       "alreadyExists": "Već konfigurirano",
-      "archivedReactivateHint": "Arhivirano — kliknite za ponovnu aktivaciju"
+      "archivedReactivateHint": "Arhivirano — kliknite za ponovnu aktivaciju",
+      "custom": "Prilagođena"
     },
     "incomesView": {
       "title": "Prihodi",

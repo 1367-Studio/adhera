@@ -1062,7 +1062,6 @@
       "description": "Pārvaldiet ieņēmumu un izdevumu kategorijas.",
       "seedButton": "Noklusējuma kategoriju inicializēšana",
       "noCategories": "Nav kategorijas",
-      "default": "Noklusējums",
       "income": "Ieņēmumi",
       "expenses": "Izdevumi",
       "newCategoryTitle": "Jauna kategorija",
@@ -1078,7 +1077,8 @@
       "chooseTemplateTitle": "Izvēlieties kategorijas tipu",
       "customCategory": "Izveido pielāgotu kategoriju",
       "alreadyExists": "Jau konfigurēts",
-      "archivedReactivateHint": "Arhivēts — klikšķiniet, lai aktivizētu"
+      "archivedReactivateHint": "Arhivēts — klikšķiniet, lai aktivizētu",
+      "custom": "Pielāgota"
     },
     "incomesView": {
       "title": "Ieņēmumi",

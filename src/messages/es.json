@@ -1062,7 +1062,6 @@
       "description": "Gestione las categorías de ingresos y gastos.",
       "seedButton": "Inicializar categorías predeterminadas",
       "noCategories": "Ninguna categoría",
-      "default": "Predeterminada",
       "income": "Ingresos",
       "expenses": "Gastos",
       "newCategoryTitle": "Nueva categoría",
@@ -1078,7 +1077,8 @@
       "chooseTemplateTitle": "Elige un tipo de categoría",
       "customCategory": "Crear una categoría personalizada",
       "alreadyExists": "Ya configurado",
-      "archivedReactivateHint": "Archivado — haz clic para reactivar"
+      "archivedReactivateHint": "Archivado — haz clic para reactivar",
+      "custom": "Personalizada"
     },
     "incomesView": {
       "title": "Ingresos",

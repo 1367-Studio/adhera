@@ -1062,7 +1062,6 @@
       "description": "Beheer de categorieën van omzet en kosten.",
       "seedButton": "Initialiseer standaardcategorieën",
       "noCategories": "Geen categorie",
-      "default": "Standaard",
       "income": "Inkomsten",
       "expenses": "Uitgaven",
       "newCategoryTitle": "Nieuwe categorie",
@@ -1078,7 +1077,8 @@
       "chooseTemplateTitle": "Kies een categorietype",
       "customCategory": "Maak een aangepaste categorie aan",
       "alreadyExists": "Al geconfigureerd",
-      "archivedReactivateHint": "Gearchiveerd — klik om te heractiveren"
+      "archivedReactivateHint": "Gearchiveerd — klik om te heractiveren",
+      "custom": "Aangepast"
     },
     "incomesView": {
       "title": "Inkomsten",

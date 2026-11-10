@@ -1062,7 +1062,6 @@
       "description": "Gestire le categorie di ricavi e spese.",
       "seedButton": "Inizializzare le categorie predefinite",
       "noCategories": "Nessuna categoria",
-      "default": "Predefinito",
       "income": "Entrate",
       "expenses": "Spese",
       "newCategoryTitle": "Nuova categoria",
@@ -1078,7 +1077,8 @@
       "chooseTemplateTitle": "Scegli un tipo di categoria",
       "customCategory": "Crea una categoria personalizzata",
       "alreadyExists": "Già configurato",
-      "archivedReactivateHint": "Archiviato — clicca per riattivare"
+      "archivedReactivateHint": "Archiviato — clicca per riattivare",
+      "custom": "Personalizzata"
     },
     "incomesView": {
       "title": "Entrate",

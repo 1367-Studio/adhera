@@ -66,7 +66,10 @@ function CategoryList({ categories, loading, canEdit, onEdit, onDelete, onReacti
                     exceptional section (a custom category pointing at FINANCIAL/EXCEPTIONAL/
                     IMMOBILISATION/IN_KIND/OTHER) is worth calling out. */}
                 {c.section !== "OPERATING" && <Badge variant="outline">{tc(`sectionOptions.${c.section}`)}</Badge>}
-                {c.isDefault && <span className="text-xs text-muted-foreground">{t("default")}</span>}
+                {/* Only the association's own custom categories get a label — the Formwise
+                    defaults are the expected baseline, not an exception worth flagging on
+                    every row (and "Défaut" reads as an error state, not reassurance). */}
+                {!c.isDefault && <span className="text-xs text-muted-foreground">{t("custom")}</span>}
                 {c.archivedAt && <span className="text-xs text-muted-foreground">{t("archived")}</span>}
               </div>
               {code && <p className="text-xs text-muted-foreground">{code}{label ? ` — ${label}` : ""}</p>}
