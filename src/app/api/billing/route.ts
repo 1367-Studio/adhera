@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma/client"
 import { withAdminAuth } from "@/lib/api-wrapper"
-import { getPricingInfo, customerHasPaymentMethod } from "@/lib/stripe"
+import { getPricingInfo, customerHasPaymentMethod, subscriptionPaymentPending } from "@/lib/stripe"
 import { effectiveMemberLimit } from "@/lib/plan-limits"
 import { reportError } from "@/lib/monitoring"
 import { tierFromPlan } from "@/lib/plan-tier"
@@ -35,10 +35,21 @@ export const GET = withAdminAuth(async (_req, ctx) => {
       })
     : null
 
+  // Cosmetic only (see subscriptionPaymentPending) — a SEPA debit still settling. Checked
+  // only while ACTIVE, same reasoning as hasPaymentMethod above: no point asking Stripe when
+  // the answer wouldn't change what's shown.
+  const paymentPending = assoc.subscriptionStatus === "ACTIVE" && assoc.stripeSubscriptionId
+    ? await subscriptionPaymentPending(assoc.stripeSubscriptionId).catch((err: unknown) => {
+        reportError(err, { area: "stripe", action: "billing.check-payment-pending", extra: { associationId: ctx.associationId } })
+        return false
+      })
+    : false
+
   return NextResponse.json({
     subscriptionStatus:  assoc.subscriptionStatus,
     trialEndsAt:         assoc.trialEndsAt,
     hasPaymentMethod,
+    paymentPending,
     suspendedAt:         assoc.suspendedAt,
     cancelAtPeriodEnd:   assoc.cancelAtPeriodEnd,
     currentPeriodEndsAt: assoc.currentPeriodEndsAt,

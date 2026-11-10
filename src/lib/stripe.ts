@@ -119,6 +119,23 @@ export async function customerHasPaymentMethod(customerId: string, subscriptionI
   return !!sub.default_payment_method
 }
 
+// Whether this subscription's latest invoice is still mid-settlement — true for a SEPA
+// Direct Debit mandate that was just confirmed (card settles near-instantly, SEPA takes a
+// few business days). Purely cosmetic signal for the settings-tab badge: subscriptionStatus
+// stays ACTIVE and access is unaffected either way, this only tells the admin not to worry
+// if the debit hasn't hit her bank statement yet. This API version's Invoice object has no
+// payment_intent field (Stripe moved payment-collection tracking off Invoice) — "open" with
+// an amount still remaining is the available proxy, and it's a safe one here specifically
+// because this is only ever checked while subscriptionStatus is still ACTIVE: Stripe only
+// flips a subscription to PAST_DUE once an invoice attempt genuinely fails, so ACTIVE + open
+// + unpaid can only mean a payment is still being collected, not that one already failed.
+export async function subscriptionPaymentPending(subscriptionId: string): Promise<boolean> {
+  const sub = await stripe.subscriptions.retrieve(subscriptionId, { expand: ["latest_invoice"] })
+  const invoice = sub.latest_invoice
+  if (!invoice || typeof invoice === "string") return false
+  return invoice.status === "open" && invoice.amount_remaining > 0
+}
+
 // DonationTier.interval (MONTH | QUARTER | YEAR) → Stripe's own recurring-price shape,
 // which only knows day/week/month/year — a quarter is a month billed every 3rd cycle,
 // not a native Stripe interval.

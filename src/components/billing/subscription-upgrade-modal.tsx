@@ -135,6 +135,9 @@ function PaymentForm({ cycle, onSuccess, onCancel }: { cycle: Plan; onSuccess: (
         <LockIcon className="size-3" />
         <span>Paiement sécurisé par Stripe</span>
       </div>
+      <p className="text-center text-xs text-muted-foreground">
+        Avec le prélèvement SEPA, le premier débit peut prendre quelques jours ouvrés avant d&apos;apparaître sur votre compte bancaire.
+      </p>
     </form>
   )
 }
@@ -187,7 +190,7 @@ export function SubscriptionUpgradeCheckout({ essentialPricing, onSuccess }: {
       )}
 
       {clientSecret && (
-        <Elements stripe={stripePromise} options={{ clientSecret, appearance: stripeAppearance, fonts: stripeFonts }}>
+        <Elements stripe={stripePromise} options={{ clientSecret, appearance: stripeAppearance, fonts: stripeFonts, locale: "fr" }}>
           <PaymentForm cycle={plan} onSuccess={onSuccess} onCancel={() => setClientSecret("")} />
         </Elements>
       )}

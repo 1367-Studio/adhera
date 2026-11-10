@@ -3959,7 +3959,8 @@
         "active": "Aktiv",
         "pastDue": "Sen betaling",
         "suspended": "Suspenderet",
-        "cancelled": "Aflyst"
+        "cancelled": "Aflyst",
+        "paymentPending": "Betaling under betaling"
       },
       "planLabel": "Formel {tier}",
       "membersCount": "{count} / {limit} Medlemmer",

@@ -3959,7 +3959,8 @@
         "active": "Aktiv",
         "pastDue": "Verspätete Zahlung",
         "suspended": "Suspendiert",
-        "cancelled": "Eingestellt"
+        "cancelled": "Eingestellt",
+        "paymentPending": "Zahlung in Bearbeitung"
       },
       "planLabel": "Formel {tier}",
       "membersCount": "{count} / {limit} Mitglieder",

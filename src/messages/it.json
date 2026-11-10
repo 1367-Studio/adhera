@@ -3959,7 +3959,8 @@
         "active": "Attivo",
         "pastDue": "Pagamento in ritardo",
         "suspended": "Sospesi",
-        "cancelled": "Cancellato"
+        "cancelled": "Cancellato",
+        "paymentPending": "Pagamento in corso"
       },
       "planLabel": "Formula {tier}",
       "membersCount": "{count} / {limit} Membri",
