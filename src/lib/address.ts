@@ -59,15 +59,19 @@ function structuredParts(input: AddressInput) {
 export function formatAddressLines(input: AddressInput): string[] {
   const { street, complement, locality, country } = structuredParts(input)
 
-  // Le pays seul ne fait pas une adresse : un formulaire qui pré-remplit "France" et que
-  // personne ne complète ne doit pas transformer une fiche sans adresse en une fiche dont
-  // l'adresse est "France". Il faut au moins une voie, un complément ou une localité.
   if (street || complement || locality) {
     return [street, complement, locality, country].filter((line): line is string => line !== null)
   }
 
+  // Pas de voie/complément/localité structurés : le texte libre hérité, quand il existe, est
+  // presque toujours plus riche qu'un pays seul, donc il l'emporte encore. C'est seulement
+  // quand il n'y a vraiment rien d'autre qu'un pays saisi volontairement par un admin (il n'y
+  // a pas de pays pré-rempli par défaut dans les formulaires) qu'il s'affiche seul plutôt que
+  // de disparaître silencieusement.
   const legacyAddress = cleanedValue(input.legacy)
-  return legacyAddress ? [legacyAddress] : []
+  if (legacyAddress) return [legacyAddress]
+
+  return country ? [country] : []
 }
 
 // La même adresse sur une seule ligne, séparée par des virgules — le format utilisé par
@@ -95,14 +99,13 @@ export type AddressColumns = {
 
 export function addressColumns(input: AddressInput): AddressColumns {
   const { street, complement, locality, country, postalCode, city } = structuredParts(input)
-  const hasStructuredAddress = !!(street || complement || locality)
+  const hasStructuredAddress = !!(street || complement || locality || country)
 
   return {
     addressStreet:     hasStructuredAddress ? street     : null,
     addressComplement: hasStructuredAddress ? complement : null,
     postalCode:        hasStructuredAddress ? postalCode : null,
     city:              hasStructuredAddress ? city       : null,
-    // Même raison que dans formatAddressLines : un pays seul n'est pas une adresse.
     country:           hasStructuredAddress ? country    : null,
     address:           formatAddress(input),
   }
@@ -139,13 +142,14 @@ export function addressFormValues(source: {
 } | null | undefined): AddressFormValues {
   if (!source) return { ...EMPTY_ADDRESS_FORM_VALUES }
 
-  const { street, complement, locality } = structuredParts({
+  const { street, complement, locality, country } = structuredParts({
     street:     source.addressStreet,
     complement: source.addressComplement,
     postalCode: source.postalCode,
     city:       source.city,
+    country:    source.country,
   })
-  const hasStructuredAddress = !!(street || complement || locality)
+  const hasStructuredAddress = !!(street || complement || locality || country)
 
   return {
     addressStreet:     hasStructuredAddress ? (source.addressStreet ?? "") : (source.address ?? ""),
@@ -203,31 +207,39 @@ export function addressWasMigratedFromLegacy(source: {
   addressComplement?: string | null
   postalCode?:        string | null
   city?:              string | null
+  country?:           string | null
   address?:           string | null
 } | null | undefined): boolean {
   if (!source) return false
-  const { street, complement, locality } = structuredParts({
+  const { street, complement, locality, country } = structuredParts({
     street:     source.addressStreet,
     complement: source.addressComplement,
     postalCode: source.postalCode,
     city:       source.city,
+    country:    source.country,
   })
-  return !(street || complement || locality) && !!cleanedValue(source.address)
+  return !(street || complement || locality || country) && !!cleanedValue(source.address)
 }
 
 export function addressColumnsPatch(payload: AddressPayload, existing: AddressPayload): Partial<AddressColumns> {
   const touchesAddress = ADDRESS_PAYLOAD_KEYS.some(key => payload[key] !== undefined)
   if (!touchesAddress) return {}
 
-  const merged = (key: typeof ADDRESS_PAYLOAD_KEYS[number]) =>
+  const mergedStructured = (key: Exclude<typeof ADDRESS_PAYLOAD_KEYS[number], "address">) =>
     payload[key] !== undefined ? payload[key] : existing[key]
 
   return addressColumns({
-    street:     merged("addressStreet"),
-    complement: merged("addressComplement"),
-    postalCode: merged("postalCode"),
-    city:       merged("city"),
-    country:    merged("country"),
-    legacy:     merged("address"),
+    street:     mergedStructured("addressStreet"),
+    complement: mergedStructured("addressComplement"),
+    postalCode: mergedStructured("postalCode"),
+    city:       mergedStructured("city"),
+    country:    mergedStructured("country"),
+    // Contrairement aux cinq colonnes structurées, `address` n'est jamais recyclé depuis la
+    // base : le formulaire d'édition soumet toujours le bloc structuré en entier mais ne
+    // renvoie jamais ce champ, donc le recycler masquait silencieusement un « tout effacer »
+    // derrière l'ancien texte composé — le pays ne se laissait plus jamais effacer une fois
+    // enregistré (FORM-103). Un appelant qui ne touche qu'à l'adresse héritée (`address` seul
+    // dans le payload) passe toujours sa propre valeur ici, donc rien n'est perdu pour lui.
+    legacy: payload.address,
   })
 }
