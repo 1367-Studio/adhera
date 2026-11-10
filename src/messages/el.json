@@ -3940,7 +3940,8 @@
         "active": "Ενεργός",
         "pastDue": "Καθυστέρηση πληρωμής",
         "suspended": "Ανασταλεί",
-        "cancelled": "Ακυρώθηκε"
+        "cancelled": "Ακυρώθηκε",
+        "paymentPending": "Πληρωμή σε εξέλιξη"
       },
       "planLabel": "Φόρμουλα {tier}",
       "membersCount": "{count} / {limit} Μέλη",

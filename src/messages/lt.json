@@ -3940,7 +3940,8 @@
         "active": "Aktyvus",
         "pastDue": "Vėluojantis mokėjimas",
         "suspended": "Nušalinta",
-        "cancelled": "Atšaukta"
+        "cancelled": "Atšaukta",
+        "paymentPending": "Mokėjimas vyksta"
       },
       "planLabel": "Formulė {tier}",
       "membersCount": "{count} / {limit} Nariai",

@@ -3940,7 +3940,8 @@
         "active": "Gníomhach",
         "pastDue": "Íocaíocht dhéanach",
         "suspended": "Fionraí",
-        "cancelled": "Cealaithe"
+        "cancelled": "Cealaithe",
+        "paymentPending": "Íocaíocht ar siúl"
       },
       "planLabel": "Foirmle {tier}",
       "membersCount": "{count} / {limit} Baill",

@@ -198,7 +198,7 @@ export function ReactivateSubscriptionView({ pricing, initialTier, trialExpired 
         )}
 
         {clientSecret && !loadingIntent && (
-          <Elements stripe={stripePromise} options={{ clientSecret, appearance: stripeAppearance, fonts: stripeFonts }}>
+          <Elements stripe={stripePromise} options={{ clientSecret, appearance: stripeAppearance, fonts: stripeFonts, locale: "fr" }}>
             <PaymentForm tier={tier} plan={plan} pricing={pricing} clientSecret={clientSecret} trialExpired={trialExpired} onSuccess={handleSuccess} />
           </Elements>
         )}

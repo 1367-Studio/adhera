@@ -3940,7 +3940,8 @@
         "active": "Aktívne",
         "pastDue": "Oneskorená platba",
         "suspended": "Suspendovaný",
-        "cancelled": "Zrušené"
+        "cancelled": "Zrušené",
+        "paymentPending": "Platba v priebehu"
       },
       "planLabel": "Vzorec {tier}",
       "membersCount": "{count} / {limit} Členovia",

@@ -3940,7 +3940,8 @@
         "active": "Activo",
         "pastDue": "Pago atrasado",
         "suspended": "Suspendido",
-        "cancelled": "Cancelado"
+        "cancelled": "Cancelado",
+        "paymentPending": "Pago en curso"
       },
       "planLabel": "Plan {tier}",
       "membersCount": "{count} / {limit} miembros",

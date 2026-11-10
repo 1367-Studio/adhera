@@ -3940,7 +3940,8 @@
         "active": "Actief",
         "pastDue": "Te late betaling",
         "suspended": "Geschorst",
-        "cancelled": "Geannuleerd"
+        "cancelled": "Geannuleerd",
+        "paymentPending": "Betaling in uitvoering"
       },
       "planLabel": "Formule {tier}",
       "membersCount": "{count} / {limit} Leden",
