@@ -1522,7 +1522,8 @@
       "discountCodeRemove": "Neħħi",
       "discountCodeInvalid": "Dan il-kodiċi huwa invalidu.",
       "discountCodeNotApplicable": "Dan il-kodiċi ma japplikax għall-prezz magħżul.",
-      "discountAmountLabel": "Tnaqqis:"
+      "discountAmountLabel": "Tnaqqis:",
+      "fieldRequired": "Dan il-qasam huwa meħtieġ."
     },
     "scanner": {
       "openButton": "Biljetti ta' skannjar",
@@ -3120,7 +3121,8 @@
       "submittedTitle": "Grazzi għad-donazzjoni tiegħek!",
       "submittedWithEmail": "Email ta' konferma ġiet mibgħuta lilek.",
       "toastCancelled": "Il-ħlas ġie kkanċellat.",
-      "errorNetwork": "Żball tan-netwerk. Erġa' pprova."
+      "errorNetwork": "Żball tan-netwerk. Erġa' pprova.",
+      "fieldRequired": "Dan il-qasam huwa meħtieġ."
     },
     "cancelSubscription": {
       "invalidLink": "Din il-link ta' kanċellazzjoni hija invalida.",

@@ -1522,7 +1522,8 @@
       "discountCodeRemove": "Ta bort",
       "discountCodeInvalid": "Denna kod är ogiltig.",
       "discountCodeNotApplicable": "Denna kod gäller inte för det valda priset.",
-      "discountAmountLabel": "Reduktion:"
+      "discountAmountLabel": "Reduktion:",
+      "fieldRequired": "Detta område är obligatoriskt."
     },
     "scanner": {
       "openButton": "Skanna biljetter",
@@ -3120,7 +3121,8 @@
       "submittedTitle": "Tack för din donation!",
       "submittedWithEmail": "Ett bekräftelsemejl har skickats till dig.",
       "toastCancelled": "Betalning avbruten.",
-      "errorNetwork": "Nätverksfel. Försök igen."
+      "errorNetwork": "Nätverksfel. Försök igen.",
+      "fieldRequired": "Detta område är obligatoriskt."
     },
     "cancelSubscription": {
       "invalidLink": "Denna avbokningslänk är ogiltig.",

@@ -1522,7 +1522,8 @@
       "discountCodeRemove": "Verwijder",
       "discountCodeInvalid": "Deze code is ongeldig.",
       "discountCodeNotApplicable": "Deze code geldt niet voor het geselecteerde tarief.",
-      "discountAmountLabel": "Reductie:"
+      "discountAmountLabel": "Reductie:",
+      "fieldRequired": "Dit vakgebied is verplicht."
     },
     "scanner": {
       "openButton": "Scan tickets",
@@ -3120,7 +3121,8 @@
       "submittedTitle": "Bedankt voor je donatie!",
       "submittedWithEmail": "Er is een bevestigingsmail naar u gestuurd.",
       "toastCancelled": "Betaling geannuleerd.",
-      "errorNetwork": "Netwerkfout. Probeer het opnieuw."
+      "errorNetwork": "Netwerkfout. Probeer het opnieuw.",
+      "fieldRequired": "Dit vakgebied is verplicht."
     },
     "cancelSubscription": {
       "invalidLink": "Deze annuleringslink is ongeldig.",

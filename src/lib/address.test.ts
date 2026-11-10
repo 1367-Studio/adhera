@@ -204,12 +204,14 @@ describe("addressColumnsPatch", () => {
 })
 
 describe("addressIsFilled", () => {
-  it("requires street, postal code and city together, not any single one of them", () => {
+  it("requires street, postal code, city and country together, not any single one of them", () => {
     expect(addressIsFilled({ addressStreet: "12 rue de la Paix" })).toBe(false)
     expect(addressIsFilled({ postalCode: "75002" })).toBe(false)
     expect(addressIsFilled({ city: "Paris" })).toBe(false)
+    expect(addressIsFilled({ country: "France" })).toBe(false)
     expect(addressIsFilled({ addressStreet: "12 rue de la Paix", postalCode: "75002" })).toBe(false)
-    expect(addressIsFilled({ addressStreet: "12 rue de la Paix", postalCode: "75002", city: "Paris" })).toBe(true)
+    expect(addressIsFilled({ addressStreet: "12 rue de la Paix", postalCode: "75002", city: "Paris" })).toBe(false)
+    expect(addressIsFilled({ addressStreet: "12 rue de la Paix", postalCode: "75002", city: "Paris", country: "France" })).toBe(true)
   })
 
   it("also accepts the legacy free-text address alone, for a tab left open on the old form", () => {
@@ -218,7 +220,7 @@ describe("addressIsFilled", () => {
 
   it("rejects blank/whitespace-only values the same as absent ones", () => {
     expect(addressIsFilled({ address: "   " })).toBe(false)
-    expect(addressIsFilled({ addressStreet: " ", postalCode: " ", city: " " })).toBe(false)
+    expect(addressIsFilled({ addressStreet: " ", postalCode: " ", city: " ", country: " " })).toBe(false)
   })
 })
 

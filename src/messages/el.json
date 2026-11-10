@@ -1522,7 +1522,8 @@
       "discountCodeRemove": "Αφαίρεση",
       "discountCodeInvalid": "Αυτός ο κωδικός δεν είναι έγκυρος.",
       "discountCodeNotApplicable": "Αυτός ο κωδικός δεν ισχύει για τον επιλεγμένο ναύλο.",
-      "discountAmountLabel": "Μείωση:"
+      "discountAmountLabel": "Μείωση:",
+      "fieldRequired": "Αυτό το πεδίο είναι υποχρεωτικό."
     },
     "scanner": {
       "openButton": "Σάρωση εισιτηρίων",
@@ -3120,7 +3121,8 @@
       "submittedTitle": "Σας ευχαριστούμε για τη δωρεά σας!",
       "submittedWithEmail": "Σας έχει σταλεί ένα email επιβεβαίωσης.",
       "toastCancelled": "Η πληρωμή ακυρώθηκε.",
-      "errorNetwork": "Σφάλμα δικτύου. Προσπαθήστε ξανά."
+      "errorNetwork": "Σφάλμα δικτύου. Προσπαθήστε ξανά.",
+      "fieldRequired": "Αυτό το πεδίο είναι υποχρεωτικό."
     },
     "cancelSubscription": {
       "invalidLink": "Αυτός ο σύνδεσμος ακύρωσης δεν είναι έγκυρος.",
