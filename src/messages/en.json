@@ -4083,7 +4083,8 @@
         "active": "Active",
         "pastDue": "Payment overdue",
         "suspended": "Suspended",
-        "cancelled": "Cancelled"
+        "cancelled": "Cancelled",
+        "paymentPending": "Payment in progress"
       },
       "planLabel": "{tier} plan",
       "membersCount": "{count} / {limit} members",

@@ -18,6 +18,10 @@ type BillingStatus = {
   trialEndsAt:         string | null
   // Only resolved while TRIAL (see /api/billing); null = Stripe couldn't say.
   hasPaymentMethod:    boolean | null
+  // Cosmetic only — see subscriptionPaymentPending in src/lib/stripe.ts. Never changes what
+  // the admin can do, only swaps the ACTIVE badge for a "payment in progress" one while a
+  // SEPA Direct Debit mandate is still settling.
+  paymentPending:      boolean
   cancelAtPeriodEnd:   boolean
   currentPeriodEndsAt: string | null
   hasBilling:          boolean
@@ -31,6 +35,7 @@ function useStatusConfig() {
   return {
     TRIAL:     { label: t("status.trial"),     variant: "outline"     as const, icon: <ClockIcon         className="size-3.5 text-blue-500"   /> },
     ACTIVE:    { label: t("status.active"),    variant: "success"     as const, icon: <CheckCircleIcon   className="size-3.5 text-green-500"  /> },
+    PAYMENT_PENDING: { label: t("status.paymentPending"), variant: "warning" as const, icon: <ClockIcon   className="size-3.5" /> },
     PAST_DUE:  { label: t("status.pastDue"),   variant: "destructive" as const, icon: <WarningCircleIcon className="size-3.5" /> },
     SUSPENDED: { label: t("status.suspended"), variant: "destructive" as const, icon: <WarningCircleIcon className="size-3.5" /> },
     CANCELLED: { label: t("status.cancelled"), variant: "secondary"   as const, icon: <XCircleIcon       className="size-3.5" /> },
@@ -83,7 +88,7 @@ export function BillingSettings({ canEdit }: { canEdit: boolean }) {
   })
 
   const status = data?.subscriptionStatus ?? null
-  const cfg    = status ? statusConfig[status] : null
+  const cfg    = status === "ACTIVE" && data?.paymentPending ? statusConfig.PAYMENT_PENDING : status ? statusConfig[status] : null
   // A card-free trial (see /api/register) with still nothing on file: Stripe will cancel
   // it at the end instead of charging, so adding a card becomes the tab's main action.
   const needsCard = status === "TRIAL" && data?.hasPaymentMethod === false

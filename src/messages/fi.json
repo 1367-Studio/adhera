@@ -3940,7 +3940,8 @@
         "active": "Aktiivinen",
         "pastDue": "Myöhästynyt maksu",
         "suspended": "Keskeytetty",
-        "cancelled": "Peruttu"
+        "cancelled": "Peruttu",
+        "paymentPending": "Maksu kesken"
       },
       "planLabel": "Kaava {tier}",
       "membersCount": "{count} / {limit} Jäsenet",

@@ -3940,7 +3940,8 @@
         "active": "Активна",
         "pastDue": "Закъсняло плащане",
         "suspended": "Временно отстранен",
-        "cancelled": "Отменено"
+        "cancelled": "Отменено",
+        "paymentPending": "Плащане в процес"
       },
       "planLabel": "Формула {tier}",
       "membersCount": "{count} / {limit} Членове",

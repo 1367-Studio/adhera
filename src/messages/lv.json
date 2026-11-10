@@ -3940,7 +3940,8 @@
         "active": "Aktīva",
         "pastDue": "Kavēta maksājuma",
         "suspended": "Apturēts",
-        "cancelled": "Atcelts"
+        "cancelled": "Atcelts",
+        "paymentPending": "Maksājums notiek"
       },
       "planLabel": "Formula {tier}",
       "membersCount": "{count} / {limit} Dalībnieki",

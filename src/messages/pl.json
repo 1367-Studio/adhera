@@ -3940,7 +3940,8 @@
         "active": "Aktywny",
         "pastDue": "Opóźnienie w płatnościach",
         "suspended": "Zawieszony",
-        "cancelled": "Anulowane"
+        "cancelled": "Anulowane",
+        "paymentPending": "Płatność w toku"
       },
       "planLabel": "Formuła {tier}",
       "membersCount": "{count} / {limit} Członkowie",

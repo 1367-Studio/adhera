@@ -3940,7 +3940,8 @@
         "active": "Aktivni",
         "pastDue": "Zamude pri plačilu",
         "suspended": "Suspendiran",
-        "cancelled": "Preklicano"
+        "cancelled": "Preklicano",
+        "paymentPending": "Plačilo v teku"
       },
       "planLabel": "Formula {tier}",
       "membersCount": "{count} / {limit} Člani",

@@ -3940,7 +3940,8 @@
         "active": "Activitate",
         "pastDue": "Plata întârziată",
         "suspended": "Suspendat",
-        "cancelled": "Anulat"
+        "cancelled": "Anulat",
+        "paymentPending": "Plata în curs"
       },
       "planLabel": "Formulă {tier}",
       "membersCount": "{count} / {limit} Membri",
