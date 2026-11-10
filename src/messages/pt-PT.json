@@ -41,6 +41,7 @@
     "location": "Local",
     "choosePlaceholder": "Escolher…",
     "allPlaceholder": "Todos",
+    "noOptionsPlaceholder": "Nenhuma opção disponível",
     "previousPage": "Página anterior",
     "nextPage": "Página seguinte",
     "paginationRange": "{from}–{to} de {total}",
@@ -4404,7 +4405,10 @@
         "birthDateFrom": "Nascido após",
         "birthDateTo": "Nascido antes de",
         "apply": "Aplicar",
-        "reset": "Repor"
+        "reset": "Repor",
+        "country": "País",
+        "countryPlaceholder": "Todos os países",
+        "countryLoadError": "Não consigo carregar países. Tente novamente daqui a pouco."
       },
       "statusOptions": {
         "pending": "Pendente",

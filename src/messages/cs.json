@@ -50,7 +50,8 @@
     "dismissTip": "Přeskočte tip",
     "addressPlaceholder": "Salle des fêtes, 12 rue de la Paix, Paříž...",
     "viewOnGoogleMaps": "Podívejte se na Google Maps",
-    "backToSite": "Zpět na web"
+    "backToSite": "Zpět na web",
+    "noOptionsPlaceholder": "Žádné možnosti nejsou k dispozici"
   },
   "address": {
     "street": "Adresa",
@@ -4402,7 +4403,10 @@
         "birthDateFrom": "Narozen po",
         "birthDateTo": "Narození před",
         "apply": "Přihlaste se",
-        "reset": "Reset"
+        "reset": "Reset",
+        "country": "Země",
+        "countryPlaceholder": "Všechny země",
+        "countryLoadError": "Nelze načíst země. Zkuste to za chvíli znovu."
       },
       "statusOptions": {
         "pending": "Čeká",

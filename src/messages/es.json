@@ -50,7 +50,8 @@
     "dismissTip": "Descartar consejo",
     "addressPlaceholder": "Salón de actos, Calle Mayor 12…",
     "viewOnGoogleMaps": "Ver en Google Maps",
-    "backToSite": "Volver al sitio"
+    "backToSite": "Volver al sitio",
+    "noOptionsPlaceholder": "No hay opciones disponibles"
   },
   "address": {
     "street": "Dirección",
@@ -4402,7 +4403,10 @@
         "birthDateFrom": "Nacido después del",
         "birthDateTo": "Nacido antes del",
         "apply": "Aplicar",
-        "reset": "Restablecer"
+        "reset": "Restablecer",
+        "country": "País",
+        "countryPlaceholder": "Todos los países",
+        "countryLoadError": "No se pueden cargar países. Inténtalo de nuevo en un momento."
       },
       "statusOptions": {
         "pending": "Pendiente",

@@ -50,7 +50,8 @@
     "dismissTip": "Salta la mancia",
     "addressPlaceholder": "Salle des fêtes, 12 rue de la Paix, Parigi...",
     "viewOnGoogleMaps": "Vedi su Google Maps",
-    "backToSite": "Torna al sito"
+    "backToSite": "Torna al sito",
+    "noOptionsPlaceholder": "Nessuna opzione disponibile"
   },
   "address": {
     "street": "Indirizzo",
@@ -4402,7 +4403,10 @@
         "birthDateFrom": "Nato dopo",
         "birthDateTo": "Nato prima",
         "apply": "Candidati",
-        "reset": "Reset"
+        "reset": "Reset",
+        "country": "Paese",
+        "countryPlaceholder": "Tutti i paesi",
+        "countryLoadError": "Impossibile caricare i paesi. Riprova tra un attimo."
       },
       "statusOptions": {
         "pending": "In attesa",

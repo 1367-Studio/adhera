@@ -50,7 +50,8 @@
     "dismissTip": "Spring tipset over",
     "addressPlaceholder": "Salle des fêtes, 12 rue de la Paix, Paris...",
     "viewOnGoogleMaps": "Se på Google Maps",
-    "backToSite": "Tilbage til sitet"
+    "backToSite": "Tilbage til sitet",
+    "noOptionsPlaceholder": "Ingen muligheder tilgængelige"
   },
   "address": {
     "street": "Adresse",
@@ -4402,7 +4403,10 @@
         "birthDateFrom": "Født efter",
         "birthDateTo": "Født før",
         "apply": "Ansøg",
-        "reset": "Nulstil"
+        "reset": "Nulstil",
+        "country": "Land",
+        "countryPlaceholder": "Alle lande",
+        "countryLoadError": "Kan ikke indlæse lande. Prøv igen om et øjeblik."
       },
       "statusOptions": {
         "pending": "Afventer",

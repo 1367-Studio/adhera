@@ -50,7 +50,8 @@
     "dismissTip": "Hagyd ki a tippet",
     "addressPlaceholder": "Salle des fêtes, 12 rue de la Paix, Párizs...",
     "viewOnGoogleMaps": "Lásd a Google Térképen",
-    "backToSite": "Vissza az oldalra"
+    "backToSite": "Vissza az oldalra",
+    "noOptionsPlaceholder": "Nincs lehetőség"
   },
   "address": {
     "street": "Cím",
@@ -4402,7 +4403,10 @@
         "birthDateFrom": "Születés után",
         "birthDateTo": "Születés előtt",
         "apply": "Jelentkezz",
-        "reset": "Reset"
+        "reset": "Reset",
+        "country": "Country",
+        "countryPlaceholder": "Minden ország",
+        "countryLoadError": "Nem tudom betölteni országokat. Próbáld meg újra mindjárt."
       },
       "statusOptions": {
         "pending": "Függőben",

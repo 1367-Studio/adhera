@@ -50,7 +50,8 @@
     "dismissTip": "Scipeáil an leid",
     "addressPlaceholder": "Salle des fêtes, 12 rue de la Paix, Páras...",
     "viewOnGoogleMaps": "Féach ar Google Maps",
-    "backToSite": "Ar ais go dtí an suíomh"
+    "backToSite": "Ar ais go dtí an suíomh",
+    "noOptionsPlaceholder": "Níl aon roghanna ar fáil"
   },
   "address": {
     "street": "Seoladh",
@@ -4402,7 +4403,10 @@
         "birthDateFrom": "Rugadh tar éis",
         "birthDateTo": "Rugadh roimhe seo",
         "apply": "Déan iarratas",
-        "reset": "Athshocraigh"
+        "reset": "Athshocraigh",
+        "country": "Tír",
+        "countryPlaceholder": "Gach tír",
+        "countryLoadError": "Ní féidir tíortha a luchtú. Bain triail as arís i gceann nóiméad."
       },
       "statusOptions": {
         "pending": "Ar feitheamh",

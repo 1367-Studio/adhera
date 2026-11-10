@@ -50,7 +50,8 @@
     "dismissTip": "Überspringe den Tipp",
     "addressPlaceholder": "Salle des fêtes, 12 rue de la Paix, Paris...",
     "viewOnGoogleMaps": "Siehe auf Google Maps",
-    "backToSite": "Zurück zur Website"
+    "backToSite": "Zurück zur Website",
+    "noOptionsPlaceholder": "Keine Optionen verfügbar"
   },
   "address": {
     "street": "Adresse",
@@ -4402,7 +4403,10 @@
         "birthDateFrom": "Geboren danach",
         "birthDateTo": "Geboren davor",
         "apply": "Bewerben Sie sich",
-        "reset": "Reset"
+        "reset": "Reset",
+        "country": "Land",
+        "countryPlaceholder": "Alle Länder",
+        "countryLoadError": "Länder können nicht geladen werden. Versuchen Sie es gleich nochmal."
       },
       "statusOptions": {
         "pending": "Ausstehend",

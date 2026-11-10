@@ -50,7 +50,8 @@
     "dismissTip": "Jäta jootraha vahele",
     "addressPlaceholder": "Salle des fêtes, 12 rue de la Paix, Pariis...",
     "viewOnGoogleMaps": "Vaata Google Mapsis",
-    "backToSite": "Tagasi saidile"
+    "backToSite": "Tagasi saidile",
+    "noOptionsPlaceholder": "Valikuid pole saadaval"
   },
   "address": {
     "street": "Aadress",
@@ -4402,7 +4403,10 @@
         "birthDateFrom": "Sündinud pärast",
         "birthDateTo": "Sündinud enne",
         "apply": "Kandideeri",
-        "reset": "Lähtestamine"
+        "reset": "Lähtestamine",
+        "country": "Maa",
+        "countryPlaceholder": "Kõik riigid",
+        "countryLoadError": "Riike ei saa laadida. Proovi kohe uuesti."
       },
       "statusOptions": {
         "pending": "Ootel",

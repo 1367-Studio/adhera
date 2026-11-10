@@ -50,7 +50,8 @@
     "dismissTip": "Pomiń wskazówkę",
     "addressPlaceholder": "Salle des fêtes, 12 rue de la Paix, Paryż...",
     "viewOnGoogleMaps": "Zobacz na Google Maps",
-    "backToSite": "Powrót do strony"
+    "backToSite": "Powrót do strony",
+    "noOptionsPlaceholder": "Brak dostępnych opcji"
   },
   "address": {
     "street": "Adres",
@@ -4402,7 +4403,10 @@
         "birthDateFrom": "Urodzeni po",
         "birthDateTo": "Urodzeni przed",
         "apply": "Aplikuj",
-        "reset": "Reset"
+        "reset": "Reset",
+        "country": "Kraj",
+        "countryPlaceholder": "Wszystkie kraje",
+        "countryLoadError": "Nie można załadować krajów. Spróbuj ponownie za chwilę."
       },
       "statusOptions": {
         "pending": "Oczekuje",

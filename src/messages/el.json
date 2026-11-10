@@ -50,7 +50,8 @@
     "dismissTip": "Παραλείψτε την άκρη",
     "addressPlaceholder": "Salle des fêtes, 12 rue de la Paix, Παρίσι...",
     "viewOnGoogleMaps": "Δείτε στο Google Maps",
-    "backToSite": "Επιστροφή στον ιστότοπο"
+    "backToSite": "Επιστροφή στον ιστότοπο",
+    "noOptionsPlaceholder": "Δεν υπάρχουν διαθέσιμες επιλογές"
   },
   "address": {
     "street": "Διεύθυνση",
@@ -4402,7 +4403,10 @@
         "birthDateFrom": "Γεννημένοι μετά",
         "birthDateTo": "Γεννημένος πριν",
         "apply": "Εφαρμογή",
-        "reset": "Επαναφορά"
+        "reset": "Επαναφορά",
+        "country": "Χώρα",
+        "countryPlaceholder": "Όλες οι χώρες",
+        "countryLoadError": "Δεν είναι δυνατή η φόρτωση χωρών. Δοκιμάστε ξανά σε λίγο."
       },
       "statusOptions": {
         "pending": "Σε εκκρεμότητα",

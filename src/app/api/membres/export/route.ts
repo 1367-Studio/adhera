@@ -44,6 +44,7 @@ export const GET = withAdminAuth(async (req, ctx) => {
   const firstName = searchParams.get("firstName")?.trim()
   const lastName  = searchParams.get("lastName")?.trim()
   const address   = searchParams.get("address")?.trim()
+  const country   = searchParams.get("country")?.trim()
   const adherent  = searchParams.get("adherent") ?? undefined // "ADHERENT" | "BENEVOLE"
 
   // Mirrors the same where-building logic as GET /api/membres — deliberately duplicated
@@ -55,6 +56,9 @@ export const GET = withAdminAuth(async (req, ctx) => {
   if (typeId) where.typeId = typeId
   if (firstName) where.firstName = { contains: firstName, mode: "insensitive" }
   if (lastName)  where.lastName  = { contains: lastName,  mode: "insensitive" }
+  // Same reasoning as GET /api/membres: the dropdown collapses case variants of the same
+  // country into one entry, so the match here must be insensitive too.
+  if (country)   where.country   = { equals: country, mode: "insensitive" }
   if (search) {
     where.OR = [
       { firstName: { contains: search, mode: "insensitive" } },
