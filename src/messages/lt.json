@@ -1061,7 +1061,6 @@
       "description": "Valdyti pajamų ir išlaidų kategorijas.",
       "seedButton": "Numatytųjų kategorijų inicializavimas",
       "noCategories": "Nėra kategorijos",
-      "default": "Numatytasis",
       "income": "Pajamos",
       "expenses": "Išlaidos",
       "newCategoryTitle": "Nauja kategorija",
@@ -1077,7 +1076,8 @@
       "chooseTemplateTitle": "Pasirinkite kategorijos tipą",
       "customCategory": "Sukurkite individualią kategoriją",
       "alreadyExists": "Jau sukonfigūruota",
-      "archivedReactivateHint": "Archyvuota — spustelėkite, kad vėl aktyvuotumėte"
+      "archivedReactivateHint": "Archyvuota — spustelėkite, kad vėl aktyvuotumėte",
+      "custom": "Pritaikyta"
     },
     "incomesView": {
       "title": "Pajamos",

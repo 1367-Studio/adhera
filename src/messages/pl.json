@@ -1061,7 +1061,6 @@
       "description": "Zarządzaj kategoriami przychodów i wydatków.",
       "seedButton": "Inicjalizuj kategorie domyślne",
       "noCategories": "Brak kategorii",
-      "default": "Domyślność",
       "income": "Przychody",
       "expenses": "Wydatki",
       "newCategoryTitle": "Nowa kategoria",
@@ -1077,7 +1076,8 @@
       "chooseTemplateTitle": "Wybierz typ kategorii",
       "customCategory": "Stwórz niestandardową kategorię",
       "alreadyExists": "Już skonfigurowane",
-      "archivedReactivateHint": "Archiwum — kliknij, aby ponownie aktywować"
+      "archivedReactivateHint": "Archiwum — kliknij, aby ponownie aktywować",
+      "custom": "Dostosowana"
     },
     "incomesView": {
       "title": "Przychody",

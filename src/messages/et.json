@@ -1061,7 +1061,6 @@
       "description": "Halda tulude ja kulude kategooriaid.",
       "seedButton": "Initsialiseeri vaikimisi kategooriad",
       "noCategories": "Kategooriat ei ole",
-      "default": "Vaikimisi",
       "income": "Tulud",
       "expenses": "Kulud",
       "newCategoryTitle": "Uus kategooria",
@@ -1077,7 +1076,8 @@
       "chooseTemplateTitle": "Vali kategooriatüüp",
       "customCategory": "Loo kohandatud kategooria",
       "alreadyExists": "Juba seadistatud",
-      "archivedReactivateHint": "Arhiveeritud — klõpsa taasaktiveerimiseks"
+      "archivedReactivateHint": "Arhiveeritud — klõpsa taasaktiveerimiseks",
+      "custom": "Kohandatud"
     },
     "incomesView": {
       "title": "Tulud",

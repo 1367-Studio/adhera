@@ -1061,7 +1061,6 @@
       "description": "Spravujte kategorie příjmů a výdajů.",
       "seedButton": "Inicializace výchozích kategorií",
       "noCategories": "Žádná kategorie",
-      "default": "Výchozí stav",
       "income": "Příjmy",
       "expenses": "Výdaje",
       "newCategoryTitle": "Nová kategorie",
@@ -1077,7 +1076,8 @@
       "chooseTemplateTitle": "Vyberte typ kategorie",
       "customCategory": "Vytvořte vlastní kategorii",
       "alreadyExists": "Již nakonfigurováno",
-      "archivedReactivateHint": "Archivováno — klikněte pro opětovnou aktivaci"
+      "archivedReactivateHint": "Archivováno — klikněte pro opětovnou aktivaci",
+      "custom": "Přizpůsobená"
     },
     "incomesView": {
       "title": "Příjmy",

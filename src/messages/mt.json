@@ -1061,7 +1061,6 @@
       "description": "Immaniġġja kategoriji ta' dħul u spejjeż.",
       "seedButton": "Inizjalizza Kategoriji Default",
       "noCategories": "L-ebda kategorija",
-      "default": "Default",
       "income": "Dħul",
       "expenses": "Spejjeż",
       "newCategoryTitle": "Kategorija ġdida",
@@ -1077,7 +1076,8 @@
       "chooseTemplateTitle": "Agħżel tip ta' kategorija",
       "customCategory": "Oħloq kategorija personalizzata",
       "alreadyExists": "Diġà kkonfigurata",
-      "archivedReactivateHint": "Arkivjat — ikklikkja biex terġa' tattiva"
+      "archivedReactivateHint": "Arkivjat — ikklikkja biex terġa' tattiva",
+      "custom": "Personalizzat"
     },
     "incomesView": {
       "title": "Dħul",

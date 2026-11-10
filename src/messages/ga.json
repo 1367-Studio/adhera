@@ -1061,7 +1061,6 @@
       "description": "Catagóirí ioncaim agus caiteachais a bhainistiú.",
       "seedButton": "Tosaigh Catagóirí Réamhshocraithe",
       "noCategories": "Gan chatagóir",
-      "default": "Réamhshocrú",
       "income": "Ioncam",
       "expenses": "Costais",
       "newCategoryTitle": "Catagóir nua",
@@ -1077,7 +1076,8 @@
       "chooseTemplateTitle": "Roghnaigh cineál catagóire",
       "customCategory": "Cruthaigh catagóir saincheaptha",
       "alreadyExists": "Cumraithe cheana féin",
-      "archivedReactivateHint": "Cartlainne - cliceáil chun athghníomhachtú a dhéanamh"
+      "archivedReactivateHint": "Cartlainne - cliceáil chun athghníomhachtú a dhéanamh",
+      "custom": "Saincheaptha"
     },
     "incomesView": {
       "title": "Ioncam",
