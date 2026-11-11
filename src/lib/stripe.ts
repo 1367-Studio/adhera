@@ -121,19 +121,76 @@ export async function customerHasPaymentMethod(customerId: string, subscriptionI
 
 // Whether this subscription's latest invoice is still mid-settlement — true for a SEPA
 // Direct Debit mandate that was just confirmed (card settles near-instantly, SEPA takes a
-// few business days). Purely cosmetic signal for the settings-tab badge: subscriptionStatus
-// stays ACTIVE and access is unaffected either way, this only tells the admin not to worry
-// if the debit hasn't hit her bank statement yet. This API version's Invoice object has no
-// payment_intent field (Stripe moved payment-collection tracking off Invoice) — "open" with
-// an amount still remaining is the available proxy, and it's a safe one here specifically
-// because this is only ever checked while subscriptionStatus is still ACTIVE: Stripe only
-// flips a subscription to PAST_DUE once an invoice attempt genuinely fails, so ACTIVE + open
-// + unpaid can only mean a payment is still being collected, not that one already failed.
+// few business days). Purely cosmetic signal for the past-due banner and settings-tab badge.
+//
+// A SEPA debit can still be "processing" while the invoice (and so the subscription) is
+// already PAST_DUE — e.g. a prior attempt genuinely failed, the admin fixed her payment
+// method, and the retry is now in flight but hasn't settled yet. "Invoice open + unpaid"
+// alone can't tell that case apart from "attempt failed, nothing retrying" (both look like
+// an open, unpaid invoice), so this checks the actual PaymentIntent behind the invoice's
+// current payment attempt via the InvoicePayments API instead: only a genuinely in-flight
+// attempt ("processing") counts as pending — a failed one reports a different status
+// (requires_payment_method, requires_action, canceled, ...) and correctly falls through to
+// the "needs action" banner.
+async function subscriptionPaymentPendingUncached(subscriptionId: string): Promise<boolean> {
+  const sub = await stripe.subscriptions.retrieve(subscriptionId)
+  const invoiceId = typeof sub.latest_invoice === "string" ? sub.latest_invoice : sub.latest_invoice?.id
+  if (!invoiceId) return false
+
+  // Not `limit: 1` — a retried invoice can carry more than one InvoicePayment (a canceled
+  // attempt from an earlier failure, then a fresh one for the current retry), and the list
+  // isn't documented to come back in a particular order. `is_default` is the one field
+  // Stripe guarantees points at the attempt it's actually collecting right now.
+  const payments = await stripe.invoicePayments.list({ invoice: invoiceId, status: "open", limit: 10 })
+  const payment = payments.data.find(p => p.is_default) ?? payments.data[0]
+  if (!payment) return false
+
+  const paymentIntentId = typeof payment.payment.payment_intent === "string"
+    ? payment.payment.payment_intent
+    : payment.payment.payment_intent?.id
+  if (!paymentIntentId) return false
+
+  const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId)
+  return paymentIntent.status === "processing"
+}
+
+// Cached in-process for a minute, keyed per subscriptionId — this is 3 live Stripe calls,
+// and without it every dashboard page view (every team member) and every backoffice page
+// view re-runs them for the same subscription. A minute of staleness is a non-issue for a
+// cosmetic "still settling" banner.
+//
+// Plain in-memory Map, not Next's unstable_cache: this module is imported by one-off scripts
+// (scripts/*.ts, run via tsx outside any Next.js request) as well as route handlers and
+// Server Components, and unstable_cache throws ("incrementalCache missing") the moment it's
+// invoked outside an actual Next.js request context. A Map has no such requirement — on
+// Vercel it only caches within a single warm instance (Fluid Compute can reuse one across
+// requests), which is a fine, simple approximation for a cosmetic signal like this one.
+const paymentPendingCache: Map<string, { value: boolean; expiresAt: number }> = new Map()
+const PAYMENT_PENDING_CACHE_TTL_MS = 60_000
+
 export async function subscriptionPaymentPending(subscriptionId: string): Promise<boolean> {
-  const sub = await stripe.subscriptions.retrieve(subscriptionId, { expand: ["latest_invoice"] })
-  const invoice = sub.latest_invoice
-  if (!invoice || typeof invoice === "string") return false
-  return invoice.status === "open" && invoice.amount_remaining > 0
+  const cached = paymentPendingCache.get(subscriptionId)
+  if (cached && cached.expiresAt > Date.now()) return cached.value
+
+  const value = await subscriptionPaymentPendingUncached(subscriptionId)
+  paymentPendingCache.set(subscriptionId, { value, expiresAt: Date.now() + PAYMENT_PENDING_CACHE_TTL_MS })
+  return value
+}
+
+// Checks many subscriptions at once with bounded concurrency — a mass-dunning event (a
+// Stripe-wide card issue, say) could otherwise put dozens of PAST_DUE associations through
+// subscriptionPaymentPending's 3 Stripe calls each in one giant Promise.all, right as a
+// backoffice page is exactly what an admin opens first to triage the incident.
+const PENDING_CHECK_CONCURRENCY = 10
+
+export async function subscriptionsPaymentPending(subscriptionIds: string[]): Promise<Map<string, boolean>> {
+  const result = new Map<string, boolean>()
+  for (let i = 0; i < subscriptionIds.length; i += PENDING_CHECK_CONCURRENCY) {
+    const batch = subscriptionIds.slice(i, i + PENDING_CHECK_CONCURRENCY)
+    const pending = await Promise.all(batch.map(id => subscriptionPaymentPending(id).catch(() => false)))
+    batch.forEach((id, idx) => result.set(id, pending[idx]))
+  }
+  return result
 }
 
 // DonationTier.interval (MONTH | QUARTER | YEAR) → Stripe's own recurring-price shape,

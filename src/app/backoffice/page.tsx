@@ -1,5 +1,6 @@
 import type { Metadata } from "next"
 import { prisma } from "@/lib/prisma/client"
+import { subscriptionsPaymentPending } from "@/lib/stripe"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { BuildingsIcon, CheckCircleIcon, ClockIcon, WarningCircleIcon } from "@phosphor-icons/react/dist/ssr";
 import { APP_NAME } from "@/config/brand"
@@ -12,13 +13,24 @@ export const metadata: Metadata = {
 async function getStats() {
   const assocs = await prisma.association.findMany({
     where:  { deletedAt: null },
-    select: { subscriptionStatus: true },
+    select: { subscriptionStatus: true, stripeSubscriptionId: true },
   })
 
   const total    = assocs.length
   const active   = assocs.filter(a => a.subscriptionStatus === "ACTIVE").length
   const trial    = assocs.filter(a => a.subscriptionStatus === "TRIAL").length
-  const problem  = assocs.filter(a => ["PAST_DUE", "SUSPENDED", "CANCELLED"].includes(a.subscriptionStatus)).length
+
+  // A PAST_DUE association whose SEPA debit is just mid-settlement (see
+  // subscriptionPaymentPending in src/lib/stripe.ts) needs no admin attention — only a
+  // genuinely stuck PAST_DUE, plus SUSPENDED/CANCELLED, should count toward this KPI. Bounded
+  // to PAST_DUE rows only (typically a handful at most), not every association, since this
+  // page is the one every backoffice session passes through first.
+  const pastDue           = assocs.filter(a => a.subscriptionStatus === "PAST_DUE")
+  const pendingByStripeId = await subscriptionsPaymentPending(pastDue.flatMap(a => a.stripeSubscriptionId ? [a.stripeSubscriptionId] : []))
+  // No stripeSubscriptionId at all (a data anomaly — PAST_DUE should always have one) fails
+  // toward "still counts as a problem", same as subscriptionsPaymentPending's own .catch(false).
+  const stuckPastDue      = pastDue.filter(a => !(a.stripeSubscriptionId && pendingByStripeId.get(a.stripeSubscriptionId))).length
+  const problem = stuckPastDue + assocs.filter(a => a.subscriptionStatus === "SUSPENDED" || a.subscriptionStatus === "CANCELLED").length
 
   return { total, active, trial, problem }
 }
