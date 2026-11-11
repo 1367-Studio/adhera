@@ -1348,8 +1348,7 @@
       "sections": {
         "FINANCIAL": "Financiar",
         "EXCEPTIONAL": "Excepțional",
-        "OTHER": "Altele",
-        "IN_KIND": "Contribuții voluntare în natură"
+        "OTHER": "Altele"
       },
       "drillDown": {
         "date": "Dată",
@@ -1376,14 +1375,19 @@
         "otherIncome": "ALTE VENITURI",
         "otherExpense": "ALTE CHELTUIELI",
         "otherResult": "REZULTATUL DIN ALTE VENITURI ȘI CHELTUIELI",
-        "inKindIncome": "CONTRIBUȚII VOLUNTARE ÎN NATURĂ",
-        "inKindExpense": "UTILIZAREA CONTRIBUȚIILOR VOLUNTARE ÎN NATURĂ",
-        "inKindResult": "CONTRIBUȚII VOLUNTARE (SOLD)",
         "uncategorizedSection": "TRANZACȚII DE CATEGORISIT",
         "uncategorizedIncomeLabel": "Venituri de categorisit",
         "uncategorizedExpenseLabel": "Cheltuieli de categorisit",
         "total": "Total",
-        "grandTotal": "TOTAL"
+        "grandTotal": "TOTAL",
+        "categoryColumn": "Categorie",
+        "inKindTitle": "Contribuții voluntare în natură",
+        "inKindEmploymentHeader": "Utilizarea contribuțiilor",
+        "inKindAmountHeader": "Sumă",
+        "inKindReceivedHeader": "Contribuții primite",
+        "inKindTotalEmployments": "Total locuri de muncă",
+        "inKindTotalReceived": "Contribuții totale",
+        "inKindNote": "Aceste contribuții gratuite sunt evaluate în euro. Ele nu conduc la nicio mișcare de bani și nu schimbă rezultatul exercițiului financiar."
       },
       "csv": {
         "date": "Dată",
@@ -1399,6 +1403,16 @@
         "origin": "Origine",
         "reference": "Referință",
         "exercice": "Exercițiu financiar"
+      },
+      "categoryColumnLabel": "Categorie",
+      "inKind": {
+        "title": "Contribuții voluntare în natură",
+        "employmentHeader": "Utilizarea contribuțiilor",
+        "amountHeader": "Sumă",
+        "receivedHeader": "Contribuții primite",
+        "totalEmployments": "Total locuri de muncă",
+        "totalReceived": "Contribuții totale",
+        "note": "Aceste contribuții gratuite sunt evaluate în euro. Ele nu conduc la nicio mișcare de bani și nu schimbă rezultatul exercițiului financiar."
       }
     }
   },

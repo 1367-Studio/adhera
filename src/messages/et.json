@@ -1348,8 +1348,7 @@
       "sections": {
         "FINANCIAL": "Finants",
         "EXCEPTIONAL": "Erakorraline",
-        "OTHER": "Muu",
-        "IN_KIND": "Vabatahtlikud mitterahalised panused"
+        "OTHER": "Muu"
       },
       "drillDown": {
         "date": "Kuupäev",
@@ -1376,14 +1375,19 @@
         "otherIncome": "MUUD TULUD",
         "otherExpense": "MUUD KULUD",
         "otherResult": "MUUDE TULUDE JA KULUDE TULEMUS",
-        "inKindIncome": "VABATAHTLIKUD MITTERAHALISED PANUSED",
-        "inKindExpense": "VABATAHTLIKE MITTERAHALISTE PANUSTE KASUTAMINE",
-        "inKindResult": "VABATAHTLIKUD PANUSED (SALDO)",
         "uncategorizedSection": "KATEGORISEERIMATA TEHINGUD",
         "uncategorizedIncomeLabel": "Kategoriseerimata tulud",
         "uncategorizedExpenseLabel": "Kategoriseerimata kulud",
         "total": "Kokku",
-        "grandTotal": "KOKKU"
+        "grandTotal": "KOKKU",
+        "categoryColumn": "Kategooria",
+        "inKindTitle": "Vabatahtlikud annetused naturaalselt",
+        "inKindEmploymentHeader": "Panuste kasutamine",
+        "inKindAmountHeader": "Kogus",
+        "inKindReceivedHeader": "Saadud panused",
+        "inKindTotalEmployments": "Töökohtade koguarv",
+        "inKindTotalReceived": "Kogupanused",
+        "inKindNote": "Need tasuta sissemaksed on hinnatud eurodes. Need ei põhjusta rahaliikumist ega muuda majandusaasta tulemust."
       },
       "csv": {
         "date": "Kuupäev",
@@ -1399,6 +1403,16 @@
         "origin": "Päritolu",
         "reference": "Viide",
         "exercice": "Majandusaasta"
+      },
+      "categoryColumnLabel": "Kategooria",
+      "inKind": {
+        "title": "Vabatahtlikud annetused naturaalselt",
+        "employmentHeader": "Panuste kasutamine",
+        "amountHeader": "Kogus",
+        "receivedHeader": "Saadud panused",
+        "totalEmployments": "Töökohtade koguarv",
+        "totalReceived": "Kogupanused",
+        "note": "Need tasuta sissemaksed on hinnatud eurodes. Need ei põhjusta rahaliikumist ega muuda majandusaasta tulemust."
       }
     }
   },

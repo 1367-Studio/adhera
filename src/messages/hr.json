@@ -1348,8 +1348,7 @@
       "sections": {
         "FINANCIAL": "Financijsko",
         "EXCEPTIONAL": "Izvanredno",
-        "OTHER": "Ostalo",
-        "IN_KIND": "Dobrovoljni doprinosi u naravi"
+        "OTHER": "Ostalo"
       },
       "drillDown": {
         "date": "Datum",
@@ -1376,14 +1375,19 @@
         "otherIncome": "OSTALI PRIHODI",
         "otherExpense": "OSTALI RASHODI",
         "otherResult": "REZULTAT OSTALIH PRIHODA I RASHODA",
-        "inKindIncome": "DOBROVOLJNI DOPRINOSI U NARAVI",
-        "inKindExpense": "UPORABA DOBROVOLJNIH DOPRINOSA U NARAVI",
-        "inKindResult": "DOBROVOLJNI DOPRINOSI (SALDO)",
         "uncategorizedSection": "TRANSAKCIJE ZA KATEGORIZACIJU",
         "uncategorizedIncomeLabel": "Prihodi za kategorizaciju",
         "uncategorizedExpenseLabel": "Rashodi za kategorizaciju",
         "total": "Ukupno",
-        "grandTotal": "UKUPNO"
+        "grandTotal": "UKUPNO",
+        "categoryColumn": "Kategorija",
+        "inKindTitle": "Dobrovoljni doprinosi u naravi",
+        "inKindEmploymentHeader": "Korištenje doprinosa",
+        "inKindAmountHeader": "Iznos",
+        "inKindReceivedHeader": "Primljeni doprinosi",
+        "inKindTotalEmployments": "Ukupno radnih mjesta",
+        "inKindTotalReceived": "Ukupni doprinosi",
+        "inKindNote": "Ti besplatni doprinosi vrednuju se u eurima. Ne dovode do kretanja novca i ne mijenjaju rezultat financijske godine."
       },
       "csv": {
         "date": "Datum",
@@ -1399,6 +1403,16 @@
         "origin": "Podrijetlo",
         "reference": "Referenca",
         "exercice": "Poslovna godina"
+      },
+      "categoryColumnLabel": "Kategorija",
+      "inKind": {
+        "title": "Dobrovoljni doprinosi u naravi",
+        "employmentHeader": "Korištenje doprinosa",
+        "amountHeader": "Iznos",
+        "receivedHeader": "Primljeni doprinosi",
+        "totalEmployments": "Ukupno radnih mjesta",
+        "totalReceived": "Ukupni doprinosi",
+        "note": "Ti besplatni doprinosi vrednuju se u eurima. Ne dovode do kretanja novca i ne mijenjaju rezultat financijske godine."
       }
     }
   },

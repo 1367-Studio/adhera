@@ -1348,8 +1348,7 @@
       "sections": {
         "FINANCIAL": "Finanční",
         "EXCEPTIONAL": "Mimořádné",
-        "OTHER": "Ostatní",
-        "IN_KIND": "Dobrovolné věcné příspěvky"
+        "OTHER": "Ostatní"
       },
       "drillDown": {
         "date": "Datum",
@@ -1376,14 +1375,19 @@
         "otherIncome": "OSTATNÍ VÝNOSY",
         "otherExpense": "OSTATNÍ NÁKLADY",
         "otherResult": "VÝSLEDEK Z OSTATNÍCH VÝNOSŮ A NÁKLADŮ",
-        "inKindIncome": "DOBROVOLNÉ VĚCNÉ PŘÍSPĚVKY",
-        "inKindExpense": "POUŽITÍ DOBROVOLNÝCH VĚCNÝCH PŘÍSPĚVKŮ",
-        "inKindResult": "DOBROVOLNÉ PŘÍSPĚVKY (SALDO)",
         "uncategorizedSection": "TRANSAKCE KE KATEGORIZACI",
         "uncategorizedIncomeLabel": "Příjmy ke kategorizaci",
         "uncategorizedExpenseLabel": "Výdaje ke kategorizaci",
         "total": "Celkem",
-        "grandTotal": "CELKEM"
+        "grandTotal": "CELKEM",
+        "categoryColumn": "Kategorie",
+        "inKindTitle": "Dobrovolné příspěvky naturálně",
+        "inKindEmploymentHeader": "Využití příspěvků",
+        "inKindAmountHeader": "Množství",
+        "inKindReceivedHeader": "Přijaté příspěvky",
+        "inKindTotalEmployments": "Celkový počet pracovních míst",
+        "inKindTotalReceived": "Celkové příspěvky",
+        "inKindNote": "Tyto bezplatné příspěvky jsou oceněny v eurech. Nevedou k žádnému pohybu peněz a nemění výsledek finančního roku."
       },
       "csv": {
         "date": "Datum",
@@ -1399,6 +1403,16 @@
         "origin": "Původ",
         "reference": "Reference",
         "exercice": "Účetní období"
+      },
+      "categoryColumnLabel": "Kategorie",
+      "inKind": {
+        "title": "Dobrovolné příspěvky naturálně",
+        "employmentHeader": "Využití příspěvků",
+        "amountHeader": "Množství",
+        "receivedHeader": "Přijaté příspěvky",
+        "totalEmployments": "Celkový počet pracovních míst",
+        "totalReceived": "Celkové příspěvky",
+        "note": "Tyto bezplatné příspěvky jsou oceněny v eurech. Nevedou k žádnému pohybu peněz a nemění výsledek finančního roku."
       }
     }
   },

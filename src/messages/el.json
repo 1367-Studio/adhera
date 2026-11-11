@@ -1348,8 +1348,7 @@
       "sections": {
         "FINANCIAL": "Χρηματοοικονομικά",
         "EXCEPTIONAL": "Έκτακτα",
-        "OTHER": "Λοιπά",
-        "IN_KIND": "Εθελοντικές εισφορές σε είδος"
+        "OTHER": "Λοιπά"
       },
       "drillDown": {
         "date": "Ημερομηνία",
@@ -1376,14 +1375,19 @@
         "otherIncome": "ΛΟΙΠΑ ΕΣΟΔΑ",
         "otherExpense": "ΛΟΙΠΑ ΕΞΟΔΑ",
         "otherResult": "ΑΠΟΤΕΛΕΣΜΑ ΛΟΙΠΩΝ ΕΣΟΔΩΝ ΚΑΙ ΕΞΟΔΩΝ",
-        "inKindIncome": "ΕΘΕΛΟΝΤΙΚΕΣ ΕΙΣΦΟΡΕΣ ΣΕ ΕΙΔΟΣ",
-        "inKindExpense": "ΧΡΗΣΗ ΤΩΝ ΕΘΕΛΟΝΤΙΚΩΝ ΕΙΣΦΟΡΩΝ ΣΕ ΕΙΔΟΣ",
-        "inKindResult": "ΕΘΕΛΟΝΤΙΚΕΣ ΕΙΣΦΟΡΕΣ (ΥΠΟΛΟΙΠΟ)",
         "uncategorizedSection": "ΣΥΝΑΛΛΑΓΕΣ ΠΡΟΣ ΚΑΤΗΓΟΡΙΟΠΟΙΗΣΗ",
         "uncategorizedIncomeLabel": "Έσοδα προς κατηγοριοποίηση",
         "uncategorizedExpenseLabel": "Έξοδα προς κατηγοριοποίηση",
         "total": "Σύνολο",
-        "grandTotal": "ΣΥΝΟΛΟ"
+        "grandTotal": "ΣΥΝΟΛΟ",
+        "categoryColumn": "Κατηγορία",
+        "inKindTitle": "Εθελοντικές συνεισφορές σε είδος",
+        "inKindEmploymentHeader": "Χρήση των συνεισφορών",
+        "inKindAmountHeader": "Ποσό",
+        "inKindReceivedHeader": "Εισπραχθείσες εισηγήσεις",
+        "inKindTotalEmployments": "Σύνολο θέσεων εργασίας",
+        "inKindTotalReceived": "Σύνολο συνεισφορών",
+        "inKindNote": "Αυτές οι δωρεάν συνεισφορές αποτιμώνται σε ευρώ. Δεν οδηγούν σε καμία κίνηση χρημάτων και δεν αλλάζουν το αποτέλεσμα του οικονομικού έτους."
       },
       "csv": {
         "date": "Ημερομηνία",
@@ -1399,6 +1403,16 @@
         "origin": "Προέλευση",
         "reference": "Αναφορά",
         "exercice": "Χρήση"
+      },
+      "categoryColumnLabel": "Κατηγορία",
+      "inKind": {
+        "title": "Εθελοντικές συνεισφορές σε είδος",
+        "employmentHeader": "Χρήση των συνεισφορών",
+        "amountHeader": "Ποσό",
+        "receivedHeader": "Εισπραχθείσες εισηγήσεις",
+        "totalEmployments": "Σύνολο θέσεων εργασίας",
+        "totalReceived": "Σύνολο συνεισφορών",
+        "note": "Αυτές οι δωρεάν συνεισφορές αποτιμώνται σε ευρώ. Δεν οδηγούν σε καμία κίνηση χρημάτων και δεν αλλάζουν το αποτέλεσμα του οικονομικού έτους."
       }
     }
   },

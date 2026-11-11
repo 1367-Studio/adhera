@@ -13,10 +13,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { EmptyState } from "@/components/ui/empty-state"
 import {
-  FINANCE_SECTIONS, sanitizeForFilename,
+  FINANCE_SECTIONS, STATEMENT_SECTIONS, sanitizeForFilename, yearLabelForPeriod,
   type IncomeStatementPeriod, type CategoryLine, type FinanceSectionKey,
 } from "@/lib/finance/income-statement-shared"
-import { exportIncomeStatementPdf, type IncomeStatementPdfRow } from "@/lib/pdf/income-statement-pdf-client"
+import { exportIncomeStatementPdf, type IncomeStatementPdfRow, type IncomeStatementPdfInKind } from "@/lib/pdf/income-statement-pdf-client"
 import { TransactionDrillDownModal, type DrillDown as ImportedDrillDown } from "@/components/finances/transaction-drill-down"
 
 type ExerciceOption = { id: string; label: string; startDate: string; endDate: string }
@@ -79,17 +79,17 @@ function sectionHasActivity(current: IncomeStatementPeriod, previous: IncomeStat
   return currentTotal !== 0 || previousTotal !== 0
 }
 
-function Column({ type, current, previous, hasPrevious, previousLabel, selectedExerciceLabel, expandedSections, onToggleSection, onOpenDrillDown, onOpenUncategorized }: {
-  type:                  "INCOME" | "EXPENSE"
-  current:               IncomeStatementPeriod
-  previous:              IncomeStatementPeriod | null
-  hasPrevious:           boolean
-  previousLabel:         string
-  selectedExerciceLabel: string | undefined
-  expandedSections:      Set<FinanceSectionKey>
-  onToggleSection:       (section: FinanceSectionKey) => void
-  onOpenDrillDown:       (line: CategoryLine, type: "INCOME" | "EXPENSE") => void
-  onOpenUncategorized:   (type: "INCOME" | "EXPENSE") => void
+function Column({ type, current, previous, hasPrevious, previousYearLabel, currentYearLabel, expandedSections, onToggleSection, onOpenDrillDown, onOpenUncategorized }: {
+  type:                "INCOME" | "EXPENSE"
+  current:             IncomeStatementPeriod
+  previous:            IncomeStatementPeriod | null
+  hasPrevious:         boolean
+  previousYearLabel:   string | undefined
+  currentYearLabel:    string | undefined
+  expandedSections:    Set<FinanceSectionKey>
+  onToggleSection:     (section: FinanceSectionKey) => void
+  onOpenDrillDown:     (line: CategoryLine, type: "INCOME" | "EXPENSE") => void
+  onOpenUncategorized: (type: "INCOME" | "EXPENSE") => void
 }) {
   const t = useTranslations()
   const key        = type === "INCOME" ? "income" : "expense"
@@ -107,15 +107,15 @@ function Column({ type, current, previous, hasPrevious, previousLabel, selectedE
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b bg-muted/40">
-              <th className="py-2 pl-4 pr-3 text-left font-medium text-muted-foreground">{t("finances.compteResultat.exerciceLabel")}</th>
-              <th className="py-2 px-3 text-right font-medium text-muted-foreground w-32">{selectedExerciceLabel}</th>
-              <th className="py-2 pr-4 pl-3 text-right font-medium text-muted-foreground w-32">
-                {hasPrevious ? previousLabel : null}
-              </th>
+              <th className="py-2 pl-4 pr-3 text-left font-medium text-muted-foreground">{t("finances.compteResultat.categoryColumnLabel")}</th>
+              <th className="py-2 px-3 text-right font-medium text-muted-foreground w-32">{currentYearLabel}</th>
+              {hasPrevious && (
+                <th className="py-2 pr-4 pl-3 text-right font-medium text-muted-foreground w-32">{previousYearLabel}</th>
+              )}
             </tr>
           </thead>
           <tbody>
-            {FINANCE_SECTIONS.map(section => {
+            {STATEMENT_SECTIONS.map(section => {
               const lines       = current.sections[section][key]
               const isOperating = section === "OPERATING"
               const hasActivity = isOperating || sectionHasActivity(current, previous, section)
@@ -128,7 +128,7 @@ function Column({ type, current, previous, hasPrevious, previousLabel, selectedE
               if (!hasActivity && !isExpanded) {
                 return (
                   <tr key={`${section}-toggle`} className="border-b last:border-0">
-                    <td colSpan={3} className="py-1 pl-4">
+                    <td colSpan={hasPrevious ? 3 : 2} className="py-1 pl-4">
                       <button
                         type="button"
                         onClick={() => onToggleSection(section)}
@@ -145,15 +145,10 @@ function Column({ type, current, previous, hasPrevious, previousLabel, selectedE
                 <Fragment key={section}>
                   {!isOperating && (
                     <tr className="border-b">
-                      <td colSpan={3} className="pt-3 pb-1 pl-4">
+                      <td colSpan={hasPrevious ? 3 : 2} className="pt-3 pb-1 pl-4">
                         <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                           {t(`finances.compteResultat.sections.${section}`)}
                         </div>
-                        {section === "IMMOBILISATION" && (
-                          <div className="text-xs text-muted-foreground font-normal normal-case mt-0.5">
-                            {t("finances.compteResultat.immobilisationNote")}
-                          </div>
-                        )}
                       </td>
                     </tr>
                   )}
@@ -167,7 +162,7 @@ function Column({ type, current, previous, hasPrevious, previousLabel, selectedE
                     />
                   )) : !isOperating && (
                     <tr className="border-b last:border-0">
-                      <td colSpan={3} className="py-2 pl-4 text-xs text-muted-foreground italic">
+                      <td colSpan={hasPrevious ? 3 : 2} className="py-2 pl-4 text-xs text-muted-foreground italic">
                         {t("finances.compteResultat.noCategoriesInSection")}
                       </td>
                     </tr>
@@ -176,7 +171,7 @@ function Column({ type, current, previous, hasPrevious, previousLabel, selectedE
                       this doesn't become a one-way door. */}
                   {!isOperating && !hasActivity && isExpanded && (
                     <tr className="border-b last:border-0">
-                      <td colSpan={3} className="py-1 pl-4">
+                      <td colSpan={hasPrevious ? 3 : 2} className="py-1 pl-4">
                         <button
                           type="button"
                           onClick={() => onToggleSection(section)}
@@ -203,9 +198,9 @@ function Column({ type, current, previous, hasPrevious, previousLabel, selectedE
             <tr className="border-t-2 border-foreground/20">
               <td className="py-2 pl-4 pr-3 font-semibold">{t(`finances.compteResultat.${totalKey}`)}</td>
               <td className="py-2 px-3 text-right font-semibold tabular-nums">{fmt(total)}</td>
-              <td className="py-2 pr-4 pl-3 text-right font-semibold tabular-nums text-muted-foreground">
-                {hasPrevious ? fmt(previousTotal) : null}
-              </td>
+              {hasPrevious && (
+                <td className="py-2 pr-4 pl-3 text-right font-semibold tabular-nums text-muted-foreground">{fmt(previousTotal)}</td>
+              )}
             </tr>
           </tbody>
         </table>
@@ -231,10 +226,63 @@ function CategoryRow({ line, previousAmount, hasPrevious, onOpen }: {
     >
       <td className="py-1.5 pl-4 pr-3 text-muted-foreground">{line.name}</td>
       <td className="py-1.5 px-3 text-right tabular-nums">{fmt(line.amount)}</td>
-      <td className="py-1.5 pr-4 pl-3 text-right tabular-nums text-muted-foreground">
-        {hasPrevious ? fmt(previousAmount ?? 0) : null}
-      </td>
+      {hasPrevious && (
+        <td className="py-1.5 pr-4 pl-3 text-right tabular-nums text-muted-foreground">{fmt(previousAmount ?? 0)}</td>
+      )}
     </tr>
+  )
+}
+
+// FORM-104: a single full-width block for "Contributions volontaires en nature" (classe 86/87
+// du PCG associatif), replacing the old pair of per-column collapsible IN_KIND sections.
+// Emplois (expense) and Contributions reçues (income) are laid out side by side, matched by
+// position rather than by category identity — the two lists can have a different number of
+// categories. Shown only when the *current* exercice has a nonzero value on either side; N-1
+// is intentionally not compared here (the ticket only asks about the selected exercice).
+function InKindContributionsSection({ current }: { current: IncomeStatementPeriod }) {
+  const t = useTranslations()
+  const employmentLines = current.sections.IN_KIND.expense
+  const receivedLines    = current.sections.IN_KIND.income
+  const hasContributions = employmentLines.some(l => l.amount !== 0) || receivedLines.some(l => l.amount !== 0)
+  if (!hasContributions) return null
+
+  const totalEmployments = employmentLines.reduce((s, l) => s + l.amount, 0)
+  const totalReceived    = receivedLines.reduce((s, l) => s + l.amount, 0)
+  const rowCount = Math.max(employmentLines.length, receivedLines.length)
+
+  return (
+    <div className="rounded-lg border bg-muted/20 p-4">
+      <h3 className="text-sm font-semibold mb-3">{t("finances.compteResultat.inKind.title")}</h3>
+      <div className="overflow-x-auto rounded-lg border">
+        <table className="w-full text-sm">
+          <thead>
+            <tr className="border-b bg-muted/40">
+              <th className="py-2 pl-4 pr-3 text-left font-medium text-muted-foreground">{t("finances.compteResultat.inKind.employmentHeader")}</th>
+              <th className="py-2 px-3 text-right font-medium text-muted-foreground w-32">{t("finances.compteResultat.inKind.amountHeader")}</th>
+              <th className="py-2 pl-4 pr-3 text-left font-medium text-muted-foreground">{t("finances.compteResultat.inKind.receivedHeader")}</th>
+              <th className="py-2 pr-4 pl-3 text-right font-medium text-muted-foreground w-32">{t("finances.compteResultat.inKind.amountHeader")}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {Array.from({ length: rowCount }, (_, i) => (
+              <tr key={i} className="border-b last:border-0">
+                <td className="py-1.5 pl-4 pr-3 text-muted-foreground">{employmentLines[i]?.name ?? ""}</td>
+                <td className="py-1.5 px-3 text-right tabular-nums">{employmentLines[i] ? fmt(employmentLines[i].amount) : ""}</td>
+                <td className="py-1.5 pl-4 pr-3 text-muted-foreground">{receivedLines[i]?.name ?? ""}</td>
+                <td className="py-1.5 pr-4 pl-3 text-right tabular-nums">{receivedLines[i] ? fmt(receivedLines[i].amount) : ""}</td>
+              </tr>
+            ))}
+            <tr className="border-t-2 border-foreground/20">
+              <td className="py-2 pl-4 pr-3 font-semibold">{t("finances.compteResultat.inKind.totalEmployments")}</td>
+              <td className="py-2 px-3 text-right font-semibold tabular-nums">{fmt(totalEmployments)}</td>
+              <td className="py-2 pl-4 pr-3 font-semibold">{t("finances.compteResultat.inKind.totalReceived")}</td>
+              <td className="py-2 pr-4 pl-3 text-right font-semibold tabular-nums">{fmt(totalReceived)}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p className="text-xs text-muted-foreground mt-2">{t("finances.compteResultat.inKind.note")}</p>
+    </div>
   )
 }
 
@@ -274,6 +322,12 @@ export function ReportsView() {
   const hasPrevious   = Boolean(previous?.exercice)
   const previousLabel = previous?.exercice?.label ?? t("finances.compteResultat.noPreviousExercice")
 
+  // Bare-year labels for the table header cells only (FORM-104, point 1) — distinct from
+  // `previousLabel`/`selectedExercice.label` above, which stay as the full free-text exercice
+  // label everywhere else (surplus/deficit banner, PDF period line, filenames).
+  const currentYearLabel  = selectedExercice ? yearLabelForPeriod(selectedExercice) : undefined
+  const previousYearLabel = previous?.exercice ? yearLabelForPeriod(previous.exercice) : undefined
+
   const resultLabel = current
     ? current.result > 0 ? t("finances.compteResultat.surplus")
     : current.result < 0 ? t("finances.compteResultat.deficit")
@@ -302,31 +356,28 @@ export function ReportsView() {
     setDrillDown({ title: t("finances.compteResultat.uncategorized"), transactions: bucket.transactions, type, categorizable: true })
   }
 
-  // Mirrors the reference accountant document (see the plan's Fase 5): every section always
-  // renders, even fully empty (PRODUITS FINANCIERS/CHARGES FINANCIERES etc. still appear at
-  // 0,00 — the export is for the treasurer/accountant, who expects the full statutory shape,
-  // unlike the screen which collapses empty sections for readability). Expense amounts are
-  // shown NEGATIVE (same convention as the reference), even though they're stored positive.
+  // FORM-104: exports now mirror the screen exactly — a section other than OPERATING is
+  // printed only when it has activity in the current or N-1 period (sectionHasActivity), same
+  // rule the screen already applied. This reverses an earlier deliberate choice ("the export is
+  // for the treasurer/accountant, who expects the full statutory shape") per the ticket's
+  // explicit requirement that screen and every export format show the same headers/sections/
+  // values/totals. Expense amounts are shown NEGATIVE (same convention as the reference
+  // accountant document this layout is modeled on), even though they're stored positive.
   function buildRows(): IncomeStatementPdfRow[] {
     if (!current) return []
     const prevOrBlank = (value: number) => hasPrevious ? value : null
     const rows: IncomeStatementPdfRow[] = []
     const pdfT = (key: string) => t(`finances.compteResultat.pdf.${key}`)
-    const sectionLabels: Record<FinanceSectionKey, { income: string; expense: string; result: string }> = {
-      OPERATING:      { income: pdfT("operatingIncome"),   expense: pdfT("operatingExpense"),   result: pdfT("operatingResult") },
-      FINANCIAL:      { income: pdfT("financialIncome"),   expense: pdfT("financialExpense"),   result: pdfT("financialResult") },
-      EXCEPTIONAL:    { income: pdfT("exceptionalIncome"), expense: pdfT("exceptionalExpense"), result: pdfT("exceptionalResult") },
-      OTHER:          { income: pdfT("otherIncome"),       expense: pdfT("otherExpense"),       result: pdfT("otherResult") },
-      IN_KIND:        { income: pdfT("inKindIncome"),      expense: pdfT("inKindExpense"),      result: pdfT("inKindResult") },
-      // Informational only — rendered below as its own block, outside this loop, so it never
-      // feeds into incomeTotal/expenseTotal/the per-section "result" row the loop below
-      // computes for every other section (see RESULT_SECTIONS in income-statement-shared.ts).
-      IMMOBILISATION: { income: pdfT("immobilisationIncome"), expense: pdfT("immobilisationExpense"), result: pdfT("immobilisationResult") },
+    const sectionLabels: Record<typeof STATEMENT_SECTIONS[number], { income: string; expense: string; result: string }> = {
+      OPERATING:   { income: pdfT("operatingIncome"),   expense: pdfT("operatingExpense"),   result: pdfT("operatingResult") },
+      FINANCIAL:   { income: pdfT("financialIncome"),   expense: pdfT("financialExpense"),   result: pdfT("financialResult") },
+      EXCEPTIONAL: { income: pdfT("exceptionalIncome"), expense: pdfT("exceptionalExpense"), result: pdfT("exceptionalResult") },
+      OTHER:       { income: pdfT("otherIncome"),       expense: pdfT("otherExpense"),       result: pdfT("otherResult") },
     }
     const lineLabel = (line: CategoryLine) => line.accountingCode ? `${line.accountingCode} - ${line.name}` : line.name
 
-    for (const section of FINANCE_SECTIONS) {
-      if (section === "IMMOBILISATION") continue
+    for (const section of STATEMENT_SECTIONS) {
+      if (section !== "OPERATING" && !sectionHasActivity(current, previous, section)) continue
       const labels = sectionLabels[section]
       const incomeLines = current.sections[section].income
       const expenseLines = current.sections[section].expense
@@ -348,21 +399,6 @@ export function ReportsView() {
       rows.push({ label: pdfT("total"), current: -expenseTotal, previous: prevOrBlank(-expenseTotalPrev), bold: true })
 
       rows.push({ label: labels.result, current: incomeTotal - expenseTotal, previous: prevOrBlank(incomeTotalPrev - expenseTotalPrev), bold: true })
-    }
-
-    // Immobilisations (capital assets/depreciation) — informational block, outside the
-    // statutory income/expense/result loop above: never summed into totalIncome/totalExpense/
-    // result (see RESULT_SECTIONS). Only printed when there's something to show.
-    const immoIncome  = current.sections.IMMOBILISATION.income
-    const immoExpense = current.sections.IMMOBILISATION.expense
-    if (immoIncome.length > 0 || immoExpense.length > 0) {
-      rows.push({ label: pdfT("immobilisationSection"), current: null, previous: null, bold: true })
-      for (const line of immoIncome) {
-        rows.push({ label: lineLabel(line), current: line.amount, previous: prevOrBlank(previousAmountFor(previous, line, "income")) })
-      }
-      for (const line of immoExpense) {
-        rows.push({ label: lineLabel(line), current: -line.amount, previous: prevOrBlank(-previousAmountFor(previous, line, "expense")) })
-      }
     }
 
     if (current.uncategorizedIncome.count > 0 || current.uncategorizedExpense.count > 0) {
@@ -403,6 +439,11 @@ export function ReportsView() {
     }
 
     for (const section of FINANCE_SECTIONS) {
+      // Immobilisations is being removed from every export (FORM-104, point 2) — reserved for
+      // the future Bilan → Actif → Immobilisations corporelles screen. IN_KIND transactions stay
+      // in this line-item ledger: unlike the screen/PDF summary, this export has no per-section
+      // header row to hide, so there's no "empty section" concept to apply here.
+      if (section === "IMMOBILISATION") continue
       for (const line of current.sections[section].income) pushLine(line, line.name, line.accountingCode ?? "")
       for (const line of current.sections[section].expense) pushLine(line, line.name, line.accountingCode ?? "")
     }
@@ -418,6 +459,29 @@ export function ReportsView() {
     XLSX.writeFile(wb, `compte-de-resultat-detaille-${sanitizeForFilename(current.exercice.label)}.xlsx`)
   }
 
+  // FORM-104: builds the "Contributions volontaires en nature" PDF block in the same shape as
+  // InKindContributionsSection on screen — null when there's nothing to show in the current
+  // exercice, so exportPdf below can skip the block entirely (point 5: export must match screen).
+  function buildInKindPdfData(): IncomeStatementPdfInKind | null {
+    if (!current) return null
+    const employmentLines = current.sections.IN_KIND.expense
+    const receivedLines   = current.sections.IN_KIND.income
+    if (!employmentLines.some(l => l.amount !== 0) && !receivedLines.some(l => l.amount !== 0)) return null
+    return {
+      title:            t("finances.compteResultat.pdf.inKindTitle"),
+      employmentHeader: t("finances.compteResultat.pdf.inKindEmploymentHeader"),
+      receivedHeader:   t("finances.compteResultat.pdf.inKindReceivedHeader"),
+      amountHeader:     t("finances.compteResultat.pdf.inKindAmountHeader"),
+      totalEmploymentsLabel: t("finances.compteResultat.pdf.inKindTotalEmployments"),
+      totalReceivedLabel:    t("finances.compteResultat.pdf.inKindTotalReceived"),
+      note:             t("finances.compteResultat.pdf.inKindNote"),
+      employments:      employmentLines.map(l => ({ label: l.name, amount: l.amount })),
+      received:         receivedLines.map(l => ({ label: l.name, amount: l.amount })),
+      totalEmployments: employmentLines.reduce((s, l) => s + l.amount, 0),
+      totalReceived:    receivedLines.reduce((s, l) => s + l.amount, 0),
+    }
+  }
+
   function exportPdf() {
     if (!current?.exercice) return
     const periodLabel = t("finances.compteResultat.pdf.periodLabel", {
@@ -425,12 +489,17 @@ export function ReportsView() {
       end:   fmtExerciceDate(current.exercice.endDate),
     })
     exportIncomeStatementPdf({
-      title:          t("finances.compteResultat.title"),
-      currentLabel:   current.exercice.label,
-      previousLabel,
+      title:            t("finances.compteResultat.title"),
+      categoryLabel:    t("finances.compteResultat.pdf.categoryColumn"),
+      currentLabel:     currentYearLabel ?? current.exercice.label,
+      previousLabel:    hasPrevious ? (previousYearLabel ?? previousLabel) : "",
+      // The N-1 column is dropped entirely (not just left blank) when there's no previous
+      // exercice — matching the screen, which never renders that column's content either.
+      hasPrevious,
       periodLabel,
-      rows:           buildRows(),
-      fileNameSuffix: sanitizeForFilename(current.exercice.label),
+      rows:             buildRows(),
+      inKind:           buildInKindPdfData(),
+      fileNameSuffix:   sanitizeForFilename(current.exercice.label),
     })
   }
 
@@ -442,7 +511,7 @@ export function ReportsView() {
   const uncategorizedIncomeCount  = current?.uncategorizedIncome.count  ?? 0
   const uncategorizedExpenseCount = current?.uncategorizedExpense.count ?? 0
   const hasOperationalDetail = current
-    ? FINANCE_SECTIONS.some(s => s !== "OPERATING" && sectionHasActivity(current, previous, s))
+    ? STATEMENT_SECTIONS.some(s => s !== "OPERATING" && sectionHasActivity(current, previous, s))
     : false
 
   return (
@@ -512,8 +581,8 @@ export function ReportsView() {
               current={current}
               previous={previous}
               hasPrevious={hasPrevious}
-              previousLabel={previousLabel}
-              selectedExerciceLabel={selectedExercice?.label}
+              previousYearLabel={previousYearLabel}
+              currentYearLabel={currentYearLabel}
               expandedSections={expandedSections}
               onToggleSection={toggleSection}
               onOpenDrillDown={openDrillDown}
@@ -524,8 +593,8 @@ export function ReportsView() {
               current={current}
               previous={previous}
               hasPrevious={hasPrevious}
-              previousLabel={previousLabel}
-              selectedExerciceLabel={selectedExercice?.label}
+              previousYearLabel={previousYearLabel}
+              currentYearLabel={currentYearLabel}
               expandedSections={expandedSections}
               onToggleSection={toggleSection}
               onOpenDrillDown={openDrillDown}
@@ -551,6 +620,8 @@ export function ReportsView() {
               </div>
             )}
           </div>
+
+          <InKindContributionsSection current={current} />
         </>
       )}
 
