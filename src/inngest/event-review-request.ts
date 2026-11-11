@@ -6,19 +6,27 @@ import { eventReviewRequestEmail } from "@/lib/email"
 import { resolveEmailBranding } from "@/lib/plan-limits"
 import { APP_URL } from "@/lib/env"
 
-// Sends a "leave a review" email one day after an event's date, to every participant who
-// was marked present and has an email on file. Fixed one-day delay for now — unlike
-// EVENT_REMINDER this isn't wired into the per-association AutomationRule engine (no admin
-// configuration needed to get it working). reviewRequestedAt dedupes so a participant is
-// only ever emailed once, even though this cron re-scans the same day window daily.
+// Sends a "leave a review" email starting one day after an event's date, to every
+// participant who was marked present and has an email on file. Unlike EVENT_REMINDER this
+// isn't wired into the per-association AutomationRule engine (no admin configuration needed
+// to get it working). reviewRequestedAt/avis dedupe so a participant is only ever emailed
+// once, even though this cron re-scans the trailing window daily.
+//
+// CATCH_UP_DAYS bounds how far back a missed run can reach — a run that didn't fire on the
+// exact day an event qualified (deploy in progress, Inngest sync not yet re-registered,
+// outage) used to skip that event's participants permanently, since the old window was a
+// single fixed "yesterday" recomputed fresh every run. Bounded rather than fully open-ended
+// (contrast erasure-request-sweep's retry-until-done) so a long-broken send doesn't suddenly
+// resurface months-old events the day it's fixed.
+const CATCH_UP_DAYS = 3
+
 export const eventReviewRequest = inngest.createFunction(
   { id: "event-review-request", triggers: { cron: "0 10 * * *" } },
   async ({ step }) => {
     const sent = await step.run("send-review-requests", async () => {
-      const now       = new Date()
-      const target     = new Date(now.getTime() - 86_400_000)
-      const dayStart   = new Date(target.getFullYear(), target.getMonth(), target.getDate(), 0, 0, 0)
-      const dayEnd     = new Date(target.getFullYear(), target.getMonth(), target.getDate(), 23, 59, 59)
+      const now     = new Date()
+      const dayEnd   = new Date(now.getTime() - 86_400_000)
+      const dayStart = new Date(dayEnd.getTime() - CATCH_UP_DAYS * 86_400_000)
 
       const events = await prisma.evenement.findMany({
         where: { date: { gte: dayStart, lte: dayEnd } },
