@@ -938,8 +938,7 @@
       "sections": {
         "FINANCIAL": "Financeiro",
         "EXCEPTIONAL": "Excecional",
-        "OTHER": "Outro",
-        "IN_KIND": "Contribuições voluntárias em espécie"
+        "OTHER": "Outro"
       },
       "drillDown": {
         "date": "Data",
@@ -966,14 +965,19 @@
         "otherIncome": "OUTRAS RECEITAS",
         "otherExpense": "OUTRAS DESPESAS",
         "otherResult": "RESULTADO DE OUTRAS RECEITAS E DESPESAS",
-        "inKindIncome": "CONTRIBUIÇÕES VOLUNTÁRIAS EM ESPÉCIE",
-        "inKindExpense": "UTILIZAÇÃO DAS CONTRIBUIÇÕES VOLUNTÁRIAS EM ESPÉCIE",
-        "inKindResult": "CONTRIBUIÇÕES VOLUNTÁRIAS",
         "uncategorizedSection": "TRANSAÇÕES A CATEGORIZAR",
         "uncategorizedIncomeLabel": "Receitas a categorizar",
         "uncategorizedExpenseLabel": "Despesas a categorizar",
         "total": "Total",
-        "grandTotal": "TOTAL"
+        "grandTotal": "TOTAL",
+        "categoryColumn": "Categoria",
+        "inKindTitle": "Contribuições voluntárias em espécie",
+        "inKindEmploymentHeader": "Uso das contribuições",
+        "inKindAmountHeader": "Valor",
+        "inKindReceivedHeader": "Contribuições recebidas",
+        "inKindTotalEmployments": "Total de Empregos",
+        "inKindTotalReceived": "Contribuições Totais",
+        "inKindNote": "Essas contribuições gratuitas são avaliadas em euros. Elas não levam a nenhum movimento de dinheiro e não alteram o resultado do ano fiscal."
       },
       "csv": {
         "date": "Data",
@@ -989,6 +993,16 @@
         "origin": "Origem",
         "reference": "Referência",
         "exercice": "Exercício"
+      },
+      "categoryColumnLabel": "Categoria",
+      "inKind": {
+        "title": "Contribuições voluntárias em espécie",
+        "employmentHeader": "Uso das contribuições",
+        "amountHeader": "Valor",
+        "receivedHeader": "Contribuições recebidas",
+        "totalEmployments": "Total de Empregos",
+        "totalReceived": "Contribuições Totais",
+        "note": "Essas contribuições gratuitas são avaliadas em euros. Elas não levam a nenhum movimento de dinheiro e não alteram o resultado do ano fiscal."
       }
     },
     "categoryForm": {

@@ -946,9 +946,7 @@
       "sections": {
         "FINANCIAL": "Financial",
         "EXCEPTIONAL": "Exceptional",
-        "OTHER": "Other",
-        "IN_KIND": "In-kind contributions",
-        "IMMOBILISATION": "Capital assets"
+        "OTHER": "Other"
       },
       "drillDown": {
         "date": "Date",
@@ -975,18 +973,19 @@
         "otherIncome": "OTHER INCOME",
         "otherExpense": "OTHER EXPENSES",
         "otherResult": "RESULT FROM OTHER INCOME AND EXPENSES",
-        "inKindIncome": "IN-KIND CONTRIBUTIONS",
-        "inKindExpense": "USE OF IN-KIND CONTRIBUTIONS",
-        "inKindResult": "IN-KIND CONTRIBUTIONS (NET)",
         "uncategorizedSection": "TRANSACTIONS TO CATEGORIZE",
         "uncategorizedIncomeLabel": "Income to categorize",
         "uncategorizedExpenseLabel": "Expenses to categorize",
         "total": "Total",
         "grandTotal": "TOTAL",
-        "immobilisationIncome": "Capital assets (income)",
-        "immobilisationExpense": "Capital assets (expense)",
-        "immobilisationResult": "Capital assets balance",
-        "immobilisationSection": "Capital assets — outside the current result"
+        "categoryColumn": "Category",
+        "inKindTitle": "Voluntary contributions in kind",
+        "inKindEmploymentHeader": "Use of contributions",
+        "inKindAmountHeader": "Amount",
+        "inKindReceivedHeader": "Contributions received",
+        "inKindTotalEmployments": "Total Jobs",
+        "inKindTotalReceived": "Total Contributions",
+        "inKindNote": "These free contributions are valued in euros. They do not lead to any movement of money and do not change the result of the financial year."
       },
       "csv": {
         "date": "Date",
@@ -1003,7 +1002,16 @@
         "reference": "Reference",
         "exercice": "Fiscal year"
       },
-      "immobilisationNote": "Capital asset purchases and depreciation — informational only, not included in the exercice's result."
+      "categoryColumnLabel": "Category",
+      "inKind": {
+        "title": "Voluntary contributions in kind",
+        "employmentHeader": "Use of contributions",
+        "amountHeader": "Amount",
+        "receivedHeader": "Contributions received",
+        "totalEmployments": "Total Jobs",
+        "totalReceived": "Total Contributions",
+        "note": "These free contributions are valued in euros. They do not lead to any movement of money and do not change the result of the financial year."
+      }
     },
     "categoryForm": {
       "name": "Name",

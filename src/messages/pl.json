@@ -1348,8 +1348,7 @@
       "sections": {
         "FINANCIAL": "Finansowe",
         "EXCEPTIONAL": "Nadzwyczajne",
-        "OTHER": "Inne",
-        "IN_KIND": "Dobrowolne świadczenia rzeczowe"
+        "OTHER": "Inne"
       },
       "drillDown": {
         "date": "Data",
@@ -1376,14 +1375,19 @@
         "otherIncome": "POZOSTAŁE PRZYCHODY",
         "otherExpense": "POZOSTAŁE KOSZTY",
         "otherResult": "WYNIK Z POZOSTAŁYCH PRZYCHODÓW I KOSZTÓW",
-        "inKindIncome": "DOBROWOLNE ŚWIADCZENIA RZECZOWE",
-        "inKindExpense": "WYKORZYSTANIE DOBROWOLNYCH ŚWIADCZEŃ RZECZOWYCH",
-        "inKindResult": "DOBROWOLNE ŚWIADCZENIA (SALDO)",
         "uncategorizedSection": "TRANSAKCJE DO SKATEGORYZOWANIA",
         "uncategorizedIncomeLabel": "Przychody do skategoryzowania",
         "uncategorizedExpenseLabel": "Wydatki do skategoryzowania",
         "total": "Razem",
-        "grandTotal": "RAZEM"
+        "grandTotal": "RAZEM",
+        "categoryColumn": "Kategoria",
+        "inKindTitle": "Dobrowolne darowizny rzeczowe",
+        "inKindEmploymentHeader": "Wykorzystanie wkładów",
+        "inKindAmountHeader": "Ilość",
+        "inKindReceivedHeader": "Otrzymane wkłady",
+        "inKindTotalEmployments": "Łączna liczba miejsc pracy",
+        "inKindTotalReceived": "Łączny wkład",
+        "inKindNote": "Te darmowe wpłaty są wyceniane w euro. Nie prowadzą do żadnego ruchu pieniądza i nie zmieniają wyniku roku finansowego."
       },
       "csv": {
         "date": "Data",
@@ -1399,6 +1403,16 @@
         "origin": "Pochodzenie",
         "reference": "Odniesienie",
         "exercice": "Rok obrotowy"
+      },
+      "categoryColumnLabel": "Kategoria",
+      "inKind": {
+        "title": "Dobrowolne darowizny rzeczowe",
+        "employmentHeader": "Wykorzystanie wkładów",
+        "amountHeader": "Ilość",
+        "receivedHeader": "Otrzymane wkłady",
+        "totalEmployments": "Łączna liczba miejsc pracy",
+        "totalReceived": "Łączny wkład",
+        "note": "Te darmowe wpłaty są wyceniane w euro. Nie prowadzą do żadnego ruchu pieniądza i nie zmieniają wyniku roku finansowego."
       }
     }
   },

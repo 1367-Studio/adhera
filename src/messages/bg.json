@@ -1348,8 +1348,7 @@
       "sections": {
         "FINANCIAL": "Финансов",
         "EXCEPTIONAL": "Извънреден",
-        "OTHER": "Друго",
-        "IN_KIND": "Доброволни вноски в натура"
+        "OTHER": "Друго"
       },
       "drillDown": {
         "date": "Дата",
@@ -1376,14 +1375,19 @@
         "otherIncome": "ДРУГИ ПРИХОДИ",
         "otherExpense": "ДРУГИ РАЗХОДИ",
         "otherResult": "РЕЗУЛТАТ ОТ ДРУГИ ПРИХОДИ И РАЗХОДИ",
-        "inKindIncome": "ДОБРОВОЛНИ ВНОСКИ В НАТУРА",
-        "inKindExpense": "ИЗПОЛЗВАНЕ НА ДОБРОВОЛНИТЕ ВНОСКИ В НАТУРА",
-        "inKindResult": "ДОБРОВОЛНИ ВНОСКИ (САЛДО)",
         "uncategorizedSection": "ТРАНЗАКЦИИ ЗА КАТЕГОРИЗИРАНЕ",
         "uncategorizedIncomeLabel": "Приходи за категоризиране",
         "uncategorizedExpenseLabel": "Разходи за категоризиране",
         "total": "Общо",
-        "grandTotal": "ОБЩО"
+        "grandTotal": "ОБЩО",
+        "categoryColumn": "Категория",
+        "inKindTitle": "Доброволни дарения в натура",
+        "inKindEmploymentHeader": "Използване на приноси",
+        "inKindAmountHeader": "Количество",
+        "inKindReceivedHeader": "Получени приноси",
+        "inKindTotalEmployments": "Общо работни места",
+        "inKindTotalReceived": "Общо приноси",
+        "inKindNote": "Тези безплатни вноски се оценяват в евро. Те не водят до движение на пари и не променят резултата от финансовата година."
       },
       "csv": {
         "date": "Дата",
@@ -1399,6 +1403,16 @@
         "origin": "Произход",
         "reference": "Референция",
         "exercice": "Финансова година"
+      },
+      "categoryColumnLabel": "Категория",
+      "inKind": {
+        "title": "Доброволни дарения в натура",
+        "employmentHeader": "Използване на приноси",
+        "amountHeader": "Количество",
+        "receivedHeader": "Получени приноси",
+        "totalEmployments": "Общо работни места",
+        "totalReceived": "Общо приноси",
+        "note": "Тези безплатни вноски се оценяват в евро. Те не водят до движение на пари и не променят резултата от финансовата година."
       }
     }
   },

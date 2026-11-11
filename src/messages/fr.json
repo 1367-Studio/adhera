@@ -945,6 +945,7 @@
       "title": "Compte de résultat",
       "description": "Résultat financier de l'exercice, comparé à l'exercice précédent.",
       "exerciceLabel": "Exercice",
+      "categoryColumnLabel": "Catégorie",
       "noPreviousExercice": "-",
       "noPreviousExerciceMessage": "Aucun exercice antérieur disponible",
       "export": "Exporter",
@@ -968,9 +969,16 @@
       "sections": {
         "FINANCIAL": "Financier",
         "EXCEPTIONAL": "Exceptionnel",
-        "OTHER": "Autre",
-        "IN_KIND": "Contributions volontaires en nature",
-        "IMMOBILISATION": "Immobilisations"
+        "OTHER": "Autre"
+      },
+      "inKind": {
+        "title": "Contributions volontaires en nature",
+        "employmentHeader": "Emplois des contributions",
+        "amountHeader": "Montant",
+        "receivedHeader": "Contributions reçues",
+        "totalEmployments": "Total des emplois",
+        "totalReceived": "Total des contributions",
+        "note": "Ces apports gratuits sont valorisés en euros. Ils n'entraînent aucun mouvement d'argent et ne modifient pas le résultat de l'exercice."
       },
       "drillDown": {
         "date": "Date",
@@ -997,18 +1005,19 @@
         "otherIncome": "AUTRES PRODUITS",
         "otherExpense": "AUTRES CHARGES",
         "otherResult": "RESULTAT AUTRES PRODUITS ET CHARGES",
-        "inKindIncome": "CONTRIBUTIONS VOLONTAIRES EN NATURE",
-        "inKindExpense": "EMPLOI DES CONTRIBUTIONS VOLONTAIRES EN NATURE",
-        "inKindResult": "CONTRIBUTIONS VOLONTAIRES",
         "uncategorizedSection": "TRANSACTIONS À CATÉGORISER",
         "uncategorizedIncomeLabel": "Recettes à catégoriser",
         "uncategorizedExpenseLabel": "Dépenses à catégoriser",
         "total": "Total",
         "grandTotal": "TOTAL",
-        "immobilisationIncome": "Immobilisations (produits)",
-        "immobilisationExpense": "Immobilisations (charges)",
-        "immobilisationResult": "Solde immobilisations",
-        "immobilisationSection": "Immobilisations — hors résultat courant"
+        "categoryColumn": "Catégorie",
+        "inKindTitle": "Contributions volontaires en nature",
+        "inKindEmploymentHeader": "Emplois des contributions",
+        "inKindAmountHeader": "Montant",
+        "inKindReceivedHeader": "Contributions reçues",
+        "inKindTotalEmployments": "Total des emplois",
+        "inKindTotalReceived": "Total des contributions",
+        "inKindNote": "Ces apports gratuits sont valorisés en euros. Ils n'entraînent aucun mouvement d'argent et ne modifient pas le résultat de l'exercice."
       },
       "csv": {
         "date": "Date",
@@ -1028,8 +1037,7 @@
       "emptyExercice": {
         "title": "Aucun exercice fiscal",
         "description": "Créez un exercice fiscal pour générer le compte de résultat."
-      },
-      "immobilisationNote": "Achats d'immobilisations et amortissements — à titre informatif, non inclus dans le résultat de l'exercice."
+      }
     },
     "previsionnel": {
       "title": "Budget prévisionnel",

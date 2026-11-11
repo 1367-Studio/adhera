@@ -1348,8 +1348,7 @@
       "sections": {
         "FINANCIAL": "Finanzjarju",
         "EXCEPTIONAL": "Eċċezzjonali",
-        "OTHER": "Ieħor",
-        "IN_KIND": "Kontribuzzjonijiet volontarji in natura"
+        "OTHER": "Ieħor"
       },
       "drillDown": {
         "date": "Data",
@@ -1376,14 +1375,19 @@
         "otherIncome": "DĦUL IEĦOR",
         "otherExpense": "NFIQ IEĦOR",
         "otherResult": "RIŻULTAT TA' DĦUL U NFIQ IEĦOR",
-        "inKindIncome": "KONTRIBUZZJONIJIET VOLONTARJI IN NATURA",
-        "inKindExpense": "UŻU TAL-KONTRIBUZZJONIJIET VOLONTARJI IN NATURA",
-        "inKindResult": "KONTRIBUZZJONIJIET VOLONTARJI (BILANĊ)",
         "uncategorizedSection": "TRANŻAZZJONIJIET LI JRIDU JIĠU KKATEGORIZZATI",
         "uncategorizedIncomeLabel": "Dħul li jrid jiġi kkategorizzat",
         "uncategorizedExpenseLabel": "Nfiq li jrid jiġi kkategorizzat",
         "total": "Total",
-        "grandTotal": "TOTAL"
+        "grandTotal": "TOTAL",
+        "categoryColumn": "Kategorija",
+        "inKindTitle": "Kontribuzzjonijiet volontarji b'natura",
+        "inKindEmploymentHeader": "Użu tal-kontribuzzjonijiet",
+        "inKindAmountHeader": "Ammont",
+        "inKindReceivedHeader": "Kontribuzzjonijiet miksuba",
+        "inKindTotalEmployments": "Total ta' Impjiegi",
+        "inKindTotalReceived": "Kontribuzzjonijiet totali",
+        "inKindNote": "Dawn il-kontribuzzjonijiet b'xejn huma valutati f'ewro. Ma jwasslux għal moviment ta' flus u ma jbiddlux ir-riżultat tas-sena finanzjarja."
       },
       "csv": {
         "date": "Data",
@@ -1399,6 +1403,16 @@
         "origin": "Oriġini",
         "reference": "Referenza",
         "exercice": "Eżerċizzju"
+      },
+      "categoryColumnLabel": "Kategorija",
+      "inKind": {
+        "title": "Kontribuzzjonijiet volontarji b'natura",
+        "employmentHeader": "Użu tal-kontribuzzjonijiet",
+        "amountHeader": "Ammont",
+        "receivedHeader": "Kontribuzzjonijiet miksuba",
+        "totalEmployments": "Total ta' Impjiegi",
+        "totalReceived": "Kontribuzzjonijiet totali",
+        "note": "Dawn il-kontribuzzjonijiet b'xejn huma valutati f'ewro. Ma jwasslux għal moviment ta' flus u ma jbiddlux ir-riżultat tas-sena finanzjarja."
       }
     }
   },

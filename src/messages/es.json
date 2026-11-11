@@ -1348,8 +1348,7 @@
       "sections": {
         "FINANCIAL": "Financiero",
         "EXCEPTIONAL": "Excepcional",
-        "OTHER": "Otro",
-        "IN_KIND": "Contribuciones voluntarias en especie"
+        "OTHER": "Otro"
       },
       "drillDown": {
         "date": "Fecha",
@@ -1376,14 +1375,19 @@
         "otherIncome": "OTROS INGRESOS",
         "otherExpense": "OTROS GASTOS",
         "otherResult": "RESULTADO DE OTROS INGRESOS Y GASTOS",
-        "inKindIncome": "CONTRIBUCIONES VOLUNTARIAS EN ESPECIE",
-        "inKindExpense": "EMPLEO DE LAS CONTRIBUCIONES VOLUNTARIAS EN ESPECIE",
-        "inKindResult": "CONTRIBUCIONES VOLUNTARIAS",
         "uncategorizedSection": "TRANSACCIONES POR CATEGORIZAR",
         "uncategorizedIncomeLabel": "Ingresos por categorizar",
         "uncategorizedExpenseLabel": "Gastos por categorizar",
         "total": "Total",
-        "grandTotal": "TOTAL"
+        "grandTotal": "TOTAL",
+        "categoryColumn": "Categoría",
+        "inKindTitle": "Contribuciones voluntarias en especie",
+        "inKindEmploymentHeader": "Uso de las contribuciones",
+        "inKindAmountHeader": "Cantidad",
+        "inKindReceivedHeader": "Contribuciones recibidas",
+        "inKindTotalEmployments": "Total de empleos",
+        "inKindTotalReceived": "Contribuciones totales",
+        "inKindNote": "Estas contribuciones gratuitas se valoran en euros. No conducen a ningún movimiento de dinero ni cambian el resultado del ejercicio fiscal."
       },
       "csv": {
         "date": "Fecha",
@@ -1399,6 +1403,16 @@
         "origin": "Origen",
         "reference": "Referencia",
         "exercice": "Ejercicio"
+      },
+      "categoryColumnLabel": "Categoría",
+      "inKind": {
+        "title": "Contribuciones voluntarias en especie",
+        "employmentHeader": "Uso de las contribuciones",
+        "amountHeader": "Cantidad",
+        "receivedHeader": "Contribuciones recibidas",
+        "totalEmployments": "Total de empleos",
+        "totalReceived": "Contribuciones totales",
+        "note": "Estas contribuciones gratuitas se valoran en euros. No conducen a ningún movimiento de dinero ni cambian el resultado del ejercicio fiscal."
       }
     }
   },

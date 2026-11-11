@@ -1348,8 +1348,7 @@
       "sections": {
         "FINANCIAL": "Finansinis",
         "EXCEPTIONAL": "Nepaprastasis",
-        "OTHER": "Kita",
-        "IN_KIND": "Savanoriški įnašai natūra"
+        "OTHER": "Kita"
       },
       "drillDown": {
         "date": "Data",
@@ -1376,14 +1375,19 @@
         "otherIncome": "KITOS PAJAMOS",
         "otherExpense": "KITOS SĄNAUDOS",
         "otherResult": "KITŲ PAJAMŲ IR SĄNAUDŲ REZULTATAS",
-        "inKindIncome": "SAVANORIŠKI ĮNAŠAI NATŪRA",
-        "inKindExpense": "SAVANORIŠKŲ ĮNAŠŲ NATŪRA PANAUDOJIMAS",
-        "inKindResult": "SAVANORIŠKI ĮNAŠAI (LIKUTIS)",
         "uncategorizedSection": "KATEGORIZUOTINOS OPERACIJOS",
         "uncategorizedIncomeLabel": "Kategorizuotinos pajamos",
         "uncategorizedExpenseLabel": "Kategorizuotinos sąnaudos",
         "total": "Iš viso",
-        "grandTotal": "IŠ VISO"
+        "grandTotal": "IŠ VISO",
+        "categoryColumn": "Kategorija",
+        "inKindTitle": "Savanoriškos natūrinės aukos",
+        "inKindEmploymentHeader": "Indėlių panaudojimas",
+        "inKindAmountHeader": "Suma",
+        "inKindReceivedHeader": "Gautos aukos",
+        "inKindTotalEmployments": "Iš viso darbo vietų skaičius",
+        "inKindTotalReceived": "Bendras indėlis",
+        "inKindNote": "Šios nemokamos įmokos vertinamos eurais. Jos nesukelia pinigų judėjimo ir nekeičia finansinių metų rezultato."
       },
       "csv": {
         "date": "Data",
@@ -1399,6 +1403,16 @@
         "origin": "Kilmė",
         "reference": "Nuoroda",
         "exercice": "Finansiniai metai"
+      },
+      "categoryColumnLabel": "Kategorija",
+      "inKind": {
+        "title": "Savanoriškos natūrinės aukos",
+        "employmentHeader": "Indėlių panaudojimas",
+        "amountHeader": "Suma",
+        "receivedHeader": "Gautos aukos",
+        "totalEmployments": "Iš viso darbo vietų skaičius",
+        "totalReceived": "Bendras indėlis",
+        "note": "Šios nemokamos įmokos vertinamos eurais. Jos nesukelia pinigų judėjimo ir nekeičia finansinių metų rezultato."
       }
     }
   },

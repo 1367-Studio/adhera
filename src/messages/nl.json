@@ -1348,8 +1348,7 @@
       "sections": {
         "FINANCIAL": "Financieel",
         "EXCEPTIONAL": "Uitzonderlijk",
-        "OTHER": "Overig",
-        "IN_KIND": "Vrijwillige bijdragen in natura"
+        "OTHER": "Overig"
       },
       "drillDown": {
         "date": "Datum",
@@ -1376,14 +1375,19 @@
         "otherIncome": "OVERIGE OPBRENGSTEN",
         "otherExpense": "OVERIGE KOSTEN",
         "otherResult": "RESULTAAT UIT OVERIGE OPBRENGSTEN EN KOSTEN",
-        "inKindIncome": "VRIJWILLIGE BIJDRAGEN IN NATURA",
-        "inKindExpense": "GEBRUIK VAN DE VRIJWILLIGE BIJDRAGEN IN NATURA",
-        "inKindResult": "VRIJWILLIGE BIJDRAGEN (SALDO)",
         "uncategorizedSection": "TE CATEGORISEREN TRANSACTIES",
         "uncategorizedIncomeLabel": "Te categoriseren inkomsten",
         "uncategorizedExpenseLabel": "Te categoriseren uitgaven",
         "total": "Totaal",
-        "grandTotal": "TOTAAL"
+        "grandTotal": "TOTAAL",
+        "categoryColumn": "Categorie",
+        "inKindTitle": "Vrijwillige bijdragen in natura",
+        "inKindEmploymentHeader": "Gebruik van bijdragen",
+        "inKindAmountHeader": "Bedrag",
+        "inKindReceivedHeader": "Ontvangen bijdragen",
+        "inKindTotalEmployments": "Totaal aantal banen",
+        "inKindTotalReceived": "Totale bijdragen",
+        "inKindNote": "Deze gratis bijdragen zijn gewaardeerd in euro's. Ze leiden niet tot geldverplaatsing en veranderen het resultaat van het boekjaar niet."
       },
       "csv": {
         "date": "Datum",
@@ -1399,6 +1403,16 @@
         "origin": "Herkomst",
         "reference": "Referentie",
         "exercice": "Boekjaar"
+      },
+      "categoryColumnLabel": "Categorie",
+      "inKind": {
+        "title": "Vrijwillige bijdragen in natura",
+        "employmentHeader": "Gebruik van bijdragen",
+        "amountHeader": "Bedrag",
+        "receivedHeader": "Ontvangen bijdragen",
+        "totalEmployments": "Totaal aantal banen",
+        "totalReceived": "Totale bijdragen",
+        "note": "Deze gratis bijdragen zijn gewaardeerd in euro's. Ze leiden niet tot geldverplaatsing en veranderen het resultaat van het boekjaar niet."
       }
     }
   },

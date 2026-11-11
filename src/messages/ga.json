@@ -1348,8 +1348,7 @@
       "sections": {
         "FINANCIAL": "Airgeadais",
         "EXCEPTIONAL": "Eisceachtúil",
-        "OTHER": "Eile",
-        "IN_KIND": "Ranníocaíochtaí deonacha i gcineál"
+        "OTHER": "Eile"
       },
       "drillDown": {
         "date": "Dáta",
@@ -1376,14 +1375,19 @@
         "otherIncome": "IONCAM EILE",
         "otherExpense": "CAITEACHAS EILE",
         "otherResult": "TORADH Ó IONCAM AGUS CAITEACHAS EILE",
-        "inKindIncome": "RANNÍOCAÍOCHTAÍ DEONACHA I GCINEÁL",
-        "inKindExpense": "ÚSÁID NA RANNÍOCAÍOCHTAÍ DEONACHA I GCINEÁL",
-        "inKindResult": "RANNÍOCAÍOCHTAÍ DEONACHA (IARMHÉID)",
         "uncategorizedSection": "IDIRBHEARTA LE CATAGÓIRIÚ",
         "uncategorizedIncomeLabel": "Ioncam le catagóiriú",
         "uncategorizedExpenseLabel": "Caiteachas le catagóiriú",
         "total": "Iomlán",
-        "grandTotal": "IOMLÁN"
+        "grandTotal": "IOMLÁN",
+        "categoryColumn": "Catagóir",
+        "inKindTitle": "Ranníocaíochtaí deonacha comhchineáil",
+        "inKindEmploymentHeader": "Ranníocaíochtaí a úsáid",
+        "inKindAmountHeader": "Méid",
+        "inKindReceivedHeader": "Síntiúis a fuarthas",
+        "inKindTotalEmployments": "Poist Iomlána",
+        "inKindTotalReceived": "Ranníocaíochtaí Iomlána",
+        "inKindNote": "Déantar na ranníocaíochtaí saor in aisce seo a luacháil in euro. Ní bhíonn aon ghluaiseacht airgid mar thoradh orthu agus ní athraíonn siad toradh na bliana airgeadais."
       },
       "csv": {
         "date": "Dáta",
@@ -1399,6 +1403,16 @@
         "origin": "Bunús",
         "reference": "Tagairt",
         "exercice": "Bliain airgeadais"
+      },
+      "categoryColumnLabel": "Catagóir",
+      "inKind": {
+        "title": "Ranníocaíochtaí deonacha comhchineáil",
+        "employmentHeader": "Ranníocaíochtaí a úsáid",
+        "amountHeader": "Méid",
+        "receivedHeader": "Síntiúis a fuarthas",
+        "totalEmployments": "Poist Iomlána",
+        "totalReceived": "Ranníocaíochtaí Iomlána",
+        "note": "Déantar na ranníocaíochtaí saor in aisce seo a luacháil in euro. Ní bhíonn aon ghluaiseacht airgid mar thoradh orthu agus ní athraíonn siad toradh na bliana airgeadais."
       }
     }
   },

@@ -1348,8 +1348,7 @@
       "sections": {
         "FINANCIAL": "Rahoitus",
         "EXCEPTIONAL": "Satunnainen",
-        "OTHER": "Muu",
-        "IN_KIND": "Vapaaehtoiset luontoissuoritukset"
+        "OTHER": "Muu"
       },
       "drillDown": {
         "date": "Päivämäärä",
@@ -1376,14 +1375,19 @@
         "otherIncome": "MUUT TUOTOT",
         "otherExpense": "MUUT KULUT",
         "otherResult": "MUIDEN TUOTTOJEN JA KULUJEN TULOS",
-        "inKindIncome": "VAPAAEHTOISET LUONTOISSUORITUKSET",
-        "inKindExpense": "VAPAAEHTOISTEN LUONTOISSUORITUSTEN KÄYTTÖ",
-        "inKindResult": "VAPAAEHTOISET LUONTOISSUORITUKSET (NETTO)",
         "uncategorizedSection": "LUOKITTELEMATTOMAT TAPAHTUMAT",
         "uncategorizedIncomeLabel": "Luokittelemattomat tulot",
         "uncategorizedExpenseLabel": "Luokittelemattomat menot",
         "total": "Yhteensä",
-        "grandTotal": "YHTEENSÄ"
+        "grandTotal": "YHTEENSÄ",
+        "categoryColumn": "Kategoria",
+        "inKindTitle": "Vapaaehtoiset lahjoitukset luonnonlahjoituksissa",
+        "inKindEmploymentHeader": "Panosten käyttö",
+        "inKindAmountHeader": "Määrä",
+        "inKindReceivedHeader": "Saadut panokset",
+        "inKindTotalEmployments": "Työpaikkojen kokonaismäärä",
+        "inKindTotalReceived": "Kokonaispanokset",
+        "inKindNote": "Nämä ilmaiset sijoitukset arvostetaan euroissa. Ne eivät johda rahan liikkeisiin eivätkä muuta tilikauden tulosta."
       },
       "csv": {
         "date": "Päivämäärä",
@@ -1399,6 +1403,16 @@
         "origin": "Alkuperä",
         "reference": "Viite",
         "exercice": "Tilikausi"
+      },
+      "categoryColumnLabel": "Kategoria",
+      "inKind": {
+        "title": "Vapaaehtoiset lahjoitukset luonnonlahjoituksissa",
+        "employmentHeader": "Panosten käyttö",
+        "amountHeader": "Määrä",
+        "receivedHeader": "Saadut panokset",
+        "totalEmployments": "Työpaikkojen kokonaismäärä",
+        "totalReceived": "Kokonaispanokset",
+        "note": "Nämä ilmaiset sijoitukset arvostetaan euroissa. Ne eivät johda rahan liikkeisiin eivätkä muuta tilikauden tulosta."
       }
     }
   },
