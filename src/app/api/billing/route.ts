@@ -36,9 +36,10 @@ export const GET = withAdminAuth(async (_req, ctx) => {
     : null
 
   // Cosmetic only (see subscriptionPaymentPending) — a SEPA debit still settling. Checked
-  // only while ACTIVE, same reasoning as hasPaymentMethod above: no point asking Stripe when
-  // the answer wouldn't change what's shown.
-  const paymentPending = assoc.subscriptionStatus === "ACTIVE" && assoc.stripeSubscriptionId
+  // while ACTIVE or PAST_DUE: a retry attempt can still be mid-settlement even after the
+  // subscription already flipped to PAST_DUE from an earlier genuine failure, and the
+  // past-due banner needs this to tell that case apart from "still needs action".
+  const paymentPending = (assoc.subscriptionStatus === "ACTIVE" || assoc.subscriptionStatus === "PAST_DUE") && assoc.stripeSubscriptionId
     ? await subscriptionPaymentPending(assoc.stripeSubscriptionId).catch((err: unknown) => {
         reportError(err, { area: "stripe", action: "billing.check-payment-pending", extra: { associationId: ctx.associationId } })
         return false

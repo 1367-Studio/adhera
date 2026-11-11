@@ -4156,6 +4156,7 @@
       "loadError": "Unable to retrieve your subscription status. Try again later.",
       "trialEndsAt": "Your free trial ends on {date}. After that date, your saved card will be charged automatically, unless cancelled before then.",
       "activeText": "Your subscription is active. You can view your invoices, change your payment method or cancel at any time from the Stripe management portal.",
+      "paymentPendingText": "Your subscription's SEPA Direct Debit payment is being processed. This can take a few business days before it appears on your bank statement.",
       "pastDueText": "The last payment attempt failed. Update your payment method to avoid your account being suspended.",
       "suspendedText": "Your subscription is suspended after several failed payments. Go to the dedicated screen to reactivate it, export your data or cancel it permanently.",
       "cancelledText": "Your subscription has been cancelled. Contact support to reactivate it.",

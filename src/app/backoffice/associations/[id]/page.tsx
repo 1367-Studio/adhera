@@ -13,7 +13,7 @@ import { CustomBrandingEditor } from "@/components/backoffice/custom-branding-ed
 import { TwoFactorAdminReset } from "@/components/backoffice/two-factor-admin-reset"
 import { LastActivityDate } from "@/components/backoffice/last-activity-date"
 import { parseModules }     from "@/lib/modules"
-import { getPricingInfo }   from "@/lib/stripe"
+import { getPricingInfo, subscriptionPaymentPending } from "@/lib/stripe"
 import { memberLimitForPlan } from "@/lib/plan-limits"
 import { planLabel } from "@/lib/plan-tier"
 import { UsersIcon } from "@phosphor-icons/react/dist/ssr";
@@ -21,9 +21,12 @@ import { buttonVariants } from "@/components/ui/button"
 import { BackLink } from "@/components/ui/back-link"
 import { APP_NAME } from "@/config/brand"
 
-const subLabel: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {
+const subLabel: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline" | "warning" }> = {
   TRIAL:     { label: "Essai",      variant: "secondary"   },
   ACTIVE:    { label: "Actif",      variant: "default"     },
+  // SEPA Direct Debit still mid-settlement — see subscriptionPaymentPending in
+  // src/lib/stripe.ts. Takes priority over ACTIVE/PAST_DUE below.
+  PAYMENT_PENDING: { label: "Paiement en cours", variant: "warning" },
   PAST_DUE:  { label: "En retard",  variant: "destructive" },
   SUSPENDED: { label: "Suspendu",   variant: "destructive" },
   CANCELLED: { label: "Annulé",     variant: "outline"     },
@@ -87,7 +90,11 @@ export default async function AssociationDetailPage({ params }: { params: Promis
   const assoc  = await getAssociation(id)
   if (!assoc) notFound()
 
-  const sub           = subLabel[assoc.subscriptionStatus] ?? { label: assoc.subscriptionStatus, variant: "outline" as const }
+  const paymentPending = (assoc.subscriptionStatus === "ACTIVE" || assoc.subscriptionStatus === "PAST_DUE") && assoc.stripeSubscriptionId
+    ? await subscriptionPaymentPending(assoc.stripeSubscriptionId).catch(() => false)
+    : false
+  const subKey        = paymentPending ? "PAYMENT_PENDING" : assoc.subscriptionStatus
+  const sub           = subLabel[subKey] ?? { label: assoc.subscriptionStatus, variant: "outline" as const }
   const admin         = assoc.users[0]
   const modules       = parseModules(assoc.modules)
   const pricing       = await getPricingInfo()
