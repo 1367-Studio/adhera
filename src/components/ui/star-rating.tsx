@@ -28,9 +28,9 @@ export function StarRating({
           aria-label={`${star} étoile${star > 1 ? "s" : ""}`}
         >
           <StarIcon
-            className={cn(iconSize, "transition-colors")}
-            fill={star <= value ? FILLED : "transparent"}
-            stroke={star <= value ? FILLED : "currentColor"}
+            className={cn(iconSize, "transition-colors", star > value && "text-muted-foreground/40")}
+            weight={star <= value ? "fill" : "regular"}
+            style={star <= value ? { color: FILLED } : undefined}
           />
         </button>
       ))}

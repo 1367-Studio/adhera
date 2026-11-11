@@ -2,7 +2,7 @@
 
 import type { ComponentConfig, CustomField } from "@puckeditor/core"
 import { FieldLabel } from "@puckeditor/core"
-import { QuotesIcon, WarningIcon } from "@phosphor-icons/react/dist/ssr"
+import { WarningIcon } from "@phosphor-icons/react/dist/ssr"
 import { cn } from "@/lib/utils"
 import { CheckboxField } from "@/components/ui/checkbox-field"
 import { StarRatingDisplay } from "@/components/ui/star-rating"
@@ -226,10 +226,7 @@ export const eventReviewsBlock: ComponentConfig<EventReviewsBlockProps> = {
                   )}
                   style={{ borderColor: dividerColor }}
                 >
-                  <div className="flex items-center justify-between">
-                    <QuotesIcon className="size-6 opacity-60" weight="fill" />
-                    <StarRatingDisplay value={review.rating} size="sm" />
-                  </div>
+                  <StarRatingDisplay value={review.rating} size="sm" />
                   {review.comment && <blockquote className="text-sm leading-relaxed text-pretty">« {review.comment} »</blockquote>}
                   <figcaption className="mt-auto flex flex-col text-sm">
                     <span className="font-semibold">{review.displayName}</span>
