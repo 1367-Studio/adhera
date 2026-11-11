@@ -1348,8 +1348,7 @@
       "sections": {
         "FINANCIAL": "Finanziario",
         "EXCEPTIONAL": "Straordinario",
-        "OTHER": "Altro",
-        "IN_KIND": "Contributi volontari in natura"
+        "OTHER": "Altro"
       },
       "drillDown": {
         "date": "Data",
@@ -1376,14 +1375,19 @@
         "otherIncome": "ALTRI PROVENTI",
         "otherExpense": "ALTRI ONERI",
         "otherResult": "RISULTATO DA ALTRI PROVENTI E ONERI",
-        "inKindIncome": "CONTRIBUTI VOLONTARI IN NATURA",
-        "inKindExpense": "IMPIEGO DEI CONTRIBUTI VOLONTARI IN NATURA",
-        "inKindResult": "CONTRIBUTI VOLONTARI (SALDO)",
         "uncategorizedSection": "TRANSAZIONI DA CATEGORIZZARE",
         "uncategorizedIncomeLabel": "Entrate da categorizzare",
         "uncategorizedExpenseLabel": "Spese da categorizzare",
         "total": "Totale",
-        "grandTotal": "TOTALE"
+        "grandTotal": "TOTALE",
+        "categoryColumn": "Categoria",
+        "inKindTitle": "Contributi volontari in natura",
+        "inKindEmploymentHeader": "Uso dei contributi",
+        "inKindAmountHeader": "Importo",
+        "inKindReceivedHeader": "Contributi ricevuti",
+        "inKindTotalEmployments": "Posti di lavoro totali",
+        "inKindTotalReceived": "Contributi totali",
+        "inKindNote": "Questi contributi gratuiti sono valutati in euro. Non comportano alcun movimento di denaro e non cambiano il risultato dell'anno finanziario."
       },
       "csv": {
         "date": "Data",
@@ -1399,6 +1403,16 @@
         "origin": "Origine",
         "reference": "Riferimento",
         "exercice": "Esercizio"
+      },
+      "categoryColumnLabel": "Categoria",
+      "inKind": {
+        "title": "Contributi volontari in natura",
+        "employmentHeader": "Uso dei contributi",
+        "amountHeader": "Importo",
+        "receivedHeader": "Contributi ricevuti",
+        "totalEmployments": "Posti di lavoro totali",
+        "totalReceived": "Contributi totali",
+        "note": "Questi contributi gratuiti sono valutati in euro. Non comportano alcun movimento di denaro e non cambiano il risultato dell'anno finanziario."
       }
     }
   },

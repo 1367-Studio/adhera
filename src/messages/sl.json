@@ -1348,8 +1348,7 @@
       "sections": {
         "FINANCIAL": "Finančno",
         "EXCEPTIONAL": "Izredno",
-        "OTHER": "Drugo",
-        "IN_KIND": "Prostovoljni prispevki v naravi"
+        "OTHER": "Drugo"
       },
       "drillDown": {
         "date": "Datum",
@@ -1376,14 +1375,19 @@
         "otherIncome": "DRUGI PRIHODKI",
         "otherExpense": "DRUGI ODHODKI",
         "otherResult": "IZID IZ DRUGIH PRIHODKOV IN ODHODKOV",
-        "inKindIncome": "PROSTOVOLJNI PRISPEVKI V NARAVI",
-        "inKindExpense": "UPORABA PROSTOVOLJNIH PRISPEVKOV V NARAVI",
-        "inKindResult": "PROSTOVOLJNI PRISPEVKI (SALDO)",
         "uncategorizedSection": "TRANSAKCIJE ZA KATEGORIZACIJO",
         "uncategorizedIncomeLabel": "Prihodki za kategorizacijo",
         "uncategorizedExpenseLabel": "Odhodki za kategorizacijo",
         "total": "Skupaj",
-        "grandTotal": "SKUPAJ"
+        "grandTotal": "SKUPAJ",
+        "categoryColumn": "Kategorija",
+        "inKindTitle": "Prostovoljni prispevki v naravi",
+        "inKindEmploymentHeader": "Uporaba prispevkov",
+        "inKindAmountHeader": "Znesek",
+        "inKindReceivedHeader": "Prejeti prispevki",
+        "inKindTotalEmployments": "Skupno število delovnih mest",
+        "inKindTotalReceived": "Skupni prispevki",
+        "inKindNote": "Ti brezplačni prispevki so vredni v evrih. Ne povzročajo nobenega premika denarja in ne spreminjajo rezultata finančnega leta."
       },
       "csv": {
         "date": "Datum",
@@ -1399,6 +1403,16 @@
         "origin": "Izvor",
         "reference": "Referenca",
         "exercice": "Poslovno leto"
+      },
+      "categoryColumnLabel": "Kategorija",
+      "inKind": {
+        "title": "Prostovoljni prispevki v naravi",
+        "employmentHeader": "Uporaba prispevkov",
+        "amountHeader": "Znesek",
+        "receivedHeader": "Prejeti prispevki",
+        "totalEmployments": "Skupno število delovnih mest",
+        "totalReceived": "Skupni prispevki",
+        "note": "Ti brezplačni prispevki so vredni v evrih. Ne povzročajo nobenega premika denarja in ne spreminjajo rezultata finančnega leta."
       }
     }
   },

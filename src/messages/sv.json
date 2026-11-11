@@ -1348,8 +1348,7 @@
       "sections": {
         "FINANCIAL": "Finansiellt",
         "EXCEPTIONAL": "Extraordinärt",
-        "OTHER": "Övrigt",
-        "IN_KIND": "Frivilliga bidrag in natura"
+        "OTHER": "Övrigt"
       },
       "drillDown": {
         "date": "Datum",
@@ -1376,14 +1375,19 @@
         "otherIncome": "ÖVRIGA INTÄKTER",
         "otherExpense": "ÖVRIGA KOSTNADER",
         "otherResult": "RESULTAT FRÅN ÖVRIGA INTÄKTER OCH KOSTNADER",
-        "inKindIncome": "FRIVILLIGA BIDRAG IN NATURA",
-        "inKindExpense": "ANVÄNDNING AV FRIVILLIGA BIDRAG IN NATURA",
-        "inKindResult": "FRIVILLIGA BIDRAG (NETTO)",
         "uncategorizedSection": "TRANSAKTIONER ATT KATEGORISERA",
         "uncategorizedIncomeLabel": "Intäkter att kategorisera",
         "uncategorizedExpenseLabel": "Kostnader att kategorisera",
         "total": "Summa",
-        "grandTotal": "TOTALT"
+        "grandTotal": "TOTALT",
+        "categoryColumn": "Kategori",
+        "inKindTitle": "Frivilliga bidrag i natura",
+        "inKindEmploymentHeader": "Användning av bidrag",
+        "inKindAmountHeader": "Belopp",
+        "inKindReceivedHeader": "Mottagna bidrag",
+        "inKindTotalEmployments": "Totalt antal jobb",
+        "inKindTotalReceived": "Totala bidrag",
+        "inKindNote": "Dessa fria bidrag värderas i euro. De leder inte till någon penningrörelse och förändrar inte resultatet av räkenskapsåret."
       },
       "csv": {
         "date": "Datum",
@@ -1399,6 +1403,16 @@
         "origin": "Ursprung",
         "reference": "Referens",
         "exercice": "Räkenskapsår"
+      },
+      "categoryColumnLabel": "Kategori",
+      "inKind": {
+        "title": "Frivilliga bidrag i natura",
+        "employmentHeader": "Användning av bidrag",
+        "amountHeader": "Belopp",
+        "receivedHeader": "Mottagna bidrag",
+        "totalEmployments": "Totalt antal jobb",
+        "totalReceived": "Totala bidrag",
+        "note": "Dessa fria bidrag värderas i euro. De leder inte till någon penningrörelse och förändrar inte resultatet av räkenskapsåret."
       }
     }
   },
