@@ -4,6 +4,7 @@ import { APP_NAME } from "@/config/brand"
 import { APP_URL } from "@/lib/env"
 import { parseModules } from "@/lib/modules"
 import { prisma } from "@/lib/prisma/client"
+import { subscriptionsPaymentPending } from "@/lib/stripe"
 import type { Metadata } from "next"
 import Link from "next/link"
 
@@ -11,9 +12,12 @@ export const metadata: Metadata = {
   title: `Associations — Backoffice ${APP_NAME}`,
 }
 
-const subLabel: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {
+const subLabel: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline" | "warning" }> = {
   TRIAL:     { label: "Essai",     variant: "secondary"   },
   ACTIVE:    { label: "Actif",     variant: "default"     },
+  // SEPA Direct Debit still mid-settlement — see subscriptionPaymentPending in
+  // src/lib/stripe.ts. Takes priority over PAST_DUE below.
+  PAYMENT_PENDING: { label: "Paiement en cours", variant: "warning" },
   PAST_DUE:  { label: "En retard", variant: "destructive" },
   SUSPENDED: { label: "Suspendu",  variant: "destructive" },
   CANCELLED: { label: "Annulé",    variant: "outline"     },
@@ -42,8 +46,9 @@ async function getAssociations() {
       slug:               true,
       city:               true,
       country:            true,
-      subscriptionStatus: true,
-      trialEndsAt:        true,
+      subscriptionStatus:   true,
+      stripeSubscriptionId: true,
+      trialEndsAt:          true,
       sitePublished:      true,
       modules:            true,
       createdAt:          true,
@@ -57,11 +62,23 @@ async function getAssociations() {
   })
 }
 
+// Only checked for PAST_DUE rows, not every association — this list can have hundreds of
+// rows and most are TRIAL/ACTIVE/CANCELLED, where a live Stripe round-trip would buy nothing
+// (see subscriptionPaymentPending in src/lib/stripe.ts for why only PAST_DUE needs it: a
+// SEPA debit still settling after an earlier genuine failure looks identical to "really
+// stuck" without this check).
+async function getPaymentPendingByAssociation(assocs: { id: string; subscriptionStatus: string; stripeSubscriptionId: string | null }[]) {
+  const pastDue = assocs.filter(a => a.subscriptionStatus === "PAST_DUE" && a.stripeSubscriptionId)
+  const pendingBySubscriptionId = await subscriptionsPaymentPending(pastDue.map(a => a.stripeSubscriptionId!))
+  return new Map(pastDue.map(a => [a.id, pendingBySubscriptionId.get(a.stripeSubscriptionId!) ?? false]))
+}
+
 export default async function AssociationsPage() {
   const [assocs, staffLastSeenByAssociation] = await Promise.all([
     getAssociations(),
     getStaffLastSeenByAssociation(),
   ])
+  const paymentPendingByAssociation = await getPaymentPendingByAssociation(assocs)
 
   return (
     <div className="space-y-4">
@@ -88,7 +105,8 @@ export default async function AssociationsPage() {
           </thead>
           <tbody className="divide-y">
             {assocs.map(assoc => {
-              const sub  = subLabel[assoc.subscriptionStatus] ?? { label: assoc.subscriptionStatus, variant: "outline" as const }
+              const subKey = paymentPendingByAssociation.get(assoc.id) ? "PAYMENT_PENDING" : assoc.subscriptionStatus
+              const sub  = subLabel[subKey] ?? { label: assoc.subscriptionStatus, variant: "outline" as const }
               const href = `/backoffice/associations/${assoc.id}`
               // Same gate as the public page (src/app/[slug]/page.tsx): published AND site module on.
               const siteIsLive    = assoc.sitePublished && parseModules(assoc.modules).site
