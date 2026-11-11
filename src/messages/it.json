@@ -910,7 +910,19 @@
         "EXCEPTIONAL": "Straordinario",
         "OTHER": "Altro",
         "IN_KIND": "Contributi in natura"
-      }
+      },
+      "accountingCodeFormwiseNote": "Sottoaccount suggerito da Formwise per un tracciamento separato — non un numero ufficiale obbligatorio.",
+      "suggestedAccounts": "Resoconti suggeriti",
+      "seeOtherAccounts": "Vedi gli altri resoconti",
+      "description": "Descrizione",
+      "descriptionPlaceholder": "Es: Vendita dei biglietti per un'attività o un evento.",
+      "sectionAutoNote": "La sezione è determinata automaticamente dal conto contabile.",
+      "sectionManualNote": "Sezione definita manualmente.",
+      "sectionUnverifiedNote": "Questo account non è riconosciuto — controlla la sezione o sceglilo tra le opzioni avanzate.",
+      "sectionToVerify": "Sezione da controllare",
+      "advancedOptions": "Opzioni avanzate",
+      "revertToAutoSection": "Ritorno alla sezione automatica",
+      "noMatchingCategory": "Nessuna categoria corrispondente"
     },
     "bankAccountForm": {
       "bankName": "Nome della banca",
@@ -1050,7 +1062,6 @@
       "description": "Gestire le categorie di ricavi e spese.",
       "seedButton": "Inizializzare le categorie predefinite",
       "noCategories": "Nessuna categoria",
-      "default": "Predefinito",
       "income": "Entrate",
       "expenses": "Spese",
       "newCategoryTitle": "Nuova categoria",
@@ -1062,7 +1073,12 @@
         "updated": "Categoria aggiornata",
         "deleted": "Categoria eliminata",
         "seeded": "{count, plural, one {# categoria inizializzata} other {# categorie iniziali}}"
-      }
+      },
+      "chooseTemplateTitle": "Scegli un tipo di categoria",
+      "customCategory": "Crea una categoria personalizzata",
+      "alreadyExists": "Già configurato",
+      "archivedReactivateHint": "Archiviato — clicca per riattivare",
+      "custom": "Personalizzata"
     },
     "incomesView": {
       "title": "Entrate",
@@ -4147,11 +4163,7 @@
       "selectedCount": "{count, plural, one {# selezionato} other {# selezionato}}",
       "deselectAll": "Deselezione",
       "sendReminder": "Invia un promemoria",
-      "exportMembers": "Membri esportatori",
-      "exportExcel": "Excel (.xlsx)",
-      "exportPdf": "PDF (.pdf)",
       "count": "{count, plural, one {# Quota associativa} other {# Contributi}}",
-      "totalCollected": " · {amount} Incassati",
       "exercise": "Esercizio {year}",
       "columns": {
         "member": "Membro",
@@ -4195,7 +4207,59 @@
         "editCancelled": "Cambio dell'iscrizione annullata"
       },
       "selectAllTruncated": "Più di 500 contributi rientravano nei filtri — solo i primi 500 sono stati selezionati.",
-      "remaining": "Riposo {amount}"
+      "remaining": "Riposo {amount}",
+      "export": "Esporta",
+      "exportCotisationsExcel": "Contributi (Excel)",
+      "exportMembresExcel": "Membri (Excel)",
+      "exportMembresPdf": "Membri (PDF)",
+      "allCategories": "Tutte le categorie",
+      "allRenewals": "Tutti i rinnovi",
+      "resetFilters": "Reset",
+      "renewal": {
+        "automatic": "Automatico",
+        "manual": "Manuale"
+      },
+      "summary": {
+        "aPagar": " · {amount} totale",
+        "recebido": " · {amount} incassati",
+        "saldo": " · {amount} da saldare"
+      },
+      "distribution": {
+        "show": "Vedi la ripartizione",
+        "hide": "Nascondi la ripartizione",
+        "category": "Categoria di appartenenza",
+        "renewal": "Rinnovo",
+        "count": "Numero di contributi",
+        "aPagar": "Importo totale",
+        "recebido": "Importo ricevuto",
+        "saldo": "Saldo residuo",
+        "total": "Totale",
+        "noCategory": "Nessuna categoria",
+        "empty": "Nessun contributo corrisponde a questi filtri."
+      },
+      "mergeTiers": {
+        "filterOption": "Unisci le categorie duplicate",
+        "title": "Unisci le categorie duplicate",
+        "description": "Categorie i cui nomi differiscono solo per caso, accenti o spazi. Nulla viene automaticamente fuso.",
+        "empty": "Nessun duplicato rilevato.",
+        "groupSummary": "{count} categorie chiamate \"{label}\"",
+        "groupTitle": "Unisci in \"{label}\"",
+        "backAction": "Indietro",
+        "cancelAction": "Cancella",
+        "keepAsPrimary": "Categoria da mantenere",
+        "mergeIntoPrimary": "Categorie da integrare",
+        "tierCounts": "{cotisationCount} Quota(e) · {membreCount} Membro(i)",
+        "mergeAction": "Fusione",
+        "confirmTitle": "Conferma la fusione",
+        "confirmDescription": "{count} categoria(e) saranno unite in \"{primaryLabel}\". {cotisationCount} La quota/i di iscrizione e {membreCount} saranno trasferiti. Questa azione è irreversibile ma preserva tutta la cronologia e le configurazioni dei rinnovi.",
+        "mergeSuccess": "{count} categoria/e fusa.",
+        "loadError": "I duplicati non possono essere caricati. Riprova tra un attimo.",
+        "activeSubscriptionWarning": "{count} l'abbonamento attivo verrà trasferito — La fatturazione Stripe già in corso non cambia automaticamente.",
+        "priceFree": "Gratis",
+        "priceFreeAmount": "Importo gratuito",
+        "priceFreeAmountFrom": "Importo gratuito da {amount}",
+        "priceRecurring": "{amount}/anno"
+      }
     },
     "reminderModal": {
       "title": "Invia un promemoria per la donazione",

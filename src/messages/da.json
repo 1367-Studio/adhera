@@ -910,7 +910,19 @@
         "EXCEPTIONAL": "Ekstraordinært",
         "OTHER": "Andet",
         "IN_KIND": "Bidrag i naturalier"
-      }
+      },
+      "accountingCodeFormwiseNote": "Underkonto foreslået af Formwise til separat sporing — ikke et obligatorisk officielt nummer.",
+      "suggestedAccounts": "Foreslåede konti",
+      "seeOtherAccounts": "Se de andre beretninger",
+      "description": "Beskrivelse",
+      "descriptionPlaceholder": "F.eks.: Billetsalg til en aktivitet eller begivenhed.",
+      "sectionAutoNote": "Afsnit automatisk fastlagt fra regnskabskontoen.",
+      "sectionManualNote": "Manuelt defineret sektion.",
+      "sectionUnverifiedNote": "Denne konto genkendes ikke — tjek sektionen eller vælg den fra de avancerede muligheder.",
+      "sectionToVerify": "Afsnit for at tjekke",
+      "advancedOptions": "Avancerede muligheder",
+      "revertToAutoSection": "Tilbage til den automatiske sektion",
+      "noMatchingCategory": "Ingen matchende kategori"
     },
     "bankAccountForm": {
       "bankName": "Banknavn",
@@ -1050,7 +1062,6 @@
       "description": "Styr omsætnings- og udgiftskategorier.",
       "seedButton": "Initialiser standardkategorier",
       "noCategories": "Ingen kategori",
-      "default": "Default",
       "income": "Indtægter",
       "expenses": "Udgifter",
       "newCategoryTitle": "Ny kategori",
@@ -1062,7 +1073,12 @@
         "updated": "Opdateret kategori",
         "deleted": "Kategori slettet",
         "seeded": "{count, plural, one {# initialiseret kategori} other {# initialiserede kategorier}}"
-      }
+      },
+      "chooseTemplateTitle": "Vælg en kategoritype",
+      "customCategory": "Opret en brugerdefineret kategori",
+      "alreadyExists": "Allerede konfigureret",
+      "archivedReactivateHint": "Arkiveret — klik for at genaktivere",
+      "custom": "Tilpasset"
     },
     "incomesView": {
       "title": "Indtægter",
@@ -4147,11 +4163,7 @@
       "selectedCount": "{count, plural, one {# udvalgt} other {# udvalgt}}",
       "deselectAll": "Fjern fravalg",
       "sendReminder": "Send en påmindelse",
-      "exportMembers": "Eksportmedlemmer",
-      "exportExcel": "Excel (.xlsx)",
-      "exportPdf": "PDF (.pdf)",
       "count": "{count, plural, one {# Medlemskontingent} other {# Bidrag}}",
-      "totalCollected": " · {amount} indløste",
       "exercise": "Regnskabsår {year}",
       "columns": {
         "member": "Medlem",
@@ -4195,7 +4207,59 @@
         "editCancelled": "Ændring af det annullerede medlemskab"
       },
       "selectAllTruncated": "Mere end 500 bidrag passede til filtrene — kun de 500 bedste blev udvalgt.",
-      "remaining": "Hvile {amount}"
+      "remaining": "Hvile {amount}",
+      "export": "Eksporter",
+      "exportCotisationsExcel": "Kontingenter (Excel)",
+      "exportMembresExcel": "Medlemmer (Excel)",
+      "exportMembresPdf": "Medlemmer (PDF)",
+      "allCategories": "Alle kategorier",
+      "allRenewals": "Alle fornyelser",
+      "resetFilters": "Nulstil",
+      "renewal": {
+        "automatic": "Automatisk",
+        "manual": "Manuel"
+      },
+      "summary": {
+        "aPagar": " · {amount} total",
+        "recebido": " · {amount} modtaget",
+        "saldo": " · {amount} udestående"
+      },
+      "distribution": {
+        "show": "Se fordeling",
+        "hide": "Skjul fordeling",
+        "category": "Medlemskategori",
+        "renewal": "Fornyelse",
+        "count": "Antal bidrag",
+        "aPagar": "Samlet beløb",
+        "recebido": "Modtaget beløb",
+        "saldo": "Resterende saldo",
+        "total": "I alt",
+        "noCategory": "Ingen kategori",
+        "empty": "Ingen kontingenter matcher disse filtre."
+      },
+      "mergeTiers": {
+        "filterOption": "Sammenlægning af duplikerede kategorier",
+        "title": "Sammenlægning af duplikerede kategorier",
+        "description": "Kategorier, hvis navne kun adskiller sig i kasus, accenter eller mellemrum. Intet bliver automatisk slået sammen.",
+        "empty": "Ingen dubletter registreret.",
+        "groupSummary": "{count} kategorier kaldet \"{label}\"",
+        "groupTitle": "Merge til \"{label}\"",
+        "backAction": "Tilbage",
+        "cancelAction": "Annuller",
+        "keepAsPrimary": "Kategori at beholde",
+        "mergeIntoPrimary": "Kategorier til at fusionere ind i den",
+        "tierCounts": "{cotisationCount} Medlemskontingent(e) · {membreCount} Medlem(er)",
+        "mergeAction": "Sammenlægning",
+        "confirmTitle": "Bekræft sammenlægningen",
+        "confirmDescription": "{count}-kategori(er) vil blive slået sammen med \"{primaryLabel}\". {cotisationCount} Medlemsgebyr(er) og {membreCount}-medlemmer(e) vil blive overført. Denne handling er irreversibel, men bevarer al fornyelseshistorik og konfigurationer.",
+        "mergeSuccess": "{count} sammenslået kategori(er).",
+        "loadError": "Dubletter kan ikke uploades. Prøv igen om et øjeblik.",
+        "activeSubscriptionWarning": "{count} aktive abonnementer vil blive overført — Stripe-fakturering, der allerede er i gang, ændres ikke automatisk.",
+        "priceFree": "Gratis",
+        "priceFreeAmount": "Gratis beløb",
+        "priceFreeAmountFrom": "Gratis beløb fra {amount}",
+        "priceRecurring": "{amount}/år"
+      }
     },
     "reminderModal": {
       "title": "Send en bidragspåmindelse",

@@ -910,7 +910,19 @@
         "EXCEPTIONAL": "Eisceachtúil",
         "OTHER": "Eile",
         "IN_KIND": "Ranníocaíochtaí i gcineál"
-      }
+      },
+      "accountingCodeFormwiseNote": "Fo-chuntas a mhol Formwise le haghaidh rianú ar leithligh - ní uimhir oifigiúil éigeantach.",
+      "suggestedAccounts": "Cuntais mholta",
+      "seeOtherAccounts": "Féach na cuntais eile",
+      "description": "Cur síos",
+      "descriptionPlaceholder": "Ex: Díolachán ticéad le haghaidh gníomhaíochta nó imeachta.",
+      "sectionAutoNote": "Alt arna chinneadh go huathoibríoch ón gcuntas cuntasaíochta.",
+      "sectionManualNote": "Alt sainmhínithe de láimh.",
+      "sectionUnverifiedNote": "Ní aithnítear an cuntas seo - seiceáil an t-alt nó roghnaigh é ó na roghanna casta.",
+      "sectionToVerify": "Rannóg le seiceáil",
+      "advancedOptions": "Ardroghanna",
+      "revertToAutoSection": "Ar ais go dtí an rannóg uathoibríoch",
+      "noMatchingCategory": "Gan aon chatagóir meaitseála"
     },
     "bankAccountForm": {
       "bankName": "Ainm an Bhainc",
@@ -1050,7 +1062,6 @@
       "description": "Catagóirí ioncaim agus caiteachais a bhainistiú.",
       "seedButton": "Tosaigh Catagóirí Réamhshocraithe",
       "noCategories": "Gan chatagóir",
-      "default": "Réamhshocrú",
       "income": "Ioncam",
       "expenses": "Costais",
       "newCategoryTitle": "Catagóir nua",
@@ -1062,7 +1073,12 @@
         "updated": "Catagóir nuashonraithe",
         "deleted": "Catagóir scriosta",
         "seeded": "{count, plural, one {# catagóir tosaithe} other {# catagóirí tosaithe}}"
-      }
+      },
+      "chooseTemplateTitle": "Roghnaigh cineál catagóire",
+      "customCategory": "Cruthaigh catagóir saincheaptha",
+      "alreadyExists": "Cumraithe cheana féin",
+      "archivedReactivateHint": "Cartlainne - cliceáil chun athghníomhachtú a dhéanamh",
+      "custom": "Saincheaptha"
     },
     "incomesView": {
       "title": "Ioncam",
@@ -4147,11 +4163,7 @@
       "selectedCount": "{count, plural, one {# roghnaithe} other {# roghnaithe}}",
       "deselectAll": "Díroghnaigh",
       "sendReminder": "Seol meabhrúchán",
-      "exportMembers": "Easpórtáil Baill",
-      "exportExcel": "Excel (.xlsx)",
-      "exportPdf": "PDF (.pdf)",
       "count": "{count, plural, one {# Táille ballraíochta} other {# Ranníocaíochtaí}}",
-      "totalCollected": " · {amount} airgead tirim isteach",
       "exercise": "Bliain fhioscach {year}",
       "columns": {
         "member": "Comhalta",
@@ -4195,7 +4207,59 @@
         "editCancelled": "Ballraíocht Cealaithe a Athrú"
       },
       "selectAllTruncated": "Oireann níos mó ná 500 ranníocaíocht do na scagairí - níor roghnaíodh ach an 500 is fearr.",
-      "remaining": "Scíth a ligean {amount}"
+      "remaining": "Scíth a ligean {amount}",
+      "export": "Easpórtáil",
+      "exportCotisationsExcel": "Táillí (Excel)",
+      "exportMembresExcel": "Baill (Excel)",
+      "exportMembresPdf": "Baill (PDF)",
+      "allCategories": "Gach catagóir",
+      "allRenewals": "Gach athnuachan",
+      "resetFilters": "Athshocraigh",
+      "renewal": {
+        "automatic": "Uathoibríoch",
+        "manual": "De láimh"
+      },
+      "summary": {
+        "aPagar": " · {amount} iomlán",
+        "recebido": " · {amount} faighte",
+        "saldo": " · {amount} fágtha"
+      },
+      "distribution": {
+        "show": "Féach ar an miondealú",
+        "hide": "Folaigh an miondealú",
+        "category": "Catagóir Ballraíochta",
+        "renewal": "Athnuachan",
+        "count": "Líon na ranníocaíochtaí",
+        "aPagar": "Méid iomlán",
+        "recebido": "Méid a fuarthas",
+        "saldo": "Iarmhéid atá fágtha",
+        "total": "Iomlán",
+        "noCategory": "Gan chatagóir",
+        "empty": "Níl aon ranníocaíocht ag teacht leis na scagairí seo."
+      },
+      "mergeTiers": {
+        "filterOption": "Cumaisc catagóirí dúblacha",
+        "title": "Cumaisc catagóirí dúblacha",
+        "description": "Catagóirí nach bhfuil a n-ainmneacha difriúil ach i gcás, accents, nó spásanna. Ní dhéantar aon rud a chumasc go huathoibríoch.",
+        "empty": "Níor aimsíodh aon dúbailt.",
+        "groupSummary": "{count} catagóirí darb ainm \"{label}\"",
+        "groupTitle": "Cumaisc isteach i \"{label}\"",
+        "backAction": "Ar ais",
+        "cancelAction": "Cuir ar ceal",
+        "keepAsPrimary": "Catagóir le coinneáil",
+        "mergeIntoPrimary": "Catagóirí le cumasc isteach ann",
+        "tierCounts": "{cotisationCount} Táille Ballraíochta · {membreCount} Ball (í)",
+        "mergeAction": "Cumaisc",
+        "confirmTitle": "Deimhnigh an cumasc",
+        "confirmDescription": "Déanfar catagóir(í) {count} a chumasc i \"{primaryLabel}\". {cotisationCount} Aistreofar táille(í) ballraíochta agus ball(í) {membreCount}. Tá an gníomh seo dochúlaithe ach caomhnaíonn sé gach stair agus cumraíocht athnuachana.",
+        "mergeSuccess": "{count} catagóir (í) cumaiscthe.",
+        "loadError": "Ní féidir dúbailtí a uaslódáil. Bain triail as arís i gceann tamaill.",
+        "activeSubscriptionWarning": "{count} abonnement(s) actif(s) seront transférés — la facturation Stripe déjà en cours ne change pas automatiquement.",
+        "priceFree": "Saor in Aisce",
+        "priceFreeAmount": "Méid saor in aisce",
+        "priceFreeAmountFrom": "Méid saor in aisce ó {amount}",
+        "priceRecurring": "{amount} / bliain"
+      }
     },
     "reminderModal": {
       "title": "Seol Meabhrúchán Ranníocaíochta",

@@ -23,7 +23,7 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
     return NextResponse.json({ error: parsed.error.issues }, { status: 422 })
   }
 
-  const { date, categoryId, memberId, paymentMethod, description, reference, ...rest } = parsed.data
+  const { date, categoryId, projectId, memberId, paymentMethod, description, reference, ...rest } = parsed.data
 
   // Auto-created from a Facture payment — amount/date/status/reference mirror that
   // payment and can only change by editing it from Factures. categoryId/memberId/
@@ -53,6 +53,7 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
         ...rest,
         ...(date          ? { date: new Date(date) } : {}),
         ...(categoryId    !== undefined ? { categoryId:    categoryId    || null } : {}),
+        ...(projectId     !== undefined ? { projectId:     projectId     || null } : {}),
         ...(memberId      !== undefined ? { memberId:      memberId      || null } : {}),
         ...(paymentMethod !== undefined ? { paymentMethod: paymentMethod || null } : {}),
         ...(description   !== undefined ? { description:   description   || null } : {}),

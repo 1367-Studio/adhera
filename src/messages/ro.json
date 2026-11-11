@@ -910,7 +910,19 @@
         "EXCEPTIONAL": "Excepțional",
         "OTHER": "Altele",
         "IN_KIND": "Contribuții în natură"
-      }
+      },
+      "accountingCodeFormwiseNote": "Subcont sugerat de Formwise pentru urmărire separată — nu un număr oficial obligatoriu.",
+      "suggestedAccounts": "Relatări sugerate",
+      "seeOtherAccounts": "Vezi celelalte relatări",
+      "description": "Descriere",
+      "descriptionPlaceholder": "Ex: Vânzarea biletelor pentru o activitate sau un eveniment.",
+      "sectionAutoNote": "Secțiunea este determinată automat din contul contabil.",
+      "sectionManualNote": "Secțiune definită manual.",
+      "sectionUnverifiedNote": "Acest cont nu este recunoscut — verifică secțiunea sau alege-l din opțiunile avansate.",
+      "sectionToVerify": "Secțiune de verificat",
+      "advancedOptions": "Opțiuni avansate",
+      "revertToAutoSection": "Înapoi la secțiunea automată",
+      "noMatchingCategory": "Nicio categorie de potrivire"
     },
     "bankAccountForm": {
       "bankName": "Nume al băncii",
@@ -1050,7 +1062,6 @@
       "description": "Gestionează categoriile de venituri și cheltuieli.",
       "seedButton": "Inițializarea categoriilor implicite",
       "noCategories": "Fără categorie",
-      "default": "Implicit",
       "income": "Venituri",
       "expenses": "Cheltuieli",
       "newCategoryTitle": "Categorie nouă",
@@ -1062,7 +1073,12 @@
         "updated": "Categorie actualizată",
         "deleted": "Categorie ștearsă",
         "seeded": "{count, plural, one {# categorie inițializată} other {# categorii inițializate}}"
-      }
+      },
+      "chooseTemplateTitle": "Alege un tip de categorie",
+      "customCategory": "Creează o categorie personalizată",
+      "alreadyExists": "Deja configurat",
+      "archivedReactivateHint": "Arhivat — click pentru a reactiva",
+      "custom": "Personalizată"
     },
     "incomesView": {
       "title": "Venituri",
@@ -4147,11 +4163,7 @@
       "selectedCount": "{count, plural, one {# selectat} other {# selectat}}",
       "deselectAll": "Deselectare",
       "sendReminder": "Trimite un memento",
-      "exportMembers": "Membri Export",
-      "exportExcel": "Excel (.xlsx)",
-      "exportPdf": "PDF (.pdf)",
       "count": "{count, plural, one {# Taxa de membru} other {# Contribuții}}",
-      "totalCollected": " · {amount} A încasat",
       "exercise": "Exercițiu {year}",
       "columns": {
         "member": "Membru",
@@ -4195,7 +4207,59 @@
         "editCancelled": "Schimbarea abonamentului anulat"
       },
       "selectAllTruncated": "Peste 500 de contribuții se încadrează în filtre — doar primele 500 au fost selectate.",
-      "remaining": "Odihnește-te {amount}"
+      "remaining": "Odihnește-te {amount}",
+      "export": "Exportă",
+      "exportCotisationsExcel": "Taxe (Excel)",
+      "exportMembresExcel": "Membri (Excel)",
+      "exportMembresPdf": "Membri (PDF)",
+      "allCategories": "Toate categoriile",
+      "allRenewals": "Toate reînnoirile",
+      "resetFilters": "Resetare",
+      "renewal": {
+        "automatic": "Automată",
+        "manual": "Manuală"
+      },
+      "summary": {
+        "aPagar": " · {amount} total",
+        "recebido": " · {amount} încasat",
+        "saldo": " · {amount} rămas de plată"
+      },
+      "distribution": {
+        "show": "Vezi distribuția",
+        "hide": "Ascunde distribuția",
+        "category": "Categoria de membru",
+        "renewal": "Reînnoire",
+        "count": "Numărul contribuțiilor",
+        "aPagar": "Suma totală",
+        "recebido": "Suma primită",
+        "saldo": "Soldul rămas",
+        "total": "Total",
+        "noCategory": "Fără categorie",
+        "empty": "Nicio taxă nu corespunde acestor filtre."
+      },
+      "mergeTiers": {
+        "filterOption": "Fuzionarea categoriilor duplicate",
+        "title": "Fuzionarea categoriilor duplicate",
+        "description": "Categorii ale căror nume diferă doar prin majuscule, accente sau spații. Nimic nu este combinat automat.",
+        "empty": "Nu s-au detectat duplicate.",
+        "groupSummary": "{count} categorii denumite \"{label}\"",
+        "groupTitle": "Fuzionează în \"{label}\"",
+        "backAction": "Înapoi",
+        "cancelAction": "Anulează",
+        "keepAsPrimary": "Categorie de păstrat",
+        "mergeIntoPrimary": "Categorii care urmează să fie integrate în el",
+        "tierCounts": "{cotisationCount} Taxă(e) de membru · {membreCount} Membru(i)",
+        "mergeAction": "Fuziunea",
+        "confirmTitle": "Confirmă fuziunea",
+        "confirmDescription": "{count} catégorie(s) seront fusionnées dans « {primaryLabel} ». {cotisationCount} cotisation(s) et {membreCount} adhérent(s) seront transférés. Cette action est irréversible mais préserve tout l'historique et les configurations de renouvellement.",
+        "mergeSuccess": "{count} categorii fuzionate.",
+        "loadError": "Duplicatele nu pot fi încărcate. Încearcă din nou imediat.",
+        "activeSubscriptionWarning": "{count} abonamentele active vor fi transferate — facturarea Stripe deja în curs nu se modifică automat.",
+        "priceFree": "Gratuit",
+        "priceFreeAmount": "Suma gratuită",
+        "priceFreeAmountFrom": "Sumă gratuită din {amount}",
+        "priceRecurring": "{amount}/an"
+      }
     },
     "reminderModal": {
       "title": "Trimite un memento de contribuție",

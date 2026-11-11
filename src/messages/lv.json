@@ -910,7 +910,19 @@
         "EXCEPTIONAL": "Ārkārtas",
         "OTHER": "Cits",
         "IN_KIND": "Ieguldījumi natūrā"
-      }
+      },
+      "accountingCodeFormwiseNote": "Apakškonts, ko ieteica Formwise atsevišķai izsekošanai — nav obligāts oficiāls numurs.",
+      "suggestedAccounts": "Ieteiktie konti",
+      "seeOtherAccounts": "Skatīt citus aprakstus",
+      "description": "Apraksts",
+      "descriptionPlaceholder": "Piemēram: biļešu pārdošana aktivitātei vai pasākumam.",
+      "sectionAutoNote": "Sadaļa tiek noteikta automātiski no grāmatvedības konta.",
+      "sectionManualNote": "Manuāli definēta sadaļa.",
+      "sectionUnverifiedNote": "Šis konts netiek atpazīts — pārbaudiet sadaļu vai izvēlieties to no paplašinātajām opcijām.",
+      "sectionToVerify": "Sadaļa, ko pārbaudīt",
+      "advancedOptions": "Paplašinātās opcijas",
+      "revertToAutoSection": "Atpakaļ uz automātisko sadaļu",
+      "noMatchingCategory": "Nav atbilstības kategorijas"
     },
     "bankAccountForm": {
       "bankName": "Bankas nosaukums",
@@ -1050,7 +1062,6 @@
       "description": "Pārvaldiet ieņēmumu un izdevumu kategorijas.",
       "seedButton": "Noklusējuma kategoriju inicializēšana",
       "noCategories": "Nav kategorijas",
-      "default": "Noklusējums",
       "income": "Ieņēmumi",
       "expenses": "Izdevumi",
       "newCategoryTitle": "Jauna kategorija",
@@ -1062,7 +1073,12 @@
         "updated": "Atjauninātā kategorija",
         "deleted": "Kategorija dzēsta",
         "seeded": "{count, plural, one {# inicializētā kategorija} other {# kategorijas inicializētas}}"
-      }
+      },
+      "chooseTemplateTitle": "Izvēlieties kategorijas tipu",
+      "customCategory": "Izveido pielāgotu kategoriju",
+      "alreadyExists": "Jau konfigurēts",
+      "archivedReactivateHint": "Arhivēts — klikšķiniet, lai aktivizētu",
+      "custom": "Pielāgota"
     },
     "incomesView": {
       "title": "Ieņēmumi",
@@ -4147,11 +4163,7 @@
       "selectedCount": "{count, plural, one {# izvēlēts} other {# izvēlēts}}",
       "deselectAll": "Deselect",
       "sendReminder": "Sūti atgādinājumu",
-      "exportMembers": "Eksporta biedri",
-      "exportExcel": "Excel (.xlsx)",
-      "exportPdf": "PDF (.pdf)",
       "count": "{count, plural, one {# Dalības maksa} other {# Ieguldījums}}",
-      "totalCollected": " · {amount} Izņemts",
       "exercise": "Fiskālais gads {year}",
       "columns": {
         "member": "Loceklis",
@@ -4195,7 +4207,59 @@
         "editCancelled": "Atceltās dalības maiņa"
       },
       "selectAllTruncated": "Vairāk nekā 500 iesniegumu atbilst filtriem — tika izvēlēti tikai top 500.",
-      "remaining": "Atpūta {amount}"
+      "remaining": "Atpūta {amount}",
+      "export": "Eksportēt",
+      "exportCotisationsExcel": "Dalības maksas (Excel)",
+      "exportMembresExcel": "Biedri (Excel)",
+      "exportMembresPdf": "Biedri (PDF)",
+      "allCategories": "Visas kategorijas",
+      "allRenewals": "Visi atjaunojumi",
+      "resetFilters": "Atiestatīt",
+      "renewal": {
+        "automatic": "Automātiska",
+        "manual": "Manuāla"
+      },
+      "summary": {
+        "aPagar": " · {amount} kopējā",
+        "recebido": " · {amount} saņemts",
+        "saldo": " · {amount} atlikums"
+      },
+      "distribution": {
+        "show": "Skatīt sadalījumu",
+        "hide": "Slēpt sadalījumu",
+        "category": "Dalības kategorija",
+        "renewal": "Atjaunošana",
+        "count": "Ieguldījumu skaits",
+        "aPagar": "Kopējā summa",
+        "recebido": "Saņemtā summa",
+        "saldo": "Atlikušais līdzsvars",
+        "total": "Kopā",
+        "noCategory": "Bez kategorijas",
+        "empty": "Neviena dalības maksa neatbilst šiem filtriem."
+      },
+      "mergeTiers": {
+        "filterOption": "Apvienot dublikātu kategorijas",
+        "title": "Apvienot dublikātu kategorijas",
+        "description": "Kategorijas, kuru nosaukumi atšķiras tikai ar locījumiem, akcentiem vai atstarpēm. Nekas netiek automātiski apvienots.",
+        "empty": "Dublikāti netika konstatēti.",
+        "groupSummary": "{count} kategorijas ar nosaukumu \"{label}\"",
+        "groupTitle": "Apvienot uz \"{label}\"",
+        "backAction": "Atpakaļ",
+        "cancelAction": "Atcelt",
+        "keepAsPrimary": "Kategorija, ko saglabāt",
+        "mergeIntoPrimary": "Kategorijas, ko tajā apvienot",
+        "tierCounts": "{cotisationCount} Dalības maksa(s) · {membreCount} Biedrs(i)",
+        "mergeAction": "Apvienošana",
+        "confirmTitle": "Apstiprini apvienošanos",
+        "confirmDescription": "{count} kategorija(-es) tiks apvienotas ar \"{primaryLabel}\". {cotisationCount} biedru maksa(-es) un {membreCount} biedrs(-i) tiks pārcelts. Šī darbība ir neatgriezeniska, bet saglabā visu atjaunošanas vēsturi un konfigurācijas.",
+        "mergeSuccess": "{count} apvienotā kategorija(-as).",
+        "loadError": "Dublikātus nevar augšupielādēt. Mēģiniet vēlreiz pēc brīža.",
+        "activeSubscriptionWarning": "{count} Aktīvais abonements(-i) tiks pārnests — Jau notiekošā Stripe rēķinu apmaksa automātiski nemainās.",
+        "priceFree": "Bezmaksas",
+        "priceFreeAmount": "Bezmaksas summa",
+        "priceFreeAmountFrom": "Bezmaksas summa no {amount}",
+        "priceRecurring": "{amount}/gads"
+      }
     },
     "reminderModal": {
       "title": "Sūtīt atgādinājumu par ziedojumu",

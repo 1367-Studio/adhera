@@ -1,34 +1,19 @@
 import { NextResponse } from "next/server"
+import { Prisma } from "@prisma/client"
 import { prisma } from "@/lib/prisma/client"
 import { cotisationSchema } from "@/lib/schemas"
 import { parsePagination } from "@/lib/pagination"
 import { writeActivityLog } from "@/lib/activity-log"
 import { withAdminAuth } from "@/lib/api-wrapper"
 import { deriveCotisationStatus } from "@/lib/cotisation-status"
+import { parseCotisationFilters, buildCotisationWhere, buildCotisationSqlFilter, A_PAGAR_SQL, RECEBIDO_SQL, SALDO_SQL } from "@/lib/cotisation-query"
 
 export const GET = withAdminAuth(async (req, ctx) => {
   const { associationId } = ctx
 
   const { searchParams } = new URL(req.url)
-  const year   = searchParams.get("year")
-  const status = searchParams.get("status") ?? undefined
-  const search = searchParams.get("search")?.trim()
-
-  const where: Record<string, unknown> = { associationId, membre: { deletedAt: null } }
-  if (year)   where.year   = parseInt(year)
-  // Comma-separated accepts multiple statuses (e.g. "select all matching" for reminders,
-  // which targets EN_ATTENTE/PARTIELLEMENT_PAYEE/EN_RETARD) — single value stays a plain
-  // equality match for the status-filter dropdown's normal usage.
-  if (status) where.status = status.includes(",") ? { in: status.split(",") } : status
-  if (search) {
-    where.membre = {
-      deletedAt: null,
-      OR: [
-        { firstName: { contains: search, mode: "insensitive" } },
-        { lastName:  { contains: search, mode: "insensitive" } },
-      ],
-    }
-  }
+  const filters = parseCotisationFilters(searchParams)
+  const where   = buildCotisationWhere(associationId, filters)
 
   const include = {
     membre:       { select: { id: true, firstName: true, lastName: true, email: true } },
@@ -45,33 +30,36 @@ export const GET = withAdminAuth(async (req, ctx) => {
     return NextResponse.json(data)
   }
 
-  // "Total collected" must count every euro actually received, even for a membre deleted
-  // after paying — unlike the list/count above, which only shows rows for members still
-  // around to act on. Otherwise this stat silently drifts below the Compte de resultat
-  // report (which has no such filter) the moment a paid member gets deleted. Name search is
-  // the exception: a deleted membre can never appear in a search result here, so letting one
-  // contribute to the total would show a non-zero amount next to an empty, unexplainable
-  // list — keep deletedAt: null whenever `search` narrows the match.
-  const aggregateWhere: Record<string, unknown> = { associationId, status: "PAYE" }
-  if (year)   aggregateWhere.year = parseInt(year)
-  if (search) {
-    aggregateWhere.membre = {
-      deletedAt: null,
-      OR: [
-        { firstName: { contains: search, mode: "insensitive" } },
-        { lastName:  { contains: search, mode: "insensitive" } },
-      ],
-    }
-  }
-
   const { page, limit, skip } = parsePagination(searchParams)
-  const [data, total, aggregate] = await Promise.all([
+  const sqlFilter = buildCotisationSqlFilter(associationId, filters)
+
+  // Indicators must reflect every filtered row, not just the current page — a plain Prisma
+  // `aggregate` can't express the conditional (EXONERE/ANNULEE-aware) sums below, hence the
+  // raw query. Shares its WHERE and per-row formulas with /api/cotisations/distribution and
+  // /api/cotisations/export so the table, indicators, breakdown and export can never diverge.
+  const [data, total, summaryRows] = await Promise.all([
     prisma.cotisation.findMany({ where, include, orderBy, skip, take: limit }),
     prisma.cotisation.count({ where }),
-    prisma.cotisation.aggregate({ where: aggregateWhere, _sum: { amount: true } }),
+    prisma.$queryRaw<{ count: bigint; aPagar: string | null; recebido: string | null; saldo: string | null }[]>(Prisma.sql`
+      SELECT
+        COUNT(*) AS count,
+        COALESCE(SUM(${A_PAGAR_SQL}), 0)  AS "aPagar",
+        COALESCE(SUM(${RECEBIDO_SQL}), 0) AS "recebido",
+        COALESCE(SUM(${SALDO_SQL}), 0)    AS "saldo"
+      FROM "Cotisation" c
+      JOIN "Membre" m ON m.id = c."membreId" AND m."deletedAt" IS NULL
+      WHERE ${sqlFilter}
+    `),
   ])
-  const totalPaye = Number(aggregate._sum.amount ?? 0)
-  return NextResponse.json({ data, total, page, limit, totalPages: Math.ceil(total / limit), totalPaye })
+  const summaryRow = summaryRows[0]
+  const summary = {
+    count:    Number(summaryRow?.count ?? 0),
+    aPagar:   Number(summaryRow?.aPagar ?? 0),
+    recebido: Number(summaryRow?.recebido ?? 0),
+    saldo:    Number(summaryRow?.saldo ?? 0),
+  }
+
+  return NextResponse.json({ data, total, page, limit, totalPages: Math.ceil(total / limit), summary })
 }, { area: "adhesions" })
 
 export const POST = withAdminAuth(async (req, ctx) => {

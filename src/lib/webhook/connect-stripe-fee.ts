@@ -4,7 +4,7 @@ import { stripe, platformFeeRate, stripeFeeCents } from "@/lib/stripe"
 import { writeActivityLog } from "@/lib/activity-log"
 import { reportError } from "@/lib/monitoring"
 import { resolveExerciceForDate } from "@/lib/finance/exercice"
-import { defaultCategoryByKey } from "@/lib/finance/default-categories"
+import { getOrCreateDefaultCategory } from "@/lib/finance/resolve-default-category"
 
 // Same helper as donation-subscriptions.ts / cotisation-subscriptions.ts / membership-installments.ts
 // (duplicated locally per that convention, not shared).
@@ -154,29 +154,26 @@ async function bookConnectFeeExpense(params: {
   if (alreadyBooked) return
 
   const reference = await resolveFeeExpenseReference(charge)
-
-  let category = await prisma.financeCategory.findFirst({
-    where:  { associationId, key: "fraisBancaires" },
-    select: { id: true },
-  })
-  if (!category) {
-    // The seed route (api/finances/categories/seed) only runs when a treasurer visits the
-    // Finances screen for the first time — can't assume it already ran for this association.
-    const def = defaultCategoryByKey("fraisBancaires")
-    if (!def) return // Unreachable: "fraisBancaires" is a hardcoded default key.
-    category = await prisma.financeCategory.create({
-      data: { associationId, key: def.key, name: def.name, type: def.type, accountingCode: def.accountingCode, section: def.section, isDefault: true },
-      select: { id: true },
-    })
-  }
-
   const exercice         = await resolveExerciceForDate(associationId, chargeDate)
   const commissionCents  = idealFeeCents - realFeeCents
+
+  // Resolved with the plain `prisma` client, outside the transaction below — see
+  // getOrCreateDefaultCategory's doc comment: its P2002-race retry needs a fresh connection to
+  // recover, which a `tx` can't give it once one of its own statements has already failed.
+  // Stripe's own processing fee is NOT a generic bank fee — it gets its own category,
+  // fraisStripe, separate from fraisBancaires (both now point at the same PCG account, 627000,
+  // but stay distinguishable by key/category for reporting — see default-categories.ts).
+  // Formwise's platform commission is its own category too, commissionFormwise (622200) — not
+  // fraisStripe, not Honoraires (622600).
+  const stripeFeeCategoryId = await getOrCreateDefaultCategory(prisma, associationId, "fraisStripe")
+  const commissionCategoryId = commissionCents > 0
+    ? await getOrCreateDefaultCategory(prisma, associationId, "commissionFormwise")
+    : null
 
   await prisma.$transaction(async (tx) => {
     await tx.expense.create({
       data: {
-        associationId, categoryId: category!.id, reference,
+        associationId, categoryId: stripeFeeCategoryId, reference,
         exerciceId:  exercice?.id ?? null,
         amount:      realFeeCents / 100,
         date:        chargeDate,
@@ -189,7 +186,7 @@ async function bookConnectFeeExpense(params: {
     if (commissionCents > 0) {
       await tx.expense.create({
         data: {
-          associationId, categoryId: category!.id, reference,
+          associationId, categoryId: commissionCategoryId, reference,
           exerciceId:  exercice?.id ?? null,
           amount:      commissionCents / 100,
           date:        chargeDate,

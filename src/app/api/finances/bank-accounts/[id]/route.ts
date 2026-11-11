@@ -31,10 +31,19 @@ export const DELETE = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) =>
   const existing = await prisma.bankAccount.findFirst({ where: { id, associationId } })
   if (!existing) return NextResponse.json({ error: "Compte introuvable" }, { status: 404 })
 
-  const txCount = await prisma.bankTransaction.count({ where: { bankAccountId: id } })
+  const [txCount, transferCount] = await Promise.all([
+    prisma.bankTransaction.count({ where: { bankAccountId: id } }),
+    prisma.accountTransfer.count({ where: { OR: [{ fromAccountId: id }, { toAccountId: id }] } }),
+  ])
   if (txCount > 0) {
     return NextResponse.json(
       { error: `Impossible de supprimer : ce compte contient ${txCount} transaction(s) importée(s).` },
+      { status: 409 },
+    )
+  }
+  if (transferCount > 0) {
+    return NextResponse.json(
+      { error: `Impossible de supprimer : ce compte est lié à ${transferCount} transfert(s) interne(s).` },
       { status: 409 },
     )
   }

@@ -910,7 +910,19 @@
         "EXCEPTIONAL": "Mimořádné",
         "OTHER": "Ostatní",
         "IN_KIND": "Věcné příspěvky"
-      }
+      },
+      "accountingCodeFormwiseNote": "Podúčet navržený Formwise pro samostatné sledování — není to povinné oficiální číslo.",
+      "suggestedAccounts": "Navrhované verze",
+      "seeOtherAccounts": "Viz ostatní zprávy",
+      "description": "Popis",
+      "descriptionPlaceholder": "Například: prodej vstupenek na aktivitu nebo akci.",
+      "sectionAutoNote": "Sekce určená automaticky z účetního účtu.",
+      "sectionManualNote": "Ručně definovaná sekce.",
+      "sectionUnverifiedNote": "Tento účet není rozpoznán — zkontrolujte sekci nebo jej vyberte z pokročilých možností.",
+      "sectionToVerify": "Sekce k ověření",
+      "advancedOptions": "Pokročilé možnosti",
+      "revertToAutoSection": "Zpět k automatické části",
+      "noMatchingCategory": "Žádná párová kategorie"
     },
     "bankAccountForm": {
       "bankName": "Název banky",
@@ -1050,7 +1062,6 @@
       "description": "Spravujte kategorie příjmů a výdajů.",
       "seedButton": "Inicializace výchozích kategorií",
       "noCategories": "Žádná kategorie",
-      "default": "Výchozí stav",
       "income": "Příjmy",
       "expenses": "Výdaje",
       "newCategoryTitle": "Nová kategorie",
@@ -1062,7 +1073,12 @@
         "updated": "Aktualizovaná kategorie",
         "deleted": "Kategorie odstraněna",
         "seeded": "{count, plural, one {# inicializovaná kategorie} other {# kategorie inicializované}}"
-      }
+      },
+      "chooseTemplateTitle": "Vyberte typ kategorie",
+      "customCategory": "Vytvořte vlastní kategorii",
+      "alreadyExists": "Již nakonfigurováno",
+      "archivedReactivateHint": "Archivováno — klikněte pro opětovnou aktivaci",
+      "custom": "Přizpůsobená"
     },
     "incomesView": {
       "title": "Příjmy",
@@ -4147,11 +4163,7 @@
       "selectedCount": "{count, plural, one {# vybrán} other {# vybrán}}",
       "deselectAll": "Zrušit výběr",
       "sendReminder": "Pošlete připomenutí",
-      "exportMembers": "Exportní členové",
-      "exportExcel": "Excel (.xlsx)",
-      "exportPdf": "PDF (.pdf)",
       "count": "{count, plural, one {# Členský poplatek} other {# Příspěvky}}",
-      "totalCollected": " · {amount} Hotovo",
       "exercise": "Fiskální rok {year}",
       "columns": {
         "member": "Člen",
@@ -4195,7 +4207,59 @@
         "editCancelled": "Změna zrušeného členství"
       },
       "selectAllTruncated": "Více než 500 příspěvků splnilo filtry — bylo vybráno pouze 500 nejlepších.",
-      "remaining": "Odpočinek {amount}"
+      "remaining": "Odpočinek {amount}",
+      "export": "Exportovat",
+      "exportCotisationsExcel": "Příspěvky (Excel)",
+      "exportMembresExcel": "Členové (Excel)",
+      "exportMembresPdf": "Členové (PDF)",
+      "allCategories": "Všechny kategorie",
+      "allRenewals": "Všechna obnovení",
+      "resetFilters": "Reset",
+      "renewal": {
+        "automatic": "Automatické",
+        "manual": "Ruční"
+      },
+      "summary": {
+        "aPagar": " · {amount} celkem",
+        "recebido": " · {amount} přijato",
+        "saldo": " · {amount} zbývá uhradit"
+      },
+      "distribution": {
+        "show": "Zobrazit rozdělení",
+        "hide": "Skrýt rozdělení",
+        "category": "Kategorie členství",
+        "renewal": "Obnovení",
+        "count": "Počet příspěvků",
+        "aPagar": "Celková částka",
+        "recebido": "Obdržela částka",
+        "saldo": "Zbývající zůstatek",
+        "total": "Celkem",
+        "noCategory": "Bez kategorie",
+        "empty": "Žádný příspěvek neodpovídá těmto filtrům."
+      },
+      "mergeTiers": {
+        "filterOption": "Sloučení duplicitních kategorií",
+        "title": "Sloučení duplicitních kategorií",
+        "description": "Kategorie, jejichž názvy se liší pouze pádem, přízvuky nebo mezerami. Nic se automaticky nespojuje.",
+        "empty": "Nebyly zjištěny žádné duplikáty.",
+        "groupSummary": "{count} kategorií s názvem \"{label}\"",
+        "groupTitle": "Sloučení do \"{label}\"",
+        "backAction": "Zpět",
+        "cancelAction": "Zrušit",
+        "keepAsPrimary": "Kategorie, kterou si zachovat",
+        "mergeIntoPrimary": "Kategorie, které lze do něj sloučit",
+        "tierCounts": "{cotisationCount} Členský poplatek(y) · {membreCount} Člen(s)",
+        "mergeAction": "Sloučení",
+        "confirmTitle": "Potvrďte sloučení",
+        "confirmDescription": "{count} kategorií(y) budou sloučeny do \"{primaryLabel}\". {cotisationCount} Členský poplatek(y) a {membreCount} člen(i) budou převedeny. Tato akce je nevratná, ale zachovává veškerou historii obnovení a konfigurace.",
+        "mergeSuccess": "{count} sloučené kategorie.",
+        "loadError": "Duplikáty nelze nahrát. Zkuste to za chvíli znovu.",
+        "activeSubscriptionWarning": "{count} aktivní předplatné bude převedeno — Fakturace Stripe, která již probíhá, se automaticky nemění.",
+        "priceFree": "Zdarma",
+        "priceFreeAmount": "Volná částka",
+        "priceFreeAmountFrom": "Zdarma částka z {amount}",
+        "priceRecurring": "{amount}/rok"
+      }
     },
     "reminderModal": {
       "title": "Pošlete připomenutí příspěvku",

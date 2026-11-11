@@ -910,7 +910,19 @@
         "EXCEPTIONAL": "Mimoriadne",
         "OTHER": "Ostatné",
         "IN_KIND": "Vecné príspevky"
-      }
+      },
+      "accountingCodeFormwiseNote": "Subúčet navrhnutý Formwise na samostatné sledovanie — nie je to povinné oficiálne číslo.",
+      "suggestedAccounts": "Navrhované verzie",
+      "seeOtherAccounts": "Pozri ďalšie účty",
+      "description": "Popis",
+      "descriptionPlaceholder": "Napríklad: predaj lístkov na aktivitu alebo podujatie.",
+      "sectionAutoNote": "Časť určená automaticky z účtovného účtu.",
+      "sectionManualNote": "Manuálne definovaná sekcia.",
+      "sectionUnverifiedNote": "Tento účet nie je uznávaný — skontrolujte sekciu alebo si ho vyberte z pokročilých možností.",
+      "sectionToVerify": "Sekcia na kontrolu",
+      "advancedOptions": "Pokročilé možnosti",
+      "revertToAutoSection": "Späť k automatickej sekcii",
+      "noMatchingCategory": "Žiadna kategória párovania"
     },
     "bankAccountForm": {
       "bankName": "Názov banky",
@@ -1050,7 +1062,6 @@
       "description": "Spravovať kategórie príjmov a výdavkov.",
       "seedButton": "Inicializovať predvolené kategórie",
       "noCategories": "Žiadna kategória",
-      "default": "Predvolený stav",
       "income": "Príjmy",
       "expenses": "Výdavky",
       "newCategoryTitle": "Nová kategória",
@@ -1062,7 +1073,12 @@
         "updated": "Aktualizovaná kategória",
         "deleted": "Kategória vymazaná",
         "seeded": "{count, plural, one {# inicializovaná kategória} other {# inicializované kategórie}}"
-      }
+      },
+      "chooseTemplateTitle": "Vyberte typ kategórie",
+      "customCategory": "Vytvoriť vlastnú kategóriu",
+      "alreadyExists": "Už nakonfigurované",
+      "archivedReactivateHint": "Archivované — kliknite na opätovnú aktiváciu",
+      "custom": "Prispôsobená"
     },
     "incomesView": {
       "title": "Príjmy",
@@ -4147,11 +4163,7 @@
       "selectedCount": "{count, plural, one {# vybraný} other {# vybraný}}",
       "deselectAll": "Zrušiť výber",
       "sendReminder": "Pošlite pripomienku",
-      "exportMembers": "Exportní členovia",
-      "exportExcel": "Excel (.xlsx)",
-      "exportPdf": "PDF (.pdf)",
       "count": "{count, plural, one {# Členský poplatok} other {# Príspevky}}",
-      "totalCollected": " · {amount} Hotovo",
       "exercise": "Fiškálny rok {year}",
       "columns": {
         "member": "Člen",
@@ -4195,7 +4207,59 @@
         "editCancelled": "Zmena zrušeného členstva"
       },
       "selectAllTruncated": "Viac ako 500 príspevkov zodpovedalo filtrom — vybrali sa len top 500.",
-      "remaining": "Odpočinok {amount}"
+      "remaining": "Odpočinok {amount}",
+      "export": "Exportovať",
+      "exportCotisationsExcel": "Príspevky (Excel)",
+      "exportMembresExcel": "Členovia (Excel)",
+      "exportMembresPdf": "Členovia (PDF)",
+      "allCategories": "Všetky kategórie",
+      "allRenewals": "Všetky obnovenia",
+      "resetFilters": "Reset",
+      "renewal": {
+        "automatic": "Automatické",
+        "manual": "Ručné"
+      },
+      "summary": {
+        "aPagar": " · {amount} celkovo",
+        "recebido": " · {amount} prijaté",
+        "saldo": " · {amount} zostáva uhradiť"
+      },
+      "distribution": {
+        "show": "Zobraziť rozdelenie",
+        "hide": "Skryť rozdelenie",
+        "category": "Kategória členstva",
+        "renewal": "Obnovenie",
+        "count": "Počet príspevkov",
+        "aPagar": "Celková suma",
+        "recebido": "Prijatá suma",
+        "saldo": "Zostávajúca zostatková bilancia",
+        "total": "Celkom",
+        "noCategory": "Bez kategórie",
+        "empty": "Žiadny príspevok nezodpovedá týmto filtrom."
+      },
+      "mergeTiers": {
+        "filterOption": "Zlúčenie duplicitných kategórií",
+        "title": "Zlúčenie duplicitných kategórií",
+        "description": "Kategórie, ktorých názvy sa líšia len pádom, prízvukom alebo medzerami. Nič sa automaticky nespája.",
+        "empty": "Neboli zistené žiadne duplikáty.",
+        "groupSummary": "{count} kategórie s názvom \"{label}\"",
+        "groupTitle": "Zlúčiť do \"{label}\"",
+        "backAction": "Späť",
+        "cancelAction": "Zrušiť",
+        "keepAsPrimary": "Kategória na zachovanie",
+        "mergeIntoPrimary": "Kategórie na zlúčenie do nej",
+        "tierCounts": "{cotisationCount} Členský poplatok · {membreCount} Členovia(i)",
+        "mergeAction": "Zlúčenie",
+        "confirmTitle": "Potvrďte zlúčenie",
+        "confirmDescription": "{count} kategórie(y) budú zlúčené do \"{primaryLabel}\". {cotisationCount} Členský poplatok a {membreCount} člen(i) budú prevedené. Táto akcia je nezvratná, ale zachováva všetku históriu obnovenia a konfigurácie.",
+        "mergeSuccess": "{count} zlúčené kategórie(y).",
+        "loadError": "Duplikáty sa nedajú nahrať. Skúste to znova o chvíľu.",
+        "activeSubscriptionWarning": "{count} aktívne predplatné budú prevedené — Stripe fakturácia, ktorá už prebieha, sa automaticky nemení.",
+        "priceFree": "Voľné",
+        "priceFreeAmount": "Voľná suma",
+        "priceFreeAmountFrom": "Bezplatná suma z {amount}",
+        "priceRecurring": "{amount}/rok"
+      }
     },
     "reminderModal": {
       "title": "Pošlite pripomienku na príspevok",

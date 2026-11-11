@@ -16,7 +16,7 @@ export const POST = withAdminAuth(async (req, ctx) => {
     return NextResponse.json({ error: parsed.error.issues }, { status: 422 })
   }
 
-  const { bankTransactionId, action, incomeId, expenseId } = parsed.data
+  const { bankTransactionId, action, incomeId, expenseId, transferId } = parsed.data
 
   const tx = await prisma.bankTransaction.findFirst({
     where:   { id: bankTransactionId, associationId },
@@ -40,11 +40,12 @@ export const POST = withAdminAuth(async (req, ctx) => {
   }
 
   if (action === "MATCH") {
-    if (!incomeId && !expenseId) {
-      return NextResponse.json({ error: "incomeId ou expenseId requis pour MATCH" }, { status: 422 })
+    const targetCount = [incomeId, expenseId, transferId].filter(Boolean).length
+    if (targetCount === 0) {
+      return NextResponse.json({ error: "incomeId, expenseId ou transferId requis pour MATCH" }, { status: 422 })
     }
-    if (incomeId && expenseId) {
-      return NextResponse.json({ error: "incomeId et expenseId ne peuvent pas être fournis simultanément" }, { status: 422 })
+    if (targetCount > 1) {
+      return NextResponse.json({ error: "Un seul de incomeId, expenseId ou transferId peut être fourni" }, { status: 422 })
     }
     if (tx.status === "MATCHED") {
       return NextResponse.json({ error: "Transaction déjà conciliée" }, { status: 409 })
@@ -113,6 +114,43 @@ export const POST = withAdminAuth(async (req, ctx) => {
         ])
 
         await writeActivityLog({ associationId, actorId: userId, action: "TX_MATCHED_EXPENSE", entity: "BankTransaction", entityId: bankTransactionId, label: tx.label, metadata: { expenseId } })
+      } else if (transferId) {
+        const transfer = await prisma.accountTransfer.findFirst({
+          where:   { id: transferId, associationId },
+          include: { exercice: { select: { status: true } } },
+        })
+        if (!transfer) return NextResponse.json({ error: "Transfert introuvable" }, { status: 404 })
+
+        // A transfer has two legs, one per account — matching only makes sense against a
+        // BankTransaction that actually belongs to one of those two accounts, otherwise this
+        // bank transaction and this transfer have nothing to do with each other.
+        if (tx.bankAccountId !== transfer.fromAccountId && tx.bankAccountId !== transfer.toAccountId) {
+          return NextResponse.json({ error: "Ce transfert ne concerne pas le compte de cette transaction" }, { status: 422 })
+        }
+
+        const transferGuard = closedExerciceGuard(transfer.exercice?.status)
+        if (transferGuard) return transferGuard
+
+        const matchScore = computeMatchScore(
+          { amount: tx.amount, transactionDate: tx.transactionDate, label: tx.label },
+          { amount: transfer.amount, date: transfer.date, reference: null, membre: null },
+        )
+
+        await prisma.$transaction([
+          prisma.bankReconciliation.create({
+            data: {
+              associationId,
+              bankTransactionId,
+              transferId,
+              matchScore,
+              matchedBy:       "USER",
+              matchedByUserId: userId,
+            },
+          }),
+          prisma.bankTransaction.update({ where: { id: bankTransactionId }, data: { status: "MATCHED" } }),
+        ])
+
+        await writeActivityLog({ associationId, actorId: userId, action: "TX_MATCHED_TRANSFER", entity: "BankTransaction", entityId: bankTransactionId, label: tx.label, metadata: { transferId } })
       }
     } catch (err) {
       if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2002") {
@@ -140,12 +178,15 @@ export const POST = withAdminAuth(async (req, ctx) => {
     const reconciliation = await prisma.bankReconciliation.findFirst({
       where:   { bankTransactionId, associationId },
       include: {
-        income:  { select: { exercice: { select: { status: true } } } },
-        expense: { select: { exercice: { select: { status: true } } } },
+        income:   { select: { exercice: { select: { status: true } } } },
+        expense:  { select: { exercice: { select: { status: true } } } },
+        transfer: { select: { exercice: { select: { status: true } } } },
       },
     })
 
-    const linkedGuard = closedExerciceGuard(reconciliation?.income?.exercice?.status ?? reconciliation?.expense?.exercice?.status)
+    const linkedGuard = closedExerciceGuard(
+      reconciliation?.income?.exercice?.status ?? reconciliation?.expense?.exercice?.status ?? reconciliation?.transfer?.exercice?.status,
+    )
     if (linkedGuard) return linkedGuard
 
     await prisma.$transaction([

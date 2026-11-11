@@ -910,7 +910,19 @@
         "EXCEPTIONAL": "Nepaprastasis",
         "OTHER": "Kita",
         "IN_KIND": "Įnašai natūra"
-      }
+      },
+      "accountingCodeFormwiseNote": "Subpaskyra, kurią Formwise pasiūlė atskiram sekimui – ne privalomas oficialus numeris.",
+      "suggestedAccounts": "Siūlomos paskyros",
+      "seeOtherAccounts": "Žr. kitus pasakojimus",
+      "description": "Aprašymas",
+      "descriptionPlaceholder": "Pvz.: bilietų pardavimas veiklai ar renginiui.",
+      "sectionAutoNote": "Skyrius automatiškai nustatomas iš apskaitos sąskaitos.",
+      "sectionManualNote": "Rankiniu būdu apibrėžtas skyrius.",
+      "sectionUnverifiedNote": "Ši paskyra nėra atpažįstama — patikrinkite skiltį arba pasirinkite ją iš išplėstinių parinkčių.",
+      "sectionToVerify": "Skyrius, kurį reikia patikrinti",
+      "advancedOptions": "Išplėstinės parinktys",
+      "revertToAutoSection": "Grįžti į automatinę sekciją",
+      "noMatchingCategory": "Kategorijoje nėra atitikmenų"
     },
     "bankAccountForm": {
       "bankName": "Banko pavadinimas",
@@ -1050,7 +1062,6 @@
       "description": "Valdyti pajamų ir išlaidų kategorijas.",
       "seedButton": "Numatytųjų kategorijų inicializavimas",
       "noCategories": "Nėra kategorijos",
-      "default": "Numatytasis",
       "income": "Pajamos",
       "expenses": "Išlaidos",
       "newCategoryTitle": "Nauja kategorija",
@@ -1062,7 +1073,12 @@
         "updated": "Atnaujinta kategorija",
         "deleted": "Kategorija ištrinta",
         "seeded": "{count, plural, one {# inicializuota kategorija} other {# kategorijos inicializuotos}}"
-      }
+      },
+      "chooseTemplateTitle": "Pasirinkite kategorijos tipą",
+      "customCategory": "Sukurkite individualią kategoriją",
+      "alreadyExists": "Jau sukonfigūruota",
+      "archivedReactivateHint": "Archyvuota — spustelėkite, kad vėl aktyvuotumėte",
+      "custom": "Pritaikyta"
     },
     "incomesView": {
       "title": "Pajamos",
@@ -4147,11 +4163,7 @@
       "selectedCount": "{count, plural, one {# atrinktas} other {# atrinktas}}",
       "deselectAll": "Atšaukti pasirinkimą",
       "sendReminder": "Siųskite priminimą",
-      "exportMembers": "Eksporto nariai",
-      "exportExcel": "Excel (.xlsx)",
-      "exportPdf": "PDF (.pdf)",
       "count": "{count, plural, one {# Narystės mokestis} other {# Indėlis}}",
-      "totalCollected": " · {amount} Išgryninta",
       "exercise": "Finansiniai metai {year}",
       "columns": {
         "member": "Narys",
@@ -4195,7 +4207,59 @@
         "editCancelled": "Atšauktos narystės keitimas"
       },
       "selectAllTruncated": "Daugiau nei 500 indėlių atitiko filtrus – buvo atrinkti tik geriausi 500.",
-      "remaining": "Poilsis {amount}"
+      "remaining": "Poilsis {amount}",
+      "export": "Eksportuoti",
+      "exportCotisationsExcel": "Mokesčiai (Excel)",
+      "exportMembresExcel": "Nariai (Excel)",
+      "exportMembresPdf": "Nariai (PDF)",
+      "allCategories": "Visos kategorijos",
+      "allRenewals": "Visi atnaujinimai",
+      "resetFilters": "Atstatymas",
+      "renewal": {
+        "automatic": "Automatinis",
+        "manual": "Rankinis"
+      },
+      "summary": {
+        "aPagar": " · {amount} iš viso",
+        "recebido": " · {amount} gauta",
+        "saldo": " · {amount} liko sumokėti"
+      },
+      "distribution": {
+        "show": "Peržiūrėti pasiskirstymą",
+        "hide": "Slėpti pasiskirstymą",
+        "category": "Narystės kategorija",
+        "renewal": "Atnaujinimas",
+        "count": "Indėlių skaičius",
+        "aPagar": "Bendra suma",
+        "recebido": "Gauta suma",
+        "saldo": "Likęs balansas",
+        "total": "Iš viso",
+        "noCategory": "Be kategorijos",
+        "empty": "Joks mokestis neatitinka šių filtrų."
+      },
+      "mergeTiers": {
+        "filterOption": "Sujungti dublikatines kategorijas",
+        "title": "Sujungti dublikatines kategorijas",
+        "description": "Kategorijos, kurių pavadinimai skiriasi tik linksniais, akcentais ar tarpais. Niekas automatiškai nesujungiama.",
+        "empty": "Dublikatų nerasta.",
+        "groupSummary": "{count} kategorijos pavadinimu \"{label}\"",
+        "groupTitle": "Sujungti į \"{label}\"",
+        "backAction": "Atgal",
+        "cancelAction": "Atšaukti",
+        "keepAsPrimary": "Kategorija, kurią verta išlaikyti",
+        "mergeIntoPrimary": "Kategorijos, kurias galima į ją sujungti",
+        "tierCounts": "{cotisationCount} Narystės mokestis(-ai) · {membreCount} Narys(-ai)",
+        "mergeAction": "Susijungimas",
+        "confirmTitle": "Patvirtinkite susijungimą",
+        "confirmDescription": "{count} kategorija(-ės) bus sujungtos į \"{primaryLabel}\". {cotisationCount} Narystės mokestis(-iai) ir {membreCount} narys(-iai) bus perkelti. Šis veiksmas yra negrįžtamas, bet išsaugo visą atnaujinimo istoriją ir konfigūracijas.",
+        "mergeSuccess": "{count} sujungta kategorija(-ės).",
+        "loadError": "Dublikatų įkelti negalima. Pabandykite dar kartą po akimirkos.",
+        "activeSubscriptionWarning": "{count} aktyvi prenumerata(-os) bus perkelta — Jau vykdomas Stripe atsiskaitymas automatiškai nesikeičia.",
+        "priceFree": "Laisvas",
+        "priceFreeAmount": "Nemokama suma",
+        "priceFreeAmountFrom": "Nemokama suma iš {amount}",
+        "priceRecurring": "{amount}/metai"
+      }
     },
     "reminderModal": {
       "title": "Siųsti priminimą apie auką",

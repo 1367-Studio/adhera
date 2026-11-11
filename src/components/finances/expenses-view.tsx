@@ -33,6 +33,8 @@ type Expense = {
   paymentMethod:   string | null
   factureRecueId:  string | null
   exerciceId:      string | null
+  categoryId:      string | null
+  projectId:       string | null
   category:        { name: string } | null
   reconciliations: { id: string; bankTransaction: { bankAccount: { accountName: string } } }[]
 }
@@ -311,11 +313,11 @@ export function ExpensesView() {
         pagination={result ? { page: result.page, totalPages: result.totalPages, total: result.total, limit: result.limit, onPageChange: setPage } : undefined}
       />
 
-      <Modal open={createOpen} onOpenChange={setCreateOpen} title={t("finances.expensesView.newTitle")} size="md" dismissable={false}>
+      <Modal open={createOpen} onOpenChange={setCreateOpen} title={t("finances.expensesView.newTitle")} size="lg" dismissable={false}>
         <ExpenseForm onSubmit={handleCreate} onCancel={() => setCreateOpen(false)} loading={createMutation.isPending} />
       </Modal>
 
-      <Modal open={!!editTarget} onOpenChange={(o) => !o && setEditTarget(null)} title={t("finances.expensesView.editTitle")} size="md" dismissable={false}>
+      <Modal open={!!editTarget} onOpenChange={(o) => !o && setEditTarget(null)} title={t("finances.expensesView.editTitle")} size="lg" dismissable={false}>
         <ExpenseForm
           defaultValues={editTarget ? {
             amount:        parseFloat(editTarget.amount),
@@ -326,6 +328,8 @@ export function ExpensesView() {
             receiptUrl:    editTarget.receiptUrl     ?? "",
             internalNote:  editTarget.internalNote   ?? "",
             paymentMethod: editTarget.paymentMethod  ?? "",
+            categoryId:    editTarget.categoryId     ?? "",
+            projectId:     editTarget.projectId      ?? "",
           } : undefined}
           onSubmit={handleUpdate}
           onCancel={() => setEditTarget(null)}

@@ -910,7 +910,19 @@
         "EXCEPTIONAL": "Extraordinärt",
         "OTHER": "Övrigt",
         "IN_KIND": "Bidrag in natura"
-      }
+      },
+      "accountingCodeFormwiseNote": "Underkonto föreslagits av Formwise för separat spårning — inte ett obligatoriskt officiellt nummer.",
+      "suggestedAccounts": "Föreslagna konton",
+      "seeOtherAccounts": "Se de andra kontona",
+      "description": "Beskrivning",
+      "descriptionPlaceholder": "Exempel: Biljettförsäljning till en aktivitet eller ett evenemang.",
+      "sectionAutoNote": "Avsnitt som automatiskt bestäms från redovisningskontot.",
+      "sectionManualNote": "Manuellt definierad sektion.",
+      "sectionUnverifiedNote": "Detta konto känns inte igen – kontrollera avsnittet eller välj det från de avancerade alternativen.",
+      "sectionToVerify": "Sektion att kontrollera",
+      "advancedOptions": "Avancerade alternativ",
+      "revertToAutoSection": "Tillbaka till den automatiska sektionen",
+      "noMatchingCategory": "Ingen matchningskategori"
     },
     "bankAccountForm": {
       "bankName": "Banknamn",
@@ -1050,7 +1062,6 @@
       "description": "Hantera intäkts- och kostnadskategorier.",
       "seedButton": "Initiera standardkategorier",
       "noCategories": "Ingen kategori",
-      "default": "Standard",
       "income": "Intäkter",
       "expenses": "Utgifter",
       "newCategoryTitle": "Ny kategori",
@@ -1062,7 +1073,12 @@
         "updated": "Uppdaterad kategori",
         "deleted": "Kategori borttagen",
         "seeded": "{count, plural, one {# initierad kategori} other {# initiala kategorier}}"
-      }
+      },
+      "chooseTemplateTitle": "Välj en kategorityp",
+      "customCategory": "Skapa en anpassad kategori",
+      "alreadyExists": "Redan konfigurerad",
+      "archivedReactivateHint": "Arkiverad — klicka för att återaktivera",
+      "custom": "Anpassad"
     },
     "incomesView": {
       "title": "Intäkter",
@@ -4147,11 +4163,7 @@
       "selectedCount": "{count, plural, one {# utvalda} other {# utvalda}}",
       "deselectAll": "Avmarkera",
       "sendReminder": "Skicka en påminnelse",
-      "exportMembers": "Exportmedlemmar",
-      "exportExcel": "Excel (.xlsx)",
-      "exportPdf": "PDF (.pdf)",
       "count": "{count, plural, one {# Medlemsavgift} other {# Bidrag}}",
-      "totalCollected": " · {amount} Löste in",
       "exercise": "Räkenskapsår {year}",
       "columns": {
         "member": "Ledamot",
@@ -4195,7 +4207,59 @@
         "editCancelled": "Att ändra det avbrutna medlemskapet"
       },
       "selectAllTruncated": "Mer än 500 bidrag passade filtren — endast de 500 bästa valdes ut.",
-      "remaining": "Vila {amount}"
+      "remaining": "Vila {amount}",
+      "export": "Exportera",
+      "exportCotisationsExcel": "Avgifter (Excel)",
+      "exportMembresExcel": "Medlemmar (Excel)",
+      "exportMembresPdf": "Medlemmar (PDF)",
+      "allCategories": "Alla kategorier",
+      "allRenewals": "Alla förnyelser",
+      "resetFilters": "Återställ",
+      "renewal": {
+        "automatic": "Automatisk",
+        "manual": "Manuell"
+      },
+      "summary": {
+        "aPagar": " · {amount} totalt",
+        "recebido": " · {amount} mottaget",
+        "saldo": " · {amount} kvarstående"
+      },
+      "distribution": {
+        "show": "Visa fördelning",
+        "hide": "Dölj fördelning",
+        "category": "Medlemskategori",
+        "renewal": "Förnyelse",
+        "count": "Antal bidrag",
+        "aPagar": "Totalt belopp",
+        "recebido": "Mottaget belopp",
+        "saldo": "Återstående saldo",
+        "total": "Totalt",
+        "noCategory": "Ingen kategori",
+        "empty": "Inga avgifter matchar dessa filter."
+      },
+      "mergeTiers": {
+        "filterOption": "Slå ihop dubblettkategorier",
+        "title": "Slå ihop dubblettkategorier",
+        "description": "Kategorier vars namn endast skiljer sig i kasus, accenter eller mellanslag. Inget slås automatiskt samman.",
+        "empty": "Inga dubbletter upptäckta.",
+        "groupSummary": "{count} kategorier med namnet \"{label}\"",
+        "groupTitle": "Slå ihop med \"{label}\"",
+        "backAction": "Tillbaka",
+        "cancelAction": "Avbryt",
+        "keepAsPrimary": "Kategori att behålla",
+        "mergeIntoPrimary": "Kategorier att slå ihop med den",
+        "tierCounts": "{cotisationCount} Medlemsavgift(ar) · {membreCount} Medlem(ar)",
+        "mergeAction": "Sammanslagning",
+        "confirmTitle": "Bekräfta sammanslagningen",
+        "confirmDescription": "{count}-kategori(er) kommer att slås ihop med \"{primaryLabel}\". {cotisationCount} Medlemsavgift(er) och {membreCount}-medlemmar(ar) kommer att överföras. Denna åtgärd är irreversibel men bevarar all förnyelsehistorik och konfigurationer.",
+        "mergeSuccess": "{count} sammanslagen kategori(er).",
+        "loadError": "Dubbletter kan inte laddas upp. Försök igen om en stund.",
+        "activeSubscriptionWarning": "{count} aktiva prenumerationer kommer att överföras — Stripe-fakturering som redan pågår ändras inte automatiskt.",
+        "priceFree": "Gratis",
+        "priceFreeAmount": "Gratis belopp",
+        "priceFreeAmountFrom": "Gratis belopp från {amount}",
+        "priceRecurring": "{amount}/år"
+      }
     },
     "reminderModal": {
       "title": "Skicka en bidragspåminnelse",

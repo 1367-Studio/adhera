@@ -947,7 +947,8 @@
         "FINANCIAL": "Financier",
         "EXCEPTIONAL": "Exceptionnel",
         "OTHER": "Autre",
-        "IN_KIND": "Contributions volontaires en nature"
+        "IN_KIND": "Contributions volontaires en nature",
+        "IMMOBILISATION": "Immobilisations"
       },
       "drillDown": {
         "date": "Date",
@@ -981,7 +982,11 @@
         "uncategorizedIncomeLabel": "Recettes à catégoriser",
         "uncategorizedExpenseLabel": "Dépenses à catégoriser",
         "total": "Total",
-        "grandTotal": "TOTAL"
+        "grandTotal": "TOTAL",
+        "immobilisationIncome": "Immobilisations (produits)",
+        "immobilisationExpense": "Immobilisations (charges)",
+        "immobilisationResult": "Solde immobilisations",
+        "immobilisationSection": "Immobilisations — hors résultat courant"
       },
       "csv": {
         "date": "Date",
@@ -1001,11 +1006,119 @@
       "emptyExercice": {
         "title": "Aucun exercice fiscal",
         "description": "Créez un exercice fiscal pour générer le compte de résultat."
+      },
+      "immobilisationNote": "Achats d'immobilisations et amortissements — à titre informatif, non inclus dans le résultat de l'exercice."
+    },
+    "previsionnel": {
+      "title": "Budget prévisionnel",
+      "description": "Comparez le budget prévu et réalisé, par catégorie et par projet.",
+      "exerciceLabel": "Exercice",
+      "emptyExercice": {
+        "title": "Aucun exercice comptable",
+        "description": "Créez un exercice comptable pour préparer son budget prévisionnel."
+      },
+      "tabs": {
+        "global": "Budget global",
+        "projects": "Par projet"
+      },
+      "income": "Recettes",
+      "expense": "Dépenses",
+      "result": "Résultat",
+      "card": {
+        "previsto": "Prévu",
+        "diff": "Écart",
+        "percent": "réalisé"
+      },
+      "columns": {
+        "category": "Catégorie",
+        "previsto": "Prévu",
+        "realizado": "Réalisé",
+        "diffPercent": "Écart / % réalisé",
+        "total": "Total"
+      },
+      "noCategories": "Aucune catégorie.",
+      "uncategorized": "À catégoriser",
+      "noProject": "Sans projet",
+      "addCategory": "Ajouter une catégorie",
+      "addCategoryModalTitle": "Ajouter une catégorie",
+      "exportFileNameGlobal": "budget-previsionnel-global",
+      "export": {
+        "action": "Exporter",
+        "excel": "Exporter Excel",
+        "pdf": "Exporter PDF",
+        "diffColumn": "Écart (€)",
+        "percentColumn": "% réalisé",
+        "associationLabel": "Association",
+        "exerciceLabel": "Exercice"
+      },
+      "toasts": {
+        "categoryCreated": "Catégorie créée.",
+        "updateError": "Erreur lors de la mise à jour."
+      },
+      "copyBudget": {
+        "action": "Copier le budget précédent",
+        "modalTitle": "Copier le budget précédent",
+        "modalDescription": "Copie les prévisions de {previous} vers {target}. Seules les prévisions sont copiées, jamais les montants réalisés.",
+        "allProjects": "Tous les projets",
+        "noProjects": "Aucun projet.",
+        "archived": "archivé",
+        "noProjectAlwaysCopied": "Les prévisions sans projet sont toujours copiées.",
+        "copy": "Copier",
+        "confirmOverwriteTitle": "Remplacer les prévisions existantes ?",
+        "confirmOverwriteDescription": "Cet exercice a déjà des prévisions non nulles pour certaines catégories. Les copier depuis l'exercice précédent remplacera ces valeurs.",
+        "confirmOverwriteAction": "Remplacer",
+        "toasts": {
+          "copied": "{count, plural, one {# prévision copiée.} other {# prévisions copiées.}}",
+          "error": "Erreur lors de la copie."
+        }
+      },
+      "projectsTab": {
+        "count": "{count, plural, one {# projet} other {# projets}}",
+        "createProject": "Créer un projet",
+        "createModalTitle": "Créer un projet",
+        "editProject": "Modifier",
+        "editModalTitle": "Modifier le projet",
+        "name": "Nom du projet",
+        "namePlaceholder": "Ex: Voyage annuel",
+        "description": "Description",
+        "descriptionPlaceholder": "Description facultative",
+        "archive": "Archiver",
+        "unarchive": "Désarchiver",
+        "archived": "archivé",
+        "showArchived": "Afficher les projets archivés ({count})",
+        "hideArchived": "Masquer les projets archivés",
+        "noProjects": {
+          "title": "Aucun projet",
+          "description": "Créez un projet pour suivre son budget séparément de l'ensemble de l'association."
+        },
+        "addCategoryToProject": "Ajouter une catégorie au projet",
+        "addCategoryModalTitle": "Ajouter une catégorie au projet",
+        "type": "Type",
+        "typeIncome": "Recette",
+        "typeExpense": "Dépense",
+        "category": "Catégorie",
+        "selectCategoryPlaceholder": "Sélectionner une catégorie",
+        "createNewCategory": "+ Créer une nouvelle catégorie",
+        "noAvailableCategories": "Toutes les catégories de ce type sont déjà ajoutées à ce projet.",
+        "removeCategoryFromProject": "Retirer du projet",
+        "removeCategoryConfirmTitle": "Retirer cette catégorie du projet ?",
+        "removeCategoryConfirmDescription": "« {category} » sera retirée du budget de ce projet. Si des recettes ou dépenses y sont déjà liées, la catégorie réapparaîtra automatiquement avec leur montant réalisé.",
+        "toasts": {
+          "created": "Projet créé.",
+          "updated": "Projet mis à jour.",
+          "archived": "Projet archivé.",
+          "unarchived": "Projet désarchivé.",
+          "categoryAdded": "Catégorie ajoutée au projet.",
+          "categoryRemoved": "Catégorie retirée du projet.",
+          "createError": "Erreur lors de la création.",
+          "updateError": "Erreur lors de la mise à jour."
+        }
       }
     },
     "categoryForm": {
       "name": "Nom",
       "namePlaceholder": "Ex: Cotisations",
+      "noMatchingCategory": "Aucune catégorie correspondante",
       "type": "Type",
       "typeIncome": "Recette",
       "typeExpense": "Dépense",
@@ -1018,8 +1131,22 @@
         "FINANCIAL": "Financier",
         "EXCEPTIONAL": "Exceptionnel",
         "OTHER": "Autre",
-        "IN_KIND": "Contributions en nature"
-      }
+        "IN_KIND": "Contributions en nature",
+        "IMMOBILISATION": "Immobilisation"
+      },
+      "accountingCodeLegacyOption": "{code} — (ancien code, à mettre à jour)",
+      "accountingCodeLegacyWarning": "Ce code comptable n'existe plus dans la liste contrôlée — choisissez un compte valide avant d'enregistrer.",
+      "accountingCodeFormwiseNote": "Sous-compte suggéré par Formwise pour un suivi séparé — pas un numéro officiel obligatoire.",
+      "suggestedAccounts": "Comptes suggérés",
+      "seeOtherAccounts": "Voir les autres comptes",
+      "description": "Description",
+      "descriptionPlaceholder": "Ex : Vente de places pour une activité ou un événement.",
+      "sectionAutoNote": "Section déterminée automatiquement à partir du compte comptable.",
+      "sectionManualNote": "Section définie manuellement.",
+      "sectionUnverifiedNote": "Ce compte n'est pas reconnu — vérifiez la section ou choisissez-la dans les options avancées.",
+      "sectionToVerify": "Section à vérifier",
+      "advancedOptions": "Options avancées",
+      "revertToAutoSection": "Revenir à la section automatique"
     },
     "bankAccountForm": {
       "bankName": "Nom de la banque",
@@ -1056,6 +1183,8 @@
       "date": "Date",
       "category": "Catégorie",
       "noCategory": "Aucune catégorie",
+      "project": "Projet",
+      "noProject": "Aucun projet",
       "paymentMethodLabel": "Mode de paiement",
       "reference": "Référence",
       "referencePlaceholder": "Ex: VIR-2024-001",
@@ -1154,24 +1283,63 @@
         "deleted": "Compte supprimé"
       }
     },
+    "transferForm": {
+      "fromAccount": "Compte source",
+      "toAccount": "Compte destination",
+      "amount": "Montant",
+      "date": "Date",
+      "note": "Note",
+      "notePlaceholder": "Ex: virement d'épargne",
+      "toasts": {
+        "created": "Transfert enregistré",
+        "updated": "Transfert mis à jour",
+        "deleted": "Transfert supprimé"
+      }
+    },
+    "transfersView": {
+      "title": "Transferts internes",
+      "add": "Transférer",
+      "newTransferTitle": "Nouveau transfert entre comptes",
+      "editTransferTitle": "Modifier le transfert",
+      "deleteConfirmTitle": "Supprimer ce transfert ?",
+      "noTransfers": "Aucun transfert enregistré",
+      "columns": {
+        "accounts": "Comptes",
+        "amount": "Montant",
+        "date": "Date",
+        "note": "Note"
+      }
+    },
     "categoriesView": {
       "title": "Catégories",
       "description": "Gérez les catégories de recettes et de dépenses.",
       "seedButton": "Initialiser les catégories par défaut",
       "noCategories": "Aucune catégorie",
-      "default": "Défaut",
       "income": "Recettes",
       "expenses": "Dépenses",
       "newCategoryTitle": "Nouvelle catégorie",
       "editCategoryTitle": "Modifier la catégorie",
       "deleteConfirmTitle": "Supprimer cette catégorie ?",
-      "deleteConfirmInUse": "« {name} » est utilisée par {count, plural, one {# recette/dépense} other {# recettes/dépenses}}. Ces entrées passeront en « Non catégorisé ».",
       "toasts": {
         "created": "Catégorie créée",
         "updated": "Catégorie mise à jour",
         "deleted": "Catégorie supprimée",
-        "seeded": "{count, plural, one {# catégorie initialisée} other {# catégories initialisées}}"
-      }
+        "seeded": "{count, plural, one {# catégorie initialisée} other {# catégories initialisées}}",
+        "archived": "Catégorie archivée",
+        "reactivated": "Catégorie réactivée"
+      },
+      "archived": "Archivée",
+      "reactivate": "Réactiver",
+      "showArchived": "Afficher les catégories archivées",
+      "transferLimitationNote": "Les virements entre comptes bancaires de l'association (trésorerie interne) ne doivent jamais être saisis comme une recette ou une dépense — enregistrez-les depuis Comptabilité → Comptes.",
+      "archiveConfirmTitle": "Archiver cette catégorie ?",
+      "archiveConfirmInUse": "« {name} » est utilisée par {count, plural, one {# recette/dépense} other {# recettes/dépenses}}. Elle sera archivée (son historique est conservé) et ne pourra plus être choisie pour de nouvelles opérations.",
+      "archive": "Archiver",
+      "chooseTemplateTitle": "Choisissez un type de catégorie",
+      "customCategory": "Créer une catégorie personnalisée",
+      "alreadyExists": "Déjà configurée",
+      "archivedReactivateHint": "Archivée — cliquez pour réactiver",
+      "custom": "Personnalisée"
     },
     "incomesView": {
       "title": "Recettes",
@@ -1376,6 +1544,7 @@
         "actions": "Actions"
       },
       "reconciledFallback": "Concilié",
+      "transferLabel": "Transfert interne — {from} → {to}",
       "allAccounts": "Tous les comptes",
       "noTransactions": "Aucune transaction à afficher",
       "actions": {
@@ -1408,6 +1577,7 @@
       "suggestedMatches": "Correspondances suggérées",
       "typeIncome": "Recette",
       "typeExpense": "Dépense",
+      "typeTransfer": "Transfert interne",
       "confirm": "Valider la conciliation"
     }
   },
@@ -4351,12 +4521,7 @@
       "selectedCount": "{count, plural, one {# sélectionnée} other {# sélectionnées}}",
       "deselectAll": "Désélectionner",
       "sendReminder": "Envoyer un rappel",
-      "exportMembers": "Exporter les membres",
-      "exportExcel": "Excel (.xlsx)",
-      "exportPdf": "PDF (.pdf)",
       "count": "{count, plural, one {# cotisation} other {# cotisations}}",
-      "totalCollected": " · {amount} encaissé",
-      "totalCollectedTooltip": "Inclut les cotisations payées par des membres supprimés depuis — ce total peut donc dépasser la somme des lignes affichées ci-dessous.",
       "exercise": "Exercice {year}",
       "columns": {
         "member": "Membre",
@@ -4401,7 +4566,59 @@
         "editCancelled": "Modifier la cotisation annulée"
       },
       "selectAllTruncated": "Plus de 500 cotisations correspondent aux filtres — seules les 500 premières ont été sélectionnées.",
-      "remaining": "Reste {amount}"
+      "remaining": "Reste {amount}",
+      "export": "Exporter",
+      "exportCotisationsExcel": "Cotisations (Excel)",
+      "exportMembresExcel": "Membres (Excel)",
+      "exportMembresPdf": "Membres (PDF)",
+      "allCategories": "Toutes les catégories",
+      "allRenewals": "Tous les renouvellements",
+      "resetFilters": "Réinitialiser",
+      "mergeTiers": {
+        "filterOption": "Fusionner les catégories en double",
+        "title": "Fusionner les catégories en double",
+        "description": "Catégories dont le nom ne diffère que par la casse, les accents ou des espaces. Rien n'est fusionné automatiquement.",
+        "empty": "Aucun doublon détecté.",
+        "groupSummary": "{count} catégories nommées « {label} »",
+        "groupTitle": "Fusionner dans « {label} »",
+        "backAction": "Retour",
+        "cancelAction": "Annuler",
+        "keepAsPrimary": "Catégorie à conserver",
+        "mergeIntoPrimary": "Catégories à fusionner dans celle-ci",
+        "tierCounts": "{cotisationCount} cotisation(s) · {membreCount} adhérent(s)",
+        "mergeAction": "Fusionner",
+        "confirmTitle": "Confirmer la fusion",
+        "confirmDescription": "{count} catégorie(s) seront fusionnées dans « {primaryLabel} ». {cotisationCount} cotisation(s) et {membreCount} adhérent(s) seront transférés. Cette action est irréversible mais préserve tout l'historique et les configurations de renouvellement.",
+        "mergeSuccess": "{count} catégorie(s) fusionnée(s).",
+        "loadError": "Impossible de charger les doublons. Réessayez dans un instant.",
+        "activeSubscriptionWarning": "{count} abonnement(s) actif(s) seront transférés — la facturation Stripe déjà en cours ne change pas automatiquement.",
+        "priceFree": "Gratuit",
+        "priceFreeAmount": "Montant libre",
+        "priceFreeAmountFrom": "Montant libre à partir de {amount}",
+        "priceRecurring": "{amount}/an"
+      },
+      "renewal": {
+        "automatic": "Automatique",
+        "manual": "Manuel"
+      },
+      "summary": {
+        "aPagar": " · {amount} au total",
+        "recebido": " · {amount} encaissés",
+        "saldo": " · {amount} restant à payer"
+      },
+      "distribution": {
+        "show": "Voir la répartition",
+        "hide": "Masquer la répartition",
+        "category": "Catégorie d'adhésion",
+        "renewal": "Renouvellement",
+        "count": "Nombre de cotisations",
+        "aPagar": "Montant total",
+        "recebido": "Montant reçu",
+        "saldo": "Solde restant",
+        "total": "Total",
+        "noCategory": "Sans catégorie",
+        "empty": "Aucune cotisation ne correspond à ces filtres."
+      }
     },
     "reminderModal": {
       "title": "Envoyer un rappel de cotisation",

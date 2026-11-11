@@ -910,7 +910,19 @@
         "EXCEPTIONAL": "Izvanredno",
         "OTHER": "Ostalo",
         "IN_KIND": "Doprinosi u naravi"
-      }
+      },
+      "accountingCodeFormwiseNote": "Podračun koji je predložio Formwise za zasebno praćenje — nije obavezni službeni broj.",
+      "suggestedAccounts": "Predloženi prikazi",
+      "seeOtherAccounts": "Pogledajte ostale izvještaje",
+      "description": "Opis",
+      "descriptionPlaceholder": "Primjer: Prodaja ulaznica za neku aktivnost ili događaj.",
+      "sectionAutoNote": "Odjeljak se automatski određuje iz računovodstvenog računa.",
+      "sectionManualNote": "Ručno definirani odjeljak.",
+      "sectionUnverifiedNote": "Ovaj račun nije priznat — provjerite odjeljak ili ga odaberite iz naprednih opcija.",
+      "sectionToVerify": "Sekcija za provjeru",
+      "advancedOptions": "Napredne opcije",
+      "revertToAutoSection": "Povratak na automatski dio",
+      "noMatchingCategory": "Nema podudaranja kategorije"
     },
     "bankAccountForm": {
       "bankName": "Naziv banke",
@@ -1050,7 +1062,6 @@
       "description": "Upravljajte kategorijama prihoda i rashoda.",
       "seedButton": "Inicijalizirajte zadane kategorije",
       "noCategories": "Nema kategorije",
-      "default": "Zadano stanje",
       "income": "Prihodi",
       "expenses": "Troškovi",
       "newCategoryTitle": "Nova kategorija",
@@ -1062,7 +1073,12 @@
         "updated": "Ažurirana kategorija",
         "deleted": "Kategorija izbrisana",
         "seeded": "{count, plural, one {# inicijalizirana kategorija} other {# inicijalizirane kategorije}}"
-      }
+      },
+      "chooseTemplateTitle": "Odaberite tip kategorije",
+      "customCategory": "Kreiraj prilagođenu kategoriju",
+      "alreadyExists": "Već konfigurirano",
+      "archivedReactivateHint": "Arhivirano — kliknite za ponovnu aktivaciju",
+      "custom": "Prilagođena"
     },
     "incomesView": {
       "title": "Prihodi",
@@ -4147,11 +4163,7 @@
       "selectedCount": "{count, plural, one {# odabrani} other {# odabrani}}",
       "deselectAll": "Deselectati",
       "sendReminder": "Pošalji podsjetnik",
-      "exportMembers": "Izvozni članovi",
-      "exportExcel": "Excel (.xlsx)",
-      "exportPdf": "PDF (.pdf)",
       "count": "{count, plural, one {# Članarina} other {# Doprinosi}}",
-      "totalCollected": " · {amount} unovčio",
       "exercise": "Fiskalna godina {year}",
       "columns": {
         "member": "Član",
@@ -4195,7 +4207,59 @@
         "editCancelled": "Promjena otkazanog članstva"
       },
       "selectAllTruncated": "Više od 500 priloga zadovoljilo je kriterije — odabrano je samo prvih 500.",
-      "remaining": "Odmor {amount}"
+      "remaining": "Odmor {amount}",
+      "export": "Izvezi",
+      "exportCotisationsExcel": "Članarine (Excel)",
+      "exportMembresExcel": "Članovi (Excel)",
+      "exportMembresPdf": "Članovi (PDF)",
+      "allCategories": "Sve kategorije",
+      "allRenewals": "Sve obnove",
+      "resetFilters": "Reset",
+      "renewal": {
+        "automatic": "Automatsko",
+        "manual": "Ručno"
+      },
+      "summary": {
+        "aPagar": " · {amount} ukupno",
+        "recebido": " · {amount} primljeno",
+        "saldo": " · {amount} preostaje za naplatu"
+      },
+      "distribution": {
+        "show": "Prikaži raspodjelu",
+        "hide": "Sakrij raspodjelu",
+        "category": "Kategorija članstva",
+        "renewal": "Obnova",
+        "count": "Broj doprinosa",
+        "aPagar": "Ukupni iznos",
+        "recebido": "Primljeni iznos",
+        "saldo": "Preostali balans",
+        "total": "Ukupno",
+        "noCategory": "Bez kategorije",
+        "empty": "Nijedan doprinos ne odgovara ovim filterima."
+      },
+      "mergeTiers": {
+        "filterOption": "Spajanje duplikatnih kategorija",
+        "title": "Spajanje duplikatnih kategorija",
+        "description": "Kategorije čija se imena razlikuju samo po padežu, naglascima ili razmacima. Ništa se automatski ne spaja.",
+        "empty": "Nisu otkriveni duplikati.",
+        "groupSummary": "{count} kategorije nazvane \"{label}\"",
+        "groupTitle": "Spajanje u \"{label}\"",
+        "backAction": "Natrag",
+        "cancelAction": "Otkaži",
+        "keepAsPrimary": "Kategorija koju treba zadržati",
+        "mergeIntoPrimary": "Kategorije za spajanje u njega",
+        "tierCounts": "{cotisationCount} Članarina · {membreCount} Član(i)",
+        "mergeAction": "Spajanje",
+        "confirmTitle": "Potvrdite spajanje",
+        "confirmDescription": "{count} kategorije bit će spojene u \"{primaryLabel}\". {cotisationCount} Članarina i {membreCount} članovi bit će preneseni. Ova radnja je nepovratna, ali čuva svu povijest i konfiguracije obnove.",
+        "mergeSuccess": "{count} spojene kategorije.",
+        "loadError": "Duplikati se ne mogu učitati. Pokušajte ponovno za trenutak.",
+        "activeSubscriptionWarning": "{count} aktivne pretplate će biti prenesene — Stripe naplata koja je već u tijeku ne mijenja se automatski.",
+        "priceFree": "Besplatno",
+        "priceFreeAmount": "Besplatna količina",
+        "priceFreeAmountFrom": "Besplatan iznos od {amount}",
+        "priceRecurring": "{amount}/godina"
+      }
     },
     "reminderModal": {
       "title": "Pošaljite podsjetnik za doprinos",

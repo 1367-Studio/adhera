@@ -910,7 +910,19 @@
         "EXCEPTIONAL": "Excecional",
         "OTHER": "Outro",
         "IN_KIND": "Contribuições em espécie"
-      }
+      },
+      "accountingCodeFormwiseNote": "Subconta sugerida pela Formwise para rastreamento separado — não é um número oficial obrigatório.",
+      "suggestedAccounts": "Relatos sugeridos",
+      "seeOtherAccounts": "Ver as outras contas",
+      "description": "Descrição",
+      "descriptionPlaceholder": "Ex: Venda de bilhetes para uma atividade ou evento.",
+      "sectionAutoNote": "A secção é determinada automaticamente a partir da conta contabilística.",
+      "sectionManualNote": "Secção definida manualmente.",
+      "sectionUnverifiedNote": "Esta conta não é reconhecida — verifique a secção ou escolha-a entre as opções avançadas.",
+      "sectionToVerify": "Secção a verificar",
+      "advancedOptions": "Opções avançadas",
+      "revertToAutoSection": "De volta à secção automática",
+      "noMatchingCategory": "Sem categoria correspondente"
     },
     "bankAccountForm": {
       "bankName": "Nome do banco",
@@ -1045,12 +1057,38 @@
         "deleted": "Conta eliminada"
       }
     },
+    "transferForm": {
+      "fromAccount": "Conta de origem",
+      "toAccount": "Conta de destino",
+      "amount": "Montante",
+      "date": "Data",
+      "note": "Nota",
+      "notePlaceholder": "Ex.: transferência para poupança",
+      "toasts": {
+        "created": "Transferência registada",
+        "updated": "Transferência atualizada",
+        "deleted": "Transferência eliminada"
+      }
+    },
+    "transfersView": {
+      "title": "Transferências internas",
+      "add": "Transferir",
+      "newTransferTitle": "Nova transferência entre contas",
+      "editTransferTitle": "Editar transferência",
+      "deleteConfirmTitle": "Eliminar esta transferência?",
+      "noTransfers": "Nenhuma transferência registada",
+      "columns": {
+        "accounts": "Contas",
+        "amount": "Montante",
+        "date": "Data",
+        "note": "Nota"
+      }
+    },
     "categoriesView": {
       "title": "Categorias",
       "description": "Faça a gestão das categorias de receitas e despesas.",
       "seedButton": "Inicializar categorias predefinidas",
       "noCategories": "Nenhuma categoria",
-      "default": "Predefinida",
       "income": "Receitas",
       "expenses": "Despesas",
       "newCategoryTitle": "Nova categoria",
@@ -1062,7 +1100,12 @@
         "updated": "Categoria atualizada",
         "deleted": "Categoria eliminada",
         "seeded": "{count, plural, one {# categoria inicializada} other {# categorias inicializadas}}"
-      }
+      },
+      "chooseTemplateTitle": "Escolha um tipo de categoria",
+      "customCategory": "Criar uma categoria personalizada",
+      "alreadyExists": "Já configurado",
+      "archivedReactivateHint": "Arquivado — clique para reativar",
+      "custom": "Personalizada"
     },
     "incomesView": {
       "title": "Receitas",
@@ -1267,6 +1310,7 @@
         "actions": "Ações"
       },
       "reconciledFallback": "Reconciliada",
+      "transferLabel": "Transferência interna — {from} → {to}",
       "allAccounts": "Todas as contas",
       "noTransactions": "Nenhuma transação a mostrar",
       "actions": {
@@ -1299,6 +1343,7 @@
       "suggestedMatches": "Correspondências sugeridas",
       "typeIncome": "Receita",
       "typeExpense": "Despesa",
+      "typeTransfer": "Transferência interna",
       "confirm": "Confirmar reconciliação"
     },
     "compteResultat": {
@@ -4149,11 +4194,7 @@
       "selectedCount": "{count, plural, one {# selecionada} other {# selecionadas}}",
       "deselectAll": "Desmarcar",
       "sendReminder": "Enviar lembrete",
-      "exportMembers": "Exportar membros",
-      "exportExcel": "Excel (.xlsx)",
-      "exportPdf": "PDF (.pdf)",
       "count": "{count, plural, one {# quota} other {# quotas}}",
-      "totalCollected": " · {amount} cobrado",
       "exercise": "Exercício {year}",
       "columns": {
         "member": "Membro",
@@ -4197,7 +4238,59 @@
         "editCancelled": "Edição da quota cancelada"
       },
       "selectAllTruncated": "Mais de 500 quotas correspondem aos filtros — apenas as primeiras 500 foram selecionadas.",
-      "remaining": "Faltam {amount}"
+      "remaining": "Faltam {amount}",
+      "export": "Exportar",
+      "exportCotisationsExcel": "Quotas (Excel)",
+      "exportMembresExcel": "Membros (Excel)",
+      "exportMembresPdf": "Membros (PDF)",
+      "allCategories": "Todas as categorias",
+      "allRenewals": "Todas as renovações",
+      "resetFilters": "Repor",
+      "renewal": {
+        "automatic": "Automática",
+        "manual": "Manual"
+      },
+      "summary": {
+        "aPagar": " · {amount} total",
+        "recebido": " · {amount} recebidos",
+        "saldo": " · {amount} pendente"
+      },
+      "distribution": {
+        "show": "Ver a distribuição",
+        "hide": "Ocultar a distribuição",
+        "category": "Categoria de Membros",
+        "renewal": "Renovação",
+        "count": "Número de contribuições",
+        "aPagar": "Montante total",
+        "recebido": "Valor recebido",
+        "saldo": "Saldo remanescente",
+        "total": "Total",
+        "noCategory": "Sem categoria",
+        "empty": "Nenhuma quota corresponde a estes filtros."
+      },
+      "mergeTiers": {
+        "filterOption": "Fusão de categorias duplicadas",
+        "title": "Fusão de categorias duplicadas",
+        "description": "Categorias cujos nomes diferem apenas em maiúsculos, acentos ou espaços. Nada é automaticamente fundido.",
+        "empty": "Não foram detetados duplicados.",
+        "groupSummary": "{count} categorias denominadas \"{label}\"",
+        "groupTitle": "Fusão em \"{label}\"",
+        "backAction": "Voltar",
+        "cancelAction": "Cancelar",
+        "keepAsPrimary": "Categoria a manter",
+        "mergeIntoPrimary": "Categorias a fundir nele",
+        "tierCounts": "{cotisationCount} quota(s) · {membreCount} membro(s)",
+        "mergeAction": "Fusão",
+        "confirmTitle": "Confirmar a fusão",
+        "confirmDescription": "{count} categoria(s) serão fundidas em \"{primaryLabel}\". {cotisationCount} quota(s) e {membreCount} membro(s) serão transferidos. Esta ação é irreversível, mas preserva todo o histórico e as configurações de renovação.",
+        "mergeSuccess": "{count} categoria(s) fundida(s).",
+        "loadError": "Duplicados não podem ser carregados. Tente novamente daqui a pouco.",
+        "activeSubscriptionWarning": "{count} as subscrições ativas serão transferidas — A faturação Stripe que já está em curso não muda automaticamente.",
+        "priceFree": "Grátis",
+        "priceFreeAmount": "Valor gratuito",
+        "priceFreeAmountFrom": "Valor gratuito de {amount}",
+        "priceRecurring": "{amount}/ano"
+      }
     },
     "reminderModal": {
       "title": "Enviar um lembrete de quota",

@@ -910,7 +910,19 @@
         "EXCEPTIONAL": "Erakorraline",
         "OTHER": "Muu",
         "IN_KIND": "Mitterahalised panused"
-      }
+      },
+      "accountingCodeFormwiseNote": "Formwise'i soovitatud alamkonto eraldi jälgimiseks — see ei ole kohustuslik ametlik number.",
+      "suggestedAccounts": "Soovitatud kirjeldused",
+      "seeOtherAccounts": "Vaata teisi kirjeldusi",
+      "description": "Kirjeldus",
+      "descriptionPlaceholder": "Näiteks: piletimüük mingile tegevusele või üritusele.",
+      "sectionAutoNote": "Sektsioon määratakse automaatselt raamatupidamiskontolt.",
+      "sectionManualNote": "Käsitsi määratletud osa.",
+      "sectionUnverifiedNote": "See konto ei ole tunnustatud — vaata sektsiooni või vali see edasijõudnute valikutest.",
+      "sectionToVerify": "Osa kontrollimiseks",
+      "advancedOptions": "Täiustatud valikud",
+      "revertToAutoSection": "Tagasi automaatsektsiooni.",
+      "noMatchingCategory": "Sobivuskategooria puudub"
     },
     "bankAccountForm": {
       "bankName": "Panga nimi",
@@ -1050,7 +1062,6 @@
       "description": "Halda tulude ja kulude kategooriaid.",
       "seedButton": "Initsialiseeri vaikimisi kategooriad",
       "noCategories": "Kategooriat ei ole",
-      "default": "Vaikimisi",
       "income": "Tulud",
       "expenses": "Kulud",
       "newCategoryTitle": "Uus kategooria",
@@ -1062,7 +1073,12 @@
         "updated": "Uuendatud kategooria",
         "deleted": "Kategooria kustutatud",
         "seeded": "{count, plural, one {# initsialiseeritud kategooria} other {# kategooriad initsialiseeritud}}"
-      }
+      },
+      "chooseTemplateTitle": "Vali kategooriatüüp",
+      "customCategory": "Loo kohandatud kategooria",
+      "alreadyExists": "Juba seadistatud",
+      "archivedReactivateHint": "Arhiveeritud — klõpsa taasaktiveerimiseks",
+      "custom": "Kohandatud"
     },
     "incomesView": {
       "title": "Tulud",
@@ -4147,11 +4163,7 @@
       "selectedCount": "{count, plural, one {# valitud} other {# valitud}}",
       "deselectAll": "Deselect",
       "sendReminder": "Saada meeldetuletus",
-      "exportMembers": "Ekspordiliikmed",
-      "exportExcel": "Excel (.xlsx)",
-      "exportPdf": "PDF (.pdf)",
       "count": "{count, plural, one {# Liikmemaksu} other {# Panused}}",
-      "totalCollected": " · {amount} Lunastatud",
       "exercise": "Eelarveaasta {year}",
       "columns": {
         "member": "Liige",
@@ -4195,7 +4207,59 @@
         "editCancelled": "Tühistatud liikmelisuse muutmine"
       },
       "selectAllTruncated": "Rohkem kui 500 panust sobib filtritesse — valiti välja ainult 500 parimat.",
-      "remaining": "Puhkus {amount}"
+      "remaining": "Puhkus {amount}",
+      "export": "Ekspordi",
+      "exportCotisationsExcel": "Liikmemaksud (Excel)",
+      "exportMembresExcel": "Liikmed (Excel)",
+      "exportMembresPdf": "Liikmed (PDF)",
+      "allCategories": "Kõik kategooriad",
+      "allRenewals": "Kõik uuendamised",
+      "resetFilters": "Lähtestamine",
+      "renewal": {
+        "automatic": "Automaatne",
+        "manual": "Käsitsi"
+      },
+      "summary": {
+        "aPagar": " · {amount} kokku",
+        "recebido": " · {amount} laekunud",
+        "saldo": " · {amount} tasumata"
+      },
+      "distribution": {
+        "show": "Vaata jaotust",
+        "hide": "Peida jaotus",
+        "category": "Liikmelisuse kategooria",
+        "renewal": "Uuendamine",
+        "count": "Panuste arv",
+        "aPagar": "Kogusumma",
+        "recebido": "Saadud summa",
+        "saldo": "Allesjäänud saldo",
+        "total": "Kokku",
+        "noCategory": "Kategooriata",
+        "empty": "Ükski liikmemaks ei vasta neile filtritele."
+      },
+      "mergeTiers": {
+        "filterOption": "Ühenda duplikaatkategooriad",
+        "title": "Ühenda duplikaatkategooriad",
+        "description": "Kategooriad, mille nimed erinevad ainult juhtumite, aktsentide või tühikute poolest. Midagi ei liideta automaatselt.",
+        "empty": "Duplikaate ei tuvastatud.",
+        "groupSummary": "{count} kategooriad nimega \"{label}\"",
+        "groupTitle": "Ühenda \"{label}\"",
+        "backAction": "Tagasi",
+        "cancelAction": "Tühista",
+        "keepAsPrimary": "Kategooria, mida hoida",
+        "mergeIntoPrimary": "Kategooriad, millega sellega liituda",
+        "tierCounts": "{cotisationCount} Liikmemaksu(d) · {membreCount} Liikme(d) liikme(d)",
+        "mergeAction": "Ühinemine",
+        "confirmTitle": "Kinnita ühinemine",
+        "confirmDescription": "{count} kategooria(d) liidetakse \"{primaryLabel}\"-ks. {cotisationCount} Liikmetasu(d) ja {membreCount} liikme(d) kantakse üle. See tegevus on pöördumatu, kuid säilitab kogu uuendamise ajaloo ja konfiguratsioonid.",
+        "mergeSuccess": "{count} ühendatud kategooria(d).",
+        "loadError": "Duplikaate ei saa üles laadida. Proovi kohe uuesti.",
+        "activeSubscriptionWarning": "{count} aktiivsed tellimus(id) kantakse üle — Stripe'i arveldus, mis on juba käimas, ei muutu automaatselt.",
+        "priceFree": "Vaba",
+        "priceFreeAmount": "Tasuta summa",
+        "priceFreeAmountFrom": "Tasuta summa aadressilt {amount}",
+        "priceRecurring": "{amount}/aasta"
+      }
     },
     "reminderModal": {
       "title": "Saada panuse meeldetuletus",

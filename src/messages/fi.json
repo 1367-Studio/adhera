@@ -910,7 +910,19 @@
         "EXCEPTIONAL": "Satunnainen",
         "OTHER": "Muu",
         "IN_KIND": "Luontoissuoritukset"
-      }
+      },
+      "accountingCodeFormwiseNote": "Formwisen suosittelema alitili erillistä seurantaa varten — ei pakollinen virallinen numero.",
+      "suggestedAccounts": "Ehdotetut kertomukset",
+      "seeOtherAccounts": "Katso muut kertomukset",
+      "description": "Kuvaus",
+      "descriptionPlaceholder": "Esim. Lipunmyynti johonkin aktiviteettiin tai tapahtumaan.",
+      "sectionAutoNote": "Osio määräytyy automaattisesti kirjanpitotilistä.",
+      "sectionManualNote": "Manuaalisesti määritelty osio.",
+      "sectionUnverifiedNote": "Tätä tiliä ei tunnisteta — tarkista osio tai valitse se edistyneistä vaihtoehdoista.",
+      "sectionToVerify": "Tarkistettava osio",
+      "advancedOptions": "Edistyneet vaihtoehdot",
+      "revertToAutoSection": "Takaisin automaattiosastolle",
+      "noMatchingCategory": "Ei yhteensopivuuskategoriaa"
     },
     "bankAccountForm": {
       "bankName": "Pankin nimi",
@@ -1050,7 +1062,6 @@
       "description": "Hallinnoi tulo- ja kulukategorioita.",
       "seedButton": "Aloita oletuskategoriat",
       "noCategories": "Ei kategoriaa",
-      "default": "Oletus",
       "income": "Tulot",
       "expenses": "Kulut",
       "newCategoryTitle": "Uusi kategoria",
@@ -1062,7 +1073,12 @@
         "updated": "Päivitetty kategoria",
         "deleted": "Kategoria poistettu",
         "seeded": "{count, plural, one {# alustettu kategoria} other {# alustetut kategoriat}}"
-      }
+      },
+      "chooseTemplateTitle": "Valitse kategoriatyyppi",
+      "customCategory": "Luo oma kategoria",
+      "alreadyExists": "Jo konfiguroitu",
+      "archivedReactivateHint": "Arkistoitu — klikkaa aktivoidaksesi uudelleen",
+      "custom": "Räätälöity"
     },
     "incomesView": {
       "title": "Tulot",
@@ -4147,11 +4163,7 @@
       "selectedCount": "{count, plural, one {# valittu} other {# valittu}}",
       "deselectAll": "Poista valinta",
       "sendReminder": "Lähetä muistutus",
-      "exportMembers": "Vientijäsenet",
-      "exportExcel": "Excel (.xlsx)",
-      "exportPdf": "PDF (.pdf)",
       "count": "{count, plural, one {# Jäsenmaksu} other {# Panokset}}",
-      "totalCollected": " · {amount} Lunastettu",
       "exercise": "Tilikausi {year}",
       "columns": {
         "member": "Jäsen",
@@ -4195,7 +4207,59 @@
         "editCancelled": "Peruutetun jäsenyyden muuttaminen"
       },
       "selectAllTruncated": "Yli 500 panosta sopii suodattimiin — vain 500 parasta valittiin.",
-      "remaining": "Lepoa {amount}"
+      "remaining": "Lepoa {amount}",
+      "export": "Vie",
+      "exportCotisationsExcel": "Jäsenmaksut (Excel)",
+      "exportMembresExcel": "Jäsenet (Excel)",
+      "exportMembresPdf": "Jäsenet (PDF)",
+      "allCategories": "Kaikki kategoriat",
+      "allRenewals": "Kaikki uusimiset",
+      "resetFilters": "Nollaus",
+      "renewal": {
+        "automatic": "Automaattinen",
+        "manual": "Manuaalinen"
+      },
+      "summary": {
+        "aPagar": " · {amount} yhteensä",
+        "recebido": " · {amount} saatu",
+        "saldo": " · {amount} maksamatta"
+      },
+      "distribution": {
+        "show": "Näytä jakauma",
+        "hide": "Piilota jakauma",
+        "category": "Jäsenyyskategoria",
+        "renewal": "Uusiminen",
+        "count": "Panosten määrä",
+        "aPagar": "Kokonaismäärä",
+        "recebido": "Saatu summa",
+        "saldo": "Jäljellä oleva saldo",
+        "total": "Yhteensä",
+        "noCategory": "Ei kategoriaa",
+        "empty": "Mikään jäsenmaksu ei vastaa näitä suodattimia."
+      },
+      "mergeTiers": {
+        "filterOption": "Yhdistä kaksoisluokkat",
+        "title": "Yhdistä kaksoisluokkat",
+        "description": "Kategoriat, joiden nimet eroavat vain sijan, aksenttien tai välilyöntien osalta. Mikään ei yhdistetä automaattisesti.",
+        "empty": "Yhtään kaksoiskappaletta ei havaittu.",
+        "groupSummary": "{count} kategorioita nimeltä \"{label}\"",
+        "groupTitle": "Yhdistä muotoon \"{label}\"",
+        "backAction": "Takaisin",
+        "cancelAction": "Peruuta",
+        "keepAsPrimary": "Säilytettävä kategoria",
+        "mergeIntoPrimary": "Kategoriat, jotka yhdistetään siihen",
+        "tierCounts": "{cotisationCount} Jäsenmaksu(t) · {membreCount} Jäsen(t)",
+        "mergeAction": "Yhdistyminen",
+        "confirmTitle": "Vahvista yhdistyminen",
+        "confirmDescription": "{count} kategoria(t) yhdistetään muotoon \"{primaryLabel}\". {cotisationCount} Jäsenmaksu(t) ja {membreCount} jäsen(t) siirretään. Tämä toimenpide on peruuttamaton, mutta säilyttää kaikki uusimishistorian ja asetukset.",
+        "mergeSuccess": "{count} yhdistetyt kategoriat.",
+        "loadError": "Kaksoiskappaleita ei voi ladata. Yritä uudelleen hetken kuluttua.",
+        "activeSubscriptionWarning": "{count} aktiiviset tilaukset siirtyvät — jo käynnissä oleva Stripe-laskutus ei muutu automaattisesti.",
+        "priceFree": "Vapaa",
+        "priceFreeAmount": "Ilmainen määrä",
+        "priceFreeAmountFrom": "Ilmainen summa osoitteesta {amount}",
+        "priceRecurring": "{amount}/vuosi"
+      }
     },
     "reminderModal": {
       "title": "Lähetä lahjoitusmuistutus",

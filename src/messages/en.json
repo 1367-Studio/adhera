@@ -947,7 +947,8 @@
         "FINANCIAL": "Financial",
         "EXCEPTIONAL": "Exceptional",
         "OTHER": "Other",
-        "IN_KIND": "In-kind contributions"
+        "IN_KIND": "In-kind contributions",
+        "IMMOBILISATION": "Capital assets"
       },
       "drillDown": {
         "date": "Date",
@@ -981,7 +982,11 @@
         "uncategorizedIncomeLabel": "Income to categorize",
         "uncategorizedExpenseLabel": "Expenses to categorize",
         "total": "Total",
-        "grandTotal": "TOTAL"
+        "grandTotal": "TOTAL",
+        "immobilisationIncome": "Capital assets (income)",
+        "immobilisationExpense": "Capital assets (expense)",
+        "immobilisationResult": "Capital assets balance",
+        "immobilisationSection": "Capital assets — outside the current result"
       },
       "csv": {
         "date": "Date",
@@ -997,11 +1002,13 @@
         "origin": "Origin",
         "reference": "Reference",
         "exercice": "Fiscal year"
-      }
+      },
+      "immobilisationNote": "Capital asset purchases and depreciation — informational only, not included in the exercice's result."
     },
     "categoryForm": {
       "name": "Name",
       "namePlaceholder": "e.g. Membership fees",
+      "noMatchingCategory": "No matching category",
       "type": "Type",
       "typeIncome": "Income",
       "typeExpense": "Expense",
@@ -1014,8 +1021,22 @@
         "FINANCIAL": "Financial",
         "EXCEPTIONAL": "Exceptional",
         "OTHER": "Other",
-        "IN_KIND": "In-kind contributions"
-      }
+        "IN_KIND": "In-kind contributions",
+        "IMMOBILISATION": "Capital asset"
+      },
+      "accountingCodeLegacyOption": "{code} — (legacy code, needs updating)",
+      "accountingCodeLegacyWarning": "This accounting code is no longer in the controlled list — choose a valid account before saving.",
+      "accountingCodeFormwiseNote": "Subaccount suggested by Formwise for separate tracking — not a mandatory official number.",
+      "suggestedAccounts": "Suggested accounts",
+      "seeOtherAccounts": "See other accounts",
+      "description": "Description",
+      "descriptionPlaceholder": "e.g. Selling tickets for an activity or event.",
+      "sectionAutoNote": "Section determined automatically from the accounting code.",
+      "sectionManualNote": "Section set manually.",
+      "sectionUnverifiedNote": "This account isn't recognized — verify the section or choose it under advanced options.",
+      "sectionToVerify": "Section to verify",
+      "advancedOptions": "Advanced options",
+      "revertToAutoSection": "Revert to automatic section"
     },
     "bankAccountForm": {
       "bankName": "Bank name",
@@ -1150,24 +1171,63 @@
         "deleted": "Account deleted"
       }
     },
+    "transferForm": {
+      "fromAccount": "Source account",
+      "toAccount": "Destination account",
+      "amount": "Amount",
+      "date": "Date",
+      "note": "Note",
+      "notePlaceholder": "E.g. savings transfer",
+      "toasts": {
+        "created": "Transfer recorded",
+        "updated": "Transfer updated",
+        "deleted": "Transfer deleted"
+      }
+    },
+    "transfersView": {
+      "title": "Internal transfers",
+      "add": "Transfer",
+      "newTransferTitle": "New transfer between accounts",
+      "editTransferTitle": "Edit transfer",
+      "deleteConfirmTitle": "Delete this transfer?",
+      "noTransfers": "No transfer recorded",
+      "columns": {
+        "accounts": "Accounts",
+        "amount": "Amount",
+        "date": "Date",
+        "note": "Note"
+      }
+    },
     "categoriesView": {
       "title": "Categories",
       "description": "Manage income and expense categories.",
       "seedButton": "Set up default categories",
       "noCategories": "No categories",
-      "default": "Default",
       "income": "Income",
       "expenses": "Expenses",
       "newCategoryTitle": "New category",
       "editCategoryTitle": "Edit category",
       "deleteConfirmTitle": "Delete this category?",
-      "deleteConfirmInUse": "\"{name}\" is used by {count, plural, one {# income/expense entry} other {# income/expense entries}}. These entries will be reassigned to \"Uncategorized\".",
       "toasts": {
         "created": "Category created",
         "updated": "Category updated",
         "deleted": "Category deleted",
-        "seeded": "{count, plural, one {# category initialized} other {# categories initialized}}"
-      }
+        "seeded": "{count, plural, one {# category initialized} other {# categories initialized}}",
+        "archived": "Category archived",
+        "reactivated": "Category reactivated"
+      },
+      "archived": "Archived",
+      "reactivate": "Reactivate",
+      "showArchived": "Show archived categories",
+      "transferLimitationNote": "Transfers between the association's own bank accounts (internal treasury) must never be entered as an income or expense — record them from Accounting → Accounts instead.",
+      "archiveConfirmTitle": "Archive this category?",
+      "archiveConfirmInUse": "\"{name}\" is used by {count, plural, one {# income/expense entry} other {# income/expense entries}}. It will be archived (its history is kept) and won't be offered for new transactions anymore.",
+      "archive": "Archive",
+      "chooseTemplateTitle": "Choose a category type",
+      "customCategory": "Create a custom category",
+      "alreadyExists": "Already set up",
+      "archivedReactivateHint": "Archived — click to reactivate",
+      "custom": "Custom"
     },
     "incomesView": {
       "title": "Income",
@@ -1372,6 +1432,7 @@
         "actions": "Actions"
       },
       "reconciledFallback": "Matched",
+      "transferLabel": "Internal transfer — {from} → {to}",
       "allAccounts": "All accounts",
       "noTransactions": "No transactions to display",
       "actions": {
@@ -1404,6 +1465,7 @@
       "suggestedMatches": "Suggested matches",
       "typeIncome": "Income",
       "typeExpense": "Expense",
+      "typeTransfer": "Internal transfer",
       "confirm": "Confirm match"
     }
   },
@@ -4342,11 +4404,7 @@
       "selectedCount": "{count, plural, one {# selected} other {# selected}}",
       "deselectAll": "Deselect",
       "sendReminder": "Send reminder",
-      "exportMembers": "Export members",
-      "exportExcel": "Excel (.xlsx)",
-      "exportPdf": "PDF (.pdf)",
       "count": "{count, plural, one {# membership fee} other {# membership fees}}",
-      "totalCollected": " · {amount} collected",
       "exercise": "Fiscal year {year}",
       "columns": {
         "member": "Member",
@@ -4391,7 +4449,59 @@
         "editCancelled": "Edit the cancelled membership fee"
       },
       "selectAllTruncated": "More than 500 cotisations match the filters — only the first 500 were selected.",
-      "remaining": "{amount} remaining"
+      "remaining": "{amount} remaining",
+      "export": "Export",
+      "exportCotisationsExcel": "Cotisations (Excel)",
+      "exportMembresExcel": "Members (Excel)",
+      "exportMembresPdf": "Members (PDF)",
+      "allCategories": "All categories",
+      "allRenewals": "All renewals",
+      "resetFilters": "Reset",
+      "mergeTiers": {
+        "filterOption": "Merge duplicate categories",
+        "title": "Merge duplicate categories",
+        "description": "Categories whose name only differs by case, accents, or extra spaces. Nothing is merged automatically.",
+        "empty": "No duplicates detected.",
+        "groupSummary": "{count} categories named \"{label}\"",
+        "groupTitle": "Merge into \"{label}\"",
+        "backAction": "Back",
+        "cancelAction": "Cancel",
+        "keepAsPrimary": "Category to keep",
+        "mergeIntoPrimary": "Categories to merge into this one",
+        "tierCounts": "{cotisationCount} due(s) · {membreCount} member(s)",
+        "mergeAction": "Merge",
+        "confirmTitle": "Confirm merge",
+        "confirmDescription": "{count} category(ies) will be merged into \"{primaryLabel}\". {cotisationCount} due(s) and {membreCount} member(s) will be transferred. This action is irreversible but preserves all history and renewal settings.",
+        "mergeSuccess": "{count} category(ies) merged.",
+        "loadError": "Couldn't load duplicates. Try again in a moment.",
+        "activeSubscriptionWarning": "{count} active subscription(s) will be transferred — their existing Stripe billing doesn't change automatically.",
+        "priceFree": "Free",
+        "priceFreeAmount": "Open amount",
+        "priceFreeAmountFrom": "Open amount from {amount}",
+        "priceRecurring": "{amount}/year"
+      },
+      "renewal": {
+        "automatic": "Automatic",
+        "manual": "Manual"
+      },
+      "summary": {
+        "aPagar": " · {amount} in total",
+        "recebido": " · {amount} received",
+        "saldo": " · {amount} outstanding"
+      },
+      "distribution": {
+        "show": "View breakdown",
+        "hide": "Hide breakdown",
+        "category": "Membership category",
+        "renewal": "Renewal",
+        "count": "Number of dues",
+        "aPagar": "Total amount",
+        "recebido": "Amount received",
+        "saldo": "Balance remaining",
+        "total": "Total",
+        "noCategory": "No category",
+        "empty": "No cotisations match these filters."
+      }
     },
     "reminderModal": {
       "title": "Send a cotisation reminder",

@@ -4,10 +4,13 @@ import { useState, useEffect, useRef } from "react"
 import { useSearchParams } from "next/navigation"
 import { toast } from "sonner"
 import { useTranslations } from "next-intl"
-import { PlusIcon, PencilSimpleIcon, TrashIcon, DownloadSimpleIcon, CaretDownIcon, BellIcon, MoneyIcon, ClockCounterClockwiseIcon, InfoIcon } from "@phosphor-icons/react/dist/ssr";
+import { PlusIcon, PencilSimpleIcon, TrashIcon, DownloadSimpleIcon, CaretDownIcon, CaretUpIcon, BellIcon, MoneyIcon, ClockCounterClockwiseIcon, FunnelXIcon } from "@phosphor-icons/react/dist/ssr";
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
-import { useCotisationsPaginated, useCreateCotisation, useUpdateCotisation, useDeleteCotisation } from "@/hooks/use-cotisations"
+import {
+  useCotisationsPaginated, useCreateCotisation, useUpdateCotisation, useDeleteCotisation,
+  useCotisationsDistribution, useCotisationTierOptions, type RenewalMode,
+} from "@/hooks/use-cotisations"
 import { useQuery } from "@tanstack/react-query"
 import type { CotisationInput } from "@/lib/schemas"
 import { PageHeader } from "@/components/ui/page-header"
@@ -17,11 +20,14 @@ import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 import { CotisationForm } from "@/components/cotisations/cotisation-form"
 import { SendReminderModal } from "@/components/cotisations/send-reminder-modal"
 import { CotisationPaymentModal } from "@/components/cotisations/cotisation-payment-modal"
-import { PENDING_COTISATION_STATUSES } from "@/lib/cotisation-filters"
+import { PENDING_COTISATION_STATUSES, NO_CATEGORY_FILTER } from "@/lib/cotisation-filters"
 import { CotisationPaymentsModal } from "@/components/cotisations/cotisation-payments-modal"
+import { CotisationsDistribution } from "@/components/cotisations/cotisations-distribution"
+import { MergeDuplicateTiersModal } from "@/components/cotisations/merge-duplicate-tiers-modal"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { RowActions } from "@/components/ui/row-actions"
+import { FilterSelect } from "@/components/ui/filter-select"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { SearchInput } from "@/components/ui/search-input"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
@@ -76,6 +82,11 @@ const yearOptions = Array.from({ length: 5 }, (_, i) => currentYear - i)
 
 const PAGE_SIZE = 25
 
+// Sentinel injected into the tier FilterSelect's own options — intercepted in its
+// onValueChange before setTierFilter, so picking it opens the merge modal instead of
+// filtering (see MergeDuplicateTiersModal). Never sent to the API, unlike NO_CATEGORY_FILTER.
+const MERGE_DUPLICATE_TIERS_OPTION = "__merge_duplicate_tiers__"
+
 export function CotisationsView() {
   const searchParams = useSearchParams()
   const t = useTranslations()
@@ -91,6 +102,10 @@ export function CotisationsView() {
   // Pré-rempli depuis l'URL : l'accueil renvoie ici avec ?status=… pour ouvrir directement
   // sur les cotisations à encaisser plutôt que sur la liste entière.
   const [statusFilter, setStatusFilter] = useState<string>(() => searchParams.get("status") ?? "")
+  const [tierFilter, setTierFilter]         = useState("")
+  const [renewalFilter, setRenewalFilter]   = useState<RenewalMode | "">("")
+  const [distributionOpen, setDistributionOpen] = useState(false)
+  const [mergeTiersOpen, setMergeTiersOpen] = useState(false)
   const [createOpen, setCreateOpen]     = useState(false)
   const [editTarget, setEditTarget]     = useState<Cotisation | null>(null)
   const [deleteTarget, setDeleteTarget] = useState<Cotisation | null>(null)
@@ -115,14 +130,32 @@ export function CotisationsView() {
   }
 
   const filters = {
-    year:   yearFilter || undefined,
-    status: statusFilter || undefined,
-    search: search       || undefined,
+    year:        yearFilter || undefined,
+    status:      statusFilter || undefined,
+    search:      search       || undefined,
+    tierId:      tierFilter    || undefined,
+    renewalMode: renewalFilter || undefined,
   }
+  const hasActiveFilters = !!(search || statusFilter || tierFilter || renewalFilter)
 
   const { data: result, isLoading } = useCotisationsPaginated(page, PAGE_SIZE, filters)
   const cotisations = (result?.data ?? []) as Cotisation[]
-  const totalPaye   = result?.totalPaye ?? 0
+  const summary = result?.summary ?? { count: 0, aPagar: 0, recebido: 0, saldo: 0 }
+
+  const { data: tierOptionsData } = useCotisationTierOptions()
+  const tierOptions       = tierOptionsData?.tiers ?? []
+  const hasUncategorized   = tierOptionsData?.hasUncategorized ?? false
+  const { data: distribution, isLoading: distributionLoading } = useCotisationsDistribution(filters, distributionOpen)
+
+  function resetFilters() {
+    if (debounceRef.current) clearTimeout(debounceRef.current)
+    setSearchInput("")
+    setSearch("")
+    setStatusFilter("")
+    setTierFilter("")
+    setRenewalFilter("")
+    setPage(1)
+  }
 
   // Load all active membres for the create form
   const { data: membres = [], isLoading: membresLoading } = useQuery<MembreOption[]>({
@@ -143,7 +176,7 @@ export function CotisationsView() {
   useEffect(() => {
     setSelected(new Map())
     setAllMatchingSelected(false)
-  }, [yearFilter, statusFilter, search])
+  }, [yearFilter, statusFilter, search, tierFilter, renewalFilter])
 
   const createMutation = useCreateCotisation()
   const updateMutation = useUpdateCotisation(editTarget?.id ?? "")
@@ -244,17 +277,21 @@ export function CotisationsView() {
     setAllMatchingSelected(false)
   }
 
-  // Fetches every EN_ATTENTE/PARTIELLEMENT_PAYEE/EN_RETARD cotisation matching the current
-  // year/search filters (ignoring the status filter itself — a reminder is only ever sent to
-  // members who still owe something, so "select all matching filters" always means that,
-  // capped at 500 like GET /api/cotisations already is). Must stay in lockstep with
-  // isSelectable below and the reminders route's own server-side filter.
+  // Fetches every EN_ATTENTE/PARTIELLEMENT_PAYEE/EN_RETARD cotisation matching every other
+  // active filter (ignoring the status filter itself — a reminder is only ever sent to members
+  // who still owe something, so "select all matching filters" always means that, capped at 500
+  // like GET /api/cotisations already is). Catégorie/Renouvellement must stay included here: the
+  // checkbox is explicitly labelled "filtres actifs" — silently dropping them would select (and
+  // remind) members outside the segment the admin had deliberately narrowed down to. Must stay
+  // in lockstep with isSelectable below and the reminders route's own server-side filter.
   async function selectAllMatching() {
     setSelectingAll(true)
     try {
       const params = new URLSearchParams({ status: "EN_ATTENTE,PARTIELLEMENT_PAYEE,EN_RETARD" })
-      if (yearFilter) params.set("year", String(yearFilter))
-      if (search)     params.set("search", search)
+      if (yearFilter)   params.set("year",        String(yearFilter))
+      if (search)       params.set("search",      search)
+      if (tierFilter)   params.set("tierId",      tierFilter)
+      if (renewalFilter) params.set("renewalMode", renewalFilter)
       const res = await fetch(`/api/cotisations?${params}`)
       if (!res.ok) { toast.error(t("common.error")); return }
       const all = await res.json() as Cotisation[]
@@ -266,6 +303,16 @@ export function CotisationsView() {
     } finally {
       setSelectingAll(false)
     }
+  }
+
+  function handleExportCotisationsXlsx() {
+    const params = new URLSearchParams()
+    if (filters.year)        params.set("year",        String(filters.year))
+    if (filters.status)      params.set("status",      filters.status)
+    if (filters.search)      params.set("search",      filters.search)
+    if (filters.tierId)      params.set("tierId",      filters.tierId)
+    if (filters.renewalMode) params.set("renewalMode", filters.renewalMode)
+    window.location.href = `${BASE_PATH}/api/cotisations/export?${params}`
   }
 
   function handleExportMembresXlsx() {
@@ -285,16 +332,6 @@ export function CotisationsView() {
   }
 
   const statusBadge = getStatusBadge(t)
-  const statusFilterLabel: Record<string, string> = {
-    [PENDING_COTISATION_STATUSES]: t("cotisations.view.statusFilter.aEncaisser"),
-    all:                 t("cotisations.view.all"),
-    EN_ATTENTE:          t("cotisations.view.statusFilter.enAttente"),
-    PARTIELLEMENT_PAYEE: t("cotisations.view.statusFilter.partiellementPayees"),
-    PAYE:                t("cotisations.view.statusFilter.payees"),
-    EN_RETARD:           t("cotisations.view.statusFilter.enRetard"),
-    EXONERE:             t("cotisations.view.statusFilter.exonerees"),
-    ANNULEE:             t("cotisations.view.statusFilter.annulees"),
-  }
 
   const columns: Column<Cotisation>[] = [
     {
@@ -422,46 +459,37 @@ export function CotisationsView() {
       <PageHeader
         title={t("cotisations.view.title")}
         description={
-          <span className="inline-flex items-center gap-1">
-            {t("cotisations.view.count", { count: result?.total ?? 0 })}
-            {totalPaye > 0 && (
-              <>
-                {t("cotisations.view.totalCollected", { amount: totalPaye.toLocaleString("fr-FR", { style: "currency", currency: "EUR" }) })}
-                {/* This sum can exceed the visible rows' total — it also counts cotisations
-                    of members deleted since paying. */}
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger className="text-muted-foreground hover:text-foreground" render={<span className="inline-flex" />}>
-                      <InfoIcon className="size-3.5" />
-                    </TooltipTrigger>
-                    <TooltipContent side="top" className="max-w-64 whitespace-normal text-left">
-                      {t("cotisations.view.totalCollectedTooltip")}
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-              </>
-            )}
+          <span className="inline-flex items-center gap-1 flex-wrap">
+            <span>{t("cotisations.view.count", { count: summary.count })}</span>
+            <span>{t("cotisations.view.summary.aPagar", { amount: fmt(summary.aPagar) })}</span>
+            <span>{t("cotisations.view.summary.recebido", { amount: fmt(summary.recebido) })}</span>
+            <span>{t("cotisations.view.summary.saldo", { amount: fmt(summary.saldo) })}</span>
           </span>
         }
         action={
           <div className="flex items-center gap-2">
-            {canReadMembres && (
-              <DropdownMenu>
-                <DropdownMenuTrigger render={<Button size="sm" variant="outline" disabled={membresLoading} />}>
-                  <DownloadSimpleIcon className="mr-1.5 size-4" />
-                  {t("cotisations.view.exportMembers")}
-                  <CaretDownIcon className="ml-1 size-3" />
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem onClick={handleExportMembresXlsx}>
-                    {t("cotisations.view.exportExcel")}
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={handleExportMembresPdf}>
-                    {t("cotisations.view.exportPdf")}
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            )}
+            <DropdownMenu>
+              <DropdownMenuTrigger render={<Button size="sm" variant="outline" />}>
+                <DownloadSimpleIcon className="mr-1.5 size-4" />
+                {t("cotisations.view.export")}
+                <CaretDownIcon className="ml-1 size-3" />
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={handleExportCotisationsXlsx}>
+                  {t("cotisations.view.exportCotisationsExcel")}
+                </DropdownMenuItem>
+                {canReadMembres && (
+                  <>
+                    <DropdownMenuItem onClick={handleExportMembresXlsx} disabled={membresLoading}>
+                      {t("cotisations.view.exportMembresExcel")}
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={handleExportMembresPdf} disabled={membresLoading}>
+                      {t("cotisations.view.exportMembresPdf")}
+                    </DropdownMenuItem>
+                  </>
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
             {canEditAdhesions && (
               <Button size="sm" onClick={() => setCreateOpen(true)}>
                 <PlusIcon className="mr-1.5 size-4" />
@@ -472,7 +500,7 @@ export function CotisationsView() {
         }
       />
 
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap items-center gap-2">
         <SearchInput
           placeholder={t("cotisations.view.searchPlaceholder")}
           value={searchInput}
@@ -486,7 +514,7 @@ export function CotisationsView() {
           containerClassName="w-60"
         />
 
-        {/* Year filter */}
+        {/* Not a FilterSelect: the exercice is always a single required year, never "all". */}
         <Select
           value={String(yearFilter)}
           onValueChange={v => { if (v !== null) { setYearFilter(parseInt(v)); setPage(1) } }}
@@ -501,31 +529,54 @@ export function CotisationsView() {
           </SelectContent>
         </Select>
 
-        {/* Status filter */}
-        <Select
-          value={statusFilter || "all"}
-          onValueChange={v => { setStatusFilter(v === "all" || v === null ? "" : v); setPage(1) }}
-        >
-          <SelectTrigger className="w-36">
-            {/* base-ui's SelectValue only auto-resolves a label when Select.Root is given an
-                `items` prop — without it, it falls back to the raw value ("EN_ATTENTE" etc).
-                Passing explicit children here is the documented workaround (see the
-                valueMode Select in import-wizard.tsx for the same pattern). */}
-            <SelectValue placeholder={t("cotisations.view.allStatuses")}>
-              {statusFilterLabel[statusFilter || "all"]}
-            </SelectValue>
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">{t("cotisations.view.all")}</SelectItem>
-            <SelectItem value={PENDING_COTISATION_STATUSES}>{t("cotisations.view.statusFilter.aEncaisser")}</SelectItem>
-            <SelectItem value="EN_ATTENTE">{t("cotisations.view.statusFilter.enAttente")}</SelectItem>
-            <SelectItem value="PARTIELLEMENT_PAYEE">{t("cotisations.view.statusFilter.partiellementPayees")}</SelectItem>
-            <SelectItem value="PAYE">{t("cotisations.view.statusFilter.payees")}</SelectItem>
-            <SelectItem value="EN_RETARD">{t("cotisations.view.statusFilter.enRetard")}</SelectItem>
-            <SelectItem value="EXONERE">{t("cotisations.view.statusFilter.exonerees")}</SelectItem>
-            <SelectItem value="ANNULEE">{t("cotisations.view.statusFilter.annulees")}</SelectItem>
-          </SelectContent>
-        </Select>
+        <FilterSelect
+          value={statusFilter}
+          onValueChange={v => { setStatusFilter(v); setPage(1) }}
+          options={[
+            { value: PENDING_COTISATION_STATUSES, label: t("cotisations.view.statusFilter.aEncaisser") },
+            { value: "EN_ATTENTE",          label: t("cotisations.view.statusFilter.enAttente") },
+            { value: "PARTIELLEMENT_PAYEE", label: t("cotisations.view.statusFilter.partiellementPayees") },
+            { value: "PAYE",                label: t("cotisations.view.statusFilter.payees") },
+            { value: "EN_RETARD",           label: t("cotisations.view.statusFilter.enRetard") },
+            { value: "EXONERE",             label: t("cotisations.view.statusFilter.exonerees") },
+            { value: "ANNULEE",             label: t("cotisations.view.statusFilter.annulees") },
+          ]}
+          placeholder={t("cotisations.view.allStatuses")}
+        />
+
+        <FilterSelect
+          value={tierFilter}
+          onValueChange={v => {
+            if (v === MERGE_DUPLICATE_TIERS_OPTION) { setMergeTiersOpen(true); return }
+            setTierFilter(v)
+            setPage(1)
+          }}
+          options={[
+            ...tierOptions.map(tier => ({ value: tier.id, label: tier.label })),
+            ...(hasUncategorized ? [{ value: NO_CATEGORY_FILTER, label: t("cotisations.view.distribution.noCategory") }] : []),
+            ...(canEditAdhesions ? [{ value: MERGE_DUPLICATE_TIERS_OPTION, label: t("cotisations.view.mergeTiers.filterOption"), separatorBefore: true }] : []),
+          ]}
+          placeholder={t("cotisations.view.allCategories")}
+          width="w-40"
+        />
+
+        <FilterSelect
+          value={renewalFilter}
+          onValueChange={v => { setRenewalFilter(v as RenewalMode | ""); setPage(1) }}
+          options={[
+            { value: "AUTO",   label: t("cotisations.view.renewal.automatic") },
+            { value: "MANUAL", label: t("cotisations.view.renewal.manual") },
+          ]}
+          placeholder={t("cotisations.view.allRenewals")}
+          width="w-44"
+        />
+
+        {hasActiveFilters && (
+          <Button variant="ghost" onClick={resetFilters} className="text-muted-foreground">
+            <FunnelXIcon className="size-3.5" />
+            {t("cotisations.view.resetFilters")}
+          </Button>
+        )}
 
         {/* Selection only exists to send reminders — a "membres" edit. */}
         {canEditAdhesions && statusFilter !== "PAYE" && statusFilter !== "EXONERE" && statusFilter !== "ANNULEE" && (
@@ -540,7 +591,20 @@ export function CotisationsView() {
             {t("cotisations.view.selectAllMatching")}
           </label>
         )}
+
+        <Button variant="outline" size="sm" className="ml-auto" onClick={() => setDistributionOpen(o => !o)}>
+          {distributionOpen ? <CaretUpIcon className="mr-1.5 size-3.5" /> : <CaretDownIcon className="mr-1.5 size-3.5" />}
+          {distributionOpen ? t("cotisations.view.distribution.hide") : t("cotisations.view.distribution.show")}
+        </Button>
       </div>
+
+      {distributionOpen && (
+        <CotisationsDistribution
+          groups={distribution?.groups ?? []}
+          total={distribution?.total ?? { count: 0, aPagar: 0, recebido: 0, saldo: 0 }}
+          loading={distributionLoading}
+        />
+      )}
 
       {selected.size > 0 && (
         <div className="flex items-center justify-between gap-3 rounded-lg border bg-muted/40 px-4 py-2.5">
@@ -581,6 +645,18 @@ export function CotisationsView() {
         onOpenChange={setReminderOpen}
         cotisations={Array.from(selected.values())}
         onSent={() => { setReminderOpen(false); clearSelection() }}
+      />
+
+      <MergeDuplicateTiersModal
+        open={mergeTiersOpen}
+        onOpenChange={setMergeTiersOpen}
+        onMerged={(mergedAwayIds, primaryTierId) => {
+          // The active "Catégorie" filter can be pointing at a tier that was just archived —
+          // left alone, the table would silently show zero results with no explanation, since
+          // nothing references that tierId anymore. Follow the filter onto the tier it merged
+          // into instead of just clearing it, so the admin keeps looking at the same category.
+          if (mergedAwayIds.includes(tierFilter)) { setTierFilter(primaryTierId); setPage(1) }
+        }}
       />
 
       {paymentTarget && (

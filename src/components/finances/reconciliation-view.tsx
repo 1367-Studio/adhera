@@ -32,8 +32,9 @@ type BankTx = {
   status:          "UNMATCHED" | "MATCHED" | "PENDING" | "IGNORED" | "DUPLICATE"
   bankAccount:     { accountName: string; bankName: string }
   reconciliations: Array<{
-    income?:  { id: string; description: string | null; amount: string; membre?: { firstName: string; lastName: string } | null } | null
-    expense?: { id: string; description: string | null; vendor: string | null; amount: string } | null
+    income?:   { id: string; description: string | null; amount: string; membre?: { firstName: string; lastName: string } | null } | null
+    expense?:  { id: string; description: string | null; vendor: string | null; amount: string } | null
+    transfer?: { id: string; amount: string; fromAccount: { accountName: string }; toAccount: { accountName: string } } | null
   }>
 }
 
@@ -165,7 +166,12 @@ export function ReconciliationView() {
           <p className="text-xs text-muted-foreground">{tx.bankAccount.accountName}</p>
           {tx.reconciliations[0] && (
             <p className="text-xs text-green-600 dark:text-green-400 mt-0.5">
-              → {tx.reconciliations[0].income?.description || tx.reconciliations[0].income?.membre?.lastName || tx.reconciliations[0].expense?.description || tx.reconciliations[0].expense?.vendor || t("finances.reconciliationView.reconciledFallback")}
+              → {tx.reconciliations[0].transfer
+                ? t("finances.reconciliationView.transferLabel", {
+                    from: tx.reconciliations[0].transfer.fromAccount.accountName,
+                    to:   tx.reconciliations[0].transfer.toAccount.accountName,
+                  })
+                : tx.reconciliations[0].income?.description || tx.reconciliations[0].income?.membre?.lastName || tx.reconciliations[0].expense?.description || tx.reconciliations[0].expense?.vendor || t("finances.reconciliationView.reconciledFallback")}
             </p>
           )}
         </div>
@@ -295,8 +301,8 @@ export function ReconciliationView() {
           transaction={matchModal}
           open={!!matchModal}
           onOpenChange={(o) => !o && setMatchModal(null)}
-          onMatch={async ({ incomeId, expenseId }) => {
-            await reconcileMutation.mutateAsync({ bankTransactionId: matchModal.id, action: "MATCH", incomeId, expenseId })
+          onMatch={async ({ incomeId, expenseId, transferId }) => {
+            await reconcileMutation.mutateAsync({ bankTransactionId: matchModal.id, action: "MATCH", incomeId, expenseId, transferId })
             toast.success(t("finances.reconciliationView.toasts.matched"))
             setMatchModal(null)
           }}
@@ -305,7 +311,7 @@ export function ReconciliationView() {
 
       {/* Create income from transaction */}
       {incomeModal && (
-        <Modal open={!!incomeModal} onOpenChange={(o) => !o && setIncomeModal(null)} title={t("finances.reconciliationView.createIncomeTitle")} size="md" dismissable={false}>
+        <Modal open={!!incomeModal} onOpenChange={(o) => !o && setIncomeModal(null)} title={t("finances.reconciliationView.createIncomeTitle")} size="lg" dismissable={false}>
           <p className="text-sm text-muted-foreground mb-4">{t("finances.reconciliationView.transactionLabel")} <strong>{incomeModal.label}</strong> · +{fmt(incomeModal.amount)}</p>
           <IncomeForm
             defaultValues={{
@@ -323,7 +329,7 @@ export function ReconciliationView() {
 
       {/* Create expense from transaction */}
       {expenseModal && (
-        <Modal open={!!expenseModal} onOpenChange={(o) => !o && setExpenseModal(null)} title={t("finances.reconciliationView.createExpenseTitle")} size="md" dismissable={false}>
+        <Modal open={!!expenseModal} onOpenChange={(o) => !o && setExpenseModal(null)} title={t("finances.reconciliationView.createExpenseTitle")} size="lg" dismissable={false}>
           <p className="text-sm text-muted-foreground mb-4">{t("finances.reconciliationView.transactionLabel")} <strong>{expenseModal.label}</strong> · −{fmt(expenseModal.amount)}</p>
           <ExpenseForm
             defaultValues={{

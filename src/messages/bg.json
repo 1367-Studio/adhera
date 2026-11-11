@@ -910,7 +910,19 @@
         "EXCEPTIONAL": "Извънреден",
         "OTHER": "Друго",
         "IN_KIND": "Вноски в натура"
-      }
+      },
+      "accountingCodeFormwiseNote": "Подакаунт, предложен от Formwise за отделно проследяване — не е задължителен официален номер.",
+      "suggestedAccounts": "Предложени разкази",
+      "seeOtherAccounts": "Вижте другите разкази",
+      "description": "Описание",
+      "descriptionPlaceholder": "Например: Продажба на билети за дейност или събитие.",
+      "sectionAutoNote": "Секцията се определя автоматично от счетоводна сметка.",
+      "sectionManualNote": "Ръчно дефинирана секция.",
+      "sectionUnverifiedNote": "Този акаунт не е разпознат — проверете секцията или го изберете от разширените опции.",
+      "sectionToVerify": "Секция за проверка",
+      "advancedOptions": "Разширени опции",
+      "revertToAutoSection": "Връщаме се към автоматичната секция",
+      "noMatchingCategory": "Няма съвпадение на категория"
     },
     "bankAccountForm": {
       "bankName": "Име на банка",
@@ -1050,7 +1062,6 @@
       "description": "Управлявайте категориите приходи и разходи.",
       "seedButton": "Инициализиране на стандартни категории",
       "noCategories": "Няма категория",
-      "default": "По подразбиране",
       "income": "Приходи",
       "expenses": "Разходи",
       "newCategoryTitle": "Нова категория",
@@ -1062,7 +1073,12 @@
         "updated": "Актуализирана категория",
         "deleted": "Категорията е изтрита",
         "seeded": "{count, plural, one {# инициализирана категория} other {# категории инициализирани}}"
-      }
+      },
+      "chooseTemplateTitle": "Изберете тип категория",
+      "customCategory": "Създайте персонализирана категория",
+      "alreadyExists": "Вече конфигурирано",
+      "archivedReactivateHint": "Архивирано — кликнете, за да активирате отново.",
+      "custom": "Персонализирана"
     },
     "incomesView": {
       "title": "Приходи",
@@ -4147,11 +4163,7 @@
       "selectedCount": "{count, plural, one {# избран} other {# избран}}",
       "deselectAll": "Премахване на селекциите",
       "sendReminder": "Изпратете напомняне",
-      "exportMembers": "Експортни членове",
-      "exportExcel": "Excel (.xlsx)",
-      "exportPdf": "PDF (.pdf)",
       "count": "{count, plural, one {# Членска такса} other {# Приноси}}",
-      "totalCollected": " · {amount} Осребрени",
       "exercise": "Фискална година {year}",
       "columns": {
         "member": "Член",
@@ -4195,7 +4207,59 @@
         "editCancelled": "Промяна на анулираното членство"
       },
       "selectAllTruncated": "Повече от 500 приноса отговаряха на филтрите — само топ 500 бяха избрани.",
-      "remaining": "Почивка {amount}"
+      "remaining": "Почивка {amount}",
+      "export": "Експортиране",
+      "exportCotisationsExcel": "Такси (Excel)",
+      "exportMembresExcel": "Членове (Excel)",
+      "exportMembresPdf": "Членове (PDF)",
+      "allCategories": "Всички категории",
+      "allRenewals": "Всички подновявания",
+      "resetFilters": "Нулиране",
+      "renewal": {
+        "automatic": "Автоматично",
+        "manual": "Ръчно"
+      },
+      "summary": {
+        "aPagar": " · {amount} общо",
+        "recebido": " · {amount} получено",
+        "saldo": " · {amount} остатък"
+      },
+      "distribution": {
+        "show": "Преглед на разпределението",
+        "hide": "Скриване на разпределението",
+        "category": "Категория членство",
+        "renewal": "Подновяване",
+        "count": "Брой приноси",
+        "aPagar": "Обща сума",
+        "recebido": "Получена сума",
+        "saldo": "Остатъчен баланс",
+        "total": "Общо",
+        "noCategory": "Без категория",
+        "empty": "Нито една такса не отговаря на тези филтри."
+      },
+      "mergeTiers": {
+        "filterOption": "Обединяване на дублиращи се категории",
+        "title": "Обединяване на дублиращи се категории",
+        "description": "Категории, чиито имена се различават само по падеж, акценти или интервали. Нищо не се слива автоматично.",
+        "empty": "Не са открити дубликати.",
+        "groupSummary": "{count} категории, наречени \"{label}\"",
+        "groupTitle": "Сливане в \"{label}\"",
+        "backAction": "Назад",
+        "cancelAction": "Отмени",
+        "keepAsPrimary": "Категория за запазване",
+        "mergeIntoPrimary": "Категории за сливане",
+        "tierCounts": "{cotisationCount} Членска такса(и) · {membreCount} Член(и)",
+        "mergeAction": "Сливане",
+        "confirmTitle": "Потвърдете сливането",
+        "confirmDescription": "{count} категории(и) ще бъдат обединени в \"{primaryLabel}\". {cotisationCount} Членски такса(и) и {membreCount} ще бъдат прехвърлени. Това действие е необратимо, но запазва цялата история на подновяване и конфигурации.",
+        "mergeSuccess": "{count} обединени категории(и).",
+        "loadError": "Дубликати не могат да бъдат качени. Опитай пак след малко.",
+        "activeSubscriptionWarning": "{count} активен абонамент(и) ще бъде прехвърлен — Stripe таксуването, което вече е в ход, не се променя автоматично.",
+        "priceFree": "Безплатно",
+        "priceFreeAmount": "Безплатна сума",
+        "priceFreeAmountFrom": "Свободна сума от {amount}",
+        "priceRecurring": "{amount}/година"
+      }
     },
     "reminderModal": {
       "title": "Изпратете напомняне за дарение",

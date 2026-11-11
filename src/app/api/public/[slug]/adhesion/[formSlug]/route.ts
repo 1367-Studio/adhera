@@ -32,7 +32,7 @@ export async function GET(
       ...(preview ? {} : { status: "PUBLISHED" as const, visibility: { not: "PRIVATE" as const } }),
     },
     include: {
-      tiers:        { orderBy: { order: "asc" } },
+      tiers:        { where: { archivedAt: null }, orderBy: { order: "asc" } },
       customFields: { orderBy: { order: "asc" } },
       products: {
         orderBy: { order: "asc" },

@@ -13,6 +13,7 @@ import { CurrencyField } from "@/components/ui/currency-field"
 import { DocumentUpload } from "@/components/ui/document-upload"
 import { Button } from "@/components/ui/button"
 import { useFinanceCategories } from "@/hooks/use-finance-categories"
+import { useBudgetProjects } from "@/hooks/use-budget"
 
 interface ExpenseFormProps {
   defaultValues?: Partial<ExpenseInput>
@@ -49,6 +50,14 @@ export function ExpenseForm({ defaultValues, onSubmit, onCancel, loading, locked
     ...categories.map((c: { id: string; name: string }) => ({ value: c.id, label: c.name })),
   ]
 
+  // See income-form.tsx — includes archived projects so an expense already linked to one
+  // doesn't render this field as a misleading blank.
+  const { data: projects = [] } = useBudgetProjects(true)
+  const projectOptions = [
+    { value: "", label: t("finances.incomeForm.noProject") },
+    ...projects.map(p => ({ value: p.id, label: p.archivedAt ? `${p.name} (${t("finances.previsionnel.projectsTab.archived")})` : p.name })),
+  ]
+
   const { register, control, handleSubmit, reset, watch, setValue, formState: { errors } } = useForm<ExpenseInput>({
     resolver: zodResolver(expenseSchema) as Resolver<ExpenseInput>,
     defaultValues: {
@@ -59,9 +68,17 @@ export function ExpenseForm({ defaultValues, onSubmit, onCancel, loading, locked
     mode: "onSubmit",
   })
 
+  // Keyed on the serialized CONTENT of defaultValues, not the object reference — same fix as
+  // finance-category-form.tsx. Callers pass a fresh object literal on every one of THEIR
+  // re-renders (e.g. the modal's `loading={mutation.isPending}` flips the instant Guardar is
+  // clicked, well before the request resolves), which re-fired this effect on every one of
+  // those renders and wiped in-progress edits — including a just-selected receipt file/
+  // categoryId/projectId — back to the original values while the save was still in flight.
+  const defaultValuesKey = JSON.stringify(defaultValues ?? {})
   useEffect(() => {
     reset({ date: new Date().toISOString().split("T")[0], status: "DRAFT", ...defaultValues })
-  }, [defaultValues, reset])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [defaultValuesKey, reset])
 
   const receiptUrl = watch("receiptUrl")
   const pendingFileRef = useRef<{ file: File; prefix: string } | null>(null)
@@ -122,12 +139,19 @@ export function ExpenseForm({ defaultValues, onSubmit, onCancel, loading, locked
         />
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-3 gap-4">
         <Controller
           name="categoryId"
           control={control}
           render={({ field }) => (
             <SelectField label={t("finances.incomeForm.category")} options={categoryOptions} value={field.value ?? ""} onValueChange={field.onChange} />
+          )}
+        />
+        <Controller
+          name="projectId"
+          control={control}
+          render={({ field }) => (
+            <SelectField label={t("finances.incomeForm.project")} options={projectOptions} value={field.value ?? ""} onValueChange={field.onChange} />
           )}
         />
         <FormField label={t("finances.expenseForm.vendor")} placeholder={t("finances.expenseForm.vendorPlaceholder")} disabled={locked} error={errors.vendor?.message} {...register("vendor")} />

@@ -1,4 +1,5 @@
 import { z } from "zod"
+import { REFERENCE_ACCOUNTS, isValidAccountingCode, normalizeAccountingCode } from "@/lib/finance/chart-of-accounts"
 
 export const bankAccountSchema = z.object({
   bankName:       z.string().trim().min(1, "Nom de la banque requis"),
@@ -24,21 +25,47 @@ export const bankAccountUpdateSchema = z.object({
 export type BankAccountInput       = z.infer<typeof bankAccountSchema>
 export type BankAccountUpdateInput = z.infer<typeof bankAccountUpdateSchema>
 
+// accountingCode is required and restricted to the controlled reference list (chart-of-accounts.ts)
+// — no more free text. The cross-field .refine below is what actually enforces "valid for this
+// type": a code that's a real account but belongs to the other type (e.g. an EXPENSE code on an
+// INCOME category) must still fail. Normalized to its 6-digit form before validation, so a
+// legacy short spelling ("706") and today's full spelling ("706000") are always the same code.
+//
+// `section` is optional here on purpose: the normal path never sends it at all — the create/
+// update API routes derive it from accountingCode via sectionForAccountCode. It's only present
+// in a submission when a user deliberately expanded "Options avancées" to override it by hand.
 export const financeCategorySchema = z.object({
   name:          z.string().trim().min(1, "Nom requis"),
   type:          z.enum(["INCOME", "EXPENSE"]),
-  accountingCode: z.string().trim().optional().or(z.literal("")),
-  section:       z.enum(["OPERATING", "FINANCIAL", "EXCEPTIONAL", "OTHER", "IN_KIND"]).default("OPERATING"),
+  accountingCode: z.string().trim().min(1, "Compte comptable requis").transform(normalizeAccountingCode),
+  description:   z.string().trim().max(200).optional().or(z.literal("")),
+  section:       z.enum(["OPERATING", "FINANCIAL", "EXCEPTIONAL", "OTHER", "IN_KIND", "IMMOBILISATION"]).optional(),
+}).refine(data => isValidAccountingCode(data.accountingCode, data.type), {
+  message: "Compte comptable invalide pour ce type",
+  path:    ["accountingCode"],
 })
 
 // Rebuilt as its own literal object instead of financeCategorySchema.partial() — same
 // .default() leak as bankAccountUpdateSchema/incomeUpdateSchema above: an omitted `section`
 // must stay undefined so Prisma leaves the existing value untouched, not reset to "OPERATING".
+// accountingCode can no longer be cleared to "" (see financeCategorySchema) — a PATCH that
+// touches it must supply a real code from the controlled list. When `type` isn't part of the
+// same PATCH, validate against the full reference list instead of one type's subset (the
+// route can't know the category's persisted type at parse time); the UI form always submits
+// both together, so this fallback only matters for a direct API caller.
 export const financeCategoryUpdateSchema = z.object({
   name:          z.string().trim().min(1, "Nom requis").optional(),
   type:          z.enum(["INCOME", "EXPENSE"]).optional(),
-  accountingCode: z.string().trim().optional().or(z.literal("")),
-  section:       z.enum(["OPERATING", "FINANCIAL", "EXCEPTIONAL", "OTHER", "IN_KIND"]).optional(),
+  accountingCode: z.string().trim().min(1, "Compte comptable requis").transform(normalizeAccountingCode).optional(),
+  description:   z.string().trim().max(200).optional().or(z.literal("")),
+  section:       z.enum(["OPERATING", "FINANCIAL", "EXCEPTIONAL", "OTHER", "IN_KIND", "IMMOBILISATION"]).optional(),
+}).refine(data => {
+  if (!data.accountingCode) return true
+  if (data.type) return isValidAccountingCode(data.accountingCode, data.type)
+  return REFERENCE_ACCOUNTS.some(a => a.code === data.accountingCode)
+}, {
+  message: "Compte comptable invalide pour ce type",
+  path:    ["accountingCode"],
 })
 
 export type FinanceCategoryInput       = z.infer<typeof financeCategorySchema>
@@ -47,6 +74,7 @@ export type FinanceCategoryUpdateInput = z.infer<typeof financeCategoryUpdateSch
 export const incomeSchema = z.object({
   amount:        z.number().positive("Montant doit être positif"),
   categoryId:    z.string().optional().or(z.literal("")),
+  projectId:     z.string().optional().or(z.literal("")),
   memberId:      z.string().optional().or(z.literal("")),
   paymentMethod: z.string().optional().or(z.literal("")),
   date:          z.string().min(1, "Date requise"),
@@ -62,6 +90,7 @@ export const incomeSchema = z.object({
 export const incomeUpdateSchema = z.object({
   amount:        z.number().positive("Montant doit être positif").optional(),
   categoryId:    z.string().optional().or(z.literal("")),
+  projectId:     z.string().optional().or(z.literal("")),
   memberId:      z.string().optional().or(z.literal("")),
   paymentMethod: z.string().optional().or(z.literal("")),
   date:          z.string().min(1, "Date requise").optional(),
@@ -77,6 +106,7 @@ export type IncomeUpdateInput = z.infer<typeof incomeUpdateSchema>
 export const expenseSchema = z.object({
   amount:        z.number().positive("Montant doit être positif"),
   categoryId:    z.string().optional().or(z.literal("")),
+  projectId:     z.string().optional().or(z.literal("")),
   date:          z.string().min(1, "Date requise"),
   vendor:        z.string().trim().optional().or(z.literal("")),
   description:   z.string().trim().optional().or(z.literal("")),
@@ -90,6 +120,7 @@ export const expenseSchema = z.object({
 export const expenseUpdateSchema = z.object({
   amount:        z.number().positive("Montant doit être positif").optional(),
   categoryId:    z.string().optional().or(z.literal("")),
+  projectId:     z.string().optional().or(z.literal("")),
   date:          z.string().min(1, "Date requise").optional(),
   vendor:        z.string().trim().optional().or(z.literal("")),
   description:   z.string().trim().optional().or(z.literal("")),
@@ -149,6 +180,23 @@ export const reconcileActionSchema = z.object({
   action:            z.enum(["MATCH", "IGNORE", "DUPLICATE", "UNMATCH"]),
   incomeId:          z.string().optional(),
   expenseId:         z.string().optional(),
+  transferId:        z.string().optional(),
 })
 
 export type ReconcileActionInput = z.infer<typeof reconcileActionSchema>
+
+// A movement of money between two of the association's own BankAccount rows — never an Income
+// (money from outside) or an Expense (money to someone else). See AccountTransfer's doc comment
+// in schema.prisma.
+export const accountTransferSchema = z.object({
+  fromAccountId: z.string().min(1, "Compte source requis"),
+  toAccountId:   z.string().min(1, "Compte destination requis"),
+  amount:        z.number().positive("Le montant doit être positif"),
+  date:          z.string().min(1, "Date requise"),
+  note:          z.string().trim().max(500).optional().or(z.literal("")),
+}).refine(data => data.fromAccountId !== data.toAccountId, {
+  message: "Le compte source et le compte destination doivent être différents",
+  path:    ["toAccountId"],
+})
+
+export type AccountTransferInput = z.infer<typeof accountTransferSchema>

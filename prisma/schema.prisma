@@ -222,6 +222,11 @@ enum FinanceSection {
   EXCEPTIONAL
   OTHER
   IN_KIND
+  // Capital-asset purchases and depreciation/amortization (classe 2 / 68 du PCG) — informational
+  // only, excluded from totalIncome/totalExpense/result in both the Compte de résultat and the
+  // Orçamento previsto (see RESULT_SECTIONS in income-statement-shared.ts). No depreciation
+  // schedule yet — see the FORM category-standardization plan's explicit scope limit.
+  IMMOBILISATION
 }
 
 enum IncomeSource {
@@ -657,7 +662,10 @@ model Association {
   financeCategories             FinanceCategory[]
   incomes                       Income[]
   expenses                      Expense[]
+  budgetProjects                BudgetProject[]
+  budgetLines                   BudgetLine[]
   bankReconciliations           BankReconciliation[]
+  accountTransfers              AccountTransfer[]
   fournisseurs                  Fournisseur[]
   devis                         Devis[]
   factures                      Facture[]
@@ -673,6 +681,7 @@ model Association {
   erasureRequests               ErasureRequest[]
   membreDuplicateMatches        MembreDuplicateMatch[]
   membreMergeLogs               MembreMergeLog[]
+  membershipTierMergeLogs       MembershipTierMergeLog[]
   boutiqueResponsable           User?                          @relation("BoutiqueResponsable", fields: [boutiqueResponsableId], references: [id], onDelete: SetNull)
   donResponsable                User?                          @relation("DonResponsable", fields: [donResponsableId], references: [id], onDelete: SetNull)
 
@@ -780,6 +789,7 @@ model User {
   dismissedDuplicateMatches MembreDuplicateMatch[]
   membreMergesPerformed    MembreMergeLog[]
   membresMerged            Membre[]               @relation("MembreMergedBy")
+  membershipTierMergesPerformed MembershipTierMergeLog[]
   boutiqueResponsableFor   Association[]          @relation("BoutiqueResponsable")
   boutiqueCommandesCreated BoutiqueCommande[]     @relation("BoutiqueCommandeCreatedBy")
   donsCreatedManually      Don[]
@@ -1948,6 +1958,14 @@ model MembershipTier {
   // aujourd'hui totalement indépendant du prix choisi sur le formulaire public actuel.
   // Seulement pertinent pour itemType MEMBERSHIP.
   membreTypeId String?
+  // Posé par la fusion de catégories en double (voir MembershipTierMergeLog) : ce tier a été
+  // conservé en base (jamais supprimé — MembershipAddonPurchase.tier est onDelete: Cascade et
+  // non-nullable, une suppression détruirait son historique d'achats) mais toutes ses relations
+  // ont été réassignées vers le tier primaire choisi. Doit être exclu de tout picker/formulaire
+  // actif (éditeur de tarifs, formulaire public, pickers de paiement) via `archivedAt: null` —
+  // mais jamais filtré dans les requêtes historiques/reporting (distribution des cotisations,
+  // export), qui doivent continuer à le retrouver pour les lignes déjà existantes.
+  archivedAt   DateTime?
 
   form           MembershipForm            @relation(fields: [formId], references: [id], onDelete: Cascade)
   membreType     MembreType?               @relation(fields: [membreTypeId], references: [id], onDelete: SetNull)
@@ -1960,6 +1978,29 @@ model MembershipTier {
 
   @@index([formId])
   @@index([membreTypeId])
+}
+
+// Trace d'audit d'une fusion de catégories d'adhésion dupliquées (voir archivedAt sur
+// MembershipTier ci-dessus) — même forme que MembreMergeLog, en plus simple : aucune FK vers
+// MembershipTier n'est contrainte par un @@unique, donc une fusion ne peut jamais produire de
+// conflit de réassignation (pas de champ `conflicts`), et un tier n'a pas de notion de "valeur
+// gagnante" comparable à celle de deux Membre (pas de `fieldResolutions`).
+model MembershipTierMergeLog {
+  id              String   @id @default(cuid())
+  associationId   String
+  primaryTierId   String
+  secondaryTierId String
+  performedById   String
+  // { "cotisations": 3, "subscriptions": 1, ... } — lignes réassignées vers le tier primaire,
+  // par relation.
+  relationCounts  Json
+  createdAt       DateTime @default(now())
+
+  association Association @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  performedBy User        @relation(fields: [performedById], references: [id])
+
+  @@index([associationId])
+  @@index([primaryTierId])
 }
 
 // Un produit Boutique proposé à la vente en fin de MembershipForm — l'admin choisit
@@ -2943,6 +2984,8 @@ model ExerciceComptable {
   incomes          Income[]
   expenses         Expense[]
   bankTransactions BankTransaction[]
+  accountTransfers AccountTransfer[]
+  budgetLines      BudgetLine[]
 
   @@index([associationId, status])
   @@index([associationId, startDate])
@@ -2963,8 +3006,47 @@ model BankAccount {
 
   association  Association       @relation(fields: [associationId], references: [id], onDelete: Cascade)
   transactions BankTransaction[]
+  transfersOut AccountTransfer[] @relation("TransferFromAccount")
+  transfersIn  AccountTransfer[] @relation("TransferToAccount")
 
   @@index([associationId])
+}
+
+// A movement of money between two of the association's OWN bank accounts — never a receipt
+// from outside (that's an Income) and never a payment to someone else (that's an Expense). Kept
+// entirely separate from FinanceCategory/Income/Expense by construction, not by a filter: a
+// transfer has no FinanceCategoryType to belong to, so it can never leak into either total in
+// computeBudgetPeriod/computeIncomeStatementPeriod just because someone forgot a WHERE clause.
+// See the FORM 78 fluxo-financeiro audit — "transferências devem ter classificação própria, sem
+// serem tratadas como receita ou despesa".
+model AccountTransfer {
+  id            String   @id @default(cuid())
+  associationId String
+  // Best-effort, same convention as BankTransaction.exerciceId — a transfer has no accounting
+  // result of its own to scope to an exercice, this is purely for filtering/reporting by period.
+  exerciceId    String?
+  fromAccountId String
+  toAccountId   String
+  amount        Decimal  @db.Decimal(10, 2)
+  date          DateTime
+  note          String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  association     Association          @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  exercice        ExerciceComptable?   @relation(fields: [exerciceId], references: [id], onDelete: SetNull)
+  // Restrict, not Cascade/SetNull — losing which two accounts money moved between is a worse
+  // outcome than blocking a delete. Same posture as src/app/api/finances/bank-accounts/[id]/
+  // route.ts's own app-level guard against deleting an account that still has BankTransaction
+  // rows (that guard is extended to also check this relation — see its doc comment).
+  fromAccount     BankAccount          @relation("TransferFromAccount", fields: [fromAccountId], references: [id], onDelete: Restrict)
+  toAccount       BankAccount          @relation("TransferToAccount", fields: [toAccountId], references: [id], onDelete: Restrict)
+  reconciliations BankReconciliation[]
+
+  @@index([associationId])
+  @@index([associationId, date])
+  @@index([fromAccountId])
+  @@index([toAccountId])
 }
 
 model BankTransaction {
@@ -2998,14 +3080,28 @@ model FinanceCategory {
   associationId  String
   name           String
   type           FinanceCategoryType
+  // Required at the application layer (see financeCategorySchema), validated against the
+  // controlled list in src/lib/finance/chart-of-accounts.ts — never free text. Stays nullable
+  // at the DB level until the production backfill script confirms no existing row is left
+  // without a code (see scripts/backfill-finance-category-accounting-codes.ts); only then does
+  // a follow-up migration add NOT NULL.
   accountingCode String?
   // Stable slug for the system/default categories seeded by api/finances/categories/seed
   // (e.g. "dons", "fraisBancaires") — lets the Compte de résultat calculation resolve a
   // bucket to its real accountingCode/section without relying on free-text name matching.
   // Null on every custom category a treasurer creates by hand.
   key            String?
+  // Short French sentence explaining what to classify here — shown under the name in the
+  // Comptabilité > Catégories list. Pre-filled from DEFAULT_FINANCE_CATEGORIES for default
+  // categories; optional free text for a custom one.
+  description    String?
   section        FinanceSection      @default(OPERATING)
   isDefault      Boolean             @default(false)
+  // Set instead of deleting a category that already has Income/Expense/BudgetLine/Boutique/
+  // Material history — see DELETE /api/finances/categories/[id]. An archived category keeps
+  // resolving correctly on every historical report (lines are created lazily by categoryId,
+  // see income-statement.ts), it just stops being offered for new transactions.
+  archivedAt     DateTime?
   createdAt      DateTime            @default(now())
   updatedAt      DateTime            @updatedAt
 
@@ -3015,9 +3111,73 @@ model FinanceCategory {
   boutiqueProduits      BoutiqueProduit[]
   boutiqueCommandeItems BoutiqueCommandeItem[]
   materials             Material[]
+  budgetLines           BudgetLine[]
 
   @@index([associationId, type])
+  // Real constraint against the default-category reseed, or a race, ever creating two ACTIVE
+  // rows with the same key for one association — hand-written as a partial unique index (see
+  // the finance_category_key_partial_unique migration) rather than Prisma's own @@unique,
+  // because it needs a WHERE archivedAt IS NULL clause Prisma's schema syntax can't express.
+  // Partial (not plain unique) is what lets DELETE archive a keyed default WITHOUT having to
+  // null its key to free the slot: an archived row's key no longer counts, so
+  // ensureDefaultFinanceCategories can recreate a fresh active one under the same key, AND —
+  // the reason this must be partial rather than a one-time-null-on-archive trick — reactivating
+  // the original row later still correctly re-claims its own key (P2002 if a replacement was
+  // created meanwhile, handled by the PATCH route's existing catch), instead of coming back
+  // forever keyless and unreachable by getOrCreateDefaultCategory/resolveIncomeCategory.
   @@index([associationId, key])
+}
+
+// ─── Orçamento previsto (budget prévisionnel) ────────────────────────────────
+
+// An optional activity/project (e.g. "Voyage annuel", "Recherche ROS1") an association can
+// track separately from its global budget. A project is tracked across multiple exercices —
+// each exercice gets its own BudgetLine forecasts — so the project itself carries no
+// exercice-specific data, only identity. Archiving (not deleting) is the only way to retire
+// one: deleting would force a choice between orphaning real Income/Expense rows or losing
+// historical forecasts, and the feature spec explicitly asks to preserve history.
+model BudgetProject {
+  id            String    @id @default(cuid())
+  associationId String
+  name          String
+  description   String?
+  archivedAt    DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  association Association  @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  budgetLines BudgetLine[]
+  incomes     Income[]
+  expenses    Expense[]
+
+  @@index([associationId, archivedAt])
+}
+
+// One forecast amount for one FinanceCategory in one ExerciceComptable, optionally scoped to
+// a BudgetProject. `projectId = null` is the "sans projet" part of a category's forecast —
+// the only part directly editable from the global budget tab (see src/lib/finance/budget.ts);
+// the project-scoped rows are edited from their own project's tab, and the global forecast is
+// always their sum, never stored separately (see the two partial unique indexes in the
+// add_budget_previsionnel migration — a plain @@unique([exerciceId, categoryId, projectId])
+// would NOT stop two "sans projet" rows from coexisting, since Postgres treats NULL as
+// distinct in a regular unique index).
+model BudgetLine {
+  id            String   @id @default(cuid())
+  associationId String
+  exerciceId    String
+  categoryId    String
+  projectId     String?
+  amount        Decimal  @db.Decimal(10, 2)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  association Association       @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  exercice    ExerciceComptable @relation(fields: [exerciceId], references: [id], onDelete: Cascade)
+  category    FinanceCategory   @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  project     BudgetProject?    @relation(fields: [projectId], references: [id], onDelete: SetNull)
+
+  @@index([associationId, exerciceId])
+  @@index([exerciceId, projectId])
 }
 
 model Income {
@@ -3042,6 +3202,12 @@ model Income {
   commandeId          String?
   amount              Decimal      @db.Decimal(10, 2)
   categoryId          String?
+  // Optional link to a "Orçamento previsto" project/activity (e.g. "Voyage annuel") — lets
+  // this same Income be counted both in the global budget's category total AND in the
+  // project's own budget, without ever being double-counted (see computeBudgetPeriod in
+  // src/lib/finance/budget.ts). Losing the project (BudgetProject deleted) must never delete
+  // the Income itself, so this is SetNull, not Cascade.
+  projectId           String?
   paymentMethod       String?
   date                DateTime
   description         String?
@@ -3060,6 +3226,7 @@ model Income {
   don               Don?                 @relation(fields: [donId], references: [id], onDelete: SetNull)
   commande          BoutiqueCommande?    @relation(fields: [commandeId], references: [id], onDelete: SetNull)
   category          FinanceCategory?     @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  project           BudgetProject?       @relation(fields: [projectId], references: [id], onDelete: SetNull)
   reconciliations   BankReconciliation[]
 
   @@index([associationId, status])
@@ -3068,6 +3235,7 @@ model Income {
   // d'idempotence, voir isReferenceAlreadyRecorded) et à chaque remboursement — sans index,
   // chaque appel scannait toute la table Income de la plateforme.
   @@index([associationId, reference])
+  @@index([associationId, projectId])
 }
 
 model Expense {
@@ -3077,6 +3245,8 @@ model Expense {
   factureRecueId String?       @unique // set when this row was auto-created from a FactureRecue marked PAYEE — see FactureRecue.expense
   amount         Decimal       @db.Decimal(10, 2)
   categoryId     String?
+  // See Income.projectId — same "Orçamento previsto" project link, same SetNull reasoning.
+  projectId      String?
   date           DateTime
   vendor         String?
   description    String?
@@ -3099,11 +3269,13 @@ model Expense {
   exercice        ExerciceComptable?   @relation(fields: [exerciceId], references: [id], onDelete: SetNull)
   factureRecue    FactureRecue?        @relation(fields: [factureRecueId], references: [id], onDelete: SetNull)
   category        FinanceCategory?     @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  project         BudgetProject?       @relation(fields: [projectId], references: [id], onDelete: SetNull)
   reconciliations BankReconciliation[]
 
   @@index([associationId, status])
   @@index([associationId, date])
   @@index([associationId, reference])
+  @@index([associationId, projectId])
 }
 
 model BankReconciliation {
@@ -3112,6 +3284,12 @@ model BankReconciliation {
   bankTransactionId String    @unique
   incomeId          String?   @unique
   expenseId         String?   @unique
+  // NOT @unique, unlike incomeId/expenseId — a single AccountTransfer has two legs (the debit
+  // in fromAccount, the credit in toAccount), each its own imported BankTransaction, so the SAME
+  // transferId legitimately appears on up to two BankReconciliation rows. Exactly one of
+  // incomeId/expenseId/transferId is set per row — enforced in src/app/api/finances/reconcile/
+  // route.ts, same place the incomeId/expenseId XOR already was.
+  transferId        String?
   matchScore        Int       @default(0)
   matchedBy         MatchedBy @default(AUTO)
   matchedAt         DateTime  @default(now())
@@ -3119,12 +3297,14 @@ model BankReconciliation {
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @updatedAt
 
-  association     Association     @relation(fields: [associationId], references: [id], onDelete: Cascade)
-  bankTransaction BankTransaction @relation(fields: [bankTransactionId], references: [id], onDelete: Cascade)
-  income          Income?         @relation(fields: [incomeId], references: [id], onDelete: SetNull)
-  expense         Expense?        @relation(fields: [expenseId], references: [id], onDelete: SetNull)
+  association     Association      @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  bankTransaction BankTransaction  @relation(fields: [bankTransactionId], references: [id], onDelete: Cascade)
+  income          Income?          @relation(fields: [incomeId], references: [id], onDelete: SetNull)
+  expense         Expense?         @relation(fields: [expenseId], references: [id], onDelete: SetNull)
+  transfer        AccountTransfer? @relation(fields: [transferId], references: [id], onDelete: SetNull)
 
   @@index([associationId])
+  @@index([transferId])
 }
 
 enum FournisseurStatus {

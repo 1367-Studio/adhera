@@ -910,7 +910,19 @@
         "EXCEPTIONAL": "Έκτακτα",
         "OTHER": "Λοιπά",
         "IN_KIND": "Εισφορές σε είδος"
-      }
+      },
+      "accountingCodeFormwiseNote": "Δευτερεύων λογαριασμός που προτείνεται από τη Formwise για ξεχωριστή παρακολούθηση — όχι υποχρεωτικός επίσημος αριθμός.",
+      "suggestedAccounts": "Προτεινόμενοι λογαριασμοί",
+      "seeOtherAccounts": "Δείτε τους άλλους λογαριασμούς",
+      "description": "Περιγραφή",
+      "descriptionPlaceholder": "Για παράδειγμα: Πωλήσεις εισιτηρίων για μια δραστηριότητα ή εκδήλωση.",
+      "sectionAutoNote": "Τμήμα που καθορίζεται αυτόματα από τον λογιστικό λογαριασμό.",
+      "sectionManualNote": "Χειροκίνητα καθορισμένη ενότητα.",
+      "sectionUnverifiedNote": "Αυτός ο λογαριασμός δεν αναγνωρίζεται — ελέγξτε την ενότητα ή επιλέξτε τον από τις σύνθετες επιλογές.",
+      "sectionToVerify": "Ενότητα για έλεγχο",
+      "advancedOptions": "Προχωρημένες επιλογές",
+      "revertToAutoSection": "Επιστροφή στην αυτόματη ενότητα",
+      "noMatchingCategory": "Δεν υπάρχει αντίστοιχη κατηγορία"
     },
     "bankAccountForm": {
       "bankName": "Όνομα τράπεζας",
@@ -1050,7 +1062,6 @@
       "description": "Διαχειριστείτε τις κατηγορίες εσόδων και εξόδων.",
       "seedButton": "Αρχικοποίηση προεπιλεγμένων κατηγοριών",
       "noCategories": "Καμία κατηγορία",
-      "default": "Προεπιλογή",
       "income": "Έσοδα",
       "expenses": "Εξοδα",
       "newCategoryTitle": "Νέα κατηγορία",
@@ -1062,7 +1073,12 @@
         "updated": "Ενημερωμένη κατηγορία",
         "deleted": "Η κατηγορία διαγράφεται",
         "seeded": "{count, plural, one {# αρχικοποιημένη κατηγορία} other {# αρχικοποιήθηκαν οι κατηγορίες}}"
-      }
+      },
+      "chooseTemplateTitle": "Επιλέξτε έναν τύπο κατηγορίας",
+      "customCategory": "Δημιουργία προσαρμοσμένης κατηγορίας",
+      "alreadyExists": "Έχει ήδη διαμορφωθεί",
+      "archivedReactivateHint": "Αρχειοθετήθηκε — κάντε κλικ για επανενεργοποίηση",
+      "custom": "Προσαρμοσμένη"
     },
     "incomesView": {
       "title": "Έσοδα",
@@ -4147,11 +4163,7 @@
       "selectedCount": "{count, plural, one {# επιλεγμένο} other {# επιλεγμένο}}",
       "deselectAll": "Αποεπιλογή",
       "sendReminder": "Αποστολή υπενθύμισης",
-      "exportMembers": "Μέλη εξαγωγής",
-      "exportExcel": "Το Excel (.xlsx)",
-      "exportPdf": "PDF (.pdf)",
       "count": "{count, plural, one {# Συνδρομή μέλους} other {# Συνεισφορές}}",
-      "totalCollected": " · {amount} εισπράχθηκαν",
       "exercise": "Οικονομικό έτος {year}",
       "columns": {
         "member": "Μέλος",
@@ -4195,7 +4207,59 @@
         "editCancelled": "Αλλαγή της ακυρωμένης συνδρομής"
       },
       "selectAllTruncated": "Περισσότερες από 500 συνεισφορές ταιριάζουν στα φίλτρα — επιλέχθηκαν μόνο οι 500 κορυφαίες.",
-      "remaining": "Υπόλοιπο {amount}"
+      "remaining": "Υπόλοιπο {amount}",
+      "export": "Εξαγωγή",
+      "exportCotisationsExcel": "Συνδρομές (Excel)",
+      "exportMembresExcel": "Μέλη (Excel)",
+      "exportMembresPdf": "Μέλη (PDF)",
+      "allCategories": "Όλες οι κατηγορίες",
+      "allRenewals": "Όλες οι ανανεώσεις",
+      "resetFilters": "Επαναφορά",
+      "renewal": {
+        "automatic": "Αυτόματη",
+        "manual": "Χειροκίνητη"
+      },
+      "summary": {
+        "aPagar": " · {amount} σύνολο",
+        "recebido": " · {amount} εισπράχθηκαν",
+        "saldo": " · {amount} εκκρεμές"
+      },
+      "distribution": {
+        "show": "Προβολή κατανομής",
+        "hide": "Απόκρυψη κατανομής",
+        "category": "Κατηγορία μέλους",
+        "renewal": "Ανανέωση",
+        "count": "Αριθμός συνεισφορών",
+        "aPagar": "Συνολικό ποσό",
+        "recebido": "Εισπραχθέν ποσό",
+        "saldo": "Υπόλοιπο",
+        "total": "Σύνολο",
+        "noCategory": "Χωρίς κατηγορία",
+        "empty": "Καμία συνδρομή δεν ταιριάζει με αυτά τα φίλτρα."
+      },
+      "mergeTiers": {
+        "filterOption": "Συγχώνευση διπλών κατηγοριών",
+        "title": "Συγχώνευση διπλών κατηγοριών",
+        "description": "Κατηγορίες των οποίων τα ονόματα διαφέρουν μόνο ως προς τα πεζά, τους τόνους ή τα κενά. Τίποτα δεν συγχωνεύεται αυτόματα.",
+        "empty": "Δεν εντοπίστηκαν διπλότυπα.",
+        "groupSummary": "{count} κατηγορίες με το όνομα \"{label}\"",
+        "groupTitle": "Συγχώνευση στο \"{label}\"",
+        "backAction": "Πίσω",
+        "cancelAction": "Ακύρωση",
+        "keepAsPrimary": "Κατηγορία προς διατήρηση",
+        "mergeIntoPrimary": "Κατηγορίες για συγχώνευση σε αυτό",
+        "tierCounts": "{cotisationCount} Συνδρομή μέλους · {membreCount} Μέλος(α)",
+        "mergeAction": "Συγχώνευση",
+        "confirmTitle": "Επιβεβαιώστε τη συγχώνευση",
+        "confirmDescription": "{count} θα συγχωνευθούν στο \"{primaryLabel}\". {cotisationCount} Οι συνδρομές μέλους και τα μέλη {membreCount} θα μεταφερθούν. Αυτή η ενέργεια είναι μη αναστρέψιμη, αλλά διατηρεί όλο το ιστορικό ανανέωσης και τις διαμορφώσεις.",
+        "mergeSuccess": "{count} συγχωνευμένες κατηγορίες.",
+        "loadError": "Δεν είναι δυνατή η μεταφόρτωση διπλότυπων. Δοκιμάστε ξανά σε λίγο.",
+        "activeSubscriptionWarning": "{count} οι ενεργές συνδρομές θα μεταφερθούν — Η χρέωση Stripe που βρίσκεται ήδη σε εξέλιξη δεν αλλάζει αυτόματα.",
+        "priceFree": "Δωρεάν",
+        "priceFreeAmount": "Δωρεάν ποσό",
+        "priceFreeAmountFrom": "Δωρεάν ποσό από {amount}",
+        "priceRecurring": "{amount}/έτος"
+      }
     },
     "reminderModal": {
       "title": "Στείλτε μια υπενθύμιση συνεισφοράς",

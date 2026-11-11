@@ -910,7 +910,19 @@
         "EXCEPTIONAL": "Nadzwyczajne",
         "OTHER": "Inne",
         "IN_KIND": "Świadczenia rzeczowe"
-      }
+      },
+      "accountingCodeFormwiseNote": "Podkonto sugerowane przez Formwise do osobnego śledzenia — nie jest to obowiązkowy numer oficjalny.",
+      "suggestedAccounts": "Sugerowane relacje",
+      "seeOtherAccounts": "Zobacz inne relacje",
+      "description": "Opis",
+      "descriptionPlaceholder": "Np.: sprzedaż biletów na jakąś aktywność lub wydarzenie.",
+      "sectionAutoNote": "Sekcja ustalana automatycznie z rachunku księgowego.",
+      "sectionManualNote": "Ręcznie zdefiniowana sekcja.",
+      "sectionUnverifiedNote": "To konto nie jest rozpoznawane — sprawdź sekcję lub wybierz ją spośród zaawansowanych opcji.",
+      "sectionToVerify": "Sekcja do sprawdzenia",
+      "advancedOptions": "Opcje zaawansowane",
+      "revertToAutoSection": "Powrót do sekcji automatycznej",
+      "noMatchingCategory": "Brak kategorii dopasowania"
     },
     "bankAccountForm": {
       "bankName": "Nazwa banku",
@@ -1050,7 +1062,6 @@
       "description": "Zarządzaj kategoriami przychodów i wydatków.",
       "seedButton": "Inicjalizuj kategorie domyślne",
       "noCategories": "Brak kategorii",
-      "default": "Domyślność",
       "income": "Przychody",
       "expenses": "Wydatki",
       "newCategoryTitle": "Nowa kategoria",
@@ -1062,7 +1073,12 @@
         "updated": "Zaktualizowana kategoria",
         "deleted": "Kategoria usunięta",
         "seeded": "{count, plural, one {# kategoria inicjalizowana} other {# kategorie zainicjowane}}"
-      }
+      },
+      "chooseTemplateTitle": "Wybierz typ kategorii",
+      "customCategory": "Stwórz niestandardową kategorię",
+      "alreadyExists": "Już skonfigurowane",
+      "archivedReactivateHint": "Archiwum — kliknij, aby ponownie aktywować",
+      "custom": "Dostosowana"
     },
     "incomesView": {
       "title": "Przychody",
@@ -4147,11 +4163,7 @@
       "selectedCount": "{count, plural, one {# wybrany} other {# wybrany}}",
       "deselectAll": "Odznacz",
       "sendReminder": "Wyślij przypomnienie",
-      "exportMembers": "Członkowie eksportowi",
-      "exportExcel": "Excel (.xlsx)",
-      "exportPdf": "PDF (.pdf)",
       "count": "{count, plural, one {# Składka członkowska} other {# Wkład}}",
-      "totalCollected": " · {amount} spieniężyli",
       "exercise": "Rok fiskalny {year}",
       "columns": {
         "member": "Członek",
@@ -4195,7 +4207,59 @@
         "editCancelled": "Zmiana anulowanego członkostwa"
       },
       "selectAllTruncated": "Ponad 500 tekstów spełniło kryteria — wybrano tylko 500 najlepszych.",
-      "remaining": "Odpoczynek {amount}"
+      "remaining": "Odpoczynek {amount}",
+      "export": "Eksportuj",
+      "exportCotisationsExcel": "Składki (Excel)",
+      "exportMembresExcel": "Członkowie (Excel)",
+      "exportMembresPdf": "Członkowie (PDF)",
+      "allCategories": "Wszystkie kategorie",
+      "allRenewals": "Wszystkie odnowienia",
+      "resetFilters": "Reset",
+      "renewal": {
+        "automatic": "Automatyczne",
+        "manual": "Ręczne"
+      },
+      "summary": {
+        "aPagar": " · {amount} total",
+        "recebido": " · {amount} otrzymano",
+        "saldo": " · {amount} do dopłaty"
+      },
+      "distribution": {
+        "show": "Zobacz podział",
+        "hide": "Ukryj podział",
+        "category": "Kategoria członkostwa",
+        "renewal": "Odnowienie",
+        "count": "Liczba wkładów",
+        "aPagar": "Całkowita kwota",
+        "recebido": "Otrzymana kwota",
+        "saldo": "Pozostała salda",
+        "total": "Razem",
+        "noCategory": "Brak kategorii",
+        "empty": "Żadna składka nie pasuje do tych filtrów."
+      },
+      "mergeTiers": {
+        "filterOption": "Łączenie kategorii duplikatów",
+        "title": "Łączenie kategorii duplikatów",
+        "description": "Kategorie, których nazwy różnią się tylko przypadkiem, akcentami lub spacjami. Nic nie jest automatycznie scalane.",
+        "empty": "Nie wykryto żadnych duplikatów.",
+        "groupSummary": "{count} kategorie o nazwie \"{label}\"",
+        "groupTitle": "Połącz z \"{label}\"",
+        "backAction": "Z powrotem",
+        "cancelAction": "Anuluj",
+        "keepAsPrimary": "Kategoria do zachowania",
+        "mergeIntoPrimary": "Kategorie do połączenia z nim",
+        "tierCounts": "{cotisationCount} Opłata członkowska · {membreCount} Członek(e)",
+        "mergeAction": "Połączenie",
+        "confirmTitle": "Potwierdź połączenie",
+        "confirmDescription": "{count} kategorie zostaną połączone z \"{primaryLabel}\". {cotisationCount} Opłaty członkowskie oraz {membreCount} zostaną przeniesione. To działanie jest nieodwracalne, ale zachowuje całą historię i konfiguracje odnowień.",
+        "mergeSuccess": "{count} połączone kategorie(y).",
+        "loadError": "Duplikatów nie można przesłać. Spróbuj ponownie za chwilę.",
+        "activeSubscriptionWarning": "{count} aktywne subskrypcje zostaną przeniesione — Rozliczenia Stripe, które już trwają, nie zmieniają się automatycznie.",
+        "priceFree": "Wolne",
+        "priceFreeAmount": "Darmowa kwota",
+        "priceFreeAmountFrom": "Darmowa kwota z {amount}",
+        "priceRecurring": "{amount}/rok"
+      }
     },
     "reminderModal": {
       "title": "Wyślij przypomnienie o wpłatach",
