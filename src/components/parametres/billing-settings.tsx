@@ -88,7 +88,7 @@ export function BillingSettings({ canEdit }: { canEdit: boolean }) {
   })
 
   const status = data?.subscriptionStatus ?? null
-  const cfg    = status === "ACTIVE" && data?.paymentPending ? statusConfig.PAYMENT_PENDING : status ? statusConfig[status] : null
+  const cfg    = data?.paymentPending ? statusConfig.PAYMENT_PENDING : status ? statusConfig[status] : null
   // A card-free trial (see /api/register) with still nothing on file: Stripe will cancel
   // it at the end instead of charging, so adding a card becomes the tab's main action.
   const needsCard = status === "TRIAL" && data?.hasPaymentMethod === false
@@ -136,13 +136,19 @@ export function BillingSettings({ canEdit }: { canEdit: boolean }) {
             </p>
           )}
 
-          {status === "ACTIVE" && (
+          {status === "ACTIVE" && !data?.paymentPending && (
             <p className="text-xs text-muted-foreground">
               {t("activeText")}
             </p>
           )}
 
-          {status === "PAST_DUE" && (
+          {data?.paymentPending && (
+            <p className="text-xs text-amber-600 dark:text-amber-400">
+              {t("paymentPendingText")}
+            </p>
+          )}
+
+          {status === "PAST_DUE" && !data?.paymentPending && (
             <p className="text-xs text-destructive">
               {t("pastDueText")}
             </p>
@@ -180,11 +186,11 @@ export function BillingSettings({ canEdit }: { canEdit: boolean }) {
             <div className="flex items-center gap-2">
               <Button
                 size="sm"
-                variant={status === "PAST_DUE" || needsCard ? "default" : "outline"}
+                variant={(status === "PAST_DUE" && !data?.paymentPending) || needsCard ? "default" : "outline"}
                 loading={portalMutation.isPending}
                 onClick={() => portalMutation.mutate()}
               >
-                {status === "PAST_DUE" ? t("updatePayment") : needsCard ? t("addPayment") : t("manageSubscription")}
+                {status === "PAST_DUE" && !data?.paymentPending ? t("updatePayment") : needsCard ? t("addPayment") : t("manageSubscription")}
               </Button>
 
               {(status === "TRIAL" || status === "ACTIVE") && !data?.cancelAtPeriodEnd && (

@@ -4301,6 +4301,7 @@
       "loadError": "Impossible de récupérer votre statut d'abonnement. Réessayez plus tard.",
       "trialEndsAt": "Votre essai gratuit se termine le {date}. Passé cette date, la carte enregistrée sera débitée automatiquement, sauf annulation avant cette date.",
       "activeText": "Votre abonnement est actif. Vous pouvez à tout moment consulter vos factures, changer de moyen de paiement ou annuler depuis l'espace de gestion Stripe.",
+      "paymentPendingText": "Le prélèvement SEPA de votre abonnement est en cours de traitement. Cela peut prendre quelques jours ouvrés avant d'apparaître sur votre compte bancaire.",
       "pastDueText": "Le dernier prélèvement a échoué. Mettez à jour votre moyen de paiement pour éviter une suspension de votre compte.",
       "suspendedText": "Votre abonnement est suspendu suite à plusieurs échecs de paiement. Rendez-vous sur l'écran dédié pour le réactiver, exporter vos données ou l'annuler définitivement.",
       "cancelledText": "Votre abonnement a été annulé. Contactez le support pour le réactiver.",
