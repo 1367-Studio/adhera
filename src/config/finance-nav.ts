@@ -25,7 +25,7 @@ export interface FinanceNavGroup {
 export const FINANCE_NAV: FinanceNavGroup[] = [
   { key: "synthese", icon: ChartLineIcon, items: [
     { key: "overview",     href: "/dashboard/finances",              icon: GaugeIcon },
-    { key: "previsionnel", href: "/dashboard/finances/previsionnel",  icon: ChartLineIcon, comingSoon: true },
+    { key: "previsionnel", href: "/dashboard/finances/previsionnel",  icon: ChartLineIcon },
   ]},
   { key: "transactions", icon: ArrowsLeftRightIcon, items: [
     { key: "income",         href: "/dashboard/finances/recettes",     icon: TrendUpIcon },
