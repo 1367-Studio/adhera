@@ -1348,8 +1348,7 @@
       "sections": {
         "FINANCIAL": "Finančné",
         "EXCEPTIONAL": "Mimoriadne",
-        "OTHER": "Ostatné",
-        "IN_KIND": "Dobrovoľné vecné príspevky"
+        "OTHER": "Ostatné"
       },
       "drillDown": {
         "date": "Dátum",
@@ -1376,14 +1375,19 @@
         "otherIncome": "OSTATNÉ VÝNOSY",
         "otherExpense": "OSTATNÉ NÁKLADY",
         "otherResult": "VÝSLEDOK Z OSTATNÝCH VÝNOSOV A NÁKLADOV",
-        "inKindIncome": "DOBROVOĽNÉ VECNÉ PRÍSPEVKY",
-        "inKindExpense": "POUŽITIE DOBROVOĽNÝCH VECNÝCH PRÍSPEVKOV",
-        "inKindResult": "DOBROVOĽNÉ PRÍSPEVKY (SALDO)",
         "uncategorizedSection": "TRANSAKCIE NA KATEGORIZÁCIU",
         "uncategorizedIncomeLabel": "Príjmy na kategorizáciu",
         "uncategorizedExpenseLabel": "Výdavky na kategorizáciu",
         "total": "Spolu",
-        "grandTotal": "SPOLU"
+        "grandTotal": "SPOLU",
+        "categoryColumn": "Kategória",
+        "inKindTitle": "Dobrovoľnícke príspevky v naturálnej forme",
+        "inKindEmploymentHeader": "Použitie príspevkov",
+        "inKindAmountHeader": "Množstvo",
+        "inKindReceivedHeader": "Prijaté príspevky",
+        "inKindTotalEmployments": "Celkový počet pracovných miest",
+        "inKindTotalReceived": "Celkové príspevky",
+        "inKindNote": "Tieto bezplatné príspevky sú ocenené v eurách. Nevedú k žiadnemu pohybu peňazí a nemenia výsledok finančného roka."
       },
       "csv": {
         "date": "Dátum",
@@ -1399,6 +1403,16 @@
         "origin": "Pôvod",
         "reference": "Referencia",
         "exercice": "Účtovné obdobie"
+      },
+      "categoryColumnLabel": "Kategória",
+      "inKind": {
+        "title": "Dobrovoľnícke príspevky v naturálnej forme",
+        "employmentHeader": "Použitie príspevkov",
+        "amountHeader": "Množstvo",
+        "receivedHeader": "Prijaté príspevky",
+        "totalEmployments": "Celkový počet pracovných miest",
+        "totalReceived": "Celkové príspevky",
+        "note": "Tieto bezplatné príspevky sú ocenené v eurách. Nevedú k žiadnemu pohybu peňazí a nemenia výsledok finančného roka."
       }
     }
   },

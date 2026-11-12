@@ -1348,8 +1348,7 @@
       "sections": {
         "FINANCIAL": "Finansielt",
         "EXCEPTIONAL": "Ekstraordinært",
-        "OTHER": "Andet",
-        "IN_KIND": "Frivillige bidrag i naturalier"
+        "OTHER": "Andet"
       },
       "drillDown": {
         "date": "Dato",
@@ -1376,14 +1375,19 @@
         "otherIncome": "ANDRE INDTÆGTER",
         "otherExpense": "ANDRE UDGIFTER",
         "otherResult": "RESULTAT AF ANDRE INDTÆGTER OG UDGIFTER",
-        "inKindIncome": "FRIVILLIGE BIDRAG I NATURALIER",
-        "inKindExpense": "ANVENDELSE AF FRIVILLIGE BIDRAG I NATURALIER",
-        "inKindResult": "FRIVILLIGE BIDRAG (NETTO)",
         "uncategorizedSection": "TRANSAKTIONER DER SKAL KATEGORISERES",
         "uncategorizedIncomeLabel": "Indtægter der skal kategoriseres",
         "uncategorizedExpenseLabel": "Udgifter der skal kategoriseres",
         "total": "I alt",
-        "grandTotal": "TOTAL"
+        "grandTotal": "TOTAL",
+        "categoryColumn": "Kategori",
+        "inKindTitle": "Frivillige naturaliebidrag",
+        "inKindEmploymentHeader": "Brug af bidrag",
+        "inKindAmountHeader": "Beløb",
+        "inKindReceivedHeader": "Modtagne bidrag",
+        "inKindTotalEmployments": "Samlede antal job",
+        "inKindTotalReceived": "Samlede bidrag",
+        "inKindNote": "Disse gratis bidrag er værdisat i euro. De fører ikke til nogen pengestrøm og ændrer ikke regnskabsårets resultat."
       },
       "csv": {
         "date": "Dato",
@@ -1399,6 +1403,16 @@
         "origin": "Oprindelse",
         "reference": "Reference",
         "exercice": "Regnskabsår"
+      },
+      "categoryColumnLabel": "Kategori",
+      "inKind": {
+        "title": "Frivillige naturaliebidrag",
+        "employmentHeader": "Brug af bidrag",
+        "amountHeader": "Beløb",
+        "receivedHeader": "Modtagne bidrag",
+        "totalEmployments": "Samlede antal job",
+        "totalReceived": "Samlede bidrag",
+        "note": "Disse gratis bidrag er værdisat i euro. De fører ikke til nogen pengestrøm og ændrer ikke regnskabsårets resultat."
       }
     }
   },

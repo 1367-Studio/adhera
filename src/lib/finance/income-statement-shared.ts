@@ -7,6 +7,12 @@
 export const FINANCE_SECTIONS = ["OPERATING", "FINANCIAL", "EXCEPTIONAL", "OTHER", "IN_KIND", "IMMOBILISATION"] as const
 export type FinanceSectionKey = typeof FINANCE_SECTIONS[number]
 
+// Sections rendered inside the Produits/Charges columns on the Compte de résultat screen and
+// export (FORM-104). IMMOBILISATION never appears there (reserved for the future Bilan →
+// Actif → Immobilisations corporelles screen) and IN_KIND gets its own full-width block below
+// the result instead (see InKindContributionsSection in reports-view.tsx).
+export const STATEMENT_SECTIONS = FINANCE_SECTIONS.filter(s => s !== "IMMOBILISATION" && s !== "IN_KIND")
+
 // IMMOBILISATION holds capital-asset purchases and depreciation/amortization (classe 2 / 68
 // du PCG) — informational only. It's never summed into totalIncome/totalExpense/result (see
 // computeIncomeStatementPeriod/computeBudgetPeriod): a capital purchase isn't a current
@@ -14,7 +20,11 @@ export type FinanceSectionKey = typeof FINANCE_SECTIONS[number]
 // FORM-reformulation plan). Internal treasury transfers between an association's own bank
 // accounts are a separate, still-unmodeled limitation — see the help text on the categories
 // admin screen; they must never be entered as an Income/Expense at all, in any section.
-export const RESULT_SECTIONS = FINANCE_SECTIONS.filter(s => s !== "IMMOBILISATION")
+// IN_KIND (contributions volontaires en nature, classe 86/87 du PCG associatif) is excluded
+// for the same reason (FORM-104): emplois/contributions are shown as their own matched pair
+// below the result line, so including them here would double-count them into Total des
+// produits/Total des charges even though they're always equal and net to zero on `result`.
+export const RESULT_SECTIONS = FINANCE_SECTIONS.filter(s => s !== "IMMOBILISATION" && s !== "IN_KIND")
 
 export interface ExerciceRef {
   id:        string
@@ -71,7 +81,8 @@ export interface IncomeStatementPeriod {
   totalIncome:       number
   totalExpense:      number
   // Receitas - despesas da seção OPERATING somente (item 13 do pedido) — distinto de `result`,
-  // que soma todas as seções (OPERATING + FINANCIAL + EXCEPTIONAL + OTHER + IN_KIND).
+  // que soma as seções RESULT_SECTIONS (OPERATING + FINANCIAL + EXCEPTIONAL + OTHER — não
+  // IMMOBILISATION nem IN_KIND, ver RESULT_SECTIONS acima).
   resultOperational: number
   result:            number
 }
@@ -81,4 +92,14 @@ export interface IncomeStatementPeriod {
 // separator by the OS/browser and break or truncate the download.
 export function sanitizeForFilename(label: string): string {
   return label.replace(/[\\/:*?"<>|]/g, "-")
+}
+
+// FORM-104: the Compte de résultat's year columns must show just the year(s) ("2026"), never
+// the free-text exercice.label ("Exercice 2026" or a custom split-year label) — derived from
+// the exercice's own dates instead of parsed out of that label, same approach already used for
+// `CurrentPeriod`/`spansYearBoundary` in src/lib/finance/exercice.ts.
+export function yearLabelForPeriod(period: { startDate: Date | string; endDate: Date | string }): string {
+  const startYear = new Date(period.startDate).getUTCFullYear()
+  const endYear   = new Date(period.endDate).getUTCFullYear()
+  return startYear === endYear ? String(startYear) : `${startYear}–${endYear}`
 }

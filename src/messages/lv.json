@@ -1348,8 +1348,7 @@
       "sections": {
         "FINANCIAL": "Finanšu",
         "EXCEPTIONAL": "Ārkārtas",
-        "OTHER": "Cits",
-        "IN_KIND": "Brīvprātīgie ieguldījumi natūrā"
+        "OTHER": "Cits"
       },
       "drillDown": {
         "date": "Datums",
@@ -1376,14 +1375,19 @@
         "otherIncome": "CITI IEŅĒMUMI",
         "otherExpense": "CITI IZDEVUMI",
         "otherResult": "CITU IEŅĒMUMU UN IZDEVUMU REZULTĀTS",
-        "inKindIncome": "BRĪVPRĀTĪGIE IEGULDĪJUMI NATŪRĀ",
-        "inKindExpense": "BRĪVPRĀTĪGO IEGULDĪJUMU NATŪRĀ IZMANTOŠANA",
-        "inKindResult": "BRĪVPRĀTĪGIE IEGULDĪJUMI (SALDO)",
         "uncategorizedSection": "KATEGORIZĒJAMIE DARĪJUMI",
         "uncategorizedIncomeLabel": "Kategorizējamie ieņēmumi",
         "uncategorizedExpenseLabel": "Kategorizējamie izdevumi",
         "total": "Kopā",
-        "grandTotal": "KOPĀ"
+        "grandTotal": "KOPĀ",
+        "categoryColumn": "Kategorija",
+        "inKindTitle": "Brīvprātīgie ziedojumi natūrā",
+        "inKindEmploymentHeader": "Ieguldījumu izmantošana",
+        "inKindAmountHeader": "Summa",
+        "inKindReceivedHeader": "Saņemtie ieguldījumi",
+        "inKindTotalEmployments": "Kopējais darba vietu skaits",
+        "inKindTotalReceived": "Kopējie ieguldījumi",
+        "inKindNote": "Šie bezmaksas ieguldījumi tiek vērtēti eiro. Tie neizraisa naudas plūsmu un nemaina finanšu gada rezultātu."
       },
       "csv": {
         "date": "Datums",
@@ -1399,6 +1403,16 @@
         "origin": "Izcelsme",
         "reference": "Atsauce",
         "exercice": "Pārskata gads"
+      },
+      "categoryColumnLabel": "Kategorija",
+      "inKind": {
+        "title": "Brīvprātīgie ziedojumi natūrā",
+        "employmentHeader": "Ieguldījumu izmantošana",
+        "amountHeader": "Summa",
+        "receivedHeader": "Saņemtie ieguldījumi",
+        "totalEmployments": "Kopējais darba vietu skaits",
+        "totalReceived": "Kopējie ieguldījumi",
+        "note": "Šie bezmaksas ieguldījumi tiek vērtēti eiro. Tie neizraisa naudas plūsmu un nemaina finanšu gada rezultātu."
       }
     }
   },

@@ -1348,8 +1348,7 @@
       "sections": {
         "FINANCIAL": "Pénzügyi",
         "EXCEPTIONAL": "Rendkívüli",
-        "OTHER": "Egyéb",
-        "IN_KIND": "Önkéntes természetbeni hozzájárulások"
+        "OTHER": "Egyéb"
       },
       "drillDown": {
         "date": "Dátum",
@@ -1376,14 +1375,19 @@
         "otherIncome": "EGYÉB BEVÉTELEK",
         "otherExpense": "EGYÉB RÁFORDÍTÁSOK",
         "otherResult": "EGYÉB BEVÉTELEK ÉS RÁFORDÍTÁSOK EREDMÉNYE",
-        "inKindIncome": "ÖNKÉNTES TERMÉSZETBENI HOZZÁJÁRULÁSOK",
-        "inKindExpense": "AZ ÖNKÉNTES TERMÉSZETBENI HOZZÁJÁRULÁSOK FELHASZNÁLÁSA",
-        "inKindResult": "ÖNKÉNTES HOZZÁJÁRULÁSOK (EGYENLEG)",
         "uncategorizedSection": "KATEGORIZÁLANDÓ TRANZAKCIÓK",
         "uncategorizedIncomeLabel": "Kategorizálandó bevételek",
         "uncategorizedExpenseLabel": "Kategorizálandó kiadások",
         "total": "Összesen",
-        "grandTotal": "ÖSSZESEN"
+        "grandTotal": "ÖSSZESEN",
+        "categoryColumn": "Kategória",
+        "inKindTitle": "Önkéntes adományok természetben",
+        "inKindEmploymentHeader": "Hozzájárulások felhasználása",
+        "inKindAmountHeader": "Összeg",
+        "inKindReceivedHeader": "Beérkezett hozzájárulások",
+        "inKindTotalEmployments": "Összes munkahely",
+        "inKindTotalReceived": "Összesen hozzájárulások",
+        "inKindNote": "Ezek az ingyenes hozzájárulások euróban értékesek. Nem vezetnek pénzmozgáshoz, és nem változtatják meg a pénzügyi év eredményét."
       },
       "csv": {
         "date": "Dátum",
@@ -1399,6 +1403,16 @@
         "origin": "Eredet",
         "reference": "Hivatkozás",
         "exercice": "Üzleti év"
+      },
+      "categoryColumnLabel": "Kategória",
+      "inKind": {
+        "title": "Önkéntes adományok természetben",
+        "employmentHeader": "Hozzájárulások felhasználása",
+        "amountHeader": "Összeg",
+        "receivedHeader": "Beérkezett hozzájárulások",
+        "totalEmployments": "Összes munkahely",
+        "totalReceived": "Összesen hozzájárulások",
+        "note": "Ezek az ingyenes hozzájárulások euróban értékesek. Nem vezetnek pénzmozgáshoz, és nem változtatják meg a pénzügyi év eredményét."
       }
     }
   },

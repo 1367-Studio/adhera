@@ -1348,8 +1348,7 @@
       "sections": {
         "FINANCIAL": "Finanziell",
         "EXCEPTIONAL": "Außerordentlich",
-        "OTHER": "Sonstiges",
-        "IN_KIND": "Freiwillige Sachleistungen"
+        "OTHER": "Sonstiges"
       },
       "drillDown": {
         "date": "Datum",
@@ -1376,14 +1375,19 @@
         "otherIncome": "SONSTIGE ERTRÄGE",
         "otherExpense": "SONSTIGE AUFWENDUNGEN",
         "otherResult": "ERGEBNIS AUS SONSTIGEN ERTRÄGEN UND AUFWENDUNGEN",
-        "inKindIncome": "FREIWILLIGE SACHLEISTUNGEN",
-        "inKindExpense": "VERWENDUNG DER FREIWILLIGEN SACHLEISTUNGEN",
-        "inKindResult": "FREIWILLIGE SACHLEISTUNGEN (SALDO)",
         "uncategorizedSection": "ZU KATEGORISIERENDE TRANSAKTIONEN",
         "uncategorizedIncomeLabel": "Zu kategorisierende Einnahmen",
         "uncategorizedExpenseLabel": "Zu kategorisierende Ausgaben",
         "total": "Summe",
-        "grandTotal": "GESAMT"
+        "grandTotal": "GESAMT",
+        "categoryColumn": "Kategorie",
+        "inKindTitle": "Freiwillige Sachspenden",
+        "inKindEmploymentHeader": "Verwendung von Beiträgen",
+        "inKindAmountHeader": "Betrag",
+        "inKindReceivedHeader": "Erhaltene Beiträge",
+        "inKindTotalEmployments": "Gesamtzahl der Arbeitsplätze",
+        "inKindTotalReceived": "Gesamtbeiträge",
+        "inKindNote": "Diese kostenlosen Beiträge werden in Euro bewertet. Sie führen nicht zu Geldbewegungen und verändern das Ergebnis des Geschäftsjahres nicht."
       },
       "csv": {
         "date": "Datum",
@@ -1399,6 +1403,16 @@
         "origin": "Herkunft",
         "reference": "Referenz",
         "exercice": "Geschäftsjahr"
+      },
+      "categoryColumnLabel": "Kategorie",
+      "inKind": {
+        "title": "Freiwillige Sachspenden",
+        "employmentHeader": "Verwendung von Beiträgen",
+        "amountHeader": "Betrag",
+        "receivedHeader": "Erhaltene Beiträge",
+        "totalEmployments": "Gesamtzahl der Arbeitsplätze",
+        "totalReceived": "Gesamtbeiträge",
+        "note": "Diese kostenlosen Beiträge werden in Euro bewertet. Sie führen nicht zu Geldbewegungen und verändern das Ergebnis des Geschäftsjahres nicht."
       }
     }
   },
