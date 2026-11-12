@@ -66,6 +66,28 @@
     "country": "Pays",
     "legacyMigratedHint": "Copié depuis l'ancien champ adresse : vérifiez qu'il ne contient pas déjà le code postal et la ville ci-dessous."
   },
+  "avis": {
+    "invalidLink": "Ce lien d'avis est invalide.",
+    "thanks": "Merci pour votre avis !",
+    "notEligible": "Seuls les participants présents à l'événement peuvent laisser un avis.",
+    "greeting": "Bonjour {firstName}, comment avez-vous trouvé cet événement ?",
+    "commentPlaceholder": "Un commentaire ? (facultatif)",
+    "submit": "Envoyer mon avis",
+    "ratingRequired": "Choisissez une note",
+    "networkError": "Erreur réseau",
+    "genericError": "Erreur",
+    "publicationQuestion": "Autorisez-vous la publication de votre avis sur le site et les réseaux sociaux de l'association ?",
+    "publicationYes": "Oui, j'autorise la publication.",
+    "publicationNo": "Non, mon avis restera accessible uniquement aux responsables de l'association.",
+    "publicationRequired": "Merci de répondre à cette question.",
+    "identificationQuestion": "Comment souhaitez-vous être identifié(e) ?",
+    "identificationNamed": "Avec mon nom et prénom",
+    "identificationAnonymous": "De façon anonyme",
+    "identificationRequired": "Merci de choisir une option.",
+    "manageConsentTitle": "Gérer l'autorisation de publication",
+    "updateConsent": "Mettre à jour mes préférences",
+    "consentUpdated": "Vos préférences ont été mises à jour."
+  },
   "auth": {
     "layout": {
       "imageAlt": "Connexion",
@@ -2044,8 +2066,14 @@
         "participant": "Participant",
         "rating": "Note",
         "comment": "Commentaire",
-        "date": "Date"
-      }
+        "date": "Date",
+        "site": "Sur le site"
+      },
+      "anonymousNote": "Anonyme",
+      "noConsent": "Pas de consentement",
+      "featureToggleLabel": "Afficher l'avis de {name} sur le site",
+      "bulkFeatureAll": "Afficher tous sur le site",
+      "bulkUnfeatureAll": "Retirer tous du site"
     },
     "detail": {
       "backToList": "Retour aux événements",

@@ -34,6 +34,7 @@ import {
 import { eventsBlock } from "@/components/site/blocks/site-block-events"
 import { actualitesBlock } from "@/components/site/blocks/site-block-actualites"
 import { boutiqueBlock } from "@/components/site/blocks/site-block-boutique"
+import { eventReviewsBlock } from "@/components/site/blocks/site-block-event-reviews"
 import { HandshakeIcon, IdentificationCardIcon } from "@phosphor-icons/react/dist/ssr"
 import { SITE_CORNER_OPTIONS, SITE_STYLE_PRESETS } from "@/components/site/blocks/site-block-theme"
 import { readSiteMetadata, type FormBinding } from "@/components/site/blocks/site-block-types"
@@ -81,7 +82,7 @@ const siteBlockCategories: Config<SitePuckComponents, SitePuckRootProps>["catego
     title:      "Association",
     components: ["team", "faq", "contactInfo", "map", "partners", "gallery", "socialLinks"],
   },
-  formwise:  { title: "Contenu Formwise", components: ["events", "actualites", "dons", "boutique"] },
+  formwise:  { title: "Contenu Formwise", components: ["events", "actualites", "dons", "boutique", "eventReviews"] },
   // The old sections (hero, about, contact) stay renderable for existing sites but are no
   // longer offered; membership blocks are created from a membership form's Publication step.
   other:     { visible: false },
@@ -172,9 +173,10 @@ const siteBlockComponents: Config<SitePuckComponents, SitePuckRootProps>["compon
 
   // Formwise content: styled blocks reading live association data (keys kept from the old
   // sections so existing sites map onto them; new options are optional and defaulted).
-  events:     eventsBlock,
-  actualites: actualitesBlock,
-  boutique:   boutiqueBlock,
+  events:       eventsBlock,
+  actualites:   actualitesBlock,
+  boutique:     boutiqueBlock,
+  eventReviews: eventReviewsBlock,
 
   membership: {
     label:        "Adhésion",

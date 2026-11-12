@@ -47,6 +47,8 @@ export const SITE_UI_STRINGS = {
   donsTaxReceiptNote:     "Reçu fiscal envoyé automatiquement par e-mail",
   contactDefaultTitle:    "Contact",
   contactCityMissing:     "Ville non renseignée dans les Paramètres.",
+  eventReviewsDefaultTitle: "Ils en parlent",
+  eventReviewsAnonymous:    "Membre anonyme",
 } as const
 
 export type SiteUiStringKey = keyof typeof SITE_UI_STRINGS

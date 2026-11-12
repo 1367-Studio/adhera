@@ -12,6 +12,32 @@ import type { SiteUiStrings } from "@/lib/site-puck/site-ui-strings"
 
 export type FormBinding = { slug: string; title: string }
 
+export type SiteEventReview = {
+  id:        string
+  eventId:   string
+  eventTitle: string
+  eventDate: string
+  rating:    number
+  comment:   string | null
+  displayName: string
+  // Editor-only context (never shown publicly): lets the block's event picker warn an admin
+  // before they feature a review tied to a private or unpublished event — see
+  // site-block-event-reviews.tsx's EventIdsField.
+  eventStatus:     "DRAFT" | "PUBLISHED" | "ARCHIVED"
+  eventVisibility: "LINK" | "PRIVATE"
+}
+
+// Shared by site-public-data.ts (public site) and /api/site-preview-data (editor) so the
+// "Prénom N."/anonymous-label resolution can never drift between the two — a reviewer's last
+// name and email never leave this function.
+export function eventReviewDisplayName(
+  firstName: string, lastName: string, anonymous: boolean, anonymousLabel: string,
+): string {
+  if (anonymous) return anonymousLabel
+  const lastInitial = lastName.trim().charAt(0)
+  return lastInitial ? `${firstName} ${lastInitial}.` : firstName
+}
+
 // Live association data handed to <Puck metadata> / <Render metadata>; every render function
 // reads it through puck.metadata (see readSiteMetadata).
 export type SitePuckMetadata = {
@@ -27,6 +53,10 @@ export type SitePuckMetadata = {
   events:                  ComponentProps<typeof SiteEventsSection>["events"]
   actualites:              ComponentProps<typeof SiteActualitesSection>["actualites"]
   boutiqueProduits:        ComponentProps<typeof SiteBoutiqueSection>["produits"]
+  // Reviews an association has both received consent for and explicitly chosen to feature —
+  // see EvenementAvis.publicationAgreedAt/featuredOnSite. displayName is pre-resolved here
+  // ("Prénom N." or the anonymous label) so no block ever needs lastName/email.
+  eventReviews:            SiteEventReview[]
   membershipFormBySection: Record<string, FormBinding>
   donationFormBySection:   Record<string, FormBinding>
   usesDonationForms:       boolean

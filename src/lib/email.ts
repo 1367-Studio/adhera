@@ -545,6 +545,9 @@ export function eventReviewRequestEmail(p: {
       Bonjour ${p.firstName},<br><br>Merci d'avoir participé à <strong>${p.eventTitle}</strong> le ${dateStr}.
       Pouvez-vous prendre un instant pour nous donner votre avis ?
     </p>
+    <p style="margin:0 0 20px;font-size:13px;line-height:1.6;color:#6b7280;">
+      Votre avis pourra être publié sur le site et les réseaux sociaux de l'association, avec votre autorisation.
+    </p>
     ${btn("Donner mon avis", p.reviewUrl)}`
   return {
     to:       p.email,
