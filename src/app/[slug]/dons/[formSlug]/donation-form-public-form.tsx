@@ -16,6 +16,7 @@ import { CurrencyField } from "@/components/ui/currency-field"
 import { PublicSiteLocaleSwitcher } from "@/components/site/public-site-locale-switcher"
 import type { Locale } from "@/i18n/locales"
 import { BackToSiteLink } from "@/components/public/back-to-site-link"
+import { PublicFormSplitLayout } from "@/components/public/public-form-split-layout"
 import { RichTextView } from "@/components/ui/rich-text-view"
 import { FormTermsSection } from "@/components/public/form-terms-section"
 import { publicFormTerms } from "@/lib/form-terms"
@@ -401,9 +402,11 @@ function DonationFormPublicFormInner({ slug, formSlug, legalDocuments }: Props) 
     return (
       <>
         {showInAppBrowserBanner && <InAppBrowserBanner>{t("inAppBrowserWarning")}</InAppBrowserBanner>}
-        <div className="min-h-screen bg-gradient-to-b from-primary/5 to-background flex items-start justify-center py-12 px-4">
-          <div className="w-full max-w-md">
-            <PublicFormSkeleton />
+        <div className="dashboard-canvas public-canvas min-h-screen p-3">
+          <div className="min-h-[calc(100vh-1.5rem)] rounded-[10px] bg-public-panel flex items-start justify-center py-12 px-4">
+            <div className="w-full max-w-md">
+              <PublicFormSkeleton />
+            </div>
           </div>
         </div>
       </>
@@ -416,9 +419,11 @@ function DonationFormPublicFormInner({ slug, formSlug, legalDocuments }: Props) 
     return (
       <>
         {showInAppBrowserBanner && <InAppBrowserBanner>{t("inAppBrowserWarning")}</InAppBrowserBanner>}
-        <div className="min-h-screen flex flex-col items-center justify-center text-center px-4 gap-4">
-          <p className="text-muted-foreground">{t("notFound")}</p>
-          <PublicSiteLocaleSwitcher locale={loc as Locale} />
+        <div className="dashboard-canvas public-canvas min-h-screen p-3">
+          <div className="min-h-[calc(100vh-1.5rem)] rounded-[10px] bg-public-panel flex flex-col items-center justify-center text-center px-4 gap-4">
+            <p className="text-muted-foreground">{t("notFound")}</p>
+            <PublicSiteLocaleSwitcher locale={loc as Locale} />
+          </div>
         </div>
       </>
     )
@@ -427,39 +432,67 @@ function DonationFormPublicFormInner({ slug, formSlug, legalDocuments }: Props) 
   return (
     <>
       {showInAppBrowserBanner && <InAppBrowserBanner>{t("inAppBrowserWarning")}</InAppBrowserBanner>}
-      <div className="min-h-screen bg-gradient-to-b from-primary/5 to-background flex items-start justify-center py-12 px-4">
-        <div className="w-full max-w-md space-y-6">
-          <div className="flex flex-wrap items-center justify-between gap-3">
+      <PublicFormSplitLayout
+        header={
+          <>
             <BackToSiteLink slug={slug} sitePublished={form.sitePublished} website={form.website} />
             <PublicSiteLocaleSwitcher locale={loc as Locale} />
-          </div>
-
-          {isPreview && (
+          </>
+        }
+        banners={
+          isPreview && (
             <p className="rounded-md border border-dashed px-3 py-2 text-center text-xs text-muted-foreground">
               {t("previewNotice")}
             </p>
-          )}
+          )
+        }
+        left={
+          <>
+            {form.imageUrl && (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={form.imageUrl} alt={form.title} className="w-full max-h-64 object-cover rounded-lg" />
+            )}
 
-          {form.imageUrl && (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={form.imageUrl} alt={form.title} className="w-full max-h-64 object-cover rounded-lg" />
-          )}
-
-          <div className="text-center space-y-2">
-            <div className="inline-flex items-center justify-center size-12 rounded-full bg-primary/10 dark:bg-primary/20 mb-2">
-              <HandHeartIcon className="size-6 text-primary" />
+            <div className="text-center space-y-2">
+              <div className="inline-flex items-center justify-center size-12 rounded-full bg-primary/10 dark:bg-primary/20 mb-2">
+                <HandHeartIcon className="size-6 text-primary" />
+              </div>
+              <h1 className="text-2xl font-bold tracking-tight">{form.title}</h1>
+              <p className="text-muted-foreground text-sm">{form.associationName}</p>
             </div>
-            <h1 className="text-2xl font-bold tracking-tight">{form.title}</h1>
-            <p className="text-muted-foreground text-sm">{form.associationName}</p>
-          </div>
 
-          {form.description && (
-            <div className="rounded-lg border bg-card p-4 text-sm">
-              <RichTextView content={form.description} className="text-foreground/90" />
-            </div>
-          )}
+            {form.description && (
+              <div className="rounded-lg border bg-card p-4 text-sm">
+                <RichTextView content={form.description} className="text-foreground/90" />
+              </div>
+            )}
 
-          {submitted ? (
+            {/* Renseignées à l'étape 1 de l'éditeur, sous « Informations de contact à destination
+                des adhérents », dont le hint promet noir sur blanc « Les coordonnées apparaissent
+                sur le formulaire en ligne ». Rendu ici, dans le panneau de présentation, plutôt
+                qu'après le formulaire : c'est justement quand le formulaire est fermé, pas encore
+                ouvert ou sans tarif que le visiteur a besoin de joindre quelqu'un, et ce panneau
+                reste visible quel que soit l'état du panneau de droite. */}
+            {(form.contactEmail || form.contactPhone) && (
+              <p className="text-center text-xs text-muted-foreground">
+                {t("contactHelp")}{" "}
+                {form.contactEmail && (
+                  <a href={`mailto:${form.contactEmail}`} className="underline underline-offset-2 hover:text-foreground">
+                    {form.contactEmail}
+                  </a>
+                )}
+                {form.contactEmail && form.contactPhone && <span aria-hidden> · </span>}
+                {form.contactPhone && (
+                  <a href={`tel:${form.contactPhone.replace(/\s/g, "")}`} className="underline underline-offset-2 hover:text-foreground">
+                    {form.contactPhone}
+                  </a>
+                )}
+              </p>
+            )}
+          </>
+        }
+        right={
+          submitted ? (
             <div className="rounded-lg border bg-card p-6 text-center text-sm space-y-1">
               <p className="font-medium">{t("submittedTitle")}</p>
               {form.confirmationMessage ? (
@@ -725,31 +758,9 @@ function DonationFormPublicFormInner({ slug, formSlug, legalDocuments }: Props) 
                 </Button>
               </div>
             </form>
-          )}
-
-          {/* Renseignées à l'étape 1 de l'éditeur, sous « Informations de contact à destination
-              des adhérents », dont le hint promet noir sur blanc « Les coordonnées apparaissent
-              sur le formulaire en ligne ». L'API les envoyait déjà ; personne ne les affichait.
-              Placées hors du bloc conditionnel : c'est justement quand le formulaire est fermé,
-              pas encore ouvert ou sans tarif que le visiteur a besoin de joindre quelqu'un. */}
-          {(form.contactEmail || form.contactPhone) && (
-            <p className="text-center text-xs text-muted-foreground">
-              {t("contactHelp")}{" "}
-              {form.contactEmail && (
-                <a href={`mailto:${form.contactEmail}`} className="underline underline-offset-2 hover:text-foreground">
-                  {form.contactEmail}
-                </a>
-              )}
-              {form.contactEmail && form.contactPhone && <span aria-hidden> · </span>}
-              {form.contactPhone && (
-                <a href={`tel:${form.contactPhone.replace(/\s/g, "")}`} className="underline underline-offset-2 hover:text-foreground">
-                  {form.contactPhone}
-                </a>
-              )}
-            </p>
-          )}
-        </div>
-      </div>
+          )
+        }
+      />
     </>
   )
 }
