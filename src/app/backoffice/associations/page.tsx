@@ -41,17 +41,18 @@ async function getAssociations() {
     where:   { deletedAt: null },
     orderBy: { createdAt: "desc" },
     select: {
-      id:                 true,
-      name:               true,
-      slug:               true,
-      city:               true,
-      country:            true,
-      subscriptionStatus:   true,
-      stripeSubscriptionId: true,
-      trialEndsAt:          true,
-      sitePublished:      true,
-      modules:            true,
-      createdAt:          true,
+      id:                      true,
+      name:                    true,
+      slug:                    true,
+      city:                    true,
+      country:                 true,
+      subscriptionStatus:      true,
+      subscriptionAmountCents: true,
+      stripeSubscriptionId:    true,
+      trialEndsAt:             true,
+      sitePublished:           true,
+      modules:                 true,
+      createdAt:               true,
       users: {
         where:  { role: { in: ["ADMIN", "PRESIDENT"] }, deletedAt: null },
         select: { email: true },
@@ -60,6 +61,18 @@ async function getAssociations() {
       _count: { select: { membres: true, evenements: true } },
     },
   })
+}
+
+// Same "paying" definition as platformFeeRate() in src/lib/stripe.ts: only an amount of
+// exactly 0 (a negotiated free PricingOffer) is non-paying — null (not yet synced from
+// Stripe) counts as paying. Active+paying associations sort first, cancelled/suspended ones
+// last (same pairing as the "Attention" KPI on the Vue d'ensemble page, which already treats
+// SUSPENDED as equivalent to CANCELLED), everything else (trial, past due, active-but-free)
+// in between.
+function subscriptionRank(assoc: { subscriptionStatus: string; subscriptionAmountCents: number | null }): number {
+  if (assoc.subscriptionStatus === "CANCELLED" || assoc.subscriptionStatus === "SUSPENDED") return 2
+  if (assoc.subscriptionStatus === "ACTIVE" && assoc.subscriptionAmountCents !== 0) return 0
+  return 1
 }
 
 // Only checked for PAST_DUE rows, not every association — this list can have hundreds of
@@ -78,6 +91,8 @@ export default async function AssociationsPage() {
     getAssociations(),
     getStaffLastSeenByAssociation(),
   ])
+  // Stable sort — preserves the createdAt desc order from getAssociations() within each rank.
+  assocs.sort((a, b) => subscriptionRank(a) - subscriptionRank(b))
   const paymentPendingByAssociation = await getPaymentPendingByAssociation(assocs)
 
   return (
@@ -150,8 +165,13 @@ export default async function AssociationsPage() {
                     </Link>
                   </td>
                   <td className="px-0 py-0">
-                    <Link href={href} className="flex px-4 py-3 justify-center h-full">
+                    <Link href={href} className="flex flex-col items-center gap-0.5 px-4 py-3 h-full">
                       <Badge variant={sub.variant}>{sub.label}</Badge>
+                      {/* Active but $0 (a negotiated free PricingOffer) sorts and shows
+                          identically to a paying one otherwise — see subscriptionRank above. */}
+                      {assoc.subscriptionStatus === "ACTIVE" && assoc.subscriptionAmountCents === 0 && (
+                        <span className="text-[10px] text-muted-foreground">Gratuite</span>
+                      )}
                     </Link>
                   </td>
                   <td className="px-0 py-0 hidden md:table-cell">
