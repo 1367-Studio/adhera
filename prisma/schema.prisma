@@ -682,6 +682,7 @@ model Association {
   membreDuplicateMatches        MembreDuplicateMatch[]
   membreMergeLogs               MembreMergeLog[]
   membershipTierMergeLogs       MembershipTierMergeLog[]
+  grupos                        Grupo[]
   boutiqueResponsable           User?                          @relation("BoutiqueResponsable", fields: [boutiqueResponsableId], references: [id], onDelete: SetNull)
   donResponsable                User?                          @relation("DonResponsable", fields: [donResponsableId], references: [id], onDelete: SetNull)
 
@@ -794,6 +795,7 @@ model User {
   boutiqueCommandesCreated BoutiqueCommande[]     @relation("BoutiqueCommandeCreatedBy")
   donsCreatedManually      Don[]
   donResponsableFor        Association[]          @relation("DonResponsable")
+  grupoResponsabilites     GrupoResponsavel[]
 
   @@unique([email, associationId])
   @@index([associationId, role])
@@ -975,11 +977,97 @@ model Membre {
   erasureRequests          ErasureRequest[]
   duplicateMatchesAsA      MembreDuplicateMatch[]    @relation("MembreDuplicateMatchA")
   duplicateMatchesAsB      MembreDuplicateMatch[]    @relation("MembreDuplicateMatchB")
+  grupos                   GrupoMembre[]
+  chamadaPresencas         ChamadaPresenca[]
 
   @@index([associationId, deletedAt])
   @@index([associationId, status])
   @@index([associationId, externalId])
   @@index([associationId, mergedIntoId])
+}
+
+// FORM-97 — Groupes de membres (équipes, classes, activités récurrentes) et appel de
+// présence par groupe. ChamadaPresenca référence Membre directement (pas via GrupoMembre)
+// pour que l'historique d'un appel survive même si la composition du groupe change ensuite.
+model Grupo {
+  id            String    @id @default(cuid())
+  associationId String
+  nome          String
+  descricao     String?
+  archivedAt    DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  association  Association        @relation(fields: [associationId], references: [id])
+  membros      GrupoMembre[]
+  responsaveis GrupoResponsavel[]
+  chamadas     ChamadaSessao[]
+
+  @@index([associationId, archivedAt])
+}
+
+model GrupoMembre {
+  id        String   @id @default(cuid())
+  grupoId   String
+  membreId  String
+  createdAt DateTime @default(now())
+
+  grupo  Grupo  @relation(fields: [grupoId], references: [id], onDelete: Cascade)
+  membre Membre @relation(fields: [membreId], references: [id], onDelete: Cascade)
+
+  @@unique([grupoId, membreId])
+}
+
+model GrupoResponsavel {
+  id        String   @id @default(cuid())
+  grupoId   String
+  userId    String
+  createdAt DateTime @default(now())
+
+  grupo Grupo @relation(fields: [grupoId], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([grupoId, userId])
+}
+
+model ChamadaSessao {
+  id            String   @id @default(cuid())
+  associationId String
+  grupoId       String
+  data          DateTime
+  // Texte libre ("14h00"), optionnel comme demandé dans le ticket — utilisé (avec grupoId et
+  // data) pour détecter un appel déjà créé pour le même créneau et proposer de le rouvrir
+  // plutôt que d'en créer un doublon (vérifié côté API, pas de contrainte unique en base car
+  // horario est un texte libre optionnel).
+  horario       String?
+  atividade     String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  grupo     Grupo             @relation(fields: [grupoId], references: [id], onDelete: Cascade)
+  presencas ChamadaPresenca[]
+
+  @@index([grupoId, data])
+}
+
+enum ChamadaPresencaStatus {
+  NAO_INFORMADO
+  PRESENTE
+  AUSENTE
+  AUSENCIA_JUSTIFICADA
+}
+
+model ChamadaPresenca {
+  id              String                @id @default(cuid())
+  chamadaSessaoId String
+  membreId        String
+  status          ChamadaPresencaStatus @default(NAO_INFORMADO)
+  updatedAt       DateTime              @updatedAt
+
+  sessao ChamadaSessao @relation(fields: [chamadaSessaoId], references: [id], onDelete: Cascade)
+  membre Membre        @relation(fields: [membreId], references: [id], onDelete: Restrict)
+
+  @@unique([chamadaSessaoId, membreId])
 }
 
 model Evenement {

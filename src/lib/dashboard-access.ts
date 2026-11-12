@@ -43,6 +43,10 @@ export const DASHBOARD_ROUTE_ACCESS: Record<string, DashboardRouteRequirement> =
   "/dashboard/fournisseurs":          { area: "comptabilite" },
   "/dashboard/reunions":              { area: "reunions" },
   "/dashboard/materiel":              { area: "materiel" },
+  // Pas { area: "groupes" } : un responsable désigné pour un groupe précis doit pouvoir
+  // ouvrir cette page même sans l'accès général à l'aire — voir src/lib/grupos/access.ts.
+  // La liste de groupes elle-même est filtrée côté API (hasAccess OR responsable).
+  "/dashboard/groupes":               { staff: true },
   // Edit, not just read: the legacy editor is discontinued and nobody should land on it — see
   // the puck pages' own redirect to "/dashboard" for anyone without edit access to this area.
   "/dashboard/site":                  { area: "site", level: "edit" },
