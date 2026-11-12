@@ -17,6 +17,7 @@ export type AssocModules = {
   fournisseurs: boolean
   devis:        boolean
   factures:     boolean
+  groupes:      boolean
 }
 
 export const DEFAULT_MODULES: AssocModules = {
@@ -36,6 +37,7 @@ export const DEFAULT_MODULES: AssocModules = {
   fournisseurs: false,
   devis:        false,
   factures:     false,
+  groupes:      false,
 }
 
 export const MODULE_LABELS: Record<keyof AssocModules, string> = {
@@ -55,6 +57,7 @@ export const MODULE_LABELS: Record<keyof AssocModules, string> = {
   fournisseurs: "Fournisseurs",
   devis:        "Devis",
   factures:     "Factures",
+  groupes:      "Groupes et appels",
 }
 
 export function parseModules(raw: unknown): AssocModules {

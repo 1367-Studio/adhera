@@ -4727,6 +4727,113 @@
       "annulee": "Cette cotisation a été annulée."
     }
   },
+  "groupes": {
+    "view": {
+      "title": "Groupes",
+      "countTotal": "{count, plural, =0 {Aucun groupe} one {# groupe} other {# groupes}}",
+      "count": "{count, plural, =0 {Aucun résultat} one {# résultat} other {# résultats}}",
+      "searchPlaceholder": "Rechercher un groupe…",
+      "noResultsFor": "Aucun groupe ne correspond à « {search} »",
+      "noGroupe": "Aucun groupe pour le moment",
+      "allStatuses": "Tous les statuts",
+      "statusFilter": {
+        "actifs": "Actifs",
+        "archives": "Archivés"
+      },
+      "addTitle": "Créer un groupe",
+      "editTitle": "Modifier le groupe",
+      "columns": {
+        "nome": "Nom",
+        "membres": "Membres",
+        "responsaveis": "Responsables",
+        "lastChamada": "Dernier appel",
+        "status": "Statut"
+      },
+      "statusBadge": {
+        "archive": "Archivé"
+      },
+      "actions": {
+        "edit": "Modifier",
+        "archive": "Archiver",
+        "unarchive": "Désarchiver"
+      },
+      "archiveConfirmTitle": "Archiver « {name} » ?",
+      "archiveConfirmDescription": "L'historique des appels est conservé. Le groupe n'apparaîtra plus dans la liste active.",
+      "unarchiveConfirmTitle": "Désarchiver « {name} » ?",
+      "toasts": {
+        "created": "Groupe créé",
+        "updated": "Groupe mis à jour",
+        "archived": "Groupe archivé",
+        "unarchived": "Groupe désarchivé"
+      }
+    },
+    "form": {
+      "nomeLabel": "Nom du groupe",
+      "nomePlaceholder": "Ex. Équipe jeunes, Chorale du jeudi…",
+      "descricaoLabel": "Description",
+      "descricaoPlaceholder": "Optionnel"
+    },
+    "detail": {
+      "backToList": "Retour aux groupes",
+      "membresTitle": "Membres",
+      "addMembre": "Ajouter un membre",
+      "noMembre": "Aucun membre dans ce groupe",
+      "removeMembreConfirmTitle": "Retirer {name} du groupe ?",
+      "removeMembreConfirmDescription": "Son historique de présence dans ce groupe est conservé.",
+      "responsaveisTitle": "Responsables",
+      "addResponsavel": "Ajouter un responsable",
+      "noResponsavel": "Aucun responsable désigné",
+      "removeResponsavelConfirmTitle": "Retirer {name} des responsables ?",
+      "appelsTitle": "Appels",
+      "faireAppel": "Faire l'appel",
+      "noAppel": "Aucun appel pour le moment",
+      "noMembreForAppel": "Ajoutez au moins un membre au groupe avant de pouvoir faire l'appel.",
+      "newAppelDateLabel": "Date",
+      "newAppelSubmit": "Commencer l'appel",
+      "appelColumns": {
+        "date": "Date",
+        "presents": "Présents",
+        "absents": "Absents",
+        "justifies": "Justifiés",
+        "nonRenseignes": "Non renseigné"
+      },
+      "reopenExistingTitle": "Un appel existe déjà pour ce créneau",
+      "reopenExistingDescription": "Vous pouvez l'ouvrir pour le consulter ou le modifier plutôt que d'en créer un autre.",
+      "reopenExistingConfirm": "Ouvrir l'appel existant"
+    },
+    "appel": {
+      "backToGroupe": "Retour au groupe",
+      "dateLabel": "Date",
+      "horarioLabel": "Horaire",
+      "horarioPlaceholder": "Optionnel, ex. 14h00",
+      "activityLabel": "Activité",
+      "activityPlaceholder": "Optionnel",
+      "markAllPresent": "Marquer tous présents",
+      "syncMembres": "Ajouter les nouveaux membres du groupe",
+      "counts": {
+        "presente": "Présents",
+        "ausente": "Absents",
+        "ausenciaJustificada": "Justifiés",
+        "naoInformado": "Non renseigné"
+      },
+      "status": {
+        "NAO_INFORMADO": "Non renseigné",
+        "PRESENTE": "Présent",
+        "AUSENTE": "Absent",
+        "AUSENCIA_JUSTIFICADA": "Justifié"
+      },
+      "save": "Enregistrer l'appel",
+      "export": "Exporter",
+      "exportPdf": "PDF",
+      "exportPdfBlank": "PDF vierge (à imprimer)",
+      "exportExcel": "Excel",
+      "toasts": {
+        "saved": "Appel enregistré",
+        "noMembersToExport": "Aucun membre à exporter",
+        "synced": "{count, plural, =0 {Aucun nouveau membre} one {# membre ajouté} other {# membres ajoutés}}"
+      }
+    }
+  },
   "membres": {
     "form": {
       "status": {
@@ -4992,6 +5099,7 @@
         "evenements": "Événements",
         "reunions": "Réunions",
         "materiel": "Matériel",
+        "groupes": "Groupes",
         "dons": "Dons",
         "historique": "Historique",
         "emails": "Emails",
@@ -6591,6 +6699,7 @@
       "actualites": "Actualités",
       "messages": "Messagerie",
       "materiel": "Matériel",
+      "groupes": "Groupes",
       "site": "Site web",
       "activite": "Historique",
       "suporte": "Support",
