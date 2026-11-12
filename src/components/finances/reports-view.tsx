@@ -361,8 +361,9 @@ export function ReportsView() {
   // rule the screen already applied. This reverses an earlier deliberate choice ("the export is
   // for the treasurer/accountant, who expects the full statutory shape") per the ticket's
   // explicit requirement that screen and every export format show the same headers/sections/
-  // values/totals. Expense amounts are shown NEGATIVE (same convention as the reference
-  // accountant document this layout is modeled on), even though they're stored positive.
+  // values/totals. Expense amounts are shown POSITIVE (same convention as the screen, per
+  // emmanuelle's 2026-11-11 follow-up) — they're already stored positive, and incomeTotal/
+  // expenseTotal below stay positive too, so the result rows below still subtract correctly.
   function buildRows(): IncomeStatementPdfRow[] {
     if (!current) return []
     const prevOrBlank = (value: number) => hasPrevious ? value : null
@@ -388,15 +389,15 @@ export function ReportsView() {
       }
       const incomeTotal = incomeLines.reduce((s, l) => s + l.amount, 0)
       const incomeTotalPrev = incomeLines.reduce((s, l) => s + previousAmountFor(previous, l, "income"), 0)
-      rows.push({ label: pdfT("total"), current: incomeTotal, previous: prevOrBlank(incomeTotalPrev), bold: true })
+      rows.push({ label: t("finances.compteResultat.totalProducts"), current: incomeTotal, previous: prevOrBlank(incomeTotalPrev), bold: true })
 
       rows.push({ label: labels.expense, current: null, previous: null, bold: true })
       for (const line of expenseLines) {
-        rows.push({ label: lineLabel(line), current: -line.amount, previous: prevOrBlank(-previousAmountFor(previous, line, "expense")) })
+        rows.push({ label: lineLabel(line), current: line.amount, previous: prevOrBlank(previousAmountFor(previous, line, "expense")) })
       }
       const expenseTotal = expenseLines.reduce((s, l) => s + l.amount, 0)
       const expenseTotalPrev = expenseLines.reduce((s, l) => s + previousAmountFor(previous, l, "expense"), 0)
-      rows.push({ label: pdfT("total"), current: -expenseTotal, previous: prevOrBlank(-expenseTotalPrev), bold: true })
+      rows.push({ label: t("finances.compteResultat.totalExpenses"), current: expenseTotal, previous: prevOrBlank(expenseTotalPrev), bold: true })
 
       rows.push({ label: labels.result, current: incomeTotal - expenseTotal, previous: prevOrBlank(incomeTotalPrev - expenseTotalPrev), bold: true })
     }
@@ -407,11 +408,14 @@ export function ReportsView() {
         rows.push({ label: pdfT("uncategorizedIncomeLabel"), current: current.uncategorizedIncome.amount, previous: prevOrBlank(previous?.uncategorizedIncome.amount ?? 0) })
       }
       if (current.uncategorizedExpense.count > 0) {
-        rows.push({ label: pdfT("uncategorizedExpenseLabel"), current: -current.uncategorizedExpense.amount, previous: prevOrBlank(-(previous?.uncategorizedExpense.amount ?? 0)) })
+        rows.push({ label: pdfT("uncategorizedExpenseLabel"), current: current.uncategorizedExpense.amount, previous: prevOrBlank(previous?.uncategorizedExpense.amount ?? 0) })
       }
     }
 
-    rows.push({ label: pdfT("grandTotal"), current: current.result, previous: prevOrBlank(previous?.result ?? 0), bold: true })
+    // Per emmanuelle's 2026-11-11 follow-up: the final row is "Résultat de l'exercice" (not a
+    // generic "TOTAL"), regardless of whether the result is positive, negative or zero — reusing
+    // the existing `compteResultat.result` key, already translated for every locale.
+    rows.push({ label: t("finances.compteResultat.result"), current: current.result, previous: prevOrBlank(previous?.result ?? 0), bold: true })
     return rows
   }
 
