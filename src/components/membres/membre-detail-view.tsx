@@ -19,6 +19,7 @@ import { spokenLanguageLabel } from "@/lib/languages"
 import { LOCALE_LABELS, isSupportedLocale } from "@/i18n/locales"
 import { formatAddress } from "@/lib/address"
 import { useCreateCotisation, useUpdateCotisation } from "@/hooks/use-cotisations"
+import { useMembreChamadas } from "@/hooks/use-membre-chamadas"
 import type { MembreInput, CotisationInput } from "@/lib/schemas"
 import { ApiError } from "@/lib/api-error"
 import { Button } from "@/components/ui/button"
@@ -38,6 +39,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { RsvpBadge } from "@/components/portal/rsvp-badge"
 import { ChangeRoleModal } from "@/components/membres/membres-view"
 import { BackLink } from "@/components/ui/back-link"
+import { MembreGruposTab } from "@/components/membres/membre-grupos-tab"
 import { DetailNotFound } from "@/components/ui/detail-not-found"
 import { DetailLoadingSkeleton } from "@/components/ui/detail-loading-skeleton"
 import { useCurrentUser, useHasAccess, useIsAdministrator, useMemberCardEnabled, useModules } from "@/lib/user-context"
@@ -769,12 +771,13 @@ export function MembreDetailView() {
         </div>
       )}
 
-      <Tabs defaultValue={modules.cotisations ? "cotisations" : modules.evenements ? "evenements" : modules.reunions ? "reunions" : modules.materiel ? "materiel" : modules.boutique ? "boutique" : "historique"}>
+      <Tabs defaultValue={modules.cotisations ? "cotisations" : modules.evenements ? "evenements" : modules.reunions ? "reunions" : modules.materiel ? "materiel" : modules.groupes ? "groupes" : modules.boutique ? "boutique" : "historique"}>
         <TabsList>
           {modules.cotisations && <TabsTrigger value="cotisations">{t("membres.detail.tabs.cotisations")}</TabsTrigger>}
           {modules.evenements && <TabsTrigger value="evenements">{t("membres.detail.tabs.evenements")}</TabsTrigger>}
           {modules.reunions && <TabsTrigger value="reunions">{t("membres.detail.tabs.reunions")}</TabsTrigger>}
           {modules.materiel && <TabsTrigger value="materiel">{t("membres.detail.tabs.materiel")}</TabsTrigger>}
+          {modules.groupes && <TabsTrigger value="groupes">{t("membres.detail.tabs.groupes")}</TabsTrigger>}
           {modules.boutique && <TabsTrigger value="boutique">{t("membres.detail.tabs.boutique")}</TabsTrigger>}
           {membre.donsHistory !== null && <TabsTrigger value="dons">{t("membres.detail.tabs.dons")}</TabsTrigger>}
           <TabsTrigger value="historique">{t("membres.detail.tabs.historique")}</TabsTrigger>
@@ -1027,6 +1030,12 @@ export function MembreDetailView() {
               {t("membres.detail.showingRecentLoans", { count: TAB_PAGE_SIZE, total: materialLoansTotal })}
             </p>
           )}
+        </TabsContent>
+        )}
+
+        {modules.groupes && (
+        <TabsContent value="groupes" className="pt-3">
+          <MembreGruposTab membreId={id} />
         </TabsContent>
         )}
 

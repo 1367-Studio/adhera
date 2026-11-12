@@ -21,6 +21,7 @@
 export const ACCESS_AREAS = [
   "dashboard", "membres", "sensible", "adhesions", "dons", "evenements", "boutique",
   "communication", "actualites", "comptabilite", "reunions", "materiel", "site", "documents",
+  "groupes",
 ] as const
 
 export type AccessArea  = (typeof ACCESS_AREAS)[number]
@@ -48,6 +49,7 @@ export const ACCESS_AREA_LABELS: Record<AccessArea, string> = {
   materiel:      "Matériel",
   site:          "Site web",
   documents:     "Documents de l'association",
+  groupes:       "Groupes et appels de présence",
 }
 
 export type AreaLevels = Record<AccessArea, AccessLevel>
@@ -95,7 +97,7 @@ export const ROLE_PROFILES: Record<StaffRole, ResolvedPermissions> = {
     areas: {
       dashboard: "read", membres: "edit", sensible: "read", adhesions: "edit", dons: "edit", evenements: "edit",
       boutique: "edit", communication: "none", actualites: "edit", comptabilite: "edit",
-      reunions: "edit", materiel: "edit", site: "none", documents: "edit",
+      reunions: "edit", materiel: "edit", site: "none", documents: "edit", groupes: "none",
     },
   },
   SECRETAIRE: {
@@ -103,7 +105,7 @@ export const ROLE_PROFILES: Record<StaffRole, ResolvedPermissions> = {
     areas: {
       dashboard: "read", membres: "edit", sensible: "read", adhesions: "read", dons: "none", evenements: "edit",
       boutique: "edit", communication: "edit", actualites: "edit", comptabilite: "none",
-      reunions: "edit", materiel: "edit", site: "none", documents: "edit",
+      reunions: "edit", materiel: "edit", site: "none", documents: "edit", groupes: "edit",
     },
   },
   // A volunteer with no bureau position: nothing until an administrator grants areas.
