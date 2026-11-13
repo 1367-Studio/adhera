@@ -666,6 +666,9 @@ model Association {
   budgetLines                   BudgetLine[]
   bankReconciliations           BankReconciliation[]
   accountTransfers              AccountTransfer[]
+  chartAccounts                 ChartAccount[]
+  journalEntries                JournalEntry[]
+  immobilisations               Immobilisation[]
   fournisseurs                  Fournisseur[]
   devis                         Devis[]
   factures                      Facture[]
@@ -3086,6 +3089,8 @@ model ExerciceComptable {
   bankTransactions BankTransaction[]
   accountTransfers AccountTransfer[]
   budgetLines      BudgetLine[]
+  journalEntries   JournalEntry[]
+  immobilisationDepreciations ImmobilisationDepreciation[]
 
   @@index([associationId, status])
   @@index([associationId, startDate])
@@ -3108,6 +3113,7 @@ model BankAccount {
   transactions BankTransaction[]
   transfersOut AccountTransfer[] @relation("TransferFromAccount")
   transfersIn  AccountTransfer[] @relation("TransferToAccount")
+  chartAccount ChartAccount?
 
   @@index([associationId])
 }
@@ -3142,6 +3148,7 @@ model AccountTransfer {
   fromAccount     BankAccount          @relation("TransferFromAccount", fields: [fromAccountId], references: [id], onDelete: Restrict)
   toAccount       BankAccount          @relation("TransferToAccount", fields: [toAccountId], references: [id], onDelete: Restrict)
   reconciliations BankReconciliation[]
+  journalEntries  JournalEntry[]
 
   @@index([associationId])
   @@index([associationId, date])
@@ -3169,6 +3176,7 @@ model BankTransaction {
   exercice        ExerciceComptable?   @relation(fields: [exerciceId], references: [id], onDelete: SetNull)
   bankAccount     BankAccount          @relation(fields: [bankAccountId], references: [id], onDelete: Cascade)
   reconciliations BankReconciliation[]
+  journalEntries  JournalEntry[]
 
   @@unique([bankAccountId, externalId])
   @@index([associationId, status])
@@ -3328,6 +3336,7 @@ model Income {
   category          FinanceCategory?     @relation(fields: [categoryId], references: [id], onDelete: SetNull)
   project           BudgetProject?       @relation(fields: [projectId], references: [id], onDelete: SetNull)
   reconciliations   BankReconciliation[]
+  journalEntries    JournalEntry[]
 
   @@index([associationId, status])
   @@index([associationId, date])
@@ -3342,7 +3351,11 @@ model Expense {
   id             String        @id @default(cuid())
   associationId  String
   exerciceId     String?
-  factureRecueId String?       @unique // set when this row was auto-created from a FactureRecue marked PAYEE — see FactureRecue.expense
+  // FORM-107 Fase 3 — one Expense per FactureRecuePayment (mirrors FacturePayment.income on
+  // the emitted side), not per FactureRecue directly: a document now accrues many payments.
+  // Null for a FactureRecue linked to an Immobilisation — that path posts straight to 404000
+  // via post-facture-recue-payment.ts instead of a generic categoryless Expense.
+  factureRecuePaymentId String? @unique
   amount         Decimal       @db.Decimal(10, 2)
   categoryId     String?
   // See Income.projectId — same "Orçamento previsto" project link, same SetNull reasoning.
@@ -3358,19 +3371,22 @@ model Expense {
   // paymentIntent/invoice id for auto-created "Frais Stripe"/"Commission Formwise" rows (see
   // connect-stripe-fee.ts) so a redelivered webhook or a refund can find these rows again.
   reference      String?
-  // Scaffolding only (see FORM-reformulation plan §15): distinguishes a capital asset
-  // purchase from a regular operating expense so a future depreciation/amortization module
-  // can exclude immobilisations from the exercice's full charge. No depreciation logic yet.
+  // Distinguishes a capital asset purchase from a regular operating expense — excludes it from
+  // the exercice's own charge total (see FORM-reformulation plan §15) and is the eligibility
+  // flag POST /api/finances/immobilisations checks before letting this Expense become the
+  // source of an Immobilisation depreciation schedule (FORM-107 Fase 2).
   isImmobilisation Boolean     @default(false)
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt
 
-  association     Association          @relation(fields: [associationId], references: [id], onDelete: Cascade)
-  exercice        ExerciceComptable?   @relation(fields: [exerciceId], references: [id], onDelete: SetNull)
-  factureRecue    FactureRecue?        @relation(fields: [factureRecueId], references: [id], onDelete: SetNull)
-  category        FinanceCategory?     @relation(fields: [categoryId], references: [id], onDelete: SetNull)
-  project         BudgetProject?       @relation(fields: [projectId], references: [id], onDelete: SetNull)
-  reconciliations BankReconciliation[]
+  association       Association          @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  exercice          ExerciceComptable?   @relation(fields: [exerciceId], references: [id], onDelete: SetNull)
+  factureRecuePayment FactureRecuePayment? @relation(fields: [factureRecuePaymentId], references: [id], onDelete: SetNull)
+  category          FinanceCategory?     @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  project           BudgetProject?       @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  reconciliations   BankReconciliation[]
+  journalEntries    JournalEntry[]
+  immobilisation    Immobilisation?
 
   @@index([associationId, status])
   @@index([associationId, date])
@@ -3405,6 +3421,213 @@ model BankReconciliation {
 
   @@index([associationId])
   @@index([transferId])
+}
+
+enum ChartAccountNature {
+  ACTIF
+  PASSIF
+  CHARGE
+  PRODUIT
+}
+
+enum NormalBalanceSide {
+  DEBIT
+  CREDIT
+}
+
+// Real double-entry chart of accounts — distinct from FinanceCategory.accountingCode, which is
+// only a reference label validated against src/lib/finance/chart-of-accounts.ts. A ChartAccount
+// row is the actual ledger account JournalLine posts debit/credit against; it is seeded per
+// association from the same reference list (see chart-accounts-seed.ts) so the two stay in sync
+// by code instead of becoming two independently-maintained sources of truth. See FORM-107.
+model ChartAccount {
+  id            String             @id @default(cuid())
+  associationId String
+  code          String // canonical 6-digit PCG code — see normalizeAccountingCode
+  label         String
+  nature        ChartAccountNature
+  // Which side a positive balance normally sits on — DEBIT for ACTIF/CHARGE, CREDIT for
+  // PASSIF/PRODUIT. Drives the sign convention the Bilan/trial-balance calculations use to turn
+  // raw debit/credit sums into a single signed balance per account.
+  normalSide    NormalBalanceSide
+  // True for every account seeded from REFERENCE_ACCOUNTS/LEDGER_INFRASTRUCTURE_ACCOUNTS; false
+  // for one created by hand for a case the reference list doesn't cover yet.
+  isSystem      Boolean   @default(true)
+  // Set only for the one dynamically-generated 512xxx account per BankAccount — the stable link
+  // post-income-expense.ts uses to find "the ledger account for this specific bank account"
+  // without matching on label text. Null for every other account (including 531000/511000/
+  // 471000, which are shared/global, not per-bank-account).
+  bankAccountId String?   @unique
+  archivedAt    DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  association  Association   @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  // SetNull, not Cascade — deleting a BankAccount must not erase the ledger account or the
+  // JournalLine history already posted against it; it only loses the live link back to the
+  // (now gone) BankAccount row.
+  bankAccount  BankAccount?  @relation(fields: [bankAccountId], references: [id], onDelete: SetNull)
+  journalLines JournalLine[]
+
+  @@unique([associationId, code])
+  @@index([associationId, nature])
+}
+
+enum JournalSourceType {
+  INCOME
+  INCOME_REVERSAL
+  EXPENSE
+  EXPENSE_REVERSAL
+  BANK_TRANSACTION
+  ACCOUNT_TRANSFER
+  OPENING_BALANCE
+  IMMOBILISATION_DEPRECIATION
+  IMMOBILISATION_ACQUISITION
+  FACTURE_RECUE_PAYMENT
+  MANUAL
+}
+
+// One double-entry posting — the real general ledger (Grand Livre) behind the future Bilan and,
+// eventually, the Compte de résultat (see FORM-107). Never written to directly: every entry goes
+// through postJournalEntry (src/lib/finance/journal/post-journal-entry.ts), the single place that
+// enforces sum(debit) = sum(credit) and idempotency. A journal entry is never edited or deleted
+// once posted — a correction (e.g. a refund) posts its own reversing entry instead, so the
+// ledger's history is always exactly what was recorded at the time.
+model JournalEntry {
+  id              String            @id @default(cuid())
+  associationId   String
+  exerciceId      String
+  date            DateTime
+  label           String
+  sourceType      JournalSourceType
+  // Deterministic dedup key — e.g. "income:<id>", "expense:<id>", "income:<id>:reversal",
+  // "opening-balance:<exerciceId>". A redelivered webhook or a re-run backfill script always
+  // resolves to the same key, so postJournalEntry can no-op instead of duplicating. This is the
+  // ONLY uniqueness guard on the whole journal — deliberately not one-time-use FKs below, since
+  // e.g. one Income legitimately produces both an original entry and, later, a reversal entry.
+  idempotencyKey  String            @unique
+  createdByUserId String?
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  // Optional link to the source document, purely for the Bilan's rubrique → comptes → écritures
+  // → document d'origine drill-down. Not unique: an INCOME_REVERSAL entry points at the same
+  // incomeId as the original INCOME entry it reverses.
+  incomeId          String?
+  expenseId         String?
+  bankTransactionId String?
+  accountTransferId String?
+  // FORM-107 Fase 3 — set only on a FACTURE_RECUE_PAYMENT entry posted against an
+  // Immobilisation-linked FactureRecue (no Expense exists for that case — see
+  // FactureRecuePayment's doc comment); each points at its own specific payment row.
+  factureRecuePaymentId String?
+  // Set only on the one IMMOBILISATION_ACQUISITION entry a FactureRecue-origin Immobilisation
+  // gets when created (see Immobilisation.factureRecueId). The Expense-origin path posts no
+  // separate acquisition entry — see postIncomeToJournal/postExpenseToJournal's own doc
+  // comment on why the generic Expense posting already covers that case.
+  immobilisationId      String?
+
+  association     Association       @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  exercice        ExerciceComptable @relation(fields: [exerciceId], references: [id], onDelete: Restrict)
+  income          Income?           @relation(fields: [incomeId], references: [id], onDelete: SetNull)
+  expense         Expense?          @relation(fields: [expenseId], references: [id], onDelete: SetNull)
+  bankTransaction BankTransaction?  @relation(fields: [bankTransactionId], references: [id], onDelete: SetNull)
+  accountTransfer AccountTransfer?  @relation(fields: [accountTransferId], references: [id], onDelete: SetNull)
+  factureRecuePayment FactureRecuePayment? @relation(fields: [factureRecuePaymentId], references: [id], onDelete: SetNull)
+  immobilisation      Immobilisation?      @relation(fields: [immobilisationId], references: [id], onDelete: SetNull)
+  lines           JournalLine[]
+  immobilisationDepreciation ImmobilisationDepreciation?
+
+  @@index([associationId, exerciceId])
+  @@index([associationId, sourceType])
+  @@index([incomeId])
+  @@index([expenseId])
+}
+
+model JournalLine {
+  id             String  @id @default(cuid())
+  journalEntryId String
+  chartAccountId String
+  debit          Decimal @default(0) @db.Decimal(10, 2)
+  credit         Decimal @default(0) @db.Decimal(10, 2)
+  label          String?
+  order          Int     @default(0)
+
+  journalEntry JournalEntry @relation(fields: [journalEntryId], references: [id], onDelete: Cascade)
+  chartAccount ChartAccount @relation(fields: [chartAccountId], references: [id], onDelete: Restrict)
+
+  @@index([journalEntryId])
+  @@index([chartAccountId])
+}
+
+enum DepreciationMethod {
+  LINEAIRE
+}
+
+// A capitalized asset with its own depreciation schedule (FORM-107 Fase 2/3) — the Ativo
+// imobilizado side of the future Bilan. Always originates from exactly one of expenseId/
+// factureRecueId (app-level XOR, same posture as BankReconciliation's incomeId/expenseId/
+// transferId): expenseId is the Fase 2 path (the asset was already paid, normal Expense flow —
+// its acquisition is ALREADY correctly posted to the ledger by the existing generic
+// postExpenseToJournal, debiting assetAccountCode and crediting tesouraria, as long as its
+// FinanceCategory.accountingCode already resolves to an ACTIF-nature ChartAccount; this model
+// adds the depreciation schedule on top, it does not re-post the acquisition). factureRecueId
+// is the Fase 3 path (invoiced, possibly not yet fully paid): creating the Immobilisation this
+// way posts the ONE IMMOBILISATION_ACQUISITION entry itself (debit assetAccountCode, credit
+// 404000 Fournisseurs d'immobilisations for the full invoice amount) — see
+// post-facture-recue-payment.ts's postImmobilisationAcquisition.
+model Immobilisation {
+  id            String             @id @default(cuid())
+  associationId String
+  label         String
+  // PCG codes (e.g. "218300"/"281830"/"681120") — stored per row, not hardcoded, so a future
+  // asset class (incorporelles, financières, …) just needs its own ChartAccount codes, no
+  // schema change. Resolved via resolveChartAccountByCode at posting time.
+  assetAccountCode       String
+  depreciationAccountCode String
+  expenseAccountCode     String
+  entryValue      Decimal            @db.Decimal(10, 2)
+  residualValue   Decimal            @default(0) @db.Decimal(10, 2)
+  acquisitionDate DateTime
+  usageStartDate  DateTime
+  usefulLifeMonths Int
+  method          DepreciationMethod @default(LINEAIRE)
+  // Set, not yet acted upon — Fase 2 computes a schedule that stops accruing past this date
+  // (see compute-depreciation.ts) but doesn't post a disposal/write-off entry. That's a
+  // deliberate, documented scope limit, not a bug.
+  disposalDate    DateTime?
+  expenseId       String?            @unique
+  factureRecueId  String?            @unique
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+
+  association   Association                  @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  expense       Expense?                     @relation(fields: [expenseId], references: [id], onDelete: SetNull)
+  factureRecue  FactureRecue?                @relation(fields: [factureRecueId], references: [id], onDelete: SetNull)
+  depreciations ImmobilisationDepreciation[]
+  journalEntries JournalEntry[]
+
+  @@index([associationId])
+}
+
+// One exercice's posted dotation for one Immobilisation — the audit trail AND the second
+// idempotency guard (@@unique below) alongside JournalEntry.idempotencyKey, so re-closing an
+// exercice (or re-running the backfill) never double-posts a dotation.
+model ImmobilisationDepreciation {
+  id               String   @id @default(cuid())
+  immobilisationId String
+  exerciceId       String
+  dotationAmount   Decimal  @db.Decimal(10, 2)
+  accumulatedAfter Decimal  @db.Decimal(10, 2)
+  netValueAfter    Decimal  @db.Decimal(10, 2)
+  journalEntryId   String   @unique
+  createdAt        DateTime @default(now())
+
+  immobilisation Immobilisation    @relation(fields: [immobilisationId], references: [id], onDelete: Restrict)
+  exercice       ExerciceComptable @relation(fields: [exerciceId], references: [id], onDelete: Restrict)
+  journalEntry   JournalEntry      @relation(fields: [journalEntryId], references: [id], onDelete: Restrict)
+
+  @@unique([immobilisationId, exerciceId])
 }
 
 enum FournisseurStatus {
@@ -3579,6 +3802,9 @@ model FacturePayment {
 
 enum FactureRecueStatus {
   A_PAYER
+  // Not a manual choice — derived from amountPaid vs amount, same posture as Facture's own
+  // PARTIELLEMENT_PAYEE/PAYEE. See resolveManualFactureRecueStatus (FORM-107 Fase 3).
+  PARTIELLEMENT_PAYEE
   PAYEE
   EN_LITIGE
   ANNULEE
@@ -3593,18 +3819,46 @@ model FactureRecue {
   issueDate     DateTime
   amount        Decimal            @db.Decimal(10, 2)
   status        FactureRecueStatus @default(A_PAYER)
+  // Sum of FactureRecuePayment.amount for this document — the single source of truth status
+  // is derived from (FORM-107 Fase 3), same role as Facture.amountPaid.
+  amountPaid    Decimal            @default(0) @db.Decimal(10, 2)
   fileUrl       String
   notes         String?
   createdAt     DateTime           @default(now())
   updatedAt     DateTime           @updatedAt
   deletedAt     DateTime?
 
-  association Association  @relation(fields: [associationId], references: [id], onDelete: Cascade)
-  fournisseur Fournisseur? @relation(fields: [fournisseurId], references: [id])
-  expense     Expense?
+  association    Association           @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  fournisseur    Fournisseur?          @relation(fields: [fournisseurId], references: [id])
+  payments       FactureRecuePayment[]
+  // Set when this document is the acquisition invoice of a capitalized asset — see
+  // Immobilisation.factureRecueId's own doc comment. Its payments post to 404000 instead of
+  // creating a generic Expense each.
+  immobilisation Immobilisation?
 
   @@index([associationId, status])
   @@index([associationId, deletedAt])
+}
+
+// Mirrors FacturePayment (Facture/emitted side) exactly — see FORM-107 Fase 3. Each payment
+// is either generic (creates a categoryless Expense, same shape as the single Expense the old
+// binary A_PAYER/PAYEE flow used to create — see `expense` below) or, when the parent
+// FactureRecue is linked to an Immobilisation, posts straight to 404000 via
+// post-facture-recue-payment.ts with no Expense at all (see JournalEntry.factureRecuePaymentId).
+model FactureRecuePayment {
+  id             String   @id @default(cuid())
+  factureRecueId String
+  amount         Decimal  @db.Decimal(10, 2)
+  method         String
+  paidAt         DateTime @default(now())
+  note           String?
+  createdAt      DateTime @default(now())
+
+  factureRecue   FactureRecue   @relation(fields: [factureRecueId], references: [id], onDelete: Cascade)
+  expense        Expense?
+  journalEntries JournalEntry[]
+
+  @@index([factureRecueId, paidAt])
 }
 
 // Documents written by the association itself (CGU, règlement intérieur, …) — rich text

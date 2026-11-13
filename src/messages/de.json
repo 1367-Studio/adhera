@@ -1414,6 +1414,45 @@
         "totalReceived": "Gesamtbeiträge",
         "note": "Diese kostenlosen Beiträge werden in Euro bewertet. Sie führen nicht zu Geldbewegungen und verändern das Ergebnis des Geschäftsjahres nicht."
       }
+    },
+    "bilan": {
+      "title": "Bilanz",
+      "description": "Vermögenswerte und Verbindlichkeiten der Vereinigung am Ende des Geschäftsjahres.",
+      "exerciceLabel": "Bewegung",
+      "rubriqueColumnLabel": "Abschnitt",
+      "noPreviousExercice": "-",
+      "actif": "Aktiv",
+      "totalActif": "Total Aktiv",
+      "passif": "Passiv",
+      "totalPassif": "Gesamtverbindlichkeiten",
+      "noAccountsInRubrique": "Kein Gleichgewicht in diesem Abschnitt",
+      "emptyExercice": {
+        "title": "Kein Haushaltsjahr",
+        "description": "Erstellen Sie ein neues Geschäftsjahr, um die Bilanz einzusehen."
+      },
+      "emptyLedger": {
+        "title": "Keine Buchungen",
+        "description": "Die Bilanz wird angezeigt, sobald Einnahmen, Ausgaben oder Anlagevermögen in diesem Geschäftsjahr erfasst wurden."
+      },
+      "rubriques": {
+        "immobilisationsCorporelles": "Materielle Kapitalvermögen",
+        "disponibilites": "Verfügbarkeit",
+        "fondsPropres": "Eigenkapital",
+        "dettes": "Schulden"
+      },
+      "issues": {
+        "title": "Anomalien entdeckt",
+        "messages": {
+          "ACCOUNT_WITHOUT_RUBRIQUE": "Das Konto {code} — {label} hat einen Saldo, ist aber nicht an einen Bilanzposten gebunden.",
+          "ACTIF_PASSIF_MISMATCH": "Der Vermögenswert ({actif}) entspricht nicht der Verbindlichkeit ({passif}).",
+          "OPENING_BALANCE_MISSING": "Für diese Übung wurden keine Eröffnungseinträge aus \"{previousLabel}\" generiert.",
+          "TRIAL_BALANCE_UNBALANCED": "Die Gesamt-Soll-Gebühr ({debit}) entspricht nicht dem Gesamt-Kredit ({credit}) für dieses Geschäftsjahr."
+        }
+      },
+      "accountLabels": {
+        "reportANouveau": "Gewinnvortrag",
+        "resultatExercice": "Nettogewinn des Jahres"
+      }
     }
   },
   "evenements": {

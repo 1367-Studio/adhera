@@ -1414,6 +1414,45 @@
         "totalReceived": "Összesen hozzájárulások",
         "note": "Ezek az ingyenes hozzájárulások euróban értékesek. Nem vezetnek pénzmozgáshoz, és nem változtatják meg a pénzügyi év eredményét."
       }
+    },
+    "bilan": {
+      "title": "Mérleg",
+      "description": "Az egyesület eszközei és kötelezettségei a pénzügyi év végén.",
+      "exerciceLabel": "Gyakorlat",
+      "rubriqueColumnLabel": "Szekció",
+      "noPreviousExercice": "-",
+      "actif": "Aktív",
+      "totalActif": "Teljes aktív",
+      "passif": "Passzív",
+      "totalPassif": "Teljes felelősségek",
+      "noAccountsInRubrique": "Ebben a részben nincs egyensúly",
+      "emptyExercice": {
+        "title": "Nincs pénzügyi év",
+        "description": "Hozz létre egy új pénzügyi évet a mérleg megtekintéséhez."
+      },
+      "emptyLedger": {
+        "title": "Nincs számviteli bejegyzés",
+        "description": "A mérleget akkor jelenítik meg, amint a jövedelmet, kiadást vagy alapeszközöket ebben a pénzügyi évben rögzítették."
+      },
+      "rubriques": {
+        "immobilisationsCorporelles": "Tárgyi tőkeeszközök",
+        "disponibilites": "Elérhetőség",
+        "fondsPropres": "Equity",
+        "dettes": "Adósságok"
+      },
+      "issues": {
+        "title": "Anomáliák észlelve",
+        "messages": {
+          "ACCOUNT_WITHOUT_RUBRIQUE": "A {code} — {label} számlának egyenlege van, de nincs csatolva semmilyen mérleg-tételhez.",
+          "ACTIF_PASSIF_MISMATCH": "Az eszköz ({actif}) nem felel meg a kötelezettségnek ({passif}).",
+          "OPENING_BALANCE_MISSING": "Ehhez a gyakorlathoz nem generáltak nyitóbejegyzések a \"{previousLabel}\" által.",
+          "TRIAL_BALANCE_UNBALANCED": "A teljes debet ({debit}) nem egyezik meg az adott pénzügyi év teljes hitelével ({credit})."
+        }
+      },
+      "accountLabels": {
+        "reportANouveau": "Tartalékos nyereség",
+        "resultatExercice": "Az év nettó jövedelme"
+      }
     }
   },
   "evenements": {

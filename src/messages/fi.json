@@ -1414,6 +1414,45 @@
         "totalReceived": "Kokonaispanokset",
         "note": "Nämä ilmaiset sijoitukset arvostetaan euroissa. Ne eivät johda rahan liikkeisiin eivätkä muuta tilikauden tulosta."
       }
+    },
+    "bilan": {
+      "title": "Tase",
+      "description": "Yhdistyksen varat ja velat tilikauden lopussa.",
+      "exerciceLabel": "Harjoitus",
+      "rubriqueColumnLabel": "Osasto",
+      "noPreviousExercice": "-",
+      "actif": "Aktiivinen",
+      "totalActif": "Total Active",
+      "passif": "Passiivinen",
+      "totalPassif": "Kokonaisvastuut",
+      "noAccountsInRubrique": "Tässä osiossa ei ole tasapainoa",
+      "emptyExercice": {
+        "title": "Ei tilivuotta",
+        "description": "Luo uusi tilikausi nähdäksesi taseen."
+      },
+      "emptyLedger": {
+        "title": "Ei kirjanpitomerkintöjä",
+        "description": "Tase näytetään heti, kun tulot, menot tai kiinteät varat on kirjattu tilikaudella."
+      },
+      "rubriques": {
+        "immobilisationsCorporelles": "Aineelliset pääomavarat",
+        "disponibilites": "Saatavuus",
+        "fondsPropres": "Oma pääoma",
+        "dettes": "Velat"
+      },
+      "issues": {
+        "title": "Poikkeavuuksia havaittu",
+        "messages": {
+          "ACCOUNT_WITHOUT_RUBRIQUE": "Tilillä {code} — {label} on saldo, mutta se ei ole sidottu mihinkään taseen erään.",
+          "ACTIF_PASSIF_MISMATCH": "Omaisuuserä ({actif}) ei vastaa velkaa ({passif}).",
+          "OPENING_BALANCE_MISSING": "Tälle harjoitukselle ei tuotettu aloitusmerkintöjä \"{previousLabel}\":sta.",
+          "TRIAL_BALANCE_UNBALANCED": "Kokonaisdebet ({debit}) ei vastaa tämän tilikauden kokonaisluottoa ({credit})."
+        }
+      },
+      "accountLabels": {
+        "reportANouveau": "Kertyneet tulokset",
+        "resultatExercice": "Vuoden nettotulos"
+      }
     }
   },
   "evenements": {

@@ -1414,6 +1414,45 @@
         "totalReceived": "Totale bijdragen",
         "note": "Deze gratis bijdragen zijn gewaardeerd in euro's. Ze leiden niet tot geldverplaatsing en veranderen het resultaat van het boekjaar niet."
       }
+    },
+    "bilan": {
+      "title": "Balans",
+      "description": "Bezittingen en passiva van de vereniging aan het einde van het boekjaar.",
+      "exerciceLabel": "Oefening",
+      "rubriqueColumnLabel": "Sectie",
+      "noPreviousExercice": "-",
+      "actif": "Actief",
+      "totalActif": "Totaal actief",
+      "passif": "Passief",
+      "totalPassif": "Totale verplichtingen",
+      "noAccountsInRubrique": "Geen balans in dit deel",
+      "emptyExercice": {
+        "title": "Geen boekjaar",
+        "description": "Maak een nieuw boekjaar aan om de balans te bekijken."
+      },
+      "emptyLedger": {
+        "title": "Geen boekhoudkundige boekingen",
+        "description": "De balans wordt weergegeven zodra inkomsten, uitgaven of vaste activa in dit boekjaar zijn geboekt."
+      },
+      "rubriques": {
+        "immobilisationsCorporelles": "Tastbare kapitaalactiva",
+        "disponibilites": "Beschikbaarheid",
+        "fondsPropres": "Aandelen",
+        "dettes": "Schulden"
+      },
+      "issues": {
+        "title": "Anomalieën gedetecteerd",
+        "messages": {
+          "ACCOUNT_WITHOUT_RUBRIQUE": "De rekening {code} — {label} heeft een saldo, maar is niet gekoppeld aan een saldopost.",
+          "ACTIF_PASSIF_MISMATCH": "Het actief ({actif}) komt niet overeen met de verplichting ({passif}).",
+          "OPENING_BALANCE_MISSING": "Er werden geen openingsvermeldingen voor deze oefening gegenereerd vanuit \"{previousLabel}\".",
+          "TRIAL_BALANCE_UNBALANCED": "De totale debet ({debit}) komt niet overeen met het totale credit ({credit}) voor dit boekjaar."
+        }
+      },
+      "accountLabels": {
+        "reportANouveau": "Ingehouden winsten",
+        "resultatExercice": "Nettowinst van het jaar"
+      }
     }
   },
   "evenements": {

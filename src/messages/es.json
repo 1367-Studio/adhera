@@ -1414,6 +1414,45 @@
         "totalReceived": "Contribuciones totales",
         "note": "Estas contribuciones gratuitas se valoran en euros. No conducen a ningún movimiento de dinero ni cambian el resultado del ejercicio fiscal."
       }
+    },
+    "bilan": {
+      "title": "Balance",
+      "description": "Activos y pasivos de la asociación al final del ejercicio fiscal.",
+      "exerciceLabel": "Ejercicio",
+      "rubriqueColumnLabel": "Sección",
+      "noPreviousExercice": "-",
+      "actif": "Activo",
+      "totalActif": "Total Activo",
+      "passif": "Pasivo",
+      "totalPassif": "Pasivos totales",
+      "noAccountsInRubrique": "No hay equilibrio en esta sección",
+      "emptyExercice": {
+        "title": "Sin año fiscal",
+        "description": "Crea un nuevo año fiscal para consultar el Balance."
+      },
+      "emptyLedger": {
+        "title": "Sin entradas contables",
+        "description": "El balance se mostrará tan pronto como se hayan registrado ingresos, gastos o activos fijos en este ejercicio fiscal."
+      },
+      "rubriques": {
+        "immobilisationsCorporelles": "Activos de capital tangible",
+        "disponibilites": "Disponibilidad",
+        "fondsPropres": "Equidad",
+        "dettes": "Deudas"
+      },
+      "issues": {
+        "title": "Anomalías detectadas",
+        "messages": {
+          "ACCOUNT_WITHOUT_RUBRIQUE": "El {code} de la cuenta — {label} tiene un saldo pero no está vinculado a ningún elemento del balance.",
+          "ACTIF_PASSIF_MISMATCH": "El activo ({actif}) no corresponde al pasivo ({passif}).",
+          "OPENING_BALANCE_MISSING": "No se generaron entradas de apertura para este ejercicio desde \"{previousLabel}\".",
+          "TRIAL_BALANCE_UNBALANCED": "El débito total ({debit}) no coincide con el crédito total ({credit}) de este año fiscal."
+        }
+      },
+      "accountLabels": {
+        "reportANouveau": "Beneficios retenidos",
+        "resultatExercice": "Ingreso neto del año"
+      }
     }
   },
   "evenements": {

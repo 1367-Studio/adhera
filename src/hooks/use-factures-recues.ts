@@ -1,8 +1,16 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
-import type { FactureRecueCreateInput, FactureRecueUpdateInput } from "@/lib/schemas"
+import type { FactureRecueCreateInput, FactureRecueUpdateInput, FactureRecuePaymentInput } from "@/lib/schemas"
 import { apiError } from "@/lib/api-error"
 
 const QK = ["factures-recues"]
+
+export type FactureRecuePayment = {
+  id:        string
+  amount:    string
+  method:    string
+  paidAt:    string
+  note:      string | null
+}
 
 export type FactureRecue = {
   id:            string
@@ -10,11 +18,14 @@ export type FactureRecue = {
   type:          "facture" | "devis_recu" | "comprovante" | "contrat" | "autre"
   issueDate:     string
   amount:        string
-  status:        "A_PAYER" | "PAYEE" | "EN_LITIGE" | "ANNULEE"
+  // FORM-107 Fase 3 — amountPaid/PARTIELLEMENT_PAYEE mirror Facture's own payment-driven status.
+  amountPaid:    string
+  status:        "A_PAYER" | "PARTIELLEMENT_PAYEE" | "PAYEE" | "EN_LITIGE" | "ANNULEE"
   fileUrl:       string
   notes:         string | null
   fournisseurId: string | null
   fournisseur:   { id: string; companyName: string } | null
+  payments?:     FactureRecuePayment[]
 }
 
 export type FacturesRecuesPage = { data: FactureRecue[]; total: number; page: number; limit: number; totalPages: number }
@@ -55,9 +66,31 @@ async function updateFactureRecue(id: string, data: FactureRecueUpdateInput) {
   return res.json()
 }
 
-async function deleteFactureRecue(id: string) {
-  const res = await fetch(`/api/factures-recues/${id}`, { method: "DELETE" })
+// force: true confirms deleting a document that already has payments recorded (FORM-107
+// Fase 3) — the route 409s with REQUIRES_CONFIRMATION otherwise, same posture as Facture's
+// own DELETE. The UI's own ConfirmDialog is what stands in for that confirmation.
+async function deleteFactureRecue(id: string, force?: boolean) {
+  const res = await fetch(`/api/factures-recues/${id}`, {
+    method:  "DELETE",
+    ...(force ? { headers: { "Content-Type": "application/json" }, body: JSON.stringify({ force: true }) } : {}),
+  })
   if (!res.ok) throw await apiError(res, "Erreur lors de la suppression")
+}
+
+async function addFactureRecuePayment(id: string, data: FactureRecuePaymentInput) {
+  const res = await fetch(`/api/factures-recues/${id}/payments`, {
+    method:  "POST",
+    headers: { "Content-Type": "application/json" },
+    body:    JSON.stringify(data),
+  })
+  if (!res.ok) throw await apiError(res, "Erreur lors de l'enregistrement du paiement")
+  return res.json()
+}
+
+async function removeFactureRecuePayment(id: string, paymentId: string) {
+  const res = await fetch(`/api/factures-recues/${id}/payments/${paymentId}`, { method: "DELETE" })
+  if (!res.ok) throw await apiError(res, "Erreur lors de la suppression du paiement")
+  return res.json()
 }
 
 export function useFacturesRecues(fournisseurId?: string) {
@@ -102,7 +135,24 @@ export function useUpdateFactureRecue(id: string) {
 export function useDeleteFactureRecue() {
   const qc = useQueryClient()
   return useMutation({
-    mutationFn: deleteFactureRecue,
+    mutationFn: (vars: { id: string; force?: boolean } | string) =>
+      typeof vars === "string" ? deleteFactureRecue(vars) : deleteFactureRecue(vars.id, vars.force),
+    onSuccess:  () => invalidateAll(qc),
+  })
+}
+
+export function useAddFactureRecuePayment(id: string) {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (data: FactureRecuePaymentInput) => addFactureRecuePayment(id, data),
+    onSuccess:  () => invalidateAll(qc),
+  })
+}
+
+export function useRemoveFactureRecuePayment(id: string) {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (paymentId: string) => removeFactureRecuePayment(id, paymentId),
     onSuccess:  () => invalidateAll(qc),
   })
 }

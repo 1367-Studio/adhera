@@ -1414,6 +1414,45 @@
         "totalReceived": "Kopējie ieguldījumi",
         "note": "Šie bezmaksas ieguldījumi tiek vērtēti eiro. Tie neizraisa naudas plūsmu un nemaina finanšu gada rezultātu."
       }
+    },
+    "bilan": {
+      "title": "Bilance",
+      "description": "Asociācijas aktīvi un saistības finanšu gada beigās.",
+      "exerciceLabel": "Vingrinājumi",
+      "rubriqueColumnLabel": "Sadaļa",
+      "noPreviousExercice": "-",
+      "actif": "Aktīva",
+      "totalActif": "Kopējais aktīvais",
+      "passif": "Pasīvs",
+      "totalPassif": "Kopējās saistības",
+      "noAccountsInRubrique": "Šajā sadaļā nav līdzsvara",
+      "emptyExercice": {
+        "title": "Nav fiskālā gada",
+        "description": "Izveidojiet jaunu finanšu gadu, lai skatītu bilanci."
+      },
+      "emptyLedger": {
+        "title": "Nav grāmatvedības ierakstu",
+        "description": "Bilance tiks parādīta, tiklīdz šajā finanšu gadā būs reģistrēti ienākumi, izdevumi vai pamatlīdzekļi."
+      },
+      "rubriques": {
+        "immobilisationsCorporelles": "Taustāmie kapitāla aktīvi",
+        "disponibilites": "Pieejamība",
+        "fondsPropres": "Kapitāls",
+        "dettes": "Parādi"
+      },
+      "issues": {
+        "title": "Konstatētās anomālijas",
+        "messages": {
+          "ACCOUNT_WITHOUT_RUBRIQUE": "Kontam {code} — {label} ir bilance, bet tas nav piesaistīts nevienam bilances punktam.",
+          "ACTIF_PASSIF_MISMATCH": "Aktīvs ({actif}) neatbilst saistībām ({passif}).",
+          "OPENING_BALANCE_MISSING": "Šim uzdevumam no \"{previousLabel}\" netika ģenerēti ievadi.",
+          "TRIAL_BALANCE_UNBALANCED": "Kopējais debets ({debit}) neatbilst kopējam kredītam ({credit}) šajā fiskālajā gadā."
+        }
+      },
+      "accountLabels": {
+        "reportANouveau": "Nesadalītā peļņa",
+        "resultatExercice": "Gada tīrā peļņa"
+      }
     }
   },
   "evenements": {

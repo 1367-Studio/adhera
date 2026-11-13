@@ -1414,6 +1414,45 @@
         "totalReceived": "Bendras indėlis",
         "note": "Šios nemokamos įmokos vertinamos eurais. Jos nesukelia pinigų judėjimo ir nekeičia finansinių metų rezultato."
       }
+    },
+    "bilan": {
+      "title": "Balansas",
+      "description": "Asociacijos turtas ir įsipareigojimai finansinių metų pabaigoje.",
+      "exerciceLabel": "Fizinis aktyvumas",
+      "rubriqueColumnLabel": "Skyrius",
+      "noPreviousExercice": "-",
+      "actif": "Aktyvus",
+      "totalActif": "Iš viso aktyvus",
+      "passif": "Pasyvus",
+      "totalPassif": "Bendros prievolės",
+      "noAccountsInRubrique": "Šioje dalyje nėra pusiausvyros",
+      "emptyExercice": {
+        "title": "Nėra finansinių metų",
+        "description": "Sukurkite naujus finansinius metus, kad peržiūrėtumėte balansą."
+      },
+      "emptyLedger": {
+        "title": "Jokių apskaitos įrašų",
+        "description": "Balansas bus rodomas, kai šiais finansiniais metais bus užfiksuotos pajamos, išlaidos ar ilgalaikis turtas."
+      },
+      "rubriques": {
+        "immobilisationsCorporelles": "Materialusis kapitalas",
+        "disponibilites": "Prieinamumas",
+        "fondsPropres": "Lygybė",
+        "dettes": "Skolos"
+      },
+      "issues": {
+        "title": "Aptiktos anomalijos",
+        "messages": {
+          "ACCOUNT_WITHOUT_RUBRIQUE": "Sąskaitos {code} — {label} turi balansą, bet nėra susietas su jokiu balanso elementu.",
+          "ACTIF_PASSIF_MISMATCH": "Turtas ({actif}) neatitinka įsipareigojimo ({passif}).",
+          "OPENING_BALANCE_MISSING": "Šiai užduočiai nebuvo sugeneruoti jokie pradiniai įrašai iš \"{previousLabel}\".",
+          "TRIAL_BALANCE_UNBALANCED": "Bendras debetas ({debit}) nesutampa su bendru kreditu ({credit}) šiais finansiniais metais."
+        }
+      },
+      "accountLabels": {
+        "reportANouveau": "Nepaskirstytasis pelnas",
+        "resultatExercice": "Metinis grynasis pelnas"
+      }
     }
   },
   "evenements": {

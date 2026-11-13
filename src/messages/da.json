@@ -1414,6 +1414,45 @@
         "totalReceived": "Samlede bidrag",
         "note": "Disse gratis bidrag er værdisat i euro. De fører ikke til nogen pengestrøm og ændrer ikke regnskabsårets resultat."
       }
+    },
+    "bilan": {
+      "title": "Balance",
+      "description": "Foreningens aktiver og passiver ved regnskabsårets afslutning.",
+      "exerciceLabel": "Motion",
+      "rubriqueColumnLabel": "Sektion",
+      "noPreviousExercice": "-",
+      "actif": "Aktiv",
+      "totalActif": "Total aktiv",
+      "passif": "Passiv",
+      "totalPassif": "Samlede forpligtelser",
+      "noAccountsInRubrique": "Ingen balance i denne sektion",
+      "emptyExercice": {
+        "title": "Intet regnskabsår",
+        "description": "Opret et nyt regnskabsår for at se balancen."
+      },
+      "emptyLedger": {
+        "title": "Ingen regnskabsføringer",
+        "description": "Balancen vil blive vist, så snart indtægter, udgifter eller anlægsaktiver er registreret i dette regnskabsår."
+      },
+      "rubriques": {
+        "immobilisationsCorporelles": "Materielle aktiver",
+        "disponibilites": "Tilgængelighed",
+        "fondsPropres": "Egenkapital",
+        "dettes": "Gæld"
+      },
+      "issues": {
+        "title": "Anomalier opdaget",
+        "messages": {
+          "ACCOUNT_WITHOUT_RUBRIQUE": "Kontoen {code} — {label} har en saldo, men er ikke knyttet til nogen balance post.",
+          "ACTIF_PASSIF_MISMATCH": "Aktivet ({actif}) svarer ikke til forpligtelsen ({passif}).",
+          "OPENING_BALANCE_MISSING": "Der blev ikke genereret nogen åbningsposter for denne øvelse fra \"{previousLabel}\".",
+          "TRIAL_BALANCE_UNBALANCED": "Den samlede debet ({debit}) matcher ikke den samlede kredit ({credit}) for dette regnskabsår."
+        }
+      },
+      "accountLabels": {
+        "reportANouveau": "Tilbageholdt indtjening",
+        "resultatExercice": "Nettoresultat for året"
+      }
     }
   },
   "evenements": {

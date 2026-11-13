@@ -1414,6 +1414,45 @@
         "totalReceived": "Kogupanused",
         "note": "Need tasuta sissemaksed on hinnatud eurodes. Need ei põhjusta rahaliikumist ega muuda majandusaasta tulemust."
       }
+    },
+    "bilan": {
+      "title": "Bilanss",
+      "description": "Ühingu varad ja kohustused majandusaasta lõpus.",
+      "exerciceLabel": "Harjutus",
+      "rubriqueColumnLabel": "Sektsioon",
+      "noPreviousExercice": "-",
+      "actif": "Aktiivne",
+      "totalActif": "Total Active",
+      "passif": "Passiivne",
+      "totalPassif": "Kogukohustused",
+      "noAccountsInRubrique": "Selles osas pole tasakaalu",
+      "emptyExercice": {
+        "title": "Eelarveaastat ei ole",
+        "description": "Loo uus majandusaasta, et vaadata bilanssi."
+      },
+      "emptyLedger": {
+        "title": "Raamatupidamiskirjeid ei ole",
+        "description": "Bilanss kuvatakse kohe, kui sellel majandusaastal on registreeritud tulu, kulutused või põhivarad."
+      },
+      "rubriques": {
+        "immobilisationsCorporelles": "Materiaalsed kapitalivarad",
+        "disponibilites": "Saadavus",
+        "fondsPropres": "Õiglus",
+        "dettes": "Võlad"
+      },
+      "issues": {
+        "title": "Anomaaliad tuvastatud",
+        "messages": {
+          "ACCOUNT_WITHOUT_RUBRIQUE": "Konto {code} — {label} omab saldo, kuid see ei ole seotud ühegi bilansiaruandega.",
+          "ACTIF_PASSIF_MISMATCH": "Vara ({actif}) ei vasta kohustusele ({passif}).",
+          "OPENING_BALANCE_MISSING": "Selle harjutuse jaoks ei genereeritud avakirjeid \"{previousLabel}\" kaudu.",
+          "TRIAL_BALANCE_UNBALANCED": "Kogu deebetsumma ({debit}) ei ühti selle majandusaasta kogukrediidiga ({credit})."
+        }
+      },
+      "accountLabels": {
+        "reportANouveau": "Jaotamata kasum",
+        "resultatExercice": "Aasta puhaskasum"
+      }
     }
   },
   "evenements": {

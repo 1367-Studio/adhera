@@ -1414,6 +1414,45 @@
         "totalReceived": "Contribuții totale",
         "note": "Aceste contribuții gratuite sunt evaluate în euro. Ele nu conduc la nicio mișcare de bani și nu schimbă rezultatul exercițiului financiar."
       }
+    },
+    "bilan": {
+      "title": "Bilanț",
+      "description": "Active și pasive ale asociației la sfârșitul anului financiar.",
+      "exerciceLabel": "Exercițiu",
+      "rubriqueColumnLabel": "Secțiune",
+      "noPreviousExercice": "-",
+      "actif": "Activitate",
+      "totalActif": "Total Activ",
+      "passif": "Pasiv",
+      "totalPassif": "Datoriile totale",
+      "noAccountsInRubrique": "Niciun echilibru în această secțiune",
+      "emptyExercice": {
+        "title": "Fără exercițiu fiscal",
+        "description": "Creează un nou an fiscal pentru a vizualiza Bilanțul."
+      },
+      "emptyLedger": {
+        "title": "Fără înregistrări contabile",
+        "description": "Bilanțul va fi afișat imediat ce veniturile, cheltuielile sau activele fixe au fost înregistrate în acest an financiar."
+      },
+      "rubriques": {
+        "immobilisationsCorporelles": "Active de capital tangibil",
+        "disponibilites": "Disponibilitate",
+        "fondsPropres": "Acțiuni",
+        "dettes": "Datorii"
+      },
+      "issues": {
+        "title": "Anomalii detectate",
+        "messages": {
+          "ACCOUNT_WITHOUT_RUBRIQUE": "Contul {code} — {label} are un sold, dar nu este atașat niciunui element din Bilanț.",
+          "ACTIF_PASSIF_MISMATCH": "Activul ({actif}) nu corespunde pasivului ({passif}).",
+          "OPENING_BALANCE_MISSING": "Nu au fost generate intrări de deschidere pentru acest exercițiu din \"{previousLabel}\".",
+          "TRIAL_BALANCE_UNBALANCED": "Debitul total ({debit}) nu corespunde cu creditul total ({credit}) pentru acest an fiscal."
+        }
+      },
+      "accountLabels": {
+        "reportANouveau": "Câștiguri reținute",
+        "resultatExercice": "Venit net pentru an"
+      }
     }
   },
   "evenements": {
