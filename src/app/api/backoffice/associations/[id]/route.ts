@@ -32,6 +32,7 @@ const patchSchema = z.object({
     fournisseurs: z.boolean(),
     devis:        z.boolean(),
     factures:     z.boolean(),
+    groupes:      z.boolean(),
   }).optional(),
 })
 
