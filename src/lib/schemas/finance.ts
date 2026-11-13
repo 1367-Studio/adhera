@@ -114,6 +114,10 @@ export const expenseSchema = z.object({
   internalNote:  z.string().trim().optional().or(z.literal("")),
   paymentMethod: z.string().optional().or(z.literal("")),
   status:        z.enum(["DRAFT", "VALIDATED", "CANCELLED"]).default("DRAFT"),
+  // FORM-107 Fase 2 — the eligibility flag POST /api/finances/immobilisations checks before
+  // letting this Expense become the source of a depreciation schedule. Previously only
+  // settable at the DB level (scaffolding) — this is what actually lets a treasurer flip it.
+  isImmobilisation: z.boolean().default(false),
 })
 
 // Same fix as incomeUpdateSchema — status must stay undefined when omitted.
@@ -128,6 +132,7 @@ export const expenseUpdateSchema = z.object({
   internalNote:  z.string().trim().optional().or(z.literal("")),
   paymentMethod: z.string().optional().or(z.literal("")),
   status:        z.enum(["DRAFT", "VALIDATED", "CANCELLED"]).optional(),
+  isImmobilisation: z.boolean().optional(),
 })
 
 export type ExpenseInput       = z.infer<typeof expenseSchema>
@@ -200,3 +205,35 @@ export const accountTransferSchema = z.object({
 })
 
 export type AccountTransferInput = z.infer<typeof accountTransferSchema>
+
+// FORM-107 Fase 2 — scoped to the one asset class the ticket's Part B concretely specifies
+// (matériel de bureau et matériel informatique, 218300/281830/681120): assetAccountCode/
+// depreciationAccountCode/expenseAccountCode aren't user-submitted, the API route hardcodes
+// them for now. entryValue isn't submitted either — it's always taken from the linked
+// Expense's own amount, so the Immobilisation's "valeur brute" can never drift from what the
+// ledger actually posted to 218300 at acquisition (see Immobilisation's doc comment on why no
+// separate acquisition entry is posted here).
+// FORM-107 Fase 3 — expenseId (already paid, Fase 2) and factureRecueId (invoiced, possibly
+// not yet fully paid) are the two origins, exactly one required — app-level XOR, same posture
+// as Immobilisation's own doc comment / BankReconciliation's incomeId/expenseId/transferId.
+export const immobilisationSchema = z.object({
+  label:            z.string().trim().min(1, "Nom requis"),
+  expenseId:        z.string().optional().or(z.literal("")),
+  factureRecueId:   z.string().optional().or(z.literal("")),
+  residualValue:    z.number().min(0).default(0),
+  acquisitionDate:  z.string().min(1, "Date d'acquisition requise"),
+  usageStartDate:   z.string().min(1, "Date de mise en service requise"),
+  usefulLifeMonths: z.number().int().positive("Durée d'utilisation requise"),
+}).refine(data => !!data.expenseId !== !!data.factureRecueId, {
+  message: "Choisissez une dépense déjà payée OU une facture reçue, pas les deux",
+  path:    ["expenseId"],
+})
+
+export type ImmobilisationInput = z.infer<typeof immobilisationSchema>
+
+export const immobilisationUpdateSchema = z.object({
+  label:        z.string().trim().min(1, "Nom requis").optional(),
+  disposalDate: z.string().nullable().optional(),
+})
+
+export type ImmobilisationUpdateInput = z.infer<typeof immobilisationUpdateSchema>

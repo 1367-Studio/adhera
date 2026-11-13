@@ -4,7 +4,7 @@ import type { Icon } from "@phosphor-icons/react"
 import {
   GaugeIcon, ChartLineIcon, ArrowsLeftRightIcon, TrendUpIcon, TrendDownIcon,
   UploadSimpleIcon, CalculatorIcon, BankIcon, TagIcon, CalendarBlankIcon,
-  ChartBarIcon, ChartPieIcon, FileTextIcon, SlidersIcon,
+  ChartBarIcon, ChartPieIcon, FileTextIcon, SlidersIcon, PackageIcon,
 } from "@phosphor-icons/react/dist/ssr"
 
 export type FinanceNavGroupKey = "synthese" | "transactions" | "comptabilite" | "rapports"
@@ -34,12 +34,13 @@ export const FINANCE_NAV: FinanceNavGroup[] = [
     { key: "import",         href: "/dashboard/finances/import",       icon: UploadSimpleIcon },
   ]},
   { key: "comptabilite", icon: CalculatorIcon, items: [
-    { key: "accounts",   href: "/dashboard/finances/comptes",    icon: BankIcon },
-    { key: "categories", href: "/dashboard/finances/categories", icon: TagIcon },
-    { key: "exercices",  href: "/dashboard/finances/exercices",  icon: CalendarBlankIcon },
+    { key: "accounts",        href: "/dashboard/finances/comptes",          icon: BankIcon },
+    { key: "categories",      href: "/dashboard/finances/categories",       icon: TagIcon },
+    { key: "exercices",       href: "/dashboard/finances/exercices",        icon: CalendarBlankIcon },
+    { key: "immobilisations", href: "/dashboard/finances/immobilisations",  icon: PackageIcon },
   ]},
   { key: "rapports", icon: ChartBarIcon, items: [
-    { key: "bilan",                  href: "/dashboard/finances/rapports/bilan",              icon: ChartPieIcon, comingSoon: true },
+    { key: "bilan",                  href: "/dashboard/finances/rapports/bilan",              icon: ChartPieIcon },
     { key: "compteResultat",         href: "/dashboard/finances/rapports/compte-de-resultat",  icon: FileTextIcon },
     { key: "rapportsPersonnalises",  href: "/dashboard/finances/rapports/personnalises",       icon: SlidersIcon, comingSoon: true },
   ]},

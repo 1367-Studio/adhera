@@ -4,8 +4,7 @@ import { prisma } from "@/lib/prisma/client"
 import { factureRecueCreateSchema } from "@/lib/schemas"
 import { parsePagination } from "@/lib/pagination"
 import { writeActivityLog } from "@/lib/activity-log"
-import { factureRecueExpenseDescription } from "@/lib/facture-recue"
-import { resolveExerciceForDate, closedExerciceGuard } from "@/lib/finance/exercice"
+import { resolveManualFactureRecueStatus } from "@/lib/facture-recue-status"
 
 // Comptabilité area (FORM-34). The old GET/DELETE allowlists also let the Secrétaire in, although
 // the sidebar never showed her this screen and every write was finance-only; she now has no access here.
@@ -52,47 +51,25 @@ export const POST = withAdminAuth(async (req, ctx) => {
     if (!fournisseur) return NextResponse.json({ error: "Fournisseur introuvable" }, { status: 404 })
   }
 
-  // Created directly as PAYEE bridges to Expense immediately — resolve which exercice the
-  // issueDate falls into up front and refuse if that period is already closed, same as the
-  // entersPaid branch on PATCH.
-  const exercice = status === "PAYEE" ? await resolveExerciceForDate(associationId, new Date(issueDate)) : null
-  const exerciceGuard = closedExerciceGuard(exercice?.status)
-  if (exerciceGuard) return exerciceGuard
+  // amountPaid is always 0 at creation (FORM-107 Fase 3) — a document is never created
+  // "already payée" directly, that's only ever a consequence of recording a real payment via
+  // POST .../payments right after. A client-sent PAYEE/PARTIELLEMENT_PAYEE with no payment yet
+  // resolves back down to A_PAYER, same posture as Facture's own creation route.
+  const resolvedStatus = resolveManualFactureRecueStatus(status, 0, amount)
 
-  const factureRecue = await prisma.$transaction(async (tx) => {
-    const created = await tx.factureRecue.create({
-      data: {
-        associationId,
-        fournisseurId: fournisseurId || null,
-        number:        number        || null,
-        type,
-        issueDate: new Date(issueDate),
-        amount,
-        status,
-        fileUrl,
-        notes: notes || null,
-      },
-      include: { fournisseur: { select: { id: true, companyName: true } } },
-    })
-
-    // Can be created directly as PAYEE (not just transitioned into it later via PATCH) —
-    // same bridge either way, see the PATCH handler's entersPaid branch.
-    if (created.status === "PAYEE") {
-      await tx.expense.create({
-        data: {
-          associationId,
-          exerciceId:  exercice?.id ?? null,
-          factureRecueId: created.id,
-          amount:      created.amount,
-          status:      "VALIDATED",
-          date:        created.issueDate,
-          vendor:      created.fournisseur?.companyName ?? null,
-          description: factureRecueExpenseDescription(created),
-        },
-      })
-    }
-
-    return created
+  const factureRecue = await prisma.factureRecue.create({
+    data: {
+      associationId,
+      fournisseurId: fournisseurId || null,
+      number:        number        || null,
+      type,
+      issueDate: new Date(issueDate),
+      amount,
+      status: resolvedStatus,
+      fileUrl,
+      notes: notes || null,
+    },
+    include: { fournisseur: { select: { id: true, companyName: true } } },
   })
 
   await writeActivityLog({ associationId, actorId: userId, action: "FACTURE_RECUE_CREATED", entity: "FactureRecue", entityId: factureRecue.id, label: factureRecue.number ?? factureRecue.type })

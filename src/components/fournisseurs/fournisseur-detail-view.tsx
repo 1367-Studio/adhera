@@ -26,6 +26,7 @@ import { FournisseurForm } from "@/components/fournisseurs/fournisseur-form"
 import { DevisForm } from "@/components/devis/devis-form"
 import { FactureForm } from "@/components/factures/facture-form"
 import { FactureRecueForm } from "@/components/fournisseurs/facture-recue-form"
+import { FactureRecuePaymentModal } from "@/components/fournisseurs/facture-recue-payment-modal"
 import { RowActions } from "@/components/ui/row-actions"
 import { ActivityLogList, type ActivityLogEntry } from "@/components/ui/activity-log-list"
 import { BackLink } from "@/components/ui/back-link"
@@ -91,6 +92,7 @@ export function FournisseurDetailView() {
   const [createFactureOpen, setCreateFactureOpen] = useState(false)
   const [createDocOpen, setCreateDocOpen] = useState(false)
   const [deleteDocTarget, setDeleteDocTarget] = useState<{ id: string; label: string; payee: boolean } | null>(null)
+  const [paymentDocTarget, setPaymentDocTarget] = useState<{ id: string; remaining: number } | null>(null)
 
   const { data: fournisseur, isLoading, isError } = useFournisseur(id)
   const TAB_PAGE_SIZE = 50
@@ -179,7 +181,7 @@ export function FournisseurDetailView() {
   async function handleDeleteDoc() {
     if (!deleteDocTarget) return
     try {
-      await deleteDocMutation.mutateAsync(deleteDocTarget.id)
+      await deleteDocMutation.mutateAsync({ id: deleteDocTarget.id, force: deleteDocTarget.payee })
       toast.success(t("fournisseurs.detail.toasts.documentDeleted"))
       setDeleteDocTarget(null)
     } catch (err) {
@@ -422,8 +424,16 @@ export function FournisseurDetailView() {
                           <ReceiptIcon className="size-3" /> {t("fournisseurs.detail.inFinances")}
                         </span>
                       )}
+                      {doc.status === "PARTIELLEMENT_PAYEE" && (
+                        <span className="inline-flex items-center gap-1 text-xs font-medium px-1.5 py-0.5 rounded-full bg-muted text-muted-foreground">
+                          {t("fournisseurs.document.statusOptions.partiellementPayee")}
+                        </span>
+                      )}
                     </p>
-                    <p className="text-xs text-muted-foreground">{format(new Date(doc.issueDate), "dd/MM/yyyy", { locale: fr })} · {fmt(doc.amount)}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {format(new Date(doc.issueDate), "dd/MM/yyyy", { locale: fr })} · {fmt(doc.amount)}
+                      {doc.status === "PARTIELLEMENT_PAYEE" && ` · ${fmt(doc.amountPaid)} ${t("fournisseurs.document.payment.paidOf")}`}
+                    </p>
                   </div>
                   <div className="flex items-center gap-1">
                     <a href={doc.fileUrl} target="_blank" rel="noopener noreferrer" className="p-1.5 text-muted-foreground hover:text-foreground" title={t("fournisseurs.detail.viewDocument")}>
@@ -431,7 +441,10 @@ export function FournisseurDetailView() {
                     </a>
                     {canEditComptabilite && (
                       <RowActions actions={[
-                        { label: t("fournisseurs.detail.delete"), icon: <TrashIcon className="size-3.5" />, destructive: true, onClick: () => setDeleteDocTarget({ id: doc.id, label: documentTypeLabel[doc.type] ?? doc.type, payee: doc.status === "PAYEE" }) },
+                        ...(doc.status === "A_PAYER" || doc.status === "PARTIELLEMENT_PAYEE" ? [
+                          { label: t("fournisseurs.document.payment.add"), icon: <ReceiptIcon className="size-3.5" />, onClick: () => setPaymentDocTarget({ id: doc.id, remaining: Number(doc.amount) - Number(doc.amountPaid) }) },
+                        ] : []),
+                        { label: t("fournisseurs.detail.delete"), icon: <TrashIcon className="size-3.5" />, destructive: true, separator: true, onClick: () => setDeleteDocTarget({ id: doc.id, label: documentTypeLabel[doc.type] ?? doc.type, payee: doc.status === "PAYEE" || doc.status === "PARTIELLEMENT_PAYEE" }) },
                       ]} />
                     )}
                   </div>
@@ -538,6 +551,15 @@ export function FournisseurDetailView() {
         loading={deleteDocMutation.isPending}
         onConfirm={handleDeleteDoc}
       />
+
+      {paymentDocTarget && (
+        <FactureRecuePaymentModal
+          factureRecueId={paymentDocTarget.id}
+          remaining={paymentDocTarget.remaining}
+          open={!!paymentDocTarget}
+          onOpenChange={(open) => !open && setPaymentDocTarget(null)}
+        />
+      )}
     </div>
   )
 }

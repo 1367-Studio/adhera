@@ -79,7 +79,7 @@ export async function computeBudgetPeriod(
     }),
     prisma.expense.findMany({
       where:  expenseWhere,
-      select: { id: true, date: true, paymentMethod: true, reference: true, description: true, vendor: true, factureRecueId: true, categoryId: true, projectId: true, amount: true },
+      select: { id: true, date: true, paymentMethod: true, reference: true, description: true, vendor: true, factureRecuePaymentId: true, categoryId: true, projectId: true, amount: true },
     }),
     projectId ? Promise.resolve([]) : prisma.budgetProject.findMany({ where: { associationId }, select: { id: true, name: true } }),
   ])
@@ -159,7 +159,7 @@ export async function computeBudgetPeriod(
         uncategorizedTotal += amount
         uncategorizedTransactions.push({
           id: row.id, type: "EXPENSE", date: row.date.toISOString(), amount,
-          paymentMethod: row.paymentMethod, origin: row.factureRecueId ? "Facture fournisseur" : "Saisie manuelle",
+          paymentMethod: row.paymentMethod, origin: row.factureRecuePaymentId ? "Facture fournisseur" : "Saisie manuelle",
           personName: row.vendor, reference: row.reference, description: row.description,
         })
         continue

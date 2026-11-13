@@ -85,7 +85,7 @@ export async function computeIncomeStatementPeriod(
     }),
     prisma.expense.findMany({
       where:  { associationId, exerciceId: exercice.id, status: "VALIDATED" },
-      select: { id: true, amount: true, date: true, description: true, vendor: true, paymentMethod: true, reference: true, categoryId: true, factureRecueId: true },
+      select: { id: true, amount: true, date: true, description: true, vendor: true, paymentMethod: true, reference: true, categoryId: true, factureRecuePaymentId: true },
     }),
   ])
 
@@ -151,7 +151,7 @@ export async function computeIncomeStatementPeriod(
     const amount = Number(row.amount)
     const detail: TransactionDetail = {
       id: row.id, type: "EXPENSE", date: row.date.toISOString(), amount,
-      paymentMethod: row.paymentMethod, origin: row.factureRecueId ? "Facture fournisseur" : "Saisie manuelle", personName: row.vendor, reference: row.reference,
+      paymentMethod: row.paymentMethod, origin: row.factureRecuePaymentId ? "Facture fournisseur" : "Saisie manuelle", personName: row.vendor, reference: row.reference,
       description: row.description,
     }
     const resolved = resolveExpenseCategory(row, categoriesById)
