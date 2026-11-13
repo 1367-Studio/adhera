@@ -14,6 +14,7 @@ import {
   useAddGrupoMembro, useRemoveGrupoMembro, useAddGrupoResponsavel, useRemoveGrupoResponsavel,
 } from "@/hooks/use-grupos"
 import { useGrupoChamadas, useCreateChamada } from "@/hooks/use-chamadas"
+import { useMembreTypes } from "@/hooks/use-membre-types"
 import { useHasAccess } from "@/lib/user-context"
 import { ApiError } from "@/lib/api-error"
 import { DateField, todayValue } from "@/components/ui/date-field"
@@ -24,6 +25,7 @@ import { Badge } from "@/components/ui/badge"
 import { Modal } from "@/components/ui/modal"
 import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 import { SelectField } from "@/components/ui/select-field"
+import { FilterSelect } from "@/components/ui/filter-select"
 import { FormField } from "@/components/ui/form-field"
 import { DataTable, type Column } from "@/components/ui/data-table"
 import { Command, CommandInput, CommandList, CommandEmpty, CommandItem } from "@/components/ui/command"
@@ -41,6 +43,7 @@ export function GrupoDetailView({ grupoId }: { grupoId: string }) {
 
   const { data: grupo, isLoading } = useGrupo(grupoId)
   const { data: staff = [] }       = useGrupoStaff()
+  const { data: membreTypes = [] } = useMembreTypes()
   const { data: chamadas = [], isLoading: chamadasLoading } = useGrupoChamadas(grupoId)
 
   const updateMutation  = useUpdateGrupo(grupoId)
@@ -56,6 +59,8 @@ export function GrupoDetailView({ grupoId }: { grupoId: string }) {
   const [addMembroOpen, setAddMembroOpen] = useState(false)
   const [memberQuery, setMemberQuery]               = useState("")
   const [debouncedMemberQuery, setDebouncedMemberQuery] = useState("")
+  const [memberTypeFilter, setMemberTypeFilter]     = useState("")
+  const [selectedCandidates, setSelectedCandidates] = useState<MembreCandidate[]>([])
   const [removeMembroTarget, setRemoveMembroTarget] = useState<{ membreId: string; nome: string } | null>(null)
   const [addResponsavelId, setAddResponsavelId]      = useState("")
   const [removeResponsavelTarget, setRemoveResponsavelTarget] = useState<{ userId: string; nome: string } | null>(null)
@@ -76,8 +81,8 @@ export function GrupoDetailView({ grupoId }: { grupoId: string }) {
 
   const memberQueryReady = debouncedMemberQuery.trim().length >= 2
   const { data: candidates = [], isLoading: loadingCandidates } = useQuery<MembreCandidate[]>({
-    queryKey: ["membres-search-for-grupo", debouncedMemberQuery],
-    queryFn:  () => fetch(`/api/membres?status=ACTIF&search=${encodeURIComponent(debouncedMemberQuery.trim())}`).then(r => r.json()),
+    queryKey: ["membres-search-for-grupo", debouncedMemberQuery, memberTypeFilter],
+    queryFn:  () => fetch(`/api/membres?status=ACTIF&search=${encodeURIComponent(debouncedMemberQuery.trim())}${memberTypeFilter ? `&typeId=${memberTypeFilter}` : ""}`).then(r => r.json()),
     enabled:  addMembroOpen && memberQueryReady,
   })
 
@@ -106,14 +111,31 @@ export function GrupoDetailView({ grupoId }: { grupoId: string }) {
     }
   }
 
-  async function handleAddMembro(membre: MembreCandidate) {
-    try {
-      await addMembroMutation.mutateAsync({ membreId: membre.id })
-      setAddMembroOpen(false)
-      setMemberQuery("")
-    } catch (err) {
-      toast.error(err instanceof Error ? err.message : t("common.error"))
+  function toggleCandidate(membre: MembreCandidate) {
+    setSelectedCandidates(prev =>
+      prev.some(c => c.id === membre.id) ? prev.filter(c => c.id !== membre.id) : [...prev, membre],
+    )
+  }
+
+  function closeAddMembroModal() {
+    setAddMembroOpen(false)
+    setMemberQuery("")
+    setSelectedCandidates([])
+    setMemberTypeFilter("")
+  }
+
+  async function handleAddSelectedMembros() {
+    let added = 0
+    for (const membre of selectedCandidates) {
+      try {
+        await addMembroMutation.mutateAsync({ membreId: membre.id })
+        added++
+      } catch (err) {
+        toast.error(err instanceof Error ? err.message : t("common.error"))
+      }
     }
+    if (added > 0) toast.success(t("groupes.detail.membresAddedToast", { count: added }))
+    closeAddMembroModal()
   }
 
   async function handleRemoveMembro() {
@@ -371,29 +393,74 @@ export function GrupoDetailView({ grupoId }: { grupoId: string }) {
         </div>
       </Modal>
 
-      <Modal open={addMembroOpen} onOpenChange={(open) => { setAddMembroOpen(open); if (!open) setMemberQuery("") }} title={t("groupes.detail.addMembre")}>
-        <Command className="rounded-lg! border" shouldFilter={false}>
-          <CommandInput value={memberQuery} onValueChange={setMemberQuery} placeholder={t("groupes.view.searchPlaceholder")} />
-          <CommandList>
-            {!memberQueryReady ? (
-              <CommandEmpty>{t("common.search")}…</CommandEmpty>
-            ) : loadingCandidates ? (
-              <div className="p-3 space-y-2">
-                {Array.from({ length: 3 }).map((_, i) => <div key={i} className="h-8 rounded-md bg-muted animate-pulse" />)}
-              </div>
-            ) : (
-              <>
-                <CommandEmpty>{t("groupes.view.noResultsFor", { search: memberQuery })}</CommandEmpty>
-                {candidates.filter(c => !alreadyInGroup.has(c.id)).map(candidate => (
-                  <CommandItem key={candidate.id} value={`${candidate.lastName} ${candidate.firstName}`} onSelect={() => handleAddMembro(candidate)}>
-                    <span className="truncate">{candidate.firstName} {candidate.lastName}</span>
-                    <span className="ml-2 truncate text-xs text-muted-foreground">{candidate.email}</span>
-                  </CommandItem>
-                ))}
-              </>
-            )}
-          </CommandList>
-        </Command>
+      <Modal open={addMembroOpen} onOpenChange={(open) => { if (!open) closeAddMembroModal(); else setAddMembroOpen(true) }} title={t("groupes.detail.addMembre")}>
+        <div className="space-y-3">
+          {membreTypes.length > 0 && (
+            <FilterSelect
+              value={memberTypeFilter}
+              onValueChange={setMemberTypeFilter}
+              options={membreTypes.map(mt => ({ value: mt.id, label: mt.name }))}
+              placeholder={t("groupes.detail.allMemberTypes")}
+              width="w-full"
+            />
+          )}
+
+          <Command className="rounded-lg! border" shouldFilter={false}>
+            <CommandInput value={memberQuery} onValueChange={setMemberQuery} placeholder={t("groupes.detail.searchMembrePlaceholder")} />
+            <CommandList>
+              {!memberQueryReady ? (
+                <CommandEmpty>{t("common.search")}…</CommandEmpty>
+              ) : loadingCandidates ? (
+                <div className="p-3 space-y-2">
+                  {Array.from({ length: 3 }).map((_, i) => <div key={i} className="h-8 rounded-md bg-muted animate-pulse" />)}
+                </div>
+              ) : (
+                <>
+                  <CommandEmpty>{t("groupes.detail.noResultsForMembre", { search: memberQuery })}</CommandEmpty>
+                  {candidates.filter(c => !alreadyInGroup.has(c.id)).map(candidate => (
+                    <CommandItem
+                      key={candidate.id}
+                      value={`${candidate.lastName} ${candidate.firstName}`}
+                      data-checked={selectedCandidates.some(c => c.id === candidate.id)}
+                      onSelect={() => toggleCandidate(candidate)}
+                    >
+                      <span className="truncate">{candidate.firstName} {candidate.lastName}</span>
+                      <span className="ml-2 truncate text-xs text-muted-foreground">{candidate.email}</span>
+                    </CommandItem>
+                  ))}
+                </>
+              )}
+            </CommandList>
+          </Command>
+
+          {selectedCandidates.length > 0 && (
+            <div className="flex flex-wrap gap-1.5">
+              {selectedCandidates.map(c => (
+                <span key={c.id} className="inline-flex items-center gap-1 rounded-md bg-muted px-2 py-1 text-xs">
+                  {c.firstName} {c.lastName}
+                  <button
+                    type="button"
+                    aria-label={t("groupes.detail.unselectCandidate", { name: `${c.firstName} ${c.lastName}` })}
+                    onClick={() => toggleCandidate(c)}
+                  >
+                    <XIcon className="size-3" />
+                  </button>
+                </span>
+              ))}
+            </div>
+          )}
+
+          <div className="flex justify-end gap-2 pt-1">
+            <Button variant="ghost" onClick={closeAddMembroModal}>{t("common.cancel")}</Button>
+            <Button
+              onClick={handleAddSelectedMembros}
+              disabled={selectedCandidates.length === 0}
+              loading={addMembroMutation.isPending}
+            >
+              {t("groupes.detail.addSelectedMembres", { count: selectedCandidates.length })}
+            </Button>
+          </div>
+        </div>
       </Modal>
     </div>
   )
