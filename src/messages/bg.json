@@ -1414,6 +1414,45 @@
         "totalReceived": "Общо приноси",
         "note": "Тези безплатни вноски се оценяват в евро. Те не водят до движение на пари и не променят резултата от финансовата година."
       }
+    },
+    "bilan": {
+      "title": "Баланс",
+      "description": "Активи и пасиви на асоциацията в края на финансовата година.",
+      "exerciceLabel": "Упражнения",
+      "rubriqueColumnLabel": "Секция",
+      "noPreviousExercice": "-",
+      "actif": "Активна",
+      "totalActif": "Total Active",
+      "passif": "Пасивно",
+      "totalPassif": "Общи задължения",
+      "noAccountsInRubrique": "Няма баланс в този раздел",
+      "emptyExercice": {
+        "title": "Няма фискална година",
+        "description": "Създайте нова фискална година, за да прегледате балансовия отчет."
+      },
+      "emptyLedger": {
+        "title": "Няма счетоводни записи",
+        "description": "Балансът ще бъде показан веднага щом приходите, разходите или дълготрайните активи бъдат отчетени през тази финансова година."
+      },
+      "rubriques": {
+        "immobilisationsCorporelles": "Материални капиталови активи",
+        "disponibilites": "Наличност",
+        "fondsPropres": "Капитал",
+        "dettes": "Дългове"
+      },
+      "issues": {
+        "title": "Открити аномалии",
+        "messages": {
+          "ACCOUNT_WITHOUT_RUBRIQUE": "Сметката {code} — {label} има баланс, но не е прикрепена към никаква елемент от баланса.",
+          "ACTIF_PASSIF_MISMATCH": "Активът ({actif}) не съответства на пасивите ({passif}).",
+          "OPENING_BALANCE_MISSING": "Не бяха генерирани начални записи за това упражнение от \"{previousLabel}\".",
+          "TRIAL_BALANCE_UNBALANCED": "Общият дебит ({debit}) не съвпада с общия кредит ({credit}) за тази финансова година."
+        }
+      },
+      "accountLabels": {
+        "reportANouveau": "Неразпределена печалба",
+        "resultatExercice": "Нетна печалба за годината"
+      }
     }
   },
   "evenements": {

@@ -32,9 +32,13 @@ export function FactureRecueForm({ defaultValues, onSubmit, onCancel, loading }:
     { value: "autre",       label: t("fournisseurs.detail.documentTypes.autre")       },
   ]
 
+  // PAYEE/PARTIELLEMENT_PAYEE aren't manual choices (FORM-107 Fase 3) — the backend derives
+  // them from amountPaid vs amount (resolveManualFactureRecueStatus), the same way Facture's
+  // own form excludes them (see facture-form.tsx). This form only ever creates a document, and
+  // a brand-new one always starts at amountPaid=0 — "already paid" is recorded as a real
+  // payment right after creation instead (see the "Enregistrer un paiement" row action).
   const statusOptions = [
     { value: "A_PAYER",   label: t("fournisseurs.document.statusOptions.aPayer")   },
-    { value: "PAYEE",     label: t("fournisseurs.document.statusOptions.payee")    },
     { value: "EN_LITIGE", label: t("fournisseurs.document.statusOptions.enLitige") },
     { value: "ANNULEE",   label: t("fournisseurs.document.statusOptions.annulee")  },
   ]
@@ -62,7 +66,6 @@ export function FactureRecueForm({ defaultValues, onSubmit, onCancel, loading }:
   }, [defaultValues, reset])
 
   const fileUrl       = watch("fileUrl")
-  const watchedStatus = watch("status")
   const pendingFileRef = useRef<{ file: File; prefix: string } | null>(null)
   const [uploading, setUploading] = useState(false)
 
@@ -133,17 +136,6 @@ export function FactureRecueForm({ defaultValues, onSubmit, onCancel, loading }:
           <SelectField label={t("membres.form.fields.status")} required options={statusOptions} value={field.value} onValueChange={field.onChange} error={errors.status?.message} />
         )}
       />
-      {defaultValues?.status === "PAYEE" && watchedStatus !== "PAYEE" && (
-        <p className="text-xs text-destructive rounded-md border border-destructive/30 bg-destructive/5 px-3 py-2">
-          {t("fournisseurs.document.unmarkPaidWarning")}
-        </p>
-      )}
-      {defaultValues?.status !== "PAYEE" && watchedStatus === "PAYEE" && (
-        <p className="text-xs text-muted-foreground rounded-md border bg-muted/40 px-3 py-2">
-          {t("fournisseurs.document.markPaidNotice")}
-        </p>
-      )}
-
       <div>
         <label className="text-sm font-medium">{t("fournisseurs.document.file")}</label>
         <div className="mt-1.5">

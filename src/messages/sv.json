@@ -1414,6 +1414,45 @@
         "totalReceived": "Totala bidrag",
         "note": "Dessa fria bidrag värderas i euro. De leder inte till någon penningrörelse och förändrar inte resultatet av räkenskapsåret."
       }
+    },
+    "bilan": {
+      "title": "Balansräkning",
+      "description": "Föreningens tillgångar och skulder vid räkenskapsårets slut.",
+      "exerciceLabel": "Träning",
+      "rubriqueColumnLabel": "Sektion",
+      "noPreviousExercice": "-",
+      "actif": "Aktiv",
+      "totalActif": "Total aktiv",
+      "passif": "Passiv",
+      "totalPassif": "Totala skulder",
+      "noAccountsInRubrique": "Ingen balans i denna sektion",
+      "emptyExercice": {
+        "title": "Inget räkenskapsår",
+        "description": "Skapa ett nytt räkenskapsår för att se balansräkningen."
+      },
+      "emptyLedger": {
+        "title": "Inga bokföringsposter",
+        "description": "Balansräkningen kommer att visas så snart inkomster, utgifter eller fasta tillgångar har bokförts under detta räkenskapsår."
+      },
+      "rubriques": {
+        "immobilisationsCorporelles": "Materiella kapitaltillgångar",
+        "disponibilites": "Tillgänglighet",
+        "fondsPropres": "Egenkapital",
+        "dettes": "Skulder"
+      },
+      "issues": {
+        "title": "Avvikelser upptäckta",
+        "messages": {
+          "ACCOUNT_WITHOUT_RUBRIQUE": "Kontot {code} — {label} har ett saldo men är inte kopplat till någon balanspost.",
+          "ACTIF_PASSIF_MISMATCH": "Tillgången ({actif}) motsvarar inte skulden ({passif}).",
+          "OPENING_BALANCE_MISSING": "Inga inledande poster genererades för denna övning från \"{previousLabel}\".",
+          "TRIAL_BALANCE_UNBALANCED": "Den totala debetbeloppet ({debit}) motsvarar inte den totala krediten ({credit}) för detta räkenskapsår."
+        }
+      },
+      "accountLabels": {
+        "reportANouveau": "Balanserade vinstmedel",
+        "resultatExercice": "Nettoresultat för året"
+      }
     }
   },
   "evenements": {

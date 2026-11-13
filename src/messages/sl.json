@@ -1414,6 +1414,45 @@
         "totalReceived": "Skupni prispevki",
         "note": "Ti brezplačni prispevki so vredni v evrih. Ne povzročajo nobenega premika denarja in ne spreminjajo rezultata finančnega leta."
       }
+    },
+    "bilan": {
+      "title": "Bilanca",
+      "description": "Premoženje in obveznosti združenja ob koncu finančnega leta.",
+      "exerciceLabel": "Vadba",
+      "rubriqueColumnLabel": "Oddelek",
+      "noPreviousExercice": "-",
+      "actif": "Aktivni",
+      "totalActif": "Celotna aktivnost",
+      "passif": "Pasivni",
+      "totalPassif": "Skupne obveznosti",
+      "noAccountsInRubrique": "V tem delu ni ravnotežja",
+      "emptyExercice": {
+        "title": "Brez fiskalnega leta",
+        "description": "Ustvarite novo fiskalno leto za ogled bilance stanja."
+      },
+      "emptyLedger": {
+        "title": "Brez računovodskih vnosov",
+        "description": "Bilanca stanja bo prikazana takoj, ko bodo v tem finančnem letu zabeleženi prihodki, odhodki ali osnovna sredstva."
+      },
+      "rubriques": {
+        "immobilisationsCorporelles": "Otipljiva kapitalska sredstva",
+        "disponibilites": "Razpoložljivost",
+        "fondsPropres": "Pravičnost",
+        "dettes": "Dolgovi"
+      },
+      "issues": {
+        "title": "Zaznane anomalije",
+        "messages": {
+          "ACCOUNT_WITHOUT_RUBRIQUE": "Račun {code} — {label} ima stanje, vendar ni vezan na nobeno postavko bilance stanja.",
+          "ACTIF_PASSIF_MISMATCH": "Sredstvo ({actif}) ne ustreza obveznosti ({passif}).",
+          "OPENING_BALANCE_MISSING": "Za to vajo iz \"{previousLabel} ni bilo ustvarjenih odprtih vnosov\".",
+          "TRIAL_BALANCE_UNBALANCED": "Skupni bremen ({debit}) se ne ujema s skupnim dobropisom ({credit}) za to fiskalno leto."
+        }
+      },
+      "accountLabels": {
+        "reportANouveau": "Zadržani dobiček",
+        "resultatExercice": "Čisti dobiček za leto"
+      }
     }
   },
   "evenements": {

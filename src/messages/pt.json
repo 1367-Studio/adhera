@@ -1456,6 +1456,45 @@
       "typeExpense": "Despesa",
       "typeTransfer": "Transferência interna",
       "confirm": "Confirmar conciliação"
+    },
+    "bilan": {
+      "title": "Balanço",
+      "description": "Ativos e passivos da associação ao final do ano fiscal.",
+      "exerciceLabel": "Exercício",
+      "rubriqueColumnLabel": "Seção",
+      "noPreviousExercice": "-",
+      "actif": "Ativo",
+      "totalActif": "Total Ativo",
+      "passif": "Passivo",
+      "totalPassif": "Passivos totais",
+      "noAccountsInRubrique": "Sem equilíbrio nesta seção",
+      "emptyExercice": {
+        "title": "Sem ano fiscal",
+        "description": "Crie um novo ano fiscal para visualizar o Balanço Patrimonial."
+      },
+      "emptyLedger": {
+        "title": "Sem registros contábeis",
+        "description": "O balanço patrimonial será exibido assim que a renda, despesas ou ativos fixos forem registrados neste ano fiscal."
+      },
+      "rubriques": {
+        "immobilisationsCorporelles": "Ativos de capital tangível",
+        "disponibilites": "Disponibilidade",
+        "fondsPropres": "Patrimônio",
+        "dettes": "Dívidas"
+      },
+      "issues": {
+        "title": "Anomalias detectadas",
+        "messages": {
+          "ACCOUNT_WITHOUT_RUBRIQUE": "O {code} da conta — {label} possui um saldo, mas não está vinculado a nenhum item do balanço patrimonial.",
+          "ACTIF_PASSIF_MISMATCH": "O ativo ({actif}) não corresponde ao passivo ({passif}).",
+          "OPENING_BALANCE_MISSING": "Nenhuma entrada de abertura foi gerada para este exercício a partir de \"{previousLabel}\".",
+          "TRIAL_BALANCE_UNBALANCED": "O débito total ({debit}) não corresponde ao crédito total ({credit}) deste ano fiscal."
+        }
+      },
+      "accountLabels": {
+        "reportANouveau": "Lucros retidos",
+        "resultatExercice": "Lucro líquido do ano"
+      }
     }
   },
   "evenements": {

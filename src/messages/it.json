@@ -1414,6 +1414,45 @@
         "totalReceived": "Contributi totali",
         "note": "Questi contributi gratuiti sono valutati in euro. Non comportano alcun movimento di denaro e non cambiano il risultato dell'anno finanziario."
       }
+    },
+    "bilan": {
+      "title": "Stato patrimoniale",
+      "description": "Beni e passività dell'associazione alla fine dell'anno finanziario.",
+      "exerciceLabel": "Esercizio",
+      "rubriqueColumnLabel": "Sezione",
+      "noPreviousExercice": "-",
+      "actif": "Attivo",
+      "totalActif": "Totale Attivo",
+      "passif": "Passivo",
+      "totalPassif": "Passività totali",
+      "noAccountsInRubrique": "Nessun equilibrio in questa sezione",
+      "emptyExercice": {
+        "title": "Nessun anno fiscale",
+        "description": "Crea un nuovo anno fiscale per visualizzare il bilancio."
+      },
+      "emptyLedger": {
+        "title": "Nessuna voce contabile",
+        "description": "Il bilancio sarà visualizzato non appena redditi, spese o immobilizzazioni saranno stati registrati in questo anno finanziario."
+      },
+      "rubriques": {
+        "immobilisationsCorporelles": "Beni di capitale tangibile",
+        "disponibilites": "Disponibilità",
+        "fondsPropres": "Equity",
+        "dettes": "Debiti"
+      },
+      "issues": {
+        "title": "Anomalie rilevate",
+        "messages": {
+          "ACCOUNT_WITHOUT_RUBRIQUE": "Il {code} del conto — {label} ha un saldo ma non è collegato a nessuna voce del bilancio.",
+          "ACTIF_PASSIF_MISMATCH": "L'asset ({actif}) non corrisponde alla passività ({passif}).",
+          "OPENING_BALANCE_MISSING": "Non sono state generate voci di apertura per questo esercizio da \"{previousLabel}\".",
+          "TRIAL_BALANCE_UNBALANCED": "Il debito totale ({debit}) non corrisponde al credito totale ({credit}) per questo anno fiscale."
+        }
+      },
+      "accountLabels": {
+        "reportANouveau": "Utili portati a nuovo",
+        "resultatExercice": "Reddito netto per l'anno"
+      }
     }
   },
   "evenements": {

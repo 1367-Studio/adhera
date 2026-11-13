@@ -1414,6 +1414,45 @@
         "totalReceived": "Ranníocaíochtaí Iomlána",
         "note": "Déantar na ranníocaíochtaí saor in aisce seo a luacháil in euro. Ní bhíonn aon ghluaiseacht airgid mar thoradh orthu agus ní athraíonn siad toradh na bliana airgeadais."
       }
+    },
+    "bilan": {
+      "title": "Comhardú",
+      "description": "Sócmhainní agus dliteanais an chomhlachais i ndeireadh na bliana airgeadais.",
+      "exerciceLabel": "Cleachtadh",
+      "rubriqueColumnLabel": "Rannóg",
+      "noPreviousExercice": "-",
+      "actif": "Gníomhach",
+      "totalActif": "Iomlán Gníomhach",
+      "passif": "Éighníomhach",
+      "totalPassif": "Dliteanais iomlána",
+      "noAccountsInRubrique": "Níl aon chothromaíocht san alt seo",
+      "emptyExercice": {
+        "title": "Gan aon bhliain fhioscach",
+        "description": "Cruthaigh bliain fhioscach nua chun an Clár Comhardaithe a fheiceáil."
+      },
+      "emptyLedger": {
+        "title": "Gan aon iontrálacha cuntasaíochta",
+        "description": "Taispeánfar an Clár Comhardaithe a luaithe a bheidh ioncam, caiteachas nó sócmhainní seasta taifeadta sa bhliain airgeadais seo."
+      },
+      "rubriques": {
+        "immobilisationsCorporelles": "Sócmhainní caipitiúla inláimhsithe",
+        "disponibilites": "Infhaighteacht",
+        "fondsPropres": "Cothromas",
+        "dettes": "Fiacha"
+      },
+      "issues": {
+        "title": "Aimhrialtachtaí aimsithe",
+        "messages": {
+          "ACCOUNT_WITHOUT_RUBRIQUE": "Tá iarmhéid ag an gcuntas {code} - {label} ach níl sé ceangailte le haon mhír de chuid an Chláir Chomhardaithe.",
+          "ACTIF_PASSIF_MISMATCH": "Ní fhreagraíonn an tsócmhainn ({actif}) don dliteanas ({passif}).",
+          "OPENING_BALANCE_MISSING": "Níor gineadh aon iontrálacha oscailte don chleachtadh seo ó \"{previousLabel}\".",
+          "TRIAL_BALANCE_UNBALANCED": "Ní hionann an dochair iomlán ({debit}) agus an creidmheas iomlán ({credit}) don bhliain fhioscach seo."
+        }
+      },
+      "accountLabels": {
+        "reportANouveau": "Tuilleamh coinnithe",
+        "resultatExercice": "Glanioncam don bhliain"
+      }
     }
   },
   "evenements": {

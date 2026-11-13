@@ -1414,6 +1414,45 @@
         "totalReceived": "Łączny wkład",
         "note": "Te darmowe wpłaty są wyceniane w euro. Nie prowadzą do żadnego ruchu pieniądza i nie zmieniają wyniku roku finansowego."
       }
+    },
+    "bilan": {
+      "title": "Bilans",
+      "description": "Aktywa i zobowiązania stowarzyszenia na koniec roku finansowego.",
+      "exerciceLabel": "Ćwiczenia",
+      "rubriqueColumnLabel": "Sekcja",
+      "noPreviousExercice": "-",
+      "actif": "Aktywa",
+      "totalActif": "Suma aktywów",
+      "passif": "Pasywa",
+      "totalPassif": "Suma pasywów",
+      "noAccountsInRubrique": "Brak równowagi w tej części",
+      "emptyExercice": {
+        "title": "Brak roku fiskalnego",
+        "description": "Stwórz nowy rok fiskalny, aby zobaczyć bilans."
+      },
+      "emptyLedger": {
+        "title": "Brak wpisów księgowych",
+        "description": "Bilans zostanie wyświetlony zaraz po odnotowaniu dochodów, wydatków lub środków trwałych w tym roku finansowym."
+      },
+      "rubriques": {
+        "immobilisationsCorporelles": "Aktywa kapitałowe materialne",
+        "disponibilites": "Dostępność",
+        "fondsPropres": "Kapitał własny",
+        "dettes": "Długi"
+      },
+      "issues": {
+        "title": "Wykryto anomalie",
+        "messages": {
+          "ACCOUNT_WITHOUT_RUBRIQUE": "Konto {code} — {label} ma saldo, ale nie jest powiązane z żadnym elementem bilansu.",
+          "ACTIF_PASSIF_MISMATCH": "Aktywo ({actif}) nie odpowiada zobowiązaniu ({passif}).",
+          "OPENING_BALANCE_MISSING": "Nie wygenerowano żadnych wpisów otwierających się dla tego zadania z \"{previousLabel}\".",
+          "TRIAL_BALANCE_UNBALANCED": "Całkowity debet ({debit}) nie pokrywa się z całkowitym kredytem ({credit}) za ten rok fiskalny."
+        }
+      },
+      "accountLabels": {
+        "reportANouveau": "Zyski zatrzymane",
+        "resultatExercice": "Zysk netto za rok"
+      }
     }
   },
   "evenements": {

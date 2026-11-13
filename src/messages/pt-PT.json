@@ -1443,6 +1443,45 @@
         "totalReceived": "Contribuições Totais",
         "note": "Estas contribuições gratuitas são avaliadas em euros. Não conduzem a qualquer movimento de dinheiro nem alteram o resultado do ano fiscal."
       }
+    },
+    "bilan": {
+      "title": "Balanço",
+      "description": "Ativos e passivos da associação no final do ano fiscal.",
+      "exerciceLabel": "Exercício",
+      "rubriqueColumnLabel": "Secção",
+      "noPreviousExercice": "-",
+      "actif": "Ativo",
+      "totalActif": "Total Ativo",
+      "passif": "Passivo",
+      "totalPassif": "Passivos totais",
+      "noAccountsInRubrique": "Não há equilíbrio nesta secção",
+      "emptyExercice": {
+        "title": "Sem ano fiscal",
+        "description": "Crie um novo ano fiscal para consultar o Balanço."
+      },
+      "emptyLedger": {
+        "title": "Sem registos contabilísticos",
+        "description": "O Balanço será exibido assim que os rendimentos, despesas ou ativos fixos forem registados neste exercício financeiro."
+      },
+      "rubriques": {
+        "immobilisationsCorporelles": "Ativos de capital tangível",
+        "disponibilites": "Disponibilidade",
+        "fondsPropres": "Património",
+        "dettes": "Dívidas"
+      },
+      "issues": {
+        "title": "Anomalias detetadas",
+        "messages": {
+          "ACCOUNT_WITHOUT_RUBRIQUE": "O {code} da conta — {label} tem um saldo mas não está associado a nenhum item do Balanço.",
+          "ACTIF_PASSIF_MISMATCH": "O ativo ({actif}) não corresponde ao passivo ({passif}).",
+          "OPENING_BALANCE_MISSING": "Não foram geradas entradas de abertura para este exercício a partir de \"{previousLabel}\".",
+          "TRIAL_BALANCE_UNBALANCED": "O débito total ({debit}) não corresponde ao crédito total ({credit}) deste ano fiscal."
+        }
+      },
+      "accountLabels": {
+        "reportANouveau": "Lucros retidos",
+        "resultatExercice": "Rendimento líquido do ano"
+      }
     }
   },
   "evenements": {

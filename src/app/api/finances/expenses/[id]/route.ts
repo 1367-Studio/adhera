@@ -25,16 +25,17 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
 
   const { date, categoryId, projectId, vendor, description, receiptUrl, internalNote, paymentMethod, ...rest } = parsed.data
 
-  // Auto-created from a FactureRecue marked payée — amount/date/status/vendor mirror that
-  // document and can only change by editing it from Fournisseurs. categoryId/description/
-  // internalNote/receiptUrl are association-side annotations and stay editable here.
-  if (existing.factureRecueId) {
+  // Auto-created from a FactureRecuePayment (FORM-107 Fase 3) — amount/date/status/vendor
+  // mirror that payment and can only change by editing/removing it from Fournisseurs.
+  // categoryId/description/internalNote/receiptUrl are association-side annotations and
+  // stay editable here.
+  if (existing.factureRecuePaymentId) {
     const changesAmount = rest.amount !== undefined && Number(rest.amount) !== Number(existing.amount)
     const changesStatus = rest.status !== undefined && rest.status !== existing.status
     const changesDate    = date       !== undefined && new Date(date).getTime() !== existing.date.getTime()
     const changesVendor  = vendor     !== undefined && (vendor || null) !== existing.vendor
     if (changesAmount || changesStatus || changesDate || changesVendor) {
-      return NextResponse.json({ error: "Le montant, la date, le statut et le fournisseur de cette dépense viennent d'une facture reçue — modifiez-les depuis Fournisseurs." }, { status: 409 })
+      return NextResponse.json({ error: "Le montant, la date, le statut et le fournisseur de cette dépense viennent d'un paiement de facture reçue — modifiez-les depuis Fournisseurs." }, { status: 409 })
     }
   }
 
@@ -83,8 +84,8 @@ export const DELETE = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) =>
   const closedGuard = closedExerciceGuard(existing.exercice?.status)
   if (closedGuard) return closedGuard
 
-  if (existing.factureRecueId) {
-    return NextResponse.json({ error: "Cette dépense vient d'une facture reçue — changez son statut depuis Fournisseurs pour la retirer." }, { status: 409 })
+  if (existing.factureRecuePaymentId) {
+    return NextResponse.json({ error: "Cette dépense vient d'un paiement de facture reçue — supprimez ce paiement depuis Fournisseurs pour la retirer." }, { status: 409 })
   }
 
   // Find linked bank transactions before deleting the reconciliation link

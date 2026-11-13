@@ -1414,6 +1414,45 @@
         "totalReceived": "Kontribuzzjonijiet totali",
         "note": "Dawn il-kontribuzzjonijiet b'xejn huma valutati f'ewro. Ma jwasslux għal moviment ta' flus u ma jbiddlux ir-riżultat tas-sena finanzjarja."
       }
+    },
+    "bilan": {
+      "title": "Bilanċ",
+      "description": "Assi u obbligazzjonijiet tal-assoċjazzjoni fl-aħħar tas-sena finanzjarja.",
+      "exerciceLabel": "Eżerċizzju",
+      "rubriqueColumnLabel": "Sezzjoni",
+      "noPreviousExercice": "-",
+      "actif": "Attiv",
+      "totalActif": "Total Attiv",
+      "passif": "Passiv",
+      "totalPassif": "Passivitajiet totali",
+      "noAccountsInRubrique": "M'hemm l-ebda bilanċ f'din is-sezzjoni",
+      "emptyExercice": {
+        "title": "L-ebda sena finanzjarja",
+        "description": "Oħloq sena finanzjarja ġdida biex tara l-Bilanċ."
+      },
+      "emptyLedger": {
+        "title": "L-ebda dħul kontabbli",
+        "description": "Il-Bilanċ se jintwera hekk kif id-dħul, l-ispejjeż jew l-assi fissi jkunu rreġistrati f'din is-sena finanzjarja."
+      },
+      "rubriques": {
+        "immobilisationsCorporelles": "Assi kapitali tanġibbli",
+        "disponibilites": "Disponibbiltà",
+        "fondsPropres": "Ekwità",
+        "dettes": "Dejn"
+      },
+      "issues": {
+        "title": "Anomaliji skoperti",
+        "messages": {
+          "ACCOUNT_WITHOUT_RUBRIQUE": "Il-kont {code} — {label} għandu bilanċ iżda mhuwiex marbut ma' ebda oġġett tal-Bilanċ.",
+          "ACTIF_PASSIF_MISMATCH": "L-assi ({actif}) ma jikkorrispondix mal-passività ({passif}).",
+          "OPENING_BALANCE_MISSING": "Ma ġewx ġġenerati entitajiet ta' apertura għal dan l-eżerċizzju minn \"{previousLabel}\".",
+          "TRIAL_BALANCE_UNBALANCED": "Id-debitu totali ({debit}) ma jikkorrispondix mat-total tal-kreditu ({credit}) għal din is-sena fiskali."
+        }
+      },
+      "accountLabels": {
+        "reportANouveau": "Dħul miżmum",
+        "resultatExercice": "Dħul nett għas-sena"
+      }
     }
   },
   "evenements": {

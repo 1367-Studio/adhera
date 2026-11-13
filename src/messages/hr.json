@@ -1414,6 +1414,45 @@
         "totalReceived": "Ukupni doprinosi",
         "note": "Ti besplatni doprinosi vrednuju se u eurima. Ne dovode do kretanja novca i ne mijenjaju rezultat financijske godine."
       }
+    },
+    "bilan": {
+      "title": "Bilanca",
+      "description": "Imovina i obveze udruge na kraju financijske godine.",
+      "exerciceLabel": "Vježbanje",
+      "rubriqueColumnLabel": "Odjeljak",
+      "noPreviousExercice": "-",
+      "actif": "Aktivno",
+      "totalActif": "Total Active",
+      "passif": "Pasivni",
+      "totalPassif": "Ukupne obveze",
+      "noAccountsInRubrique": "Nema ravnoteže u ovom dijelu",
+      "emptyExercice": {
+        "title": "Nema fiskalne godine",
+        "description": "Kreirajte novu fiskalnu godinu za pregled bilance."
+      },
+      "emptyLedger": {
+        "title": "Nema računovodstvenih unosa",
+        "description": "Bilanca stanja bit će prikazana čim se zabilježe prihodi, rashodi ili fiksna imovina u ovoj financijskoj godini."
+      },
+      "rubriques": {
+        "immobilisationsCorporelles": "Materijalna kapitalna sredstva",
+        "disponibilites": "Dostupnost",
+        "fondsPropres": "Pravičnost",
+        "dettes": "Dugovi"
+      },
+      "issues": {
+        "title": "Otkrivene anomalije",
+        "messages": {
+          "ACCOUNT_WITHOUT_RUBRIQUE": "Račun {code} — {label} ima stanje, ali nije vezan uz nijednu stavku bilance.",
+          "ACTIF_PASSIF_MISMATCH": "Imovina ({actif}) ne odgovara obvezi ({passif}).",
+          "OPENING_BALANCE_MISSING": "Za ovu vježbu nisu generirani početni unosi iz \"{previousLabel}\".",
+          "TRIAL_BALANCE_UNBALANCED": "Ukupno terećenje ({debit}) ne odgovara ukupnom kreditu ({credit}) za ovu fiskalnu godinu."
+        }
+      },
+      "accountLabels": {
+        "reportANouveau": "Zadržana dobit",
+        "resultatExercice": "Neto dobit za godinu"
+      }
     }
   },
   "evenements": {

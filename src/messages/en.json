@@ -915,6 +915,45 @@
       "title": "Coming soon",
       "description": "This feature is currently in development."
     },
+    "bilan": {
+      "title": "Balance sheet",
+      "description": "Assets and liabilities of the organization at the close of the fiscal year.",
+      "exerciceLabel": "Fiscal year",
+      "rubriqueColumnLabel": "Heading",
+      "noPreviousExercice": "-",
+      "actif": "Assets",
+      "totalActif": "Total assets",
+      "passif": "Liabilities & equity",
+      "totalPassif": "Total liabilities & equity",
+      "noAccountsInRubrique": "No balance in this heading",
+      "emptyExercice": {
+        "title": "No fiscal year",
+        "description": "Create a fiscal year to display the Balance sheet."
+      },
+      "emptyLedger": {
+        "title": "No accounting entries",
+        "description": "The Balance sheet will appear once income, expenses or assets have been recorded for this fiscal year."
+      },
+      "rubriques": {
+        "immobilisationsCorporelles": "Tangible fixed assets",
+        "disponibilites": "Cash & equivalents",
+        "fondsPropres": "Equity",
+        "dettes": "Liabilities"
+      },
+      "accountLabels": {
+        "reportANouveau": "Retained earnings",
+        "resultatExercice": "Net income for the year"
+      },
+      "issues": {
+        "title": "Issues detected",
+        "messages": {
+          "ACCOUNT_WITHOUT_RUBRIQUE": "Account {code} — {label} has a balance but isn't mapped to any Balance sheet heading.",
+          "ACTIF_PASSIF_MISMATCH": "Assets ({actif}) do not match liabilities & equity ({passif}).",
+          "OPENING_BALANCE_MISSING": "No opening entry was generated for this fiscal year from \"{previousLabel}\".",
+          "TRIAL_BALANCE_UNBALANCED": "Total debit ({debit}) does not match total credit ({credit}) for this fiscal year."
+        }
+      }
+    },
     "compteResultat": {
       "title": "Income statement",
       "description": "Financial result for the fiscal year, compared to the previous year.",

@@ -5,6 +5,10 @@ import { exerciceComptableUpdateSchema } from "@/lib/schemas"
 import { writeActivityLog } from "@/lib/activity-log"
 import { withAdminAuth } from "@/lib/api-wrapper"
 import { exclusiveEndOfDay } from "@/lib/finance/exercice"
+import { ensureChartAccounts } from "@/lib/finance/journal/chart-accounts-seed"
+import { generateOpeningBalanceForExercice, deleteOpeningBalanceForExercice } from "@/lib/finance/journal/opening-balance"
+import { ensurePostedJournalEntries } from "@/lib/finance/journal/post-income-expense"
+import { generateDepreciationForExercice, deleteDepreciationForExercice } from "@/lib/finance/immobilisations/post-closing-depreciation"
 
 export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   const { associationId, userId } = ctx
@@ -24,6 +28,7 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   const { label, status, confirmEarlyClosure } = parsed.data
   const statusChanged = status !== undefined && status !== existing.status
   const closing       = statusChanged && status === "CLOTURE"
+  const reopening      = statusChanged && status === "OUVERT" && existing.status === "CLOTURE"
   // exclusiveEndOfDay, not existing.endDate directly — endDate is stored at UTC midnight of
   // the last calendar day, so comparing the live "now" straight against it would let the
   // period close (without ever showing this warning) hours before that day is actually over.
@@ -40,6 +45,27 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
       code:  "EARLY_CLOSURE",
       endDate: existing.endDate,
     }, { status: 422 })
+  }
+
+  // The exercice right after this one, if any — the one whose opening entry (FORM-107 Fase 1)
+  // this closure feeds, or whose stale opening entry a reopening must undo. Resolved once,
+  // up front, so both branches below see a consistent snapshot.
+  const nextExercice = (closing || reopening)
+    ? await prisma.exerciceComptable.findFirst({
+        where:   { associationId, startDate: { gt: existing.endDate } },
+        orderBy: { startDate: "asc" },
+      })
+    : null
+
+  // Reopening N while N+1 is already closed would leave N+1's own opening entry (built from
+  // N's now-about-to-change balances) silently stale — block it, same posture as "a closed
+  // exercice is never written to again" elsewhere in Finances. The treasurer must reopen N+1
+  // first.
+  if (reopening && nextExercice?.status === "CLOTURE") {
+    return NextResponse.json({
+      error: `Impossible de réouvrir cet exercice : "${nextExercice.label}" est déjà clôturé sur cette période. Réouvrez-le d'abord.`,
+      code:  "NEXT_EXERCICE_CLOTURE",
+    }, { status: 409 })
   }
 
   const { exercice, linkedRecords } = await prisma.$transaction(async (tx) => {
@@ -79,10 +105,47 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
     return { exercice, linkedRecords }
   })
 
+  // Journal postings (FORM-107 Fase 1) run after the main transaction commits, not inside it —
+  // postJournalEntry/opening-balance use the global `prisma` client, not `tx`, and its own
+  // idempotencyKey guard already makes a retry after a partial failure here safe (a crash
+  // between the two just leaves the opening entry "pending", which validateOpeningBalance
+  // surfaces — same posture as an Income never reaching postIncomeToJournal).
+  let openingBalanceGenerated = false
+  let openingBalanceDeleted   = false
+  let depreciationPosted      = 0
+  let depreciationDeleted     = 0
+  if (closing) {
+    await ensureChartAccounts(associationId)
+    // Catches up any PAID/VALIDATED Income/Expense of the exercice that's closing that never
+    // got posted to the journal (no write-time hook exists yet — see ensurePostedJournalEntries'
+    // own doc comment) — without this, both the dotation below and the opening balance that
+    // follows it would silently miss them.
+    await ensurePostedJournalEntries(associationId, id)
+    // Dotations post INTO the closing exercice itself (id), BEFORE the opening balance of the
+    // next one is computed — see post-closing-depreciation.ts's own doc comment for why that
+    // order is required for the dotation to correctly reduce this exercice's own result.
+    const depreciation = await generateDepreciationForExercice(associationId, id)
+    depreciationPosted = depreciation.posted
+    if (nextExercice) {
+      const result = await generateOpeningBalanceForExercice(associationId, nextExercice.id)
+      openingBalanceGenerated = result?.created ?? false
+    }
+  }
+  if (reopening) {
+    // Undo in the reverse order of posting: the opening entry lives in nextExercice (built
+    // from this exercice's balances), the dotations live in this exercice (id) itself.
+    if (nextExercice) openingBalanceDeleted = await deleteOpeningBalanceForExercice(nextExercice.id)
+    depreciationDeleted = await deleteDepreciationForExercice(id)
+  }
+
   const action = !statusChanged ? "EXERCICE_UPDATED" : status === "CLOTURE" ? "EXERCICE_CLOTURE" : "EXERCICE_REOUVERT"
   const metadata = {
     ...(linkedRecords > 0 ? { linkedRecords } : {}),
     ...(isEarly && confirmEarlyClosure ? { earlyClosure: true } : {}),
+    ...(openingBalanceGenerated ? { openingBalanceGeneratedFor: nextExercice!.id } : {}),
+    ...(openingBalanceDeleted   ? { openingBalanceDeletedFor:   nextExercice!.id } : {}),
+    ...(depreciationPosted  > 0 ? { depreciationPosted } : {}),
+    ...(depreciationDeleted > 0 ? { depreciationDeleted } : {}),
   }
   await writeActivityLog({
     associationId, actorId: userId, action, entity: "ExerciceComptable", entityId: id, label: exercice.label,
@@ -99,6 +162,17 @@ export const DELETE = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) =>
 
   if (existing.status === "CLOTURE") {
     return NextResponse.json({ error: "Cet exercice est clôturé — réouvrez-le avant de le supprimer." }, { status: 409 })
+  }
+
+  // JournalEntry.exerciceId is onDelete: Restrict (FORM-107 Fase 1) — a journal entry is never
+  // edited or deleted along with the exercice it belongs to, unlike Income/Expense/
+  // BankTransaction below. Checked up front for a clean error instead of letting the delete
+  // below fail on a raw FK violation.
+  const journalEntryCount = await prisma.journalEntry.count({ where: { exerciceId: id } })
+  if (journalEntryCount > 0) {
+    return NextResponse.json({
+      error: `Impossible de supprimer : ${journalEntryCount} écriture(s) comptable(s) sont rattachées à cet exercice.`,
+    }, { status: 409 })
   }
 
   // onDelete: SetNull unlinks these automatically — nothing here is destroyed, only

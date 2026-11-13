@@ -5,6 +5,7 @@
     "delete": "Supprimer",
     "add": "Ajouter",
     "edit": "Modifier",
+    "view": "Voir le détail",
     "confirm": "Confirmer",
     "close": "Fermer",
     "back": "Retour",
@@ -689,13 +690,20 @@
       "amount": "Montant",
       "statusOptions": {
         "aPayer": "À payer",
+        "partiellementPayee": "Partiellement payée",
         "payee": "Payée",
         "enLitige": "En litige",
         "annulee": "Annulée"
       },
-      "unmarkPaidWarning": "Ce document est actuellement payée — retirer ce statut supprimera la dépense qu'il a générée dans Finances, ainsi que sa réconciliation bancaire éventuelle.",
-      "markPaidNotice": "Marquer ce document comme payée créera automatiquement une dépense correspondante dans Finances.",
       "file": "Document",
+      "payment": {
+        "add": "Enregistrer un paiement",
+        "title": "Enregistrer un paiement",
+        "paidOf": "payé",
+        "toasts": {
+          "recorded": "Paiement enregistré"
+        }
+      },
       "toasts": {
         "uploadError": "Erreur lors de l'upload du document",
         "networkError": "Erreur réseau lors de l'upload — réessayez"
@@ -925,6 +933,7 @@
       "import": "Importer",
       "reconciliation": "Conciliation",
       "categories": "Catégories",
+      "immobilisations": "Immobilisations",
       "reports": "Rapports",
       "bilan": "Bilan",
       "compteResultat": "Compte de résultat",
@@ -940,6 +949,85 @@
     "comingSoon": {
       "title": "Bientôt disponible",
       "description": "Cette fonctionnalité est en cours de développement."
+    },
+    "immobilisationsView": {
+      "title": "Immobilisations",
+      "description": "Matériel de bureau et informatique amortissable, et son calendrier de dotation aux amortissements.",
+      "add": "Ajouter",
+      "newTitle": "Nouvelle immobilisation",
+      "noImmobilisations": "Aucune immobilisation",
+      "columns": {
+        "label": "Désignation",
+        "entryValue": "Valeur brute",
+        "accumulated": "Amortissements",
+        "netValue": "Valeur nette",
+        "usageStartDate": "Mise en service"
+      },
+      "deleteConfirmTitle": "Supprimer cette immobilisation ?",
+      "toasts": {
+        "created": "Immobilisation créée",
+        "updated": "Immobilisation mise à jour",
+        "deleted": "Immobilisation supprimée"
+      },
+      "drillDown": {
+        "title": "Dotations aux amortissements",
+        "exercice": "Exercice",
+        "dotation": "Dotation",
+        "accumulated": "Cumul",
+        "netValue": "Valeur nette",
+        "noDepreciations": "Aucune dotation comptabilisée pour le moment"
+      }
+    },
+    "immobilisationForm": {
+      "label": "Désignation",
+      "labelPlaceholder": "Ex: Ordinateur portable — bureau",
+      "expense": "Dépense d'acquisition",
+      "expensePlaceholder": "Choisir une dépense marquée « immobilisation »",
+      "noEligibleExpenses": "Aucune dépense éligible — marquez une dépense comme immobilisation et catégorisez-la sur le compte 218300.",
+      "entryValue": "Valeur d'entrée",
+      "residualValue": "Valeur résiduelle",
+      "acquisitionDate": "Date d'acquisition",
+      "usageStartDate": "Date de mise en service",
+      "usefulLifeMonths": "Durée d'utilisation (mois)"
+    },
+    "bilan": {
+      "title": "Bilan",
+      "description": "Actif et passif de l'association à la clôture de l'exercice.",
+      "exerciceLabel": "Exercice",
+      "rubriqueColumnLabel": "Rubrique",
+      "noPreviousExercice": "-",
+      "actif": "Actif",
+      "totalActif": "Total actif",
+      "passif": "Passif",
+      "totalPassif": "Total passif",
+      "noAccountsInRubrique": "Aucun solde dans cette rubrique",
+      "emptyExercice": {
+        "title": "Aucun exercice comptable",
+        "description": "Créez un exercice comptable pour afficher le Bilan."
+      },
+      "emptyLedger": {
+        "title": "Aucune écriture comptable",
+        "description": "Le Bilan s'affichera dès que des recettes, dépenses ou immobilisations auront été enregistrées sur cet exercice."
+      },
+      "rubriques": {
+        "immobilisationsCorporelles": "Immobilisations corporelles",
+        "disponibilites": "Disponibilités",
+        "fondsPropres": "Fonds propres",
+        "dettes": "Dettes"
+      },
+      "accountLabels": {
+        "reportANouveau": "Report à nouveau",
+        "resultatExercice": "Résultat de l'exercice"
+      },
+      "issues": {
+        "title": "Anomalies détectées",
+        "messages": {
+          "ACCOUNT_WITHOUT_RUBRIQUE": "Le compte {code} — {label} a un solde mais n'est rattaché à aucune rubrique du Bilan.",
+          "ACTIF_PASSIF_MISMATCH": "L'actif ({actif}) ne correspond pas au passif ({passif}).",
+          "OPENING_BALANCE_MISSING": "Aucune écriture d'ouverture générée pour cet exercice à partir de « {previousLabel} ».",
+          "TRIAL_BALANCE_UNBALANCED": "Le total débit ({debit}) ne correspond pas au total crédit ({credit}) pour cet exercice."
+        }
+      }
     },
     "compteResultat": {
       "title": "Compte de résultat",
@@ -1234,6 +1322,8 @@
       "internalNote": "Note interne",
       "internalNotePlaceholder": "Note pour le trésorier…",
       "receipt": "Justificatif",
+      "isImmobilisation": "Immobilisation (actif amortissable)",
+      "isImmobilisationHint": "Cochez pour un achat capitalisable (ex: matériel de bureau et informatique) — vous pourrez ensuite créer son calendrier d'amortissement dans Finances > Immobilisations.",
       "toasts": {
         "uploadError": "Erreur lors de l'upload du justificatif",
         "networkError": "Erreur réseau lors de l'upload — réessayez"

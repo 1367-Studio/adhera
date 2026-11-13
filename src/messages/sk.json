@@ -1414,6 +1414,45 @@
         "totalReceived": "Celkové príspevky",
         "note": "Tieto bezplatné príspevky sú ocenené v eurách. Nevedú k žiadnemu pohybu peňazí a nemenia výsledok finančného roka."
       }
+    },
+    "bilan": {
+      "title": "Súvaha",
+      "description": "Aktíva a záväzky združenia na konci finančného roka.",
+      "exerciceLabel": "Cvičenie",
+      "rubriqueColumnLabel": "Sekcia",
+      "noPreviousExercice": "-",
+      "actif": "Aktívne",
+      "totalActif": "Total Active",
+      "passif": "Pasívne",
+      "totalPassif": "Celkové záväzky",
+      "noAccountsInRubrique": "V tejto časti nie je žiadna rovnováha",
+      "emptyExercice": {
+        "title": "Žiadny fiškálny rok",
+        "description": "Vytvorte nový fiškálny rok na zobrazenie súvahy."
+      },
+      "emptyLedger": {
+        "title": "Žiadne účtovné záznamy",
+        "description": "Súvaha bude zobrazená hneď, ako budú v tomto finančnom roku zaznamenané príjmy, výdavky alebo fixné aktíva."
+      },
+      "rubriques": {
+        "immobilisationsCorporelles": "Hmotné kapitálové aktíva",
+        "disponibilites": "Dostupnosť",
+        "fondsPropres": "Ekvita",
+        "dettes": "Dlhy"
+      },
+      "issues": {
+        "title": "Zistené anomálie",
+        "messages": {
+          "ACCOUNT_WITHOUT_RUBRIQUE": "Účet {code} — {label} má zostatok, ale nie je pripojený k žiadnej položke súvahy.",
+          "ACTIF_PASSIF_MISMATCH": "Majetok ({actif}) nezodpovedá záväzku ({passif}).",
+          "OPENING_BALANCE_MISSING": "Pre toto cvičenie neboli vygenerované žiadne úvodné položky z \"{previousLabel}\".",
+          "TRIAL_BALANCE_UNBALANCED": "Celkový debet ({debit}) nezodpovedá celkovému kreditu ({credit}) za tento fiškálny rok."
+        }
+      },
+      "accountLabels": {
+        "reportANouveau": "Zadržaný zisk",
+        "resultatExercice": "Čistý zisk za rok"
+      }
     }
   },
   "evenements": {
