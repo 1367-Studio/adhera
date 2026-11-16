@@ -7,6 +7,21 @@
 import { prisma } from "@/lib/prisma/client"
 import { postJournalEntry, type PostJournalEntryResult } from "@/lib/finance/journal/post-journal-entry"
 import { ensureChartAccounts, resolveChartAccountByCode } from "@/lib/finance/journal/chart-accounts-seed"
+import { resolveIncomeCategory, resolveExpenseCategory, type CategoryRow } from "@/lib/finance/category-resolution"
+
+// Same resolver the Compte de résultat / Previsionnel reports use (see category-resolution.ts):
+// most Income rows (Adesões/Doações/Loja/Eventos) never get an explicit `categoryId` — they're
+// categorized by origin id instead. Reading `income.category` directly, as this module used to,
+// silently skipped every one of those rows (eligible for the report, invisible to the journal).
+async function loadCategoryMaps(associationId: string) {
+  const categories = await prisma.financeCategory.findMany({
+    where:  { associationId, archivedAt: null },
+    select: { id: true, key: true, name: true, accountingCode: true, section: true, isDefault: true, type: true },
+  })
+  const categoriesById  = new Map(categories.map(c => [c.id, c as CategoryRow]))
+  const categoriesByKey = new Map(categories.filter(c => c.key).map(c => [c.key as string, c as CategoryRow]))
+  return { categoriesById, categoriesByKey }
+}
 
 const CASH_PAYMENT_METHOD = "ESPECES"
 const CAISSE_CODE         = "531000"
@@ -40,14 +55,16 @@ export async function resolveTresorerieAccount(
 export async function postIncomeToJournal(incomeId: string): Promise<PostJournalEntryResult | null> {
   const income = await prisma.income.findUnique({
     where:   { id: incomeId },
-    include: { category: true, reconciliations: { include: { bankTransaction: true } } },
+    include: { reconciliations: { include: { bankTransaction: true } } },
   })
   if (!income || income.status !== "PAID") return null
   if (!income.exerciceId) return null
 
   await ensureChartAccounts(income.associationId)
 
-  const categoryAccount = await resolveChartAccountByCode(income.associationId, income.category?.accountingCode)
+  const { categoriesById, categoriesByKey } = await loadCategoryMaps(income.associationId)
+  const resolved = resolveIncomeCategory(income, categoriesById, categoriesByKey)
+  const categoryAccount = await resolveChartAccountByCode(income.associationId, resolved?.accountingCode)
   if (!categoryAccount) return null
 
   const reconciledBankAccountId = income.reconciliations[0]?.bankTransaction.bankAccountId ?? null
@@ -81,14 +98,16 @@ export async function postIncomeToJournal(incomeId: string): Promise<PostJournal
 export async function postExpenseToJournal(expenseId: string): Promise<PostJournalEntryResult | null> {
   const expense = await prisma.expense.findUnique({
     where:   { id: expenseId },
-    include: { category: true, reconciliations: { include: { bankTransaction: true } } },
+    include: { reconciliations: { include: { bankTransaction: true } } },
   })
   if (!expense || expense.status !== "VALIDATED") return null
   if (!expense.exerciceId) return null
 
   await ensureChartAccounts(expense.associationId)
 
-  const categoryAccount = await resolveChartAccountByCode(expense.associationId, expense.category?.accountingCode)
+  const { categoriesById } = await loadCategoryMaps(expense.associationId)
+  const resolved = resolveExpenseCategory(expense, categoriesById)
+  const categoryAccount = await resolveChartAccountByCode(expense.associationId, resolved?.accountingCode)
   if (!categoryAccount) return null
 
   const reconciledBankAccountId = expense.reconciliations[0]?.bankTransaction.bankAccountId ?? null
