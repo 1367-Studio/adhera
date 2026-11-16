@@ -27,6 +27,23 @@ export const GET = withSuperAdminAuth(async (req) => {
   const cutoff = new Date(Date.now() - days * 24 * 60 * 60 * 1000)
   const where = {
     createdAt: { gte: cutoff },
+    // Scope the whole chart to active + paying associations (FORM-106) — a trial, past-due,
+    // suspended or cancelled association's signups would otherwise inflate "recent adhésions"
+    // with activity that isn't representative of real platform usage. Same "paying" definition
+    // as platformFeeRate() in src/lib/stripe.ts: null (not yet synced from Stripe) counts as
+    // paying, only an amount of exactly 0 (a negotiated free PricingOffer) doesn't. Expressed
+    // as a relation filter (join) rather than a separate query + `associationId: { in: [...] }`
+    // — avoids ferrying a full association-id list that only grows with the platform.
+    association: {
+      deletedAt:          null,
+      subscriptionStatus: "ACTIVE" as const,
+      // Prisma's `{ not: 0 }` alone would drop NULL rows (SQL `<> 0` excludes NULL) —
+      // spelled out so an un-synced amount still counts as paying, per the comment above.
+      OR: [
+        { subscriptionAmountCents: null },
+        { subscriptionAmountCents: { not: 0 } },
+      ],
+    },
     ...(paidOnly ? { cotisations: { some: { status: "PAYE" as const } } } : {}),
   }
 

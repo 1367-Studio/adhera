@@ -104,14 +104,14 @@ export function RecentAdhesionsChart() {
 
       {!isLoading && !hasData && (
         <p className="py-6 text-center text-xs text-muted-foreground">
-          Aucune nouvelle adhésion{paidOnly ? " payante" : ""} sur les {days} derniers jours.
+          Aucune nouvelle adhésion{paidOnly ? " payante" : ""} sur les {days} derniers jours, parmi les associations actives et payantes.
         </p>
       )}
 
       {!isLoading && data && hasData && (
         <div className="space-y-6">
           <div>
-            <p className="mb-2 text-[11px] text-muted-foreground">Total quotidien, toutes associations</p>
+            <p className="mb-2 text-[11px] text-muted-foreground">Total quotidien, associations actives et payantes</p>
             <ResponsiveContainer width="100%" height={160} debounce={50}>
               {/* left:16 — otherwise the first x-axis tick's label (centered on the plot's
                   own left edge) gets half-clipped by the container. */}
