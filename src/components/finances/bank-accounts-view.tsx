@@ -252,7 +252,10 @@ export function BankAccountsView() {
 
       {(accounts.length >= 2 || transfers.length > 0) && (
         <div className="space-y-2 pt-4">
-          <h3 className="text-sm font-medium">{t("finances.transfersView.title")}</h3>
+          <div>
+            <h3 className="text-sm font-medium">{t("finances.transfersView.title")}</h3>
+            <p className="text-xs text-muted-foreground">{t("finances.transfersView.description")}</p>
+          </div>
           <DataTable
             columns={transferColumns}
             data={transfers as Transfer[]}
