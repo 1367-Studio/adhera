@@ -61,6 +61,7 @@ export function GrupoDetailView({ grupoId }: { grupoId: string }) {
   const [debouncedMemberQuery, setDebouncedMemberQuery] = useState("")
   const [memberTypeFilter, setMemberTypeFilter]     = useState("")
   const [selectedCandidates, setSelectedCandidates] = useState<MembreCandidate[]>([])
+  const [isAddingBatch, setIsAddingBatch]           = useState(false)
   const [removeMembroTarget, setRemoveMembroTarget] = useState<{ membreId: string; nome: string } | null>(null)
   const [addResponsavelId, setAddResponsavelId]      = useState("")
   const [removeResponsavelTarget, setRemoveResponsavelTarget] = useState<{ userId: string; nome: string } | null>(null)
@@ -79,7 +80,9 @@ export function GrupoDetailView({ grupoId }: { grupoId: string }) {
     return () => { if (debounceRef.current) clearTimeout(debounceRef.current) }
   }, [memberQuery])
 
-  const memberQueryReady = debouncedMemberQuery.trim().length >= 2
+  // Prête dès qu'il y a un texte de recherche OU un type choisi — Emmanuelle veut pouvoir
+  // sélectionner un type et voir directement tous ses membres, sans devoir taper une lettre.
+  const memberQueryReady = debouncedMemberQuery.trim().length >= 2 || memberTypeFilter !== ""
   const { data: candidates = [], isLoading: loadingCandidates } = useQuery<MembreCandidate[]>({
     queryKey: ["membres-search-for-grupo", debouncedMemberQuery, memberTypeFilter],
     queryFn:  () => fetch(`/api/membres?status=ACTIF&search=${encodeURIComponent(debouncedMemberQuery.trim())}${memberTypeFilter ? `&typeId=${memberTypeFilter}` : ""}`).then(r => r.json()),
@@ -125,17 +128,27 @@ export function GrupoDetailView({ grupoId }: { grupoId: string }) {
   }
 
   async function handleAddSelectedMembros() {
-    let added = 0
-    for (const membre of selectedCandidates) {
-      try {
-        await addMembroMutation.mutateAsync({ membreId: membre.id })
-        added++
-      } catch (err) {
-        toast.error(err instanceof Error ? err.message : t("common.error"))
+    setIsAddingBatch(true)
+    try {
+      const outcomes = await Promise.allSettled(
+        selectedCandidates.map(membre => addMembroMutation.mutateAsync({ membreId: membre.id }).then(() => membre)),
+      )
+      const succeededIds = new Set<string>()
+      outcomes.forEach(outcome => {
+        if (outcome.status === "fulfilled") succeededIds.add(outcome.value.id)
+        else toast.error(outcome.reason instanceof Error ? outcome.reason.message : t("common.error"))
+      })
+      if (succeededIds.size > 0) toast.success(t("groupes.detail.membresAddedToast", { count: succeededIds.size }))
+      if (succeededIds.size === outcomes.length) {
+        closeAddMembroModal()
+      } else {
+        // Un échec ne doit pas faire perdre toute la sélection — seuls ceux ajoutés avec
+        // succès sortent de la liste, le reste reste coché pour un nouvel essai.
+        setSelectedCandidates(prev => prev.filter(c => !succeededIds.has(c.id)))
       }
+    } finally {
+      setIsAddingBatch(false)
     }
-    if (added > 0) toast.success(t("groupes.detail.membresAddedToast", { count: added }))
-    closeAddMembroModal()
   }
 
   async function handleRemoveMembro() {
@@ -192,6 +205,24 @@ export function GrupoDetailView({ grupoId }: { grupoId: string }) {
 
   const alreadyInGroup = new Set(grupo.membros.map(m => m.membreId))
   const staffNotYetResponsavel = staff.filter(s => !grupo.responsaveis.some(r => r.userId === s.id))
+
+  const availableCandidates = candidates.filter(c => !alreadyInGroup.has(c.id))
+  const allAvailableSelected = availableCandidates.length > 0
+    && availableCandidates.every(c => selectedCandidates.some(s => s.id === c.id))
+
+  function selectAllCandidates() {
+    // `/api/membres` plafonne à 500 résultats sans pagination explicite — même heuristique
+    // que selectAllMatching dans cotisations-view.tsx pour signaler la troncature.
+    if (candidates.length >= 500) toast.warning(t("groupes.detail.selectAllTruncated"))
+    setSelectedCandidates(prev => {
+      const existingIds = new Set(prev.map(c => c.id))
+      return [...prev, ...availableCandidates.filter(c => !existingIds.has(c.id))]
+    })
+  }
+
+  function deselectAllCandidates() {
+    setSelectedCandidates(prev => prev.filter(c => !availableCandidates.some(a => a.id === c.id)))
+  }
 
   const chamadaColumns: Column<ChamadaSessaoListItem>[] = [
     { key: "data", header: t("groupes.detail.appelColumns.date"), cell: (c) => `${format(dateOnlyToLocal(c.data), "dd/MM/yyyy")}${c.horario ? ` · ${c.horario}` : ""}` },
@@ -393,7 +424,15 @@ export function GrupoDetailView({ grupoId }: { grupoId: string }) {
         </div>
       </Modal>
 
-      <Modal open={addMembroOpen} onOpenChange={(open) => { if (!open) closeAddMembroModal(); else setAddMembroOpen(true) }} title={t("groupes.detail.addMembre")}>
+      <Modal
+        open={addMembroOpen}
+        onOpenChange={(open) => {
+          if (isAddingBatch) return
+          if (!open) closeAddMembroModal(); else setAddMembroOpen(true)
+        }}
+        title={t("groupes.detail.addMembre")}
+        dismissable={!isAddingBatch}
+      >
         <div className="space-y-3">
           {membreTypes.length > 0 && (
             <FilterSelect
@@ -405,19 +444,40 @@ export function GrupoDetailView({ grupoId }: { grupoId: string }) {
             />
           )}
 
+          {memberQueryReady && !loadingCandidates && availableCandidates.length > 0 && (
+            <div className="flex items-center justify-between">
+              <span className="text-xs text-muted-foreground">
+                {t("groupes.detail.candidatesFound", { count: availableCandidates.length })}
+              </span>
+              <Button
+                type="button"
+                variant="ghost"
+                size="xs"
+                onClick={allAvailableSelected ? deselectAllCandidates : selectAllCandidates}
+              >
+                <ChecksIcon />
+                {t(allAvailableSelected ? "groupes.detail.deselectAllCandidates" : "groupes.detail.selectAllCandidates")}
+              </Button>
+            </div>
+          )}
+
           <Command className="rounded-lg! border" shouldFilter={false}>
             <CommandInput value={memberQuery} onValueChange={setMemberQuery} placeholder={t("groupes.detail.searchMembrePlaceholder")} />
             <CommandList>
               {!memberQueryReady ? (
-                <CommandEmpty>{t("common.search")}…</CommandEmpty>
+                <CommandEmpty>{t("groupes.detail.searchOrFilterPrompt")}</CommandEmpty>
               ) : loadingCandidates ? (
                 <div className="p-3 space-y-2">
                   {Array.from({ length: 3 }).map((_, i) => <div key={i} className="h-8 rounded-md bg-muted animate-pulse" />)}
                 </div>
               ) : (
                 <>
-                  <CommandEmpty>{t("groupes.detail.noResultsForMembre", { search: memberQuery })}</CommandEmpty>
-                  {candidates.filter(c => !alreadyInGroup.has(c.id)).map(candidate => (
+                  <CommandEmpty>
+                    {memberQuery.trim()
+                      ? t("groupes.detail.noResultsForMembre", { search: memberQuery })
+                      : t("groupes.detail.noResultsForType")}
+                  </CommandEmpty>
+                  {availableCandidates.map(candidate => (
                     <CommandItem
                       key={candidate.id}
                       value={`${candidate.lastName} ${candidate.firstName}`}
@@ -451,11 +511,11 @@ export function GrupoDetailView({ grupoId }: { grupoId: string }) {
           )}
 
           <div className="flex justify-end gap-2 pt-1">
-            <Button variant="ghost" onClick={closeAddMembroModal}>{t("common.cancel")}</Button>
+            <Button variant="ghost" onClick={closeAddMembroModal} disabled={isAddingBatch}>{t("common.cancel")}</Button>
             <Button
               onClick={handleAddSelectedMembros}
               disabled={selectedCandidates.length === 0}
-              loading={addMembroMutation.isPending}
+              loading={isAddingBatch}
             >
               {t("groupes.detail.addSelectedMembres", { count: selectedCandidates.length })}
             </Button>
