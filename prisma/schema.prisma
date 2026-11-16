@@ -1132,6 +1132,12 @@ model Evenement {
   // collectés avant ce champ, donc HIDDEN (leur default) est le backfill correct pour eux.
   fieldPhone             EvenementFieldRequirement @default(OPTIONAL)
   fieldAddress           EvenementFieldRequirement @default(OPTIONAL)
+  // Indépendant de fieldAddress (FORM-108) : avant son introduction, le pays s'affichait et
+  // se validait toujours en même temps que le reste de l'adresse. Le default OPTIONAL
+  // préserve ce comportement pour les événements déjà configurés — voir le backfill dans la
+  // migration qui l'introduit, qui recopie fieldAddress plutôt que de s'appuyer sur ce seul
+  // default.
+  fieldCountry           EvenementFieldRequirement @default(OPTIONAL)
   fieldBirthDate         EvenementFieldRequirement @default(HIDDEN)
   fieldGender            EvenementFieldRequirement @default(HIDDEN)
   fieldMobile            EvenementFieldRequirement @default(HIDDEN)
@@ -1722,6 +1728,8 @@ model DonationForm {
 
   // Étape 3 — Formulaire : matrice d'exigence des champs standards
   fieldAddress   DonationFieldRequirement @default(HIDDEN)
+  // Indépendant de fieldAddress (FORM-108), voir le commentaire équivalent sur Evenement.
+  fieldCountry   DonationFieldRequirement @default(HIDDEN)
   fieldBirthDate DonationFieldRequirement @default(HIDDEN)
   fieldPhone     DonationFieldRequirement @default(HIDDEN)
   fieldMobile    DonationFieldRequirement @default(HIDDEN)
@@ -1838,6 +1846,8 @@ model MembershipForm {
 
   // Étape 3 — Formulaire : matrice d'exigence des champs standards
   fieldAddress         MembershipFieldRequirement @default(HIDDEN)
+  // Indépendant de fieldAddress (FORM-108), voir le commentaire équivalent sur Evenement.
+  fieldCountry         MembershipFieldRequirement @default(HIDDEN)
   fieldBirthDate       MembershipFieldRequirement @default(HIDDEN)
   fieldPhone           MembershipFieldRequirement @default(HIDDEN)
   fieldMobile          MembershipFieldRequirement @default(HIDDEN)

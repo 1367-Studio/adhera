@@ -5,6 +5,7 @@
     "delete": "Изтрий",
     "add": "Добави",
     "edit": "Редактирай",
+    "view": "Вижте подробности",
     "confirm": "Потвърди",
     "close": "Затвори",
     "back": "Назад",
@@ -41,6 +42,7 @@
     "location": "Местоположение",
     "choosePlaceholder": "Избери...",
     "allPlaceholder": "Всички",
+    "noOptionsPlaceholder": "Няма налични опции",
     "previousPage": "Предишна страница",
     "nextPage": "Следваща страница",
     "paginationRange": "{from}–{to} на {total}",
@@ -51,7 +53,10 @@
     "addressPlaceholder": "Salle des fêtes, 12 rue de la Paix, Париж...",
     "viewOnGoogleMaps": "Вижте в Google Maps",
     "backToSite": "Назад към сайта",
-    "noOptionsPlaceholder": "Няма налични опции"
+    "period": {
+      "exercice": "Упражнения {year}",
+      "exerciceRange": "Упражнения {startYear}–{endYear}"
+    }
   },
   "address": {
     "street": "Адрес",
@@ -59,8 +64,30 @@
     "complementPlaceholder": "Сграда, етаж, пощенска кутия…",
     "postalCode": "Пощенски код",
     "city": "Град",
-    "country": "Държава",
+    "country": "Държава на пребиваване",
     "legacyMigratedHint": "Копирано от стария адрес — проверете дали вече не съдържа пощенския код и града по-долу."
+  },
+  "avis": {
+    "invalidLink": "Този линк за ревю е невалиден.",
+    "thanks": "Благодаря за ревюто!",
+    "notEligible": "Само участниците на събитието могат да оставят отзиви.",
+    "greeting": "Здравейте {firstName}, как ви се стори това събитие?",
+    "commentPlaceholder": "Имате ли коментари? (по желание)",
+    "submit": "Изпратете моя отзив",
+    "ratingRequired": "Избери нота",
+    "networkError": "Мрежова грешка",
+    "genericError": "Грешка",
+    "publicationQuestion": "Позволявате ли публикуването на вашето мнение на уебсайта и социалните мрежи на асоциацията?",
+    "publicationYes": "Да, разрешавам публикуването.",
+    "publicationNo": "Не, моето мнение ще остане достъпно само за мениджърите на асоциацията.",
+    "publicationRequired": "Благодаря, че отговорихте на този въпрос.",
+    "identificationQuestion": "Как бихте искали да бъдете идентифицирани?",
+    "identificationNamed": "С моето име и фамилия",
+    "identificationAnonymous": "Анонимно",
+    "identificationRequired": "Моля, изберете някоя опция.",
+    "manageConsentTitle": "Управление на разрешение за публикуване",
+    "updateConsent": "Актуализирай предпочитанията си",
+    "consentUpdated": "Вашите предпочитания са актуализирани."
   },
   "auth": {
     "layout": {
@@ -80,6 +107,8 @@
       "heading": "Влез",
       "subtitle": "Въведете вашите данни за вход, за да получите достъп до вашето пространство.",
       "suspended": "Абонаментът на вашата асоциация е спрян. Свържете се с администратора си, за да уредите ситуацията.",
+      "errorMulti": "Няколко акаунта съвпадат с този Google имейл. Влезте с паролата си.",
+      "error2faRequired": "Двуфакторната автентикация е активирана в този акаунт. Влезте с паролата си.",
       "noAccount": "Все още нямате акаунт?",
       "createAccount": "Създайте акаунт",
       "form": {
@@ -91,6 +120,17 @@
         "connecting": "Влизане…",
         "or": "или",
         "continueWithGoogle": "Продължете с Google"
+      },
+      "twoFactor": {
+        "title": "Двустепенна проверка",
+        "descriptionTotp": "Въведете 6-цифрения код, показан във вашето приложение за автентикация.",
+        "descriptionBackup": "Въведете един от резервните си кодове.",
+        "codeLabel": "Код за верификация",
+        "backupCodeLabel": "Резервен код",
+        "submit": "Проверете",
+        "back": "Назад",
+        "useBackupCode": "Използвайте резервен код",
+        "useAuthenticatorCode": "Използвайте кода на приложението"
       }
     },
     "register": {
@@ -224,6 +264,7 @@
       "title": "Зона за членове",
       "subtitle": "Влезте в системата, за да влезете в пространството си.",
       "suspendedNotice": "Абонаментът на тази асоциация е спрян. Свържете се с администратора, за да уредите ситуацията.",
+      "selfRegisterDisabledNotice": "Самообслужването на акаунт вече не е възможно. Свържете се с администратор във вашата организация за достъп.",
       "emailLabel": "Имейл адрес",
       "emailPlaceholder": "contact@association.fr",
       "passwordLabel": "Парола",
@@ -316,6 +357,7 @@
     "vat": "ДДС",
     "totalDiscount": "Обща отстъпка",
     "total": "Total",
+    "paymentMethod": "Метод на плащане",
     "paymentTerms": "Условия за плащане",
     "paymentTermsPlaceholder": "например 30-дневно плащане",
     "notes": "Бележки",
@@ -371,7 +413,9 @@
     "viewDocument": "Вижте документа",
     "remove": "Изтрий",
     "uploading": "Качвам...",
-    "attach": "Прикачете изображение или PDF (максимум 4 MB)"
+    "attach": "Прикачете изображение или PDF (максимум 4 MB)",
+    "attachPdf": "Импортирайте PDF (максимум 4 MB)",
+    "pdfOnly": "Приемат се само PDF файлове"
   },
   "factures": {
     "form": {
@@ -646,13 +690,20 @@
       "amount": "Количество",
       "statusOptions": {
         "aPayer": "Плащане",
+        "partiellementPayee": "Частично платени",
         "payee": "Платено",
         "enLitige": "В спор",
         "annulee": "Отменено"
       },
-      "unmarkPaidWarning": "Този документ в момента се изплаща — премахването на този статус ще премахне разходите по финанси, както и всяко банково съгласуване.",
-      "markPaidNotice": "Отбелязването на този документ като платен автоматично ще създаде съответен разход във Финансови отчети.",
       "file": "Документ",
+      "payment": {
+        "add": "Запишете плащане",
+        "title": "Запишете плащане",
+        "paidOf": "платено",
+        "toasts": {
+          "recorded": "Записано плащане"
+        }
+      },
       "toasts": {
         "uploadError": "Грешка при качване на документа",
         "networkError": "Качване на мрежова грешка — опитай отново"
@@ -863,6 +914,10 @@
       "userMenu": {
         "title": "Вашият профил",
         "description": "Редактирайте профила си, сменете паролата си и излезте от това меню."
+      },
+      "help": {
+        "title": "Нуждаете се от помощ?",
+        "description": "Това е! Този бутон отваря Центъра за помощ: статии, често задавани въпроси, магьосник и новини. Можете също да рестартирате това посещение от основания ѝ текст."
       }
     }
   },
@@ -878,6 +933,8 @@
       "import": "Import",
       "reconciliation": "Равнение",
       "categories": "Категории",
+      "immobilisations": "Капиталови активи",
+      "journalManual": "Писане на ръчници",
       "reports": "Доклади",
       "bilan": "Баланс",
       "compteResultat": "Отчет за приходите",
@@ -894,9 +951,358 @@
       "title": "Скоро",
       "description": "Тази функция е в процес на разработка."
     },
+    "immobilisationsView": {
+      "title": "Капиталови активи",
+      "description": "Амортизируеми активи (материални и нематериални) и техният график за амортизация.",
+      "add": "Добави в кошницата",
+      "newTitle": "Нов капиталов актив",
+      "noImmobilisations": "Няма прекъсване",
+      "columns": {
+        "label": "Обозначение",
+        "entryValue": "Брутна стойност",
+        "accumulated": "Амортизация и амортизация",
+        "netValue": "Нетна стойност",
+        "usageStartDate": "Въвеждане в експлоатация"
+      },
+      "deleteConfirmTitle": "Да премахне тази обездвижване?",
+      "toasts": {
+        "created": "Създаден дълготраен актив",
+        "updated": "Актуализирани дълготрайни активи",
+        "deleted": "Премахване на дълготрайния актив"
+      },
+      "drillDown": {
+        "title": "Амортизация и амортизация",
+        "exercice": "Упражнения",
+        "dotation": "Персонал",
+        "accumulated": "Кумулация",
+        "netValue": "Нетна стойност",
+        "noDepreciations": "Към момента не е записана парична награда"
+      }
+    },
+    "immobilisationForm": {
+      "label": "Обозначение",
+      "labelPlaceholder": "Например: Лаптоп — Настолен компютър",
+      "expense": "Разходи за придобиване",
+      "expensePlaceholder": "Изберете разход, маркиран като \"капитал\"",
+      "noEligibleExpenses": "Няма допустими разходи — маркирайте разход като капитал и го категоризирайте на сметка 218300 (имот) или 205000 (нематериална).",
+      "entryValue": "Входна стойност",
+      "residualValue": "Остатъчна стойност",
+      "acquisitionDate": "Дата на придобиване",
+      "usageStartDate": "Дата на въвеждане в експлоатация",
+      "usefulLifeMonths": "Продължителност на употреба (месеци)"
+    },
+    "journalManual": {
+      "title": "Писане на ръчници",
+      "description": "Започнете запис в дневника за сумата, която решите — провизия, депозит, натрупване — когато никоя функция не я изчислява автоматично.",
+      "newEntry": "Ново писане",
+      "exercice": "Упражнения",
+      "date": "Дата",
+      "label": "Формулировка",
+      "labelPlaceholder": "Пример: Разпоредба за съдебни дела — дело 2026-04",
+      "account": "Разказ",
+      "accountPlaceholder": "Изберете сметка",
+      "debit": "Дебит",
+      "credit": "Кредит",
+      "totals": "Дебитни/кредитни суми",
+      "addLine": "Добавете ред",
+      "mustBalance": "Дебитът и кредитът трябва да са равни и различни от нула.",
+      "missingAccount": "Всяка линия трябва да има акаунт.",
+      "cancel": "Отмени",
+      "submit": "Започнете да пишете",
+      "createSuccess": "Създаден запис",
+      "noOpenExercice": "Без отворени упражнения — отваряйте или преоткривайте фискалната година преди да започнете ръчно въвеждане."
+    },
+    "bilan": {
+      "title": "Баланс",
+      "description": "Активи и пасиви на асоциацията в края на финансовата година.",
+      "exerciceLabel": "Упражнения",
+      "rubriqueColumnLabel": "Секция",
+      "noPreviousExercice": "Няма налична сравнение",
+      "actif": "Активна",
+      "totalActif": "Total Active",
+      "passif": "Пасивно",
+      "totalPassif": "Общи задължения",
+      "noAccountsInRubrique": "Няма баланс в този раздел",
+      "exportPdf": "Експорт PDF",
+      "exportDisabledTooltip": "Не може да се експортира окончателен баланс, докато горните аномалии не бъдат поправени.",
+      "emptyExercice": {
+        "title": "Няма фискална година",
+        "description": "Създайте нова фискална година, за да прегледате балансовия отчет."
+      },
+      "emptyLedger": {
+        "title": "Няма счетоводни записи",
+        "description": "Балансът ще бъде показан веднага щом приходите, разходите или дълготрайните активи бъдат отчетени през тази финансова година."
+      },
+      "rubriques": {
+        "immobilisationsCorporelles": "Материални капиталови активи",
+        "immobilisationsIncorporelles": "Нематериални дълготрайни активи",
+        "immobilisationsFinancieres": "Финансови дълготрайни активи",
+        "disponibilites": "Наличност",
+        "chargesConstateesDavance": "Предплатени разходи",
+        "creances": "Вземания",
+        "stocksEtEnCours": "Инвентар",
+        "fondsPropres": "Капитал",
+        "provisions": "Резерви",
+        "dettes": "Дългове",
+        "produitsConstatesDavance": "Отложен доход",
+        "fondsDedies": "Ограничени фондове"
+      },
+      "memoNotice": "Оценка — не е записана в регистъра, изключена от общите активи.",
+      "accountLabels": {
+        "reportANouveau": "Неразпределена печалба",
+        "resultatExercice": "Нетна печалба за годината",
+        "creancesCotisations": "Неизпълнени членски вноски",
+        "creancesFactures": "Неизпълнени фактури",
+        "stocksEstimatedValue": "Оценена стойност на инвентара",
+        "creancesFacturesEnRetard": "Просрочени фактури"
+      },
+      "pdf": {
+        "periodLabel": "Период от {start} до {end}"
+      },
+      "drillDown": {
+        "date": "Дата",
+        "label": "Етикет",
+        "origin": "Произход",
+        "debit": "Дебит",
+        "credit": "Кредит",
+        "noLines": "Няма записи за този акаунт.",
+        "sourceTypes": {
+          "INCOME": "Доходи",
+          "INCOME_REVERSAL": "Обръщане на доходите",
+          "EXPENSE": "Разходи",
+          "EXPENSE_REVERSAL": "Обръщане на разходите",
+          "BANK_TRANSACTION": "Банкова транзакция",
+          "ACCOUNT_TRANSFER": "Вътрешен трансфер",
+          "OPENING_BALANCE": "Начално балансиране",
+          "IMMOBILISATION_DEPRECIATION": "Обезценяване",
+          "IMMOBILISATION_ACQUISITION": "Придобиване на активи",
+          "FACTURE_RECUE_PAYMENT": "Плащане от доставчика",
+          "MANUAL": "Ръчно въвеждане"
+        }
+      },
+      "issues": {
+        "title": "Открити аномалии",
+        "messages": {
+          "ACCOUNT_WITHOUT_RUBRIQUE": "Сметката {code} — {label} има баланс, но не е прикрепена към никаква елемент от баланса.",
+          "ACTIF_PASSIF_MISMATCH": "Активът ({actif}) не съответства на пасивите ({passif}).",
+          "OPENING_BALANCE_MISSING": "Не бяха генерирани начални записи за това упражнение от \"{previousLabel}\".",
+          "TRIAL_BALANCE_UNBALANCED": "Общият дебит ({debit}) не съвпада с общия кредит ({credit}) за тази финансова година.",
+          "RESULT_DIVERGENCE": "Резултатът от журнала ({journal}) се различава от този на отчета за приходи и доходи ({statement}) — журналът може все още да не е актуален за тази финансова година (затваряне на фискалната година или рестартиране на синхронизацията)."
+        }
+      },
+      "memoNoHistory": "Няма исторически данни",
+      "caveats": {
+        "stocksMissingCostPrice": "{count} варианти без записана покупна стойност, изключени от оценката"
+      }
+    },
+    "compteResultat": {
+      "title": "Отчет за приходите и разходите",
+      "description": "Финансов резултат за финансовата година, сравнен с предходната година.",
+      "exerciceLabel": "Финансова година",
+      "categoryColumnLabel": "Категория",
+      "noPreviousExercice": "-",
+      "noPreviousExerciceMessage": "Няма предходна финансова година",
+      "export": "Експортиране",
+      "exportExcel": "Експортиране в Excel (подробно)",
+      "exportPdf": "Експортиране в PDF",
+      "products": "Приходи",
+      "totalProducts": "Общо приходи",
+      "expenses": "Разходи",
+      "totalExpenses": "Общо разходи",
+      "result": "Резултат за годината",
+      "resultZero": "Резултат за финансовата година: 0 €",
+      "surplus": "Излишък за годината",
+      "deficit": "Дефицит за годината",
+      "operationalResult": "Оперативен резултат",
+      "uncategorized": "За категоризиране",
+      "uncategorizedAlertIncome": "{count, plural, one {# приход трябва да бъде категоризиран} other {# прихода трябва да бъдат категоризирани}}",
+      "uncategorizedAlertExpense": "{count, plural, one {# разход трябва да бъде категоризиран} other {# разхода трябва да бъдат категоризирани}}",
+      "expandSection": "Покажи",
+      "collapseSection": "Скрий",
+      "noCategoriesInSection": "Няма категория в този раздел",
+      "sections": {
+        "FINANCIAL": "Финансов",
+        "EXCEPTIONAL": "Извънреден",
+        "OTHER": "Друго"
+      },
+      "inKind": {
+        "title": "Доброволни дарения в натура",
+        "employmentHeader": "Използване на приноси",
+        "amountHeader": "Количество",
+        "receivedHeader": "Получени приноси",
+        "totalEmployments": "Общо работни места",
+        "totalReceived": "Общо приноси",
+        "note": "Тези безплатни вноски се оценяват в евро. Те не водят до движение на пари и не променят резултата от финансовата година."
+      },
+      "drillDown": {
+        "date": "Дата",
+        "origin": "Произход",
+        "person": "Лице",
+        "payment": "Плащане",
+        "amount": "Сума",
+        "categorize": "Категоризирай",
+        "categorizePlaceholder": "Изберете категория",
+        "noTransactions": "Няма транзакции",
+        "categorizeSuccess": "Транзакцията е категоризирана"
+      },
+      "pdf": {
+        "periodLabel": "Период от {start} до {end}",
+        "operatingIncome": "ПРИХОДИ ОТ ОСНОВНА ДЕЙНОСТ",
+        "operatingExpense": "РАЗХОДИ ЗА ОСНОВНА ДЕЙНОСТ",
+        "operatingResult": "РЕЗУЛТАТ ОТ ОСНОВНА ДЕЙНОСТ",
+        "financialIncome": "ФИНАНСОВИ ПРИХОДИ",
+        "financialExpense": "ФИНАНСОВИ РАЗХОДИ",
+        "financialResult": "ФИНАНСОВ РЕЗУЛТАТ",
+        "exceptionalIncome": "ИЗВЪНРЕДНИ ПРИХОДИ",
+        "exceptionalExpense": "ИЗВЪНРЕДНИ РАЗХОДИ",
+        "exceptionalResult": "ИЗВЪНРЕДЕН РЕЗУЛТАТ",
+        "otherIncome": "ДРУГИ ПРИХОДИ",
+        "otherExpense": "ДРУГИ РАЗХОДИ",
+        "otherResult": "РЕЗУЛТАТ ОТ ДРУГИ ПРИХОДИ И РАЗХОДИ",
+        "uncategorizedSection": "ТРАНЗАКЦИИ ЗА КАТЕГОРИЗИРАНЕ",
+        "uncategorizedIncomeLabel": "Приходи за категоризиране",
+        "uncategorizedExpenseLabel": "Разходи за категоризиране",
+        "total": "Общо",
+        "grandTotal": "ОБЩО",
+        "categoryColumn": "Категория",
+        "inKindTitle": "Доброволни дарения в натура",
+        "inKindEmploymentHeader": "Използване на приноси",
+        "inKindAmountHeader": "Количество",
+        "inKindReceivedHeader": "Получени приноси",
+        "inKindTotalEmployments": "Общо работни места",
+        "inKindTotalReceived": "Общо приноси",
+        "inKindNote": "Тези безплатни вноски се оценяват в евро. Те не водят до движение на пари и не променят резултата от финансовата година."
+      },
+      "csv": {
+        "date": "Дата",
+        "type": "Тип",
+        "typeIncome": "Приход",
+        "typeExpense": "Разход",
+        "category": "Категория",
+        "uncategorized": "За категоризиране",
+        "accountingCode": "Счетоводен код",
+        "description": "Описание",
+        "amount": "Сума",
+        "paymentMethod": "Начин на плащане",
+        "origin": "Произход",
+        "reference": "Референция",
+        "exercice": "Финансова година"
+      },
+      "emptyExercice": {
+        "title": "Няма финансова година",
+        "description": "Създайте финансова година, за да генерирате отчета за приходите и разходите."
+      }
+    },
+    "previsionnel": {
+      "title": "Временен бюджет",
+      "description": "Сравнете планирания и реалния бюджет, по категории и проекти.",
+      "exerciceLabel": "Упражнения",
+      "emptyExercice": {
+        "title": "Няма фискална година",
+        "description": "Създайте фискална година, за да подготвите прогнозния си бюджет."
+      },
+      "tabs": {
+        "global": "Глобален бюджет",
+        "projects": "По проект"
+      },
+      "income": "Рецепти",
+      "expense": "Разходи",
+      "result": "Резултат",
+      "card": {
+        "previsto": "Планирано",
+        "diff": "Дисперсия",
+        "percent": "Завършено"
+      },
+      "columns": {
+        "category": "Категория",
+        "previsto": "Планирано",
+        "realizado": "Завършено",
+        "diffPercent": "Вариация / % реализирана",
+        "total": "Total"
+      },
+      "noCategories": "Няма категория.",
+      "uncategorized": "За категоризиране",
+      "noProject": "Без проект",
+      "addCategory": "Добавете категория",
+      "addCategoryModalTitle": "Добавете категория",
+      "exportFileNameGlobal": "Глобален прогноз-бюджет",
+      "export": {
+        "action": "Износ",
+        "excel": "Експортер Excel",
+        "pdf": "PDF за експортер",
+        "diffColumn": "Спред (€)",
+        "percentColumn": "% завършени",
+        "associationLabel": "Асоциация",
+        "exerciceLabel": "Упражнения"
+      },
+      "toasts": {
+        "categoryCreated": "Категория е създадена.",
+        "updateError": "Грешка при обновяване."
+      },
+      "copyBudget": {
+        "action": "Копирай предишния бюджет",
+        "modalTitle": "Копирай предишния бюджет",
+        "modalDescription": "Копира прогнозите на {previous} към {target}. Само прогнозите се копират, никога не се реализират сумите.",
+        "allProjects": "Всички проекти",
+        "noProjects": "Нямам планове.",
+        "archived": "АРХИВИРАНО",
+        "noProjectAlwaysCopied": "Прогнозите без проект винаги се копират.",
+        "copy": "Прието.",
+        "confirmOverwriteTitle": "Да заменя съществуващите прогнози?",
+        "confirmOverwriteDescription": "Това упражнение вече има ненулеви прогнози за някои категории. Копирането им от предходната фискална година ще надделее над тези стойности.",
+        "confirmOverwriteAction": "Замяна",
+        "toasts": {
+          "copied": "{count, plural, one {# прогнозата е копирана.} other {# прогнози копирани.}}",
+          "error": "Грешка при копиране."
+        }
+      },
+      "projectsTab": {
+        "count": "{count, plural, one {# проект} other {# проекти}}",
+        "createProject": "Създайте проект",
+        "createModalTitle": "Създайте проект",
+        "editProject": "Редакция",
+        "editModalTitle": "Проект за редактиране",
+        "name": "Име на проекта",
+        "namePlaceholder": "Например: Годишно пътуване",
+        "description": "Описание",
+        "descriptionPlaceholder": "Описание на факултета",
+        "archive": "Архив",
+        "unarchive": "Unarchive",
+        "archived": "АРХИВИРАНО",
+        "showArchived": "Вижте архивирани проекти ({count})",
+        "hideArchived": "Скрий архивирани проекти",
+        "noProjects": {
+          "title": "Няма проекти",
+          "description": "Създайте проект, който да следи бюджета си отделно от цялата асоциация."
+        },
+        "addCategoryToProject": "Добавете категория към проекта",
+        "addCategoryModalTitle": "Добавете категория към проекта",
+        "type": "Тип",
+        "typeIncome": "Рецепта",
+        "typeExpense": "Разходи",
+        "category": "Категория",
+        "selectCategoryPlaceholder": "Изберете категория",
+        "createNewCategory": "+ Създаване на нова категория",
+        "noAvailableCategories": "Всички такива категории вече са добавени към този проект.",
+        "removeCategoryFromProject": "Премахване от проекта",
+        "removeCategoryConfirmTitle": "Да премахна тази категория от проекта?",
+        "removeCategoryConfirmDescription": "« {category} \" ще бъде премахнат от бюджета на този проект. Ако вече има приходи или разходи, свързани с него, категорията автоматично ще се появи отново с реализираната сума.",
+        "toasts": {
+          "created": "Проектът е създаден.",
+          "updated": "Актуализиран вариант.",
+          "archived": "Архивиран проект.",
+          "unarchived": "Неархивиран проект.",
+          "categoryAdded": "Добавена категория към проекта.",
+          "categoryRemoved": "Категорията е премахната от проекта.",
+          "createError": "Грешка по време на създаването.",
+          "updateError": "Грешка при обновяване."
+        }
+      }
+    },
     "categoryForm": {
       "name": "Име",
       "namePlaceholder": "Пример: Приноси",
+      "noMatchingCategory": "Няма съвпадение на категория",
       "type": "Тип",
       "typeIncome": "Приход",
       "typeExpense": "Разходи",
@@ -909,8 +1315,11 @@
         "FINANCIAL": "Финансов",
         "EXCEPTIONAL": "Извънреден",
         "OTHER": "Друго",
-        "IN_KIND": "Вноски в натура"
+        "IN_KIND": "Вноски в натура",
+        "IMMOBILISATION": "Капитал"
       },
+      "accountingCodeLegacyOption": "{code} — (стар код, предстои да бъде актуализиран)",
+      "accountingCodeLegacyWarning": "Този счетоводен код вече не съществува в контролирания списък — изберете валидна сметка преди да спестявате.",
       "accountingCodeFormwiseNote": "Подакаунт, предложен от Formwise за отделно проследяване — не е задължителен официален номер.",
       "suggestedAccounts": "Предложени разкази",
       "seeOtherAccounts": "Вижте другите разкази",
@@ -921,8 +1330,7 @@
       "sectionUnverifiedNote": "Този акаунт не е разпознат — проверете секцията или го изберете от разширените опции.",
       "sectionToVerify": "Секция за проверка",
       "advancedOptions": "Разширени опции",
-      "revertToAutoSection": "Връщаме се към автоматичната секция",
-      "noMatchingCategory": "Няма съвпадение на категория"
+      "revertToAutoSection": "Връщаме се към автоматичната секция"
     },
     "bankAccountForm": {
       "bankName": "Име на банка",
@@ -959,6 +1367,8 @@
       "date": "Дата",
       "category": "Категория",
       "noCategory": "Няма категория",
+      "project": "Проект",
+      "noProject": "Няма проекти",
       "paymentMethodLabel": "Метод на плащане",
       "reference": "Референция",
       "referencePlaceholder": "Пример: VIR-2024-001",
@@ -978,6 +1388,8 @@
       "internalNote": "Вътрешна бележка",
       "internalNotePlaceholder": "Бележка до касиера...",
       "receipt": "Доказателство",
+      "isImmobilisation": "Дълготрайни активи (амортируем актив)",
+      "isImmobilisationHint": "Проверете за капитализируема покупка (например офис и компютърно оборудване) — след това можете да създадете график за амортизация във Финанси > Капиталови активи.",
       "toasts": {
         "uploadError": "Грешка при качване на касова бележка",
         "networkError": "Качване на мрежова грешка — опитай отново"
@@ -1057,6 +1469,33 @@
         "deleted": "Акаунтът е изтрит"
       }
     },
+    "transferForm": {
+      "fromAccount": "Източник",
+      "toAccount": "Дестинационен акаунт",
+      "amount": "Количество",
+      "date": "Дата",
+      "note": "Бележка",
+      "notePlaceholder": "Например превод на спестявания",
+      "toasts": {
+        "created": "Регистриран трансфер",
+        "updated": "Актуализиран трансфер",
+        "deleted": "Трансферът е изтрит"
+      }
+    },
+    "transfersView": {
+      "title": "Вътрешни трансфери",
+      "add": "Трансфер",
+      "newTransferTitle": "Нов трансфер между сметки",
+      "editTransferTitle": "Редакция Трансфер",
+      "deleteConfirmTitle": "Да изтрия този трансфер?",
+      "noTransfers": "Няма записани трансфери",
+      "columns": {
+        "accounts": "Разкази",
+        "amount": "Количество",
+        "date": "Дата",
+        "note": "Бележка"
+      }
+    },
     "categoriesView": {
       "title": "Категории",
       "description": "Управлявайте категориите приходи и разходи.",
@@ -1067,13 +1506,21 @@
       "newCategoryTitle": "Нова категория",
       "editCategoryTitle": "Редактиране на категория",
       "deleteConfirmTitle": "Да изтрия тази категория?",
-      "deleteConfirmInUse": "« {name} се използва от {count, plural, one {# приходи/разходи} other {# приходи/разходи}}. Тези записи ще се променят на \"Некатегоризирани\".",
       "toasts": {
         "created": "Създадена категория",
         "updated": "Актуализирана категория",
         "deleted": "Категорията е изтрита",
-        "seeded": "{count, plural, one {# инициализирана категория} other {# категории инициализирани}}"
+        "seeded": "{count, plural, one {# инициализирана категория} other {# категории инициализирани}}",
+        "archived": "Архивирана категория",
+        "reactivated": "Реактивирана категория"
       },
+      "archived": "Архивирано",
+      "reactivate": "Реактивирай",
+      "showArchived": "Вижте архивирани категории",
+      "transferLimitationNote": "Преводите между банкови сметки на асоциацията (вътрешна хазна) никога не трябва да се въвеждат като доходи или разходи — записвайте ги от счетоводството → сметките.",
+      "archiveConfirmTitle": "Архивиране на тази категория?",
+      "archiveConfirmInUse": "« {name} се използва от {count, plural, one {# приходи/разходи} other {# приходи/разходи}}. Той ще бъде архивиран (историята му ще бъде запазена) и вече не може да бъде избиран за нови операции.",
+      "archive": "Архив",
       "chooseTemplateTitle": "Изберете тип категория",
       "customCategory": "Създайте персонализирана категория",
       "alreadyExists": "Вече конфигурирано",
@@ -1283,6 +1730,7 @@
         "actions": "Действия"
       },
       "reconciledFallback": "Помирение",
+      "transferLabel": "Вътрешен трансфер — {from} → {to}",
       "allAccounts": "Всички акаунти",
       "noTransactions": "Няма транзакции за показване",
       "actions": {
@@ -1315,188 +1763,8 @@
       "suggestedMatches": "Предложени съвпадения",
       "typeIncome": "Приход",
       "typeExpense": "Разходи",
+      "typeTransfer": "Вътрешен трансфер",
       "confirm": "Валидирайте помирението"
-    },
-    "compteResultat": {
-      "title": "Отчет за приходите и разходите",
-      "description": "Финансов резултат за финансовата година, сравнен с предходната година.",
-      "exerciceLabel": "Финансова година",
-      "noPreviousExercice": "-",
-      "export": "Експортиране",
-      "exportExcel": "Експортиране в Excel (подробно)",
-      "exportPdf": "Експортиране в PDF",
-      "products": "Приходи",
-      "totalProducts": "Общо приходи",
-      "expenses": "Разходи",
-      "totalExpenses": "Общо разходи",
-      "result": "Резултат за годината",
-      "surplus": "Излишък за годината",
-      "deficit": "Дефицит за годината",
-      "emptyExercice": {
-        "title": "Няма финансова година",
-        "description": "Създайте финансова година, за да генерирате отчета за приходите и разходите."
-      },
-      "noPreviousExerciceMessage": "Няма предходна финансова година",
-      "resultZero": "Резултат за финансовата година: 0 €",
-      "operationalResult": "Оперативен резултат",
-      "uncategorized": "За категоризиране",
-      "uncategorizedAlertIncome": "{count, plural, one {# приход трябва да бъде категоризиран} other {# прихода трябва да бъдат категоризирани}}",
-      "uncategorizedAlertExpense": "{count, plural, one {# разход трябва да бъде категоризиран} other {# разхода трябва да бъдат категоризирани}}",
-      "expandSection": "Покажи",
-      "collapseSection": "Скрий",
-      "noCategoriesInSection": "Няма категория в този раздел",
-      "sections": {
-        "FINANCIAL": "Финансов",
-        "EXCEPTIONAL": "Извънреден",
-        "OTHER": "Друго"
-      },
-      "drillDown": {
-        "date": "Дата",
-        "origin": "Произход",
-        "person": "Лице",
-        "payment": "Плащане",
-        "amount": "Сума",
-        "categorize": "Категоризирай",
-        "categorizePlaceholder": "Изберете категория",
-        "noTransactions": "Няма транзакции",
-        "categorizeSuccess": "Транзакцията е категоризирана"
-      },
-      "pdf": {
-        "periodLabel": "Период от {start} до {end}",
-        "operatingIncome": "ПРИХОДИ ОТ ОСНОВНА ДЕЙНОСТ",
-        "operatingExpense": "РАЗХОДИ ЗА ОСНОВНА ДЕЙНОСТ",
-        "operatingResult": "РЕЗУЛТАТ ОТ ОСНОВНА ДЕЙНОСТ",
-        "financialIncome": "ФИНАНСОВИ ПРИХОДИ",
-        "financialExpense": "ФИНАНСОВИ РАЗХОДИ",
-        "financialResult": "ФИНАНСОВ РЕЗУЛТАТ",
-        "exceptionalIncome": "ИЗВЪНРЕДНИ ПРИХОДИ",
-        "exceptionalExpense": "ИЗВЪНРЕДНИ РАЗХОДИ",
-        "exceptionalResult": "ИЗВЪНРЕДЕН РЕЗУЛТАТ",
-        "otherIncome": "ДРУГИ ПРИХОДИ",
-        "otherExpense": "ДРУГИ РАЗХОДИ",
-        "otherResult": "РЕЗУЛТАТ ОТ ДРУГИ ПРИХОДИ И РАЗХОДИ",
-        "uncategorizedSection": "ТРАНЗАКЦИИ ЗА КАТЕГОРИЗИРАНЕ",
-        "uncategorizedIncomeLabel": "Приходи за категоризиране",
-        "uncategorizedExpenseLabel": "Разходи за категоризиране",
-        "total": "Общо",
-        "grandTotal": "ОБЩО",
-        "categoryColumn": "Категория",
-        "inKindTitle": "Доброволни дарения в натура",
-        "inKindEmploymentHeader": "Използване на приноси",
-        "inKindAmountHeader": "Количество",
-        "inKindReceivedHeader": "Получени приноси",
-        "inKindTotalEmployments": "Общо работни места",
-        "inKindTotalReceived": "Общо приноси",
-        "inKindNote": "Тези безплатни вноски се оценяват в евро. Те не водят до движение на пари и не променят резултата от финансовата година."
-      },
-      "csv": {
-        "date": "Дата",
-        "type": "Тип",
-        "typeIncome": "Приход",
-        "typeExpense": "Разход",
-        "category": "Категория",
-        "uncategorized": "За категоризиране",
-        "accountingCode": "Счетоводен код",
-        "description": "Описание",
-        "amount": "Сума",
-        "paymentMethod": "Начин на плащане",
-        "origin": "Произход",
-        "reference": "Референция",
-        "exercice": "Финансова година"
-      },
-      "categoryColumnLabel": "Категория",
-      "inKind": {
-        "title": "Доброволни дарения в натура",
-        "employmentHeader": "Използване на приноси",
-        "amountHeader": "Количество",
-        "receivedHeader": "Получени приноси",
-        "totalEmployments": "Общо работни места",
-        "totalReceived": "Общо приноси",
-        "note": "Тези безплатни вноски се оценяват в евро. Те не водят до движение на пари и не променят резултата от финансовата година."
-      }
-    },
-    "bilan": {
-      "title": "Баланс",
-      "description": "Активи и пасиви на асоциацията в края на финансовата година.",
-      "exerciceLabel": "Упражнения",
-      "rubriqueColumnLabel": "Секция",
-      "noPreviousExercice": "Няма налична сравнение",
-      "actif": "Активна",
-      "totalActif": "Total Active",
-      "passif": "Пасивно",
-      "totalPassif": "Общи задължения",
-      "noAccountsInRubrique": "Няма баланс в този раздел",
-      "emptyExercice": {
-        "title": "Няма фискална година",
-        "description": "Създайте нова фискална година, за да прегледате балансовия отчет."
-      },
-      "emptyLedger": {
-        "title": "Няма счетоводни записи",
-        "description": "Балансът ще бъде показан веднага щом приходите, разходите или дълготрайните активи бъдат отчетени през тази финансова година."
-      },
-      "rubriques": {
-        "immobilisationsCorporelles": "Материални капиталови активи",
-        "disponibilites": "Наличност",
-        "fondsPropres": "Капитал",
-        "dettes": "Дългове",
-        "immobilisationsIncorporelles": "Нематериални дълготрайни активи",
-        "immobilisationsFinancieres": "Финансови дълготрайни активи",
-        "chargesConstateesDavance": "Предплатени разходи",
-        "provisions": "Резерви",
-        "produitsConstatesDavance": "Отложен доход",
-        "creances": "Вземания",
-        "stocksEtEnCours": "Инвентар",
-        "fondsDedies": "Ограничени фондове"
-      },
-      "issues": {
-        "title": "Открити аномалии",
-        "messages": {
-          "ACCOUNT_WITHOUT_RUBRIQUE": "Сметката {code} — {label} има баланс, но не е прикрепена към никаква елемент от баланса.",
-          "ACTIF_PASSIF_MISMATCH": "Активът ({actif}) не съответства на пасивите ({passif}).",
-          "OPENING_BALANCE_MISSING": "Не бяха генерирани начални записи за това упражнение от \"{previousLabel}\".",
-          "TRIAL_BALANCE_UNBALANCED": "Общият дебит ({debit}) не съвпада с общия кредит ({credit}) за тази финансова година.",
-          "RESULT_DIVERGENCE": "Резултатът от журнала ({journal}) се различава от този на отчета за приходи и доходи ({statement}) — журналът може все още да не е актуален за тази финансова година (затваряне на фискалната година или рестартиране на синхронизацията)."
-        }
-      },
-      "accountLabels": {
-        "reportANouveau": "Неразпределена печалба",
-        "resultatExercice": "Нетна печалба за годината",
-        "creancesCotisations": "Неизпълнени членски вноски",
-        "creancesFactures": "Неизпълнени фактури",
-        "stocksEstimatedValue": "Оценена стойност на инвентара",
-        "creancesFacturesEnRetard": "Просрочени фактури"
-      },
-      "exportPdf": "Експорт PDF",
-      "exportDisabledTooltip": "Не може да се експортира окончателен баланс, докато горните аномалии не бъдат поправени.",
-      "pdf": {
-        "periodLabel": "Период от {start} до {end}"
-      },
-      "drillDown": {
-        "date": "Дата",
-        "label": "Етикет",
-        "origin": "Произход",
-        "debit": "Дебит",
-        "credit": "Кредит",
-        "noLines": "Няма записи за този акаунт.",
-        "sourceTypes": {
-          "INCOME": "Доходи",
-          "INCOME_REVERSAL": "Обръщане на доходите",
-          "EXPENSE": "Разходи",
-          "EXPENSE_REVERSAL": "Обръщане на разходите",
-          "BANK_TRANSACTION": "Банкова транзакция",
-          "ACCOUNT_TRANSFER": "Вътрешен трансфер",
-          "OPENING_BALANCE": "Начално балансиране",
-          "IMMOBILISATION_DEPRECIATION": "Обезценяване",
-          "IMMOBILISATION_ACQUISITION": "Придобиване на активи",
-          "FACTURE_RECUE_PAYMENT": "Плащане от доставчика",
-          "MANUAL": "Ръчно въвеждане"
-        }
-      },
-      "memoNotice": "Оценка — не е записана в регистъра, изключена от общите активи.",
-      "memoNoHistory": "Няма исторически данни",
-      "caveats": {
-        "stocksMissingCostPrice": "{count} варианти без записана покупна стойност, изключени от оценката"
-      }
     }
   },
   "evenements": {
@@ -1711,6 +1979,10 @@
         "titlePlaceholder": "Общо събрание 2026",
         "dateLabel": "Начална дата",
         "createButton": "Създаване"
+      },
+      "summary": {
+        "eventCount": "Брой събития",
+        "participants": "Участници"
       },
       "bilan": {
         "show": "Покажи обобщението",
@@ -1929,6 +2201,26 @@
         "qrRevoked": "QR кодът е изключен",
         "noMembersToExport": "Няма членове за износ",
         "linkCopied": "Връзката е копирана"
+      },
+      "payment": {
+        "sectionTitle": "Плащане",
+        "modeLabel": "Плащане",
+        "modeNow": "Платено сега",
+        "modeLater": "Ще се оправи по-късно",
+        "laterHint": "Мястото е резервирано. След това го осребрете с \"Mark Paid\".",
+        "methodLabel": "Метод на плащане",
+        "tierLabel": "Цена",
+        "methods": {
+          "ESPECES": "Видове",
+          "CHEQUE": "Проверете",
+          "VIREMENT": "Трансфер"
+        },
+        "encaisserTitle": "Плащане на пари",
+        "encaisserConfirm": "Плащане на пари",
+        "amountHint": "Сума: {amount}",
+        "selectedMember": "Избран член: {name}",
+        "selectMemberHint": "Изберете член от горния списък.",
+        "addSubmit": "Добави в кошницата"
       }
     },
     "avaliacoes": {
@@ -1938,8 +2230,14 @@
         "participant": "Участник",
         "rating": "Бележка",
         "comment": "Коментар",
-        "date": "Дата"
-      }
+        "date": "Дата",
+        "site": "На уебсайта"
+      },
+      "anonymousNote": "Анонимен",
+      "noConsent": "Без съгласие",
+      "featureToggleLabel": "Ревю на шоуто {name} На сайта",
+      "bulkFeatureAll": "Покажи всичко на място",
+      "bulkUnfeatureAll": "Премахнете всичко от сайта"
     },
     "detail": {
       "backToList": "Обратно към събитията",
@@ -1965,7 +2263,9 @@
         "saved": "Запазени промени",
         "saveError": "Записване на грешки",
         "linkCopied": "Връзката е копирана",
-        "linkCopyError": "Не може да се копира — изберете линка ръчно."
+        "linkCopyError": "Не може да се копира — изберете линка ръчно.",
+        "registrationsClosed": "Регистрацията е затворена",
+        "registrationsReopened": "Регистрациите бяха възстановени"
       },
       "publishBlocked": {
         "unsavedToast": "Запазете следните раздели преди публикуване: {steps}",
@@ -1983,6 +2283,7 @@
           "standardFieldsHint": "Полета са поискани при регистрация",
           "phoneLabel": "Телефон",
           "addressLabel": "Адрес",
+          "countryLabel": "Държава на пребиваване",
           "requirement": {
             "hidden": "Маскирани",
             "optional": "По избор",
@@ -2029,6 +2330,11 @@
         }
       },
       "titleRequired": "Заглавието е задължително",
+      "closeRegistrationsButton": "Затваряне на регистрациите",
+      "reopenRegistrationsButton": "Преоткриване на регистрациите",
+      "registrationsClosedNotice": "Надписи завършват",
+      "closeRegistrationsConfirmTitle": "Затвори регистрациите?",
+      "closeRegistrationsConfirmDescription": "Никой няма да може да се регистрира онлайн. Все още ще можете да добавяте участници от списъка с участници.",
       "bilanButton": "Обобщение"
     },
     "discountCodes": {
@@ -2310,6 +2616,13 @@
       "liveSince": "Продължава оттогава {mins} мин",
       "durationLessThanMin": "< 1 min",
       "durationMin": "{mins} мин",
+      "activeMeetingWarning": {
+        "title": "{count, plural, one {Вече започва среща} other {# срещи вече са в ход}}",
+        "description": "{count, plural, one {Започна тази среща и още не си я завършил. Присъедини се към нея или все пак създай нова.} other {Започнали сте тези срещи и още не сте ги приключили. Присъединете се към една или все пак създайте нова.}}",
+        "joinExisting": "Присъединете се",
+        "createNew": "Все пак създай нова среща",
+        "alreadyEnded": "Тази среща приключи сама по себе си. Можеш да създадеш нова среща."
+      },
       "toasts": {
         "meetingStarted": "Започна срещата",
         "meetingScheduled": "Насрочена среща",
@@ -2715,8 +3028,12 @@
       "validation": {
         "nameRequired": "Задължително е име",
         "atLeastOneVariant": "Изисква се поне един вариант",
-        "variantLabelRequired": "Всеки вариант трябва да има етикет"
+        "variantLabelRequired": "Всеки вариант трябва да има етикет",
+        "weightRequiredWhenShippable": "Теглото е задължително за вариант с пощенска доставка"
       },
+      "shippableColumn": "Корабоплаване",
+      "weightColumn": "Тегло (g)",
+      "weightPlaceholder": "500",
       "costPriceColumn": "Себестойност"
     },
     "view": {
@@ -2738,12 +3055,14 @@
       "variantsCount": "{count, plural, one {# вариант} other {# варианти}}",
       "actions": {
         "edit": "Редактирай",
+        "view": "Изглед",
         "delete": "Изтрий",
         "deleteAlreadyOrdered": "Изтрий (вече поръчано)",
         "markPaid": "Марк плати",
         "cancelOrder": "Отмени",
         "downloadReceipt": "Изтеглете касовата бележка",
-        "editPaymentMethod": "Промяна на начина на плащане"
+        "editPaymentMethod": "Промяна на начина на плащане",
+        "refundOrder": "Възнаграждение"
       },
       "noProduct": "Няма продукти",
       "noOrder": "Без заповеди",
@@ -2774,7 +3093,9 @@
       "toasts": {
         "productDeleted": "Прекратен продукт",
         "deleteError": "Изтриване на грешки",
-        "orderUpdated": "Актуализиран ред"
+        "orderUpdated": "Актуализиран ред",
+        "orderNotInRecentList": "Този ред не е в последните 50. Използвайте филтрите, за да го намерите.",
+        "refundSuccess": "Поръчката е възстановена"
       }
     },
     "payModal": {
@@ -2784,6 +3105,13 @@
       "orderedTotal": "Пълен ред",
       "restockNoticePlural": "{count, plural, one {Запасите на неизтегления предмет ще бъдат възстановени.} other {Запасът от несъбрани предмети ще бъде възстановен.}}",
       "restockNoticeStatic": "Запасът от несъбрани предмети ще бъде възстановен."
+    },
+    "refundModal": {
+      "title": "Върнете парите за поръчката",
+      "confirmWithAmount": "Възнаграждение {amount}",
+      "stripeNotice": "Възстановяването ще бъде автоматично по картата на клиента.",
+      "manualNotice": "Това действие актуализира инвентара и счетоводството — не забравяйте да върнете парите на клиента (в брой, чек или трансфер).",
+      "shippingIncludedNotice": "Разходи за доставка ({amount}) са включени в това възстановяване."
     },
     "stripeConfirm": {
       "title": "Маркиране като платено?",
@@ -2991,6 +3319,7 @@
       "noDonations": "Няма регистрирани дарения",
       "noDonationsFiltered": "Никакви дарения не съответстват на тези филтри.",
       "resetFilters": "Нулиране",
+      "totalLabel": "Total",
       "donorsLabel": "Дарители",
       "averageLabel": "Средно дарение",
       "pendingTitle": "Чакане за събиране",
@@ -3121,6 +3450,7 @@
           "title": "Форма",
           "standardFieldsHint": "Полета, поискани от дарителя",
           "addressLabel": "Адрес",
+          "countryLabel": "Държава на пребиваване",
           "birthDateLabel": "Дата на раждане",
           "phoneLabel": "Стационарен телефон",
           "mobileLabel": "Мобилни",
@@ -3178,7 +3508,8 @@
           "siteSectionReplaceWarningPublished": "Тази секция в момента показва „{title}“. При запазване този формуляр ще го замени; „{title}“ ще остане достъпен чрез своя линк.",
           "siteSectionReplaceWarningDraft": "Тази секция в момента показва „{title}“. Този формуляр ще го замени веднага щом бъде публикуван; „{title}“ ще остане достъпен чрез своя линк.",
           "siteSectionRemovedWarning": "При запазване секцията „{section}“ ще бъде скрита на уебсайта.",
-          "datesOrderError": "Крайната дата трябва да е по-късно от датата на откриване."
+          "datesOrderError": "Крайната дата трябва да е по-късно от датата на откриване.",
+          "siteSectionPuckHint": "Нов редактор на сайта блокира"
         }
       }
     },
@@ -3394,6 +3725,8 @@
           "kindField": "Тип",
           "kindOneOff": "Точен",
           "kindRecurring": "Повтарящ се (годишно)",
+          "recurringNeedsOnlinePayment": "За всеки онлайн абонамент се плаща повтаряща се такса: докато онлайн плащането не е активирано, във формата се появява \"Недостъпно\".",
+          "recurringNeedsOnlinePaymentLink": "Настройте онлайн плащане",
           "itemTypeField": "Природа",
           "itemTypeMembership": "Процент на членство",
           "itemTypeAddon": "Платена опция",
@@ -3410,6 +3743,7 @@
           "title": "Форма",
           "standardFieldsHint": "Полета са поискани при регистрация",
           "addressLabel": "Адрес",
+          "countryLabel": "Държава на пребиваване",
           "birthDateLabel": "Дата на раждане",
           "phoneLabel": "Стационарен телефон",
           "mobileLabel": "Мобилни",
@@ -3432,6 +3766,8 @@
           "fieldLabelPlaceholder": "Напр. Професия",
           "fieldType": "Тип",
           "fieldRequired": "Задължително",
+          "fieldSensible": "Чувствителни данни",
+          "fieldSensibleRequiredHint": "Тъй като това поле е чувствително и задължително, мениджър без достъп до чувствителни данни няма да може да създаде или модифицира член без достъп до него.",
           "typeText": "Текст",
           "typeNumber": "Брой",
           "typeSelect": "Падащ списък",
@@ -3472,7 +3808,8 @@
           "siteSectionPlaceholder": "Избери...",
           "siteSectionCreateOption": "+ Създай нов раздел",
           "siteSectionCreateError": "Грешка при създаването на секцията за сайта.",
-          "siteSectionRequiredError": "Изберете секцията на сайта, в която да публикувате тази форма."
+          "siteSectionRequiredError": "Изберете секцията на сайта, в която да публикувате тази форма.",
+          "siteSectionPuckHint": "Нов редактор на сайта блокира"
         },
         "products": {
           "title": "Продукти",
@@ -3657,6 +3994,12 @@
       "isDefaultHint": "Автоматично се използва като предложено съобщение за тази категория (например напомняния за приноси, изпратени от страницата за приноси).",
       "emailSubject": "Тема на имейла",
       "emailSubjectPlaceholder": "Напомняне: вашият принос '{{annee_cotisation}}'",
+      "modeText": "Прост текст",
+      "modeTextHint": "Едно поле с богат текст.",
+      "modeBlocks": "Визуален дизайн",
+      "modeBlocksHint": "Пренареждащи се блокове: текст, изображение, бутон, разделител.",
+      "modeBlocksProOnly": "Запазено е за Pro плана. Ъпгрейднете до следващия план в таба Абонамент, за да го активирате.",
+      "modeLockedHint": "Режимът на редактиране (прост текст или визуален дизайн) се задава, когато шаблонът е създаден и не може да се промени — създайте нов шаблон за използване на другия режим.",
       "variablesHint": "Променливи — влачене в темата, тялото или текстовото съобщение",
       "variables": {
         "prenom": "Първо име",
@@ -3687,6 +4030,8 @@
       "previewTitle": "Преглед на съобщението",
       "previewDescription": "Рендериране с извадни данни",
       "previewSubject": "Цел",
+      "previewBrandingHint": "Заглавието, основата и подписът идват от визуалната идентичност на асоциацията.",
+      "previewBrandingLink": "Редакция в настройките",
       "toasts": {
         "updated": "Обновен модел",
         "created": "Създаден шаблон",
@@ -3695,6 +4040,26 @@
       "validation": {
         "required": "Задължително"
       }
+    },
+    "blockEditor": {
+      "empty": "Добавете първи блок по-долу.",
+      "incomplete": "Блокът не е пълен (изображение без файл или бутон без текст/връзка).",
+      "uploadError": "Грешка при качване на изображение — опитайте отново.",
+      "dragHandle": "Пренареждане",
+      "duplicate": "Дубликат",
+      "remove": "Изтрий",
+      "textPlaceholder": "Напиши текста си...",
+      "imageLink": "Връзка (по избор)",
+      "buttonLabel": "Текст на бутона",
+      "buttonLabelPlaceholder": "Научете повече",
+      "buttonUrl": "Бутон Линк",
+      "urlHint": "https://... или променлива като '{{lien_portal}}'",
+      "buttonColor": "Предистория",
+      "buttonTextColor": "Текст",
+      "addText": "Текст",
+      "addImage": "Изображение",
+      "addButton": "Бутон",
+      "addDivider": "Сепаратор"
     },
     "rulesManager": {
       "title": "Правила за автоматизация",
@@ -3921,6 +4286,7 @@
         "paiements": "Плащания",
         "abonnement": "Абонамент",
         "integrations": "Интеграции",
+        "equipe": "Екип и достъп",
         "rgpd": "ОРЗД"
       },
       "associationInfo": "Информация за асоциацията",
@@ -3928,6 +4294,10 @@
       "city": "Град",
       "cityPlaceholder": "Париж",
       "country": "Кънтри",
+      "contactEmail": "Изпратете имейл на контакта",
+      "contactEmailPlaceholder": "contact@monassociation.fr",
+      "contactEmailHint": "Използва се като име и адрес за отговор (Reply-To) на всички имейли, изпращани от името на асоциацията (абонаменти, събития, дарения, съобщения и др.).",
+      "contactEmailEmptyWarning": "Не е настроено — отговорите на членовете на вашите имейли няма да достигнат до вашата организация.",
       "toasts": {
         "saved": "Запазени настройки"
       }
@@ -4012,7 +4382,41 @@
       "title": "Визуална идентичност",
       "subtitle": "Логото е показано на таблото, оферти/фактури, листа за присъствие и публичен уебсайт.",
       "logo": "Лого",
+      "color": "Цвят",
+      "colorHint": "Използва се в заглавия на имейли и бутони на екрана.",
+      "senderName": "Името на изпращача",
+      "senderNameHint": "Името, показано като подател на имейлите. Оставете празно, за да използвате името на асоциацията.",
+      "signature": "Подпис",
+      "signatureHint": "Добавено към края на ръчно съставени или автоматизирани имейли.",
+      "footerText": "Текст в долния колонел",
+      "footerTextHint": "Замества стандартния текст в долната част на всички имейли. Оставя празен, за да запази стандартния текст.",
+      "footerTextPlaceholder": "Автоматичен имейл, изпратен от {name}…",
+      "footerStyles": {
+        "classic": "Класика",
+        "bold": "Акцентирани",
+        "minimal": "Минимализъм"
+      },
+      "footer": {
+        "title": "Основен колонел",
+        "subtitle": "Стил, цвят, текст и социални медии се показват в долната част на всеки имейл.",
+        "color": "Фонов цвят",
+        "socialLinks": "Социални медии",
+        "socialPlatforms": {
+          "facebook": "Facebook",
+          "instagram": "Instagram",
+          "linkedin": "LinkedIn",
+          "x": "X (Twitter)"
+        }
+      },
       "proOnlyText": "Персонализираното лого (табло, оферти/фактури, работно време) е запазено за Pro плана. Ъпгрейднете до следващия план в таба Абонамент, за да го активирате.",
+      "preview": {
+        "label": "Обща информация",
+        "placeholderName": "Твоята асоциация",
+        "sampleHeading": "Здравей, Първо Име,",
+        "sampleButton": "Вижте подробности",
+        "defaultFooter": "Автоматичен имейл, изпратен от {name} чрез Formwise. \nМоля, не отговаряйте директно на този имейл.",
+        "fromLabel": "Изпращач: {name}"
+      },
       "toasts": {
         "updated": "Актуализирана визуална идентичност",
         "uploadError": "Логото при качване на грешка"
@@ -4055,16 +4459,17 @@
       "status": {
         "trial": "Безплатен пробен период",
         "active": "Активна",
+        "paymentPending": "Плащане в процес",
         "pastDue": "Закъсняло плащане",
         "suspended": "Временно отстранен",
-        "cancelled": "Отменено",
-        "paymentPending": "Плащане в процес"
+        "cancelled": "Отменено"
       },
       "planLabel": "Формула {tier}",
       "membersCount": "{count} / {limit} Членове",
       "loadError": "Не мога да възстановя статуса на абонамента. Опитайте отново по-късно.",
       "trialEndsAt": "Вашият безплатен пробен период изтича на {date}. След тази дата регистрираната карта ще бъде дебитирана автоматично, освен ако не бъде анулирана преди тази дата.",
       "activeText": "Вашият абонамент е активен. Можете да разглеждате фактурите си, да променяте начина си на плащане или да анулирате по всяко време от управлението на Stripe.",
+      "paymentPendingText": "SEPA Direct Debit за вашия абонамент се обработва. Може да отнеме няколко работни дни, докато се появи във вашата банкова сметка.",
       "pastDueText": "Последното таксуване се провали. Актуализирайте начина си на плащане, за да избегнете спиране на акаунта си.",
       "suspendedText": "Абонаментът ви е спрян след няколко неуспешни плащания. Отидете на специалния екран, за да го активирате отново, експортирайте данните си или да го анулирате завинаги.",
       "cancelledText": "Абонаментът ви е отменен. Свържете се с поддръжката, за да го активирате отново.",
@@ -4179,6 +4584,63 @@
       "subtitleTrialExpired": "Безплатният ви пробен период приключи. Изберете план и въведете метод на плащане, за да продължите.",
       "confirmButtonSubscribe": "Потвърдете и се абонирайте"
     },
+    "teamAccess": {
+      "title": "Екип и достъп",
+      "description": "Кой има достъп до управлението на асоциацията и какво всеки може да види или промени.",
+      "howToAdd": "За да добавите някого, задайте му роля от списъка с членове или ролята \"Член на екипа\", за да му отвори само определени домейни. Viewer: може да разглежда без да редактира нищо.",
+      "empty": "В момента няма членове на екипа.",
+      "columns": {
+        "name": "Име",
+        "role": "Функция",
+        "access": "Достъп"
+      },
+      "you": "Ти",
+      "summary": {
+        "administrator": "Администратор",
+        "none": "Няма достъп",
+        "editAndRead": "{edit, plural, one {# поле} other {# райони}} В издателската дейност · {read} Възпроизвеждане",
+        "editOnly": "{edit, plural, one {# поле} other {# райони}} В издателската дейност",
+        "readOnly": "{read, plural, one {# поле} other {# райони}} Възпроизвеждане"
+      },
+      "editTitle": "Промяна на достъпа",
+      "editDescription": "Функция и достъп до {name}.",
+      "roleLabel": "Функция",
+      "profileLabel": "Профил",
+      "profiles": {
+        "administrator": "Администратор",
+        "role": "Профил на ролята",
+        "custom": "Персонализирано"
+      },
+      "administratorSwitch": "Администратор (настройки, фактуриране, достъп)",
+      "administratorHint": "Пълен достъп до всички домейни.",
+      "memberRoleHint": "Обикновен член няма достъп до управление: той използва само своята членска зона.",
+      "adminRoleHint": "Ролята на администратор винаги дава пълен достъп.",
+      "areasLabel": "Достъп по домейн",
+      "levels": {
+        "none": "Няма",
+        "read": "Читател",
+        "edit": "Издател"
+      },
+      "areas": {
+        "dashboard": "Табло и активност",
+        "membres": "Членове",
+        "sensible": "Чувствителни данни на членовете",
+        "adhesions": "Членства и членски вноски",
+        "dons": "Дарения",
+        "evenements": "Събития и билети",
+        "boutique": "Магазин",
+        "communication": "Комуникация (имейли, SMS, сондажи)",
+        "actualites": "Новини",
+        "comptabilite": "Счетоводство (финанси, оферти, фактури, доставчици)",
+        "reunions": "Срещи",
+        "materiel": "Материал",
+        "site": "Уебсайт",
+        "documents": "Документи на асоциацията"
+      },
+      "toasts": {
+        "saved": "Актуализиран достъп"
+      }
+    },
     "erasureRequests": {
       "title": "Изтриване на данни (ОРЗД)",
       "description": "Заявки за окончателно изтриване на лични данни на член, съгласно член 17 от ОРЗД. Обработват се автоматично всяка нощ, освен ако не са поставени на изчакване.",
@@ -4219,11 +4681,6 @@
       },
       "automaticOrigin": "Автоматично отбелязано — неактивен повече от 3 години",
       "inactiveSince": "напуснал на {date}"
-    },
-    "teamAccess": {
-      "areas": {
-        "sensible": "Чувствителни данни на членовете"
-      }
     }
   },
   "cotisations": {
@@ -4287,6 +4744,7 @@
         "enAttente": "В процес на изчакване",
         "payees": "Платено",
         "exonerees": "Освободен",
+        "aEncaisser": "Да бъде осребрен",
         "partiellementPayees": "Частично платено",
         "enRetard": "Късно",
         "annulees": "Отменено"
@@ -4313,28 +4771,6 @@
       "allCategories": "Всички категории",
       "allRenewals": "Всички подновявания",
       "resetFilters": "Нулиране",
-      "renewal": {
-        "automatic": "Автоматично",
-        "manual": "Ръчно"
-      },
-      "summary": {
-        "aPagar": " · {amount} общо",
-        "recebido": " · {amount} получено",
-        "saldo": " · {amount} остатък"
-      },
-      "distribution": {
-        "show": "Преглед на разпределението",
-        "hide": "Скриване на разпределението",
-        "category": "Категория членство",
-        "renewal": "Подновяване",
-        "count": "Брой приноси",
-        "aPagar": "Обща сума",
-        "recebido": "Получена сума",
-        "saldo": "Остатъчен баланс",
-        "total": "Общо",
-        "noCategory": "Без категория",
-        "empty": "Нито една такса не отговаря на тези филтри."
-      },
       "mergeTiers": {
         "filterOption": "Обединяване на дублиращи се категории",
         "title": "Обединяване на дублиращи се категории",
@@ -4357,6 +4793,28 @@
         "priceFreeAmount": "Безплатна сума",
         "priceFreeAmountFrom": "Свободна сума от {amount}",
         "priceRecurring": "{amount}/година"
+      },
+      "renewal": {
+        "automatic": "Автоматично",
+        "manual": "Ръчно"
+      },
+      "summary": {
+        "aPagar": " · {amount} общо",
+        "recebido": " · {amount} получено",
+        "saldo": " · {amount} остатък"
+      },
+      "distribution": {
+        "show": "Преглед на разпределението",
+        "hide": "Скриване на разпределението",
+        "category": "Категория членство",
+        "renewal": "Подновяване",
+        "count": "Брой приноси",
+        "aPagar": "Обща сума",
+        "recebido": "Получена сума",
+        "saldo": "Остатъчен баланс",
+        "total": "Общо",
+        "noCategory": "Без категория",
+        "empty": "Нито една такса не отговаря на тези филтри."
       }
     },
     "reminderModal": {
@@ -4396,6 +4854,14 @@
       "title": "Запишете плащане",
       "amount": "Количество",
       "remainingBalance": "Неизплатен баланс: {amount}",
+      "installmentChoice": "Това плащане се изплаща",
+      "installmentNext": "Краен срок {position}",
+      "installmentThrough": "До зрялост {position}",
+      "installmentPaid": "Краен срок {position} — платено",
+      "installmentPartlyPaid": "(остава да се плати {amount})",
+      "lateSuffix": " (късно)",
+      "customAmount": "Друга сума",
+      "installmentsInOrder": "Плащанията покриват вноските по ред.",
       "method": "Метод на плащане",
       "date": "Дата на плащане",
       "note": "Бележка",
@@ -4421,6 +4887,125 @@
       "annulee": "Това дарение е отменено."
     }
   },
+  "groupes": {
+    "view": {
+      "title": "Групи",
+      "countTotal": "{count, plural, =0 {Няма групи} one {# група} other {# групи}}",
+      "count": "{count, plural, =0 {Няма резултати} one {# резултат} other {# резултати}}",
+      "searchPlaceholder": "Търси група...",
+      "noResultsFor": "Няма групи, които да съвпадат \" {search} »",
+      "noGroupe": "В момента няма групи",
+      "allStatuses": "Всички статуси",
+      "statusFilter": {
+        "actifs": "Активни съставки",
+        "archives": "Архивирано"
+      },
+      "addTitle": "Създайте група",
+      "editTitle": "Редактирай групата",
+      "columns": {
+        "nome": "Име",
+        "membres": "Членове",
+        "responsaveis": "Мениджъри",
+        "lastChamada": "Последно повикване",
+        "status": "Статус"
+      },
+      "statusBadge": {
+        "archive": "Архивирано"
+      },
+      "actions": {
+        "edit": "Редакция",
+        "archive": "Архив",
+        "unarchive": "Unarchive"
+      },
+      "archiveConfirmTitle": "Архив « {name} » ?",
+      "archiveConfirmDescription": "Историята на обажданията се запазва. Групата вече няма да се появява в активния списък.",
+      "unarchiveConfirmTitle": "Unarchive \" {name} » ?",
+      "toasts": {
+        "created": "Създадена група",
+        "updated": "Актуализирана група",
+        "archived": "Архивирана група",
+        "unarchived": "Неархивирана група"
+      }
+    },
+    "form": {
+      "nomeLabel": "Име на групата",
+      "nomePlaceholder": "Например младежки отбор, четвъртъчен хор...",
+      "descricaoLabel": "Описание",
+      "descricaoPlaceholder": "По избор"
+    },
+    "detail": {
+      "backToList": "Обратно към групите",
+      "membresTitle": "Членове",
+      "addMembre": "Добавете член",
+      "allMemberTypes": "Всички видове",
+      "searchMembrePlaceholder": "Търси член...",
+      "searchOrFilterPrompt": "Потърсете член или изберете тип по-горе",
+      "noResultsForMembre": "Няма съвпадение на членове \" {search} »",
+      "noResultsForType": "Няма такъв член",
+      "candidatesFound": "{count, plural, one {# намерен член} other {# намерени членове}}",
+      "selectAllCandidates": "Изберете всички",
+      "deselectAllCandidates": "Де-селект All",
+      "selectAllTruncated": "Повече от 500 членове отговаряха на този филтър — бяха избрани само топ 500.",
+      "unselectCandidate": "Премахване на селекциите {name}",
+      "addSelectedMembres": "Добави ({count})",
+      "membresAddedToast": "{count, plural, =0 {Без добавени членове} one {# член добави} other {# членове са добавени}}",
+      "noMembre": "Няма членове на тази група",
+      "removeMembreConfirmTitle": "Премахване {name} на групата?",
+      "removeMembreConfirmDescription": "Историята му на присъствие в тази група е запазена.",
+      "responsaveisTitle": "Мениджъри",
+      "addResponsavel": "Добавете мениджър",
+      "noResponsavel": "Няма назначен служител",
+      "removeResponsavelConfirmTitle": "Премахване {name} От отговорните?",
+      "appelsTitle": "Обжалвания",
+      "faireAppel": "Обади се",
+      "noAppel": "В момента няма обаждания",
+      "noMembreForAppel": "Добавете поне един член към групата, преди да можете да направите обаждането.",
+      "newAppelDateLabel": "Дата",
+      "newAppelSubmit": "Start Call",
+      "appelColumns": {
+        "date": "Дата",
+        "presents": "Настояще",
+        "absents": "Отсъстващ",
+        "justifies": "Оправдано",
+        "nonRenseignes": "Не е уточнено"
+      },
+      "reopenExistingTitle": "Вече съществува призив за тази ниша",
+      "reopenExistingDescription": "Можеш да го отвориш, за да го гледаш или редактираш, вместо да създаваш нов.",
+      "reopenExistingConfirm": "Отворен съществуващ позив"
+    },
+    "appel": {
+      "backToGroupe": "Обратно към групата",
+      "dateLabel": "Дата",
+      "horarioLabel": "График",
+      "horarioPlaceholder": "По желание, например 14:00 ч.",
+      "activityLabel": "Дейност",
+      "activityPlaceholder": "По избор",
+      "markAllPresent": "Маркирайте всички присъстващи",
+      "syncMembres": "Добавете нови членове на групата",
+      "counts": {
+        "presente": "Настояще",
+        "ausente": "Отсъстващ",
+        "ausenciaJustificada": "Оправдано",
+        "naoInformado": "Не е уточнено"
+      },
+      "status": {
+        "NAO_INFORMADO": "Не е уточнено",
+        "PRESENTE": "Настояще",
+        "AUSENTE": "Отсъстващ",
+        "AUSENCIA_JUSTIFICADA": "Оправдано"
+      },
+      "save": "Рекорд Кол",
+      "export": "Износ",
+      "exportPdf": "PDF",
+      "exportPdfBlank": "Празен PDF (за печат)",
+      "exportExcel": "Excel",
+      "toasts": {
+        "saved": "Записан разговор",
+        "noMembersToExport": "Няма членове за износ",
+        "synced": "{count, plural, =0 {Няма нови членове} one {# член добави} other {# членове са добавени}}"
+      }
+    }
+  },
   "membres": {
     "form": {
       "status": {
@@ -4434,7 +5019,8 @@
         "secretaire": "Секретар",
         "tresorier": "Касиер",
         "president": "Президент",
-        "admin": "Админ"
+        "admin": "Админ",
+        "equipe": "Член на отбора"
       },
       "civilite": {
         "none": "Не е уточнено",
@@ -4448,6 +5034,11 @@
         "femme": "Женски"
       },
       "groupeSanguinNone": "Не е уточнено",
+      "imageRights": {
+        "unknown": "Не е посочено",
+        "granted": "Да",
+        "refused": "Не"
+      },
       "tailleTshirtNone": "Не е уточнено",
       "preferredLocaleNone": "Не е уточнено",
       "preferredLocaleHint": "Избраният език ще позволи изпращането на имейли и съобщения до този член на предпочитания от него език.",
@@ -4479,14 +5070,15 @@
         "allergies": "Известни алергии",
         "allergiesPlaceholder": "Арахиди, прашец...",
         "type": "Тип член",
-        "preferredLocale": "Език за комуникация",
-        "spokenLanguage": "Говорен език",
-        "cotisationTier": "Членски внос",
-        "guardianName": "Законен настойник {number} — име",
-        "guardianPhone": "Законен настойник {number} — телефон",
         "imageRights": "Право на изображение",
         "notes": "Бележки",
-        "notesPlaceholder": "Полезна информация за този член (курсове, бележки…)"
+        "notesPlaceholder": "Полезна информация за този член (курсове, бележки…)",
+        "guardians": "Законни настойници",
+        "guardianName": "Законен настойник {number} — име",
+        "guardianPhone": "Законен настойник {number} — телефон",
+        "preferredLocale": "Език за комуникация",
+        "spokenLanguage": "Говорен език",
+        "cotisationTier": "Членски внос"
       },
       "invitationNotice": "Покана по имейл с идентификаторите ще бъде изпратена на този адрес.",
       "tierNone": "Няма ценообразуване (стандартно поведение)",
@@ -4507,12 +5099,7 @@
         "management": "Управление на члена"
       },
       "invalidFormToast": "Запазването не бе успешно. Свържете се с поддръжката, ако проблемът продължава.",
-      "customFieldsLoading": "Зареждане на отговорите от формуляра за членство…",
-      "imageRights": {
-        "unknown": "Не е посочено",
-        "granted": "Да",
-        "refused": "Не"
-      }
+      "customFieldsLoading": "Зареждане на отговорите от формуляра за членство…"
     },
     "actions": {
       "add": "Добавете член",
@@ -4562,13 +5149,13 @@
         "firstName": "Първо име",
         "lastName": "Фамилия",
         "address": "Адрес",
+        "country": "Кънтри",
+        "countryPlaceholder": "Всички държави",
+        "countryLoadError": "Не може да се заредят държави. Опитайте отново след малко.",
         "birthDateFrom": "Роден след",
         "birthDateTo": "Роден преди",
         "apply": "Кандидатствайте",
-        "reset": "Нулиране",
-        "country": "Кънтри",
-        "countryPlaceholder": "Всички държави",
-        "countryLoadError": "Не може да се заредят държави. Опитайте отново след малко."
+        "reset": "Нулиране"
       },
       "statusOptions": {
         "pending": "В процес на изчакване",
@@ -4609,12 +5196,14 @@
         "memberDeletedWithUnlink": "Отстранен член — отстранен като законен настойник на {count} Членове(и)",
         "noMembersToExport": "Няма членове за износ",
         "viewSubscription": "Виж абонамент",
-        "roleUpdated": "Актуализирана роля"
+        "roleUpdated": "Актуализирана роля",
+        "configureAccess": "Конфигуриране на достъпа"
       },
       "changeRoleTitle": "Промяна на ролята",
       "addViaForm": "Чрез формуляр за членство",
       "addManual": "Добави ръчно",
       "changeRoleDescription": "Роля на {name} в асоциацията.",
+      "changeRoleEquipeHint": "Тази роля започва без никакъв управленски достъп. Конфигурирайте достъпа по домейн в Настройки › Екип и Достъп.",
       "pendingRequests": "{count, plural, one {# чакаща заявка} other {# чакащи кандидатури}}"
     },
     "detail": {
@@ -4627,6 +5216,14 @@
       "cotisationButton": "Членски внос",
       "createAccessButton": "Създаване на достъп",
       "roleButton": "Роля",
+      "exportDataButton": "Износ на данни (GDPR)",
+      "eraseData": {
+        "button": "Изтриване на данни (ОРЗД)",
+        "confirmTitle": "Заявка за окончателно изтриване на данните на {name}?",
+        "confirmDescription": "Това регистрира заявка за изтриване по член 17 от ОРЗД. Членът ще получи имейл за потвърждение, след което личните му данни ще бъдат анонимизирани безвъзвратно при следващата автоматична обработка, освен ако не бъдат поставени на изчакване.",
+        "toastSuccess": "Заявката за изтриване е регистрирана",
+        "requestLabel": "Изтриване по ОРЗД"
+      },
       "contact": "Контакт",
       "noContactInfo": "Без контактна информация",
       "memberSinceColon": "Член от: {date}",
@@ -4642,6 +5239,10 @@
       "spokenLanguageColon": "Език, който се говори: {value}",
       "preferredLocaleColon": "Език за комуникация: {value}",
       "allergiesColon": "Алергии: {value}",
+      "imageRightsColon": "Права за изображения: {value}",
+      "imageRightsDate": "(the {date})",
+      "notes": "Бележки",
+      "guardians": "Законни настойници",
       "mobileColon": "Мобилно : {value}",
       "legalGuardianColon": "Законен настойник:",
       "noInfo": "Няма предоставена информация",
@@ -4670,6 +5271,7 @@
         "evenements": "Събития",
         "reunions": "Срещи",
         "materiel": "Материал",
+        "groupes": "Групи",
         "dons": "Дарения",
         "historique": "История",
         "emails": "Имейли",
@@ -4700,6 +5302,7 @@
       "paidOn": "Платено {date}",
       "validUntil": "Валидно до {date}",
       "periodExpiredOn": "Изтекъл {date}",
+      "recordPayment": "Запишете плащане",
       "downloadRecuFiscal": "Изтеглете данъчна разписка",
       "downloadRecuFiscalPartial": "Изтеглете данъчната разписка (частично: {amount} франшиза)",
       "showingRecentCotisations": "Показване {count} най-нови приноси по {total} Общо.",
@@ -4742,13 +5345,6 @@
         "rejectedToast": "Заявлението е отхвърлено",
         "rejectConfirmTitle": "Да откажем тази молба?",
         "rejectConfirmDescription": "{name} ще се промени на статус \"Неактивен\" и няма да може да влезе. Заявката и отговорите ѝ към формуляра се запазват."
-      },
-      "eraseData": {
-        "button": "Изтриване на данни (ОРЗД)",
-        "confirmTitle": "Заявка за окончателно изтриване на данните на {name}?",
-        "confirmDescription": "Това регистрира заявка за изтриване по член 17 от ОРЗД. Членът ще получи имейл за потвърждение, след което личните му данни ще бъдат анонимизирани безвъзвратно при следващата автоматична обработка, освен ако не бъдат поставени на изчакване.",
-        "toastSuccess": "Заявката за изтриване е регистрирана",
-        "requestLabel": "Изтриване по ОРЗД"
       },
       "noCommande": "Няма покупки от магазина за този контакт.",
       "commandeStatus": {
@@ -4839,6 +5435,12 @@
       "inMessagesSection": " в секцията Съобщения.",
       "messageSectionLabel": "Съобщение",
       "saveAsTemplate": "Запази като шаблон",
+      "subjectLabel": "Цел",
+      "subjectPlaceholder": "Темата на имейла...",
+      "subjectTooLong": "Темата е твърде дълга: {length}/{max} символа — ще бъде отхвърлена при изпращане.",
+      "bodyLabel": "Тяло на съобщението",
+      "bodyPlaceholder": "Напиши съобщението си...",
+      "designTemplateReadonlyHint": "Този шаблон използва режим Визуален дизайн (изображения, бутони) — съдържанието му не може да се редактира тук. За да го промените, редактирайте шаблона в Съобщения.",
       "language": {
         "title": "Език на изпращане",
         "modeOriginal": "Оригинален език",
@@ -4863,15 +5465,12 @@
         "autoNoEffect": "Никой от текущите получатели няма предпочитан език, различен от френски — всички ще получат оригиналната версия.",
         "autoExternalNote": "{count, plural, one {# външен имейл (оригинален език)} other {# външни имейла (оригинален език)}}"
       },
-      "subjectLabel": "Цел",
-      "subjectPlaceholder": "Темата на имейла...",
-      "subjectTooLong": "Темата е твърде дълга: {length}/{max} символа — ще бъде отхвърлена при изпращане.",
-      "bodyLabel": "Тяло на съобщението",
-      "bodyPlaceholder": "Напиши съобщението си...",
       "continue": "Продължавай",
       "confirmSendTitle": "Потвърждение за доставка",
       "confirmSendDescription": "Този имейл ще бъде изпратен на {recipients}. Това действие е необратимо.",
       "sendNow": "Изпрати сега",
+      "sending": "Изпращам...",
+      "sendFailedTitle": "Имейлът не можа да бъде изпратен",
       "replaceContentTitle": "Да заменя съдържанието?",
       "replaceContentDescription": "Прилагането на този шаблон ще замени темата и основната част на съобщението, което вече сте написали.",
       "replace": "Замяна",
@@ -4884,6 +5483,28 @@
       "recipientsActive": "{count, plural, one {# активен член} other {# активни членове}}",
       "externalOnlyCount": "{count, plural, one {# външен имейл} other {# външни имейли}}",
       "recipientsWithExternal": "{members} + {count, plural, one {# външен имейл} other {# външни имейли}}",
+      "attachments": {
+        "label": "Прикачени материали",
+        "add": "Прикачете файлове",
+        "hint": "JPG, PNG, WebP, GIF или PDF · {maxSize} Total",
+        "usage": "{count, plural, one {# файл} other {# файлове}} · {used} / {maxSize}",
+        "limitFilesReached": "Граница на {maxFiles} Достигнати файлове",
+        "limitSizeReached": "Граница на {maxSize} Постигнато",
+        "remove": "Премахване {name}",
+        "nameWithSize": "{name} ({size})",
+        "andMore": "{count, plural, one {и # други} other {и # други}}",
+        "errors": {
+          "emptyFile": "{count, plural, one {{names} не е добавен — файлът е празен.} other {# файлове не са добавени: {names} — Тези файлове са празни.}}",
+          "unsupportedType": "{count, plural, one {{names} не е добавен} other {# файлове не са добавени: {names}}} — приети формати: изображения (JPG, PNG, WebP, GIF) и PDF.",
+          "totalSizeExceeded": "{count, plural, one {{names} не е добавен} other {# файлове не са добавени: {names}}} — границата на {maxSize} общо би било надвишено (оставащо пространство: {remaining}).",
+          "tooManyFiles": "{count, plural, one {{names} не е добавен} other {# файлове не са добавени: {names}}} — {maxFiles} Максимален брой файлове на имейл."
+        },
+        "recapSummary": "{count, plural, one {# файл} other {# файлове}} · {size}",
+        "uploading": "Изпращане на прикачени файлове...",
+        "uploadFailedTitle": "Прикачени файлове не можеха да бъдат изпратени",
+        "uploadFailedDescription": "Няма останали имейли. Опитайте отново или натиснете \"Редактирай\", за да премахнете или замените файл.",
+        "notSavedInTemplate": "Прикачените файлове не се запазват в шаблона."
+      },
       "toasts": {
         "selectType": "Изберете тип член",
         "selectMember": "Изберете поне един член или добавете външен имейл",
@@ -4916,7 +5537,14 @@
         "status": "Статус",
         "typeId": "Тип",
         "role": "Роля",
-        "adherentOverride": "Статут на членство"
+        "adherentOverride": "Статут на членство",
+        "notes": "Бележки",
+        "imageRightsConsent": "Права за изображения",
+        "guardianName": "Законен настойник 1",
+        "guardianPhone": "Телефонен номер на законните настойници 1",
+        "secondGuardianName": "Законен настойник 2",
+        "secondGuardianPhone": "Телефонен номер на законния настойник 2",
+        "permissions": "Достъп"
       },
       "adherentOverrideValues": {
         "forcedAdherent": "Принудителна привързаност",
@@ -4930,9 +5558,11 @@
         "membreRoleChanged": "Модифицирана роля",
         "passwordChanged": "Паролата е променена",
         "passwordReset": "Нулиране на паролата",
+        "membreCardTokenRotated": "Регенериран QR код на картата",
         "membreDeleted": "Архивиран член",
         "membrePortalRegistered": "Регистрация на портал",
         "membreInscriptionRequested": "Заявление за членство (уебсайт)",
+        "membreAdhesionCompleted": "Членството е завършено и платено",
         "cotisationCreated": "Добавен принос",
         "cotisationUpdated": "Променена оценка",
         "cotisationDeleted": "Членският внос отменен",
@@ -5004,7 +5634,8 @@
         "expense": "Разходи",
         "financeCategory": "Финансови категории",
         "payment": "Плащания",
-        "associationDocument": "Документи на асоциацията"
+        "associationDocument": "Документи на асоциацията",
+        "paperFormTemplate": "Хартиени листове"
       },
       "messageTemplateFilterLabel": "MSG шаблони",
       "actualiteFields": {
@@ -5065,12 +5696,20 @@
         "membreDeleted": "Архивиран член",
         "membrePortalRegistered": "Регистрирано (портал)",
         "membreInscriptionRequested": "Заявление за членство (уебсайт)",
+        "membreAdhesionCompleted": "Членството е завършено и платено",
         "membreRoleChanged": "Модифицирана роля",
         "membreAccessCreated": "Достъп е създаден",
+        "membreCardTokenRotated": "Регенериран QR код на картата",
         "profilUpdated": "Модифициран профил",
         "profileUpdated": "Модифициран профил",
         "passwordChanged": "Паролата е променена",
         "passwordReset": "Нулиране на паролата",
+        "twoFactorEnabled": "Активирана двуфакторна автентикация",
+        "twoFactorDisabled": "Двуфакторната автентикация е изключена",
+        "twoFactorBackupRegenerated": "Регенерирани резервни кодове",
+        "twoFactorDisabledByAdmin": "Двуфакторна автентикация е изключена от поддръжката",
+        "loginSuccess": "Успешно влизане",
+        "loginFailed": "Неуспешен опит за вход",
         "emailSentBulk": "Изпратен имейл",
         "smsSentBulk": "Изпратено SMS",
         "supportEmailSent": "Имейл изпратен от поддръжката на Formwise",
@@ -5181,6 +5820,9 @@
         "associationDocumentCreated": "Документът е създаден",
         "associationDocumentUpdated": "Документът е променен",
         "associationDocumentDeleted": "Документът е изтрит",
+        "paperFormTemplateCreated": "Създаден шаблон на формуляр",
+        "paperFormTemplateUpdated": "Модифициран шаблон на формуляр",
+        "paperFormTemplateDeleted": "Изтрит шаблон за карта",
         "ticketCheckoutExpired": "Плащането изтече"
       }
     },
@@ -5385,8 +6027,8 @@
       "actualites": "Новини",
       "membership": "Присъединете се към асоциацията",
       "dons": "Дарете",
-      "contact": "Контакт",
-      "boutique": "Магазин"
+      "boutique": "Магазин",
+      "contact": "Контакт"
     },
     "defaultTitles": {
       "hero": "Добре дошли",
@@ -5394,9 +6036,9 @@
       "events": "Предстоящи събития",
       "membership": "Присъединете се към асоциацията",
       "dons": "Дарете",
+      "boutique": "Магазин",
       "actualites": "Новини",
-      "contact": "Контакт",
-      "boutique": "Магазин"
+      "contact": "Контакт"
     },
     "view": {
       "uploadFailedWarning": "{count, plural, one {# изображение не можеше да бъде изтеглено.} other {# изображения не можеха да бъдат качени.}}",
@@ -5420,6 +6062,8 @@
       "save": "Запази",
       "appearance": "Външен вид",
       "primaryColor": "Основен цвят",
+      "secondaryColor": "Вторичен цвят",
+      "fontFamily": "Полиция",
       "logo": "Лого",
       "header": "Заглавие",
       "headerBgColor": "Фонов цвят",
@@ -5438,11 +6082,12 @@
       "noLinks": "Няма линкове. Кликни Добави.",
       "sections": "Секции",
       "noSections": "Няма секции. Добавете една по-долу.",
+      "createWithAi": "Създаване с изкуствен интелект",
       "addSection": "Добави секция",
       "donsModuleDisabled": "Модулът за дарения е изключен — невидим на публичния обект",
+      "boutiqueModuleDisabled": "Модулът „Магазин“ е деактивиран — невидим на публичния сайт",
       "deleteSectionTitle": "Секция за изтриване",
-      "deleteSectionDescription": "Това действие е необратимо.",
-      "boutiqueModuleDisabled": "Модулът „Магазин“ е деактивиран — невидим на публичния сайт"
+      "deleteSectionDescription": "Това действие е необратимо."
     },
     "sectionSheet": {
       "editTitle": "Редакция — {label}",
@@ -5463,6 +6108,8 @@
       "eventsLimitHint": "Събитията се изтеглят автоматично от календара ви.",
       "actualitesLimit": "Брой новинарски материали за показване",
       "actualitesLimitHint": "Само първите публикувани новини за N ще бъдат показани на сайта.",
+      "boutiqueLimit": "Брой продукти за показване",
+      "boutiqueLimitHint": "На сайта ще се показват само първите N активни продукта.",
       "membershipIntro": "Въведение",
       "membershipIntroPlaceholder": "Попълнете този формуляр, за да кандидатствате за членство в асоциацията...",
       "membershipHint": "Заявките се появяват в списъка с членове със статус \"В очакване\".",
@@ -5483,9 +6130,7 @@
       "apply": "Кандидатствайте",
       "discardTitle": "Да игнорирам промените?",
       "discardDescription": "Неприложените промени ще бъдат загубени.",
-      "discardConfirm": "Игнорирай",
-      "boutiqueLimit": "Брой продукти за показване",
-      "boutiqueLimitHint": "На сайта ще се показват само първите N активни продукта."
+      "discardConfirm": "Игнорирай"
     },
     "preview": {
       "donsNoForm": "Не е избран формуляр за дарение — невидим на публичния сайт"
@@ -5494,6 +6139,52 @@
       "viewSite": "Вижте уебсайта",
       "logoUrl": "URL на логото (по избор)",
       "footerText": "Текст в долния колонел"
+    },
+    "aiAssistant": {
+      "title": "Изградете сайта си с изкуствен интелект",
+      "description": "Опишете вашата асоциация – AI предлага първа версия на сайта (цветове, шрифт, заглавие, долен лист и секции), която можете да промените преди да я запазите.",
+      "descriptionLabel": "Опишете вашата асоциация",
+      "descriptionPlaceholder": "Например Културна асоциация в Лион, която организира театрални работилници за деца...",
+      "generate": "Генерирай",
+      "regenerate": "Регенерация",
+      "apply": "Кандидатствайте",
+      "cancel": "Отмени",
+      "error": "Възникна грешка, опитайте отново.",
+      "previewAppearance": "Външен вид",
+      "previewHeader": "Заглавие",
+      "previewHeaderLogin": "Бутон за вход",
+      "previewHeaderRegister": "Бутон за присъединяване",
+      "previewFooter": "Основен колонел",
+      "previewSections": "Секции",
+      "fieldButtonLabel": "Предлагай с изкуствен интелект",
+      "appearancePlaceholder": "Например спортна, динамична и приятелска асоциация...",
+      "headerPlaceholder": "Например: нещо трезво, което изпъква на бял фон...",
+      "footerPlaceholder": "Например: кратко благодарствено съобщение...",
+      "sectionPlaceholder": "Опишете какво трябва да казва този раздел..."
+    },
+    "builderSwitch": {
+      "liveVersionLabel": "Онлайн версия",
+      "switchLabel": "Нов редактор (бета)",
+      "statusLegacy": "Вашите посетители виждат стария сайт",
+      "statusNewBuilder": "Вашите посетители ще видят версията, публикувана на {date}",
+      "publishFirstHint": "Първо публикувай от новия редактор",
+      "openNewBuilder": "Отворете новия редактор на →",
+      "legacyEditsNotice": "Вашият сайт показва версията на новия редактор: промените тук ще бъдат видими само ако се върнете към стария сайт.",
+      "confirmOn": {
+        "title": "Да активирам новия редактор?",
+        "description": "Вашият публичен сайт ще покаже версията, публикувана на {date}. Можете да се върнете на стария сайт по всяко време.",
+        "confirmLabel": "Активирай"
+      },
+      "confirmOff": {
+        "title": "Да се върна на стария сайт?",
+        "description": "Вашият публичен сайт ще покаже стария сайт отново.",
+        "confirmLabel": "Връщане на старото място"
+      },
+      "toasts": {
+        "switchedOn": "Новият редактор е онлайн",
+        "switchedOff": "Старият сайт е отново онлайн",
+        "error": "Грешка при смяна на редактора"
+      }
     }
   },
   "richTextEditor": {
@@ -5506,6 +6197,134 @@
     "heading1": "Заглавие 1",
     "heading2": "Заглавие 2",
     "heading3": "Заглавие 3"
+  },
+  "paperFormTemplates": {
+    "title": "Хартиени листове",
+    "description": "Шаблони за вашите хартиени формуляри, за да създадете членове от попълнени и сканирани формуляри.",
+    "backToMembers": "Членове",
+    "backToList": "Хартиени листове",
+    "newTemplate": "Нов модел",
+    "empty": "Без шаблони. Създайте един от празния си формуляр за регистрация.",
+    "notFound": "Този шаблон не можа да бъде намерен или е изтрит.",
+    "mappedFieldCount": "{count, plural, =0 {Няма внесени полета} one {# внесено поле} other {# внесени полета}}",
+    "columns": {
+      "name": "Име",
+      "pages": "Страници",
+      "fields": "Полета",
+      "updatedAt": "Модифицирано на"
+    },
+    "toasts": {
+      "created": "Създаден шаблон",
+      "saved": "Регистриран дизайн",
+      "deleted": "Изтрит шаблон"
+    },
+    "deleteConfirm": {
+      "title": "Изтрий \" {name} » ?",
+      "description": "Членовете, вече импортирани с този шаблон, се запазват. Вече няма да можете да сканирате записи с този шаблон."
+    },
+    "leaveWarning": {
+      "title": "Незапазени промени",
+      "description": "Промените в шаблона ще бъдат загубени, ако напуснете тази страница.",
+      "discard": "Излизане без запазване",
+      "saveAndLeave": "Запази и излез"
+    },
+    "targetGroups": {
+      "identity": "Идентичност",
+      "contact": "Контакт",
+      "guardian": "Законен настойник",
+      "commitments": "Ангажименти",
+      "other": "Други"
+    },
+    "targets": {
+      "fullName": "Първо и фамилно име",
+      "firstName": "Първо име",
+      "lastName": "Име",
+      "birthDate": "Дата на раждане",
+      "civilite": "Заглавие",
+      "sexe": "Пол",
+      "email": "Имейл",
+      "phone": "Телефон",
+      "address": "Адрес",
+      "guardianFullName": "Законен настойник 1 — име и фамилия",
+      "guardianPhone": "Законен настойник 1 — телефон",
+      "secondGuardianFullName": "Законен настойник 2 — име и фамилия",
+      "secondGuardianPhone": "Законен настойник 2 — телефон",
+      "imageRights": "Права за изображения (отметка)",
+      "legalDocument": "Приемане на документ (отметка)",
+      "notes": "Бележки за членовете",
+      "ignore": "Не внасяйте"
+    },
+    "renderErrors": {
+      "unsupported_type": "Форматът не се поддържа. Качете PDF, JPEG или PNG снимки.",
+      "too_many_pages": "Формулярът има твърде много страници ({maximum} максимум).",
+      "pdf_password": "Този PDF е защитен с парола.",
+      "pdf_invalid": "Този PDF не можа да бъде отворен.",
+      "image_invalid": "Това изображение не можеше да бъде прочетено.",
+      "too_large": "Страницата е твърде голяма, дори след като се свива.",
+      "aborted": "Подготовката е отменена."
+    },
+    "editor": {
+      "newTitle": "Нов шаблон за щепсел",
+      "newDescription": "Попълнете празния си формуляр за регистрация: изкуственият интелект предлага съответствието на всяка кутия, отбелязвате я и след това я запазвате.",
+      "updatedAt": "Модифицирано на {date}",
+      "dropTitle": "Празен регистрационен формуляр",
+      "dropHint": "Една PDF, или една JPEG или PNG снимка на страница — максимум 4 страници. Картата не се съхранява.",
+      "chooseFile": "Изберете файл",
+      "manualIntro": "Няма конфигуриран AI ключ?",
+      "configureManually": "Конфигурирайте ръчно",
+      "preparing": "Подготвяйки страниците...",
+      "analyzing": "Анализ на листа в процес...",
+      "analyzingHint": "AI идентифицира кутиите, които трябва да бъдат запълнени. Това може да отнеме до минута.",
+      "analyzeFailedTitle": "Картата не успя да се анализира",
+      "openAiSettings": "Конфигурирайте AI клавиша в настройките",
+      "retryAnalyze": "Повтори сканирането",
+      "changeFile": "Файлове за смяна",
+      "nameLabel": "Име на модела",
+      "namePlaceholder": "Формуляр за регистрация 2026-2027",
+      "identificationLabel": "Идентификационен текст",
+      "identificationPlaceholder": "Напр. ФОРМУЛЯР ЗА РЕГИСТРАЦИЯ 2026 2027 — DAC Academy",
+      "identificationHint": "Ако е попълнена, всяка страница, която не съвпада точно с тази форма, се отхвърля за импорт.",
+      "pagesPerFormLabel": "Страници на карта",
+      "pageCount": "{count, plural, one {# страница} other {# страници}}",
+      "fieldsTitle": "Съвпадение на полето",
+      "fieldsSummary": "{count, plural, =0 {Няма полета} one {# поле} other {# полета}} · {mapped, plural, one {# внесен} other {Внесени #}}",
+      "fieldsHint": "Всеки ред съответства на поле в записа. Посочете къде трябва да бъде записана неговата стойност в записа на члена.",
+      "droppedFields": "{count, plural, one {# кутия, предложена от ИИ, беше отхвърлена, защото беше непълна.} other {# кутии, предложени от ИИ, бяха отхвърлени, защото бяха непълни.}} Добавете ги, ако е необходимо.",
+      "noFields": "Никакви полета. Добавете кутиите в обявата си.",
+      "addField": "Добавете поле",
+      "moreErrors": "… и {count, plural, one {# друга грешка} other {# други грешки}}",
+      "rowError": "Линия {row} : {message}",
+      "labelPlaceholder": "Печатна формулировка",
+      "hintPlaceholder": "По избор",
+      "legalDocumentPlaceholder": "Изберете документ",
+      "noLegalDocuments": "Без правни документи. Първо го създай в Правни документи.",
+      "columns": {
+        "label": "Формулировка",
+        "page": "Страница",
+        "target": "Дестинация",
+        "legalDocument": "Документ",
+        "hint": "Индикация за четене",
+        "actions": "Действия"
+      },
+      "rowLabelAria": "Етикет на линията {row}",
+      "rowPageAria": "Страница на линията {row}",
+      "rowTargetAria": "Дестинация на линията {row}",
+      "rowLegalDocumentAria": "Редов документ {row}",
+      "rowHintAria": "Индикация за четене на линии {row}",
+      "removeRowAria": "Премахни линията {row}",
+      "pageLabel": "Страница {page}",
+      "enlargePage": "Увеличи страницата {page}",
+      "referenceHint": "Празната карта не се съхранява. Презаредете я, за да я покажете до полетата.",
+      "showBlankForm": "Покажи празната карта"
+    },
+    "activity": {
+      "fields": {
+        "name": "Име",
+        "pagesPerForm": "Страници на карта",
+        "fields": "Полета",
+        "identificationText": "Идентификационен текст"
+      }
+    }
   },
   "associationDocuments": {
     "title": "Документи на асоциацията",
@@ -5521,6 +6340,13 @@
     "hidden": "Скрит",
     "visibleToMembers": "Видим за членовете",
     "visibleToMembersHint": "Показва този документ в зоната за членове. Когато опцията е изключена, само мениджърите го виждат.",
+    "visibleToPublic": "Публично достъпно",
+    "visibleToPublicHint": "Прави този документ достъпен за всеки с линк, без акаунт — необходим за свързване от публичните ви формуляри.",
+    "visibleToPublicForcedHint": "Автоматично активиране: документът, който трябва да бъде приет, трябва да може да бъде прочетено от лицето, което го приема.",
+    "requiresAcceptance": "Да бъдеш приет",
+    "requiresAcceptanceHint": "Задължителна отметка ще се появи във формулярите за членство, дарение, регистрация на събитие, магазин и създаване на акаунт. Всяко приемане се записва с документната версия.",
+    "exportAcceptances": "Приемане на износ",
+    "publicShort": "Публично",
     "toasts": {
       "madeVisible": "„{title}“ е видим за членовете",
       "madeHidden": "„{title}“ е скрит от членовете",
@@ -5541,7 +6367,10 @@
       "contentLabel": "Съдържание",
       "contentPlaceholder": "Въведете съдържанието на документа…",
       "titleRequired": "Заглавието е задължително.",
-      "contentRequired": "Съдържанието е задължително."
+      "contentRequired": "Съдържанието е задължително.",
+      "fileLabel": "PDF файл",
+      "fileHint": "Импортирайте официалната версия на документа (подписани устави, сканирани разпоредби и др.). Тя е достъпна за изтегляне и показване със съдържанието.",
+      "contentOptionalHint": "По желание при прикачване на PDF: Текстът се появява под файла."
     },
     "leaveWarning": {
       "title": "Незапазени промени",
@@ -5550,7 +6379,36 @@
       "saveAndLeave": "Запази и излез"
     },
     "notFound": "Този документ не е намерен.",
-    "backToList": "Обратно към документите"
+    "backToList": "Обратно към документите",
+    "pdfShort": "PDF"
+  },
+  "formDraft": {
+    "restored": "Твоята информация е запазена.",
+    "discard": "Започнете отначало с празен формуляр"
+  },
+  "legalConsent": {
+    "agreeLabel": "{count, plural, one {Съгласен съм със следния документ:} other {Приемам следните документи:}}",
+    "required": "Трябва да приемете документите на корпорацията, за да продължите.",
+    "stale": "Документите на асоциацията са актуализирани, моля, прочетете ги отново, преди да продължите.",
+    "offlineAttestation": "Удостоверявам, че съм получил съгласието на този човек върху тези документи",
+    "gateTitle": "Документи, които ще бъдат приети",
+    "gateSubtitle": "Вашата асоциация е актуализирала документите си. Моля, прочетете и приемете ги, за да получите достъп до вашето пространство.",
+    "gateSubmit": "Приемам и продължавам",
+    "gateSignOut": "Излез от излизането",
+    "gateError": "Не мога да регистрирам приемането си.",
+    "offlineAttestationHint": "Записано като приемане, получено офлайн, от ваше име."
+  },
+  "publicDocuments": {
+    "title": "Правни документи",
+    "subtitle": "Документи, предоставени от асоциацията.",
+    "empty": "Към момента няма публикувани документи.",
+    "updatedAt": "Актуализирано {date}",
+    "backToList": "Всички документи",
+    "associationNotFound": "Тази асоциация я няма никъде.",
+    "notFound": "Този документ вече не е наличен.",
+    "openPdf": "Отвори PDF",
+    "opensNewTab": "(отваря се в нов раздел)",
+    "pdfShort": "PDF"
   },
   "portalMembre": {
     "associationDocuments": {
@@ -5560,7 +6418,10 @@
       "empty": "В момента няма налични документи.",
       "loadError": "Документите не могат да бъдат заредени.",
       "notFound": "Този документ не е намерен или вече не е наличен.",
-      "backToList": "Обратно към документите"
+      "backToList": "Обратно към документите",
+      "openPdf": "Отвори PDF",
+      "opensNewTab": "(отваря се в нов раздел)",
+      "pdfShort": "PDF"
     },
     "sondages": {
       "title": "Проучвания",
@@ -5598,6 +6459,15 @@
       "viewShop": "Виж магазина",
       "orderPlacedTitle": "Поръчката е регистрирана!",
       "orderPlacedDescription": "Вашата поръчка чака плащане. Администрацията ще се свърже с вас, за да финализира сделката.",
+      "paymentSuccessTitle": "Плащането е потвърдено!",
+      "paymentSuccessDescription": "Благодарим ви за покупката. Изпратен ви е имейл за потвърждение с касовата бележка.",
+      "stockAdjustedNotice": "Наличността на някои артикули се промени — количката ви беше коригирана, прегледайте я, преди да продължите.",
+      "trackOrderButton": "Проследяване на поръчката",
+      "trackingPageTitle": "Проследяване на поръчка",
+      "trackingStatusPending": "Очаква плащане",
+      "trackingStatusPaid": "Поръчката е платена",
+      "trackingStatusCancelled": "Поръчката е анулирана",
+      "trackingNotFound": "Поръчката не е намерена",
       "myOrdersButton": "Моите заповеди",
       "continueShopping": "Продължавай да пазаруваш",
       "maxStockReached": "Max Stock Reach",
@@ -5635,16 +6505,7 @@
         "orderError": "Грешка по време на поръчка",
         "orderUpdated": "Актуализиран ред",
         "orderCancelled": "Поръчката е отменена"
-      },
-      "paymentSuccessTitle": "Плащането е потвърдено!",
-      "paymentSuccessDescription": "Благодарим ви за покупката. Изпратен ви е имейл за потвърждение с касовата бележка.",
-      "stockAdjustedNotice": "Наличността на някои артикули се промени — количката ви беше коригирана, прегледайте я, преди да продължите.",
-      "trackOrderButton": "Проследяване на поръчката",
-      "trackingPageTitle": "Проследяване на поръчка",
-      "trackingStatusPending": "Очаква плащане",
-      "trackingStatusPaid": "Поръчката е платена",
-      "trackingStatusCancelled": "Поръчката е анулирана",
-      "trackingNotFound": "Поръчката не е намерена"
+      }
     },
     "dons": {
       "title": "Моите дарения",
@@ -5673,7 +6534,13 @@
       "toasts": {
         "thanked": "Благодаря ви за дарението! Изпратен ви е потвърждаващ имейл.",
         "cancelled": "Дарението е отменено."
-      }
+      },
+      "campaignsHeading": "Текущи кампании",
+      "backToDons": "Обратно към моите дарения",
+      "donatingAs": "Ти даваш като {name} ({email}).",
+      "comingSoon": "Скоро",
+      "campaignClosed": "Кампанията приключи",
+      "loadCampaignsError": "Кампаниите за дарения не могат да се заредят. Опитайте пак по-късно."
     },
     "reunions": {
       "title": "Срещи",
@@ -5862,6 +6729,73 @@
       }
     },
     "evenements": {
+      "title": "Събития",
+      "subtitle": "Следващите ти прегледи и историята ти.",
+      "upcomingHeading": "Скоро",
+      "noneUpcoming": "Няма предстоящи събития.",
+      "moreUpcomingHint": "Други предстоящи събития не се показват. Свържете се с вашата асоциация за повече информация.",
+      "pastHeading": "Минало",
+      "pastLimitHint": "Показват се само последните 10 събития.",
+      "guestsLabel": "Вашите гости:",
+      "guestFirstNamePlaceholder": "Име на гост {n}",
+      "guestLastNamePlaceholder": "Име на гост {n}",
+      "guestEmailPlaceholder": "Гост имейл (по избор)",
+      "ticketTypeFullSuffix": "(разпродадено)",
+      "paymentError": "Грешка по време на плащане",
+      "waitlistedToast": "Вие сте в списъка на чакащите – ще ви уведомим по имейл, ако се освободи място.",
+      "payOnline": "Плащане онлайн",
+      "ticketCancelledToast": "Анулиран билет — ще ви бъде възстановено в рамките на няколко дни.",
+      "ticketsPurchased": "{n, plural, one {Закупен билет} other {# закупени билети}}",
+      "youSuffix": " (ти)",
+      "cancelAndRefund": "Отмени и поискай възстановяване на сумата",
+      "cancelSeatTitle": "Да отменя това място?",
+      "cancelTicketTitle": "Да анулирам този билет?",
+      "refundOriginalMethod": "Ще ви бъде възстановено по първоначалния ви начин на плащане.",
+      "refundSelfOnly": "Ще ви бъде възстановена сумата за мястото ви. Гостите ви ще останат регистрирани и няма да им бъде възстановено.",
+      "refundGuestOnly": "Ще ви бъде възстановена сумата за това място. Останалата част от резервацията ви не е засегната.",
+      "cancelAndRefundConfirm": "Анулиране и възстановяване",
+      "reservedPayOnSite": "Резервирано – плащане на място",
+      "seatsCountLabel": "Брой места:",
+      "cancelReservation": "Анулиране на резервацията",
+      "cancelReservationSimple": "Можеш да резервираш отново, ако промениш решението си.",
+      "cancelReservationPaidCompanions": "Вашите гости, които все още не са получили заплата, ще бъдат изведени. T {n} Гостите, които вече са платени в брой, ще останат записани.",
+      "cancelReservationWithCompanions": "Това също ще анулира резервацията на вашия {n} гости.",
+      "onWaitlist": "Вие сте в списъка на чакащите",
+      "eventFull": "Пълно събитие",
+      "reserveButton": "Резервирайте – платете на място",
+      "totalLabel": "Общо :",
+      "rsvpConfirme": "Ще бъда там!",
+      "rsvpProvavel": "Ако е възможно",
+      "rsvpIncerto": "Може би",
+      "rsvpAbsent": "Няма да дойда",
+      "rsvpRecordedToast": "Записан отговор: {label}",
+      "rsvpSaveError": "Записване на грешки",
+      "addGuestsButton": "+ Добавете гости",
+      "updateGuestsButton": "Актуализирай гостите ми",
+      "guestsUpdatedToast": "Актуализирани гости",
+      "countConfirmed": "{n, plural, one {# потвърдено} other {# потвърдено}}",
+      "countProvavel": "{n} ако е възможно",
+      "countIncerto": "{n} може би",
+      "countAbsent": "{n, plural, one {# липсва} other {# липсва}}",
+      "countWaitlist": "{n} в списъка на чакащите",
+      "priceLabel": "Цена:",
+      "reservedCount": "{confirmed}/{capacity} Запазено",
+      "fullSuffix": " · Разпродадени са",
+      "presenceLabel": "Присъствие:",
+      "present": "Настояще",
+      "presenceAbsent": "Отсъстващ",
+      "presenceNotRecorded": "Не е регистрирано",
+      "rsvpDisplay": "Потвърдете се: {label}",
+      "yourResponseLabel": "Вашият отговор:",
+      "confirmParticipationLabel": "Потвърдете участието си:",
+      "reviewSentThanks": "Изпратено уведомление — благодаря!",
+      "chooseRatingError": "Избери нота",
+      "leaveReview": "Оставете отзив",
+      "send": "Изпрати",
+      "commentPlaceholder": "Имате ли коментари? (по желание)",
+      "ticketPurchaseSuccessToast": "Билетът успешно закупен!",
+      "paymentCancelledToast": "Плащането е анулирано. Мястото ви все още е запазено — платете по-късно или анулирайте резервацията с картата на събитието.",
+      "registrationsClosed": "Регистрацията е затворена.",
       "viewEvent": "Преглед на събитието",
       "backToList": "Всички събития",
       "notFound": "Това събитие вече не е налично."
@@ -5877,6 +6811,7 @@
     "platformKeyActive": "Активен ключ към платформата — можете да използвате AI без конфигурация.",
     "providerFieldLabel": "Доставчик",
     "providerFieldPlaceholder": "Избор на доставчик...",
+    "anthropicAssistantHint": "Асистентът на помощния център отговаря само на данните на вашата асоциация (членове, вноски, финанси) с Anthropic ключ. При друг доставчик отговаря само от документацията.",
     "apiKeyLabel": "API ключ",
     "apiKeyPlaceholderReplace": "Съществуващ ключ — enter за замяна",
     "apiKeyPlaceholderNew": "Поставете вашия API ключ...",
@@ -5936,6 +6871,7 @@
       "actualites": "Новини",
       "messages": "Съобщения",
       "materiel": "Материал",
+      "groupes": "Групи",
       "site": "Уебсайт",
       "activite": "История",
       "suporte": "Поддръжка",
@@ -5954,7 +6890,8 @@
       "pricingOffers": "Оферти за цени",
       "support": "Поддръжка",
       "controlAlerts": "Контролни сигнали",
-      "signOut": "Излез от излизането"
+      "signOut": "Излез от излизането",
+      "membreDuplicates": "Дубликати"
     },
     "themeToggle": {
       "changeTheme": "Промени темата"
@@ -5962,7 +6899,8 @@
     "header": {
       "myPortal": "Моето пространство",
       "myProfile": "Моят профил",
-      "management": "Управление"
+      "management": "Управление",
+      "publicSite": "Вижте уебсайта"
     },
     "userMenu": {
       "roleLabels": {
@@ -5971,10 +6909,12 @@
         "PRESIDENT": "Президент",
         "TRESORIER": "Касиер",
         "SECRETAIRE": "Секретар",
-        "MEMBRE": "Член"
+        "MEMBRE": "Член",
+        "EQUIPE": "Член на отбора"
       },
       "editProfile": "Редактиране на профила",
       "changePassword": "Промяна на паролата",
+      "security": "Сигурност",
       "legalDocuments": {
         "title": "Правни документи",
         "mentionsLegales": "Правно уведомление",
@@ -5984,6 +6924,38 @@
         "opensNewTab": "Отваря нов таб"
       },
       "logout": "Излез от излизането"
+    },
+    "twoFactorSettingsModal": {
+      "title": "Двуфакторна автентикация",
+      "statusEnabled": "Активирано",
+      "statusEnabledDescription": "Вашият акаунт е защитен чрез двустепенна верификация.",
+      "statusDisabled": "Изключен",
+      "statusDisabledDescription": "Добавете допълнителна верификация към входа си с приложение за автентикация.",
+      "backupCodesLabel": "Резервни кодове",
+      "backupCodesRemaining": "{count, plural, =0 {Няма повече код} one {# останал код} other {# кодове се възстановяват}}",
+      "regenerate": "Регенерация",
+      "scanTitle": "1. Сканирай този QR код",
+      "scanDescription": "Отворете вашето приложение за автентикация (Google Authenticator, Authy...) и сканирайте кода по-долу.",
+      "manualEntryLabel": "Не можете да сканирате? Въведете този код ръчно:",
+      "confirmCodeLabel": "Код за верификация",
+      "backupCodesTitle": "Запази тези кодове сега",
+      "backupCodesDescription": "Тези кодове ще се показват само веднъж. Всеки код може да се използва само веднъж.",
+      "copyAll": "Копирай всички кодове",
+      "copied": "Копирах!",
+      "savedCodesConfirm": "Запазих резервните си кодове на сигурно място.",
+      "done": "Завършено",
+      "disableDescription": "Потвърдете паролата си, за да изключите двуфакторната автентикация.",
+      "disableConfirm": "Деактивирай",
+      "regenDescription": "Потвърдете с код от вашето приложение, за да генерирате резервните си кодове.",
+      "passwordLabel": "Парола",
+      "enable": "Активирай",
+      "disable": "Деактивирай",
+      "cancel": "Отмени",
+      "confirm": "Потвърдете",
+      "close": "Затвори",
+      "enabledToast": "Активирана е двуфакторна автентикация.",
+      "disabledToast": "Двуфакторната автентикация е изключена.",
+      "regeneratedToast": "Регенерирани резервни кодове."
     },
     "changePasswordModal": {
       "title": "Промяна на паролата",
@@ -6109,7 +7081,14 @@
       "error": "Възникна грешка",
       "closed": "Заявката е затворена",
       "reopened": "Кандидатурата е отворена отново"
-    }
+    },
+    "suggestReply": "Предложете отговор",
+    "suggestReplyConfirmTitle": "Да смениш драфта си?",
+    "suggestReplyConfirmDescription": "Вече въведеният текст ще бъде заменен с AI предложението.",
+    "suggestReplyConfirmAction": "Замяна",
+    "suggestReplyNote": "Предложение, генерирано от изкуствен интелект — коригирайте преди да изпратите.",
+    "suggestReplySources": "Източници: {titles}",
+    "suggestReplyError": "Не мога да генерирам предложение."
   },
   "controlAlerts": {
     "title": "Контрол на членството",
@@ -6122,9 +7101,27 @@
     "columns": {
       "membre": "Член",
       "association": "Сдружение",
+      "origin": "Произход",
       "raisedAt": "Създаден на",
       "daysWithoutCotisation": "Дни без принос",
       "status": "Статус"
+    },
+    "originByLabel": "От {name}",
+    "originSources": {
+      "ADMIN_MANUAL": "Ръчно добавяне от администратор",
+      "ADMIN_REGISTRATION": "Регистрация от администратор (формуляр)",
+      "PUBLIC_ADHESION_FORM": "Публичен формуляр за членство (безплатен)",
+      "PUBLIC_ADHESION_FORM_OFFLINE": "Публичен формуляр за членство (офлайн плащане)",
+      "PUBLIC_ADHESION_STRIPE": "Публичен формуляр за членство (онлайн плащане)",
+      "PUBLIC_ADHESION_INSTALLMENTS": "Публичен формуляр за членство (плащане на вноски)",
+      "PUBLIC_ADHESION_MULTI": "Публичен формуляр за членство (регистрация на група)",
+      "PUBLIC_ADHESION_SUBSCRIPTION": "Публичен формуляр за членство (повтарящ се абонамент)",
+      "ASSOCONNECT_IMPORT": "Импортиране на AssoConnect",
+      "PAPER_FORM": "Внос на хартиени формуляри",
+      "ASSOCIATION_SIGNUP_ADMIN": "Основател (създаване на асоциацията)",
+      "PUBLIC_INSCRIPTION_REQUEST": "Заявка за публична регистрация (чака валидиране)",
+      "PUBLIC_INSCRIPTION_REQUEST_MULTI": "Масова публична заявка за регистрация (чака валидиране)",
+      "unknown": "Произход е неизвестен"
     },
     "empty": "Няма контролни сигнали.",
     "resolveAction": "Реши",
@@ -6143,7 +7140,453 @@
     "autoResolvedLabel": "(автоматично)",
     "emptyForSearch": "Няма резултати за \"{search}\"."
   },
+  "help": {
+    "buttonLabel": "Помощ",
+    "title": "Център за помощ",
+    "moduleGeneral": "Общо",
+    "tabs": {
+      "guide": "Помощ",
+      "assistant": "Асистент",
+      "changelog": "Какво ново",
+      "news": "Новини"
+    },
+    "searchPlaceholder": "Помощ при търсене...",
+    "searchResultsCount": "{count, plural, one {# резултат} other {# резултати}}",
+    "searchNoResults": "Няма резултати за \" {query} ».",
+    "searchError": "Търсенето в момента не е налично.",
+    "newBadge": "Ново",
+    "pinnedSection": "Това е",
+    "articlesSection": "Статии",
+    "articlesOtherSection": "Други статии",
+    "faqSection": "Често задавани въпроси",
+    "faqOtherSection": "Други въпроси",
+    "noContent": "В момента няма помощно съдържание за този раздел.",
+    "loadError": "Не мога да заредя помощта.",
+    "retry": "Опитай пак",
+    "back": "Назад",
+    "updatedOn": "Актуализирано {date}",
+    "articleNotFound": "Предметът не е намерен.",
+    "callout": {
+      "info": "Информация",
+      "tip": "Съвет",
+      "warning": "Внимание"
+    },
+    "assistant": {
+      "questionLabel": "Вашият въпрос",
+      "questionPlaceholder": "Задай въпроса си...",
+      "send": "Изпрати",
+      "sendShortcut": "Ctrl + Enter (⌘ + Enter на Mac)",
+      "disclaimer": "Отговори, генерирани от изкуствен интелект — проверете важна информация.",
+      "charactersCount": "{count}/{max}",
+      "youLabel": "Ти",
+      "assistantLabel": "Асистент",
+      "newConversation": "Нов разговор",
+      "conversationRestoreFailed": "Предишният ви разговор не можа да бъде възстановен.",
+      "intro": "Задайте въпрос относно използването на Formwise или данните на вашата асоциация: членове, членски вноски, финанси, събития.",
+      "introDocs": "Задайте въпрос относно използването на Formwise.",
+      "examplesLabel": "Примерни въпроси",
+      "examples": {
+        "unpaid": "Кой не е платил членската си такса тази година?",
+        "donations": "Колко дарения има този месец?",
+        "createEvent": "Как да създам събитие?"
+      },
+      "examplesDocs": {
+        "reminder": "Как да последвам при неплатена вноска?",
+        "export": "Как да експортирам списъка с членове?",
+        "createEvent": "Как да създам събитие?"
+      },
+      "loadingCopilot": "Консултантски данни...",
+      "loadingDocs": "Писане...",
+      "dataConsulted": "Дата се консултира:",
+      "tools": {
+        "search_members": "Членове",
+        "get_member": "Членове",
+        "list_cotisations": "Приноси",
+        "get_finance_summary": "Финансово обобщение",
+        "list_events": "Събития",
+        "list_donations": "Дарения",
+        "list_invoices": "Фактури"
+      },
+      "sources": "Източници:",
+      "docsOnlyNotice": "Въпроси относно членството, вноските и финансите ви изискват Anthropic ключ.",
+      "docsOnlyConfigure": "Конфигурирайте в Настройки → Интеграции.",
+      "error": "Невъзможно е да се получи отговор.",
+      "errorTimeout": "Магьосникът не успя да завърши в определеното време. Задайте по-конкретен или по-кратък въпрос.",
+      "errorRateLimit": "Твърде много заявки, опитай пак след няколко минути.",
+      "errorProvider": "AI доставчикът не успя да отговори, опитайте пак по-късно.",
+      "noApiKey": "Няма конфигурирани API ключове.",
+      "noApiKeyConfigure": "Добавете вашия API ключ в Настройки → Интеграции.",
+      "noApiKeyAskAdmin": "Помолете администратор да добави API ключ в Настройки → Интеграции.",
+      "apiKeyInvalid": "Конфигурираният API ключ се отказва от доставчика.",
+      "apiKeyInvalidConfigure": "Проверете го в Настройки → Интеграции.",
+      "apiKeyInvalidAskAdmin": "Помолете администратор да провери в Настройки → Интеграции."
+    },
+    "changelog": {
+      "latestSection": "Последни новини",
+      "empty": "Засега няма нови функции.",
+      "loadError": "Не мога да заредя нови функции.",
+      "kind": {
+        "feature": "Ново",
+        "improvement": "Подобрение",
+        "fix": "Поправка"
+      }
+    },
+    "releaseNotes": {
+      "title": "Какво ново"
+    },
+    "news": {
+      "latestSection": "Последни новини",
+      "empty": "Засега няма новини.",
+      "loadError": "Не може да се зареди новината.",
+      "popupTitle": "Новини"
+    },
+    "faqPopup": {
+      "title": "Често задавани въпроси"
+    },
+    "popupCarousel": {
+      "remindLater": "Напомни ми по-късно",
+      "remindLaterToast": "Ще ви напомним следващия път, когато влезете.",
+      "previous": "Предишни",
+      "next": "Следващият",
+      "finish": "Финал",
+      "position": "Елемент {current} на {total}",
+      "goTo": "Отиди на артикула {index}"
+    },
+    "footer": {
+      "tour": "Обиколка с екскурзовод.",
+      "contactSupport": "Свържете се с поддръжката"
+    }
+  },
+  "boutiqueShipping": {
+    "title": "Корабоплаване",
+    "description": "Адресът за доставка, използван за изчисляване на разходите за доставка на магазина.",
+    "addressLabel": "Адрес",
+    "addressPlaceholder": "12 rue de la Paix",
+    "cityLabel": "Град",
+    "postalCodeLabel": "Пощенски код",
+    "countryLabel": "Кънтри",
+    "saved": "Регистриран адрес за доставка",
+    "deliveryMethodLabel": "Режим на приемане",
+    "pickupOption": "Вземане на място",
+    "deliveryOption": "Изпращане по пощата",
+    "shippingAddressHint": "Изисква се изчисляване на разходите за доставка.",
+    "shippingOptionsLabel": "Разходи за доставка",
+    "loadingRates": "Изчисляване на разходите за доставка...",
+    "noShippingOptions": "Няма налични опции за доставка за този адрес.",
+    "shippingUnavailable": "Пощенската доставка все още не е конфигурирана от тази асоциация.",
+    "leadTimeApprox": "~{days} j",
+    "shippingCostLabel": "Разходи за доставка",
+    "mixedCartPickupOnlyHint": "Доставка не е налична: Вашата количка съдържа предмет, който може да се вземе само на ръка.",
+    "markupLabel": "Марж на безопасност при разходите за доставка",
+    "markupHint": "Добавено към тарифата, показвана на купувача. Защитава ви, ако тарифата на превозвача се увеличи преди самата доставка, но по-високата цена може да възпре покупката.",
+    "markupRangeError": "Маржът трябва да е цяло число между 0 и 50.",
+    "markupHintTooltip": "При поръчката не се купуват етикети: показаната цена е само приблизителна оценка. Ако действителната цена на превозвача се е увеличила към момента на франкиране на пакета, благотворителната организация плаща разликата — освен ако този марж не я покрива. Обратно, маржът, който е твърде висок, увеличава цената, показана на клиента, и може да го обезкуражи да купува."
+  },
+  "paperFormScan": {
+    "menuItem": "Вносни хартиени карти",
+    "manageTemplatesMenuItem": "Управление на шаблони за карти",
+    "title": "Вносни хартиени карти",
+    "description": "Прочетете ръчно попълнени формуляри за регистрация, проверете всеки формуляр и след това създайте членове.",
+    "backToMembers": "Членове",
+    "loadingTemplates": "Зареждане на шаблони...",
+    "steps": {
+      "upload": "Файлове",
+      "reading": "Четене",
+      "review": "Верификация",
+      "result": "Създаване"
+    },
+    "upload": {
+      "noTemplateTitle": "Без шаблон за хартиена карта",
+      "noTemplateDescription": "Първо, опишете формуляра си за регистрация на хартия, така че полетата му да могат да бъдат прочетени.",
+      "createTemplate": "Създайте шаблон",
+      "template": "Шаблонен лист",
+      "templatePlaceholder": "Изберете модел",
+      "templateSummary": "{pages, plural, one {# страница} other {# страници}} По карта · {fields, plural, one {# поле} other {# полета}}.",
+      "manageTemplates": "Управление на шаблони",
+      "dropTitle": "Качете сканирания PDF или снимки на листовете",
+      "galleryTitle": "Изберете снимки или PDF",
+      "dropSubtitle": "PDF, JPEG или PNG — възможни са множество файлове, прочетени по реда на името",
+      "privacyNote": "Страниците остават в браузъра ви: само изображенията се изпращат едно по едно за четене, нищо не се запазва.",
+      "pageCount": "{count, plural, one {# страница} other {# страници}}",
+      "removeFile": "Премахване {name}",
+      "preparing": "Подготвяйки страниците...",
+      "batchSummary": "{pages, plural, one {# страница} other {# страници}} · За {forms, plural, one {# рекорд} other {# чаршафи}}",
+      "pageTotal": "{count, plural, one {# страница} other {# страници}}",
+      "start": "Започване на играта",
+      "renderFailed": "{name} : {error}",
+      "strictTemplateNotice": "Само страниците на \" {name} \"ще бъде приет.",
+      "capturedListLabel": "Фотографирани карти",
+      "capturedForm": "Информационен лист {form}",
+      "capturedPages": "{count, plural, one {Страница {list}} other {Страници {list}}}",
+      "capturedMissing": "{count, plural, one {страница {list} отсъстват} other {страници {list} отсъстват}}",
+      "capturedInProgress": "Продължава",
+      "removeCapturedForm": "Премахни файла {form}",
+      "capturedSummary": "{forms, plural, one {# рекорд} other {# чаршафи}} · {pages, plural, one {# страница} other {# страници}}",
+      "camera": {
+        "title": "Снимайте картите",
+        "needsTemplate": "Първо, изберете шаблон: приложението ще ви каже коя страница да снимате.",
+        "prompt": "Информационен лист {form} — страница {page} на {pages}",
+        "promptSinglePage": "Информационен лист {form}",
+        "capturePage": "Снимка на страницата {page}",
+        "captureForm": "Снимка на листа",
+        "skipToNextForm": "Прескочи към файла {form}",
+        "lastShot": "Информационен лист {form} · страница {page}",
+        "lastShotSinglePage": "Информационен лист {form}",
+        "lastShotAlt": "Снимка на файла {form}, страница {page}",
+        "preparing": "Подготовка...",
+        "retake": "Резюме",
+        "retakeLabel": "Направи снимка на картичката {form}, страница {page}",
+        "framingHint": "Поставете листа плоско, добре осветено, и рамкирайте цялата страница с четирите ѝ ръба.",
+        "photoFileName": "Информационен лист {form} страница {page}.{extension}"
+      }
+    },
+    "reading": {
+      "progress": "{read} / {total} Страници люи",
+      "failedCount": "{count, plural, one {# страница с грешка} other {# страници с грешка}}",
+      "runningHint": "Четенето продължава, докато тази страница остава отворена.",
+      "pageFailed": "Страницата не можеше да бъде прочетена",
+      "stoppedTitle": "Прекъснато възпроизвеждане",
+      "rateLimitedTitle": "Пауза на възпроизвеждането",
+      "openAiSettings": "AI настройки",
+      "openTemplates": "Шаблонни листове",
+      "resume": "Резюме",
+      "failedTitle": "Непрочетени страници",
+      "retryAll": "Опитай всичко отново",
+      "pageColumn": "Страница",
+      "fileColumn": "Файл",
+      "errorColumn": "Грешка",
+      "retry": "Опитай пак",
+      "continueWithFailuresHint": "Можете да продължите: непрочетените страници остават видими по време на проверка и се завършват ръчно.",
+      "restart": "Започни отначало",
+      "continueAnyway": "Провери все пак",
+      "continue": "Прескочи към верификация",
+      "refusedCount": "{count, plural, one {# страница с неодобрение} other {# отхвърлени страници}}",
+      "refusedTitle": "Неодобрени страници",
+      "reasonColumn": "Мотив",
+      "pageRefused": "Пейдж е отхвърлен — това не е очакваният рекорд",
+      "detectedDocument": "Открит документ: {title}",
+      "removePage": "Премахване",
+      "refusedHint": "Тези страници няма да бъдат импортирани. Ако карта загуби една от страниците си по този начин, тя ще се появи с липсваща страница."
+    },
+    "viewer": {
+      "pageSwitch": "Показвана страница",
+      "page": "Страница {number}",
+      "pageMissing": "Страница {number} Липсва",
+      "zoomOut": "Колапс",
+      "zoomIn": "Уголемете",
+      "pageUnread": "Page non lue: {error}",
+      "pageAlt": "Страница {number} на работния лист ({file})",
+      "missingPageBody": "Страницата {number} от този лист не е внесен."
+    },
+    "editor": {
+      "lowConfidence": "Несигурно четене, предстои да се провери",
+      "identity": "Идентичност",
+      "firstName": "Първо име",
+      "lastName": "Име",
+      "alreadyExists": "Вече съществува: {people}",
+      "email": "Имейл",
+      "phone": "Телефон",
+      "birthDate": "Дата на раждане",
+      "age": "{age, plural, one {#} other {# години}}",
+      "civilite": "Заглавие",
+      "sexe": "Пол",
+      "address": "Адрес",
+      "addressLowConfidence": "Адресът е прочетен с несигурност, предстои да бъде проверен",
+      "guardians": "Законни настойници",
+      "guardianExpected": "Незначителен член ({age, plural, one {#} other {# години}}): Няма информиран законен настойник.",
+      "guardianName": "Законен настойник {number} — Име",
+      "guardianPhone": "Законен настойник {number} — телефон",
+      "consents": "Разрешения",
+      "imageRights": "Права за изображения",
+      "imageRightsYes": "Да",
+      "imageRightsNo": "Не",
+      "imageRightsUnknown": "Не е уточнено",
+      "sheetAnswers": "Отговори във файла",
+      "sheetAnswersHint": "Полета без специална колона: Те ще бъдат добавени към бележките на членовете при създаване.",
+      "sheetPage": "Страница {page}",
+      "sheetPageMissing": "Липсва страница: няма отговор.",
+      "checkboxUnread": "Непрочетена кутия, която ще бъде отметната на картата",
+      "linkedDocument": "Приемане на записи на \" {title} »",
+      "notes": "Бележки",
+      "notesOwnHint": "Ваши собствени бележки. Отговорите в картата ще бъдат добавени към нея при създаването ѝ, във формат \"label: value\"."
+    },
+    "review": {
+      "summary": "{total, plural, one {# рекорд} other {# чаршафи}} · {toReview} предстои за преглед · {validated, plural, one {# валидиран} other {# валидиран}} · {ignored, plural, one {# игнориран} other {# игнориран}} · {created, plural, one {# създаден} other {# създаден}}",
+      "checkingDuplicates": "търсене на дубликати...",
+      "duplicatesFailed": "Търсенето на дублиращи се провали; можете да продължите проверката.",
+      "create": "{count, plural, =0 {Създаване на членове} one {Създайте # член} other {Създайте # членове}}",
+      "formsList": "Информационни листове",
+      "untitledForm": "Информационен лист {number}",
+      "missingPages": "{count, plural, one {Страница {list} отсъстват} other {Страници {list} отсъстват}}",
+      "formPosition": "Информационен лист {number} на {total}",
+      "previous": "Предишна карта",
+      "next": "Следваща страница",
+      "missingPagesNotice": "{count, plural, one {Страница {list} отсъстват} other {Страници {list} отсъстват}} : Полетата на тази страница остават празни. Можете да валидирате формуляра и да попълните члена по-късно.",
+      "commitError": "Създаването се провали: {error}",
+      "createdNotice": "Създаден член.",
+      "openMember": "Отвори файла",
+      "unvalidate": "Отмяна на валидация",
+      "restore": "Възстановяване",
+      "ignore": "Игнорирай",
+      "validate": "Валидиране",
+      "invalidBeforeCreate": "{count, plural, one {Валидираният листинг съдържа грешка} other {# валидирани списъци съдържат грешка}} : Коригирайте ги преди да създадете членове."
+    },
+    "status": {
+      "toReview": "Ще бъде рецензиран",
+      "validated": "Валидирано",
+      "ignored": "Игнориран",
+      "error": "Грешка",
+      "created": "Създадена"
+    },
+    "result": {
+      "summary": "{created, plural, =0 {Няма създадени членове} one {# създаден член} other {# създадени членове}}{errors, plural, =0 {} one { · # грешка} other { · # грешки}}",
+      "remaining": "{count, plural, one {# файл остава да бъде обработен} other {# файлове остават за обработка}}.",
+      "nameColumn": "Име",
+      "statusColumn": "Резултат",
+      "detailColumn": "Детайли",
+      "created": "Създадена",
+      "error": "Грешка",
+      "skippedDocuments": "Нерегистрирано приемане: {documents}",
+      "backToReview": "Обратно към верификацията",
+      "goToMembers": "Вижте членовете",
+      "genericError": "Членове, създаващи грешки"
+    },
+    "notesValues": {
+      "yes": "Да",
+      "no": "Не"
+    },
+    "validation": {
+      "firstNameRequired": "Задължително първо име",
+      "lastNameRequired": "Изисквано е име"
+    },
+    "leaveWarning": {
+      "title": "Да се откажеш ли?",
+      "description": "Записите, прочетени и проверени на тази страница, ще бъдат загубени. Вече създадените членове се запазват.",
+      "confirm": "Напускане без да създава"
+    },
+    "restartWarning": {
+      "title": "Recommencer l''import?",
+      "description": "Качените страници и тяхното четене ще бъдат прекратени.",
+      "confirm": "Започни отначало"
+    }
+  },
   "formTermsEditor": {
     "contentRequired": "Трябва да попълните полето „{conditionsLabel}“ или да качите документ."
+  },
+  "membreDuplicates": {
+    "list": {
+      "title": "Потенциални дубликати",
+      "subtitle": "Членове, които изглеждат като един и същ човек — проверете преди да ги обедините.",
+      "menuItem": "Дубликати",
+      "scanAction": "Сканирайте за дубликати",
+      "scanSuccess": "{count, plural, =0 {Няма чакащи дубликати} one {1 дубликат в очакване} other {# дубликати, които чакат}}",
+      "scanError": "Грешка при търсене на дубликати",
+      "searchPlaceholder": "Търси член...",
+      "matchedFields": {
+        "EMAIL": "Имейл",
+        "NAME": "Име"
+      },
+      "columns": {
+        "membreA": "Член А",
+        "membreB": "Член B",
+        "matchedFields": "Съответстващи критерии",
+        "detectedAt": "Засечен",
+        "status": "Статус"
+      },
+      "status": {
+        "PENDING": "В процес на изчакване",
+        "DISMISSED": "Игнориран",
+        "MERGED": "Обединени"
+      },
+      "autoDismissedLabel": "(кола)",
+      "compareAction": "Сравнете",
+      "dismissAction": "Игнорирай",
+      "empty": "Няма дубликати.",
+      "emptyForSearch": "Няма резултати за \" {search} ».",
+      "restoreAction": "Възстановяване"
+    },
+    "merge": {
+      "backLink": "Назад",
+      "title": "Сравнение и сливане",
+      "subtitle": "Изберете кой член да запазите и за всяко различно поле коя стойност да запазите.",
+      "alreadyMerged": "Този дубликат вече е обединен.",
+      "keepAsPrimary": "Кийп като директор",
+      "fieldsTitle": "Различни области",
+      "fields": {
+        "firstName": "Първо име",
+        "lastName": "Име",
+        "email": "Имейл",
+        "phone": "Телефон",
+        "birthDate": "Дата на раждане",
+        "civilite": "Заглавие",
+        "address": "Адрес",
+        "addressStreet": "Писта",
+        "addressComplement": "Допълнителен адрес",
+        "postalCode": "Пощенски код",
+        "city": "Град",
+        "country": "Кънтри",
+        "groupeSanguin": "Кръвна група",
+        "sexe": "Пол",
+        "allergies": "Алергии",
+        "photoUrl": "Снимка",
+        "preferredLocale": "Предпочитан език",
+        "spokenLanguage": "Говорен език",
+        "possedeTshirt": "Има тениска",
+        "tailleTshirt": "Размер на тениската",
+        "typeId": "Тип член",
+        "notes": "Бележки",
+        "guardianName": "Име на законния настойник",
+        "guardianPhone": "Телефонен номер на законния настойник",
+        "secondGuardianName": "Име на втория законен настойник",
+        "secondGuardianPhone": "Телефонен номер на втория законен настойник",
+        "imageRightsConsent": "Права за изображения",
+        "imageRightsConsentAt": "Дата на съгласие (права на изображения)"
+      },
+      "relatedDataTitle": "Свързани данни",
+      "relations": {
+        "cotisations": "Приноси",
+        "participations": "Регистрации на събития",
+        "dons": "Дарения",
+        "membershipAddonPurchases": "Закупени опции за членство",
+        "automationLogs": "Задействани автоматизации",
+        "emailMessages": "Изпратени имейли",
+        "smsMessages": "Изпратено SMS",
+        "incomes": "Разписки",
+        "materialLoans": "Заеми за оборудване",
+        "boutiqueCommandes": "Поръчки от магазини",
+        "actualiteRecipients": "Получатели на новини",
+        "sondageRecipients": "Получатели на анкети",
+        "sondageReponses": "Отговори на анкети",
+        "meetingParticipants": "Участие в срещи",
+        "erasureRequests": "Искания за изтриване",
+        "dependants": "Прикрепени (зависими) членове",
+        "cotisationSubscription": "Активен членски абонамент",
+        "controlAlert": "Активен контролен сигнал"
+      },
+      "relatedDataCounts": "{primary} → {secondary}",
+      "conflictWarning": "⚠ {reason}",
+      "dismissAction": "Игнорирай този дубликат",
+      "mergeAction": "Сливане",
+      "mergeConfirmTitle": "Да обединя тези двама членове?",
+      "mergeConfirmDescription": "Всички свързани данни от вторичния член ще бъдат прехвърлени към основния член. Това действие не може да бъде отменено от интерфейса.",
+      "mergeConfirmDescriptionWithPortalWarning": "И двамата членове имат портален акаунт — акаунтът на вторичния член ще бъде деактивиран. Всички останали свързани данни ще бъдат прехвърлени към основния член. Това действие не може да бъде отменено от интерфейса.",
+      "mergeConfirmDescriptionAdoptsPortal": "Порталният акаунт на вторичния член ще бъде поет от основния член. Всички други свързани данни ще бъдат прехвърлени. Това действие не може да бъде отменено от интерфейса.",
+      "mergeSuccess": "{count, plural, =0 {Сливането е завършено} one {Сливане — 1 елемент прехвърлен} other {Сливане — # прехвърлени елементи}}",
+      "mergeError": "Сливане на грешки",
+      "relatedDataEmpty": "Няма данни, свързани с нито един от членовете."
+    },
+    "backoffice": {
+      "title": "Дублиращи се членове",
+      "subtitle": "Потенциални дубликати са открити във всички асоциации.",
+      "columns": {
+        "association": "Асоциация"
+      },
+      "changeAssociation": "Changer d''association",
+      "associationSearchPlaceholder": "Търси асоциация...",
+      "typeToSearch": "Докосни за търсене...",
+      "loading": "Зареждане...",
+      "noResults": "Няма резултати.",
+      "scanAction": "Скенер"
+    }
   }
 }

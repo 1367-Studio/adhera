@@ -6,7 +6,7 @@ import { storedRowRequiresTermsAcceptance } from "@/lib/form-terms-response"
 import { prisma } from "@/lib/prisma/client"
 import { APP_URL } from "@/lib/env"
 import { isValidSiret } from "@/lib/siret"
-import { ADDRESS_MAX_LENGTHS, addressColumns, addressIsFilled } from "@/lib/address"
+import { ADDRESS_MAX_LENGTHS, addressColumns, addressIsFilled, countryIsFilled } from "@/lib/address"
 import { writeActivityLog } from "@/lib/activity-log"
 import { eligibleReceiptAmount } from "@/lib/receipt-eligibility"
 import { withPortalAuth } from "@/lib/api-wrapper"
@@ -121,9 +121,12 @@ export const POST = withPortalAuth<{ formSlug: string }>(async (req, ctx, { form
   const donorAddress = { street: addressStreet, complement: addressComplement, postalCode, city, country, legacy: address }
   // Adresse structurée complète (voie + code postal + ville) OU seule adresse héritée en
   // texte libre — jamais un seul sous-champ isolé (voir addressIsFilled dans
-  // src/lib/address.ts, même règle que le checkout public et l'inscription événement).
+  // src/lib/address.ts, même règle que le checkout public et l'inscription événement). Le
+  // pays a son propre réglage d'obligation, indépendant de l'adresse (FORM-108).
   if (form.fieldAddress === "REQUIRED" && !addressIsFilled(parsed.data))
-    return NextResponse.json({ error: "Le champ « Adresse » est requis." }, { status: 422 })
+    return NextResponse.json({ error: "Le champ « Adresse postale » est requis." }, { status: 422 })
+  if (form.fieldCountry === "REQUIRED" && !countryIsFilled(parsed.data))
+    return NextResponse.json({ error: "Le champ « Pays de résidence » est requis." }, { status: 422 })
   const standardChecks: [string, string | undefined, string][] = [
     [form.fieldBirthDate, birthDate, "Date de naissance"],
     [form.fieldPhone,     phone,     "Téléphone"],

@@ -5,6 +5,7 @@
     "delete": "Delete",
     "add": "Add",
     "edit": "Edit",
+    "view": "View details",
     "confirm": "Confirm",
     "close": "Close",
     "back": "Back",
@@ -51,7 +52,11 @@
     "dismissTip": "Dismiss tip",
     "addressPlaceholder": "Community hall, 12 Main Street…",
     "viewOnGoogleMaps": "View on Google Maps",
-    "backToSite": "Back to site"
+    "backToSite": "Back to site",
+    "period": {
+      "exercice": "Exercise {year}",
+      "exerciceRange": "Exercise {startYear}–{endYear}"
+    }
   },
   "address": {
     "street": "Address",
@@ -59,8 +64,30 @@
     "complementPlaceholder": "Building, floor, mailbox…",
     "postalCode": "Postal code",
     "city": "City",
-    "country": "Country",
+    "country": "Country of residence",
     "legacyMigratedHint": "Copied from the old address field — check it doesn't already include the postal code and city below."
+  },
+  "avis": {
+    "invalidLink": "This review link is invalid.",
+    "thanks": "Thank you for your review!",
+    "notEligible": "Only attendees at the event can leave a review.",
+    "greeting": "Hello {firstName}, how did you find this event?",
+    "commentPlaceholder": "Any comments? (optional)",
+    "submit": "Send my review",
+    "ratingRequired": "Choose a note",
+    "networkError": "Network Error",
+    "genericError": "Error",
+    "publicationQuestion": "Do you allow the publication of your opinion on the association''s website and social networks?",
+    "publicationYes": "Yes, I authorize publication.",
+    "publicationNo": "No, my opinion will remain accessible only to the association''s managers.",
+    "publicationRequired": "Thank you for answering this question.",
+    "identificationQuestion": "How would you like to be identified?",
+    "identificationNamed": "With my first and last name",
+    "identificationAnonymous": "Anonymously",
+    "identificationRequired": "Please choose an option.",
+    "manageConsentTitle": "Manage Publish Permission",
+    "updateConsent": "Update my preferences",
+    "consentUpdated": "Your preferences have been updated."
   },
   "auth": {
     "layout": {
@@ -663,13 +690,20 @@
       "amount": "Amount",
       "statusOptions": {
         "aPayer": "To pay",
+        "partiellementPayee": "Partially Paid",
         "payee": "Paid",
         "enLitige": "In dispute",
         "annulee": "Cancelled"
       },
-      "unmarkPaidWarning": "This document is currently marked paid — removing this status will delete the expense it generated in Finances, along with any bank reconciliation.",
-      "markPaidNotice": "Marking this document as paid will automatically create a matching expense in Finances.",
       "file": "Document",
+      "payment": {
+        "add": "Record a payment",
+        "title": "Record a payment",
+        "paidOf": "paid",
+        "toasts": {
+          "recorded": "Payment Recorded"
+        }
+      },
       "toasts": {
         "uploadError": "Error uploading the document",
         "networkError": "Network error during upload — please try again"
@@ -899,6 +933,8 @@
       "import": "Import",
       "reconciliation": "Reconciliation",
       "categories": "Categories",
+      "immobilisations": "Capital assets",
+      "journalManual": "Manual Writing",
       "reports": "Reports",
       "bilan": "Balance sheet",
       "compteResultat": "Income statement",
@@ -914,6 +950,67 @@
     "comingSoon": {
       "title": "Coming soon",
       "description": "This feature is currently in development."
+    },
+    "immobilisationsView": {
+      "title": "Capital assets",
+      "description": "Depreciable assets (tangible and intangible) and their depreciation schedule.",
+      "add": "Add to cart",
+      "newTitle": "New capital asset",
+      "noImmobilisations": "No downtime",
+      "columns": {
+        "label": "Designation",
+        "entryValue": "Gross value",
+        "accumulated": "Depreciation and amortization",
+        "netValue": "Net Worth",
+        "usageStartDate": "Commissioning"
+      },
+      "deleteConfirmTitle": "Abolish this immobilization?",
+      "toasts": {
+        "created": "Fixed asset created",
+        "updated": "Updated fixed asset",
+        "deleted": "Fixed asset removed"
+      },
+      "drillDown": {
+        "title": "Depreciation and amortization",
+        "exercice": "Exercise",
+        "dotation": "Staffing",
+        "accumulated": "Cumulation",
+        "netValue": "Net Worth",
+        "noDepreciations": "No prize money recorded at this time"
+      }
+    },
+    "immobilisationForm": {
+      "label": "Designation",
+      "labelPlaceholder": "Ex: Laptop — Desktop",
+      "expense": "Acquisition expenditure",
+      "expensePlaceholder": "Choose an expense marked \"capital\"",
+      "noEligibleExpenses": "No eligible expenses — mark an expense as capital and categorize it on account 218300 (property) or 205000 (intangible).",
+      "entryValue": "Input Value",
+      "residualValue": "Residual Value",
+      "acquisitionDate": "Acquisition date",
+      "usageStartDate": "In-service date",
+      "usefulLifeMonths": "Duration of use (months)"
+    },
+    "journalManual": {
+      "title": "Manual Writing",
+      "description": "Start a journal entry for an amount you decide — provision, security deposit, accrual — when no feature automatically calculates it.",
+      "newEntry": "New writing",
+      "exercice": "Exercise",
+      "date": "Date",
+      "label": "Wording",
+      "labelPlaceholder": "Ex: Provision for litigation — file 2026-04",
+      "account": "Account",
+      "accountPlaceholder": "Choose an account",
+      "debit": "Flow rate",
+      "credit": "Credit",
+      "totals": "Debit/Credit Totals",
+      "addLine": "Add a row",
+      "mustBalance": "The debit and credit must be equal and non-zero.",
+      "missingAccount": "Each line must have an account.",
+      "cancel": "Cancel",
+      "submit": "Start writing",
+      "createSuccess": "Entry created",
+      "noOpenExercice": "No open exercises—open or reopen a fiscal year before initiating a manual entry."
     },
     "bilan": {
       "title": "Balance sheet",
@@ -1002,7 +1099,9 @@
       "title": "Income statement",
       "description": "Financial result for the fiscal year, compared to the previous year.",
       "exerciceLabel": "Fiscal year",
+      "categoryColumnLabel": "Category",
       "noPreviousExercice": "-",
+      "noPreviousExerciceMessage": "No previous exercice available",
       "export": "Export",
       "exportExcel": "Export Excel",
       "exportPdf": "Export PDF",
@@ -1011,14 +1110,9 @@
       "expenses": "Expenses",
       "totalExpenses": "Total expenses",
       "result": "Result for the year",
+      "resultZero": "Result for the period: €0",
       "surplus": "Surplus for the year",
       "deficit": "Deficit for the year",
-      "emptyExercice": {
-        "title": "No fiscal year",
-        "description": "Create a fiscal year to generate the income statement."
-      },
-      "noPreviousExerciceMessage": "No previous exercice available",
-      "resultZero": "Result for the period: €0",
       "operationalResult": "Operating result",
       "uncategorized": "Uncategorized",
       "uncategorizedAlertIncome": "{count, plural, one {# income entry needs to be categorized} other {# income entries need to be categorized}}",
@@ -1030,6 +1124,15 @@
         "FINANCIAL": "Financial",
         "EXCEPTIONAL": "Exceptional",
         "OTHER": "Other"
+      },
+      "inKind": {
+        "title": "Voluntary contributions in kind",
+        "employmentHeader": "Use of contributions",
+        "amountHeader": "Amount",
+        "receivedHeader": "Contributions received",
+        "totalEmployments": "Total Jobs",
+        "totalReceived": "Total Contributions",
+        "note": "These free contributions are valued in euros. They do not lead to any movement of money and do not change the result of the financial year."
       },
       "drillDown": {
         "date": "Date",
@@ -1085,15 +1188,115 @@
         "reference": "Reference",
         "exercice": "Fiscal year"
       },
-      "categoryColumnLabel": "Category",
-      "inKind": {
-        "title": "Voluntary contributions in kind",
-        "employmentHeader": "Use of contributions",
-        "amountHeader": "Amount",
-        "receivedHeader": "Contributions received",
-        "totalEmployments": "Total Jobs",
-        "totalReceived": "Total Contributions",
-        "note": "These free contributions are valued in euros. They do not lead to any movement of money and do not change the result of the financial year."
+      "emptyExercice": {
+        "title": "No fiscal year",
+        "description": "Create a fiscal year to generate the income statement."
+      }
+    },
+    "previsionnel": {
+      "title": "Provisional budget",
+      "description": "Compare the planned and actual budget, by category and by project.",
+      "exerciceLabel": "Exercise",
+      "emptyExercice": {
+        "title": "No fiscal year",
+        "description": "Create a fiscal year to prepare its projected budget."
+      },
+      "tabs": {
+        "global": "Budget global",
+        "projects": "By project"
+      },
+      "income": "Recipes",
+      "expense": "Expenses",
+      "result": "Result",
+      "card": {
+        "previsto": "Planned",
+        "diff": "Variance",
+        "percent": "Completed"
+      },
+      "columns": {
+        "category": "Category",
+        "previsto": "Planned",
+        "realizado": "Completed",
+        "diffPercent": "Variance / % Realized",
+        "total": "Total"
+      },
+      "noCategories": "No category.",
+      "uncategorized": "To be categorized",
+      "noProject": "Without a project",
+      "addCategory": "Add a category",
+      "addCategoryModalTitle": "Add a category",
+      "exportFileNameGlobal": "Global-forecast-budget",
+      "export": {
+        "action": "Export",
+        "excel": "Exporter Excel",
+        "pdf": "Exporter PDF",
+        "diffColumn": "Spread (€)",
+        "percentColumn": "% Completed",
+        "associationLabel": "Association",
+        "exerciceLabel": "Exercise"
+      },
+      "toasts": {
+        "categoryCreated": "Category created.",
+        "updateError": "Error while updating."
+      },
+      "copyBudget": {
+        "action": "Copy previous budget",
+        "modalTitle": "Copy previous budget",
+        "modalDescription": "Copies the forecasts of {previous} to {target}. Only the forecasts are copied, never the amounts realized.",
+        "allProjects": "All projects",
+        "noProjects": "No plans.",
+        "archived": "ARCHIVED",
+        "noProjectAlwaysCopied": "Forecasts without a project are always copied.",
+        "copy": "Copy",
+        "confirmOverwriteTitle": "Replace existing forecasts?",
+        "confirmOverwriteDescription": "This exercise already has non-zero forecasts for some categories. Copying them from the previous fiscal year will override these values.",
+        "confirmOverwriteAction": "Replace",
+        "toasts": {
+          "copied": "{count, plural, one {# forecast copied.} other {# forecasts copied.}}",
+          "error": "Error copying."
+        }
+      },
+      "projectsTab": {
+        "count": "{count, plural, one {# project} other {# projects}}",
+        "createProject": "Create a project",
+        "createModalTitle": "Create a project",
+        "editProject": "Edit",
+        "editModalTitle": "Edit Project",
+        "name": "Project Name",
+        "namePlaceholder": "Ex: Annual trip",
+        "description": "Description",
+        "descriptionPlaceholder": "Description facultative",
+        "archive": "Archive",
+        "unarchive": "Unarchive",
+        "archived": "ARCHIVED",
+        "showArchived": "View archived projects ({count})",
+        "hideArchived": "Hide archived projects",
+        "noProjects": {
+          "title": "No projects",
+          "description": "Create a project to track its budget separately from the entire association."
+        },
+        "addCategoryToProject": "Add a category to the project",
+        "addCategoryModalTitle": "Add a category to the project",
+        "type": "Type",
+        "typeIncome": "Recipe",
+        "typeExpense": "Expense",
+        "category": "Category",
+        "selectCategoryPlaceholder": "Select a category",
+        "createNewCategory": "+ Create a new category",
+        "noAvailableCategories": "All such categories are already added to this project.",
+        "removeCategoryFromProject": "Remove from the project",
+        "removeCategoryConfirmTitle": "Remove this category from the project?",
+        "removeCategoryConfirmDescription": "« {category} \" will be removed from the budget of this project. If there are already revenues or expenses related to it, the category will automatically reappear with their realized amount.",
+        "toasts": {
+          "created": "Project created.",
+          "updated": "Updated draft.",
+          "archived": "Archived project.",
+          "unarchived": "Unarchived project.",
+          "categoryAdded": "Category added to the project.",
+          "categoryRemoved": "Category removed from the project.",
+          "createError": "Error during creation.",
+          "updateError": "Error while updating."
+        }
       }
     },
     "categoryForm": {
@@ -1164,6 +1367,8 @@
       "date": "Date",
       "category": "Category",
       "noCategory": "No category",
+      "project": "Project",
+      "noProject": "No projects",
       "paymentMethodLabel": "Payment method",
       "reference": "Reference",
       "referencePlaceholder": "e.g. TRF-2024-001",
@@ -1183,6 +1388,8 @@
       "internalNote": "Internal note",
       "internalNotePlaceholder": "Note for the treasurer…",
       "receipt": "Receipt",
+      "isImmobilisation": "Fixed asset (depreciable asset)",
+      "isImmobilisationHint": "Check for a capitalizable purchase (e.g., office and computer equipment) — you can then create its depreciation schedule in Finance > Capital Assets.",
       "toasts": {
         "uploadError": "Error uploading the receipt",
         "networkError": "Network error during upload — please try again"
@@ -1773,6 +1980,10 @@
         "dateLabel": "Start date",
         "createButton": "Create"
       },
+      "summary": {
+        "eventCount": "Number of events",
+        "participants": "Participants"
+      },
       "bilan": {
         "show": "Show summary",
         "hide": "Hide summary",
@@ -2019,8 +2230,14 @@
         "participant": "Participant",
         "rating": "Rating",
         "comment": "Comment",
-        "date": "Date"
-      }
+        "date": "Date",
+        "site": "On the website"
+      },
+      "anonymousNote": "Anonymous",
+      "noConsent": "No consent",
+      "featureToggleLabel": "Show review of {name} On the site",
+      "bulkFeatureAll": "Show all on site",
+      "bulkUnfeatureAll": "Remove all from the site"
     },
     "detail": {
       "backToList": "Back to events",
@@ -2066,6 +2283,7 @@
           "standardFieldsHint": "Fields requested at registration",
           "phoneLabel": "Phone",
           "addressLabel": "Address",
+          "countryLabel": "Country of residence",
           "requirement": {
             "hidden": "Hidden",
             "optional": "Optional",
@@ -3101,6 +3319,7 @@
       "noDonations": "No donations recorded",
       "noDonationsFiltered": "No donations match these filters.",
       "resetFilters": "Reset",
+      "totalLabel": "Total",
       "donorsLabel": "Donors",
       "averageLabel": "Average donation",
       "pendingTitle": "Awaiting encashment",
@@ -3231,6 +3450,7 @@
           "title": "Form",
           "standardFieldsHint": "Fields requested from the donor",
           "addressLabel": "Address",
+          "countryLabel": "Country of residence",
           "birthDateLabel": "Date of birth",
           "phoneLabel": "Phone",
           "mobileLabel": "Mobile",
@@ -3523,6 +3743,7 @@
           "title": "Form",
           "standardFieldsHint": "Fields requested at signup",
           "addressLabel": "Address",
+          "countryLabel": "Country of residence",
           "birthDateLabel": "Date of birth",
           "phoneLabel": "Phone",
           "mobileLabel": "Mobile",
@@ -4238,10 +4459,10 @@
       "status": {
         "trial": "Free trial",
         "active": "Active",
+        "paymentPending": "Payment in progress",
         "pastDue": "Payment overdue",
         "suspended": "Suspended",
-        "cancelled": "Cancelled",
-        "paymentPending": "Payment in progress"
+        "cancelled": "Cancelled"
       },
       "planLabel": "{tier} plan",
       "membersCount": "{count} / {limit} members",
@@ -4666,6 +4887,125 @@
       "annulee": "This cotisation has been cancelled."
     }
   },
+  "groupes": {
+    "view": {
+      "title": "Groups",
+      "countTotal": "{count, plural, =0 {No groups} one {# group} other {# groups}}",
+      "count": "{count, plural, =0 {No results} one {# result} other {# results}}",
+      "searchPlaceholder": "Search for a group...",
+      "noResultsFor": "There are no groups that match \" {search} »",
+      "noGroupe": "No groups at the moment",
+      "allStatuses": "All statuses",
+      "statusFilter": {
+        "actifs": "Active ingredients",
+        "archives": "Archived"
+      },
+      "addTitle": "Create a group",
+      "editTitle": "Edit the group",
+      "columns": {
+        "nome": "Name",
+        "membres": "Members",
+        "responsaveis": "Managers",
+        "lastChamada": "Last Call",
+        "status": "Status"
+      },
+      "statusBadge": {
+        "archive": "Archived"
+      },
+      "actions": {
+        "edit": "Edit",
+        "archive": "Archive",
+        "unarchive": "Unarchive"
+      },
+      "archiveConfirmTitle": "Archive « {name} » ?",
+      "archiveConfirmDescription": "The call history is retained. The group will no longer appear in the active list.",
+      "unarchiveConfirmTitle": "Unarchive \" {name} » ?",
+      "toasts": {
+        "created": "Group created",
+        "updated": "Updated group",
+        "archived": "Archived Group",
+        "unarchived": "Unarchived Group"
+      }
+    },
+    "form": {
+      "nomeLabel": "Group Name",
+      "nomePlaceholder": "E.g. Youth team, Thursday choir...",
+      "descricaoLabel": "Description",
+      "descricaoPlaceholder": "Optional"
+    },
+    "detail": {
+      "backToList": "Back to groups",
+      "membresTitle": "Members",
+      "addMembre": "Add a member",
+      "allMemberTypes": "All types",
+      "searchMembrePlaceholder": "Search for a member...",
+      "searchOrFilterPrompt": "Search for a member or choose a type above",
+      "noResultsForMembre": "No members match \" {search} »",
+      "noResultsForType": "No such member",
+      "candidatesFound": "{count, plural, one {# member found} other {# members found}}",
+      "selectAllCandidates": "Select all",
+      "deselectAllCandidates": "Deselect All",
+      "selectAllTruncated": "More than 500 members fit this filter — only the top 500 were selected.",
+      "unselectCandidate": "Deselect {name}",
+      "addSelectedMembres": "Add ({count})",
+      "membresAddedToast": "{count, plural, =0 {No members added} one {# member added} other {# members added}}",
+      "noMembre": "No members in this group",
+      "removeMembreConfirmTitle": "Remove {name} of the group?",
+      "removeMembreConfirmDescription": "His history of presence in this group is preserved.",
+      "responsaveisTitle": "Managers",
+      "addResponsavel": "Add a manager",
+      "noResponsavel": "No designated official",
+      "removeResponsavelConfirmTitle": "Remove {name} Of those responsible?",
+      "appelsTitle": "Appeals",
+      "faireAppel": "Make the call",
+      "noAppel": "No calls at this time",
+      "noMembreForAppel": "Add at least one member to the group before you can make the call.",
+      "newAppelDateLabel": "Date",
+      "newAppelSubmit": "Start Call",
+      "appelColumns": {
+        "date": "Date",
+        "presents": "Present",
+        "absents": "Absent",
+        "justifies": "Justified",
+        "nonRenseignes": "Not specified"
+      },
+      "reopenExistingTitle": "A call already exists for this niche",
+      "reopenExistingDescription": "You can open it to view or edit it instead of creating a new one.",
+      "reopenExistingConfirm": "Open existing call"
+    },
+    "appel": {
+      "backToGroupe": "Back to the group",
+      "dateLabel": "Date",
+      "horarioLabel": "Schedule",
+      "horarioPlaceholder": "Optional, e.g. 2:00 p.m.",
+      "activityLabel": "Activity",
+      "activityPlaceholder": "Optional",
+      "markAllPresent": "Mark all present",
+      "syncMembres": "Add new group members",
+      "counts": {
+        "presente": "Present",
+        "ausente": "Absent",
+        "ausenciaJustificada": "Justified",
+        "naoInformado": "Not specified"
+      },
+      "status": {
+        "NAO_INFORMADO": "Not specified",
+        "PRESENTE": "Present",
+        "AUSENTE": "Absent",
+        "AUSENCIA_JUSTIFICADA": "Justified"
+      },
+      "save": "Record Call",
+      "export": "Export",
+      "exportPdf": "PDF",
+      "exportPdfBlank": "Blank PDF (to print)",
+      "exportExcel": "Excel",
+      "toasts": {
+        "saved": "Recorded call",
+        "noMembersToExport": "No members to export",
+        "synced": "{count, plural, =0 {No new members} one {# member added} other {# members added}}"
+      }
+    }
+  },
   "membres": {
     "form": {
       "status": {
@@ -4931,6 +5271,7 @@
         "evenements": "Events",
         "reunions": "Meetings",
         "materiel": "Equipment",
+        "groupes": "Groups",
         "dons": "Donations",
         "historique": "History",
         "emails": "Emails",
@@ -5094,6 +5435,12 @@
       "inMessagesSection": " in the Messages section.",
       "messageSectionLabel": "Message",
       "saveAsTemplate": "Save as template",
+      "subjectLabel": "Subject",
+      "subjectPlaceholder": "Email subject…",
+      "subjectTooLong": "Subject too long: {length}/{max} characters — it will be rejected when sending.",
+      "bodyLabel": "Message body",
+      "bodyPlaceholder": "Write your message…",
+      "designTemplateReadonlyHint": "This template uses Visual design mode (images, buttons) — its content can't be edited here. To change it, edit the template in Messages.",
       "language": {
         "title": "Sending language",
         "modeOriginal": "Original language",
@@ -5118,12 +5465,6 @@
         "autoNoEffect": "No current recipient has a preferred language other than French — everyone will receive the original version.",
         "autoExternalNote": "{count, plural, one {# external email (original language)} other {# external emails (original language)}}"
       },
-      "subjectLabel": "Subject",
-      "subjectPlaceholder": "Email subject…",
-      "subjectTooLong": "Subject too long: {length}/{max} characters — it will be rejected when sending.",
-      "bodyLabel": "Message body",
-      "bodyPlaceholder": "Write your message…",
-      "designTemplateReadonlyHint": "This template uses Visual design mode (images, buttons) — its content can't be edited here. To change it, edit the template in Messages.",
       "continue": "Continue",
       "confirmSendTitle": "Send confirmation",
       "confirmSendDescription": "This email will be sent to {recipients}. This action cannot be undone.",
@@ -5686,8 +6027,8 @@
       "actualites": "News",
       "membership": "Join the association",
       "dons": "Make a donation",
-      "contact": "Contact",
-      "boutique": "Store"
+      "boutique": "Store",
+      "contact": "Contact"
     },
     "defaultTitles": {
       "hero": "Welcome",
@@ -5695,9 +6036,9 @@
       "events": "Upcoming events",
       "membership": "Join the association",
       "dons": "Make a donation",
+      "boutique": "Store",
       "actualites": "News",
-      "contact": "Contact",
-      "boutique": "Store"
+      "contact": "Contact"
     },
     "view": {
       "uploadFailedWarning": "{count, plural, one {# image could not be uploaded.} other {# images could not be uploaded.}}",
@@ -5744,9 +6085,9 @@
       "createWithAi": "Create with AI",
       "addSection": "Add a section",
       "donsModuleDisabled": "Donations module disabled — hidden on the public site",
+      "boutiqueModuleDisabled": "Store module disabled — hidden from the public site",
       "deleteSectionTitle": "Delete the section",
-      "deleteSectionDescription": "This action is irreversible.",
-      "boutiqueModuleDisabled": "Store module disabled — hidden from the public site"
+      "deleteSectionDescription": "This action is irreversible."
     },
     "sectionSheet": {
       "editTitle": "Edit — {label}",
@@ -5767,6 +6108,8 @@
       "eventsLimitHint": "Events are automatically pulled from your calendar.",
       "actualitesLimit": "Number of news posts to display",
       "actualitesLimitHint": "Only the first N published news posts will be shown on the site.",
+      "boutiqueLimit": "Number of products to display",
+      "boutiqueLimitHint": "Only the first N active products will be shown on the site.",
       "membershipIntro": "Introductory text",
       "membershipIntroPlaceholder": "Fill out this form to request to join the association…",
       "membershipHint": "Requests appear in the member list with \"Pending\" status.",
@@ -5787,9 +6130,7 @@
       "apply": "Apply",
       "discardTitle": "Discard changes?",
       "discardDescription": "Unapplied changes will be lost.",
-      "discardConfirm": "Discard",
-      "boutiqueLimit": "Number of products to display",
-      "boutiqueLimitHint": "Only the first N active products will be shown on the site."
+      "discardConfirm": "Discard"
     },
     "preview": {
       "donsNoForm": "No donation form selected — hidden on the public site"
@@ -6118,6 +6459,15 @@
       "viewShop": "View shop",
       "orderPlacedTitle": "Order placed!",
       "orderPlacedDescription": "Your order is awaiting payment. The administration will contact you to finalize it.",
+      "paymentSuccessTitle": "Payment confirmed!",
+      "paymentSuccessDescription": "Thank you for your purchase. A confirmation email with your receipt has been sent to you.",
+      "stockAdjustedNotice": "Stock for some items has changed — your cart was adjusted, please review before continuing.",
+      "trackOrderButton": "Track my order",
+      "trackingPageTitle": "Order tracking",
+      "trackingStatusPending": "Awaiting payment",
+      "trackingStatusPaid": "Order paid",
+      "trackingStatusCancelled": "Order cancelled",
+      "trackingNotFound": "Order not found",
       "myOrdersButton": "My orders",
       "continueShopping": "Continue shopping",
       "maxStockReached": "Max stock reached",
@@ -6155,16 +6505,7 @@
         "orderError": "Error placing the order",
         "orderUpdated": "Order updated",
         "orderCancelled": "Order cancelled"
-      },
-      "paymentSuccessTitle": "Payment confirmed!",
-      "paymentSuccessDescription": "Thank you for your purchase. A confirmation email with your receipt has been sent to you.",
-      "stockAdjustedNotice": "Stock for some items has changed — your cart was adjusted, please review before continuing.",
-      "trackOrderButton": "Track my order",
-      "trackingPageTitle": "Order tracking",
-      "trackingStatusPending": "Awaiting payment",
-      "trackingStatusPaid": "Order paid",
-      "trackingStatusCancelled": "Order cancelled",
-      "trackingNotFound": "Order not found"
+      }
     },
     "dons": {
       "title": "My donations",
@@ -6530,6 +6871,7 @@
       "actualites": "News",
       "messages": "Messaging",
       "materiel": "Equipment",
+      "groupes": "Groups",
       "site": "Website",
       "activite": "History",
       "suporte": "Support",

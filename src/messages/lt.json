@@ -5,6 +5,7 @@
     "delete": "Ištrinti",
     "add": "Pridėti",
     "edit": "Redaguoti",
+    "view": "Peržiūrėti detales",
     "confirm": "Patvirtinti",
     "close": "Uždaryti",
     "back": "Atgal",
@@ -41,6 +42,7 @@
     "location": "Vieta",
     "choosePlaceholder": "Pasirink...",
     "allPlaceholder": "Visi",
+    "noOptionsPlaceholder": "Nėra jokių pasirinkimų",
     "previousPage": "Ankstesnis puslapis",
     "nextPage": "Kitas puslapis",
     "paginationRange": "{from}–{to} / {total}",
@@ -51,7 +53,10 @@
     "addressPlaceholder": "Salle des fêtes, 12 rue de la Paix, Paryžius...",
     "viewOnGoogleMaps": "Žr. Google žemėlapiuose",
     "backToSite": "Grįžti į svetainę",
-    "noOptionsPlaceholder": "Nėra jokių pasirinkimų"
+    "period": {
+      "exercice": "Fizinis aktyvumas {year}",
+      "exerciceRange": "Fizinis aktyvumas {startYear}–{endYear}"
+    }
   },
   "address": {
     "street": "Adresas",
@@ -59,8 +64,30 @@
     "complementPlaceholder": "Pastatas, aukštas, pašto dėžutė…",
     "postalCode": "Pašto kodas",
     "city": "Miestas",
-    "country": "Šalis",
+    "country": "Gyvenamosios vietos šalis",
     "legacyMigratedHint": "Nukopijuota iš senojo adreso lauko — patikrinkite, ar jame jau nėra žemiau nurodyto pašto kodo ir miesto."
+  },
+  "avis": {
+    "invalidLink": "Ši apžvalgos nuoroda yra neteisinga.",
+    "thanks": "Ačiū už jūsų atsiliepimą!",
+    "notEligible": "Atsiliepimą gali palikti tik renginio dalyviai.",
+    "greeting": "Labas {firstName}, kaip jums patiko šis renginys?",
+    "commentPlaceholder": "Ar turite komentarų? (neprivaloma)",
+    "submit": "Atsiųskite mano atsiliepimą",
+    "ratingRequired": "Pasirinkite natą",
+    "networkError": "Tinklo klaida",
+    "genericError": "Klaida",
+    "publicationQuestion": "Ar leidžiate skelbti savo nuomonę asociacijos svetainėje ir socialiniuose tinkluose?",
+    "publicationYes": "Taip, aš leidžiu publikuoti.",
+    "publicationNo": "Ne, mano nuomonė bus prieinama tik asociacijos vadovams.",
+    "publicationRequired": "Ačiū, kad atsakėte į šį klausimą.",
+    "identificationQuestion": "Kaip norėtumėte, kad jus atpažintų?",
+    "identificationNamed": "Su mano vardu ir pavarde",
+    "identificationAnonymous": "Anonimiškai",
+    "identificationRequired": "Prašome pasirinkti vieną variantą.",
+    "manageConsentTitle": "Valdyti Publikavimo leidimą",
+    "updateConsent": "Atnaujinti mano nustatymus",
+    "consentUpdated": "Jūsų pageidavimai buvo atnaujinti."
   },
   "auth": {
     "layout": {
@@ -80,6 +107,8 @@
       "heading": "Prisijungti, prisijunk",
       "subtitle": "Įveskite savo prisijungimo duomenis, kad pasiektumėte savo erdvę.",
       "suspended": "Jūsų asociacijos prenumerata yra sustabdyta. Susisiekite su savo administratoriumi, kad situacija būtų sureguliuota.",
+      "errorMulti": "Kelios paskyros atitinka šį Google el. paštą. Prisijunkite su savo slaptažodžiu.",
+      "error2faRequired": "Šioje paskyroje įjungtas dviejų veiksnių autentifikavimas. Prisijunkite su savo slaptažodžiu.",
       "noAccount": "Dar neturi paskyros?",
       "createAccount": "Sukurkite paskyrą",
       "form": {
@@ -91,6 +120,17 @@
         "connecting": "Prisijungiama…",
         "or": "arba",
         "continueWithGoogle": "Tęskite paieškas Google"
+      },
+      "twoFactor": {
+        "title": "Dviejų žingsnių patikra",
+        "descriptionTotp": "Įveskite 6 skaitmenų kodą, rodomą autentifikavimo programėlėje.",
+        "descriptionBackup": "Įveskite vieną iš atsarginių kopijų kodų.",
+        "codeLabel": "Patikros kodas",
+        "backupCodeLabel": "Atsarginis kodas",
+        "submit": "Patikrinta",
+        "back": "Atgal",
+        "useBackupCode": "Naudokite atsarginį kodą",
+        "useAuthenticatorCode": "Naudokite programėlės kodą"
       }
     },
     "register": {
@@ -224,6 +264,7 @@
       "title": "Narių zona",
       "subtitle": "Prisijunkite, kad pasiektumėte savo erdvę.",
       "suspendedNotice": "Šios asociacijos narystė sustabdyta. Susisiekite su administratoriumi, kad situacija būtų sutvarkyta.",
+      "selfRegisterDisabledNotice": "Savitarnos paskyros kūrimas nebeįmanomas. Dėl prieigos kreipkitės į savo organizacijos administratorių.",
       "emailLabel": "El. pašto adresas",
       "emailPlaceholder": "contact@association.fr",
       "passwordLabel": "Slaptažodis",
@@ -316,6 +357,7 @@
     "vat": "PVM",
     "totalDiscount": "Visiška nuolaida",
     "total": "Iš viso",
+    "paymentMethod": "Mokėjimo būdas",
     "paymentTerms": "Mokėjimo sąlygos",
     "paymentTermsPlaceholder": "pvz., 30 dienų mokėjimas",
     "notes": "Pastabos",
@@ -371,7 +413,9 @@
     "viewDocument": "Peržiūrėti dokumentą",
     "remove": "Ištrinti",
     "uploading": "Įkeliama...",
-    "attach": "Prisegti paveikslėlį arba PDF (maksimaliai 4 MB)"
+    "attach": "Prisegti paveikslėlį arba PDF (maksimaliai 4 MB)",
+    "attachPdf": "Importuokite PDF (maksimaliai 4 MB)",
+    "pdfOnly": "Priimami tik PDF failai"
   },
   "factures": {
     "form": {
@@ -646,13 +690,20 @@
       "amount": "Suma",
       "statusOptions": {
         "aPayer": "Mokėtina",
+        "partiellementPayee": "Dalinai apmokama",
         "payee": "Apmokėta",
         "enLitige": "Ginčas",
         "annulee": "Atšaukta"
       },
-      "unmarkPaidWarning": "Šis dokumentas šiuo metu yra apmokėtas — pašalinus šį statusą, bus pašalintos išlaidos, kurias jis sukėlė finansuose, taip pat ir bet koks banko suderinimas.",
-      "markPaidNotice": "Pažymėjus šį dokumentą kaip apmokėtą, automatiškai sukurs atitinkamas išlaidas Finansuose.",
       "file": "Dokumentas",
+      "payment": {
+        "add": "Įrašykite mokėjimą",
+        "title": "Įrašykite mokėjimą",
+        "paidOf": "Mokama",
+        "toasts": {
+          "recorded": "Užregistruotas mokėjimas"
+        }
+      },
       "toasts": {
         "uploadError": "Klaida įkeliant dokumentą",
         "networkError": "Tinklo klaidų įkėlimas — bandykite dar kartą"
@@ -863,6 +914,10 @@
       "userMenu": {
         "title": "Jūsų profilis",
         "description": "Redaguok savo profilį, pakeisk slaptažodį ir atsijunk nuo šio meniu."
+      },
+      "help": {
+        "title": "Reikia pagalbos?",
+        "description": "Štai ir viskas! Šis mygtukas atidaro Pagalbos centrą: straipsnius, dažniausiai užduodamus klausimus, burtininką ir naujienas. Taip pat galite pradėti šį apsilankymą iš jo poraštės."
       }
     }
   },
@@ -878,6 +933,8 @@
       "import": "Import",
       "reconciliation": "Suderinimas",
       "categories": "Kategorijos",
+      "immobilisations": "Kapitalo turtas",
+      "journalManual": "Rankinis rašymas",
       "reports": "Ataskaitos",
       "bilan": "Balansas",
       "compteResultat": "Pelno (nuostolių) ataskaita",
@@ -894,9 +951,358 @@
       "title": "Greitai grįšiu",
       "description": "Ši funkcija yra kuriama."
     },
+    "immobilisationsView": {
+      "title": "Kapitalo turtas",
+      "description": "Nusidėvėjęs turtas (materialus ir nematerialus) bei jų nusidėvėjimo grafikas.",
+      "add": "Dėti į krepšelį",
+      "newTitle": "Naujas kapitalo turtas",
+      "noImmobilisations": "Nėra laisvo laiko",
+      "columns": {
+        "label": "Žymėjimas",
+        "entryValue": "Bendroji vertė",
+        "accumulated": "Nusidėvėjimas ir amortizacija",
+        "netValue": "Grynoji vertė",
+        "usageStartDate": "Priėmimas į tarnybą"
+      },
+      "deleteConfirmTitle": "Panaikinti šią imobilizaciją?",
+      "toasts": {
+        "created": "Sukurtas ilgalaikis turtas",
+        "updated": "Atnaujintas ilgalaikis turtas",
+        "deleted": "Ilgalaikis turtas pašalintas"
+      },
+      "drillDown": {
+        "title": "Nusidėvėjimas ir amortizacija",
+        "exercice": "Fizinis aktyvumas",
+        "dotation": "Personalas",
+        "accumulated": "Kumuliacija",
+        "netValue": "Grynoji vertė",
+        "noDepreciations": "Šiuo metu prizų fondas nebuvo užfiksuotas"
+      }
+    },
+    "immobilisationForm": {
+      "label": "Žymėjimas",
+      "labelPlaceholder": "Pvz.: nešiojamas – stacionarus kompiuteris",
+      "expense": "Įsigijimo išlaidos",
+      "expensePlaceholder": "Pasirinkite išlaidas, pažymėtas \"kapitalas\"",
+      "noEligibleExpenses": "Nėra tinkamų išlaidų – pažymėkite sąnaudą kaip kapitalą ir priskirkite ją sąskaitai 218300 (turtas) arba 205000 (nemateriali).",
+      "entryValue": "Įvesties reikšmė",
+      "residualValue": "Likutinė vertė",
+      "acquisitionDate": "Įsigijimo data",
+      "usageStartDate": "Tarnybos data",
+      "usefulLifeMonths": "Naudojimo trukmė (mėnesiai)"
+    },
+    "journalManual": {
+      "title": "Rankinis rašymas",
+      "description": "Pradėkite žurnalo įrašą už sumą, kurią nusprendžiate – tiekimas, užstatas, kaupimas – kai jokia funkcija jos automatiškai neskaičiuoja.",
+      "newEntry": "Nauji kūriniai",
+      "exercice": "Fizinis aktyvumas",
+      "date": "Data",
+      "label": "Formuluotė",
+      "labelPlaceholder": "Pvz.: Teisminio proceso nuostata — byla 2026-04",
+      "account": "Pasakojimas",
+      "accountPlaceholder": "Pasirinkite paskyrą",
+      "debit": "Srauto greitis",
+      "credit": "Kreditas",
+      "totals": "Debeto/kredito sumos",
+      "addLine": "Pridėkite eilutę",
+      "mustBalance": "Debetas ir kreditas turi būti lygūs ir ne nuliniai.",
+      "missingAccount": "Kiekviena eilutė turi turėti paskyrą.",
+      "cancel": "Atšaukti",
+      "submit": "Pradėkite rašyti",
+      "createSuccess": "Įrašas sukurtas",
+      "noOpenExercice": "Jokių atvirų pratybų – atidarykite arba atnaujinkite finansinius metus prieš pradėdami rankinį įvedimą."
+    },
+    "bilan": {
+      "title": "Balansas",
+      "description": "Asociacijos turtas ir įsipareigojimai finansinių metų pabaigoje.",
+      "exerciceLabel": "Fizinis aktyvumas",
+      "rubriqueColumnLabel": "Skyrius",
+      "noPreviousExercice": "Nėra palyginimo",
+      "actif": "Aktyvus",
+      "totalActif": "Iš viso aktyvus",
+      "passif": "Pasyvus",
+      "totalPassif": "Bendros prievolės",
+      "noAccountsInRubrique": "Šioje dalyje nėra pusiausvyros",
+      "exportPdf": "Eksportuoti PDF",
+      "exportDisabledTooltip": "Negaliu eksportuoti galutinės balanso ataskaitos, kol nebus ištaisytos minėtos anomalijos.",
+      "emptyExercice": {
+        "title": "Nėra finansinių metų",
+        "description": "Sukurkite naujus finansinius metus, kad peržiūrėtumėte balansą."
+      },
+      "emptyLedger": {
+        "title": "Jokių apskaitos įrašų",
+        "description": "Balansas bus rodomas, kai šiais finansiniais metais bus užfiksuotos pajamos, išlaidos ar ilgalaikis turtas."
+      },
+      "rubriques": {
+        "immobilisationsCorporelles": "Materialusis kapitalas",
+        "immobilisationsIncorporelles": "Nematerialus ilgalaikis turtas",
+        "immobilisationsFinancieres": "Finansinis ilgalaikis turtas",
+        "disponibilites": "Prieinamumas",
+        "chargesConstateesDavance": "Iš anksto apmokėtos išlaidos",
+        "creances": "Gautinos sumos",
+        "stocksEtEnCours": "Inventorius",
+        "fondsPropres": "Lygybė",
+        "provisions": "Atidėjiniai",
+        "dettes": "Skolos",
+        "produitsConstatesDavance": "Atidėtos pajamos",
+        "fondsDedies": "Ribotos lėšos"
+      },
+      "memoNotice": "Įvertinimas — neįrašytas į apskaitos knygą, neįtrauktas į bendrą turtą.",
+      "accountLabels": {
+        "reportANouveau": "Nepaskirstytasis pelnas",
+        "resultatExercice": "Metinis grynasis pelnas",
+        "creancesCotisations": "Neapmokėti narystės mokesčiai",
+        "creancesFactures": "Neapmokėtos sąskaitos faktūros",
+        "stocksEstimatedValue": "Numatoma atsargų vertė",
+        "creancesFacturesEnRetard": "Vėluojančios sąskaitos faktūros"
+      },
+      "pdf": {
+        "periodLabel": "Laikotarpis nuo {start} iki {end}"
+      },
+      "drillDown": {
+        "date": "Data",
+        "label": "Etiketė",
+        "origin": "Kilmė",
+        "debit": "Debetas",
+        "credit": "Kreditas",
+        "noLines": "Šioje paskyroje įrašų nėra.",
+        "sourceTypes": {
+          "INCOME": "Pajamos",
+          "INCOME_REVERSAL": "Pajamų atšaukimas",
+          "EXPENSE": "Išlaidos",
+          "EXPENSE_REVERSAL": "Išlaidų atšaukimas",
+          "BANK_TRANSACTION": "Banko operacija",
+          "ACCOUNT_TRANSFER": "Vidinis perdavimas",
+          "OPENING_BALANCE": "Atidarymo balansas",
+          "IMMOBILISATION_DEPRECIATION": "Nuvertėjimas",
+          "IMMOBILISATION_ACQUISITION": "Turto įsigijimas",
+          "FACTURE_RECUE_PAYMENT": "Tiekėjų apmokėjimas",
+          "MANUAL": "Rankinis įvedimas"
+        }
+      },
+      "issues": {
+        "title": "Aptiktos anomalijos",
+        "messages": {
+          "ACCOUNT_WITHOUT_RUBRIQUE": "Sąskaitos {code} — {label} turi balansą, bet nėra susietas su jokiu balanso elementu.",
+          "ACTIF_PASSIF_MISMATCH": "Turtas ({actif}) neatitinka įsipareigojimo ({passif}).",
+          "OPENING_BALANCE_MISSING": "Šiai užduočiai nebuvo sugeneruoti jokie pradiniai įrašai iš \"{previousLabel}\".",
+          "TRIAL_BALANCE_UNBALANCED": "Bendras debetas ({debit}) nesutampa su bendru kreditu ({credit}) šiais finansiniais metais.",
+          "RESULT_DIVERGENCE": "Žurnalo ({journal}) rezultatas skiriasi nuo pelno (nuostolių) ataskaitos ({statement}) – žurnalas gali dar būti neatnaujintas šiems finansiniams metams (uždaryti finansinius metus arba atnaujinti sinchronizacija)."
+        }
+      },
+      "memoNoHistory": "Nėra istorinių duomenų",
+      "caveats": {
+        "stocksMissingCostPrice": "{count} variantai be pirkimo kainos, neįtraukti į sąmatą"
+      }
+    },
+    "compteResultat": {
+      "title": "Pelno (nuostolių) ataskaita",
+      "description": "Finansinių metų finansinis rezultatas, palyginti su praėjusiais metais.",
+      "exerciceLabel": "Finansiniai metai",
+      "categoryColumnLabel": "Kategorija",
+      "noPreviousExercice": "-",
+      "noPreviousExerciceMessage": "Nėra ankstesnių finansinių metų",
+      "export": "Eksportuoti",
+      "exportExcel": "Eksportuoti Excel (išsamiai)",
+      "exportPdf": "Eksportuoti PDF",
+      "products": "Pajamos",
+      "totalProducts": "Pajamos iš viso",
+      "expenses": "Sąnaudos",
+      "totalExpenses": "Sąnaudos iš viso",
+      "result": "Finansinių metų rezultatas",
+      "resultZero": "Finansinių metų rezultatas: 0 €",
+      "surplus": "Finansinių metų perteklius",
+      "deficit": "Finansinių metų deficitas",
+      "operationalResult": "Veiklos rezultatas",
+      "uncategorized": "Kategorizuotina",
+      "uncategorizedAlertIncome": "{count, plural, one {# pajamą reikia kategorizuoti} few {# pajamas reikia kategorizuoti} many {# pajamos reikia kategorizuoti} other {# pajamų reikia kategorizuoti}}",
+      "uncategorizedAlertExpense": "{count, plural, one {# išlaidą reikia kategorizuoti} few {# išlaidas reikia kategorizuoti} many {# išlaidos reikia kategorizuoti} other {# išlaidų reikia kategorizuoti}}",
+      "expandSection": "Rodyti",
+      "collapseSection": "Slėpti",
+      "noCategoriesInSection": "Šiame skyriuje nėra kategorijos",
+      "sections": {
+        "FINANCIAL": "Finansinis",
+        "EXCEPTIONAL": "Nepaprastasis",
+        "OTHER": "Kita"
+      },
+      "inKind": {
+        "title": "Savanoriškos natūrinės aukos",
+        "employmentHeader": "Indėlių panaudojimas",
+        "amountHeader": "Suma",
+        "receivedHeader": "Gautos aukos",
+        "totalEmployments": "Iš viso darbo vietų skaičius",
+        "totalReceived": "Bendras indėlis",
+        "note": "Šios nemokamos įmokos vertinamos eurais. Jos nesukelia pinigų judėjimo ir nekeičia finansinių metų rezultato."
+      },
+      "drillDown": {
+        "date": "Data",
+        "origin": "Kilmė",
+        "person": "Asmuo",
+        "payment": "Mokėjimas",
+        "amount": "Suma",
+        "categorize": "Kategorizuoti",
+        "categorizePlaceholder": "Pasirinkti kategoriją",
+        "noTransactions": "Nėra operacijų",
+        "categorizeSuccess": "Operacija kategorizuota"
+      },
+      "pdf": {
+        "periodLabel": "Laikotarpis nuo {start} iki {end}",
+        "operatingIncome": "VEIKLOS PAJAMOS",
+        "operatingExpense": "VEIKLOS SĄNAUDOS",
+        "operatingResult": "VEIKLOS REZULTATAS",
+        "financialIncome": "FINANSINĖS PAJAMOS",
+        "financialExpense": "FINANSINĖS SĄNAUDOS",
+        "financialResult": "FINANSINĖS VEIKLOS REZULTATAS",
+        "exceptionalIncome": "NEPAPRASTOSIOS PAJAMOS",
+        "exceptionalExpense": "NEPAPRASTOSIOS SĄNAUDOS",
+        "exceptionalResult": "NEPAPRASTASIS REZULTATAS",
+        "otherIncome": "KITOS PAJAMOS",
+        "otherExpense": "KITOS SĄNAUDOS",
+        "otherResult": "KITŲ PAJAMŲ IR SĄNAUDŲ REZULTATAS",
+        "uncategorizedSection": "KATEGORIZUOTINOS OPERACIJOS",
+        "uncategorizedIncomeLabel": "Kategorizuotinos pajamos",
+        "uncategorizedExpenseLabel": "Kategorizuotinos sąnaudos",
+        "total": "Iš viso",
+        "grandTotal": "IŠ VISO",
+        "categoryColumn": "Kategorija",
+        "inKindTitle": "Savanoriškos natūrinės aukos",
+        "inKindEmploymentHeader": "Indėlių panaudojimas",
+        "inKindAmountHeader": "Suma",
+        "inKindReceivedHeader": "Gautos aukos",
+        "inKindTotalEmployments": "Iš viso darbo vietų skaičius",
+        "inKindTotalReceived": "Bendras indėlis",
+        "inKindNote": "Šios nemokamos įmokos vertinamos eurais. Jos nesukelia pinigų judėjimo ir nekeičia finansinių metų rezultato."
+      },
+      "csv": {
+        "date": "Data",
+        "type": "Tipas",
+        "typeIncome": "Pajamos",
+        "typeExpense": "Sąnaudos",
+        "category": "Kategorija",
+        "uncategorized": "Kategorizuotina",
+        "accountingCode": "Apskaitos kodas",
+        "description": "Aprašymas",
+        "amount": "Suma",
+        "paymentMethod": "Mokėjimo būdas",
+        "origin": "Kilmė",
+        "reference": "Nuoroda",
+        "exercice": "Finansiniai metai"
+      },
+      "emptyExercice": {
+        "title": "Nėra finansinių metų",
+        "description": "Sukurkite finansinius metus, kad būtų sugeneruota pelno (nuostolių) ataskaita."
+      }
+    },
+    "previsionnel": {
+      "title": "Laikinasis biudžetas",
+      "description": "Palyginkite planuotą ir faktinį biudžetą pagal kategorijas ir projektus.",
+      "exerciceLabel": "Fizinis aktyvumas",
+      "emptyExercice": {
+        "title": "Nėra finansinių metų",
+        "description": "Sukurkite finansinius metus, kad parengtumėte numatomą biudžetą."
+      },
+      "tabs": {
+        "global": "Biudžetinis pasaulinis",
+        "projects": "Pagal projektą"
+      },
+      "income": "Receptai",
+      "expense": "Išlaidos",
+      "result": "Rezultatas",
+      "card": {
+        "previsto": "Planuota",
+        "diff": "Variacija",
+        "percent": "Baigta"
+      },
+      "columns": {
+        "category": "Kategorija",
+        "previsto": "Planuota",
+        "realizado": "Baigta",
+        "diffPercent": "Realizuota dispersija / %",
+        "total": "Iš viso"
+      },
+      "noCategories": "Nėra kategorijos.",
+      "uncategorized": "Būti kategorizuojamam",
+      "noProject": "Be projekto",
+      "addCategory": "Pridėti kategoriją",
+      "addCategoryModalTitle": "Pridėti kategoriją",
+      "exportFileNameGlobal": "Pasaulinis prognozių biudžetas",
+      "export": {
+        "action": "Eksportas",
+        "excel": "Eksportuotojas Excel",
+        "pdf": "PDF eksportuotojas",
+        "diffColumn": "Išdėstymas (€)",
+        "percentColumn": "% Įvykdyta",
+        "associationLabel": "Asociacija",
+        "exerciceLabel": "Fizinis aktyvumas"
+      },
+      "toasts": {
+        "categoryCreated": "Kategorija sukurta.",
+        "updateError": "Klaida atnaujinant."
+      },
+      "copyBudget": {
+        "action": "Kopijuoti ankstesnį biudžetą",
+        "modalTitle": "Kopijuoti ankstesnį biudžetą",
+        "modalDescription": "Prognozių kopijos {previous} į {target}. Kopijuojamos tik prognozės, bet niekada – realizuotos sumos.",
+        "allProjects": "Visi projektai",
+        "noProjects": "Jokių planų.",
+        "archived": "ARCHYVUOTA",
+        "noProjectAlwaysCopied": "Prognozės be projekto visada kopijuojamos.",
+        "copy": "Supratau",
+        "confirmOverwriteTitle": "Pakeisti esamas prognozes?",
+        "confirmOverwriteDescription": "Šis pratimas jau turi nenulinės prognozes kai kurioms kategorijoms. Kopijuojant jas iš praėjusių finansinių metų, šios reikšmės bus panaikintos.",
+        "confirmOverwriteAction": "Pakeisti",
+        "toasts": {
+          "copied": "{count, plural, one {# prognozė nukopijuota.} other {# prognozės buvo nukopijuotos.}}",
+          "error": "Klaida kopijuojant."
+        }
+      },
+      "projectsTab": {
+        "count": "{count, plural, one {# projektas} other {# projektai}}",
+        "createProject": "Sukurkite projektą",
+        "createModalTitle": "Sukurkite projektą",
+        "editProject": "Redagavimas",
+        "editModalTitle": "Redagavimo projektas",
+        "name": "Projekto pavadinimas",
+        "namePlaceholder": "Pvz.: metinė kelionė",
+        "description": "Aprašymas",
+        "descriptionPlaceholder": "Aprašymas fakultatyvas",
+        "archive": "Archyvas",
+        "unarchive": "Unarchive",
+        "archived": "ARCHYVUOTA",
+        "showArchived": "Peržiūrėti archyvuotus projektus ({count})",
+        "hideArchived": "Slėpti archyvuotus projektus",
+        "noProjects": {
+          "title": "Jokių projektų",
+          "description": "Sukurkite projektą, kuris atskirai stebėtų jo biudžetą nuo visos asociacijos."
+        },
+        "addCategoryToProject": "Pridėti kategoriją prie projekto",
+        "addCategoryModalTitle": "Pridėti kategoriją prie projekto",
+        "type": "Tipas",
+        "typeIncome": "Receptas",
+        "typeExpense": "Išlaidos",
+        "category": "Kategorija",
+        "selectCategoryPlaceholder": "Pasirinkite kategoriją",
+        "createNewCategory": "+ Sukurti naują kategoriją",
+        "noAvailableCategories": "Visos tokios kategorijos jau įtrauktos į šį projektą.",
+        "removeCategoryFromProject": "Pašalinimas iš projekto",
+        "removeCategoryConfirmTitle": "Pašalinti šią kategoriją iš projekto?",
+        "removeCategoryConfirmDescription": "« {category} \" bus pašalinta iš šio projekto biudžeto. Jei jau yra pajamų ar išlaidų, susijusių su juo, kategorija automatiškai vėl pasirodys su realizuota suma.",
+        "toasts": {
+          "created": "Projektas sukurtas.",
+          "updated": "Atnaujintas juodraštis.",
+          "archived": "Archyvuotas projektas.",
+          "unarchived": "Nearchyvuotas projektas.",
+          "categoryAdded": "Kategorija pridėta prie projekto.",
+          "categoryRemoved": "Kategorija pašalinta iš projekto.",
+          "createError": "Klaida kūrimo metu.",
+          "updateError": "Klaida atnaujinant."
+        }
+      }
+    },
     "categoryForm": {
       "name": "Vardas, pavadinimas",
       "namePlaceholder": "Pvz.: indėlis",
+      "noMatchingCategory": "Kategorijoje nėra atitikmenų",
       "type": "Tipas",
       "typeIncome": "Pajama",
       "typeExpense": "Išlaidos",
@@ -909,8 +1315,11 @@
         "FINANCIAL": "Finansinis",
         "EXCEPTIONAL": "Nepaprastasis",
         "OTHER": "Kita",
-        "IN_KIND": "Įnašai natūra"
+        "IN_KIND": "Įnašai natūra",
+        "IMMOBILISATION": "Sostinė"
       },
+      "accountingCodeLegacyOption": "{code} — (senas kodas, bus atnaujintas)",
+      "accountingCodeLegacyWarning": "Šis apskaitos kodas nebeegzistuoja kontroliuojamoje sąraše – pasirinkite galiojančią sąskaitą prieš taupydami.",
       "accountingCodeFormwiseNote": "Subpaskyra, kurią Formwise pasiūlė atskiram sekimui – ne privalomas oficialus numeris.",
       "suggestedAccounts": "Siūlomos paskyros",
       "seeOtherAccounts": "Žr. kitus pasakojimus",
@@ -921,8 +1330,7 @@
       "sectionUnverifiedNote": "Ši paskyra nėra atpažįstama — patikrinkite skiltį arba pasirinkite ją iš išplėstinių parinkčių.",
       "sectionToVerify": "Skyrius, kurį reikia patikrinti",
       "advancedOptions": "Išplėstinės parinktys",
-      "revertToAutoSection": "Grįžti į automatinę sekciją",
-      "noMatchingCategory": "Kategorijoje nėra atitikmenų"
+      "revertToAutoSection": "Grįžti į automatinę sekciją"
     },
     "bankAccountForm": {
       "bankName": "Banko pavadinimas",
@@ -959,6 +1367,8 @@
       "date": "Data",
       "category": "Kategorija",
       "noCategory": "Nėra kategorijos",
+      "project": "Projektas",
+      "noProject": "Jokių projektų",
       "paymentMethodLabel": "Mokėjimo būdas",
       "reference": "Nuoroda",
       "referencePlaceholder": "Pvz.: VIR-2024-001",
@@ -978,6 +1388,8 @@
       "internalNote": "Vidinė pastaba",
       "internalNotePlaceholder": "Pastaba iždininkui...",
       "receipt": "Įrodymas",
+      "isImmobilisation": "Ilgalaikis turtas (nusidėvėjęs turtas)",
+      "isImmobilisationHint": "Patikrinkite kapitalizuojamą pirkimą (pvz., biuro ir kompiuterinę įrangą) – tuomet galite sudaryti nusidėvėjimo grafiką Finance > Capital Assets.",
       "toasts": {
         "uploadError": "Klaida įkeliant kvitą",
         "networkError": "Tinklo klaidų įkėlimas — bandykite dar kartą"
@@ -1057,6 +1469,33 @@
         "deleted": "Paskyra ištrinta"
       }
     },
+    "transferForm": {
+      "fromAccount": "Šaltinio aprašymas",
+      "toAccount": "Kelionės tikslo paskyra",
+      "amount": "Suma",
+      "date": "Data",
+      "note": "Pastaba",
+      "notePlaceholder": "Pvz., taupymo pervedimas",
+      "toasts": {
+        "created": "Registruotas perdavimas",
+        "updated": "Atnaujintas perdavimas",
+        "deleted": "Perkėlimas ištrintas"
+      }
+    },
+    "transfersView": {
+      "title": "Vidiniai pervedimai",
+      "add": "Perkėlimas",
+      "newTransferTitle": "Naujas pervedimas tarp sąskaitų",
+      "editTransferTitle": "Redaguoti Perkėlimas",
+      "deleteConfirmTitle": "Ištrinti šį perkėlimą?",
+      "noTransfers": "Jokių perėjimų nebuvo užfiksuota",
+      "columns": {
+        "accounts": "Pasakojimai",
+        "amount": "Suma",
+        "date": "Data",
+        "note": "Pastaba"
+      }
+    },
     "categoriesView": {
       "title": "Kategorijos",
       "description": "Valdyti pajamų ir išlaidų kategorijas.",
@@ -1067,13 +1506,21 @@
       "newCategoryTitle": "Nauja kategorija",
       "editCategoryTitle": "Redagavimo kategorija",
       "deleteConfirmTitle": "Ištrinti šią kategoriją?",
-      "deleteConfirmInUse": "« {name} naudojamas {count, plural, one {# pajamos/išlaidos} other {# pajamos/išlaidos}}. Šie įrašai bus pakeisti į \"Nekategorizuoti\".",
       "toasts": {
         "created": "Sukurta kategorija",
         "updated": "Atnaujinta kategorija",
         "deleted": "Kategorija ištrinta",
-        "seeded": "{count, plural, one {# inicializuota kategorija} other {# kategorijos inicializuotos}}"
+        "seeded": "{count, plural, one {# inicializuota kategorija} other {# kategorijos inicializuotos}}",
+        "archived": "Archyvuota kategorija",
+        "reactivated": "Kategorija vėl aktyvuota"
       },
+      "archived": "Archyvuota",
+      "reactivate": "Reaktyvuoti",
+      "showArchived": "Peržiūrėti archyvuotas kategorijas",
+      "transferLimitationNote": "Pervedimai tarp asociacijos banko sąskaitų (vidaus iždo) niekada neturėtų būti įrašomi kaip pajamos ar išlaidos – juos reikia registruoti apskaitos → sąskaitų skyriuje.",
+      "archiveConfirmTitle": "Archyvuoti šią kategoriją?",
+      "archiveConfirmInUse": "« {name} naudojamas {count, plural, one {# pajamos/išlaidos} other {# pajamos/išlaidos}}. Jis bus archyvuotas (jo istorija išsaugota) ir nebegalės būti pasirinktas naujoms operacijoms.",
+      "archive": "Archyvas",
       "chooseTemplateTitle": "Pasirinkite kategorijos tipą",
       "customCategory": "Sukurkite individualią kategoriją",
       "alreadyExists": "Jau sukonfigūruota",
@@ -1283,6 +1730,7 @@
         "actions": "Veiksmai"
       },
       "reconciledFallback": "Susitaikęs",
+      "transferLabel": "Vidinis perdavimas — {from} → {to}",
       "allAccounts": "Visi pasakojimai",
       "noTransactions": "Nėra jokių transakcijų, kurias būtų galima rodyti",
       "actions": {
@@ -1315,188 +1763,8 @@
       "suggestedMatches": "Siūlomos rungtynės",
       "typeIncome": "Pajama",
       "typeExpense": "Išlaidos",
+      "typeTransfer": "Vidinis perdavimas",
       "confirm": "Patvirtinti taikinimą"
-    },
-    "compteResultat": {
-      "title": "Pelno (nuostolių) ataskaita",
-      "description": "Finansinių metų finansinis rezultatas, palyginti su praėjusiais metais.",
-      "exerciceLabel": "Finansiniai metai",
-      "noPreviousExercice": "-",
-      "export": "Eksportuoti",
-      "exportExcel": "Eksportuoti Excel (išsamiai)",
-      "exportPdf": "Eksportuoti PDF",
-      "products": "Pajamos",
-      "totalProducts": "Pajamos iš viso",
-      "expenses": "Sąnaudos",
-      "totalExpenses": "Sąnaudos iš viso",
-      "result": "Finansinių metų rezultatas",
-      "surplus": "Finansinių metų perteklius",
-      "deficit": "Finansinių metų deficitas",
-      "emptyExercice": {
-        "title": "Nėra finansinių metų",
-        "description": "Sukurkite finansinius metus, kad būtų sugeneruota pelno (nuostolių) ataskaita."
-      },
-      "noPreviousExerciceMessage": "Nėra ankstesnių finansinių metų",
-      "resultZero": "Finansinių metų rezultatas: 0 €",
-      "operationalResult": "Veiklos rezultatas",
-      "uncategorized": "Kategorizuotina",
-      "uncategorizedAlertIncome": "{count, plural, one {# pajamą reikia kategorizuoti} few {# pajamas reikia kategorizuoti} many {# pajamos reikia kategorizuoti} other {# pajamų reikia kategorizuoti}}",
-      "uncategorizedAlertExpense": "{count, plural, one {# išlaidą reikia kategorizuoti} few {# išlaidas reikia kategorizuoti} many {# išlaidos reikia kategorizuoti} other {# išlaidų reikia kategorizuoti}}",
-      "expandSection": "Rodyti",
-      "collapseSection": "Slėpti",
-      "noCategoriesInSection": "Šiame skyriuje nėra kategorijos",
-      "sections": {
-        "FINANCIAL": "Finansinis",
-        "EXCEPTIONAL": "Nepaprastasis",
-        "OTHER": "Kita"
-      },
-      "drillDown": {
-        "date": "Data",
-        "origin": "Kilmė",
-        "person": "Asmuo",
-        "payment": "Mokėjimas",
-        "amount": "Suma",
-        "categorize": "Kategorizuoti",
-        "categorizePlaceholder": "Pasirinkti kategoriją",
-        "noTransactions": "Nėra operacijų",
-        "categorizeSuccess": "Operacija kategorizuota"
-      },
-      "pdf": {
-        "periodLabel": "Laikotarpis nuo {start} iki {end}",
-        "operatingIncome": "VEIKLOS PAJAMOS",
-        "operatingExpense": "VEIKLOS SĄNAUDOS",
-        "operatingResult": "VEIKLOS REZULTATAS",
-        "financialIncome": "FINANSINĖS PAJAMOS",
-        "financialExpense": "FINANSINĖS SĄNAUDOS",
-        "financialResult": "FINANSINĖS VEIKLOS REZULTATAS",
-        "exceptionalIncome": "NEPAPRASTOSIOS PAJAMOS",
-        "exceptionalExpense": "NEPAPRASTOSIOS SĄNAUDOS",
-        "exceptionalResult": "NEPAPRASTASIS REZULTATAS",
-        "otherIncome": "KITOS PAJAMOS",
-        "otherExpense": "KITOS SĄNAUDOS",
-        "otherResult": "KITŲ PAJAMŲ IR SĄNAUDŲ REZULTATAS",
-        "uncategorizedSection": "KATEGORIZUOTINOS OPERACIJOS",
-        "uncategorizedIncomeLabel": "Kategorizuotinos pajamos",
-        "uncategorizedExpenseLabel": "Kategorizuotinos sąnaudos",
-        "total": "Iš viso",
-        "grandTotal": "IŠ VISO",
-        "categoryColumn": "Kategorija",
-        "inKindTitle": "Savanoriškos natūrinės aukos",
-        "inKindEmploymentHeader": "Indėlių panaudojimas",
-        "inKindAmountHeader": "Suma",
-        "inKindReceivedHeader": "Gautos aukos",
-        "inKindTotalEmployments": "Iš viso darbo vietų skaičius",
-        "inKindTotalReceived": "Bendras indėlis",
-        "inKindNote": "Šios nemokamos įmokos vertinamos eurais. Jos nesukelia pinigų judėjimo ir nekeičia finansinių metų rezultato."
-      },
-      "csv": {
-        "date": "Data",
-        "type": "Tipas",
-        "typeIncome": "Pajamos",
-        "typeExpense": "Sąnaudos",
-        "category": "Kategorija",
-        "uncategorized": "Kategorizuotina",
-        "accountingCode": "Apskaitos kodas",
-        "description": "Aprašymas",
-        "amount": "Suma",
-        "paymentMethod": "Mokėjimo būdas",
-        "origin": "Kilmė",
-        "reference": "Nuoroda",
-        "exercice": "Finansiniai metai"
-      },
-      "categoryColumnLabel": "Kategorija",
-      "inKind": {
-        "title": "Savanoriškos natūrinės aukos",
-        "employmentHeader": "Indėlių panaudojimas",
-        "amountHeader": "Suma",
-        "receivedHeader": "Gautos aukos",
-        "totalEmployments": "Iš viso darbo vietų skaičius",
-        "totalReceived": "Bendras indėlis",
-        "note": "Šios nemokamos įmokos vertinamos eurais. Jos nesukelia pinigų judėjimo ir nekeičia finansinių metų rezultato."
-      }
-    },
-    "bilan": {
-      "title": "Balansas",
-      "description": "Asociacijos turtas ir įsipareigojimai finansinių metų pabaigoje.",
-      "exerciceLabel": "Fizinis aktyvumas",
-      "rubriqueColumnLabel": "Skyrius",
-      "noPreviousExercice": "Nėra palyginimo",
-      "actif": "Aktyvus",
-      "totalActif": "Iš viso aktyvus",
-      "passif": "Pasyvus",
-      "totalPassif": "Bendros prievolės",
-      "noAccountsInRubrique": "Šioje dalyje nėra pusiausvyros",
-      "emptyExercice": {
-        "title": "Nėra finansinių metų",
-        "description": "Sukurkite naujus finansinius metus, kad peržiūrėtumėte balansą."
-      },
-      "emptyLedger": {
-        "title": "Jokių apskaitos įrašų",
-        "description": "Balansas bus rodomas, kai šiais finansiniais metais bus užfiksuotos pajamos, išlaidos ar ilgalaikis turtas."
-      },
-      "rubriques": {
-        "immobilisationsCorporelles": "Materialusis kapitalas",
-        "disponibilites": "Prieinamumas",
-        "fondsPropres": "Lygybė",
-        "dettes": "Skolos",
-        "immobilisationsIncorporelles": "Nematerialus ilgalaikis turtas",
-        "immobilisationsFinancieres": "Finansinis ilgalaikis turtas",
-        "chargesConstateesDavance": "Iš anksto apmokėtos išlaidos",
-        "provisions": "Atidėjiniai",
-        "produitsConstatesDavance": "Atidėtos pajamos",
-        "creances": "Gautinos sumos",
-        "stocksEtEnCours": "Inventorius",
-        "fondsDedies": "Ribotos lėšos"
-      },
-      "issues": {
-        "title": "Aptiktos anomalijos",
-        "messages": {
-          "ACCOUNT_WITHOUT_RUBRIQUE": "Sąskaitos {code} — {label} turi balansą, bet nėra susietas su jokiu balanso elementu.",
-          "ACTIF_PASSIF_MISMATCH": "Turtas ({actif}) neatitinka įsipareigojimo ({passif}).",
-          "OPENING_BALANCE_MISSING": "Šiai užduočiai nebuvo sugeneruoti jokie pradiniai įrašai iš \"{previousLabel}\".",
-          "TRIAL_BALANCE_UNBALANCED": "Bendras debetas ({debit}) nesutampa su bendru kreditu ({credit}) šiais finansiniais metais.",
-          "RESULT_DIVERGENCE": "Žurnalo ({journal}) rezultatas skiriasi nuo pelno (nuostolių) ataskaitos ({statement}) – žurnalas gali dar būti neatnaujintas šiems finansiniams metams (uždaryti finansinius metus arba atnaujinti sinchronizacija)."
-        }
-      },
-      "accountLabels": {
-        "reportANouveau": "Nepaskirstytasis pelnas",
-        "resultatExercice": "Metinis grynasis pelnas",
-        "creancesCotisations": "Neapmokėti narystės mokesčiai",
-        "creancesFactures": "Neapmokėtos sąskaitos faktūros",
-        "stocksEstimatedValue": "Numatoma atsargų vertė",
-        "creancesFacturesEnRetard": "Vėluojančios sąskaitos faktūros"
-      },
-      "exportPdf": "Eksportuoti PDF",
-      "exportDisabledTooltip": "Negaliu eksportuoti galutinės balanso ataskaitos, kol nebus ištaisytos minėtos anomalijos.",
-      "pdf": {
-        "periodLabel": "Laikotarpis nuo {start} iki {end}"
-      },
-      "drillDown": {
-        "date": "Data",
-        "label": "Etiketė",
-        "origin": "Kilmė",
-        "debit": "Debetas",
-        "credit": "Kreditas",
-        "noLines": "Šioje paskyroje įrašų nėra.",
-        "sourceTypes": {
-          "INCOME": "Pajamos",
-          "INCOME_REVERSAL": "Pajamų atšaukimas",
-          "EXPENSE": "Išlaidos",
-          "EXPENSE_REVERSAL": "Išlaidų atšaukimas",
-          "BANK_TRANSACTION": "Banko operacija",
-          "ACCOUNT_TRANSFER": "Vidinis perdavimas",
-          "OPENING_BALANCE": "Atidarymo balansas",
-          "IMMOBILISATION_DEPRECIATION": "Nuvertėjimas",
-          "IMMOBILISATION_ACQUISITION": "Turto įsigijimas",
-          "FACTURE_RECUE_PAYMENT": "Tiekėjų apmokėjimas",
-          "MANUAL": "Rankinis įvedimas"
-        }
-      },
-      "memoNotice": "Įvertinimas — neįrašytas į apskaitos knygą, neįtrauktas į bendrą turtą.",
-      "memoNoHistory": "Nėra istorinių duomenų",
-      "caveats": {
-        "stocksMissingCostPrice": "{count} variantai be pirkimo kainos, neįtraukti į sąmatą"
-      }
     }
   },
   "evenements": {
@@ -1711,6 +1979,10 @@
         "titlePlaceholder": "Generalinė Asamblėja 2026",
         "dateLabel": "Pradžios data",
         "createButton": "Sukurti"
+      },
+      "summary": {
+        "eventCount": "Renginių skaičius",
+        "participants": "Dalyviai"
       },
       "bilan": {
         "show": "Rodyti suvestinę",
@@ -1929,6 +2201,26 @@
         "qrRevoked": "QR kodas išjungtas",
         "noMembersToExport": "Nėra narių, kuriuos reikėtų eksportuoti",
         "linkCopied": "Nuoroda nukopijuota"
+      },
+      "payment": {
+        "sectionTitle": "Mokėjimas",
+        "modeLabel": "Mokėjimas",
+        "modeNow": "Sumokėta dabar",
+        "modeLater": "Vėliau bus pataisyta",
+        "laterHint": "Vieta rezervuota. Tada išgryninkite su \"Pažymėta sumokėta\".",
+        "methodLabel": "Mokėjimo būdas",
+        "tierLabel": "Kaina",
+        "methods": {
+          "ESPECES": "Rūšys",
+          "CHEQUE": "Patikrinta",
+          "VIREMENT": "Perkėlimas"
+        },
+        "encaisserTitle": "Išsigrynink",
+        "encaisserConfirm": "Išsigrynink",
+        "amountHint": "Suma: {amount}",
+        "selectedMember": "Pasirinktas narys: {name}",
+        "selectMemberHint": "Pasirinkite narį iš aukščiau pateikto sąrašo.",
+        "addSubmit": "Dėti į krepšelį"
       }
     },
     "avaliacoes": {
@@ -1938,8 +2230,14 @@
         "participant": "Dalyvis",
         "rating": "Pastaba",
         "comment": "Komentaras",
-        "date": "Data"
-      }
+        "date": "Data",
+        "site": "Svetainėje"
+      },
+      "anonymousNote": "Anonimas",
+      "noConsent": "Nėra sutikimo",
+      "featureToggleLabel": "Laidos apžvalga {name} Svetainėje",
+      "bulkFeatureAll": "Rodyti viską vietoje",
+      "bulkUnfeatureAll": "Pašalinkite viską iš svetainės"
     },
     "detail": {
       "backToList": "Grįžti prie renginių",
@@ -1965,7 +2263,9 @@
         "saved": "Išsaugoti pakeitimai",
         "saveError": "Klaidų įrašymas",
         "linkCopied": "Nuoroda nukopijuota",
-        "linkCopyError": "Nepavyksta kopijuoti — pasirinkite nuorodą rankiniu būdu."
+        "linkCopyError": "Nepavyksta kopijuoti — pasirinkite nuorodą rankiniu būdu.",
+        "registrationsClosed": "Registracija uždaryta",
+        "registrationsReopened": "Registracijos vėl atidarytos"
       },
       "publishBlocked": {
         "unsavedToast": "Prieš publikuodami išsaugokite šiuos skyrius: {steps}",
@@ -1983,6 +2283,7 @@
           "standardFieldsHint": "Registracijos metu prašomi laukai",
           "phoneLabel": "Telefonas",
           "addressLabel": "Adresas",
+          "countryLabel": "Gyvenamoji šalis",
           "requirement": {
             "hidden": "Su kauke",
             "optional": "Pasirenkama",
@@ -2029,6 +2330,11 @@
         }
       },
       "titleRequired": "Titulas yra privalomas",
+      "closeRegistrationsButton": "Registracijos uždarymas",
+      "reopenRegistrationsButton": "Registracijų atnaujinimas",
+      "registrationsClosedNotice": "Užrašų uždarymas",
+      "closeRegistrationsConfirmTitle": "Ar registracija artima?",
+      "closeRegistrationsConfirmDescription": "Niekas negalės užsiregistruoti internetu. Vis tiek galėsite pridėti dalyvius iš lankomumo sąrašo.",
       "bilanButton": "Suvestinė"
     },
     "discountCodes": {
@@ -2310,6 +2616,13 @@
       "liveSince": "Tęsiasi nuo tada {mins} min",
       "durationLessThanMin": "< 1 min",
       "durationMin": "{mins} min",
+      "activeMeetingWarning": {
+        "title": "{count, plural, one {Susitikimas jau vyksta} other {# susitikimai jau vyksta}}",
+        "description": "{count, plural, one {Tu pradėjai šį susitikimą, bet dar jo nebaigei. Prisijunk prie jo arba vis tiek sukurk naują.} other {Jūs jau pradėjote šiuos susitikimus ir dar jų nebaigėte. Prisijunkite prie vieno arba vis tiek sukurkite naują.}}",
+        "joinExisting": "Prisijunkite",
+        "createNew": "Vis tiek sukurk naują susitikimą",
+        "alreadyEnded": "Šis susirinkimas ką tik baigėsi savaime. Galite sukurti naują susirinkimą."
+      },
       "toasts": {
         "meetingStarted": "Susirinkimas prasidėjo",
         "meetingScheduled": "Suplanuotas susitikimas",
@@ -2715,8 +3028,12 @@
       "validation": {
         "nameRequired": "Reikalingas vardas",
         "atLeastOneVariant": "Reikalingas bent vienas variantas",
-        "variantLabelRequired": "Kiekviena variacija turi turėti žymą"
+        "variantLabelRequired": "Kiekviena variacija turi turėti žymą",
+        "weightRequiredWhenShippable": "Svoris yra privalomas variantui su pašto pristatymu"
       },
+      "shippableColumn": "Laivyba",
+      "weightColumn": "Svoris (g)",
+      "weightPlaceholder": "500",
       "costPriceColumn": "Kaina"
     },
     "view": {
@@ -2738,12 +3055,14 @@
       "variantsCount": "{count, plural, one {# variantas} other {# variantai}}",
       "actions": {
         "edit": "Redaguoti",
+        "view": "Vaizdas",
         "delete": "Ištrinti",
         "deleteAlreadyOrdered": "Ištrinti (jau užsakyta)",
         "markPaid": "Markas Peiklas",
         "cancelOrder": "Atšaukti",
         "downloadReceipt": "Atsisiųskite kvitą",
-        "editPaymentMethod": "Pakeiskite mokėjimo būdą"
+        "editPaymentMethod": "Pakeiskite mokėjimo būdą",
+        "refundOrder": "Grąžinimas"
       },
       "noProduct": "Jokių produktų",
       "noOrder": "Jokių įsakymų",
@@ -2774,7 +3093,9 @@
       "toasts": {
         "productDeleted": "Nutrauktas produktas",
         "deleteError": "Klaidų šalinimas",
-        "orderUpdated": "Atnaujinta tvarka"
+        "orderUpdated": "Atnaujinta tvarka",
+        "orderNotInRecentList": "Ši tvarka nėra tarp 50 naujausiųjų. Naudokite filtrus, kad ją surastumėte.",
+        "refundSuccess": "Užsakymas grąžintas"
       }
     },
     "payModal": {
@@ -2784,6 +3105,13 @@
       "orderedTotal": "Bendras užsakymas",
       "restockNoticePlural": "{count, plural, one {Neišimtos prekės atsargos bus atstatytos.} other {Nesurinktų daiktų atsargos bus atstatytos.}}",
       "restockNoticeStatic": "Nesurinktų daiktų atsargos bus atstatytos."
+    },
+    "refundModal": {
+      "title": "Grąžinkite užsakymą",
+      "confirmWithAmount": "Grąžinimas {amount}",
+      "stripeNotice": "Grąžinimas bus automatiškai pervedamas į kliento kortelę.",
+      "manualNotice": "Šis veiksmas atnaujina atsargas ir apskaitą – nepamirškite grąžinti pinigus klientui (grynaisiais, čekiu arba pervedimu).",
+      "shippingIncludedNotice": "Siuntimo išlaidos ({amount}) yra įtraukti į šią kompensaciją."
     },
     "stripeConfirm": {
       "title": "Markas kaip apmokėtas?",
@@ -2991,6 +3319,7 @@
       "noDonations": "Aukų neužfiksuota",
       "noDonationsFiltered": "Nėra aukų, atitinkančių šiuos filtrus.",
       "resetFilters": "Atstatymas",
+      "totalLabel": "Iš viso",
       "donorsLabel": "Rėmėjai",
       "averageLabel": "Vidutinė auka",
       "pendingTitle": "Laukiu atsiėmimo",
@@ -3121,6 +3450,7 @@
           "title": "Forma",
           "standardFieldsHint": "Laukai, prašyti donoro",
           "addressLabel": "Adresas",
+          "countryLabel": "Gyvenamoji šalis",
           "birthDateLabel": "Gimimo data",
           "phoneLabel": "Fiksuoto ryšio telefonas",
           "mobileLabel": "Mobilusis",
@@ -3178,7 +3508,8 @@
           "siteSectionReplaceWarningPublished": "Šioje skiltyje šiuo metu rodoma „{title}“. Išsaugojus ši forma ją pakeis; „{title}“ išliks pasiekiama per savo nuorodą.",
           "siteSectionReplaceWarningDraft": "Šioje skiltyje šiuo metu rodoma „{title}“. Ši forma ją pakeis, kai tik bus paskelbta; „{title}“ išliks pasiekiama per savo nuorodą.",
           "siteSectionRemovedWarning": "Išsaugojus skiltis „{section}“ svetainėje bus paslėpta.",
-          "datesOrderError": "Uždarymo data turi būti vėlesnė nei atidarymo data."
+          "datesOrderError": "Uždarymo data turi būti vėlesnė nei atidarymo data.",
+          "siteSectionPuckHint": "Nauji svetainės redaktoriaus blokai"
         }
       }
     },
@@ -3394,6 +3725,8 @@
           "kindField": "Tipas",
           "kindOneOff": "Punktualūs",
           "kindRecurring": "Pasikartojantys (metiniai) numeriai",
+          "recurringNeedsOnlinePayment": "Už kiekvieną internetinę prenumeratą mokamas pasikartojantis tarifas: kol internetinis mokėjimas nėra aktyvuotas, formoje jis rodomas kaip \"Nepasiekiamas\".",
+          "recurringNeedsOnlinePaymentLink": "Nustatykite internetinį mokėjimą",
           "itemTypeField": "Gamta",
           "itemTypeMembership": "Narystės rodiklis",
           "itemTypeAddon": "Mokama opcija",
@@ -3410,6 +3743,7 @@
           "title": "Forma",
           "standardFieldsHint": "Registracijos metu prašomi laukai",
           "addressLabel": "Adresas",
+          "countryLabel": "Gyvenamoji šalis",
           "birthDateLabel": "Gimimo data",
           "phoneLabel": "Fiksuoto ryšio telefonas",
           "mobileLabel": "Mobilusis",
@@ -3432,6 +3766,8 @@
           "fieldLabelPlaceholder": "Pvz. profesija",
           "fieldType": "Tipas",
           "fieldRequired": "Privaloma",
+          "fieldSensible": "Jautrūs duomenys",
+          "fieldSensibleRequiredHint": "Kadangi ši sritis yra jautri ir privaloma, valdytojas, neturintis prieigos prie jautrių duomenų, negalės kurti ar modifikuoti nario be prieigos prie jų.",
           "typeText": "SMS žinutė",
           "typeNumber": "Skaičius",
           "typeSelect": "Išskleidžiamasis sąrašas",
@@ -3472,7 +3808,8 @@
           "siteSectionPlaceholder": "Pasirink...",
           "siteSectionCreateOption": "+ Sukurti naują skyrių",
           "siteSectionCreateError": "Klaida kuriant svetainės skyrių.",
-          "siteSectionRequiredError": "Pasirinkite svetainės skiltį, į kurią skelbti šią formą."
+          "siteSectionRequiredError": "Pasirinkite svetainės skiltį, į kurią skelbti šią formą.",
+          "siteSectionPuckHint": "Nauji svetainės redaktoriaus blokai"
         },
         "products": {
           "title": "Produktai",
@@ -3657,6 +3994,12 @@
       "isDefaultHint": "Automatiškai naudojama kaip siūloma žinutė šiai kategorijai (pvz., prisidėjimo priminimai, siunčiami iš Indėlių puslapio).",
       "emailSubject": "El. laiško tema",
       "emailSubjectPlaceholder": "Primename: jūsų indėlis '{{annee_cotisation}}'",
+      "modeText": "Paprastas tekstas",
+      "modeTextHint": "Vienas turtingo teksto laukas.",
+      "modeBlocks": "Dizaino vizualizacija",
+      "modeBlocksHint": "Pertvarkomi blokai: tekstas, paveikslėlis, mygtukas, skirtukas.",
+      "modeBlocksProOnly": "Rezervuota Pro planui. Atnaujinkite į kitą planą prenumeratos skirtuke, kad jį aktyvuotumėte.",
+      "modeLockedHint": "Redagavimo režimas (paprastas tekstas arba vizualinis dizainas) nustatomas, kai šablonas sukuriamas ir negali būti pakeistas — sukuriamas naujas šablonas, kad naudotumėte kitą režimą.",
       "variablesHint": "Kintamieji – įtraukti į temą, tekstą ar žinutę",
       "variables": {
         "prenom": "Vardas",
@@ -3687,6 +4030,8 @@
       "previewTitle": "Žinutės peržiūra",
       "previewDescription": "Atvaizdavimas naudojant pavyzdinius duomenis",
       "previewSubject": "Paskirtis",
+      "previewBrandingHint": "Antraštė, poraštė ir parašas kyla iš asociacijos vizualinės tapatybės.",
+      "previewBrandingLink": "Redaguoti nustatymuose",
       "toasts": {
         "updated": "Atnaujintas modelis",
         "created": "Sukurtas šablonas",
@@ -3695,6 +4040,26 @@
       "validation": {
         "required": "Privaloma"
       }
+    },
+    "blockEditor": {
+      "empty": "Pridėkite pirmąjį bloką žemiau.",
+      "incomplete": "Blokas nėra pilnas (paveikslėlis be failo arba mygtukas be teksto/nuorodos).",
+      "uploadError": "Klaida įkeliant paveikslėlį — bandykite dar kartą.",
+      "dragHandle": "Pertvarkymas",
+      "duplicate": "Dublikatas",
+      "remove": "Ištrinti",
+      "textPlaceholder": "Parašyk savo žinutę...",
+      "imageLink": "Nuoroda (pasirinktinai)",
+      "buttonLabel": "Mygtuko tekstas",
+      "buttonLabelPlaceholder": "Sužinoti daugiau, sužinok daugiau",
+      "buttonUrl": "Mygtuko nuoroda",
+      "urlHint": "https://... arba kintamąjį, pavyzdžiui, '{{lien_portal}}'",
+      "buttonColor": "Istorinis kontekstas",
+      "buttonTextColor": "SMS žinutė",
+      "addText": "SMS žinutė",
+      "addImage": "Vaizdas",
+      "addButton": "Mygtukas",
+      "addDivider": "Separatorius"
     },
     "rulesManager": {
       "title": "Automatizavimo taisyklės",
@@ -3921,6 +4286,7 @@
         "paiements": "Mokėjimai",
         "abonnement": "Prenumerata",
         "integrations": "Integracijos",
+        "equipe": "Komanda ir prieiga",
         "rgpd": "BDAR"
       },
       "associationInfo": "Asociacijos informacija",
@@ -3928,6 +4294,10 @@
       "city": "Miestas",
       "cityPlaceholder": "Paryžius",
       "country": "Kantri",
+      "contactEmail": "Parašykite kontaktui el. paštu",
+      "contactEmailPlaceholder": "contact@monassociation.fr",
+      "contactEmailHint": "Naudojamas kaip visų el. laiškų, siunčiamų asociacijos vardu (prenumeratos, renginiai, aukos, žinutės ir kt.) pavadinimas ir atsakymo adresas (Atsakymo adresas).",
+      "contactEmailEmptyWarning": "Nenustatyta — Narių atsakymai į jūsų el. laiškus nepasieks jūsų organizacijos.",
       "toasts": {
         "saved": "Išsaugoti nustatymai"
       }
@@ -4012,7 +4382,41 @@
       "title": "Vizualinė tapatybė",
       "subtitle": "Logotipas rodomas prietaisų skydelyje, pasiūlymuose/sąskaitose, lankomumo lape ir viešoje svetainėje.",
       "logo": "Logotipas",
+      "color": "Spalva",
+      "colorHint": "Naudojama el. pašto antraštėse ir mygtukuose.",
+      "senderName": "Siuntėjo vardas",
+      "senderNameHint": "El. laiškų siuntėjo vardas rodomas. Palikite tuščią vietą, kad galėtumėte naudoti asociacijos pavadinimą.",
+      "signature": "Parašas",
+      "signatureHint": "Pridėta prie ranka rašomų ar automatizuotai siunčiamų el. laiškų pabaigos.",
+      "footerText": "Antraštės tekstas",
+      "footerTextHint": "Pakeičia numatytąjį tekstą visų el. laiškų apačioje. Palikite tuščią, kad išsaugotumėte standartinį tekstą.",
+      "footerTextPlaceholder": "Automatinis el. laiškas išsiųstas {name}…",
+      "footerStyles": {
+        "classic": "Klasika",
+        "bold": "Pabrėžta",
+        "minimal": "Minimalistinis"
+      },
+      "footer": {
+        "title": "Poraštė",
+        "subtitle": "Stilius, spalva, tekstas ir socialiniai tinklai rodomi kiekvieno el. laiško apačioje.",
+        "color": "Fono spalva",
+        "socialLinks": "Socialiniai tinklai",
+        "socialPlatforms": {
+          "facebook": "Facebook",
+          "instagram": "Instagram",
+          "linkedin": "LinkedIn",
+          "x": "X (Twitter)"
+        }
+      },
       "proOnlyText": "Individualus logotipas (prietaisų skydelis, pasiūlymai/sąskaitos, darbo laiko apskaita) yra skirtas Pro planui. Norėdami jį aktyvuoti, atnaujinkite į kitą planą prenumeratos skirtuke.",
+      "preview": {
+        "label": "Apžvalga",
+        "placeholderName": "Jūsų asociacija",
+        "sampleHeading": "Sveiki, Vardai,",
+        "sampleButton": "Peržiūrėti detales",
+        "defaultFooter": "Automatinis el. laiškas išsiųstas {name} per Formwise. \nPrašome neatsakyti tiesiogiai į šį el. laišką.",
+        "fromLabel": "Siuntėjas: {name}"
+      },
       "toasts": {
         "updated": "Atnaujinta vizualinė tapatybė",
         "uploadError": "Klaidos įkėlimo logotipas"
@@ -4055,16 +4459,17 @@
       "status": {
         "trial": "Nemokama bandomoji versija",
         "active": "Aktyvus",
+        "paymentPending": "Mokėjimas vyksta",
         "pastDue": "Vėluojantis mokėjimas",
         "suspended": "Nušalinta",
-        "cancelled": "Atšaukta",
-        "paymentPending": "Mokėjimas vyksta"
+        "cancelled": "Atšaukta"
       },
       "planLabel": "Formulė {tier}",
       "membersCount": "{count} / {limit} Nariai",
       "loadError": "Nepavyksta atkurti prenumeratos būsenos. Bandykite vėliau.",
       "trialEndsAt": "Jūsų nemokamas bandomasis laikotarpis baigiasi {date}. Po šios datos registruota kortelė bus automatiškai nuskaičiuota, nebent ji bus atšaukta iki šios datos.",
       "activeText": "Jūsų prenumerata aktyvi. Galite peržiūrėti sąskaitas, pakeisti mokėjimo būdą arba atšaukti bet kuriuo metu Stripe valdymo skiltyje.",
+      "paymentPendingText": "SEPA tiesioginis debetas jūsų prenumeratai yra tvarkomas. Gali praeiti kelios darbo dienos, kol jis pasirodys jūsų banko sąskaitoje.",
       "pastDueText": "Paskutinis mokėjimas nepavyko. Atnaujinkite mokėjimo būdą, kad išvengtumėte paskyros sustabdymo.",
       "suspendedText": "Jūsų prenumerata sustabdoma po kelių nesėkmingų mokėjimų. Eikite į specialų ekraną, kad ją vėl aktyvuotumėte, eksportuokite duomenis arba atšaukite visam laikui.",
       "cancelledText": "Jūsų prenumerata atšaukta. Susisiekite su palaikymu, kad ją vėl aktyvuotumėte.",
@@ -4179,6 +4584,63 @@
       "subtitleTrialExpired": "Jūsų nemokamas bandomasis laikotarpis baigėsi. Pasirinkite planą ir įveskite mokėjimo būdą, kad tęstumėte.",
       "confirmButtonSubscribe": "Patvirtinkite ir prenumeruokite"
     },
+    "teamAccess": {
+      "title": "Komanda ir prieiga",
+      "description": "Kas turi prieigą prie asociacijos valdymo ir ką kiekvienas gali matyti ar pakeisti.",
+      "howToAdd": "Norint pridėti ką nors, priskirkite jam vaidmenį iš narių sąrašo arba \"Komandos nario\" vaidmenį, kad atidarytumėte tik tam tikrus domenus. Peržiūros priemonė: galima peržiūrėti nieko neredaguojant.",
+      "empty": "Šiuo metu nėra komandos narių.",
+      "columns": {
+        "name": "Vardas, pavadinimas",
+        "role": "Funkcija",
+        "access": "Prieiga"
+      },
+      "you": "Tu",
+      "summary": {
+        "administrator": "Administratorius",
+        "none": "Nėra prieigos",
+        "editAndRead": "{edit, plural, one {# laukas} other {# sritys}} leidyboje · {read} Atkūrimas",
+        "editOnly": "{edit, plural, one {# laukas} other {# sritys}} Leidyboje",
+        "readOnly": "{read, plural, one {# laukas} other {# sritys}} Atkūrimas"
+      },
+      "editTitle": "Prieiga prie pokyčių",
+      "editDescription": "Funkcija ir prieiga {name}.",
+      "roleLabel": "Funkcija",
+      "profileLabel": "Profilis",
+      "profiles": {
+        "administrator": "Administratorius",
+        "role": "Pareigų profilis",
+        "custom": "Pritaikyta"
+      },
+      "administratorSwitch": "Administratorius (nustatymai, atsiskaitymas, prieiga)",
+      "administratorHint": "Pilna prieiga prie visų domenų.",
+      "memberRoleHint": "Paprastas narys neturi prieigos prie valdymo: jis naudoja tik savo nario teritoriją.",
+      "adminRoleHint": "Administratoriaus pareigos visada suteikia pilną prieigą.",
+      "areasLabel": "Prieiga pagal domeną",
+      "levels": {
+        "none": "Nėra",
+        "read": "Skaitytojas",
+        "edit": "Leidėjas"
+      },
+      "areas": {
+        "dashboard": "Informacijos skydelis ir veikla",
+        "membres": "Nariai",
+        "sensible": "Jautrūs narių duomenys",
+        "adhesions": "Narystės ir narystės mokesčiai",
+        "dons": "Aukos",
+        "evenements": "Renginiai ir bilietų pardavimas",
+        "boutique": "Parduotuvė",
+        "communication": "Komunikacija (el. laiškai, SMS, susitikimai)",
+        "actualites": "Naujienos",
+        "comptabilite": "Apskaita (finansai, pasiūlymai, sąskaitos, tiekėjai)",
+        "reunions": "Susitikimai",
+        "materiel": "Medžiaga",
+        "site": "Svetainė",
+        "documents": "Asociacijos dokumentai"
+      },
+      "toasts": {
+        "saved": "Atnaujinta prieiga"
+      }
+    },
     "erasureRequests": {
       "title": "Duomenų ištrynimas (BDAR)",
       "description": "Prašymai visam laikui ištrinti nario asmens duomenis pagal BDAR 17 straipsnį. Automatiškai apdorojami kiekvieną naktį, išskyrus sustabdytus prašymus.",
@@ -4219,11 +4681,6 @@
       },
       "automaticOrigin": "Automatiškai pažymėta — neaktyvus ilgiau nei 3 metus",
       "inactiveSince": "išvyko {date}"
-    },
-    "teamAccess": {
-      "areas": {
-        "sensible": "Jautrūs narių duomenys"
-      }
     }
   },
   "cotisations": {
@@ -4287,6 +4744,7 @@
         "enAttente": "Laukiama",
         "payees": "Apmokėta",
         "exonerees": "Atleista nuo mokesčių",
+        "aEncaisser": "Kad būtų išgryninta",
         "partiellementPayees": "Dalinai apmokama",
         "enRetard": "Vėluoju",
         "annulees": "Atšaukta"
@@ -4313,28 +4771,6 @@
       "allCategories": "Visos kategorijos",
       "allRenewals": "Visi atnaujinimai",
       "resetFilters": "Atstatymas",
-      "renewal": {
-        "automatic": "Automatinis",
-        "manual": "Rankinis"
-      },
-      "summary": {
-        "aPagar": " · {amount} iš viso",
-        "recebido": " · {amount} gauta",
-        "saldo": " · {amount} liko sumokėti"
-      },
-      "distribution": {
-        "show": "Peržiūrėti pasiskirstymą",
-        "hide": "Slėpti pasiskirstymą",
-        "category": "Narystės kategorija",
-        "renewal": "Atnaujinimas",
-        "count": "Indėlių skaičius",
-        "aPagar": "Bendra suma",
-        "recebido": "Gauta suma",
-        "saldo": "Likęs balansas",
-        "total": "Iš viso",
-        "noCategory": "Be kategorijos",
-        "empty": "Joks mokestis neatitinka šių filtrų."
-      },
       "mergeTiers": {
         "filterOption": "Sujungti dublikatines kategorijas",
         "title": "Sujungti dublikatines kategorijas",
@@ -4357,6 +4793,28 @@
         "priceFreeAmount": "Nemokama suma",
         "priceFreeAmountFrom": "Nemokama suma iš {amount}",
         "priceRecurring": "{amount}/metai"
+      },
+      "renewal": {
+        "automatic": "Automatinis",
+        "manual": "Rankinis"
+      },
+      "summary": {
+        "aPagar": " · {amount} iš viso",
+        "recebido": " · {amount} gauta",
+        "saldo": " · {amount} liko sumokėti"
+      },
+      "distribution": {
+        "show": "Peržiūrėti pasiskirstymą",
+        "hide": "Slėpti pasiskirstymą",
+        "category": "Narystės kategorija",
+        "renewal": "Atnaujinimas",
+        "count": "Indėlių skaičius",
+        "aPagar": "Bendra suma",
+        "recebido": "Gauta suma",
+        "saldo": "Likęs balansas",
+        "total": "Iš viso",
+        "noCategory": "Be kategorijos",
+        "empty": "Joks mokestis neatitinka šių filtrų."
       }
     },
     "reminderModal": {
@@ -4396,6 +4854,14 @@
       "title": "Įrašykite mokėjimą",
       "amount": "Suma",
       "remainingBalance": "Neapmokėtas likutis: {amount}",
+      "installmentChoice": "Šis mokėjimas atsiperka",
+      "installmentNext": "Terminas {position}",
+      "installmentThrough": "Iki pilnametystės {position}",
+      "installmentPaid": "Terminas {position} — apmokamas",
+      "installmentPartlyPaid": "(liko sumokėti už {amount})",
+      "lateSuffix": " (vėlyvas)",
+      "customAmount": "Kita suma",
+      "installmentsInOrder": "Mokėjimai apima įmokas iš eilės.",
       "method": "Mokėjimo būdas",
       "date": "Mokėjimo data",
       "note": "Pastaba",
@@ -4421,6 +4887,125 @@
       "annulee": "Šis indėlis buvo atšauktas."
     }
   },
+  "groupes": {
+    "view": {
+      "title": "Grupės",
+      "countTotal": "{count, plural, =0 {Jokių grupių} one {# grupė} other {# grupės}}",
+      "count": "{count, plural, =0 {Rezultatų nėra} one {# rezultatas} other {# rezultatai}}",
+      "searchPlaceholder": "Ieškoti grupės...",
+      "noResultsFor": "Nėra grupių, kurios atitiktų \" {search} »",
+      "noGroupe": "Šiuo metu nėra grupių",
+      "allStatuses": "Visos būsenos",
+      "statusFilter": {
+        "actifs": "Veikliosios medžiagos",
+        "archives": "Archyvuota"
+      },
+      "addTitle": "Sukurkite grupę",
+      "editTitle": "Redaguoti grupę",
+      "columns": {
+        "nome": "Vardas, pavadinimas",
+        "membres": "Nariai",
+        "responsaveis": "Treneriai",
+        "lastChamada": "Paskutinis kvietimas",
+        "status": "Statusas"
+      },
+      "statusBadge": {
+        "archive": "Archyvuota"
+      },
+      "actions": {
+        "edit": "Redagavimas",
+        "archive": "Archyvas",
+        "unarchive": "Unarchive"
+      },
+      "archiveConfirmTitle": "Archyvas « {name} » ?",
+      "archiveConfirmDescription": "Skambučių istorija išsaugoma. Grupė nebebus aktyvių sąraše.",
+      "unarchiveConfirmTitle": "Unarchive \" {name} » ?",
+      "toasts": {
+        "created": "Sukurta grupė",
+        "updated": "Atnaujinta grupė",
+        "archived": "Archyvuota grupė",
+        "unarchived": "Nearchyvuota grupė"
+      }
+    },
+    "form": {
+      "nomeLabel": "Grupės pavadinimas",
+      "nomePlaceholder": "Pvz., jaunimo komanda, ketvirtadienio choras...",
+      "descricaoLabel": "Aprašymas",
+      "descricaoPlaceholder": "Pasirenkama"
+    },
+    "detail": {
+      "backToList": "Grįžimas prie grupių",
+      "membresTitle": "Nariai",
+      "addMembre": "Pridėti narį",
+      "allMemberTypes": "Visų tipų",
+      "searchMembrePlaceholder": "Ieškok nario...",
+      "searchOrFilterPrompt": "Ieškokite nario arba pasirinkite aukščiau nurodytą tipą",
+      "noResultsForMembre": "Nė vienas narys nesutampa\" {search} »",
+      "noResultsForType": "Tokio nario nėra",
+      "candidatesFound": "{count, plural, one {# narys rastas} other {# nariai rasti}}",
+      "selectAllCandidates": "Pažymėkite visus",
+      "deselectAllCandidates": "Atžymėkite visus",
+      "selectAllTruncated": "Šį filtrą atitiko daugiau nei 500 narių – buvo atrinkti tik 500 geriausių.",
+      "unselectCandidate": "Atšaukti pasirinkimą {name}",
+      "addSelectedMembres": "Pridėti ({count})",
+      "membresAddedToast": "{count, plural, =0 {Narių nepridėta} one {# narys pridėjo} other {# nariai pridėti}}",
+      "noMembre": "Šioje grupėje nėra narių",
+      "removeMembreConfirmTitle": "Pašalinti {name} grupės?",
+      "removeMembreConfirmDescription": "Jo buvimo šioje grupėje istorija yra išsaugota.",
+      "responsaveisTitle": "Treneriai",
+      "addResponsavel": "Pridėti vadybininką",
+      "noResponsavel": "Nėra paskirto pareigūno",
+      "removeResponsavelConfirmTitle": "Pašalinti {name} Iš tų, kurie atsakingi?",
+      "appelsTitle": "Apeliacijos",
+      "faireAppel": "Skambinkite",
+      "noAppel": "Šiuo metu skambučių nėra.",
+      "noMembreForAppel": "Pridėkite bent vieną narį į grupę prieš priimdami sprendimą.",
+      "newAppelDateLabel": "Data",
+      "newAppelSubmit": "Pradėti skambutį",
+      "appelColumns": {
+        "date": "Data",
+        "presents": "Dabartis",
+        "absents": "Nėra",
+        "justifies": "Pateisinama",
+        "nonRenseignes": "Nenurodyta"
+      },
+      "reopenExistingTitle": "Šiai nišai jau yra kvietimas",
+      "reopenExistingDescription": "Galite jį atidaryti, kad peržiūrėtumėte arba redaguotumėte, o ne kurtumėte naują.",
+      "reopenExistingConfirm": "Atidarytas esamas kvietimas"
+    },
+    "appel": {
+      "backToGroupe": "Grįžimas prie grupės",
+      "dateLabel": "Data",
+      "horarioLabel": "Tvarkaraštis",
+      "horarioPlaceholder": "Neprivaloma, pvz., 14:00 val.",
+      "activityLabel": "Veikla",
+      "activityPlaceholder": "Pasirenkama",
+      "markAllPresent": "Pažymėkite visus susirinkusius",
+      "syncMembres": "Pridėti naujų grupės narių",
+      "counts": {
+        "presente": "Dabartis",
+        "ausente": "Nėra",
+        "ausenciaJustificada": "Pateisinama",
+        "naoInformado": "Nenurodyta"
+      },
+      "status": {
+        "NAO_INFORMADO": "Nenurodyta",
+        "PRESENTE": "Dabartis",
+        "AUSENTE": "Nėra",
+        "AUSENCIA_JUSTIFICADA": "Pateisinama"
+      },
+      "save": "Įrašytas skambutis",
+      "export": "Eksportas",
+      "exportPdf": "PDF",
+      "exportPdfBlank": "Tuščias PDF (spausdinti)",
+      "exportExcel": "Excel",
+      "toasts": {
+        "saved": "Įrašytas skambutis",
+        "noMembersToExport": "Nėra narių, kuriuos reikėtų eksportuoti",
+        "synced": "{count, plural, =0 {Naujų narių nėra} one {# narys pridėjo} other {# nariai pridėti}}"
+      }
+    }
+  },
   "membres": {
     "form": {
       "status": {
@@ -4434,7 +5019,8 @@
         "secretaire": "Sekretorius",
         "tresorier": "Iždininkas",
         "president": "Prezidentas",
-        "admin": "Administracija"
+        "admin": "Administracija",
+        "equipe": "Komandos narys"
       },
       "civilite": {
         "none": "Nenurodyta",
@@ -4448,6 +5034,11 @@
         "femme": "Moteris"
       },
       "groupeSanguinNone": "Nenurodyta",
+      "imageRights": {
+        "unknown": "Nenurodyta",
+        "granted": "Taip",
+        "refused": "Ne"
+      },
       "tailleTshirtNone": "Nenurodyta",
       "preferredLocaleNone": "Nenurodyta",
       "preferredLocaleHint": "Pasirinkta kalba leis šiam nariui siųsti el. laiškus ir pranešimus jo pageidaujama kalba.",
@@ -4479,14 +5070,15 @@
         "allergies": "Žinomos alergijos",
         "allergiesPlaceholder": "Arachidai, žiedadulkės...",
         "type": "Narių tipas",
-        "preferredLocale": "Bendravimo kalba",
-        "spokenLanguage": "Vartojama kalba",
-        "cotisationTier": "Narystės mokestis",
-        "guardianName": "Teisėtas atstovas {number} — vardas",
-        "guardianPhone": "Teisėtas atstovas {number} — telefonas",
         "imageRights": "Teisė į atvaizdą",
         "notes": "Pastabos",
-        "notesPlaceholder": "Naudinga informacija apie šį narį (užsiėmimai, pastabos…)"
+        "notesPlaceholder": "Naudinga informacija apie šį narį (užsiėmimai, pastabos…)",
+        "guardians": "Teisiniai globėjai",
+        "guardianName": "Teisėtas atstovas {number} — vardas",
+        "guardianPhone": "Teisėtas atstovas {number} — telefonas",
+        "preferredLocale": "Bendravimo kalba",
+        "spokenLanguage": "Vartojama kalba",
+        "cotisationTier": "Narystės mokestis"
       },
       "invitationNotice": "Kvietimo el. laiškas su identifikatoriais bus išsiųstas į šį adresą.",
       "tierNone": "Nėra kainodaros (numatytoji elgsena)",
@@ -4507,12 +5099,7 @@
         "management": "Nario valdymas"
       },
       "invalidFormToast": "Nepavyko išsaugoti. Jei problema tęsiasi, susisiekite su pagalba.",
-      "customFieldsLoading": "Įkeliami narystės formos atsakymai…",
-      "imageRights": {
-        "unknown": "Nenurodyta",
-        "granted": "Taip",
-        "refused": "Ne"
-      }
+      "customFieldsLoading": "Įkeliami narystės formos atsakymai…"
     },
     "actions": {
       "add": "Pridėti narį",
@@ -4562,13 +5149,13 @@
         "firstName": "Vardas",
         "lastName": "Pavardė",
         "address": "Adresas",
+        "country": "Kantri",
+        "countryPlaceholder": "Visos šalys",
+        "countryLoadError": "Nepavyksta įkelti šalių. Pabandykite dar kartą po akimirkos.",
         "birthDateFrom": "Gimę po",
         "birthDateTo": "Gimęs anksčiau",
         "apply": "Pateikite paraišką",
-        "reset": "Atstatymas",
-        "country": "Kantri",
-        "countryPlaceholder": "Visos šalys",
-        "countryLoadError": "Nepavyksta įkelti šalių. Pabandykite dar kartą po akimirkos."
+        "reset": "Atstatymas"
       },
       "statusOptions": {
         "pending": "Laukiama",
@@ -4609,12 +5196,14 @@
         "memberDeletedWithUnlink": "Pašalintas narys — pašalintas iš teisėto globėjo pareigų {count} narys(-iai)",
         "noMembersToExport": "Nėra narių, kuriuos reikėtų eksportuoti",
         "viewSubscription": "Peržiūrėti prenumeratą",
-        "roleUpdated": "Atnaujintas vaidmuo"
+        "roleUpdated": "Atnaujintas vaidmuo",
+        "configureAccess": "Prieigos konfigūravimas"
       },
       "changeRoleTitle": "Vaidmens keitimas",
       "addViaForm": "Per narystės formą",
       "addManual": "Pridėti rankiniu būdu",
       "changeRoleDescription": "Vaidmuo {name} asociacijoje.",
+      "changeRoleEquipeHint": "Šis vaidmuo prasideda be jokios valdymo prieigos. Konfigūruokite prieigą pagal domeną nustatymuose › Komanda & Prieiga.",
       "pendingRequests": "{count, plural, one {# laukiamas prašymas} other {# laukiančios paraiškos}}"
     },
     "detail": {
@@ -4627,6 +5216,14 @@
       "cotisationButton": "Narystės mokestis",
       "createAccessButton": "Sukurti prieigą",
       "roleButton": "Vaidmuo",
+      "exportDataButton": "Eksporto duomenys (BDAR)",
+      "eraseData": {
+        "button": "Ištrinti duomenis (BDAR)",
+        "confirmTitle": "Prašyti visam laikui ištrinti {name} duomenis?",
+        "confirmDescription": "Šis veiksmas užregistruoja BDAR 17 straipsnio ištrynimo prašymą. Narys gaus patvirtinimo el. laišką, po to jo asmens duomenys bus neatšaukiamai anonimizuoti per kitą automatinį apdorojimą, jei prašymas nebus sustabdytas.",
+        "toastSuccess": "Ištrynimo prašymas užregistruotas",
+        "requestLabel": "BDAR ištrynimas"
+      },
       "contact": "Kontaktai",
       "noContactInfo": "Nėra kontaktinės informacijos",
       "memberSinceColon": "Narys nuo: {date}",
@@ -4642,6 +5239,10 @@
       "spokenLanguageColon": "Vartojama kalba: {value}",
       "preferredLocaleColon": "Bendravimo kalba: {value}",
       "allergiesColon": "Alergijos: {value}",
+      "imageRightsColon": "Vaizdo teisės: {value}",
+      "imageRightsDate": "(the {date})",
+      "notes": "Pastabos",
+      "guardians": "Teisiniai globėjai",
       "mobileColon": "Mobilusis: {value}",
       "legalGuardianColon": "Teisinis globėjas:",
       "noInfo": "Informacija nepateikta",
@@ -4670,6 +5271,7 @@
         "evenements": "Renginiai",
         "reunions": "Susitikimai",
         "materiel": "Medžiaga",
+        "groupes": "Grupės",
         "dons": "Aukos",
         "historique": "Istorija",
         "emails": "El. laiškai",
@@ -4700,6 +5302,7 @@
       "paidOn": "Sumokėta {date}",
       "validUntil": "Galioja iki {date}",
       "periodExpiredOn": "Pasibaigė {date}",
+      "recordPayment": "Įrašykite mokėjimą",
       "downloadRecuFiscal": "Atsisiųsti mokesčių kvitą",
       "downloadRecuFiscalPartial": "Atsisiųskite mokesčių kvitą (dalinį: {amount} franšizė)",
       "showingRecentCotisations": "Eksponavimas {count} Naujausi indėliai apie {total} Iš viso.",
@@ -4742,13 +5345,6 @@
         "rejectedToast": "Paraiška atmesta",
         "rejectConfirmTitle": "Atsisakyti šio prašymo?",
         "rejectConfirmDescription": "{name} pasikeis į \"Neaktyvus\" būseną ir negalės prisijungti. Užklausa ir jos atsakymai į formą išsaugomi."
-      },
-      "eraseData": {
-        "button": "Ištrinti duomenis (BDAR)",
-        "confirmTitle": "Prašyti visam laikui ištrinti {name} duomenis?",
-        "confirmDescription": "Šis veiksmas užregistruoja BDAR 17 straipsnio ištrynimo prašymą. Narys gaus patvirtinimo el. laišką, po to jo asmens duomenys bus neatšaukiamai anonimizuoti per kitą automatinį apdorojimą, jei prašymas nebus sustabdytas.",
-        "toastSuccess": "Ištrynimo prašymas užregistruotas",
-        "requestLabel": "BDAR ištrynimas"
       },
       "noCommande": "Šis kontaktas neturi pirkimų parduotuvėje.",
       "commandeStatus": {
@@ -4839,6 +5435,12 @@
       "inMessagesSection": " Žinučių skyriuje.",
       "messageSectionLabel": "Žinutė",
       "saveAsTemplate": "Išsaugoti kaip šabloną",
+      "subjectLabel": "Paskirtis",
+      "subjectPlaceholder": "El. laiško tema...",
+      "subjectTooLong": "Tema per ilga: {length}/{max} simbolių — siunčiant bus atmesta.",
+      "bodyLabel": "Pranešimo turinys",
+      "bodyPlaceholder": "Parašyk savo žinutę...",
+      "designTemplateReadonlyHint": "Šis šablonas naudoja Visual Design režimą (paveikslėliai, mygtukai) – jo turinio čia redaguoti negalima. Norėdami jį pakeisti, redaguokite šabloną Messages.",
       "language": {
         "title": "Siuntimo kalba",
         "modeOriginal": "Originali kalba",
@@ -4863,15 +5465,12 @@
         "autoNoEffect": "Nė vienas dabartinis gavėjas neturi kitos pageidaujamos kalbos nei prancūzų — visi gaus originalią versiją.",
         "autoExternalNote": "{count, plural, one {# išorinis el. laiškas (originalo kalba)} other {# išoriniai el. laiškai (originalo kalba)}}"
       },
-      "subjectLabel": "Paskirtis",
-      "subjectPlaceholder": "El. laiško tema...",
-      "subjectTooLong": "Tema per ilga: {length}/{max} simbolių — siunčiant bus atmesta.",
-      "bodyLabel": "Pranešimo turinys",
-      "bodyPlaceholder": "Parašyk savo žinutę...",
       "continue": "Tęsti",
       "confirmSendTitle": "Siuntimo patvirtinimas",
       "confirmSendDescription": "Šis el. laiškas bus išsiųstas į {recipients}. Šis veiksmas yra negrįžtamas.",
       "sendNow": "Siųskite dabar",
+      "sending": "Siunčiu...",
+      "sendFailedTitle": "El. laiško nebuvo galima išsiųsti",
       "replaceContentTitle": "Pakeisti turinį?",
       "replaceContentDescription": "Taikant šį šabloną, bus pakeista jau parašytos žinutės tema ir turinys.",
       "replace": "Pakeisti",
@@ -4884,6 +5483,28 @@
       "recipientsActive": "{count, plural, one {# aktyvus narys} other {# aktyvūs nariai}}",
       "externalOnlyCount": "{count, plural, one {# išorinis el. paštas} other {# išoriniai el. laiškai}}",
       "recipientsWithExternal": "{members} + {count, plural, one {# išorinis el. paštas} other {# išoriniai el. laiškai}}",
+      "attachments": {
+        "label": "Priedai",
+        "add": "Prisegti failus",
+        "hint": "JPG, PNG, WebP, GIF arba PDF · {maxSize} Iš viso",
+        "usage": "{count, plural, one {# failas} other {# failai}} · {used} / {maxSize}",
+        "limitFilesReached": "Riba {maxFiles} Pasiekti failai",
+        "limitSizeReached": "Riba {maxSize} Pasiekta",
+        "remove": "Pašalinti {name}",
+        "nameWithSize": "{name} ({size})",
+        "andMore": "{count, plural, one {ir # kitas} other {ir # kitų}}",
+        "errors": {
+          "emptyFile": "{count, plural, one {{names} nebuvo pridėtas — failas tuščias.} other {# failai nebuvo pridėti: {names} — Šios bylos tuščios.}}",
+          "unsupportedType": "{count, plural, one {{names} nebuvo pridėta} other {# failai nebuvo pridėti: {names}}} — priimti formatai: vaizdai (JPG, PNG, WebP, GIF) ir PDF.",
+          "totalSizeExceeded": "{count, plural, one {{names} nebuvo pridėta} other {# failai nebuvo pridėti: {names}}} — riba {maxSize} iš viso būtų viršyta (likusi vieta: {remaining}).",
+          "tooManyFiles": "{count, plural, one {{names} nebuvo pridėta} other {# failai nebuvo pridėti: {names}}} — {maxFiles} Maksimalus failų skaičius vienam el. paštui."
+        },
+        "recapSummary": "{count, plural, one {# failas} other {# failai}} · {size}",
+        "uploading": "Siunčiu priedus...",
+        "uploadFailedTitle": "Prisegtukų siųsti nebuvo",
+        "uploadFailedDescription": "El. laiškų nebuvo. Bandykite dar kartą arba spustelėkite \"Redaguoti\", kad pašalintumėte arba pakeistumėte failą.",
+        "notSavedInTemplate": "Priedų šablone nėra."
+      },
       "toasts": {
         "selectType": "Pasirinkite nario tipą",
         "selectMember": "Pasirinkite bent vieną narį arba pridėkite išorinį el. paštą",
@@ -4916,7 +5537,14 @@
         "status": "Statusas",
         "typeId": "Tipas",
         "role": "Vaidmuo",
-        "adherentOverride": "Narystės statusas"
+        "adherentOverride": "Narystės statusas",
+        "notes": "Pastabos",
+        "imageRightsConsent": "Vaizdo teisės",
+        "guardianName": "Teisinis globėjas 1",
+        "guardianPhone": "Teisėtų globėjų telefono numeris 1",
+        "secondGuardianName": "Teisinis globėjas 2",
+        "secondGuardianPhone": "Teisėto globėjo telefono numeris 2",
+        "permissions": "Prieiga"
       },
       "adherentOverrideValues": {
         "forcedAdherent": "Priverstinis laikymasis",
@@ -4930,9 +5558,11 @@
         "membreRoleChanged": "Pakeista paskirtis",
         "passwordChanged": "Slaptažodis pakeistas",
         "passwordReset": "Slaptažodžio atstatymas",
+        "membreCardTokenRotated": "Regeneruotas kortelės QR kodas",
         "membreDeleted": "Archyvuotas narys",
         "membrePortalRegistered": "Portalo registracija",
         "membreInscriptionRequested": "Narystės paraiška (svetainė)",
+        "membreAdhesionCompleted": "Narystė baigta ir apmokėta",
         "cotisationCreated": "Pridėtas indėlis",
         "cotisationUpdated": "Pakeistas vertinimas",
         "cotisationDeleted": "Narystės mokestis panaikintas",
@@ -5004,7 +5634,8 @@
         "expense": "Išlaidos",
         "financeCategory": "Finansų kategorijos",
         "payment": "Mokėjimai",
-        "associationDocument": "Asociacijos dokumentai"
+        "associationDocument": "Asociacijos dokumentai",
+        "paperFormTemplate": "Popieriaus lapai"
       },
       "messageTemplateFilterLabel": "MSG šablonai",
       "actualiteFields": {
@@ -5065,12 +5696,20 @@
         "membreDeleted": "Archyvuotas narys",
         "membrePortalRegistered": "Registruotas (portalas)",
         "membreInscriptionRequested": "Narystės paraiška (svetainė)",
+        "membreAdhesionCompleted": "Narystė baigta ir apmokėta",
         "membreRoleChanged": "Pakeista paskirtis",
         "membreAccessCreated": "Prieiga sukurta",
+        "membreCardTokenRotated": "Regeneruotas kortelės QR kodas",
         "profilUpdated": "Modifikuotas profilis",
         "profileUpdated": "Modifikuotas profilis",
         "passwordChanged": "Slaptažodis pakeistas",
         "passwordReset": "Slaptažodžio atstatymas",
+        "twoFactorEnabled": "Įjungta dviejų veiksnių autentifikacija",
+        "twoFactorDisabled": "Dviejų veiksnių autentifikacija išjungta",
+        "twoFactorBackupRegenerated": "Regeneruoti atsarginių kopijų kodai",
+        "twoFactorDisabledByAdmin": "Dviejų veiksnių autentifikacija išjungta palaikymo",
+        "loginSuccess": "Sėkmingas prisijungimas",
+        "loginFailed": "Nepavykęs prisijungimo bandymas",
         "emailSentBulk": "El. laiškas išsiųstas",
         "smsSentBulk": "SMS žinutė išsiųsta",
         "supportEmailSent": "El. laišką atsiuntė Formwise Support",
@@ -5181,6 +5820,9 @@
         "associationDocumentCreated": "Dokumentas sukurtas",
         "associationDocumentUpdated": "Dokumentas pakeistas",
         "associationDocumentDeleted": "Dokumentas ištrintas",
+        "paperFormTemplateCreated": "Sukurtas formos šablonas",
+        "paperFormTemplateUpdated": "Modifikuotas formos šablonas",
+        "paperFormTemplateDeleted": "Ištrintos kortelės šablonas",
         "ticketCheckoutExpired": "Mokėjimas pasibaigė"
       }
     },
@@ -5385,8 +6027,8 @@
       "actualites": "Naujienos",
       "membership": "Prisijunk prie asociacijos",
       "dons": "Aukoti",
-      "contact": "Kontaktai",
-      "boutique": "Parduotuvė"
+      "boutique": "Parduotuvė",
+      "contact": "Kontaktai"
     },
     "defaultTitles": {
       "hero": "Sveikas atvykęs",
@@ -5394,9 +6036,9 @@
       "events": "Artėjantys renginiai",
       "membership": "Prisijunk prie asociacijos",
       "dons": "Aukoti",
+      "boutique": "Parduotuvė",
       "actualites": "Naujienos",
-      "contact": "Kontaktai",
-      "boutique": "Parduotuvė"
+      "contact": "Kontaktai"
     },
     "view": {
       "uploadFailedWarning": "{count, plural, one {# paveikslėlio nebuvo galima atsisiųsti.} other {# vaizdai negalėjo būti įkelti.}}",
@@ -5420,6 +6062,8 @@
       "save": "Išsaugoti",
       "appearance": "Išvaizda",
       "primaryColor": "Pagrindinė spalva",
+      "secondaryColor": "Antrinė spalva",
+      "fontFamily": "Policija",
       "logo": "Logotipas",
       "header": "Antraštė",
       "headerBgColor": "Fono spalva",
@@ -5438,11 +6082,12 @@
       "noLinks": "Nėra nuorodų. Spauskite \"Pridėti\".",
       "sections": "Skyriai",
       "noSections": "Nėra skyrių. Pridėkite vieną žemiau.",
+      "createWithAi": "Kūrimas naudojant dirbtinį intelektą",
       "addSection": "Pridėti skyrių",
       "donsModuleDisabled": "Aukojimo modulis išjungtas — nematomas viešoje svetainėje",
+      "boutiqueModuleDisabled": "Parduotuvės modulis išjungtas — nerodomas viešoje svetainėje",
       "deleteSectionTitle": "Ištrinti skyrių",
-      "deleteSectionDescription": "Šis veiksmas yra negrįžtamas.",
-      "boutiqueModuleDisabled": "Parduotuvės modulis išjungtas — nerodomas viešoje svetainėje"
+      "deleteSectionDescription": "Šis veiksmas yra negrįžtamas."
     },
     "sectionSheet": {
       "editTitle": "Redagavimas — {label}",
@@ -5463,6 +6108,8 @@
       "eventsLimitHint": "Renginiai automatiškai paimami iš jūsų kalendoriaus.",
       "actualitesLimit": "Naujienų, kurias reikia rodyti, skaičius",
       "actualitesLimitHint": "Svetainėje bus rodomos tik pirmosios N naujienos.",
+      "boutiqueLimit": "Rodomų produktų skaičius",
+      "boutiqueLimitHint": "Svetainėje bus rodomi tik pirmieji N aktyvūs produktai.",
       "membershipIntro": "Įvadinis tekstas",
       "membershipIntroPlaceholder": "Užpildykite šią formą, kad galėtumėte stoti į asociaciją...",
       "membershipHint": "Prašymai pateikiami narių sąraše, kurių statusas yra \"Laukiama\".",
@@ -5483,9 +6130,7 @@
       "apply": "Pateikite paraišką",
       "discardTitle": "Ignoruoti pokyčius?",
       "discardDescription": "Netaikomi pakeitimai bus prarasti.",
-      "discardConfirm": "Ignoruoti",
-      "boutiqueLimit": "Rodomų produktų skaičius",
-      "boutiqueLimitHint": "Svetainėje bus rodomi tik pirmieji N aktyvūs produktai."
+      "discardConfirm": "Ignoruoti"
     },
     "preview": {
       "donsNoForm": "Aukojimo forma nepasirinkta — nematoma viešoje svetainėje"
@@ -5494,6 +6139,52 @@
       "viewSite": "Žiūrėkite svetainę",
       "logoUrl": "Logotipo URL (pasirinktinai)",
       "footerText": "Antraštės tekstas"
+    },
+    "aiAssistant": {
+      "title": "Kurkite savo svetainę naudodami dirbtinį intelektą",
+      "description": "Apibūdinkite savo asociaciją, DI siūlo pirmąją svetainės versiją (spalvas, šriftą, antraštę, poraštę ir skyrius), kurią galite pakeisti prieš išsaugodami.",
+      "descriptionLabel": "Apibūdinkite savo asociaciją",
+      "descriptionPlaceholder": "Pvz., Kultūros asociacija Lione, kuri organizuoja teatro dirbtuves vaikams...",
+      "generate": "Generuoti",
+      "regenerate": "Regeneracija",
+      "apply": "Pateikite paraišką",
+      "cancel": "Atšaukti",
+      "error": "Įvyko klaida, bandykite dar kartą.",
+      "previewAppearance": "Išvaizda",
+      "previewHeader": "Antraštė",
+      "previewHeaderLogin": "Prisijungimo mygtukas",
+      "previewHeaderRegister": "Prisijungimo mygtukas",
+      "previewFooter": "Poraštė",
+      "previewSections": "Skyriai",
+      "fieldButtonLabel": "Pasiūlymas su dirbtiniu intelektu",
+      "appearancePlaceholder": "Pvz., sportiška, dinamiška ir draugiška asociacija...",
+      "headerPlaceholder": "Pvz.: kažkas blaivaus, kas išsiskiria ant balto fono...",
+      "footerPlaceholder": "Pvz.: trumpa padėkos žinutė...",
+      "sectionPlaceholder": "Apibūdinkite, ką ši dalis turėtų pasakyti..."
+    },
+    "builderSwitch": {
+      "liveVersionLabel": "Internetinė versija",
+      "switchLabel": "Naujas redaktorius (beta)",
+      "statusLegacy": "Jūsų lankytojai mato seną svetainę",
+      "statusNewBuilder": "Jūsų lankytojai matys paskelbtą versiją {date}",
+      "publishFirstHint": "Pirmiausia publikuokite iš naujo redaktoriaus",
+      "openNewBuilder": "Atidarykite naują → redaktorių",
+      "legacyEditsNotice": "Jūsų svetainėje rodoma naujojo redaktoriaus versija: čia atlikti pakeitimai bus matomi tik tada, kai grįšite prie senos svetainės.",
+      "confirmOn": {
+        "title": "Aktyvuoti naują redaktorių?",
+        "description": "Jūsų viešoje svetainėje bus rodoma versija, paskelbta {date}. Galite bet kada grįžti į seną svetainę.",
+        "confirmLabel": "Aktyvuoti"
+      },
+      "confirmOff": {
+        "title": "Grįžti į seną svetainę?",
+        "description": "Jūsų viešoje svetainėje vėl bus rodoma sena svetainė.",
+        "confirmLabel": "Grįžimas į senąją vietą"
+      },
+      "toasts": {
+        "switchedOn": "Naujasis redaktorius yra prisijungęs",
+        "switchedOff": "Sena svetainė vėl veikia",
+        "error": "Klaida keičiant redaktorius"
+      }
     }
   },
   "richTextEditor": {
@@ -5506,6 +6197,134 @@
     "heading1": "Antraštė 1",
     "heading2": "Antraštė 2",
     "heading3": "Antraštė 3"
+  },
+  "paperFormTemplates": {
+    "title": "Popieriaus lapai",
+    "description": "Šablonai jūsų popierinėms registracijos formoms, kad galėtumėte sudaryti narius iš užpildytų ir nuskaitytų formų.",
+    "backToMembers": "Nariai",
+    "backToList": "Popieriaus lapai",
+    "newTemplate": "Naujas modelis",
+    "empty": "Jokių šablonų. Sukurkite jį iš tuščios registracijos formos.",
+    "notFound": "Šio šablono nepavyko rasti arba jis buvo ištrintas.",
+    "mappedFieldCount": "{count, plural, =0 {Jokių importuotų laukų} one {# importuotas laukas} other {# importuoti laukai}}",
+    "columns": {
+      "name": "Vardas, pavadinimas",
+      "pages": "Puslapiai",
+      "fields": "Laukai",
+      "updatedAt": "Modifikuota"
+    },
+    "toasts": {
+      "created": "Sukurtas šablonas",
+      "saved": "Registruotas dizainas",
+      "deleted": "Ištrintas šablonas"
+    },
+    "deleteConfirm": {
+      "title": "Ištrinkite \" {name} » ?",
+      "description": "Nariai, jau importuoti su šiuo šablonu, yra išsaugomi. Nebegalėsite skenuoti įrašų su šiuo šablonu."
+    },
+    "leaveWarning": {
+      "title": "Neišsaugoti pakeitimai",
+      "description": "Šablono pakeitimai bus prarasti, jei išeisite iš šio puslapio.",
+      "discard": "Išeiti be išsaugojimo",
+      "saveAndLeave": "Išsaugoti ir išeiti"
+    },
+    "targetGroups": {
+      "identity": "Tapatybė",
+      "contact": "Kontaktai",
+      "guardian": "Teisinis globėjas",
+      "commitments": "Įsipareigojimai",
+      "other": "Kita"
+    },
+    "targets": {
+      "fullName": "Vardas ir pavardė",
+      "firstName": "Vardas",
+      "lastName": "Vardas, pavadinimas",
+      "birthDate": "Gimimo data",
+      "civilite": "Pavadinimas",
+      "sexe": "Lytis",
+      "email": "El paštas",
+      "phone": "Telefonas",
+      "address": "Adresas",
+      "guardianFullName": "Teisinis globėjas 1 — vardas ir pavardė",
+      "guardianPhone": "Teisėtas globėjas 1 — telefonas",
+      "secondGuardianFullName": "Teisinis globėjas 2 — vardas ir pavardė",
+      "secondGuardianPhone": "Teisėtas globėjas 2 — telefonas",
+      "imageRights": "Vaizdo teisės (varnelė)",
+      "legalDocument": "Dokumento priėmimas (varnelė)",
+      "notes": "Narių pastabos",
+      "ignore": "Neimportuoti"
+    },
+    "renderErrors": {
+      "unsupported_type": "Formatas nepalaikomas. Įkelkite PDF, JPEG ar PNG nuotraukas.",
+      "too_many_pages": "Forma turi per daug puslapių ({maximum} maksimaliai).",
+      "pdf_password": "Šis PDF yra apsaugotas slaptažodžiu.",
+      "pdf_invalid": "Šio PDF atidaryti nepavyko.",
+      "image_invalid": "Šio paveikslėlio nebuvo įmanoma perskaityti.",
+      "too_large": "Puslapis yra per didelis, net ir susitraukus.",
+      "aborted": "Pasiruošimas atšauktas."
+    },
+    "editor": {
+      "newTitle": "Naujas kištuko šablonas",
+      "newDescription": "Pateikite tuščią registracijos formą: dirbtinis intelektas siūlo kiekvieno langelio atitikimą, pažymite ir išsaugote.",
+      "updatedAt": "Modifikuota {date}",
+      "dropTitle": "Tuščia registracijos forma",
+      "dropHint": "Vienas PDF arba viena JPEG ar PNG nuotrauka puslapyje – daugiausia 4 puslapiai. Kortelė nėra laikoma.",
+      "chooseFile": "Pasirinkite failą",
+      "manualIntro": "Nėra sukonfigūruoto AI rakto?",
+      "configureManually": "Konfigūruokite rankiniu būdu",
+      "preparing": "Ruošiau puslapius...",
+      "analyzing": "Lapo analizė vyksta...",
+      "analyzingHint": "DI identifikuoja langelius, kuriuos reikia užpildyti. Tai gali užtrukti iki minutės.",
+      "analyzeFailedTitle": "Kortelė nepavyko išanalizuoti",
+      "openAiSettings": "Konfigūruoti DI raktą nustatymuose",
+      "retryAnalyze": "Pakartokite skenavimą",
+      "changeFile": "Perjungimo failai",
+      "nameLabel": "Modelio pavadinimas",
+      "namePlaceholder": "Registracijos forma 2026–2027",
+      "identificationLabel": "Identifikacijos tekstas",
+      "identificationPlaceholder": "Pvz., REGISTRACIJOS FORMA 2026 2027 — DAC Academy",
+      "identificationHint": "Jei puslapis užpildytas, jis atmetamas, jei puslapis tiksliai neatitinka šios formos, yra atmetamas importavimui.",
+      "pagesPerFormLabel": "Puslapiai vienai kortelei",
+      "pageCount": "{count, plural, one {# puslapis} other {# puslapiai}}",
+      "fieldsTitle": "Laukų suderinimas",
+      "fieldsSummary": "{count, plural, =0 {Nėra laukų} one {# laukas} other {# laukai}} · {mapped, plural, one {# importas} other {Importuoti #}}",
+      "fieldsHint": "Kiekviena eilutė atitinka langelį įraše. Nurodykite, kur jo reikšmė turėtų būti įrašyta nario įraše.",
+      "droppedFields": "{count, plural, one {# DI pasiūlyta dėžė buvo atmesta, nes buvo neišsami.} other {# DI siūlomos dėžutės buvo atmestos, nes jos buvo neišbaigtos.}} Jei reikia, pridėkite juos.",
+      "noFields": "Nėra laukų. Pridėkite langelius savo skelbime.",
+      "addField": "Pridėti lauką",
+      "moreErrors": "… ir {count, plural, one {# kita klaida} other {# kitos klaidos}}",
+      "rowError": "Linija {row} : {message}",
+      "labelPlaceholder": "Spausdinta formuluotė",
+      "hintPlaceholder": "Pasirenkama",
+      "legalDocumentPlaceholder": "Pasirinkite dokumentą",
+      "noLegalDocuments": "Jokių teisinių dokumentų. Pirmiausia sukurkite tai Teisiniuose dokumentuose.",
+      "columns": {
+        "label": "Formuluotė",
+        "page": "Puslapis",
+        "target": "Kelionės tikslas",
+        "legalDocument": "Dokumentas",
+        "hint": "Skaitymo indikacija",
+        "actions": "Veiksmai"
+      },
+      "rowLabelAria": "Linijos etiketė {row}",
+      "rowPageAria": "Eilutės puslapis {row}",
+      "rowTargetAria": "Linijos paskirties vieta {row}",
+      "rowLegalDocumentAria": "Eilutės dokumentas {row}",
+      "rowHintAria": "Eilučių skaitymo indikacija {row}",
+      "removeRowAria": "Pašalinkite liniją {row}",
+      "pageLabel": "Puslapis {page}",
+      "enlargePage": "Padidinti puslapį {page}",
+      "referenceHint": "Tuščia kortelė nesaugoma. Perkraukite ją, kad rodytumėte šalia laukų.",
+      "showBlankForm": "Rodyti tuščią kortelę"
+    },
+    "activity": {
+      "fields": {
+        "name": "Vardas, pavadinimas",
+        "pagesPerForm": "Puslapiai vienai kortelei",
+        "fields": "Laukai",
+        "identificationText": "Identifikacijos tekstas"
+      }
+    }
   },
   "associationDocuments": {
     "title": "Asociacijos dokumentai",
@@ -5521,6 +6340,13 @@
     "hidden": "Paslėptas",
     "visibleToMembers": "Matomas nariams",
     "visibleToMembersHint": "Rodo šį dokumentą narių zonoje. Išjungus jį mato tik vadovai.",
+    "visibleToPublic": "Viešai prieinama",
+    "visibleToPublicHint": "Šį dokumentą gali peržiūrėti bet kas, turintis nuorodą, neturintis paskyros — reikia susieti su juo per viešas formas.",
+    "visibleToPublicForcedHint": "Automatiškai aktyvuojama: dokumentas, kurį reikia priimti, turi būti perskaitytas jį priimančio asmens.",
+    "requiresAcceptance": "Būti priimtam",
+    "requiresAcceptanceHint": "Privalomas varnelė bus matoma narystės, aukos, renginio registracijos, parduotuvės ir paskyros kūrimo formose. Kiekvienas priėmimas įrašomas kartu su dokumento versija.",
+    "exportAcceptances": "Eksporto priėmimai",
+    "publicShort": "Viešoji nuomonė",
     "toasts": {
       "madeVisible": "„{title}“ matomas nariams",
       "madeHidden": "„{title}“ paslėptas nuo narių",
@@ -5541,7 +6367,10 @@
       "contentLabel": "Turinys",
       "contentPlaceholder": "Įveskite dokumento turinį…",
       "titleRequired": "Pavadinimas yra privalomas.",
-      "contentRequired": "Turinys yra privalomas."
+      "contentRequired": "Turinys yra privalomas.",
+      "fileLabel": "PDF failas",
+      "fileHint": "Importuokite oficialią dokumento versiją (pasirašytus statutus, nuskenuotus reglamentus ir pan.). Ji yra prieinama atsisiuntimui ir rodoma kartu su turiniu.",
+      "contentOptionalHint": "Pasirenkama, kai pridedamas PDF: tekstas rodomas po failu."
     },
     "leaveWarning": {
       "title": "Neišsaugoti pakeitimai",
@@ -5550,7 +6379,36 @@
       "saveAndLeave": "Išsaugoti ir išeiti"
     },
     "notFound": "Šis dokumentas nerastas.",
-    "backToList": "Grįžti į dokumentus"
+    "backToList": "Grįžti į dokumentus",
+    "pdfShort": "PDF"
+  },
+  "formDraft": {
+    "restored": "Jūsų informacija išsaugota.",
+    "discard": "Pradėkite iš naujo su tuščia forma"
+  },
+  "legalConsent": {
+    "agreeLabel": "{count, plural, one {Sutinku su šiuo dokumentu:} other {Priimu šiuos dokumentus:}}",
+    "required": "Norėdami tęsti, turite priimti įmonės dokumentus.",
+    "stale": "Asociacijos dokumentai buvo atnaujinti, prašome juos perskaityti dar kartą prieš tęsiant.",
+    "offlineAttestation": "Patvirtinu, kad gavau šio asmens sutikimą dėl šių dokumentų",
+    "gateTitle": "Priimami dokumentai",
+    "gateSubtitle": "Jūsų asociacija atnaujino savo dokumentus. Prašome juos perskaityti ir priimti, kad galėtumėte pasiekti savo erdvę.",
+    "gateSubmit": "Aš priimu ir tęsiu",
+    "gateSignOut": "Atsijungti",
+    "gateError": "Negalite užregistruoti savo priėmimo.",
+    "offlineAttestationHint": "Įrašyta kaip priėmimas, surinktas neprisijungus, jūsų vardu."
+  },
+  "publicDocuments": {
+    "title": "Teisiniai dokumentai",
+    "subtitle": "Dokumentai, kuriuos pateikė asociacija.",
+    "empty": "Šiuo metu nėra paskelbtų dokumentų.",
+    "updatedAt": "Atnaujinta {date}",
+    "backToList": "Visi dokumentai",
+    "associationNotFound": "Tokios asociacijos čia nėra.",
+    "notFound": "Šis dokumentas nebėra prieinamas.",
+    "openPdf": "Atverkite PDF",
+    "opensNewTab": "(atsidaro naujame lange)",
+    "pdfShort": "PDF"
   },
   "portalMembre": {
     "associationDocuments": {
@@ -5560,7 +6418,10 @@
       "empty": "Šiuo metu dokumentų nėra.",
       "loadError": "Nepavyko įkelti dokumentų.",
       "notFound": "Šis dokumentas nerastas arba nebepasiekiamas.",
-      "backToList": "Grįžti į dokumentus"
+      "backToList": "Grįžti į dokumentus",
+      "openPdf": "Atverkite PDF",
+      "opensNewTab": "(atsidaro naujame lange)",
+      "pdfShort": "PDF"
     },
     "sondages": {
       "title": "Tyrimai",
@@ -5598,6 +6459,15 @@
       "viewShop": "Peržiūros parduotuvė",
       "orderPlacedTitle": "Užsakymas užregistruotas!",
       "orderPlacedDescription": "Jūsų užsakymas laukia apmokėjimo. Administracija susisieks su jumis, kad užbaigtų procesą.",
+      "paymentSuccessTitle": "Mokėjimas patvirtintas!",
+      "paymentSuccessDescription": "Dėkojame už pirkinį. Jums išsiųstas patvirtinimo el. laiškas su kvitu.",
+      "stockAdjustedNotice": "Kai kurių prekių atsargos pasikeitė — jūsų krepšelis buvo pakoreguotas, peržiūrėkite prieš tęsdami.",
+      "trackOrderButton": "Sekti mano užsakymą",
+      "trackingPageTitle": "Užsakymo sekimas",
+      "trackingStatusPending": "Laukiama mokėjimo",
+      "trackingStatusPaid": "Užsakymas apmokėtas",
+      "trackingStatusCancelled": "Užsakymas atšauktas",
+      "trackingNotFound": "Užsakymas nerastas",
       "myOrdersButton": "Mano įsakymai",
       "continueShopping": "Tęskite apsipirkimą",
       "maxStockReached": "Max Stock pasiekė",
@@ -5635,16 +6505,7 @@
         "orderError": "Klaida užsakymo metu",
         "orderUpdated": "Atnaujinta tvarka",
         "orderCancelled": "Užsakymas atšauktas"
-      },
-      "paymentSuccessTitle": "Mokėjimas patvirtintas!",
-      "paymentSuccessDescription": "Dėkojame už pirkinį. Jums išsiųstas patvirtinimo el. laiškas su kvitu.",
-      "stockAdjustedNotice": "Kai kurių prekių atsargos pasikeitė — jūsų krepšelis buvo pakoreguotas, peržiūrėkite prieš tęsdami.",
-      "trackOrderButton": "Sekti mano užsakymą",
-      "trackingPageTitle": "Užsakymo sekimas",
-      "trackingStatusPending": "Laukiama mokėjimo",
-      "trackingStatusPaid": "Užsakymas apmokėtas",
-      "trackingStatusCancelled": "Užsakymas atšauktas",
-      "trackingNotFound": "Užsakymas nerastas"
+      }
     },
     "dons": {
       "title": "Mano aukos",
@@ -5673,7 +6534,13 @@
       "toasts": {
         "thanked": "Ačiū už jūsų auką! Jums išsiųstas patvirtinimo el. laiškas.",
         "cancelled": "Auka atšaukta."
-      }
+      },
+      "campaignsHeading": "Dabartinės kampanijos",
+      "backToDons": "Grįžti prie mano aukų",
+      "donatingAs": "Tu duodi kaip {name} ({email}).",
+      "comingSoon": "Greitai grįšiu",
+      "campaignClosed": "Kampanija baigėsi",
+      "loadCampaignsError": "Aukojimo kampanijų negalima įkelti. Bandykite vėliau."
     },
     "reunions": {
       "title": "Susitikimai",
@@ -5862,6 +6729,73 @@
       }
     },
     "evenements": {
+      "title": "Renginiai",
+      "subtitle": "Jūsų kiti vizitai ir jūsų istorija.",
+      "upcomingHeading": "Greitai grįšiu",
+      "noneUpcoming": "Artėjančių renginių nėra.",
+      "moreUpcomingHint": "Kiti artėjantys renginiai nėra rodomi. Dėl daugiau informacijos kreipkitės į savo asociaciją.",
+      "pastHeading": "Praeitis",
+      "pastLimitHint": "Rodomi tik paskutiniai 10 renginių.",
+      "guestsLabel": "Jūsų svečiai:",
+      "guestFirstNamePlaceholder": "Svečio vardas {n}",
+      "guestLastNamePlaceholder": "Svečio vardas {n}",
+      "guestEmailPlaceholder": "Svečio el. paštas (pasirinktinai)",
+      "ticketTypeFullSuffix": "(išparduota)",
+      "paymentError": "Klaida mokėjimo metu",
+      "waitlistedToast": "Jūs esate laukiančiųjų sąraše – pranešime jums el. paštu, jei atsiras laisva vieta.",
+      "payOnline": "Mokėkite internetu",
+      "ticketCancelledToast": "Atšauktas bilietas — pinigus grąžinsite per kelias dienas.",
+      "ticketsPurchased": "{n, plural, one {Įsigytas bilietas} other {# įsigyti bilietai}}",
+      "youSuffix": " (tu)",
+      "cancelAndRefund": "Atšaukite ir paprašykite grąžinti pinigus",
+      "cancelSeatTitle": "Atšaukti šią vietą?",
+      "cancelTicketTitle": "Atšaukti šį bilietą?",
+      "refundOriginalMethod": "Jums bus grąžinta suma pagal pradinį mokėjimo būdą.",
+      "refundSelfOnly": "Jums bus grąžinti pinigai už jūsų vietą. Jūsų svečiai liks registruoti ir nebus grąžinti.",
+      "refundGuestOnly": "Už šią vietą jums bus grąžinta suma. Likusi jūsų rezervacijos dalis nebus paveikta.",
+      "cancelAndRefundConfirm": "Atšaukti ir grąžinti pinigus",
+      "reservedPayOnSite": "Rezervuota – mokėjimas vietoje",
+      "seatsCountLabel": "Vietų skaičius:",
+      "cancelReservation": "Atšaukti rezervaciją",
+      "cancelReservationSimple": "Jei persigalvosite, galėsite užsisakyti dar kartą.",
+      "cancelReservationPaidCompanions": "Jūsų svečiai, kuriems dar nebuvo sumokėta, bus pašalinti. Ta {n} Svečiai, jau sumokėję grynaisiais, liks registruoti.",
+      "cancelReservationWithCompanions": "Tai taip pat atšauks jūsų užsakymą {n} svečių.",
+      "onWaitlist": "Tu esi laukiančiųjų sąraše",
+      "eventFull": "Pilnas renginys",
+      "reserveButton": "Knyga – mokėjimas vietoje",
+      "totalLabel": "Iš viso :",
+      "rsvpConfirme": "Aš būsiu ten!",
+      "rsvpProvavel": "Jei įmanoma",
+      "rsvpIncerto": "Galbūt",
+      "rsvpAbsent": "Aš neisiu",
+      "rsvpRecordedToast": "Įrašytas atsakymas: {label}",
+      "rsvpSaveError": "Klaidų įrašymas",
+      "addGuestsButton": "+ Pridėti svečius",
+      "updateGuestsButton": "Atnaujinkite savo svečius",
+      "guestsUpdatedToast": "Atnaujinti svečiai",
+      "countConfirmed": "{n, plural, one {# patvirtinta} other {# patvirtinta}}",
+      "countProvavel": "{n} jei įmanoma",
+      "countIncerto": "{n} Galbūt",
+      "countAbsent": "{n, plural, one {# nedalyvauja} other {# nedalyvauja}}",
+      "countWaitlist": "{n} Laukiančiųjų sąraše",
+      "priceLabel": "Kaina:",
+      "reservedCount": "{confirmed}/{capacity} Rezervuota",
+      "fullSuffix": " · Išparduota",
+      "presenceLabel": "Žiūrovų skaičius:",
+      "present": "Dabartis",
+      "presenceAbsent": "Nėra",
+      "presenceNotRecorded": "Neregistruota",
+      "rsvpDisplay": "RSVP: {label}",
+      "yourResponseLabel": "Jūsų atsakymas:",
+      "confirmParticipationLabel": "Patvirtinkite savo dalyvavimą:",
+      "reviewSentThanks": "Pranešimas išsiųstas — ačiū!",
+      "chooseRatingError": "Pasirinkite natą",
+      "leaveReview": "Palikite atsiliepimą",
+      "send": "Siųsti",
+      "commentPlaceholder": "Ar turite komentarų? (neprivaloma)",
+      "ticketPurchaseSuccessToast": "Bilietas sėkmingai nupirktas!",
+      "paymentCancelledToast": "Mokėjimas atšauktas. Jūsų vieta vis dar rezervuota — mokėkite vėliau arba atšaukite rezervaciją renginio kortelėje.",
+      "registrationsClosed": "Registracija uždaryta.",
       "viewEvent": "Peržiūrėti renginį",
       "backToList": "Visi renginiai",
       "notFound": "Šis renginys nebepasiekiamas."
@@ -5877,6 +6811,7 @@
     "platformKeyActive": "Aktyvus platformos raktas — galite naudoti DI be konfigūracijos.",
     "providerFieldLabel": "Tiekėjas",
     "providerFieldPlaceholder": "Renkantis tiekėją...",
+    "anthropicAssistantHint": "Pagalbos centro asistentas atsako tik į jūsų asociacijos duomenis (narius, nario mokesčius, finansus) naudodamas Anthropic raktą. Su kitu paslaugų teikėju jis atsako tik iš dokumentacijos.",
     "apiKeyLabel": "API raktas",
     "apiKeyPlaceholderReplace": "Esamas raktas — įvesti, kad pakeistum",
     "apiKeyPlaceholderNew": "Įklijuokite savo API raktą...",
@@ -5936,6 +6871,7 @@
       "actualites": "Naujienos",
       "messages": "Žinutės",
       "materiel": "Medžiaga",
+      "groupes": "Grupės",
       "site": "Svetainė",
       "activite": "Istorija",
       "suporte": "Parama",
@@ -5954,7 +6890,8 @@
       "pricingOffers": "Kainos pasiūlymai",
       "support": "Parama",
       "controlAlerts": "Kontrolės įspėjimai",
-      "signOut": "Atsijungti"
+      "signOut": "Atsijungti",
+      "membreDuplicates": "Dublikatai"
     },
     "themeToggle": {
       "changeTheme": "Pakeiskite temą"
@@ -5962,7 +6899,8 @@
     "header": {
       "myPortal": "Mano erdvė",
       "myProfile": "Mano profilis",
-      "management": "Valdymas"
+      "management": "Valdymas",
+      "publicSite": "Žiūrėkite svetainę"
     },
     "userMenu": {
       "roleLabels": {
@@ -5971,10 +6909,12 @@
         "PRESIDENT": "Prezidentas",
         "TRESORIER": "Iždininkas",
         "SECRETAIRE": "Sekretorius",
-        "MEMBRE": "Narys"
+        "MEMBRE": "Narys",
+        "EQUIPE": "Komandos narys"
       },
       "editProfile": "Redaguoti profilį",
       "changePassword": "Pakeisti slaptažodį",
+      "security": "Saugumas",
       "legalDocuments": {
         "title": "Teisiniai dokumentai",
         "mentionsLegales": "Teisinis pranešimas",
@@ -5984,6 +6924,38 @@
         "opensNewTab": "Atidaro naują skirtuką"
       },
       "logout": "Atsijungti"
+    },
+    "twoFactorSettingsModal": {
+      "title": "Dviejų veiksnių autentifikacija",
+      "statusEnabled": "Įjungta",
+      "statusEnabledDescription": "Jūsų paskyra apsaugota dviejų žingsnių patvirtinimu.",
+      "statusDisabled": "Neįgalūs",
+      "statusDisabledDescription": "Pridėkite papildomą patvirtinimą prie prisijungimo naudodami autentifikavimo programėlę.",
+      "backupCodesLabel": "Atsarginių kopijų kodai",
+      "backupCodesRemaining": "{count, plural, =0 {Neliko jokio kodo} one {# likęs kodas} other {# restantų kodai}}",
+      "regenerate": "Regeneracija",
+      "scanTitle": "1. Nuskenuokite šį QR kodą",
+      "scanDescription": "Atidarykite autentifikatoriaus programėlę (Google Authenticator, Authy...) ir nuskaitykite žemiau esantį kodą.",
+      "manualEntryLabel": "Negalite nuskaityti? Įveskite šį kodą rankiniu būdu:",
+      "confirmCodeLabel": "Patikros kodas",
+      "backupCodesTitle": "Išsaugok šiuos kodus dabar",
+      "backupCodesDescription": "Šie kodai bus rodomi tik vieną kartą. Kiekvienas kodas gali būti naudojamas tik vieną kartą.",
+      "copyAll": "Nukopijuokite visus kodus",
+      "copied": "Nukopijavau!",
+      "savedCodesConfirm": "Atsarginius kodus išsaugojau saugioje vietoje.",
+      "done": "Baigta",
+      "disableDescription": "Patvirtinkite slaptažodį, kad išjungtumėte dviejų veiksnių autentifikavimą.",
+      "disableConfirm": "Išjungti",
+      "regenDescription": "Patikrinkite naudodami kodą iš savo programėlės, kad sugeneruotumėte atsarginius kodus.",
+      "passwordLabel": "Slaptažodis",
+      "enable": "Aktyvuoti",
+      "disable": "Išjungti",
+      "cancel": "Atšaukti",
+      "confirm": "Patvirtinkite",
+      "close": "Uždaryti",
+      "enabledToast": "Įjungta dviejų veiksnių autentifikacija.",
+      "disabledToast": "Dviejų veiksnių autentifikacija išjungta.",
+      "regeneratedToast": "Pergeneruoti atsarginių kopijų kodus."
     },
     "changePasswordModal": {
       "title": "Pakeisti slaptažodį",
@@ -6109,7 +7081,14 @@
       "error": "Įvyko klaida",
       "closed": "Prašymas uždarytas",
       "reopened": "Paraiška vėl atidaryta"
-    }
+    },
+    "suggestReply": "Pasiūlykite atsakymą",
+    "suggestReplyConfirmTitle": "Pakeisti juodraštį?",
+    "suggestReplyConfirmDescription": "Jau įvestas tekstas bus pakeistas DI pasiūlymu.",
+    "suggestReplyConfirmAction": "Pakeisti",
+    "suggestReplyNote": "Dirbtinio intelekto sugeneruotas pasiūlymas — peržiūrėkite prieš siųsdami.",
+    "suggestReplySources": "Šaltiniai: {titles}",
+    "suggestReplyError": "Negaliu sugeneruoti pasiūlymo."
   },
   "controlAlerts": {
     "title": "Narystės kontrolė",
@@ -6122,9 +7101,27 @@
     "columns": {
       "membre": "Narys",
       "association": "Asociacija",
+      "origin": "Kilmė",
       "raisedAt": "Sukurta",
       "daysWithoutCotisation": "Dienos be įnašo",
       "status": "Būsena"
+    },
+    "originByLabel": "Autorius {name}",
+    "originSources": {
+      "ADMIN_MANUAL": "Administracijos rankinis papildymas",
+      "ADMIN_REGISTRATION": "Registracija administratoriaus pagalba (forma)",
+      "PUBLIC_ADHESION_FORM": "Viešosios narystės forma (nemokama)",
+      "PUBLIC_ADHESION_FORM_OFFLINE": "Viešoji narystės forma (mokėjimas neprisijungus)",
+      "PUBLIC_ADHESION_STRIPE": "Viešoji narystės forma (mokėjimas internetu)",
+      "PUBLIC_ADHESION_INSTALLMENTS": "Viešoji narystės forma (mokėjimas dalimis)",
+      "PUBLIC_ADHESION_MULTI": "Viešosios narystės forma (grupinė registracija)",
+      "PUBLIC_ADHESION_SUBSCRIPTION": "Viešoji narystės forma (pasikartojanti prenumerata)",
+      "ASSOCONNECT_IMPORT": "Importuoti AssoConnect",
+      "PAPER_FORM": "Popierinių formų importas",
+      "ASSOCIATION_SIGNUP_ADMIN": "Steigėjas (asociacijos įkūrimas)",
+      "PUBLIC_INSCRIPTION_REQUEST": "Viešos registracijos prašymas (laukiant patvirtinimo)",
+      "PUBLIC_INSCRIPTION_REQUEST_MULTI": "Masinis viešas registracijos prašymas (laukiant patvirtinimo)",
+      "unknown": "Kilmė nežinoma"
     },
     "empty": "Kontrolės įspėjimų nėra.",
     "resolveAction": "Išspręsti",
@@ -6143,7 +7140,453 @@
     "autoResolvedLabel": "(automatiškai)",
     "emptyForSearch": "Rezultatų pagal \"{search}\" nerasta."
   },
+  "help": {
+    "buttonLabel": "Pagalba",
+    "title": "Pagalbos centras",
+    "moduleGeneral": "Bendra",
+    "tabs": {
+      "guide": "Pagalba",
+      "assistant": "Asistentas",
+      "changelog": "Kas naujo",
+      "news": "Naujienos"
+    },
+    "searchPlaceholder": "Paieška, pagalba...",
+    "searchResultsCount": "{count, plural, one {# rezultatas} other {# rezultatai}}",
+    "searchNoResults": "Nėra rezultatų už \" {query} ».",
+    "searchError": "Šiuo metu paieška nepasiekiama.",
+    "newBadge": "Nauja",
+    "pinnedSection": "Tai yra",
+    "articlesSection": "Straipsniai",
+    "articlesOtherSection": "Kiti straipsniai",
+    "faqSection": "Dažniausiai užduodami klausimai",
+    "faqOtherSection": "Kiti klausimai",
+    "noContent": "Šiuo metu nėra pagalbos turinio šiai daliai.",
+    "loadError": "Nepavyksta įkelti pagalbos.",
+    "retry": "Pabandyk dar kartą",
+    "back": "Atgal",
+    "updatedOn": "Atnaujinta {date}",
+    "articleNotFound": "Daiktas nerastas.",
+    "callout": {
+      "info": "Informacija",
+      "tip": "Patarimas",
+      "warning": "Dėmesio"
+    },
+    "assistant": {
+      "questionLabel": "Jūsų klausimas",
+      "questionPlaceholder": "Užduok savo klausimą...",
+      "send": "Siųsti",
+      "sendShortcut": "Ctrl + Enter (⌘ + Enter Mac kompiuteryje)",
+      "disclaimer": "DI sugeneruoti atsakymai — patikrinkite svarbią informaciją.",
+      "charactersCount": "{count}/{max}",
+      "youLabel": "Tu",
+      "assistantLabel": "Asistentas",
+      "newConversation": "Naujas pokalbis",
+      "conversationRestoreFailed": "Jūsų ankstesnio pokalbio atkurti nepavyko.",
+      "intro": "Užduokite klausimą apie Formwise ar savo asociacijos duomenų naudojimą: nariai, nario mokesčiai, finansai, renginiai.",
+      "introDocs": "Užduokite klausimą apie Formwise naudojimą.",
+      "examplesLabel": "Pavyzdiniai klausimai",
+      "examples": {
+        "unpaid": "Kas šiemet nesumokėjo narystės mokesčio?",
+        "donations": "Kiek aukų yra šį mėnesį?",
+        "createEvent": "Kaip sukurti įvykį?"
+      },
+      "examplesDocs": {
+        "reminder": "Kaip susisiekti dėl neapmokėto įnašo?",
+        "export": "Kaip eksportuoti narių sąrašą?",
+        "createEvent": "Kaip sukurti įvykį?"
+      },
+      "loadingCopilot": "Konsultuojuosi su duomenimis...",
+      "loadingDocs": "Rašymas...",
+      "dataConsulted": "Konsultuoti duomenys:",
+      "tools": {
+        "search_members": "Nariai",
+        "get_member": "Nariai",
+        "list_cotisations": "Indėlis",
+        "get_finance_summary": "Finansinė santrauka",
+        "list_events": "Renginiai",
+        "list_donations": "Aukos",
+        "list_invoices": "Sąskaitos faktūros"
+      },
+      "sources": "Šaltiniai:",
+      "docsOnlyNotice": "Klausimams apie narystę, nario mokesčius ir finansus reikalingas Anthropic raktas.",
+      "docsOnlyConfigure": "Konfigūruokite nustatymuose → integracijose.",
+      "error": "Neįmanoma gauti atsakymo.",
+      "errorTimeout": "Burtininkas negalėjo baigti per skirtą laiką. Užduokite konkretesnį arba trumpesnį klausimą.",
+      "errorRateLimit": "Per daug prašymų, bandyk dar kartą po kelių akimirkų.",
+      "errorProvider": "DI tiekėjas negalėjo atsakyti, bandykite vėliau.",
+      "noApiKey": "API raktai nebuvo sukonfigūruoti.",
+      "noApiKeyConfigure": "Pridėkite savo API raktą nustatymuose → integracijose.",
+      "noApiKeyAskAdmin": "Paprašykite administratoriaus pridėti API raktą Nustatymuose → Integracijose.",
+      "apiKeyInvalid": "Konfigūruotas API raktas yra atmestas tiekėjo.",
+      "apiKeyInvalidConfigure": "Patikrinkite tai nustatymuose → integracijose.",
+      "apiKeyInvalidAskAdmin": "Paprašykite administratoriaus patikrinti tai nustatymuose → integracijose."
+    },
+    "changelog": {
+      "latestSection": "Paskutiniai atnaujinimai",
+      "empty": "Kol kas jokių naujų funkcijų.",
+      "loadError": "Nepavyksta įkelti naujų funkcijų.",
+      "kind": {
+        "feature": "Nauja",
+        "improvement": "Patobulinimai",
+        "fix": "Pataisyti"
+      }
+    },
+    "releaseNotes": {
+      "title": "Kas naujo"
+    },
+    "news": {
+      "latestSection": "Naujausios naujienos",
+      "empty": "Kol kas jokių naujienų.",
+      "loadError": "Nepavyko įkelti naujienų.",
+      "popupTitle": "Naujienos"
+    },
+    "faqPopup": {
+      "title": "Dažniausiai užduodami klausimai"
+    },
+    "popupCarousel": {
+      "remindLater": "Primink man vėliau",
+      "remindLaterToast": "Priminsime jums kitą kartą, kai prisijungsite.",
+      "previous": "Ankstesnė",
+      "next": "Kitas",
+      "finish": "Pabaiga",
+      "position": "Elementas {current} on {total}",
+      "goTo": "Eiti į daiktą {index}"
+    },
+    "footer": {
+      "tour": "Ekskursija su gidu",
+      "contactSupport": "Kontaktų palaikymas"
+    }
+  },
+  "boutiqueShipping": {
+    "title": "Laivyba",
+    "description": "Pristatymo adresas, naudojamas parduotuvės siuntimo kainai apskaičiuoti.",
+    "addressLabel": "Adresas",
+    "addressPlaceholder": "12 rue de la Paix",
+    "cityLabel": "Miestas",
+    "postalCodeLabel": "Kodo paštas",
+    "countryLabel": "Kantri",
+    "saved": "Registruotas siuntimo adresas",
+    "deliveryMethodLabel": "Priėmimo režimas",
+    "pickupOption": "Atsiėmimas vietoje",
+    "deliveryOption": "Siuntimas paštu",
+    "shippingAddressHint": "Reikalinga apskaičiuoti siuntimo išlaidas.",
+    "shippingOptionsLabel": "Siuntimo išlaidos",
+    "loadingRates": "Pristatymo sąnaudų skaičiavimas...",
+    "noShippingOptions": "Šiam adresui nėra pristatymo galimybių.",
+    "shippingUnavailable": "Pašto pristatymas dar nėra sukonfigūruotas šios asociacijos.",
+    "leadTimeApprox": "~{days} j",
+    "shippingCostLabel": "Siuntimo išlaidos",
+    "mixedCartPickupOnlyHint": "Siuntimas nepasiekiamas: Jūsų krepšelyje yra prekė, kurią galima atsiimti tik rankomis.",
+    "markupLabel": "Saugumo marža siuntimo išlaidoms",
+    "markupHint": "Pridedama prie pirkėjui rodomos kainos. Apsaugo, jei vežėjo kaina padidėja prieš patį siuntimą, tačiau didesnė kaina gali atgrasyti pirkimą.",
+    "markupRangeError": "Skirtumas turi būti sveikasis skaičius nuo 0 iki 50.",
+    "markupHintTooltip": "Užsakymo metu etiketės neperkamos: rodoma kaina yra tik apytikslė. Jei vežėjo faktinė kaina padidėjo tuo metu, kai siunčiate siuntinį, labdaros organizacija sumoka skirtumą – nebent ši marža jį padengia. Priešingai, per didelė marža padidina klientui rodomą kainą ir gali atgrasyti jį nuo pirkimo."
+  },
+  "paperFormScan": {
+    "menuItem": "Importo popierinės kortelės",
+    "manageTemplatesMenuItem": "Kortelių šablonų valdymas",
+    "title": "Importo popierinės kortelės",
+    "description": "Perskaitykite ranka užpildytas registracijos formas, patikrinkite kiekvieną formą ir tada sukurkite narius.",
+    "backToMembers": "Nariai",
+    "loadingTemplates": "Įkeliami šablonai...",
+    "steps": {
+      "upload": "Failai",
+      "reading": "Skaitymas",
+      "review": "Patikra",
+      "result": "Sukūrimas"
+    },
+    "upload": {
+      "noTemplateTitle": "Nėra popierinio kortelės šablono",
+      "noTemplateDescription": "Pirmiausia apibūdinkite savo straipsnio registracijos formą, kad jos laukai būtų skaitomi.",
+      "createTemplate": "Sukurkite šabloną",
+      "template": "Šablonų lapas",
+      "templatePlaceholder": "Pasirinkite modelį",
+      "templateSummary": "{pages, plural, one {# puslapis} other {# puslapiai}} Pagal kortelę · {fields, plural, one {# laukas} other {# laukai}}.",
+      "manageTemplates": "Valdymo šablonai",
+      "dropTitle": "Įkelkite nuskaitytą PDF arba lapų nuotraukas",
+      "galleryTitle": "Pasirinkite nuotraukas arba PDF",
+      "dropSubtitle": "PDF, JPEG arba PNG — galimi keli failai, skaitomi pagal pavadinimą",
+      "privacyNote": "Puslapiai lieka jūsų naršyklėje: tik paveikslėliai siunčiami skaityti po vieną, nieko nesaugoma.",
+      "pageCount": "{count, plural, one {# puslapis} other {# puslapiai}}",
+      "removeFile": "Pašalinti {name}",
+      "preparing": "Ruošiau puslapius...",
+      "batchSummary": "{pages, plural, one {# puslapis} other {# puslapiai}} · Apie {forms, plural, one {# rezultatai} other {# lapai}}",
+      "pageTotal": "{count, plural, one {# puslapis} other {# puslapiai}}",
+      "start": "Pradėti žaidimą",
+      "renderFailed": "{name} : {error}",
+      "strictTemplateNotice": "Tik puslapiai apie \" {name} \" bus priimta.",
+      "capturedListLabel": "Fotografuotos kortelės",
+      "capturedForm": "Faktų lapas {form}",
+      "capturedPages": "{count, plural, one {Puslapis {list}} other {Puslapiai {list}}}",
+      "capturedMissing": "{count, plural, one {puslapis {list} nedalyvauja} other {Puslapiai {list} nedalyvauja}}",
+      "capturedInProgress": "Tęsinys",
+      "removeCapturedForm": "Pašalinkite failą {form}",
+      "capturedSummary": "{forms, plural, one {# rezultatai} other {# lapai}} · {pages, plural, one {# puslapis} other {# puslapiai}}",
+      "camera": {
+        "title": "Fotografuokite korteles",
+        "needsTemplate": "Pirmiausia pasirinkite šabloną: programėlė parodys, kurį puslapį fotografuoti.",
+        "prompt": "Faktų lapas {form} — puslapis {page} on {pages}",
+        "promptSinglePage": "Faktų lapas {form}",
+        "capturePage": "Nufotografuokite puslapį {page}",
+        "captureForm": "Nufotografuokite lapą",
+        "skipToNextForm": "Pereiti prie failo {form}",
+        "lastShot": "Faktų lapas {form} · puslapis {page}",
+        "lastShotSinglePage": "Faktų lapas {form}",
+        "lastShotAlt": "Bylos nuotrauka {form}, puslapis {page}",
+        "preparing": "Pasiruošimas...",
+        "retake": "Gyvenimo aprašymas",
+        "retakeLabel": "Nufotografuok atviruką {form}, puslapis {page}",
+        "framingHint": "Padėkite lapą plokščiai, gerai apšviestą ir įrėminkite visą puslapį keturiais kraštais.",
+        "photoFileName": "Faktų lapas {form} puslapis {page}.{extension}"
+      }
+    },
+    "reading": {
+      "progress": "{read} / {total} Pages lues",
+      "failedCount": "{count, plural, one {# puslapis klaidingas} other {# puslapiai klaidingi}}",
+      "runningHint": "Skaitymas tęsiasi tol, kol šis puslapis lieka atviras.",
+      "pageFailed": "Puslapis nebuvo perskaitytas",
+      "stoppedTitle": "Nutrauktas atkūrimas",
+      "rateLimitedTitle": "Sustabdykite atkūrimą",
+      "openAiSettings": "DI nustatymai",
+      "openTemplates": "Šablonų lapai",
+      "resume": "Gyvenimo aprašymas",
+      "failedTitle": "Neskaityti puslapiai",
+      "retryAll": "Bandyk viską dar kartą",
+      "pageColumn": "Puslapis",
+      "fileColumn": "Failas",
+      "errorColumn": "Klaida",
+      "retry": "Pabandyk dar kartą",
+      "continueWithFailuresHint": "Galite tęsti: neperskaityti puslapiai lieka matomi patikrinimo metu ir užpildomi ranka.",
+      "restart": "Pradėti iš naujo",
+      "continueAnyway": "Vis tiek patikrink",
+      "continue": "Pereiti prie patvirtinimo",
+      "refusedCount": "{count, plural, one {# nepatvirtintas puslapis} other {# atmesti puslapiai}}",
+      "refusedTitle": "Nepatvirtinti puslapiai",
+      "reasonColumn": "Motyvas",
+      "pageRefused": "Puslapis atmestas — tai nėra tikėtinas rezultatas",
+      "detectedDocument": "Aptiktas dokumentas: {title}",
+      "removePage": "Pašalinti",
+      "refusedHint": "Šie puslapiai nebus importuojami. Jei kortelė tokiu būdu praranda vieną iš savo puslapių, ji pasirodys su trūkstamu puslapiu."
+    },
+    "viewer": {
+      "pageSwitch": "Puslapis rodomas",
+      "page": "Puslapis {number}",
+      "pageMissing": "Puslapis {number} dingo",
+      "zoomOut": "Žlugimas",
+      "zoomIn": "Padidinti",
+      "pageUnread": "Puslapis non lue: {error}",
+      "pageAlt": "Puslapis {number} užduočių lapo ({file})",
+      "missingPageBody": "Puslapis {number} šio lakšto nebuvo importuota."
+    },
+    "editor": {
+      "lowConfidence": "Neaiškus skaitymas, bus patvirtintas",
+      "identity": "Tapatybė",
+      "firstName": "Vardas",
+      "lastName": "Vardas, pavadinimas",
+      "alreadyExists": "Jau egzistuoja: {people}",
+      "email": "El paštas",
+      "phone": "Telefonas",
+      "birthDate": "Gimimo data",
+      "age": "{age, plural, one {#} other {# metai}}",
+      "civilite": "Pavadinimas",
+      "sexe": "Lytis",
+      "address": "Adresas",
+      "addressLowConfidence": "Adresas perskaitytas su neapibrėžtumu, kad būtų patvirtintas",
+      "guardians": "Teisiniai globėjai",
+      "guardianExpected": "Mažasis narys ({age, plural, one {#} other {# metai}}): Nėra jokio teisėto globėjo pranešimo.",
+      "guardianName": "Teisinis globėjas {number} — Vardas",
+      "guardianPhone": "Teisinis globėjas {number} — telefonas",
+      "consents": "Leidimai",
+      "imageRights": "Vaizdo teisės",
+      "imageRightsYes": "Taip",
+      "imageRightsNo": "Ne",
+      "imageRightsUnknown": "Nenurodyta",
+      "sheetAnswers": "Atsakymai byloje",
+      "sheetAnswersHint": "Laukai be atskiros stulpelio: jie bus pridėti prie nario užrašų sukūrimo metu.",
+      "sheetPage": "Puslapis {page}",
+      "sheetPageMissing": "Puslapis trūksta: atsakymo neperskaityta.",
+      "checkboxUnread": "Neskaitytas langelis, pažymėtas kortelėje",
+      "linkedDocument": "Įrašų priėmimas \" {title} »",
+      "notes": "Pastabos",
+      "notesOwnHint": "Jūsų asmeniniai užrašai. Atsakymai kortelėje bus pridėti kūrimo metu, formatu \"etiketė: reikšmė\"."
+    },
+    "review": {
+      "summary": "{total, plural, one {# rezultatai} other {# lapai}} · {toReview} Peržiūra · {validated, plural, one {# patvirtinta} other {# patvirtinta}} · {ignored, plural, one {# ignoruota} other {# ignoruota}} · {created, plural, one {# sukurta} other {# sukurta}}",
+      "checkingDuplicates": "ieškokite dublikatų...",
+      "duplicatesFailed": "Dublikatų paieška nepavyko; galite tęsti patikrinimą.",
+      "create": "{count, plural, =0 {Kurti narius} one {Sukurti # narį} other {Sukurkite # narius}}",
+      "formsList": "Faktų lapai",
+      "untitledForm": "Faktų lapas {number}",
+      "missingPages": "{count, plural, one {Puslapis {list} nedalyvauja} other {Puslapiai {list} nedalyvauja}}",
+      "formPosition": "Faktų lapas {number} on {total}",
+      "previous": "Ankstesnė korta",
+      "next": "Kitas puslapis",
+      "missingPagesNotice": "{count, plural, one {Puslapis {list} nedalyvauja} other {Puslapiai {list} nedalyvauja}} : Šio puslapio laukai lieka tušti. Formą galite patvirtinti ir užpildyti narį vėliau.",
+      "commitError": "Kūrimas nepavyko: {error}",
+      "createdNotice": "Narys sukurtas.",
+      "openMember": "Atidarykite failą",
+      "unvalidate": "Atšaukti patvirtinimą",
+      "restore": "Atkūrimas",
+      "ignore": "Ignoruoti",
+      "validate": "Validacija",
+      "invalidBeforeCreate": "{count, plural, one {Patvirtintame sąraše yra klaida} other {# patvirtintuose sąrašuose yra klaida}} : Pataisykite juos prieš kuriant narius."
+    },
+    "status": {
+      "toReview": "Bus peržiūrėta",
+      "validated": "Patvirtinta",
+      "ignored": "Ignoruota",
+      "error": "Klaida",
+      "created": "Sukurta"
+    },
+    "result": {
+      "summary": "{created, plural, =0 {Narių nesukūrė} one {# narys sukurtas} other {# sukurti nariai}}{errors, plural, =0 {} one { · # klaida} other { · # klaidos}}",
+      "remaining": "{count, plural, one {# byla dar turi būti apdorota} other {# bylos dar turi būti apdorotos}}.",
+      "nameColumn": "Vardas, pavadinimas",
+      "statusColumn": "Rezultatas",
+      "detailColumn": "Išsamiau",
+      "created": "Sukurta",
+      "error": "Klaida",
+      "skippedDocuments": "Neregistruotas priėmimas: {documents}",
+      "backToReview": "Grįžti į patikrinimą",
+      "goToMembers": "Peržiūrėti narius",
+      "genericError": "Klaidų kūrimo nariai"
+    },
+    "notesValues": {
+      "yes": "Taip",
+      "no": "Ne"
+    },
+    "validation": {
+      "firstNameRequired": "Reikalingas vardas",
+      "lastNameRequired": "Reikalingas vardas"
+    },
+    "leaveWarning": {
+      "title": "Paliko importą?",
+      "description": "Šiame puslapyje perskaityti ir patvirtinti įrašai bus prarasti. Jau sukurti nariai yra išsaugoti.",
+      "confirm": "Išeiti nesukūrus"
+    },
+    "restartWarning": {
+      "title": "Ar rekomenduoju importuoti?",
+      "description": "Įkelti puslapiai ir jų skaitymas bus nutrauktas.",
+      "confirm": "Pradėti iš naujo"
+    }
+  },
   "formTermsEditor": {
     "contentRequired": "Turite užpildyti lauką „{conditionsLabel}“ arba įkelti dokumentą."
+  },
+  "membreDuplicates": {
+    "list": {
+      "title": "Galimi dublikatai",
+      "subtitle": "Nariai, kurie atrodo kaip tas pats asmuo – patikrinkite prieš juos sujungdami.",
+      "menuItem": "Dublikatai",
+      "scanAction": "Skenuokite dublikatus",
+      "scanSuccess": "{count, plural, =0 {Nėra laukiančių dublikatų} one {1 dublikatas laukia} other {# dublikatai laukia}}",
+      "scanError": "Klaidų paieška dėl pasikartojimų",
+      "searchPlaceholder": "Ieškok nario...",
+      "matchedFields": {
+        "EMAIL": "El paštas",
+        "NAME": "Vardas, pavadinimas"
+      },
+      "columns": {
+        "membreA": "Narys A",
+        "membreB": "Narys B",
+        "matchedFields": "Atitinkami kriterijai",
+        "detectedAt": "Aptikta",
+        "status": "Statusas"
+      },
+      "status": {
+        "PENDING": "Laukiama",
+        "DISMISSED": "Ignoruota",
+        "MERGED": "Sujungimas"
+      },
+      "autoDismissedLabel": "(automobilis)",
+      "compareAction": "Palyginkite",
+      "dismissAction": "Ignoruoti",
+      "empty": "Nėra dubliavimų.",
+      "emptyForSearch": "Nėra rezultatų už \" {search} ».",
+      "restoreAction": "Atkūrimas"
+    },
+    "merge": {
+      "backLink": "Atgal",
+      "title": "Palyginimas ir sujungimas",
+      "subtitle": "Pasirinkite, kurį narį pasilikti ir, kiekvienam skirtingam laukui, kokią vertę išlaikyti.",
+      "alreadyMerged": "Šis dublikatas jau buvo sujungtas.",
+      "keepAsPrimary": "Išlik direktoriumi",
+      "fieldsTitle": "Skirtingos sritys",
+      "fields": {
+        "firstName": "Vardas",
+        "lastName": "Vardas, pavadinimas",
+        "email": "El paštas",
+        "phone": "Telefonas",
+        "birthDate": "Gimimo data",
+        "civilite": "Pavadinimas",
+        "address": "Adresas",
+        "addressStreet": "Lengvoji atletika",
+        "addressComplement": "Papildomas adresas",
+        "postalCode": "Kodo paštas",
+        "city": "Miestas",
+        "country": "Kantri",
+        "groupeSanguin": "Kraujo grupė",
+        "sexe": "Lytis",
+        "allergies": "Alergijos",
+        "photoUrl": "Nuotrauka",
+        "preferredLocale": "Pageidaujama kalba",
+        "spokenLanguage": "Vartojama kalba",
+        "possedeTshirt": "Turi marškinėlius",
+        "tailleTshirt": "Marškinėlių dydis",
+        "typeId": "Narių tipas",
+        "notes": "Pastabos",
+        "guardianName": "Teisėto globėjo vardas",
+        "guardianPhone": "Teisėto globėjo telefono numeris",
+        "secondGuardianName": "Antrojo teisėto globėjo vardas",
+        "secondGuardianPhone": "Antrojo teisėto globėjo telefono numeris",
+        "imageRightsConsent": "Vaizdo teisės",
+        "imageRightsConsentAt": "Sutikimo data (vaizdo teisės)"
+      },
+      "relatedDataTitle": "Susiję duomenys",
+      "relations": {
+        "cotisations": "Indėlis",
+        "participations": "Renginių registracijos",
+        "dons": "Aukos",
+        "membershipAddonPurchases": "Įsigytos narystės galimybės",
+        "automationLogs": "Suaktyvintos automatizacijos",
+        "emailMessages": "Išsiųsti el. laiškai",
+        "smsMessages": "SMS žinutė išsiųsta",
+        "incomes": "Pajamos",
+        "materialLoans": "Įrangos paskolos",
+        "boutiqueCommandes": "Parduotuvės užsakymai",
+        "actualiteRecipients": "Naujienų gavėjai",
+        "sondageRecipients": "Apklausos gavėjai",
+        "sondageReponses": "Apklausos atsakymai",
+        "meetingParticipants": "Dalyvavimas susitikimuose",
+        "erasureRequests": "Prašymai ištrinti",
+        "dependants": "Prijungti (priklausomi) nariai",
+        "cotisationSubscription": "Aktyvi narystės prenumerata",
+        "controlAlert": "Aktyvaus valdymo įspėjimas"
+      },
+      "relatedDataCounts": "{primary} → {secondary}",
+      "conflictWarning": "⚠ {reason}",
+      "dismissAction": "Ignoruokite šį dublikatą",
+      "mergeAction": "Susijungimas",
+      "mergeConfirmTitle": "Sujungti šiuos du narius?",
+      "mergeConfirmDescription": "Visi susiję duomenys iš antrinio nario bus perduoti pirminiam nariui. Šio veiksmo negalima atšaukti iš sąsajos.",
+      "mergeConfirmDescriptionWithPortalWarning": "Abu nariai turi portalo paskyrą – antrinio nario paskyra bus deaktyvuota. Visi kiti susiję duomenys bus perduoti pagrindiniam nariui. Šio veiksmo negalima atšaukti iš sąsajos.",
+      "mergeConfirmDescriptionAdoptsPortal": "Antrinio nario portalo paskyrą perims pagrindinis narys. Visi kiti susiję duomenys bus perduoti. Šio veiksmo negalima atšaukti iš sąsajos.",
+      "mergeSuccess": "{count, plural, =0 {Susijungimas baigtas} one {Sujungimas — 1 daiktas perduotas} other {Sujungti — # perduoti daiktai}}",
+      "mergeError": "Klaidų sujungimas",
+      "relatedDataEmpty": "Jokie duomenys nesusieti su nė vienu nariu."
+    },
+    "backoffice": {
+      "title": "Dublikatiniai nariai",
+      "subtitle": "Galimi dublikatai aptikti visose asociacijose.",
+      "columns": {
+        "association": "Asociacija"
+      },
+      "changeAssociation": "Changer d''association",
+      "associationSearchPlaceholder": "Ieškokite asociacijos...",
+      "typeToSearch": "Palieskite, kad ieškotumėte...",
+      "loading": "Kraunama...",
+      "noResults": "Rezultatų nėra.",
+      "scanAction": "Skeneris"
+    }
   }
 }

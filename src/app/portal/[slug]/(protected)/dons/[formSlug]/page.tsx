@@ -43,6 +43,7 @@ type FormInfo = {
   contactEmail: string | null
   contactPhone: string | null
   fieldAddress: FieldRequirement
+  fieldCountry: FieldRequirement
   fieldBirthDate: FieldRequirement
   fieldPhone: FieldRequirement
   fieldMobile: FieldRequirement
@@ -193,12 +194,12 @@ function PortalDonationFormInner() {
     required && !value.trim() && showAllErrors ? t("fieldRequired") : undefined
   // AddressFields has no blur of its own (see requiredError above) — errors only appear once
   // showAllErrors is set, same timing as every other field's.
-  const addressErrors = form?.fieldAddress === "REQUIRED" && showAllErrors
+  const addressErrors = showAllErrors
     ? {
-        addressStreet: requiredError(addressValues.addressStreet, true),
-        postalCode:    requiredError(addressValues.postalCode,    true),
-        city:          requiredError(addressValues.city,          true),
-        country:       requiredError(addressValues.country,       true),
+        addressStreet: form?.fieldAddress === "REQUIRED" ? requiredError(addressValues.addressStreet, true) : undefined,
+        postalCode:    form?.fieldAddress === "REQUIRED" ? requiredError(addressValues.postalCode,    true) : undefined,
+        city:          form?.fieldAddress === "REQUIRED" ? requiredError(addressValues.city,          true) : undefined,
+        country:       form?.fieldCountry === "REQUIRED" ? requiredError(addressValues.country,       true) : undefined,
       }
     : undefined
 
@@ -209,8 +210,10 @@ function PortalDonationFormInner() {
     !!selectedTier && amount > 0 && !belowMinimum && !belowTierMinimum && !belowIneligible &&
     (donorType !== "COMPANY" || (companyName.trim() && siret.trim())) &&
     // Une adresse « requise » est une adresse postale complète — même règle que le
-    // formulaire public ; le complément reste facultatif.
-    (form.fieldAddress   !== "REQUIRED" || (addressValues.addressStreet.trim() && addressValues.postalCode.trim() && addressValues.city.trim() && addressValues.country.trim())) &&
+    // formulaire public ; le complément reste facultatif. Le pays est vérifié à part
+    // (FORM-108).
+    (form.fieldAddress   !== "REQUIRED" || (addressValues.addressStreet.trim() && addressValues.postalCode.trim() && addressValues.city.trim())) &&
+    (form.fieldCountry   !== "REQUIRED" || addressValues.country.trim()) &&
     (form.fieldBirthDate !== "REQUIRED" || birthDate.trim()) &&
     (form.fieldPhone     !== "REQUIRED" || phone.trim()) &&
     (form.fieldMobile    !== "REQUIRED" || mobile.trim()) &&
@@ -475,11 +478,14 @@ function PortalDonationFormInner() {
             </div>
           )}
 
-          {form.fieldAddress !== "HIDDEN" && (
+          {(form.fieldAddress !== "HIDDEN" || form.fieldCountry !== "HIDDEN") && (
             <AddressFields
               value={addressValues}
               onChange={patch => setAddressValues(previousValues => ({ ...previousValues, ...patch }))}
               required={form.fieldAddress === "REQUIRED"}
+              showAddress={form.fieldAddress !== "HIDDEN"}
+              showCountry={form.fieldCountry !== "HIDDEN"}
+              countryRequired={form.fieldCountry === "REQUIRED"}
               legacyHint={addressWasMigratedFromLegacy(form.member)}
               errors={addressErrors}
             />

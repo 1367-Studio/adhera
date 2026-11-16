@@ -5,6 +5,7 @@
     "delete": "Excluir",
     "add": "Adicionar",
     "edit": "Editar",
+    "view": "Ver detalhes",
     "confirm": "Confirmar",
     "close": "Fechar",
     "back": "Voltar",
@@ -51,7 +52,11 @@
     "dismissTip": "Dispensar dica",
     "addressPlaceholder": "Salão de festas, Rua Principal, 123…",
     "viewOnGoogleMaps": "Ver no Google Maps",
-    "backToSite": "Voltar ao site"
+    "backToSite": "Voltar ao site",
+    "period": {
+      "exercice": "Exercício {year}",
+      "exerciceRange": "Exercício {startYear}–{endYear}"
+    }
   },
   "address": {
     "street": "Endereço",
@@ -59,8 +64,30 @@
     "complementPlaceholder": "Edifício, andar, caixa de correio…",
     "postalCode": "Código postal",
     "city": "Cidade",
-    "country": "País",
+    "country": "País de residência",
     "legacyMigratedHint": "Copiado do campo de endereço antigo — verifique se ele já não inclui o código postal e a cidade abaixo."
+  },
+  "avis": {
+    "invalidLink": "Este link para avaliação é inválido.",
+    "thanks": "Obrigado pela sua avaliação!",
+    "notEligible": "Apenas os participantes do evento podem deixar uma avaliação.",
+    "greeting": "Olá {firstName}, como você achou esse evento?",
+    "commentPlaceholder": "Algum comentário? (opcional)",
+    "submit": "Envie minha avaliação",
+    "ratingRequired": "Escolha uma nota",
+    "networkError": "Erro de Rede",
+    "genericError": "Erro",
+    "publicationQuestion": "Você permite a publicação de sua opinião no site da associação e nas redes sociais?",
+    "publicationYes": "Sim, autorizo a publicação.",
+    "publicationNo": "Não, minha opinião permanecerá acessível apenas aos gestores da associação.",
+    "publicationRequired": "Obrigado por responder essa pergunta.",
+    "identificationQuestion": "Como você gostaria de ser identificado?",
+    "identificationNamed": "Com meu primeiro e sobrenome",
+    "identificationAnonymous": "Anonimamente",
+    "identificationRequired": "Por favor, escolha uma opção.",
+    "manageConsentTitle": "Permissão para Gerenciar e Publicar",
+    "updateConsent": "Atualize minhas preferências",
+    "consentUpdated": "Suas preferências foram atualizadas."
   },
   "auth": {
     "layout": {
@@ -237,6 +264,7 @@
       "title": "Área do membro",
       "subtitle": "Entre para acessar sua área.",
       "suspendedNotice": "A assinatura desta associação está suspensa. Contate o administrador para regularizar a situação.",
+      "selfRegisterDisabledNotice": "A criação de conta self-service não está mais disponível. Entre em contato com um administrador da sua organização para acesso.",
       "emailLabel": "Endereço de email",
       "emailPlaceholder": "contato@associacao.org",
       "passwordLabel": "Senha",
@@ -329,6 +357,7 @@
     "vat": "IVA",
     "totalDiscount": "Desconto total",
     "total": "Total",
+    "paymentMethod": "Método de pagamento",
     "paymentTerms": "Condições de pagamento",
     "paymentTermsPlaceholder": "ex: Pagamento em 30 dias",
     "notes": "Observações",
@@ -384,7 +413,9 @@
     "viewDocument": "Ver documento",
     "remove": "Remover",
     "uploading": "Enviando…",
-    "attach": "Anexar imagem ou PDF (máx. 4 MB)"
+    "attach": "Anexar imagem ou PDF (máx. 4 MB)",
+    "attachPdf": "Importar um PDF (máximo 4 MB)",
+    "pdfOnly": "Somente arquivos PDF são aceitos"
   },
   "factures": {
     "form": {
@@ -659,13 +690,20 @@
       "amount": "Valor",
       "statusOptions": {
         "aPayer": "A pagar",
+        "partiellementPayee": "Parcialmente Pago",
         "payee": "Paga",
         "enLitige": "Em disputa",
         "annulee": "Cancelada"
       },
-      "unmarkPaidWarning": "Este documento está atualmente marcado como pago — remover esse status excluirá a despesa que ele gerou em Finanças, junto com sua eventual conciliação bancária.",
-      "markPaidNotice": "Marcar este documento como pago criará automaticamente uma despesa correspondente em Finanças.",
       "file": "Documento",
+      "payment": {
+        "add": "Registre um pagamento",
+        "title": "Registre um pagamento",
+        "paidOf": "Pago",
+        "toasts": {
+          "recorded": "Pagamento Registrado"
+        }
+      },
       "toasts": {
         "uploadError": "Erro ao enviar o documento",
         "networkError": "Erro de rede durante o envio — tente novamente"
@@ -876,6 +914,10 @@
       "userMenu": {
         "title": "Seu perfil",
         "description": "Edite seu perfil, altere sua senha e saia a partir deste menu."
+      },
+      "help": {
+        "title": "Precisa de ajuda?",
+        "description": "É isso! Este botão abre o Centro de Ajuda: artigos, perguntas frequentes, mago e notícias. Você também pode reiniciar esta visita do rodapé."
       }
     }
   },
@@ -891,6 +933,8 @@
       "import": "Importar",
       "reconciliation": "Conciliação",
       "categories": "Categorias",
+      "immobilisations": "Ativos de capital",
+      "journalManual": "Escrita Manual",
       "reports": "Relatórios",
       "bilan": "Balanço",
       "compteResultat": "Demonstração de resultados",
@@ -907,11 +951,157 @@
       "title": "Em breve",
       "description": "Esta funcionalidade está em desenvolvimento."
     },
+    "immobilisationsView": {
+      "title": "Ativos de capital",
+      "description": "Ativos depreciáveis (tangíveis e intangíveis) e sua tabela de depreciação.",
+      "add": "Adicionar ao carrinho",
+      "newTitle": "Novo ativo de capital",
+      "noImmobilisations": "Sem tempo livre",
+      "columns": {
+        "label": "Designação",
+        "entryValue": "Valor bruto",
+        "accumulated": "Depreciação e amortização",
+        "netValue": "Patrimônio Líquido",
+        "usageStartDate": "Comissionamento"
+      },
+      "deleteConfirmTitle": "Abolir essa imobilização?",
+      "toasts": {
+        "created": "Ativo fixo criado",
+        "updated": "Ativo fixo atualizado",
+        "deleted": "Ativo fixo removido"
+      },
+      "drillDown": {
+        "title": "Depreciação e amortização",
+        "exercice": "Exercício",
+        "dotation": "Equipe",
+        "accumulated": "Acumulação",
+        "netValue": "Patrimônio Líquido",
+        "noDepreciations": "Nenhum prêmio em dinheiro foi registrado até o momento"
+      }
+    },
+    "immobilisationForm": {
+      "label": "Designação",
+      "labelPlaceholder": "Ex: Laptop — Desktop",
+      "expense": "Despesa com aquisição",
+      "expensePlaceholder": "Escolha uma despesa marcada como \"capital\"",
+      "noEligibleExpenses": "Sem despesas elegíveis — marque uma despesa como capital e categorize-a na conta 218300 (propriedade) ou 205000 (intangível).",
+      "entryValue": "Valor de entrada",
+      "residualValue": "Valor residual",
+      "acquisitionDate": "Data da aquisição",
+      "usageStartDate": "Data de entrada em serviço",
+      "usefulLifeMonths": "Duração do uso (meses)"
+    },
+    "journalManual": {
+      "title": "Escrita Manual",
+      "description": "Comece um lançamento contábil para um valor que você decidir — provisão, depósito de segurança, acumulação — quando nenhuma funcionalidade o calcula automaticamente.",
+      "newEntry": "Novos escritos",
+      "exercice": "Exercício",
+      "date": "Data",
+      "label": "Redação",
+      "labelPlaceholder": "Ex: Disposição para litígios — arquivo 2026-04",
+      "account": "Conta",
+      "accountPlaceholder": "Escolha uma conta",
+      "debit": "Vazão",
+      "credit": "Crédito",
+      "totals": "Totais de Débito/Crédito",
+      "addLine": "Adicionar uma linha",
+      "mustBalance": "O débito e o crédito devem ser iguais e diferentes de zero.",
+      "missingAccount": "Cada linha deve ter uma conta.",
+      "cancel": "Cancelar",
+      "submit": "Comece a escrever",
+      "createSuccess": "Entrada criada",
+      "noOpenExercice": "Sem exercícios abertos — abra ou reabra um ano fiscal antes de iniciar uma entrada manual."
+    },
+    "bilan": {
+      "title": "Balanço",
+      "description": "Ativos e passivos da associação ao final do ano fiscal.",
+      "exerciceLabel": "Exercício",
+      "rubriqueColumnLabel": "Seção",
+      "noPreviousExercice": "Não há comparação disponível",
+      "actif": "Ativo",
+      "totalActif": "Total Ativo",
+      "passif": "Passivo",
+      "totalPassif": "Passivos totais",
+      "noAccountsInRubrique": "Sem equilíbrio nesta seção",
+      "exportPdf": "Exportar PDF",
+      "exportDisabledTooltip": "Impossível exportar um Balanço Completo até que as anomalias acima sejam corrigidas.",
+      "emptyExercice": {
+        "title": "Sem ano fiscal",
+        "description": "Crie um novo ano fiscal para visualizar o Balanço Patrimonial."
+      },
+      "emptyLedger": {
+        "title": "Sem registros contábeis",
+        "description": "O balanço patrimonial será exibido assim que a renda, despesas ou ativos fixos forem registrados neste ano fiscal."
+      },
+      "rubriques": {
+        "immobilisationsCorporelles": "Ativos de capital tangível",
+        "immobilisationsIncorporelles": "Ativos fixos intangíveis",
+        "immobilisationsFinancieres": "Ativos fixos financeiros",
+        "disponibilites": "Disponibilidade",
+        "chargesConstateesDavance": "Despesas pré-pagas",
+        "creances": "Recebíveis",
+        "stocksEtEnCours": "Inventário",
+        "fondsPropres": "Patrimônio",
+        "provisions": "Provisões",
+        "dettes": "Dívidas",
+        "produitsConstatesDavance": "Renda diferida",
+        "fondsDedies": "Fundos restritos"
+      },
+      "memoNotice": "Estimativa — não registrada no livro-razão e excluída do total dos bens.",
+      "accountLabels": {
+        "reportANouveau": "Lucros retidos",
+        "resultatExercice": "Lucro líquido do ano",
+        "creancesCotisations": "Taxas de associação pendentes",
+        "creancesFactures": "Faturas pendentes",
+        "stocksEstimatedValue": "Estimado do valor do estoque",
+        "creancesFacturesEnRetard": "Faturas em atraso"
+      },
+      "pdf": {
+        "periodLabel": "Período de {start} a {end}"
+      },
+      "drillDown": {
+        "date": "Data",
+        "label": "Rótulo",
+        "origin": "Origem",
+        "debit": "Débito",
+        "credit": "Crédito",
+        "noLines": "Não há registros para esta conta.",
+        "sourceTypes": {
+          "INCOME": "Renda",
+          "INCOME_REVERSAL": "Reversão de renda",
+          "EXPENSE": "Despesas",
+          "EXPENSE_REVERSAL": "Reversão de despesas",
+          "BANK_TRANSACTION": "Transação bancária",
+          "ACCOUNT_TRANSFER": "Transferência interna",
+          "OPENING_BALANCE": "Saldo inicial",
+          "IMMOBILISATION_DEPRECIATION": "Depreciação",
+          "IMMOBILISATION_ACQUISITION": "Aquisição de ativos",
+          "FACTURE_RECUE_PAYMENT": "Pagamento ao fornecedor",
+          "MANUAL": "Entrada manual"
+        }
+      },
+      "issues": {
+        "title": "Anomalias detectadas",
+        "messages": {
+          "ACCOUNT_WITHOUT_RUBRIQUE": "O {code} da conta — {label} possui um saldo, mas não está vinculado a nenhum item do balanço patrimonial.",
+          "ACTIF_PASSIF_MISMATCH": "O ativo ({actif}) não corresponde ao passivo ({passif}).",
+          "OPENING_BALANCE_MISSING": "Nenhuma entrada de abertura foi gerada para este exercício a partir de \"{previousLabel}\".",
+          "TRIAL_BALANCE_UNBALANCED": "O débito total ({debit}) não corresponde ao crédito total ({credit}) deste ano fiscal.",
+          "RESULT_DIVERGENCE": "O resultado do diário ({journal}) difere do da demonstração de resultados ({statement}) — o diário pode ainda não estar atualizado para este ano fiscal (fechar o ano fiscal ou reiniciar a sincronização)."
+        }
+      },
+      "memoNoHistory": "Sem dados históricos",
+      "caveats": {
+        "stocksMissingCostPrice": "{count} variantes sem custo de compra registrado, excluídas da estimativa"
+      }
+    },
     "compteResultat": {
       "title": "Demonstração de resultados",
       "description": "Resultado financeiro do exercício, comparado ao exercício anterior.",
       "exerciceLabel": "Exercício",
+      "categoryColumnLabel": "Categoria",
       "noPreviousExercice": "-",
+      "noPreviousExerciceMessage": "Nenhum exercício anterior disponível",
       "export": "Exportar",
       "exportExcel": "Exportar Excel",
       "exportPdf": "Exportar PDF",
@@ -920,14 +1110,9 @@
       "expenses": "Despesas / Encargos",
       "totalExpenses": "Total das despesas",
       "result": "Resultado do exercício",
+      "resultZero": "Resultado do exercício: 0 €",
       "surplus": "Excedente do exercício",
       "deficit": "Déficit do exercício",
-      "emptyExercice": {
-        "title": "Nenhum exercício fiscal",
-        "description": "Crie um exercício fiscal para gerar a demonstração de resultados."
-      },
-      "noPreviousExerciceMessage": "Nenhum exercício anterior disponível",
-      "resultZero": "Resultado do exercício: 0 €",
       "operationalResult": "Resultado operacional",
       "uncategorized": "A categorizar",
       "uncategorizedAlertIncome": "{count, plural, one {# receita precisa ser categorizada} other {# receitas precisam ser categorizadas}}",
@@ -939,6 +1124,15 @@
         "FINANCIAL": "Financeiro",
         "EXCEPTIONAL": "Excecional",
         "OTHER": "Outro"
+      },
+      "inKind": {
+        "title": "Contribuições voluntárias em espécie",
+        "employmentHeader": "Uso das contribuições",
+        "amountHeader": "Valor",
+        "receivedHeader": "Contribuições recebidas",
+        "totalEmployments": "Total de Empregos",
+        "totalReceived": "Contribuições Totais",
+        "note": "Essas contribuições gratuitas são avaliadas em euros. Elas não levam a nenhum movimento de dinheiro e não alteram o resultado do ano fiscal."
       },
       "drillDown": {
         "date": "Data",
@@ -994,20 +1188,121 @@
         "reference": "Referência",
         "exercice": "Exercício"
       },
-      "categoryColumnLabel": "Categoria",
-      "inKind": {
-        "title": "Contribuições voluntárias em espécie",
-        "employmentHeader": "Uso das contribuições",
-        "amountHeader": "Valor",
-        "receivedHeader": "Contribuições recebidas",
-        "totalEmployments": "Total de Empregos",
-        "totalReceived": "Contribuições Totais",
-        "note": "Essas contribuições gratuitas são avaliadas em euros. Elas não levam a nenhum movimento de dinheiro e não alteram o resultado do ano fiscal."
+      "emptyExercice": {
+        "title": "Nenhum exercício fiscal",
+        "description": "Crie um exercício fiscal para gerar a demonstração de resultados."
+      }
+    },
+    "previsionnel": {
+      "title": "Orçamento provisório",
+      "description": "Compare o orçamento planejado e o real, por categoria e por projeto.",
+      "exerciceLabel": "Exercício",
+      "emptyExercice": {
+        "title": "Sem ano fiscal",
+        "description": "Crie um ano fiscal para preparar o orçamento projetado."
+      },
+      "tabs": {
+        "global": "Orçamento global",
+        "projects": "Por projeto"
+      },
+      "income": "Receitas",
+      "expense": "Despesas",
+      "result": "Resultado",
+      "card": {
+        "previsto": "Planejado",
+        "diff": "Variância",
+        "percent": "Concluído"
+      },
+      "columns": {
+        "category": "Categoria",
+        "previsto": "Planejado",
+        "realizado": "Concluído",
+        "diffPercent": "Variância / % Realizado",
+        "total": "Total"
+      },
+      "noCategories": "Sem categoria.",
+      "uncategorized": "A ser categorizado",
+      "noProject": "Sem projeto",
+      "addCategory": "Adicionar uma categoria",
+      "addCategoryModalTitle": "Adicionar uma categoria",
+      "exportFileNameGlobal": "Orçamento global de previsão",
+      "export": {
+        "action": "Exportação",
+        "excel": "Exporter Excel",
+        "pdf": "PDF do exportador",
+        "diffColumn": "Spread (€)",
+        "percentColumn": "% concluído",
+        "associationLabel": "Associação",
+        "exerciceLabel": "Exercício"
+      },
+      "toasts": {
+        "categoryCreated": "Categoria criada.",
+        "updateError": "Erro ao atualizar."
+      },
+      "copyBudget": {
+        "action": "Copiar o orçamento anterior",
+        "modalTitle": "Copiar o orçamento anterior",
+        "modalDescription": "Cópias das previsões de {previous} para {target}. Apenas as previsões são copiadas, nunca os valores alcançados.",
+        "allProjects": "Todos os projetos",
+        "noProjects": "Sem planos.",
+        "archived": "ARQUIVADO",
+        "noProjectAlwaysCopied": "Previsões sem projeto são sempre copiadas.",
+        "copy": "Cópia",
+        "confirmOverwriteTitle": "Substituir previsões existentes?",
+        "confirmOverwriteDescription": "Este exercício já possui previsões não nulas para algumas categorias. Copiá-las do ano fiscal anterior vai sobrepor esses valores.",
+        "confirmOverwriteAction": "Substituir",
+        "toasts": {
+          "copied": "{count, plural, one {# previsão copiada.} other {# previsões copiadas.}}",
+          "error": "Erro de cópia."
+        }
+      },
+      "projectsTab": {
+        "count": "{count, plural, one {# projeto} other {# projetos}}",
+        "createProject": "Crie um projeto",
+        "createModalTitle": "Crie um projeto",
+        "editProject": "Edit",
+        "editModalTitle": "Editar Projeto",
+        "name": "Nome do Projeto",
+        "namePlaceholder": "Ex: Viagem anual",
+        "description": "Descrição",
+        "descriptionPlaceholder": "Descrição facultativa",
+        "archive": "Arquivo",
+        "unarchive": "Desarquivamento",
+        "archived": "ARQUIVADO",
+        "showArchived": "Ver projetos arquivados ({count})",
+        "hideArchived": "Ocultar projetos arquivados",
+        "noProjects": {
+          "title": "Sem projetos",
+          "description": "Crie um projeto para acompanhar seu orçamento separadamente de toda a associação."
+        },
+        "addCategoryToProject": "Adicionar uma categoria ao projeto",
+        "addCategoryModalTitle": "Adicionar uma categoria ao projeto",
+        "type": "Tipo",
+        "typeIncome": "Receita",
+        "typeExpense": "Despesas",
+        "category": "Categoria",
+        "selectCategoryPlaceholder": "Selecione uma categoria",
+        "createNewCategory": "+ Criar uma nova categoria",
+        "noAvailableCategories": "Todas essas categorias já foram adicionadas a este projeto.",
+        "removeCategoryFromProject": "Remover do projeto",
+        "removeCategoryConfirmTitle": "Remover essa categoria do projeto?",
+        "removeCategoryConfirmDescription": "« {category} \" será removido do orçamento deste projeto. Se já houver receitas ou despesas relacionadas a ele, a categoria reaparecerá automaticamente com o valor realizado.",
+        "toasts": {
+          "created": "Projeto criado.",
+          "updated": "Rascunho atualizado.",
+          "archived": "Projeto arquivado.",
+          "unarchived": "Projeto não arquivado.",
+          "categoryAdded": "Categoria adicionada ao projeto.",
+          "categoryRemoved": "Categoria removida do projeto.",
+          "createError": "Erro durante a criação.",
+          "updateError": "Erro ao atualizar."
+        }
       }
     },
     "categoryForm": {
       "name": "Nome",
       "namePlaceholder": "Ex: Mensalidades",
+      "noMatchingCategory": "Sem categoria correspondente",
       "type": "Tipo",
       "typeIncome": "Receita",
       "typeExpense": "Despesa",
@@ -1020,8 +1315,11 @@
         "FINANCIAL": "Financeiro",
         "EXCEPTIONAL": "Excecional",
         "OTHER": "Outro",
-        "IN_KIND": "Contribuições em espécie"
+        "IN_KIND": "Contribuições em espécie",
+        "IMMOBILISATION": "Capital"
       },
+      "accountingCodeLegacyOption": "{code} — (código antigo, a ser atualizado)",
+      "accountingCodeLegacyWarning": "Esse código contábil não existe mais na lista controlada — escolha uma conta válida antes de salvar.",
       "accountingCodeFormwiseNote": "Subconta sugerida pela Formwise para rastreamento separado — não um número oficial obrigatório.",
       "suggestedAccounts": "Contas sugeridas",
       "seeOtherAccounts": "Veja as outras contas",
@@ -1032,8 +1330,7 @@
       "sectionUnverifiedNote": "Esta conta não é reconhecida — confira a seção ou escolha-a entre as opções avançadas.",
       "sectionToVerify": "Seção para verificar",
       "advancedOptions": "Opções avançadas",
-      "revertToAutoSection": "Voltando à seção automática",
-      "noMatchingCategory": "Sem categoria correspondente"
+      "revertToAutoSection": "Voltando à seção automática"
     },
     "bankAccountForm": {
       "bankName": "Nome do banco",
@@ -1070,6 +1367,8 @@
       "date": "Data",
       "category": "Categoria",
       "noCategory": "Nenhuma categoria",
+      "project": "Projeto",
+      "noProject": "Sem projetos",
       "paymentMethodLabel": "Forma de pagamento",
       "reference": "Referência",
       "referencePlaceholder": "Ex: TRF-2024-001",
@@ -1089,6 +1388,8 @@
       "internalNote": "Observação interna",
       "internalNotePlaceholder": "Observação para o tesoureiro…",
       "receipt": "Comprovante",
+      "isImmobilisation": "Ativo fixo (ativo depreciável)",
+      "isImmobilisationHint": "Verifique se há uma compra capitalizável (por exemplo, equipamentos de escritório e de computador) — você pode então criar o cronograma de depreciação em Finanças > Ativos de Capital.",
       "toasts": {
         "uploadError": "Erro ao enviar o comprovante",
         "networkError": "Erro de rede durante o envio — tente novamente"
@@ -1205,13 +1506,21 @@
       "newCategoryTitle": "Nova categoria",
       "editCategoryTitle": "Editar categoria",
       "deleteConfirmTitle": "Excluir esta categoria?",
-      "deleteConfirmInUse": "\"{name}\" é usada por {count, plural, one {# receita/despesa} other {# receitas/despesas}}. Esses lançamentos passarão para \"Sem categoria\".",
       "toasts": {
         "created": "Categoria criada",
         "updated": "Categoria atualizada",
         "deleted": "Categoria excluída",
-        "seeded": "{count, plural, one {# categoria inicializada} other {# categorias inicializadas}}"
+        "seeded": "{count, plural, one {# categoria inicializada} other {# categorias inicializadas}}",
+        "archived": "Categoria Arquivada",
+        "reactivated": "Categoria reativada"
       },
+      "archived": "Arquivado",
+      "reactivate": "Reativar",
+      "showArchived": "Ver categorias arquivadas",
+      "transferLimitationNote": "Transferências entre contas bancárias da associação (tesouro interno) nunca devem ser registradas como receita ou despesa — registre-as a partir das contas → contábeis.",
+      "archiveConfirmTitle": "Arquivar essa categoria?",
+      "archiveConfirmInUse": "« {name} é usado por {count, plural, one {# receita/despesa} other {# receita/despesa}}. Ela será arquivada (sua história é preservada) e não poderá mais ser escolhida para novas operações.",
+      "archive": "Arquivo",
       "chooseTemplateTitle": "Escolha um tipo de categoria",
       "customCategory": "Crie uma categoria personalizada",
       "alreadyExists": "Já configurado",
@@ -1456,89 +1765,6 @@
       "typeExpense": "Despesa",
       "typeTransfer": "Transferência interna",
       "confirm": "Confirmar conciliação"
-    },
-    "bilan": {
-      "title": "Balanço",
-      "description": "Ativos e passivos da associação ao final do ano fiscal.",
-      "exerciceLabel": "Exercício",
-      "rubriqueColumnLabel": "Seção",
-      "noPreviousExercice": "Não há comparação disponível",
-      "actif": "Ativo",
-      "totalActif": "Total Ativo",
-      "passif": "Passivo",
-      "totalPassif": "Passivos totais",
-      "noAccountsInRubrique": "Sem equilíbrio nesta seção",
-      "emptyExercice": {
-        "title": "Sem ano fiscal",
-        "description": "Crie um novo ano fiscal para visualizar o Balanço Patrimonial."
-      },
-      "emptyLedger": {
-        "title": "Sem registros contábeis",
-        "description": "O balanço patrimonial será exibido assim que a renda, despesas ou ativos fixos forem registrados neste ano fiscal."
-      },
-      "rubriques": {
-        "immobilisationsCorporelles": "Ativos de capital tangível",
-        "disponibilites": "Disponibilidade",
-        "fondsPropres": "Patrimônio",
-        "dettes": "Dívidas",
-        "immobilisationsIncorporelles": "Ativos fixos intangíveis",
-        "immobilisationsFinancieres": "Ativos fixos financeiros",
-        "chargesConstateesDavance": "Despesas pré-pagas",
-        "provisions": "Provisões",
-        "produitsConstatesDavance": "Renda diferida",
-        "creances": "Recebíveis",
-        "stocksEtEnCours": "Inventário",
-        "fondsDedies": "Fundos restritos"
-      },
-      "issues": {
-        "title": "Anomalias detectadas",
-        "messages": {
-          "ACCOUNT_WITHOUT_RUBRIQUE": "O {code} da conta — {label} possui um saldo, mas não está vinculado a nenhum item do balanço patrimonial.",
-          "ACTIF_PASSIF_MISMATCH": "O ativo ({actif}) não corresponde ao passivo ({passif}).",
-          "OPENING_BALANCE_MISSING": "Nenhuma entrada de abertura foi gerada para este exercício a partir de \"{previousLabel}\".",
-          "TRIAL_BALANCE_UNBALANCED": "O débito total ({debit}) não corresponde ao crédito total ({credit}) deste ano fiscal.",
-          "RESULT_DIVERGENCE": "O resultado do diário ({journal}) difere do da demonstração de resultados ({statement}) — o diário pode ainda não estar atualizado para este ano fiscal (fechar o ano fiscal ou reiniciar a sincronização)."
-        }
-      },
-      "accountLabels": {
-        "reportANouveau": "Lucros retidos",
-        "resultatExercice": "Lucro líquido do ano",
-        "creancesCotisations": "Taxas de associação pendentes",
-        "creancesFactures": "Faturas pendentes",
-        "stocksEstimatedValue": "Estimado do valor do estoque",
-        "creancesFacturesEnRetard": "Faturas em atraso"
-      },
-      "exportPdf": "Exportar PDF",
-      "exportDisabledTooltip": "Impossível exportar um Balanço Completo até que as anomalias acima sejam corrigidas.",
-      "pdf": {
-        "periodLabel": "Período de {start} a {end}"
-      },
-      "drillDown": {
-        "date": "Data",
-        "label": "Rótulo",
-        "origin": "Origem",
-        "debit": "Débito",
-        "credit": "Crédito",
-        "noLines": "Não há registros para esta conta.",
-        "sourceTypes": {
-          "INCOME": "Renda",
-          "INCOME_REVERSAL": "Reversão de renda",
-          "EXPENSE": "Despesas",
-          "EXPENSE_REVERSAL": "Reversão de despesas",
-          "BANK_TRANSACTION": "Transação bancária",
-          "ACCOUNT_TRANSFER": "Transferência interna",
-          "OPENING_BALANCE": "Saldo inicial",
-          "IMMOBILISATION_DEPRECIATION": "Depreciação",
-          "IMMOBILISATION_ACQUISITION": "Aquisição de ativos",
-          "FACTURE_RECUE_PAYMENT": "Pagamento ao fornecedor",
-          "MANUAL": "Entrada manual"
-        }
-      },
-      "memoNotice": "Estimativa — não registrada no livro-razão e excluída do total dos bens.",
-      "memoNoHistory": "Sem dados históricos",
-      "caveats": {
-        "stocksMissingCostPrice": "{count} variantes sem custo de compra registrado, excluídas da estimativa"
-      }
     }
   },
   "evenements": {
@@ -1753,6 +1979,10 @@
         "titlePlaceholder": "Assembleia geral 2026",
         "dateLabel": "Data de início",
         "createButton": "Criar"
+      },
+      "summary": {
+        "eventCount": "Número de eventos",
+        "participants": "Participantes"
       },
       "bilan": {
         "show": "Ver o balanço",
@@ -1971,6 +2201,26 @@
         "qrRevoked": "QR Code desativado",
         "noMembersToExport": "Nenhum membro para exportar",
         "linkCopied": "Link copiado"
+      },
+      "payment": {
+        "sectionTitle": "Pagamento",
+        "modeLabel": "Pagamento",
+        "modeNow": "Pago Agora",
+        "modeLater": "A ser corrigido posteriormente",
+        "laterHint": "O assento está reservado. Depois, desconte com \"Marcar Pago\".",
+        "methodLabel": "Método de pagamento",
+        "tierLabel": "Preço",
+        "methods": {
+          "ESPECES": "Espécies",
+          "CHEQUE": "Confere",
+          "VIREMENT": "Transferência"
+        },
+        "encaisserTitle": "Sacar",
+        "encaisserConfirm": "Sacar",
+        "amountHint": "Valor: {amount}",
+        "selectedMember": "Membro Selecionado: {name}",
+        "selectMemberHint": "Selecione um membro da lista acima.",
+        "addSubmit": "Adicionar ao carrinho"
       }
     },
     "avaliacoes": {
@@ -1980,8 +2230,14 @@
         "participant": "Participante",
         "rating": "Nota",
         "comment": "Comentário",
-        "date": "Data"
-      }
+        "date": "Data",
+        "site": "No site"
+      },
+      "anonymousNote": "Anônimo",
+      "noConsent": "Sem consentimento",
+      "featureToggleLabel": "Crítica do programa de {name} No local",
+      "bulkFeatureAll": "Mostre tudo no local",
+      "bulkUnfeatureAll": "Remova tudo do site"
     },
     "detail": {
       "backToList": "Voltar aos eventos",
@@ -2007,7 +2263,9 @@
         "saved": "Alterações salvas",
         "saveError": "Erro ao salvar",
         "linkCopied": "Link copiado",
-        "linkCopyError": "Não foi possível copiar — selecione o link manualmente."
+        "linkCopyError": "Não foi possível copiar — selecione o link manualmente.",
+        "registrationsClosed": "Registro encerrado",
+        "registrationsReopened": "Registros reabertos"
       },
       "publishBlocked": {
         "unsavedToast": "Salve as seguintes seções antes de publicar: {steps}",
@@ -2025,6 +2283,7 @@
           "standardFieldsHint": "Campos solicitados na inscrição",
           "phoneLabel": "Telefone",
           "addressLabel": "Endereço",
+          "countryLabel": "País de residência",
           "requirement": {
             "hidden": "Oculto",
             "optional": "Opcional",
@@ -2071,6 +2330,11 @@
         }
       },
       "titleRequired": "O título é obrigatório",
+      "closeRegistrationsButton": "Encerrar os Registros",
+      "reopenRegistrationsButton": "Reabrir inscrições",
+      "registrationsClosedNotice": "Encerramento das inscrições",
+      "closeRegistrationsConfirmTitle": "Fechar os registros?",
+      "closeRegistrationsConfirmDescription": "Ninguém poderá se inscrever online. Você ainda poderá adicionar participantes da lista de presença.",
       "bilanButton": "Balanço"
     },
     "discountCodes": {
@@ -2352,6 +2616,13 @@
       "liveSince": "Em andamento há {mins} min",
       "durationLessThanMin": "< 1 min",
       "durationMin": "{mins} min",
+      "activeMeetingWarning": {
+        "title": "{count, plural, one {Uma reunião já está em andamento} other {# reuniões já estão em andamento}}",
+        "description": "{count, plural, one {Você já começou essa reunião e ainda não terminou. Participe, ou crie uma nova mesmo assim.} other {Você já começou essas reuniões e ainda não as terminou. Participe de uma, ou crie uma nova mesmo assim.}}",
+        "joinExisting": "Junte-se",
+        "createNew": "De qualquer forma, crie uma nova reunião",
+        "alreadyEnded": "Essa reunião acabou sozinha. Você pode criar uma nova reunião."
+      },
       "toasts": {
         "meetingStarted": "Reunião iniciada",
         "meetingScheduled": "Reunião agendada",
@@ -2757,8 +3028,12 @@
       "validation": {
         "nameRequired": "O nome é obrigatório",
         "atLeastOneVariant": "É necessária pelo menos uma variante",
-        "variantLabelRequired": "Cada variante deve ter um rótulo"
+        "variantLabelRequired": "Cada variante deve ter um rótulo",
+        "weightRequiredWhenShippable": "O peso é obrigatório para uma variante com entrega postal"
       },
+      "shippableColumn": "Navegação",
+      "weightColumn": "Peso (g)",
+      "weightPlaceholder": "500",
       "costPriceColumn": "Custo"
     },
     "view": {
@@ -2780,6 +3055,7 @@
       "variantsCount": "{count, plural, one {# variante} other {# variantes}}",
       "actions": {
         "edit": "Editar",
+        "view": "Visão",
         "delete": "Excluir",
         "deleteAlreadyOrdered": "Excluir (já pedido)",
         "markPaid": "Marcar como pago",
@@ -2818,6 +3094,7 @@
         "productDeleted": "Produto excluído",
         "deleteError": "Erro ao excluir",
         "orderUpdated": "Pedido atualizado",
+        "orderNotInRecentList": "Essa ordem não está entre as 50 mais recentes. Use os filtros para encontrá-la.",
         "refundSuccess": "Pedido reembolsado"
       }
     },
@@ -3042,6 +3319,7 @@
       "noDonations": "Nenhuma doação registrada",
       "noDonationsFiltered": "Nenhuma doação corresponde a esses filtros.",
       "resetFilters": "Redefinir",
+      "totalLabel": "Total",
       "donorsLabel": "Doadores",
       "averageLabel": "Doação média",
       "pendingTitle": "Aguardando encaixe",
@@ -3172,6 +3450,7 @@
           "title": "Formulário",
           "standardFieldsHint": "Campos solicitados ao doador",
           "addressLabel": "Endereço",
+          "countryLabel": "País de residência",
           "birthDateLabel": "Data de nascimento",
           "phoneLabel": "Telefone",
           "mobileLabel": "Celular",
@@ -3229,7 +3508,8 @@
           "siteSectionReplaceWarningPublished": "Esta seção exibe atualmente “{title}”. Ao salvar, este formulário vai substituí-lo; “{title}” continuará acessível pelo próprio link.",
           "siteSectionReplaceWarningDraft": "Esta seção exibe atualmente “{title}”. Este formulário vai substituí-lo assim que for publicado; “{title}” continuará acessível pelo próprio link.",
           "siteSectionRemovedWarning": "Ao salvar, a seção “{section}” ficará oculta no site.",
-          "datesOrderError": "A data de encerramento deve ser posterior à data de abertura."
+          "datesOrderError": "A data de encerramento deve ser posterior à data de abertura.",
+          "siteSectionPuckHint": "Novos blocos do Editor de Site"
         }
       }
     },
@@ -3463,6 +3743,7 @@
           "title": "Formulário",
           "standardFieldsHint": "Campos solicitados na inscrição",
           "addressLabel": "Endereço",
+          "countryLabel": "País de residência",
           "birthDateLabel": "Data de nascimento",
           "phoneLabel": "Telefone",
           "mobileLabel": "Celular",
@@ -3485,6 +3766,8 @@
           "fieldLabelPlaceholder": "Ex. Profissão",
           "fieldType": "Tipo",
           "fieldRequired": "Obrigatório",
+          "fieldSensible": "Dados sensíveis",
+          "fieldSensibleRequiredHint": "Como esse campo é sensível e obrigatório, um gerente sem acesso a dados sensíveis não poderá criar ou modificar um membro sem ter acesso a ele.",
           "typeText": "Texto",
           "typeNumber": "Número",
           "typeSelect": "Lista suspensa",
@@ -3525,7 +3808,8 @@
           "siteSectionPlaceholder": "Escolher…",
           "siteSectionCreateOption": "+ Criar nova seção",
           "siteSectionCreateError": "Erro ao criar a seção do site.",
-          "siteSectionRequiredError": "Escolha em qual seção do site este formulário será publicado."
+          "siteSectionRequiredError": "Escolha em qual seção do site este formulário será publicado.",
+          "siteSectionPuckHint": "Novos blocos do Editor de Site"
         },
         "products": {
           "title": "Produtos",
@@ -3710,6 +3994,12 @@
       "isDefaultHint": "Usado automaticamente como mensagem sugerida para esta categoria (ex.: lembretes de cotização enviados a partir da página de Cotizações).",
       "emailSubject": "Assunto do email",
       "emailSubjectPlaceholder": "Lembrete: sua mensalidade de '{{annee_cotisation}}'",
+      "modeText": "Texto simples",
+      "modeTextHint": "Um único campo de texto enriquecido.",
+      "modeBlocks": "Visual de design",
+      "modeBlocksHint": "Blocos reordenáveis: texto, imagem, botão, separador.",
+      "modeBlocksProOnly": "Reservado para o plano Pro. Faça upgrade para o próximo plano na aba Assinatura para ativá-lo.",
+      "modeLockedHint": "O modo de edição (texto simples ou design visual) é definido quando o template é criado e não pode ser alterado — crie um novo template para usar o outro modo.",
       "variablesHint": "Variáveis — arraste para o assunto, corpo ou SMS",
       "variables": {
         "prenom": "Nome",
@@ -3740,6 +4030,8 @@
       "previewTitle": "Pré-visualização da mensagem",
       "previewDescription": "Renderizado com dados de exemplo",
       "previewSubject": "Assunto",
+      "previewBrandingHint": "O cabeçalho, o rodapé e a assinatura vêm da identidade visual da associação.",
+      "previewBrandingLink": "Editar nas configurações",
       "toasts": {
         "updated": "Modelo atualizado",
         "created": "Modelo criado",
@@ -3748,6 +4040,26 @@
       "validation": {
         "required": "Obrigatório"
       }
+    },
+    "blockEditor": {
+      "empty": "Adicione um primeiro bloco abaixo.",
+      "incomplete": "Um bloco não está completo (imagem sem arquivo, ou botão sem texto/link).",
+      "uploadError": "Erro ao enviar uma imagem — tente novamente.",
+      "dragHandle": "Reordenação",
+      "duplicate": "Duplicate",
+      "remove": "Excluir",
+      "textPlaceholder": "Escreva sua mensagem...",
+      "imageLink": "Link (opcional)",
+      "buttonLabel": "Texto do botão",
+      "buttonLabelPlaceholder": "Saiba mais",
+      "buttonUrl": "Link de Botão",
+      "urlHint": "https://... ou uma variável como '{{lien_portal}}'",
+      "buttonColor": "Contexto",
+      "buttonTextColor": "Texto",
+      "addText": "Texto",
+      "addImage": "Imagem",
+      "addButton": "Botão",
+      "addDivider": "Separador"
     },
     "rulesManager": {
       "title": "Regras de automação",
@@ -3974,6 +4286,7 @@
         "paiements": "Pagamentos",
         "abonnement": "Assinatura",
         "integrations": "Integrações",
+        "equipe": "Equipe e acesso",
         "rgpd": "GDPR"
       },
       "associationInfo": "Informações da associação",
@@ -3981,6 +4294,10 @@
       "city": "Cidade",
       "cityPlaceholder": "São Paulo",
       "country": "País",
+      "contactEmail": "Envie um e-mail para o contato",
+      "contactEmailPlaceholder": "contact@monassociation.fr",
+      "contactEmailHint": "Usado como nome e endereço de resposta (Respondida) de todos os e-mails enviados em nome da associação (assinaturas, eventos, doações, mensagens, etc.).",
+      "contactEmailEmptyWarning": "Não configurado — Respostas de membros aos seus e-mails não chegam à sua organização.",
       "toasts": {
         "saved": "Configurações salvas"
       }
@@ -4065,7 +4382,41 @@
       "title": "Identidade visual",
       "subtitle": "Logo exibido no painel, orçamentos/faturas, folha de presença e site público.",
       "logo": "Logo",
+      "color": "Cor",
+      "colorHint": "Usado em cabeçalhos de e-mail e botões.",
+      "senderName": "Nome do expedidor",
+      "senderNameHint": "O nome aparece como o remetente dos e-mails. Deixe em branco para usar o nome da associação.",
+      "signature": "Assinatura",
+      "signatureHint": "Adicionado ao final dos e-mails escritos manualmente ou enviados por automação.",
+      "footerText": "Texto do rodapé",
+      "footerTextHint": "Substitui o texto padrão no final de todos os e-mails. Deixe em branco para manter o texto padrão.",
+      "footerTextPlaceholder": "E-mail automático enviado por {name}…",
+      "footerStyles": {
+        "classic": "Clássico",
+        "bold": "Acentuado",
+        "minimal": "Minimalista"
+      },
+      "footer": {
+        "title": "Rodapé",
+        "subtitle": "Estilo, cor, texto e redes sociais exibidos no final de cada e-mail.",
+        "color": "Cor de fundo",
+        "socialLinks": "Mídias sociais",
+        "socialPlatforms": {
+          "facebook": "Facebook",
+          "instagram": "Instagram",
+          "linkedin": "LinkedIn",
+          "x": "X (Twitter)"
+        }
+      },
       "proOnlyText": "O logo personalizado (painel, orçamentos/faturas, folha de presença) é exclusivo do plano Pro. Faça upgrade na aba Assinatura para ativá-lo.",
+      "preview": {
+        "label": "Visão geral",
+        "placeholderName": "Sua associação",
+        "sampleHeading": "Olá, Primeiro Nome,",
+        "sampleButton": "Ver Detalhes",
+        "defaultFooter": "E-mail automático enviado por {name} via Formwise. \nPor favor, não responda diretamente a este e-mail.",
+        "fromLabel": "Expedidor: {name}"
+      },
       "toasts": {
         "updated": "Identidade visual atualizada",
         "uploadError": "Erro ao enviar o logo"
@@ -4108,16 +4459,17 @@
       "status": {
         "trial": "Teste gratuito",
         "active": "Ativo",
+        "paymentPending": "Pagamento em andamento",
         "pastDue": "Pagamento atrasado",
         "suspended": "Suspenso",
-        "cancelled": "Cancelado",
-        "paymentPending": "Pagamento em andamento"
+        "cancelled": "Cancelado"
       },
       "planLabel": "Plano {tier}",
       "membersCount": "{count} / {limit} membros",
       "loadError": "Não foi possível obter o status da sua assinatura. Tente novamente mais tarde.",
       "trialEndsAt": "Seu teste gratuito termina em {date}. Após essa data, o cartão registrado será debitado automaticamente, salvo cancelamento antes dessa data.",
       "activeText": "Sua assinatura está ativa. Você pode consultar suas faturas, alterar o meio de pagamento ou cancelar a qualquer momento pelo portal de gerenciamento Stripe.",
+      "paymentPendingText": "O Débito Direto SEPA da sua assinatura está sendo processado. Pode levar alguns dias úteis para aparecer na sua conta bancária.",
       "pastDueText": "A última cobrança falhou. Atualize seu meio de pagamento para evitar a suspensão da sua conta.",
       "suspendedText": "Sua assinatura está suspensa após várias falhas de pagamento. Acesse a tela dedicada para reativá-la, exportar seus dados ou cancelá-la definitivamente.",
       "cancelledText": "Sua assinatura foi cancelada. Entre em contato com o suporte para reativá-la.",
@@ -4232,6 +4584,63 @@
       "subtitleTrialExpired": "Seu teste gratuito terminou. Escolha um plano e informe um método de pagamento para continuar.",
       "confirmButtonSubscribe": "Confirmar e assinar"
     },
+    "teamAccess": {
+      "title": "Equipe e acesso",
+      "description": "Quem tem acesso à gestão da associação e o que cada um pode ver ou mudar.",
+      "howToAdd": "Para adicionar alguém, atribua a ele um papel da lista de membros, ou o papel de \"Membro da Equipe\" para abrir apenas certos domínios para ele. Visualizador: pode visualizar sem editar nada.",
+      "empty": "Nenhum membro da equipe no momento.",
+      "columns": {
+        "name": "Nome",
+        "role": "Função",
+        "access": "Acesso"
+      },
+      "you": "Você",
+      "summary": {
+        "administrator": "Administrador",
+        "none": "Sem acesso",
+        "editAndRead": "{edit, plural, one {# campo} other {# Áreas}} na edição · {read} Reprodução",
+        "editOnly": "{edit, plural, one {# campo} other {# Áreas}} Na publicação",
+        "readOnly": "{read, plural, one {# campo} other {# Áreas}} Reprodução"
+      },
+      "editTitle": "Acesso para mudanças",
+      "editDescription": "Função e acesso de {name}.",
+      "roleLabel": "Função",
+      "profileLabel": "Perfil",
+      "profiles": {
+        "administrator": "Administrador",
+        "role": "Perfil de Função",
+        "custom": "Personalizado"
+      },
+      "administratorSwitch": "Administrador (configurações, faturamento, acesso)",
+      "administratorHint": "Acesso total a todos os domínios.",
+      "memberRoleHint": "Um membro simples não tem acesso à administração: ele usa apenas sua área de membros.",
+      "adminRoleHint": "O cargo de Administrador sempre oferece acesso total.",
+      "areasLabel": "Acesso por domínio",
+      "levels": {
+        "none": "Nenhum",
+        "read": "Leitor",
+        "edit": "Editora"
+      },
+      "areas": {
+        "dashboard": "Painel e atividade",
+        "membres": "Membros",
+        "sensible": "Dados sensíveis dos membros",
+        "adhesions": "Associações e Taxas de Associação",
+        "dons": "Doações",
+        "evenements": "Eventos e ingressos",
+        "boutique": "Loja",
+        "communication": "Comunicação (e-mails, SMS, sondagens)",
+        "actualites": "Notícias",
+        "comptabilite": "Contabilidade (finanças, orçamentos, faturas, fornecedores)",
+        "reunions": "Reuniões",
+        "materiel": "Material",
+        "site": "Site",
+        "documents": "Documentos da Associação"
+      },
+      "toasts": {
+        "saved": "Acesso atualizado"
+      }
+    },
     "erasureRequests": {
       "title": "Exclusão de dados (GDPR)",
       "description": "Solicitações de exclusão definitiva dos dados pessoais de um membro, conforme o artigo 17 do GDPR. São processadas automaticamente todas as noites, exceto as que estão em espera.",
@@ -4272,11 +4681,6 @@
       },
       "automaticOrigin": "Marcado automaticamente — inativo há mais de 3 anos",
       "inactiveSince": "saiu em {date}"
-    },
-    "teamAccess": {
-      "areas": {
-        "sensible": "Dados sensíveis dos membros"
-      }
     }
   },
   "cotisations": {
@@ -4340,6 +4744,7 @@
         "enAttente": "Pendente",
         "payees": "Pagas",
         "exonerees": "Isentas",
+        "aEncaisser": "Para ser resgatado",
         "partiellementPayees": "Parcialmente pagas",
         "enRetard": "Em atraso",
         "annulees": "Canceladas"
@@ -4366,28 +4771,6 @@
       "allCategories": "Todas as categorias",
       "allRenewals": "Todas as renovações",
       "resetFilters": "Redefinir",
-      "renewal": {
-        "automatic": "Automática",
-        "manual": "Manual"
-      },
-      "summary": {
-        "aPagar": " · {amount} total",
-        "recebido": " · {amount} recebidos",
-        "saldo": " · {amount} pendente"
-      },
-      "distribution": {
-        "show": "Ver a distribuição",
-        "hide": "Ocultar a distribuição",
-        "category": "Categoria de Membros",
-        "renewal": "Renovação",
-        "count": "Número de contribuições",
-        "aPagar": "Valor total",
-        "recebido": "Valor recebido",
-        "saldo": "Saldo restante",
-        "total": "Total",
-        "noCategory": "Sem categoria",
-        "empty": "Nenhuma mensalidade corresponde a estes filtros."
-      },
       "mergeTiers": {
         "filterOption": "Mesclar categorias duplicadas",
         "title": "Mesclar categorias duplicadas",
@@ -4410,6 +4793,28 @@
         "priceFreeAmount": "Valor gratuito",
         "priceFreeAmountFrom": "Valor grátis de {amount}",
         "priceRecurring": "{amount}/ano"
+      },
+      "renewal": {
+        "automatic": "Automática",
+        "manual": "Manual"
+      },
+      "summary": {
+        "aPagar": " · {amount} total",
+        "recebido": " · {amount} recebidos",
+        "saldo": " · {amount} pendente"
+      },
+      "distribution": {
+        "show": "Ver a distribuição",
+        "hide": "Ocultar a distribuição",
+        "category": "Categoria de Membros",
+        "renewal": "Renovação",
+        "count": "Número de contribuições",
+        "aPagar": "Valor total",
+        "recebido": "Valor recebido",
+        "saldo": "Saldo restante",
+        "total": "Total",
+        "noCategory": "Sem categoria",
+        "empty": "Nenhuma mensalidade corresponde a estes filtros."
       }
     },
     "reminderModal": {
@@ -4449,6 +4854,14 @@
       "title": "Registrar pagamento",
       "amount": "Valor",
       "remainingBalance": "Saldo restante: {amount}",
+      "installmentChoice": "Esse pagamento paga",
+      "installmentNext": "Prazo {position}",
+      "installmentThrough": "Até a maturidade {position}",
+      "installmentPaid": "Prazo {position} — pago",
+      "installmentPartlyPaid": "(restante a ser pago em {amount})",
+      "lateSuffix": " (atrasado)",
+      "customAmount": "Outro valor",
+      "installmentsInOrder": "Os pagamentos cobrem as parcelas em ordem.",
       "method": "Método de pagamento",
       "date": "Data do pagamento",
       "note": "Observação",
@@ -4474,6 +4887,125 @@
       "annulee": "Esta cotização foi cancelada."
     }
   },
+  "groupes": {
+    "view": {
+      "title": "Grupos",
+      "countTotal": "{count, plural, =0 {Sem grupos} one {Grupo #} other {# Grupos}}",
+      "count": "{count, plural, =0 {Sem resultados} one {# resultado} other {# resultados}}",
+      "searchPlaceholder": "Procure um grupo...",
+      "noResultsFor": "Não existem grupos que combinem\" {search} »",
+      "noGroupe": "Sem grupos no momento",
+      "allStatuses": "Todos os status",
+      "statusFilter": {
+        "actifs": "Ingredientes ativos",
+        "archives": "Arquivado"
+      },
+      "addTitle": "Crie um grupo",
+      "editTitle": "Editar o grupo",
+      "columns": {
+        "nome": "Nome",
+        "membres": "Membros",
+        "responsaveis": "Técnicos",
+        "lastChamada": "Última Chamada",
+        "status": "Status"
+      },
+      "statusBadge": {
+        "archive": "Arquivado"
+      },
+      "actions": {
+        "edit": "Edit",
+        "archive": "Arquivo",
+        "unarchive": "Desarquivamento"
+      },
+      "archiveConfirmTitle": "Arquivo « {name} » ?",
+      "archiveConfirmDescription": "O histórico de chamadas é mantido. O grupo não aparecerá mais na lista de ativos.",
+      "unarchiveConfirmTitle": "Desarquivar \" {name} » ?",
+      "toasts": {
+        "created": "Grupo criado",
+        "updated": "Grupo atualizado",
+        "archived": "Grupo Arquivado",
+        "unarchived": "Grupo Não Arquivado"
+      }
+    },
+    "form": {
+      "nomeLabel": "Nome do grupo",
+      "nomePlaceholder": "Por exemplo, time juvenil, coral de quinta-feira...",
+      "descricaoLabel": "Descrição",
+      "descricaoPlaceholder": "Opcional"
+    },
+    "detail": {
+      "backToList": "Voltando aos grupos",
+      "membresTitle": "Membros",
+      "addMembre": "Adicionar um membro",
+      "allMemberTypes": "Todos os tipos",
+      "searchMembrePlaceholder": "Procure por um membro...",
+      "searchOrFilterPrompt": "Procure por um membro ou escolha um tipo acima",
+      "noResultsForMembre": "Nenhum membro faz match \" {search} »",
+      "noResultsForType": "Não existe esse membro",
+      "candidatesFound": "{count, plural, one {# membro encontrado} other {# membros encontrados}}",
+      "selectAllCandidates": "Selecionar todos",
+      "deselectAllCandidates": "Desselecionar tudo",
+      "selectAllTruncated": "Mais de 500 membros se encaixam nesse filtro — apenas os 500 melhores foram selecionados.",
+      "unselectCandidate": "Desselecionar {name}",
+      "addSelectedMembres": "Adicionar ({count})",
+      "membresAddedToast": "{count, plural, =0 {Nenhum membro adicionado} one {# membro adicionado} other {# membros acrescentaram}}",
+      "noMembre": "Nenhum membro neste grupo",
+      "removeMembreConfirmTitle": "Remover {name} do grupo?",
+      "removeMembreConfirmDescription": "Sua história de presença nesse grupo está preservada.",
+      "responsaveisTitle": "Técnicos",
+      "addResponsavel": "Adicione um gerente",
+      "noResponsavel": "Nenhum funcionário designado",
+      "removeResponsavelConfirmTitle": "Remover {name} Dos responsáveis?",
+      "appelsTitle": "Recursos",
+      "faireAppel": "Faça a ligação",
+      "noAppel": "Nenhuma ligação no momento",
+      "noMembreForAppel": "Adicione pelo menos um membro ao grupo antes de poder fazer a ligação.",
+      "newAppelDateLabel": "Data",
+      "newAppelSubmit": "Chamada de Início",
+      "appelColumns": {
+        "date": "Data",
+        "presents": "Presente",
+        "absents": "Ausente",
+        "justifies": "Justificado",
+        "nonRenseignes": "Não especificado"
+      },
+      "reopenExistingTitle": "Já existe uma chamada para esse nicho",
+      "reopenExistingDescription": "Você pode abrir para visualizar ou editar em vez de criar um novo.",
+      "reopenExistingConfirm": "Abrir chamada existente"
+    },
+    "appel": {
+      "backToGroupe": "De volta ao grupo",
+      "dateLabel": "Data",
+      "horarioLabel": "Cronograma",
+      "horarioPlaceholder": "Opcional, por exemplo, 14h.",
+      "activityLabel": "Atividade",
+      "activityPlaceholder": "Opcional",
+      "markAllPresent": "Marque todos presentes",
+      "syncMembres": "Adicionar novos membros ao grupo",
+      "counts": {
+        "presente": "Presente",
+        "ausente": "Ausente",
+        "ausenciaJustificada": "Justificado",
+        "naoInformado": "Não especificado"
+      },
+      "status": {
+        "NAO_INFORMADO": "Não especificado",
+        "PRESENTE": "Presente",
+        "AUSENTE": "Ausente",
+        "AUSENCIA_JUSTIFICADA": "Justificado"
+      },
+      "save": "Chamada de Recorde",
+      "export": "Exportação",
+      "exportPdf": "PDF",
+      "exportPdfBlank": "PDF em branco (para impressão)",
+      "exportExcel": "Excel",
+      "toasts": {
+        "saved": "Chamada gravada",
+        "noMembersToExport": "Sem membros para exportar",
+        "synced": "{count, plural, =0 {Sem novos membros} one {# membro adicionado} other {# membros acrescentaram}}"
+      }
+    }
+  },
   "membres": {
     "form": {
       "status": {
@@ -4487,7 +5019,8 @@
         "secretaire": "Secretário(a)",
         "tresorier": "Tesoureiro(a)",
         "president": "Presidente",
-        "admin": "Admin"
+        "admin": "Admin",
+        "equipe": "Membro da equipe"
       },
       "civilite": {
         "none": "Não informado",
@@ -4501,6 +5034,11 @@
         "femme": "Feminino"
       },
       "groupeSanguinNone": "Não informado",
+      "imageRights": {
+        "unknown": "Não indicado",
+        "granted": "Sim",
+        "refused": "Não"
+      },
       "tailleTshirtNone": "Não informado",
       "preferredLocaleNone": "Não informado",
       "preferredLocaleHint": "O idioma selecionado permitirá enviar a este membro e-mails e comunicações no idioma preferido dele.",
@@ -4532,14 +5070,15 @@
         "allergies": "Alergias conhecidas",
         "allergiesPlaceholder": "Amendoim, pólen…",
         "type": "Tipo de membro",
-        "preferredLocale": "Idioma de comunicação",
-        "spokenLanguage": "Idioma falado",
-        "cotisationTier": "Mensalidade — tarifa de adesão",
-        "guardianName": "Responsável legal {number} — nome",
-        "guardianPhone": "Responsável legal {number} — telefone",
         "imageRights": "Direito de imagem",
         "notes": "Observações",
-        "notesPlaceholder": "Informações úteis sobre este membro (cursos, observações…)"
+        "notesPlaceholder": "Informações úteis sobre este membro (cursos, observações…)",
+        "guardians": "Tutores legais",
+        "guardianName": "Responsável legal {number} — nome",
+        "guardianPhone": "Responsável legal {number} — telefone",
+        "preferredLocale": "Idioma de comunicação",
+        "spokenLanguage": "Idioma falado",
+        "cotisationTier": "Mensalidade — tarifa de adesão"
       },
       "invitationNotice": "Um email de convite com os dados de acesso será enviado para este endereço.",
       "tierNone": "Sem tarifa (comportamento padrão)",
@@ -4560,12 +5099,7 @@
         "management": "Gestão do membro"
       },
       "invalidFormToast": "Não foi possível guardar. Contate o suporte se o problema persistir.",
-      "customFieldsLoading": "Carregando as respostas do formulário de adesão…",
-      "imageRights": {
-        "unknown": "Não indicado",
-        "granted": "Sim",
-        "refused": "Não"
-      }
+      "customFieldsLoading": "Carregando as respostas do formulário de adesão…"
     },
     "actions": {
       "add": "Adicionar membro",
@@ -4615,13 +5149,13 @@
         "firstName": "Nome",
         "lastName": "Sobrenome",
         "address": "Endereço",
+        "country": "País",
+        "countryPlaceholder": "Todos os países",
+        "countryLoadError": "Não é possível carregar países. Tente novamente em um momento.",
         "birthDateFrom": "Nascido após",
         "birthDateTo": "Nascido antes de",
         "apply": "Aplicar",
-        "reset": "Repor",
-        "country": "País",
-        "countryPlaceholder": "Todos os países",
-        "countryLoadError": "Não é possível carregar países. Tente novamente em um momento."
+        "reset": "Repor"
       },
       "statusOptions": {
         "pending": "Pendente",
@@ -4632,6 +5166,11 @@
       "adherentOptions": {
         "adherents": "Associados",
         "benevoles": "Voluntários"
+      },
+      "sortDefault": "Ordem alfabética",
+      "sortOptions": {
+        "recent": "Adicionados recentemente",
+        "oldest": "Adicionados primeiro"
       },
       "noResultsFor": "Nenhum resultado para \"{search}\"",
       "noResultsFiltered": "Nenhum associado corresponde a estes filtros",
@@ -4657,18 +5196,15 @@
         "memberDeletedWithUnlink": "Membro excluído — removido como responsável legal de {count} membro(s)",
         "noMembersToExport": "Nenhum membro para exportar",
         "viewSubscription": "Ver assinatura",
-        "roleUpdated": "Função atualizada"
+        "roleUpdated": "Função atualizada",
+        "configureAccess": "Configurar acesso"
       },
       "changeRoleTitle": "Alterar função",
       "addViaForm": "Por um formulário de adesão",
       "addManual": "Adicionar manualmente",
       "changeRoleDescription": "Função de {name} na associação.",
-      "pendingRequests": "{count, plural, one {# pedido pendente} other {# pedidos pendentes}}",
-      "sortDefault": "Ordem alfabética",
-      "sortOptions": {
-        "recent": "Adicionados recentemente",
-        "oldest": "Adicionados primeiro"
-      }
+      "changeRoleEquipeHint": "Esse papel começa sem qualquer acesso de gerenciamento. Configure o acesso por domínio em Configurações › Equipe & Acesso.",
+      "pendingRequests": "{count, plural, one {# pedido pendente} other {# pedidos pendentes}}"
     },
     "detail": {
       "notFound": "Este membro não foi encontrado ou foi excluído.",
@@ -4680,6 +5216,14 @@
       "cotisationButton": "Mensalidade",
       "createAccessButton": "Criar acesso",
       "roleButton": "Função",
+      "exportDataButton": "Dados de exportação (GDPR)",
+      "eraseData": {
+        "button": "Excluir dados (GDPR)",
+        "confirmTitle": "Solicitar a exclusão definitiva dos dados de {name}?",
+        "confirmDescription": "Esta ação registra uma solicitação de exclusão conforme o art. 17 do GDPR. O membro receberá um e-mail de confirmação e, em seguida, seus dados pessoais serão anonimizados de forma irreversível no próximo processamento automático, salvo colocação em espera.",
+        "toastSuccess": "Solicitação de exclusão registrada",
+        "requestLabel": "Exclusão GDPR"
+      },
       "contact": "Contato",
       "noContactInfo": "Nenhuma informação de contato",
       "memberSinceColon": "Membro desde: {date}",
@@ -4695,6 +5239,10 @@
       "spokenLanguageColon": "Idioma falado: {value}",
       "preferredLocaleColon": "Idioma de comunicação: {value}",
       "allergiesColon": "Alergias: {value}",
+      "imageRightsColon": "Direitos da imagem: {value}",
+      "imageRightsDate": "(o {date})",
+      "notes": "Notas",
+      "guardians": "Tutores legais",
       "mobileColon": "Celular: {value}",
       "legalGuardianColon": "Responsável legal:",
       "noInfo": "Nenhuma informação cadastrada",
@@ -4723,6 +5271,7 @@
         "evenements": "Eventos",
         "reunions": "Reuniões",
         "materiel": "Material",
+        "groupes": "Grupos",
         "dons": "Doações",
         "historique": "Histórico",
         "emails": "Emails",
@@ -4753,6 +5302,7 @@
       "paidOn": "Paga em {date}",
       "validUntil": "Válida até {date}",
       "periodExpiredOn": "Expirou em {date}",
+      "recordPayment": "Registre um pagamento",
       "downloadRecuFiscal": "Baixar o recibo fiscal",
       "downloadRecuFiscalPartial": "Baixar o recibo fiscal (parcial: {amount} dedutível)",
       "showingRecentCotisations": "Exibindo as {count} mensalidades mais recentes de {total} no total.",
@@ -4795,13 +5345,6 @@
         "rejectedToast": "Pedido recusado",
         "rejectConfirmTitle": "Recusar este pedido?",
         "rejectConfirmDescription": "{name} passará ao estado «Inativo» e não poderá iniciar sessão. O pedido e as respostas ao formulário são mantidos."
-      },
-      "eraseData": {
-        "button": "Excluir dados (GDPR)",
-        "confirmTitle": "Solicitar a exclusão definitiva dos dados de {name}?",
-        "confirmDescription": "Esta ação registra uma solicitação de exclusão conforme o art. 17 do GDPR. O membro receberá um e-mail de confirmação e, em seguida, seus dados pessoais serão anonimizados de forma irreversível no próximo processamento automático, salvo colocação em espera.",
-        "toastSuccess": "Solicitação de exclusão registrada",
-        "requestLabel": "Exclusão GDPR"
       },
       "noCommande": "Nenhuma compra na loja para este contato.",
       "commandeStatus": {
@@ -4892,6 +5435,12 @@
       "inMessagesSection": " na seção Mensagens.",
       "messageSectionLabel": "Mensagem",
       "saveAsTemplate": "Salvar como modelo",
+      "subjectLabel": "Assunto",
+      "subjectPlaceholder": "Assunto do email…",
+      "subjectTooLong": "Assunto muito longo: {length}/{max} caracteres — será rejeitado no envio.",
+      "bodyLabel": "Corpo da mensagem",
+      "bodyPlaceholder": "Redija sua mensagem…",
+      "designTemplateReadonlyHint": "Este modelo usa o modo Visual Design (imagens, botões) — seu conteúdo não pode ser editado aqui. Para alterá-lo, edite o modelo em Mensagens.",
       "language": {
         "title": "Idioma de envio",
         "modeOriginal": "Idioma original",
@@ -4916,15 +5465,12 @@
         "autoNoEffect": "Nenhum destinatário atual tem idioma preferido diferente do francês — todos receberão a versão original.",
         "autoExternalNote": "{count, plural, one {# email externo (idioma original)} other {# emails externos (idioma original)}}"
       },
-      "subjectLabel": "Assunto",
-      "subjectPlaceholder": "Assunto do email…",
-      "subjectTooLong": "Assunto muito longo: {length}/{max} caracteres — será rejeitado no envio.",
-      "bodyLabel": "Corpo da mensagem",
-      "bodyPlaceholder": "Redija sua mensagem…",
       "continue": "Continuar",
       "confirmSendTitle": "Confirmação de envio",
       "confirmSendDescription": "Este email será enviado a {recipients}. Esta ação é irreversível.",
       "sendNow": "Enviar agora",
+      "sending": "Enviando...",
+      "sendFailedTitle": "O e-mail não pôde ser enviado",
       "replaceContentTitle": "Substituir o conteúdo?",
       "replaceContentDescription": "Aplicar este modelo substituirá o assunto e o corpo já redigidos.",
       "replace": "Substituir",
@@ -4937,6 +5483,28 @@
       "recipientsActive": "{count, plural, one {# membro ativo} other {# membros ativos}}",
       "externalOnlyCount": "{count, plural, one {# email externo} other {# emails externos}}",
       "recipientsWithExternal": "{members} + {count, plural, one {# email externo} other {# emails externos}}",
+      "attachments": {
+        "label": "Anexos",
+        "add": "Anexar arquivos",
+        "hint": "JPG, PNG, WebP, GIF ou PDF · {maxSize} Total",
+        "usage": "{count, plural, one {# arquivo} other {# arquivos}} · {used} / {maxSize}",
+        "limitFilesReached": "Limite de {maxFiles} arquivos alcançados",
+        "limitSizeReached": "Limite de {maxSize} Conquistado",
+        "remove": "Remover {name}",
+        "nameWithSize": "{name} ({size})",
+        "andMore": "{count, plural, one {e # outros} other {e # outros}}",
+        "errors": {
+          "emptyFile": "{count, plural, one {{names} não foi adicionado — o arquivo está vazio.} other {# arquivos não foram adicionados: {names} — Esses arquivos estão vazios.}}",
+          "unsupportedType": "{count, plural, one {{names} não foi adicionado} other {# arquivos não foram adicionados: {names}}} — formatos aceitos: imagens (JPG, PNG, WebP, GIF) e PDF.",
+          "totalSizeExceeded": "{count, plural, one {{names} não foi adicionado} other {# arquivos não foram adicionados: {names}}} — o limite de {maxSize} no total seria excedido (espaço restante: {remaining}).",
+          "tooManyFiles": "{count, plural, one {{names} não foi adicionado} other {# arquivos não foram adicionados: {names}}} — {maxFiles} Máximo de arquivos por e-mail."
+        },
+        "recapSummary": "{count, plural, one {# arquivo} other {# arquivos}} · {size}",
+        "uploading": "Enviando anexos...",
+        "uploadFailedTitle": "Anexos não puderam ser enviados",
+        "uploadFailedDescription": "Nenhum e-mail saiu. Tente novamente ou clique em \"Editar\" para remover ou substituir um arquivo.",
+        "notSavedInTemplate": "Anexos não são salvos no template."
+      },
       "toasts": {
         "selectType": "Selecione um tipo de membro",
         "selectMember": "Selecione ao menos um membro ou adicione um email externo",
@@ -4969,7 +5537,14 @@
         "status": "Status",
         "typeId": "Tipo",
         "role": "Função",
-        "adherentOverride": "Status de associação"
+        "adherentOverride": "Status de associação",
+        "notes": "Notas",
+        "imageRightsConsent": "Direitos de imagem",
+        "guardianName": "Tutor legal 1",
+        "guardianPhone": "Número de telefone dos tutores legais 1",
+        "secondGuardianName": "Guardião Legal 2",
+        "secondGuardianPhone": "Número de telefone do tutor legal 2",
+        "permissions": "Acesso"
       },
       "adherentOverrideValues": {
         "forcedAdherent": "Forçado Associado",
@@ -4983,9 +5558,11 @@
         "membreRoleChanged": "Função alterada",
         "passwordChanged": "Senha alterada",
         "passwordReset": "Senha redefinida",
+        "membreCardTokenRotated": "Código QR do cartão regenerado",
         "membreDeleted": "Membro arquivado",
         "membrePortalRegistered": "Registro no portal",
         "membreInscriptionRequested": "Solicitação de associação (site)",
+        "membreAdhesionCompleted": "Filiação concluída e paga",
         "cotisationCreated": "Mensalidade adicionada",
         "cotisationUpdated": "Mensalidade atualizada",
         "cotisationDeleted": "Mensalidade excluída",
@@ -5057,7 +5634,8 @@
         "expense": "Despesas",
         "financeCategory": "Categorias financeiras",
         "payment": "Pagamentos",
-        "associationDocument": "Documentos da associação"
+        "associationDocument": "Documentos da associação",
+        "paperFormTemplate": "Folhas de papel"
       },
       "messageTemplateFilterLabel": "Modelos msg",
       "actualiteFields": {
@@ -5118,8 +5696,10 @@
         "membreDeleted": "Membro arquivado",
         "membrePortalRegistered": "Registrado (portal)",
         "membreInscriptionRequested": "Solicitação de associação (site)",
+        "membreAdhesionCompleted": "Filiação concluída e paga",
         "membreRoleChanged": "Função alterada",
         "membreAccessCreated": "Acesso criado",
+        "membreCardTokenRotated": "Código QR do cartão regenerado",
         "profilUpdated": "Perfil atualizado",
         "profileUpdated": "Perfil atualizado",
         "passwordChanged": "Senha alterada",
@@ -5240,6 +5820,9 @@
         "associationDocumentCreated": "Documento criado",
         "associationDocumentUpdated": "Documento atualizado",
         "associationDocumentDeleted": "Documento excluído",
+        "paperFormTemplateCreated": "Modelo de Formulário Criado",
+        "paperFormTemplateUpdated": "Modelo de formulário modificado",
+        "paperFormTemplateDeleted": "Modelo de cartão excluído",
         "ticketCheckoutExpired": "Pagamento expirado"
       }
     },
@@ -5444,8 +6027,8 @@
       "actualites": "Notícias",
       "membership": "Junte-se à associação",
       "dons": "Fazer uma doação",
-      "contact": "Contato",
-      "boutique": "Loja"
+      "boutique": "Loja",
+      "contact": "Contato"
     },
     "defaultTitles": {
       "hero": "Bem-vindo",
@@ -5453,9 +6036,9 @@
       "events": "Próximos eventos",
       "membership": "Junte-se à associação",
       "dons": "Fazer uma doação",
+      "boutique": "Loja",
       "actualites": "Notícias",
-      "contact": "Contato",
-      "boutique": "Loja"
+      "contact": "Contato"
     },
     "view": {
       "uploadFailedWarning": "{count, plural, one {# imagem não pôde ser enviada.} other {# imagens não puderam ser enviadas.}}",
@@ -5479,6 +6062,8 @@
       "save": "Salvar",
       "appearance": "Aparência",
       "primaryColor": "Cor principal",
+      "secondaryColor": "Cor secundária",
+      "fontFamily": "Polícia",
       "logo": "Logo",
       "header": "Cabeçalho",
       "headerBgColor": "Cor de fundo",
@@ -5497,11 +6082,12 @@
       "noLinks": "Nenhum link. Clique em Adicionar.",
       "sections": "Seções",
       "noSections": "Nenhuma seção. Adicione uma abaixo.",
+      "createWithAi": "Criando com IA",
       "addSection": "Adicionar uma seção",
       "donsModuleDisabled": "Módulo de doações desativado — oculto no site público",
+      "boutiqueModuleDisabled": "Módulo Loja desativado — invisível no site público",
       "deleteSectionTitle": "Excluir a seção",
-      "deleteSectionDescription": "Esta ação é irreversível.",
-      "boutiqueModuleDisabled": "Módulo Loja desativado — invisível no site público"
+      "deleteSectionDescription": "Esta ação é irreversível."
     },
     "sectionSheet": {
       "editTitle": "Editar — {label}",
@@ -5522,6 +6108,8 @@
       "eventsLimitHint": "Os eventos são retirados automaticamente do seu calendário.",
       "actualitesLimit": "Número de notícias a exibir",
       "actualitesLimitHint": "Apenas as N primeiras notícias publicadas serão exibidas no site.",
+      "boutiqueLimit": "Número de produtos a exibir",
+      "boutiqueLimitHint": "Apenas os primeiros N produtos ativos serão exibidos no site.",
       "membershipIntro": "Texto introdutório",
       "membershipIntroPlaceholder": "Preencha este formulário para solicitar associação…",
       "membershipHint": "As solicitações aparecem na lista de membros com status \"Pendente\".",
@@ -5542,9 +6130,7 @@
       "apply": "Aplicar",
       "discardTitle": "Descartar as alterações?",
       "discardDescription": "As alterações não aplicadas serão perdidas.",
-      "discardConfirm": "Descartar",
-      "boutiqueLimit": "Número de produtos a exibir",
-      "boutiqueLimitHint": "Apenas os primeiros N produtos ativos serão exibidos no site."
+      "discardConfirm": "Descartar"
     },
     "preview": {
       "donsNoForm": "Nenhum formulário de doação escolhido — oculto no site público"
@@ -5553,6 +6139,52 @@
       "viewSite": "Ver o site",
       "logoUrl": "URL do logo (opcional)",
       "footerText": "Texto do rodapé"
+    },
+    "aiAssistant": {
+      "title": "Construa seu site com IA",
+      "description": "Descreva sua associação, a IA oferece uma primeira versão do site (cores, fonte, cabeçalho, rodapé e seções) que você pode modificar antes de salvá-la.",
+      "descriptionLabel": "Descreva sua associação",
+      "descriptionPlaceholder": "Por exemplo, a associação cultural de Lyon, que organiza oficinas de teatro para crianças...",
+      "generate": "Gerar",
+      "regenerate": "Regenerar",
+      "apply": "Candidate-se",
+      "cancel": "Cancelar",
+      "error": "Ocorreu um erro, tente novamente.",
+      "previewAppearance": "Aparência",
+      "previewHeader": "Cabeçalho",
+      "previewHeaderLogin": "Botão de login",
+      "previewHeaderRegister": "Botão de Entrar",
+      "previewFooter": "Rodapé",
+      "previewSections": "Seções",
+      "fieldButtonLabel": "Sugira com IA",
+      "appearancePlaceholder": "Por exemplo, uma associação esportiva, dinâmica e amigável...",
+      "headerPlaceholder": "Ex: algo sóbrio que se destaque em um fundo branco...",
+      "footerPlaceholder": "Ex: uma mensagem curta de agradecimento...",
+      "sectionPlaceholder": "Descreva o que esta seção deve dizer..."
+    },
+    "builderSwitch": {
+      "liveVersionLabel": "Versão online",
+      "switchLabel": "Novo Editor (Beta)",
+      "statusLegacy": "Seus visitantes veem o site antigo",
+      "statusNewBuilder": "Seus visitantes verão a versão publicada em {date}",
+      "publishFirstHint": "Publique primeiro pelo novo editor",
+      "openNewBuilder": "Abra o novo editor de →",
+      "legacyEditsNotice": "Seu site exibe a versão do novo editor: as alterações feitas aqui só serão visíveis se você voltar ao site antigo.",
+      "confirmOn": {
+        "title": "Ativar o novo editor?",
+        "description": "Seu site público exibirá a versão publicada em {date}. Você pode retornar ao site antigo a qualquer momento.",
+        "confirmLabel": "Ativar"
+      },
+      "confirmOff": {
+        "title": "Voltar ao local antigo?",
+        "description": "Seu site público mostrará o site antigo novamente.",
+        "confirmLabel": "Retorno ao antigo local"
+      },
+      "toasts": {
+        "switchedOn": "O novo editor está online",
+        "switchedOff": "O site antigo está online novamente",
+        "error": "Erro ao trocar de editor"
+      }
     }
   },
   "richTextEditor": {
@@ -5565,6 +6197,134 @@
     "heading1": "Título 1",
     "heading2": "Título 2",
     "heading3": "Título 3"
+  },
+  "paperFormTemplates": {
+    "title": "Folhas de papel",
+    "description": "Modelos para seus formulários de registro em papel, para criar membros a partir de formulários preenchidos e escaneados.",
+    "backToMembers": "Membros",
+    "backToList": "Folhas de papel",
+    "newTemplate": "Novo modelo",
+    "empty": "Sem modelos. Crie um a partir do seu formulário de registro em branco.",
+    "notFound": "Este modelo não pôde ser encontrado ou foi excluído.",
+    "mappedFieldCount": "{count, plural, =0 {Sem campos importados} one {# campo importado} other {# campos importados}}",
+    "columns": {
+      "name": "Nome",
+      "pages": "Páginas",
+      "fields": "Campos",
+      "updatedAt": "Modificado em"
+    },
+    "toasts": {
+      "created": "Modelo criado",
+      "saved": "Design registrado",
+      "deleted": "Template deletado"
+    },
+    "deleteConfirm": {
+      "title": "Apague o \" {name} » ?",
+      "description": "Membros já importados com este modelo são mantidos. Você não poderá mais escanear registros com este modelo."
+    },
+    "leaveWarning": {
+      "title": "Alterações não salvas",
+      "description": "Alterações no modelo serão perdidas se você sair desta página.",
+      "discard": "Saia sem salvar",
+      "saveAndLeave": "Salvar e Sair"
+    },
+    "targetGroups": {
+      "identity": "Identidade",
+      "contact": "Contato",
+      "guardian": "Tutor legal",
+      "commitments": "Compromissos",
+      "other": "Outros"
+    },
+    "targets": {
+      "fullName": "Primeiro e sobrenome",
+      "firstName": "Primeiro nome",
+      "lastName": "Nome",
+      "birthDate": "Data de nascimento",
+      "civilite": "Título",
+      "sexe": "Gênero",
+      "email": "E-mail",
+      "phone": "Telefone",
+      "address": "Endereço",
+      "guardianFullName": "Tutor legal 1 — nome e sobrenome",
+      "guardianPhone": "Tutor legal 1 — telefone",
+      "secondGuardianFullName": "Tutor legal 2 — nome e sobrenome",
+      "secondGuardianPhone": "Tutor legal 2 — telefone",
+      "imageRights": "Direitos de imagem (caixa de seleção)",
+      "legalDocument": "Aceitando um documento (caixa de seleção)",
+      "notes": "Notas dos Membros",
+      "ignore": "Não importe"
+    },
+    "renderErrors": {
+      "unsupported_type": "Formato não suportado. Envie um PDF, ou fotos em JPEG ou PNG.",
+      "too_many_pages": "O formulário tem muitas páginas ({maximum} máximo).",
+      "pdf_password": "Este PDF está protegido por senha.",
+      "pdf_invalid": "Este PDF não pôde ser aberto.",
+      "image_invalid": "Essa imagem não pôde ser lida.",
+      "too_large": "Uma página é grande demais, mesmo depois de encolher.",
+      "aborted": "Preparação cancelada."
+    },
+    "editor": {
+      "newTitle": "Novo Modelo de Plugue",
+      "newDescription": "Envie seu formulário de registro em branco: a IA sugere a correspondência de cada caixa, você a marca e depois salva.",
+      "updatedAt": "Modificado em {date}",
+      "dropTitle": "Formulário de registro em branco",
+      "dropHint": "Um PDF, ou uma foto em JPEG ou PNG por página — no máximo 4 páginas. O cartão não é guardado.",
+      "chooseFile": "Escolha um arquivo",
+      "manualIntro": "Nenhuma chave de IA configurada?",
+      "configureManually": "Configure manualmente",
+      "preparing": "Preparando as páginas...",
+      "analyzing": "Análise da folha em andamento...",
+      "analyzingHint": "A IA identifica as caixas que precisam ser preenchidas. Isso pode levar até um minuto.",
+      "analyzeFailedTitle": "A carta não conseguiu analisar",
+      "openAiSettings": "Configurar a chave da IA nas configurações",
+      "retryAnalyze": "Refaça a varredura",
+      "changeFile": "Arquivos de troca",
+      "nameLabel": "Nome do modelo",
+      "namePlaceholder": "Formulário de registro 2026-2027",
+      "identificationLabel": "Texto de identificação",
+      "identificationPlaceholder": "EX. FORMULÁRIO DE INSCRIÇÃO 2026 2027 — Academia DAC",
+      "identificationHint": "Se preenchida, qualquer página que não corresponda exatamente a esse formulário é rejeitada para importação.",
+      "pagesPerFormLabel": "Páginas por cartão",
+      "pageCount": "{count, plural, one {# página} other {# páginas}}",
+      "fieldsTitle": "Correspondência de Campo",
+      "fieldsSummary": "{count, plural, =0 {Sem campos} one {# campo} other {# Campos}} · {mapped, plural, one {# importados} other {# importados}}",
+      "fieldsHint": "Cada linha corresponde a uma caixa no registro. Indique onde seu valor deve ser registrado no registro do membro.",
+      "droppedFields": "{count, plural, one {# caixa proposta pela IA foi descartada porque estava incompleta.} other {# caixas propostas pela IA foram descartadas porque estavam incompletas.}} Adicione-os se necessário.",
+      "noFields": "Sem campos. Adicione as caixas no seu anúncio.",
+      "addField": "Adicionar um campo",
+      "moreErrors": "… e {count, plural, one {# outro erro} other {# outros erros}}",
+      "rowError": "Linha {row} : {message}",
+      "labelPlaceholder": "Redação impressa",
+      "hintPlaceholder": "Opcional",
+      "legalDocumentPlaceholder": "Escolha um documento",
+      "noLegalDocuments": "Sem documentos legais. Crie primeiro em Documentos Legais.",
+      "columns": {
+        "label": "Redação",
+        "page": "Page",
+        "target": "Destino",
+        "legalDocument": "Documento",
+        "hint": "Indicação de leitura",
+        "actions": "Ações"
+      },
+      "rowLabelAria": "Rótulo da Linha {row}",
+      "rowPageAria": "Página da Linha {row}",
+      "rowTargetAria": "Destino da linha {row}",
+      "rowLegalDocumentAria": "Documento de Linha {row}",
+      "rowHintAria": "Indicação de Leitura de Linha {row}",
+      "removeRowAria": "Remova a linha {row}",
+      "pageLabel": "Page {page}",
+      "enlargePage": "Ampliar página {page}",
+      "referenceHint": "O cartão em branco não é guardado. Recarregue para exibi-lo ao lado dos campos.",
+      "showBlankForm": "Mostre o cartão em branco"
+    },
+    "activity": {
+      "fields": {
+        "name": "Nome",
+        "pagesPerForm": "Páginas por cartão",
+        "fields": "Campos",
+        "identificationText": "Texto de identificação"
+      }
+    }
   },
   "associationDocuments": {
     "title": "Documentos da associação",
@@ -5580,6 +6340,13 @@
     "hidden": "Oculto",
     "visibleToMembers": "Visível para os membros",
     "visibleToMembersHint": "Exibe este documento na área do membro. Se desativado, somente os gestores podem vê-lo.",
+    "visibleToPublic": "Acessível ao público",
+    "visibleToPublicHint": "Torna este documento visualizável por qualquer pessoa com o link, sem conta — necessário para vinculá-lo a partir dos seus formulários públicos.",
+    "visibleToPublicForcedHint": "Ativado automaticamente: um documento a ser aceito deve poder ser lido pela pessoa que o aceita.",
+    "requiresAcceptance": "Ser aceito",
+    "requiresAcceptanceHint": "Uma caixa de seleção obrigatória aparecerá nos formulários de associação de membros, doações, inscrição no evento, loja e criação de conta. Cada aceitação é registrada junto com a versão do documento.",
+    "exportAcceptances": "Aceitações de exportação",
+    "publicShort": "Público",
     "toasts": {
       "madeVisible": "“{title}” está visível para os membros",
       "madeHidden": "“{title}” está oculto para os membros",
@@ -5600,7 +6367,10 @@
       "contentLabel": "Conteúdo",
       "contentPlaceholder": "Escreva o conteúdo do documento…",
       "titleRequired": "O título é obrigatório.",
-      "contentRequired": "O conteúdo é obrigatório."
+      "contentRequired": "O conteúdo é obrigatório.",
+      "fileLabel": "Arquivo PDF",
+      "fileHint": "Importe a versão oficial do documento (estatutos assinados, regulamentos digitalizados, etc.). Ele está disponível para download e exibido junto com o conteúdo.",
+      "contentOptionalHint": "Opcional quando um PDF é anexado: O texto aparece abaixo do arquivo."
     },
     "leaveWarning": {
       "title": "Alterações não salvas",
@@ -5609,7 +6379,36 @@
       "saveAndLeave": "Salvar e sair"
     },
     "notFound": "Este documento não foi encontrado.",
-    "backToList": "Voltar aos documentos"
+    "backToList": "Voltar aos documentos",
+    "pdfShort": "PDF"
+  },
+  "formDraft": {
+    "restored": "Suas informações foram retidas.",
+    "discard": "Comece de novo com um formulário em branco"
+  },
+  "legalConsent": {
+    "agreeLabel": "{count, plural, one {Concordo com o seguinte documento:} other {Aceito os seguintes documentos:}}",
+    "required": "Você deve aceitar os documentos da empresa para prosseguir.",
+    "stale": "Os documentos da associação foram atualizados, por favor, leia-os novamente antes de continuar.",
+    "offlineAttestation": "Certifico que obtive o acordo dessa pessoa sobre esses documentos",
+    "gateTitle": "Documentos a serem aceitos",
+    "gateSubtitle": "Sua associação atualizou seus documentos. Por favor, leia e aceite-os para acessar seu espaço.",
+    "gateSubmit": "Eu aceito e continuo",
+    "gateSignOut": "Sair de Logout",
+    "gateError": "Não foi possível registrar sua aceitação.",
+    "offlineAttestationHint": "Registrado como uma aceitação coletada offline, em seu nome."
+  },
+  "publicDocuments": {
+    "title": "Documentos legais",
+    "subtitle": "Documentos disponibilizados pela associação.",
+    "empty": "Nenhum documento foi publicado até o momento.",
+    "updatedAt": "Atualizado em {date}",
+    "backToList": "Todos os documentos",
+    "associationNotFound": "Essa associação não aparece em lugar nenhum.",
+    "notFound": "Este documento não está mais disponível.",
+    "openPdf": "Abrir PDF",
+    "opensNewTab": "(abre em uma nova aba)",
+    "pdfShort": "PDF"
   },
   "portalMembre": {
     "associationDocuments": {
@@ -5619,7 +6418,10 @@
       "empty": "Nenhum documento disponível no momento.",
       "loadError": "Não foi possível carregar os documentos.",
       "notFound": "Este documento não foi encontrado ou não está mais disponível.",
-      "backToList": "Voltar aos documentos"
+      "backToList": "Voltar aos documentos",
+      "openPdf": "Abrir PDF",
+      "opensNewTab": "(abre em uma nova aba)",
+      "pdfShort": "PDF"
     },
     "sondages": {
       "title": "Enquetes",
@@ -5657,6 +6459,15 @@
       "viewShop": "Ver a loja",
       "orderPlacedTitle": "Pedido registrado!",
       "orderPlacedDescription": "Seu pedido está aguardando pagamento. A administração entrará em contato para finalizar.",
+      "paymentSuccessTitle": "Pagamento confirmado!",
+      "paymentSuccessDescription": "Obrigado pela sua compra. Um e-mail de confirmação com o seu recibo foi enviado para você.",
+      "stockAdjustedNotice": "O estoque de alguns itens mudou — seu carrinho foi ajustado, revise antes de continuar.",
+      "trackOrderButton": "Acompanhar meu pedido",
+      "trackingPageTitle": "Acompanhamento do pedido",
+      "trackingStatusPending": "Aguardando pagamento",
+      "trackingStatusPaid": "Pedido pago",
+      "trackingStatusCancelled": "Pedido cancelado",
+      "trackingNotFound": "Pedido não encontrado",
       "myOrdersButton": "Meus pedidos",
       "continueShopping": "Continuar comprando",
       "maxStockReached": "Estoque máximo atingido",
@@ -5694,16 +6505,7 @@
         "orderError": "Erro ao registrar o pedido",
         "orderUpdated": "Pedido atualizado",
         "orderCancelled": "Pedido cancelado"
-      },
-      "paymentSuccessTitle": "Pagamento confirmado!",
-      "paymentSuccessDescription": "Obrigado pela sua compra. Um e-mail de confirmação com o seu recibo foi enviado para você.",
-      "stockAdjustedNotice": "O estoque de alguns itens mudou — seu carrinho foi ajustado, revise antes de continuar.",
-      "trackOrderButton": "Acompanhar meu pedido",
-      "trackingPageTitle": "Acompanhamento do pedido",
-      "trackingStatusPending": "Aguardando pagamento",
-      "trackingStatusPaid": "Pedido pago",
-      "trackingStatusCancelled": "Pedido cancelado",
-      "trackingNotFound": "Pedido não encontrado"
+      }
     },
     "dons": {
       "title": "Minhas doações",
@@ -5732,7 +6534,13 @@
       "toasts": {
         "thanked": "Obrigado pela sua doação! Um e-mail de confirmação foi enviado.",
         "cancelled": "Doação cancelada."
-      }
+      },
+      "campaignsHeading": "Campanhas atuais",
+      "backToDons": "Voltando às Minhas Doações",
+      "donatingAs": "Você dá como um {name} ({email}).",
+      "comingSoon": "Em breve",
+      "campaignClosed": "Fim da campanha",
+      "loadCampaignsError": "Campanhas de doação não podem ser carregadas. Tente novamente depois."
     },
     "reunions": {
       "title": "Reuniões",
@@ -5987,6 +6795,7 @@
       "commentPlaceholder": "Algum comentário? (opcional)",
       "ticketPurchaseSuccessToast": "Ingresso comprado com sucesso!",
       "paymentCancelledToast": "Pagamento cancelado. Sua vaga continua reservada — pague depois ou cancele a reserva no card do evento.",
+      "registrationsClosed": "As inscrições estão encerradas.",
       "viewEvent": "Ver o evento",
       "backToList": "Todos os eventos",
       "notFound": "Este evento já não está disponível."
@@ -6002,6 +6811,7 @@
     "platformKeyActive": "Chave da plataforma ativa — você pode usar a IA sem configuração.",
     "providerFieldLabel": "Provedor",
     "providerFieldPlaceholder": "Escolher um provedor…",
+    "anthropicAssistantHint": "O Assistente do Centro de Ajuda só responde aos dados da sua associação (membros, contribuições, finanças) com uma chave Anthropic. Com outro provedor, ele responde apenas a partir da documentação.",
     "apiKeyLabel": "Chave de API",
     "apiKeyPlaceholderReplace": "Chave existente — digite para substituir",
     "apiKeyPlaceholderNew": "Cole sua chave de API…",
@@ -6061,6 +6871,7 @@
       "actualites": "Notícias",
       "messages": "Mensagens",
       "materiel": "Material",
+      "groupes": "Grupos",
       "site": "Site",
       "activite": "Histórico",
       "suporte": "Suporte",
@@ -6079,7 +6890,8 @@
       "pricingOffers": "Ofertas de preço",
       "support": "Suporte",
       "controlAlerts": "Alertas de controle",
-      "signOut": "Sair"
+      "signOut": "Sair",
+      "membreDuplicates": "Duplicados"
     },
     "themeToggle": {
       "changeTheme": "Mudar tema"
@@ -6087,7 +6899,8 @@
     "header": {
       "myPortal": "Meu espaço",
       "myProfile": "Meu perfil",
-      "management": "Gestão"
+      "management": "Gestão",
+      "publicSite": "Veja o site"
     },
     "userMenu": {
       "roleLabels": {
@@ -6096,7 +6909,8 @@
         "PRESIDENT": "Presidente",
         "TRESORIER": "Tesoureiro",
         "SECRETAIRE": "Secretário",
-        "MEMBRE": "Membro"
+        "MEMBRE": "Membro",
+        "EQUIPE": "Membro da equipe"
       },
       "editProfile": "Editar perfil",
       "changePassword": "Alterar senha",
@@ -6267,7 +7081,14 @@
       "error": "Ocorreu um erro",
       "closed": "Chamado fechado",
       "reopened": "Chamado reaberto"
-    }
+    },
+    "suggestReply": "Sugira uma resposta",
+    "suggestReplyConfirmTitle": "Substituir seu rascunho?",
+    "suggestReplyConfirmDescription": "O texto já inserido será substituído pela sugestão de IA.",
+    "suggestReplyConfirmAction": "Substituir",
+    "suggestReplyNote": "Sugestão gerada por IA — revise antes de enviar.",
+    "suggestReplySources": "Fontes: {titles}",
+    "suggestReplyError": "Não consigo gerar uma sugestão."
   },
   "controlAlerts": {
     "title": "Controle de adesão",
@@ -6280,9 +7101,27 @@
     "columns": {
       "membre": "Membro",
       "association": "Associação",
+      "origin": "Origem",
       "raisedAt": "Criado em",
       "daysWithoutCotisation": "Dias sem mensalidade",
       "status": "Status"
+    },
+    "originByLabel": "Por {name}",
+    "originSources": {
+      "ADMIN_MANUAL": "Adição manual por um administrador",
+      "ADMIN_REGISTRATION": "Registro por um administrador (formulário)",
+      "PUBLIC_ADHESION_FORM": "Formulário de Associação Pública (Gratuito)",
+      "PUBLIC_ADHESION_FORM_OFFLINE": "Formulário de Associação Pública (Pagamento Offline)",
+      "PUBLIC_ADHESION_STRIPE": "Formulário de Associação Pública (Pagamento Online)",
+      "PUBLIC_ADHESION_INSTALLMENTS": "Formulário público de adesão (pagamento em parcelas)",
+      "PUBLIC_ADHESION_MULTI": "Formulário de Associação Pública (Registro de Grupo)",
+      "PUBLIC_ADHESION_SUBSCRIPTION": "Formulário de Associação Pública (Assinatura Recorrente)",
+      "ASSOCONNECT_IMPORT": "Importar AssoConnect",
+      "PAPER_FORM": "Importação de formulários em papel",
+      "ASSOCIATION_SIGNUP_ADMIN": "Membro fundador (criação da associação)",
+      "PUBLIC_INSCRIPTION_REQUEST": "Solicitação de registro público (pendente de validação)",
+      "PUBLIC_INSCRIPTION_REQUEST_MULTI": "Solicitação de registro público em massa (pendente de validação)",
+      "unknown": "Origem desconhecida"
     },
     "empty": "Nenhum alerta de controle.",
     "resolveAction": "Resolver",
@@ -6301,7 +7140,453 @@
     "autoResolvedLabel": "(auto)",
     "emptyForSearch": "Nenhum resultado para \"{search}\"."
   },
+  "help": {
+    "buttonLabel": "Ajuda",
+    "title": "Centro de Ajuda",
+    "moduleGeneral": "Geral",
+    "tabs": {
+      "guide": "Ajuda",
+      "assistant": "Assistente",
+      "changelog": "Novidades",
+      "news": "Notícias"
+    },
+    "searchPlaceholder": "Ajuda na busca...",
+    "searchResultsCount": "{count, plural, one {# resultado} other {# resultados}}",
+    "searchNoResults": "Sem resultados para \" {query} ».",
+    "searchError": "A busca não está disponível no momento.",
+    "newBadge": "Novo",
+    "pinnedSection": "Isso é um",
+    "articlesSection": "Artigos",
+    "articlesOtherSection": "Outros artigos",
+    "faqSection": "Perguntas frequentes",
+    "faqOtherSection": "Outros assuntos",
+    "noContent": "Sem conteúdo de ajuda para esta seção no momento.",
+    "loadError": "Não é possível carregar a ajuda.",
+    "retry": "Tente de novo",
+    "back": "Voltar",
+    "updatedOn": "Atualizado em {date}",
+    "articleNotFound": "Item não encontrado.",
+    "callout": {
+      "info": "Informações",
+      "tip": "Dica",
+      "warning": "Atenção"
+    },
+    "assistant": {
+      "questionLabel": "Sua pergunta",
+      "questionPlaceholder": "Faça sua pergunta...",
+      "send": "Enviar",
+      "sendShortcut": "Ctrl + Enter (⌘ + Enter no Mac)",
+      "disclaimer": "Respostas geradas por IA — verifique informações importantes.",
+      "charactersCount": "{count}/{max}",
+      "youLabel": "Você",
+      "assistantLabel": "Assistente",
+      "newConversation": "Nova conversa",
+      "conversationRestoreFailed": "Sua conversa anterior não pôde ser recuperada.",
+      "intro": "Faça uma pergunta sobre o uso do Formwise ou dos dados da sua associação: membros, contribuições, finanças, eventos.",
+      "introDocs": "Faça uma pergunta sobre o uso do Formwise.",
+      "examplesLabel": "Perguntas de exemplo",
+      "examples": {
+        "unpaid": "Quem não pagou a taxa de associação este ano?",
+        "donations": "Quantas doações foram feitas este mês?",
+        "createEvent": "Como faço para criar um evento?"
+      },
+      "examplesDocs": {
+        "reminder": "Como faço para dar um acompanhamento a uma contribuição não remunerada?",
+        "export": "Como faço para exportar a lista de membros?",
+        "createEvent": "Como faço para criar um evento?"
+      },
+      "loadingCopilot": "Consultando dados...",
+      "loadingDocs": "Escrevendo...",
+      "dataConsulted": "Dados consultados:",
+      "tools": {
+        "search_members": "Membros",
+        "get_member": "Membros",
+        "list_cotisations": "Contribuições",
+        "get_finance_summary": "Resumo financeiro",
+        "list_events": "Eventos",
+        "list_donations": "Doações",
+        "list_invoices": "Faturas"
+      },
+      "sources": "Fontes:",
+      "docsOnlyNotice": "Dúvidas sobre sua associação, contribuições e finanças exigem uma chave Anthropic.",
+      "docsOnlyConfigure": "Configure nas Configurações → Integrações.",
+      "error": "Impossível obter uma resposta.",
+      "errorTimeout": "O mago não conseguiu completar dentro do tempo estipulado. Faça uma pergunta mais específica ou mais curta.",
+      "errorRateLimit": "Muitos pedidos, tente de novo em alguns instantes.",
+      "errorProvider": "O provedor de IA não conseguiu responder, tente novamente depois.",
+      "noApiKey": "Nenhuma chave de API configurada.",
+      "noApiKeyConfigure": "Adicione sua chave API em Configurações → Integrações.",
+      "noApiKeyAskAdmin": "Peça a um administrador para adicionar uma chave de API em Configurações → Integrações.",
+      "apiKeyInvalid": "A chave de API configurada é negada pelo provedor.",
+      "apiKeyInvalidConfigure": "Confira isso em Configurações → Integrações.",
+      "apiKeyInvalidAskAdmin": "Peça para um administrador verificar isso em Configurações → Integrações."
+    },
+    "changelog": {
+      "latestSection": "Últimas Atualizações",
+      "empty": "Sem novidades por enquanto.",
+      "loadError": "Não é possível carregar novos recursos.",
+      "kind": {
+        "feature": "Novo",
+        "improvement": "Melhoria",
+        "fix": "Corrigir"
+      }
+    },
+    "releaseNotes": {
+      "title": "Novidades"
+    },
+    "news": {
+      "latestSection": "Últimas notícias",
+      "empty": "Sem notícias por enquanto.",
+      "loadError": "Não consigo carregar notícias.",
+      "popupTitle": "Notícias"
+    },
+    "faqPopup": {
+      "title": "Perguntas frequentes"
+    },
+    "popupCarousel": {
+      "remindLater": "Me lembra depois",
+      "remindLaterToast": "Vamos te lembrar na próxima vez que você fizer login.",
+      "previous": "Anterior",
+      "next": "Próximo",
+      "finish": "Fim",
+      "position": "Elemento {current} em {total}",
+      "goTo": "Ir para o item {index}"
+    },
+    "footer": {
+      "tour": "Visita guiada",
+      "contactSupport": "Contate o Suporte"
+    }
+  },
+  "boutiqueShipping": {
+    "title": "Navegação",
+    "description": "O endereço de envio usado para calcular o custo de envio da loja.",
+    "addressLabel": "Endereço",
+    "addressPlaceholder": "12 rue de la Paix,",
+    "cityLabel": "Cidade",
+    "postalCodeLabel": "Código postal",
+    "countryLabel": "País",
+    "saved": "Endereço de envio registrado",
+    "deliveryMethodLabel": "Modo de Recepção",
+    "pickupOption": "Retirada no local",
+    "deliveryOption": "Envio por correspondência",
+    "shippingAddressHint": "Necessário para calcular os custos de envio.",
+    "shippingOptionsLabel": "Custos de envio",
+    "loadingRates": "Cálculo dos custos de entrega...",
+    "noShippingOptions": "Não há opções de entrega disponíveis para este endereço.",
+    "shippingUnavailable": "A entrega postal ainda não está configurada por essa associação.",
+    "leadTimeApprox": "~{days} j",
+    "shippingCostLabel": "Custos de envio",
+    "mixedCartPickupOnlyHint": "Envio indisponível: Seu carrinho contém um item que só pode ser retirado manualmente.",
+    "markupLabel": "Margem de segurança nos custos de envio",
+    "markupHint": "Adicionado à taxa exibida ao comprador. Protege você se a tarifa do transportador aumentar antes do envio real, mas um preço mais alto pode desestimular a compra.",
+    "markupRangeError": "A margem deve ser um número inteiro entre 0 e 50.",
+    "markupHintTooltip": "Nenhuma etiqueta é comprada no momento do pedido: o preço exibido é apenas uma estimativa. Se o preço real da operadora tiver aumentado no momento em que você faz a encomenda, a instituição paga a diferença — a menos que essa margem cubra isso. Por outro lado, uma margem muito alta aumenta o preço exibido ao cliente e pode desencorajá-lo a comprar."
+  },
+  "paperFormScan": {
+    "menuItem": "Importar cartões de papel",
+    "manageTemplatesMenuItem": "Gerenciar modelos de cartões",
+    "title": "Importar cartões de papel",
+    "description": "Leia formulários de inscrição preenchidos manualmente, verifique cada formulário e então crie membros.",
+    "backToMembers": "Membros",
+    "loadingTemplates": "Carregando Templates...",
+    "steps": {
+      "upload": "Arquivos",
+      "reading": "Leitura",
+      "review": "Verificação",
+      "result": "Criação"
+    },
+    "upload": {
+      "noTemplateTitle": "Sem modelo de cartão de papel",
+      "noTemplateDescription": "Primeiro, descreva seu formulário de inscrição em papel para que seus campos possam ser lidos.",
+      "createTemplate": "Crie um modelo",
+      "template": "Folha modelo",
+      "templatePlaceholder": "Escolha um modelo",
+      "templateSummary": "{pages, plural, one {# página} other {# páginas}} por cartão · {fields, plural, one {# campo} other {# Campos}}.",
+      "manageTemplates": "Gerenciar Modelos",
+      "dropTitle": "Envie o PDF escaneado ou as fotos das folhas",
+      "galleryTitle": "Escolha fotos ou PDF",
+      "dropSubtitle": "PDF, JPEG ou PNG — múltiplos arquivos possíveis, lidos em ordem de nome",
+      "privacyNote": "As páginas permanecem no seu navegador: apenas as imagens são enviadas uma a uma para serem lidas, nada é guardado.",
+      "pageCount": "{count, plural, one {# página} other {# páginas}}",
+      "removeFile": "Remover {name}",
+      "preparing": "Preparando as páginas...",
+      "batchSummary": "{pages, plural, one {# página} other {# páginas}} · Sobre {forms, plural, one {# Histórico} other {# folhas}}",
+      "pageTotal": "{count, plural, one {# página} other {# páginas}}",
+      "start": "Iniciar o jogo",
+      "renderFailed": "{name} : {error}",
+      "strictTemplateNotice": "Apenas as páginas de \" {name} \" será aceito.",
+      "capturedListLabel": "Cartões fotografados",
+      "capturedForm": "Ficha informativa {form}",
+      "capturedPages": "{count, plural, one {Page {list}} other {Páginas {list}}}",
+      "capturedMissing": "{count, plural, one {Página {list} ausente} other {páginas {list} ausente}}",
+      "capturedInProgress": "Em andamento",
+      "removeCapturedForm": "Remover o arquivo {form}",
+      "capturedSummary": "{forms, plural, one {# Histórico} other {# folhas}} · {pages, plural, one {# página} other {# páginas}}",
+      "camera": {
+        "title": "Fotografe os cartões",
+        "needsTemplate": "Primeiro, escolha um modelo: o aplicativo vai te dizer qual página fotografar.",
+        "prompt": "Ficha informativa {form} — página {page} em {pages}",
+        "promptSinglePage": "Ficha informativa {form}",
+        "capturePage": "Fotografe a página {page}",
+        "captureForm": "Fotografe a folha",
+        "skipToNextForm": "Pular para o arquivo {form}",
+        "lastShot": "Ficha informativa {form} · Página {page}",
+        "lastShotSinglePage": "Ficha informativa {form}",
+        "lastShotAlt": "Foto do arquivo {form}, página {page}",
+        "preparing": "Preparação...",
+        "retake": "Currículo",
+        "retakeLabel": "Tire a foto do cartão {form}, página {page}",
+        "framingHint": "Coloque a folha plana, bem iluminada, e emoldure toda a página com suas quatro bordas.",
+        "photoFileName": "Ficha informativa {form} Página {page}.{extension}"
+      }
+    },
+    "reading": {
+      "progress": "{read} / {total} Páginas Lues",
+      "failedCount": "{count, plural, one {# página em erro} other {# páginas com erro}}",
+      "runningHint": "A leitura continua enquanto esta página permanecer aberta.",
+      "pageFailed": "A página não pôde ser lida",
+      "stoppedTitle": "Reprodução interrompida",
+      "rateLimitedTitle": "Pause a reprodução",
+      "openAiSettings": "Configurações de IA",
+      "openTemplates": "Folhas de Modelo",
+      "resume": "Currículo",
+      "failedTitle": "Páginas não lidas",
+      "retryAll": "Tente tudo de novo",
+      "pageColumn": "Page",
+      "fileColumn": "Arquivo",
+      "errorColumn": "Erro",
+      "retry": "Tente de novo",
+      "continueWithFailuresHint": "Você pode continuar: as páginas não lidas permanecem visíveis durante a verificação e são preenchidas manualmente.",
+      "restart": "Começar de novo",
+      "continueAnyway": "Confere mesmo assim",
+      "continue": "Pular para a Verificação",
+      "refusedCount": "{count, plural, one {# página de rejeição} other {# páginas rejeitadas}}",
+      "refusedTitle": "Páginas reprovadas",
+      "reasonColumn": "Motivo",
+      "pageRefused": "Página rejeitada — este não é o recorde esperado",
+      "detectedDocument": "Documento detectado: {title}",
+      "removePage": "Remover",
+      "refusedHint": "Essas páginas não serão importadas. Se uma carta perder uma de suas páginas dessa forma, ela aparecerá com uma página faltando."
+    },
+    "viewer": {
+      "pageSwitch": "Página exibida",
+      "page": "Page {number}",
+      "pageMissing": "Page {number} Sumido",
+      "zoomOut": "Colapso",
+      "zoomIn": "Ampliar",
+      "pageUnread": "Page non lue: {error}",
+      "pageAlt": "Page {number} da folha de exercícios ({file})",
+      "missingPageBody": "A página {number} desta folha não foi importada."
+    },
+    "editor": {
+      "lowConfidence": "Leitura incerta, a ser verificada",
+      "identity": "Identidade",
+      "firstName": "Primeiro nome",
+      "lastName": "Nome",
+      "alreadyExists": "Já existe: {people}",
+      "email": "E-mail",
+      "phone": "Telefone",
+      "birthDate": "Data de nascimento",
+      "age": "{age, plural, one {# um} other {# anos}}",
+      "civilite": "Título",
+      "sexe": "Gênero",
+      "address": "Endereço",
+      "addressLowConfidence": "Endereço lido com incerteza, a ser verificado",
+      "guardians": "Tutores legais",
+      "guardianExpected": "Membro Secundário ({age, plural, one {# um} other {# anos}}): nenhum tutor legal informado.",
+      "guardianName": "Tutor legal {number} — Nome",
+      "guardianPhone": "Tutor legal {number} — telefone",
+      "consents": "Permissões",
+      "imageRights": "Direitos de imagem",
+      "imageRightsYes": "Sim",
+      "imageRightsNo": "Não",
+      "imageRightsUnknown": "Não especificado",
+      "sheetAnswers": "Respostas no arquivo",
+      "sheetAnswersHint": "Campos sem coluna dedicada: Estes serão adicionados às anotações do membro na criação.",
+      "sheetPage": "Page {page}",
+      "sheetPageMissing": "Página faltando: sem resposta lida.",
+      "checkboxUnread": "Caixa não lida, para ser marcada no cartão",
+      "linkedDocument": "Aceitação dos registros de \" {title} »",
+      "notes": "Notas",
+      "notesOwnHint": "Suas próprias anotações. As respostas no cartão serão adicionadas a ele no momento da criação, no formato \"rótulo: valor\"."
+    },
+    "review": {
+      "summary": "{total, plural, one {# Histórico} other {# folhas}} · {toReview} a ser revisado · {validated, plural, one {# validado} other {# validado}} · {ignored, plural, one {# ignorado} other {# ignorado}} · {created, plural, one {# criado} other {# criado}}",
+      "checkingDuplicates": "procurar por duplicados...",
+      "duplicatesFailed": "A busca duplicada falhou; você pode continuar a verificação.",
+      "create": "{count, plural, =0 {Criar Membros} one {Crie # membro} other {Crie # membros}}",
+      "formsList": "Fichas informativas",
+      "untitledForm": "Ficha informativa {number}",
+      "missingPages": "{count, plural, one {Page {list} ausente} other {Páginas {list} ausente}}",
+      "formPosition": "Ficha informativa {number} em {total}",
+      "previous": "Carta anterior",
+      "next": "Próxima página",
+      "missingPagesNotice": "{count, plural, one {Page {list} ausente} other {Páginas {list} ausente}} : Os campos desta página permanecem vazios. Você pode validar o formulário e preencher o membro depois.",
+      "commitError": "A criação fracassou: {error}",
+      "createdNotice": "Membro criado.",
+      "openMember": "Abra o arquivo",
+      "unvalidate": "Desfazer Validação",
+      "restore": "Restauração",
+      "ignore": "Ignore",
+      "validate": "Validar",
+      "invalidBeforeCreate": "{count, plural, one {Uma listagem validada contém um erro} other {# listagens validadas contêm um erro}} : Corrija-os antes de criar membros."
+    },
+    "status": {
+      "toReview": "A ser revisado",
+      "validated": "Validado",
+      "ignored": "Ignorado",
+      "error": "Erro",
+      "created": "Criação"
+    },
+    "result": {
+      "summary": "{created, plural, =0 {Nenhum membro criado} one {# membro criado} other {# membros criados}}{errors, plural, =0 {} one { · # erro} other { · # erros}}",
+      "remaining": "{count, plural, one {# arquivo ainda precisa ser processado} other {# arquivos ainda precisam ser processados}}.",
+      "nameColumn": "Nome",
+      "statusColumn": "Resultado",
+      "detailColumn": "Detalhes",
+      "created": "Criação",
+      "error": "Erro",
+      "skippedDocuments": "Aceitação Não Registrada: {documents}",
+      "backToReview": "Voltar à Verificação",
+      "goToMembers": "Ver Membros",
+      "genericError": "Membros criadores de erros"
+    },
+    "notesValues": {
+      "yes": "Sim",
+      "no": "Não"
+    },
+    "validation": {
+      "firstNameRequired": "Primeiro nome necessário",
+      "lastNameRequired": "Nome necessário"
+    },
+    "leaveWarning": {
+      "title": "Abandonar l''import?",
+      "description": "Registros lidos e verificados nesta página serão perdidos. Membros já criados são mantidos.",
+      "confirm": "Sair sem criar"
+    },
+    "restartWarning": {
+      "title": "Recomeçar l''import?",
+      "description": "Páginas enviadas e a leitura deles serão abortadas.",
+      "confirm": "Começar de novo"
+    }
+  },
   "formTermsEditor": {
     "contentRequired": "Você deve preencher o campo “{conditionsLabel}” ou enviar um documento."
+  },
+  "membreDuplicates": {
+    "list": {
+      "title": "Possíveis duplicados",
+      "subtitle": "Membros que parecem ser a mesma pessoa — verifique antes de fundi-los.",
+      "menuItem": "Duplicados",
+      "scanAction": "Escanear para duplicatas",
+      "scanSuccess": "{count, plural, =0 {Sem duplicatas pendentes} one {1 duplicado pendente} other {# duplicatas pendentes}}",
+      "scanError": "Busca por Erros por Duplicatas",
+      "searchPlaceholder": "Procure por um membro...",
+      "matchedFields": {
+        "EMAIL": "E-mail",
+        "NAME": "Nome"
+      },
+      "columns": {
+        "membreA": "Membro A",
+        "membreB": "Membro B",
+        "matchedFields": "Critérios correspondentes",
+        "detectedAt": "Detectado",
+        "status": "Status"
+      },
+      "status": {
+        "PENDING": "Pendente",
+        "DISMISSED": "Ignorado",
+        "MERGED": "Fusão"
+      },
+      "autoDismissedLabel": "(carro)",
+      "compareAction": "Compare",
+      "dismissAction": "Ignore",
+      "empty": "Sem duplicatas.",
+      "emptyForSearch": "Sem resultados para \" {search} ».",
+      "restoreAction": "Restauração"
+    },
+    "merge": {
+      "backLink": "Voltar",
+      "title": "Comparar e mesclar",
+      "subtitle": "Escolha qual membro manter e, para cada campo diferente, qual valor manter.",
+      "alreadyMerged": "Essa duplicata já foi fundida.",
+      "keepAsPrimary": "Mantenha-se como Diretor",
+      "fieldsTitle": "Diferentes áreas",
+      "fields": {
+        "firstName": "Primeiro nome",
+        "lastName": "Nome",
+        "email": "E-mail",
+        "phone": "Telefone",
+        "birthDate": "Data de nascimento",
+        "civilite": "Título",
+        "address": "Endereço",
+        "addressStreet": "Pista",
+        "addressComplement": "Endereço adicional",
+        "postalCode": "Código postal",
+        "city": "Cidade",
+        "country": "País",
+        "groupeSanguin": "Tipo sanguíneo",
+        "sexe": "Gênero",
+        "allergies": "Alergias",
+        "photoUrl": "Foto",
+        "preferredLocale": "Idioma preferido",
+        "spokenLanguage": "Idioma falado",
+        "possedeTshirt": "Tem uma camiseta",
+        "tailleTshirt": "Tamanho de camiseta",
+        "typeId": "Tipo de Membro",
+        "notes": "Notas",
+        "guardianName": "Nome do tutor legal",
+        "guardianPhone": "Número de telefone do tutor legal",
+        "secondGuardianName": "Nome do segundo tutor legal",
+        "secondGuardianPhone": "Número de telefone do segundo tutor legal",
+        "imageRightsConsent": "Direitos de imagem",
+        "imageRightsConsentAt": "Data do consentimento (direitos de imagem)"
+      },
+      "relatedDataTitle": "Dados relacionados",
+      "relations": {
+        "cotisations": "Contribuições",
+        "participations": "Inscrições em eventos",
+        "dons": "Doações",
+        "membershipAddonPurchases": "Opções de Associação Compradas",
+        "automationLogs": "Automações acionadas",
+        "emailMessages": "E-mails enviados",
+        "smsMessages": "SMS enviado",
+        "incomes": "Receitas",
+        "materialLoans": "Empréstimos para equipamentos",
+        "boutiqueCommandes": "Pedidos de Loja",
+        "actualiteRecipients": "Destinatários da notícia",
+        "sondageRecipients": "Beneficiários da pesquisa",
+        "sondageReponses": "Respostas da Pesquisa",
+        "meetingParticipants": "Participação em reuniões",
+        "erasureRequests": "Solicitações de exclusão",
+        "dependants": "Membros Anexados (dependentes)",
+        "cotisationSubscription": "Assinatura ativa de associação",
+        "controlAlert": "Alerta de Controle Ativo"
+      },
+      "relatedDataCounts": "{primary} → {secondary}",
+      "conflictWarning": "⚠ {reason}",
+      "dismissAction": "Ignore essa duplicação",
+      "mergeAction": "Fusão",
+      "mergeConfirmTitle": "Fusão esses dois membros?",
+      "mergeConfirmDescription": "Todos os dados relacionados do membro secundário serão transferidos para o membro primário. Essa ação não pode ser desfeita da interface.",
+      "mergeConfirmDescriptionWithPortalWarning": "Ambos os membros possuem uma conta de portal — a conta do membro secundário será desativada. Todos os outros dados relacionados serão transferidos para o membro principal. Essa ação não pode ser desfeita da interface.",
+      "mergeConfirmDescriptionAdoptsPortal": "A conta do portal do membro secundário será assumida pelo membro primário. Todos os outros dados relacionados serão transferidos. Essa ação não pode ser desfeita da interface.",
+      "mergeSuccess": "{count, plural, =0 {Fusão concluída} one {Fusão — 1 item transferido} other {Mescla — # itens transferidos}}",
+      "mergeError": "Fusão de erros",
+      "relatedDataEmpty": "Nenhum dado vinculado a nenhum dos membros."
+    },
+    "backoffice": {
+      "title": "Membros duplicados",
+      "subtitle": "Possíveis duplicados detectados em todas as associações.",
+      "columns": {
+        "association": "Associação"
+      },
+      "changeAssociation": "Changer d''association",
+      "associationSearchPlaceholder": "Procure uma associação...",
+      "typeToSearch": "Toque para buscar...",
+      "loading": "Carregando...",
+      "noResults": "Sem resultados.",
+      "scanAction": "Scanner"
+    }
   }
 }

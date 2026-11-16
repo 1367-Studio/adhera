@@ -5,6 +5,7 @@
     "delete": "Radera",
     "add": "Lägg till",
     "edit": "Redigera",
+    "view": "Visa detaljer",
     "confirm": "Bekräfta",
     "close": "Stäng",
     "back": "Tillbaka",
@@ -41,6 +42,7 @@
     "location": "Läge",
     "choosePlaceholder": "Välj...",
     "allPlaceholder": "Alla",
+    "noOptionsPlaceholder": "Inga alternativ tillgängliga",
     "previousPage": "Föregående sida",
     "nextPage": "Nästa sida",
     "paginationRange": "{from}–{to} / {total}",
@@ -51,7 +53,10 @@
     "addressPlaceholder": "Salle des fêtes, 12 rue de la Paix, Paris...",
     "viewOnGoogleMaps": "Se på Google Maps",
     "backToSite": "Tillbaka till webbplatsen",
-    "noOptionsPlaceholder": "Inga alternativ tillgängliga"
+    "period": {
+      "exercice": "Träning {year}",
+      "exerciceRange": "Träning {startYear}–{endYear}"
+    }
   },
   "address": {
     "street": "Adress",
@@ -59,8 +64,30 @@
     "complementPlaceholder": "Byggnad, våning, brevlåda…",
     "postalCode": "Postnummer",
     "city": "Ort",
-    "country": "Land",
+    "country": "Bosättningsland",
     "legacyMigratedHint": "Kopierat från det gamla adressfältet — kontrollera att det inte redan innehåller postnumret och orten nedan."
+  },
+  "avis": {
+    "invalidLink": "Denna recensionslänk är ogiltig.",
+    "thanks": "Tack för din recension!",
+    "notEligible": "Endast deltagare på evenemanget kan lämna en recension.",
+    "greeting": "Hej {firstName}, hur upplevde du det här evenemanget?",
+    "commentPlaceholder": "Några kommentarer? (valfritt)",
+    "submit": "Skicka min recension",
+    "ratingRequired": "Välj en ton",
+    "networkError": "Nätverksfel",
+    "genericError": "Fel",
+    "publicationQuestion": "Tillåter du att din åsikt publiceras på föreningens webbplats och sociala nätverk?",
+    "publicationYes": "Ja, jag godkänner publicering.",
+    "publicationNo": "Nej, min åsikt kommer att förbli tillgänglig endast för föreningens chefer.",
+    "publicationRequired": "Tack för att du svarade på den här frågan.",
+    "identificationQuestion": "Hur skulle du vilja bli identifierad?",
+    "identificationNamed": "Med mitt för- och efternamn",
+    "identificationAnonymous": "Anonymt",
+    "identificationRequired": "Vänligen välj ett alternativ.",
+    "manageConsentTitle": "Hantera publiceringstillstånd",
+    "updateConsent": "Uppdatera mina inställningar",
+    "consentUpdated": "Dina inställningar har uppdaterats."
   },
   "auth": {
     "layout": {
@@ -80,6 +107,8 @@
       "heading": "Logga in",
       "subtitle": "Ange dina inloggningsuppgifter för att komma åt ditt utrymme.",
       "suspended": "Din förenings prenumeration är avstängd. Kontakta din administratör för att klargöra situationen.",
+      "errorMulti": "Flera konton matchar denna Google-mejl. Logga in med ditt lösenord.",
+      "error2faRequired": "Tvåfaktorsautentisering är aktiverad på detta konto. Logga in med ditt lösenord.",
       "noAccount": "Har du inget konto än?",
       "createAccount": "Skapa ett konto",
       "form": {
@@ -91,6 +120,17 @@
         "connecting": "Loggar in…",
         "or": "eller",
         "continueWithGoogle": "Fortsätt med Google"
+      },
+      "twoFactor": {
+        "title": "Tvåstegsverifiering",
+        "descriptionTotp": "Ange den sexsiffriga koden som visas i din autentiseringsapp.",
+        "descriptionBackup": "Ange en av dina backupkoder.",
+        "codeLabel": "Verifieringskod",
+        "backupCodeLabel": "Backupkod",
+        "submit": "Check",
+        "back": "Tillbaka",
+        "useBackupCode": "Använd en reservkod",
+        "useAuthenticatorCode": "Använd appkoden"
       }
     },
     "register": {
@@ -224,6 +264,7 @@
       "title": "Medlemsområde",
       "subtitle": "Logga in för att komma åt ditt utrymme.",
       "suspendedNotice": "Föreningens prenumeration är inställd. Kontakta administratören för att klargöra situationen.",
+      "selfRegisterDisabledNotice": "Självbetjäningskontoskapande är inte längre möjligt. Kontakta en administratör i din organisation för åtkomst.",
       "emailLabel": "E-postadress",
       "emailPlaceholder": "contact@association.fr",
       "passwordLabel": "Lösenord",
@@ -316,6 +357,7 @@
     "vat": "Moms",
     "totalDiscount": "Total rabatt",
     "total": "Totalt",
+    "paymentMethod": "Betalningsmetod",
     "paymentTerms": "Betalningsvillkor",
     "paymentTermsPlaceholder": "t.ex. 30-dagars betalning",
     "notes": "Noter",
@@ -371,7 +413,9 @@
     "viewDocument": "Visa dokumentet",
     "remove": "Radera",
     "uploading": "Laddar upp...",
-    "attach": "Bifoga bild eller PDF (max 4 MB)"
+    "attach": "Bifoga bild eller PDF (max 4 MB)",
+    "attachPdf": "Importera en PDF (max 4 MB)",
+    "pdfOnly": "Endast PDF-filer accepteras"
   },
   "factures": {
     "form": {
@@ -646,13 +690,20 @@
       "amount": "Belopp",
       "statusOptions": {
         "aPayer": "Betalbart",
+        "partiellementPayee": "Delvis betald",
         "payee": "Betald",
         "enLitige": "I tvist",
         "annulee": "Nedlagd"
       },
-      "unmarkPaidWarning": "Detta dokument är för närvarande betalat — att ta bort denna status tar bort den kostnad det genererat i Finans, liksom eventuell bankavstämning.",
-      "markPaidNotice": "Att markera detta dokument som betalt skapar automatiskt en motsvarande utgift i Ekonomiavdelningen.",
       "file": "Dokument",
+      "payment": {
+        "add": "Registrera en betalning",
+        "title": "Registrera en betalning",
+        "paidOf": "Betald",
+        "toasts": {
+          "recorded": "Betalning registrerad"
+        }
+      },
       "toasts": {
         "uploadError": "Fel vid uppladdning av dokumentet",
         "networkError": "Nätverksfel laddas upp — försök igen"
@@ -863,6 +914,10 @@
       "userMenu": {
         "title": "Din profil",
         "description": "Redigera din profil, byt lösenord och logga ut från denna meny."
+      },
+      "help": {
+        "title": "Behöver du hjälp?",
+        "description": "Det var allt! Den här knappen öppnar Hjälpcentern: artiklar, vanliga frågor, guide och nyheter. Du kan också starta om detta besök från dess fot."
       }
     }
   },
@@ -878,6 +933,8 @@
       "import": "Import",
       "reconciliation": "Avstämning",
       "categories": "Kategorier",
+      "immobilisations": "Kapitaltillgångar",
+      "journalManual": "Handskrift",
       "reports": "Rapporter",
       "bilan": "Balansräkning",
       "compteResultat": "Resultaträkning",
@@ -894,9 +951,358 @@
       "title": "Kommer snart",
       "description": "Denna funktion är under utveckling."
     },
+    "immobilisationsView": {
+      "title": "Kapitaltillgångar",
+      "description": "Avskrivningsbara tillgångar (materiella och immateriella) och deras avskrivningsschema.",
+      "add": "Lägg till i kundvagnen",
+      "newTitle": "Ny kapitaltillgång",
+      "noImmobilisations": "Ingen nedgång",
+      "columns": {
+        "label": "Beteckning",
+        "entryValue": "Bruttovärde",
+        "accumulated": "Avskrivningar och amortering",
+        "netValue": "Nettoförmögenhet",
+        "usageStartDate": "Sjösättning"
+      },
+      "deleteConfirmTitle": "Ska du avskaffa denna immobilisering?",
+      "toasts": {
+        "created": "Fasta tillgångar skapade",
+        "updated": "Uppdaterad anläggningstillgång",
+        "deleted": "Anläggningstillgångar borttagna"
+      },
+      "drillDown": {
+        "title": "Avskrivningar och amortering",
+        "exercice": "Träning",
+        "dotation": "Bemanning",
+        "accumulated": "Kumulering",
+        "netValue": "Nettoförmögenhet",
+        "noDepreciations": "Inga prispengar registreras vid denna tidpunkt"
+      }
+    },
+    "immobilisationForm": {
+      "label": "Beteckning",
+      "labelPlaceholder": "Exempel: Laptop — Stationär dator",
+      "expense": "Upphandlingskostnader",
+      "expensePlaceholder": "Välj en utgift märkt \"kapital\"",
+      "noEligibleExpenses": "Inga berättigade utgifter — markera en utgift som kapital och kategorisera den på konto 218300 (egendom) eller 205000 (immateriellt).",
+      "entryValue": "Indatavärde",
+      "residualValue": "Restvärde",
+      "acquisitionDate": "Förvärvsdatum",
+      "usageStartDate": "Intjänstgöringsdatum",
+      "usefulLifeMonths": "Användningstid (månader)"
+    },
+    "journalManual": {
+      "title": "Handskrift",
+      "description": "Börja en bokbokspost för ett belopp du bestämmer – avsättning, deposition, upptjäning – när ingen funktion automatiskt beräknar det.",
+      "newEntry": "Nytt skrivande",
+      "exercice": "Träning",
+      "date": "Datum",
+      "label": "Formulering",
+      "labelPlaceholder": "Exempel: Bestämmelse för rättstvist — ansökan 2026-04",
+      "account": "Kontot",
+      "accountPlaceholder": "Välj ett konto",
+      "debit": "Flödeshastighet",
+      "credit": "Kredit",
+      "totals": "Debet-/kredittotaler",
+      "addLine": "Lägg till en rad",
+      "mustBalance": "Debet och kredit måste vara lika och icke-noll.",
+      "missingAccount": "Varje linje måste ha ett konto.",
+      "cancel": "Avbryt",
+      "submit": "Börja skriva",
+      "createSuccess": "Inlägg skapat",
+      "noOpenExercice": "Inga öppna aktiviteter – öppna eller öppna igen ett räkenskapsår innan manuell registrering påbörjas."
+    },
+    "bilan": {
+      "title": "Balansräkning",
+      "description": "Föreningens tillgångar och skulder vid räkenskapsårets slut.",
+      "exerciceLabel": "Träning",
+      "rubriqueColumnLabel": "Sektion",
+      "noPreviousExercice": "Ingen jämförande tillgång",
+      "actif": "Aktiv",
+      "totalActif": "Total aktiv",
+      "passif": "Passiv",
+      "totalPassif": "Totala skulder",
+      "noAccountsInRubrique": "Ingen balans i denna sektion",
+      "exportPdf": "Exportera PDF",
+      "exportDisabledTooltip": "Kan inte exportera en slutgiltig balansräkning förrän ovanstående avvikelser är åtgärdade.",
+      "emptyExercice": {
+        "title": "Inget räkenskapsår",
+        "description": "Skapa ett nytt räkenskapsår för att se balansräkningen."
+      },
+      "emptyLedger": {
+        "title": "Inga bokföringsposter",
+        "description": "Balansräkningen kommer att visas så snart inkomster, utgifter eller fasta tillgångar har bokförts under detta räkenskapsår."
+      },
+      "rubriques": {
+        "immobilisationsCorporelles": "Materiella kapitaltillgångar",
+        "immobilisationsIncorporelles": "Immateriella fasta tillgångar",
+        "immobilisationsFinancieres": "Finansiella anläggningstillgångar",
+        "disponibilites": "Tillgänglighet",
+        "chargesConstateesDavance": "Förbetalda utgifter",
+        "creances": "Kundfordringar",
+        "stocksEtEnCours": "Inventarie",
+        "fondsPropres": "Egenkapital",
+        "provisions": "Avsättningar",
+        "dettes": "Skulder",
+        "produitsConstatesDavance": "Uppskjuten inkomst",
+        "fondsDedies": "Begränsade medel"
+      },
+      "memoNotice": "Uppskattning — inte bokförd i huvudboken, exkluderad från totala tillgångar.",
+      "accountLabels": {
+        "reportANouveau": "Balanserade vinstmedel",
+        "resultatExercice": "Nettoresultat för året",
+        "creancesCotisations": "Utestående medlemsavgifter",
+        "creancesFactures": "Utestående fakturor",
+        "stocksEstimatedValue": "Uppskattat lagervärde",
+        "creancesFacturesEnRetard": "Förfallna fakturor"
+      },
+      "pdf": {
+        "periodLabel": "Period från {start} till {end}"
+      },
+      "drillDown": {
+        "date": "Datum",
+        "label": "Etikett",
+        "origin": "Ursprung",
+        "debit": "Debet",
+        "credit": "Kredit",
+        "noLines": "Inga poster för detta konto.",
+        "sourceTypes": {
+          "INCOME": "Inkomst",
+          "INCOME_REVERSAL": "Inkomstvändning",
+          "EXPENSE": "Kostnad",
+          "EXPENSE_REVERSAL": "Kostnadsåtervinning",
+          "BANK_TRANSACTION": "Banktransaktion",
+          "ACCOUNT_TRANSFER": "Intern överföring",
+          "OPENING_BALANCE": "Öppningsbalans",
+          "IMMOBILISATION_DEPRECIATION": "Värdeminskning",
+          "IMMOBILISATION_ACQUISITION": "Förvärv av tillgångar",
+          "FACTURE_RECUE_PAYMENT": "Leverantörsbetalning",
+          "MANUAL": "Manuell inmatning"
+        }
+      },
+      "issues": {
+        "title": "Avvikelser upptäckta",
+        "messages": {
+          "ACCOUNT_WITHOUT_RUBRIQUE": "Kontot {code} — {label} har ett saldo men är inte kopplat till någon balanspost.",
+          "ACTIF_PASSIF_MISMATCH": "Tillgången ({actif}) motsvarar inte skulden ({passif}).",
+          "OPENING_BALANCE_MISSING": "Inga inledande poster genererades för denna övning från \"{previousLabel}\".",
+          "TRIAL_BALANCE_UNBALANCED": "Den totala debetbeloppet ({debit}) motsvarar inte den totala krediten ({credit}) för detta räkenskapsår.",
+          "RESULT_DIVERGENCE": "Resultatet av journalen ({journal}) skiljer sig från resultaträkningen ({statement}) — journalen kanske ännu inte är uppdaterad för detta räkenskapsår (stäng räkenskapsåret eller återstart synkronisering)."
+        }
+      },
+      "memoNoHistory": "Inga historiska data",
+      "caveats": {
+        "stocksMissingCostPrice": "{count} varianter utan inköpskostnad registrerad, undantagna från uppskattningen"
+      }
+    },
+    "compteResultat": {
+      "title": "Resultaträkning",
+      "description": "Räkenskapsårets ekonomiska resultat jämfört med föregående år.",
+      "exerciceLabel": "Räkenskapsår",
+      "categoryColumnLabel": "Kategori",
+      "noPreviousExercice": "-",
+      "noPreviousExerciceMessage": "Inget föregående räkenskapsår tillgängligt",
+      "export": "Exportera",
+      "exportExcel": "Exportera Excel (detaljerad)",
+      "exportPdf": "Exportera PDF",
+      "products": "Intäkter",
+      "totalProducts": "Totala intäkter",
+      "expenses": "Kostnader",
+      "totalExpenses": "Totala kostnader",
+      "result": "Räkenskapsårets resultat",
+      "resultZero": "Räkenskapsårets resultat: 0 €",
+      "surplus": "Räkenskapsårets överskott",
+      "deficit": "Räkenskapsårets underskott",
+      "operationalResult": "Rörelseresultat",
+      "uncategorized": "Att kategorisera",
+      "uncategorizedAlertIncome": "{count, plural, one {# intäkt måste kategoriseras} other {# intäkter måste kategoriseras}}",
+      "uncategorizedAlertExpense": "{count, plural, one {# kostnad måste kategoriseras} other {# kostnader måste kategoriseras}}",
+      "expandSection": "Visa",
+      "collapseSection": "Dölj",
+      "noCategoriesInSection": "Ingen kategori i detta avsnitt",
+      "sections": {
+        "FINANCIAL": "Finansiellt",
+        "EXCEPTIONAL": "Extraordinärt",
+        "OTHER": "Övrigt"
+      },
+      "inKind": {
+        "title": "Frivilliga bidrag i natura",
+        "employmentHeader": "Användning av bidrag",
+        "amountHeader": "Belopp",
+        "receivedHeader": "Mottagna bidrag",
+        "totalEmployments": "Totalt antal jobb",
+        "totalReceived": "Totala bidrag",
+        "note": "Dessa fria bidrag värderas i euro. De leder inte till någon penningrörelse och förändrar inte resultatet av räkenskapsåret."
+      },
+      "drillDown": {
+        "date": "Datum",
+        "origin": "Ursprung",
+        "person": "Person",
+        "payment": "Betalning",
+        "amount": "Belopp",
+        "categorize": "Kategorisera",
+        "categorizePlaceholder": "Välj en kategori",
+        "noTransactions": "Inga transaktioner",
+        "categorizeSuccess": "Transaktion kategoriserad"
+      },
+      "pdf": {
+        "periodLabel": "Period från {start} till {end}",
+        "operatingIncome": "RÖRELSEINTÄKTER",
+        "operatingExpense": "RÖRELSEKOSTNADER",
+        "operatingResult": "RÖRELSERESULTAT",
+        "financialIncome": "FINANSIELLA INTÄKTER",
+        "financialExpense": "FINANSIELLA KOSTNADER",
+        "financialResult": "FINANSIELLT RESULTAT",
+        "exceptionalIncome": "EXTRAORDINÄRA INTÄKTER",
+        "exceptionalExpense": "EXTRAORDINÄRA KOSTNADER",
+        "exceptionalResult": "EXTRAORDINÄRT RESULTAT",
+        "otherIncome": "ÖVRIGA INTÄKTER",
+        "otherExpense": "ÖVRIGA KOSTNADER",
+        "otherResult": "RESULTAT FRÅN ÖVRIGA INTÄKTER OCH KOSTNADER",
+        "uncategorizedSection": "TRANSAKTIONER ATT KATEGORISERA",
+        "uncategorizedIncomeLabel": "Intäkter att kategorisera",
+        "uncategorizedExpenseLabel": "Kostnader att kategorisera",
+        "total": "Summa",
+        "grandTotal": "TOTALT",
+        "categoryColumn": "Kategori",
+        "inKindTitle": "Frivilliga bidrag i natura",
+        "inKindEmploymentHeader": "Användning av bidrag",
+        "inKindAmountHeader": "Belopp",
+        "inKindReceivedHeader": "Mottagna bidrag",
+        "inKindTotalEmployments": "Totalt antal jobb",
+        "inKindTotalReceived": "Totala bidrag",
+        "inKindNote": "Dessa fria bidrag värderas i euro. De leder inte till någon penningrörelse och förändrar inte resultatet av räkenskapsåret."
+      },
+      "csv": {
+        "date": "Datum",
+        "type": "Typ",
+        "typeIncome": "Intäkt",
+        "typeExpense": "Kostnad",
+        "category": "Kategori",
+        "uncategorized": "Att kategorisera",
+        "accountingCode": "Kontokod",
+        "description": "Beskrivning",
+        "amount": "Belopp",
+        "paymentMethod": "Betalningsmetod",
+        "origin": "Ursprung",
+        "reference": "Referens",
+        "exercice": "Räkenskapsår"
+      },
+      "emptyExercice": {
+        "title": "Inget räkenskapsår",
+        "description": "Skapa ett räkenskapsår för att generera resultaträkningen."
+      }
+    },
+    "previsionnel": {
+      "title": "Preliminär budget",
+      "description": "Jämför den planerade och faktiska budgeten, per kategori och projekt.",
+      "exerciceLabel": "Träning",
+      "emptyExercice": {
+        "title": "Inget räkenskapsår",
+        "description": "Skapa ett räkenskapsår för att förbereda sin prognostiserade budget."
+      },
+      "tabs": {
+        "global": "Global budget",
+        "projects": "Per projekt"
+      },
+      "income": "Recept",
+      "expense": "Utgifter",
+      "result": "Resultat",
+      "card": {
+        "previsto": "Planerat",
+        "diff": "Varians",
+        "percent": "Färdigställd"
+      },
+      "columns": {
+        "category": "Kategori",
+        "previsto": "Planerat",
+        "realizado": "Färdigställd",
+        "diffPercent": "Varians / % realiserad",
+        "total": "Totalt"
+      },
+      "noCategories": "Ingen kategori.",
+      "uncategorized": "Att kategoriseras",
+      "noProject": "Utan projekt",
+      "addCategory": "Lägg till en kategori",
+      "addCategoryModalTitle": "Lägg till en kategori",
+      "exportFileNameGlobal": "Global-prognos-budget",
+      "export": {
+        "action": "Export",
+        "excel": "Exporter Excel",
+        "pdf": "Exportör PDF",
+        "diffColumn": "Spread (€)",
+        "percentColumn": "% slutfört",
+        "associationLabel": "Förening",
+        "exerciceLabel": "Träning"
+      },
+      "toasts": {
+        "categoryCreated": "Kategori skapad.",
+        "updateError": "Fel vid uppdatering."
+      },
+      "copyBudget": {
+        "action": "Kopiera föregående budget",
+        "modalTitle": "Kopiera föregående budget",
+        "modalDescription": "Kopierar prognoserna för {previous} att {target}. Endast prognoserna kopieras, aldrig de realiserade mängden.",
+        "allProjects": "Alla projekt",
+        "noProjects": "Inga planer.",
+        "archived": "ARKIVERAD",
+        "noProjectAlwaysCopied": "Prognoser utan projekt kopieras alltid.",
+        "copy": "Kopiera",
+        "confirmOverwriteTitle": "Byta ut befintliga prognoser?",
+        "confirmOverwriteDescription": "Denna övning har redan icke-noll prognoser för vissa kategorier. Att kopiera dem från föregående räkenskapsår kommer att åsidosätta dessa värden.",
+        "confirmOverwriteAction": "Byt ut",
+        "toasts": {
+          "copied": "{count, plural, one {# prognos kopierad.} other {# prognoser kopierade.}}",
+          "error": "Felkopiering."
+        }
+      },
+      "projectsTab": {
+        "count": "{count, plural, one {# projekt} other {# projekt}}",
+        "createProject": "Skapa ett projekt",
+        "createModalTitle": "Skapa ett projekt",
+        "editProject": "Redigering",
+        "editModalTitle": "Redigeringsprojekt",
+        "name": "Projektnamn",
+        "namePlaceholder": "Exempel: Årlig resa",
+        "description": "Beskrivning",
+        "descriptionPlaceholder": "Beskrivning fakultativ",
+        "archive": "Arkiv",
+        "unarchive": "Avarkiv",
+        "archived": "ARKIVERAD",
+        "showArchived": "Visa arkiverade projekt ({count})",
+        "hideArchived": "Dölj arkiverade projekt",
+        "noProjects": {
+          "title": "Inga projekt",
+          "description": "Skapa ett projekt för att följa sin budget separat från hela föreningen."
+        },
+        "addCategoryToProject": "Lägg till en kategori i projektet",
+        "addCategoryModalTitle": "Lägg till en kategori i projektet",
+        "type": "Typ",
+        "typeIncome": "Recept",
+        "typeExpense": "Kostnad",
+        "category": "Kategori",
+        "selectCategoryPlaceholder": "Välj en kategori",
+        "createNewCategory": "+ Skapa en ny kategori",
+        "noAvailableCategories": "Alla sådana kategorier har redan lagts till i detta projekt.",
+        "removeCategoryFromProject": "Ta bort från projektet",
+        "removeCategoryConfirmTitle": "Ta bort denna kategori från projektet?",
+        "removeCategoryConfirmDescription": "« {category} \" tas bort från projektets budget. Om det redan finns intäkter eller utgifter relaterade till det, kommer kategorin automatiskt att återkomma med deras realiserade belopp.",
+        "toasts": {
+          "created": "Projekt skapat.",
+          "updated": "Uppdaterat utkast.",
+          "archived": "Arkiverat projekt.",
+          "unarchived": "Oarkiverat projekt.",
+          "categoryAdded": "Kategori tillagd i projektet.",
+          "categoryRemoved": "Kategorin tagen bort från projektet.",
+          "createError": "Fel under skapandet.",
+          "updateError": "Fel vid uppdatering."
+        }
+      }
+    },
     "categoryForm": {
       "name": "Namn",
       "namePlaceholder": "Exempel: Bidrag",
+      "noMatchingCategory": "Ingen matchningskategori",
       "type": "Typ",
       "typeIncome": "Intäkt",
       "typeExpense": "Kostnad",
@@ -909,8 +1315,11 @@
         "FINANCIAL": "Finansiellt",
         "EXCEPTIONAL": "Extraordinärt",
         "OTHER": "Övrigt",
-        "IN_KIND": "Bidrag in natura"
+        "IN_KIND": "Bidrag in natura",
+        "IMMOBILISATION": "Huvudstad"
       },
+      "accountingCodeLegacyOption": "{code} — (gammal kod, kommer att uppdateras)",
+      "accountingCodeLegacyWarning": "Denna redovisningskod finns inte längre i den kontrollerade listan – välj ett giltigt konto innan du sparar.",
       "accountingCodeFormwiseNote": "Underkonto föreslagits av Formwise för separat spårning — inte ett obligatoriskt officiellt nummer.",
       "suggestedAccounts": "Föreslagna konton",
       "seeOtherAccounts": "Se de andra kontona",
@@ -921,8 +1330,7 @@
       "sectionUnverifiedNote": "Detta konto känns inte igen – kontrollera avsnittet eller välj det från de avancerade alternativen.",
       "sectionToVerify": "Sektion att kontrollera",
       "advancedOptions": "Avancerade alternativ",
-      "revertToAutoSection": "Tillbaka till den automatiska sektionen",
-      "noMatchingCategory": "Ingen matchningskategori"
+      "revertToAutoSection": "Tillbaka till den automatiska sektionen"
     },
     "bankAccountForm": {
       "bankName": "Banknamn",
@@ -959,6 +1367,8 @@
       "date": "Datum",
       "category": "Kategori",
       "noCategory": "Ingen kategori",
+      "project": "Projekt",
+      "noProject": "Inga projekt",
       "paymentMethodLabel": "Betalningsmetod",
       "reference": "Referens",
       "referencePlaceholder": "Ex: VIR-2024-001",
@@ -978,6 +1388,8 @@
       "internalNote": "Intern not",
       "internalNotePlaceholder": "Not till kassören...",
       "receipt": "Bevis",
+      "isImmobilisation": "Anläggningstillgångar (avskrivningsbar tillgång)",
+      "isImmobilisationHint": "Kontrollera om det finns ett kapitaliserbart köp (t.ex. kontors- och datorutrustning) — du kan sedan skapa dess avskrivningsschema i Finance > Capital Assets.",
       "toasts": {
         "uploadError": "Fel vid uppladdning av kvitto",
         "networkError": "Nätverksfel laddas upp — försök igen"
@@ -1057,6 +1469,33 @@
         "deleted": "Konto borttaget"
       }
     },
+    "transferForm": {
+      "fromAccount": "Källberättelse",
+      "toAccount": "Destinationskonto",
+      "amount": "Belopp",
+      "date": "Datum",
+      "note": "Not",
+      "notePlaceholder": "T.ex. sparöverföring",
+      "toasts": {
+        "created": "Registrerad överföring",
+        "updated": "Uppdaterad överföring",
+        "deleted": "Överföring borttagen"
+      }
+    },
+    "transfersView": {
+      "title": "Interna överföringar",
+      "add": "Övergång",
+      "newTransferTitle": "Ny överföring mellan konton",
+      "editTransferTitle": "Redigera Överföring",
+      "deleteConfirmTitle": "Radera denna överföring?",
+      "noTransfers": "Inga överförflyttningar registrerade",
+      "columns": {
+        "accounts": "Konton",
+        "amount": "Belopp",
+        "date": "Datum",
+        "note": "Not"
+      }
+    },
     "categoriesView": {
       "title": "Kategorier",
       "description": "Hantera intäkts- och kostnadskategorier.",
@@ -1067,13 +1506,21 @@
       "newCategoryTitle": "Ny kategori",
       "editCategoryTitle": "Redigera kategori",
       "deleteConfirmTitle": "Ta bort den här kategorin?",
-      "deleteConfirmInUse": "« {name} används av {count, plural, one {# intäkter/utgifter} other {# intäkter/utgifter}}. Dessa poster ändras till \"Okategoriserade\".",
       "toasts": {
         "created": "Kategori skapad",
         "updated": "Uppdaterad kategori",
         "deleted": "Kategori borttagen",
-        "seeded": "{count, plural, one {# initierad kategori} other {# initiala kategorier}}"
+        "seeded": "{count, plural, one {# initierad kategori} other {# initiala kategorier}}",
+        "archived": "Arkiverad kategori",
+        "reactivated": "Kategori återaktiverad"
       },
+      "archived": "Arkiverad",
+      "reactivate": "Aktivera igen",
+      "showArchived": "Visa arkiverade kategorier",
+      "transferLimitationNote": "Överföringar mellan föreningens bankkonton (interna kassan) ska aldrig bokföras som intäkter eller utgifter – de registreras från Redovisning → Konton.",
+      "archiveConfirmTitle": "Arkivera denna kategori?",
+      "archiveConfirmInUse": "« {name} används av {count, plural, one {# intäkter/utgifter} other {# intäkter/utgifter}}. Den kommer att arkiveras (dess historia bevaras) och kan inte längre väljas för nya operationer.",
+      "archive": "Arkiv",
       "chooseTemplateTitle": "Välj en kategorityp",
       "customCategory": "Skapa en anpassad kategori",
       "alreadyExists": "Redan konfigurerad",
@@ -1283,6 +1730,7 @@
         "actions": "Åtgärder"
       },
       "reconciledFallback": "Förlikat",
+      "transferLabel": "Intern överföring — {from} → {to}",
       "allAccounts": "Alla konton",
       "noTransactions": "Inga transaktioner att visa",
       "actions": {
@@ -1315,188 +1763,8 @@
       "suggestedMatches": "Föreslagna matcher",
       "typeIncome": "Intäkt",
       "typeExpense": "Kostnad",
+      "typeTransfer": "Intern överföring",
       "confirm": "Validera förlikningen"
-    },
-    "compteResultat": {
-      "title": "Resultaträkning",
-      "description": "Räkenskapsårets ekonomiska resultat jämfört med föregående år.",
-      "exerciceLabel": "Räkenskapsår",
-      "noPreviousExercice": "-",
-      "export": "Exportera",
-      "exportExcel": "Exportera Excel (detaljerad)",
-      "exportPdf": "Exportera PDF",
-      "products": "Intäkter",
-      "totalProducts": "Totala intäkter",
-      "expenses": "Kostnader",
-      "totalExpenses": "Totala kostnader",
-      "result": "Räkenskapsårets resultat",
-      "surplus": "Räkenskapsårets överskott",
-      "deficit": "Räkenskapsårets underskott",
-      "emptyExercice": {
-        "title": "Inget räkenskapsår",
-        "description": "Skapa ett räkenskapsår för att generera resultaträkningen."
-      },
-      "noPreviousExerciceMessage": "Inget föregående räkenskapsår tillgängligt",
-      "resultZero": "Räkenskapsårets resultat: 0 €",
-      "operationalResult": "Rörelseresultat",
-      "uncategorized": "Att kategorisera",
-      "uncategorizedAlertIncome": "{count, plural, one {# intäkt måste kategoriseras} other {# intäkter måste kategoriseras}}",
-      "uncategorizedAlertExpense": "{count, plural, one {# kostnad måste kategoriseras} other {# kostnader måste kategoriseras}}",
-      "expandSection": "Visa",
-      "collapseSection": "Dölj",
-      "noCategoriesInSection": "Ingen kategori i detta avsnitt",
-      "sections": {
-        "FINANCIAL": "Finansiellt",
-        "EXCEPTIONAL": "Extraordinärt",
-        "OTHER": "Övrigt"
-      },
-      "drillDown": {
-        "date": "Datum",
-        "origin": "Ursprung",
-        "person": "Person",
-        "payment": "Betalning",
-        "amount": "Belopp",
-        "categorize": "Kategorisera",
-        "categorizePlaceholder": "Välj en kategori",
-        "noTransactions": "Inga transaktioner",
-        "categorizeSuccess": "Transaktion kategoriserad"
-      },
-      "pdf": {
-        "periodLabel": "Period från {start} till {end}",
-        "operatingIncome": "RÖRELSEINTÄKTER",
-        "operatingExpense": "RÖRELSEKOSTNADER",
-        "operatingResult": "RÖRELSERESULTAT",
-        "financialIncome": "FINANSIELLA INTÄKTER",
-        "financialExpense": "FINANSIELLA KOSTNADER",
-        "financialResult": "FINANSIELLT RESULTAT",
-        "exceptionalIncome": "EXTRAORDINÄRA INTÄKTER",
-        "exceptionalExpense": "EXTRAORDINÄRA KOSTNADER",
-        "exceptionalResult": "EXTRAORDINÄRT RESULTAT",
-        "otherIncome": "ÖVRIGA INTÄKTER",
-        "otherExpense": "ÖVRIGA KOSTNADER",
-        "otherResult": "RESULTAT FRÅN ÖVRIGA INTÄKTER OCH KOSTNADER",
-        "uncategorizedSection": "TRANSAKTIONER ATT KATEGORISERA",
-        "uncategorizedIncomeLabel": "Intäkter att kategorisera",
-        "uncategorizedExpenseLabel": "Kostnader att kategorisera",
-        "total": "Summa",
-        "grandTotal": "TOTALT",
-        "categoryColumn": "Kategori",
-        "inKindTitle": "Frivilliga bidrag i natura",
-        "inKindEmploymentHeader": "Användning av bidrag",
-        "inKindAmountHeader": "Belopp",
-        "inKindReceivedHeader": "Mottagna bidrag",
-        "inKindTotalEmployments": "Totalt antal jobb",
-        "inKindTotalReceived": "Totala bidrag",
-        "inKindNote": "Dessa fria bidrag värderas i euro. De leder inte till någon penningrörelse och förändrar inte resultatet av räkenskapsåret."
-      },
-      "csv": {
-        "date": "Datum",
-        "type": "Typ",
-        "typeIncome": "Intäkt",
-        "typeExpense": "Kostnad",
-        "category": "Kategori",
-        "uncategorized": "Att kategorisera",
-        "accountingCode": "Kontokod",
-        "description": "Beskrivning",
-        "amount": "Belopp",
-        "paymentMethod": "Betalningsmetod",
-        "origin": "Ursprung",
-        "reference": "Referens",
-        "exercice": "Räkenskapsår"
-      },
-      "categoryColumnLabel": "Kategori",
-      "inKind": {
-        "title": "Frivilliga bidrag i natura",
-        "employmentHeader": "Användning av bidrag",
-        "amountHeader": "Belopp",
-        "receivedHeader": "Mottagna bidrag",
-        "totalEmployments": "Totalt antal jobb",
-        "totalReceived": "Totala bidrag",
-        "note": "Dessa fria bidrag värderas i euro. De leder inte till någon penningrörelse och förändrar inte resultatet av räkenskapsåret."
-      }
-    },
-    "bilan": {
-      "title": "Balansräkning",
-      "description": "Föreningens tillgångar och skulder vid räkenskapsårets slut.",
-      "exerciceLabel": "Träning",
-      "rubriqueColumnLabel": "Sektion",
-      "noPreviousExercice": "Ingen jämförande tillgång",
-      "actif": "Aktiv",
-      "totalActif": "Total aktiv",
-      "passif": "Passiv",
-      "totalPassif": "Totala skulder",
-      "noAccountsInRubrique": "Ingen balans i denna sektion",
-      "emptyExercice": {
-        "title": "Inget räkenskapsår",
-        "description": "Skapa ett nytt räkenskapsår för att se balansräkningen."
-      },
-      "emptyLedger": {
-        "title": "Inga bokföringsposter",
-        "description": "Balansräkningen kommer att visas så snart inkomster, utgifter eller fasta tillgångar har bokförts under detta räkenskapsår."
-      },
-      "rubriques": {
-        "immobilisationsCorporelles": "Materiella kapitaltillgångar",
-        "disponibilites": "Tillgänglighet",
-        "fondsPropres": "Egenkapital",
-        "dettes": "Skulder",
-        "immobilisationsIncorporelles": "Immateriella fasta tillgångar",
-        "immobilisationsFinancieres": "Finansiella anläggningstillgångar",
-        "chargesConstateesDavance": "Förbetalda utgifter",
-        "provisions": "Avsättningar",
-        "produitsConstatesDavance": "Uppskjuten inkomst",
-        "creances": "Kundfordringar",
-        "stocksEtEnCours": "Inventarie",
-        "fondsDedies": "Begränsade medel"
-      },
-      "issues": {
-        "title": "Avvikelser upptäckta",
-        "messages": {
-          "ACCOUNT_WITHOUT_RUBRIQUE": "Kontot {code} — {label} har ett saldo men är inte kopplat till någon balanspost.",
-          "ACTIF_PASSIF_MISMATCH": "Tillgången ({actif}) motsvarar inte skulden ({passif}).",
-          "OPENING_BALANCE_MISSING": "Inga inledande poster genererades för denna övning från \"{previousLabel}\".",
-          "TRIAL_BALANCE_UNBALANCED": "Den totala debetbeloppet ({debit}) motsvarar inte den totala krediten ({credit}) för detta räkenskapsår.",
-          "RESULT_DIVERGENCE": "Resultatet av journalen ({journal}) skiljer sig från resultaträkningen ({statement}) — journalen kanske ännu inte är uppdaterad för detta räkenskapsår (stäng räkenskapsåret eller återstart synkronisering)."
-        }
-      },
-      "accountLabels": {
-        "reportANouveau": "Balanserade vinstmedel",
-        "resultatExercice": "Nettoresultat för året",
-        "creancesCotisations": "Utestående medlemsavgifter",
-        "creancesFactures": "Utestående fakturor",
-        "stocksEstimatedValue": "Uppskattat lagervärde",
-        "creancesFacturesEnRetard": "Förfallna fakturor"
-      },
-      "exportPdf": "Exportera PDF",
-      "exportDisabledTooltip": "Kan inte exportera en slutgiltig balansräkning förrän ovanstående avvikelser är åtgärdade.",
-      "pdf": {
-        "periodLabel": "Period från {start} till {end}"
-      },
-      "drillDown": {
-        "date": "Datum",
-        "label": "Etikett",
-        "origin": "Ursprung",
-        "debit": "Debet",
-        "credit": "Kredit",
-        "noLines": "Inga poster för detta konto.",
-        "sourceTypes": {
-          "INCOME": "Inkomst",
-          "INCOME_REVERSAL": "Inkomstvändning",
-          "EXPENSE": "Kostnad",
-          "EXPENSE_REVERSAL": "Kostnadsåtervinning",
-          "BANK_TRANSACTION": "Banktransaktion",
-          "ACCOUNT_TRANSFER": "Intern överföring",
-          "OPENING_BALANCE": "Öppningsbalans",
-          "IMMOBILISATION_DEPRECIATION": "Värdeminskning",
-          "IMMOBILISATION_ACQUISITION": "Förvärv av tillgångar",
-          "FACTURE_RECUE_PAYMENT": "Leverantörsbetalning",
-          "MANUAL": "Manuell inmatning"
-        }
-      },
-      "memoNotice": "Uppskattning — inte bokförd i huvudboken, exkluderad från totala tillgångar.",
-      "memoNoHistory": "Inga historiska data",
-      "caveats": {
-        "stocksMissingCostPrice": "{count} varianter utan inköpskostnad registrerad, undantagna från uppskattningen"
-      }
     }
   },
   "evenements": {
@@ -1711,6 +1979,10 @@
         "titlePlaceholder": "Generalförsamlingen 2026",
         "dateLabel": "Startdatum",
         "createButton": "Skapa"
+      },
+      "summary": {
+        "eventCount": "Antal grenar",
+        "participants": "Deltagare"
       },
       "bilan": {
         "show": "Visa sammanfattning",
@@ -1929,6 +2201,26 @@
         "qrRevoked": "QR-kod inaktiverad",
         "noMembersToExport": "Inga medlemmar att exportera",
         "linkCopied": "Länk kopierad"
+      },
+      "payment": {
+        "sectionTitle": "Betalning",
+        "modeLabel": "Betalning",
+        "modeNow": "Betalat nu",
+        "modeLater": "Att åtgärda senare",
+        "laterHint": "Platsen är reserverad. Då löser du ut den med \"Markera betalt\".",
+        "methodLabel": "Betalningsmetod",
+        "tierLabel": "Pris",
+        "methods": {
+          "ESPECES": "Arter",
+          "CHEQUE": "Check",
+          "VIREMENT": "Övergång"
+        },
+        "encaisserTitle": "Cash out",
+        "encaisserConfirm": "Cash out",
+        "amountHint": "Belopp: {amount}",
+        "selectedMember": "Utvald medlem: {name}",
+        "selectMemberHint": "Välj en medlem från listan ovan.",
+        "addSubmit": "Lägg till i kundvagnen"
       }
     },
     "avaliacoes": {
@@ -1938,8 +2230,14 @@
         "participant": "Deltagare",
         "rating": "Not",
         "comment": "Kommentar",
-        "date": "Datum"
-      }
+        "date": "Datum",
+        "site": "På webbplatsen"
+      },
+      "anonymousNote": "Anonym",
+      "noConsent": "Inget samtycke",
+      "featureToggleLabel": "Showrecension av {name} På platsen",
+      "bulkFeatureAll": "Visa alla på plats",
+      "bulkUnfeatureAll": "Ta bort alla från sidan"
     },
     "detail": {
       "backToList": "Tillbaka till evenemangen",
@@ -1965,7 +2263,9 @@
         "saved": "Sparade ändringar",
         "saveError": "Felinspelning",
         "linkCopied": "Länk kopierad",
-        "linkCopyError": "Kan inte kopiera — välj länken manuellt."
+        "linkCopyError": "Kan inte kopiera — välj länken manuellt.",
+        "registrationsClosed": "Registreringen stängd",
+        "registrationsReopened": "Registreringarna öppnades på nytt"
       },
       "publishBlocked": {
         "unsavedToast": "Spara följande avsnitt innan publicering: {steps}",
@@ -1983,6 +2283,7 @@
           "standardFieldsHint": "Fält begärda vid registreringen",
           "phoneLabel": "Telefon",
           "addressLabel": "Adress",
+          "countryLabel": "Bopnland",
           "requirement": {
             "hidden": "Maskerad",
             "optional": "Valfritt",
@@ -2029,6 +2330,11 @@
         }
       },
       "titleRequired": "Titeln är obligatorisk",
+      "closeRegistrationsButton": "Stängda registreringar",
+      "reopenRegistrationsButton": "Anmälningar återöppnas",
+      "registrationsClosedNotice": "Inskriptioner avslutas",
+      "closeRegistrationsConfirmTitle": "Stänger registreringarna?",
+      "closeRegistrationsConfirmDescription": "Ingen kommer att kunna registrera sig online. Du kommer fortfarande att kunna lägga till deltagare från deltagarlistan.",
       "bilanButton": "Sammanfattning"
     },
     "discountCodes": {
@@ -2310,6 +2616,13 @@
       "liveSince": "Pågår sedan dess {mins} Min",
       "durationLessThanMin": "< 1 min",
       "durationMin": "{mins} Min",
+      "activeMeetingWarning": {
+        "title": "{count, plural, one {Ett möte är redan igång} other {# möten är redan igång}}",
+        "description": "{count, plural, one {Du har påbörjat det här mötet och har inte avslutat det än. Gå med i det, eller skapa ett nytt ändå.} other {Du har startat dessa möten och har inte avslutat dem än. Gå med i ett, eller skapa ett nytt ändå.}}",
+        "joinExisting": "Gå med",
+        "createNew": "Skapa ändå ett nytt möte",
+        "alreadyEnded": "Det här mötet avslutades av sig självt. Du kan skapa ett nytt möte."
+      },
       "toasts": {
         "meetingStarted": "Mötet inleddes",
         "meetingScheduled": "Schemalagt möte",
@@ -2715,8 +3028,12 @@
       "validation": {
         "nameRequired": "Namn krävs",
         "atLeastOneVariant": "Minst en variant krävs",
-        "variantLabelRequired": "Varje variant måste ha en etikett"
+        "variantLabelRequired": "Varje variant måste ha en etikett",
+        "weightRequiredWhenShippable": "Vikt är obligatoriskt för en variant med postleverans"
       },
+      "shippableColumn": "Sjöfart",
+      "weightColumn": "Vikt (g)",
+      "weightPlaceholder": "500",
       "costPriceColumn": "Kostnad"
     },
     "view": {
@@ -2738,12 +3055,14 @@
       "variantsCount": "{count, plural, one {# variant} other {# varianter}}",
       "actions": {
         "edit": "Redigera",
+        "view": "Vy",
         "delete": "Radera",
         "deleteAlreadyOrdered": "Radera (redan beställt)",
         "markPaid": "Mark Betalade",
         "cancelOrder": "Avbryt",
         "downloadReceipt": "Ladda ner kvittot",
-        "editPaymentMethod": "Byt betalningsmetod"
+        "editPaymentMethod": "Byt betalningsmetod",
+        "refundOrder": "Betala tillbaka"
       },
       "noProduct": "Inga produkter",
       "noOrder": "Inga order",
@@ -2774,7 +3093,9 @@
       "toasts": {
         "productDeleted": "Utgången produkt",
         "deleteError": "Felborttagning",
-        "orderUpdated": "Uppdaterad ordning"
+        "orderUpdated": "Uppdaterad ordning",
+        "orderNotInRecentList": "Denna ordning är inte bland de 50 senaste. Använd filtren för att hitta den.",
+        "refundSuccess": "Beställning återbetald"
       }
     },
     "payModal": {
@@ -2784,6 +3105,13 @@
       "orderedTotal": "Total Order",
       "restockNoticePlural": "{count, plural, one {Lageret av den vara som inte tas tillbaka kommer att återställas.} other {Lagret av oinsamlade föremål kommer att återställas.}}",
       "restockNoticeStatic": "Lagret av oinsamlade föremål kommer att återställas."
+    },
+    "refundModal": {
+      "title": "Återbetala beställningen",
+      "confirmWithAmount": "Betala tillbaka {amount}",
+      "stripeNotice": "Återbetalningen kommer att göras automatiskt till kundens kort.",
+      "manualNotice": "Denna åtgärd uppdaterar lagret och bokföringen — kom ihåg att återlämna pengarna till kunden (kontant, check eller överföring).",
+      "shippingIncludedNotice": "Fraktkostnader ({amount}) ingår i denna ersättning."
     },
     "stripeConfirm": {
       "title": "Markera som betald?",
@@ -2991,6 +3319,7 @@
       "noDonations": "Inga donationer registrerade",
       "noDonationsFiltered": "Inga donationer matchar dessa filter.",
       "resetFilters": "Återställ",
+      "totalLabel": "Totalt",
       "donorsLabel": "Donatorer",
       "averageLabel": "Genomsnittlig donation",
       "pendingTitle": "Väntar på insamling",
@@ -3121,6 +3450,7 @@
           "title": "Form",
           "standardFieldsHint": "Fält begärda från givaren",
           "addressLabel": "Adress",
+          "countryLabel": "Bopnland",
           "birthDateLabel": "Födelsedatum",
           "phoneLabel": "Fast telefon",
           "mobileLabel": "Mobil",
@@ -3178,7 +3508,8 @@
           "siteSectionReplaceWarningPublished": "Den här sektionen visar just nu ”{title}”. När du sparar ersätter det här formuläret det; ”{title}” förblir tillgängligt via sin länk.",
           "siteSectionReplaceWarningDraft": "Den här sektionen visar just nu ”{title}”. Det här formuläret ersätter det så snart det publiceras; ”{title}” förblir tillgängligt via sin länk.",
           "siteSectionRemovedWarning": "När du sparar döljs sektionen ”{section}” på webbplatsen.",
-          "datesOrderError": "Tillträdesdatumet måste vara senare än öppningsdatumet."
+          "datesOrderError": "Tillträdesdatumet måste vara senare än öppningsdatumet.",
+          "siteSectionPuckHint": "Nya blockeringar för webbplatsredigerare"
         }
       }
     },
@@ -3394,6 +3725,8 @@
           "kindField": "Typ",
           "kindOneOff": "Punktlig",
           "kindRecurring": "Återkommande (årlig)",
+          "recurringNeedsOnlinePayment": "En återkommande avgift betalas per onlineprenumeration: så länge onlinebetalning inte är aktiverad visas det som \"Otillgängligt\" på formuläret.",
+          "recurringNeedsOnlinePaymentLink": "Ställ in onlinebetalning",
           "itemTypeField": "Natur",
           "itemTypeMembership": "Medlemsandel",
           "itemTypeAddon": "Betald option",
@@ -3410,6 +3743,7 @@
           "title": "Form",
           "standardFieldsHint": "Fält begärda vid registreringen",
           "addressLabel": "Adress",
+          "countryLabel": "Bopnland",
           "birthDateLabel": "Födelsedatum",
           "phoneLabel": "Fast telefon",
           "mobileLabel": "Mobil",
@@ -3432,6 +3766,8 @@
           "fieldLabelPlaceholder": "Exempel: Yrke",
           "fieldType": "Typ",
           "fieldRequired": "Obligatoriskt",
+          "fieldSensible": "Känslig data",
+          "fieldSensibleRequiredHint": "Eftersom detta fält är känsligt och obligatoriskt kan en chef utan tillgång till känslig data inte skapa eller ändra en medlem utan tillgång till det.",
           "typeText": "Text",
           "typeNumber": "Antal",
           "typeSelect": "Rullgardinslista",
@@ -3472,7 +3808,8 @@
           "siteSectionPlaceholder": "Välj...",
           "siteSectionCreateOption": "+ Skapa en ny sektion",
           "siteSectionCreateError": "Fel som skapar sidan.",
-          "siteSectionRequiredError": "Välj vilken sektion på sidan du vill posta detta formulär i."
+          "siteSectionRequiredError": "Välj vilken sektion på sidan du vill posta detta formulär i.",
+          "siteSectionPuckHint": "Nya blockeringar för webbplatsredigerare"
         },
         "products": {
           "title": "Produkter",
@@ -3657,6 +3994,12 @@
       "isDefaultHint": "Används automatiskt som ett föreslaget meddelande för denna kategori (t.ex. bidragspåminnelser skickade från bidragssidan).",
       "emailSubject": "Ämnet för mejlet",
       "emailSubjectPlaceholder": "Påminnelse: ditt bidrag '{{annee_cotisation}}'",
+      "modeText": "Enkel text",
+      "modeTextHint": "Ett enda rikt textfält.",
+      "modeBlocks": "Designvisuell",
+      "modeBlocksHint": "Omordningbara block: text, bild, knapp, separator.",
+      "modeBlocksProOnly": "Reserverat för Pro-planen. Uppgradera till nästa abonnemang under fliken Prenumeration för att aktivera den.",
+      "modeLockedHint": "Redigeringsläget (enkel text eller visuell design) ställs in när mallen skapas och kan inte ändras — skapa en ny mall för att använda det andra läget.",
       "variablesHint": "Variabler – drag in i ämnet, brödtexten eller textmeddelandet",
       "variables": {
         "prenom": "Förnamn",
@@ -3687,6 +4030,8 @@
       "previewTitle": "Meddelandeförhandsvisning",
       "previewDescription": "Rendering med exempeldata",
       "previewSubject": "Syfte",
+      "previewBrandingHint": "Rubriken, foten och signaturen kommer från föreningens visuella identitet.",
+      "previewBrandingLink": "Redigering i inställningar",
       "toasts": {
         "updated": "Uppdaterad modell",
         "created": "Skapad mall",
@@ -3695,6 +4040,26 @@
       "validation": {
         "required": "Obligatoriskt"
       }
+    },
+    "blockEditor": {
+      "empty": "Lägg till ett första block nedanför.",
+      "incomplete": "Ett block är inte komplett (bild utan fil, eller knapp utan text/länk).",
+      "uploadError": "Fel vid uppladdning av bild — försök igen.",
+      "dragHandle": "Omordning",
+      "duplicate": "Duplicat",
+      "remove": "Radera",
+      "textPlaceholder": "Skriv din text...",
+      "imageLink": "Länk (valfritt)",
+      "buttonLabel": "Knapptext",
+      "buttonLabelPlaceholder": "Läs mer",
+      "buttonUrl": "Knapplänk",
+      "urlHint": "https://... eller en variabel som '{{lien_portal}}'",
+      "buttonColor": "Bakgrund",
+      "buttonTextColor": "Text",
+      "addText": "Text",
+      "addImage": "Bild",
+      "addButton": "Knapp",
+      "addDivider": "Separator"
     },
     "rulesManager": {
       "title": "Automationsregler",
@@ -3921,6 +4286,7 @@
         "paiements": "Betalningar",
         "abonnement": "Prenumeration",
         "integrations": "Integrationer",
+        "equipe": "Team och tillgång",
         "rgpd": "GDPR"
       },
       "associationInfo": "Föreningsinformation",
@@ -3928,6 +4294,10 @@
       "city": "Stad",
       "cityPlaceholder": "Paris",
       "country": "Land",
+      "contactEmail": "Mejla kontakten",
+      "contactEmailPlaceholder": "contact@monassociation.fr",
+      "contactEmailHint": "Används som namn och svarsadress (svar-till) på alla mejl som skickas i föreningens namn (prenumerationer, evenemang, donationer, meddelanden etc.).",
+      "contactEmailEmptyWarning": "Inte uppsatt — Medlemssvar på dina mejl når inte din organisation.",
       "toasts": {
         "saved": "Sparade inställningar"
       }
@@ -4012,7 +4382,41 @@
       "title": "Visuell identitet",
       "subtitle": "Logotyp visas på instrumentpanelen, offerter/fakturor, närvarolista och publik webbplats.",
       "logo": "Logotyp",
+      "color": "Färg",
+      "colorHint": "Används i e-postrubriker och på knappar.",
+      "senderName": "Avsändarens namn",
+      "senderNameHint": "Namnet visas som avsändare av mejlen. Lämna tomt för att använda föreningens namn.",
+      "signature": "Signatur",
+      "signatureHint": "Lagt till i slutet av manuellt komponerade eller automatiserade mejl.",
+      "footerText": "Sidfottext",
+      "footerTextHint": "Ersätter standardtexten längst ner i alla mejl. Lämna den tomma texten för att behålla standardtexten.",
+      "footerTextPlaceholder": "Automatiskt mejl skickat av {name}…",
+      "footerStyles": {
+        "classic": "Klassisk",
+        "bold": "Accentuerad",
+        "minimal": "Minimalistisk"
+      },
+      "footer": {
+        "title": "Fot",
+        "subtitle": "Stil, färg, text och sociala medier visas längst ner i varje mejl.",
+        "color": "Bakgrundsfärg",
+        "socialLinks": "Sociala medier",
+        "socialPlatforms": {
+          "facebook": "Facebook",
+          "instagram": "Instagram",
+          "linkedin": "LinkedIn",
+          "x": "X (Twitter)"
+        }
+      },
       "proOnlyText": "Den anpassade logotypen (instrumentpanel, offerter/fakturor, tidrapport) är reserverad för Pro-planen. Uppgradera till nästa plan i fliken Prenumeration för att aktivera den.",
+      "preview": {
+        "label": "Översikt",
+        "placeholderName": "Din förening",
+        "sampleHeading": "Hej förnamn,",
+        "sampleButton": "Visa detaljer",
+        "defaultFooter": "Automatiskt mejl skickat av {name} via Formwise. \nVänligen svara inte direkt på detta e-postmeddelande.",
+        "fromLabel": "Avsändare: {name}"
+      },
       "toasts": {
         "updated": "Uppdaterad visuell identitet",
         "uploadError": "Fel vid uppladdning av logotyp"
@@ -4055,16 +4459,17 @@
       "status": {
         "trial": "Gratis provperiod",
         "active": "Aktiv",
+        "paymentPending": "Betalning pågår",
         "pastDue": "Sen betalning",
         "suspended": "Avstängd",
-        "cancelled": "Nedlagd",
-        "paymentPending": "Betalning pågår"
+        "cancelled": "Nedlagd"
       },
       "planLabel": "Formel {tier}",
       "membersCount": "{count} / {limit} Medlemmar",
       "loadError": "Kan inte återställa din prenumerationsstatus. Försök igen senare.",
       "trialEndsAt": "Din gratis provperiod slutar på {date}. Efter detta datum debiteras det registrerade kortet automatiskt, om det inte spärras före detta datum.",
       "activeText": "Din prenumeration är aktiv. Du kan se dina fakturor, ändra betalningsmetod eller säga upp när som helst från Stripes administrationsområde.",
+      "paymentPendingText": "SEPA-autogirot för din prenumeration behandlas nu. Det kan ta några arbetsdagar innan det dyker upp på ditt bankkonto.",
       "pastDueText": "Den senaste avgiften misslyckades. Uppdatera din betalningsmetod för att undvika att ditt konto stängs av.",
       "suspendedText": "Din prenumeration är avstängd efter flera betalningsmisslyckanden. Gå till den dedikerade skärmen för att återaktivera den, exportera din data eller avsluta den permanent.",
       "cancelledText": "Din prenumeration har blivit avbruten. Kontakta supporten för att återaktivera den.",
@@ -4179,6 +4584,63 @@
       "subtitleTrialExpired": "Din gratis provperiod är över. Välj ett abonnemang och ange en betalningsmetod för att fortsätta.",
       "confirmButtonSubscribe": "Bekräfta och prenumerera"
     },
+    "teamAccess": {
+      "title": "Team och tillgång",
+      "description": "Vem har tillgång till föreningens ledning, och vad var och en kan se eller ändra.",
+      "howToAdd": "För att lägga till någon, tilldela dem en roll från medlemslistan, eller rollen \"Teammedlem\" för att öppna endast vissa domäner för dem. Visare: kan visa utan att redigera något.",
+      "empty": "Inga lagmedlemmar just nu.",
+      "columns": {
+        "name": "Namn",
+        "role": "Funktion",
+        "access": "Tillgång"
+      },
+      "you": "Du",
+      "summary": {
+        "administrator": "Administratör",
+        "none": "Ingen tillgång",
+        "editAndRead": "{edit, plural, one {# fält} other {# områden}} inom förlagsverksamhet · {read} Uppspelning",
+        "editOnly": "{edit, plural, one {# fält} other {# områden}} Inom förlagsbranschen",
+        "readOnly": "{read, plural, one {# fält} other {# områden}} Uppspelning"
+      },
+      "editTitle": "Ändra åtkomst",
+      "editDescription": "Funktion och tillgång till {name}.",
+      "roleLabel": "Funktion",
+      "profileLabel": "Profil",
+      "profiles": {
+        "administrator": "Administratör",
+        "role": "Rollprofil",
+        "custom": "Anpassad"
+      },
+      "administratorSwitch": "Administratör (inställningar, fakturering, åtkomst)",
+      "administratorHint": "Full tillgång till alla domäner.",
+      "memberRoleHint": "En enkel medlem har inte tillgång till förvaltning: han använder bara sitt medlemsområde.",
+      "adminRoleHint": "Administratörsrollen ger alltid full tillgång.",
+      "areasLabel": "Tillgång per domän",
+      "levels": {
+        "none": "Inga",
+        "read": "Läsare",
+        "edit": "Förläggare"
+      },
+      "areas": {
+        "dashboard": "Instrumentpanel och aktivitet",
+        "membres": "Medlemmar",
+        "sensible": "Medlemmars känsliga uppgifter",
+        "adhesions": "Medlemskap och medlemsavgifter",
+        "dons": "Donationer",
+        "evenements": "Evenemang och biljettförsäljning",
+        "boutique": "Butik",
+        "communication": "Kommunikation (e-post, SMS, sondages)",
+        "actualites": "Nyheter",
+        "comptabilite": "Redovisning (finans, offerter, fakturor, leverantörer)",
+        "reunions": "Möten",
+        "materiel": "Material",
+        "site": "Webbplats",
+        "documents": "Föreningsdokument"
+      },
+      "toasts": {
+        "saved": "Uppdaterad åtkomst"
+      }
+    },
     "erasureRequests": {
       "title": "Dataradering (GDPR)",
       "description": "Begäranden om permanent radering av en medlems personuppgifter enligt artikel 17 i GDPR. Behandlas automatiskt varje natt, förutom de som är pausade.",
@@ -4219,11 +4681,6 @@
       },
       "automaticOrigin": "Automatiskt flaggad — inaktiv i mer än 3 år",
       "inactiveSince": "lämnade den {date}"
-    },
-    "teamAccess": {
-      "areas": {
-        "sensible": "Medlemmars känsliga uppgifter"
-      }
     }
   },
   "cotisations": {
@@ -4287,6 +4744,7 @@
         "enAttente": "Väntar",
         "payees": "Betald",
         "exonerees": "Undantaget",
+        "aEncaisser": "Att lösas in",
         "partiellementPayees": "Delavlönad",
         "enRetard": "Sent",
         "annulees": "Nedlagd"
@@ -4313,28 +4771,6 @@
       "allCategories": "Alla kategorier",
       "allRenewals": "Alla förnyelser",
       "resetFilters": "Återställ",
-      "renewal": {
-        "automatic": "Automatisk",
-        "manual": "Manuell"
-      },
-      "summary": {
-        "aPagar": " · {amount} totalt",
-        "recebido": " · {amount} mottaget",
-        "saldo": " · {amount} kvarstående"
-      },
-      "distribution": {
-        "show": "Visa fördelning",
-        "hide": "Dölj fördelning",
-        "category": "Medlemskategori",
-        "renewal": "Förnyelse",
-        "count": "Antal bidrag",
-        "aPagar": "Totalt belopp",
-        "recebido": "Mottaget belopp",
-        "saldo": "Återstående saldo",
-        "total": "Totalt",
-        "noCategory": "Ingen kategori",
-        "empty": "Inga avgifter matchar dessa filter."
-      },
       "mergeTiers": {
         "filterOption": "Slå ihop dubblettkategorier",
         "title": "Slå ihop dubblettkategorier",
@@ -4357,6 +4793,28 @@
         "priceFreeAmount": "Gratis belopp",
         "priceFreeAmountFrom": "Gratis belopp från {amount}",
         "priceRecurring": "{amount}/år"
+      },
+      "renewal": {
+        "automatic": "Automatisk",
+        "manual": "Manuell"
+      },
+      "summary": {
+        "aPagar": " · {amount} totalt",
+        "recebido": " · {amount} mottaget",
+        "saldo": " · {amount} kvarstående"
+      },
+      "distribution": {
+        "show": "Visa fördelning",
+        "hide": "Dölj fördelning",
+        "category": "Medlemskategori",
+        "renewal": "Förnyelse",
+        "count": "Antal bidrag",
+        "aPagar": "Totalt belopp",
+        "recebido": "Mottaget belopp",
+        "saldo": "Återstående saldo",
+        "total": "Totalt",
+        "noCategory": "Ingen kategori",
+        "empty": "Inga avgifter matchar dessa filter."
       }
     },
     "reminderModal": {
@@ -4396,6 +4854,14 @@
       "title": "Registrera en betalning",
       "amount": "Belopp",
       "remainingBalance": "Utestående saldo: {amount}",
+      "installmentChoice": "Denna betalning betalar",
+      "installmentNext": "Deadline {position}",
+      "installmentThrough": "Tills mognad {position}",
+      "installmentPaid": "Deadline {position} — betald",
+      "installmentPartlyPaid": "(återstår att betala på {amount})",
+      "lateSuffix": " (sent)",
+      "customAmount": "Övrigt belopp",
+      "installmentsInOrder": "Betalningarna täcker avbetalningarna i ordning.",
       "method": "Betalningsmetod",
       "date": "Betalningsdatum",
       "note": "Not",
@@ -4421,6 +4887,125 @@
       "annulee": "Detta bidrag har avbrutits."
     }
   },
+  "groupes": {
+    "view": {
+      "title": "Grupper",
+      "countTotal": "{count, plural, =0 {Inga grupper} one {# grupp} other {# grupper}}",
+      "count": "{count, plural, =0 {Inga resultat} one {# resultat} other {# resultat}}",
+      "searchPlaceholder": "Sök efter en grupp...",
+      "noResultsFor": "Det finns inga grupper som matchar.\" {search} »",
+      "noGroupe": "Inga grupper just nu",
+      "allStatuses": "Alla statusar",
+      "statusFilter": {
+        "actifs": "Aktiva ingredienser",
+        "archives": "Arkiverad"
+      },
+      "addTitle": "Skapa en grupp",
+      "editTitle": "Redigera gruppen",
+      "columns": {
+        "nome": "Namn",
+        "membres": "Medlemmar",
+        "responsaveis": "Tränare",
+        "lastChamada": "Sista samtalet",
+        "status": "Status"
+      },
+      "statusBadge": {
+        "archive": "Arkiverad"
+      },
+      "actions": {
+        "edit": "Redigering",
+        "archive": "Arkiv",
+        "unarchive": "Avarkiv"
+      },
+      "archiveConfirmTitle": "Arkiv « {name} » ?",
+      "archiveConfirmDescription": "Samtalshistoriken sparas. Gruppen kommer inte längre att finnas med i den aktiva listan.",
+      "unarchiveConfirmTitle": "Avarkivera \" {name} » ?",
+      "toasts": {
+        "created": "Grupp skapad",
+        "updated": "Uppdaterad grupp",
+        "archived": "Arkiverad grupp",
+        "unarchived": "Oarkiverad grupp"
+      }
+    },
+    "form": {
+      "nomeLabel": "Gruppnamn",
+      "nomePlaceholder": "T.ex. ungdomslag, torsdagskör...",
+      "descricaoLabel": "Beskrivning",
+      "descricaoPlaceholder": "Valfritt"
+    },
+    "detail": {
+      "backToList": "Tillbaka till grupperna",
+      "membresTitle": "Medlemmar",
+      "addMembre": "Lägg till en medlem",
+      "allMemberTypes": "Alla typer",
+      "searchMembrePlaceholder": "Sök efter en medlem...",
+      "searchOrFilterPrompt": "Sök efter en medlem eller välj en typ ovan",
+      "noResultsForMembre": "Inga medlemmar matchar \" {search} »",
+      "noResultsForType": "Ingen sådan medlem",
+      "candidatesFound": "{count, plural, one {# medlem hittad} other {# medlemmar som hittades}}",
+      "selectAllCandidates": "Välj alla",
+      "deselectAllCandidates": "Avmarkera alla",
+      "selectAllTruncated": "Mer än 500 medlemmar passade in i detta filter — endast de 500 bästa valdes ut.",
+      "unselectCandidate": "Avmarkera {name}",
+      "addSelectedMembres": "Lägg till ({count})",
+      "membresAddedToast": "{count, plural, =0 {Inga medlemmar tillagda} one {# medlem tillagd} other {# medlemmar tillagda}}",
+      "noMembre": "Inga medlemmar i denna grupp",
+      "removeMembreConfirmTitle": "Ta bort {name} av gruppen?",
+      "removeMembreConfirmDescription": "Hans närvaro i denna grupp är bevarad.",
+      "responsaveisTitle": "Tränare",
+      "addResponsavel": "Lägg till en chef",
+      "noResponsavel": "Ingen utsedd tjänsteman",
+      "removeResponsavelConfirmTitle": "Ta bort {name} Av de ansvariga?",
+      "appelsTitle": "Överklaganden",
+      "faireAppel": "Ring",
+      "noAppel": "Inga samtal just nu",
+      "noMembreForAppel": "Lägg till minst en medlem i gruppen innan du kan ringa.",
+      "newAppelDateLabel": "Datum",
+      "newAppelSubmit": "Start Call",
+      "appelColumns": {
+        "date": "Datum",
+        "presents": "Nutid",
+        "absents": "Frånvarande",
+        "justifies": "Motiverat",
+        "nonRenseignes": "Ej specificerat"
+      },
+      "reopenExistingTitle": "Det finns redan en efterfrågan på denna nisch",
+      "reopenExistingDescription": "Du kan öppna den för att visa eller redigera den istället för att skapa en ny.",
+      "reopenExistingConfirm": "Öppna befintlig samtal"
+    },
+    "appel": {
+      "backToGroupe": "Tillbaka till gruppen",
+      "dateLabel": "Datum",
+      "horarioLabel": "Schema",
+      "horarioPlaceholder": "Valfritt, t.ex. kl. 14.00.",
+      "activityLabel": "Verksamhet",
+      "activityPlaceholder": "Valfritt",
+      "markAllPresent": "Markera alla närvarande",
+      "syncMembres": "Lägg till nya gruppmedlemmar",
+      "counts": {
+        "presente": "Nutid",
+        "ausente": "Frånvarande",
+        "ausenciaJustificada": "Motiverat",
+        "naoInformado": "Ej specificerat"
+      },
+      "status": {
+        "NAO_INFORMADO": "Ej specificerat",
+        "PRESENTE": "Nutid",
+        "AUSENTE": "Frånvarande",
+        "AUSENCIA_JUSTIFICADA": "Motiverat"
+      },
+      "save": "Inspelningssamtal",
+      "export": "Export",
+      "exportPdf": "PDF",
+      "exportPdfBlank": "Tom PDF (att skriva ut)",
+      "exportExcel": "Excel",
+      "toasts": {
+        "saved": "Inspelat samtal",
+        "noMembersToExport": "Inga medlemmar att exportera",
+        "synced": "{count, plural, =0 {Inga nya medlemmar} one {# medlem tillagd} other {# medlemmar tillagda}}"
+      }
+    }
+  },
   "membres": {
     "form": {
       "status": {
@@ -4434,7 +5019,8 @@
         "secretaire": "Sekreterare",
         "tresorier": "Kassör",
         "president": "President",
-        "admin": "Administration"
+        "admin": "Administration",
+        "equipe": "Teammedlem"
       },
       "civilite": {
         "none": "Ej specificerat",
@@ -4448,6 +5034,11 @@
         "femme": "Kvinna"
       },
       "groupeSanguinNone": "Ej specificerat",
+      "imageRights": {
+        "unknown": "Ej angivet",
+        "granted": "Ja",
+        "refused": "Nej"
+      },
       "tailleTshirtNone": "Ej specificerat",
       "preferredLocaleNone": "Ej specificerat",
       "preferredLocaleHint": "Det valda språket gör det möjligt att skicka e-post och kommunikation till denna medlem på dennes föredragna språk.",
@@ -4479,14 +5070,15 @@
         "allergies": "Kända allergier",
         "allergiesPlaceholder": "Arachides, pollen...",
         "type": "Medlemstyp",
-        "preferredLocale": "Kommunikationsspråk",
-        "spokenLanguage": "Talat språk",
-        "cotisationTier": "Medlemsavgift",
-        "guardianName": "Vårdnadshavare {number} — namn",
-        "guardianPhone": "Vårdnadshavare {number} — telefon",
         "imageRights": "Bildrättigheter",
         "notes": "Anteckningar",
-        "notesPlaceholder": "Användbar information om denna medlem (kurser, anmärkningar…)"
+        "notesPlaceholder": "Användbar information om denna medlem (kurser, anmärkningar…)",
+        "guardians": "Juridiska vårdnadshavare",
+        "guardianName": "Vårdnadshavare {number} — namn",
+        "guardianPhone": "Vårdnadshavare {number} — telefon",
+        "preferredLocale": "Kommunikationsspråk",
+        "spokenLanguage": "Talat språk",
+        "cotisationTier": "Medlemsavgift"
       },
       "invitationNotice": "Ett inbjudningsmail med identifierarna kommer att skickas till denna adress.",
       "tierNone": "Ingen prissättning (standardbeteende)",
@@ -4507,12 +5099,7 @@
         "management": "Medlemshantering"
       },
       "invalidFormToast": "Det gick inte att spara. Kontakta supporten om problemet kvarstår.",
-      "customFieldsLoading": "Läser in svar från anslutningsformuläret…",
-      "imageRights": {
-        "unknown": "Ej angivet",
-        "granted": "Ja",
-        "refused": "Nej"
-      }
+      "customFieldsLoading": "Läser in svar från anslutningsformuläret…"
     },
     "actions": {
       "add": "Lägg till en medlem",
@@ -4562,13 +5149,13 @@
         "firstName": "Förnamn",
         "lastName": "Efternamn",
         "address": "Adress",
+        "country": "Land",
+        "countryPlaceholder": "Alla länder",
+        "countryLoadError": "Kan inte ladda länder. Försök igen om en stund.",
         "birthDateFrom": "Född efter",
         "birthDateTo": "Född före",
         "apply": "Ansök",
-        "reset": "Återställ",
-        "country": "Land",
-        "countryPlaceholder": "Alla länder",
-        "countryLoadError": "Kan inte ladda länder. Försök igen om en stund."
+        "reset": "Återställ"
       },
       "statusOptions": {
         "pending": "Väntar",
@@ -4609,12 +5196,14 @@
         "memberDeletedWithUnlink": "Borttagen medlem — borttagen som juridisk vårdnadshavare för {count} Medlemmar(r)",
         "noMembersToExport": "Inga medlemmar att exportera",
         "viewSubscription": "Visa prenumeration",
-        "roleUpdated": "Uppdaterad roll"
+        "roleUpdated": "Uppdaterad roll",
+        "configureAccess": "Konfigurera åtkomst"
       },
       "changeRoleTitle": "Förändringsroll",
       "addViaForm": "Via ett medlemsformulär",
       "addManual": "Lägg till manuellt",
       "changeRoleDescription": "Roll för {name} i föreningen.",
+      "changeRoleEquipeHint": "Denna roll börjar utan någon hanteringsåtkomst. Konfigurera åtkomst per domän i Inställningar › Team & Access.",
       "pendingRequests": "{count, plural, one {# pågående begäran} other {# pågående ansökningar}}"
     },
     "detail": {
@@ -4627,6 +5216,14 @@
       "cotisationButton": "Medlemsavgift",
       "createAccessButton": "Skapa åtkomst",
       "roleButton": "Roll",
+      "exportDataButton": "Exportdata (GDPR)",
+      "eraseData": {
+        "button": "Radera data (GDPR)",
+        "confirmTitle": "Begära permanent radering av {name}s data?",
+        "confirmDescription": "Denna åtgärd registrerar en raderingsbegäran enligt art. 17 i GDPR. Medlemmen får ett bekräftelsemail, och därefter anonymiseras deras personuppgifter oåterkalleligt vid nästa automatiska behandling, såvida begäran inte pausas.",
+        "toastSuccess": "Raderingsbegäran registrerad",
+        "requestLabel": "GDPR-radering"
+      },
       "contact": "Kontakt",
       "noContactInfo": "Ingen kontaktinformation",
       "memberSinceColon": "Medlem sedan dess: {date}",
@@ -4642,6 +5239,10 @@
       "spokenLanguageColon": "Talat språk: {value}",
       "preferredLocaleColon": "Kommunikationsspråk: {value}",
       "allergiesColon": "Allergier: {value}",
+      "imageRightsColon": "Bildrättigheter: {value}",
+      "imageRightsDate": "(den {date})",
+      "notes": "Noter",
+      "guardians": "Juridiska vårdnadshavare",
       "mobileColon": "Mobil: {value}",
       "legalGuardianColon": "Juridisk förmyndare:",
       "noInfo": "Ingen information lämnas",
@@ -4670,6 +5271,7 @@
         "evenements": "Evenemang",
         "reunions": "Möten",
         "materiel": "Material",
+        "groupes": "Grupper",
         "dons": "Donationer",
         "historique": "Historik",
         "emails": "E-post",
@@ -4700,6 +5302,7 @@
       "paidOn": "Betald {date}",
       "validUntil": "Giltigt tills dess {date}",
       "periodExpiredOn": "Utgången {date}",
+      "recordPayment": "Registrera en betalning",
       "downloadRecuFiscal": "Ladda ner skattekvitto",
       "downloadRecuFiscalPartial": "Ladda ner skattekvittot (delvis: {amount} avdragsbar)",
       "showingRecentCotisations": "Utställning {count} Senaste bidrag om {total} Totalt.",
@@ -4742,13 +5345,6 @@
         "rejectedToast": "Ansökan avslås",
         "rejectConfirmTitle": "Vägra denna begäran?",
         "rejectConfirmDescription": "{name} kommer att ändras till \"Inaktiv\" och kan inte logga in. Begäran och dess svar på formuläret behålls."
-      },
-      "eraseData": {
-        "button": "Radera data (GDPR)",
-        "confirmTitle": "Begära permanent radering av {name}s data?",
-        "confirmDescription": "Denna åtgärd registrerar en raderingsbegäran enligt art. 17 i GDPR. Medlemmen får ett bekräftelsemail, och därefter anonymiseras deras personuppgifter oåterkalleligt vid nästa automatiska behandling, såvida begäran inte pausas.",
-        "toastSuccess": "Raderingsbegäran registrerad",
-        "requestLabel": "GDPR-radering"
       },
       "noCommande": "Inga butiksköp för denna kontakt.",
       "commandeStatus": {
@@ -4839,6 +5435,12 @@
       "inMessagesSection": " i avsnittet Meddelanden.",
       "messageSectionLabel": "Meddelande",
       "saveAsTemplate": "Spara som mall",
+      "subjectLabel": "Syfte",
+      "subjectPlaceholder": "Ämnet för mejlet...",
+      "subjectTooLong": "Ämnet är för långt: {length}/{max} tecken — det avvisas vid utskick.",
+      "bodyLabel": "Meddelandets kropp",
+      "bodyPlaceholder": "Skriv ditt meddelande...",
+      "designTemplateReadonlyHint": "Denna mall använder Visual Design-läge (bilder, knappar) – dess innehåll kan inte redigeras här. För att ändra det, redigera mallen i Meddelanden.",
       "language": {
         "title": "Avsändningsspråk",
         "modeOriginal": "Originalspråk",
@@ -4863,15 +5465,12 @@
         "autoNoEffect": "Ingen nuvarande mottagare har ett annat föredraget språk än franska — alla får originalversionen.",
         "autoExternalNote": "{count, plural, one {# extern e-post (originalspråk)} other {# externa e-postadresser (originalspråk)}}"
       },
-      "subjectLabel": "Syfte",
-      "subjectPlaceholder": "Ämnet för mejlet...",
-      "subjectTooLong": "Ämnet är för långt: {length}/{max} tecken — det avvisas vid utskick.",
-      "bodyLabel": "Meddelandets kropp",
-      "bodyPlaceholder": "Skriv ditt meddelande...",
       "continue": "Fortsätt",
       "confirmSendTitle": "Fraktbekräftelse",
       "confirmSendDescription": "Detta mejl kommer att skickas till {recipients}. Denna åtgärd är oåterkallelig.",
       "sendNow": "Skicka nu",
+      "sending": "Skickar...",
+      "sendFailedTitle": "Mejlet kunde inte skickas",
       "replaceContentTitle": "Byta ut innehållet?",
       "replaceContentDescription": "Att använda denna mall ersätter ämnet och brödtexten i meddelandet som du redan har skrivit.",
       "replace": "Byt ut",
@@ -4884,6 +5483,28 @@
       "recipientsActive": "{count, plural, one {# aktiv medlem} other {# aktiva medlemmar}}",
       "externalOnlyCount": "{count, plural, one {# extern e-post} other {# externa mejl}}",
       "recipientsWithExternal": "{members} + {count, plural, one {# extern e-post} other {# externa mejl}}",
+      "attachments": {
+        "label": "Tillägg",
+        "add": "Bifoga filer",
+        "hint": "JPG, PNG, WebP, GIF eller PDF · {maxSize} Totalt",
+        "usage": "{count, plural, one {# fil} other {# filer}} · {used} / {maxSize}",
+        "limitFilesReached": "Gräns för {maxFiles} Filer nådda",
+        "limitSizeReached": "Gräns för {maxSize} Uppnått",
+        "remove": "Ta bort {name}",
+        "nameWithSize": "{name} ({size})",
+        "andMore": "{count, plural, one {och # andra} other {och # andra}}",
+        "errors": {
+          "emptyFile": "{count, plural, one {{names} har inte lagts till — filen är tom.} other {# filer har inte lagts till: {names} — Dessa filer är tomma.}}",
+          "unsupportedType": "{count, plural, one {{names} har inte lagts till} other {# filer har inte lagts till: {names}}} — accepterade format: bilder (JPG, PNG, WebP, GIF) och PDF.",
+          "totalSizeExceeded": "{count, plural, one {{names} har inte lagts till} other {# filer har inte lagts till: {names}}} — gränsvärdet av {maxSize} totalt skulle överskridas (återstående utrymme: {remaining}).",
+          "tooManyFiles": "{count, plural, one {{names} har inte lagts till} other {# filer har inte lagts till: {names}}} — {maxFiles} Maximalt antal filer per mejl."
+        },
+        "recapSummary": "{count, plural, one {# fil} other {# filer}} · {size}",
+        "uploading": "Skickar bilagor...",
+        "uploadFailedTitle": "Bilagor kunde inte skickas",
+        "uploadFailedDescription": "Inga mejl har lämnats kvar. Försök igen, eller klicka på \"Redigera\" för att ta bort eller ersätta en fil.",
+        "notSavedInTemplate": "Bifoganden sparas inte i mallen."
+      },
       "toasts": {
         "selectType": "Välj en medlemstyp",
         "selectMember": "Välj minst en medlem eller lägg till en extern e-postadress",
@@ -4916,7 +5537,14 @@
         "status": "Status",
         "typeId": "Typ",
         "role": "Roll",
-        "adherentOverride": "Medlemskapsstatus"
+        "adherentOverride": "Medlemskapsstatus",
+        "notes": "Noter",
+        "imageRightsConsent": "Bildrättigheter",
+        "guardianName": "Juridisk vårdnadshavare 1",
+        "guardianPhone": "Telefonnummer till juridiska vårdnadshavare 1",
+        "secondGuardianName": "Juridisk förmyndare 2",
+        "secondGuardianPhone": "Telefonnummer till vårdnadshavare 2",
+        "permissions": "Tillgång"
       },
       "adherentOverrideValues": {
         "forcedAdherent": "Tvingad anhängare",
@@ -4930,9 +5558,11 @@
         "membreRoleChanged": "Modifierad roll",
         "passwordChanged": "Lösenord ändrat",
         "passwordReset": "Lösenordsåterställning",
+        "membreCardTokenRotated": "Återgenererad kort-QR-kod",
         "membreDeleted": "Arkiverad medlem",
         "membrePortalRegistered": "Portalregistrering",
         "membreInscriptionRequested": "Medlemsansökan (webbplats)",
+        "membreAdhesionCompleted": "Medlemskap slutfört och betalt",
         "cotisationCreated": "Bidrag tillkommet",
         "cotisationUpdated": "Ändrad bedömning",
         "cotisationDeleted": "Medlemsavgiften avskaffad",
@@ -5004,7 +5634,8 @@
         "expense": "Utgifter",
         "financeCategory": "Finanskategorier",
         "payment": "Betalningar",
-        "associationDocument": "Föreningsdokument"
+        "associationDocument": "Föreningsdokument",
+        "paperFormTemplate": "Pappersark"
       },
       "messageTemplateFilterLabel": "MSG-mallar",
       "actualiteFields": {
@@ -5065,12 +5696,20 @@
         "membreDeleted": "Arkiverad medlem",
         "membrePortalRegistered": "Registrerad (portal)",
         "membreInscriptionRequested": "Medlemsansökan (webbplats)",
+        "membreAdhesionCompleted": "Medlemskap slutfört och betalt",
         "membreRoleChanged": "Modifierad roll",
         "membreAccessCreated": "Åtkomst skapad",
+        "membreCardTokenRotated": "Återgenererad kort-QR-kod",
         "profilUpdated": "Modifierad profil",
         "profileUpdated": "Modifierad profil",
         "passwordChanged": "Lösenord ändrat",
         "passwordReset": "Lösenordsåterställning",
+        "twoFactorEnabled": "Tvåfaktorsautentisering aktiverad",
+        "twoFactorDisabled": "Tvåfaktorsautentisering inaktiverad",
+        "twoFactorBackupRegenerated": "Återgenererade reservkoder",
+        "twoFactorDisabledByAdmin": "Tvåfaktorsautentisering inaktiverad av support",
+        "loginSuccess": "Lyckad inloggning",
+        "loginFailed": "Misslyckat inloggningsförsök",
         "emailSentBulk": "E-post skickad",
         "smsSentBulk": "SMS skickat",
         "supportEmailSent": "E-post skickad av Formwise Support",
@@ -5181,6 +5820,9 @@
         "associationDocumentCreated": "Dokument skapat",
         "associationDocumentUpdated": "Dokument ändrat",
         "associationDocumentDeleted": "Dokument raderat",
+        "paperFormTemplateCreated": "Skapad formulärmall",
+        "paperFormTemplateUpdated": "Modifierad formulärmall",
+        "paperFormTemplateDeleted": "Borttagen kortmall",
         "ticketCheckoutExpired": "Betalningen har gått ut"
       }
     },
@@ -5385,8 +6027,8 @@
       "actualites": "Nyheter",
       "membership": "Gå med i föreningen",
       "dons": "Donera",
-      "contact": "Kontakt",
-      "boutique": "Butik"
+      "boutique": "Butik",
+      "contact": "Kontakt"
     },
     "defaultTitles": {
       "hero": "Välkommen",
@@ -5394,9 +6036,9 @@
       "events": "Kommande evenemang",
       "membership": "Gå med i föreningen",
       "dons": "Donera",
+      "boutique": "Butik",
       "actualites": "Nyheter",
-      "contact": "Kontakt",
-      "boutique": "Butik"
+      "contact": "Kontakt"
     },
     "view": {
       "uploadFailedWarning": "{count, plural, one {# bild kunde inte laddas ner.} other {# bilder kunde inte laddas upp.}}",
@@ -5420,6 +6062,8 @@
       "save": "Spara",
       "appearance": "Utseende",
       "primaryColor": "Huvudfärg",
+      "secondaryColor": "Sekundärfärg",
+      "fontFamily": "Polisen",
       "logo": "Logotyp",
       "header": "Rubrik",
       "headerBgColor": "Bakgrundsfärg",
@@ -5438,11 +6082,12 @@
       "noLinks": "Inga länkar. Klicka på Lägg till.",
       "sections": "Sektioner",
       "noSections": "Inga sektioner. Lägg till en nedanför.",
+      "createWithAi": "Skapa med AI",
       "addSection": "Lägg till en sektion",
       "donsModuleDisabled": "Donationsmodulen inaktiverad — osynlig på den offentliga sidan",
+      "boutiqueModuleDisabled": "Butiksmodulen är inaktiverad — visas inte på den offentliga webbplatsen",
       "deleteSectionTitle": "Ta bort avsnittet",
-      "deleteSectionDescription": "Denna åtgärd är oåterkallelig.",
-      "boutiqueModuleDisabled": "Butiksmodulen är inaktiverad — visas inte på den offentliga webbplatsen"
+      "deleteSectionDescription": "Denna åtgärd är oåterkallelig."
     },
     "sectionSheet": {
       "editTitle": "Redigering — {label}",
@@ -5463,6 +6108,8 @@
       "eventsLimitHint": "Evenemang dras automatiskt från din kalender.",
       "actualitesLimit": "Antal nyhetsartiklar att visa",
       "actualitesLimitHint": "Endast de första N-nyheterna som publiceras kommer att visas på sidan.",
+      "boutiqueLimit": "Antal produkter att visa",
+      "boutiqueLimitHint": "Endast de första N aktiva produkterna visas på webbplatsen.",
       "membershipIntro": "Introduktionstext",
       "membershipIntroPlaceholder": "Fyll i detta formulär för att ansöka om medlemskap i föreningen...",
       "membershipHint": "Förfrågningar visas i listan över medlemmar med statusen \"Väntande\".",
@@ -5483,9 +6130,7 @@
       "apply": "Ansök",
       "discardTitle": "Ignorera förändringar?",
       "discardDescription": "Oapplicerade ändringar kommer att gå förlorade.",
-      "discardConfirm": "Ignorera",
-      "boutiqueLimit": "Antal produkter att visa",
-      "boutiqueLimitHint": "Endast de första N aktiva produkterna visas på webbplatsen."
+      "discardConfirm": "Ignorera"
     },
     "preview": {
       "donsNoForm": "Inget donationsformulär valt — osynligt på den offentliga sidan"
@@ -5494,6 +6139,52 @@
       "viewSite": "Se webbplatsen",
       "logoUrl": "Logotyp-URL (valfritt)",
       "footerText": "Sidfottext"
+    },
+    "aiAssistant": {
+      "title": "Bygg din sida med AI",
+      "description": "Beskriv din förening, AI:n erbjuder en första version av sidan (färger, typsnitt, rubrik, sidfot och sektioner) som du kan ändra innan du sparar den.",
+      "descriptionLabel": "Beskriv din relation",
+      "descriptionPlaceholder": "Till exempel kulturföreningen i Lyon som organiserar teaterworkshops för barn...",
+      "generate": "Generera",
+      "regenerate": "Regenerera",
+      "apply": "Ansök",
+      "cancel": "Avbryt",
+      "error": "Ett fel har uppstått, försök igen.",
+      "previewAppearance": "Utseende",
+      "previewHeader": "Rubrik",
+      "previewHeaderLogin": "Logga in-knappen",
+      "previewHeaderRegister": "Join-knappen",
+      "previewFooter": "Fot",
+      "previewSections": "Sektioner",
+      "fieldButtonLabel": "Föreslå med AI",
+      "appearancePlaceholder": "Till exempel en idrottslig, dynamisk och vänskaplig förening...",
+      "headerPlaceholder": "Exempel: något nyktert som sticker ut på en vit bakgrund...",
+      "footerPlaceholder": "Exempel: ett kort tackmeddelande...",
+      "sectionPlaceholder": "Beskriv vad detta avsnitt ska säga..."
+    },
+    "builderSwitch": {
+      "liveVersionLabel": "Onlineversion",
+      "switchLabel": "Ny redigerare (Beta)",
+      "statusLegacy": "Dina besökare ser den gamla sidan",
+      "statusNewBuilder": "Dina besökare kommer att se versionen som publiceras på {date}",
+      "publishFirstHint": "Publicera först från den nya redaktören",
+      "openNewBuilder": "Öppna den nya →redigeraren",
+      "legacyEditsNotice": "Din webbplats visar versionen av den nya redigeraren: ändringar som gjorts här kommer bara att synas om du återgår till den gamla sidan.",
+      "confirmOn": {
+        "title": "Aktivera den nya editorn?",
+        "description": "Din publika webbplats visar versionen som publicerats på {date}. Du kan återvända till den gamla sidan när som helst.",
+        "confirmLabel": "Aktivera"
+      },
+      "confirmOff": {
+        "title": "Återvända till den gamla sidan?",
+        "description": "Din publika sida visar den gamla sidan igen.",
+        "confirmLabel": "Återgång till den gamla platsen"
+      },
+      "toasts": {
+        "switchedOn": "Den nya redaktören är online",
+        "switchedOff": "Den gamla sidan är tillbaka online",
+        "error": "Fel vid byte av redigerare"
+      }
     }
   },
   "richTextEditor": {
@@ -5506,6 +6197,134 @@
     "heading1": "Rubrik 1",
     "heading2": "Rubrik 2",
     "heading3": "Rubrik 3"
+  },
+  "paperFormTemplates": {
+    "title": "Pappersark",
+    "description": "Mallar för dina pappersregistreringsformulär, för att skapa medlemmar från ifyllda och inskannade formulär.",
+    "backToMembers": "Medlemmar",
+    "backToList": "Pappersark",
+    "newTemplate": "Ny modell",
+    "empty": "Inga mallar. Skapa en från ditt tomma registreringsformulär.",
+    "notFound": "Denna mall kunde inte hittas eller har tagits bort.",
+    "mappedFieldCount": "{count, plural, =0 {Inga importerade fält} one {# importerat fält} other {# importerade fält}}",
+    "columns": {
+      "name": "Namn",
+      "pages": "Sidor",
+      "fields": "Fält",
+      "updatedAt": "Modifierad"
+    },
+    "toasts": {
+      "created": "Skapad mall",
+      "saved": "Registrerad design",
+      "deleted": "Borttagen mall"
+    },
+    "deleteConfirm": {
+      "title": "Radera \" {name} » ?",
+      "description": "Medlemmar som redan importerats med denna mall behålls. Du kommer inte längre att kunna skanna poster med denna mall."
+    },
+    "leaveWarning": {
+      "title": "Osparade ändringar",
+      "description": "Ändringar i mallen kommer att gå förlorade om du lämnar denna sida.",
+      "discard": "Avsluta utan att spara",
+      "saveAndLeave": "Spara och lämna"
+    },
+    "targetGroups": {
+      "identity": "Identitet",
+      "contact": "Kontakt",
+      "guardian": "Juridisk förmyndare",
+      "commitments": "Åtaganden",
+      "other": "Övrigt"
+    },
+    "targets": {
+      "fullName": "För- och efternamn",
+      "firstName": "Förnamn",
+      "lastName": "Namn",
+      "birthDate": "Födelsedatum",
+      "civilite": "Titel",
+      "sexe": "Kön",
+      "email": "E-post",
+      "phone": "Telefon",
+      "address": "Adress",
+      "guardianFullName": "Juridisk vårdnadshavare 1 — för- och efternamn",
+      "guardianPhone": "Juridisk vårdnadshavare 1 — telefon",
+      "secondGuardianFullName": "Juridisk vårdnadshavare 2 — för- och efternamn",
+      "secondGuardianPhone": "Juridisk vårdnadshavare 2 — telefon",
+      "imageRights": "Bildrättigheter (kryssruta)",
+      "legalDocument": "Acceptera ett dokument (kryssruta)",
+      "notes": "Medlemsanteckningar",
+      "ignore": "Importera ej"
+    },
+    "renderErrors": {
+      "unsupported_type": "Format stöds inte. Ladda upp en PDF, eller JPEG- eller PNG-foton.",
+      "too_many_pages": "Formuläret har för många sidor ({maximum} Maximum).",
+      "pdf_password": "Denna PDF är lösenordsskyddad.",
+      "pdf_invalid": "Denna PDF kunde inte öppnas.",
+      "image_invalid": "Denna bild kunde inte läsas.",
+      "too_large": "En sida är för stor, även efter att den krympt.",
+      "aborted": "Förberedelserna avbröts."
+    },
+    "editor": {
+      "newTitle": "Ny pluggmall",
+      "newDescription": "Skicka in ditt tomma registreringsformulär: AI:n föreslår motsvarigheten till varje ruta, du kryssar i den och sparar sedan.",
+      "updatedAt": "Modifierad {date}",
+      "dropTitle": "Blankt registreringsformulär",
+      "dropHint": "En PDF, eller ett JPEG- eller PNG-foto per sida — max 4 sidor. Kortet sparas inte.",
+      "chooseFile": "Välj en fil",
+      "manualIntro": "Ingen AI-nyckel konfigurerad?",
+      "configureManually": "Konfigurera manuellt",
+      "preparing": "Förbereder sidorna...",
+      "analyzing": "Analys av arket pågår...",
+      "analyzingHint": "AI:n identifierar de rutor som behöver fyllas. Detta kan ta upp till en minut.",
+      "analyzeFailedTitle": "Kortet misslyckades med att tolka",
+      "openAiSettings": "Konfigurera AI-nyckel i inställningarna",
+      "retryAnalyze": "Kör om skanningen",
+      "changeFile": "Switch-filer",
+      "nameLabel": "Modellnamn",
+      "namePlaceholder": "Registreringsformulär 2026-2027",
+      "identificationLabel": "Identifieringstext",
+      "identificationPlaceholder": "Exempel: REGISTRERINGSFORMULÄR 2026 2027 — DAC Academy",
+      "identificationHint": "Om de fylls i avvisas alla sidor som inte exakt matchar detta formulär för import.",
+      "pagesPerFormLabel": "Sidor per kort",
+      "pageCount": "{count, plural, one {# sida} other {# sidor}}",
+      "fieldsTitle": "Fältmatchning",
+      "fieldsSummary": "{count, plural, =0 {Inga fält} one {# fält} other {# fält}} · {mapped, plural, one {# importerade} other {Importerade #}}",
+      "fieldsHint": "Varje rad motsvarar en ruta på posten. Ange var dess värde ska registreras i medlemmens post.",
+      "droppedFields": "{count, plural, one {# låda som föreslogs av AI:n kastades bort eftersom den var ofullständig.} other {# lådor som föreslogs av AI:n kastades bort eftersom de var ofullständiga.}} Lägg till dem om det behövs.",
+      "noFields": "Inga fält. Lägg till rutorna i din annons.",
+      "addField": "Lägg till ett fält",
+      "moreErrors": "… och {count, plural, one {# andra misstaget} other {# andra fel}}",
+      "rowError": "Linjen {row} : {message}",
+      "labelPlaceholder": "Tryckt formulering",
+      "hintPlaceholder": "Valfritt",
+      "legalDocumentPlaceholder": "Välj ett dokument",
+      "noLegalDocuments": "Inga juridiska dokument. Skapa det först i Legal Documents.",
+      "columns": {
+        "label": "Formulering",
+        "page": "Sida",
+        "target": "Destination",
+        "legalDocument": "Dokument",
+        "hint": "Läsindikation",
+        "actions": "Åtgärder"
+      },
+      "rowLabelAria": "Linjeetikett {row}",
+      "rowPageAria": "Radsida {row}",
+      "rowTargetAria": "Linjens destination {row}",
+      "rowLegalDocumentAria": "Raddokument {row}",
+      "rowHintAria": "Indikation för radläsning {row}",
+      "removeRowAria": "Ta bort linan {row}",
+      "pageLabel": "Sida {page}",
+      "enlargePage": "Förstora sidan {page}",
+      "referenceHint": "Det tomma kortet sparas inte. Ladda om det för att visa det bredvid fälten.",
+      "showBlankForm": "Visa det tomma kortet"
+    },
+    "activity": {
+      "fields": {
+        "name": "Namn",
+        "pagesPerForm": "Sidor per kort",
+        "fields": "Fält",
+        "identificationText": "Identifieringstext"
+      }
+    }
   },
   "associationDocuments": {
     "title": "Föreningsdokument",
@@ -5521,6 +6340,13 @@
     "hidden": "Dolt",
     "visibleToMembers": "Synligt för medlemmar",
     "visibleToMembersHint": "Visar dokumentet i medlemsområdet. När det är avstängt kan bara administratörer se det.",
+    "visibleToPublic": "Offentligt tillgänglig",
+    "visibleToPublicHint": "Gör detta dokument synligt för alla med länken, utan konto — du behöver länka till det från dina offentliga formulär.",
+    "visibleToPublicForcedHint": "Automatiskt aktiverat: ett dokument som ska accepteras måste kunna läsas av den som accepterar det.",
+    "requiresAcceptance": "Att bli accepterad",
+    "requiresAcceptanceHint": "En obligatorisk kryssruta kommer att visas i formulär för medlemskap, donation, evenemangsregistrering, butik och kontoskapande. Varje godkännande registreras med dokumentversionen.",
+    "exportAcceptances": "Exportacceptanser",
+    "publicShort": "Offentligt",
     "toasts": {
       "madeVisible": "”{title}” är synligt för medlemmar",
       "madeHidden": "”{title}” är dolt för medlemmar",
@@ -5541,7 +6367,10 @@
       "contentLabel": "Innehåll",
       "contentPlaceholder": "Skriv dokumentets innehåll…",
       "titleRequired": "Titel krävs.",
-      "contentRequired": "Innehåll krävs."
+      "contentRequired": "Innehåll krävs.",
+      "fileLabel": "PDF-fil",
+      "fileHint": "Importera den officiella versionen av dokumentet (undertecknade lagar, skannade föreskrifter, etc.). Den finns tillgänglig för nedladdning och visas tillsammans med innehållet.",
+      "contentOptionalHint": "Valfritt när en PDF bifogas: Texten visas under filen."
     },
     "leaveWarning": {
       "title": "Osparade ändringar",
@@ -5550,7 +6379,36 @@
       "saveAndLeave": "Spara och lämna"
     },
     "notFound": "Dokumentet kunde inte hittas.",
-    "backToList": "Tillbaka till dokumenten"
+    "backToList": "Tillbaka till dokumenten",
+    "pdfShort": "PDF"
+  },
+  "formDraft": {
+    "restored": "Din information har sparats.",
+    "discard": "Börja om med ett tomt formulär"
+  },
+  "legalConsent": {
+    "agreeLabel": "{count, plural, one {Jag godkänner följande dokument:} other {Jag accepterar följande dokument:}}",
+    "required": "Du måste acceptera bolagets dokument för att gå vidare.",
+    "stale": "Föreningens dokument har uppdaterats, vänligen läs dem igen innan du fortsätter.",
+    "offlineAttestation": "Jag intygar att jag har fått denna persons samtycke till dessa dokument",
+    "gateTitle": "Dokument som ska accepteras",
+    "gateSubtitle": "Din förening har uppdaterat sina dokument. Vänligen läs och acceptera dem för att få tillgång till ditt utrymme.",
+    "gateSubmit": "Jag accepterar och fortsätter",
+    "gateSignOut": "Logga ut",
+    "gateError": "Kan inte registrera din antagning.",
+    "offlineAttestationHint": "Inspelat som en acceptans inhämtad offline, för din räkning."
+  },
+  "publicDocuments": {
+    "title": "Juridiska dokument",
+    "subtitle": "Dokument som tillhandahålls av föreningen.",
+    "empty": "Inga dokument publicerade för närvarande.",
+    "updatedAt": "Uppdaterad {date}",
+    "backToList": "Alla dokument",
+    "associationNotFound": "Denna koppling finns ingenstans.",
+    "notFound": "Detta dokument är inte längre tillgängligt.",
+    "openPdf": "Öppna PDF",
+    "opensNewTab": "(öppnas i en ny flik)",
+    "pdfShort": "PDF"
   },
   "portalMembre": {
     "associationDocuments": {
@@ -5560,7 +6418,10 @@
       "empty": "Inga dokument tillgängliga just nu.",
       "loadError": "Det gick inte att läsa in dokumenten.",
       "notFound": "Dokumentet kunde inte hittas eller är inte längre tillgängligt.",
-      "backToList": "Tillbaka till dokumenten"
+      "backToList": "Tillbaka till dokumenten",
+      "openPdf": "Öppna PDF",
+      "opensNewTab": "(öppnas i en ny flik)",
+      "pdfShort": "PDF"
     },
     "sondages": {
       "title": "Undersökningar",
@@ -5598,6 +6459,15 @@
       "viewShop": "Visa butik",
       "orderPlacedTitle": "Beställ registrerat!",
       "orderPlacedDescription": "Din beställning väntar på betalning. Administrationen kommer att kontakta dig för att slutföra det.",
+      "paymentSuccessTitle": "Betalning bekräftad!",
+      "paymentSuccessDescription": "Tack för ditt köp. Ett bekräftelsemail med ditt kvitto har skickats till dig.",
+      "stockAdjustedNotice": "Lagersaldot för vissa artiklar har ändrats — din varukorg har justerats, granska den innan du fortsätter.",
+      "trackOrderButton": "Spåra min beställning",
+      "trackingPageTitle": "Orderspårning",
+      "trackingStatusPending": "Väntar på betalning",
+      "trackingStatusPaid": "Order betald",
+      "trackingStatusCancelled": "Order avbruten",
+      "trackingNotFound": "Beställningen hittades inte",
       "myOrdersButton": "Mina order",
       "continueShopping": "Fortsätt handla",
       "maxStockReached": "Max-aktier nådda",
@@ -5635,16 +6505,7 @@
         "orderError": "Fel under beställning",
         "orderUpdated": "Uppdaterad ordning",
         "orderCancelled": "Beställning avbokad"
-      },
-      "paymentSuccessTitle": "Betalning bekräftad!",
-      "paymentSuccessDescription": "Tack för ditt köp. Ett bekräftelsemail med ditt kvitto har skickats till dig.",
-      "stockAdjustedNotice": "Lagersaldot för vissa artiklar har ändrats — din varukorg har justerats, granska den innan du fortsätter.",
-      "trackOrderButton": "Spåra min beställning",
-      "trackingPageTitle": "Orderspårning",
-      "trackingStatusPending": "Väntar på betalning",
-      "trackingStatusPaid": "Order betald",
-      "trackingStatusCancelled": "Order avbruten",
-      "trackingNotFound": "Beställningen hittades inte"
+      }
     },
     "dons": {
       "title": "Mina donationer",
@@ -5673,7 +6534,13 @@
       "toasts": {
         "thanked": "Tack för din donation! Ett bekräftelsemail har skickats till dig.",
         "cancelled": "Donation inställd."
-      }
+      },
+      "campaignsHeading": "Nuvarande kampanjer",
+      "backToDons": "Tillbaka till mina donationer",
+      "donatingAs": "Du ger som en {name} ({email}).",
+      "comingSoon": "Kommer snart",
+      "campaignClosed": "Kampanjen avslutades",
+      "loadCampaignsError": "Donationskampanjer kan inte laddas. Försök igen senare."
     },
     "reunions": {
       "title": "Möten",
@@ -5862,6 +6729,73 @@
       }
     },
     "evenements": {
+      "title": "Evenemang",
+      "subtitle": "Dina nästa besök och din historik.",
+      "upcomingHeading": "Kommer snart",
+      "noneUpcoming": "Inga kommande evenemang.",
+      "moreUpcomingHint": "Andra kommande evenemang visas inte. Kontakta din förening för mer information.",
+      "pastHeading": "Dåtid",
+      "pastLimitHint": "Endast de sista 10 grenarna visas.",
+      "guestsLabel": "Dina gäster:",
+      "guestFirstNamePlaceholder": "Gästnamn {n}",
+      "guestLastNamePlaceholder": "Gästnamn {n}",
+      "guestEmailPlaceholder": "Gästmejl (valfritt)",
+      "ticketTypeFullSuffix": "(slutsålt)",
+      "paymentError": "Fel under betalning",
+      "waitlistedToast": "Du står på väntelistan – vi meddelar dig via e-post om en plats blir ledig.",
+      "payOnline": "Betala online",
+      "ticketCancelledToast": "Avbokad biljett — du får återbetalning inom några dagar.",
+      "ticketsPurchased": "{n, plural, one {Köpt biljett} other {# köpta biljetter}}",
+      "youSuffix": " (du)",
+      "cancelAndRefund": "Avboka och begär återbetalning",
+      "cancelSeatTitle": "Ställa in det här stället?",
+      "cancelTicketTitle": "Avboka den här biljetten?",
+      "refundOriginalMethod": "Du kommer att få återbetalning till din ursprungliga betalningsmetod.",
+      "refundSelfOnly": "Du kommer att få återbetalning för din plats. Dina gäster kommer att förbli registrerade och kommer inte att få någon återbetalning.",
+      "refundGuestOnly": "Du kommer att få återbetalning för denna plats. Resten av din bokning påverkas inte.",
+      "cancelAndRefundConfirm": "Avboka och återbetalning",
+      "reservedPayOnSite": "Reserverat – betalning på plats",
+      "seatsCountLabel": "Antal platser:",
+      "cancelReservation": "Avboka bokning",
+      "cancelReservationSimple": "Du kan boka igen om du ändrar dig.",
+      "cancelReservationPaidCompanions": "Dina gäster som ännu inte fått betalt kommer att tas bort. Den {n} Gäster som redan har betalat kontant kommer att förbli inskrivna.",
+      "cancelReservationWithCompanions": "Detta kommer också att avboka bokningen av din {n} gäster.",
+      "onWaitlist": "Du står på väntelistan",
+      "eventFull": "Hela evenemanget",
+      "reserveButton": "Boka – betala på plats",
+      "totalLabel": "Totalt:",
+      "rsvpConfirme": "Jag kommer!",
+      "rsvpProvavel": "Om möjligt",
+      "rsvpIncerto": "Kanske",
+      "rsvpAbsent": "Jag kommer inte",
+      "rsvpRecordedToast": "Inspelat svar: {label}",
+      "rsvpSaveError": "Felinspelning",
+      "addGuestsButton": "+ Lägg till gäster",
+      "updateGuestsButton": "Uppdatera mina gäster",
+      "guestsUpdatedToast": "Uppdaterade gäster",
+      "countConfirmed": "{n, plural, one {# bekräftat} other {# bekräftat}}",
+      "countProvavel": "{n} Om möjligt",
+      "countIncerto": "{n} Kanske",
+      "countAbsent": "{n, plural, one {# frånvarande} other {# frånvarande}}",
+      "countWaitlist": "{n} På väntelistan",
+      "priceLabel": "Pris:",
+      "reservedCount": "{confirmed}/{capacity} Reserverad",
+      "fullSuffix": " · Slutsåld",
+      "presenceLabel": "Publik:",
+      "present": "Nutid",
+      "presenceAbsent": "Frånvarande",
+      "presenceNotRecorded": "Ej registrerad",
+      "rsvpDisplay": "OSA: {label}",
+      "yourResponseLabel": "Ditt svar:",
+      "confirmParticipationLabel": "Bekräfta ditt deltagande:",
+      "reviewSentThanks": "Meddelande skickat — tack!",
+      "chooseRatingError": "Välj en ton",
+      "leaveReview": "Lämna en recension",
+      "send": "Skicka",
+      "commentPlaceholder": "Några kommentarer? (valfritt)",
+      "ticketPurchaseSuccessToast": "Biljetten är köpt framgångsrikt!",
+      "paymentCancelledToast": "Betalning avbokad. Din plats är fortfarande reserverad – betala senare eller avboka bokningen på evenemangskortet.",
+      "registrationsClosed": "Registreringen är stängd.",
       "viewEvent": "Visa evenemanget",
       "backToList": "Alla evenemang",
       "notFound": "Det här evenemanget är inte längre tillgängligt."
@@ -5877,6 +6811,7 @@
     "platformKeyActive": "Aktiv plattformsnyckel — du kan använda AI utan konfiguration.",
     "providerFieldLabel": "Leverantör",
     "providerFieldPlaceholder": "Att välja en leverantör...",
+    "anthropicAssistantHint": "Hjälpcenterassistenten svarar endast på din förenings data (medlemmar, avgifter, ekonomi) med en antropisk nyckel. Hos en annan leverantör svarar den endast från dokumentationen.",
     "apiKeyLabel": "API-nyckel",
     "apiKeyPlaceholderReplace": "Befintlig nyckel — ange för att ersätta",
     "apiKeyPlaceholderNew": "Klistra in din API-nyckel...",
@@ -5936,6 +6871,7 @@
       "actualites": "Nyheter",
       "messages": "Meddelanden",
       "materiel": "Material",
+      "groupes": "Grupper",
       "site": "Webbplats",
       "activite": "Historik",
       "suporte": "Stöd",
@@ -5954,7 +6890,8 @@
       "pricingOffers": "Prissättningserbjudanden",
       "support": "Stöd",
       "controlAlerts": "Kontrollvarningar",
-      "signOut": "Logga ut"
+      "signOut": "Logga ut",
+      "membreDuplicates": "Dubbletter"
     },
     "themeToggle": {
       "changeTheme": "Byt tema"
@@ -5962,7 +6899,8 @@
     "header": {
       "myPortal": "Mitt utrymme",
       "myProfile": "Min profil",
-      "management": "Förvaltning"
+      "management": "Förvaltning",
+      "publicSite": "Se webbplatsen"
     },
     "userMenu": {
       "roleLabels": {
@@ -5971,10 +6909,12 @@
         "PRESIDENT": "President",
         "TRESORIER": "Kassör",
         "SECRETAIRE": "Sekreterare",
-        "MEMBRE": "Ledamot"
+        "MEMBRE": "Ledamot",
+        "EQUIPE": "Teammedlem"
       },
       "editProfile": "Redigera profil",
       "changePassword": "Byt lösenord",
+      "security": "Säkerhet",
       "legalDocuments": {
         "title": "Juridiska dokument",
         "mentionsLegales": "Juridisk notis",
@@ -5984,6 +6924,38 @@
         "opensNewTab": "Öppnar en ny flik"
       },
       "logout": "Logga ut"
+    },
+    "twoFactorSettingsModal": {
+      "title": "Tvåfaktorsautentisering",
+      "statusEnabled": "Aktiverad",
+      "statusEnabledDescription": "Ditt konto skyddas av tvåstegsverifiering.",
+      "statusDisabled": "Funktionsnedsatt",
+      "statusDisabledDescription": "Lägg till ytterligare verifiering på din inloggning med en autentiseringsapp.",
+      "backupCodesLabel": "Reservkoder",
+      "backupCodesRemaining": "{count, plural, =0 {Ingen kod kvar} one {# återstående kod} other {# kod-restanter}}",
+      "regenerate": "Regenerera",
+      "scanTitle": "1. Skanna denna QR-kod",
+      "scanDescription": "Öppna din autentiseringsapp (Google Authenticator, Authy...) och skanna koden nedan.",
+      "manualEntryLabel": "Kan du inte scanna? Skriv in den här koden manuellt:",
+      "confirmCodeLabel": "Verifieringskod",
+      "backupCodesTitle": "Spara dessa koder nu",
+      "backupCodesDescription": "Dessa koder visas bara en gång. Varje kod kan bara användas en gång.",
+      "copyAll": "Kopiera alla koder",
+      "copied": "Kopierat!",
+      "savedCodesConfirm": "Jag sparade mina backup-koder på en säker plats.",
+      "done": "Färdigställd",
+      "disableDescription": "Bekräfta ditt lösenord för att inaktivera tvåfaktorsautentisering.",
+      "disableConfirm": "Inaktivera",
+      "regenDescription": "Bekräfta med en kod från din app för att återskapa dina reservkoder.",
+      "passwordLabel": "Lösenord",
+      "enable": "Aktivera",
+      "disable": "Inaktivera",
+      "cancel": "Avbryt",
+      "confirm": "Bekräfta",
+      "close": "Stäng",
+      "enabledToast": "Tvåfaktorsautentisering aktiverad.",
+      "disabledToast": "Tvåfaktorsautentisering inaktiverad.",
+      "regeneratedToast": "Återgenererade backupkoder."
     },
     "changePasswordModal": {
       "title": "Byt lösenord",
@@ -6109,7 +7081,14 @@
       "error": "Ett fel uppstod",
       "closed": "Begäran avslutad",
       "reopened": "Ansökan öppnades på nytt"
-    }
+    },
+    "suggestReply": "Föreslå ett svar",
+    "suggestReplyConfirmTitle": "Byta ut ditt drag?",
+    "suggestReplyConfirmDescription": "Den text som redan matats in ersätts av AI-förslaget.",
+    "suggestReplyConfirmAction": "Byt ut",
+    "suggestReplyNote": "AI-genererat förslag – korrekturläs innan du skickar in.",
+    "suggestReplySources": "Källor: {titles}",
+    "suggestReplyError": "Kan inte generera något förslag."
   },
   "controlAlerts": {
     "title": "Medlemskontroll",
@@ -6122,9 +7101,27 @@
     "columns": {
       "membre": "Medlem",
       "association": "Förening",
+      "origin": "Ursprung",
       "raisedAt": "Skapad",
       "daysWithoutCotisation": "Dagar utan bidrag",
       "status": "Status"
+    },
+    "originByLabel": "Av {name}",
+    "originSources": {
+      "ADMIN_MANUAL": "Manuell tillägg av en administratör",
+      "ADMIN_REGISTRATION": "Registrering av en administratör (formulär)",
+      "PUBLIC_ADHESION_FORM": "Offentligt medlemskapsformulär (Gratis)",
+      "PUBLIC_ADHESION_FORM_OFFLINE": "Formulär för offentligt medlemskap (Offline-betalning)",
+      "PUBLIC_ADHESION_STRIPE": "Offentligt medlemskapsformulär (Onlinebetalning)",
+      "PUBLIC_ADHESION_INSTALLMENTS": "Offentligt medlemskapsformulär (betalning i avbetalningar)",
+      "PUBLIC_ADHESION_MULTI": "Offentligt medlemskapsformulär (Gruppregistrering)",
+      "PUBLIC_ADHESION_SUBSCRIPTION": "Offentligt medlemskapsformulär (återkommande prenumeration)",
+      "ASSOCONNECT_IMPORT": "Importera AssoConnect",
+      "PAPER_FORM": "Import av pappersformulär",
+      "ASSOCIATION_SIGNUP_ADMIN": "Grundande medlem (föreningens skapande)",
+      "PUBLIC_INSCRIPTION_REQUEST": "Begäran om offentlig registrering (väntar på validering)",
+      "PUBLIC_INSCRIPTION_REQUEST_MULTI": "Massregistrering av allmänheten (väntar på validering)",
+      "unknown": "Ursprung okänt"
     },
     "empty": "Inga kontrollvarningar.",
     "resolveAction": "Lös",
@@ -6143,7 +7140,453 @@
     "autoResolvedLabel": "(auto)",
     "emptyForSearch": "Inga resultat för \"{search}\"."
   },
+  "help": {
+    "buttonLabel": "Hjälp",
+    "title": "Hjälpcenter",
+    "moduleGeneral": "Allmänt",
+    "tabs": {
+      "guide": "Hjälp",
+      "assistant": "Assistent",
+      "changelog": "Vad är nytt",
+      "news": "Nyheter"
+    },
+    "searchPlaceholder": "Sökhjälp...",
+    "searchResultsCount": "{count, plural, one {# resultat} other {# resultat}}",
+    "searchNoResults": "Inga resultat för \" {query} ».",
+    "searchError": "Sökningen är för närvarande inte tillgänglig.",
+    "newBadge": "Nytt",
+    "pinnedSection": "Det här är en",
+    "articlesSection": "Artiklar",
+    "articlesOtherSection": "Andra artiklar",
+    "faqSection": "Vanliga frågor",
+    "faqOtherSection": "Andra frågor",
+    "noContent": "Inget hjälpinnehåll för denna sektion just nu.",
+    "loadError": "Kan inte ladda hjälpen.",
+    "retry": "Försök igen",
+    "back": "Tillbaka",
+    "updatedOn": "Uppdaterad {date}",
+    "articleNotFound": "Föremål ej hittat.",
+    "callout": {
+      "info": "Info",
+      "tip": "Tips",
+      "warning": "Uppmärksamhet"
+    },
+    "assistant": {
+      "questionLabel": "Din fråga",
+      "questionPlaceholder": "Ställ din fråga...",
+      "send": "Skicka",
+      "sendShortcut": "Ctrl + Enter (⌘ + Enter på Mac)",
+      "disclaimer": "AI-genererade svar – kontrollera viktig information.",
+      "charactersCount": "{count}/{max}",
+      "youLabel": "Du",
+      "assistantLabel": "Assistent",
+      "newConversation": "Ny konversation",
+      "conversationRestoreFailed": "Ditt tidigare samtal kunde inte återupptas.",
+      "intro": "Ställ en fråga om att använda Formwise eller din förenings data: medlemmar, avgifter, ekonomi, evenemang.",
+      "introDocs": "Ställ en fråga om att använda Formwise.",
+      "examplesLabel": "Exempelfrågor",
+      "examples": {
+        "unpaid": "Vem har inte betalat sin medlemsavgift i år?",
+        "donations": "Hur många donationer finns det denna månad?",
+        "createEvent": "Hur skapar jag ett evenemang?"
+      },
+      "examplesDocs": {
+        "reminder": "Hur följer jag upp en obetald insättning?",
+        "export": "Hur exporterar jag medlemslistan?",
+        "createEvent": "Hur skapar jag ett evenemang?"
+      },
+      "loadingCopilot": "Konsultera data...",
+      "loadingDocs": "Skrivande...",
+      "dataConsulted": "Konsulterade data:",
+      "tools": {
+        "search_members": "Medlemmar",
+        "get_member": "Medlemmar",
+        "list_cotisations": "Bidrag",
+        "get_finance_summary": "Ekonomisk sammanfattning",
+        "list_events": "Evenemang",
+        "list_donations": "Donationer",
+        "list_invoices": "Fakturor"
+      },
+      "sources": "Källor:",
+      "docsOnlyNotice": "Frågor om ditt medlemskap, avgifter och ekonomi kräver en antropisk nyckel.",
+      "docsOnlyConfigure": "Konfigurera i inställningarna → integrationer.",
+      "error": "Omöjligt att få ett svar.",
+      "errorTimeout": "Trollkarlen kunde inte slutföra det inom den angivna tiden. Ställ en mer specifik eller kortare fråga.",
+      "errorRateLimit": "För många förfrågningar, försök igen om några ögonblick.",
+      "errorProvider": "AI-leverantören kunde inte svara, försök igen senare.",
+      "noApiKey": "Inga API-nycklar konfigurerade.",
+      "noApiKeyConfigure": "Lägg till din API-nyckel i Inställningar → Integrationer.",
+      "noApiKeyAskAdmin": "Be en administratör lägga till en API-nyckel i Settings → Integrations.",
+      "apiKeyInvalid": "Den konfigurerade API-nyckeln nekas av leverantören.",
+      "apiKeyInvalidConfigure": "Kolla det i Inställningar → Integrationer.",
+      "apiKeyInvalidAskAdmin": "Be en administratör att kontrollera det i Inställningar → Integrationer."
+    },
+    "changelog": {
+      "latestSection": "Senaste uppdateringarna",
+      "empty": "Inga nya funktioner för tillfället.",
+      "loadError": "Kan inte ladda nya funktioner.",
+      "kind": {
+        "feature": "Nytt",
+        "improvement": "Förbättring",
+        "fix": "Fix"
+      }
+    },
+    "releaseNotes": {
+      "title": "Vad är nytt"
+    },
+    "news": {
+      "latestSection": "Senaste nytt",
+      "empty": "Inga nyheter just nu.",
+      "loadError": "Kan inte ladda nyheter.",
+      "popupTitle": "Nyheter"
+    },
+    "faqPopup": {
+      "title": "Vanliga frågor"
+    },
+    "popupCarousel": {
+      "remindLater": "Påminn mig senare",
+      "remindLaterToast": "Vi påminner dig nästa gång du loggar in.",
+      "previous": "Tidigare",
+      "next": "Nästa",
+      "finish": "Slut",
+      "position": "Element {current} på {total}",
+      "goTo": "Gå till föremålet {index}"
+    },
+    "footer": {
+      "tour": "Guidad tur",
+      "contactSupport": "Kontakta Support"
+    }
+  },
+  "boutiqueShipping": {
+    "title": "Sjöfart",
+    "description": "Leveransadressen som används för att beräkna butikens fraktkostnad för posten.",
+    "addressLabel": "Adress",
+    "addressPlaceholder": "12 rue de la Paix",
+    "cityLabel": "Stad",
+    "postalCodeLabel": "Postnummer",
+    "countryLabel": "Land",
+    "saved": "Registrerad leveransadress",
+    "deliveryMethodLabel": "Mottagningsläge",
+    "pickupOption": "Upphämtning på plats",
+    "deliveryOption": "Utskick",
+    "shippingAddressHint": "Krävs för att beräkna fraktkostnader.",
+    "shippingOptionsLabel": "Fraktkostnader",
+    "loadingRates": "Beräkning av leveranskostnader...",
+    "noShippingOptions": "Inga leveransalternativ tillgängliga för denna adress.",
+    "shippingUnavailable": "Postleverans är ännu inte konfigurerad av denna förening.",
+    "leadTimeApprox": "~{days} j",
+    "shippingCostLabel": "Fraktkostnader",
+    "mixedCartPickupOnlyHint": "Frakt otillgänglig: Din kundvagn innehåller en vara som bara kan hämtas för hand.",
+    "markupLabel": "Säkerhetsmarginal på fraktkostnader",
+    "markupHint": "Läggs till priset som visas för köparen. Skyddar dig om transportörspriset höjs före den faktiska leveransen, men ett högre pris kan avskräcka köp.",
+    "markupRangeError": "Marginalen måste vara ett heltal mellan 0 och 50.",
+    "markupHintTooltip": "Inga etiketter köps vid beställningstillfället: priset som visas är endast en uppskattning. Om transportörens faktiska pris har ökat vid tiden då du frankerar paketet, betalar välgörenhetsorganisationen mellanskillnaden – om inte denna marginal täcker det. Omvänt ökar en för hög marginal priset som visas för kunden och kan avskräcka dem från att köpa."
+  },
+  "paperFormScan": {
+    "menuItem": "Importera papperskort",
+    "manageTemplatesMenuItem": "Hantera kortmallar",
+    "title": "Importera papperskort",
+    "description": "Läs handifyllda registreringsformulär, kontrollera varje formulär och skapa sedan medlemmar.",
+    "backToMembers": "Medlemmar",
+    "loadingTemplates": "Laddar mallar...",
+    "steps": {
+      "upload": "Filer",
+      "reading": "Läsning",
+      "review": "Verifiering",
+      "result": "Skapandet"
+    },
+    "upload": {
+      "noTemplateTitle": "Ingen papperskortsmall",
+      "noTemplateDescription": "Först, beskriv ditt pappersregistreringsformulär så att dess fält kan läsas.",
+      "createTemplate": "Skapa en mall",
+      "template": "Mallblad",
+      "templatePlaceholder": "Välj en modell",
+      "templateSummary": "{pages, plural, one {# sida} other {# sidor}} per kort · {fields, plural, one {# fält} other {# fält}}.",
+      "manageTemplates": "Hantera mallar",
+      "dropTitle": "Ladda upp den skannade PDF:en eller foton på bladen",
+      "galleryTitle": "Välj foton eller PDF",
+      "dropSubtitle": "PDF, JPEG eller PNG — flera filer möjliga, lästa i namnets ordning",
+      "privacyNote": "Sidorna finns kvar i din webbläsare: endast bilderna skickas en efter en för att läsas, inget sparas.",
+      "pageCount": "{count, plural, one {# sida} other {# sidor}}",
+      "removeFile": "Ta bort {name}",
+      "preparing": "Förbereder sidorna...",
+      "batchSummary": "{pages, plural, one {# sida} other {# sidor}} · Om {forms, plural, one {# rekord} other {# blad}}",
+      "pageTotal": "{count, plural, one {# sida} other {# sidor}}",
+      "start": "Start Play",
+      "renderFailed": "{name} : {error}",
+      "strictTemplateNotice": "Endast sidorna i \" {name} \" kommer att accepteras.",
+      "capturedListLabel": "Fotograferade kort",
+      "capturedForm": "Faktablad {form}",
+      "capturedPages": "{count, plural, one {Sida {list}} other {Sidor {list}}}",
+      "capturedMissing": "{count, plural, one {sida {list} frånvarande} other {sidor {list} frånvarande}}",
+      "capturedInProgress": "Pågående",
+      "removeCapturedForm": "Ta bort filen {form}",
+      "capturedSummary": "{forms, plural, one {# rekord} other {# blad}} · {pages, plural, one {# sida} other {# sidor}}",
+      "camera": {
+        "title": "Fotografera korten",
+        "needsTemplate": "Välj först en mall: appen talar om för dig vilken sida du ska fotografera.",
+        "prompt": "Faktablad {form} — sida {page} på {pages}",
+        "promptSinglePage": "Faktablad {form}",
+        "capturePage": "Fotografera sidan {page}",
+        "captureForm": "Fotografera bladet",
+        "skipToNextForm": "Hoppa till filen {form}",
+        "lastShot": "Faktablad {form} · sida {page}",
+        "lastShotSinglePage": "Faktablad {form}",
+        "lastShotAlt": "Foto av filen {form}, sida {page}",
+        "preparing": "Förberedelser...",
+        "retake": "CV",
+        "retakeLabel": "Ta fotot på kortet {form}, sida {page}",
+        "framingHint": "Lägg arket platt, väl belyst, och rama in hela sidan med dess fyra kanter.",
+        "photoFileName": "Faktablad {form} sida {page}.{extension}"
+      }
+    },
+    "reading": {
+      "progress": "{read} / {total} Sidledtrådar",
+      "failedCount": "{count, plural, one {# sida i misstag} other {# sidor i misstag}}",
+      "runningHint": "Läsningen fortsätter så länge denna sida är öppen.",
+      "pageFailed": "Sidan kunde inte läsas",
+      "stoppedTitle": "Avbruten uppspelning",
+      "rateLimitedTitle": "Pausa uppspelning",
+      "openAiSettings": "AI-inställningar",
+      "openTemplates": "Mallblad",
+      "resume": "CV",
+      "failedTitle": "Olästa sidor",
+      "retryAll": "Försök allt igen",
+      "pageColumn": "Sida",
+      "fileColumn": "Fil",
+      "errorColumn": "Fel",
+      "retry": "Försök igen",
+      "continueWithFailuresHint": "Du kan fortsätta: olästa sidor förblir synliga under verifieringen och fylls i för hand.",
+      "restart": "Börja om",
+      "continueAnyway": "Kolla ändå",
+      "continue": "Hoppa till verifiering",
+      "refusedCount": "{count, plural, one {# sidan som inte godkändes} other {# avvisade sidor}}",
+      "refusedTitle": "Ej godkända sidor",
+      "reasonColumn": "Motiv",
+      "pageRefused": "Sidan avvisades — detta är inte det förväntade resultatet",
+      "detectedDocument": "Dokument upptäckt: {title}",
+      "removePage": "Ta bort",
+      "refusedHint": "Dessa sidor kommer inte att importeras. Om ett kort förlorar en av sina sidor på detta sätt, kommer det att visas med en saknad sida."
+    },
+    "viewer": {
+      "pageSwitch": "Sida visas",
+      "page": "Sida {number}",
+      "pageMissing": "Sida {number} Saknas",
+      "zoomOut": "Kollaps",
+      "zoomIn": "Förstora",
+      "pageUnread": "Page non lue : {error}",
+      "pageAlt": "Sida {number} av arbetsbladet ({file})",
+      "missingPageBody": "Sidan {number} av detta blad har inte importerats."
+    },
+    "editor": {
+      "lowConfidence": "Osäker läsning, ska verifieras",
+      "identity": "Identitet",
+      "firstName": "Förnamn",
+      "lastName": "Namn",
+      "alreadyExists": "Finns redan: {people}",
+      "email": "E-post",
+      "phone": "Telefon",
+      "birthDate": "Födelsedatum",
+      "age": "{age, plural, one {# en} other {# år}}",
+      "civilite": "Titel",
+      "sexe": "Kön",
+      "address": "Adress",
+      "addressLowConfidence": "Adress läst med osäkerhet, ska verifieras",
+      "guardians": "Juridiska vårdnadshavare",
+      "guardianExpected": "Mindre medlem ({age, plural, one {# en} other {# år}}): ingen juridisk vårdnadshavare informeras.",
+      "guardianName": "Juridisk förmyndare {number} — Namn",
+      "guardianPhone": "Juridisk förmyndare {number} — telefon",
+      "consents": "Behörigheter",
+      "imageRights": "Bildrättigheter",
+      "imageRightsYes": "Ja",
+      "imageRightsNo": "Inte",
+      "imageRightsUnknown": "Ej specificerat",
+      "sheetAnswers": "Svar i filen",
+      "sheetAnswersHint": "Fält utan en dedikerad kolumn: Dessa läggs till i medlemmens anteckningar vid skapandet.",
+      "sheetPage": "Sida {page}",
+      "sheetPageMissing": "Sida saknas: inget svar läst.",
+      "checkboxUnread": "Oläst ruta, som ska kryssas i på kortet",
+      "linkedDocument": "Register som accepteras av \" {title} »",
+      "notes": "Noter",
+      "notesOwnHint": "Dina egna anteckningar. Svaren i kortet läggs till vid skapandet, i formatet \"label: value\"."
+    },
+    "review": {
+      "summary": "{total, plural, one {# rekord} other {# blad}} · {toReview} Kommer att granskas · {validated, plural, one {# validerad} other {# validerad}} · {ignored, plural, one {# ignorerade} other {# ignorerade}} · {created, plural, one {# skapad} other {# skapad}}",
+      "checkingDuplicates": "leta efter dubbletter...",
+      "duplicatesFailed": "Dubbelsökningen misslyckades; du kan fortsätta verifieringen.",
+      "create": "{count, plural, =0 {Skapa medlemmar} one {Skapa # medlem} other {Skapa # medlemmar}}",
+      "formsList": "Faktablad",
+      "untitledForm": "Faktablad {number}",
+      "missingPages": "{count, plural, one {Sida {list} frånvarande} other {Sidor {list} frånvarande}}",
+      "formPosition": "Faktablad {number} på {total}",
+      "previous": "Föregående kort",
+      "next": "Nästa sida",
+      "missingPagesNotice": "{count, plural, one {Sida {list} frånvarande} other {Sidor {list} frånvarande}} : Fälten på denna sida förblir tomma. Du kan validera formuläret och fylla i medlemmen senare.",
+      "commitError": "Skapandet misslyckades: {error}",
+      "createdNotice": "Medlem skapad.",
+      "openMember": "Öppna filen",
+      "unvalidate": "Ångra-validering",
+      "restore": "Återställ",
+      "ignore": "Ignorera",
+      "validate": "Validera",
+      "invalidBeforeCreate": "{count, plural, one {En validerad lista innehåller ett fel} other {# validerade listningar innehåller ett fel}} : Rätta dem innan du skapar medlemmar."
+    },
+    "status": {
+      "toReview": "Kommer att recenseras",
+      "validated": "Validerad",
+      "ignored": "Ignoreras",
+      "error": "Fel",
+      "created": "Skapad"
+    },
+    "result": {
+      "summary": "{created, plural, =0 {Inga medlemmar skapade} one {# medlem skapad} other {# medlemmar skapade}}{errors, plural, =0 {} one { · # misstag} other { · # misstag}}",
+      "remaining": "{count, plural, one {# ärende återstår att bearbeta} other {# filer återstår att bearbeta}}.",
+      "nameColumn": "Namn",
+      "statusColumn": "Resultat",
+      "detailColumn": "Detaljer",
+      "created": "Skapad",
+      "error": "Fel",
+      "skippedDocuments": "Oregistrerad acceptans: {documents}",
+      "backToReview": "Tillbaka till verifiering",
+      "goToMembers": "Visa medlemmar",
+      "genericError": "Felskapande medlemmar"
+    },
+    "notesValues": {
+      "yes": "Ja",
+      "no": "Inte"
+    },
+    "validation": {
+      "firstNameRequired": "Förnamn krävs",
+      "lastNameRequired": "Namn krävs"
+    },
+    "leaveWarning": {
+      "title": "Quitter l''import?",
+      "description": "Register som lästs och verifierats på denna sida kommer att gå förlorade. Medlemmar som redan skapats behålls.",
+      "confirm": "Lämnar utan att skapa"
+    },
+    "restartWarning": {
+      "title": "Recommencer l''import?",
+      "description": "Uppladdade sidor och deras läsning avbryts.",
+      "confirm": "Börja om"
+    }
+  },
   "formTermsEditor": {
     "contentRequired": "Du måste fylla i fältet ”{conditionsLabel}” eller ladda upp ett dokument."
+  },
+  "membreDuplicates": {
+    "list": {
+      "title": "Potentiella dubbletter",
+      "subtitle": "Medlemmar som verkar vara samma person — kontrollera innan du slår ihop dem.",
+      "menuItem": "Dubbletter",
+      "scanAction": "Sök efter dubbletter",
+      "scanSuccess": "{count, plural, =0 {Inga dubbletter väntar} one {1 dubblett, väntande} other {# dubbletter väntar}}",
+      "scanError": "Felsökning efter dubbletter",
+      "searchPlaceholder": "Sök efter en medlem...",
+      "matchedFields": {
+        "EMAIL": "E-post",
+        "NAME": "Namn"
+      },
+      "columns": {
+        "membreA": "Medlem A",
+        "membreB": "Medlem B",
+        "matchedFields": "Motsvarande kriterier",
+        "detectedAt": "Upptäckt",
+        "status": "Status"
+      },
+      "status": {
+        "PENDING": "Väntar",
+        "DISMISSED": "Ignoreras",
+        "MERGED": "Sammanslagen"
+      },
+      "autoDismissedLabel": "(bil)",
+      "compareAction": "Jämför",
+      "dismissAction": "Ignorera",
+      "empty": "Inga dubbletter.",
+      "emptyForSearch": "Inga resultat för \" {search} ».",
+      "restoreAction": "Återställ"
+    },
+    "merge": {
+      "backLink": "Tillbaka",
+      "title": "Jämför och slå ihop",
+      "subtitle": "Välj vilken medlem som ska behållas och, för varje olika fält, vilket värde som ska behållas.",
+      "alreadyMerged": "Denna dubbletter har redan slagits samman.",
+      "keepAsPrimary": "Behåll som rektor",
+      "fieldsTitle": "Olika områden",
+      "fields": {
+        "firstName": "Förnamn",
+        "lastName": "Namn",
+        "email": "E-post",
+        "phone": "Telefon",
+        "birthDate": "Födelsedatum",
+        "civilite": "Titel",
+        "address": "Adress",
+        "addressStreet": "Bana",
+        "addressComplement": "Ytterligare adress",
+        "postalCode": "Postnummer",
+        "city": "Stad",
+        "country": "Land",
+        "groupeSanguin": "Blodgrupp",
+        "sexe": "Kön",
+        "allergies": "Allergier",
+        "photoUrl": "Foto",
+        "preferredLocale": "Föredraget språk",
+        "spokenLanguage": "Talat språk",
+        "possedeTshirt": "Har en t-shirt",
+        "tailleTshirt": "T-shirtstorlek",
+        "typeId": "Medlemstyp",
+        "notes": "Noter",
+        "guardianName": "Namn på den juridiska vårdnadshavaren",
+        "guardianPhone": "Telefonnummer till den juridiska vårdnadshavaren",
+        "secondGuardianName": "Namn på den andra lagliga vårdnadshavaren",
+        "secondGuardianPhone": "Telefonnummer till den andra juridiska vårdnadshavaren",
+        "imageRightsConsent": "Bildrättigheter",
+        "imageRightsConsentAt": "Datum för samtycke (bildrättigheter)"
+      },
+      "relatedDataTitle": "Relaterad data",
+      "relations": {
+        "cotisations": "Bidrag",
+        "participations": "Evenemangsregistreringar",
+        "dons": "Donationer",
+        "membershipAddonPurchases": "Köpta medlemskapsalternativ",
+        "automationLogs": "Utlösta automationer",
+        "emailMessages": "Skickade mejl",
+        "smsMessages": "SMS skickat",
+        "incomes": "Intäkter",
+        "materialLoans": "Utrustningslån",
+        "boutiqueCommandes": "Butiksbeställningar",
+        "actualiteRecipients": "Nyhetsmottagare",
+        "sondageRecipients": "Mottagare av undersökningen",
+        "sondageReponses": "Svar på enkäten",
+        "meetingParticipants": "Deltagande i möten",
+        "erasureRequests": "Begäran om radering",
+        "dependants": "Tillhörande (beroende) medlemmar",
+        "cotisationSubscription": "Aktiv medlemsprenumeration",
+        "controlAlert": "Aktiv kontrollvarning"
+      },
+      "relatedDataCounts": "{primary} → {secondary}",
+      "conflictWarning": "⚠ {reason}",
+      "dismissAction": "Ignorera denna dubblett.",
+      "mergeAction": "Sammanslagning",
+      "mergeConfirmTitle": "Slå ihop dessa två medlemmar?",
+      "mergeConfirmDescription": "All relaterad data från sekundärmedlemmen kommer att överföras till primärmedlemmen. Denna åtgärd kan inte ångras från gränssnittet.",
+      "mergeConfirmDescriptionWithPortalWarning": "Båda medlemmarna har ett portalkonto — den sekundära medlemmens konto kommer att inaktiveras. All annan relaterad data kommer att överföras till primärmedlemmen. Denna åtgärd kan inte ångras från gränssnittet.",
+      "mergeConfirmDescriptionAdoptsPortal": "Portalkontot för den sekundära medlemmen kommer att tas över av den primära medlemmen. All annan relaterad data kommer att överföras. Denna åtgärd kan inte ångras från gränssnittet.",
+      "mergeSuccess": "{count, plural, =0 {Sammanslagningen slutförd} one {Sammanslagning — 1 överförd vara} other {Slå ihop — # överförda föremål}}",
+      "mergeError": "Felsammanslagning",
+      "relatedDataEmpty": "Ingen data kopplad till någon av medlemmarna."
+    },
+    "backoffice": {
+      "title": "Dubblettmedlemmar",
+      "subtitle": "Potentiella dubbletter upptäckta i alla associationer.",
+      "columns": {
+        "association": "Förening"
+      },
+      "changeAssociation": "Changer d''association",
+      "associationSearchPlaceholder": "Sök efter en koppling...",
+      "typeToSearch": "Tryck för att söka...",
+      "loading": "Laddar...",
+      "noResults": "Inga resultat.",
+      "scanAction": "Scanner"
+    }
   }
 }

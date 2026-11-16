@@ -70,6 +70,7 @@ type DonationForm = {
   contactPhone:         string | null
 
   fieldAddress:   FieldRequirement
+  fieldCountry:   FieldRequirement
   fieldBirthDate: FieldRequirement
   fieldPhone:     FieldRequirement
   fieldMobile:    FieldRequirement
@@ -171,6 +172,7 @@ export default function DonationFormDetailPage() {
 
   // Step 3 — Matrice de champs standards
   const [fieldAddress, setFieldAddress]     = useState<FieldRequirement>("HIDDEN")
+  const [fieldCountry, setFieldCountry]     = useState<FieldRequirement>("HIDDEN")
   const [fieldBirthDate, setFieldBirthDate] = useState<FieldRequirement>("HIDDEN")
   const [fieldPhone, setFieldPhone]         = useState<FieldRequirement>("HIDDEN")
   const [fieldMobile, setFieldMobile]       = useState<FieldRequirement>("HIDDEN")
@@ -243,6 +245,7 @@ export default function DonationFormDetailPage() {
     setContactEmail(form.contactEmail ?? "")
     setContactPhone(form.contactPhone ?? "")
     setFieldAddress(form.fieldAddress)
+    setFieldCountry(form.fieldCountry)
     setFieldBirthDate(form.fieldBirthDate)
     setFieldPhone(form.fieldPhone)
     setFieldMobile(form.fieldMobile)
@@ -350,7 +353,7 @@ export default function DonationFormDetailPage() {
     }
   }
   const standardFieldsPayload = (): SaveableFields => ({
-    fieldAddress, fieldBirthDate, fieldPhone, fieldMobile, fieldGender,
+    fieldAddress, fieldCountry, fieldBirthDate, fieldPhone, fieldMobile, fieldGender,
   })
   const paymentPayload = (): SaveableFields => ({
     allowOnline, allowCash, allowCheque, allowTransfer,
@@ -433,8 +436,8 @@ export default function DonationFormDetailPage() {
   // editor's own — so its halves are tracked apart (each greys out its own button) and merged
   // for the step.
   const standardFieldsDirty = !!form && changed(
-    [fieldAddress, fieldBirthDate, fieldPhone, fieldMobile, fieldGender],
-    [form.fieldAddress, form.fieldBirthDate, form.fieldPhone, form.fieldMobile, form.fieldGender],
+    [fieldAddress, fieldCountry, fieldBirthDate, fieldPhone, fieldMobile, fieldGender],
+    [form.fieldAddress, form.fieldCountry, form.fieldBirthDate, form.fieldPhone, form.fieldMobile, form.fieldGender],
   )
   const stepDirty: Record<StepKey, boolean> = {
     // A picked-but-not-yet-uploaded file only lives in memory (see the lazy-upload pattern
@@ -826,6 +829,7 @@ export default function DonationFormDetailPage() {
                 <p className="text-sm font-medium">{tSteps("fields.standardFieldsHint")}</p>
                 <div className="mt-2 grid grid-cols-1 gap-3 sm:grid-cols-2">
                   <SelectField label={tSteps("fields.addressLabel")} options={requirementOptions} value={fieldAddress} onValueChange={v => setFieldAddress(v as FieldRequirement)} />
+                  <SelectField label={tSteps("fields.countryLabel")} options={requirementOptions} value={fieldCountry} onValueChange={v => setFieldCountry(v as FieldRequirement)} />
                   <SelectField label={tSteps("fields.birthDateLabel")} options={requirementOptions} value={fieldBirthDate} onValueChange={v => setFieldBirthDate(v as FieldRequirement)} />
                   <SelectField label={tSteps("fields.phoneLabel")} options={requirementOptions} value={fieldPhone} onValueChange={v => setFieldPhone(v as FieldRequirement)} />
                   <SelectField label={tSteps("fields.mobileLabel")} options={requirementOptions} value={fieldMobile} onValueChange={v => setFieldMobile(v as FieldRequirement)} />

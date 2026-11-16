@@ -29,7 +29,10 @@ export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
 export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   const { associationId, userId } = ctx
 
-  const existing = await prisma.evenement.findFirst({ where: { id, associationId } })
+  const existing = await prisma.evenement.findFirst({
+    where:   { id, associationId },
+    include: { ticketTypes: { select: { active: true, receiptMode: true } }, association: { select: { canIssueTaxReceipts: true } } },
+  })
   if (!existing) return NextResponse.json({ error: "Événement introuvable" }, { status: 404 })
 
   const body = await req.json()
@@ -53,6 +56,16 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
     requireCguvSignature: rest.requireCguvSignature !== undefined ? rest.requireCguvSignature : existing.requireCguvSignature,
   }
   if (!isTermsConfigurationValid(finalTerms)) return termsContentRequiredResponse()
+
+  // Même garde-fou qu'à la publication (voir publish/route.ts) — un événement déjà publié et
+  // qui émet des reçus fiscaux ne doit pas pouvoir se retrouver, par une simple édition de la
+  // matrice de champs, avec l'adresse ou le pays plus obligatoires (FORM-108).
+  const finalFieldAddress = rest.fieldAddress !== undefined ? rest.fieldAddress : existing.fieldAddress
+  const finalFieldCountry = rest.fieldCountry !== undefined ? rest.fieldCountry : existing.fieldCountry
+  if (existing.status === "PUBLISHED" && existing.association.canIssueTaxReceipts
+      && existing.ticketTypes.some(tt => tt.active && tt.receiptMode !== "NONE")
+      && (finalFieldAddress !== "REQUIRED" || finalFieldCountry !== "REQUIRED"))
+    return NextResponse.json({ error: "Cet événement émet des reçus fiscaux : les champs « Adresse postale » et « Pays de résidence » doivent rester obligatoires." }, { status: 422 })
 
   if (capacity != null) {
     const reserved = await prisma.participation.count({
