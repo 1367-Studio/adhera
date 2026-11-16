@@ -1483,12 +1483,13 @@
       }
     },
     "transfersView": {
-      "title": "Transferts internes",
-      "add": "Transférer",
+      "title": "Virements internes",
+      "description": "Enregistrez ici les virements déjà effectués entre les comptes bancaires de votre association. Formwise enregistre le virement sans déplacer d'argent.",
+      "add": "Enregistrer un virement interne",
       "newTransferTitle": "Nouveau transfert entre comptes",
       "editTransferTitle": "Modifier le transfert",
       "deleteConfirmTitle": "Supprimer ce transfert ?",
-      "noTransfers": "Aucun transfert enregistré",
+      "noTransfers": "Aucun virement enregistré",
       "columns": {
         "accounts": "Comptes",
         "amount": "Montant",
