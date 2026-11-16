@@ -5,6 +5,7 @@
     "delete": "Ħassar",
     "add": "Żid",
     "edit": "Immodifika",
+    "view": "Ara d-dettalji",
     "confirm": "Ikkonferma",
     "close": "Għalaq",
     "back": "Lura",
@@ -41,6 +42,7 @@
     "location": "Post",
     "choosePlaceholder": "Għażel...",
     "allPlaceholder": "Kollha",
+    "noOptionsPlaceholder": "L-ebda għażliet disponibbli",
     "previousPage": "Paġna preċedenti",
     "nextPage": "Paġna li jmiss",
     "paginationRange": "{from}–{to} / {total}",
@@ -51,7 +53,10 @@
     "addressPlaceholder": "Salle des fêtes, 12 rue de la Paix, Pariġi...",
     "viewOnGoogleMaps": "Ara fuq Google Maps",
     "backToSite": "Lura għas-sit",
-    "noOptionsPlaceholder": "L-ebda għażliet disponibbli"
+    "period": {
+      "exercice": "Eżerċizzju {year}",
+      "exerciceRange": "Eżerċizzju {startYear}–{endYear}"
+    }
   },
   "address": {
     "street": "Indirizz",
@@ -59,8 +64,30 @@
     "complementPlaceholder": "Bini, sular, kaxxa postali…",
     "postalCode": "Kodiċi postali",
     "city": "Belt",
-    "country": "Pajjiż",
+    "country": "Pajjiż ta' residenza",
     "legacyMigratedHint": "Ikkupjat mill-qasam tal-indirizz l-qadim — iċċekkja li ma jkunx diġà jinkludi l-kodiċi postali u l-belt hawn taħt."
+  },
+  "avis": {
+    "invalidLink": "Dan il-link tar-reviżjoni mhuwiex valid.",
+    "thanks": "Grazzi għar-reviżjoni tiegħek!",
+    "notEligible": "Biss dawk li attendew fl-avveniment jistgħu jħallu reviżjoni.",
+    "greeting": "Ħello {firstName}, kif sab dan l-avveniment?",
+    "commentPlaceholder": "Xi kummenti? (fakultattiv)",
+    "submit": "Ibgħat ir-reviżjoni tiegħi",
+    "ratingRequired": "Agħżel nota",
+    "networkError": "Żball tan-Netwerk",
+    "genericError": "Żball",
+    "publicationQuestion": "Tħalli l-pubblikazzjoni tal-opinjoni tiegħek fuq is-sit elettroniku u n-netwerks soċjali tal-assoċjazzjoni?",
+    "publicationYes": "Iva, jien napprova l-pubblikazzjoni.",
+    "publicationNo": "Le, l-opinjoni tiegħi tibqa'' aċċessibbli biss għall-maniġers tal-assoċjazzjoni.",
+    "publicationRequired": "Grazzi talli wieġebt din il-mistoqsija.",
+    "identificationQuestion": "Kif tixtieq tkun identifikata?",
+    "identificationNamed": "Bil-kunjom u l-familja tiegħi",
+    "identificationAnonymous": "B''mod anonimu",
+    "identificationRequired": "Jekk jogħġbok agħżel għażla.",
+    "manageConsentTitle": "Ġestjoni tal-Permess ta'' Pubblikazzjoni",
+    "updateConsent": "Aġġorna l-preferenzi tiegħi",
+    "consentUpdated": "Il-preferenzi tiegħek ġew aġġornati."
   },
   "auth": {
     "layout": {
@@ -80,6 +107,8 @@
       "heading": "Illogja",
       "subtitle": "Daħħal id-dettalji tal-login tiegħek biex taċċessa l-ispazju tiegħek.",
       "suspended": "Is-sħubija tal-assoċjazzjoni tiegħek ġiet sospiża. Ikkuntattja lill-amministratur tiegħek biex tirregolarizza s-sitwazzjoni.",
+      "errorMulti": "Diversi kontijiet jikkorrispondu ma'' dan l-email ta'' Google. Idħol bil-password tiegħek.",
+      "error2faRequired": "L-awtentikazzjoni b''żewġ fatturi hija attivata f''dan il-kont. Idħol bil-password tiegħek.",
       "noAccount": "Għad m'għandekx kont?",
       "createAccount": "Oħloq kont",
       "form": {
@@ -91,6 +120,17 @@
         "connecting": "Qed tidħol…",
         "or": "jew",
         "continueWithGoogle": "Kompli ma' Google"
+      },
+      "twoFactor": {
+        "title": "Verifika f''żewġ passi",
+        "descriptionTotp": "Daħħal il-kodiċi ta'' 6 ċifri muri fl-app tal-awtentikatur tiegħek.",
+        "descriptionBackup": "Daħħal wieħed mill-kodiċijiet ta'' backup tiegħek.",
+        "codeLabel": "Kodiċi ta'' Verifika",
+        "backupCodeLabel": "Kodiċi ta'' Backup",
+        "submit": "Iċċekkja",
+        "back": "Lura",
+        "useBackupCode": "Uża kodiċi ta'' backup",
+        "useAuthenticatorCode": "Uża l-kodiċi tal-app"
       }
     },
     "register": {
@@ -224,6 +264,7 @@
       "title": "Żona tal-Membri",
       "subtitle": "Idħol biex taċċessa l-ispazju tiegħek.",
       "suspendedNotice": "Is-sottoskrizzjoni ta' din l-assoċjazzjoni hija sospiża. Ikkuntattja lill-amministratur biex tirregolarizza s-sitwazzjoni.",
+      "selfRegisterDisabledNotice": "Il-ħolqien ta'' kont self-service m''għadux disponibbli. Ikkuntattja amministratur fl-organizzazzjoni tiegħek għal aċċess.",
       "emailLabel": "Indirizz tal-email",
       "emailPlaceholder": "contact@association.fr",
       "passwordLabel": "Password",
@@ -316,6 +357,7 @@
     "vat": "VAT",
     "totalDiscount": "Skont totali",
     "total": "Total",
+    "paymentMethod": "Metodu ta'' ħlas",
     "paymentTerms": "Termini ta' ħlas",
     "paymentTermsPlaceholder": "eż. ħlas ta' 30 jum",
     "notes": "Noti",
@@ -371,7 +413,9 @@
     "viewDocument": "Ara d-dokument",
     "remove": "Ħassar",
     "uploading": "Qed tuploadja...",
-    "attach": "Attakk immaġni jew PDF (massimu ta' 4 MB)"
+    "attach": "Attakk immaġni jew PDF (massimu ta' 4 MB)",
+    "attachPdf": "Importazzjoni PDF (massimu ta'' 4 MB)",
+    "pdfOnly": "Huma aċċettati biss fajls PDF"
   },
   "factures": {
     "form": {
@@ -646,13 +690,20 @@
       "amount": "Ammont",
       "statusOptions": {
         "aPayer": "Pagabbli",
+        "partiellementPayee": "Parzjalment Imħallas",
         "payee": "Imħallas",
         "enLitige": "Fil-kontroversja",
         "annulee": "Ikkanċellat"
       },
-      "unmarkPaidWarning": "Dan id-dokument bħalissa huwa mħallas — it-tneħħija ta' dan l-istatus se tneħħi l-ispejjeż li ġġenera fil-Finanzi, kif ukoll kwalunkwe rikonċiljazzjoni bankarja.",
-      "markPaidNotice": "Li timmarka dan id-dokument bħala mħallas awtomatikament toħloq spejjeż korrispondenti fil-Finanzjarji.",
       "file": "Dokument",
+      "payment": {
+        "add": "Irreġistra ħlas",
+        "title": "Irreġistra ħlas",
+        "paidOf": "Imħallas",
+        "toasts": {
+          "recorded": "Ħlas Irreġistrat"
+        }
+      },
       "toasts": {
         "uploadError": "Żball fit-tniżżil tad-dokument",
         "networkError": "Tniżżil ta' żball tan-netwerk — ipprova mill-ġdid"
@@ -863,6 +914,10 @@
       "userMenu": {
         "title": "Il-profil tiegħek",
         "description": "Editja l-profil tiegħek, biddel il-password tiegħek, u ħareġ minn dan il-menu."
+      },
+      "help": {
+        "title": "Trid għajnuna?",
+        "description": "Dak hu! Din il-buttuna tiftaħ iċ-Ċentru tal-Għajnuna: artikli, mistoqsijiet frekwenti, wizard u aħbarijiet. Tista'' wkoll terġa'' tibda din iż-żjara mill-qiegħ tal-paġna."
       }
     }
   },
@@ -878,6 +933,8 @@
       "import": "Import",
       "reconciliation": "Konċiljazzjoni",
       "categories": "Kategoriji",
+      "immobilisations": "Assi kapitali",
+      "journalManual": "Kitba Manwali",
       "reports": "Rapporti",
       "bilan": "Bilanċ",
       "compteResultat": "Dikjarazzjoni tad-dħul",
@@ -894,9 +951,358 @@
       "title": "Dalwaqt",
       "description": "Din il-karatteristika tinsab taħt żvilupp."
     },
+    "immobilisationsView": {
+      "title": "Assi kapitali",
+      "description": "Assi deprezzabbli (tanġibbli u intanġibbli) u l-iskeda ta'' deprezzament tagħhom.",
+      "add": "Żid mal-karrettun",
+      "newTitle": "Assi kapitali ġdid",
+      "noImmobilisations": "L-ebda ħin ta'' waqfien",
+      "columns": {
+        "label": "Designazzjoni",
+        "entryValue": "Valur gross",
+        "accumulated": "Tnaqqis u ammortizzazzjoni",
+        "netValue": "Valur Nett",
+        "usageStartDate": "Kummissjonar"
+      },
+      "deleteConfirmTitle": "Tneħħi din l-immobilizzazzjoni?",
+      "toasts": {
+        "created": "Assi fiss maħluqa",
+        "updated": "Assi fiss aġġornati",
+        "deleted": "Assi fiss imneħħija"
+      },
+      "drillDown": {
+        "title": "Tnaqqis u ammortizzazzjoni",
+        "exercice": "Eżerċizzju",
+        "dotation": "Staff",
+        "accumulated": "Akkumulazzjoni",
+        "netValue": "Valur Nett",
+        "noDepreciations": "F''dak iż-żmien m''hemm l-ebda premju f''flus irreġistrati"
+      }
+    },
+    "immobilisationForm": {
+      "label": "Designazzjoni",
+      "labelPlaceholder": "Eż: Laptop — Desktop",
+      "expense": "Spejjeż ta'' akkwist",
+      "expensePlaceholder": "Agħżel spejjeż immarkat bħala \"kapitali\"",
+      "noEligibleExpenses": "L-ebda spejjeż eliġibbli — immarka spejjeż bħala kapital u kklassifikaha fuq il-kont 218300 (propjetà) jew 205000 (intanġibbli).",
+      "entryValue": "Valur ta'' Input",
+      "residualValue": "Valur Residwu",
+      "acquisitionDate": "Data tal-akkwist",
+      "usageStartDate": "Data tas-servizz",
+      "usefulLifeMonths": "Tul tal-użu (xhur)"
+    },
+    "journalManual": {
+      "title": "Kitba Manwali",
+      "description": "Ibda dħul ta'' journal għal ammont li tiddeċiedi — provvisti, depożitu ta'' sigurtà, akkumulazzjoni — meta l-ebda karatteristika ma tikkalkulah awtomatikament.",
+      "newEntry": "Kitba ġdida",
+      "exercice": "Eżerċizzju",
+      "date": "Data",
+      "label": "Kliem",
+      "labelPlaceholder": "Ex: Dispożizzjoni għal litigazzjoni — fajl 2026-04",
+      "account": "Kont",
+      "accountPlaceholder": "Agħżel kont",
+      "debit": "Rata tal-fluss",
+      "credit": "Kreditu",
+      "totals": "Totali ta'' Debitu/Kreditu",
+      "addLine": "Żid ringiela",
+      "mustBalance": "Id-debitu u l-kreditu għandhom ikunu ugwali u mhux żero.",
+      "missingAccount": "Kull linja trid ikollha kont.",
+      "cancel": "Ikkanċellazzjoni",
+      "submit": "Ibda tikteb",
+      "createSuccess": "Dħul maħluq",
+      "noOpenExercice": "L-ebda eżerċizzji miftuħa—iftaħ jew erġa'' tiftaħ sena finanzjarja qabel tibda daħla manwali."
+    },
+    "bilan": {
+      "title": "Bilanċ",
+      "description": "Assi u obbligazzjonijiet tal-assoċjazzjoni fl-aħħar tas-sena finanzjarja.",
+      "exerciceLabel": "Eżerċizzju",
+      "rubriqueColumnLabel": "Sezzjoni",
+      "noPreviousExercice": "M'hemm l-ebda komparazzjoni disponibbli",
+      "actif": "Attiv",
+      "totalActif": "Total Attiv",
+      "passif": "Passiv",
+      "totalPassif": "Passivitajiet totali",
+      "noAccountsInRubrique": "M'hemm l-ebda bilanċ f'din is-sezzjoni",
+      "exportPdf": "Esporta PDF",
+      "exportDisabledTooltip": "Ma jistax jesporta l-Bilanċ Finali sakemm l-anomaliji ta' hawn fuq jiġu solvuti.",
+      "emptyExercice": {
+        "title": "L-ebda sena finanzjarja",
+        "description": "Oħloq sena finanzjarja ġdida biex tara l-Bilanċ."
+      },
+      "emptyLedger": {
+        "title": "L-ebda dħul kontabbli",
+        "description": "Il-Bilanċ se jintwera hekk kif id-dħul, l-ispejjeż jew l-assi fissi jkunu rreġistrati f'din is-sena finanzjarja."
+      },
+      "rubriques": {
+        "immobilisationsCorporelles": "Assi kapitali tanġibbli",
+        "immobilisationsIncorporelles": "Assi fissi intanġibbli",
+        "immobilisationsFinancieres": "Assi fissi finanzjarji",
+        "disponibilites": "Disponibbiltà",
+        "chargesConstateesDavance": "Spejjeż imħallsa minn qabel",
+        "creances": "Riċevuti",
+        "stocksEtEnCours": "Inventarju",
+        "fondsPropres": "Ekwità",
+        "provisions": "Riżervi",
+        "dettes": "Dejn",
+        "produitsConstatesDavance": "Dħul differit",
+        "fondsDedies": "Fondi ristretti"
+      },
+      "memoNotice": "Stima — mhux irreġistrata fil-ktieb tal-ktieb, eskluża mill-assi totali.",
+      "accountLabels": {
+        "reportANouveau": "Dħul miżmum",
+        "resultatExercice": "Dħul nett għas-sena",
+        "creancesCotisations": "Ħlasijiet ta' sħubija pendenti",
+        "creancesFactures": "Fatturi pendenti",
+        "stocksEstimatedValue": "Valur stmat tal-inventarju",
+        "creancesFacturesEnRetard": "Fatturi tard"
+      },
+      "pdf": {
+        "periodLabel": "Perjodu minn {start} sa {end}"
+      },
+      "drillDown": {
+        "date": "Data",
+        "label": "Label",
+        "origin": "Oriġini",
+        "debit": "Debitu",
+        "credit": "Kreditu",
+        "noLines": "M'hemm l-ebda dħul għal dan il-kont.",
+        "sourceTypes": {
+          "INCOME": "Dħul",
+          "INCOME_REVERSAL": "Inverżjoni tad-dħul",
+          "EXPENSE": "Spejjeż",
+          "EXPENSE_REVERSAL": "Bidla ta' spejjeż",
+          "BANK_TRANSACTION": "Transazzjoni bankarja",
+          "ACCOUNT_TRANSFER": "Trasferiment intern",
+          "OPENING_BALANCE": "Bilanċ tal-ftuħ",
+          "IMMOBILISATION_DEPRECIATION": "Tnaqqis",
+          "IMMOBILISATION_ACQUISITION": "Akkwist ta' assi",
+          "FACTURE_RECUE_PAYMENT": "Ħlas għall-fornitur",
+          "MANUAL": "Dħul manwali"
+        }
+      },
+      "issues": {
+        "title": "Anomaliji skoperti",
+        "messages": {
+          "ACCOUNT_WITHOUT_RUBRIQUE": "Il-kont {code} — {label} għandu bilanċ iżda mhuwiex marbut ma' ebda oġġett tal-Bilanċ.",
+          "ACTIF_PASSIF_MISMATCH": "L-assi ({actif}) ma jikkorrispondix mal-passività ({passif}).",
+          "OPENING_BALANCE_MISSING": "Ma ġewx ġġenerati entitajiet ta' apertura għal dan l-eżerċizzju minn \"{previousLabel}\".",
+          "TRIAL_BALANCE_UNBALANCED": "Id-debitu totali ({debit}) ma jikkorrispondix mat-total tal-kreditu ({credit}) għal din is-sena fiskali.",
+          "RESULT_DIVERGENCE": "Ir-riżultat tal-ġurnal ({journal}) huwa differenti minn dak tal-istqarrija tad-dħul ({statement}) — il-ġurnal jista' għadu ma jkunx aġġornat għal din is-sena finanzjarja (jagħlaq is-sena finanzjarja jew jerġa' jibda sinkronizzazzjoni)."
+        }
+      },
+      "memoNoHistory": "L-ebda data storika",
+      "caveats": {
+        "stocksMissingCostPrice": "{count} varjanti mingħajr spiża tax-xiri rreġistrata, esklużi mill-istima"
+      }
+    },
+    "compteResultat": {
+      "title": "Rendikont tad-Dħul",
+      "description": "Riżultat finanzjarju tal-eżerċizzju, imqabbel mal-eżerċizzju preċedenti.",
+      "exerciceLabel": "Eżerċizzju",
+      "categoryColumnLabel": "Kategorija",
+      "noPreviousExercice": "-",
+      "noPreviousExerciceMessage": "L-ebda eżerċizzju preċedenti disponibbli",
+      "export": "Esporta",
+      "exportExcel": "Esporta Excel (dettaljat)",
+      "exportPdf": "Esporta PDF",
+      "products": "Dħul",
+      "totalProducts": "Total tad-dħul",
+      "expenses": "Nfiq",
+      "totalExpenses": "Total tan-nfiq",
+      "result": "Riżultat tal-eżerċizzju",
+      "resultZero": "Riżultat tal-eżerċizzju: 0 €",
+      "surplus": "Surplus tal-eżerċizzju",
+      "deficit": "Defiċit tal-eżerċizzju",
+      "operationalResult": "Riżultat operattiv",
+      "uncategorized": "Trid tiġi kkategorizzata",
+      "uncategorizedAlertIncome": "{count, plural, one {# dħul jeħtieġ jiġi kkategorizzat} other {# dħul jeħtieġu jiġu kkategorizzati}}",
+      "uncategorizedAlertExpense": "{count, plural, one {# nefqa teħtieġ tiġi kkategorizzata} other {# nfiq jeħtieġu jiġu kkategorizzati}}",
+      "expandSection": "Uri",
+      "collapseSection": "Aħbi",
+      "noCategoriesInSection": "L-ebda kategorija f'din it-taqsima",
+      "sections": {
+        "FINANCIAL": "Finanzjarju",
+        "EXCEPTIONAL": "Eċċezzjonali",
+        "OTHER": "Ieħor"
+      },
+      "inKind": {
+        "title": "Kontribuzzjonijiet volontarji b'natura",
+        "employmentHeader": "Użu tal-kontribuzzjonijiet",
+        "amountHeader": "Ammont",
+        "receivedHeader": "Kontribuzzjonijiet miksuba",
+        "totalEmployments": "Total ta' Impjiegi",
+        "totalReceived": "Kontribuzzjonijiet totali",
+        "note": "Dawn il-kontribuzzjonijiet b'xejn huma valutati f'ewro. Ma jwasslux għal moviment ta' flus u ma jbiddlux ir-riżultat tas-sena finanzjarja."
+      },
+      "drillDown": {
+        "date": "Data",
+        "origin": "Oriġini",
+        "person": "Persuna",
+        "payment": "Ħlas",
+        "amount": "Ammont",
+        "categorize": "Ikkategorizza",
+        "categorizePlaceholder": "Agħżel kategorija",
+        "noTransactions": "L-ebda tranżazzjoni",
+        "categorizeSuccess": "Tranżazzjoni kkategorizzata"
+      },
+      "pdf": {
+        "periodLabel": "Perjodu minn {start} sa {end}",
+        "operatingIncome": "DĦUL OPERATTIV",
+        "operatingExpense": "NFIQ OPERATTIV",
+        "operatingResult": "RIŻULTAT OPERATTIV",
+        "financialIncome": "DĦUL FINANZJARJU",
+        "financialExpense": "NFIQ FINANZJARJU",
+        "financialResult": "RIŻULTAT FINANZJARJU",
+        "exceptionalIncome": "DĦUL EĊĊEZZJONALI",
+        "exceptionalExpense": "NFIQ EĊĊEZZJONALI",
+        "exceptionalResult": "RIŻULTAT EĊĊEZZJONALI",
+        "otherIncome": "DĦUL IEĦOR",
+        "otherExpense": "NFIQ IEĦOR",
+        "otherResult": "RIŻULTAT TA' DĦUL U NFIQ IEĦOR",
+        "uncategorizedSection": "TRANŻAZZJONIJIET LI JRIDU JIĠU KKATEGORIZZATI",
+        "uncategorizedIncomeLabel": "Dħul li jrid jiġi kkategorizzat",
+        "uncategorizedExpenseLabel": "Nfiq li jrid jiġi kkategorizzat",
+        "total": "Total",
+        "grandTotal": "TOTAL",
+        "categoryColumn": "Kategorija",
+        "inKindTitle": "Kontribuzzjonijiet volontarji b'natura",
+        "inKindEmploymentHeader": "Użu tal-kontribuzzjonijiet",
+        "inKindAmountHeader": "Ammont",
+        "inKindReceivedHeader": "Kontribuzzjonijiet miksuba",
+        "inKindTotalEmployments": "Total ta' Impjiegi",
+        "inKindTotalReceived": "Kontribuzzjonijiet totali",
+        "inKindNote": "Dawn il-kontribuzzjonijiet b'xejn huma valutati f'ewro. Ma jwasslux għal moviment ta' flus u ma jbiddlux ir-riżultat tas-sena finanzjarja."
+      },
+      "csv": {
+        "date": "Data",
+        "type": "Tip",
+        "typeIncome": "Dħul",
+        "typeExpense": "Nefqa",
+        "category": "Kategorija",
+        "uncategorized": "Trid tiġi kkategorizzata",
+        "accountingCode": "Kodiċi tal-kontabilità",
+        "description": "Deskrizzjoni",
+        "amount": "Ammont",
+        "paymentMethod": "Metodu ta' ħlas",
+        "origin": "Oriġini",
+        "reference": "Referenza",
+        "exercice": "Eżerċizzju"
+      },
+      "emptyExercice": {
+        "title": "L-ebda eżerċizzju",
+        "description": "Oħloq eżerċizzju biex tiġġenera r-rendikont tad-dħul."
+      }
+    },
+    "previsionnel": {
+      "title": "Baġit proviżorju",
+      "description": "Qabbil il-baġit ippjanat u dak reali, skont il-kategorija u l-proġett.",
+      "exerciceLabel": "Eżerċizzju",
+      "emptyExercice": {
+        "title": "L-ebda sena finanzjarja",
+        "description": "Oħloq sena finanzjarja biex tipprepara l-baġit proġettat tagħha."
+      },
+      "tabs": {
+        "global": "Baġit globali",
+        "projects": "Skont il-proġett"
+      },
+      "income": "Riċetti",
+      "expense": "Spejjeż",
+      "result": "Riżultat",
+      "card": {
+        "previsto": "Ippjanat",
+        "diff": "Varjanza",
+        "percent": "Komplut"
+      },
+      "columns": {
+        "category": "Kategorija",
+        "previsto": "Ippjanat",
+        "realizado": "Komplut",
+        "diffPercent": "Varjanza / % Realizzat",
+        "total": "Total"
+      },
+      "noCategories": "L-ebda kategorija.",
+      "uncategorized": "Biex jiġu kklassifikati",
+      "noProject": "Mingħajr proġett",
+      "addCategory": "Żid kategorija",
+      "addCategoryModalTitle": "Żid kategorija",
+      "exportFileNameGlobal": "Baġit globali ta'' previżjoni",
+      "export": {
+        "action": "Esportazzjoni",
+        "excel": "Exporter Excel",
+        "pdf": "Exporter PDF",
+        "diffColumn": "Spread (€)",
+        "percentColumn": "% Komplut",
+        "associationLabel": "Assoċjazzjoni",
+        "exerciceLabel": "Eżerċizzju"
+      },
+      "toasts": {
+        "categoryCreated": "Kategorija maħluqa.",
+        "updateError": "Żball waqt l-aġġornament."
+      },
+      "copyBudget": {
+        "action": "Kopja l-baġit preċedenti",
+        "modalTitle": "Kopja l-baġit preċedenti",
+        "modalDescription": "Kopji tal-previżjonijiet ta'' {previous} għal {target}. Biss it-tbassir jiġu kkopjati, qatt ma l-ammonti realizzati.",
+        "allProjects": "Il-proġetti kollha",
+        "noProjects": "L-ebda pjanijiet.",
+        "archived": "ARKIVJAT",
+        "noProjectAlwaysCopied": "It-tbassir mingħajr proġett dejjem jiġu kkopjati.",
+        "copy": "Kopja",
+        "confirmOverwriteTitle": "Tissostitwixxi l-previżjonijiet eżistenti?",
+        "confirmOverwriteDescription": "Dan l-eżerċizzju diġà għandu previżjonijiet mhux nulli għal xi kategoriji. Kopja tagħhom mis-sena finanzjarja preċedenti se jegħleb dawn il-valuri.",
+        "confirmOverwriteAction": "Sostituzzjoni",
+        "toasts": {
+          "copied": "{count, plural, one {# previżjoni kopjata.} other {# previżjonijiet kopjati.}}",
+          "error": "Żball fil-kopja."
+        }
+      },
+      "projectsTab": {
+        "count": "{count, plural, one {# proġett} other {# Proġetti}}",
+        "createProject": "Oħloq proġett",
+        "createModalTitle": "Oħloq proġett",
+        "editProject": "Edit",
+        "editModalTitle": "Edit Project",
+        "name": "Isem tal-Proġett",
+        "namePlaceholder": "Ex: Vjaġġ annwali",
+        "description": "Deskrizzjoni",
+        "descriptionPlaceholder": "Deskrizzjoni fakultattiva",
+        "archive": "Arkivju",
+        "unarchive": "Unarchive",
+        "archived": "ARKIVJAT",
+        "showArchived": "Ara proġetti arkivjati ({count})",
+        "hideArchived": "Aħbi proġetti arkivjati",
+        "noProjects": {
+          "title": "L-ebda proġetti",
+          "description": "Oħloq proġett biex issegwi l-baġit tagħha separatament mill-assoċjazzjoni kollha."
+        },
+        "addCategoryToProject": "Żid kategorija mal-proġett",
+        "addCategoryModalTitle": "Żid kategorija mal-proġett",
+        "type": "Tip",
+        "typeIncome": "Riċetta",
+        "typeExpense": "Spejjeż",
+        "category": "Kategorija",
+        "selectCategoryPlaceholder": "Agħżel kategorija",
+        "createNewCategory": "+ Oħloq kategorija ġdida",
+        "noAvailableCategories": "Dawn il-kategoriji kollha diġà ġew miżjuda ma'' dan il-proġett.",
+        "removeCategoryFromProject": "Tneħħija mill-proġett",
+        "removeCategoryConfirmTitle": "Neħħi din il-kategorija mill-proġett?",
+        "removeCategoryConfirmDescription": "« {category} \" se jitneħħa mill-baġit ta'' dan il-proġett. Jekk diġà hemm dħul jew spejjeż relatati miegħu, il-kategorija terġa'' tidher awtomatikament bl-ammont reali tagħhom.",
+        "toasts": {
+          "created": "Proġett maħluq.",
+          "updated": "Abbozz aġġornat.",
+          "archived": "Proġett arkivjat.",
+          "unarchived": "Proġett mhux arkivjat.",
+          "categoryAdded": "Kategorija miżjuda mal-proġett.",
+          "categoryRemoved": "Kategorija mneħħija mill-proġett.",
+          "createError": "Żball waqt il-ħolqien.",
+          "updateError": "Żball waqt l-aġġornament."
+        }
+      }
+    },
     "categoryForm": {
       "name": "Isem",
       "namePlaceholder": "Eż: Kontribuzzjonijiet",
+      "noMatchingCategory": "L-ebda kategorija ta' tqabbil",
       "type": "Tip",
       "typeIncome": "Dħul",
       "typeExpense": "Spejjeż",
@@ -909,8 +1315,11 @@
         "FINANCIAL": "Finanzjarju",
         "EXCEPTIONAL": "Eċċezzjonali",
         "OTHER": "Ieħor",
-        "IN_KIND": "Kontribuzzjonijiet in natura"
+        "IN_KIND": "Kontribuzzjonijiet in natura",
+        "IMMOBILISATION": "Kapitali"
       },
+      "accountingCodeLegacyOption": "{code} — (kodiċi antik, li għandu jiġi aġġornat)",
+      "accountingCodeLegacyWarning": "Dan il-kodiċi tal-kontabilità m''għadux jeżisti fil-lista kontrollata — agħżel kont validu qabel tissalva.",
       "accountingCodeFormwiseNote": "Subkont suġġerit minn Formwise għal traċċar separat — mhux numru uffiċjali obbligatorju.",
       "suggestedAccounts": "Kontijiet suġġeriti",
       "seeOtherAccounts": "Ara l-kontijiet l-oħra",
@@ -921,8 +1330,7 @@
       "sectionUnverifiedNote": "Dan il-kont mhuwiex rikonoxxut — iċċekkja s-sezzjoni jew agħżelha mill-għażliet avvanzati.",
       "sectionToVerify": "Sezzjoni biex tiġi ċċekkjata",
       "advancedOptions": "Għażliet avvanzati",
-      "revertToAutoSection": "Lura għas-sezzjoni awtomatika",
-      "noMatchingCategory": "L-ebda kategorija ta' tqabbil"
+      "revertToAutoSection": "Lura għas-sezzjoni awtomatika"
     },
     "bankAccountForm": {
       "bankName": "Isem tal-Bank",
@@ -959,6 +1367,8 @@
       "date": "Data",
       "category": "Kategorija",
       "noCategory": "L-ebda kategorija",
+      "project": "Proġett",
+      "noProject": "L-ebda proġetti",
       "paymentMethodLabel": "Metodu ta' ħlas",
       "reference": "Referenza",
       "referencePlaceholder": "Ex: VIR-2024-001",
@@ -978,6 +1388,8 @@
       "internalNote": "Nota interna",
       "internalNotePlaceholder": "Nota għat-tesorier...",
       "receipt": "Prova",
+      "isImmobilisation": "Assi fiss (assi deprezzabbli)",
+      "isImmobilisationHint": "Iċċekkja għal xiri kapitalizzabbli (eż., tagħmir tal-uffiċċju u tal-kompjuter) — imbagħad tista'' toħloq l-iskeda ta'' deprezzament tagħha fil-Finanzi > Assi Kapitali.",
       "toasts": {
         "uploadError": "Irċevuta ta' żball fit-tniżżil",
         "networkError": "Tniżżil ta' żball tan-netwerk — ipprova mill-ġdid"
@@ -1057,6 +1469,33 @@
         "deleted": "Kont imħassar"
       }
     },
+    "transferForm": {
+      "fromAccount": "Kont sors",
+      "toAccount": "Kont tad-destinazzjoni",
+      "amount": "Ammont",
+      "date": "Data",
+      "note": "Nota",
+      "notePlaceholder": "Eż. trasferiment ta'' tfaddil",
+      "toasts": {
+        "created": "Trasferiment Irreġistrat",
+        "updated": "Trasferiment aġġornat",
+        "deleted": "Trasferiment imħassar"
+      }
+    },
+    "transfersView": {
+      "title": "Trasferimenti interni",
+      "add": "Trasferiment",
+      "newTransferTitle": "Trasferiment ġdid bejn kontijiet",
+      "editTransferTitle": "Edit Transfer",
+      "deleteConfirmTitle": "Tħassar dan it-trasferiment?",
+      "noTransfers": "L-ebda trasferiment irreġistrat",
+      "columns": {
+        "accounts": "Kontijiet",
+        "amount": "Ammont",
+        "date": "Data",
+        "note": "Nota"
+      }
+    },
     "categoriesView": {
       "title": "Kategoriji",
       "description": "Immaniġġja kategoriji ta' dħul u spejjeż.",
@@ -1067,13 +1506,21 @@
       "newCategoryTitle": "Kategorija ġdida",
       "editCategoryTitle": "Editja Kategorija",
       "deleteConfirmTitle": "Tħassar din il-kategorija?",
-      "deleteConfirmInUse": "« {name} jintuża minn {count, plural, one {# dħul/spejjeż} other {# dħul/spejjeż}}. Dawn l-entrati se jinbidlu għal \"Mhux kategorizzat\".",
       "toasts": {
         "created": "Kategorija maħluqa",
         "updated": "Kategorija aġġornata",
         "deleted": "Kategorija mħassra",
-        "seeded": "{count, plural, one {# -kategorija inizjalizzata} other {# kategoriji inizjalizzati}}"
+        "seeded": "{count, plural, one {# -kategorija inizjalizzata} other {# kategoriji inizjalizzati}}",
+        "archived": "Kategorija Arkivjata",
+        "reactivated": "Kategorija reattivata"
       },
+      "archived": "Arkivjat",
+      "reactivate": "Riattivazzjoni",
+      "showArchived": "Ara kategoriji arkivjati",
+      "transferLimitationNote": "It-trasferimenti bejn kontijiet bankarji tal-assoċjazzjoni (teżor intern) qatt m''għandhom jiġu daħlu bħala dħul jew spejjeż — irreġistrahom mill-Kontijiet → Kontabilità.",
+      "archiveConfirmTitle": "Arkivja din il-kategorija?",
+      "archiveConfirmInUse": "« {name} jintuża minn {count, plural, one {# dħul/spejjeż} other {# dħul/spejjeż}}. Se tiġi arkivjata (l-istorja tagħha hija ppreservata) u ma tistax tiġi magħżula aktar għal operazzjonijiet ġodda.",
+      "archive": "Arkivju",
       "chooseTemplateTitle": "Agħżel tip ta' kategorija",
       "customCategory": "Oħloq kategorija personalizzata",
       "alreadyExists": "Diġà kkonfigurata",
@@ -1283,6 +1730,7 @@
         "actions": "Azzjonijiet"
       },
       "reconciledFallback": "Konċiljat",
+      "transferLabel": "Trasferiment intern — {from} → {to}",
       "allAccounts": "Il-kontijiet kollha",
       "noTransactions": "L-ebda transazzjonijiet biex juru",
       "actions": {
@@ -1315,188 +1763,8 @@
       "suggestedMatches": "Logħbiet suġġeriti",
       "typeIncome": "Dħul",
       "typeExpense": "Spejjeż",
+      "typeTransfer": "Trasferiment intern",
       "confirm": "Ivvalida l-konċiljazzjoni"
-    },
-    "compteResultat": {
-      "title": "Rendikont tad-Dħul",
-      "description": "Riżultat finanzjarju tal-eżerċizzju, imqabbel mal-eżerċizzju preċedenti.",
-      "exerciceLabel": "Eżerċizzju",
-      "noPreviousExercice": "-",
-      "export": "Esporta",
-      "exportExcel": "Esporta Excel (dettaljat)",
-      "exportPdf": "Esporta PDF",
-      "products": "Dħul",
-      "totalProducts": "Total tad-dħul",
-      "expenses": "Nfiq",
-      "totalExpenses": "Total tan-nfiq",
-      "result": "Riżultat tal-eżerċizzju",
-      "surplus": "Surplus tal-eżerċizzju",
-      "deficit": "Defiċit tal-eżerċizzju",
-      "emptyExercice": {
-        "title": "L-ebda eżerċizzju",
-        "description": "Oħloq eżerċizzju biex tiġġenera r-rendikont tad-dħul."
-      },
-      "noPreviousExerciceMessage": "L-ebda eżerċizzju preċedenti disponibbli",
-      "resultZero": "Riżultat tal-eżerċizzju: 0 €",
-      "operationalResult": "Riżultat operattiv",
-      "uncategorized": "Trid tiġi kkategorizzata",
-      "uncategorizedAlertIncome": "{count, plural, one {# dħul jeħtieġ jiġi kkategorizzat} other {# dħul jeħtieġu jiġu kkategorizzati}}",
-      "uncategorizedAlertExpense": "{count, plural, one {# nefqa teħtieġ tiġi kkategorizzata} other {# nfiq jeħtieġu jiġu kkategorizzati}}",
-      "expandSection": "Uri",
-      "collapseSection": "Aħbi",
-      "noCategoriesInSection": "L-ebda kategorija f'din it-taqsima",
-      "sections": {
-        "FINANCIAL": "Finanzjarju",
-        "EXCEPTIONAL": "Eċċezzjonali",
-        "OTHER": "Ieħor"
-      },
-      "drillDown": {
-        "date": "Data",
-        "origin": "Oriġini",
-        "person": "Persuna",
-        "payment": "Ħlas",
-        "amount": "Ammont",
-        "categorize": "Ikkategorizza",
-        "categorizePlaceholder": "Agħżel kategorija",
-        "noTransactions": "L-ebda tranżazzjoni",
-        "categorizeSuccess": "Tranżazzjoni kkategorizzata"
-      },
-      "pdf": {
-        "periodLabel": "Perjodu minn {start} sa {end}",
-        "operatingIncome": "DĦUL OPERATTIV",
-        "operatingExpense": "NFIQ OPERATTIV",
-        "operatingResult": "RIŻULTAT OPERATTIV",
-        "financialIncome": "DĦUL FINANZJARJU",
-        "financialExpense": "NFIQ FINANZJARJU",
-        "financialResult": "RIŻULTAT FINANZJARJU",
-        "exceptionalIncome": "DĦUL EĊĊEZZJONALI",
-        "exceptionalExpense": "NFIQ EĊĊEZZJONALI",
-        "exceptionalResult": "RIŻULTAT EĊĊEZZJONALI",
-        "otherIncome": "DĦUL IEĦOR",
-        "otherExpense": "NFIQ IEĦOR",
-        "otherResult": "RIŻULTAT TA' DĦUL U NFIQ IEĦOR",
-        "uncategorizedSection": "TRANŻAZZJONIJIET LI JRIDU JIĠU KKATEGORIZZATI",
-        "uncategorizedIncomeLabel": "Dħul li jrid jiġi kkategorizzat",
-        "uncategorizedExpenseLabel": "Nfiq li jrid jiġi kkategorizzat",
-        "total": "Total",
-        "grandTotal": "TOTAL",
-        "categoryColumn": "Kategorija",
-        "inKindTitle": "Kontribuzzjonijiet volontarji b'natura",
-        "inKindEmploymentHeader": "Użu tal-kontribuzzjonijiet",
-        "inKindAmountHeader": "Ammont",
-        "inKindReceivedHeader": "Kontribuzzjonijiet miksuba",
-        "inKindTotalEmployments": "Total ta' Impjiegi",
-        "inKindTotalReceived": "Kontribuzzjonijiet totali",
-        "inKindNote": "Dawn il-kontribuzzjonijiet b'xejn huma valutati f'ewro. Ma jwasslux għal moviment ta' flus u ma jbiddlux ir-riżultat tas-sena finanzjarja."
-      },
-      "csv": {
-        "date": "Data",
-        "type": "Tip",
-        "typeIncome": "Dħul",
-        "typeExpense": "Nefqa",
-        "category": "Kategorija",
-        "uncategorized": "Trid tiġi kkategorizzata",
-        "accountingCode": "Kodiċi tal-kontabilità",
-        "description": "Deskrizzjoni",
-        "amount": "Ammont",
-        "paymentMethod": "Metodu ta' ħlas",
-        "origin": "Oriġini",
-        "reference": "Referenza",
-        "exercice": "Eżerċizzju"
-      },
-      "categoryColumnLabel": "Kategorija",
-      "inKind": {
-        "title": "Kontribuzzjonijiet volontarji b'natura",
-        "employmentHeader": "Użu tal-kontribuzzjonijiet",
-        "amountHeader": "Ammont",
-        "receivedHeader": "Kontribuzzjonijiet miksuba",
-        "totalEmployments": "Total ta' Impjiegi",
-        "totalReceived": "Kontribuzzjonijiet totali",
-        "note": "Dawn il-kontribuzzjonijiet b'xejn huma valutati f'ewro. Ma jwasslux għal moviment ta' flus u ma jbiddlux ir-riżultat tas-sena finanzjarja."
-      }
-    },
-    "bilan": {
-      "title": "Bilanċ",
-      "description": "Assi u obbligazzjonijiet tal-assoċjazzjoni fl-aħħar tas-sena finanzjarja.",
-      "exerciceLabel": "Eżerċizzju",
-      "rubriqueColumnLabel": "Sezzjoni",
-      "noPreviousExercice": "M'hemm l-ebda komparazzjoni disponibbli",
-      "actif": "Attiv",
-      "totalActif": "Total Attiv",
-      "passif": "Passiv",
-      "totalPassif": "Passivitajiet totali",
-      "noAccountsInRubrique": "M'hemm l-ebda bilanċ f'din is-sezzjoni",
-      "emptyExercice": {
-        "title": "L-ebda sena finanzjarja",
-        "description": "Oħloq sena finanzjarja ġdida biex tara l-Bilanċ."
-      },
-      "emptyLedger": {
-        "title": "L-ebda dħul kontabbli",
-        "description": "Il-Bilanċ se jintwera hekk kif id-dħul, l-ispejjeż jew l-assi fissi jkunu rreġistrati f'din is-sena finanzjarja."
-      },
-      "rubriques": {
-        "immobilisationsCorporelles": "Assi kapitali tanġibbli",
-        "disponibilites": "Disponibbiltà",
-        "fondsPropres": "Ekwità",
-        "dettes": "Dejn",
-        "immobilisationsIncorporelles": "Assi fissi intanġibbli",
-        "immobilisationsFinancieres": "Assi fissi finanzjarji",
-        "chargesConstateesDavance": "Spejjeż imħallsa minn qabel",
-        "provisions": "Riżervi",
-        "produitsConstatesDavance": "Dħul differit",
-        "creances": "Riċevuti",
-        "stocksEtEnCours": "Inventarju",
-        "fondsDedies": "Fondi ristretti"
-      },
-      "issues": {
-        "title": "Anomaliji skoperti",
-        "messages": {
-          "ACCOUNT_WITHOUT_RUBRIQUE": "Il-kont {code} — {label} għandu bilanċ iżda mhuwiex marbut ma' ebda oġġett tal-Bilanċ.",
-          "ACTIF_PASSIF_MISMATCH": "L-assi ({actif}) ma jikkorrispondix mal-passività ({passif}).",
-          "OPENING_BALANCE_MISSING": "Ma ġewx ġġenerati entitajiet ta' apertura għal dan l-eżerċizzju minn \"{previousLabel}\".",
-          "TRIAL_BALANCE_UNBALANCED": "Id-debitu totali ({debit}) ma jikkorrispondix mat-total tal-kreditu ({credit}) għal din is-sena fiskali.",
-          "RESULT_DIVERGENCE": "Ir-riżultat tal-ġurnal ({journal}) huwa differenti minn dak tal-istqarrija tad-dħul ({statement}) — il-ġurnal jista' għadu ma jkunx aġġornat għal din is-sena finanzjarja (jagħlaq is-sena finanzjarja jew jerġa' jibda sinkronizzazzjoni)."
-        }
-      },
-      "accountLabels": {
-        "reportANouveau": "Dħul miżmum",
-        "resultatExercice": "Dħul nett għas-sena",
-        "creancesCotisations": "Ħlasijiet ta' sħubija pendenti",
-        "creancesFactures": "Fatturi pendenti",
-        "stocksEstimatedValue": "Valur stmat tal-inventarju",
-        "creancesFacturesEnRetard": "Fatturi tard"
-      },
-      "exportPdf": "Esporta PDF",
-      "exportDisabledTooltip": "Ma jistax jesporta l-Bilanċ Finali sakemm l-anomaliji ta' hawn fuq jiġu solvuti.",
-      "pdf": {
-        "periodLabel": "Perjodu minn {start} sa {end}"
-      },
-      "drillDown": {
-        "date": "Data",
-        "label": "Label",
-        "origin": "Oriġini",
-        "debit": "Debitu",
-        "credit": "Kreditu",
-        "noLines": "M'hemm l-ebda dħul għal dan il-kont.",
-        "sourceTypes": {
-          "INCOME": "Dħul",
-          "INCOME_REVERSAL": "Inverżjoni tad-dħul",
-          "EXPENSE": "Spejjeż",
-          "EXPENSE_REVERSAL": "Bidla ta' spejjeż",
-          "BANK_TRANSACTION": "Transazzjoni bankarja",
-          "ACCOUNT_TRANSFER": "Trasferiment intern",
-          "OPENING_BALANCE": "Bilanċ tal-ftuħ",
-          "IMMOBILISATION_DEPRECIATION": "Tnaqqis",
-          "IMMOBILISATION_ACQUISITION": "Akkwist ta' assi",
-          "FACTURE_RECUE_PAYMENT": "Ħlas għall-fornitur",
-          "MANUAL": "Dħul manwali"
-        }
-      },
-      "memoNotice": "Stima — mhux irreġistrata fil-ktieb tal-ktieb, eskluża mill-assi totali.",
-      "memoNoHistory": "L-ebda data storika",
-      "caveats": {
-        "stocksMissingCostPrice": "{count} varjanti mingħajr spiża tax-xiri rreġistrata, esklużi mill-istima"
-      }
     }
   },
   "evenements": {
@@ -1711,6 +1979,10 @@
         "titlePlaceholder": "Assemblea Ġenerali 2026",
         "dateLabel": "Data tal-bidu",
         "createButton": "Oħloq"
+      },
+      "summary": {
+        "eventCount": "Numru ta'' avvenimenti",
+        "participants": "Parteċipanti"
       },
       "bilan": {
         "show": "Uri s-sommarju",
@@ -1929,6 +2201,26 @@
         "qrRevoked": "Kodiċi QR Diżattivat",
         "noMembersToExport": "L-ebda membri biex jesportaw",
         "linkCopied": "Link kopjat"
+      },
+      "payment": {
+        "sectionTitle": "Ħlas",
+        "modeLabel": "Ħlas",
+        "modeNow": "Imħallas Issa",
+        "modeLater": "Se tiġi fissata aktar tard",
+        "laterHint": "Is-siġġu huwa riservat. Imbagħad ħallih b''\"Mark Paid\".",
+        "methodLabel": "Metodu ta'' ħlas",
+        "tierLabel": "Prezz",
+        "methods": {
+          "ESPECES": "Speċi",
+          "CHEQUE": "Iċċekkja",
+          "VIREMENT": "Trasferiment"
+        },
+        "encaisserTitle": "Flus ta'' flus",
+        "encaisserConfirm": "Flus ta'' flus",
+        "amountHint": "Ammont: {amount}",
+        "selectedMember": "Membru Magħżul: {name}",
+        "selectMemberHint": "Agħżel membru mill-lista hawn fuq.",
+        "addSubmit": "Żid mal-karrettun"
       }
     },
     "avaliacoes": {
@@ -1938,8 +2230,14 @@
         "participant": "Parteċipant",
         "rating": "Nota",
         "comment": "Kumment",
-        "date": "Data"
-      }
+        "date": "Data",
+        "site": "Fuq is-sit elettroniku"
+      },
+      "anonymousNote": "Anonimu",
+      "noConsent": "L-ebda kunsens",
+      "featureToggleLabel": "Reviżjoni tal-programm ta'' {name} Fis-sit",
+      "bulkFeatureAll": "Uri kollox fuq il-post",
+      "bulkUnfeatureAll": "Neħħi kollox mis-sit"
     },
     "detail": {
       "backToList": "Lura għall-Avvenimenti",
@@ -1965,7 +2263,9 @@
         "saved": "Bidliet maħżuna",
         "saveError": "Reġistrazzjoni ta' żbalji",
         "linkCopied": "Link kopjat",
-        "linkCopyError": "Ma tistax tikkopja — agħżel il-link manwalment."
+        "linkCopyError": "Ma tistax tikkopja — agħżel il-link manwalment.",
+        "registrationsClosed": "Ir-reġistrazzjoni magħluqa",
+        "registrationsReopened": "Ir-reġistrazzjonijiet reġgħu nfetħu"
       },
       "publishBlocked": {
         "unsavedToast": "Iffranka s-sezzjonijiet li ġejjin qabel ma tippubblika: {steps}",
@@ -1983,6 +2283,7 @@
           "standardFieldsHint": "Il-kampijiet mitluba fir-reġistrazzjoni",
           "phoneLabel": "Telefown",
           "addressLabel": "Indirizz",
+          "countryLabel": "Pajjiż ta'' residenza",
           "requirement": {
             "hidden": "Maskra",
             "optional": "Fakultattiv",
@@ -2029,6 +2330,11 @@
         }
       },
       "titleRequired": "It-titlu huwa obbligatorju",
+      "closeRegistrationsButton": "Reġistrazzjonijiet Magħluqa",
+      "reopenRegistrationsButton": "Reġistrazzjonijiet mill-ġdid miftuħa",
+      "registrationsClosedNotice": "L-inskrizzjonijiet jagħlqu",
+      "closeRegistrationsConfirmTitle": "Jirreġistraw magħluq?",
+      "closeRegistrationsConfirmDescription": "Ħadd ma jkun jista'' jirreġistra online. Xorta tkun tista'' żżid parteċipanti mill-lista tal-attendenza.",
       "bilanButton": "Sommarju"
     },
     "discountCodes": {
@@ -2310,6 +2616,13 @@
       "liveSince": "Għadu għaddej minn dakinhar {mins} min",
       "durationLessThanMin": "< 1 min",
       "durationMin": "{mins} min",
+      "activeMeetingWarning": {
+        "title": "{count, plural, one {Laqgħa diġà għaddejja} other {# laqgħat diġà bdew}}",
+        "description": "{count, plural, one {Bdejt din il-laqgħa u għadek ma spiċċajtx. Ingħaqad magħha, jew oħloq waħda ġdida xorta waħda.} other {Bdejt dawn il-laqgħat u għadek ma spiċċajtx. Ingħaqad ma'' wieħed, jew oħloq wieħed ġdid xorta waħda.}}",
+        "joinExisting": "Ingħaqad",
+        "createNew": "Oħloq laqgħa ġdida xorta",
+        "alreadyEnded": "Din il-laqgħa spiċċat waħedha. Tista'' toħloq laqgħa ġdida."
+      },
       "toasts": {
         "meetingStarted": "Il-laqgħa bdiet",
         "meetingScheduled": "Laqgħa skedata",
@@ -2715,8 +3028,12 @@
       "validation": {
         "nameRequired": "L-isem huwa meħtieġ",
         "atLeastOneVariant": "Huwa meħtieġ mill-inqas varjant wieħed",
-        "variantLabelRequired": "Kull varjant irid ikollu tikketta"
+        "variantLabelRequired": "Kull varjant irid ikollu tikketta",
+        "weightRequiredWhenShippable": "Il-piż huwa obbligatorju għal varjant b''kunsinna postali"
       },
+      "shippableColumn": "Trasport bil-baħar",
+      "weightColumn": "Piż (g)",
+      "weightPlaceholder": "500",
       "costPriceColumn": "Spiża"
     },
     "view": {
@@ -2738,12 +3055,14 @@
       "variantsCount": "{count, plural, one {# varjant} other {# varjanti}}",
       "actions": {
         "edit": "Immodifika",
+        "view": "Veduta",
         "delete": "Ħassar",
         "deleteAlreadyOrdered": "Ħassar (diġà ordnat)",
         "markPaid": "Mark Paid",
         "cancelOrder": "Ikkanċella",
         "downloadReceipt": "Niżżel ir-riċevuta",
-        "editPaymentMethod": "Biddel il-metodu ta' ħlas"
+        "editPaymentMethod": "Biddel il-metodu ta' ħlas",
+        "refundOrder": "Ħlas"
       },
       "noProduct": "L-ebda prodotti",
       "noOrder": "L-ebda ordnijiet",
@@ -2774,7 +3093,9 @@
       "toasts": {
         "productDeleted": "Prodott Mhux Prodott Prodott Imwaqqaf",
         "deleteError": "Tneħħija ta' żball",
-        "orderUpdated": "Ordni aġġornata"
+        "orderUpdated": "Ordni aġġornata",
+        "orderNotInRecentList": "Din l-ordni mhix fil-50 l-aktar riċenti. Uża l-filtri biex issibuha.",
+        "refundSuccess": "Ordni rritornata"
       }
     },
     "payModal": {
@@ -2784,6 +3105,13 @@
       "orderedTotal": "Ordni totali",
       "restockNoticePlural": "{count, plural, one {L-istokk tal-oġġett li ma ġiex irtirat se jiġi restawrat.} other {Il-ħażna ta' oġġetti mhux miġbura se tiġi restawrata.}}",
       "restockNoticeStatic": "Il-ħażna ta' oġġetti mhux miġbura se tiġi restawrata."
+    },
+    "refundModal": {
+      "title": "Irrifuża l-ordni",
+      "confirmWithAmount": "Ħlas {amount}",
+      "stripeNotice": "Ir-rifużjoni ssir awtomatikament fuq il-karta tal-klijent.",
+      "manualNotice": "Din l-azzjoni taġġorna l-inventarju u l-kontabilità — ftakar li tirritorna l-flus lill-klijent (flus kontanti, ċekk, jew trasferiment).",
+      "shippingIncludedNotice": "Spejjeż tat-trasport ({amount}) huma inklużi f''dan ir-rimbors."
     },
     "stripeConfirm": {
       "title": "Mark bħala mħallas?",
@@ -2991,6 +3319,7 @@
       "noDonations": "L-ebda donazzjoni rreġistrata",
       "noDonationsFiltered": "L-ebda donazzjoni ma taqbel ma' dawn il-filtri.",
       "resetFilters": "Reset",
+      "totalLabel": "Total",
       "donorsLabel": "Donaturi",
       "averageLabel": "Donazzjoni medja",
       "pendingTitle": "Nistennew il-ġbir",
@@ -3121,6 +3450,7 @@
           "title": "Forma",
           "standardFieldsHint": "Qasam mitlub mid-donatur",
           "addressLabel": "Indirizz",
+          "countryLabel": "Pajjiż ta'' residenza",
           "birthDateLabel": "Id-data tat-twelid",
           "phoneLabel": "Telefon bil-linja fissa",
           "mobileLabel": "Mobile",
@@ -3178,7 +3508,8 @@
           "siteSectionReplaceWarningPublished": "Din is-sezzjoni bħalissa turi “{title}”. Meta ssalva, din il-formola se tieħu postha; “{title}” se tibqa' aċċessibbli permezz tal-link tagħha.",
           "siteSectionReplaceWarningDraft": "Din is-sezzjoni bħalissa turi “{title}”. Din il-formola se tieħu postha hekk kif tiġi ppubblikata; “{title}” se tibqa' aċċessibbli permezz tal-link tagħha.",
           "siteSectionRemovedWarning": "Meta ssalva, is-sezzjoni “{section}” se tinħeba fuq is-sit elettroniku.",
-          "datesOrderError": "Id-data tal-għeluq trid tkun aktar tard mid-data tal-ftuħ."
+          "datesOrderError": "Id-data tal-għeluq trid tkun aktar tard mid-data tal-ftuħ.",
+          "siteSectionPuckHint": "Blokki Ġodda ta'' Editur tas-Sit"
         }
       }
     },
@@ -3394,6 +3725,8 @@
           "kindField": "Tip",
           "kindOneOff": "Puntuali",
           "kindRecurring": "Rikorrenti (annwali)",
+          "recurringNeedsOnlinePayment": "Rata rikorrenti titħallas għal kull abbonament online: sakemm il-ħlas online ma jkunx attivat, jidher \"Mhux disponibbli\" fuq il-formola.",
+          "recurringNeedsOnlinePaymentLink": "Issettja ħlas online",
           "itemTypeField": "Natura",
           "itemTypeMembership": "Rata ta' Membri",
           "itemTypeAddon": "Għażla mħallsa",
@@ -3410,6 +3743,7 @@
           "title": "Forma",
           "standardFieldsHint": "Il-kampijiet mitluba fir-reġistrazzjoni",
           "addressLabel": "Indirizz",
+          "countryLabel": "Pajjiż ta'' residenza",
           "birthDateLabel": "Id-data tat-twelid",
           "phoneLabel": "Telefon bil-linja fissa",
           "mobileLabel": "Mobile",
@@ -3432,6 +3766,8 @@
           "fieldLabelPlaceholder": "Professjoni ta' qabel",
           "fieldType": "Tip",
           "fieldRequired": "Meħtieġ",
+          "fieldSensible": "Data sensittiva",
+          "fieldSensibleRequiredHint": "Peress li dan il-qasam huwa sensittiv u obbligatorju, maniġer mingħajr aċċess għal data sensittiva ma jkunx jista'' joħloq jew jimmodifika membru mingħajr ma jkollu aċċess għalih.",
           "typeText": "Test",
           "typeNumber": "Numru",
           "typeSelect": "Lista drop-down",
@@ -3472,7 +3808,8 @@
           "siteSectionPlaceholder": "Għażel...",
           "siteSectionCreateOption": "+ Oħloq sezzjoni ġdida",
           "siteSectionCreateError": "Żball fil-ħolqien tas-sezzjoni tas-sit.",
-          "siteSectionRequiredError": "Agħżel is-sezzjoni tas-sit biex tippubblika din il-formola."
+          "siteSectionRequiredError": "Agħżel is-sezzjoni tas-sit biex tippubblika din il-formola.",
+          "siteSectionPuckHint": "Blokki Ġodda ta'' Editur tas-Sit"
         },
         "products": {
           "title": "Prodotti",
@@ -3657,6 +3994,12 @@
       "isDefaultHint": "Jintuża awtomatikament bħala messaġġ suġġerit għal din il-kategorija (eż. twissijiet ta' kontribuzzjoni mibgħuta mill-paġna tal-Kontribuzzjonijiet).",
       "emailSubject": "Suġġett tal-email",
       "emailSubjectPlaceholder": "Tfakkira: il-kontribuzzjoni tiegħek '{{annee_cotisation}}'",
+      "modeText": "Test sempliċi",
+      "modeTextHint": "Qasam wieħed ta'' test rikk.",
+      "modeBlocks": "Disinn viżiv",
+      "modeBlocksHint": "Blokki li jistgħu jiġu ordnati mill-ġdid: test, immaġni, buttuna, separatur.",
+      "modeBlocksProOnly": "Riservat għall-pjan Pro. Aġġorna għall-pjan li jmiss fit-tab Subscription biex tattivah.",
+      "modeLockedHint": "Il-modalità ta'' editjar (test sempliċi jew disinn viżiv) tiġi stabbilita meta jinħoloq it-template u ma jistax jinbidel — joħloq mudell ġdid biex tuża l-mod l-ieħor.",
       "variablesHint": "Varjabbli—jiġri fis-suġġett, fil-ġisem, jew fil-messaġġ tat-test",
       "variables": {
         "prenom": "Isem l-Ewwel",
@@ -3687,6 +4030,8 @@
       "previewTitle": "Preview tal-Messaġġ",
       "previewDescription": "Rendering b'data ta' kampjun",
       "previewSubject": "Għan",
+      "previewBrandingHint": "Il-header, il-footer u s-sinjatura jiġu mill-identità viżiva tal-assoċjazzjoni.",
+      "previewBrandingLink": "Edit fil-Settings",
       "toasts": {
         "updated": "Mudell aġġornat",
         "created": "Mudell maħluq",
@@ -3695,6 +4040,26 @@
       "validation": {
         "required": "Meħtieġ"
       }
+    },
+    "blockEditor": {
+      "empty": "Żid blokka l-ewwel hawn taħt.",
+      "incomplete": "Blokka mhix kompluta (immaġni mingħajr fajl, jew buttuna mingħajr test/link).",
+      "uploadError": "Żball waqt it-tniżżil ta'' immaġni — ipprova mill-ġdid.",
+      "dragHandle": "Ordni mill-ġdid",
+      "duplicate": "Duplikat",
+      "remove": "Ħassar",
+      "textPlaceholder": "Ikteb it-test tiegħek...",
+      "imageLink": "Link (fakultattiv)",
+      "buttonLabel": "Test tal-buttuna",
+      "buttonLabelPlaceholder": "Tgħallem aktar",
+      "buttonUrl": "Button Link",
+      "urlHint": "https://... jew varjabbli bħal '{{lien_portal}}'",
+      "buttonColor": "Sfondo",
+      "buttonTextColor": "Test",
+      "addText": "Test",
+      "addImage": "Immaġni",
+      "addButton": "Buttuna",
+      "addDivider": "Separatur"
     },
     "rulesManager": {
       "title": "Regoli ta' awtomazzjoni",
@@ -3921,6 +4286,7 @@
         "paiements": "Ħlasijiet",
         "abonnement": "Abbonament",
         "integrations": "Integrazzjonijiet",
+        "equipe": "Tim u aċċess",
         "rgpd": "GDPR"
       },
       "associationInfo": "Informazzjoni dwar l-Assoċjazzjoni",
@@ -3928,6 +4294,10 @@
       "city": "Belt",
       "cityPlaceholder": "Pariġi",
       "country": "Pajjiż",
+      "contactEmail": "Ibgħat email lill-kuntatt",
+      "contactEmailPlaceholder": "contact@monassociation.fr",
+      "contactEmailHint": "Użat bħala l-isem u l-indirizz ta'' risposta (Reply-To) ta'' kull email mibgħut f''isem l-assoċjazzjoni (abbonamenti, avvenimenti, donazzjonijiet, messaġġi, eċċ.).",
+      "contactEmailEmptyWarning": "Mhux imwaqqaf — It-tweġibiet tal-Membri għall-emails tiegħek ma jaslux fl-organizzazzjoni tiegħek.",
       "toasts": {
         "saved": "Settings Salvati"
       }
@@ -4012,7 +4382,41 @@
       "title": "Identità viżiva",
       "subtitle": "Logo muri fuq id-dashboard, kwotazzjonijiet/fatturi, folja ta' preżenza u websajt pubblika.",
       "logo": "Logo",
+      "color": "Kulur",
+      "colorHint": "Użat fil-headers tal-email u fuq buttuni.",
+      "senderName": "Isem il-vapur",
+      "senderNameHint": "L-isem jidher bħala l-mittent tal-emails. Ħalli vojta biex tuża l-isem tal-assoċjazzjoni.",
+      "signature": "Sinjatura",
+      "signatureHint": "Miżjud fl-aħħar ta'' emails komposti manwalment jew mibgħuta bl-awtomazzjoni.",
+      "footerText": "Test fil-qiegħ tal-paġna",
+      "footerTextHint": "Jibdel it-test default fil-qiegħ ta'' kull email. Ħalli vojta biex iżżomm it-test standard.",
+      "footerTextPlaceholder": "Email awtomatiku mibgħut minn {name}…",
+      "footerStyles": {
+        "classic": "Klassiku",
+        "bold": "Accentuat",
+        "minimal": "Minimalista"
+      },
+      "footer": {
+        "title": "Footer",
+        "subtitle": "L-istil, il-kulur, it-test, u l-midja soċjali kienu murija fil-qiegħ ta'' kull email.",
+        "color": "Kulur tal-isfond",
+        "socialLinks": "Midja soċjali",
+        "socialPlatforms": {
+          "facebook": "Facebook",
+          "instagram": "Instagram",
+          "linkedin": "LinkedIn",
+          "x": "X (Twitter)"
+        }
+      },
       "proOnlyText": "Il-logo personalizzat (dashboard, kwotazzjonijiet/fatturi, timesheet) huwa riservat għall-pjan Pro. Aġġorna għall-pjan li jmiss fit-tab Subscription biex tattivah.",
+      "preview": {
+        "label": "Ħarsa Ġenerali",
+        "placeholderName": "L-assoċjazzjoni tiegħek",
+        "sampleHeading": "Bongu Isem,",
+        "sampleButton": "Ara d-Dettalji",
+        "defaultFooter": "Email awtomatiku mibgħut minn {name} permezz ta'' Formwise. \nJekk jogħġbok twieġebx direttament għal din l-email.",
+        "fromLabel": "Shipper: {name}"
+      },
       "toasts": {
         "updated": "Identità viżiva aġġornata",
         "uploadError": "Logo ta' żball fit-tniżżil"
@@ -4055,16 +4459,17 @@
       "status": {
         "trial": "Prova Ħielsa",
         "active": "Attiv",
+        "paymentPending": "Ħlas għaddej",
         "pastDue": "Ħlas tard",
         "suspended": "Sospiż",
-        "cancelled": "Ikkanċellat",
-        "paymentPending": "Ħlas għaddej"
+        "cancelled": "Ikkanċellat"
       },
       "planLabel": "Formula {tier}",
       "membersCount": "{count} / {limit} Membri",
       "loadError": "Ma nistax nirkupra l-istatus ta' abbonament tiegħek. Ipprova mill-ġdid aktar tard.",
       "trialEndsAt": "Il-prova b'xejn tiegħek tispiċċa fuq {date}. Wara din id-data, il-karta rreġistrata tiġi ddebitata awtomatikament, sakemm ma tkunx ikkanċellata qabel din id-data.",
       "activeText": "L-abbonament tiegħek huwa attiv. Tista' tara l-fatturi tiegħek, tbiddel il-metodu ta' ħlas jew tikkanċella fi kwalunkwe ħin mill-ispazju ta' ġestjoni ta' Stripe.",
+      "paymentPendingText": "Id-Dirett Debit SEPA għall-abbonament tiegħek qed jiġi pproċessat. Jista'' jieħu ftit jiem tax-xogħol biex jidher fil-kont bankarju tiegħek.",
       "pastDueText": "L-aħħar ħlas falla. Aġġorna l-metodu ta' ħlas tiegħek biex tevita sospensjoni tal-kont tiegħek.",
       "suspendedText": "L-abbonament tiegħek huwa sospiż wara diversi fallimenti fil-ħlasijiet. Mur fuq l-iskrin dedikat biex terġa' tattivah, tesporta d-dejta tiegħek jew ikkanċellaha b'mod permanenti.",
       "cancelledText": "Is-sottoskrizzjoni tiegħek ġiet ikkanċellata. Ikkuntattja l-appoġġ biex terġa' tattivah.",
@@ -4179,6 +4584,63 @@
       "subtitleTrialExpired": "Il-prova b'xejn tiegħek spiċċat. Agħżel pjan u daħħal metodu ta' ħlas biex tkompli.",
       "confirmButtonSubscribe": "Ikkonferma u abbona"
     },
+    "teamAccess": {
+      "title": "Tim u aċċess",
+      "description": "Min għandu aċċess għall-ġestjoni tal-assoċjazzjoni, u x''jista'' jara jew jibdel kull wieħed.",
+      "howToAdd": "Biex iżżid xi ħadd, assenjatu rwol mill-lista tal-membri, jew ir-rwol ta'' \"Membru tat-Tim\" biex tiftaħ biss ċerti dominji għalih. Viżitatur: tista'' tara mingħajr ma teditja xejn.",
+      "empty": "M''hemm l-ebda membru tat-tim bħalissa.",
+      "columns": {
+        "name": "Isem",
+        "role": "Funzjoni",
+        "access": "Aċċess"
+      },
+      "you": "Int",
+      "summary": {
+        "administrator": "Amministratur",
+        "none": "L-ebda aċċess",
+        "editAndRead": "{edit, plural, one {# Field} other {# -żoni}} fil-pubblikazzjoni · {read} Riproduzzjoni",
+        "editOnly": "{edit, plural, one {# Field} other {# -żoni}} Fil-pubblikazzjoni",
+        "readOnly": "{read, plural, one {# Field} other {# -żoni}} Riproduzzjoni"
+      },
+      "editTitle": "Bidla fl-aċċess",
+      "editDescription": "Funzjoni u aċċess ta'' {name}.",
+      "roleLabel": "Funzjoni",
+      "profileLabel": "Profil",
+      "profiles": {
+        "administrator": "Amministratur",
+        "role": "Profil tar-Rwoli",
+        "custom": "Personalizzat"
+      },
+      "administratorSwitch": "Amministratur (settings, fatturazzjoni, aċċess)",
+      "administratorHint": "Aċċess sħiħ għal kull dominju.",
+      "memberRoleHint": "Membru sempliċi m''għandux aċċess għall-maniġment: juża biss iż-żona tal-membri tiegħu.",
+      "adminRoleHint": "Ir-rwol ta'' Amministratur dejjem jagħti aċċess sħiħ.",
+      "areasLabel": "Aċċess skont id-dominju",
+      "levels": {
+        "none": "Xejn",
+        "read": "Qarrej",
+        "edit": "Pubblikatur"
+      },
+      "areas": {
+        "dashboard": "Dashboard u attività",
+        "membres": "Membri",
+        "sensible": "Data sensittiva tal-membri",
+        "adhesions": "Sħubijiet u Miżati ta'' Membri",
+        "dons": "Donazzjonijiet",
+        "evenements": "Avvenimenti u biljetti",
+        "boutique": "Ħanut",
+        "communication": "Komunikazzjoni (emails, SMS, sondazzjonijiet)",
+        "actualites": "Aħbarijiet",
+        "comptabilite": "Kontabilità (finanzi, kwotazzjonijiet, fatturi, fornituri)",
+        "reunions": "Laqgħat",
+        "materiel": "Materjal",
+        "site": "Sit elettroniku",
+        "documents": "Dokumenti tal-Assoċjazzjoni"
+      },
+      "toasts": {
+        "saved": "Aċċess aġġornat"
+      }
+    },
     "erasureRequests": {
       "title": "Tħassir tad-data (GDPR)",
       "description": "Talbiet għat-tħassir permanenti tad-data personali ta' membru, skont l-Artikolu 17 tal-GDPR. Jiġu pproċessati awtomatikament kull lejl, ħlief dawk miżmuma in sospensjoni.",
@@ -4219,11 +4681,6 @@
       },
       "automaticOrigin": "Immarkat awtomatikament — mhux attiv għal aktar minn 3 snin",
       "inactiveSince": "telaq fi {date}"
-    },
-    "teamAccess": {
-      "areas": {
-        "sensible": "Data sensittiva tal-membri"
-      }
     }
   },
   "cotisations": {
@@ -4287,6 +4744,7 @@
         "enAttente": "Pendenti",
         "payees": "Imħallas",
         "exonerees": "Eżentati",
+        "aEncaisser": "Biex jiġu mħallsa",
         "partiellementPayees": "Parzjalment imħallas",
         "enRetard": "Tard",
         "annulees": "Ikkanċellat"
@@ -4313,28 +4771,6 @@
       "allCategories": "Il-kategoriji kollha",
       "allRenewals": "It-tiġdid kollu",
       "resetFilters": "Reset",
-      "renewal": {
-        "automatic": "Awtomatiku",
-        "manual": "Manwali"
-      },
-      "summary": {
-        "aPagar": " · {amount} totali",
-        "recebido": " · {amount} riċevut",
-        "saldo": " · {amount} dovut fadal"
-      },
-      "distribution": {
-        "show": "Ara t-tqassim",
-        "hide": "Aħbi t-tqassim",
-        "category": "Kategorija ta' Membri",
-        "renewal": "Tiġdid",
-        "count": "Numru ta' kontribuzzjonijiet",
-        "aPagar": "Ammont totali",
-        "recebido": "Ammont riċevut",
-        "saldo": "Bilanċ li jibqa'",
-        "total": "Total",
-        "noCategory": "Mingħajr kategorija",
-        "empty": "L-ebda ħlas ma jaqbel ma' dawn il-filtri."
-      },
       "mergeTiers": {
         "filterOption": "Għaqqad kategoriji duplikati",
         "title": "Għaqqad kategoriji duplikati",
@@ -4357,6 +4793,28 @@
         "priceFreeAmount": "Ammont b'xejn",
         "priceFreeAmountFrom": "Ammont ħieles minn {amount}",
         "priceRecurring": "{amount}/sena"
+      },
+      "renewal": {
+        "automatic": "Awtomatiku",
+        "manual": "Manwali"
+      },
+      "summary": {
+        "aPagar": " · {amount} totali",
+        "recebido": " · {amount} riċevut",
+        "saldo": " · {amount} dovut fadal"
+      },
+      "distribution": {
+        "show": "Ara t-tqassim",
+        "hide": "Aħbi t-tqassim",
+        "category": "Kategorija ta' Membri",
+        "renewal": "Tiġdid",
+        "count": "Numru ta' kontribuzzjonijiet",
+        "aPagar": "Ammont totali",
+        "recebido": "Ammont riċevut",
+        "saldo": "Bilanċ li jibqa'",
+        "total": "Total",
+        "noCategory": "Mingħajr kategorija",
+        "empty": "L-ebda ħlas ma jaqbel ma' dawn il-filtri."
       }
     },
     "reminderModal": {
@@ -4396,6 +4854,14 @@
       "title": "Irreġistra ħlas",
       "amount": "Ammont",
       "remainingBalance": "Bilanċ pendenti: {amount}",
+      "installmentChoice": "Dan il-ħlas iħallas",
+      "installmentNext": "Skadenza {position}",
+      "installmentThrough": "Sakemm jilħaq il-maturità {position}",
+      "installmentPaid": "Skadenza {position} — imħallas",
+      "installmentPartlyPaid": "(fadal biex jitħallas fuq {amount})",
+      "lateSuffix": " (tard)",
+      "customAmount": "Ammont ieħor",
+      "installmentsInOrder": "Il-ħlasijiet jkopru l-pagamenti f''ordni.",
       "method": "Metodu ta' ħlas",
       "date": "Data tal-ħlas",
       "note": "Nota",
@@ -4421,6 +4887,125 @@
       "annulee": "Din il-kontribuzzjoni ġiet ikkanċellata."
     }
   },
+  "groupes": {
+    "view": {
+      "title": "Gruppi",
+      "countTotal": "{count, plural, =0 {L-ebda gruppi} one {# Grupp} other {# Gruppi}}",
+      "count": "{count, plural, =0 {L-ebda riżultat} one {# riżultat} other {Riżultati #}}",
+      "searchPlaceholder": "Fittex grupp...",
+      "noResultsFor": "M''hemm l-ebda gruppi li jaqblu \" {search} »",
+      "noGroupe": "M''hemm l-ebda gruppi bħalissa",
+      "allStatuses": "L-istatus kollha",
+      "statusFilter": {
+        "actifs": "Ingredjenti attivi",
+        "archives": "Arkivjat"
+      },
+      "addTitle": "Oħloq grupp",
+      "editTitle": "Editja l-grupp",
+      "columns": {
+        "nome": "Isem",
+        "membres": "Membri",
+        "responsaveis": "Maniġers",
+        "lastChamada": "Last Call",
+        "status": "Status"
+      },
+      "statusBadge": {
+        "archive": "Arkivjat"
+      },
+      "actions": {
+        "edit": "Edit",
+        "archive": "Arkivju",
+        "unarchive": "Unarchive"
+      },
+      "archiveConfirmTitle": "Arkivju « {name} » ?",
+      "archiveConfirmDescription": "L-istorja tas-sejħa tinżamm. Il-grupp ma jibqax jidher fil-lista attiva.",
+      "unarchiveConfirmTitle": "Unarchive \" {name} » ?",
+      "toasts": {
+        "created": "Grupp maħluq",
+        "updated": "Grupp aġġornat",
+        "archived": "Grupp Arkivjat",
+        "unarchived": "Grupp Mhux Arkivjat"
+      }
+    },
+    "form": {
+      "nomeLabel": "Isem tal-Grupp",
+      "nomePlaceholder": "Eż. Tim taż-żgħażagħ, kor tal-Ħamis...",
+      "descricaoLabel": "Deskrizzjoni",
+      "descricaoPlaceholder": "Fakultattiv"
+    },
+    "detail": {
+      "backToList": "Lura għall-gruppi",
+      "membresTitle": "Membri",
+      "addMembre": "Żid membru",
+      "allMemberTypes": "Kull tip",
+      "searchMembrePlaceholder": "Fittex membru...",
+      "searchOrFilterPrompt": "Fittex membru jew agħżel tip hawn fuq",
+      "noResultsForMembre": "L-ebda membru ma jilħaq\" {search} »",
+      "noResultsForType": "L-ebda membru bħal dan",
+      "candidatesFound": "{count, plural, one {# membru misjub} other {# membri li nstabu}}",
+      "selectAllCandidates": "Agħżel kollox",
+      "deselectAllCandidates": "Deselect All",
+      "selectAllTruncated": "Aktar minn 500 membru jaqblu ma'' dan il-filtru — ġew magħżula biss l-aqwa 500.",
+      "unselectCandidate": "Deselect {name}",
+      "addSelectedMembres": "Żied ({count})",
+      "membresAddedToast": "{count, plural, =0 {L-ebda membru miżjud} one {# membru żied} other {# membri żiedu}}",
+      "noMembre": "L-ebda membru f''dan il-grupp",
+      "removeMembreConfirmTitle": "Neħħi {name} tal-grupp?",
+      "removeMembreConfirmDescription": "Il-preżenza tiegħu f''dan il-grupp hija ppreservata.",
+      "responsaveisTitle": "Maniġers",
+      "addResponsavel": "Żid maniġer",
+      "noResponsavel": "L-ebda uffiċjal maħtur",
+      "removeResponsavelConfirmTitle": "Neħħi {name} Minn dawk responsabbli?",
+      "appelsTitle": "Appelli",
+      "faireAppel": "Agħmel is-sejħa",
+      "noAppel": "Bħalissa m''hemm l-ebda sejħiet",
+      "noMembreForAppel": "Żid mill-inqas membru wieħed mal-grupp qabel tkun tista'' tagħmel is-sejħa.",
+      "newAppelDateLabel": "Data",
+      "newAppelSubmit": "Sejħa tal-bidu",
+      "appelColumns": {
+        "date": "Data",
+        "presents": "Preżent",
+        "absents": "Assenti",
+        "justifies": "Ġustifikat",
+        "nonRenseignes": "Mhux speċifikat"
+      },
+      "reopenExistingTitle": "Diġà teżisti sejħa għal dan in-niċċa",
+      "reopenExistingDescription": "Tista'' tiftaħha biex tara jew teditja minflok toħloq waħda ġdida.",
+      "reopenExistingConfirm": "Iftaħ sejħa eżistenti"
+    },
+    "appel": {
+      "backToGroupe": "Lura għall-grupp",
+      "dateLabel": "Data",
+      "horarioLabel": "Skeda",
+      "horarioPlaceholder": "Fakultattiv, eż. 2:00 p.m.",
+      "activityLabel": "Attività",
+      "activityPlaceholder": "Fakultattiv",
+      "markAllPresent": "Marka lil dawk kollha preżenti",
+      "syncMembres": "Żid membri ġodda tal-grupp",
+      "counts": {
+        "presente": "Preżent",
+        "ausente": "Assenti",
+        "ausenciaJustificada": "Ġustifikat",
+        "naoInformado": "Mhux speċifikat"
+      },
+      "status": {
+        "NAO_INFORMADO": "Mhux speċifikat",
+        "PRESENTE": "Preżent",
+        "AUSENTE": "Assenti",
+        "AUSENCIA_JUSTIFICADA": "Ġustifikat"
+      },
+      "save": "Sejħa tar-Rekords",
+      "export": "Esportazzjoni",
+      "exportPdf": "PDF",
+      "exportPdfBlank": "PDF vojta (biex tiġi stampata)",
+      "exportExcel": "Excel",
+      "toasts": {
+        "saved": "Sejħa rreġistrata",
+        "noMembersToExport": "L-ebda membri biex jesportaw",
+        "synced": "{count, plural, =0 {L-ebda membru ġdid} one {# membru żied} other {# membri żiedu}}"
+      }
+    }
+  },
   "membres": {
     "form": {
       "status": {
@@ -4434,7 +5019,8 @@
         "secretaire": "Segretarju",
         "tresorier": "Teżorier",
         "president": "President",
-        "admin": "Amministrazzjoni"
+        "admin": "Amministrazzjoni",
+        "equipe": "Membru tat-Tim"
       },
       "civilite": {
         "none": "Mhux speċifikat",
@@ -4448,6 +5034,11 @@
         "femme": "Femminili"
       },
       "groupeSanguinNone": "Mhux speċifikat",
+      "imageRights": {
+        "unknown": "Mhux indikat",
+        "granted": "Iva",
+        "refused": "Le"
+      },
       "tailleTshirtNone": "Mhux speċifikat",
       "preferredLocaleNone": "Mhux speċifikat",
       "preferredLocaleHint": "Il-lingwa magħżula se tippermetti li jintbagħtu lil dan il-membru l-imejls u l-komunikazzjonijiet fil-lingwa preferuta tiegħu.",
@@ -4479,14 +5070,15 @@
         "allergies": "Allerġiji magħrufa",
         "allergiesPlaceholder": "Arachides, pollini...",
         "type": "Tip ta' Membru",
-        "preferredLocale": "Lingwa ta' komunikazzjoni",
-        "spokenLanguage": "Lingwa mitkellma",
-        "cotisationTier": "Miżata tal-Membri",
-        "guardianName": "Kustodju legali {number} — isem",
-        "guardianPhone": "Kustodju legali {number} — telefon",
         "imageRights": "Dritt tal-immaġni",
         "notes": "Noti",
-        "notesPlaceholder": "Informazzjoni utli dwar dan il-membru (korsijiet, noti…)"
+        "notesPlaceholder": "Informazzjoni utli dwar dan il-membru (korsijiet, noti…)",
+        "guardians": "Gwardjani legali",
+        "guardianName": "Kustodju legali {number} — isem",
+        "guardianPhone": "Kustodju legali {number} — telefon",
+        "preferredLocale": "Lingwa ta' komunikazzjoni",
+        "spokenLanguage": "Lingwa mitkellma",
+        "cotisationTier": "Miżata tal-Membri"
       },
       "invitationNotice": "Email ta' stedina bl-identifikaturi se jintbagħat f'dan l-indirizz.",
       "tierNone": "L-ebda prezz (imġiba default)",
@@ -4507,12 +5099,7 @@
         "management": "Ġestjoni tal-membru"
       },
       "invalidFormToast": "Ma stax jiġi sejvjat. Ikkuntattja s-support jekk il-problema tippersisti.",
-      "customFieldsLoading": "Qed jitgħabbew it-tweġibiet tal-formola ta' sħubija…",
-      "imageRights": {
-        "unknown": "Mhux indikat",
-        "granted": "Iva",
-        "refused": "Le"
-      }
+      "customFieldsLoading": "Qed jitgħabbew it-tweġibiet tal-formola ta' sħubija…"
     },
     "actions": {
       "add": "Żid membru",
@@ -4562,13 +5149,13 @@
         "firstName": "Isem l-Ewwel",
         "lastName": "Kunjom",
         "address": "Indirizz",
+        "country": "Pajjiż",
+        "countryPlaceholder": "Il-pajjiżi kollha",
+        "countryLoadError": "Ma nistgħux nħaddmu pajjiżi. Ipprova mill-ġdid f'mument.",
         "birthDateFrom": "Imwielda wara",
         "birthDateTo": "Twieldet qabel",
         "apply": "Applika",
-        "reset": "Reset",
-        "country": "Pajjiż",
-        "countryPlaceholder": "Il-pajjiżi kollha",
-        "countryLoadError": "Ma nistgħux nħaddmu pajjiżi. Ipprova mill-ġdid f'mument."
+        "reset": "Reset"
       },
       "statusOptions": {
         "pending": "Pendenti",
@@ -4609,12 +5196,14 @@
         "memberDeletedWithUnlink": "Membru imneħħi — imneħħi bħala gwardjan legali ta' {count} Membru (Membru)",
         "noMembersToExport": "L-ebda membri biex jesportaw",
         "viewSubscription": "Ara l-Abbonament",
-        "roleUpdated": "Rwol Aġġornat"
+        "roleUpdated": "Rwol Aġġornat",
+        "configureAccess": "Kkonfigura l-aċċess"
       },
       "changeRoleTitle": "Bidla fil-Funzjoni",
       "addViaForm": "Permezz ta' formola ta' membru",
       "addManual": "Żid manwalment",
       "changeRoleDescription": "Ir-rwol ta' {name} fl-assoċjazzjoni.",
+      "changeRoleEquipeHint": "Dan ir-rwol jibda mingħajr aċċess għall-ġestjoni. Ikkonfigura l-aċċess skont id-dominju f''Settings › Team & Access.",
       "pendingRequests": "{count, plural, one {# talba pendenti} other {# applikazzjonijiet pendenti}}"
     },
     "detail": {
@@ -4627,6 +5216,14 @@
       "cotisationButton": "Miżata tal-Membri",
       "createAccessButton": "Oħloq aċċess",
       "roleButton": "Rwol",
+      "exportDataButton": "Data ta'' esportazzjoni (GDPR)",
+      "eraseData": {
+        "button": "Ħassar id-data (GDPR)",
+        "confirmTitle": "Titlob it-tħassir permanenti tad-data ta' {name}?",
+        "confirmDescription": "Din l-azzjoni tirreġistra talba għat-tħassir skont l-Art. 17 tal-GDPR. Il-membru jirċievi email ta' konferma, u mbagħad id-data personali tiegħu tiġi anonimizzata b'mod irriversibbli fl-ipproċessar awtomatiku li jmiss, ħlief jekk titwaqqaf in sospensjoni.",
+        "toastSuccess": "Talba għat-tħassir irreġistrata",
+        "requestLabel": "Tħassir GDPR"
+      },
       "contact": "Kuntatt",
       "noContactInfo": "L-ebda informazzjoni ta' kuntatt",
       "memberSinceColon": "Membru minn dakinhar: {date}",
@@ -4642,6 +5239,10 @@
       "spokenLanguageColon": "Lingwa mitkellma: {value}",
       "preferredLocaleColon": "Lingwa ta' komunikazzjoni: {value}",
       "allergiesColon": "Allerġiji: {value}",
+      "imageRightsColon": "Drittijiet tal-immaġni: {value}",
+      "imageRightsDate": "(il- {date})",
+      "notes": "Noti",
+      "guardians": "Gwardjani legali",
       "mobileColon": "Mobbli : {value}",
       "legalGuardianColon": "Gwardjan legali:",
       "noInfo": "L-ebda informazzjoni pprovduta",
@@ -4670,6 +5271,7 @@
         "evenements": "Avvenimenti",
         "reunions": "Laqgħat",
         "materiel": "Materjal",
+        "groupes": "Gruppi",
         "dons": "Donazzjonijiet",
         "historique": "Storja",
         "emails": "Emails",
@@ -4700,6 +5302,7 @@
       "paidOn": "Imħallas fuq {date}",
       "validUntil": "Validu sakemm {date}",
       "periodExpiredOn": "Skadiet {date}",
+      "recordPayment": "Irreġistra ħlas",
       "downloadRecuFiscal": "Niżżel ir-Riċevuta tat-Taxxa",
       "downloadRecuFiscalPartial": "Niżżel ir-riċevuta tat-taxxa (parzjali: {amount} deduttibbli)",
       "showingRecentCotisations": "Wirja {count} l-aktar kontribuzzjonijiet riċenti fuq {total} b'kollox.",
@@ -4742,13 +5345,6 @@
         "rejectedToast": "Applikazzjoni miċħuda",
         "rejectConfirmTitle": "Tirrifjuta din it-talba?",
         "rejectConfirmDescription": "{name} se jinbidel għal status ta' \"Inattiv\" u ma jkunx jista' jidħol fil-ħin. It-talba u r-risposti tagħha għall-formola jinżammu."
-      },
-      "eraseData": {
-        "button": "Ħassar id-data (GDPR)",
-        "confirmTitle": "Titlob it-tħassir permanenti tad-data ta' {name}?",
-        "confirmDescription": "Din l-azzjoni tirreġistra talba għat-tħassir skont l-Art. 17 tal-GDPR. Il-membru jirċievi email ta' konferma, u mbagħad id-data personali tiegħu tiġi anonimizzata b'mod irriversibbli fl-ipproċessar awtomatiku li jmiss, ħlief jekk titwaqqaf in sospensjoni.",
-        "toastSuccess": "Talba għat-tħassir irreġistrata",
-        "requestLabel": "Tħassir GDPR"
       },
       "noCommande": "Dan il-kuntatt m'għandu l-ebda xiri mill-ħanut.",
       "commandeStatus": {
@@ -4839,6 +5435,12 @@
       "inMessagesSection": " fis-sezzjoni tal-Messaġġi.",
       "messageSectionLabel": "Messaġġ",
       "saveAsTemplate": "Salva bħala mudell",
+      "subjectLabel": "Għan",
+      "subjectPlaceholder": "Suġġett tal-email...",
+      "subjectTooLong": "Suġġett twil wisq: {length}/{max} karattru — jiġi rrifjutat mal-bgħit.",
+      "bodyLabel": "Korp tal-messaġġ",
+      "bodyPlaceholder": "Ikteb il-messaġġ tiegħek...",
+      "designTemplateReadonlyHint": "Dan it-template juża modalità ta'' Visual Design (immaġini, buttuni)—il-kontenut tiegħu ma jistax jiġi editjat hawnhekk. Biex tibdelha, editja t-template f''Messaġġi.",
       "language": {
         "title": "Lingwa tal-mibgħut",
         "modeOriginal": "Lingwa oriġinali",
@@ -4863,15 +5465,12 @@
         "autoNoEffect": "L-ebda riċevitur attwali m'għandu lingwa ppreferuta differenti mill-Franċiż — kulħadd jirċievi l-verżjoni oriġinali.",
         "autoExternalNote": "{count, plural, one {# email estern (lingwa oriġinali)} other {# emails esterni (lingwa oriġinali)}}"
       },
-      "subjectLabel": "Għan",
-      "subjectPlaceholder": "Suġġett tal-email...",
-      "subjectTooLong": "Suġġett twil wisq: {length}/{max} karattru — jiġi rrifjutat mal-bgħit.",
-      "bodyLabel": "Korp tal-messaġġ",
-      "bodyPlaceholder": "Ikteb il-messaġġ tiegħek...",
       "continue": "Kompli",
       "confirmSendTitle": "Konferma tat-Tbaħħir",
       "confirmSendDescription": "Din l-email se tintbagħat lil {recipients}. Din l-azzjoni hija irreversibbli.",
       "sendNow": "Ibgħat issa",
+      "sending": "Nibgħat...",
+      "sendFailedTitle": "L-email ma setgħetx tintbagħat",
       "replaceContentTitle": "Tissostitwixxi l-kontenut?",
       "replaceContentDescription": "L-applikazzjoni ta' dan it-template se tissostitwixxi s-suġġett u l-korp tal-messaġġ li diġà ktibt.",
       "replace": "Sostituzzjoni",
@@ -4884,6 +5483,28 @@
       "recipientsActive": "{count, plural, one {# membru attiv} other {# Membri attivi}}",
       "externalOnlyCount": "{count, plural, one {# email esterna} other {# emails esterni}}",
       "recipientsWithExternal": "{members} + {count, plural, one {# email esterna} other {# emails esterni}}",
+      "attachments": {
+        "label": "Attachments",
+        "add": "Attakka fajls",
+        "hint": "JPG, PNG, WebP, GIF jew PDF · {maxSize} Total",
+        "usage": "{count, plural, one {# fajl} other {# fajls}} · {used} / {maxSize}",
+        "limitFilesReached": "Limitu ta'' {maxFiles} fajls aċċessati",
+        "limitSizeReached": "Limitu ta'' {maxSize} Miksuba",
+        "remove": "Neħħi {name}",
+        "nameWithSize": "{name} ({size})",
+        "andMore": "{count, plural, one {u # oħrajn} other {u # oħrajn}}",
+        "errors": {
+          "emptyFile": "{count, plural, one {{names} ma ġietx miżjuda — il-fajl huwa vojta.} other {# fajls ma ġewx miżjuda: {names} — Dawn il-fajls huma vojta.}}",
+          "unsupportedType": "{count, plural, one {{names} ma ġietx miżjuda} other {# fajls ma ġewx miżjuda: {names}}} — formati aċċettati: immaġini (JPG, PNG, WebP, GIF) u PDF.",
+          "totalSizeExceeded": "{count, plural, one {{names} ma ġietx miżjuda} other {# fajls ma ġewx miżjuda: {names}}} — il-limitu ta'' {maxSize} b''mod totali jkun mgħotti (spazju li jibqa'': {remaining}).",
+          "tooManyFiles": "{count, plural, one {{names} ma ġietx miżjuda} other {# fajls ma ġewx miżjuda: {names}}} — {maxFiles} fajls massimu għal kull email."
+        },
+        "recapSummary": "{count, plural, one {# fajl} other {# fajls}} · {size}",
+        "uploading": "Nibgħat attakki...",
+        "uploadFailedTitle": "Ma setgħux jintbagħtu attakki",
+        "uploadFailedDescription": "L-ebda email ma baqgħet. Ipprova mill-ġdid, jew ikklikkja fuq \"Edit\" biex tneħħi jew tissostitwixxi fajl.",
+        "notSavedInTemplate": "L-attakki mhumiex salvati fit-template."
+      },
       "toasts": {
         "selectType": "Agħżel Tip ta' Membru",
         "selectMember": "Agħżel mill-inqas membru wieħed jew żid email esterna",
@@ -4916,7 +5537,14 @@
         "status": "Status",
         "typeId": "Tip",
         "role": "Rwol",
-        "adherentOverride": "Status tal-Membri"
+        "adherentOverride": "Status tal-Membri",
+        "notes": "Noti",
+        "imageRightsConsent": "Drittijiet tal-immaġni",
+        "guardianName": "Gwardjan legali 1",
+        "guardianPhone": "Numru tat-telefon tal-kustodji legali 1",
+        "secondGuardianName": "Gwardjan Legali 2",
+        "secondGuardianPhone": "Numru tat-telefon tal-kustodju legali 2",
+        "permissions": "Aċċess"
       },
       "adherentOverrideValues": {
         "forcedAdherent": "Segwaċi Forzati",
@@ -4930,9 +5558,11 @@
         "membreRoleChanged": "Rwol modifikat",
         "passwordChanged": "Password mibdula",
         "passwordReset": "Reset tal-password",
+        "membreCardTokenRotated": "Kodiċi QR tal-karta riġenerata",
         "membreDeleted": "Membru Arkivjat",
         "membrePortalRegistered": "Reġistrazzjoni tal-Portal",
         "membreInscriptionRequested": "Applikazzjoni għall-membri (websajt)",
+        "membreAdhesionCompleted": "Membri kompluti u mħallsa",
         "cotisationCreated": "Kontribuzzjoni miżjuda",
         "cotisationUpdated": "Evalwazzjoni emendata",
         "cotisationDeleted": "Il-miżata tal-membri tneħħiet",
@@ -5004,7 +5634,8 @@
         "expense": "Spejjeż",
         "financeCategory": "Kategoriji tal-Finanzi",
         "payment": "Ħlasijiet",
-        "associationDocument": "Dokumenti tal-assoċjazzjoni"
+        "associationDocument": "Dokumenti tal-assoċjazzjoni",
+        "paperFormTemplate": "Folji tal-karta"
       },
       "messageTemplateFilterLabel": "Mudelli MSG",
       "actualiteFields": {
@@ -5065,12 +5696,20 @@
         "membreDeleted": "Membru Arkivjat",
         "membrePortalRegistered": "Irreġistrat (portal)",
         "membreInscriptionRequested": "Applikazzjoni għall-membri (websajt)",
+        "membreAdhesionCompleted": "Membri kompluti u mħallsa",
         "membreRoleChanged": "Rwol modifikat",
         "membreAccessCreated": "Aċċess maħluq",
+        "membreCardTokenRotated": "Kodiċi QR tal-karta riġenerata",
         "profilUpdated": "Profil modifikat",
         "profileUpdated": "Profil modifikat",
         "passwordChanged": "Password mibdula",
         "passwordReset": "Reset tal-password",
+        "twoFactorEnabled": "Awtentikazzjoni b''żewġ fatturi attivata",
+        "twoFactorDisabled": "Awtentikazzjoni b''żewġ fatturi diżattivata",
+        "twoFactorBackupRegenerated": "Kodiċijiet ta'' Backup Riġenerati",
+        "twoFactorDisabledByAdmin": "Awtentikazzjoni b''żewġ fatturi diżattivata mill-appoġġ",
+        "loginSuccess": "Login b''suċċess",
+        "loginFailed": "Tentattiv ta'' login fallut",
         "emailSentBulk": "Email mibgħuta",
         "smsSentBulk": "SMS mibgħuta",
         "supportEmailSent": "Email mibgħuta minn Formwise Support",
@@ -5181,6 +5820,9 @@
         "associationDocumentCreated": "Dokument maħluq",
         "associationDocumentUpdated": "Dokument modifikat",
         "associationDocumentDeleted": "Dokument imħassar",
+        "paperFormTemplateCreated": "Mudell ta'' Formola Maħluq",
+        "paperFormTemplateUpdated": "Mudell modifikat tal-formola",
+        "paperFormTemplateDeleted": "Mudell ta'' karta mħassra",
         "ticketCheckoutExpired": "Il-ħlas skada"
       }
     },
@@ -5385,8 +6027,8 @@
       "actualites": "Aħbarijiet",
       "membership": "Ingħaqad mal-assoċjazzjoni",
       "dons": "Dona",
-      "contact": "Kuntatt",
-      "boutique": "Ħanut"
+      "boutique": "Ħanut",
+      "contact": "Kuntatt"
     },
     "defaultTitles": {
       "hero": "Merħba",
@@ -5394,9 +6036,9 @@
       "events": "Avvenimenti li ġejjin",
       "membership": "Ingħaqad mal-assoċjazzjoni",
       "dons": "Dona",
+      "boutique": "Ħanut",
       "actualites": "Aħbarijiet",
-      "contact": "Kuntatt",
-      "boutique": "Ħanut"
+      "contact": "Kuntatt"
     },
     "view": {
       "uploadFailedWarning": "{count, plural, one {# -immaġni ma setgħetx titniżżel.} other {# -immaġini ma setgħux jittellgħu.}}",
@@ -5420,6 +6062,8 @@
       "save": "Salva",
       "appearance": "Dehra",
       "primaryColor": "Kulur prinċipali",
+      "secondaryColor": "Kulur sekondarju",
+      "fontFamily": "Pulizija",
       "logo": "Logo",
       "header": "Header",
       "headerBgColor": "Kulur tal-isfond",
@@ -5438,11 +6082,12 @@
       "noLinks": "L-ebda links. Ikklikkja Add.",
       "sections": "Sezzjonijiet",
       "noSections": "L-ebda sezzjonijiet. Żid waħda hawn taħt.",
+      "createWithAi": "Ħolqien bl-AI",
       "addSection": "Żid sezzjoni",
       "donsModuleDisabled": "Modulu tad-donazzjonijiet diżattivat — inviżibbli fuq is-sit pubbliku",
+      "boutiqueModuleDisabled": "Il-modulu Ħanut diżattivat — mhux viżibbli fuq is-sit pubbliku",
       "deleteSectionTitle": "Is-sezzjoni Ħassar",
-      "deleteSectionDescription": "Din l-azzjoni hija irreversibbli.",
-      "boutiqueModuleDisabled": "Il-modulu Ħanut diżattivat — mhux viżibbli fuq is-sit pubbliku"
+      "deleteSectionDescription": "Din l-azzjoni hija irreversibbli."
     },
     "sectionSheet": {
       "editTitle": "Edit — {label}",
@@ -5463,6 +6108,8 @@
       "eventsLimitHint": "L-avvenimenti jiġu estratti awtomatikament mill-kalendarju tiegħek.",
       "actualitesLimit": "Numru ta' aħbarijiet li għandhom juru",
       "actualitesLimitHint": "Biss l-ewwel N aħbarijiet ippubblikati se jintwerew fuq is-sit.",
+      "boutiqueLimit": "Numru ta' prodotti li għandhom jintwerew",
+      "boutiqueLimitHint": "Fuq is-sit se jidhru biss l-ewwel N prodotti attivi.",
       "membershipIntro": "Test introduttorju",
       "membershipIntroPlaceholder": "Imla din il-formola biex tapplika biex tingħaqad mal-assoċjazzjoni...",
       "membershipHint": "It-talbiet jidhru fil-lista tal-membri b'status ta' \"Pendenti\".",
@@ -5483,9 +6130,7 @@
       "apply": "Applika",
       "discardTitle": "Tinjora l-bidliet?",
       "discardDescription": "Bidliet mhux applikati jintilfu.",
-      "discardConfirm": "Ignora",
-      "boutiqueLimit": "Numru ta' prodotti li għandhom jintwerew",
-      "boutiqueLimitHint": "Fuq is-sit se jidhru biss l-ewwel N prodotti attivi."
+      "discardConfirm": "Ignora"
     },
     "preview": {
       "donsNoForm": "L-ebda formola ta' donazzjoni magħżula — inviżibbli fuq is-sit pubbliku"
@@ -5494,6 +6139,52 @@
       "viewSite": "Ara s-sit elettroniku",
       "logoUrl": "URL tal-logo (fakultattiv)",
       "footerText": "Test fil-qiegħ tal-paġna"
+    },
+    "aiAssistant": {
+      "title": "Ibni s-sit tiegħek bl-AI",
+      "description": "Iddeskrivi l-assoċjazzjoni tiegħek, l-AI toffri verżjoni l-ewwel tas-sit (kuluri, font, header, footer u sezzjonijiet) li tista'' timmodifika qabel ma ssalvah.",
+      "descriptionLabel": "Iddeskrivi l-assoċjazzjoni tiegħek",
+      "descriptionPlaceholder": "Eż. Assoċjazzjoni Kulturali f''Lyon li torganizza workshops tat-teatru għat-tfal...",
+      "generate": "Generate",
+      "regenerate": "Rigenerazzjoni",
+      "apply": "Applika",
+      "cancel": "Ikkanċellazzjoni",
+      "error": "Seħħ żball, ipprova mill-ġdid.",
+      "previewAppearance": "Dehra",
+      "previewHeader": "Header",
+      "previewHeaderLogin": "Buttuna ta'' login",
+      "previewHeaderRegister": "Buttuna ta'' Ingħaqad",
+      "previewFooter": "Footer",
+      "previewSections": "Sezzjonijiet",
+      "fieldButtonLabel": "Issuġġerixxi bl-AI",
+      "appearancePlaceholder": "Eż. assoċjazzjoni sportiva, dinamika u ħbiberija...",
+      "headerPlaceholder": "Eż: xi ħaġa sobrja li tispikka fuq sfond abjad...",
+      "footerPlaceholder": "Eż: messaġġ qasir ta'' ringrazzjament...",
+      "sectionPlaceholder": "Iddeskrivi x''għandha tgħid din is-sezzjoni..."
+    },
+    "builderSwitch": {
+      "liveVersionLabel": "Verżjoni online",
+      "switchLabel": "Editur Ġdid (Beta)",
+      "statusLegacy": "Il-viżitaturi tiegħek jaraw is-sit antik",
+      "statusNewBuilder": "Il-viżitaturi tiegħek se jaraw il-verżjoni ppubblikata fuq {date}",
+      "publishFirstHint": "Ippubblika mill-editur il-ġdid l-ewwel",
+      "openNewBuilder": "Iftaħ l-editur il-ġdid tal-→",
+      "legacyEditsNotice": "Is-sit tiegħek juri l-verżjoni tal-editur il-ġdid: il-bidliet magħmula hawn se jkunu viżibbli biss jekk terġa'' lura għas-sit l-antik.",
+      "confirmOn": {
+        "title": "Attivar l-editur il-ġdid?",
+        "description": "Is-sit pubbliku tiegħek se juri l-verżjoni ppubblikata fuq {date}. Tista'' terġa'' lura għas-sit antik fi kwalunkwe ħin.",
+        "confirmLabel": "Attivazzjoni"
+      },
+      "confirmOff": {
+        "title": "Terġa'' lura għas-sit l-antik?",
+        "description": "Is-sit pubbliku tiegħek jerġa'' juri s-sit qadim.",
+        "confirmLabel": "Ritorn għas-sit antik"
+      },
+      "toasts": {
+        "switchedOn": "L-editur il-ġdid huwa online",
+        "switchedOff": "Is-sit qadim reġa'' lura online",
+        "error": "Żball meta tinbidel l-edituri"
+      }
     }
   },
   "richTextEditor": {
@@ -5506,6 +6197,134 @@
     "heading1": "Intestatura 1",
     "heading2": "Intestatura 2",
     "heading3": "Intestatura 3"
+  },
+  "paperFormTemplates": {
+    "title": "Folji tal-karta",
+    "description": "Mudelli għall-formoli ta'' reġistrazzjoni fuq karta tiegħek, biex toħloq membri minn formoli mimlija u skannjati.",
+    "backToMembers": "Membri",
+    "backToList": "Folji tal-karta",
+    "newTemplate": "Mudell ġdid",
+    "empty": "L-ebda mudelli. Oħloq wieħed mill-formola vojta ta'' reġistrazzjoni tiegħek.",
+    "notFound": "Dan it-template ma setax jinstab jew ġie mħassar.",
+    "mappedFieldCount": "{count, plural, =0 {L-ebda art importata} one {# -art importata} other {# kampijiet importati}}",
+    "columns": {
+      "name": "Isem",
+      "pages": "Paġni",
+      "fields": "Qasam",
+      "updatedAt": "Modifikat fuq"
+    },
+    "toasts": {
+      "created": "Mudell maħluq",
+      "saved": "Disinn irreġistrat",
+      "deleted": "Mudell imħassar"
+    },
+    "deleteConfirm": {
+      "title": "Ħassar il-\" {name} » ?",
+      "description": "Il-membri diġà importati b''dan it-template huma miżmum. Ma tkunx tista'' tibqa'' tiskannja r-rekords b''dan it-template."
+    },
+    "leaveWarning": {
+      "title": "Bidliet mhux salvati",
+      "description": "Bidliet fit-template jintilfu jekk titlaq minn din il-paġna.",
+      "discard": "Ħruġ mingħajr salvataġġ",
+      "saveAndLeave": "Salvataġġ u Ħruġ"
+    },
+    "targetGroups": {
+      "identity": "Identità",
+      "contact": "Kuntatt",
+      "guardian": "Gwardjan legali",
+      "commitments": "Impenji",
+      "other": "Oħrajn"
+    },
+    "targets": {
+      "fullName": "Isem u l-aħħar isem",
+      "firstName": "Isem l-Ewwel",
+      "lastName": "Isem",
+      "birthDate": "Id-data tat-twelid",
+      "civilite": "Titlu",
+      "sexe": "Ġeneru",
+      "email": "Email",
+      "phone": "Telefown",
+      "address": "Indirizz",
+      "guardianFullName": "Gwardjan legali 1 — isem u kunjom",
+      "guardianPhone": "Gwardjan legali 1 — telefon",
+      "secondGuardianFullName": "Gwardjan legali 2 — isem u kunjom",
+      "secondGuardianPhone": "Gwardjan legali 2 — telefon",
+      "imageRights": "Drittijiet tal-immaġni (kaxxa ta'' check)",
+      "legalDocument": "Aċċettazzjoni ta'' dokument (kaxxa ta'' checkbox)",
+      "notes": "Noti tal-Membri",
+      "ignore": "Timportax"
+    },
+    "renderErrors": {
+      "unsupported_type": "Format mhux appoġġjat. Ittella'' ritratti PDF, jew JPEG jew PNG.",
+      "too_many_pages": "Il-formola għandha wisq paġni ({maximum} maximum).",
+      "pdf_password": "Dan il-PDF huwa protett b''password.",
+      "pdf_invalid": "Dan il-PDF ma setax jinfetaħ.",
+      "image_invalid": "Din l-immaġni ma setgħetx tinqara.",
+      "too_large": "Paġna hija wisq kbira, anke wara li tinżel.",
+      "aborted": "Il-preparazzjoni ġiet ikkanċellata."
+    },
+    "editor": {
+      "newTitle": "Mudell Ġdid ta'' Plug",
+      "newDescription": "Ibgħat il-formola vojta tar-reġistrazzjoni tiegħek: l-AI tissuġġerixxi l-korrispondenza ta'' kull kaxxa, tiċċekkjaha u mbagħad issalvaha.",
+      "updatedAt": "Modifikat fuq {date}",
+      "dropTitle": "Formola vojta ta'' reġistrazzjoni",
+      "dropHint": "PDF wieħed, jew ritratt wieħed JPEG jew PNG kull paġna — massimu ta'' 4 paġni. Il-karta ma tinżammx.",
+      "chooseFile": "Agħżel fajl",
+      "manualIntro": "L-ebda ċavetta AI kkonfigurata?",
+      "configureManually": "Kkonfigura manwalment",
+      "preparing": "Qed jippreparaw il-paġni...",
+      "analyzing": "Analiżi tal-folja għaddejja...",
+      "analyzingHint": "L-AI tidentifika l-kaxxi li għandhom jiġu mimlija. Dan jista'' jieħu sa minuta.",
+      "analyzeFailedTitle": "Il-karta ma rnexxilhiex tinqasam",
+      "openAiSettings": "Ikkonfigura ċ-ċavetta tal-AI fis-settings",
+      "retryAnalyze": "Erġa'' għamel l-iskanjar",
+      "changeFile": "Fajls ta'' Switch",
+      "nameLabel": "Isem tal-Mudell",
+      "namePlaceholder": "Formola ta'' Reġistrazzjoni 2026-2027",
+      "identificationLabel": "Test ta'' identifikazzjoni",
+      "identificationPlaceholder": "FORMOLA TA'' REĠISTRAZZJONI TA'' QABEL 2026 2027 — DAC Academy",
+      "identificationHint": "Jekk tkun mimlija popolazzjoni, kwalunkwe paġna li ma taqbilx eżattament ma'' din il-formola tiġi miċħuda għall-importazzjoni.",
+      "pagesPerFormLabel": "Paġni għal kull karta",
+      "pageCount": "{count, plural, one {Paġna #} other {# paġni}}",
+      "fieldsTitle": "Tqabbil tal-Kamp",
+      "fieldsSummary": "{count, plural, =0 {L-ebda qasam} one {# Field} other {# oqsma}} · {mapped, plural, one {# importati} other {Importati #}}",
+      "fieldsHint": "Kull ringiela tikkorrispondi għal kaxxa fuq ir-rekord. Indika fejn għandu jiġi rreġistrat il-valur tiegħu fuq ir-rekord tal-membru.",
+      "droppedFields": "{count, plural, one {# -kaxxa proposta mill-AI ġiet abbandunata għax kienet mhux kompluta.} other {# -kaxxi proposti mill-AI ġew abbandunati għax kienu mhux kompluti.}} Żidhom jekk ikun hemm bżonn.",
+      "noFields": "L-ebda kampi. Żid il-kaxxi fil-lista tiegħek.",
+      "addField": "Żid qasam",
+      "moreErrors": "… u {count, plural, one {# żball ieħor} other {# żbalji oħra}}",
+      "rowError": "Linja {row} : {message}",
+      "labelPlaceholder": "Kliem Stampat",
+      "hintPlaceholder": "Fakultattiv",
+      "legalDocumentPlaceholder": "Agħżel dokument",
+      "noLegalDocuments": "L-ebda dokumenti legali. Oħloq l-ewwel f''Dokumenti Legali.",
+      "columns": {
+        "label": "Kliem",
+        "page": "Paġna",
+        "target": "Destinazzjoni",
+        "legalDocument": "Dokument",
+        "hint": "Indikazzjoni tal-qari",
+        "actions": "Azzjonijiet"
+      },
+      "rowLabelAria": "Etichetta tal-Linja {row}",
+      "rowPageAria": "Paġna tal-Linja {row}",
+      "rowTargetAria": "Destinazzjoni tal-linja {row}",
+      "rowLegalDocumentAria": "Dokument tal-Linja {row}",
+      "rowHintAria": "Indikazzjoni tal-Qari tal-Linja {row}",
+      "removeRowAria": "Neħħi l-linja {row}",
+      "pageLabel": "Paġna {page}",
+      "enlargePage": "Paġna tespandi {page}",
+      "referenceHint": "Il-karta vojta ma tinżammx. Erġa'' poġġiha biex turi ħdejn il-kampijiet.",
+      "showBlankForm": "Uri l-karta vojta"
+    },
+    "activity": {
+      "fields": {
+        "name": "Isem",
+        "pagesPerForm": "Paġni għal kull karta",
+        "fields": "Qasam",
+        "identificationText": "Test ta'' identifikazzjoni"
+      }
+    }
   },
   "associationDocuments": {
     "title": "Dokumenti tal-assoċjazzjoni",
@@ -5521,6 +6340,13 @@
     "hidden": "Moħbi",
     "visibleToMembers": "Viżibbli għall-membri",
     "visibleToMembersHint": "Juri dan id-dokument fiż-żona tal-membri. Meta jkun mitfi, il-maniġers biss jistgħu jarawh.",
+    "visibleToPublic": "Aċċessibbli għall-pubbliku",
+    "visibleToPublicHint": "Jagħmel dan id-dokument viżibbli minn kull min għandu l-link, mingħajr kont — meħtieġ li tgħaqqad miegħu mill-formoli pubbliċi tiegħek.",
+    "visibleToPublicForcedHint": "Attivata awtomatikament: dokument li għandu jiġi aċċettat irid ikun jista'' jinqara mill-persuna li taċċettah.",
+    "requiresAcceptance": "Biex jiġi aċċettat",
+    "requiresAcceptanceHint": "Kaxxa obbligatorja tidher fil-formoli tal-membri, donazzjoni, reġistrazzjoni tal-avvenimenti, ħanut u ħolqien ta'' kont. Kull aċċettazzjoni tiġi rreġistrata mal-verżjoni tad-dokument.",
+    "exportAcceptances": "Aċċettazzjonijiet ta'' esportazzjoni",
+    "publicShort": "Pubbliku",
     "toasts": {
       "madeVisible": "“{title}” huwa viżibbli għall-membri",
       "madeHidden": "“{title}” huwa moħbi mill-membri",
@@ -5541,7 +6367,10 @@
       "contentLabel": "Kontenut",
       "contentPlaceholder": "Ikteb il-kontenut tad-dokument…",
       "titleRequired": "It-titlu huwa obbligatorju.",
-      "contentRequired": "Il-kontenut huwa obbligatorju."
+      "contentRequired": "Il-kontenut huwa obbligatorju.",
+      "fileLabel": "Fajl PDF",
+      "fileHint": "Importa l-verżjoni uffiċjali tad-dokument (statuti ffirmati, regolamenti skannati, eċċ.). Huwa disponibbli biex jitniżżel u jintwera flimkien mal-kontenut.",
+      "contentOptionalHint": "Fakultattiv meta jkun hemm PDF mehmuż: It-test jidher taħt il-fajl."
     },
     "leaveWarning": {
       "title": "Bidliet mhux salvati",
@@ -5550,7 +6379,36 @@
       "saveAndLeave": "Salva u oħroġ"
     },
     "notFound": "Dan id-dokument ma nstabx.",
-    "backToList": "Lura għad-dokumenti"
+    "backToList": "Lura għad-dokumenti",
+    "pdfShort": "PDF"
+  },
+  "formDraft": {
+    "restored": "L-informazzjoni tiegħek ġiet miżmum.",
+    "discard": "Ibda mill-ġdid b''formola vojta"
+  },
+  "legalConsent": {
+    "agreeLabel": "{count, plural, one {Naqbel mad-dokument li ġej:} other {Naċċetta d-dokumenti li ġejjin:}}",
+    "required": "Trid taċċetta d-dokumenti tal-korporazzjoni biex tkompli.",
+    "stale": "Id-dokumenti tal-assoċjazzjoni ġew aġġornati, jekk jogħġbok aqrahom mill-ġdid qabel tkompli.",
+    "offlineAttestation": "Niċċertifika li ksibt il-ftehim ta'' din il-persuna dwar dawn id-dokumenti",
+    "gateTitle": "Dokumenti li għandhom jiġu aċċettati",
+    "gateSubtitle": "L-assoċjazzjoni tiegħek aġġornat id-dokumenti tagħha. Jekk jogħġbok aqra u aċċettahom biex taċċessa l-ispazju tiegħek.",
+    "gateSubmit": "Naċċetta u nkompli",
+    "gateSignOut": "Logout",
+    "gateError": "Ma tistax tirreġistra l-aċċettazzjoni tiegħek.",
+    "offlineAttestationHint": "Irreġistrat bħala aċċettazzjoni miġbura offline, f''isem tiegħek."
+  },
+  "publicDocuments": {
+    "title": "Dokumenti legali",
+    "subtitle": "Dokumenti pprovduti mill-assoċjazzjoni.",
+    "empty": "Ma ġew ippubblikati l-ebda dokumenti f''dak iż-żmien.",
+    "updatedAt": "Aġġornat fuq {date}",
+    "backToList": "Id-dokumenti kollha",
+    "associationNotFound": "Din l-assoċjazzjoni m''għadhiex hemm.",
+    "notFound": "Dan id-dokument m''għadux disponibbli.",
+    "openPdf": "Open PDF",
+    "opensNewTab": "(jinfetaħ f''tab ġdid)",
+    "pdfShort": "PDF"
   },
   "portalMembre": {
     "associationDocuments": {
@@ -5560,7 +6418,10 @@
       "empty": "Bħalissa m'hemm l-ebda dokument disponibbli.",
       "loadError": "Ma setgħux jitgħabbew id-dokumenti.",
       "notFound": "Dan id-dokument ma nstabx jew m'għadux disponibbli.",
-      "backToList": "Lura għad-dokumenti"
+      "backToList": "Lura għad-dokumenti",
+      "openPdf": "Open PDF",
+      "opensNewTab": "(jinfetaħ f''tab ġdid)",
+      "pdfShort": "PDF"
     },
     "sondages": {
       "title": "Stħarriġ",
@@ -5598,6 +6459,15 @@
       "viewShop": "Ara l-Ħanut",
       "orderPlacedTitle": "Ordni rreġistrata!",
       "orderPlacedDescription": "L-ordni tiegħek qed tistenna l-ħlas. L-amministrazzjoni se tikkuntattjak biex tikkonkludi.",
+      "paymentSuccessTitle": "Il-ħlas ġie kkonfermat!",
+      "paymentSuccessDescription": "Grazzi tax-xiri tiegħek. Intbagħtitlek email ta' konferma bir-riċevuta tiegħek.",
+      "stockAdjustedNotice": "L-istokk ta' xi oġġetti nbidel — il-karrell tiegħek ġie aġġustat, irrevedih qabel ma tkompli.",
+      "trackOrderButton": "Segwi l-ordni tiegħi",
+      "trackingPageTitle": "Traċċar tal-ordni",
+      "trackingStatusPending": "Jistenna ħlas",
+      "trackingStatusPaid": "Ordni mħallsa",
+      "trackingStatusCancelled": "Ordni kkanċellata",
+      "trackingNotFound": "L-ordni ma nstabtx",
       "myOrdersButton": "L-Ordnijiet Tiegħi",
       "continueShopping": "Kompli tixtri",
       "maxStockReached": "L-Istokk Massimu Miksub",
@@ -5635,16 +6505,7 @@
         "orderError": "Żball waqt l-ordni",
         "orderUpdated": "Ordni aġġornata",
         "orderCancelled": "Ordni kkanċellata"
-      },
-      "paymentSuccessTitle": "Il-ħlas ġie kkonfermat!",
-      "paymentSuccessDescription": "Grazzi tax-xiri tiegħek. Intbagħtitlek email ta' konferma bir-riċevuta tiegħek.",
-      "stockAdjustedNotice": "L-istokk ta' xi oġġetti nbidel — il-karrell tiegħek ġie aġġustat, irrevedih qabel ma tkompli.",
-      "trackOrderButton": "Segwi l-ordni tiegħi",
-      "trackingPageTitle": "Traċċar tal-ordni",
-      "trackingStatusPending": "Jistenna ħlas",
-      "trackingStatusPaid": "Ordni mħallsa",
-      "trackingStatusCancelled": "Ordni kkanċellata",
-      "trackingNotFound": "L-ordni ma nstabtx"
+      }
     },
     "dons": {
       "title": "Id-Donazzjonijiet tiegħi",
@@ -5673,7 +6534,13 @@
       "toasts": {
         "thanked": "Grazzi tad-donazzjoni tiegħek! Email ta' konferma ġiet mibgħuta lilek.",
         "cancelled": "Donazzjoni kkanċellata."
-      }
+      },
+      "campaignsHeading": "Kampanji kurrenti",
+      "backToDons": "Lura għad-Donazzjonijiet Tiegħi",
+      "donatingAs": "Int tagħti bħala {name} ({email}).",
+      "comingSoon": "Dalwaqt",
+      "campaignClosed": "Il-kampanja intemmet",
+      "loadCampaignsError": "Kampanji ta'' donazzjonijiet ma jistgħux jittellgħu. Ipprova mill-ġdid aktar tard."
     },
     "reunions": {
       "title": "Laqgħat",
@@ -5862,6 +6729,73 @@
       }
     },
     "evenements": {
+      "title": "Avvenimenti",
+      "subtitle": "L-appuntamenti li jmiss tiegħek u l-istorja tiegħek.",
+      "upcomingHeading": "Dalwaqt",
+      "noneUpcoming": "L-ebda avveniment li ġej.",
+      "moreUpcomingHint": "Avvenimenti oħra li ġejjin mhumiex murija. Ikkuntattja l-assoċjazzjoni tiegħek għal aktar informazzjoni.",
+      "pastHeading": "Passat",
+      "pastLimitHint": "Juru biss l-aħħar 10 avvenimenti.",
+      "guestsLabel": "Il-mistednin tiegħek:",
+      "guestFirstNamePlaceholder": "Isem tal-Mistieden {n}",
+      "guestLastNamePlaceholder": "Isem tal-Mistieden {n}",
+      "guestEmailPlaceholder": "Email mistiedna (fakultattiv)",
+      "ticketTypeFullSuffix": "(mibjugħa kollha)",
+      "paymentError": "Żball waqt il-ħlas",
+      "waitlistedToast": "Inti fuq il-lista ta'' stennija – aħna ninfurmawk bl-email jekk post ikun disponibbli.",
+      "payOnline": "Ħallas online",
+      "ticketCancelledToast": "Biljett ikkanċellat — se tiġi rimborsat fi ftit jiem.",
+      "ticketsPurchased": "{n, plural, one {Biljett mixtri} other {# biljetti mixtrija}}",
+      "youSuffix": " (int)",
+      "cancelAndRefund": "Ikkanċella u talab rifużjoni",
+      "cancelSeatTitle": "Tħassar dan il-post?",
+      "cancelTicketTitle": "Tħassar dan it-tikek?",
+      "refundOriginalMethod": "Se tiġi rimborsata għall-metodu oriġinali ta'' ħlas tiegħek.",
+      "refundSelfOnly": "Se tirritorna lura għall-post tiegħek. Il-mistednin tiegħek jibqgħu rreġistrati u ma jitħallewx lura r-rifużjoni.",
+      "refundGuestOnly": "Se tirritorna lura għal dan is-siġġu. Il-bqija tal-booking tiegħek mhix affettwata.",
+      "cancelAndRefundConfirm": "Ikkanċella u rifużjoni",
+      "reservedPayOnSite": "Riservat – ħlas fuq il-post",
+      "seatsCountLabel": "Numru ta'' postijiet:",
+      "cancelReservation": "Ikkanċella l-Booking",
+      "cancelReservationSimple": "Tista'' tibbukkja mill-ġdid jekk tbiddel fehmtek.",
+      "cancelReservationPaidCompanions": "Il-mistednin tiegħek li għadhom ma ngħatawx ħlas se jitneħħew. Il- {n} Il-mistednin li diġà ħallsu fi flus kontanti jibqgħu rreġistrati.",
+      "cancelReservationWithCompanions": "Dan se wkoll ikkanċella l-booking tal- {n} mistednin.",
+      "onWaitlist": "Int fuq il-lista ta'' stennija",
+      "eventFull": "Avveniment Sħiħ",
+      "reserveButton": "Ktieb – ħallas fuq il-post",
+      "totalLabel": "Total :",
+      "rsvpConfirme": "Se nkun hemm!",
+      "rsvpProvavel": "Jekk possibbli",
+      "rsvpIncerto": "Forsi",
+      "rsvpAbsent": "Jien mhux se niġi",
+      "rsvpRecordedToast": "Risposta rreġistrata: {label}",
+      "rsvpSaveError": "Reġistrazzjoni ta'' żbalji",
+      "addGuestsButton": "+ Żid mistednin",
+      "updateGuestsButton": "Aġġorna lill-mistednin tiegħi",
+      "guestsUpdatedToast": "Mistednin aġġornati",
+      "countConfirmed": "{n, plural, one {# ikkonfermat} other {# ikkonfermat}}",
+      "countProvavel": "{n} jekk possibbli",
+      "countIncerto": "{n} forsi",
+      "countAbsent": "{n, plural, one {# nieqsa} other {# nieqsa}}",
+      "countWaitlist": "{n} fil-lista ta'' stennija",
+      "priceLabel": "Prezz:",
+      "reservedCount": "{confirmed}/{capacity} Riservat",
+      "fullSuffix": " · Mibjugħa kollha",
+      "presenceLabel": "Parteċipazzjoni:",
+      "present": "Preżent",
+      "presenceAbsent": "Assenti",
+      "presenceNotRecorded": "Mhux irreġistrat",
+      "rsvpDisplay": "RSVP : {label}",
+      "yourResponseLabel": "It-tweġiba tiegħek:",
+      "confirmParticipationLabel": "Ikkonferma l-parteċipazzjoni tiegħek:",
+      "reviewSentThanks": "Avviż mibgħut — grazzi!",
+      "chooseRatingError": "Agħżel nota",
+      "leaveReview": "Ħalli reviżjoni",
+      "send": "Ibgħat",
+      "commentPlaceholder": "Xi kummenti? (fakultattiv)",
+      "ticketPurchaseSuccessToast": "Biljett mixtri b''suċċess!",
+      "paymentCancelledToast": "Il-ħlas ġie kkanċellat. Il-post tiegħek għadu riservat — ħallas aktar tard jew ikkanċella r-riżervazzjoni fuq il-karta tal-avveniment.",
+      "registrationsClosed": "Ir-reġistrazzjoni hija magħluqa.",
       "viewEvent": "Ara l-avveniment",
       "backToList": "L-avvenimenti kollha",
       "notFound": "Dan l-avveniment m'għadux disponibbli."
@@ -5877,6 +6811,7 @@
     "platformKeyActive": "Ċavetta attiva tal-pjattaforma — tista' tuża AI mingħajr konfigurazzjoni.",
     "providerFieldLabel": "Fornitur",
     "providerFieldPlaceholder": "Tagħżel fornitur...",
+    "anthropicAssistantHint": "L-Assistent tal-Help Center jirrispondi biss għad-dejta tal-assoċjazzjoni tiegħek (membri, ħlasijiet, finanzi) b''ċavetta Anthropic. Ma'' fornitur ieħor, jirrispondi biss mid-dokumentazzjoni.",
     "apiKeyLabel": "Ċwievet API",
     "apiKeyPlaceholderReplace": "Ċavetta eżistenti — daħħal biex tissostitwixxi",
     "apiKeyPlaceholderNew": "Ippasta ċ-ċavetta API tiegħek...",
@@ -5936,6 +6871,7 @@
       "actualites": "Aħbarijiet",
       "messages": "Messaġġi",
       "materiel": "Materjal",
+      "groupes": "Gruppi",
       "site": "Sit elettroniku",
       "activite": "Storja",
       "suporte": "Appoġġ",
@@ -5954,7 +6890,8 @@
       "pricingOffers": "Offerti ta' prezzijiet",
       "support": "Appoġġ",
       "controlAlerts": "Avviżi ta' Kontroll",
-      "signOut": "Logout"
+      "signOut": "Logout",
+      "membreDuplicates": "Dupliki"
     },
     "themeToggle": {
       "changeTheme": "Biddel it-tema"
@@ -5962,7 +6899,8 @@
     "header": {
       "myPortal": "L-Ispazju Tiegħi",
       "myProfile": "Il-Profil Tiegħi",
-      "management": "Ġestjoni"
+      "management": "Ġestjoni",
+      "publicSite": "Ara s-sit elettroniku"
     },
     "userMenu": {
       "roleLabels": {
@@ -5971,10 +6909,12 @@
         "PRESIDENT": "President",
         "TRESORIER": "Teżorier",
         "SECRETAIRE": "Segretarju",
-        "MEMBRE": "Membru"
+        "MEMBRE": "Membru",
+        "EQUIPE": "Membru tat-Tim"
       },
       "editProfile": "Edit Profil",
       "changePassword": "Biddel il-Password",
+      "security": "Sigurtà",
       "legalDocuments": {
         "title": "Dokumenti legali",
         "mentionsLegales": "Avviż legali",
@@ -5984,6 +6924,38 @@
         "opensNewTab": "Tiftaħ tab ġdid"
       },
       "logout": "Logout"
+    },
+    "twoFactorSettingsModal": {
+      "title": "Awtentikazzjoni b''żewġ fatturi",
+      "statusEnabled": "Abilitat",
+      "statusEnabledDescription": "Il-kont tiegħek huwa protett b''verifika f''żewġ passi.",
+      "statusDisabled": "Persuni b''diżabilità",
+      "statusDisabledDescription": "Żid verifika addizzjonali mal-login tiegħek permezz ta'' app ta'' awtentikatur.",
+      "backupCodesLabel": "Kodiċijiet ta'' Backup",
+      "backupCodesRemaining": "{count, plural, =0 {L-ebda kodiċi ma baqa''} one {# -kodiċi li fadal} other {# -kodiċijiet li jibqgħu}}",
+      "regenerate": "Rigenerazzjoni",
+      "scanTitle": "1. Skannja dan il-kodiċi QR",
+      "scanDescription": "Iftaħ l-app awtentikatur tiegħek (Google Authenticator, Authy...) u skannja l-kodiċi hawn taħt.",
+      "manualEntryLabel": "Ma tistax tiskannja? Daħħal dan il-kodiċi manwalment:",
+      "confirmCodeLabel": "Kodiċi ta'' Verifika",
+      "backupCodesTitle": "Salvja dawn il-kodiċijiet issa",
+      "backupCodesDescription": "Dawn il-kodiċijiet se jintwerew darba biss. Kull kodiċi jista'' jintuża darba biss.",
+      "copyAll": "Kopja l-kodiċijiet kollha",
+      "copied": "Kopija!",
+      "savedCodesConfirm": "Salvajt il-kodiċijiet ta'' backup tiegħi f''post sigur.",
+      "done": "Komplut",
+      "disableDescription": "Ikkonferma l-password tiegħek biex tiddiżattiva l-awtentikazzjoni b''żewġ fatturi.",
+      "disableConfirm": "Diżattivazzjoni",
+      "regenDescription": "Ikkonferma b''kodiċi mill-app tiegħek biex terġa'' ġġenera l-kodiċijiet ta'' fallback tiegħek.",
+      "passwordLabel": "Password",
+      "enable": "Attivazzjoni",
+      "disable": "Diżattivazzjoni",
+      "cancel": "Ikkanċellazzjoni",
+      "confirm": "Ikkonferma",
+      "close": "Għalaq",
+      "enabledToast": "Awtentikazzjoni b''żewġ fatturi attivata.",
+      "disabledToast": "Awtentikazzjoni b''żewġ fatturi diżattivata.",
+      "regeneratedToast": "Kodiċijiet ta'' backup riġenerati."
     },
     "changePasswordModal": {
       "title": "Biddel il-Password",
@@ -6109,7 +7081,14 @@
       "error": "Seħħ żball",
       "closed": "Talba magħluqa",
       "reopened": "L-applikazzjoni reġgħet infetħet"
-    }
+    },
+    "suggestReply": "Issuġġerixxi tweġiba",
+    "suggestReplyConfirmTitle": "Tissostitwixxi d-draft tiegħek?",
+    "suggestReplyConfirmDescription": "It-test diġà daħal se jiġi sostitwit bis-suġġeriment tal-AI.",
+    "suggestReplyConfirmAction": "Sostituzzjoni",
+    "suggestReplyNote": "Suġġeriment ġenerat mill-AI — eżekuzzjoni qabel tibgħat.",
+    "suggestReplySources": "Sorsi : {titles}",
+    "suggestReplyError": "Ma setax jiġġenera suġġeriment."
   },
   "controlAlerts": {
     "title": "Kontroll tas-Sħubija",
@@ -6122,9 +7101,27 @@
     "columns": {
       "membre": "Membru",
       "association": "Assoċjazzjoni",
+      "origin": "Oriġini",
       "raisedAt": "Maħluq fi",
       "daysWithoutCotisation": "Jiem mingħajr kontribuzzjoni",
       "status": "Status"
+    },
+    "originByLabel": "Minn {name}",
+    "originSources": {
+      "ADMIN_MANUAL": "Żieda manwali minn amministratur",
+      "ADMIN_REGISTRATION": "Reġistrazzjoni minn amministratur (formola)",
+      "PUBLIC_ADHESION_FORM": "Formola ta'' Membri Pubbliċi (B''xejn)",
+      "PUBLIC_ADHESION_FORM_OFFLINE": "Formola ta'' Membri Pubbliċi (Ħlas Offline)",
+      "PUBLIC_ADHESION_STRIPE": "Formola ta'' Membri Pubbliċi (Ħlas Online)",
+      "PUBLIC_ADHESION_INSTALLMENTS": "Formola pubblika ta'' membri (ħlas f''partijiet regolari)",
+      "PUBLIC_ADHESION_MULTI": "Formola Pubblika ta'' Membri (Reġistrazzjoni tal-Grupp)",
+      "PUBLIC_ADHESION_SUBSCRIPTION": "Formola ta'' Membri Pubbliċi (Abbonament Ripetut)",
+      "ASSOCONNECT_IMPORT": "Import AssoConnect",
+      "PAPER_FORM": "Importazzjoni ta'' formoli tal-karta",
+      "ASSOCIATION_SIGNUP_ADMIN": "Membru fundatur (ħolqien tal-assoċjazzjoni)",
+      "PUBLIC_INSCRIPTION_REQUEST": "Talba għal reġistrazzjoni pubblika (pendenti ta'' validazzjoni)",
+      "PUBLIC_INSCRIPTION_REQUEST_MULTI": "Talba għal reġistrazzjoni pubblika bl-ingrossa (pendenti ta'' validazzjoni)",
+      "unknown": "Oriġini mhux magħrufa"
     },
     "empty": "L-ebda avviż ta' kontroll.",
     "resolveAction": "Solvi",
@@ -6143,7 +7140,453 @@
     "autoResolvedLabel": "(awtomatiku)",
     "emptyForSearch": "L-ebda riżultat għal \"{search}\"."
   },
+  "help": {
+    "buttonLabel": "Għajnuna",
+    "title": "Ċentru ta'' Għajnuna",
+    "moduleGeneral": "Ġenerali",
+    "tabs": {
+      "guide": "Għajnuna",
+      "assistant": "Assistent",
+      "changelog": "X''hemm Ġdid",
+      "news": "Aħbarijiet"
+    },
+    "searchPlaceholder": "Għajnuna fit-Tfittxija...",
+    "searchResultsCount": "{count, plural, one {# riżultat} other {Riżultati #}}",
+    "searchNoResults": "L-ebda riżultat għal \" {query} ».",
+    "searchError": "It-tfittxija mhix disponibbli bħalissa.",
+    "newBadge": "Ġdid",
+    "pinnedSection": "Dan hu",
+    "articlesSection": "Artikli",
+    "articlesOtherSection": "Artikli oħra",
+    "faqSection": "Mistoqsijiet frekwenti",
+    "faqOtherSection": "Affarijiet oħra",
+    "noContent": "M''hemm l-ebda kontenut ta'' għajnuna għal din is-sezzjoni bħalissa.",
+    "loadError": "Ma nistax nħaddem l-għajnuna.",
+    "retry": "Erġa'' pprova",
+    "back": "Lura",
+    "updatedOn": "Aġġornat fuq {date}",
+    "articleNotFound": "Oġġett mhux misjub.",
+    "callout": {
+      "info": "Informazzjoni",
+      "tip": "Tip",
+      "warning": "Attenzjoni"
+    },
+    "assistant": {
+      "questionLabel": "Il-mistoqsija tiegħek",
+      "questionPlaceholder": "Staqsi l-mistoqsija tiegħek...",
+      "send": "Ibgħat",
+      "sendShortcut": "Ctrl + Enter (⌘ + Enter fuq Mac)",
+      "disclaimer": "Risposti ġġenerati mill-AI — iċċekkja informazzjoni importanti.",
+      "charactersCount": "{count}/{max}",
+      "youLabel": "Int",
+      "assistantLabel": "Assistent",
+      "newConversation": "Konversazzjoni ġdida",
+      "conversationRestoreFailed": "Il-konversazzjoni preċedenti tiegħek ma setgħetx tiġi rkuprata.",
+      "intro": "Staqsi mistoqsija dwar l-użu ta'' Formwise jew tad-dejta tal-assoċjazzjoni tiegħek: membri, ħlasijiet, finanzi, avvenimenti.",
+      "introDocs": "Staqsi mistoqsija dwar l-użu ta'' Formwise.",
+      "examplesLabel": "Mistoqsijiet ta'' kampjun",
+      "examples": {
+        "unpaid": "Min ma ħallasx il-miżata tal-membri din is-sena?",
+        "donations": "Kemm hemm donazzjonijiet dan ix-xahar?",
+        "createEvent": "Kif noħloq avveniment?"
+      },
+      "examplesDocs": {
+        "reminder": "Kif nista'' nsegwi kontribuzzjoni mhux imħallsa?",
+        "export": "Kif nista'' nesporta l-lista tal-membri?",
+        "createEvent": "Kif noħloq avveniment?"
+      },
+      "loadingCopilot": "Konsulenza tad-data...",
+      "loadingDocs": "Kitba...",
+      "dataConsulted": "Data kkonsultata:",
+      "tools": {
+        "search_members": "Membri",
+        "get_member": "Membri",
+        "list_cotisations": "Kontribuzzjonijiet",
+        "get_finance_summary": "Sommarju finanzjarju",
+        "list_events": "Avvenimenti",
+        "list_donations": "Donazzjonijiet",
+        "list_invoices": "Fatturi"
+      },
+      "sources": "Sorsi :",
+      "docsOnlyNotice": "Mistoqsijiet dwar il-membri tiegħek, id-dħul, u l-finanzi jeħtieġu ċavetta Anthropic.",
+      "docsOnlyConfigure": "Ikkonfigura fl-Issettjar → Integrazzjonijiet.",
+      "error": "Impossibbli li tikseb tweġiba.",
+      "errorTimeout": "Il-wizard ma setax itemm fil-ħin allokat. Staqsi mistoqsija aktar speċifika jew iqsar.",
+      "errorRateLimit": "Ħafna talbiet, ipprova mill-ġdid f''ftit mumenti.",
+      "errorProvider": "Il-fornitur tal-AI ma setax jirrispondi, ipprova mill-ġdid aktar tard.",
+      "noApiKey": "L-ebda ċwievet API kkonfigurati.",
+      "noApiKeyConfigure": "Żid iċ-ċavetta API tiegħek f''Settings → Integrazzjonijiet.",
+      "noApiKeyAskAdmin": "Staqsi lil amministratur biex iżid ċavetta API fis-Settings → Integrazzjonijiet.",
+      "apiKeyInvalid": "Il-key API kkonfigurata tiġi miċħuda mill-fornitur.",
+      "apiKeyInvalidConfigure": "Iċċekkja dan f''Settings → Integrazzjonijiet.",
+      "apiKeyInvalidAskAdmin": "Staqsi lil amministratur biex jiċċekkja dan f''Settings → Integrations."
+    },
+    "changelog": {
+      "latestSection": "L-Aħħar Aġġornamenti",
+      "empty": "M''hemm l-ebda karatteristiċi ġodda għalissa.",
+      "loadError": "Ma nistax nħaddem karatteristiċi ġodda.",
+      "kind": {
+        "feature": "Ġdid",
+        "improvement": "Titjib",
+        "fix": "Fix"
+      }
+    },
+    "releaseNotes": {
+      "title": "X''hemm Ġdid"
+    },
+    "news": {
+      "latestSection": "L-aħħar aħbarijiet",
+      "empty": "L-ebda aħbarijiet għalissa.",
+      "loadError": "Ma nistax nilgħab aħbarijiet.",
+      "popupTitle": "Aħbarijiet"
+    },
+    "faqPopup": {
+      "title": "Mistoqsijiet frekwenti"
+    },
+    "popupCarousel": {
+      "remindLater": "Iftakarni aktar tard",
+      "remindLaterToast": "Niftakruk il-ħin li jmiss li tidħol fil-log.",
+      "previous": "Preċedenti",
+      "next": "Li jmiss",
+      "finish": "Tmiem",
+      "position": "Element {current} fuq {total}",
+      "goTo": "Mur għall-oġġett {index}"
+    },
+    "footer": {
+      "tour": "Żjara gwidata",
+      "contactSupport": "Ikkuntattja l-Appoġġ"
+    }
+  },
+  "boutiqueShipping": {
+    "title": "Trasport bil-baħar",
+    "description": "L-indirizz tat-tbaħħir jintuża biex jikkalkula l-ispiża tat-tbaħħir bil-posta tal-ħanu.",
+    "addressLabel": "Indirizz",
+    "addressPlaceholder": "12 rue de la Paix",
+    "cityLabel": "Belt",
+    "postalCodeLabel": "Kodiċi postali",
+    "countryLabel": "Pajjiż",
+    "saved": "Indirizz ta'' tbaħħir irreġistrat",
+    "deliveryMethodLabel": "Modalità ta'' Riċeviment",
+    "pickupOption": "Ġbir fuq il-post",
+    "deliveryOption": "It-Tbaħħir tal-Posta",
+    "shippingAddressHint": "Meħtieġ li jikkalkula l-ispejjeż tat-tbaħħir.",
+    "shippingOptionsLabel": "Spejjeż tat-trasport",
+    "loadingRates": "Kalkolu tal-ispejjeż tal-kunsinna...",
+    "noShippingOptions": "M''hemm l-ebda għażliet ta'' kunsinna disponibbli għal dan l-indirizz.",
+    "shippingUnavailable": "Il-kunsinna postali għadha mhix ikkonfigurata minn din l-assoċjazzjoni.",
+    "leadTimeApprox": "~{days} j",
+    "shippingCostLabel": "Spejjeż tat-trasport",
+    "mixedCartPickupOnlyHint": "It-tbaħħir mhux disponibbli: Il-karrettun tiegħek fih oġġett li jista'' jittieħed biss bl-idejn.",
+    "markupLabel": "Marġni ta'' sigurtà fuq l-ispejjeż tat-trasport",
+    "markupHint": "Miżjud mar-rata murija lill-xerrej. Jipproteġik jekk ir-rata tal-trasportatur tiżdied qabel it-tbaħħir reali, iżda prezz ogħla jista'' jħassar ix-xiri.",
+    "markupRangeError": "Il-marġni għandu jkun numru sħiħ bejn 0 u 50.",
+    "markupHintTooltip": "Ma jinxtraw l-ebda lejbel fil-ħin tal-ordni: il-prezz muri huwa biss stima. Jekk il-prezz reali tal-carrier ikun żdied meta tħallas il-pakkett, il-karità tħallas id-differenza — sakemm dan il-marġni ma jkoprixha. Min-naħa l-oħra, marġni li jkun għoli wisq iżid il-prezz li juri lill-klijent u jista'' jżagħtih biex jixtri."
+  },
+  "paperFormScan": {
+    "menuItem": "Kards tal-karta importati",
+    "manageTemplatesMenuItem": "Immaniġġja mudelli tal-karti",
+    "title": "Kards tal-karta importati",
+    "description": "Aqra formoli ta'' reġistrazzjoni mimlija bl-idejn, iċċekkja kull formola u mbagħad oħloq membri.",
+    "backToMembers": "Membri",
+    "loadingTemplates": "Mudelli ta'' Tħaddim...",
+    "steps": {
+      "upload": "Fajls",
+      "reading": "Qari",
+      "review": "Verifika",
+      "result": "Ħolqien"
+    },
+    "upload": {
+      "noTemplateTitle": "L-ebda mudell ta'' karta tal-karta",
+      "noTemplateDescription": "L-ewwel, iddeskrivi l-formola ta'' reġistrazzjoni tal-karta tiegħek sabiex il-kampijiet tagħha jkunu jistgħu jinqraw.",
+      "createTemplate": "Oħloq mudell",
+      "template": "Folja tal-mudell",
+      "templatePlaceholder": "Agħżel mudell",
+      "templateSummary": "{pages, plural, one {Paġna #} other {# paġni}} by card · {fields, plural, one {# Field} other {# oqsma}}.",
+      "manageTemplates": "Immaniġġja mudelli",
+      "dropTitle": "Ittella'' l-PDF skannjat jew ir-ritratti tal-folji",
+      "galleryTitle": "Agħżel ritratti jew PDF",
+      "dropSubtitle": "PDF, JPEG jew PNG — fajls multipli possibbli, jinqraw skont l-isem",
+      "privacyNote": "Il-paġni jibqgħu fil-browser tiegħek: biss l-immaġini jintbagħtu wieħed wieħed biex jinqraw, xejn ma jinżamm.",
+      "pageCount": "{count, plural, one {Paġna #} other {# paġni}}",
+      "removeFile": "Neħħi {name}",
+      "preparing": "Qed jippreparaw il-paġni...",
+      "batchSummary": "{pages, plural, one {Paġna #} other {# paġni}} · Dwar {forms, plural, one {Rekord #} other {# folji}}",
+      "pageTotal": "{count, plural, one {Paġna #} other {# paġni}}",
+      "start": "Bidu tal-logħob",
+      "renderFailed": "{name} : {error}",
+      "strictTemplateNotice": "Biss il-paġni ta'' \" {name} \" se jiġi aċċettat.",
+      "capturedListLabel": "Karti ritrattati",
+      "capturedForm": "Fact sheet {form}",
+      "capturedPages": "{count, plural, one {Paġna {list}} other {Paġni {list}}}",
+      "capturedMissing": "{count, plural, one {Paġna {list} Assenti} other {Paġni {list} Assenti}}",
+      "capturedInProgress": "Għaddej",
+      "removeCapturedForm": "Neħħi l-fajl {form}",
+      "capturedSummary": "{forms, plural, one {Rekord #} other {# folji}} · {pages, plural, one {Paġna #} other {# paġni}}",
+      "camera": {
+        "title": "Ritrattja l-karti",
+        "needsTemplate": "L-ewwel, agħżel mudell: l-app tgħidlek liema paġna għandek tirritratta.",
+        "prompt": "Fact sheet {form} — paġna {page} fuq {pages}",
+        "promptSinglePage": "Fact sheet {form}",
+        "capturePage": "Ritrattja l-paġna {page}",
+        "captureForm": "Fotografija l-folja",
+        "skipToNextForm": "Mur għall-fajl {form}",
+        "lastShot": "Fact sheet {form} · Paġna {page}",
+        "lastShotSinglePage": "Fact sheet {form}",
+        "lastShotAlt": "Ritratt tal-fajl {form}, paġna {page}",
+        "preparing": "Preparazzjoni...",
+        "retake": "Riżumé",
+        "retakeLabel": "Ħu r-ritratt tal-karta {form}, paġna {page}",
+        "framingHint": "Poġġi l-folja ċatt, tajjeb imdawwla, u qafas il-paġna kollha b''erba'' xnub tagħha.",
+        "photoFileName": "Fact sheet {form} Paġna {page}.{extension}"
+      }
+    },
+    "reading": {
+      "progress": "{read} / {total} Paġni LUES",
+      "failedCount": "{count, plural, one {# paġna żbaljata} other {# paġni żbaljati}}",
+      "runningHint": "Il-qari jkompli sakemm din il-paġna tibqa'' miftuħa.",
+      "pageFailed": "Il-paġna ma setgħetx tinqara",
+      "stoppedTitle": "Riproduzzjoni interrotta",
+      "rateLimitedTitle": "Waqqaf il-playback",
+      "openAiSettings": "Settings tal-AI",
+      "openTemplates": "Folji ta'' Template",
+      "resume": "Riżumé",
+      "failedTitle": "Paġni mhux imqraw",
+      "retryAll": "Ipprova kollox mill-ġdid",
+      "pageColumn": "Paġna",
+      "fileColumn": "Fajl",
+      "errorColumn": "Żball",
+      "retry": "Erġa'' pprova",
+      "continueWithFailuresHint": "Tista'' tkompli: il-paġni mhux qraw jibqgħu viżibbli waqt il-verifika u jiġu kompluti bl-idejn.",
+      "restart": "Ibda mill-ġdid",
+      "continueAnyway": "Iċċekkja xorta",
+      "continue": "Għela għall-Verifika",
+      "refusedCount": "{count, plural, one {# paġna mhux approvata} other {# paġni miċħuda}}",
+      "refusedTitle": "Paġni mhux approvati",
+      "reasonColumn": "Motif",
+      "pageRefused": "Page miċħud — dan mhux ir-rekord mistenni",
+      "detectedDocument": "Dokument skopert: {title}",
+      "removePage": "Neħħi",
+      "refusedHint": "Dawn il-paġni ma jiġu importati. Jekk karta titlef paġna waħda tagħha b''dan il-mod, tidher b''paġna nieqsa."
+    },
+    "viewer": {
+      "pageSwitch": "Paġna murija",
+      "page": "Paġna {number}",
+      "pageMissing": "Paġna {number} Nieqsa",
+      "zoomOut": "Kollass",
+      "zoomIn": "Espandi",
+      "pageUnread": "Paġna mhux lue: {error}",
+      "pageAlt": "Paġna {number} tal-worksheet ({file})",
+      "missingPageBody": "Il-paġna {number} minn din il-folja ma ġietx importata."
+    },
+    "editor": {
+      "lowConfidence": "Qari mhux ċert, li għandu jiġi vverifikat",
+      "identity": "Identità",
+      "firstName": "Isem l-Ewwel",
+      "lastName": "Isem",
+      "alreadyExists": "Diġà teżisti: {people}",
+      "email": "Email",
+      "phone": "Telefown",
+      "birthDate": "Id-data tat-twelid",
+      "age": "{age, plural, one {# an} other {# snin}}",
+      "civilite": "Titlu",
+      "sexe": "Ġeneru",
+      "address": "Indirizz",
+      "addressLowConfidence": "L-indirizz jinqara b''inċertezza, biex jiġi vverifikat",
+      "guardians": "Gwardjani legali",
+      "guardianExpected": "Membru Minuri ({age, plural, one {# an} other {# snin}}): l-ebda gwardjan legali infurmat.",
+      "guardianName": "Gwardjan legali {number} — Isem",
+      "guardianPhone": "Gwardjan legali {number} — telefon",
+      "consents": "Permessi",
+      "imageRights": "Drittijiet tal-immaġni",
+      "imageRightsYes": "Iva",
+      "imageRightsNo": "Mhux",
+      "imageRightsUnknown": "Mhux speċifikat",
+      "sheetAnswers": "Tweġibiet fil-fajl",
+      "sheetAnswersHint": "Kampijiet mingħajr kolonna ddedikata: Dawn se jiġu miżjuda mal-noti tal-membri meta jinħolqu.",
+      "sheetPage": "Paġna {page}",
+      "sheetPageMissing": "Paġna nieqsa: l-ebda tweġiba mqrata.",
+      "checkboxUnread": "Kaxxa mhux qara, biex tiġi ċċekkjata fuq il-karta",
+      "linkedDocument": "Aċċettazzjoni tar-rekords ta'' \" {title} »",
+      "notes": "Noti",
+      "notesOwnHint": "In-noti tiegħek stess. It-tweġibiet fil-karta jiġu miżjuda magħha fil-ħin tal-ħolqien, fil-format \"label: value\"."
+    },
+    "review": {
+      "summary": "{total, plural, one {Rekord #} other {# folji}} · {toReview} biex jiġi rivedut · {validated, plural, one {# validat} other {# validat}} · {ignored, plural, one {# injorat} other {# injorat}} · {created, plural, one {# maħluqa} other {# maħluqa}}",
+      "checkingDuplicates": "fittex duplikati...",
+      "duplicatesFailed": "It-tfittxija duplikata falliet; tista'' tkompli l-verifika.",
+      "create": "{count, plural, =0 {Ħolqien ta'' Membri} one {Oħloq # membru} other {Oħloq # membri}}",
+      "formsList": "Fatti ta'' informazzjoni",
+      "untitledForm": "Fact sheet {number}",
+      "missingPages": "{count, plural, one {Paġna {list} Assenti} other {Paġni {list} Assenti}}",
+      "formPosition": "Fact sheet {number} fuq {total}",
+      "previous": "Karta preċedenti",
+      "next": "Paġna li jmiss",
+      "missingPagesNotice": "{count, plural, one {Paġna {list} Assenti} other {Paġni {list} Assenti}} : Il-kampijiet f''din il-paġna jibqgħu vojta. Tista'' tivvalida l-formola u timla l-membru aktar tard.",
+      "commitError": "Il-ħolqien falliet: {error}",
+      "createdNotice": "Membru maħluq.",
+      "openMember": "Iftaħ il-fajl",
+      "unvalidate": "Undo Validazzjoni",
+      "restore": "Restawr",
+      "ignore": "Ignora",
+      "validate": "Ivvalida",
+      "invalidBeforeCreate": "{count, plural, one {Lista validata fiha żball} other {# -listings validati fihom żball}} : Ikkoreġihom qabel ma toħloq membri."
+    },
+    "status": {
+      "toReview": "Biex jiġu riveduti",
+      "validated": "Validat",
+      "ignored": "Injorat",
+      "error": "Żball",
+      "created": "Maħluq"
+    },
+    "result": {
+      "summary": "{created, plural, =0 {L-ebda membru maħluq} one {# membru maħluq} other {# membri maħluqa}}{errors, plural, =0 {} one { · # żball} other { · # żbalji}}",
+      "remaining": "{count, plural, one {# -fajl għadu għaddej biex jiġi pproċessat} other {# fajls għadhom għaddejjin biex jiġu pproċessati}}.",
+      "nameColumn": "Isem",
+      "statusColumn": "Riżultat",
+      "detailColumn": "Dettall",
+      "created": "Maħluq",
+      "error": "Żball",
+      "skippedDocuments": "Aċċettazzjoni mhux irreġistrata: {documents}",
+      "backToReview": "Lura għall-Verifika",
+      "goToMembers": "Ara l-Membri",
+      "genericError": "Membri li joħolqu żbalji"
+    },
+    "notesValues": {
+      "yes": "Iva",
+      "no": "Mhux"
+    },
+    "validation": {
+      "firstNameRequired": "L-ewwel isem meħtieġ",
+      "lastNameRequired": "Isem meħtieġ"
+    },
+    "leaveWarning": {
+      "title": "Ħalla l''import?",
+      "description": "Ir-rekords miksuba u vverifikati f''din il-paġna jintilfu. Il-membri diġà maħluqa huma miżmum.",
+      "confirm": "Ħruġ mingħajr ma joħloq"
+    },
+    "restartWarning": {
+      "title": "Rebidu l''import?",
+      "description": "Paġni mniżżla u l-qari tagħhom jiġu abbandunati.",
+      "confirm": "Ibda mill-ġdid"
+    }
+  },
   "formTermsEditor": {
     "contentRequired": "Trid timla l-qasam “{conditionsLabel}” jew ittella’ dokument."
+  },
+  "membreDuplicates": {
+    "list": {
+      "title": "Duplikati potenzjali",
+      "subtitle": "Membri li jidher li huma l-istess persuna — iċċekkja qabel ma jingħaqduhom.",
+      "menuItem": "Dupliki",
+      "scanAction": "Skennja għal duplikati",
+      "scanSuccess": "{count, plural, =0 {L-ebda duplikati pendenti} one {1 duplikat pendenti} other {# duplikati pendenti}}",
+      "scanError": "Tfittxija ta'' Żbalji għal Dupliki",
+      "searchPlaceholder": "Fittex membru...",
+      "matchedFields": {
+        "EMAIL": "Email",
+        "NAME": "Isem"
+      },
+      "columns": {
+        "membreA": "Membru A",
+        "membreB": "Membru B",
+        "matchedFields": "Kriterji korrispondenti",
+        "detectedAt": "Skopert",
+        "status": "Status"
+      },
+      "status": {
+        "PENDING": "Pendenti",
+        "DISMISSED": "Injorat",
+        "MERGED": "Imħallta"
+      },
+      "autoDismissedLabel": "(karozza)",
+      "compareAction": "Qabbil",
+      "dismissAction": "Ignora",
+      "empty": "L-ebda duplikati.",
+      "emptyForSearch": "L-ebda riżultat għal \" {search} ».",
+      "restoreAction": "Restawr"
+    },
+    "merge": {
+      "backLink": "Lura",
+      "title": "Qabbil u merġa",
+      "subtitle": "Agħżel liema membru żżomm u, għal kull qasam differenti, liema valur għandek iżomm.",
+      "alreadyMerged": "Dan id-duplikat diġà ġie magħqud.",
+      "keepAsPrimary": "Keep bħala Prinċipal",
+      "fieldsTitle": "Qasam differenti",
+      "fields": {
+        "firstName": "Isem l-Ewwel",
+        "lastName": "Isem",
+        "email": "Email",
+        "phone": "Telefown",
+        "birthDate": "Id-data tat-twelid",
+        "civilite": "Titlu",
+        "address": "Indirizz",
+        "addressStreet": "Track",
+        "addressComplement": "Indirizz addizzjonali",
+        "postalCode": "Kodiċi postali",
+        "city": "Belt",
+        "country": "Pajjiż",
+        "groupeSanguin": "Tip ta'' demm",
+        "sexe": "Ġeneru",
+        "allergies": "Allerġiji",
+        "photoUrl": "Ritratt",
+        "preferredLocale": "Lingwa preferuta",
+        "spokenLanguage": "Lingwa mitkellma",
+        "possedeTshirt": "Għandu t-shirt",
+        "tailleTshirt": "Daqs ta'' T-shirt",
+        "typeId": "Tip ta'' Membru",
+        "notes": "Noti",
+        "guardianName": "Isem il-gwardjan legali",
+        "guardianPhone": "Numru tat-telefon tal-kustodju legali",
+        "secondGuardianName": "Isem it-tieni gwardjan legali",
+        "secondGuardianPhone": "Numru tat-telefon tat-tieni gwardjan legali",
+        "imageRightsConsent": "Drittijiet tal-immaġni",
+        "imageRightsConsentAt": "Data tal-kunsens (drittijiet tal-immaġni)"
+      },
+      "relatedDataTitle": "Data relatata",
+      "relations": {
+        "cotisations": "Kontribuzzjonijiet",
+        "participations": "Reġistrazzjonijiet tal-avvenimenti",
+        "dons": "Donazzjonijiet",
+        "membershipAddonPurchases": "Għażliet ta'' Membri mixtrija",
+        "automationLogs": "Awtomazzjonijiet attivati",
+        "emailMessages": "Emails mibgħuta",
+        "smsMessages": "SMS mibgħuta",
+        "incomes": "Irċevuti",
+        "materialLoans": "Self ta'' tagħmir",
+        "boutiqueCommandes": "Ordnijiet tal-Ħanut",
+        "actualiteRecipients": "Riċevituri tal-aħbarijiet",
+        "sondageRecipients": "Riċevituri tal-Istħarriġ",
+        "sondageReponses": "Risposti għall-Istħarriġ",
+        "meetingParticipants": "Parteċipazzjoni fil-laqgħat",
+        "erasureRequests": "Talbiet għat-tneħħija",
+        "dependants": "Membri marbuta (dipendenti)",
+        "cotisationSubscription": "Abbonament attiv tal-membri",
+        "controlAlert": "Allarm ta'' Kontroll Attiv"
+      },
+      "relatedDataCounts": "{primary} → {secondary}",
+      "conflictWarning": "⚠ {reason}",
+      "dismissAction": "Ignora dan id-duplikat",
+      "mergeAction": "Merġa",
+      "mergeConfirmTitle": "Tgħaqqad dawn iż-żewġ membri?",
+      "mergeConfirmDescription": "Id-dejta kollha relatata mill-membru sekondarju se tiġi trasferita lill-membru primarju. Din l-azzjoni ma tistax tiġi rneħħija mill-interface.",
+      "mergeConfirmDescriptionWithPortalWarning": "It-tnejn għandhom kont tal-portal — il-kont tal-membru sekondarju se jiġi diżattivat. Id-dejta l-oħra kollha relatata tiġi trasferita lill-membru primarju. Din l-azzjoni ma tistax tiġi rneħħija mill-interface.",
+      "mergeConfirmDescriptionAdoptsPortal": "Il-kont tal-portal tal-membru sekondarju se jittieħed mill-membru primarju. Id-data l-oħra kollha relatata se tiġi trasferita. Din l-azzjoni ma tistax tiġi rneħħija mill-interface.",
+      "mergeSuccess": "{count, plural, =0 {Il-fużjoni kompluta} one {Merge — 1 oġġett trasferit} other {Merge — # oġġetti trasferiti}}",
+      "mergeError": "Għaqda ta'' żbalji",
+      "relatedDataEmpty": "M''hemm l-ebda data marbuta ma'' kwalunkwe membru."
+    },
+    "backoffice": {
+      "title": "Membri duplikati",
+      "subtitle": "Duplikati potenzjali jiġu skoperti f''kull assoċjazzjoni.",
+      "columns": {
+        "association": "Assoċjazzjoni"
+      },
+      "changeAssociation": "Changer d''association",
+      "associationSearchPlaceholder": "Fittex assoċjazzjoni...",
+      "typeToSearch": "Agħfas biex tfittex...",
+      "loading": "Qed jitħaddem...",
+      "noResults": "L-ebda riżultat.",
+      "scanAction": "Scanner"
+    }
   }
 }

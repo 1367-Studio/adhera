@@ -5,6 +5,7 @@
     "delete": "Törlés",
     "add": "Hozzáadás",
     "edit": "Szerkesztés",
+    "view": "Részletek megtekintése",
     "confirm": "Megerősítés",
     "close": "Bezárás",
     "back": "Hátra",
@@ -41,6 +42,7 @@
     "location": "Elhelyezkedés",
     "choosePlaceholder": "Válassz...",
     "allPlaceholder": "Mind",
+    "noOptionsPlaceholder": "Nincs lehetőség",
     "previousPage": "Előző oldal",
     "nextPage": "Következő oldal",
     "paginationRange": "{from}–{to} / {total}",
@@ -51,7 +53,10 @@
     "addressPlaceholder": "Salle des fêtes, 12 rue de la Paix, Párizs...",
     "viewOnGoogleMaps": "Lásd a Google Térképen",
     "backToSite": "Vissza az oldalra",
-    "noOptionsPlaceholder": "Nincs lehetőség"
+    "period": {
+      "exercice": "Gyakorlat {year}",
+      "exerciceRange": "Gyakorlat {startYear}–{endYear}"
+    }
   },
   "address": {
     "street": "Cím",
@@ -59,8 +64,30 @@
     "complementPlaceholder": "Épület, emelet, postaláda…",
     "postalCode": "Irányítószám",
     "city": "Város",
-    "country": "Ország",
+    "country": "Lakóhely szerinti ország",
     "legacyMigratedHint": "A régi cím mezőből másolva – ellenőrizze, hogy nem tartalmazza-e már az alábbi irányítószámot és várost."
+  },
+  "avis": {
+    "invalidLink": "Ez az értékelési link érvénytelen.",
+    "thanks": "Köszönöm az értékelésedet!",
+    "notEligible": "Csak az esemény résztvevői írhatnak véleményt.",
+    "greeting": "Helló {firstName}, hogyan találtad ezt az eseményt?",
+    "commentPlaceholder": "Van valami hozzászólás? (opcionális)",
+    "submit": "Küldd el az értékelésemet",
+    "ratingRequired": "Válassz egy hangot",
+    "networkError": "Hálózati hiba",
+    "genericError": "Hiba",
+    "publicationQuestion": "Engedélyezi véleményének közzétételét az egyesület honlapján és közösségi hálózatain?",
+    "publicationYes": "Igen, én engedélyezem a kiadást.",
+    "publicationNo": "Nem, a véleményem csak az egyesület vezetői számára lesz elérhető.",
+    "publicationRequired": "Köszönöm, hogy válaszoltál erre a kérdésre.",
+    "identificationQuestion": "Hogyan szeretnéd, ha azonosítanának?",
+    "identificationNamed": "A kereszt- és vezetéknevemmel",
+    "identificationAnonymous": "Névtelenül",
+    "identificationRequired": "Kérlek, válassz egy lehetőséget.",
+    "manageConsentTitle": "Publish Permission kezelése",
+    "updateConsent": "Frissítsem a beállításaimat",
+    "consentUpdated": "A beállításaid frissültek."
   },
   "auth": {
     "layout": {
@@ -80,6 +107,8 @@
       "heading": "Bejelentkezés",
       "subtitle": "Adja meg bejelentkezési adatait, hogy hozzáférjen a helyéhez.",
       "suspended": "Az Ön egyesülete előfizetése felfüggesztett. Vegye fel a kapcsolatot az adminisztrátorával, hogy szabályozza a helyzetet.",
+      "errorMulti": "Több fiók is egyezik ezzel a Google e-mail címmel. Jelentkezz be a jelszavaddal.",
+      "error2faRequired": "A kétfaktoros hitelesítés engedélyezett ezen a fiókon. Jelentkezz be a jelszavaddal.",
       "noAccount": "Még nincs fiókod?",
       "createAccount": "Fiók létrehozása",
       "form": {
@@ -91,6 +120,17 @@
         "connecting": "Bejelentkezés…",
         "or": "vagy",
         "continueWithGoogle": "Folytasd a Google-t"
+      },
+      "twoFactor": {
+        "title": "Kétlépéses ellenőrzés",
+        "descriptionTotp": "Adja be a 6 számjegyű kódot az autentifikátor alkalmazásban.",
+        "descriptionBackup": "Írd be az egyik biztonsági kódodat.",
+        "codeLabel": "Ellenőrző kód",
+        "backupCodeLabel": "Tartalék kód",
+        "submit": "Megvan",
+        "back": "Hátra",
+        "useBackupCode": "Használj biztonsági kódot",
+        "useAuthenticatorCode": "Használd az alkalmazás kódját"
       }
     },
     "register": {
@@ -224,6 +264,7 @@
       "title": "Tagterület",
       "subtitle": "Jelentkezz be, hogy hozzáférj a helyedhez.",
       "suspendedNotice": "Az egyesület előfizetése felfüggesztett. Vegye fel a kapcsolatot az adminisztrátorral a helyzet szabályozása érdekében.",
+      "selfRegisterDisabledNotice": "Az önkiszolgáló fiók létrehozása már nem elérhető. Keresse fel a szervezete adminisztrátorát a hozzáférésért.",
       "emailLabel": "E-mail cím",
       "emailPlaceholder": "contact@association.fr",
       "passwordLabel": "Jelszó",
@@ -316,6 +357,7 @@
     "vat": "ÁFA",
     "totalDiscount": "Teljes kedvezmény",
     "total": "Összesen",
+    "paymentMethod": "Fizetési mód",
     "paymentTerms": "Fizetési feltételek",
     "paymentTermsPlaceholder": "például 30 napos fizetés",
     "notes": "Jegyzetek",
@@ -371,7 +413,9 @@
     "viewDocument": "Tekintse meg a dokumentumot",
     "remove": "Törlés",
     "uploading": "Feltöltöm...",
-    "attach": "Csatolj képet vagy PDF-et (maximum 4 MB)"
+    "attach": "Csatolj képet vagy PDF-et (maximum 4 MB)",
+    "attachPdf": "PDF importálása (maximum 4 MB)",
+    "pdfOnly": "Csak PDF fájlokat fogadnak el"
   },
   "factures": {
     "form": {
@@ -646,13 +690,20 @@
       "amount": "Összeg",
       "statusOptions": {
         "aPayer": "Fizetendő",
+        "partiellementPayee": "Részben fizetett",
         "payee": "Fizetett",
         "enLitige": "Vita tárgya",
         "annulee": "Törölve"
       },
-      "unmarkPaidWarning": "Ez a dokumentum jelenleg ki van fizetve — ha eltávolítjuk a státuszt, akkor a pénzügyben keletkezett költségek és a banki egyeztetések is megszűnnek.",
-      "markPaidNotice": "Ha ezt a dokumentumot fizetettnek jelölve, automatikusan hozzátartozik a Pénzügyi Kiadás.",
       "file": "Dokumentum",
+      "payment": {
+        "add": "Fizetés rögzítése",
+        "title": "Fizetés rögzítése",
+        "paidOf": "fizetett",
+        "toasts": {
+          "recorded": "Kifizetés rögzítve"
+        }
+      },
       "toasts": {
         "uploadError": "Hiba a dokumentum feltöltésén",
         "networkError": "Hálózati hiba feltöltése — próbáld újra"
@@ -863,6 +914,10 @@
       "userMenu": {
         "title": "A profilod",
         "description": "Szerkesztés a profilod, a jelszó megváltoztatása, és kijelentkezz ebből a menüből."
+      },
+      "help": {
+        "title": "Segítségre van szüksége?",
+        "description": "Ennyi! Ez a gomb megnyitja a Súgóközpontot: cikkek, gyakran ismételt kérdések, varázsló és hírek. Ezt a látogatást újraindíthatod a lábalapból is."
       }
     }
   },
@@ -878,6 +933,8 @@
       "import": "Import",
       "reconciliation": "Egyeztetés",
       "categories": "Kategóriák",
+      "immobilisations": "Tőkeeszközök",
+      "journalManual": "Kézírás",
       "reports": "Jelentések",
       "bilan": "Mérleg",
       "compteResultat": "Eredményjelentés",
@@ -894,9 +951,358 @@
       "title": "Hamarosan",
       "description": "Ez a funkció fejlesztés alatt áll."
     },
+    "immobilisationsView": {
+      "title": "Tőkeeszközök",
+      "description": "Értékcsökkenési eszközök (kézzelfogható és nem materiális) és értékcsökkenési ütemterveik.",
+      "add": "Hozzáadás a kosárba",
+      "newTitle": "Új tőkeeszköz",
+      "noImmobilisations": "Nincs szünetes idő",
+      "columns": {
+        "label": "Megjelölés",
+        "entryValue": "Bruttóérték",
+        "accumulated": "Értékcsökkenés és amortizáció",
+        "netValue": "Nettó vagyon",
+        "usageStartDate": "Szolgálatba állítás"
+      },
+      "deleteConfirmTitle": "Megszüntetni ezt a mozgékonyságot?",
+      "toasts": {
+        "created": "Létrehozott alapeszköz",
+        "updated": "Frissített alapeszköz",
+        "deleted": "Kivitelező eszközök eltávolítása"
+      },
+      "drillDown": {
+        "title": "Értékcsökkenés és amortizáció",
+        "exercice": "Gyakorlat",
+        "dotation": "Személyzet",
+        "accumulated": "Kumuláció",
+        "netValue": "Nettó vagyon",
+        "noDepreciations": "Ekkor nem jegyzett díjpénzt"
+      }
+    },
+    "immobilisationForm": {
+      "label": "Megjelölés",
+      "labelPlaceholder": "Például: Laptop — Asztali gép",
+      "expense": "Beszerzési kiadások",
+      "expensePlaceholder": "Válasszon egy \"tőke\" jelzésű kiadást",
+      "noEligibleExpenses": "Nincs jogosult kiadás — jelöld meg a költséget tőkeként, és kategorizáld a 218300 (ingatlan) vagy 205000 (immateriál) számlára.",
+      "entryValue": "Bemeneti érték",
+      "residualValue": "Maradványérték",
+      "acquisitionDate": "Felvásárlási dátum",
+      "usageStartDate": "Használatba vételi dátum",
+      "usefulLifeMonths": "Használat időtartama (hónapok)"
+    },
+    "journalManual": {
+      "title": "Kézírás",
+      "description": "Indíts naplóbejegyzést egy összegről, amit te határoztál meg — biztosíték, biztosíték, előletétel, felhalmozódás — amikor egyetlen funkció sem számítja automatikusan ki.",
+      "newEntry": "Új írás",
+      "exercice": "Gyakorlat",
+      "date": "Dátum",
+      "label": "Megfogalmazás",
+      "labelPlaceholder": "Például: Peres eljárás biztosítása — 2026-04-es iratanyag",
+      "account": "Fiók",
+      "accountPlaceholder": "Válasszon fiókot",
+      "debit": "Áramlási sebesség",
+      "credit": "Elismerés",
+      "totals": "Terhelés/hitelösszegek",
+      "addLine": "Hozzáadj egy sort",
+      "mustBalance": "A debetnek és a hitelnek egyenlőnek és nem nullának kell lennie.",
+      "missingAccount": "Minden vonalnak kell lennie egy fióknak.",
+      "cancel": "Törlés",
+      "submit": "Kezdj el írni",
+      "createSuccess": "Bejegyzés készült",
+      "noOpenExercice": "Nincs nyitott gyakorlat – egy pénzügyi évben nyisson vagy újranyit, mielőtt manuális belépést indítasz."
+    },
+    "bilan": {
+      "title": "Mérleg",
+      "description": "Az egyesület eszközei és kötelezettségei a pénzügyi év végén.",
+      "exerciceLabel": "Gyakorlat",
+      "rubriqueColumnLabel": "Szekció",
+      "noPreviousExercice": "Összehasonlító információ nem elérhető",
+      "actif": "Aktív",
+      "totalActif": "Teljes aktív",
+      "passif": "Passzív",
+      "totalPassif": "Teljes felelősségek",
+      "noAccountsInRubrique": "Ebben a részben nincs egyensúly",
+      "exportPdf": "PDF exportálás",
+      "exportDisabledTooltip": "Nem lehet végleges mérleget exportálni, amíg a fenti anomáliákat nem javítják.",
+      "emptyExercice": {
+        "title": "Nincs pénzügyi év",
+        "description": "Hozz létre egy új pénzügyi évet a mérleg megtekintéséhez."
+      },
+      "emptyLedger": {
+        "title": "Nincs számviteli bejegyzés",
+        "description": "A mérleget akkor jelenítik meg, amint a jövedelmet, kiadást vagy alapeszközöket ebben a pénzügyi évben rögzítették."
+      },
+      "rubriques": {
+        "immobilisationsCorporelles": "Tárgyi tőkeeszközök",
+        "immobilisationsIncorporelles": "Immatani tárgyi eszközök",
+        "immobilisationsFinancieres": "Pénzügyi alapeszközök",
+        "disponibilites": "Elérhetőség",
+        "chargesConstateesDavance": "Előre fizetett kiadások",
+        "creances": "Követelések",
+        "stocksEtEnCours": "Készlet",
+        "fondsPropres": "Equity",
+        "provisions": "Tartalékok",
+        "dettes": "Adósságok",
+        "produitsConstatesDavance": "Halasztott jövedelem",
+        "fondsDedies": "Korlátozott alapok"
+      },
+      "memoNotice": "Becslés — nem rögzítve a könyvelésben, kizárva a teljes eszközből.",
+      "accountLabels": {
+        "reportANouveau": "Tartalékos nyereség",
+        "resultatExercice": "Az év nettó jövedelme",
+        "creancesCotisations": "Fennálló tagságdíjak",
+        "creancesFactures": "Kifizetett számlák",
+        "stocksEstimatedValue": "Becsült készletérték",
+        "creancesFacturesEnRetard": "Késedelmes számlák"
+      },
+      "pdf": {
+        "periodLabel": "Időszak: {start} – {end}"
+      },
+      "drillDown": {
+        "date": "Dátum",
+        "label": "Címke",
+        "origin": "Eredet",
+        "debit": "Tartozik",
+        "credit": "Követel",
+        "noLines": "Nincs bejegyzés ehhez a fiókhoz.",
+        "sourceTypes": {
+          "INCOME": "Jövedelem",
+          "INCOME_REVERSAL": "Jövedelem megfordítása",
+          "EXPENSE": "Költségek",
+          "EXPENSE_REVERSAL": "Költségek megfordítása",
+          "BANK_TRANSACTION": "Banki tranzakció",
+          "ACCOUNT_TRANSFER": "Belső átvitel",
+          "OPENING_BALANCE": "Nyitó egyenleg",
+          "IMMOBILISATION_DEPRECIATION": "Értékcsökkenés",
+          "IMMOBILISATION_ACQUISITION": "Eszközbeszerzés",
+          "FACTURE_RECUE_PAYMENT": "Beszállítói fizetés",
+          "MANUAL": "Manuális belépés"
+        }
+      },
+      "issues": {
+        "title": "Anomáliák észlelve",
+        "messages": {
+          "ACCOUNT_WITHOUT_RUBRIQUE": "A {code} — {label} számlának egyenlege van, de nincs csatolva semmilyen mérleg-tételhez.",
+          "ACTIF_PASSIF_MISMATCH": "Az eszköz ({actif}) nem felel meg a kötelezettségnek ({passif}).",
+          "OPENING_BALANCE_MISSING": "Ehhez a gyakorlathoz nem generáltak nyitóbejegyzések a \"{previousLabel}\" által.",
+          "TRIAL_BALANCE_UNBALANCED": "A teljes debet ({debit}) nem egyezik meg az adott pénzügyi év teljes hitelével ({credit}).",
+          "RESULT_DIVERGENCE": "A napló ({journal}) eredménye eltér a nyereségkimutatásétól ({statement}) — lehet, hogy a folyóirat még nem naprakész ebben a pénzügyi évben (a pénzügyi év lezárása vagy újraindítása a szinkronizáció)."
+        }
+      },
+      "memoNoHistory": "Nincsenek történelmi adatok",
+      "caveats": {
+        "stocksMissingCostPrice": "{count} variáns, amelyeknek nincs rögzített beszerzési költsége, kizárva a becslésből"
+      }
+    },
+    "compteResultat": {
+      "title": "Eredménykimutatás",
+      "description": "Az üzleti év pénzügyi eredménye az előző évhez képest.",
+      "exerciceLabel": "Üzleti év",
+      "categoryColumnLabel": "Kategória",
+      "noPreviousExercice": "-",
+      "noPreviousExerciceMessage": "Nincs elérhető korábbi üzleti év",
+      "export": "Exportálás",
+      "exportExcel": "Excel exportálása (részletes)",
+      "exportPdf": "PDF exportálása",
+      "products": "Bevételek",
+      "totalProducts": "Bevételek összesen",
+      "expenses": "Kiadások",
+      "totalExpenses": "Kiadások összesen",
+      "result": "Az üzleti év eredménye",
+      "resultZero": "Az üzleti év eredménye: 0 €",
+      "surplus": "Az üzleti év többlete",
+      "deficit": "Az üzleti év hiánya",
+      "operationalResult": "Üzemi eredmény",
+      "uncategorized": "Kategorizálandó",
+      "uncategorizedAlertIncome": "{count, plural, one {# bevételt kategorizálni kell} other {# bevételt kategorizálni kell}}",
+      "uncategorizedAlertExpense": "{count, plural, one {# kiadást kategorizálni kell} other {# kiadást kategorizálni kell}}",
+      "expandSection": "Megjelenítés",
+      "collapseSection": "Elrejtés",
+      "noCategoriesInSection": "Nincs kategória ebben a szakaszban",
+      "sections": {
+        "FINANCIAL": "Pénzügyi",
+        "EXCEPTIONAL": "Rendkívüli",
+        "OTHER": "Egyéb"
+      },
+      "inKind": {
+        "title": "Önkéntes adományok természetben",
+        "employmentHeader": "Hozzájárulások felhasználása",
+        "amountHeader": "Összeg",
+        "receivedHeader": "Beérkezett hozzájárulások",
+        "totalEmployments": "Összes munkahely",
+        "totalReceived": "Összesen hozzájárulások",
+        "note": "Ezek az ingyenes hozzájárulások euróban értékesek. Nem vezetnek pénzmozgáshoz, és nem változtatják meg a pénzügyi év eredményét."
+      },
+      "drillDown": {
+        "date": "Dátum",
+        "origin": "Eredet",
+        "person": "Személy",
+        "payment": "Fizetés",
+        "amount": "Összeg",
+        "categorize": "Kategorizálás",
+        "categorizePlaceholder": "Válasszon kategóriát",
+        "noTransactions": "Nincsenek tranzakciók",
+        "categorizeSuccess": "Tranzakció kategorizálva"
+      },
+      "pdf": {
+        "periodLabel": "Időszak: {start} – {end}",
+        "operatingIncome": "ÜZEMI BEVÉTELEK",
+        "operatingExpense": "ÜZEMI RÁFORDÍTÁSOK",
+        "operatingResult": "ÜZEMI EREDMÉNY",
+        "financialIncome": "PÉNZÜGYI BEVÉTELEK",
+        "financialExpense": "PÉNZÜGYI RÁFORDÍTÁSOK",
+        "financialResult": "PÉNZÜGYI EREDMÉNY",
+        "exceptionalIncome": "RENDKÍVÜLI BEVÉTELEK",
+        "exceptionalExpense": "RENDKÍVÜLI RÁFORDÍTÁSOK",
+        "exceptionalResult": "RENDKÍVÜLI EREDMÉNY",
+        "otherIncome": "EGYÉB BEVÉTELEK",
+        "otherExpense": "EGYÉB RÁFORDÍTÁSOK",
+        "otherResult": "EGYÉB BEVÉTELEK ÉS RÁFORDÍTÁSOK EREDMÉNYE",
+        "uncategorizedSection": "KATEGORIZÁLANDÓ TRANZAKCIÓK",
+        "uncategorizedIncomeLabel": "Kategorizálandó bevételek",
+        "uncategorizedExpenseLabel": "Kategorizálandó kiadások",
+        "total": "Összesen",
+        "grandTotal": "ÖSSZESEN",
+        "categoryColumn": "Kategória",
+        "inKindTitle": "Önkéntes adományok természetben",
+        "inKindEmploymentHeader": "Hozzájárulások felhasználása",
+        "inKindAmountHeader": "Összeg",
+        "inKindReceivedHeader": "Beérkezett hozzájárulások",
+        "inKindTotalEmployments": "Összes munkahely",
+        "inKindTotalReceived": "Összesen hozzájárulások",
+        "inKindNote": "Ezek az ingyenes hozzájárulások euróban értékesek. Nem vezetnek pénzmozgáshoz, és nem változtatják meg a pénzügyi év eredményét."
+      },
+      "csv": {
+        "date": "Dátum",
+        "type": "Típus",
+        "typeIncome": "Bevétel",
+        "typeExpense": "Kiadás",
+        "category": "Kategória",
+        "uncategorized": "Kategorizálandó",
+        "accountingCode": "Számviteli kód",
+        "description": "Leírás",
+        "amount": "Összeg",
+        "paymentMethod": "Fizetési mód",
+        "origin": "Eredet",
+        "reference": "Hivatkozás",
+        "exercice": "Üzleti év"
+      },
+      "emptyExercice": {
+        "title": "Nincs üzleti év",
+        "description": "Hozzon létre egy üzleti évet az eredménykimutatás elkészítéséhez."
+      }
+    },
+    "previsionnel": {
+      "title": "Ideiglenes költségvetés",
+      "description": "Hasonlítsd össze a tervezett és tényleges költségvetést, kategóriák és projektek szerint.",
+      "exerciceLabel": "Gyakorlat",
+      "emptyExercice": {
+        "title": "Nincs pénzügyi év",
+        "description": "Készítsünk egy pénzügyi évet a tervezett költségvetés elkészítéséhez."
+      },
+      "tabs": {
+        "global": "Költségvetés globális",
+        "projects": "Projekt szerint"
+      },
+      "income": "Receptek",
+      "expense": "Költségek",
+      "result": "Eredmény",
+      "card": {
+        "previsto": "Tervezett",
+        "diff": "Variancia",
+        "percent": "Befejezve"
+      },
+      "columns": {
+        "category": "Kategória",
+        "previsto": "Tervezett",
+        "realizado": "Befejezve",
+        "diffPercent": "Variancia / Megvalósított %",
+        "total": "Összesen"
+      },
+      "noCategories": "Nincs kategória.",
+      "uncategorized": "Kategorizálás",
+      "noProject": "Projekt nélkül",
+      "addCategory": "Kategória hozzáadása",
+      "addCategoryModalTitle": "Kategória hozzáadása",
+      "exportFileNameGlobal": "Globális előrejelzés-költségvetés",
+      "export": {
+        "action": "Export",
+        "excel": "Exporter Excel",
+        "pdf": "Exporter PDF",
+        "diffColumn": "Spread (€)",
+        "percentColumn": "% Teljesített",
+        "associationLabel": "Szövetség",
+        "exerciceLabel": "Gyakorlat"
+      },
+      "toasts": {
+        "categoryCreated": "Kategória létrehozva.",
+        "updateError": "Hiba frissítés közben."
+      },
+      "copyBudget": {
+        "action": "Másolj az előző költségvetést",
+        "modalTitle": "Másolj az előző költségvetést",
+        "modalDescription": "Másolja a következő előrejelzéseket {previous} to {target}. Csak az előrejelzéseket másolják le, soha nem a megvalósult mennyiségeket.",
+        "allProjects": "Minden projekt",
+        "noProjects": "Nincs terv.",
+        "archived": "ARCHIVÁLVA",
+        "noProjectAlwaysCopied": "A projekt nélküli előrejelzéseket mindig lemásolják.",
+        "copy": "Értettem",
+        "confirmOverwriteTitle": "Pótolni a meglévő előrejelzéseket?",
+        "confirmOverwriteDescription": "Ez a gyakorlat néhány kategóriára már tartalmaz nem nulla előrejelzéseket. Ha az előző pénzügyi évből másoljuk őket, felülírja ezeket az értékeket.",
+        "confirmOverwriteAction": "Cseréje",
+        "toasts": {
+          "copied": "{count, plural, one {# előrejelzést lemásolva.} other {# előrejelzéseket másoltak.}}",
+          "error": "Hiba másolás."
+        }
+      },
+      "projectsTab": {
+        "count": "{count, plural, one {# projekt} other {# projektek}}",
+        "createProject": "Készíts egy projektet",
+        "createModalTitle": "Készíts egy projektet",
+        "editProject": "Szerkesztés",
+        "editModalTitle": "Szerkesztési projekt",
+        "name": "Projekt neve",
+        "namePlaceholder": "Például: Éves utazás",
+        "description": "Leírás",
+        "descriptionPlaceholder": "Leírás fakultatív",
+        "archive": "Archívum",
+        "unarchive": "Archívum elvonása",
+        "archived": "ARCHIVÁLVA",
+        "showArchived": "Archivált projektek megtekintése ({count})",
+        "hideArchived": "Archivált projektek elrejtése",
+        "noProjects": {
+          "title": "Nincsenek projektek",
+          "description": "Készíts egy projektet, amely külön követi a költségvetését az egész egyesületétől."
+        },
+        "addCategoryToProject": "Hozzáadj egy kategóriát a projekthez",
+        "addCategoryModalTitle": "Hozzáadj egy kategóriát a projekthez",
+        "type": "Típus",
+        "typeIncome": "Recept",
+        "typeExpense": "Költségek",
+        "category": "Kategória",
+        "selectCategoryPlaceholder": "Válassz egy kategóriát",
+        "createNewCategory": "+ Hozzon létre egy új kategóriát",
+        "noAvailableCategories": "Minden ilyen kategória már fel van adva ebben a projektben.",
+        "removeCategoryFromProject": "Eltávolítás a projektből",
+        "removeCategoryConfirmTitle": "Eltávolítani ezt a kategóriát a projektből?",
+        "removeCategoryConfirmDescription": "« {category} \" eltávolítják a projekt költségvetéséből. Ha már vannak hozzá kapcsolódó bevételek vagy kiadások, a kategória automatikusan újra megjelenik a megvalósult összeggel.",
+        "toasts": {
+          "created": "Projekt létrejött.",
+          "updated": "Frissített vázlat.",
+          "archived": "Archivált projekt.",
+          "unarchived": "Archiválás nélküli projekt.",
+          "categoryAdded": "Kategória hozzáadva a projekthez.",
+          "categoryRemoved": "A kategória eltávolítva a projektből.",
+          "createError": "Hiba a létrehozás során.",
+          "updateError": "Hiba frissítés közben."
+        }
+      }
+    },
     "categoryForm": {
       "name": "Név",
       "namePlaceholder": "Példa: Hozzájárulások",
+      "noMatchingCategory": "Nincs megfelelő kategória",
       "type": "Típus",
       "typeIncome": "Bevétel",
       "typeExpense": "Költségek",
@@ -909,8 +1315,11 @@
         "FINANCIAL": "Pénzügyi",
         "EXCEPTIONAL": "Rendkívüli",
         "OTHER": "Egyéb",
-        "IN_KIND": "Természetbeni hozzájárulások"
+        "IN_KIND": "Természetbeni hozzájárulások",
+        "IMMOBILISATION": "Főváros"
       },
+      "accountingCodeLegacyOption": "{code} — (régi kód, frissítés)",
+      "accountingCodeLegacyWarning": "Ez a számviteli kód már nem létezik a kontrollált listán — válassz érvényes számlát a mentés előtt.",
       "accountingCodeFormwiseNote": "A Formwise által javasolt alfiók külön követésre — nem kötelező hivatalos szám.",
       "suggestedAccounts": "Javasolt beszámolók",
       "seeOtherAccounts": "Lásd a többi beszámolót",
@@ -921,8 +1330,7 @@
       "sectionUnverifiedNote": "Ez a fiók nem ismerhető fel — nézd meg a részt, vagy válaszd ki a haladó opciók közül.",
       "sectionToVerify": "A szakasz, amit ellenőrizni kell",
       "advancedOptions": "Fejlett opciók",
-      "revertToAutoSection": "Vissza az automatikus szakaszhoz",
-      "noMatchingCategory": "Nincs megfelelő kategória"
+      "revertToAutoSection": "Vissza az automatikus szakaszhoz"
     },
     "bankAccountForm": {
       "bankName": "Bank neve",
@@ -959,6 +1367,8 @@
       "date": "Dátum",
       "category": "Kategória",
       "noCategory": "Nincs kategória",
+      "project": "Projekt",
+      "noProject": "Nincsenek projektek",
       "paymentMethodLabel": "Fizetési mód",
       "reference": "Hivatkozás",
       "referencePlaceholder": "Példa: VIR-2024-001",
@@ -978,6 +1388,8 @@
       "internalNote": "Belső megjegyzés",
       "internalNotePlaceholder": "Jegyzet a pénztárosnak...",
       "receipt": "Bizonyítás",
+      "isImmobilisation": "Alapeszköz (értékértékes eszköz)",
+      "isImmobilisationHint": "Ellenőrizd a tőkealapítható vásárlást (pl. irodai vagy számítógépes eszközöket) — ezután létrehozhatod az értékcsökkenési táblázatot a Pénzügyi > Tőkeeszközök részben.",
       "toasts": {
         "uploadError": "Hiba a nyugtát feltöltésnél",
         "networkError": "Hálózati hiba feltöltése — próbáld újra"
@@ -1057,6 +1469,33 @@
         "deleted": "Fiók törölve"
       }
     },
+    "transferForm": {
+      "fromAccount": "Forrásjelentés",
+      "toAccount": "Célfiók",
+      "amount": "Összeg",
+      "date": "Dátum",
+      "note": "Megjegyzés",
+      "notePlaceholder": "Például megtakarítási átruházás",
+      "toasts": {
+        "created": "Regisztrált áthelyezés",
+        "updated": "Frissített átigazolás",
+        "deleted": "Áthelyezés törölve"
+      }
+    },
+    "transfersView": {
+      "title": "Belső áthelyezések",
+      "add": "Átigazolás",
+      "newTransferTitle": "Új átutalás a számlák között",
+      "editTransferTitle": "Szerkesztés áthelyezés",
+      "deleteConfirmTitle": "Törölni ezt az áthelyezést?",
+      "noTransfers": "Áthelyezést nem rögzítettek",
+      "columns": {
+        "accounts": "Történetek",
+        "amount": "Összeg",
+        "date": "Dátum",
+        "note": "Megjegyzés"
+      }
+    },
     "categoriesView": {
       "title": "Kategóriák",
       "description": "Kezeld a bevételi és költségkategóriákat.",
@@ -1067,13 +1506,21 @@
       "newCategoryTitle": "Új kategória",
       "editCategoryTitle": "Szerkesztés kategóriát",
       "deleteConfirmTitle": "Törölni ezt a kategóriát?",
-      "deleteConfirmInUse": "« {name} a használata {count, plural, one {# bevétel/kiadás} other {# bevétel/kiadás}}. Ezek a bejegyzések \"Kategorizálatlan\" formátumra változnak.",
       "toasts": {
         "created": "Kategória létrehozva",
         "updated": "Frissített kategória",
         "deleted": "Kategória törölve",
-        "seeded": "{count, plural, one {# inicializált kategória} other {# kategóriák inicializáltak}}"
+        "seeded": "{count, plural, one {# inicializált kategória} other {# kategóriák inicializáltak}}",
+        "archived": "Archivált kategória",
+        "reactivated": "Kategória újraaktiválása"
       },
+      "archived": "Archiválva",
+      "reactivate": "Aktiválás újra",
+      "showArchived": "Archivált kategóriák megtekintése",
+      "transferLimitationNote": "Az egyesület bankszámlái közötti (belső kincstár) közötti átutalások soha nem kerülnek jövedelemként vagy kiadásként — ezeket a számviteli → számlák nyilvántartásában kell rögzíteni.",
+      "archiveConfirmTitle": "Archiválni ezt a kategóriát?",
+      "archiveConfirmInUse": "« {name} a használata {count, plural, one {# bevétel/kiadás} other {# bevétel/kiadás}}. Archiválást kap (a történelmét megőrizték), és többé nem választhatják új műveletekhez.",
+      "archive": "Archívum",
       "chooseTemplateTitle": "Válassz kategóriatípust",
       "customCategory": "Hozzon létre egy egyedi kategóriát",
       "alreadyExists": "Már konfigurálva",
@@ -1283,6 +1730,7 @@
         "actions": "Akciók"
       },
       "reconciledFallback": "Megbékélve",
+      "transferLabel": "Belső áthelyezés — {from} → {to}",
       "allAccounts": "Minden beszámoló",
       "noTransactions": "Nincs tranzakció, amit meg kell jeleníteni",
       "actions": {
@@ -1315,188 +1763,8 @@
       "suggestedMatches": "Javasolt mérkőzések",
       "typeIncome": "Bevétel",
       "typeExpense": "Költségek",
+      "typeTransfer": "Belső átvitel",
       "confirm": "A megbékélés érvényesítése"
-    },
-    "compteResultat": {
-      "title": "Eredménykimutatás",
-      "description": "Az üzleti év pénzügyi eredménye az előző évhez képest.",
-      "exerciceLabel": "Üzleti év",
-      "noPreviousExercice": "-",
-      "export": "Exportálás",
-      "exportExcel": "Excel exportálása (részletes)",
-      "exportPdf": "PDF exportálása",
-      "products": "Bevételek",
-      "totalProducts": "Bevételek összesen",
-      "expenses": "Kiadások",
-      "totalExpenses": "Kiadások összesen",
-      "result": "Az üzleti év eredménye",
-      "surplus": "Az üzleti év többlete",
-      "deficit": "Az üzleti év hiánya",
-      "emptyExercice": {
-        "title": "Nincs üzleti év",
-        "description": "Hozzon létre egy üzleti évet az eredménykimutatás elkészítéséhez."
-      },
-      "noPreviousExerciceMessage": "Nincs elérhető korábbi üzleti év",
-      "resultZero": "Az üzleti év eredménye: 0 €",
-      "operationalResult": "Üzemi eredmény",
-      "uncategorized": "Kategorizálandó",
-      "uncategorizedAlertIncome": "{count, plural, one {# bevételt kategorizálni kell} other {# bevételt kategorizálni kell}}",
-      "uncategorizedAlertExpense": "{count, plural, one {# kiadást kategorizálni kell} other {# kiadást kategorizálni kell}}",
-      "expandSection": "Megjelenítés",
-      "collapseSection": "Elrejtés",
-      "noCategoriesInSection": "Nincs kategória ebben a szakaszban",
-      "sections": {
-        "FINANCIAL": "Pénzügyi",
-        "EXCEPTIONAL": "Rendkívüli",
-        "OTHER": "Egyéb"
-      },
-      "drillDown": {
-        "date": "Dátum",
-        "origin": "Eredet",
-        "person": "Személy",
-        "payment": "Fizetés",
-        "amount": "Összeg",
-        "categorize": "Kategorizálás",
-        "categorizePlaceholder": "Válasszon kategóriát",
-        "noTransactions": "Nincsenek tranzakciók",
-        "categorizeSuccess": "Tranzakció kategorizálva"
-      },
-      "pdf": {
-        "periodLabel": "Időszak: {start} – {end}",
-        "operatingIncome": "ÜZEMI BEVÉTELEK",
-        "operatingExpense": "ÜZEMI RÁFORDÍTÁSOK",
-        "operatingResult": "ÜZEMI EREDMÉNY",
-        "financialIncome": "PÉNZÜGYI BEVÉTELEK",
-        "financialExpense": "PÉNZÜGYI RÁFORDÍTÁSOK",
-        "financialResult": "PÉNZÜGYI EREDMÉNY",
-        "exceptionalIncome": "RENDKÍVÜLI BEVÉTELEK",
-        "exceptionalExpense": "RENDKÍVÜLI RÁFORDÍTÁSOK",
-        "exceptionalResult": "RENDKÍVÜLI EREDMÉNY",
-        "otherIncome": "EGYÉB BEVÉTELEK",
-        "otherExpense": "EGYÉB RÁFORDÍTÁSOK",
-        "otherResult": "EGYÉB BEVÉTELEK ÉS RÁFORDÍTÁSOK EREDMÉNYE",
-        "uncategorizedSection": "KATEGORIZÁLANDÓ TRANZAKCIÓK",
-        "uncategorizedIncomeLabel": "Kategorizálandó bevételek",
-        "uncategorizedExpenseLabel": "Kategorizálandó kiadások",
-        "total": "Összesen",
-        "grandTotal": "ÖSSZESEN",
-        "categoryColumn": "Kategória",
-        "inKindTitle": "Önkéntes adományok természetben",
-        "inKindEmploymentHeader": "Hozzájárulások felhasználása",
-        "inKindAmountHeader": "Összeg",
-        "inKindReceivedHeader": "Beérkezett hozzájárulások",
-        "inKindTotalEmployments": "Összes munkahely",
-        "inKindTotalReceived": "Összesen hozzájárulások",
-        "inKindNote": "Ezek az ingyenes hozzájárulások euróban értékesek. Nem vezetnek pénzmozgáshoz, és nem változtatják meg a pénzügyi év eredményét."
-      },
-      "csv": {
-        "date": "Dátum",
-        "type": "Típus",
-        "typeIncome": "Bevétel",
-        "typeExpense": "Kiadás",
-        "category": "Kategória",
-        "uncategorized": "Kategorizálandó",
-        "accountingCode": "Számviteli kód",
-        "description": "Leírás",
-        "amount": "Összeg",
-        "paymentMethod": "Fizetési mód",
-        "origin": "Eredet",
-        "reference": "Hivatkozás",
-        "exercice": "Üzleti év"
-      },
-      "categoryColumnLabel": "Kategória",
-      "inKind": {
-        "title": "Önkéntes adományok természetben",
-        "employmentHeader": "Hozzájárulások felhasználása",
-        "amountHeader": "Összeg",
-        "receivedHeader": "Beérkezett hozzájárulások",
-        "totalEmployments": "Összes munkahely",
-        "totalReceived": "Összesen hozzájárulások",
-        "note": "Ezek az ingyenes hozzájárulások euróban értékesek. Nem vezetnek pénzmozgáshoz, és nem változtatják meg a pénzügyi év eredményét."
-      }
-    },
-    "bilan": {
-      "title": "Mérleg",
-      "description": "Az egyesület eszközei és kötelezettségei a pénzügyi év végén.",
-      "exerciceLabel": "Gyakorlat",
-      "rubriqueColumnLabel": "Szekció",
-      "noPreviousExercice": "Összehasonlító információ nem elérhető",
-      "actif": "Aktív",
-      "totalActif": "Teljes aktív",
-      "passif": "Passzív",
-      "totalPassif": "Teljes felelősségek",
-      "noAccountsInRubrique": "Ebben a részben nincs egyensúly",
-      "emptyExercice": {
-        "title": "Nincs pénzügyi év",
-        "description": "Hozz létre egy új pénzügyi évet a mérleg megtekintéséhez."
-      },
-      "emptyLedger": {
-        "title": "Nincs számviteli bejegyzés",
-        "description": "A mérleget akkor jelenítik meg, amint a jövedelmet, kiadást vagy alapeszközöket ebben a pénzügyi évben rögzítették."
-      },
-      "rubriques": {
-        "immobilisationsCorporelles": "Tárgyi tőkeeszközök",
-        "disponibilites": "Elérhetőség",
-        "fondsPropres": "Equity",
-        "dettes": "Adósságok",
-        "immobilisationsIncorporelles": "Immatani tárgyi eszközök",
-        "immobilisationsFinancieres": "Pénzügyi alapeszközök",
-        "chargesConstateesDavance": "Előre fizetett kiadások",
-        "provisions": "Tartalékok",
-        "produitsConstatesDavance": "Halasztott jövedelem",
-        "creances": "Követelések",
-        "stocksEtEnCours": "Készlet",
-        "fondsDedies": "Korlátozott alapok"
-      },
-      "issues": {
-        "title": "Anomáliák észlelve",
-        "messages": {
-          "ACCOUNT_WITHOUT_RUBRIQUE": "A {code} — {label} számlának egyenlege van, de nincs csatolva semmilyen mérleg-tételhez.",
-          "ACTIF_PASSIF_MISMATCH": "Az eszköz ({actif}) nem felel meg a kötelezettségnek ({passif}).",
-          "OPENING_BALANCE_MISSING": "Ehhez a gyakorlathoz nem generáltak nyitóbejegyzések a \"{previousLabel}\" által.",
-          "TRIAL_BALANCE_UNBALANCED": "A teljes debet ({debit}) nem egyezik meg az adott pénzügyi év teljes hitelével ({credit}).",
-          "RESULT_DIVERGENCE": "A napló ({journal}) eredménye eltér a nyereségkimutatásétól ({statement}) — lehet, hogy a folyóirat még nem naprakész ebben a pénzügyi évben (a pénzügyi év lezárása vagy újraindítása a szinkronizáció)."
-        }
-      },
-      "accountLabels": {
-        "reportANouveau": "Tartalékos nyereség",
-        "resultatExercice": "Az év nettó jövedelme",
-        "creancesCotisations": "Fennálló tagságdíjak",
-        "creancesFactures": "Kifizetett számlák",
-        "stocksEstimatedValue": "Becsült készletérték",
-        "creancesFacturesEnRetard": "Késedelmes számlák"
-      },
-      "exportPdf": "PDF exportálás",
-      "exportDisabledTooltip": "Nem lehet végleges mérleget exportálni, amíg a fenti anomáliákat nem javítják.",
-      "pdf": {
-        "periodLabel": "Időszak: {start} – {end}"
-      },
-      "drillDown": {
-        "date": "Dátum",
-        "label": "Címke",
-        "origin": "Eredet",
-        "debit": "Tartozik",
-        "credit": "Követel",
-        "noLines": "Nincs bejegyzés ehhez a fiókhoz.",
-        "sourceTypes": {
-          "INCOME": "Jövedelem",
-          "INCOME_REVERSAL": "Jövedelem megfordítása",
-          "EXPENSE": "Költségek",
-          "EXPENSE_REVERSAL": "Költségek megfordítása",
-          "BANK_TRANSACTION": "Banki tranzakció",
-          "ACCOUNT_TRANSFER": "Belső átvitel",
-          "OPENING_BALANCE": "Nyitó egyenleg",
-          "IMMOBILISATION_DEPRECIATION": "Értékcsökkenés",
-          "IMMOBILISATION_ACQUISITION": "Eszközbeszerzés",
-          "FACTURE_RECUE_PAYMENT": "Beszállítói fizetés",
-          "MANUAL": "Manuális belépés"
-        }
-      },
-      "memoNotice": "Becslés — nem rögzítve a könyvelésben, kizárva a teljes eszközből.",
-      "memoNoHistory": "Nincsenek történelmi adatok",
-      "caveats": {
-        "stocksMissingCostPrice": "{count} variáns, amelyeknek nincs rögzített beszerzési költsége, kizárva a becslésből"
-      }
     }
   },
   "evenements": {
@@ -1711,6 +1979,10 @@
         "titlePlaceholder": "Közgyűlés 2026",
         "dateLabel": "Kezdeti dátum",
         "createButton": "Létrehozni"
+      },
+      "summary": {
+        "eventCount": "Események száma",
+        "participants": "Résztvevők"
       },
       "bilan": {
         "show": "Összesítő megjelenítése",
@@ -1929,6 +2201,26 @@
         "qrRevoked": "QR-kód kikapcsolva",
         "noMembersToExport": "Nincs exportálható tag",
         "linkCopied": "Link másolva"
+      },
+      "payment": {
+        "sectionTitle": "Fizetés",
+        "modeLabel": "Fizetés",
+        "modeNow": "Most fizetett",
+        "modeLater": "Később javítani kell",
+        "laterHint": "A helyet lefoglalják. Akkor váltsd ki a \"Mark Paid\" felirattal.",
+        "methodLabel": "Fizetési mód",
+        "tierLabel": "Ár",
+        "methods": {
+          "ESPECES": "Fajok",
+          "CHEQUE": "Megvan",
+          "VIREMENT": "Átigazolás"
+        },
+        "encaisserTitle": "Cash out",
+        "encaisserConfirm": "Cash out",
+        "amountHint": "Összeg: {amount}",
+        "selectedMember": "Kiválasztott tag: {name}",
+        "selectMemberHint": "Válassz egy tagot a fenti listáról.",
+        "addSubmit": "Hozzáadás a kosárba"
       }
     },
     "avaliacoes": {
@@ -1938,8 +2230,14 @@
         "participant": "Résztvevő",
         "rating": "Megjegyzés",
         "comment": "Hozzászólás",
-        "date": "Dátum"
-      }
+        "date": "Dátum",
+        "site": "A weboldalon"
+      },
+      "anonymousNote": "Névtelen",
+      "noConsent": "Nincs beleegyezés",
+      "featureToggleLabel": "Mű értékelése {name} A helyszínen",
+      "bulkFeatureAll": "Mutasd meg mindenkit a helyszínen",
+      "bulkUnfeatureAll": "Távolítsd el az összes területet"
     },
     "detail": {
       "backToList": "Vissza az eseményekhez",
@@ -1965,7 +2263,9 @@
         "saved": "Mentett változtatások",
         "saveError": "Hibafelvétel",
         "linkCopied": "Link másolva",
-        "linkCopyError": "Nem lehet másolni — válaszd ki a linket manuálisan."
+        "linkCopyError": "Nem lehet másolni — válaszd ki a linket manuálisan.",
+        "registrationsClosed": "A regisztráció zárva",
+        "registrationsReopened": "Regisztrációk újranyitása"
       },
       "publishBlocked": {
         "unsavedToast": "Mentse el a következő részeket a publikáció előtt: {steps}",
@@ -1983,6 +2283,7 @@
           "standardFieldsHint": "Regisztrációkor kért mezők",
           "phoneLabel": "Telefon",
           "addressLabel": "Cím",
+          "countryLabel": "Lakóhely",
           "requirement": {
             "hidden": "Maszkos",
             "optional": "Opcionális",
@@ -2029,6 +2330,11 @@
         }
       },
       "titleRequired": "A cím kötelező",
+      "closeRegistrationsButton": "Zárt regisztrációk",
+      "reopenRegistrationsButton": "Regisztrációk újranyitása",
+      "registrationsClosedNotice": "Feliratok záródnak",
+      "closeRegistrationsConfirmTitle": "Zárt regisztrációk?",
+      "closeRegistrationsConfirmDescription": "Senki sem tud online regisztrálni. Továbbra is hozzáadhatod a résztvevőket a részvételi listáról.",
       "bilanButton": "Összesítő"
     },
     "discountCodes": {
@@ -2310,6 +2616,13 @@
       "liveSince": "Azóta is folytatódik {mins} min",
       "durationLessThanMin": "< 1 min",
       "durationMin": "{mins} min",
+      "activeMeetingWarning": {
+        "title": "{count, plural, one {Már megbeszélés zajlik} other {# találkozók már megvannak}}",
+        "description": "{count, plural, one {Elkezdted ezt a megbeszélést, de még nem fejezted be. Csatlakozz hozzá, vagy hozz létre egy újat.} other {Elkezdted ezeket a megbeszéléseket, de még nem fejezted be. Csatlakozz egyhez, vagy hozz létre egy újat.}}",
+        "joinExisting": "Csatlakozz",
+        "createNew": "Mindenképp szervezz új találkozót",
+        "alreadyEnded": "Ez a megbeszélés magától véget ért. Létrehozhatsz egy új találkozót."
+      },
       "toasts": {
         "meetingStarted": "A megbeszélés kezdete",
         "meetingScheduled": "Tervezett ülés",
@@ -2715,8 +3028,12 @@
       "validation": {
         "nameRequired": "Név szükséges",
         "atLeastOneVariant": "Legalább egy változat szükséges",
-        "variantLabelRequired": "Minden változatnak címkével kell rendelkeznie"
+        "variantLabelRequired": "Minden változatnak címkével kell rendelkeznie",
+        "weightRequiredWhenShippable": "A súly kötelező egy postai kézbesítéssel rendelkező változatnál"
       },
+      "shippableColumn": "Hajózás",
+      "weightColumn": "Súly (g)",
+      "weightPlaceholder": "500",
       "costPriceColumn": "Költség"
     },
     "view": {
@@ -2738,12 +3055,14 @@
       "variantsCount": "{count, plural, one {# változat} other {# változatok}}",
       "actions": {
         "edit": "Szerkesztés",
+        "view": "Kilátás",
         "delete": "Törlés",
         "deleteAlreadyOrdered": "Törlés (már megrendelve)",
         "markPaid": "Mark Paid",
         "cancelOrder": "Mégse",
         "downloadReceipt": "Töltse le a nyugtát",
-        "editPaymentMethod": "Változtasd meg a fizetési módot"
+        "editPaymentMethod": "Változtasd meg a fizetési módot",
+        "refundOrder": "Visszafizetés"
       },
       "noProduct": "Nincsenek termékek",
       "noOrder": "Nincs parancs",
@@ -2774,7 +3093,9 @@
       "toasts": {
         "productDeleted": "Megszüntetett termék",
         "deleteError": "Hiba törlés",
-        "orderUpdated": "Frissített sorrend"
+        "orderUpdated": "Frissített sorrend",
+        "orderNotInRecentList": "Ez a sorrend nem a legfrissebb 50-ben van. Használd a szűrőket, hogy megtaláld.",
+        "refundSuccess": "Rendelés visszatérítése"
       }
     },
     "payModal": {
@@ -2784,6 +3105,13 @@
       "orderedTotal": "Teljes sorrend",
       "restockNoticePlural": "{count, plural, one {A kivonás nélküli termék készlete helyreáll.} other {A be nem szedett tárgyak készletét helyreállítják.}}",
       "restockNoticeStatic": "A be nem szedett tárgyak készletét helyreállítják."
+    },
+    "refundModal": {
+      "title": "Térítse vissza a rendelést",
+      "confirmWithAmount": "Visszafizetés {amount}",
+      "stripeNotice": "A visszatérítés automatikusan a vásárló kártyájára kerül.",
+      "manualNotice": "Ez a művelet frissíti a készletet és a könyvelést — ne felejtsd el visszaadni a pénzt az ügyfélnek (készpénz, csekk vagy átutalás).",
+      "shippingIncludedNotice": "Szállítási költségek ({amount}) része ennek a visszatérítésnek."
     },
     "stripeConfirm": {
       "title": "Fizetettnek jelöljük?",
@@ -2991,6 +3319,7 @@
       "noDonations": "Nem regisztráltak adományokat",
       "noDonationsFiltered": "Egyetlen adomány sem éri meg ezeket a szűrőket.",
       "resetFilters": "Reset",
+      "totalLabel": "Összesen",
       "donorsLabel": "Donorok",
       "averageLabel": "Átlagos adomány",
       "pendingTitle": "Várva a beszedésre",
@@ -3121,6 +3450,7 @@
           "title": "Forma",
           "standardFieldsHint": "A donortól kért mezők",
           "addressLabel": "Cím",
+          "countryLabel": "Lakóhely",
           "birthDateLabel": "Születési dátum",
           "phoneLabel": "Vezetékes telefon",
           "mobileLabel": "Mobil",
@@ -3178,7 +3508,8 @@
           "siteSectionReplaceWarningPublished": "Ez a szakasz jelenleg a(z) „{title}” űrlapot jeleníti meg. Mentéskor ez az űrlap lép a helyére; a(z) „{title}” továbbra is elérhető marad a saját linkjén.",
           "siteSectionReplaceWarningDraft": "Ez a szakasz jelenleg a(z) „{title}” űrlapot jeleníti meg. Ez az űrlap a közzétételekor lép a helyére; a(z) „{title}” továbbra is elérhető marad a saját linkjén.",
           "siteSectionRemovedWarning": "Mentéskor a(z) „{section}” szakasz rejtve lesz a weboldalon.",
-          "datesOrderError": "A zárási dátumnak későbbnek kell lennie, mint a nyitás."
+          "datesOrderError": "A zárási dátumnak későbbnek kell lennie, mint a nyitás.",
+          "siteSectionPuckHint": "Új oldalszerkesztő blokkok"
         }
       }
     },
@@ -3394,6 +3725,8 @@
           "kindField": "Típus",
           "kindOneOff": "Pontos",
           "kindRecurring": "Visszatérő (éves)",
+          "recurringNeedsOnlinePayment": "Visszatérő díj fizet online előfizetésenként: amíg online fizetés nincs aktiválva, az űrlapon \"Nem elérhető\" szerepel.",
+          "recurringNeedsOnlinePaymentLink": "Online fizetés beállítása",
           "itemTypeField": "Természet",
           "itemTypeMembership": "Tagsági arány",
           "itemTypeAddon": "Fizetős opció",
@@ -3410,6 +3743,7 @@
           "title": "Forma",
           "standardFieldsHint": "Regisztrációkor kért mezők",
           "addressLabel": "Cím",
+          "countryLabel": "Lakóhely",
           "birthDateLabel": "Születési dátum",
           "phoneLabel": "Vezetékes telefon",
           "mobileLabel": "Mobil",
@@ -3432,6 +3766,8 @@
           "fieldLabelPlaceholder": "Például szakma",
           "fieldType": "Típus",
           "fieldRequired": "Kötelező",
+          "fieldSensible": "Érzékeny adatok",
+          "fieldSensibleRequiredHint": "Mivel ez a mező érzékeny és kötelező, egy olyan menedzser, akinek nincs hozzáférése érzékeny adatokhoz, nem tud létrehozni vagy módosítani egy tagot anélkül, hogy hozzáférne hozzá.",
           "typeText": "Szöveg",
           "typeNumber": "Szám",
           "typeSelect": "Legördülő lista",
@@ -3472,7 +3808,8 @@
           "siteSectionPlaceholder": "Válassz...",
           "siteSectionCreateOption": "+ Hozzon létre egy új szakaszt",
           "siteSectionCreateError": "Hiba a weboldal szekció létrehozása.",
-          "siteSectionRequiredError": "Válaszd ki az oldal azon részét, ahol ezt az űrlapot közzéteszed."
+          "siteSectionRequiredError": "Válaszd ki az oldal azon részét, ahol ezt az űrlapot közzéteszed.",
+          "siteSectionPuckHint": "Új oldalszerkesztő blokkok"
         },
         "products": {
           "title": "Termékek",
@@ -3657,6 +3994,12 @@
       "isDefaultHint": "Automatikusan ajánlott üzenetként használják ehhez a kategóriához (például hozzájárulási emlékeztetők, amelyeket a Hozzájárulások oldalról küldenek).",
       "emailSubject": "Az e-mail témája",
       "emailSubjectPlaceholder": "Emlékeztető: a hozzájárulásod '{{annee_cotisation}}'",
+      "modeText": "Egyszerű szöveg",
+      "modeTextHint": "Egyetlen gazdag szövegmező.",
+      "modeBlocks": "Vizuális tervezés",
+      "modeBlocksHint": "Átrendezhető blokkok: szöveg, kép, gomb, elválasztó.",
+      "modeBlocksProOnly": "A Pro csomagra van fenntartva. Frissíts a következő csomagra az Előfizetés fülön az aktiváláshoz.",
+      "modeLockedHint": "A szerkesztési mód (egyszerű szöveg vagy vizuális tervezés) akkor van beállítva, amikor a sablont létrehozják, és nem lehet változtatni — létrehozz egy új sablont, hogy a másik módot használd.",
       "variablesHint": "Változók – húzzák be a témát, szöveget vagy szöveget",
       "variables": {
         "prenom": "Keresztnév",
@@ -3687,6 +4030,8 @@
       "previewTitle": "Üzenet előzetes",
       "previewDescription": "Renderelések mintaadatokkal",
       "previewSubject": "Cél",
+      "previewBrandingHint": "A fejléc, az alaplap és az aláírás a szervezet vizuális identitásából származik.",
+      "previewBrandingLink": "Szerkesztés a beállításokban",
       "toasts": {
         "updated": "Frissített modell",
         "created": "Létrehozott sablon",
@@ -3695,6 +4040,26 @@
       "validation": {
         "required": "Kötelező"
       }
+    },
+    "blockEditor": {
+      "empty": "Írj hozzá egy első blokkot alá.",
+      "incomplete": "Egy blokk nem teljes (kép fájl nélkül, vagy gomb szöveg/link nélkül).",
+      "uploadError": "Hiba egy kép feltöltése — próbáld újra.",
+      "dragHandle": "Átrendelni",
+      "duplicate": "Duplikátum",
+      "remove": "Törlés",
+      "textPlaceholder": "Írd meg az üzeneted...",
+      "imageLink": "Link (opcionális)",
+      "buttonLabel": "Gomb szöveg",
+      "buttonLabelPlaceholder": "Tudjon meg többet",
+      "buttonUrl": "Gomb Link",
+      "urlHint": "https://... vagy egy olyan változó, mint '{{lien_portal}}'",
+      "buttonColor": "Háttér",
+      "buttonTextColor": "Szöveg",
+      "addText": "Szöveg",
+      "addImage": "Kép",
+      "addButton": "Gomb",
+      "addDivider": "Szeparátor"
     },
     "rulesManager": {
       "title": "Automatizálási szabályok",
@@ -3921,6 +4286,7 @@
         "paiements": "Kifizetések",
         "abonnement": "Előfizetés",
         "integrations": "Integrációk",
+        "equipe": "Csapat és hozzáférés",
         "rgpd": "GDPR"
       },
       "associationInfo": "Szövetségi információk",
@@ -3928,6 +4294,10 @@
       "city": "Város",
       "cityPlaceholder": "Párizs",
       "country": "Country",
+      "contactEmail": "Írj e-mailt a kapcsolattartónak",
+      "contactEmailPlaceholder": "contact@monassociation.fr",
+      "contactEmailHint": "Ez volt a név és válasz címe (Reply-To) minden e-mailhez, amelyet az egyesület nevében küldtek (előfizetések, események, adományok, üzenetek stb.).",
+      "contactEmailEmptyWarning": "Nem beállítva — A tagok e-mailjeire adott válaszai nem jutnak el a szervezetedhez.",
       "toasts": {
         "saved": "Mentett beállítások"
       }
@@ -4012,7 +4382,41 @@
       "title": "Vizuális identitás",
       "subtitle": "Logó látható a műszerfalon, ajánlatok/számlák, jelenléti táblázat és nyilvános weboldal.",
       "logo": "Logó",
+      "color": "Szín",
+      "colorHint": "E-mail fejlécekben és gombokban használják.",
+      "senderName": "Shipper neve",
+      "senderNameHint": "Az e-mailek küldőjeként látható név. Hagyj üres helyet az egyesület nevének használatához.",
+      "signature": "Aláírás",
+      "signatureHint": "Hozzáadva a kézzel összeállított vagy automatizált e-mailek végéhez.",
+      "footerText": "Lábalap szöveg",
+      "footerTextHint": "Lecseréli az alapértelmezett szöveget az összes e-mail alján. Hagyj üres szöveget, hogy megmaradj a szokásos szöveg.",
+      "footerTextPlaceholder": "Automatikus e-mail küldött {name}…",
+      "footerStyles": {
+        "classic": "Klasszikus",
+        "bold": "Kiemelt",
+        "minimal": "Minimalista"
+      },
+      "footer": {
+        "title": "Lábalap",
+        "subtitle": "Stílus, szín, szöveg és közösségi média minden e-mail alján látható.",
+        "color": "Háttérszín",
+        "socialLinks": "Közösségi média",
+        "socialPlatforms": {
+          "facebook": "Facebook",
+          "instagram": "Instagram",
+          "linkedin": "LinkedIn",
+          "x": "X (Twitter)"
+        }
+      },
       "proOnlyText": "Az egyedi logó (irányítópult, árajánlatok/számlák, munkaidőnyilvántartás) a Pro csomaghoz van fenntartva. Frissíts a következő csomagra az Előfizetés fülön, hogy aktiváld.",
+      "preview": {
+        "label": "Áttekintés",
+        "placeholderName": "Az ön kapcsolata",
+        "sampleHeading": "Sziasztok, keresztnév,",
+        "sampleButton": "Részletek megtekintése",
+        "defaultFooter": "Automatikus e-mail küldött {name} Formwise-on keresztül. \nKérjük, ne válaszoljon közvetlenül erre az e-mailre.",
+        "fromLabel": "Szállító: {name}"
+      },
       "toasts": {
         "updated": "Frissített vizuális identitás",
         "uploadError": "Hiba logó feltöltésén"
@@ -4055,16 +4459,17 @@
       "status": {
         "trial": "Ingyenes próba",
         "active": "Aktív",
+        "paymentPending": "Fizetés folyamatban",
         "pastDue": "Késedelmes fizetés",
         "suspended": "Felfüggesztve",
-        "cancelled": "Törölve",
-        "paymentPending": "Fizetés folyamatban"
+        "cancelled": "Törölve"
       },
       "planLabel": "Formula {tier}",
       "membersCount": "{count} / {limit} Tagok",
       "loadError": "Nem sikerült helyreállítani az előfizetési státuszodat. Próbáld meg később újra.",
       "trialEndsAt": "Az ingyenes próbaidőszakod a következő időpontban jár {date}. E dátum után a regisztrált kártyát automatikusan levonják, kivéve, ha korábban törölték.",
       "activeText": "Az előfizetésed aktív marad. Bármikor megtekintheted a számláidat, megváltoztathatod a fizetési módodat vagy lemondhatod a Stripe menedzsment részén.",
+      "paymentPendingText": "A SEPA Direct Debit előfizetése feldolgozás alatt áll. Lehet, hogy néhány munkanapba telhet, mire megjelenik a bankszámládon.",
       "pastDueText": "Az utolsó terhelés meghiúsult. Frissítse a fizetési módját, hogy elkerülje a számlád felfüggesztését.",
       "suspendedText": "Az előfizetésed több fizetési hibát követően felfüggesztett. Menj a dedikált képernyőhöz, hogy újra aktiváld, exportáld az adataidat vagy véglegesen töröld.",
       "cancelledText": "Az előfizetésed törölve lett. Vegye fel a kapcsolatot a támogatással, hogy újra aktiváld.",
@@ -4179,6 +4584,63 @@
       "subtitleTrialExpired": "Az ingyenes próbaidőszakod véget ért. Válassz egy csomagot, és adj be egy fizetési módot a folytatáshoz.",
       "confirmButtonSubscribe": "Erősítsd meg és iratkozz fel"
     },
+    "teamAccess": {
+      "title": "Csapat és hozzáférés",
+      "description": "Kinek van hozzáférése az egyesület irányításához, és mit láthatnak vagy változtathatnak mindket.",
+      "howToAdd": "Ha valaki hozzáad, rendelj neki egy szerepet a taglistából, vagy a \"Csapattag\" szerepet, hogy csak bizonyos domaineket nyisson meg előtte. Néző: szerkesztés nélkül is megtekinthető.",
+      "empty": "Jelenleg nincs csapattag.",
+      "columns": {
+        "name": "Név",
+        "role": "Funkció",
+        "access": "Hozzáférés"
+      },
+      "you": "Te",
+      "summary": {
+        "administrator": "Adminisztrátor",
+        "none": "Nincs hozzáférés",
+        "editAndRead": "{edit, plural, one {# mező} other {# területek}} Kiadásban · {read} Lejátszás",
+        "editOnly": "{edit, plural, one {# mező} other {# területek}} A kiadói tevékenységben",
+        "readOnly": "{read, plural, one {# mező} other {# területek}} Lejátszás"
+      },
+      "editTitle": "Hozzáférés módosítása",
+      "editDescription": "Funkció és hozzáférés {name}.",
+      "roleLabel": "Funkció",
+      "profileLabel": "Profil",
+      "profiles": {
+        "administrator": "Adminisztrátor",
+        "role": "Szerep profil",
+        "custom": "Testreszabott"
+      },
+      "administratorSwitch": "Adrír (beállítások, számlázás, hozzáférés)",
+      "administratorHint": "Teljes hozzáférés minden domainhez.",
+      "memberRoleHint": "Egy egyszerű tagnak nincs hozzáférése a menedzsmenthez: csak a saját tagterületét használja.",
+      "adminRoleHint": "Az adminisztrátor szerep mindig teljes hozzáférést biztosít.",
+      "areasLabel": "Hozzáférés domain szerint",
+      "levels": {
+        "none": "Nincs",
+        "read": "Olvasó",
+        "edit": "Kiadó"
+      },
+      "areas": {
+        "dashboard": "Dashboard és tevékenység",
+        "membres": "Tagok",
+        "sensible": "Tagok érzékeny adatai",
+        "adhesions": "Tagságok és tagságdíjak",
+        "dons": "Adományok",
+        "evenements": "Események és jegyértékesítés",
+        "boutique": "Bolt",
+        "communication": "Kommunikáció (e-mailek, SMS, sondázok)",
+        "actualites": "Hírek",
+        "comptabilite": "Számvitel (pénzügy, árajánlatok, számlák, beszállítók)",
+        "reunions": "Találkozók",
+        "materiel": "Anyagok",
+        "site": "Weboldal",
+        "documents": "Szövetségi dokumentumok"
+      },
+      "toasts": {
+        "saved": "Frissített hozzáférés"
+      }
+    },
     "erasureRequests": {
       "title": "Adattörlés (GDPR)",
       "description": "Egy tag személyes adatainak végleges törlésére vonatkozó kérelmek, a GDPR 17. cikke alapján. Minden éjjel automatikusan feldolgozásra kerülnek, kivéve a felfüggesztett kérelmeket.",
@@ -4219,11 +4681,6 @@
       },
       "automaticOrigin": "Automatikusan megjelölve — több mint 3 éve inaktív",
       "inactiveSince": "kilépett: {date}"
-    },
-    "teamAccess": {
-      "areas": {
-        "sensible": "Tagok érzékeny adatai"
-      }
     }
   },
   "cotisations": {
@@ -4287,6 +4744,7 @@
         "enAttente": "Függőben",
         "payees": "Fizetett",
         "exonerees": "Mentes",
+        "aEncaisser": "Hogy bevált legyen",
         "partiellementPayees": "Részben fizetett",
         "enRetard": "Késői",
         "annulees": "Törölve"
@@ -4313,28 +4771,6 @@
       "allCategories": "Minden kategória",
       "allRenewals": "Minden megújítás",
       "resetFilters": "Reset",
-      "renewal": {
-        "automatic": "Automatikus",
-        "manual": "Manuális"
-      },
-      "summary": {
-        "aPagar": " · {amount} összesen",
-        "recebido": " · {amount} beérkezett",
-        "saldo": " · {amount} hátralék"
-      },
-      "distribution": {
-        "show": "Megoszlás megtekintése",
-        "hide": "Megoszlás elrejtése",
-        "category": "Tagsági kategória",
-        "renewal": "Megújítás",
-        "count": "Hozzájárulások száma",
-        "aPagar": "Teljes összeg",
-        "recebido": "A kapott összeg",
-        "saldo": "Fennmaradó egyenleg",
-        "total": "Összesen",
-        "noCategory": "Nincs kategória",
-        "empty": "Egyetlen tagdíj sem felel meg ezeknek a szűrőknek."
-      },
       "mergeTiers": {
         "filterOption": "Duplikált kategóriák egyesítése",
         "title": "Duplikált kategóriák egyesítése",
@@ -4357,6 +4793,28 @@
         "priceFreeAmount": "Ingyenes összeg",
         "priceFreeAmountFrom": "Ingyenes összeg a {amount}",
         "priceRecurring": "{amount}/év"
+      },
+      "renewal": {
+        "automatic": "Automatikus",
+        "manual": "Manuális"
+      },
+      "summary": {
+        "aPagar": " · {amount} összesen",
+        "recebido": " · {amount} beérkezett",
+        "saldo": " · {amount} hátralék"
+      },
+      "distribution": {
+        "show": "Megoszlás megtekintése",
+        "hide": "Megoszlás elrejtése",
+        "category": "Tagsági kategória",
+        "renewal": "Megújítás",
+        "count": "Hozzájárulások száma",
+        "aPagar": "Teljes összeg",
+        "recebido": "A kapott összeg",
+        "saldo": "Fennmaradó egyenleg",
+        "total": "Összesen",
+        "noCategory": "Nincs kategória",
+        "empty": "Egyetlen tagdíj sem felel meg ezeknek a szűrőknek."
       }
     },
     "reminderModal": {
@@ -4396,6 +4854,14 @@
       "title": "Fizetés rögzítése",
       "amount": "Összeg",
       "remainingBalance": "Fennálló egyenleg: {amount}",
+      "installmentChoice": "Ez a fizetés fizeti",
+      "installmentNext": "Határidő {position}",
+      "installmentThrough": "A felnőtté válásig {position}",
+      "installmentPaid": "Határidő {position} — fizetett",
+      "installmentPartlyPaid": "(Még fizetni kell {amount})",
+      "lateSuffix": " (késői)",
+      "customAmount": "Egyéb összeg",
+      "installmentsInOrder": "A törlesztések sorrendben fedezik a részleteket.",
       "method": "Fizetési mód",
       "date": "A fizetés dátuma",
       "note": "Megjegyzés",
@@ -4421,6 +4887,125 @@
       "annulee": "Ezt a hozzájárulást törölték."
     }
   },
+  "groupes": {
+    "view": {
+      "title": "Csoportok",
+      "countTotal": "{count, plural, =0 {Nincs csoport} one {# csoport} other {# csoportok}}",
+      "count": "{count, plural, =0 {Nincs eredmény} one {# eredmény} other {# eredmények}}",
+      "searchPlaceholder": "Keress egy csoportot...",
+      "noResultsFor": "Nincsenek olyan csoportok, amelyek illenek\" {search} »",
+      "noGroupe": "Jelenleg nincs csoport",
+      "allStatuses": "Minden státusz",
+      "statusFilter": {
+        "actifs": "Aktív összetevők",
+        "archives": "Archiválva"
+      },
+      "addTitle": "Alapítsunk egy csoportot",
+      "editTitle": "Szerkesztés a csoportot",
+      "columns": {
+        "nome": "Név",
+        "membres": "Tagok",
+        "responsaveis": "Menedzserek",
+        "lastChamada": "Utolsó hívás",
+        "status": "Státusz"
+      },
+      "statusBadge": {
+        "archive": "Archiválva"
+      },
+      "actions": {
+        "edit": "Szerkesztés",
+        "archive": "Archívum",
+        "unarchive": "Archívum elvonása"
+      },
+      "archiveConfirmTitle": "Archívum « {name} » ?",
+      "archiveConfirmDescription": "A hívás előzménye megmarad. A csoport többé nem jelenik meg az aktív listán.",
+      "unarchiveConfirmTitle": "Archívummentesítsd \" {name} » ?",
+      "toasts": {
+        "created": "Csoport létrejött",
+        "updated": "Frissített csoport",
+        "archived": "Archivált csoport",
+        "unarchived": "Archivált csoport"
+      }
+    },
+    "form": {
+      "nomeLabel": "Csoport neve",
+      "nomePlaceholder": "Például ifjúsági csapat, csütörtöki kórus...",
+      "descricaoLabel": "Leírás",
+      "descricaoPlaceholder": "Opcionális"
+    },
+    "detail": {
+      "backToList": "Vissza a csoportokhoz",
+      "membresTitle": "Tagok",
+      "addMembre": "Tag hozzáadása",
+      "allMemberTypes": "Minden típus",
+      "searchMembrePlaceholder": "Keress egy tagot...",
+      "searchOrFilterPrompt": "Keress egy tagot, vagy válassz egy fenti típust",
+      "noResultsForMembre": "Nincs tag meccs \" {search} »",
+      "noResultsForType": "Ilyen tag nem",
+      "candidatesFound": "{count, plural, one {# tag megtalálva} other {# tagok megtalálása}}",
+      "selectAllCandidates": "Válassz ki mindenkit",
+      "deselectAllCandidates": "Töröld az összes kiválasztást",
+      "selectAllTruncated": "Több mint 500 tag felel meg ennek a szűrőnek — csak a legjobb 500-at választották ki.",
+      "unselectCandidate": "Kiválasztás törlése {name}",
+      "addSelectedMembres": "Add ({count})",
+      "membresAddedToast": "{count, plural, =0 {Tagok nem kerültek hozzá} one {# tag hozzátette} other {# tagok hozzáadták}}",
+      "noMembre": "Ebben a csoportban nincs tag",
+      "removeMembreConfirmTitle": "Távolítsd el {name} a csoportból?",
+      "removeMembreConfirmDescription": "Jelen története ebben a csoportban megőriződött.",
+      "responsaveisTitle": "Menedzserek",
+      "addResponsavel": "Vezetőt adj hozzá",
+      "noResponsavel": "Nincs kijelölt hivatalos",
+      "removeResponsavelConfirmTitle": "Távolítsd el {name} A felelősök közé?",
+      "appelsTitle": "Fellebbezések",
+      "faireAppel": "Hívd fel a hívást",
+      "noAppel": "Jelenleg nincs hívás",
+      "noMembreForAppel": "Legalább egy tagot adj hozzá a csoporthoz, mielőtt megteheted a döntést.",
+      "newAppelDateLabel": "Dátum",
+      "newAppelSubmit": "Indítsa a hívást",
+      "appelColumns": {
+        "date": "Dátum",
+        "presents": "Jelenkor",
+        "absents": "Hiányzik",
+        "justifies": "Igazolt",
+        "nonRenseignes": "Nem részletezve"
+      },
+      "reopenExistingTitle": "Már létezik egy hívás erre a résre",
+      "reopenExistingDescription": "Megnyithatod, hogy megnézd vagy szerkeszthesd, ahelyett, hogy új verziót hoznál létre.",
+      "reopenExistingConfirm": "Nyitott meglévő hívás"
+    },
+    "appel": {
+      "backToGroupe": "Vissza a csoporthoz",
+      "dateLabel": "Dátum",
+      "horarioLabel": "Menetrend",
+      "horarioPlaceholder": "Opcionális, például 14:00-kor.",
+      "activityLabel": "Tevékenység",
+      "activityPlaceholder": "Opcionális",
+      "markAllPresent": "Jelöljétek meg mindenkit jelenlévőnek",
+      "syncMembres": "Új tagok hozzáadása",
+      "counts": {
+        "presente": "Jelenkor",
+        "ausente": "Hiányzik",
+        "ausenciaJustificada": "Igazolt",
+        "naoInformado": "Nem részletezve"
+      },
+      "status": {
+        "NAO_INFORMADO": "Nem részletezve",
+        "PRESENTE": "Jelenkor",
+        "AUSENTE": "Hiányzik",
+        "AUSENCIA_JUSTIFICADA": "Igazolt"
+      },
+      "save": "Felvételi hívás",
+      "export": "Export",
+      "exportPdf": "PDF",
+      "exportPdfBlank": "Üres PDF (nyomtatásra)",
+      "exportExcel": "Excel",
+      "toasts": {
+        "saved": "Felvett hívás",
+        "noMembersToExport": "Nincs exportálható tag",
+        "synced": "{count, plural, =0 {Nincsenek új tagok} one {# tag hozzátette} other {# tagok hozzáadták}}"
+      }
+    }
+  },
   "membres": {
     "form": {
       "status": {
@@ -4434,7 +5019,8 @@
         "secretaire": "Titkár",
         "tresorier": "Pénztáros",
         "president": "Elnök",
-        "admin": "Admin"
+        "admin": "Admin",
+        "equipe": "Csapattag"
       },
       "civilite": {
         "none": "Nem részletezve",
@@ -4448,6 +5034,11 @@
         "femme": "Nő"
       },
       "groupeSanguinNone": "Nem részletezve",
+      "imageRights": {
+        "unknown": "Nincs megadva",
+        "granted": "Igen",
+        "refused": "Nem"
+      },
       "tailleTshirtNone": "Nem részletezve",
       "preferredLocaleNone": "Nem részletezve",
       "preferredLocaleHint": "A kiválasztott nyelv lehetővé teszi, hogy ennek a tagnak a preferált nyelvén küldjünk e-maileket és üzeneteket.",
@@ -4479,14 +5070,15 @@
         "allergies": "Ismert allergiák",
         "allergiesPlaceholder": "Arachidesz, pollen...",
         "type": "Tagtípus",
-        "preferredLocale": "Kommunikációs nyelv",
-        "spokenLanguage": "Beszélt nyelv",
-        "cotisationTier": "Tagsági díj",
-        "guardianName": "Törvényes képviselő {number} — név",
-        "guardianPhone": "Törvényes képviselő {number} — telefon",
         "imageRights": "Képmáshoz való jog",
         "notes": "Megjegyzések",
-        "notesPlaceholder": "Hasznos információk erről a tagról (foglalkozások, megjegyzések…)"
+        "notesPlaceholder": "Hasznos információk erről a tagról (foglalkozások, megjegyzések…)",
+        "guardians": "Törvényes gyámok",
+        "guardianName": "Törvényes képviselő {number} — név",
+        "guardianPhone": "Törvényes képviselő {number} — telefon",
+        "preferredLocale": "Kommunikációs nyelv",
+        "spokenLanguage": "Beszélt nyelv",
+        "cotisationTier": "Tagsági díj"
       },
       "invitationNotice": "Meghívó e-mailt küldenek az azonosítókkal erre a címre.",
       "tierNone": "Nincs árképzés (alapértelmezett viselkedés)",
@@ -4507,12 +5099,7 @@
         "management": "Tag kezelése"
       },
       "invalidFormToast": "A mentés nem sikerült. Ha a probléma továbbra is fennáll, forduljon az ügyfélszolgálathoz.",
-      "customFieldsLoading": "A belépési űrlap válaszainak betöltése…",
-      "imageRights": {
-        "unknown": "Nincs megadva",
-        "granted": "Igen",
-        "refused": "Nem"
-      }
+      "customFieldsLoading": "A belépési űrlap válaszainak betöltése…"
     },
     "actions": {
       "add": "Tag hozzáadása",
@@ -4562,13 +5149,13 @@
         "firstName": "Keresztnév",
         "lastName": "Vezetéknév",
         "address": "Cím",
+        "country": "Country",
+        "countryPlaceholder": "Minden ország",
+        "countryLoadError": "Nem tudom betölteni országokat. Próbáld meg újra mindjárt.",
         "birthDateFrom": "Születés után",
         "birthDateTo": "Születés előtt",
         "apply": "Jelentkezz",
-        "reset": "Reset",
-        "country": "Country",
-        "countryPlaceholder": "Minden ország",
-        "countryLoadError": "Nem tudom betölteni országokat. Próbáld meg újra mindjárt."
+        "reset": "Reset"
       },
       "statusOptions": {
         "pending": "Függőben",
@@ -4609,12 +5196,14 @@
         "memberDeletedWithUnlink": "Eltávolított tag — eltávolítva a törvényes gyám {count} Tag(ok)",
         "noMembersToExport": "Nincs exportálható tag",
         "viewSubscription": "Előfizetés megtekintése",
-        "roleUpdated": "Frissített szerep"
+        "roleUpdated": "Frissített szerep",
+        "configureAccess": "Hozzáférés konfigurálása"
       },
       "changeRoleTitle": "Változás szerepe",
       "addViaForm": "Tagsági űrlapon keresztül",
       "addManual": "Manuálisan add hozzá",
       "changeRoleDescription": "Szerepe {name} az Egyesületben.",
+      "changeRoleEquipeHint": "Ez a szerep menedzsment hozzáférés nélkül indul. Hozzáférés konfigurálása domain szerint a Beállítások › Csapat és Hozzáférés menüben.",
       "pendingRequests": "{count, plural, one {# függőben lévő kérés} other {# függőben lévő kérelmek}}"
     },
     "detail": {
@@ -4627,6 +5216,14 @@
       "cotisationButton": "Tagsági díj",
       "createAccessButton": "Hozzáférés létrehozása",
       "roleButton": "Szerep",
+      "exportDataButton": "Exportadatok (GDPR)",
+      "eraseData": {
+        "button": "Adatok törlése (GDPR)",
+        "confirmTitle": "{name} adatainak végleges törlését kéri?",
+        "confirmDescription": "Ez a művelet a GDPR 17. cikke szerinti törlési kérelmet rögzít. A tag megerősítő e-mailt kap, majd személyes adatai a következő automatikus feldolgozás során véglegesen anonimizálásra kerülnek, kivéve ha a kérelmet felfüggesztik.",
+        "toastSuccess": "Törlési kérelem rögzítve",
+        "requestLabel": "GDPR-törlés"
+      },
       "contact": "Kapcsolat",
       "noContactInfo": "Nincs elérhetőségi információ",
       "memberSinceColon": "Tag azóta: {date}",
@@ -4642,6 +5239,10 @@
       "spokenLanguageColon": "Beszélt nyelv: {value}",
       "preferredLocaleColon": "Kommunikációs nyelv: {value}",
       "allergiesColon": "Allergiák: {value}",
+      "imageRightsColon": "Képi jogok: {value}",
+      "imageRightsDate": "(az {date})",
+      "notes": "Jegyzetek",
+      "guardians": "Törvényes gyámok",
       "mobileColon": "Mobil: {value}",
       "legalGuardianColon": "Jogi gyám:",
       "noInfo": "Nincs információ",
@@ -4670,6 +5271,7 @@
         "evenements": "Események",
         "reunions": "Találkozók",
         "materiel": "Anyagok",
+        "groupes": "Csoportok",
         "dons": "Adományok",
         "historique": "Előzmények",
         "emails": "E-mailek",
@@ -4700,6 +5302,7 @@
       "paidOn": "Kifizetve {date}",
       "validUntil": "Érvényes addig {date}",
       "periodExpiredOn": "Lejárt {date}",
+      "recordPayment": "Fizetés rögzítése",
       "downloadRecuFiscal": "Töltsd le az adóbetöltőt",
       "downloadRecuFiscalPartial": "Töltsd le az adóbevallást (részleges: {amount} Előrész)",
       "showingRecentCotisations": "Megjelenítés {count} Legutóbbi hozzájárulások a {total} összesen.",
@@ -4742,13 +5345,6 @@
         "rejectedToast": "A kérelem elutasítása",
         "rejectConfirmTitle": "Elutasítani ezt a kérést?",
         "rejectConfirmDescription": "{name} \"Inaktív\" státuszra változik, és nem lesz lehetőség bejelentkezni. A kérelmet és a válaszokat megőrizték."
-      },
-      "eraseData": {
-        "button": "Adatok törlése (GDPR)",
-        "confirmTitle": "{name} adatainak végleges törlését kéri?",
-        "confirmDescription": "Ez a művelet a GDPR 17. cikke szerinti törlési kérelmet rögzít. A tag megerősítő e-mailt kap, majd személyes adatai a következő automatikus feldolgozás során véglegesen anonimizálásra kerülnek, kivéve ha a kérelmet felfüggesztik.",
-        "toastSuccess": "Törlési kérelem rögzítve",
-        "requestLabel": "GDPR-törlés"
       },
       "noCommande": "Ennek a kapcsolatnak nincs bolti vásárlása.",
       "commandeStatus": {
@@ -4839,6 +5435,12 @@
       "inMessagesSection": " az Üzenetek szekcióban.",
       "messageSectionLabel": "Üzenet",
       "saveAsTemplate": "Mentés sablonként",
+      "subjectLabel": "Cél",
+      "subjectPlaceholder": "Az e-mail témája...",
+      "subjectTooLong": "A tárgy túl hosszú: {length}/{max} karakter — a küldéskor elutasításra kerül.",
+      "bodyLabel": "Üzenet test",
+      "bodyPlaceholder": "Írd meg az üzeneted...",
+      "designTemplateReadonlyHint": "Ez a sablon Visual Design módot (képek, gombok) használ – a tartalma itt nem szerkeszthető. A módosításhoz szerkeszted a sablont az Üzenetek menüben.",
       "language": {
         "title": "Küldés nyelve",
         "modeOriginal": "Eredeti nyelv",
@@ -4863,15 +5465,12 @@
         "autoNoEffect": "Egyik jelenlegi címzettnek sincs a franciától eltérő preferált nyelve — mindenki az eredeti verziót kapja.",
         "autoExternalNote": "{count, plural, one {# külső e-mail (eredeti nyelv)} other {# külső e-mail (eredeti nyelv)}}"
       },
-      "subjectLabel": "Cél",
-      "subjectPlaceholder": "Az e-mail témája...",
-      "subjectTooLong": "A tárgy túl hosszú: {length}/{max} karakter — a küldéskor elutasításra kerül.",
-      "bodyLabel": "Üzenet test",
-      "bodyPlaceholder": "Írd meg az üzeneted...",
       "continue": "Folytatás",
       "confirmSendTitle": "Szállítási megerősítés",
       "confirmSendDescription": "Ezt az e-mailt a címre küldjük {recipients}. Ez a cselekedet visszafordíthatatlan.",
       "sendNow": "Küldd el most",
+      "sending": "Küldve...",
+      "sendFailedTitle": "Az e-mailt nem lehetett elküldeni",
       "replaceContentTitle": "Pótolni a tartalmat?",
       "replaceContentDescription": "Ennek a sablonnak a alkalmazása lecseréli az üzenet témáját és törzsét, amit már írtál.",
       "replace": "Cseréje",
@@ -4884,6 +5483,28 @@
       "recipientsActive": "{count, plural, one {# aktív tag} other {# aktív tagok}}",
       "externalOnlyCount": "{count, plural, one {# külső e-mail} other {# külső e-mailek}}",
       "recipientsWithExternal": "{members} + {count, plural, one {# külső e-mail} other {# külső e-mailek}}",
+      "attachments": {
+        "label": "Mellékletek",
+        "add": "Fájlok csatolása",
+        "hint": "JPG, PNG, WebP, GIF vagy PDF · {maxSize} Összesen",
+        "usage": "{count, plural, one {# fájl} other {# fájlok}} · {used} / {maxSize}",
+        "limitFilesReached": "Határérték {maxFiles} Fájlok elértek",
+        "limitSizeReached": "Határérték {maxSize} Elért",
+        "remove": "Távolítsd el {name}",
+        "nameWithSize": "{name} ({size})",
+        "andMore": "{count, plural, one {és # más} other {és # mások}}",
+        "errors": {
+          "emptyFile": "{count, plural, one {{names} nem került hozzá — a fájl üres.} other {# fájlokat nem adtak hozzá: {names} — Ezek az akták üresek.}}",
+          "unsupportedType": "{count, plural, one {{names} nem került hozzá} other {# fájlokat nem adtak hozzá: {names}}} — elfogadott formátumok: képek (JPG, PNG, WebP, GIF) és PDF.",
+          "totalSizeExceeded": "{count, plural, one {{names} nem került hozzá} other {# fájlokat nem adtak hozzá: {names}}} — a határ {maxSize} összesen túllépnék (a maradék hely: {remaining}).",
+          "tooManyFiles": "{count, plural, one {{names} nem került hozzá} other {# fájlokat nem adtak hozzá: {names}}} — {maxFiles} Maximális fájlok egy e-mailenként."
+        },
+        "recapSummary": "{count, plural, one {# fájl} other {# fájlok}} · {size}",
+        "uploading": "Mellékletek küldése...",
+        "uploadFailedTitle": "Csatolmányokat nem lehetett küldeni",
+        "uploadFailedDescription": "Nincs e-mail sem. Próbáld újra, vagy kattints a \"Szerkesztés\" gombra, hogy eltávolíts vagy cserélj egy fájlt.",
+        "notSavedInTemplate": "A mellékletek nincsenek elmentve a sablonban."
+      },
       "toasts": {
         "selectType": "Válasszon tagtípust",
         "selectMember": "Válasszon legalább egy tagot vagy adj hozzá külső e-mail címet",
@@ -4916,7 +5537,14 @@
         "status": "Státusz",
         "typeId": "Típus",
         "role": "Szerep",
-        "adherentOverride": "Tagsági státusz"
+        "adherentOverride": "Tagsági státusz",
+        "notes": "Jegyzetek",
+        "imageRightsConsent": "Képi jogok",
+        "guardianName": "Jogi gyám 1",
+        "guardianPhone": "A törvényes gyámok telefonszáma 1",
+        "secondGuardianName": "Legal Guardian 2",
+        "secondGuardianPhone": "A jogi gyám telefonszáma 2",
+        "permissions": "Hozzáférés"
       },
       "adherentOverrideValues": {
         "forcedAdherent": "Kényszerített követő",
@@ -4930,9 +5558,11 @@
         "membreRoleChanged": "Módosított szerep",
         "passwordChanged": "Jelszó megváltoztatva",
         "passwordReset": "Jelszó-visszaállítás",
+        "membreCardTokenRotated": "Újragenerált kártya QR kód",
         "membreDeleted": "Archivált tag",
         "membrePortalRegistered": "Portálregisztráció",
         "membreInscriptionRequested": "Tagsági jelentkezés (weboldal)",
+        "membreAdhesionCompleted": "Tagság kifejezett és kifizetett",
         "cotisationCreated": "Hozzájárulás hozzáadva",
         "cotisationUpdated": "Módosított értékelés",
         "cotisationDeleted": "Tagságdíj eltörlése",
@@ -5004,7 +5634,8 @@
         "expense": "Költségek",
         "financeCategory": "Pénzügyi kategóriák",
         "payment": "Kifizetések",
-        "associationDocument": "Egyesületi dokumentumok"
+        "associationDocument": "Egyesületi dokumentumok",
+        "paperFormTemplate": "Papírlapok"
       },
       "messageTemplateFilterLabel": "MSG sablonok",
       "actualiteFields": {
@@ -5065,12 +5696,20 @@
         "membreDeleted": "Archivált tag",
         "membrePortalRegistered": "Regisztrált (portál)",
         "membreInscriptionRequested": "Tagsági jelentkezés (weboldal)",
+        "membreAdhesionCompleted": "Tagság kifejezett és kifizetett",
         "membreRoleChanged": "Módosított szerep",
         "membreAccessCreated": "Hozzáférés létrejött",
+        "membreCardTokenRotated": "Újragenerált kártya QR kód",
         "profilUpdated": "Módosított profil",
         "profileUpdated": "Módosított profil",
         "passwordChanged": "Jelszó megváltoztatva",
         "passwordReset": "Jelszó-visszaállítás",
+        "twoFactorEnabled": "Kétfaktoros hitelesítés engedélyezve",
+        "twoFactorDisabled": "Kétfaktoros hitelesítés letiltva",
+        "twoFactorBackupRegenerated": "Újragenerált biztonsági kódok",
+        "twoFactorDisabledByAdmin": "A kétfaktoros hitelesítést a támogatás tiltotta ki",
+        "loginSuccess": "Sikeres bejelentkezés",
+        "loginFailed": "Sikertelen bejelentkezési kísérlet",
         "emailSentBulk": "E-mail elküldve",
         "smsSentBulk": "SMS küldés",
         "supportEmailSent": "E-mailt küldte a Formwise Support",
@@ -5181,6 +5820,9 @@
         "associationDocumentCreated": "Dokumentum létrehozva",
         "associationDocumentUpdated": "Dokumentum módosítva",
         "associationDocumentDeleted": "Dokumentum törölve",
+        "paperFormTemplateCreated": "Létrehozott űrlap sablon",
+        "paperFormTemplateUpdated": "Módosított űrlapsablon",
+        "paperFormTemplateDeleted": "Törölt kártya sablon",
         "ticketCheckoutExpired": "A fizetés lejárt"
       }
     },
@@ -5385,8 +6027,8 @@
       "actualites": "Hírek",
       "membership": "Csatlakozz az egyesülethez",
       "dons": "Adományozás",
-      "contact": "Kapcsolat",
-      "boutique": "Bolt"
+      "boutique": "Bolt",
+      "contact": "Kapcsolat"
     },
     "defaultTitles": {
       "hero": "Üdvözlöm",
@@ -5394,9 +6036,9 @@
       "events": "Közelgő események",
       "membership": "Csatlakozz az egyesülethez",
       "dons": "Adományozás",
+      "boutique": "Bolt",
       "actualites": "Hírek",
-      "contact": "Kapcsolat",
-      "boutique": "Bolt"
+      "contact": "Kapcsolat"
     },
     "view": {
       "uploadFailedWarning": "{count, plural, one {# képet nem lehetett letölteni.} other {# képeket nem lehetett feltölteni.}}",
@@ -5420,6 +6062,8 @@
       "save": "Mentés",
       "appearance": "Megjelenés",
       "primaryColor": "Fő szín",
+      "secondaryColor": "Másodlagos szín",
+      "fontFamily": "Rendőrség",
       "logo": "Logó",
       "header": "Fejléc",
       "headerBgColor": "Háttérszín",
@@ -5438,11 +6082,12 @@
       "noLinks": "Nincs link. Kattints az Hozzáadásra.",
       "sections": "Szekciók",
       "noSections": "Nincsenek szakaszok. Adj hozzá egyet lent.",
+      "createWithAi": "Mesterséges intelligenciával való alkotás",
       "addSection": "Szekció hozzáadása",
       "donsModuleDisabled": "Adományozó modul letiltva — láthatatlan a nyilvános oldalon",
+      "boutiqueModuleDisabled": "A Bolt modul letiltva — nem látható a nyilvános oldalon",
       "deleteSectionTitle": "Törlés szakasz",
-      "deleteSectionDescription": "Ez a cselekedet visszafordíthatatlan.",
-      "boutiqueModuleDisabled": "A Bolt modul letiltva — nem látható a nyilvános oldalon"
+      "deleteSectionDescription": "Ez a cselekedet visszafordíthatatlan."
     },
     "sectionSheet": {
       "editTitle": "Szerkesztés — {label}",
@@ -5463,6 +6108,8 @@
       "eventsLimitHint": "Az események automatikusan lekerülnek a naptáradból.",
       "actualitesLimit": "A bemutatandó hírek száma",
       "actualitesLimitHint": "Csak az első N hír jelenik meg az oldalon.",
+      "boutiqueLimit": "Megjelenítendő termékek száma",
+      "boutiqueLimitHint": "Csak az első N aktív termék jelenik meg az oldalon.",
       "membershipIntro": "Bevezető szöveg",
       "membershipIntroPlaceholder": "Töltse ki ezt az űrlapot, hogy jelentkezzen a szövetséghez...",
       "membershipHint": "A kérések a \"Függőben\" státuszú tagok listáján jelennek meg.",
@@ -5483,9 +6130,7 @@
       "apply": "Jelentkezz",
       "discardTitle": "Figyelmen kívül hagyni a változásokat?",
       "discardDescription": "A be nem alkalmazott változtatások elvesznek.",
-      "discardConfirm": "Figyelmen kívül hagyás",
-      "boutiqueLimit": "Megjelenítendő termékek száma",
-      "boutiqueLimitHint": "Csak az első N aktív termék jelenik meg az oldalon."
+      "discardConfirm": "Figyelmen kívül hagyás"
     },
     "preview": {
       "donsNoForm": "Nincs kiválasztott adományozási űrlap — láthatatlan a nyilvános oldalon"
@@ -5494,6 +6139,52 @@
       "viewSite": "Tekintse meg a weboldalt",
       "logoUrl": "Logó URL (opcionális)",
       "footerText": "Lábalap szöveg"
+    },
+    "aiAssistant": {
+      "title": "Építsd az oldaladat MI-vel",
+      "description": "Írd le az assosiációdat, az AI kínál egy első verziót az oldalról (színek, betűtípus, fejléc, lábalap és szakaszok), amit módosíthatsz a mentés előtt.",
+      "descriptionLabel": "Írd le a kapcsolatodat",
+      "descriptionPlaceholder": "Például a lyoni kulturális egyesület, amely színházi műhelyeket szervez gyermekeknek...",
+      "generate": "Generálj",
+      "regenerate": "Regenerálás",
+      "apply": "Jelentkezz",
+      "cancel": "Törlés",
+      "error": "Hiba történt, próbáld újra.",
+      "previewAppearance": "Megjelenés",
+      "previewHeader": "Fejléc",
+      "previewHeaderLogin": "Bejelentkezés gomb",
+      "previewHeaderRegister": "Csatlakozás gomb",
+      "previewFooter": "Lábalap",
+      "previewSections": "Szekciók",
+      "fieldButtonLabel": "Javasolj MI-vel",
+      "appearancePlaceholder": "Például egy sportos, dinamikus és barátságos egyesület...",
+      "headerPlaceholder": "Például: valami józan, ami kiemelkedik egy fehér háttéren...",
+      "footerPlaceholder": "Például: egy rövid köszönőüzenet...",
+      "sectionPlaceholder": "Írd le, mit kellene mondania ennek a résznek..."
+    },
+    "builderSwitch": {
+      "liveVersionLabel": "Online verzió",
+      "switchLabel": "Új szerkesztő (béta)",
+      "statusLegacy": "A látogatóid látják a régi oldalt",
+      "statusNewBuilder": "Látogatói megláthatják a kiadást, amelyen megjelent {date}",
+      "publishFirstHint": "Először az új szerkesztőtől kell megjelenni",
+      "openNewBuilder": "Nyisd meg az új → szerkesztőt",
+      "legacyEditsNotice": "Az oldalod megjeleníti az új szerkesztő verzióját: az itt végrehajtott változtatások csak akkor lesznek láthatók, ha visszatérsz a régi oldalra.",
+      "confirmOn": {
+        "title": "Aktiválni az új szerkesztőt?",
+        "description": "A nyilvános oldalon megjelenik a kiadás {date}. Bármikor visszatérhetsz a régi oldalra.",
+        "confirmLabel": "Aktiválás"
+      },
+      "confirmOff": {
+        "title": "Visszatérni a régi helyre?",
+        "description": "A nyilvános oldalon újra megmutatja a régi oldalt.",
+        "confirmLabel": "Visszatérés a régi helyszínre"
+      },
+      "toasts": {
+        "switchedOn": "Az új szerkesztő online van",
+        "switchedOff": "A régi oldal újra online",
+        "error": "Hiba szerkesztőváltáskor"
+      }
     }
   },
   "richTextEditor": {
@@ -5506,6 +6197,134 @@
     "heading1": "Címsor 1",
     "heading2": "Címsor 2",
     "heading3": "Címsor 3"
+  },
+  "paperFormTemplates": {
+    "title": "Papírlapok",
+    "description": "Sablonok papíralapú regisztrációs űrlapokhoz, hogy tagokat hozzanak létre a kitöltött és beszkennelt űrlapokból.",
+    "backToMembers": "Tagok",
+    "backToList": "Papírlapok",
+    "newTemplate": "Új modell",
+    "empty": "Nincsenek sablonok. Készíts egyet az üres regisztrációs űrlapodból.",
+    "notFound": "Ez a sablon nem található meg, vagy törölték.",
+    "mappedFieldCount": "{count, plural, =0 {Nincs behozott mező} one {# importált mező} other {# importált mezők}}",
+    "columns": {
+      "name": "Név",
+      "pages": "Oldalak",
+      "fields": "Mezők",
+      "updatedAt": "Módosítva"
+    },
+    "toasts": {
+      "created": "Létrehozott sablon",
+      "saved": "Regisztrált kialakítás",
+      "deleted": "Törölt sablon"
+    },
+    "deleteConfirm": {
+      "title": "Töröld a \" {name} » ?",
+      "description": "A már importált tagok megmaradnak. Ezzel a sablonnal már nem tudsz rekordokat szkennelni."
+    },
+    "leaveWarning": {
+      "title": "Mentetlen változtatások",
+      "description": "A sablon módosításai elvesznek, ha elhagyod ezt az oldalt.",
+      "discard": "Mentés nélkül való kilépés",
+      "saveAndLeave": "Mentés és kilépés"
+    },
+    "targetGroups": {
+      "identity": "Identitás",
+      "contact": "Kapcsolat",
+      "guardian": "Jogi gyám",
+      "commitments": "Kötelezettségek",
+      "other": "Egyéb"
+    },
+    "targets": {
+      "fullName": "Kereszt- és vezetéknév",
+      "firstName": "Keresztnév",
+      "lastName": "Név",
+      "birthDate": "Születési dátum",
+      "civilite": "Cím",
+      "sexe": "Nemek",
+      "email": "E-mail",
+      "phone": "Telefon",
+      "address": "Cím",
+      "guardianFullName": "Törvényes gyám 1 — kereszt- és vezetéknév",
+      "guardianPhone": "Jogi gyám 1 — telefon",
+      "secondGuardianFullName": "Törvényes gyám 2 — kereszt- és vezetéknév",
+      "secondGuardianPhone": "Törvényes gyám 2 — telefon",
+      "imageRights": "Képjogok (jelölőnégyzet)",
+      "legalDocument": "Dokumentum elfogadása (jelölőnégyzet)",
+      "notes": "Tag megjegyzések",
+      "ignore": "Ne importálj"
+    },
+    "renderErrors": {
+      "unsupported_type": "Formátum nem támogatott. Tölts fel PDF-et, JPEG vagy PNG fotókat.",
+      "too_many_pages": "Az űrlap túl sok oldal ({maximum} maximális).",
+      "pdf_password": "Ez a PDF jelszóval védett.",
+      "pdf_invalid": "Ezt a PDF-et nem lehetett megnyitni.",
+      "image_invalid": "Ez a kép nem volt olvasható.",
+      "too_large": "Egy oldal túl nagy, még zsugorítás után is.",
+      "aborted": "Az előkészület megmaradt."
+    },
+    "editor": {
+      "newTitle": "Új dugósablon",
+      "newDescription": "Add be az üres regisztrációs űrlapodat: az MI javasolja az egyes dobozok egyeztetését, te pipálod be, majd elmented.",
+      "updatedAt": "Módosítva {date}",
+      "dropTitle": "Üres regisztrációs űrlap",
+      "dropHint": "Egy PDF, vagy egy JPEG vagy PNG fotó oldalonként — maximum 4 oldal. A kártyát nem tartják meg.",
+      "chooseFile": "Válassz egy fájlt",
+      "manualIntro": "Nincs AI kulcs konfigurálva?",
+      "configureManually": "Manuálisan konfigurálni",
+      "preparing": "A lapok előkészítése...",
+      "analyzing": "A lap elemzése folyamatban...",
+      "analyzingHint": "Az MI azonosítja azokat a dobozokat, amelyeket ki kell tölteni. Ez akár egy percet is igénybe vehet.",
+      "analyzeFailedTitle": "A kártya nem tudott értelmezni",
+      "openAiSettings": "Konfiguráld az AI kulcsot a beállításokban",
+      "retryAnalyze": "Ismételd meg a vizsgálatot",
+      "changeFile": "Switch fájlok",
+      "nameLabel": "Modell név",
+      "namePlaceholder": "Regisztrációs űrlap 2026-2027",
+      "identificationLabel": "Azonosító szöveg",
+      "identificationPlaceholder": "Például: REGISZTRÁCIÓS ŰRLAP 2026 2027 — DAC Akadémia",
+      "identificationHint": "Ha fel van töltve, minden olyan oldal, amely nem felel meg pontosan ennek az űrlapnak, elutasítják importálásra.",
+      "pagesPerFormLabel": "Oldalak egy kártyánként",
+      "pageCount": "{count, plural, one {# oldal} other {# oldal}}",
+      "fieldsTitle": "Mezőpárosítás",
+      "fieldsSummary": "{count, plural, =0 {Nincs mező} one {# mező} other {# mezők}} · {mapped, plural, one {# importált} other {Importált #}}",
+      "fieldsHint": "Minden sor egy doboznak felel meg a lemezen. Jelöld meg, hol kell rögzíteni az értékét a tag nyilvántartásán.",
+      "droppedFields": "{count, plural, one {# MI által javasolt dobozt elvették, mert hiányos volt.} other {# MI által javasolt dobozokat eldobtak, mert hiányosak voltak.}} Ha szükséges, add hozzá őket.",
+      "noFields": "Nincsenek mezők. Add hozzá a dobozokat a hirdetésedbe.",
+      "addField": "Teszünk hozzá egy mezőt",
+      "moreErrors": "… és {count, plural, one {# másik hiba} other {# egyéb hibák}}",
+      "rowError": "Vonal {row} : {message}",
+      "labelPlaceholder": "Nyomtatott megfogalmazás",
+      "hintPlaceholder": "Opcionális",
+      "legalDocumentPlaceholder": "Válasszon dokumentumot",
+      "noLegalDocuments": "Nincsenek jogi dokumentumok. Először a Jogi Dokumentumokban készítsd el.",
+      "columns": {
+        "label": "Megfogalmazás",
+        "page": "Oldal",
+        "target": "Úti cél",
+        "legalDocument": "Dokumentum",
+        "hint": "Olvasási jelzés",
+        "actions": "Akciók"
+      },
+      "rowLabelAria": "Vonal címke {row}",
+      "rowPageAria": "Soroldal {row}",
+      "rowTargetAria": "A vonal célpontja {row}",
+      "rowLegalDocumentAria": "Vonaldokumentum {row}",
+      "rowHintAria": "Vonalolvasási jelzés {row}",
+      "removeRowAria": "Távolítsd el a vezetéket {row}",
+      "pageLabel": "Oldal {page}",
+      "enlargePage": "Oldal nagyítása {page}",
+      "referenceHint": "Az üres kártya nincs megőrizve. Töltsd fel, hogy a mezők mellett mutassa ki.",
+      "showBlankForm": "Mutasd meg az üres kártyát"
+    },
+    "activity": {
+      "fields": {
+        "name": "Név",
+        "pagesPerForm": "Oldalak egy kártyánként",
+        "fields": "Mezők",
+        "identificationText": "Azonosító szöveg"
+      }
+    }
   },
   "associationDocuments": {
     "title": "Egyesületi dokumentumok",
@@ -5521,6 +6340,13 @@
     "hidden": "Rejtett",
     "visibleToMembers": "Látható a tagok számára",
     "visibleToMembersHint": "Megjeleníti a dokumentumot a tagterületen. Kikapcsolva csak a vezetők látják.",
+    "visibleToPublic": "Nyilvánosan hozzáférhető",
+    "visibleToPublicHint": "Ez a dokumentum bárki számára láthatóvá válik, akinek van linkje, fiók nélkül — szükséges ahhoz, hogy a nyilvános űrlapokból linkeljék.",
+    "visibleToPublicForcedHint": "Automatikusan aktiválva: az elfogadandó dokumentumnak el kell olvasnia annak a személynek, aki elfogadja.",
+    "requiresAcceptance": "Elfogadni",
+    "requiresAcceptanceHint": "Kötelező jelölőnégyzet jelenik meg a tagsági, adományi, eseményregisztrációs, bolti és fióklétrehozó űrlapoknál. Minden elfogadást a dokumentum verzióval rögzítenek.",
+    "exportAcceptances": "Exportelfogadások",
+    "publicShort": "Nyilvános",
     "toasts": {
       "madeVisible": "„{title}” látható a tagok számára",
       "madeHidden": "„{title}” el van rejtve a tagok elől",
@@ -5541,7 +6367,10 @@
       "contentLabel": "Tartalom",
       "contentPlaceholder": "Írd be a dokumentum tartalmát…",
       "titleRequired": "A cím megadása kötelező.",
-      "contentRequired": "A tartalom megadása kötelező."
+      "contentRequired": "A tartalom megadása kötelező.",
+      "fileLabel": "PDF fájl",
+      "fileHint": "Importálja a dokumentum hivatalos változatát (aláírt törvények, szkennelt rendeletek stb.). Letölthető és a tartalommal együtt megjeleníthető.",
+      "contentOptionalHint": "Opcionális, ha PDF van csatolva: a szöveg a fájl alatt jelenik meg."
     },
     "leaveWarning": {
       "title": "Nem mentett módosítások",
@@ -5550,7 +6379,36 @@
       "saveAndLeave": "Mentés és kilépés"
     },
     "notFound": "Ez a dokumentum nem található.",
-    "backToList": "Vissza a dokumentumokhoz"
+    "backToList": "Vissza a dokumentumokhoz",
+    "pdfShort": "PDF"
+  },
+  "formDraft": {
+    "restored": "Az adataid megmaradtak.",
+    "discard": "Kezdj újra, egy üres űrlappal"
+  },
+  "legalConsent": {
+    "agreeLabel": "{count, plural, one {Egyetértek a következő dokumentummal:} other {Elfogadom a következő dokumentumokat:}}",
+    "required": "A folytatáshoz el kell fogadnia a vállalat dokumentumait.",
+    "stale": "Az egyesület dokumentumai frissültek, kérjük, olvassák el őket újra, mielőtt folytatnák.",
+    "offlineAttestation": "Megerősítem, hogy megszereztem ennek a személynek a jóváhagyását ezekkel a dokumentumokkal kapcsolatban",
+    "gateTitle": "Elfogadandó dokumentumok",
+    "gateSubtitle": "Az Ön egyesülete frissítette a dokumentumait. Kérjük, olvassa el és fogadja el őket, hogy hozzáférjen a teréhez.",
+    "gateSubmit": "Elfogadom, és folytatom",
+    "gateSignOut": "Kilépés",
+    "gateError": "Nem tudom regisztrálni az elfogadását.",
+    "offlineAttestationHint": "Felvételként rögzítik, offline begyűjtve, a nevedre."
+  },
+  "publicDocuments": {
+    "title": "Jogi dokumentumok",
+    "subtitle": "Az egyesület által elérhetővé tett dokumentumok.",
+    "empty": "Jelenleg nem publikált dokumentum.",
+    "updatedAt": "Frissítve {date}",
+    "backToList": "Minden dokumentum",
+    "associationNotFound": "Ez az összefüggés sehol sem található.",
+    "notFound": "Ez a dokumentum már nem elérhető.",
+    "openPdf": "PDF megnyitása",
+    "opensNewTab": "(új fülön nyílik meg)",
+    "pdfShort": "PDF"
   },
   "portalMembre": {
     "associationDocuments": {
@@ -5560,7 +6418,10 @@
       "empty": "Jelenleg nincs elérhető dokumentum.",
       "loadError": "Nem sikerült betölteni a dokumentumokat.",
       "notFound": "Ez a dokumentum nem található, vagy már nem érhető el.",
-      "backToList": "Vissza a dokumentumokhoz"
+      "backToList": "Vissza a dokumentumokhoz",
+      "openPdf": "PDF megnyitása",
+      "opensNewTab": "(új fülön nyílik meg)",
+      "pdfShort": "PDF"
     },
     "sondages": {
       "title": "Felmérések",
@@ -5598,6 +6459,15 @@
       "viewShop": "View Shop",
       "orderPlacedTitle": "Rendelés regisztrálva!",
       "orderPlacedDescription": "A rendelésed vár a fizetésre. Az adminisztráció felveszi veled a kapcsolatot, hogy véglegesítse.",
+      "paymentSuccessTitle": "A fizetés megerősítve!",
+      "paymentSuccessDescription": "Köszönjük a vásárlást. Elküldtük Önnek a visszaigazoló e-mailt a nyugtával.",
+      "stockAdjustedNotice": "Néhány termék készlete megváltozott — a kosarát módosítottuk, kérjük, ellenőrizze, mielőtt folytatja.",
+      "trackOrderButton": "Rendelésem nyomon követése",
+      "trackingPageTitle": "Rendeléskövetés",
+      "trackingStatusPending": "Fizetésre vár",
+      "trackingStatusPaid": "Rendelés kifizetve",
+      "trackingStatusCancelled": "Rendelés törölve",
+      "trackingNotFound": "A rendelés nem található",
       "myOrdersButton": "Parancsaim",
       "continueShopping": "Folytasd a vásárlást",
       "maxStockReached": "Max Stock Elérve",
@@ -5635,16 +6505,7 @@
         "orderError": "Hiba a rendelés során",
         "orderUpdated": "Frissített sorrend",
         "orderCancelled": "Rendelés törölve"
-      },
-      "paymentSuccessTitle": "A fizetés megerősítve!",
-      "paymentSuccessDescription": "Köszönjük a vásárlást. Elküldtük Önnek a visszaigazoló e-mailt a nyugtával.",
-      "stockAdjustedNotice": "Néhány termék készlete megváltozott — a kosarát módosítottuk, kérjük, ellenőrizze, mielőtt folytatja.",
-      "trackOrderButton": "Rendelésem nyomon követése",
-      "trackingPageTitle": "Rendeléskövetés",
-      "trackingStatusPending": "Fizetésre vár",
-      "trackingStatusPaid": "Rendelés kifizetve",
-      "trackingStatusCancelled": "Rendelés törölve",
-      "trackingNotFound": "A rendelés nem található"
+      }
     },
     "dons": {
       "title": "Az adományaim",
@@ -5673,7 +6534,13 @@
       "toasts": {
         "thanked": "Köszönöm az adományodat! Megerősítő e-mailt küldöttünk neked.",
         "cancelled": "Az adományozás törlése."
-      }
+      },
+      "campaignsHeading": "Jelenlegi kampányok",
+      "backToDons": "Vissza az adományaimhoz",
+      "donatingAs": "Te adsz úgy, mint egy {name} ({email}).",
+      "comingSoon": "Hamarosan",
+      "campaignClosed": "A hadjárat véget ért",
+      "loadCampaignsError": "Az adománykampányokat nem lehet betölteni. Próbáld meg később újra."
     },
     "reunions": {
       "title": "Találkozók",
@@ -5862,6 +6729,73 @@
       }
     },
     "evenements": {
+      "title": "Események",
+      "subtitle": "A következő időpontjaid és a történeted.",
+      "upcomingHeading": "Hamarosan",
+      "noneUpcoming": "Nincsenek közelgő események.",
+      "moreUpcomingHint": "A többi közelgő események nem jelennek meg. További információért forduljon az egyesületéhez.",
+      "pastHeading": "Múlt",
+      "pastLimitHint": "Csak az utolsó 10 esemény jelenik meg.",
+      "guestsLabel": "Vendégek:",
+      "guestFirstNamePlaceholder": "Vendégnév {n}",
+      "guestLastNamePlaceholder": "Vendégnév {n}",
+      "guestEmailPlaceholder": "Vendég e-mail (opcionális)",
+      "ticketTypeFullSuffix": "(elfogyott)",
+      "paymentError": "Hiba fizetés közben",
+      "waitlistedToast": "A várólistán vagy – e-mailben értesítünk, ha szabad hely lesz.",
+      "payOnline": "Online fizetés",
+      "ticketCancelledToast": "Törölt jegy — néhány napon belül visszatérítést kapsz.",
+      "ticketsPurchased": "{n, plural, one {Megvásárolt jegy} other {# jegyek vásároltsága}}",
+      "youSuffix": " (te)",
+      "cancelAndRefund": "Töröld a törlést és kérd a visszatérítést",
+      "cancelSeatTitle": "Lemondani ezt a helyet?",
+      "cancelTicketTitle": "Lemondani ezt a jegyet?",
+      "refundOriginalMethod": "Visszatérítést kapsz az eredeti fizetési módodhoz.",
+      "refundSelfOnly": "Visszatérítést kapsz a helyedért. Vendégeid regisztráltak maradnak, és nem kapnak visszatérítést.",
+      "refundGuestOnly": "Visszatérítést kapsz ezért a helyért. A foglalásod többi része nem változik.",
+      "cancelAndRefundConfirm": "Törlés és visszatérítés",
+      "reservedPayOnSite": "Fenntartott – fizetés helyszínen",
+      "seatsCountLabel": "Helyek száma:",
+      "cancelReservation": "Foglalás törlése",
+      "cancelReservationSimple": "Ha meggondolod magad, újra foglalhatsz.",
+      "cancelReservationPaidCompanions": "Azokat a vendégeket, akiket még nem kaptak kifizetni, eltávolítják. A {n} A már készpénzben fizetett vendégek továbbra is beiratkoznak.",
+      "cancelReservationWithCompanions": "Ez a lefoglalást is lemondja {n} vendégek.",
+      "onWaitlist": "Te vagy a várólistán",
+      "eventFull": "Teljes esemény",
+      "reserveButton": "Foglalás – fizetés helyszínen",
+      "totalLabel": "Összesen:",
+      "rsvpConfirme": "Ott leszek!",
+      "rsvpProvavel": "Ha lehetséges",
+      "rsvpIncerto": "Talán",
+      "rsvpAbsent": "Nem megyek",
+      "rsvpRecordedToast": "Rögzített válasz: {label}",
+      "rsvpSaveError": "Hibafelvétel",
+      "addGuestsButton": "+ Vendégek hozzáadása",
+      "updateGuestsButton": "Frissítsem vendégeimet",
+      "guestsUpdatedToast": "Frissített vendégek",
+      "countConfirmed": "{n, plural, one {# megerősítették} other {# megerősítették}}",
+      "countProvavel": "{n} ha lehetséges",
+      "countIncerto": "{n} talán",
+      "countAbsent": "{n, plural, one {# hiányzik} other {# hiányzik}}",
+      "countWaitlist": "{n} A várólistán",
+      "priceLabel": "Ár:",
+      "reservedCount": "{confirmed}/{capacity} Fenntartott",
+      "fullSuffix": " · Telt házas",
+      "presenceLabel": "Nézőszám:",
+      "present": "Jelenkor",
+      "presenceAbsent": "Hiányzik",
+      "presenceNotRecorded": "Nem regisztrált",
+      "rsvpDisplay": "RSVP : {label}",
+      "yourResponseLabel": "A válaszod:",
+      "confirmParticipationLabel": "Erősítse meg részvételét:",
+      "reviewSentThanks": "Értesítés elküldve — köszönöm!",
+      "chooseRatingError": "Válassz egy hangot",
+      "leaveReview": "Írj véleményt",
+      "send": "Elküldöm",
+      "commentPlaceholder": "Van valami hozzászólás? (opcionális)",
+      "ticketPurchaseSuccessToast": "Jegy sikeresen megvásárolva!",
+      "paymentCancelledToast": "Fizetés törölve. A helyed továbbra is le van foglalva — fizess később, vagy töröld a foglalást az eseménykártyán.",
+      "registrationsClosed": "A regisztráció zárva van.",
       "viewEvent": "Esemény megtekintése",
       "backToList": "Összes esemény",
       "notFound": "Ez az esemény már nem érhető el."
@@ -5877,6 +6811,7 @@
     "platformKeyActive": "Aktív platform kulcs — konfiguráció nélkül is használhatod az AI-t.",
     "providerFieldLabel": "Beszállító",
     "providerFieldPlaceholder": "Beszállító kiválasztása...",
+    "anthropicAssistantHint": "A Help Center Assistant csak az Ön szervezetének adataira (tagdíjak, pénzügyek) válaszol antropikus kulmával. Egy másik szolgáltatónál csak a dokumentációból válaszol.",
     "apiKeyLabel": "API kulcs",
     "apiKeyPlaceholderReplace": "Meglévő kulcs — belép a helyettesítéshez",
     "apiKeyPlaceholderNew": "Illesztsd be az API kulcsodat...",
@@ -5936,6 +6871,7 @@
       "actualites": "Hírek",
       "messages": "Üzenetküldés",
       "materiel": "Anyagok",
+      "groupes": "Csoportok",
       "site": "Weboldal",
       "activite": "Előzmények",
       "suporte": "Támogatás",
@@ -5954,7 +6890,8 @@
       "pricingOffers": "Árajánlatok",
       "support": "Támogatás",
       "controlAlerts": "Ellenőrzési riasztások",
-      "signOut": "Kilépés"
+      "signOut": "Kilépés",
+      "membreDuplicates": "Másolatok"
     },
     "themeToggle": {
       "changeTheme": "Változtasd meg a témát"
@@ -5962,7 +6899,8 @@
     "header": {
       "myPortal": "Saját tér",
       "myProfile": "Profilom",
-      "management": "Vezetés"
+      "management": "Vezetés",
+      "publicSite": "Tekintse meg a weboldalt"
     },
     "userMenu": {
       "roleLabels": {
@@ -5971,10 +6909,12 @@
         "PRESIDENT": "Elnök",
         "TRESORIER": "Pénztáros",
         "SECRETAIRE": "Titkár",
-        "MEMBRE": "Tag"
+        "MEMBRE": "Tag",
+        "EQUIPE": "Csapattag"
       },
       "editProfile": "Profil szerkesztése",
       "changePassword": "Jelszó módosítása",
+      "security": "Biztonság",
       "legalDocuments": {
         "title": "Jogi dokumentumok",
         "mentionsLegales": "Jogi közlemény",
@@ -5984,6 +6924,38 @@
         "opensNewTab": "Új oldal nyílik meg"
       },
       "logout": "Kilépés"
+    },
+    "twoFactorSettingsModal": {
+      "title": "Kétfaktoros hitelesítés",
+      "statusEnabled": "Engedélyezve",
+      "statusEnabledDescription": "Fiókodat kétlépéses ellenőrzés védi.",
+      "statusDisabled": "Mozgáskorlátozott",
+      "statusDisabledDescription": "További hitelesítést adj a bejelentkezésedhez egy hitelesítési alkalmazással.",
+      "backupCodesLabel": "Tartalék kódok",
+      "backupCodesRemaining": "{count, plural, =0 {Kód sem maradt} one {# maradt kód} other {# kódok újraértelmezése}}",
+      "regenerate": "Regenerálás",
+      "scanTitle": "1. Szkenneld be ezt a QR-kódot",
+      "scanDescription": "Nyisd meg az autentifikátor alkalmazásodat (Google Authenticator, Authy...), és szkenneld be az alábbi kódot.",
+      "manualEntryLabel": "Nem tudsz beszkennelni? Írd be ezt a kódot kézzel:",
+      "confirmCodeLabel": "Ellenőrző kód",
+      "backupCodesTitle": "Mentsd el ezeket a kódokat most",
+      "backupCodesDescription": "Ezek a kódok csak egyszer jelennek meg. Minden kódot csak egyszer lehet használni.",
+      "copyAll": "Másold le az összes kódot",
+      "copied": "Másolva!",
+      "savedCodesConfirm": "A biztonsági kódjaimat biztonságos helyre mentettem.",
+      "done": "Befejezve",
+      "disableDescription": "Erősítse meg a jelszavát a kétfaktoros hitelesítés letiltásához.",
+      "disableConfirm": "Kikapcsolás",
+      "regenDescription": "Erősítsd meg az alkalmazásod kódjával, hogy újrageneráld a tartalék kódokat.",
+      "passwordLabel": "Jelszó",
+      "enable": "Aktiválás",
+      "disable": "Kikapcsolás",
+      "cancel": "Törlés",
+      "confirm": "Megerősítse",
+      "close": "Zárt",
+      "enabledToast": "Kétfaktoros hitelesítés engedélyezve.",
+      "disabledToast": "Kétfaktoros hitelesítés letiltva.",
+      "regeneratedToast": "Újragenerált biztonsági kódok."
     },
     "changePasswordModal": {
       "title": "Jelszó módosítása",
@@ -6109,7 +7081,14 @@
       "error": "Hiba történt",
       "closed": "Kérelem lezárva",
       "reopened": "Újra megnyitották a jelentkezést"
-    }
+    },
+    "suggestReply": "Javasolj választ",
+    "suggestReplyConfirmTitle": "Kicserélni a vázlatot?",
+    "suggestReplyConfirmDescription": "A már beírt szöveget az AI javaslata váltja fel.",
+    "suggestReplyConfirmAction": "Cseréje",
+    "suggestReplyNote": "MI által generált javaslat — átnézd a küldés előtt.",
+    "suggestReplySources": "Források: {titles}",
+    "suggestReplyError": "Nem tudok javaslatot generálni."
   },
   "controlAlerts": {
     "title": "Tagsági ellenőrzés",
@@ -6122,9 +7101,27 @@
     "columns": {
       "membre": "Tag",
       "association": "Egyesület",
+      "origin": "Eredet",
       "raisedAt": "Létrehozva",
       "daysWithoutCotisation": "Napok hozzájárulás nélkül",
       "status": "Állapot"
+    },
+    "originByLabel": "Szerző {name}",
+    "originSources": {
+      "ADMIN_MANUAL": "Kézi hozzáadás admin által",
+      "ADMIN_REGISTRATION": "Admin regisztráció (űrlap)",
+      "PUBLIC_ADHESION_FORM": "Nyilvános tagsági űrlap (ingyenes)",
+      "PUBLIC_ADHESION_FORM_OFFLINE": "Nyilvános tagsági űrlap (offline fizetés)",
+      "PUBLIC_ADHESION_STRIPE": "Nyilvános tagsági űrlap (online fizetés)",
+      "PUBLIC_ADHESION_INSTALLMENTS": "Nyilvános tagsági űrlap (részletfizetés)",
+      "PUBLIC_ADHESION_MULTI": "Nyilvános tagsági űrlap (csoportregisztráció)",
+      "PUBLIC_ADHESION_SUBSCRIPTION": "Nyilvános tagsági űrlap (visszatérő előfizetés)",
+      "ASSOCONNECT_IMPORT": "Import AssoConnect",
+      "PAPER_FORM": "Papír űrlapok importja",
+      "ASSOCIATION_SIGNUP_ADMIN": "Alapító tag (az egyesület létrehozása)",
+      "PUBLIC_INSCRIPTION_REQUEST": "Nyilvános regisztrációs kérelem (ellenőrzés függően)",
+      "PUBLIC_INSCRIPTION_REQUEST_MULTI": "Tömeges nyilvános regisztrációs kérelem (ellenőrzés előtt)",
+      "unknown": "Eredete ismeretlen"
     },
     "empty": "Nincsenek ellenőrzési riasztások.",
     "resolveAction": "Megoldás",
@@ -6143,7 +7140,453 @@
     "autoResolvedLabel": "(automatikus)",
     "emptyForSearch": "Nincs találat erre: \"{search}\"."
   },
+  "help": {
+    "buttonLabel": "Segítség",
+    "title": "Segítségközpont",
+    "moduleGeneral": "Általános",
+    "tabs": {
+      "guide": "Segítség",
+      "assistant": "Asszisztens",
+      "changelog": "Mi újság",
+      "news": "Hírek"
+    },
+    "searchPlaceholder": "Keresési segítség...",
+    "searchResultsCount": "{count, plural, one {# eredmény} other {# eredmények}}",
+    "searchNoResults": "Nincs eredmény \" {query} ».",
+    "searchError": "A keresés jelenleg nem elérhető.",
+    "newBadge": "Új",
+    "pinnedSection": "Ez egy",
+    "articlesSection": "Cikkek",
+    "articlesOtherSection": "Egyéb cikkek",
+    "faqSection": "Gyakran ismételt kérdések",
+    "faqOtherSection": "Egyéb ügyek",
+    "noContent": "Jelenleg nincs segítség ebben a szakaszban.",
+    "loadError": "Nem tudom betölteni a segítséget.",
+    "retry": "Próbáld meg újra",
+    "back": "Hátra",
+    "updatedOn": "Frissítve {date}",
+    "articleNotFound": "Tárgy nem talált.",
+    "callout": {
+      "info": "Információ",
+      "tip": "Tipp",
+      "warning": "Figyelem"
+    },
+    "assistant": {
+      "questionLabel": "A kérdésed",
+      "questionPlaceholder": "Tedd fel a kérdésed...",
+      "send": "Elküldöm",
+      "sendShortcut": "Ctrl + Enter (⌘ + Enter Macen)",
+      "disclaimer": "MI által generált válaszok — ellenőrizd a fontos információkat.",
+      "charactersCount": "{count}/{max}",
+      "youLabel": "Te",
+      "assistantLabel": "Asszisztens",
+      "newConversation": "Új beszélgetés",
+      "conversationRestoreFailed": "Az előző beszélgetésed nem volt visszanyerhető.",
+      "intro": "Tegyél fel egy kérdést a Formwise vagy a szervezeted adatai használatáról is: tagságok, tagdíjak, pénzügyek, események.",
+      "introDocs": "Tegyél fel kérdést a Formwise használatával kapcsolatban.",
+      "examplesLabel": "Példa kérdések",
+      "examples": {
+        "unpaid": "Ki nem fizette ki idén a tagsági díját?",
+        "donations": "Hány adomány van ebben a hónapban?",
+        "createEvent": "Hogyan hozhatok létre eseményt?"
+      },
+      "examplesDocs": {
+        "reminder": "Hogyan tudom követni egy kifizetetlen hozzájárulást?",
+        "export": "Hogyan exportálhatom a taglistát?",
+        "createEvent": "Hogyan hozhatok létre eseményt?"
+      },
+      "loadingCopilot": "Konzultációs adatok...",
+      "loadingDocs": "Írás...",
+      "dataConsulted": "A felhasznált adatok:",
+      "tools": {
+        "search_members": "Tagok",
+        "get_member": "Tagok",
+        "list_cotisations": "Hozzájárulások",
+        "get_finance_summary": "Pénzügyi összefoglaló",
+        "list_events": "Események",
+        "list_donations": "Adományok",
+        "list_invoices": "Számlák"
+      },
+      "sources": "Források:",
+      "docsOnlyNotice": "A tagsággal, tagdíjával és pénzügyekkel kapcsolatos kérdésekhez antropikus kulcsot kell használni.",
+      "docsOnlyConfigure": "Konfiguráld a Beállítások → Integrációk menüben.",
+      "error": "Lehetetlen választ kapni.",
+      "errorTimeout": "A varázsló nem tudta befejezni a megadott időn belül. Tegyen fel egy konkrétabb vagy rövidebb kérdést.",
+      "errorRateLimit": "Túl sok kérés, próbáld meg újra pár perc múlva.",
+      "errorProvider": "Az MI szolgáltató nem tudott válaszolni, próbálkoztam meg később újra.",
+      "noApiKey": "Nincs konfigurálva API kulcs.",
+      "noApiKeyConfigure": "Add hozzá az API kulcsodat a Beállítások → Integrációk menübe.",
+      "noApiKeyAskAdmin": "Kérj meg egy adminisztrátort, hogy adjon hozzá egy API kulcsot a Beállítások → Integrációk menüben.",
+      "apiKeyInvalid": "A konfigurált API kulcsot a szolgáltató elutasítja.",
+      "apiKeyInvalidConfigure": "Nézd meg a Beállítások → Integrációk menüben.",
+      "apiKeyInvalidAskAdmin": "Kérj meg egy admint, hogy nézze meg a Beállítások → Integrációk menüben."
+    },
+    "changelog": {
+      "latestSection": "Legfrissebb frissítések",
+      "empty": "Egyelőre nincs új funkció.",
+      "loadError": "Nem tudok új funkciókat betölteni.",
+      "kind": {
+        "feature": "Új",
+        "improvement": "Fejlesztés",
+        "fix": "Javítás"
+      }
+    },
+    "releaseNotes": {
+      "title": "Mi újság"
+    },
+    "news": {
+      "latestSection": "Legfrissebb hírek",
+      "empty": "Egyelőre nincs hír.",
+      "loadError": "Nem tudok betölteni híreket.",
+      "popupTitle": "Hírek"
+    },
+    "faqPopup": {
+      "title": "Gyakran ismételt kérdések"
+    },
+    "popupCarousel": {
+      "remindLater": "Emlékeztess később",
+      "remindLaterToast": "Legközelebb bejelentkezéskor emlékeztetünk rá.",
+      "previous": "Korábbi",
+      "next": "Következő",
+      "finish": "Befejezés",
+      "position": "Elem {current} On {total}",
+      "goTo": "Kattints az item oldalra {index}"
+    },
+    "footer": {
+      "tour": "Vezetett túra",
+      "contactSupport": "Kapcsolatfelvétel ügyfélszolgálattal"
+    }
+  },
+  "boutiqueShipping": {
+    "title": "Hajózás",
+    "description": "A szállítási cím, amelyet az üzlet postai szállítási költségének kiszámításához használnak.",
+    "addressLabel": "Cím",
+    "addressPlaceholder": "12 rue de la Paix",
+    "cityLabel": "Város",
+    "postalCodeLabel": "Kód postai",
+    "countryLabel": "Country",
+    "saved": "Regisztrált szállítási cím",
+    "deliveryMethodLabel": "Vételi mód",
+    "pickupOption": "Helyszíni átvétel",
+    "deliveryOption": "Postázás",
+    "shippingAddressHint": "Szükséges a szállítási költségek kiszámításához.",
+    "shippingOptionsLabel": "Szállítási költségek",
+    "loadingRates": "A szállítási költségek számítása...",
+    "noShippingOptions": "Erre a címre nincs kézbesítési lehetőség.",
+    "shippingUnavailable": "A postai kézbesítést még nem konfigurálja ez az egyesület.",
+    "leadTimeApprox": "~{days} j",
+    "shippingCostLabel": "Szállítási költségek",
+    "mixedCartPickupOnlyHint": "Szállítás nem elérhető: A kosara tartalmaz egy terméket, amit csak kézzel lehet átvenni.",
+    "markupLabel": "Biztonsági ár a szállítási költségeken",
+    "markupHint": "Hozzáadva a vevőnek megjelenített árhoz. Megvéd, ha a fuvarozó díj a tényleges szállítás előtt emelkedik, de a magasabb ár elriaszthatja a vásárlást.",
+    "markupRangeError": "A margónak egy teljes számnak kell lennie 0 és 50 között.",
+    "markupHintTooltip": "A rendeléskor nem vásárolnak címkéket: a megjelenített ár csak egy becslés. Ha a fuvarozó tényleges ára emelkedett a csomag átadásakor, a jótékonysági szervezet fizeti a különbséget — hacsak ez a haszonkulcs fedezi azt. Ezzel szemben, ha túl magas a marzs, növeli az ügyfélnek bemutatott árat, és elriaszthatja a vásárlást."
+  },
+  "paperFormScan": {
+    "menuItem": "Papírkártyák importálása",
+    "manageTemplatesMenuItem": "Kártya sablonok kezelése",
+    "title": "Papírkártyák importálása",
+    "description": "Olvasd el kézzel kitöltött regisztrációs űrlapokat, ellenőrizd az egyes űrlapokat, majd hozz létre tagokat.",
+    "backToMembers": "Tagok",
+    "loadingTemplates": "Sablonok betöltése...",
+    "steps": {
+      "upload": "Fájlok",
+      "reading": "Olvasás",
+      "review": "Ellenőrzés",
+      "result": "Létrehozás"
+    },
+    "upload": {
+      "noTemplateTitle": "Nincs papírkártya sablon",
+      "noTemplateDescription": "Először írja le a papíralapú regisztrációs űrlapot, hogy a mezők olvashatók legyenek.",
+      "createTemplate": "Készíts sablont",
+      "template": "Sablonlap",
+      "templatePlaceholder": "Válasszon modellt",
+      "templateSummary": "{pages, plural, one {# oldal} other {# oldal}} kártyával · {fields, plural, one {# mező} other {# mezők}}.",
+      "manageTemplates": "Sablonkezelés",
+      "dropTitle": "Töltsd fel a beszkennelt PDF-et vagy a lapok fényképeit",
+      "galleryTitle": "Válassz fotókat vagy PDF-et",
+      "dropSubtitle": "PDF, JPEG vagy PNG — több fájl is lehetséges, névsorrendben olvasható",
+      "privacyNote": "Az oldalak a böngészőben maradnak: csak a képeket küldik el egyenként, hogy elolvassák őket, semmi sem marad meg.",
+      "pageCount": "{count, plural, one {# oldal} other {# oldal}}",
+      "removeFile": "Távolítsd el {name}",
+      "preparing": "A lapok előkészítése...",
+      "batchSummary": "{pages, plural, one {# oldal} other {# oldal}} · About {forms, plural, one {# rekord} other {# lepedők}}",
+      "pageTotal": "{count, plural, one {# oldal} other {# oldal}}",
+      "start": "Indítsa a játékot",
+      "renderFailed": "{name} : {error}",
+      "strictTemplateNotice": "Csak a \" oldalai {name} \" elfogadják.",
+      "capturedListLabel": "Fényképezett kártyák",
+      "capturedForm": "Tájékoztató {form}",
+      "capturedPages": "{count, plural, one {Oldal {list}} other {Oldalak {list}}}",
+      "capturedMissing": "{count, plural, one {oldal {list} hiányzik} other {Oldalak {list} hiányzik}}",
+      "capturedInProgress": "Folyamatban",
+      "removeCapturedForm": "Távolítsa el a fájlt {form}",
+      "capturedSummary": "{forms, plural, one {# rekord} other {# lepedők}} · {pages, plural, one {# oldal} other {# oldal}}",
+      "camera": {
+        "title": "Fotózzátok a kártyákat",
+        "needsTemplate": "Először válassz egy sablont: az alkalmazás megmondja, melyik oldalt fotózz.",
+        "prompt": "Tájékoztató {form} — oldal {page} On {pages}",
+        "promptSinglePage": "Tájékoztató {form}",
+        "capturePage": "Fotózza az oldalt {page}",
+        "captureForm": "Fotózzátok a lapot",
+        "skipToNextForm": "Ugrás a fájlhoz {form}",
+        "lastShot": "Tájékoztató {form} · oldal {page}",
+        "lastShotSinglePage": "Tájékoztató {form}",
+        "lastShotAlt": "A fájl fényképe {form}, oldal {page}",
+        "preparing": "Előkészület...",
+        "retake": "Önéletrajz",
+        "retakeLabel": "Készítsd el a képet a kártyáról {form}, oldal {page}",
+        "framingHint": "Fektesd le a lapot síkon, jól megvilágítva, és keretezd be az egész oldalt a négy élével.",
+        "photoFileName": "Tájékoztató {form} oldal {page}.{extension}"
+      }
+    },
+    "reading": {
+      "progress": "{read} / {total} Oldalak lue-i",
+      "failedCount": "{count, plural, one {# oldal hibázott} other {# oldal hibázott}}",
+      "runningHint": "Az olvasás addig folytatódik, amíg ez az oldal nyitva marad.",
+      "pageFailed": "Az oldalt nem lehetett olvasni",
+      "stoppedTitle": "Megszakított lejátszás",
+      "rateLimitedTitle": "Lejátszás szünete",
+      "openAiSettings": "AI beállítások",
+      "openTemplates": "Sablonlapok",
+      "resume": "Önéletrajz",
+      "failedTitle": "Olvasatlan oldalak",
+      "retryAll": "Próbáld ki mindent újra.",
+      "pageColumn": "Oldal",
+      "fileColumn": "Fájl",
+      "errorColumn": "Hiba",
+      "retry": "Próbáld meg újra",
+      "continueWithFailuresHint": "Folytathatod: az olvasatlan oldalak az ellenőrzés során láthatóak maradnak, és kézzel töltik ki.",
+      "restart": "Kezdjük elölről",
+      "continueAnyway": "Mindenesetre ellenőrizd",
+      "continue": "Átugorjon a Ellenőrzésre",
+      "refusedCount": "{count, plural, one {# elutasított oldal} other {# elutasított oldalak}}",
+      "refusedTitle": "Elutasított oldalak",
+      "reasonColumn": "Motívum",
+      "pageRefused": "Oldal elutasítva — ez nem a várható rekord",
+      "detectedDocument": "Dokumentum észlelve: {title}",
+      "removePage": "Távolítsd el",
+      "refusedHint": "Ezeket az oldalakat nem fogják importálni. Ha egy kártya így elveszíti az egyik oldalát, akkor egy hiányzó oldallal jelenik meg."
+    },
+    "viewer": {
+      "pageSwitch": "Oldal megjelenítve",
+      "page": "Oldal {number}",
+      "pageMissing": "Oldal {number} hiányzik",
+      "zoomOut": "Összeomlás",
+      "zoomIn": "Nagyítás",
+      "pageUnread": "Oldal non lue : {error}",
+      "pageAlt": "Oldal {number} a munkalapról ({file})",
+      "missingPageBody": "Az oldal {number} ezt a lapot nem importálták."
+    },
+    "editor": {
+      "lowConfidence": "Bizonytalan olvasmány, ellenőrizni kell",
+      "identity": "Identitás",
+      "firstName": "Keresztnév",
+      "lastName": "Név",
+      "alreadyExists": "Már létezik: {people}",
+      "email": "E-mail",
+      "phone": "Telefon",
+      "birthDate": "Születési dátum",
+      "age": "{age, plural, one {#} other {# év}}",
+      "civilite": "Cím",
+      "sexe": "Nemek",
+      "address": "Cím",
+      "addressLowConfidence": "A cím bizonytalansággal olvasható, ellenőrizni kell",
+      "guardians": "Törvényes gyámok",
+      "guardianExpected": "Kisebb tag ({age, plural, one {#} other {# év}}): Törvényes gyám nem tájékoztatott.",
+      "guardianName": "Jogi gyám {number} — Név",
+      "guardianPhone": "Jogi gyám {number} — telefon",
+      "consents": "Engedélyek",
+      "imageRights": "Képi jogok",
+      "imageRightsYes": "Igen",
+      "imageRightsNo": "Nem",
+      "imageRightsUnknown": "Nem részletezve",
+      "sheetAnswers": "Válaszok a fájlban",
+      "sheetAnswersHint": "Mezek, amelyekben nincs dedikált oszlop: Ezeket hozzáadják a tag jegyzeteihez a létrehozáskor.",
+      "sheetPage": "Oldal {page}",
+      "sheetPageMissing": "Oldal hiányzik: nem olvasható válasz.",
+      "checkboxUnread": "Olvashatatlan doboz, amit a kártyán kell bepipálni",
+      "linkedDocument": "A \" {title} »",
+      "notes": "Jegyzetek",
+      "notesOwnHint": "A saját jegyzeteid. A kártyán lévő válaszokat a létrehozáskor hozzáadjuk hozzá, a \"label: value\" formátumban."
+    },
+    "review": {
+      "summary": "{total, plural, one {# rekord} other {# lepedők}} · {toReview} Felülvizsgálandó · {validated, plural, one {# igazolták} other {# igazolták}} · {ignored, plural, one {# figyelmen kívül hagyták} other {# figyelmen kívül hagyták}} · {created, plural, one {# létrehozták} other {# létrehozták}}",
+      "checkingDuplicates": "Utánanézéseket keresni...",
+      "duplicatesFailed": "A duplikátum keresés sikertelen volt; folytathatod az ellenőrzést.",
+      "create": "{count, plural, =0 {Tagok létrehozása} one {Hozz létre # tagot} other {Hozz létre # tagokat}}",
+      "formsList": "Tájékoztatók",
+      "untitledForm": "Tájékoztató {number}",
+      "missingPages": "{count, plural, one {Oldal {list} hiányzik} other {Oldalak {list} hiányzik}}",
+      "formPosition": "Tájékoztató {number} On {total}",
+      "previous": "Előző kártya",
+      "next": "Következő oldal",
+      "missingPagesNotice": "{count, plural, one {Oldal {list} hiányzik} other {Oldalak {list} hiányzik}} : Az oldalon lévő mezők üresek maradnak. Később ellenőrizheted az űrlapot, és kitöltheted a tagságot.",
+      "commitError": "A létrehozás kudarcot vallott: {error}",
+      "createdNotice": "Tag létrehozva.",
+      "openMember": "Nyisd ki a fájlt",
+      "unvalidate": "Visszavonás ellenőrzése",
+      "restore": "Helyreállítás",
+      "ignore": "Figyelmen kívül hagyás",
+      "validate": "Validálás",
+      "invalidBeforeCreate": "{count, plural, one {Egy validált listázás hibát tartalmaz} other {# validált listákban hiba található}} : Javítsd ki őket, mielőtt tagokat hoznak létre."
+    },
+    "status": {
+      "toReview": "Felülvizsgálat vár",
+      "validated": "Hitelesített",
+      "ignored": "Figyelmen kívül hagyva",
+      "error": "Hiba",
+      "created": "Létrehozva"
+    },
+    "result": {
+      "summary": "{created, plural, =0 {Tagok nem születtek} one {# tag létrejött} other {# tagok létrejött}}{errors, plural, =0 {} one { · # hiba} other { · # hibák}}",
+      "remaining": "{count, plural, one {# fájl még feldolgozásra kerül} other {# fájlok feldolgozásra kerülnek}}.",
+      "nameColumn": "Név",
+      "statusColumn": "Eredmény",
+      "detailColumn": "Részletek",
+      "created": "Létrehozva",
+      "error": "Hiba",
+      "skippedDocuments": "Regisztrálatlan elfogadás: {documents}",
+      "backToReview": "Vissza az ellenőrzéshez",
+      "goToMembers": "Tagok megtekintése",
+      "genericError": "Hibatermelő tagok"
+    },
+    "notesValues": {
+      "yes": "Igen",
+      "no": "Nem"
+    },
+    "validation": {
+      "firstNameRequired": "Keresztnév szükséges",
+      "lastNameRequired": "Név szükséges"
+    },
+    "leaveWarning": {
+      "title": "Quitter l''import?",
+      "description": "Az ezen az oldalon olvasott és ellenőrizett feljegyzések elvesznek. A már létrehozott tagokat megtartják.",
+      "confirm": "Anélkül, hogy létrehozni"
+    },
+    "restartWarning": {
+      "title": "Recommencer l''import?",
+      "description": "A feltöltött oldalakat és az olvasásukat megszakítják.",
+      "confirm": "Kezdjük elölről"
+    }
+  },
   "formTermsEditor": {
     "contentRequired": "Ki kell töltenie a(z) „{conditionsLabel}” mezőt, vagy fel kell töltenie egy dokumentumot."
+  },
+  "membreDuplicates": {
+    "list": {
+      "title": "Lehetséges duplikátumok",
+      "subtitle": "Azok a tagok, akik ugyanannak tűnnek — ellenőrizzétek, mielőtt összevonnád őket.",
+      "menuItem": "Másolatok",
+      "scanAction": "Duplikátumok szkennelése",
+      "scanSuccess": "{count, plural, =0 {Nincsenek duplikátumok függőben} one {1 duplikátum függőben} other {# duplikáták várnak}}",
+      "scanError": "Hiba duplikátumok keresése",
+      "searchPlaceholder": "Keress egy tagot...",
+      "matchedFields": {
+        "EMAIL": "E-mail",
+        "NAME": "Név"
+      },
+      "columns": {
+        "membreA": "A tag",
+        "membreB": "B tag",
+        "matchedFields": "Ehhez kapcsolódó kritériumok",
+        "detectedAt": "Észlelve",
+        "status": "Státusz"
+      },
+      "status": {
+        "PENDING": "Függőben",
+        "DISMISSED": "Figyelmen kívül hagyva",
+        "MERGED": "Összeolvadt"
+      },
+      "autoDismissedLabel": "(autó)",
+      "compareAction": "Összehasonlítás",
+      "dismissAction": "Figyelmen kívül hagyás",
+      "empty": "Nincsenek másolatok.",
+      "emptyForSearch": "Nincs eredmény \" {search} ».",
+      "restoreAction": "Helyreállítás"
+    },
+    "merge": {
+      "backLink": "Hátra",
+      "title": "Összehasonlítás és összevonás",
+      "subtitle": "Válaszd ki, melyik tagot tartod meg, és minden mező esetében melyik értéket tartsd meg.",
+      "alreadyMerged": "Ez a másolat már össze van olvasztva.",
+      "keepAsPrimary": "Igazgatóként maradjon",
+      "fieldsTitle": "Különböző területek",
+      "fields": {
+        "firstName": "Keresztnév",
+        "lastName": "Név",
+        "email": "E-mail",
+        "phone": "Telefon",
+        "birthDate": "Születési dátum",
+        "civilite": "Cím",
+        "address": "Cím",
+        "addressStreet": "Pálya",
+        "addressComplement": "További cím",
+        "postalCode": "Kód postai",
+        "city": "Város",
+        "country": "Country",
+        "groupeSanguin": "Vércsoport",
+        "sexe": "Nemek",
+        "allergies": "Allergiák",
+        "photoUrl": "Fotó",
+        "preferredLocale": "Preferált nyelv",
+        "spokenLanguage": "Beszélt nyelv",
+        "possedeTshirt": "Pólója van",
+        "tailleTshirt": "Pólóméret",
+        "typeId": "Tagtípus",
+        "notes": "Jegyzetek",
+        "guardianName": "A törvényes gyám neve",
+        "guardianPhone": "A törvényes gyám telefonszáma",
+        "secondGuardianName": "A második törvényes gyám neve",
+        "secondGuardianPhone": "A második törvényes gyám telefonszáma",
+        "imageRightsConsent": "Képi jogok",
+        "imageRightsConsentAt": "A beleegyezés dátuma (képjogok)"
+      },
+      "relatedDataTitle": "Kapcsolódó adatok",
+      "relations": {
+        "cotisations": "Hozzájárulások",
+        "participations": "Eseményregisztrációk",
+        "dons": "Adományok",
+        "membershipAddonPurchases": "Megvásárolt tagsági lehetőségek",
+        "automationLogs": "Aktivált automatizációk",
+        "emailMessages": "Küldött e-mailek",
+        "smsMessages": "SMS küldés",
+        "incomes": "Bevételek",
+        "materialLoans": "Felszereléshitelek",
+        "boutiqueCommandes": "Bolti rendelések",
+        "actualiteRecipients": "Híradók",
+        "sondageRecipients": "Felmérés kedvezményezettek",
+        "sondageReponses": "Felmérési válaszok",
+        "meetingParticipants": "Részvétel a találkozókon",
+        "erasureRequests": "Törlési kérelek",
+        "dependants": "Hozzátartozott (függő) tagok",
+        "cotisationSubscription": "Aktív tagsági előfizetés",
+        "controlAlert": "Aktív irányítási riasztás"
+      },
+      "relatedDataCounts": "{primary} → {secondary}",
+      "conflictWarning": "⚠ {reason}",
+      "dismissAction": "Ne hagyd figyelmen kívül ezt a másolatot",
+      "mergeAction": "Egyesülés",
+      "mergeConfirmTitle": "Egyesíteni ezt a két tagot?",
+      "mergeConfirmDescription": "A másodlagos tagtól származó összes kapcsolódó adat átkerül az elsődleges taghoz. Ez a művelet nem vonható vissza az interfészről.",
+      "mergeConfirmDescriptionWithPortalWarning": "Mindkét tagnak van portálfiókja — a másodlakos tag fiókja deaktiválódik. Minden egyéb kapcsolódó adatot áthelyeznek az elsődleges tagnak. Ez a művelet nem vonható vissza a felületről.",
+      "mergeConfirmDescriptionAdoptsPortal": "A másodlagos tag portálfiókját a fő tag veszi át. Minden egyéb kapcsolódó adatot áthelyeznek. Ez a művelet nem vonható vissza az interfészről.",
+      "mergeSuccess": "{count, plural, =0 {Az egyesülés befejeződött} one {Összevonás — 1 tétel áthelyezve} other {Összevonás — # átvitt tárgyak}}",
+      "mergeError": "Hiba összevonása",
+      "relatedDataEmpty": "Egyik taghoz sem kötött adat."
+    },
+    "backoffice": {
+      "title": "Duplikáttagok",
+      "subtitle": "Minden assszociációban potenciális duplikátumokat észleltek.",
+      "columns": {
+        "association": "Szövetség"
+      },
+      "changeAssociation": "Changer d''association",
+      "associationSearchPlaceholder": "Keress egy kapcsolatot...",
+      "typeToSearch": "Nyomd meg a kereséshez...",
+      "loading": "Betöltés...",
+      "noResults": "Nincs eredmény.",
+      "scanAction": "Szkenner"
+    }
   }
 }

@@ -5,6 +5,7 @@
     "delete": "Șterge",
     "add": "Adaugă",
     "edit": "Editează",
+    "view": "Vezi detalii",
     "confirm": "Confirmă",
     "close": "Închide",
     "back": "Înapoi",
@@ -41,6 +42,7 @@
     "location": "Localizare",
     "choosePlaceholder": "Alege...",
     "allPlaceholder": "Toate",
+    "noOptionsPlaceholder": "Nu există opțiuni disponibile",
     "previousPage": "Pagina anterioară",
     "nextPage": "Pagina următoare",
     "paginationRange": "{from}–{to} / {total}",
@@ -51,7 +53,10 @@
     "addressPlaceholder": "Salle des fêtes, 12 rue de la Paix, Paris...",
     "viewOnGoogleMaps": "Vezi pe Google Maps",
     "backToSite": "Înapoi la site",
-    "noOptionsPlaceholder": "Nu există opțiuni disponibile"
+    "period": {
+      "exercice": "Exercițiu {year}",
+      "exerciceRange": "Exercițiu {startYear}–{endYear}"
+    }
   },
   "address": {
     "street": "Adresă",
@@ -59,8 +64,30 @@
     "complementPlaceholder": "Clădire, etaj, cutie poștală…",
     "postalCode": "Cod poștal",
     "city": "Oraș",
-    "country": "Țară",
+    "country": "Țara de reședință",
     "legacyMigratedHint": "Copiat din vechiul câmp de adresă — verificați dacă nu conține deja codul poștal și orașul de mai jos."
+  },
+  "avis": {
+    "invalidLink": "Acest link de recenzie este invalid.",
+    "thanks": "Mulțumesc pentru recenzie!",
+    "notEligible": "Doar participanții la eveniment pot lăsa o recenzie.",
+    "greeting": "Bună {firstName}, cum ți s-a părut acest eveniment?",
+    "commentPlaceholder": "Aveți vreun comentariu? (opțional)",
+    "submit": "Trimite-mi recenzia",
+    "ratingRequired": "Alege o notă",
+    "networkError": "Eroare de rețea",
+    "genericError": "Eroare",
+    "publicationQuestion": "Permiteți publicarea opiniei dumneavoastră pe site-ul asociației și pe rețelele sociale?",
+    "publicationYes": "Da, autorizez publicarea.",
+    "publicationNo": "Nu, opinia mea va rămâne accesibilă doar managerilor asociației.",
+    "publicationRequired": "Mulțumesc că ai răspuns la această întrebare.",
+    "identificationQuestion": "Cum ai vrea să fii identificat?",
+    "identificationNamed": "Cu prenumele și numele meu de familie",
+    "identificationAnonymous": "Anonim",
+    "identificationRequired": "Vă rugăm să alegeți o opțiune.",
+    "manageConsentTitle": "Gestionarea permisiunii de publicare",
+    "updateConsent": "Actualizează-mi preferințele",
+    "consentUpdated": "Preferințele tale au fost actualizate."
   },
   "auth": {
     "layout": {
@@ -80,6 +107,8 @@
       "heading": "Conectează-te",
       "subtitle": "Introdu datele tale de autentificare pentru a accesa spațiul tău.",
       "suspended": "Abonamentul asociației dumneavoastră este suspendat. Contactați administratorul pentru a stabili situația.",
+      "errorMulti": "Mai multe conturi corespund acestui email Google. Conectează-te cu parola ta.",
+      "error2faRequired": "Autentificarea în doi pași este activată pe acest cont. Conectează-te cu parola ta.",
       "noAccount": "Nu ai încă un cont?",
       "createAccount": "Creează un cont",
       "form": {
@@ -91,6 +120,17 @@
         "connecting": "Se conectează…",
         "or": "sau",
         "continueWithGoogle": "Continuă cu Google"
+      },
+      "twoFactor": {
+        "title": "Verificare în doi pași",
+        "descriptionTotp": "Introdu codul de 6 cifre afișat în aplicația ta de autentificare.",
+        "descriptionBackup": "Introdu unul dintre codurile tale de rezervă.",
+        "codeLabel": "Cod de verificare",
+        "backupCodeLabel": "Cod de rezervă",
+        "submit": "Bifat",
+        "back": "Înapoi",
+        "useBackupCode": "Folosește un cod de rezervă",
+        "useAuthenticatorCode": "Folosește codul aplicației"
       }
     },
     "register": {
@@ -224,6 +264,7 @@
       "title": "Zona membrilor",
       "subtitle": "Conectează-te pentru a accesa spațiul tău.",
       "suspendedNotice": "Abonamentul acestei asociații este suspendat. Contactați administratorul pentru a regulariza situația.",
+      "selfRegisterDisabledNotice": "Crearea de cont self-service nu mai este disponibilă. Contactați un administrator din organizația dumneavoastră pentru acces.",
       "emailLabel": "Adresă de email",
       "emailPlaceholder": "contact@association.fr",
       "passwordLabel": "Parolă",
@@ -316,6 +357,7 @@
     "vat": "TVA",
     "totalDiscount": "Reducere totală",
     "total": "Total",
+    "paymentMethod": "Metoda de plată",
     "paymentTerms": "Termeni de plată",
     "paymentTermsPlaceholder": "de exemplu, plată în 30 de zile",
     "notes": "Note",
@@ -371,7 +413,9 @@
     "viewDocument": "Vizualizați documentul",
     "remove": "Șterge",
     "uploading": "Încărcăm...",
-    "attach": "Atașează imaginea sau PDF-ul (maxim 4 MB)"
+    "attach": "Atașează imaginea sau PDF-ul (maxim 4 MB)",
+    "attachPdf": "Importă un PDF (maxim 4 MB)",
+    "pdfOnly": "Sunt acceptate doar fișierele PDF"
   },
   "factures": {
     "form": {
@@ -646,13 +690,20 @@
       "amount": "Sumă",
       "statusOptions": {
         "aPayer": "Plătibil",
+        "partiellementPayee": "Parțial plătit",
         "payee": "Plătit",
         "enLitige": "În dispută",
         "annulee": "Anulat"
       },
-      "unmarkPaidWarning": "Acest document este plătit în prezent — eliminarea acestui statut va elimina cheltuielile generate în Finanțe, precum și orice reconciliere bancară.",
-      "markPaidNotice": "Marcarea acestui document ca plătită va crea automat o cheltuială corespunzătoare în Finanțe.",
       "file": "Document",
+      "payment": {
+        "add": "Înregistrează o plată",
+        "title": "Înregistrează o plată",
+        "paidOf": "plătit",
+        "toasts": {
+          "recorded": "Plata înregistrată"
+        }
+      },
       "toasts": {
         "uploadError": "Eroare la încărcarea documentului",
         "networkError": "Încărcarea erorilor de rețea — încearcă din nou"
@@ -863,6 +914,10 @@
       "userMenu": {
         "title": "Profilul tău",
         "description": "Editează-ți profilul, schimbă-ți parola și deconectează-te din acest meniu."
+      },
+      "help": {
+        "title": "Ai nevoie de ajutor?",
+        "description": "Atât! Acest buton deschide Centrul de Ajutor: articole, întrebări frecvente, vrăjitor și știri. Poți, de asemenea, să reîncepi această vizită din subsol."
       }
     }
   },
@@ -878,6 +933,8 @@
       "import": "Import",
       "reconciliation": "Conciliere",
       "categories": "Categorii",
+      "immobilisations": "Active de capital",
+      "journalManual": "Scrierea manuală",
       "reports": "Rapoarte",
       "bilan": "Bilanț",
       "compteResultat": "Cont de profit și pierdere",
@@ -894,9 +951,358 @@
       "title": "În curând",
       "description": "Această funcție este în curs de dezvoltare."
     },
+    "immobilisationsView": {
+      "title": "Active de capital",
+      "description": "Active depreciabile (tangibile și intangibile) și programul lor de amortizare.",
+      "add": "Adaugă în coș",
+      "newTitle": "Noi active de capital",
+      "noImmobilisations": "Fără timp mort",
+      "columns": {
+        "label": "Denumire",
+        "entryValue": "Valoarea brută",
+        "accumulated": "Amortizare și amortizare",
+        "netValue": "Averea netă",
+        "usageStartDate": "Punerea în funcțiune"
+      },
+      "deleteConfirmTitle": "Abolirea acestei imobilizări?",
+      "toasts": {
+        "created": "Activ fix creat",
+        "updated": "Activ fix actualizat",
+        "deleted": "Activ fix eliminat"
+      },
+      "drillDown": {
+        "title": "Amortizare și amortizare",
+        "exercice": "Exercițiu",
+        "dotation": "Personal",
+        "accumulated": "Acumulare",
+        "netValue": "Averea netă",
+        "noDepreciations": "Nu s-a înregistrat niciun premiu în bani în acest moment"
+      }
+    },
+    "immobilisationForm": {
+      "label": "Denumire",
+      "labelPlaceholder": "Ex: Laptop — Desktop",
+      "expense": "Cheltuieli pentru achiziții",
+      "expensePlaceholder": "Alege o cheltuială marcată \"capital\"",
+      "noEligibleExpenses": "Fără cheltuieli eligibile — marchează o cheltuială ca capital și clasifică-o pe contul 218300 (proprietate) sau 205000 (intangibil).",
+      "entryValue": "Valoarea de intrare",
+      "residualValue": "Valoare reziduală",
+      "acquisitionDate": "Data achiziției",
+      "usageStartDate": "Data intrării în serviciu",
+      "usefulLifeMonths": "Durata utilizării (luni)"
+    },
+    "journalManual": {
+      "title": "Scrierea manuală",
+      "description": "Începe o înregistrare contabilă pentru o sumă pe care o decizi — proviziune, depozit de garanție, acumulare — când nicio caracteristică nu o calculează automat.",
+      "newEntry": "Scrieri noi",
+      "exercice": "Exercițiu",
+      "date": "Data",
+      "label": "Formulare",
+      "labelPlaceholder": "Ex: Prevedere pentru litigii — dosar 2026-04",
+      "account": "Cont",
+      "accountPlaceholder": "Alege un cont",
+      "debit": "Debit",
+      "credit": "Credit",
+      "totals": "Totaluri de debit/credit",
+      "addLine": "Adaugă un rând",
+      "mustBalance": "Debitul și creditul trebuie să fie egale și nezero.",
+      "missingAccount": "Fiecare linie trebuie să aibă un cont.",
+      "cancel": "Anulează",
+      "submit": "Începe să scrii",
+      "createSuccess": "Intrare creată",
+      "noOpenExercice": "Fără exerciții deschise — deschide sau redeschide un an fiscal înainte de a începe o introducere manuală."
+    },
+    "bilan": {
+      "title": "Bilanț",
+      "description": "Active și pasive ale asociației la sfârșitul anului financiar.",
+      "exerciceLabel": "Exercițiu",
+      "rubriqueColumnLabel": "Secțiune",
+      "noPreviousExercice": "Nu există o comparație disponibilă",
+      "actif": "Activitate",
+      "totalActif": "Total Activ",
+      "passif": "Pasiv",
+      "totalPassif": "Datoriile totale",
+      "noAccountsInRubrique": "Niciun echilibru în această secțiune",
+      "exportPdf": "Export PDF",
+      "exportDisabledTooltip": "Nu se poate exporta un Bilanț Final până când anomaliile de mai sus nu sunt corectate.",
+      "emptyExercice": {
+        "title": "Fără exercițiu fiscal",
+        "description": "Creează un nou an fiscal pentru a vizualiza Bilanțul."
+      },
+      "emptyLedger": {
+        "title": "Fără înregistrări contabile",
+        "description": "Bilanțul va fi afișat imediat ce veniturile, cheltuielile sau activele fixe au fost înregistrate în acest an financiar."
+      },
+      "rubriques": {
+        "immobilisationsCorporelles": "Active de capital tangibil",
+        "immobilisationsIncorporelles": "Active fixe intangibile",
+        "immobilisationsFinancieres": "Active fixe financiare",
+        "disponibilites": "Disponibilitate",
+        "chargesConstateesDavance": "Cheltuieli plătite în avans",
+        "creances": "Creanțe",
+        "stocksEtEnCours": "Inventar",
+        "fondsPropres": "Acțiuni",
+        "provisions": "Provizioane",
+        "dettes": "Datorii",
+        "produitsConstatesDavance": "Venit amânat",
+        "fondsDedies": "Fonduri restricționate"
+      },
+      "memoNotice": "Estimare — neînregistrată în registru, exclusă din totalul activelor.",
+      "accountLabels": {
+        "reportANouveau": "Câștiguri reținute",
+        "resultatExercice": "Venit net pentru an",
+        "creancesCotisations": "Taxe restante de membru",
+        "creancesFactures": "Facturi restante",
+        "stocksEstimatedValue": "Valoarea estimată a stocului",
+        "creancesFacturesEnRetard": "Facturi restante"
+      },
+      "pdf": {
+        "periodLabel": "Perioada {start} – {end}"
+      },
+      "drillDown": {
+        "date": "Data",
+        "label": "Etichetă",
+        "origin": "Origine",
+        "debit": "Debit",
+        "credit": "Credit",
+        "noLines": "Nicio înregistrare pentru acest cont.",
+        "sourceTypes": {
+          "INCOME": "Venituri",
+          "INCOME_REVERSAL": "Inversarea veniturilor",
+          "EXPENSE": "Cheltuieli",
+          "EXPENSE_REVERSAL": "Inversarea cheltuielilor",
+          "BANK_TRANSACTION": "Tranzacție bancară",
+          "ACCOUNT_TRANSFER": "Transfer intern",
+          "OPENING_BALANCE": "Balansul de deschidere",
+          "IMMOBILISATION_DEPRECIATION": "Amortizare",
+          "IMMOBILISATION_ACQUISITION": "Achiziția de active",
+          "FACTURE_RECUE_PAYMENT": "Plata furnizorului",
+          "MANUAL": "Intrare manuală"
+        }
+      },
+      "issues": {
+        "title": "Anomalii detectate",
+        "messages": {
+          "ACCOUNT_WITHOUT_RUBRIQUE": "Contul {code} — {label} are un sold, dar nu este atașat niciunui element din Bilanț.",
+          "ACTIF_PASSIF_MISMATCH": "Activul ({actif}) nu corespunde pasivului ({passif}).",
+          "OPENING_BALANCE_MISSING": "Nu au fost generate intrări de deschidere pentru acest exercițiu din \"{previousLabel}\".",
+          "TRIAL_BALANCE_UNBALANCED": "Debitul total ({debit}) nu corespunde cu creditul total ({credit}) pentru acest an fiscal.",
+          "RESULT_DIVERGENCE": "Rezultatul jurnalului ({journal}) diferă de cel al contului de profit și pierdere ({statement}) — jurnalul poate să nu fie încă actualizat pentru acest exercițiu fiscal (închiderea anului fiscal sau sincronizarea reluată)."
+        }
+      },
+      "memoNoHistory": "Fără date istorice",
+      "caveats": {
+        "stocksMissingCostPrice": "{count} variante fără cost de achiziție înregistrat, excluse din estimare"
+      }
+    },
+    "compteResultat": {
+      "title": "Contul de rezultat",
+      "description": "Rezultatul financiar al exercițiului, comparat cu exercițiul precedent.",
+      "exerciceLabel": "Exercițiu",
+      "categoryColumnLabel": "Categorie",
+      "noPreviousExercice": "-",
+      "noPreviousExerciceMessage": "Niciun exercițiu anterior disponibil",
+      "export": "Exportă",
+      "exportExcel": "Exportă Excel (detaliat)",
+      "exportPdf": "Exportă PDF",
+      "products": "Venituri",
+      "totalProducts": "Total venituri",
+      "expenses": "Cheltuieli",
+      "totalExpenses": "Total cheltuieli",
+      "result": "Rezultatul exercițiului",
+      "resultZero": "Rezultatul exercițiului: 0 €",
+      "surplus": "Excedentul exercițiului",
+      "deficit": "Deficitul exercițiului",
+      "operationalResult": "Rezultat operațional",
+      "uncategorized": "De categorisit",
+      "uncategorizedAlertIncome": "{count, plural, one {# venit trebuie categorisit} few {# venituri trebuie categorisite} other {# de venituri trebuie categorisite}}",
+      "uncategorizedAlertExpense": "{count, plural, one {# cheltuială trebuie categorisită} few {# cheltuieli trebuie categorisite} other {# de cheltuieli trebuie categorisite}}",
+      "expandSection": "Afișează",
+      "collapseSection": "Ascunde",
+      "noCategoriesInSection": "Nicio categorie în această secțiune",
+      "sections": {
+        "FINANCIAL": "Financiar",
+        "EXCEPTIONAL": "Excepțional",
+        "OTHER": "Altele"
+      },
+      "inKind": {
+        "title": "Contribuții voluntare în natură",
+        "employmentHeader": "Utilizarea contribuțiilor",
+        "amountHeader": "Sumă",
+        "receivedHeader": "Contribuții primite",
+        "totalEmployments": "Total locuri de muncă",
+        "totalReceived": "Contribuții totale",
+        "note": "Aceste contribuții gratuite sunt evaluate în euro. Ele nu conduc la nicio mișcare de bani și nu schimbă rezultatul exercițiului financiar."
+      },
+      "drillDown": {
+        "date": "Dată",
+        "origin": "Origine",
+        "person": "Persoană",
+        "payment": "Plată",
+        "amount": "Sumă",
+        "categorize": "Categorisește",
+        "categorizePlaceholder": "Alege o categorie",
+        "noTransactions": "Nicio tranzacție",
+        "categorizeSuccess": "Tranzacție categorisită"
+      },
+      "pdf": {
+        "periodLabel": "Perioada {start} – {end}",
+        "operatingIncome": "VENITURI DIN EXPLOATARE",
+        "operatingExpense": "CHELTUIELI DIN EXPLOATARE",
+        "operatingResult": "REZULTATUL DIN EXPLOATARE",
+        "financialIncome": "VENITURI FINANCIARE",
+        "financialExpense": "CHELTUIELI FINANCIARE",
+        "financialResult": "REZULTATUL FINANCIAR",
+        "exceptionalIncome": "VENITURI EXCEPȚIONALE",
+        "exceptionalExpense": "CHELTUIELI EXCEPȚIONALE",
+        "exceptionalResult": "REZULTATUL EXCEPȚIONAL",
+        "otherIncome": "ALTE VENITURI",
+        "otherExpense": "ALTE CHELTUIELI",
+        "otherResult": "REZULTATUL DIN ALTE VENITURI ȘI CHELTUIELI",
+        "uncategorizedSection": "TRANZACȚII DE CATEGORISIT",
+        "uncategorizedIncomeLabel": "Venituri de categorisit",
+        "uncategorizedExpenseLabel": "Cheltuieli de categorisit",
+        "total": "Total",
+        "grandTotal": "TOTAL",
+        "categoryColumn": "Categorie",
+        "inKindTitle": "Contribuții voluntare în natură",
+        "inKindEmploymentHeader": "Utilizarea contribuțiilor",
+        "inKindAmountHeader": "Sumă",
+        "inKindReceivedHeader": "Contribuții primite",
+        "inKindTotalEmployments": "Total locuri de muncă",
+        "inKindTotalReceived": "Contribuții totale",
+        "inKindNote": "Aceste contribuții gratuite sunt evaluate în euro. Ele nu conduc la nicio mișcare de bani și nu schimbă rezultatul exercițiului financiar."
+      },
+      "csv": {
+        "date": "Dată",
+        "type": "Tip",
+        "typeIncome": "Venit",
+        "typeExpense": "Cheltuială",
+        "category": "Categorie",
+        "uncategorized": "De categorisit",
+        "accountingCode": "Cod contabil",
+        "description": "Descriere",
+        "amount": "Sumă",
+        "paymentMethod": "Metodă de plată",
+        "origin": "Origine",
+        "reference": "Referință",
+        "exercice": "Exercițiu financiar"
+      },
+      "emptyExercice": {
+        "title": "Niciun exercițiu financiar",
+        "description": "Creați un exercițiu financiar pentru a genera contul de rezultat."
+      }
+    },
+    "previsionnel": {
+      "title": "Buget provizoriu",
+      "description": "Compară bugetul planificat cu cel real, pe categorii și pe proiecte.",
+      "exerciceLabel": "Exercițiu",
+      "emptyExercice": {
+        "title": "Fără exercițiu fiscal",
+        "description": "Creează un an fiscal pentru a pregăti bugetul proiectat."
+      },
+      "tabs": {
+        "global": "Buget global",
+        "projects": "După proiect"
+      },
+      "income": "Rețete",
+      "expense": "Cheltuieli",
+      "result": "Rezultat",
+      "card": {
+        "previsto": "Planificat",
+        "diff": "Varianță",
+        "percent": "Finalizat"
+      },
+      "columns": {
+        "category": "Categorie",
+        "previsto": "Planificat",
+        "realizado": "Finalizat",
+        "diffPercent": "Varianță / % realizat",
+        "total": "Total"
+      },
+      "noCategories": "Fără categorie.",
+      "uncategorized": "Să fie încadrat",
+      "noProject": "Fără un proiect",
+      "addCategory": "Adaugă o categorie",
+      "addCategoryModalTitle": "Adaugă o categorie",
+      "exportFileNameGlobal": "Bugetul global de prognoză",
+      "export": {
+        "action": "Export",
+        "excel": "Exporter Excel",
+        "pdf": "Exporter PDF",
+        "diffColumn": "Distribuție (€)",
+        "percentColumn": "Procentaj finalizat",
+        "associationLabel": "Asociere",
+        "exerciceLabel": "Exercițiu"
+      },
+      "toasts": {
+        "categoryCreated": "Categorie creată.",
+        "updateError": "Eroare la actualizare."
+      },
+      "copyBudget": {
+        "action": "Copiază bugetul anterior",
+        "modalTitle": "Copiază bugetul anterior",
+        "modalDescription": "Copiază previziunile lui {previous} la {target}. Doar previziunile sunt copiate, niciodată sumele realizate.",
+        "allProjects": "Toate proiectele",
+        "noProjects": "Niciun plan.",
+        "archived": "ARHIVAT",
+        "noProjectAlwaysCopied": "Previziunile fără proiect sunt întotdeauna copiate.",
+        "copy": "Recepționat",
+        "confirmOverwriteTitle": "Să înlocuiești previziunile existente?",
+        "confirmOverwriteDescription": "Acest exercițiu are deja prognoze diferite de zero pentru unele categorii. Copierea lor din anul fiscal precedent va anula aceste valori.",
+        "confirmOverwriteAction": "Înlocuiește",
+        "toasts": {
+          "copied": "{count, plural, one {# prognoză copiată.} other {# previziuni copiate.}}",
+          "error": "Eroare la copiere."
+        }
+      },
+      "projectsTab": {
+        "count": "{count, plural, one {# proiect} other {# proiecte}}",
+        "createProject": "Creează un proiect",
+        "createModalTitle": "Creează un proiect",
+        "editProject": "Editare",
+        "editModalTitle": "Editare proiect",
+        "name": "Nume proiect",
+        "namePlaceholder": "Ex: Excursie anuală",
+        "description": "Descriere",
+        "descriptionPlaceholder": "Descriere: facultativă",
+        "archive": "Arhivă",
+        "unarchive": "Unarchive",
+        "archived": "ARHIVAT",
+        "showArchived": "Vizualizați proiectele arhivate ({count})",
+        "hideArchived": "Ascunde proiectele arhivate",
+        "noProjects": {
+          "title": "Fără proiecte",
+          "description": "Creează un proiect pentru a urmări bugetul separat de întreaga asociație."
+        },
+        "addCategoryToProject": "Adaugă o categorie proiectului",
+        "addCategoryModalTitle": "Adaugă o categorie proiectului",
+        "type": "Tip",
+        "typeIncome": "Rețetă",
+        "typeExpense": "Cheltuieli",
+        "category": "Categorie",
+        "selectCategoryPlaceholder": "Selectează o categorie",
+        "createNewCategory": "+ Creează o nouă categorie",
+        "noAvailableCategories": "Toate aceste categorii sunt deja adăugate în acest proiect.",
+        "removeCategoryFromProject": "Scoaterea din proiect",
+        "removeCategoryConfirmTitle": "Să elimini această categorie din proiect?",
+        "removeCategoryConfirmDescription": "« {category} \" va fi eliminată din bugetul acestui proiect. Dacă există deja venituri sau cheltuieli legate de acesta, categoria va reapărea automat cu suma realizată.",
+        "toasts": {
+          "created": "Proiect creat.",
+          "updated": "Draft actualizat.",
+          "archived": "Proiect arhivat.",
+          "unarchived": "Proiect nearhivat.",
+          "categoryAdded": "Categorie adăugată proiectului.",
+          "categoryRemoved": "Categorie eliminată din proiect.",
+          "createError": "Eroare în timpul creării.",
+          "updateError": "Eroare la actualizare."
+        }
+      }
+    },
     "categoryForm": {
       "name": "Nume",
       "namePlaceholder": "Ex: Contribuții",
+      "noMatchingCategory": "Nicio categorie de potrivire",
       "type": "Tip",
       "typeIncome": "Venit",
       "typeExpense": "Cheltuieli",
@@ -909,8 +1315,11 @@
         "FINANCIAL": "Financiar",
         "EXCEPTIONAL": "Excepțional",
         "OTHER": "Altele",
-        "IN_KIND": "Contribuții în natură"
+        "IN_KIND": "Contribuții în natură",
+        "IMMOBILISATION": "Capitală"
       },
+      "accountingCodeLegacyOption": "{code} — (cod vechi, urmează să fie actualizat)",
+      "accountingCodeLegacyWarning": "Acest cod contabil nu mai există în lista controlată — alege un cont valid înainte de a economisi.",
       "accountingCodeFormwiseNote": "Subcont sugerat de Formwise pentru urmărire separată — nu un număr oficial obligatoriu.",
       "suggestedAccounts": "Relatări sugerate",
       "seeOtherAccounts": "Vezi celelalte relatări",
@@ -921,8 +1330,7 @@
       "sectionUnverifiedNote": "Acest cont nu este recunoscut — verifică secțiunea sau alege-l din opțiunile avansate.",
       "sectionToVerify": "Secțiune de verificat",
       "advancedOptions": "Opțiuni avansate",
-      "revertToAutoSection": "Înapoi la secțiunea automată",
-      "noMatchingCategory": "Nicio categorie de potrivire"
+      "revertToAutoSection": "Înapoi la secțiunea automată"
     },
     "bankAccountForm": {
       "bankName": "Nume al băncii",
@@ -959,6 +1367,8 @@
       "date": "Data",
       "category": "Categorie",
       "noCategory": "Fără categorie",
+      "project": "Proiect",
+      "noProject": "Fără proiecte",
       "paymentMethodLabel": "Metoda de plată",
       "reference": "Referință",
       "referencePlaceholder": "Ex: VIR-2024-001",
@@ -978,6 +1388,8 @@
       "internalNote": "Notă internă",
       "internalNotePlaceholder": "Notă pentru trezorier...",
       "receipt": "Demonstrație",
+      "isImmobilisation": "Activ fix (activ depreciabil)",
+      "isImmobilisationHint": "Verifică dacă există o achiziție capitalizabilă (de exemplu, echipamente de birou și de calcul) — poți apoi crea un calendar de amortizare în Finanțe > Active de Capital.",
       "toasts": {
         "uploadError": "Eroare la încărcarea chitanței",
         "networkError": "Încărcarea erorilor de rețea — încearcă din nou"
@@ -1057,6 +1469,33 @@
         "deleted": "Cont șters"
       }
     },
+    "transferForm": {
+      "fromAccount": "Relatare sursă",
+      "toAccount": "Cont de destinație",
+      "amount": "Sumă",
+      "date": "Data",
+      "note": "Notă",
+      "notePlaceholder": "De exemplu, transfer de economii",
+      "toasts": {
+        "created": "Transfer înregistrat",
+        "updated": "Transfer actualizat",
+        "deleted": "Transfer șters"
+      }
+    },
+    "transfersView": {
+      "title": "Transferuri interne",
+      "add": "Transfer",
+      "newTransferTitle": "Transfer nou între conturi",
+      "editTransferTitle": "Editare Transfer",
+      "deleteConfirmTitle": "Să șterg acest transfer?",
+      "noTransfers": "Nu s-au înregistrat transferuri",
+      "columns": {
+        "accounts": "Relatări",
+        "amount": "Sumă",
+        "date": "Data",
+        "note": "Notă"
+      }
+    },
     "categoriesView": {
       "title": "Categorii",
       "description": "Gestionează categoriile de venituri și cheltuieli.",
@@ -1067,13 +1506,21 @@
       "newCategoryTitle": "Categorie nouă",
       "editCategoryTitle": "Editare Categorie",
       "deleteConfirmTitle": "Să șterg această categorie?",
-      "deleteConfirmInUse": "« {name} este folosit de {count, plural, one {# venituri/cheltuieli} other {# venituri/cheltuieli}}. Aceste înregistrări vor deveni \"Necategorizate\".",
       "toasts": {
         "created": "Categorie creată",
         "updated": "Categorie actualizată",
         "deleted": "Categorie ștearsă",
-        "seeded": "{count, plural, one {# categorie inițializată} other {# categorii inițializate}}"
+        "seeded": "{count, plural, one {# categorie inițializată} other {# categorii inițializate}}",
+        "archived": "Categorie arhivată",
+        "reactivated": "Categorie reactivată"
       },
+      "archived": "Arhivat",
+      "reactivate": "Reactivare",
+      "showArchived": "Vezi categoriile arhivate",
+      "transferLimitationNote": "Transferurile între conturile bancare ale asociației (trezorerie internă) nu trebuie niciodată introduse ca venituri sau cheltuieli — înregistrează-le din conturile de contabilitate →.",
+      "archiveConfirmTitle": "Să arhivezi această categorie?",
+      "archiveConfirmInUse": "« {name} este folosit de {count, plural, one {# venituri/cheltuieli} other {# venituri/cheltuieli}}. Va fi arhivată (istoria sa este păstrată) și nu mai poate fi selectată pentru noi operațiuni.",
+      "archive": "Arhivă",
       "chooseTemplateTitle": "Alege un tip de categorie",
       "customCategory": "Creează o categorie personalizată",
       "alreadyExists": "Deja configurat",
@@ -1283,6 +1730,7 @@
         "actions": "Acțiuni"
       },
       "reconciledFallback": "Conciliat",
+      "transferLabel": "Transfer intern — {from} → {to}",
       "allAccounts": "Toate relatările",
       "noTransactions": "Nicio tranzacție de afișat",
       "actions": {
@@ -1315,188 +1763,8 @@
       "suggestedMatches": "Meciuri sugerate",
       "typeIncome": "Venit",
       "typeExpense": "Cheltuieli",
+      "typeTransfer": "Transfer intern",
       "confirm": "Validează concilierea"
-    },
-    "compteResultat": {
-      "title": "Contul de rezultat",
-      "description": "Rezultatul financiar al exercițiului, comparat cu exercițiul precedent.",
-      "exerciceLabel": "Exercițiu",
-      "noPreviousExercice": "-",
-      "export": "Exportă",
-      "exportExcel": "Exportă Excel (detaliat)",
-      "exportPdf": "Exportă PDF",
-      "products": "Venituri",
-      "totalProducts": "Total venituri",
-      "expenses": "Cheltuieli",
-      "totalExpenses": "Total cheltuieli",
-      "result": "Rezultatul exercițiului",
-      "surplus": "Excedentul exercițiului",
-      "deficit": "Deficitul exercițiului",
-      "emptyExercice": {
-        "title": "Niciun exercițiu financiar",
-        "description": "Creați un exercițiu financiar pentru a genera contul de rezultat."
-      },
-      "noPreviousExerciceMessage": "Niciun exercițiu anterior disponibil",
-      "resultZero": "Rezultatul exercițiului: 0 €",
-      "operationalResult": "Rezultat operațional",
-      "uncategorized": "De categorisit",
-      "uncategorizedAlertIncome": "{count, plural, one {# venit trebuie categorisit} few {# venituri trebuie categorisite} other {# de venituri trebuie categorisite}}",
-      "uncategorizedAlertExpense": "{count, plural, one {# cheltuială trebuie categorisită} few {# cheltuieli trebuie categorisite} other {# de cheltuieli trebuie categorisite}}",
-      "expandSection": "Afișează",
-      "collapseSection": "Ascunde",
-      "noCategoriesInSection": "Nicio categorie în această secțiune",
-      "sections": {
-        "FINANCIAL": "Financiar",
-        "EXCEPTIONAL": "Excepțional",
-        "OTHER": "Altele"
-      },
-      "drillDown": {
-        "date": "Dată",
-        "origin": "Origine",
-        "person": "Persoană",
-        "payment": "Plată",
-        "amount": "Sumă",
-        "categorize": "Categorisește",
-        "categorizePlaceholder": "Alege o categorie",
-        "noTransactions": "Nicio tranzacție",
-        "categorizeSuccess": "Tranzacție categorisită"
-      },
-      "pdf": {
-        "periodLabel": "Perioada {start} – {end}",
-        "operatingIncome": "VENITURI DIN EXPLOATARE",
-        "operatingExpense": "CHELTUIELI DIN EXPLOATARE",
-        "operatingResult": "REZULTATUL DIN EXPLOATARE",
-        "financialIncome": "VENITURI FINANCIARE",
-        "financialExpense": "CHELTUIELI FINANCIARE",
-        "financialResult": "REZULTATUL FINANCIAR",
-        "exceptionalIncome": "VENITURI EXCEPȚIONALE",
-        "exceptionalExpense": "CHELTUIELI EXCEPȚIONALE",
-        "exceptionalResult": "REZULTATUL EXCEPȚIONAL",
-        "otherIncome": "ALTE VENITURI",
-        "otherExpense": "ALTE CHELTUIELI",
-        "otherResult": "REZULTATUL DIN ALTE VENITURI ȘI CHELTUIELI",
-        "uncategorizedSection": "TRANZACȚII DE CATEGORISIT",
-        "uncategorizedIncomeLabel": "Venituri de categorisit",
-        "uncategorizedExpenseLabel": "Cheltuieli de categorisit",
-        "total": "Total",
-        "grandTotal": "TOTAL",
-        "categoryColumn": "Categorie",
-        "inKindTitle": "Contribuții voluntare în natură",
-        "inKindEmploymentHeader": "Utilizarea contribuțiilor",
-        "inKindAmountHeader": "Sumă",
-        "inKindReceivedHeader": "Contribuții primite",
-        "inKindTotalEmployments": "Total locuri de muncă",
-        "inKindTotalReceived": "Contribuții totale",
-        "inKindNote": "Aceste contribuții gratuite sunt evaluate în euro. Ele nu conduc la nicio mișcare de bani și nu schimbă rezultatul exercițiului financiar."
-      },
-      "csv": {
-        "date": "Dată",
-        "type": "Tip",
-        "typeIncome": "Venit",
-        "typeExpense": "Cheltuială",
-        "category": "Categorie",
-        "uncategorized": "De categorisit",
-        "accountingCode": "Cod contabil",
-        "description": "Descriere",
-        "amount": "Sumă",
-        "paymentMethod": "Metodă de plată",
-        "origin": "Origine",
-        "reference": "Referință",
-        "exercice": "Exercițiu financiar"
-      },
-      "categoryColumnLabel": "Categorie",
-      "inKind": {
-        "title": "Contribuții voluntare în natură",
-        "employmentHeader": "Utilizarea contribuțiilor",
-        "amountHeader": "Sumă",
-        "receivedHeader": "Contribuții primite",
-        "totalEmployments": "Total locuri de muncă",
-        "totalReceived": "Contribuții totale",
-        "note": "Aceste contribuții gratuite sunt evaluate în euro. Ele nu conduc la nicio mișcare de bani și nu schimbă rezultatul exercițiului financiar."
-      }
-    },
-    "bilan": {
-      "title": "Bilanț",
-      "description": "Active și pasive ale asociației la sfârșitul anului financiar.",
-      "exerciceLabel": "Exercițiu",
-      "rubriqueColumnLabel": "Secțiune",
-      "noPreviousExercice": "Nu există o comparație disponibilă",
-      "actif": "Activitate",
-      "totalActif": "Total Activ",
-      "passif": "Pasiv",
-      "totalPassif": "Datoriile totale",
-      "noAccountsInRubrique": "Niciun echilibru în această secțiune",
-      "emptyExercice": {
-        "title": "Fără exercițiu fiscal",
-        "description": "Creează un nou an fiscal pentru a vizualiza Bilanțul."
-      },
-      "emptyLedger": {
-        "title": "Fără înregistrări contabile",
-        "description": "Bilanțul va fi afișat imediat ce veniturile, cheltuielile sau activele fixe au fost înregistrate în acest an financiar."
-      },
-      "rubriques": {
-        "immobilisationsCorporelles": "Active de capital tangibil",
-        "disponibilites": "Disponibilitate",
-        "fondsPropres": "Acțiuni",
-        "dettes": "Datorii",
-        "immobilisationsIncorporelles": "Active fixe intangibile",
-        "immobilisationsFinancieres": "Active fixe financiare",
-        "chargesConstateesDavance": "Cheltuieli plătite în avans",
-        "provisions": "Provizioane",
-        "produitsConstatesDavance": "Venit amânat",
-        "creances": "Creanțe",
-        "stocksEtEnCours": "Inventar",
-        "fondsDedies": "Fonduri restricționate"
-      },
-      "issues": {
-        "title": "Anomalii detectate",
-        "messages": {
-          "ACCOUNT_WITHOUT_RUBRIQUE": "Contul {code} — {label} are un sold, dar nu este atașat niciunui element din Bilanț.",
-          "ACTIF_PASSIF_MISMATCH": "Activul ({actif}) nu corespunde pasivului ({passif}).",
-          "OPENING_BALANCE_MISSING": "Nu au fost generate intrări de deschidere pentru acest exercițiu din \"{previousLabel}\".",
-          "TRIAL_BALANCE_UNBALANCED": "Debitul total ({debit}) nu corespunde cu creditul total ({credit}) pentru acest an fiscal.",
-          "RESULT_DIVERGENCE": "Rezultatul jurnalului ({journal}) diferă de cel al contului de profit și pierdere ({statement}) — jurnalul poate să nu fie încă actualizat pentru acest exercițiu fiscal (închiderea anului fiscal sau sincronizarea reluată)."
-        }
-      },
-      "accountLabels": {
-        "reportANouveau": "Câștiguri reținute",
-        "resultatExercice": "Venit net pentru an",
-        "creancesCotisations": "Taxe restante de membru",
-        "creancesFactures": "Facturi restante",
-        "stocksEstimatedValue": "Valoarea estimată a stocului",
-        "creancesFacturesEnRetard": "Facturi restante"
-      },
-      "exportPdf": "Export PDF",
-      "exportDisabledTooltip": "Nu se poate exporta un Bilanț Final până când anomaliile de mai sus nu sunt corectate.",
-      "pdf": {
-        "periodLabel": "Perioada {start} – {end}"
-      },
-      "drillDown": {
-        "date": "Data",
-        "label": "Etichetă",
-        "origin": "Origine",
-        "debit": "Debit",
-        "credit": "Credit",
-        "noLines": "Nicio înregistrare pentru acest cont.",
-        "sourceTypes": {
-          "INCOME": "Venituri",
-          "INCOME_REVERSAL": "Inversarea veniturilor",
-          "EXPENSE": "Cheltuieli",
-          "EXPENSE_REVERSAL": "Inversarea cheltuielilor",
-          "BANK_TRANSACTION": "Tranzacție bancară",
-          "ACCOUNT_TRANSFER": "Transfer intern",
-          "OPENING_BALANCE": "Balansul de deschidere",
-          "IMMOBILISATION_DEPRECIATION": "Amortizare",
-          "IMMOBILISATION_ACQUISITION": "Achiziția de active",
-          "FACTURE_RECUE_PAYMENT": "Plata furnizorului",
-          "MANUAL": "Intrare manuală"
-        }
-      },
-      "memoNotice": "Estimare — neînregistrată în registru, exclusă din totalul activelor.",
-      "memoNoHistory": "Fără date istorice",
-      "caveats": {
-        "stocksMissingCostPrice": "{count} variante fără cost de achiziție înregistrat, excluse din estimare"
-      }
     }
   },
   "evenements": {
@@ -1711,6 +1979,10 @@
         "titlePlaceholder": "Adunarea Generală 2026",
         "dateLabel": "Data începerii",
         "createButton": "Creează"
+      },
+      "summary": {
+        "eventCount": "Numărul de evenimente",
+        "participants": "Participanți"
       },
       "bilan": {
         "show": "Vezi bilanțul",
@@ -1929,6 +2201,26 @@
         "qrRevoked": "Cod QR dezactivat",
         "noMembersToExport": "Niciun membru de exportat",
         "linkCopied": "Link copiat"
+      },
+      "payment": {
+        "sectionTitle": "Plata",
+        "modeLabel": "Plata",
+        "modeNow": "Plătit acum",
+        "modeLater": "Va fi reparat ulterior",
+        "laterHint": "Locul este rezervat. Apoi încasează-l cu \"Mark Paid\".",
+        "methodLabel": "Metoda de plată",
+        "tierLabel": "Preț",
+        "methods": {
+          "ESPECES": "Specii",
+          "CHEQUE": "Bifat",
+          "VIREMENT": "Transfer"
+        },
+        "encaisserTitle": "Încasare",
+        "encaisserConfirm": "Încasare",
+        "amountHint": "Sumă: {amount}",
+        "selectedMember": "Membru selectat: {name}",
+        "selectMemberHint": "Selectați un membru din lista de mai sus.",
+        "addSubmit": "Adaugă în coș"
       }
     },
     "avaliacoes": {
@@ -1938,8 +2230,14 @@
         "participant": "Participant",
         "rating": "Notă",
         "comment": "Comentariu",
-        "date": "Data"
-      }
+        "date": "Data",
+        "site": "Pe site web"
+      },
+      "anonymousNote": "Anonim",
+      "noConsent": "Fără consimțământ",
+      "featureToggleLabel": "Recenzie a emisiunii {name} La fața locului",
+      "bulkFeatureAll": "Afișați totul la fața locului",
+      "bulkUnfeatureAll": "Elimină totul de pe site"
     },
     "detail": {
       "backToList": "Înapoi la evenimente",
@@ -1965,7 +2263,9 @@
         "saved": "Modificări salvate",
         "saveError": "Înregistrarea erorilor",
         "linkCopied": "Link copiat",
-        "linkCopyError": "Nu se poate copia — selectează manual linkul."
+        "linkCopyError": "Nu se poate copia — selectează manual linkul.",
+        "registrationsClosed": "Înregistrarea a fost închisă",
+        "registrationsReopened": "Înscrierile redeschise"
       },
       "publishBlocked": {
         "unsavedToast": "Salvați următoarele secțiuni înainte de publicare: {steps}",
@@ -1983,6 +2283,7 @@
           "standardFieldsHint": "Câmpuri solicitate la înregistrare",
           "phoneLabel": "Telefon",
           "addressLabel": "Adresă",
+          "countryLabel": "Țara de reședință",
           "requirement": {
             "hidden": "Mască",
             "optional": "Opțional",
@@ -2029,6 +2330,11 @@
         }
       },
       "titleRequired": "Titlul este obligatoriu",
+      "closeRegistrationsButton": "Închide înscrierile",
+      "reopenRegistrationsButton": "Redeschiderea înscrierilor",
+      "registrationsClosedNotice": "Inscripții închise",
+      "closeRegistrationsConfirmTitle": "Închiderea înregistrărilor?",
+      "closeRegistrationsConfirmDescription": "Nimeni nu se va putea înregistra online. Veți putea totuși să adăugați participanți din lista de participanți.",
       "bilanButton": "Bilanț"
     },
     "discountCodes": {
@@ -2310,6 +2616,13 @@
       "liveSince": "Continuă de atunci {mins} min",
       "durationLessThanMin": "< 1 min",
       "durationMin": "{mins} min",
+      "activeMeetingWarning": {
+        "title": "{count, plural, one {O întâlnire este deja în desfășurare} other {# întâlniri sunt deja în desfășurare}}",
+        "description": "{count, plural, one {Ai început această întâlnire și nu ai terminat-o încă. Alătură-te sau creează oricum una nouă.} other {Ai început aceste întâlniri și nu le-ai terminat încă. Participă la una sau creează oricum una nouă.}}",
+        "joinExisting": "Alătură-te",
+        "createNew": "Oricum, creează o nouă întâlnire",
+        "alreadyEnded": "Această ședință s-a încheiat de la sine. Poți crea o nouă întâlnire."
+      },
       "toasts": {
         "meetingStarted": "Ședința a început",
         "meetingScheduled": "Întâlnire programată",
@@ -2715,8 +3028,12 @@
       "validation": {
         "nameRequired": "Este necesar numele",
         "atLeastOneVariant": "Este necesară cel puțin o variantă",
-        "variantLabelRequired": "Fiecare variantă trebuie să aibă o etichetă"
+        "variantLabelRequired": "Fiecare variantă trebuie să aibă o etichetă",
+        "weightRequiredWhenShippable": "Greutatea este obligatorie pentru o variantă cu livrare poștală"
       },
+      "shippableColumn": "Transport maritim",
+      "weightColumn": "Greutate (g)",
+      "weightPlaceholder": "500",
       "costPriceColumn": "Cost"
     },
     "view": {
@@ -2738,12 +3055,14 @@
       "variantsCount": "{count, plural, one {# variantă} other {# variante}}",
       "actions": {
         "edit": "Editează",
+        "view": "Vizualizare",
         "delete": "Șterge",
         "deleteAlreadyOrdered": "Șterge (deja comandat)",
         "markPaid": "Mark Paid",
         "cancelOrder": "Anulează",
         "downloadReceipt": "Descarcă chitanța",
-        "editPaymentMethod": "Schimbă metoda de plată"
+        "editPaymentMethod": "Schimbă metoda de plată",
+        "refundOrder": "Răsplătire"
       },
       "noProduct": "Fără produse",
       "noOrder": "Fără ordine",
@@ -2774,7 +3093,9 @@
       "toasts": {
         "productDeleted": "Produs întrerupt",
         "deleteError": "Ștergerea erorilor",
-        "orderUpdated": "Ordine actualizată"
+        "orderUpdated": "Ordine actualizată",
+        "orderNotInRecentList": "Această ordine nu este în cele 50 cele mai recente. Folosește filtrele ca să o găsești.",
+        "refundSuccess": "Ordin rambursat"
       }
     },
     "payModal": {
@@ -2784,6 +3105,13 @@
       "orderedTotal": "Ordinea totală",
       "restockNoticePlural": "{count, plural, one {Stocul obiectului care nu a fost retras va fi restaurat.} other {Stocul de obiecte necolectate va fi restaurat.}}",
       "restockNoticeStatic": "Stocul de obiecte necolectate va fi restaurat."
+    },
+    "refundModal": {
+      "title": "Rambursează comanda",
+      "confirmWithAmount": "Răsplătire {amount}",
+      "stripeNotice": "Rambursarea va fi făcută automat pe cardul clientului.",
+      "manualNotice": "Această acțiune actualizează stocul și contabilitatea — amintește-ți să returnezi banii clientului (numerar, cec sau transfer).",
+      "shippingIncludedNotice": "Costuri de transport ({amount}) sunt incluse în această rambursare."
     },
     "stripeConfirm": {
       "title": "Marcați ca plătit?",
@@ -2991,6 +3319,7 @@
       "noDonations": "Nu s-au înregistrat donații",
       "noDonationsFiltered": "Nicio donație nu corespunde acestor filtre.",
       "resetFilters": "Resetare",
+      "totalLabel": "Total",
       "donorsLabel": "Donatori",
       "averageLabel": "Donație medie",
       "pendingTitle": "Așteptarea colectării",
@@ -3121,6 +3450,7 @@
           "title": "Formă",
           "standardFieldsHint": "Câmpuri solicitate de la donator",
           "addressLabel": "Adresă",
+          "countryLabel": "Țara de reședință",
           "birthDateLabel": "Data nașterii",
           "phoneLabel": "Telefon fix",
           "mobileLabel": "Mobil",
@@ -3178,7 +3508,8 @@
           "siteSectionReplaceWarningPublished": "Această secțiune afișează în prezent „{title}”. La salvare, acest formular îl va înlocui; „{title}” va rămâne accesibil prin propriul link.",
           "siteSectionReplaceWarningDraft": "Această secțiune afișează în prezent „{title}”. Acest formular îl va înlocui imediat ce va fi publicat; „{title}” va rămâne accesibil prin propriul link.",
           "siteSectionRemovedWarning": "La salvare, secțiunea „{section}” va fi ascunsă pe site.",
-          "datesOrderError": "Data de închidere trebuie să fie mai târzie decât data deschiderii."
+          "datesOrderError": "Data de închidere trebuie să fie mai târzie decât data deschiderii.",
+          "siteSectionPuckHint": "Blocuri noi pentru editorul site-ului"
         }
       }
     },
@@ -3394,6 +3725,8 @@
           "kindField": "Tip",
           "kindOneOff": "Punctual",
           "kindRecurring": "Recurring (anual)",
+          "recurringNeedsOnlinePayment": "Se plătește o rată recurentă pentru fiecare abonament online: atâta timp cât plata online nu este activată, apare \"Indisponibil\" pe formular.",
+          "recurringNeedsOnlinePaymentLink": "Configurează plata online",
           "itemTypeField": "Natură",
           "itemTypeMembership": "Rata de membru",
           "itemTypeAddon": "Opțiunea plătită",
@@ -3410,6 +3743,7 @@
           "title": "Formă",
           "standardFieldsHint": "Câmpuri solicitate la înregistrare",
           "addressLabel": "Adresă",
+          "countryLabel": "Țara de reședință",
           "birthDateLabel": "Data nașterii",
           "phoneLabel": "Telefon fix",
           "mobileLabel": "Mobil",
@@ -3432,6 +3766,8 @@
           "fieldLabelPlaceholder": "Ex. Profesie",
           "fieldType": "Tip",
           "fieldRequired": "Obligatoriu",
+          "fieldSensible": "Date sensibile",
+          "fieldSensibleRequiredHint": "Deoarece acest câmp este sensibil și obligatoriu, un manager fără acces la date sensibile nu va putea crea sau modifica un membru fără acces la acesta.",
           "typeText": "Text",
           "typeNumber": "Număr",
           "typeSelect": "Listă derulantă",
@@ -3472,7 +3808,8 @@
           "siteSectionPlaceholder": "Alege...",
           "siteSectionCreateOption": "+ Creează o secțiune nouă",
           "siteSectionCreateError": "Eroare la crearea secțiunii site-ului.",
-          "siteSectionRequiredError": "Alege secțiunea site-ului unde să postezi acest formular."
+          "siteSectionRequiredError": "Alege secțiunea site-ului unde să postezi acest formular.",
+          "siteSectionPuckHint": "Blocuri noi pentru editorul site-ului"
         },
         "products": {
           "title": "Produse",
@@ -3657,6 +3994,12 @@
       "isDefaultHint": "Este folosit automat ca mesaj sugerat pentru această categorie (de exemplu, memento-uri de contribuție trimise de pe pagina Contribuții).",
       "emailSubject": "Subiectul e-mailului",
       "emailSubjectPlaceholder": "Reamintire: contribuția ta '{{annee_cotisation}}'",
+      "modeText": "Text simplu",
+      "modeTextHint": "Un singur câmp de text bogat.",
+      "modeBlocks": "Design vizual",
+      "modeBlocksHint": "Blocuri reordonabile: text, imagine, buton, separator.",
+      "modeBlocksProOnly": "Rezervat pentru planul Pro. Faceți upgrade la următorul plan din fila Abonament pentru a-l activa.",
+      "modeLockedHint": "Modul de editare (text simplu sau design vizual) este setat când șablonul este creat și nu poate fi modificat — creează un șablon nou pentru a folosi celălalt mod.",
       "variablesHint": "Variabile—se trag în subiect, corp sau mesaj text",
       "variables": {
         "prenom": "Prenume",
@@ -3687,6 +4030,8 @@
       "previewTitle": "Previzualizare a mesajului",
       "previewDescription": "Redarea cu date de probă",
       "previewSubject": "Scop",
+      "previewBrandingHint": "Antetul, subsolul și semnătura provin din identitatea vizuală a asociației.",
+      "previewBrandingLink": "Editare în setări",
       "toasts": {
         "updated": "Model actualizat",
         "created": "Șablon creat",
@@ -3695,6 +4040,26 @@
       "validation": {
         "required": "Obligatoriu"
       }
+    },
+    "blockEditor": {
+      "empty": "Adaugă un prim bloc mai jos.",
+      "incomplete": "Un bloc nu este complet (imagine fără fișier sau buton fără text/link).",
+      "uploadError": "Eroare la încărcarea unei imagini — încearcă din nou.",
+      "dragHandle": "Reordonare",
+      "duplicate": "Duplicat",
+      "remove": "Șterge",
+      "textPlaceholder": "Scrie-ți mesajul...",
+      "imageLink": "Link (opțional)",
+      "buttonLabel": "Textul butonului",
+      "buttonLabelPlaceholder": "Află mai multe",
+      "buttonUrl": "Link de buton",
+      "urlHint": "https://... sau o variabilă ca '{{lien_portal}}'",
+      "buttonColor": "Context",
+      "buttonTextColor": "Text",
+      "addText": "Text",
+      "addImage": "Imagine",
+      "addButton": "Buton",
+      "addDivider": "Separator"
     },
     "rulesManager": {
       "title": "Reguli de automatizare",
@@ -3921,6 +4286,7 @@
         "paiements": "Plăți",
         "abonnement": "Abonament",
         "integrations": "Integrări",
+        "equipe": "Echipă și acces",
         "rgpd": "RGPD"
       },
       "associationInfo": "Informații despre asociație",
@@ -3928,6 +4294,10 @@
       "city": "Oraș",
       "cityPlaceholder": "Paris",
       "country": "Țară",
+      "contactEmail": "Trimite un email contactului",
+      "contactEmailPlaceholder": "contact@monassociation.fr",
+      "contactEmailHint": "Folosite ca nume și adresă de răspuns (Respondența) tuturor emailurilor trimise în numele asociației (abonamente, evenimente, donații, mesaje etc.).",
+      "contactEmailEmptyWarning": "Neconfigurat — Răspunsurile membrilor la emailurile tale nu vor ajunge la organizația ta.",
       "toasts": {
         "saved": "Setări salvate"
       }
@@ -4012,7 +4382,41 @@
       "title": "Identitatea vizuală",
       "subtitle": "Logo-ul afișat pe tabloul de bord, ofertele/facturile, fișa de prezență și site-ul public.",
       "logo": "Logo",
+      "color": "Culoare",
+      "colorHint": "Folosit în anteturile emailurilor și pe butoane.",
+      "senderName": "Numele expeditorului",
+      "senderNameHint": "Numele este afișat ca expeditor al emailurilor. Lasă gol pentru a folosi numele asociației.",
+      "signature": "Semnătură",
+      "signatureHint": "Adăugat la finalul emailurilor compuse manual sau trimise automat.",
+      "footerText": "Textul subsolului",
+      "footerTextHint": "Înlocuiește textul implicit la finalul tuturor emailurilor. Lasă blank pentru a păstra textul standard.",
+      "footerTextPlaceholder": "Email automat trimis de {name}…",
+      "footerStyles": {
+        "classic": "Clasic",
+        "bold": "Accentuat",
+        "minimal": "Minimalist"
+      },
+      "footer": {
+        "title": "Subsol",
+        "subtitle": "Stilul, culoarea, textul și rețelele sociale sunt afișate la finalul fiecărui email.",
+        "color": "Culoare de fundal",
+        "socialLinks": "Rețelele sociale",
+        "socialPlatforms": {
+          "facebook": "Facebook",
+          "instagram": "Instagram",
+          "linkedin": "LinkedIn",
+          "x": "X (Twitter)"
+        }
+      },
       "proOnlyText": "Logo-ul personalizat (dashboard, oferte/facturi, foaia de pontaj) este rezervat pentru planul Pro. Faceți upgrade la următorul plan din fila Abonament pentru a-l activa.",
+      "preview": {
+        "label": "Prezentare generală",
+        "placeholderName": "Asocierea ta",
+        "sampleHeading": "Bună, Prenume,",
+        "sampleButton": "Vezi detalii",
+        "defaultFooter": "Email automat trimis de {name} prin Formwise. \nVă rugăm să nu răspundeți direct la acest email.",
+        "fromLabel": "Expeditor: {name}"
+      },
       "toasts": {
         "updated": "Identitate vizuală actualizată",
         "uploadError": "Eroare la încărcarea logo-ului"
@@ -4055,16 +4459,17 @@
       "status": {
         "trial": "Probă gratuită",
         "active": "Activitate",
+        "paymentPending": "Plata în curs",
         "pastDue": "Plata întârziată",
         "suspended": "Suspendat",
-        "cancelled": "Anulat",
-        "paymentPending": "Plata în curs"
+        "cancelled": "Anulat"
       },
       "planLabel": "Formulă {tier}",
       "membersCount": "{count} / {limit} Membri",
       "loadError": "Nu se poate recupera statutul de abonament. Încearcă din nou mai târziu.",
       "trialEndsAt": "Perioada ta de probă gratuită se încheie la {date}. După această dată, cardul înregistrat va fi debitat automat, cu excepția cazului în care este anulat înainte de această dată.",
       "activeText": "Abonamentul tău este activ. Poți vizualiza facturile, schimba metoda de plată sau anula oricând din zona de administrare Stripe.",
+      "paymentPendingText": "Debitul Direct SEPA pentru abonamentul tău este în procesare. Poate dura câteva zile lucrătoare până când apare în contul tău bancar.",
       "pastDueText": "Ultima taxă a eșuat. Actualizează metoda de plată pentru a evita suspendarea contului.",
       "suspendedText": "Abonamentul tău este suspendat după mai multe eșecuri de plată. Mergi pe ecranul dedicat pentru a-l reactiva, exporta datele sau anulează-l definitiv.",
       "cancelledText": "Abonamentul dumneavoastră a fost anulat. Contactați suportul pentru a-l reactiva.",
@@ -4179,6 +4584,63 @@
       "subtitleTrialExpired": "Perioada ta de probă gratuită s-a încheiat. Alege un plan și introdu o metodă de plată pentru a continua.",
       "confirmButtonSubscribe": "Confirmă și abonează-te"
     },
+    "teamAccess": {
+      "title": "Echipă și acces",
+      "description": "Cine are acces la conducerea asociației și ce poate vedea sau schimba fiecare.",
+      "howToAdd": "Pentru a adăuga pe cineva, atribuie-i un rol din lista de membri sau rolul \"Membru Echipă\" pentru a deschide doar anumite domenii către el. Vizualizator: poate vizualiza fără să editeze nimic.",
+      "empty": "Nu există membri în echipă momentan.",
+      "columns": {
+        "name": "Nume",
+        "role": "Funcție",
+        "access": "Acces"
+      },
+      "you": "Tu",
+      "summary": {
+        "administrator": "Administrator",
+        "none": "Fără acces",
+        "editAndRead": "{edit, plural, one {# domeniu} other {# Zone}} În Editare · {read} Redare",
+        "editOnly": "{edit, plural, one {# domeniu} other {# Zone}} În publicare",
+        "readOnly": "{read, plural, one {# domeniu} other {# Zone}} Redare"
+      },
+      "editTitle": "Acces la schimbare",
+      "editDescription": "Funcția și accesul {name}.",
+      "roleLabel": "Funcție",
+      "profileLabel": "Profil",
+      "profiles": {
+        "administrator": "Administrator",
+        "role": "Profilul rolului",
+        "custom": "Personalizat"
+      },
+      "administratorSwitch": "Administrator (setări, facturare, acces)",
+      "administratorHint": "Acces complet la toate domeniile.",
+      "memberRoleHint": "Un simplu membru nu are acces la management: folosește doar zona sa de membru.",
+      "adminRoleHint": "Rolul de administrator oferă întotdeauna acces complet.",
+      "areasLabel": "Acces după domeniu",
+      "levels": {
+        "none": "Niciuna",
+        "read": "Cititor",
+        "edit": "Editură"
+      },
+      "areas": {
+        "dashboard": "Tabloul de bord și activitatea",
+        "membres": "Membri",
+        "sensible": "Date sensibile ale membrilor",
+        "adhesions": "Abonamente și taxe de membru",
+        "dons": "Donații",
+        "evenements": "Evenimente și vânzare a biletelor",
+        "boutique": "Magazin",
+        "communication": "Comunicare (e-mailuri, SMS, sondaje)",
+        "actualites": "Știri",
+        "comptabilite": "Contabilitate (finanțe, oferte, facturi, furnizori)",
+        "reunions": "Întâlniri",
+        "materiel": "Material",
+        "site": "Site web",
+        "documents": "Documente ale asociației"
+      },
+      "toasts": {
+        "saved": "Acces actualizat"
+      }
+    },
     "erasureRequests": {
       "title": "Ștergerea datelor (RGPD)",
       "description": "Cereri de ștergere definitivă a datelor cu caracter personal ale unui membru, conform articolului 17 din RGPD. Sunt procesate automat în fiecare noapte, cu excepția celor suspendate.",
@@ -4219,11 +4681,6 @@
       },
       "automaticOrigin": "Semnalat automat — inactiv de peste 3 ani",
       "inactiveSince": "a părăsit la {date}"
-    },
-    "teamAccess": {
-      "areas": {
-        "sensible": "Date sensibile ale membrilor"
-      }
     }
   },
   "cotisations": {
@@ -4287,6 +4744,7 @@
         "enAttente": "În așteptare",
         "payees": "Plătit",
         "exonerees": "Exceptat",
+        "aEncaisser": "Să fie încasat",
         "partiellementPayees": "Parțial plătit",
         "enRetard": "Târziu",
         "annulees": "Anulat"
@@ -4313,28 +4771,6 @@
       "allCategories": "Toate categoriile",
       "allRenewals": "Toate reînnoirile",
       "resetFilters": "Resetare",
-      "renewal": {
-        "automatic": "Automată",
-        "manual": "Manuală"
-      },
-      "summary": {
-        "aPagar": " · {amount} total",
-        "recebido": " · {amount} încasat",
-        "saldo": " · {amount} rămas de plată"
-      },
-      "distribution": {
-        "show": "Vezi distribuția",
-        "hide": "Ascunde distribuția",
-        "category": "Categoria de membru",
-        "renewal": "Reînnoire",
-        "count": "Numărul contribuțiilor",
-        "aPagar": "Suma totală",
-        "recebido": "Suma primită",
-        "saldo": "Soldul rămas",
-        "total": "Total",
-        "noCategory": "Fără categorie",
-        "empty": "Nicio taxă nu corespunde acestor filtre."
-      },
       "mergeTiers": {
         "filterOption": "Fuzionarea categoriilor duplicate",
         "title": "Fuzionarea categoriilor duplicate",
@@ -4357,6 +4793,28 @@
         "priceFreeAmount": "Suma gratuită",
         "priceFreeAmountFrom": "Sumă gratuită din {amount}",
         "priceRecurring": "{amount}/an"
+      },
+      "renewal": {
+        "automatic": "Automată",
+        "manual": "Manuală"
+      },
+      "summary": {
+        "aPagar": " · {amount} total",
+        "recebido": " · {amount} încasat",
+        "saldo": " · {amount} rămas de plată"
+      },
+      "distribution": {
+        "show": "Vezi distribuția",
+        "hide": "Ascunde distribuția",
+        "category": "Categoria de membru",
+        "renewal": "Reînnoire",
+        "count": "Numărul contribuțiilor",
+        "aPagar": "Suma totală",
+        "recebido": "Suma primită",
+        "saldo": "Soldul rămas",
+        "total": "Total",
+        "noCategory": "Fără categorie",
+        "empty": "Nicio taxă nu corespunde acestor filtre."
       }
     },
     "reminderModal": {
@@ -4396,6 +4854,14 @@
       "title": "Înregistrează o plată",
       "amount": "Sumă",
       "remainingBalance": "Sold restant: {amount}",
+      "installmentChoice": "Această plată plătește",
+      "installmentNext": "Termen limită {position}",
+      "installmentThrough": "Până la maturitate {position}",
+      "installmentPaid": "Termen limită {position} — plătit",
+      "installmentPartlyPaid": "(rămase de plătit pe {amount})",
+      "lateSuffix": " (târziu)",
+      "customAmount": "Alte sume",
+      "installmentsInOrder": "Plățile acoperă în ordinea ratelor.",
       "method": "Metoda de plată",
       "date": "Data plății",
       "note": "Notă",
@@ -4421,6 +4887,125 @@
       "annulee": "Această contribuție a fost anulată."
     }
   },
+  "groupes": {
+    "view": {
+      "title": "Grupuri",
+      "countTotal": "{count, plural, =0 {Fără grupuri} one {# grup} other {# Grupuri}}",
+      "count": "{count, plural, =0 {Niciun rezultat} one {# rezultat} other {# rezultate}}",
+      "searchPlaceholder": "Caută un grup...",
+      "noResultsFor": "Nu există grupuri care să se potrivească \" {search} »",
+      "noGroupe": "Momentan nu există grupuri",
+      "allStatuses": "Toate statuturile",
+      "statusFilter": {
+        "actifs": "Ingrediente active",
+        "archives": "Arhivat"
+      },
+      "addTitle": "Creează un grup",
+      "editTitle": "Editare grupul",
+      "columns": {
+        "nome": "Nume",
+        "membres": "Membri",
+        "responsaveis": "Antrenori",
+        "lastChamada": "Ultimul apel",
+        "status": "Statut"
+      },
+      "statusBadge": {
+        "archive": "Arhivat"
+      },
+      "actions": {
+        "edit": "Editare",
+        "archive": "Arhivă",
+        "unarchive": "Unarchive"
+      },
+      "archiveConfirmTitle": "Arhivă « {name} » ?",
+      "archiveConfirmDescription": "Istoricul apelurilor este păstrat. Grupul nu va mai apărea în lista activă.",
+      "unarchiveConfirmTitle": "Dezarhivează \" {name} » ?",
+      "toasts": {
+        "created": "Grup creat",
+        "updated": "Grup actualizat",
+        "archived": "Grup arhivat",
+        "unarchived": "Grup nearhivat"
+      }
+    },
+    "form": {
+      "nomeLabel": "Nume al grupului",
+      "nomePlaceholder": "De exemplu, echipa de tineret, corul de joi...",
+      "descricaoLabel": "Descriere",
+      "descricaoPlaceholder": "Opțional"
+    },
+    "detail": {
+      "backToList": "Înapoi la grupuri",
+      "membresTitle": "Membri",
+      "addMembre": "Adaugă un membru",
+      "allMemberTypes": "Toate tipurile",
+      "searchMembrePlaceholder": "Caută un membru...",
+      "searchOrFilterPrompt": "Caută un membru sau alege un tip de mai sus",
+      "noResultsForMembre": "Niciun membru nu se potrivește\" {search} »",
+      "noResultsForType": "Niciun astfel de membru",
+      "candidatesFound": "{count, plural, one {# membru găsit} other {# membri găsiți}}",
+      "selectAllCandidates": "Selectează toate",
+      "deselectAllCandidates": "Deselectează toate",
+      "selectAllTruncated": "Peste 500 de membri se încadrează în acest filtru — doar primii 500 au fost selectați.",
+      "unselectCandidate": "Deselectare {name}",
+      "addSelectedMembres": "Adaugă ({count})",
+      "membresAddedToast": "{count, plural, =0 {Niciun membru adăugat} one {# membru adăugat} other {# membri adăugați}}",
+      "noMembre": "Niciun membru în acest grup",
+      "removeMembreConfirmTitle": "Îndepărtează {name} din grup?",
+      "removeMembreConfirmDescription": "Istoria sa de prezență în acest grup este păstrată.",
+      "responsaveisTitle": "Antrenori",
+      "addResponsavel": "Adaugă un manager",
+      "noResponsavel": "Niciun oficial desemnat",
+      "removeResponsavelConfirmTitle": "Îndepărtează {name} Dintre cei responsabili?",
+      "appelsTitle": "Apeluri",
+      "faireAppel": "Sună",
+      "noAppel": "Niciun apel în acest moment",
+      "noMembreForAppel": "Adaugă cel puțin un membru în grup înainte să poți lua decizia.",
+      "newAppelDateLabel": "Data",
+      "newAppelSubmit": "Apelul de pornire",
+      "appelColumns": {
+        "date": "Data",
+        "presents": "Prezent",
+        "absents": "Absent",
+        "justifies": "Justificat",
+        "nonRenseignes": "Nespecificat"
+      },
+      "reopenExistingTitle": "Există deja un apel pentru această nișă",
+      "reopenExistingDescription": "Poți să-l deschizi pentru a-l vizualiza sau edita în loc să creezi unul nou.",
+      "reopenExistingConfirm": "Deschide apelul existent"
+    },
+    "appel": {
+      "backToGroupe": "Înapoi la grup",
+      "dateLabel": "Data",
+      "horarioLabel": "Program",
+      "horarioPlaceholder": "Opțional, de exemplu ora 14:00.",
+      "activityLabel": "Activitate",
+      "activityPlaceholder": "Opțional",
+      "markAllPresent": "Notați toți cei prezenți",
+      "syncMembres": "Adaugă noi membri ai grupului",
+      "counts": {
+        "presente": "Prezent",
+        "ausente": "Absent",
+        "ausenciaJustificada": "Justificat",
+        "naoInformado": "Nespecificat"
+      },
+      "status": {
+        "NAO_INFORMADO": "Nespecificat",
+        "PRESENTE": "Prezent",
+        "AUSENTE": "Absent",
+        "AUSENCIA_JUSTIFICADA": "Justificat"
+      },
+      "save": "Record Call",
+      "export": "Export",
+      "exportPdf": "PDF",
+      "exportPdfBlank": "PDF gol (pentru tipărire)",
+      "exportExcel": "Excel",
+      "toasts": {
+        "saved": "Apel înregistrat",
+        "noMembersToExport": "Niciun membru de exportat",
+        "synced": "{count, plural, =0 {Niciun membru nou} one {# membru adăugat} other {# membri adăugați}}"
+      }
+    }
+  },
   "membres": {
     "form": {
       "status": {
@@ -4434,7 +5019,8 @@
         "secretaire": "Secretar",
         "tresorier": "Trezorier",
         "president": "Președinte",
-        "admin": "Administrare"
+        "admin": "Administrare",
+        "equipe": "Membru al echipei"
       },
       "civilite": {
         "none": "Nespecificat",
@@ -4448,6 +5034,11 @@
         "femme": "Feminin"
       },
       "groupeSanguinNone": "Nespecificat",
+      "imageRights": {
+        "unknown": "Nespecificat",
+        "granted": "Da",
+        "refused": "Nu"
+      },
       "tailleTshirtNone": "Nespecificat",
       "preferredLocaleNone": "Nespecificat",
       "preferredLocaleHint": "Limba selectată va permite trimiterea către acest membru a e-mailurilor și comunicărilor în limba sa preferată.",
@@ -4479,14 +5070,15 @@
         "allergies": "Alergii cunoscute",
         "allergiesPlaceholder": "Arahide, polen...",
         "type": "Tip de membru",
-        "preferredLocale": "Limba de comunicare",
-        "spokenLanguage": "Limba vorbită",
-        "cotisationTier": "Taxa de membru",
-        "guardianName": "Reprezentant legal {number} — nume",
-        "guardianPhone": "Reprezentant legal {number} — telefon",
         "imageRights": "Drept de imagine",
         "notes": "Note",
-        "notesPlaceholder": "Informații utile despre acest membru (cursuri, observații…)"
+        "notesPlaceholder": "Informații utile despre acest membru (cursuri, observații…)",
+        "guardians": "Tutori legali",
+        "guardianName": "Reprezentant legal {number} — nume",
+        "guardianPhone": "Reprezentant legal {number} — telefon",
+        "preferredLocale": "Limba de comunicare",
+        "spokenLanguage": "Limba vorbită",
+        "cotisationTier": "Taxa de membru"
       },
       "invitationNotice": "Un e-mail de invitație cu identificatorii va fi trimis la această adresă.",
       "tierNone": "Fără preț (comportament implicit)",
@@ -4507,12 +5099,7 @@
         "management": "Gestionarea membrului"
       },
       "invalidFormToast": "Salvarea a eșuat. Contactați asistența dacă problema persistă.",
-      "customFieldsLoading": "Se încarcă răspunsurile din formularul de aderare…",
-      "imageRights": {
-        "unknown": "Nespecificat",
-        "granted": "Da",
-        "refused": "Nu"
-      }
+      "customFieldsLoading": "Se încarcă răspunsurile din formularul de aderare…"
     },
     "actions": {
       "add": "Adaugă un membru",
@@ -4562,13 +5149,13 @@
         "firstName": "Prenume",
         "lastName": "Nume de familie",
         "address": "Adresă",
+        "country": "Țară",
+        "countryPlaceholder": "Toate țările",
+        "countryLoadError": "Nu se pot încărca țările. Încearcă din nou imediat.",
         "birthDateFrom": "Născută după",
         "birthDateTo": "Născut înainte",
         "apply": "Aplică",
-        "reset": "Resetare",
-        "country": "Țară",
-        "countryPlaceholder": "Toate țările",
-        "countryLoadError": "Nu se pot încărca țările. Încearcă din nou imediat."
+        "reset": "Resetare"
       },
       "statusOptions": {
         "pending": "În așteptare",
@@ -4609,12 +5196,14 @@
         "memberDeletedWithUnlink": "Membru înlăturat — înlăturat ca tutore legal al {count} Membru(i)",
         "noMembersToExport": "Niciun membru de exportat",
         "viewSubscription": "Vezi abonamentul",
-        "roleUpdated": "Rol actualizat"
+        "roleUpdated": "Rol actualizat",
+        "configureAccess": "Configurează accesul"
       },
       "changeRoleTitle": "Schimbarea rolului",
       "addViaForm": "Prin intermediul unui formular de membru",
       "addManual": "Adaugă manual",
       "changeRoleDescription": "Rolul {name} în asociație.",
+      "changeRoleEquipeHint": "Acest rol începe fără niciun acces managerial. Configurează accesul după domeniu în Setări › Echipă & Acces.",
       "pendingRequests": "{count, plural, one {# cerere în așteptare} other {# cereri în așteptare}}"
     },
     "detail": {
@@ -4627,6 +5216,14 @@
       "cotisationButton": "Taxa de membru",
       "createAccessButton": "Creează acces",
       "roleButton": "Rol",
+      "exportDataButton": "Date de export (GDPR)",
+      "eraseData": {
+        "button": "Șterge datele (RGPD)",
+        "confirmTitle": "Soliciți ștergerea definitivă a datelor lui {name}?",
+        "confirmDescription": "Această acțiune înregistrează o cerere de ștergere conform art. 17 din RGPD. Membrul va primi un e-mail de confirmare, apoi datele sale personale vor fi anonimizate ireversibil la următoarea procesare automată, cu excepția cazului în care cererea este suspendată.",
+        "toastSuccess": "Cerere de ștergere înregistrată",
+        "requestLabel": "Ștergere RGPD"
+      },
       "contact": "Contact",
       "noContactInfo": "Fără informații de contact",
       "memberSinceColon": "Membru de la: {date}",
@@ -4642,6 +5239,10 @@
       "spokenLanguageColon": "Limbă vorbită: {value}",
       "preferredLocaleColon": "Limba de comunicare: {value}",
       "allergiesColon": "Alergii: {value}",
+      "imageRightsColon": "Drepturi de imagine: {value}",
+      "imageRightsDate": "( {date})",
+      "notes": "Note",
+      "guardians": "Tutori legali",
       "mobileColon": "Mobil : {value}",
       "legalGuardianColon": "Tutore legal:",
       "noInfo": "Nu s-a furnizat nicio informație",
@@ -4670,6 +5271,7 @@
         "evenements": "Evenimente",
         "reunions": "Întâlniri",
         "materiel": "Material",
+        "groupes": "Grupuri",
         "dons": "Donații",
         "historique": "Istoric",
         "emails": "Emailuri",
@@ -4700,6 +5302,7 @@
       "paidOn": "Plătit {date}",
       "validUntil": "Valabil până când {date}",
       "periodExpiredOn": "Expirat {date}",
+      "recordPayment": "Înregistrează o plată",
       "downloadRecuFiscal": "Descarcă chitanța fiscală",
       "downloadRecuFiscalPartial": "Descarcă chitanța fiscală (parțial: {amount} deductibil)",
       "showingRecentCotisations": "Expunere {count} Cele mai recente contribuții la {total} în total.",
@@ -4742,13 +5345,6 @@
         "rejectedToast": "Cererea respinsă",
         "rejectConfirmTitle": "Să refuzi această cerere?",
         "rejectConfirmDescription": "{name} va trece la statutul \"Inactiv\" și nu va mai putea să mă conectezi. Cererea și răspunsurile la formular sunt păstrate."
-      },
-      "eraseData": {
-        "button": "Șterge datele (RGPD)",
-        "confirmTitle": "Soliciți ștergerea definitivă a datelor lui {name}?",
-        "confirmDescription": "Această acțiune înregistrează o cerere de ștergere conform art. 17 din RGPD. Membrul va primi un e-mail de confirmare, apoi datele sale personale vor fi anonimizate ireversibil la următoarea procesare automată, cu excepția cazului în care cererea este suspendată.",
-        "toastSuccess": "Cerere de ștergere înregistrată",
-        "requestLabel": "Ștergere RGPD"
       },
       "noCommande": "Acest contact nu are achiziții din magazin.",
       "commandeStatus": {
@@ -4839,6 +5435,12 @@
       "inMessagesSection": " în secțiunea Mesaje.",
       "messageSectionLabel": "Mesaj",
       "saveAsTemplate": "Salvează ca șablon",
+      "subjectLabel": "Scop",
+      "subjectPlaceholder": "Subiectul emailului...",
+      "subjectTooLong": "Subiect prea lung: {length}/{max} caractere — va fi respins la trimitere.",
+      "bodyLabel": "Corpul mesajului",
+      "bodyPlaceholder": "Scrie-ți mesajul...",
+      "designTemplateReadonlyHint": "Acest șablon folosește modul Visual Design (imagini, butoane) — conținutul său nu poate fi editat aici. Pentru a-l schimba, editează șablonul în Mesaje.",
       "language": {
         "title": "Limba de trimitere",
         "modeOriginal": "Limba originală",
@@ -4863,15 +5465,12 @@
         "autoNoEffect": "Niciun destinatar actual nu are o limbă preferată alta decât franceza — toți vor primi versiunea originală.",
         "autoExternalNote": "{count, plural, one {# email extern (limba originală)} few {# emailuri externe (limba originală)} other {# de emailuri externe (limba originală)}}"
       },
-      "subjectLabel": "Scop",
-      "subjectPlaceholder": "Subiectul emailului...",
-      "subjectTooLong": "Subiect prea lung: {length}/{max} caractere — va fi respins la trimitere.",
-      "bodyLabel": "Corpul mesajului",
-      "bodyPlaceholder": "Scrie-ți mesajul...",
       "continue": "Continuă",
       "confirmSendTitle": "Confirmarea livrării",
       "confirmSendDescription": "Acest e-mail va fi trimis către {recipients}. Această acțiune este ireversibilă.",
       "sendNow": "Trimite acum",
+      "sending": "Trimiți...",
+      "sendFailedTitle": "Emailul nu a putut fi trimis",
       "replaceContentTitle": "Să înlocuiesc conținutul?",
       "replaceContentDescription": "Aplicarea acestui șablon va înlocui subiectul și corpul mesajului pe care l-ați scris deja.",
       "replace": "Înlocuiește",
@@ -4884,6 +5483,28 @@
       "recipientsActive": "{count, plural, one {# membru activ} other {# Membri activi}}",
       "externalOnlyCount": "{count, plural, one {# email extern} other {# emailuri externe}}",
       "recipientsWithExternal": "{members} + {count, plural, one {# email extern} other {# emailuri externe}}",
+      "attachments": {
+        "label": "Atașamentele",
+        "add": "Atașează fișierele",
+        "hint": "JPG, PNG, WebP, GIF sau PDF · {maxSize} Total",
+        "usage": "{count, plural, one {# dosar} other {# fișiere}} · {used} / {maxSize}",
+        "limitFilesReached": "Limita {maxFiles} fișiere atinse",
+        "limitSizeReached": "Limita {maxSize} Realizat",
+        "remove": "Îndepărtează {name}",
+        "nameWithSize": "{name} ({size})",
+        "andMore": "{count, plural, one {și # altele} other {și # altele}}",
+        "errors": {
+          "emptyFile": "{count, plural, one {{names} nu a fost adăugat — fișierul este gol.} other {# fișiere nu au fost adăugate: {names} — Aceste dosare sunt goale.}}",
+          "unsupportedType": "{count, plural, one {{names} nu a fost adăugat} other {# fișiere nu au fost adăugate: {names}}} — formate acceptate: imagini (JPG, PNG, WebP, GIF) și PDF.",
+          "totalSizeExceeded": "{count, plural, one {{names} nu a fost adăugat} other {# fișiere nu au fost adăugate: {names}}} — limita lui {maxSize} în total ar fi depășit (spațiul rămas: {remaining}).",
+          "tooManyFiles": "{count, plural, one {{names} nu a fost adăugat} other {# fișiere nu au fost adăugate: {names}}} — {maxFiles} Numărul maxim de fișiere pe email."
+        },
+        "recapSummary": "{count, plural, one {# dosar} other {# fișiere}} · {size}",
+        "uploading": "Trimit atașamente...",
+        "uploadFailedTitle": "Atașamentele nu puteau fi trimise",
+        "uploadFailedDescription": "Nu au mai rămas niciun email. Încearcă din nou sau apasă pe \"Editează\" pentru a elimina sau înlocui un fișier.",
+        "notSavedInTemplate": "Atașamentele nu sunt salvate în șablon."
+      },
       "toasts": {
         "selectType": "Selectează un tip de membru",
         "selectMember": "Selectează cel puțin un membru sau adaugă un email extern",
@@ -4916,7 +5537,14 @@
         "status": "Statut",
         "typeId": "Tip",
         "role": "Rol",
-        "adherentOverride": "Statutul de membru"
+        "adherentOverride": "Statutul de membru",
+        "notes": "Note",
+        "imageRightsConsent": "Drepturi de imagine",
+        "guardianName": "Tutore legal 1",
+        "guardianPhone": "Numărul de telefon al tutorilor legali 1",
+        "secondGuardianName": "Tutorele legal 2",
+        "secondGuardianPhone": "Numărul de telefon al tutorelui legal 2",
+        "permissions": "Acces"
       },
       "adherentOverrideValues": {
         "forcedAdherent": "Aderent Forțat",
@@ -4930,9 +5558,11 @@
         "membreRoleChanged": "Rol modificat",
         "passwordChanged": "Parola schimbată",
         "passwordReset": "Resetarea parolei",
+        "membreCardTokenRotated": "Cod QR pentru carduri regenerate",
         "membreDeleted": "Membru arhivat",
         "membrePortalRegistered": "Înregistrare prin portal",
         "membreInscriptionRequested": "Cerere de membru (site web)",
+        "membreAdhesionCompleted": "Calitatea de membru finalizată și plătită",
         "cotisationCreated": "Contribuție adăugată",
         "cotisationUpdated": "Evaluare modificată",
         "cotisationDeleted": "Taxa de membru a fost abolită",
@@ -5004,7 +5634,8 @@
         "expense": "Cheltuieli",
         "financeCategory": "Categorii financiare",
         "payment": "Plăți",
-        "associationDocument": "Documentele asociației"
+        "associationDocument": "Documentele asociației",
+        "paperFormTemplate": "Foi de hârtie"
       },
       "messageTemplateFilterLabel": "Șabloane MSG",
       "actualiteFields": {
@@ -5065,12 +5696,20 @@
         "membreDeleted": "Membru arhivat",
         "membrePortalRegistered": "Înregistrat (portal)",
         "membreInscriptionRequested": "Cerere de membru (site web)",
+        "membreAdhesionCompleted": "Calitatea de membru finalizată și plătită",
         "membreRoleChanged": "Rol modificat",
         "membreAccessCreated": "Acces creat",
+        "membreCardTokenRotated": "Cod QR pentru carduri regenerate",
         "profilUpdated": "Profil modificat",
         "profileUpdated": "Profil modificat",
         "passwordChanged": "Parola schimbată",
         "passwordReset": "Resetarea parolei",
+        "twoFactorEnabled": "Autentificarea în doi pași activată",
+        "twoFactorDisabled": "Autentificarea în doi pași dezactivată",
+        "twoFactorBackupRegenerated": "Coduri de rezervă regenerate",
+        "twoFactorDisabledByAdmin": "Autentificarea în doi pași dezactivată de suport",
+        "loginSuccess": "Autentificare reușită",
+        "loginFailed": "Tentativă de autentificare eșuată",
         "emailSentBulk": "Email trimis",
         "smsSentBulk": "SMS trimis",
         "supportEmailSent": "Email trimis de Suportul Formwise",
@@ -5181,6 +5820,9 @@
         "associationDocumentCreated": "Document creat",
         "associationDocumentUpdated": "Document modificat",
         "associationDocumentDeleted": "Document șters",
+        "paperFormTemplateCreated": "Șablon de formular creat",
+        "paperFormTemplateUpdated": "Șablon de formular modificat",
+        "paperFormTemplateDeleted": "Șablon de card șters",
         "ticketCheckoutExpired": "Plata a expirat"
       }
     },
@@ -5385,8 +6027,8 @@
       "actualites": "Știri",
       "membership": "Alătură-te asociației",
       "dons": "Donează",
-      "contact": "Contact",
-      "boutique": "Magazin"
+      "boutique": "Magazin",
+      "contact": "Contact"
     },
     "defaultTitles": {
       "hero": "Bine ai venit",
@@ -5394,9 +6036,9 @@
       "events": "Evenimente viitoare",
       "membership": "Alătură-te asociației",
       "dons": "Donează",
+      "boutique": "Magazin",
       "actualites": "Știri",
-      "contact": "Contact",
-      "boutique": "Magazin"
+      "contact": "Contact"
     },
     "view": {
       "uploadFailedWarning": "{count, plural, one {# imagine nu a putut fi descărcată.} other {# imagini nu puteau fi încărcate.}}",
@@ -5420,6 +6062,8 @@
       "save": "Salvează",
       "appearance": "Aspect",
       "primaryColor": "Culoare principală",
+      "secondaryColor": "Culoare secundară",
+      "fontFamily": "Poliția",
       "logo": "Logo",
       "header": "Header",
       "headerBgColor": "Culoare de fundal",
@@ -5438,11 +6082,12 @@
       "noLinks": "Fără linkuri. Apasă pe Adaugă.",
       "sections": "Secțiuni",
       "noSections": "Nicio secțiune. Adaugă una mai jos.",
+      "createWithAi": "Crearea cu AI",
       "addSection": "Adaugă o secțiune",
       "donsModuleDisabled": "Modulul donațiilor dezactivat — invizibil pe site-ul public",
+      "boutiqueModuleDisabled": "Modulul Magazin dezactivat — invizibil pe site-ul public",
       "deleteSectionTitle": "Secțiunea Șterge",
-      "deleteSectionDescription": "Această acțiune este ireversibilă.",
-      "boutiqueModuleDisabled": "Modulul Magazin dezactivat — invizibil pe site-ul public"
+      "deleteSectionDescription": "Această acțiune este ireversibilă."
     },
     "sectionSheet": {
       "editTitle": "Editare — {label}",
@@ -5463,6 +6108,8 @@
       "eventsLimitHint": "Evenimentele sunt preluate automat din calendarul tău.",
       "actualitesLimit": "Numărul de știri de afișat",
       "actualitesLimitHint": "Doar primele știri N publicate vor fi afișate pe site.",
+      "boutiqueLimit": "Numărul de produse afișate",
+      "boutiqueLimitHint": "Pe site vor fi afișate doar primele N produse active.",
       "membershipIntro": "Text introductiv",
       "membershipIntroPlaceholder": "Completați acest formular pentru a aplica la aderarea la asociație...",
       "membershipHint": "Cereri apar în lista membrilor cu statut \"În așteptare\".",
@@ -5483,9 +6130,7 @@
       "apply": "Aplică",
       "discardTitle": "Să ignor schimbările?",
       "discardDescription": "Modificările neaplicate vor fi pierdute.",
-      "discardConfirm": "Ignoră",
-      "boutiqueLimit": "Numărul de produse afișate",
-      "boutiqueLimitHint": "Pe site vor fi afișate doar primele N produse active."
+      "discardConfirm": "Ignoră"
     },
     "preview": {
       "donsNoForm": "Niciun formular de donație ales — invizibil pe site-ul public"
@@ -5494,6 +6139,52 @@
       "viewSite": "Vezi site-ul",
       "logoUrl": "URL al logo-ului (opțional)",
       "footerText": "Textul subsolului"
+    },
+    "aiAssistant": {
+      "title": "Construiește-ți site-ul cu AI",
+      "description": "Descrie-ți asocierea, AI-ul oferă o primă versiune a site-ului (culori, font, antet, subsol și secțiuni) pe care o poți modifica înainte de a o salva.",
+      "descriptionLabel": "Descrie-ți asocierea",
+      "descriptionPlaceholder": "De exemplu, asociația culturală din Lyon care organizează ateliere de teatru pentru copii...",
+      "generate": "Generează",
+      "regenerate": "Regenerează",
+      "apply": "Aplică",
+      "cancel": "Anulează",
+      "error": "A apărut o eroare, încearcă din nou.",
+      "previewAppearance": "Aspect",
+      "previewHeader": "Header",
+      "previewHeaderLogin": "Butonul de autentificare",
+      "previewHeaderRegister": "Buton de Alăturare",
+      "previewFooter": "Subsol",
+      "previewSections": "Secțiuni",
+      "fieldButtonLabel": "Sugerează cu AI",
+      "appearancePlaceholder": "De exemplu, o asociație sportivă, dinamică și prietenoasă...",
+      "headerPlaceholder": "Ex: ceva sobru care iese în evidență pe un fundal alb...",
+      "footerPlaceholder": "Ex: un scurt mesaj de mulțumire...",
+      "sectionPlaceholder": "Descrie ce ar trebui să spună această secțiune..."
+    },
+    "builderSwitch": {
+      "liveVersionLabel": "Versiunea online",
+      "switchLabel": "Editor nou (Beta)",
+      "statusLegacy": "Vizitatorii tăi văd vechiul site",
+      "statusNewBuilder": "Vizitatorii tăi vor vedea versiunea publicată pe {date}",
+      "publishFirstHint": "Publicați mai întâi de la noul editor",
+      "openNewBuilder": "Deschide noul editor →",
+      "legacyEditsNotice": "Site-ul tău afișează versiunea noului editor: modificările făcute aici vor fi vizibile doar dacă revii la vechiul site.",
+      "confirmOn": {
+        "title": "Să activez noul editor?",
+        "description": "Site-ul tău public va afișa versiunea publicată pe {date}. Poți reveni la vechiul site oricând.",
+        "confirmLabel": "Activează"
+      },
+      "confirmOff": {
+        "title": "Să mă întorc la vechiul site?",
+        "description": "Site-ul tău public va afișa din nou site-ul vechi.",
+        "confirmLabel": "Întoarcerea la vechiul amplasament"
+      },
+      "toasts": {
+        "switchedOn": "Noul editor este online",
+        "switchedOff": "Vechiul site este din nou online",
+        "error": "Eroare la schimbarea editorilor"
+      }
     }
   },
   "richTextEditor": {
@@ -5506,6 +6197,134 @@
     "heading1": "Titlu 1",
     "heading2": "Titlu 2",
     "heading3": "Titlu 3"
+  },
+  "paperFormTemplates": {
+    "title": "Foi de hârtie",
+    "description": "Șabloane pentru formularele tale de înregistrare pe hârtie, pentru a crea membri din formularele completate și scanate.",
+    "backToMembers": "Membri",
+    "backToList": "Foi de hârtie",
+    "newTemplate": "Noul model",
+    "empty": "Fără șabloane. Creează unul din formularul tău de înregistrare gol.",
+    "notFound": "Acest șablon nu a putut fi găsit sau a fost șters.",
+    "mappedFieldCount": "{count, plural, =0 {Fără câmpuri importate} one {# câmp importat} other {# câmpuri importate}}",
+    "columns": {
+      "name": "Nume",
+      "pages": "Pagini",
+      "fields": "Domenii",
+      "updatedAt": "Modificat pe"
+    },
+    "toasts": {
+      "created": "Șablon creat",
+      "saved": "Design înregistrat",
+      "deleted": "Șablon șters"
+    },
+    "deleteConfirm": {
+      "title": "Șterge \" {name} » ?",
+      "description": "Membrii deja importați cu acest șablon sunt păstrați. Nu veți mai putea scana înregistrările cu acest șablon."
+    },
+    "leaveWarning": {
+      "title": "Modificări nesalvate",
+      "description": "Modificările aduse șablonului se vor pierde dacă părăsiți această pagină.",
+      "discard": "Ieși fără salvare",
+      "saveAndLeave": "Salvare și ieșire"
+    },
+    "targetGroups": {
+      "identity": "Identitate",
+      "contact": "Contact",
+      "guardian": "Tutore legal",
+      "commitments": "Angajamente",
+      "other": "Altele"
+    },
+    "targets": {
+      "fullName": "Prenume și nume de familie",
+      "firstName": "Prenume",
+      "lastName": "Nume",
+      "birthDate": "Data nașterii",
+      "civilite": "Titlu",
+      "sexe": "Gen",
+      "email": "Email",
+      "phone": "Telefon",
+      "address": "Adresă",
+      "guardianFullName": "Tutore legal 1 — prenume și nume de familie",
+      "guardianPhone": "Tutore legal 1 — telefon",
+      "secondGuardianFullName": "Tutore legal 2 — prenume și nume de familie",
+      "secondGuardianPhone": "Tutore legal 2 — telefon",
+      "imageRights": "Drepturi de imagine (căsuță de bifat)",
+      "legalDocument": "Acceptarea unui document (casetă de bifat)",
+      "notes": "Note ale membrilor",
+      "ignore": "Nu importa"
+    },
+    "renderErrors": {
+      "unsupported_type": "Formatul nu este suportat. Încarcă un PDF, sau fotografii JPEG sau PNG.",
+      "too_many_pages": "Formularul are prea multe pagini ({maximum} maxim).",
+      "pdf_password": "Acest PDF este protejat prin parolă.",
+      "pdf_invalid": "Acest PDF nu a putut fi deschis.",
+      "image_invalid": "Această imagine nu putea fi citită.",
+      "too_large": "O pagină este prea mare, chiar și după micșorare.",
+      "aborted": "Pregătirea a fost anulată."
+    },
+    "editor": {
+      "newTitle": "Șablon nou pentru plug",
+      "newDescription": "Trimite formularul tău de înregistrare gol: AI-ul sugerează corespondența fiecărei casete, tu o bifezi și apoi o salvezi.",
+      "updatedAt": "Modificat pe {date}",
+      "dropTitle": "Formular de înregistrare gol",
+      "dropHint": "Un PDF, sau o fotografie JPEG sau PNG pe pagină — maximum 4 pagini. Cardul nu este păstrat.",
+      "chooseFile": "Alege un fișier",
+      "manualIntro": "Nicio cheie AI configurată?",
+      "configureManually": "Configurează manual",
+      "preparing": "Pregătind paginile...",
+      "analyzing": "Analiza foii în desfășurare...",
+      "analyzingHint": "AI-ul identifică căsuțele care trebuie completate. Acest lucru poate dura până la un minut.",
+      "analyzeFailedTitle": "Cartea nu a reușit să descifreze",
+      "openAiSettings": "Configurează cheia AI în setări",
+      "retryAnalyze": "Rerulează scanarea",
+      "changeFile": "Fișiere Switch",
+      "nameLabel": "Nume model",
+      "namePlaceholder": "Formularul de înregistrare 2026-2027",
+      "identificationLabel": "Text de identificare",
+      "identificationPlaceholder": "EX. FORMULAR DE ÎNREGISTRARE 2026 2027 — Academia DAC",
+      "identificationHint": "Dacă este populată, orice pagină care nu corespunde exact acestui formular este respinsă pentru import.",
+      "pagesPerFormLabel": "Pagini pe carte",
+      "pageCount": "{count, plural, one {# pagină} other {# pagini}}",
+      "fieldsTitle": "Potrivirea câmpurilor",
+      "fieldsSummary": "{count, plural, =0 {Fără câmpuri} one {# domeniu} other {# domenii}} · {mapped, plural, one {# importat} other {Import #}}",
+      "fieldsHint": "Fiecare rând corespunde unei casete de pe înregistrare. Indică unde valoarea sa trebuie înregistrată pe înregistrarea membrului.",
+      "droppedFields": "{count, plural, one {# cutie propusă de AI a fost aruncată pentru că era incompletă.} other {# cutiile propuse de AI au fost aruncate pentru că erau incomplete.}} Adaugă-le dacă e nevoie.",
+      "noFields": "Fără câmpuri. Adaugă casetele în anunțul tău.",
+      "addField": "Adaugă un câmp",
+      "moreErrors": "… și {count, plural, one {# altă greșeală} other {# alte erori}}",
+      "rowError": "Linie {row} : {message}",
+      "labelPlaceholder": "Formulare tipărită",
+      "hintPlaceholder": "Opțional",
+      "legalDocumentPlaceholder": "Alege un document",
+      "noLegalDocuments": "Fără documente legale. Creează-l mai întâi în Documente Legale.",
+      "columns": {
+        "label": "Formulare",
+        "page": "Pagină",
+        "target": "Destinație",
+        "legalDocument": "Document",
+        "hint": "Indicație de citire",
+        "actions": "Acțiuni"
+      },
+      "rowLabelAria": "Eticheta liniei {row}",
+      "rowPageAria": "Pagina liniei {row}",
+      "rowTargetAria": "Destinația liniei {row}",
+      "rowLegalDocumentAria": "Document de linie {row}",
+      "rowHintAria": "Indicația de citire a liniei {row}",
+      "removeRowAria": "Îndepărtați linia {row}",
+      "pageLabel": "Pagină {page}",
+      "enlargePage": "Mărește pagina {page}",
+      "referenceHint": "Cardul gol nu este păstrat. Reîncarcă-l pentru a-l afișa lângă câmpuri.",
+      "showBlankForm": "Arată cartea goală"
+    },
+    "activity": {
+      "fields": {
+        "name": "Nume",
+        "pagesPerForm": "Pagini pe carte",
+        "fields": "Domenii",
+        "identificationText": "Text de identificare"
+      }
+    }
   },
   "associationDocuments": {
     "title": "Documentele asociației",
@@ -5521,6 +6340,13 @@
     "hidden": "Ascuns",
     "visibleToMembers": "Vizibil pentru membri",
     "visibleToMembersHint": "Afișează acest document în zona membrilor. Dacă opțiunea este dezactivată, doar administratorii îl pot vedea.",
+    "visibleToPublic": "Accesibil public",
+    "visibleToPublicHint": "Face ca acest document să poată fi vizualizat de oricine are linkul, fără cont — trebuie să fie legat de el din formularele tale publice.",
+    "visibleToPublicForcedHint": "Activat automat: un document care urmează să fie acceptat trebuie să poată fi citit de persoana care îl acceptă.",
+    "requiresAcceptance": "Să fie acceptat",
+    "requiresAcceptanceHint": "O căsuță obligatorie de bifat va apărea în formularele de abonament, donații, înregistrare la eveniment, magazin și crearea contului. Fiecare acceptare este înregistrată împreună cu versiunea documentului.",
+    "exportAcceptances": "Acceptări la export",
+    "publicShort": "Public",
     "toasts": {
       "madeVisible": "„{title}” este vizibil pentru membri",
       "madeHidden": "„{title}” este ascuns pentru membri",
@@ -5541,7 +6367,10 @@
       "contentLabel": "Conținut",
       "contentPlaceholder": "Redactează conținutul documentului…",
       "titleRequired": "Titlul este obligatoriu.",
-      "contentRequired": "Conținutul este obligatoriu."
+      "contentRequired": "Conținutul este obligatoriu.",
+      "fileLabel": "Fișier PDF",
+      "fileHint": "Importă versiunea oficială a documentului (statute semnate, reglementări scanate etc.). Este disponibil pentru descărcare și afișat împreună cu conținutul.",
+      "contentOptionalHint": "Opțional când este atașat un PDF: Textul apare sub fișier."
     },
     "leaveWarning": {
       "title": "Modificări nesalvate",
@@ -5550,7 +6379,36 @@
       "saveAndLeave": "Salvează și ieși"
     },
     "notFound": "Documentul nu a fost găsit.",
-    "backToList": "Înapoi la documente"
+    "backToList": "Înapoi la documente",
+    "pdfShort": "PDF"
+  },
+  "formDraft": {
+    "restored": "Informațiile dumneavoastră au fost păstrate.",
+    "discard": "Ia-o de la zero cu un formular gol"
+  },
+  "legalConsent": {
+    "agreeLabel": "{count, plural, one {Sunt de acord cu următorul document:} other {Accept următoarele documente:}}",
+    "required": "Trebuie să accepți documentele corporației pentru a continua.",
+    "stale": "Documentele asociației au fost actualizate, vă rugăm să le recitiți înainte de a continua.",
+    "offlineAttestation": "Certific că am obținut acordul acestei persoane cu privire la aceste documente",
+    "gateTitle": "Documente ce urmează a fi acceptate",
+    "gateSubtitle": "Asociația dumneavoastră și-a actualizat documentele. Vă rugăm să le citiți și să le acceptați pentru a accesa spațiul dumneavoastră.",
+    "gateSubmit": "Accept și continui",
+    "gateSignOut": "Deconectează-te",
+    "gateError": "Nu am putut înregistra acceptarea.",
+    "offlineAttestationHint": "Înregistrat ca o acceptare colectată offline, în numele tău."
+  },
+  "publicDocuments": {
+    "title": "Documente legale",
+    "subtitle": "Documente puse la dispoziție de asociație.",
+    "empty": "Nu au fost publicate documente în acest moment.",
+    "updatedAt": "Actualizat la {date}",
+    "backToList": "Toate documentele",
+    "associationNotFound": "Această asociere nu se găsește nicăieri.",
+    "notFound": "Acest document nu mai este disponibil.",
+    "openPdf": "Open PDF",
+    "opensNewTab": "(se deschide într-o filă nouă)",
+    "pdfShort": "PDF"
   },
   "portalMembre": {
     "associationDocuments": {
@@ -5560,7 +6418,10 @@
       "empty": "Niciun document disponibil momentan.",
       "loadError": "Documentele nu au putut fi încărcate.",
       "notFound": "Documentul nu a fost găsit sau nu mai este disponibil.",
-      "backToList": "Înapoi la documente"
+      "backToList": "Înapoi la documente",
+      "openPdf": "Open PDF",
+      "opensNewTab": "(se deschide într-o filă nouă)",
+      "pdfShort": "PDF"
     },
     "sondages": {
       "title": "Sondaje",
@@ -5598,6 +6459,15 @@
       "viewShop": "Vezi magazinul",
       "orderPlacedTitle": "Comandă înregistrată!",
       "orderPlacedDescription": "Comanda dumneavoastră este în așteptarea plății. Administrația vă va contacta pentru finalizare.",
+      "paymentSuccessTitle": "Plată confirmată!",
+      "paymentSuccessDescription": "Vă mulțumim pentru achiziție. V-a fost trimis un e-mail de confirmare cu chitanța dvs.",
+      "stockAdjustedNotice": "Stocul unor articole s-a modificat — coșul dvs. a fost ajustat, verificați-l înainte de a continua.",
+      "trackOrderButton": "Urmărește comanda mea",
+      "trackingPageTitle": "Urmărire comandă",
+      "trackingStatusPending": "În așteptarea plății",
+      "trackingStatusPaid": "Comandă plătită",
+      "trackingStatusCancelled": "Comandă anulată",
+      "trackingNotFound": "Comanda nu a fost găsită",
       "myOrdersButton": "Ordinele mele",
       "continueShopping": "Continuă cumpărăturile",
       "maxStockReached": "Acțiuni maxime atinse",
@@ -5635,16 +6505,7 @@
         "orderError": "Eroare în timpul comenzii",
         "orderUpdated": "Ordine actualizată",
         "orderCancelled": "Ordin anulat"
-      },
-      "paymentSuccessTitle": "Plată confirmată!",
-      "paymentSuccessDescription": "Vă mulțumim pentru achiziție. V-a fost trimis un e-mail de confirmare cu chitanța dvs.",
-      "stockAdjustedNotice": "Stocul unor articole s-a modificat — coșul dvs. a fost ajustat, verificați-l înainte de a continua.",
-      "trackOrderButton": "Urmărește comanda mea",
-      "trackingPageTitle": "Urmărire comandă",
-      "trackingStatusPending": "În așteptarea plății",
-      "trackingStatusPaid": "Comandă plătită",
-      "trackingStatusCancelled": "Comandă anulată",
-      "trackingNotFound": "Comanda nu a fost găsită"
+      }
     },
     "dons": {
       "title": "Donațiile mele",
@@ -5673,7 +6534,13 @@
       "toasts": {
         "thanked": "Vă mulțumim pentru donație! Un e-mail de confirmare a fost trimis către dumneavoastră.",
         "cancelled": "Donația a fost anulată."
-      }
+      },
+      "campaignsHeading": "Campanii actuale",
+      "backToDons": "Revenind la Donațiile mele",
+      "donatingAs": "Dai ca un {name} ({email}).",
+      "comingSoon": "În curând",
+      "campaignClosed": "Campania s-a încheiat",
+      "loadCampaignsError": "Campaniile de donații nu pot fi încărcate. Încearcă din nou mai târziu."
     },
     "reunions": {
       "title": "Întâlniri",
@@ -5862,6 +6729,73 @@
       }
     },
     "evenements": {
+      "title": "Evenimente",
+      "subtitle": "Următoarele programări și istoricul tău.",
+      "upcomingHeading": "În curând",
+      "noneUpcoming": "Nu există evenimente viitoare.",
+      "moreUpcomingHint": "Alte evenimente viitoare nu sunt afișate. Contactați asociația pentru mai multe informații.",
+      "pastHeading": "Trecut",
+      "pastLimitHint": "Sunt afișate doar ultimele 10 evenimente.",
+      "guestsLabel": "Oaspeții tăi:",
+      "guestFirstNamePlaceholder": "Numele invitatului {n}",
+      "guestLastNamePlaceholder": "Numele invitatului {n}",
+      "guestEmailPlaceholder": "Email de oaspeți (opțional)",
+      "ticketTypeFullSuffix": "(sold out)",
+      "paymentError": "Eroare în timpul plății",
+      "waitlistedToast": "Sunteți pe lista de așteptare – vă vom anunța prin e-mail dacă se eliberează un loc.",
+      "payOnline": "Plătește online",
+      "ticketCancelledToast": "Bilet anulat — vei fi rambursat în câteva zile.",
+      "ticketsPurchased": "{n, plural, one {Bilet cumpărat} other {# bilete achiziționate}}",
+      "youSuffix": " (tu)",
+      "cancelAndRefund": "Anulează și cere rambursarea",
+      "cancelSeatTitle": "Să anuleze locul ăsta?",
+      "cancelTicketTitle": "Să anulez acest bilet?",
+      "refundOriginalMethod": "Vei primi rambursarea metodei tale inițiale de plată.",
+      "refundSelfOnly": "Veți primi rambursarea pentru locul dumneavoastră. Oaspeții dumneavoastră vor rămâne înregistrați și nu vor primi rambursare.",
+      "refundGuestOnly": "Vei primi rambursarea acestui loc. Restul rezervării tale nu este afectat.",
+      "cancelAndRefundConfirm": "Anulează și rambursează",
+      "reservedPayOnSite": "Rezervat – plată la fața locului",
+      "seatsCountLabel": "Număr de locuri:",
+      "cancelReservation": "Anulează rezervarea",
+      "cancelReservationSimple": "Poți rezerva din nou dacă te răzgândești.",
+      "cancelReservationPaidCompanions": "Oaspeții tăi care nu au fost încă plătiți vor fi eliminați. Oaspeții tăi {n} Oaspeții deja plătiți în numerar vor rămâne înscriși.",
+      "cancelReservationWithCompanions": "Acest lucru va anula și rezervarea ta {n} Oaspeți.",
+      "onWaitlist": "Ești pe lista de așteptare",
+      "eventFull": "Eveniment complet",
+      "reserveButton": "Rezervă – plătește la fața locului",
+      "totalLabel": "Total:",
+      "rsvpConfirme": "O să fiu acolo!",
+      "rsvpProvavel": "Dacă este posibil",
+      "rsvpIncerto": "Poate",
+      "rsvpAbsent": "Nu vin",
+      "rsvpRecordedToast": "Răspuns înregistrat: {label}",
+      "rsvpSaveError": "Înregistrarea erorilor",
+      "addGuestsButton": "+ Adaugă invitați",
+      "updateGuestsButton": "Actualizează, oaspeții mei",
+      "guestsUpdatedToast": "Oaspeți actualizați",
+      "countConfirmed": "{n, plural, one {# confirmat} other {# confirmat}}",
+      "countProvavel": "{n} dacă este posibil",
+      "countIncerto": "{n} Poate",
+      "countAbsent": "{n, plural, one {# absent} other {# absent}}",
+      "countWaitlist": "{n} pe lista de așteptare",
+      "priceLabel": "Preț:",
+      "reservedCount": "{confirmed}/{capacity} Rezervat",
+      "fullSuffix": " · Sold out",
+      "presenceLabel": "Prezență:",
+      "present": "Prezent",
+      "presenceAbsent": "Absent",
+      "presenceNotRecorded": "Neînregistrat",
+      "rsvpDisplay": "RSVP: {label}",
+      "yourResponseLabel": "Răspunsul tău:",
+      "confirmParticipationLabel": "Confirmă-ți participarea:",
+      "reviewSentThanks": "Notificare trimisă — mulțumesc!",
+      "chooseRatingError": "Alege o notă",
+      "leaveReview": "Lasă o recenzie",
+      "send": "Trimite",
+      "commentPlaceholder": "Aveți vreun comentariu? (opțional)",
+      "ticketPurchaseSuccessToast": "Bilet cumpărat cu succes!",
+      "paymentCancelledToast": "Plata a fost anulată. Locul tău este încă rezervat — plătește mai târziu sau anulează rezervarea pe cardul evenimentului.",
+      "registrationsClosed": "Înscrierile sunt închise.",
       "viewEvent": "Vezi evenimentul",
       "backToList": "Toate evenimentele",
       "notFound": "Acest eveniment nu mai este disponibil."
@@ -5877,6 +6811,7 @@
     "platformKeyActive": "Cheia platformei active — poți folosi AI fără configurare.",
     "providerFieldLabel": "Furnizor",
     "providerFieldPlaceholder": "Alegerea unui furnizor...",
+    "anthropicAssistantHint": "Asistentul Centrului de Ajutor răspunde doar la datele asociației tale (membri, cotizații, finanțe) cu o cheie Anthropic. Cu un alt furnizor, răspunde doar din documentație.",
     "apiKeyLabel": "Cheia API",
     "apiKeyPlaceholderReplace": "Cheia existentă — introduce pentru înlocuire",
     "apiKeyPlaceholderNew": "Lipiți cheia API...",
@@ -5936,6 +6871,7 @@
       "actualites": "Știri",
       "messages": "Mesagerie",
       "materiel": "Material",
+      "groupes": "Grupuri",
       "site": "Site web",
       "activite": "Istoric",
       "suporte": "Sprijin",
@@ -5954,7 +6890,8 @@
       "pricingOffers": "Oferte de preț",
       "support": "Sprijin",
       "controlAlerts": "Alerte de control",
-      "signOut": "Deconectează-te"
+      "signOut": "Deconectează-te",
+      "membreDuplicates": "Duplicate"
     },
     "themeToggle": {
       "changeTheme": "Schimbă tema"
@@ -5962,7 +6899,8 @@
     "header": {
       "myPortal": "Spațiul meu",
       "myProfile": "Profilul meu",
-      "management": "Conducere"
+      "management": "Conducere",
+      "publicSite": "Vezi site-ul"
     },
     "userMenu": {
       "roleLabels": {
@@ -5971,10 +6909,12 @@
         "PRESIDENT": "Președinte",
         "TRESORIER": "Trezorier",
         "SECRETAIRE": "Secretar",
-        "MEMBRE": "Membru"
+        "MEMBRE": "Membru",
+        "EQUIPE": "Membru al echipei"
       },
       "editProfile": "Editare Profil",
       "changePassword": "Schimbă parola",
+      "security": "Securitate",
       "legalDocuments": {
         "title": "Documente legale",
         "mentionsLegales": "Notificare legală",
@@ -5984,6 +6924,38 @@
         "opensNewTab": "Se deschide o filă nouă"
       },
       "logout": "Deconectează-te"
+    },
+    "twoFactorSettingsModal": {
+      "title": "Autentificare în doi pași",
+      "statusEnabled": "Activat",
+      "statusEnabledDescription": "Contul tău este protejat prin verificare în doi pași.",
+      "statusDisabled": "Persoană cu dizabilități",
+      "statusDisabledDescription": "Adaugă verificare suplimentară la autentificarea ta cu o aplicație de autentificare.",
+      "backupCodesLabel": "Coduri de rezervă",
+      "backupCodesRemaining": "{count, plural, =0 {Niciun cod rămas} one {# cod rămas} other {# coduri rămase}}",
+      "regenerate": "Regenerează",
+      "scanTitle": "1. Scanează acest cod QR",
+      "scanDescription": "Deschide aplicația ta de autentificare (Google Authenticator, Authy...) și scanează codul de mai jos.",
+      "manualEntryLabel": "Nu poți scana? Introdu manual acest cod:",
+      "confirmCodeLabel": "Cod de verificare",
+      "backupCodesTitle": "Salvează aceste coduri acum",
+      "backupCodesDescription": "Aceste coduri vor fi afișate o singură dată. Fiecare cod poate fi folosit o singură dată.",
+      "copyAll": "Copiază toate codurile",
+      "copied": "Copiat!",
+      "savedCodesConfirm": "Mi-am salvat codurile de rezervă într-un loc sigur.",
+      "done": "Finalizat",
+      "disableDescription": "Confirmă parola pentru a dezactiva autentificarea în doi pași.",
+      "disableConfirm": "Dezactivare",
+      "regenDescription": "Confirmă cu un cod din aplicația ta pentru a regenera codurile de rezervă.",
+      "passwordLabel": "Parolă",
+      "enable": "Activează",
+      "disable": "Dezactivare",
+      "cancel": "Anulează",
+      "confirm": "Confirmă",
+      "close": "Închide",
+      "enabledToast": "Autentificare în doi pași activată.",
+      "disabledToast": "Autentificarea în doi pași dezactivată.",
+      "regeneratedToast": "Coduri de backup regenerate."
     },
     "changePasswordModal": {
       "title": "Schimbă parola",
@@ -6109,7 +7081,14 @@
       "error": "A apărut o eroare",
       "closed": "Cerere închisă",
       "reopened": "Cererea a fost redeschisă"
-    }
+    },
+    "suggestReply": "Sugerează un răspuns",
+    "suggestReplyConfirmTitle": "Să-ți schimbi curentul?",
+    "suggestReplyConfirmDescription": "Textul introdus deja va fi înlocuit de sugestia AI.",
+    "suggestReplyConfirmAction": "Înlocuiește",
+    "suggestReplyNote": "Sugestie generată de AI — corectează înainte să trimiți.",
+    "suggestReplySources": "Surse: {titles}",
+    "suggestReplyError": "Nu pot genera o sugestie."
   },
   "controlAlerts": {
     "title": "Control aderare",
@@ -6122,9 +7101,27 @@
     "columns": {
       "membre": "Membru",
       "association": "Asociație",
+      "origin": "Origine",
       "raisedAt": "Creată la",
       "daysWithoutCotisation": "Zile fără contribuție",
       "status": "Stare"
+    },
+    "originByLabel": "De {name}",
+    "originSources": {
+      "ADMIN_MANUAL": "Adăugarea manuală de către un administrator",
+      "ADMIN_REGISTRATION": "Înregistrare de către un administrator (formular)",
+      "PUBLIC_ADHESION_FORM": "Formular Public de Aderare (Gratuit)",
+      "PUBLIC_ADHESION_FORM_OFFLINE": "Formular Public de Membru (Plată Offline)",
+      "PUBLIC_ADHESION_STRIPE": "Formular public de membru (plată online)",
+      "PUBLIC_ADHESION_INSTALLMENTS": "Formular public de membru (plată în rate)",
+      "PUBLIC_ADHESION_MULTI": "Formular public de membru (Înregistrare a grupului)",
+      "PUBLIC_ADHESION_SUBSCRIPTION": "Formular Public de Membru (Abonament Recurent)",
+      "ASSOCONNECT_IMPORT": "Import AssoConnect",
+      "PAPER_FORM": "Importul formularelor pe hârtie",
+      "ASSOCIATION_SIGNUP_ADMIN": "Membru fondator (crearea asociației)",
+      "PUBLIC_INSCRIPTION_REQUEST": "Cerere de înregistrare publică (în așteptarea validării)",
+      "PUBLIC_INSCRIPTION_REQUEST_MULTI": "Cerere de înregistrare publică în masă (în așteptarea validării)",
+      "unknown": "Origine necunoscută"
     },
     "empty": "Nicio alertă de control.",
     "resolveAction": "Rezolvă",
@@ -6143,7 +7140,453 @@
     "autoResolvedLabel": "(auto)",
     "emptyForSearch": "Niciun rezultat pentru \"{search}\"."
   },
+  "help": {
+    "buttonLabel": "Ajutor",
+    "title": "Centru de Ajutor",
+    "moduleGeneral": "General",
+    "tabs": {
+      "guide": "Ajutor",
+      "assistant": "Asistent",
+      "changelog": "Ce e nou",
+      "news": "Știri"
+    },
+    "searchPlaceholder": "Ajutor pentru căutare...",
+    "searchResultsCount": "{count, plural, one {# rezultat} other {# rezultate}}",
+    "searchNoResults": "Niciun rezultat pentru \" {query} ».",
+    "searchError": "Căutarea nu este disponibilă în acest moment.",
+    "newBadge": "Nou",
+    "pinnedSection": "Acesta este un",
+    "articlesSection": "Articole",
+    "articlesOtherSection": "Alte articole",
+    "faqSection": "Întrebări frecvente",
+    "faqOtherSection": "Alte chestiuni",
+    "noContent": "Nu există conținut de ajutor pentru această secțiune în acest moment.",
+    "loadError": "Nu pot încărca ajutorul.",
+    "retry": "Încearcă din nou",
+    "back": "Înapoi",
+    "updatedOn": "Actualizat la {date}",
+    "articleNotFound": "Obiect negăsit.",
+    "callout": {
+      "info": "Informații",
+      "tip": "Sfat",
+      "warning": "Atenție"
+    },
+    "assistant": {
+      "questionLabel": "Întrebarea ta",
+      "questionPlaceholder": "Pune-ți întrebarea...",
+      "send": "Trimite",
+      "sendShortcut": "Ctrl + Enter (⌘ + Enter pe Mac)",
+      "disclaimer": "Răspunsuri generate de AI — verifică informațiile importante.",
+      "charactersCount": "{count}/{max}",
+      "youLabel": "Tu",
+      "assistantLabel": "Asistent",
+      "newConversation": "Conversație nouă",
+      "conversationRestoreFailed": "Discuția ta anterioară nu a putut fi recuperată.",
+      "intro": "Pune o întrebare despre utilizarea Formwise sau a datelor asociației tale: membri, cotizații, finanțe, evenimente.",
+      "introDocs": "Pune o întrebare despre utilizarea Formwise.",
+      "examplesLabel": "Întrebări exemplu",
+      "examples": {
+        "unpaid": "Cine nu și-a plătit cotizația de membru anul acesta?",
+        "donations": "Câte donații sunt luna aceasta?",
+        "createEvent": "Cum pot crea un eveniment?"
+      },
+      "examplesDocs": {
+        "reminder": "Cum pot urmări o contribuție neplătită?",
+        "export": "Cum export lista membrilor?",
+        "createEvent": "Cum pot crea un eveniment?"
+      },
+      "loadingCopilot": "Consultare a datelor...",
+      "loadingDocs": "Scriu...",
+      "dataConsulted": "Date consultate:",
+      "tools": {
+        "search_members": "Membri",
+        "get_member": "Membri",
+        "list_cotisations": "Contribuții",
+        "get_finance_summary": "Rezumatul financiar",
+        "list_events": "Evenimente",
+        "list_donations": "Donații",
+        "list_invoices": "Facturi"
+      },
+      "sources": "Surse:",
+      "docsOnlyNotice": "Întrebările legate de calitatea ta de membru, cotizații și finanțe necesită o cheie Anthropic.",
+      "docsOnlyConfigure": "Configurează în setări → integrări.",
+      "error": "Imposibil de obținut un răspuns.",
+      "errorTimeout": "Vrăjitorul nu a reușit să termine în timpul alocat. Pune o întrebare mai specifică sau mai scurtă.",
+      "errorRateLimit": "Prea multe cereri, încearcă din nou în câteva momente.",
+      "errorProvider": "Furnizorul AI nu a putut răspunde, încearcă din nou mai târziu.",
+      "noApiKey": "Fără chei API configurate.",
+      "noApiKeyConfigure": "Adaugă cheia API în Setări → Integrări.",
+      "noApiKeyAskAdmin": "Cere unui administrator să adauge o cheie API în Setări → Integrări.",
+      "apiKeyInvalid": "Cheia API configurată este refuzată de către furnizor.",
+      "apiKeyInvalidConfigure": "Verifică în Setări → Integrări.",
+      "apiKeyInvalidAskAdmin": "Roagă un administrator să verifice în Setări → Integrări."
+    },
+    "changelog": {
+      "latestSection": "Ultimele actualizări",
+      "empty": "Nicio funcționalitate nouă momentan.",
+      "loadError": "Nu pot încărca funcții noi.",
+      "kind": {
+        "feature": "Nou",
+        "improvement": "Îmbunătățire",
+        "fix": "Fix"
+      }
+    },
+    "releaseNotes": {
+      "title": "Ce e nou"
+    },
+    "news": {
+      "latestSection": "Ultimele știri",
+      "empty": "Nicio veste deocamdată.",
+      "loadError": "Nu se pot încărca știrile.",
+      "popupTitle": "Știri"
+    },
+    "faqPopup": {
+      "title": "Întrebări frecvente"
+    },
+    "popupCarousel": {
+      "remindLater": "Amintește-mi mai târziu",
+      "remindLaterToast": "Îți vom reaminti data viitoare când te conectezi.",
+      "previous": "Anterior",
+      "next": "Următorul",
+      "finish": "Finish",
+      "position": "Element {current} pe {total}",
+      "goTo": "Mergi la obiect {index}"
+    },
+    "footer": {
+      "tour": "Tur ghidat",
+      "contactSupport": "Contactează suportul"
+    }
+  },
+  "boutiqueShipping": {
+    "title": "Transport maritim",
+    "description": "Adresa de livrare folosită pentru a calcula costul de expediere prin poștă al magazinului.",
+    "addressLabel": "Adresă",
+    "addressPlaceholder": "12 rue de la Paix",
+    "cityLabel": "Oraș",
+    "postalCodeLabel": "Cod poștal",
+    "countryLabel": "Țară",
+    "saved": "Adresă de livrare înregistrată",
+    "deliveryMethodLabel": "Modul de recepție",
+    "pickupOption": "Preluare la fața locului",
+    "deliveryOption": "Poștă",
+    "shippingAddressHint": "Necesar pentru a calcula costurile de transport.",
+    "shippingOptionsLabel": "Costuri de transport",
+    "loadingRates": "Calculul costurilor de livrare...",
+    "noShippingOptions": "Nu există opțiuni de livrare disponibile pentru această adresă.",
+    "shippingUnavailable": "Livrarea poștală nu este încă configurată de această asociație.",
+    "leadTimeApprox": "~{days} j",
+    "shippingCostLabel": "Costuri de transport",
+    "mixedCartPickupOnlyHint": "Transportul nu este disponibil: Coșul tău conține un articol care poate fi ridicat doar manual.",
+    "markupLabel": "Marja de siguranță la costurile de transport",
+    "markupHint": "Se adaugă la tariful afișat cumpărătorului. Te protejează dacă tariful transportatorului crește înainte de expedierea propriu-zisă, dar un preț mai mare poate descuraja achiziția.",
+    "markupRangeError": "Marja trebuie să fie un număr întreg între 0 și 50.",
+    "markupHintTooltip": "Nu se cumpără etichete la momentul comenzii: prețul afișat este doar o estimare. Dacă prețul real al transportatorului a crescut în momentul în care faci francing pachetului, organizația caritabilă plătește diferența — cu excepția cazului în care această marjă o acoperă. În schimb, o marjă prea mare crește prețul afișat clientului și îl poate descuraja să cumpere."
+  },
+  "paperFormScan": {
+    "menuItem": "Importă carduri de hârtie",
+    "manageTemplatesMenuItem": "Gestionează șabloanele cardurilor",
+    "title": "Importă carduri de hârtie",
+    "description": "Citește formularele de înregistrare completate manual, bifează fiecare formular și apoi creează membri.",
+    "backToMembers": "Membri",
+    "loadingTemplates": "Șabloane de încărcare...",
+    "steps": {
+      "upload": "Dosare",
+      "reading": "Citire",
+      "review": "Verificare",
+      "result": "Creație"
+    },
+    "upload": {
+      "noTemplateTitle": "Șablon fără card pe hârtie",
+      "noTemplateDescription": "Mai întâi, descrie-ți formularul de înregistrare pentru lucrare astfel încât câmpurile sale să poată fi citite.",
+      "createTemplate": "Creează un șablon",
+      "template": "Foaie șablon",
+      "templatePlaceholder": "Alege un model",
+      "templateSummary": "{pages, plural, one {# pagină} other {# pagini}} după card · {fields, plural, one {# domeniu} other {# domenii}}.",
+      "manageTemplates": "Șabloane de gestionare",
+      "dropTitle": "Încarcă PDF-ul scanat sau fotografiile cu foile",
+      "galleryTitle": "Alege fotografii sau PDF",
+      "dropSubtitle": "PDF, JPEG sau PNG — mai multe fișiere posibile, citite în ordinea numelui",
+      "privacyNote": "Paginile rămân în browserul tău: doar imaginile sunt trimise una câte una pentru a fi citite, nimic nu este păstrat.",
+      "pageCount": "{count, plural, one {# pagină} other {# pagini}}",
+      "removeFile": "Îndepărtează {name}",
+      "preparing": "Pregătind paginile...",
+      "batchSummary": "{pages, plural, one {# pagină} other {# pagini}} · Despre {forms, plural, one {# record} other {# foi}}",
+      "pageTotal": "{count, plural, one {# pagină} other {# pagini}}",
+      "start": "Începe jocul",
+      "renderFailed": "{name} : {error}",
+      "strictTemplateNotice": "Doar paginile din \" {name} \" va fi acceptat.",
+      "capturedListLabel": "Cărți fotografiate",
+      "capturedForm": "Fișă informativă {form}",
+      "capturedPages": "{count, plural, one {Pagină {list}} other {Pagini {list}}}",
+      "capturedMissing": "{count, plural, one {Pagină {list} absent} other {Pagini {list} absent}}",
+      "capturedInProgress": "În desfășurare",
+      "removeCapturedForm": "Elimină fișierul {form}",
+      "capturedSummary": "{forms, plural, one {# record} other {# foi}} · {pages, plural, one {# pagină} other {# pagini}}",
+      "camera": {
+        "title": "Fotografiază cărțile",
+        "needsTemplate": "Mai întâi, alege un șablon: aplicația îți va spune ce pagină să fotografiezi.",
+        "prompt": "Fișă informativă {form} — pagină {page} pe {pages}",
+        "promptSinglePage": "Fișă informativă {form}",
+        "capturePage": "Fotografiază pagina {page}",
+        "captureForm": "Fotografiază foaia",
+        "skipToNextForm": "Sari direct la fișier {form}",
+        "lastShot": "Fișă informativă {form} · Pagină {page}",
+        "lastShotSinglePage": "Fișă informativă {form}",
+        "lastShotAlt": "Fotografie a dosarului {form}, pagină {page}",
+        "preparing": "Pregătire...",
+        "retake": "Recapitulare",
+        "retakeLabel": "Fă poza cardului {form}, pagină {page}",
+        "framingHint": "Așeză foaia plată, bine luminată, și încadrează întreaga pagină cu cele patru margini ale sale.",
+        "photoFileName": "Fișă informativă {form} Pagină {page}.{extension}"
+      }
+    },
+    "reading": {
+      "progress": "{read} / {total} Pagini Lues",
+      "failedCount": "{count, plural, one {# pagină în eroare} other {# pagini în eroare}}",
+      "runningHint": "Lectura continuă atât timp cât această pagină rămâne deschisă.",
+      "pageFailed": "Pagina nu putea fi citită",
+      "stoppedTitle": "Redare întreruptă",
+      "rateLimitedTitle": "Pauză redarea",
+      "openAiSettings": "Setări AI",
+      "openTemplates": "Fișe de șabloane",
+      "resume": "Recapitulare",
+      "failedTitle": "Pagini necitite",
+      "retryAll": "Încearcă totul din nou",
+      "pageColumn": "Pagină",
+      "fileColumn": "Dosar",
+      "errorColumn": "Eroare",
+      "retry": "Încearcă din nou",
+      "continueWithFailuresHint": "Puteți continua: paginile necitite rămân vizibile în timpul verificării și sunt completate manual.",
+      "restart": "Începe-o de la zero",
+      "continueAnyway": "Verifică oricum",
+      "continue": "Sari la verificare",
+      "refusedCount": "{count, plural, one {# pagina respinsă} other {# pagini respinse}}",
+      "refusedTitle": "Pagini respinse",
+      "reasonColumn": "Motiv",
+      "pageRefused": "Pagină respinsă — acesta nu este recordul așteptat",
+      "detectedDocument": "Document detectat: {title}",
+      "removePage": "Îndepărtează",
+      "refusedHint": "Aceste pagini nu vor fi importate. Dacă o carte pierde una dintre paginile sale în acest mod, va apărea cu o pagină lipsă."
+    },
+    "viewer": {
+      "pageSwitch": "Pagina afișată",
+      "page": "Pagină {number}",
+      "pageMissing": "Pagină {number} dispărut",
+      "zoomOut": "Prăbușirea",
+      "zoomIn": "Mărește",
+      "pageUnread": "Page non lue: {error}",
+      "pageAlt": "Pagină {number} a fișei de lucru ({file})",
+      "missingPageBody": "Pagina {number} din această foaie nu a fost importată."
+    },
+    "editor": {
+      "lowConfidence": "Lectură incertă, de verificat",
+      "identity": "Identitate",
+      "firstName": "Prenume",
+      "lastName": "Nume",
+      "alreadyExists": "Există deja: {people}",
+      "email": "Email",
+      "phone": "Telefon",
+      "birthDate": "Data nașterii",
+      "age": "{age, plural, one {# un} other {# ani}}",
+      "civilite": "Titlu",
+      "sexe": "Gen",
+      "address": "Adresă",
+      "addressLowConfidence": "Adresa citită cu incertitudine, de verificat",
+      "guardians": "Tutori legali",
+      "guardianExpected": "Membru minor ({age, plural, one {# un} other {# ani}}): niciun tutore legal informat.",
+      "guardianName": "Tutore legal {number} — Nume",
+      "guardianPhone": "Tutore legal {number} — telefon",
+      "consents": "Permisiuni",
+      "imageRights": "Drepturi de imagine",
+      "imageRightsYes": "Da",
+      "imageRightsNo": "Nu",
+      "imageRightsUnknown": "Nespecificat",
+      "sheetAnswers": "Răspunsuri din dosar",
+      "sheetAnswersHint": "Câmpuri fără coloană dedicată: Acestea vor fi adăugate în notițele membrilor la creare.",
+      "sheetPage": "Pagină {page}",
+      "sheetPageMissing": "Pagină lipsă: fără răspuns citit.",
+      "checkboxUnread": "Căsuță necitită, de bifat pe card",
+      "linkedDocument": "Acceptarea de către înregistrări a \" {title} »",
+      "notes": "Note",
+      "notesOwnHint": "Notele tale proprii. Răspunsurile din cartonaș vor fi adăugate la momentul creării, în formatul \"etichetă: valoare\"."
+    },
+    "review": {
+      "summary": "{total, plural, one {# record} other {# foi}} · {toReview} de revizuit · {validated, plural, one {# validat} other {# validat}} · {ignored, plural, one {# ignorat} other {# ignorat}} · {created, plural, one {# creat} other {# creat}}",
+      "checkingDuplicates": "caută duplicate...",
+      "duplicatesFailed": "Căutarea duplicată a eșuat; poți continua verificarea.",
+      "create": "{count, plural, =0 {Creează Membri} one {Creează # membru} other {Creează # membri}}",
+      "formsList": "Fișe informative",
+      "untitledForm": "Fișă informativă {number}",
+      "missingPages": "{count, plural, one {Pagină {list} absent} other {Pagini {list} absent}}",
+      "formPosition": "Fișă informativă {number} pe {total}",
+      "previous": "Cartea anterioară",
+      "next": "Pagina următoare",
+      "missingPagesNotice": "{count, plural, one {Pagină {list} absent} other {Pagini {list} absent}} : Câmpurile de pe această pagină rămân goale. Poți valida formularul și completa membrul mai târziu.",
+      "commitError": "Creația a eșuat: {error}",
+      "createdNotice": "Membru creat.",
+      "openMember": "Deschide fișierul",
+      "unvalidate": "Anulează validarea",
+      "restore": "Restaurare",
+      "ignore": "Ignoră",
+      "validate": "Validare",
+      "invalidBeforeCreate": "{count, plural, one {O listare validată conține o eroare} other {# listele validate conțin o eroare}} : Corectați-i înainte de a crea membri."
+    },
+    "status": {
+      "toReview": "De revizuit",
+      "validated": "Validat",
+      "ignored": "Ignorat",
+      "error": "Eroare",
+      "created": "Creat"
+    },
+    "result": {
+      "summary": "{created, plural, =0 {Niciun membru creat} one {# membru creat} other {# membri creați}}{errors, plural, =0 {} one { · # greșeală} other { · # greșeli}}",
+      "remaining": "{count, plural, one {# dosar rămâne de procesat} other {# fișiere rămân de procesat}}.",
+      "nameColumn": "Nume",
+      "statusColumn": "Rezultat",
+      "detailColumn": "Detaliu",
+      "created": "Creat",
+      "error": "Eroare",
+      "skippedDocuments": "Acceptare neînregistrată: {documents}",
+      "backToReview": "Înapoi la verificare",
+      "goToMembers": "Vezi membrii",
+      "genericError": "Membrii care creează eroare"
+    },
+    "notesValues": {
+      "yes": "Da",
+      "no": "Nu"
+    },
+    "validation": {
+      "firstNameRequired": "Prenume necesar",
+      "lastNameRequired": "Nume necesar"
+    },
+    "leaveWarning": {
+      "title": "Părăsește l''import?",
+      "description": "Documentele citite și verificate pe această pagină vor fi pierdute. Membrii deja creați sunt păstrați.",
+      "confirm": "Plecarea fără a crea"
+    },
+    "restartWarning": {
+      "title": "Recommencer l''import?",
+      "description": "Paginile încărcate și lectura lor vor fi întrerupte.",
+      "confirm": "Începe-o de la zero"
+    }
+  },
   "formTermsEditor": {
     "contentRequired": "Trebuie să completați câmpul „{conditionsLabel}” sau să încărcați un document."
+  },
+  "membreDuplicates": {
+    "list": {
+      "title": "Duplicate potențiale",
+      "subtitle": "Membri care par a fi aceeași persoană — verifică înainte de a le fuziona.",
+      "menuItem": "Duplicate",
+      "scanAction": "Scanează pentru duplicate",
+      "scanSuccess": "{count, plural, =0 {Nu există duplicate în așteptare} one {1 duplicat în așteptare} other {# duplicate în așteptare}}",
+      "scanError": "Eroare în căutarea duplicatelor",
+      "searchPlaceholder": "Caută un membru...",
+      "matchedFields": {
+        "EMAIL": "Email",
+        "NAME": "Nume"
+      },
+      "columns": {
+        "membreA": "Membru A",
+        "membreB": "Membru B",
+        "matchedFields": "Criterii corespunzătoare",
+        "detectedAt": "Detectat",
+        "status": "Statut"
+      },
+      "status": {
+        "PENDING": "În așteptare",
+        "DISMISSED": "Ignorat",
+        "MERGED": "Fuzionarea"
+      },
+      "autoDismissedLabel": "(mașină)",
+      "compareAction": "Compară",
+      "dismissAction": "Ignoră",
+      "empty": "Fără duplicate.",
+      "emptyForSearch": "Niciun rezultat pentru \" {search} ».",
+      "restoreAction": "Restaurare"
+    },
+    "merge": {
+      "backLink": "Înapoi",
+      "title": "Comparație și fuziune",
+      "subtitle": "Alege ce membru să păstrezi și, pentru fiecare câmp diferit, ce valoare să păstrezi.",
+      "alreadyMerged": "Acest duplicat a fost deja fuzionat.",
+      "keepAsPrimary": "Păstrați ca director",
+      "fieldsTitle": "Domenii diferite",
+      "fields": {
+        "firstName": "Prenume",
+        "lastName": "Nume",
+        "email": "Email",
+        "phone": "Telefon",
+        "birthDate": "Data nașterii",
+        "civilite": "Titlu",
+        "address": "Adresă",
+        "addressStreet": "Pistă",
+        "addressComplement": "Adresă suplimentară",
+        "postalCode": "Cod poștal",
+        "city": "Oraș",
+        "country": "Țară",
+        "groupeSanguin": "Grupa sanguină",
+        "sexe": "Gen",
+        "allergies": "Alergii",
+        "photoUrl": "Fotografie",
+        "preferredLocale": "Limba preferată",
+        "spokenLanguage": "Limba vorbită",
+        "possedeTshirt": "Are un tricou",
+        "tailleTshirt": "Mărimea tricoului",
+        "typeId": "Tip de membru",
+        "notes": "Note",
+        "guardianName": "Numele tutorelui legal",
+        "guardianPhone": "Numărul de telefon al tutorelui legal",
+        "secondGuardianName": "Numele celui de-al doilea tutore legal",
+        "secondGuardianPhone": "Numărul de telefon al celui de-al doilea tutore legal",
+        "imageRightsConsent": "Drepturi de imagine",
+        "imageRightsConsentAt": "Data consimțământului (drepturi de imagine)"
+      },
+      "relatedDataTitle": "Date conexe",
+      "relations": {
+        "cotisations": "Contribuții",
+        "participations": "Înscrieri la evenimente",
+        "dons": "Donații",
+        "membershipAddonPurchases": "Opțiuni de membru achiziționate",
+        "automationLogs": "Automatizări declanșate",
+        "emailMessages": "Emailuri trimise",
+        "smsMessages": "SMS trimis",
+        "incomes": "Încasări",
+        "materialLoans": "Împrumuturi pentru echipamente",
+        "boutiqueCommandes": "Comenzi de magazin",
+        "actualiteRecipients": "Destinatari ai știrilor",
+        "sondageRecipients": "Beneficiarii sondajului",
+        "sondageReponses": "Răspunsuri la sondaje",
+        "meetingParticipants": "Participarea la întâlniri",
+        "erasureRequests": "Cereri de ștergere",
+        "dependants": "Membri atașați (dependenți)",
+        "cotisationSubscription": "Abonament activ de membru",
+        "controlAlert": "Alertă Control Activ"
+      },
+      "relatedDataCounts": "{primary} → {secondary}",
+      "conflictWarning": "⚠ {reason}",
+      "dismissAction": "Ignorați această dublă",
+      "mergeAction": "Fuziunea",
+      "mergeConfirmTitle": "Să fuzionezi acești doi membri?",
+      "mergeConfirmDescription": "Toate datele conexe de la membrul secundar vor fi transferate către membrul primar. Această acțiune nu poate fi anulată din interfață.",
+      "mergeConfirmDescriptionWithPortalWarning": "Ambii membri au un cont de portal — contul membrului secundar va fi dezactivat. Toate celelalte date conexe vor fi transferate către membrul principal. Această acțiune nu poate fi anulată din interfață.",
+      "mergeConfirmDescriptionAdoptsPortal": "Contul de portal al membrului secundar va fi preluat de membrul primar. Toate celelalte date conexe vor fi transferate. Această acțiune nu poate fi anulată din interfață.",
+      "mergeSuccess": "{count, plural, =0 {Fuziunea finalizată} one {Fuziune — 1 element transferat} other {Fuziune — # iteme transferate}}",
+      "mergeError": "Fuziunea erorilor",
+      "relatedDataEmpty": "Nu există date legate de niciunul dintre membri."
+    },
+    "backoffice": {
+      "title": "Membri duplicați",
+      "subtitle": "Duplicate potențiale detectate în toate asocierile.",
+      "columns": {
+        "association": "Asociere"
+      },
+      "changeAssociation": "Changer d''association",
+      "associationSearchPlaceholder": "Caută o asociere...",
+      "typeToSearch": "Atinge pentru a căuta...",
+      "loading": "Se încarcă...",
+      "noResults": "Niciun rezultat.",
+      "scanAction": "Scaner"
+    }
   }
 }

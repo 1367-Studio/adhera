@@ -70,6 +70,7 @@ type Evenement = {
 
   fieldPhone:     FieldRequirement
   fieldAddress:   FieldRequirement
+  fieldCountry:   FieldRequirement
   fieldBirthDate: FieldRequirement
   fieldGender:    FieldRequirement
   fieldMobile:    FieldRequirement
@@ -199,6 +200,7 @@ export default function EvenementDetailPage() {
   // Step 3 — Formulaire : matrice de champs standards
   const [fieldPhone, setFieldPhone]         = useState<FieldRequirement>("OPTIONAL")
   const [fieldAddress, setFieldAddress]     = useState<FieldRequirement>("OPTIONAL")
+  const [fieldCountry, setFieldCountry]     = useState<FieldRequirement>("OPTIONAL")
   const [fieldBirthDate, setFieldBirthDate] = useState<FieldRequirement>("HIDDEN")
   const [fieldGender, setFieldGender]       = useState<FieldRequirement>("HIDDEN")
   const [fieldMobile, setFieldMobile]       = useState<FieldRequirement>("HIDDEN")
@@ -252,6 +254,7 @@ export default function EvenementDetailPage() {
     setContactPhone(evenement.contactPhone ?? "")
     setFieldPhone(evenement.fieldPhone)
     setFieldAddress(evenement.fieldAddress)
+    setFieldCountry(evenement.fieldCountry)
     setFieldBirthDate(evenement.fieldBirthDate)
     setFieldGender(evenement.fieldGender)
     setFieldMobile(evenement.fieldMobile)
@@ -363,7 +366,7 @@ export default function EvenementDetailPage() {
       contactEmail, contactPhone,
     }
   }
-  const standardFieldsPayload = (): SaveableFields => ({ fieldPhone, fieldAddress, fieldBirthDate, fieldGender, fieldMobile })
+  const standardFieldsPayload = (): SaveableFields => ({ fieldPhone, fieldAddress, fieldCountry, fieldBirthDate, fieldGender, fieldMobile })
   const paymentPayload = (): SaveableFields => ({
     allowCash, allowCheque, allowTransfer,
     offlineInstructions,
@@ -431,8 +434,8 @@ export default function EvenementDetailPage() {
 
   const changed = (edited: unknown[], saved: unknown[]) => JSON.stringify(edited) !== JSON.stringify(saved)
   const standardFieldsDirty = !!evenement && changed(
-    [fieldPhone, fieldAddress, fieldBirthDate, fieldGender, fieldMobile],
-    [evenement.fieldPhone, evenement.fieldAddress, evenement.fieldBirthDate, evenement.fieldGender, evenement.fieldMobile],
+    [fieldPhone, fieldAddress, fieldCountry, fieldBirthDate, fieldGender, fieldMobile],
+    [evenement.fieldPhone, evenement.fieldAddress, evenement.fieldCountry, evenement.fieldBirthDate, evenement.fieldGender, evenement.fieldMobile],
   )
   const stepDirty: Record<StepKey, boolean> = {
     info: !!evenement && (!!pendingFile || !!pendingPdf || changed(
@@ -801,6 +804,7 @@ export default function EvenementDetailPage() {
                   <SelectField label={tSteps("fields.phoneLabel")} options={requirementOptions} value={fieldPhone} onValueChange={v => setFieldPhone(v as FieldRequirement)} />
                   <SelectField label={tSteps("fields.mobileLabel")} options={requirementOptions} value={fieldMobile} onValueChange={v => setFieldMobile(v as FieldRequirement)} />
                   <SelectField label={tSteps("fields.addressLabel")} options={requirementOptions} value={fieldAddress} onValueChange={v => setFieldAddress(v as FieldRequirement)} />
+                  <SelectField label={tSteps("fields.countryLabel")} options={requirementOptions} value={fieldCountry} onValueChange={v => setFieldCountry(v as FieldRequirement)} />
                   <SelectField label={tSteps("fields.birthDateLabel")} options={requirementOptions} value={fieldBirthDate} onValueChange={v => setFieldBirthDate(v as FieldRequirement)} />
                   <SelectField label={tSteps("fields.genderLabel")} options={requirementOptions} value={fieldGender} onValueChange={v => setFieldGender(v as FieldRequirement)} />
                 </div>
