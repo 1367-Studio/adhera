@@ -1462,7 +1462,7 @@
       "description": "Ativos e passivos da associação ao final do ano fiscal.",
       "exerciceLabel": "Exercício",
       "rubriqueColumnLabel": "Seção",
-      "noPreviousExercice": "-",
+      "noPreviousExercice": "Não há comparação disponível",
       "actif": "Ativo",
       "totalActif": "Total Ativo",
       "passif": "Passivo",
@@ -1480,7 +1480,15 @@
         "immobilisationsCorporelles": "Ativos de capital tangível",
         "disponibilites": "Disponibilidade",
         "fondsPropres": "Patrimônio",
-        "dettes": "Dívidas"
+        "dettes": "Dívidas",
+        "immobilisationsIncorporelles": "Ativos fixos intangíveis",
+        "immobilisationsFinancieres": "Ativos fixos financeiros",
+        "chargesConstateesDavance": "Despesas pré-pagas",
+        "provisions": "Provisões",
+        "produitsConstatesDavance": "Renda diferida",
+        "creances": "Recebíveis",
+        "stocksEtEnCours": "Inventário",
+        "fondsDedies": "Fundos restritos"
       },
       "issues": {
         "title": "Anomalias detectadas",
@@ -1488,12 +1496,48 @@
           "ACCOUNT_WITHOUT_RUBRIQUE": "O {code} da conta — {label} possui um saldo, mas não está vinculado a nenhum item do balanço patrimonial.",
           "ACTIF_PASSIF_MISMATCH": "O ativo ({actif}) não corresponde ao passivo ({passif}).",
           "OPENING_BALANCE_MISSING": "Nenhuma entrada de abertura foi gerada para este exercício a partir de \"{previousLabel}\".",
-          "TRIAL_BALANCE_UNBALANCED": "O débito total ({debit}) não corresponde ao crédito total ({credit}) deste ano fiscal."
+          "TRIAL_BALANCE_UNBALANCED": "O débito total ({debit}) não corresponde ao crédito total ({credit}) deste ano fiscal.",
+          "RESULT_DIVERGENCE": "O resultado do diário ({journal}) difere do da demonstração de resultados ({statement}) — o diário pode ainda não estar atualizado para este ano fiscal (fechar o ano fiscal ou reiniciar a sincronização)."
         }
       },
       "accountLabels": {
         "reportANouveau": "Lucros retidos",
-        "resultatExercice": "Lucro líquido do ano"
+        "resultatExercice": "Lucro líquido do ano",
+        "creancesCotisations": "Taxas de associação pendentes",
+        "creancesFactures": "Faturas pendentes",
+        "stocksEstimatedValue": "Estimado do valor do estoque",
+        "creancesFacturesEnRetard": "Faturas em atraso"
+      },
+      "exportPdf": "Exportar PDF",
+      "exportDisabledTooltip": "Impossível exportar um Balanço Completo até que as anomalias acima sejam corrigidas.",
+      "pdf": {
+        "periodLabel": "Período de {start} a {end}"
+      },
+      "drillDown": {
+        "date": "Data",
+        "label": "Rótulo",
+        "origin": "Origem",
+        "debit": "Débito",
+        "credit": "Crédito",
+        "noLines": "Não há registros para esta conta.",
+        "sourceTypes": {
+          "INCOME": "Renda",
+          "INCOME_REVERSAL": "Reversão de renda",
+          "EXPENSE": "Despesas",
+          "EXPENSE_REVERSAL": "Reversão de despesas",
+          "BANK_TRANSACTION": "Transação bancária",
+          "ACCOUNT_TRANSFER": "Transferência interna",
+          "OPENING_BALANCE": "Saldo inicial",
+          "IMMOBILISATION_DEPRECIATION": "Depreciação",
+          "IMMOBILISATION_ACQUISITION": "Aquisição de ativos",
+          "FACTURE_RECUE_PAYMENT": "Pagamento ao fornecedor",
+          "MANUAL": "Entrada manual"
+        }
+      },
+      "memoNotice": "Estimativa — não registrada no livro-razão e excluída do total dos bens.",
+      "memoNoHistory": "Sem dados históricos",
+      "caveats": {
+        "stocksMissingCostPrice": "{count} variantes sem custo de compra registrado, excluídas da estimativa"
       }
     }
   },
@@ -2714,7 +2758,8 @@
         "nameRequired": "O nome é obrigatório",
         "atLeastOneVariant": "É necessária pelo menos uma variante",
         "variantLabelRequired": "Cada variante deve ter um rótulo"
-      }
+      },
+      "costPriceColumn": "Custo"
     },
     "view": {
       "title": "Loja",

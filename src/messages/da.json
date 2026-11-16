@@ -1420,7 +1420,7 @@
       "description": "Foreningens aktiver og passiver ved regnskabsårets afslutning.",
       "exerciceLabel": "Motion",
       "rubriqueColumnLabel": "Sektion",
-      "noPreviousExercice": "-",
+      "noPreviousExercice": "Ingen sammenligning tilgængelig",
       "actif": "Aktiv",
       "totalActif": "Total aktiv",
       "passif": "Passiv",
@@ -1438,7 +1438,15 @@
         "immobilisationsCorporelles": "Materielle aktiver",
         "disponibilites": "Tilgængelighed",
         "fondsPropres": "Egenkapital",
-        "dettes": "Gæld"
+        "dettes": "Gæld",
+        "immobilisationsIncorporelles": "Immaterielle anlægsaktiver",
+        "immobilisationsFinancieres": "Finansielle anlægsaktiver",
+        "chargesConstateesDavance": "Forudbetalte udgifter",
+        "provisions": "Hensættelser",
+        "produitsConstatesDavance": "Udskudt indkomst",
+        "creances": "Tilgodehavender",
+        "stocksEtEnCours": "Inventar",
+        "fondsDedies": "Begrænsede midler"
       },
       "issues": {
         "title": "Anomalier opdaget",
@@ -1446,12 +1454,48 @@
           "ACCOUNT_WITHOUT_RUBRIQUE": "Kontoen {code} — {label} har en saldo, men er ikke knyttet til nogen balance post.",
           "ACTIF_PASSIF_MISMATCH": "Aktivet ({actif}) svarer ikke til forpligtelsen ({passif}).",
           "OPENING_BALANCE_MISSING": "Der blev ikke genereret nogen åbningsposter for denne øvelse fra \"{previousLabel}\".",
-          "TRIAL_BALANCE_UNBALANCED": "Den samlede debet ({debit}) matcher ikke den samlede kredit ({credit}) for dette regnskabsår."
+          "TRIAL_BALANCE_UNBALANCED": "Den samlede debet ({debit}) matcher ikke den samlede kredit ({credit}) for dette regnskabsår.",
+          "RESULT_DIVERGENCE": "Resultatet af journalen ({journal}) adskiller sig fra resultatopgørelsen ({statement}) — journalen er måske endnu ikke opdateret for dette regnskabsår (luk regnskabsåret eller genstart synkronisering)."
         }
       },
       "accountLabels": {
         "reportANouveau": "Tilbageholdt indtjening",
-        "resultatExercice": "Nettoresultat for året"
+        "resultatExercice": "Nettoresultat for året",
+        "creancesCotisations": "Udestående medlemskontingenter",
+        "creancesFactures": "Udestående fakturaer",
+        "stocksEstimatedValue": "Anslået lagerværdi",
+        "creancesFacturesEnRetard": "Forfaldne fakturaer"
+      },
+      "exportPdf": "Eksport PDF",
+      "exportDisabledTooltip": "Kan ikke eksportere en endelig balance, før ovenstående uregelmæssigheder er rettet.",
+      "pdf": {
+        "periodLabel": "Periode fra {start} til {end}"
+      },
+      "drillDown": {
+        "date": "Dato",
+        "label": "Label",
+        "origin": "Oprindelse",
+        "debit": "Debet",
+        "credit": "Kredit",
+        "noLines": "Ingen poster for denne konto.",
+        "sourceTypes": {
+          "INCOME": "Indkomst",
+          "INCOME_REVERSAL": "Indkomstomvending",
+          "EXPENSE": "Udgifter",
+          "EXPENSE_REVERSAL": "Omkostningsomvending",
+          "BANK_TRANSACTION": "Banktransaktion",
+          "ACCOUNT_TRANSFER": "Intern overførsel",
+          "OPENING_BALANCE": "Åbningsbalance",
+          "IMMOBILISATION_DEPRECIATION": "Afskrivning",
+          "IMMOBILISATION_ACQUISITION": "Aktiver erhvervelse",
+          "FACTURE_RECUE_PAYMENT": "Leverandørbetaling",
+          "MANUAL": "Manuel indtastning"
+        }
+      },
+      "memoNotice": "Estimat — ikke registreret i hovedbogen, udelukket fra de samlede aktiver.",
+      "memoNoHistory": "Ingen historiske data",
+      "caveats": {
+        "stocksMissingCostPrice": "{count} varianter uden registreringsomkostninger, udelukket fra estimatet"
       }
     }
   },
@@ -2672,7 +2716,8 @@
         "nameRequired": "Navn er påkrævet",
         "atLeastOneVariant": "Mindst én variant er påkrævet",
         "variantLabelRequired": "Hver variant skal have en etiket"
-      }
+      },
+      "costPriceColumn": "Kostpris"
     },
     "view": {
       "title": "Shop",

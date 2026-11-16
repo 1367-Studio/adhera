@@ -934,6 +934,7 @@
       "reconciliation": "Conciliation",
       "categories": "Catégories",
       "immobilisations": "Immobilisations",
+      "journalManual": "Écriture manuelle",
       "reports": "Rapports",
       "bilan": "Bilan",
       "compteResultat": "Compte de résultat",
@@ -952,7 +953,7 @@
     },
     "immobilisationsView": {
       "title": "Immobilisations",
-      "description": "Matériel de bureau et informatique amortissable, et son calendrier de dotation aux amortissements.",
+      "description": "Biens amortissables (corporels et incorporels) et leur calendrier de dotation aux amortissements.",
       "add": "Ajouter",
       "newTitle": "Nouvelle immobilisation",
       "noImmobilisations": "Aucune immobilisation",
@@ -983,24 +984,47 @@
       "labelPlaceholder": "Ex: Ordinateur portable — bureau",
       "expense": "Dépense d'acquisition",
       "expensePlaceholder": "Choisir une dépense marquée « immobilisation »",
-      "noEligibleExpenses": "Aucune dépense éligible — marquez une dépense comme immobilisation et catégorisez-la sur le compte 218300.",
+      "noEligibleExpenses": "Aucune dépense éligible — marquez une dépense comme immobilisation et catégorisez-la sur le compte 218300 (corporelle) ou 205000 (incorporelle).",
       "entryValue": "Valeur d'entrée",
       "residualValue": "Valeur résiduelle",
       "acquisitionDate": "Date d'acquisition",
       "usageStartDate": "Date de mise en service",
       "usefulLifeMonths": "Durée d'utilisation (mois)"
     },
+    "journalManual": {
+      "title": "Écriture manuelle",
+      "description": "Lancez une écriture au journal pour un montant décidé par vous — provision, dépôt de garantie, régularisation — quand aucune fonctionnalité ne le calcule automatiquement.",
+      "newEntry": "Nouvelle écriture",
+      "exercice": "Exercice",
+      "date": "Date",
+      "label": "Libellé",
+      "labelPlaceholder": "Ex: Provision pour litige — dossier 2026-04",
+      "account": "Compte",
+      "accountPlaceholder": "Choisir un compte",
+      "debit": "Débit",
+      "credit": "Crédit",
+      "totals": "Totaux débit / crédit",
+      "addLine": "Ajouter une ligne",
+      "mustBalance": "Le débit et le crédit doivent être égaux et différents de zéro.",
+      "missingAccount": "Chaque ligne doit avoir un compte.",
+      "cancel": "Annuler",
+      "submit": "Lancer l'écriture",
+      "createSuccess": "Écriture créée",
+      "noOpenExercice": "Aucun exercice ouvert — ouvrez ou rouvrez un exercice avant de lancer une écriture manuelle."
+    },
     "bilan": {
       "title": "Bilan",
       "description": "Actif et passif de l'association à la clôture de l'exercice.",
       "exerciceLabel": "Exercice",
       "rubriqueColumnLabel": "Rubrique",
-      "noPreviousExercice": "-",
+      "noPreviousExercice": "Comparatif indisponible",
       "actif": "Actif",
       "totalActif": "Total actif",
       "passif": "Passif",
       "totalPassif": "Total passif",
       "noAccountsInRubrique": "Aucun solde dans cette rubrique",
+      "exportPdf": "Exporter PDF",
+      "exportDisabledTooltip": "Impossible d'exporter un Bilan définitif tant que les anomalies ci-dessus ne sont pas corrigées.",
       "emptyExercice": {
         "title": "Aucun exercice comptable",
         "description": "Créez un exercice comptable pour afficher le Bilan."
@@ -1011,13 +1035,50 @@
       },
       "rubriques": {
         "immobilisationsCorporelles": "Immobilisations corporelles",
+        "immobilisationsIncorporelles": "Immobilisations incorporelles",
+        "immobilisationsFinancieres": "Immobilisations financières",
         "disponibilites": "Disponibilités",
+        "chargesConstateesDavance": "Charges constatées d'avance",
+        "creances": "Créances",
+        "stocksEtEnCours": "Stocks et en-cours",
         "fondsPropres": "Fonds propres",
-        "dettes": "Dettes"
+        "provisions": "Provisions pour risques et charges",
+        "dettes": "Dettes",
+        "produitsConstatesDavance": "Produits constatés d'avance",
+        "fondsDedies": "Fonds dédiés"
       },
+      "memoNotice": "Estimation — non comptabilisée, hors total actif.",
       "accountLabels": {
         "reportANouveau": "Report à nouveau",
-        "resultatExercice": "Résultat de l'exercice"
+        "resultatExercice": "Résultat de l'exercice",
+        "creancesCotisations": "Cotisations en attente",
+        "creancesFactures": "Factures en attente",
+        "stocksEstimatedValue": "Valeur du stock estimée",
+        "creancesFacturesEnRetard": "Factures en retard"
+      },
+      "pdf": {
+        "periodLabel": "Période du {start} au {end}"
+      },
+      "drillDown": {
+        "date": "Date",
+        "label": "Libellé",
+        "origin": "Origine",
+        "debit": "Débit",
+        "credit": "Crédit",
+        "noLines": "Aucune écriture pour ce compte.",
+        "sourceTypes": {
+          "INCOME": "Recette",
+          "INCOME_REVERSAL": "Annulation de recette",
+          "EXPENSE": "Dépense",
+          "EXPENSE_REVERSAL": "Annulation de dépense",
+          "BANK_TRANSACTION": "Transaction bancaire",
+          "ACCOUNT_TRANSFER": "Virement interne",
+          "OPENING_BALANCE": "Report à nouveau",
+          "IMMOBILISATION_DEPRECIATION": "Amortissement",
+          "IMMOBILISATION_ACQUISITION": "Acquisition d'immobilisation",
+          "FACTURE_RECUE_PAYMENT": "Paiement fournisseur",
+          "MANUAL": "Saisie manuelle"
+        }
       },
       "issues": {
         "title": "Anomalies détectées",
@@ -1025,8 +1086,13 @@
           "ACCOUNT_WITHOUT_RUBRIQUE": "Le compte {code} — {label} a un solde mais n'est rattaché à aucune rubrique du Bilan.",
           "ACTIF_PASSIF_MISMATCH": "L'actif ({actif}) ne correspond pas au passif ({passif}).",
           "OPENING_BALANCE_MISSING": "Aucune écriture d'ouverture générée pour cet exercice à partir de « {previousLabel} ».",
-          "TRIAL_BALANCE_UNBALANCED": "Le total débit ({debit}) ne correspond pas au total crédit ({credit}) pour cet exercice."
+          "TRIAL_BALANCE_UNBALANCED": "Le total débit ({debit}) ne correspond pas au total crédit ({credit}) pour cet exercice.",
+          "RESULT_DIVERGENCE": "Le résultat du journal ({journal}) diverge de celui du compte de résultat ({statement}) — le journal n'est peut-être pas encore à jour pour cet exercice (clôturez l'exercice ou relancez la synchronisation)."
         }
+      },
+      "memoNoHistory": "Pas d'historique",
+      "caveats": {
+        "stocksMissingCostPrice": "{count, plural, one {# variante sans coût d'achat renseigné, exclue de l'estimation} other {# variantes sans coût d'achat renseigné, exclues de l'estimation}}"
       }
     },
     "compteResultat": {
@@ -2966,7 +3032,8 @@
       },
       "shippableColumn": "Envoi",
       "weightColumn": "Poids (g)",
-      "weightPlaceholder": "500"
+      "weightPlaceholder": "500",
+      "costPriceColumn": "Coût"
     },
     "view": {
       "title": "Boutique",

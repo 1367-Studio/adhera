@@ -1420,7 +1420,7 @@
       "description": "Bezittingen en passiva van de vereniging aan het einde van het boekjaar.",
       "exerciceLabel": "Oefening",
       "rubriqueColumnLabel": "Sectie",
-      "noPreviousExercice": "-",
+      "noPreviousExercice": "Geen vergelijkingsmethode beschikbaar",
       "actif": "Actief",
       "totalActif": "Totaal actief",
       "passif": "Passief",
@@ -1438,7 +1438,15 @@
         "immobilisationsCorporelles": "Tastbare kapitaalactiva",
         "disponibilites": "Beschikbaarheid",
         "fondsPropres": "Aandelen",
-        "dettes": "Schulden"
+        "dettes": "Schulden",
+        "immobilisationsIncorporelles": "Immateriële vaste activa",
+        "immobilisationsFinancieres": "Financiële vaste activa",
+        "chargesConstateesDavance": "Vooruitbetaalde kosten",
+        "provisions": "Voorzieningen",
+        "produitsConstatesDavance": "Uitgestelde inkomsten",
+        "creances": "Debiteuren",
+        "stocksEtEnCours": "Inventaris",
+        "fondsDedies": "Beperkte fondsen"
       },
       "issues": {
         "title": "Anomalieën gedetecteerd",
@@ -1446,12 +1454,48 @@
           "ACCOUNT_WITHOUT_RUBRIQUE": "De rekening {code} — {label} heeft een saldo, maar is niet gekoppeld aan een saldopost.",
           "ACTIF_PASSIF_MISMATCH": "Het actief ({actif}) komt niet overeen met de verplichting ({passif}).",
           "OPENING_BALANCE_MISSING": "Er werden geen openingsvermeldingen voor deze oefening gegenereerd vanuit \"{previousLabel}\".",
-          "TRIAL_BALANCE_UNBALANCED": "De totale debet ({debit}) komt niet overeen met het totale credit ({credit}) voor dit boekjaar."
+          "TRIAL_BALANCE_UNBALANCED": "De totale debet ({debit}) komt niet overeen met het totale credit ({credit}) voor dit boekjaar.",
+          "RESULT_DIVERGENCE": "Het resultaat van het journaal ({journal}) verschilt van dat van de winst- en verliesrekening ({statement}) — het journaal is mogelijk nog niet up-to-date voor dit boekjaar (het boekjaar afsluiten of synchronisatie herstarten)."
         }
       },
       "accountLabels": {
         "reportANouveau": "Ingehouden winsten",
-        "resultatExercice": "Nettowinst van het jaar"
+        "resultatExercice": "Nettowinst van het jaar",
+        "creancesCotisations": "Uitstaande lidmaatschapsbijdragen",
+        "creancesFactures": "Uitstaande facturen",
+        "stocksEstimatedValue": "Geschatte voorraadwaarde",
+        "creancesFacturesEnRetard": "Achterstallige facturen"
+      },
+      "exportPdf": "PDF exporteren",
+      "exportDisabledTooltip": "Kan geen eindbalans exporteren totdat bovenstaande anomalieën zijn opgelost.",
+      "pdf": {
+        "periodLabel": "Periode van {start} tot {end}"
+      },
+      "drillDown": {
+        "date": "Datum",
+        "label": "Label",
+        "origin": "Oorsprong",
+        "debit": "Debet",
+        "credit": "Krediet",
+        "noLines": "Geen vermeldingen voor dit account.",
+        "sourceTypes": {
+          "INCOME": "Inkomen",
+          "INCOME_REVERSAL": "Inkomensomkering",
+          "EXPENSE": "Kosten",
+          "EXPENSE_REVERSAL": "Kostenomkering",
+          "BANK_TRANSACTION": "Banktransactie",
+          "ACCOUNT_TRANSFER": "Interne overdracht",
+          "OPENING_BALANCE": "Openingsbalans",
+          "IMMOBILISATION_DEPRECIATION": "Afschrijving",
+          "IMMOBILISATION_ACQUISITION": "Activa-acquisitie",
+          "FACTURE_RECUE_PAYMENT": "Leveranciersbetaling",
+          "MANUAL": "Handmatige invoer"
+        }
+      },
+      "memoNotice": "Schatting — niet geregistreerd in het grootboek, uitgesloten van de totale activa.",
+      "memoNoHistory": "Geen historische gegevens",
+      "caveats": {
+        "stocksMissingCostPrice": "{count} varianten zonder aankoopprijs geregistreerd, uitgesloten van de schatting"
       }
     }
   },
@@ -2672,7 +2716,8 @@
         "nameRequired": "Naam is vereist",
         "atLeastOneVariant": "Er is ten minste één variant vereist",
         "variantLabelRequired": "Elke variant moet een label hebben"
-      }
+      },
+      "costPriceColumn": "Kosten"
     },
     "view": {
       "title": "Winkel",

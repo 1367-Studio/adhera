@@ -1420,7 +1420,7 @@
       "description": "Asociācijas aktīvi un saistības finanšu gada beigās.",
       "exerciceLabel": "Vingrinājumi",
       "rubriqueColumnLabel": "Sadaļa",
-      "noPreviousExercice": "-",
+      "noPreviousExercice": "Nav pieejams salīdzinājums",
       "actif": "Aktīva",
       "totalActif": "Kopējais aktīvais",
       "passif": "Pasīvs",
@@ -1438,7 +1438,15 @@
         "immobilisationsCorporelles": "Taustāmie kapitāla aktīvi",
         "disponibilites": "Pieejamība",
         "fondsPropres": "Kapitāls",
-        "dettes": "Parādi"
+        "dettes": "Parādi",
+        "immobilisationsIncorporelles": "Nemateriālie pamatlīdzekļi",
+        "immobilisationsFinancieres": "Finanšu pamatlīdzekļi",
+        "chargesConstateesDavance": "Iepriekš apmaksāti izdevumi",
+        "provisions": "Rezerves",
+        "produitsConstatesDavance": "Atliktie ienākumi",
+        "creances": "Saņemamais parāds",
+        "stocksEtEnCours": "Inventārs",
+        "fondsDedies": "Ierobežotie līdzekļi"
       },
       "issues": {
         "title": "Konstatētās anomālijas",
@@ -1446,12 +1454,48 @@
           "ACCOUNT_WITHOUT_RUBRIQUE": "Kontam {code} — {label} ir bilance, bet tas nav piesaistīts nevienam bilances punktam.",
           "ACTIF_PASSIF_MISMATCH": "Aktīvs ({actif}) neatbilst saistībām ({passif}).",
           "OPENING_BALANCE_MISSING": "Šim uzdevumam no \"{previousLabel}\" netika ģenerēti ievadi.",
-          "TRIAL_BALANCE_UNBALANCED": "Kopējais debets ({debit}) neatbilst kopējam kredītam ({credit}) šajā fiskālajā gadā."
+          "TRIAL_BALANCE_UNBALANCED": "Kopējais debets ({debit}) neatbilst kopējam kredītam ({credit}) šajā fiskālajā gadā.",
+          "RESULT_DIVERGENCE": "Žurnāla ({journal}) rezultāts atšķiras no peļņas vai zaudējumu pārskata ({statement}) rezultātiem — žurnāls var vēl nebūt atjaunināts šim fiskālajam gadam (finanšu gada slēgšana vai atsākšanas sinhronizācija)."
         }
       },
       "accountLabels": {
         "reportANouveau": "Nesadalītā peļņa",
-        "resultatExercice": "Gada tīrā peļņa"
+        "resultatExercice": "Gada tīrā peļņa",
+        "creancesCotisations": "Neapmaksātās biedru maksas",
+        "creancesFactures": "Neapmaksātie rēķini",
+        "stocksEstimatedValue": "Aptuvenā krājumu vērtība",
+        "creancesFacturesEnRetard": "Nokavētie rēķini"
+      },
+      "exportPdf": "PDF eksports",
+      "exportDisabledTooltip": "Nav iespējams eksportēt galīgo bilanci, kamēr iepriekš minētās anomālijas nav novērstas.",
+      "pdf": {
+        "periodLabel": "Periods no {start} līdz {end}"
+      },
+      "drillDown": {
+        "date": "Datums",
+        "label": "Etiķete",
+        "origin": "Izcelsme",
+        "debit": "Debets",
+        "credit": "Kredīts",
+        "noLines": "Šim kontam nav ierakstu.",
+        "sourceTypes": {
+          "INCOME": "Ienākumi",
+          "INCOME_REVERSAL": "Ienākumu apgriešana",
+          "EXPENSE": "Izdevumi",
+          "EXPENSE_REVERSAL": "Izdevumu apgriešana",
+          "BANK_TRANSACTION": "Bankas darījums",
+          "ACCOUNT_TRANSFER": "Iekšējā pāreja",
+          "OPENING_BALANCE": "Atklāšanas bilance",
+          "IMMOBILISATION_DEPRECIATION": "Nolietojums",
+          "IMMOBILISATION_ACQUISITION": "Aktīvu iegāde",
+          "FACTURE_RECUE_PAYMENT": "Piegādātāju maksājums",
+          "MANUAL": "Manuāla ievade"
+        }
+      },
+      "memoNotice": "Novērtējums — nav ierakstīts grāmatā, izslēgts no kopējiem aktīviem.",
+      "memoNoHistory": "Nav vēsturisku datu",
+      "caveats": {
+        "stocksMissingCostPrice": "{count} varianti bez norādītām pirkuma izmaksām, izslēgti no tāmes"
       }
     }
   },
@@ -2672,7 +2716,8 @@
         "nameRequired": "Vārds ir nepieciešams",
         "atLeastOneVariant": "Nepieciešama vismaz viena variācija",
         "variantLabelRequired": "Katram variantam jābūt ar etiķeti"
-      }
+      },
+      "costPriceColumn": "Izmaksas"
     },
     "view": {
       "title": "Veikals",

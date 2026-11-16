@@ -1420,7 +1420,7 @@
       "description": "Aktywa i zobowiązania stowarzyszenia na koniec roku finansowego.",
       "exerciceLabel": "Ćwiczenia",
       "rubriqueColumnLabel": "Sekcja",
-      "noPreviousExercice": "-",
+      "noPreviousExercice": "Brak dostępnych porównań",
       "actif": "Aktywa",
       "totalActif": "Suma aktywów",
       "passif": "Pasywa",
@@ -1438,7 +1438,15 @@
         "immobilisationsCorporelles": "Aktywa kapitałowe materialne",
         "disponibilites": "Dostępność",
         "fondsPropres": "Kapitał własny",
-        "dettes": "Długi"
+        "dettes": "Długi",
+        "immobilisationsIncorporelles": "Niematerialne aktywa trwałe",
+        "immobilisationsFinancieres": "Aktywa trwałe finansowe",
+        "chargesConstateesDavance": "Przedpłacone wydatki",
+        "provisions": "Rezerwy",
+        "produitsConstatesDavance": "Dochód odroczony",
+        "creances": "Należności",
+        "stocksEtEnCours": "Inwentarz",
+        "fondsDedies": "Ograniczone środki"
       },
       "issues": {
         "title": "Wykryto anomalie",
@@ -1446,12 +1454,48 @@
           "ACCOUNT_WITHOUT_RUBRIQUE": "Konto {code} — {label} ma saldo, ale nie jest powiązane z żadnym elementem bilansu.",
           "ACTIF_PASSIF_MISMATCH": "Aktywo ({actif}) nie odpowiada zobowiązaniu ({passif}).",
           "OPENING_BALANCE_MISSING": "Nie wygenerowano żadnych wpisów otwierających się dla tego zadania z \"{previousLabel}\".",
-          "TRIAL_BALANCE_UNBALANCED": "Całkowity debet ({debit}) nie pokrywa się z całkowitym kredytem ({credit}) za ten rok fiskalny."
+          "TRIAL_BALANCE_UNBALANCED": "Całkowity debet ({debit}) nie pokrywa się z całkowitym kredytem ({credit}) za ten rok fiskalny.",
+          "RESULT_DIVERGENCE": "Wynik księgi ({journal}) różni się od rachunku zysków i strat ({statement}) — dziennik może nie być jeszcze aktualny na ten rok obrotowy (zamknięcie roku fiskalnego lub synchronizacja wznowiona)."
         }
       },
       "accountLabels": {
         "reportANouveau": "Zyski zatrzymane",
-        "resultatExercice": "Zysk netto za rok"
+        "resultatExercice": "Zysk netto za rok",
+        "creancesCotisations": "Niezaległe składki członkowskie",
+        "creancesFactures": "Zaległe faktury",
+        "stocksEstimatedValue": "Szacowana wartość zapasów",
+        "creancesFacturesEnRetard": "Faktury zaległe"
+      },
+      "exportPdf": "Eksport PDF",
+      "exportDisabledTooltip": "Nie można wyeksportować Ostatecznego Bilansu Bilansowego, dopóki powyższe anomalie nie zostaną naprawione.",
+      "pdf": {
+        "periodLabel": "Okres od {start} do {end}"
+      },
+      "drillDown": {
+        "date": "Data",
+        "label": "Etykieta",
+        "origin": "Pochodzenie",
+        "debit": "Debet",
+        "credit": "Kredyt",
+        "noLines": "Brak wpisów na to konto.",
+        "sourceTypes": {
+          "INCOME": "Dochód",
+          "INCOME_REVERSAL": "Odwrócenie dochodu",
+          "EXPENSE": "Wydatki",
+          "EXPENSE_REVERSAL": "Odwrócenie kosztów",
+          "BANK_TRANSACTION": "Transakcja bankowa",
+          "ACCOUNT_TRANSFER": "Transfer wewnętrzny",
+          "OPENING_BALANCE": "Saldo początkowe",
+          "IMMOBILISATION_DEPRECIATION": "Amortyzacja",
+          "IMMOBILISATION_ACQUISITION": "Pozyskiwanie aktywów",
+          "FACTURE_RECUE_PAYMENT": "Płatność dostawcy",
+          "MANUAL": "Wprowadzanie ręczne"
+        }
+      },
+      "memoNotice": "Szacunek — nie odnotowany w księdze, wyłączony z całkowitych aktywów.",
+      "memoNoHistory": "Brak danych historycznych",
+      "caveats": {
+        "stocksMissingCostPrice": "{count} wariantów bez zarejestrowanego kosztu zakupu, wyłączonych z szacunku"
       }
     }
   },
@@ -2672,7 +2716,8 @@
         "nameRequired": "Wymagane jest imię",
         "atLeastOneVariant": "Wymagany jest co najmniej jeden wariant",
         "variantLabelRequired": "Każdy wariant musi mieć etykietę"
-      }
+      },
+      "costPriceColumn": "Koszt"
     },
     "view": {
       "title": "Sklep",

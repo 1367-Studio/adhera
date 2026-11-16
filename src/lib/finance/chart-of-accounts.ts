@@ -86,6 +86,14 @@ export const REFERENCE_ACCOUNTS: ReferenceAccount[] = [
   // `nature` doc comment above. 681000 is a genuine CHARGE (dotation aux amortissements).
   { code: "218300", label: "Matériel de bureau et matériel informatique",        type: "EXPENSE", section: "IMMOBILISATION", nature: "ACTIF",  normalSide: "DEBIT" },
   { code: "681000", label: "Dépréciations / Amortissements",                     type: "EXPENSE", section: "IMMOBILISATION", nature: "CHARGE", normalSide: "DEBIT" },
+  // Immobilisations incorporelles (FORM-107, rubricas restantes) — même logique que 218300 :
+  // une dépense catégorisée ici (ex. achat d'un logiciel/licence) devient éligible à
+  // immobilisation via /api/finances/immobilisations/eligible-expenses, qui route vers le bon
+  // triplet de comptes (205000/280500/681110) selon le code de catégorie choisi — voir
+  // immobilisations/route.ts. Pas de catégorie par défaut pour ce code, même choix délibéré
+  // que pour 218300 (voir default-categories.ts) : un trésorier crée/active une catégorie
+  // personnalisée pointant dessus quand il en a besoin.
+  { code: "205000", label: "Concessions et droits similaires, brevets, licences", type: "EXPENSE", section: "IMMOBILISATION", nature: "ACTIF", normalSide: "DEBIT" },
 ]
 
 // Ledger-only infrastructure accounts: never selectable by a FinanceCategory (no `type`/
@@ -126,6 +134,35 @@ export const LEDGER_INFRASTRUCTURE_ACCOUNTS: LedgerInfrastructureAccount[] = [
   // Fournisseurs d'immobilisations — reserved for FORM-107 Fase 3 (partial payment of an
   // invoiced asset purchase). Seeded now so the chart doesn't need a second migration later.
   { code: "404000", label: "Fournisseurs d'immobilisations", nature: "PASSIF", normalSide: "CREDIT" },
+
+  // Contra-asset pour 205000, même rôle que 281830 pour 218300.
+  { code: "280500", label: "Amortissements des concessions et droits similaires", nature: "ACTIF", normalSide: "CREDIT" },
+
+  // Immobilisations financières — prêts accordés et dépôts/cautions versés. Ne s'amortissent
+  // pas (pas de dotation/compte contra) : postés uniquement via le lançamento manual (voir
+  // journal/post-manual-entry.ts), jamais via le flux Immobilisation/dépréciation.
+  { code: "274000", label: "Prêts", nature: "ACTIF", normalSide: "DEBIT" },
+  { code: "275000", label: "Dépôts et cautionnements versés", nature: "ACTIF", normalSide: "DEBIT" },
+
+  // Provisions pour risques et charges — montant décidé par le trésorier, jamais calculé
+  // automatiquement (contrairement à l'amortissement) : posté via le lançamento manual.
+  { code: "151000", label: "Provisions pour risques et charges", nature: "PASSIF", normalSide: "CREDIT" },
+  { code: "681500", label: "Dotations aux provisions pour risques et charges", nature: "CHARGE", normalSide: "DEBIT" },
+  { code: "781500", label: "Reprises sur provisions pour risques et charges", nature: "PRODUIT", normalSide: "CREDIT" },
+
+  // Comptes de régularisation — répartissent une charge/un produit déjà comptabilisé entre
+  // l'exercice en cours et le suivant. Montant décidé par le trésorier (ex. prime d'assurance
+  // payée d'avance) : posté via le lançamento manual, jamais calculé automatiquement.
+  { code: "486000", label: "Charges constatées d'avance", nature: "ACTIF", normalSide: "DEBIT" },
+  { code: "487000", label: "Produits constatés d'avance", nature: "PASSIF", normalSide: "CREDIT" },
+
+  // Fonds dédiés — ressources reçues pour un projet/don restreint, pas encore utilisées. Même
+  // logique que Provisions : montant décidé par le trésorier au lançamento manual, jamais
+  // calculé automatiquement (aucun modèle de "fonds restreint" n'existe dans le produit — voir
+  // le contexte du plan Grupo B).
+  { code: "194000", label: "Fonds dédiés", nature: "PASSIF", normalSide: "CREDIT" },
+  { code: "689000", label: "Engagements à réaliser sur ressources affectées", nature: "CHARGE", normalSide: "DEBIT" },
+  { code: "789000", label: "Report des ressources non utilisées des exercices antérieurs", nature: "PRODUIT", normalSide: "CREDIT" },
 ]
 
 export function referenceAccountsForType(type: FinanceCategoryType): ReferenceAccount[] {
