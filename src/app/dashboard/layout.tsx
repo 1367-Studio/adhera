@@ -17,6 +17,8 @@ import { HelpPopupQueue } from "@/components/layout/help-popup-queue"
 import { DashboardMain } from "@/app/dashboard/dashboard-main"
 import { SubscriptionUpgradeModal } from "@/components/billing/subscription-upgrade-modal"
 import { getPricingInfo } from "@/lib/stripe"
+import { PlatformLegalValidationModal } from "@/components/dashboard/platform-legal-validation-modal"
+import { pendingPlatformValidations } from "@/lib/legal/platform-validation"
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const session = await auth()
@@ -85,6 +87,13 @@ export default async function DashboardLayout({ children }: { children: React.Re
     )
   }
 
+  // FORM-113: the handful of accounts with requiresLegalValidation set must confirm
+  // Formwise's current legal documents before anything else — outranks every popup below,
+  // same reasoning as the SUSPENDED/CANCELLED check above but as an overlay rather than a
+  // full replacement, since the account itself isn't locked, just gated until it confirms.
+  const pendingPlatformLegal = await pendingPlatformValidations(u.id)
+  const showPlatformLegalValidation = pendingPlatformLegal.length > 0
+
   // Meant to nag once per actual login (not once ever, and not once per page refresh)
   // until the association has a fiscal period configured. fiscalPeriodPopupSeenAt is
   // compared against this session's loginAt (stamped once at sign-in, see auth/config.ts's
@@ -119,6 +128,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
     canManageBilling
     && assocRow?.subscriptionAmountCents === 0
     && assocRow.subscriptionGracePeriodEndsAt
+    && !showPlatformLegalValidation
   )
   const gracePeriodOverdue = showSubscriptionUpgradeModal
     && assocRow!.subscriptionGracePeriodEndsAt!.getTime() <= Date.now()
@@ -131,7 +141,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
   // render on top of the gate's "locked" modal a moment after it mounts, burying an
   // un-skippable billing block under a dismissable "what's new" dialog.
   const showFiscalPeriodPopup = canManageFinance && modules.finances && exerciceCount === 0
-    && !popupSeenThisLogin && !showSubscriptionUpgradeModal
+    && !popupSeenThisLogin && !showSubscriptionUpgradeModal && !showPlatformLegalValidation
 
   return (
     <UserProvider user={sessionUser} modules={modules} branding={branding} memberCardEnabled={memberCardEnabled} canUseCustomBranding={brandingAllowed}>
@@ -145,8 +155,22 @@ export default async function DashboardLayout({ children }: { children: React.Re
           {/* Never alongside the fiscal-period popup, so the two dialogs don't stack — nor
               alongside the subscription gate below, which outranks both. Sequences Nouveautés,
               Notícias and FAQ pop-ups one at a time (see help-popup-queue.tsx). */}
-          <HelpPopupQueue enabled={!showFiscalPeriodPopup && !showSubscriptionUpgradeModal} />
+          <HelpPopupQueue enabled={!showFiscalPeriodPopup && !showSubscriptionUpgradeModal && !showPlatformLegalValidation} />
           {essentialPricing && <SubscriptionUpgradeModal show={showSubscriptionUpgradeModal} essentialPricing={essentialPricing} overdue={gracePeriodOverdue} />}
+          {showPlatformLegalValidation && (
+            // assocRow?.name falls back to "" rather than requiring assocRow truthy to
+            // render at all — this gate must never fail open just because the association
+            // row came back empty (association row missing/renamed mid-session shouldn't
+            // ever happen for a staff account past the redirects above, but if it did, the
+            // worst outcome should be an association name interpolated as blank, not the
+            // pop-up silently not showing).
+            <PlatformLegalValidationModal
+              show={showPlatformLegalValidation}
+              documents={pendingPlatformLegal}
+              associationName={assocRow?.name ?? ""}
+              userName={sessionUser.name ?? ""}
+            />
+          )}
           <DashboardMain>{children}</DashboardMain>
         </SidebarInset>
       </SidebarProvider>
