@@ -1419,7 +1419,7 @@
       "description": "Föreningens tillgångar och skulder vid räkenskapsårets slut.",
       "exerciceLabel": "Träning",
       "rubriqueColumnLabel": "Sektion",
-      "noPreviousExercice": "-",
+      "noPreviousExercice": "Ingen jämförande tillgång",
       "actif": "Aktiv",
       "totalActif": "Total aktiv",
       "passif": "Passiv",
@@ -1437,7 +1437,15 @@
         "immobilisationsCorporelles": "Materiella kapitaltillgångar",
         "disponibilites": "Tillgänglighet",
         "fondsPropres": "Egenkapital",
-        "dettes": "Skulder"
+        "dettes": "Skulder",
+        "immobilisationsIncorporelles": "Immateriella fasta tillgångar",
+        "immobilisationsFinancieres": "Finansiella anläggningstillgångar",
+        "chargesConstateesDavance": "Förbetalda utgifter",
+        "provisions": "Avsättningar",
+        "produitsConstatesDavance": "Uppskjuten inkomst",
+        "creances": "Kundfordringar",
+        "stocksEtEnCours": "Inventarie",
+        "fondsDedies": "Begränsade medel"
       },
       "issues": {
         "title": "Avvikelser upptäckta",
@@ -1445,12 +1453,48 @@
           "ACCOUNT_WITHOUT_RUBRIQUE": "Kontot {code} — {label} har ett saldo men är inte kopplat till någon balanspost.",
           "ACTIF_PASSIF_MISMATCH": "Tillgången ({actif}) motsvarar inte skulden ({passif}).",
           "OPENING_BALANCE_MISSING": "Inga inledande poster genererades för denna övning från \"{previousLabel}\".",
-          "TRIAL_BALANCE_UNBALANCED": "Den totala debetbeloppet ({debit}) motsvarar inte den totala krediten ({credit}) för detta räkenskapsår."
+          "TRIAL_BALANCE_UNBALANCED": "Den totala debetbeloppet ({debit}) motsvarar inte den totala krediten ({credit}) för detta räkenskapsår.",
+          "RESULT_DIVERGENCE": "Resultatet av journalen ({journal}) skiljer sig från resultaträkningen ({statement}) — journalen kanske ännu inte är uppdaterad för detta räkenskapsår (stäng räkenskapsåret eller återstart synkronisering)."
         }
       },
       "accountLabels": {
         "reportANouveau": "Balanserade vinstmedel",
-        "resultatExercice": "Nettoresultat för året"
+        "resultatExercice": "Nettoresultat för året",
+        "creancesCotisations": "Utestående medlemsavgifter",
+        "creancesFactures": "Utestående fakturor",
+        "stocksEstimatedValue": "Uppskattat lagervärde",
+        "creancesFacturesEnRetard": "Förfallna fakturor"
+      },
+      "exportPdf": "Exportera PDF",
+      "exportDisabledTooltip": "Kan inte exportera en slutgiltig balansräkning förrän ovanstående avvikelser är åtgärdade.",
+      "pdf": {
+        "periodLabel": "Period från {start} till {end}"
+      },
+      "drillDown": {
+        "date": "Datum",
+        "label": "Etikett",
+        "origin": "Ursprung",
+        "debit": "Debet",
+        "credit": "Kredit",
+        "noLines": "Inga poster för detta konto.",
+        "sourceTypes": {
+          "INCOME": "Inkomst",
+          "INCOME_REVERSAL": "Inkomstvändning",
+          "EXPENSE": "Kostnad",
+          "EXPENSE_REVERSAL": "Kostnadsåtervinning",
+          "BANK_TRANSACTION": "Banktransaktion",
+          "ACCOUNT_TRANSFER": "Intern överföring",
+          "OPENING_BALANCE": "Öppningsbalans",
+          "IMMOBILISATION_DEPRECIATION": "Värdeminskning",
+          "IMMOBILISATION_ACQUISITION": "Förvärv av tillgångar",
+          "FACTURE_RECUE_PAYMENT": "Leverantörsbetalning",
+          "MANUAL": "Manuell inmatning"
+        }
+      },
+      "memoNotice": "Uppskattning — inte bokförd i huvudboken, exkluderad från totala tillgångar.",
+      "memoNoHistory": "Inga historiska data",
+      "caveats": {
+        "stocksMissingCostPrice": "{count} varianter utan inköpskostnad registrerad, undantagna från uppskattningen"
       }
     }
   },
@@ -2672,7 +2716,8 @@
         "nameRequired": "Namn krävs",
         "atLeastOneVariant": "Minst en variant krävs",
         "variantLabelRequired": "Varje variant måste ha en etikett"
-      }
+      },
+      "costPriceColumn": "Kostnad"
     },
     "view": {
       "title": "Butik",

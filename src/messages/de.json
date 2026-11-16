@@ -1419,7 +1419,7 @@
       "description": "Vermögenswerte und Verbindlichkeiten der Vereinigung am Ende des Geschäftsjahres.",
       "exerciceLabel": "Bewegung",
       "rubriqueColumnLabel": "Abschnitt",
-      "noPreviousExercice": "-",
+      "noPreviousExercice": "Kein Vergleich verfügbar",
       "actif": "Aktiv",
       "totalActif": "Total Aktiv",
       "passif": "Passiv",
@@ -1437,7 +1437,15 @@
         "immobilisationsCorporelles": "Materielle Kapitalvermögen",
         "disponibilites": "Verfügbarkeit",
         "fondsPropres": "Eigenkapital",
-        "dettes": "Schulden"
+        "dettes": "Schulden",
+        "immobilisationsIncorporelles": "Immaterielle Anlagevermögen",
+        "immobilisationsFinancieres": "Finanzielle Anlagevermögen",
+        "chargesConstateesDavance": "Vorausbezahlte Ausgaben",
+        "provisions": "Rückstellungen",
+        "produitsConstatesDavance": "Aufgeschobene Einkünfte",
+        "creances": "Forderungen",
+        "stocksEtEnCours": "Inventar",
+        "fondsDedies": "Eingeschränkte Fonds"
       },
       "issues": {
         "title": "Anomalien entdeckt",
@@ -1445,12 +1453,48 @@
           "ACCOUNT_WITHOUT_RUBRIQUE": "Das Konto {code} — {label} hat einen Saldo, ist aber nicht an einen Bilanzposten gebunden.",
           "ACTIF_PASSIF_MISMATCH": "Der Vermögenswert ({actif}) entspricht nicht der Verbindlichkeit ({passif}).",
           "OPENING_BALANCE_MISSING": "Für diese Übung wurden keine Eröffnungseinträge aus \"{previousLabel}\" generiert.",
-          "TRIAL_BALANCE_UNBALANCED": "Die Gesamt-Soll-Gebühr ({debit}) entspricht nicht dem Gesamt-Kredit ({credit}) für dieses Geschäftsjahr."
+          "TRIAL_BALANCE_UNBALANCED": "Die Gesamt-Soll-Gebühr ({debit}) entspricht nicht dem Gesamt-Kredit ({credit}) für dieses Geschäftsjahr.",
+          "RESULT_DIVERGENCE": "Das Ergebnis des Journal ({journal}) unterscheidet sich von dem der Gewinn- und Verlustrechnung ({statement}) – das Journal ist möglicherweise noch nicht auf dem neuesten Stand für dieses Geschäftsjahr (Haushaltsjahr schließen oder Synchronisation neu starten)."
         }
       },
       "accountLabels": {
         "reportANouveau": "Gewinnvortrag",
-        "resultatExercice": "Nettogewinn des Jahres"
+        "resultatExercice": "Nettogewinn des Jahres",
+        "creancesCotisations": "Ausstehende Mitgliedsbeiträge",
+        "creancesFactures": "Ausstehende Rechnungen",
+        "stocksEstimatedValue": "Geschätzter Lagerwert",
+        "creancesFacturesEnRetard": "Überfällige Rechnungen"
+      },
+      "exportPdf": "PDF exportieren",
+      "exportDisabledTooltip": "Eine Endbilanz kann nicht exportiert werden, bis die oben genannten Anomalien behoben sind.",
+      "pdf": {
+        "periodLabel": "Zeitraum vom {start} bis {end}"
+      },
+      "drillDown": {
+        "date": "Datum",
+        "label": "Etikett",
+        "origin": "Ursprung",
+        "debit": "Debit",
+        "credit": "Kredit",
+        "noLines": "Keine Einträge für dieses Konto.",
+        "sourceTypes": {
+          "INCOME": "Einkommen",
+          "INCOME_REVERSAL": "Einkommensumkehr",
+          "EXPENSE": "Kosten",
+          "EXPENSE_REVERSAL": "Kostenumkehr",
+          "BANK_TRANSACTION": "Banktransaktion",
+          "ACCOUNT_TRANSFER": "Interner Transfer",
+          "OPENING_BALANCE": "Eröffnungsbilanz",
+          "IMMOBILISATION_DEPRECIATION": "Abschreibung",
+          "IMMOBILISATION_ACQUISITION": "Erwerb von Vermögenswerten",
+          "FACTURE_RECUE_PAYMENT": "Lieferantenzahlung",
+          "MANUAL": "Manuelle Eingabe"
+        }
+      },
+      "memoNotice": "Schätzung – nicht im Hauptbuch erfasst, vom Gesamtvermögen ausgeschlossen.",
+      "memoNoHistory": "Keine historischen Daten",
+      "caveats": {
+        "stocksMissingCostPrice": "{count} Varianten ohne Kaufkosten erfasst, ausgeschlossen aus der Schätzung"
       }
     }
   },
@@ -2672,7 +2716,8 @@
         "nameRequired": "Name ist erforderlich",
         "atLeastOneVariant": "Mindestens eine Variante ist erforderlich",
         "variantLabelRequired": "Jede Variante muss ein Label haben"
-      }
+      },
+      "costPriceColumn": "Kosten"
     },
     "view": {
       "title": "Laden",

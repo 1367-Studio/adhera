@@ -1419,7 +1419,7 @@
       "description": "Περιουσιακά στοιχεία και υποχρεώσεις του συλλόγου στο τέλος του οικονομικού έτους.",
       "exerciceLabel": "Άσκηση",
       "rubriqueColumnLabel": "Τμήμα",
-      "noPreviousExercice": "-",
+      "noPreviousExercice": "Δεν υπάρχει διαθέσιμο συγκριτικό",
       "actif": "Ενεργός",
       "totalActif": "Σύνολο ενεργών",
       "passif": "Παθητική",
@@ -1437,7 +1437,15 @@
         "immobilisationsCorporelles": "Ενσώματα πάγια στοιχεία ενεργητικού",
         "disponibilites": "Διαθεσιμότητα",
         "fondsPropres": "Μετοχικό κεφάλαιο",
-        "dettes": "Χρέη"
+        "dettes": "Χρέη",
+        "immobilisationsIncorporelles": "Άυλα πάγια στοιχεία ενεργητικού",
+        "immobilisationsFinancieres": "Πάγια χρηματοπιστωτικά στοιχεία ενεργητικού",
+        "chargesConstateesDavance": "Προπληρωμένα έξοδα",
+        "provisions": "Προβλέψεις",
+        "produitsConstatesDavance": "Αναβαλλόμενο εισόδημα",
+        "creances": "Απαιτήσεις",
+        "stocksEtEnCours": "Καταγραφή εμπορευμάτων",
+        "fondsDedies": "Περιορισμένα κεφάλαια"
       },
       "issues": {
         "title": "Ανωμαλίες που εντοπίστηκαν",
@@ -1445,12 +1453,48 @@
           "ACCOUNT_WITHOUT_RUBRIQUE": "Ο λογαριασμός {code} — {label} έχει υπόλοιπο αλλά δεν είναι συνδεδεμένος με κανένα στοιχείο του Ισολογισμού.",
           "ACTIF_PASSIF_MISMATCH": "Το περιουσιακό στοιχείο ({actif}) δεν αντιστοιχεί στην υποχρέωση ({passif}).",
           "OPENING_BALANCE_MISSING": "Δεν δημιουργήθηκαν αρχικές καταχωρήσεις για αυτήν την άσκηση από το \"{previousLabel}\".",
-          "TRIAL_BALANCE_UNBALANCED": "Η συνολική χρέωση ({debit}) δεν αντιστοιχεί στη συνολική πίστωση ({credit}) για αυτό το οικονομικό έτος."
+          "TRIAL_BALANCE_UNBALANCED": "Η συνολική χρέωση ({debit}) δεν αντιστοιχεί στη συνολική πίστωση ({credit}) για αυτό το οικονομικό έτος.",
+          "RESULT_DIVERGENCE": "Το αποτέλεσμα του ημερολογίου ({journal}) διαφέρει από αυτό της κατάστασης λογαριασμού αποτελεσμάτων ({statement}) — το ημερολόγιο ενδέχεται να μην είναι ακόμη ενημερωμένο για αυτό το οικονομικό έτος (κλείσιμο του οικονομικού έτους ή επανεκκίνηση συγχρονισμού)."
         }
       },
       "accountLabels": {
         "reportANouveau": "Κέρδη εις νέον",
-        "resultatExercice": "Καθαρά έσοδα για το έτος"
+        "resultatExercice": "Καθαρά έσοδα για το έτος",
+        "creancesCotisations": "Εκκρεμείς συνδρομές μελών",
+        "creancesFactures": "Ανεξόφλητα τιμολόγια",
+        "stocksEstimatedValue": "Εκτιμώμενη αξία αποθέματος",
+        "creancesFacturesEnRetard": "Ληξιπρόθεσμα τιμολόγια"
+      },
+      "exportPdf": "Εξαγωγή PDF",
+      "exportDisabledTooltip": "Αδυναμία εξαγωγής Τελικού Ισολογισμού μέχρι να διορθωθούν οι παραπάνω ανωμαλίες.",
+      "pdf": {
+        "periodLabel": "Περίοδος από {start} έως {end}"
+      },
+      "drillDown": {
+        "date": "Ημερομηνία",
+        "label": "Ετικέτα",
+        "origin": "Προέλευση",
+        "debit": "Χρέωση",
+        "credit": "Πίστωση",
+        "noLines": "Δεν υπάρχουν καταχωρήσεις για αυτόν τον λογαριασμό.",
+        "sourceTypes": {
+          "INCOME": "Εισόδημα",
+          "INCOME_REVERSAL": "Αντιστροφή εισοδήματος",
+          "EXPENSE": "Έξοδα",
+          "EXPENSE_REVERSAL": "Αντιλογισμός εξόδων",
+          "BANK_TRANSACTION": "Τραπεζική συναλλαγή",
+          "ACCOUNT_TRANSFER": "Εσωτερική μεταφορά",
+          "OPENING_BALANCE": "Αρχικό υπόλοιπο",
+          "IMMOBILISATION_DEPRECIATION": "Απόσβεση",
+          "IMMOBILISATION_ACQUISITION": "Απόκτηση περιουσιακών στοιχείων",
+          "FACTURE_RECUE_PAYMENT": "Πληρωμή προμηθευτή",
+          "MANUAL": "Χειροκίνητη καταχώριση"
+        }
+      },
+      "memoNotice": "Εκτίμηση — δεν καταγράφεται στο καθολικό, εξαιρείται από το σύνολο του ενεργητικού.",
+      "memoNoHistory": "Δεν υπάρχουν ιστορικά δεδομένα",
+      "caveats": {
+        "stocksMissingCostPrice": "{count} παραλλαγές χωρίς καταγεγραμμένο κόστος αγοράς, οι οποίες εξαιρούνται από την εκτίμηση"
       }
     }
   },
@@ -2672,7 +2716,8 @@
         "nameRequired": "Το όνομα είναι υποχρεωτικό",
         "atLeastOneVariant": "Απαιτείται τουλάχιστον μία παραλλαγή",
         "variantLabelRequired": "Κάθε παραλλαγή πρέπει να έχει ετικέτα"
-      }
+      },
+      "costPriceColumn": "Κόστος"
     },
     "view": {
       "title": "Κατάστημα",

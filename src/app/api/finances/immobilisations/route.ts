@@ -6,10 +6,22 @@ import { writeActivityLog } from "@/lib/activity-log"
 import { withAdminAuth } from "@/lib/api-wrapper"
 import { postImmobilisationAcquisition } from "@/lib/finance/journal/post-facture-recue-payment"
 
-// FORM-107 Fase 2/3 — scoped to this one asset class (see immobilisationSchema's doc comment).
+// FORM-107 Fase 2/3 — corporelle (218300) is the only class a FactureRecue acquisition can use
+// below, since FactureRecue carries no category to read a class from. The expenseId path (see
+// POST) supports both classes, keyed by whichever account the Expense's own category points at
+// — see immobilisationSchema's doc comment.
 const ASSET_ACCOUNT_CODE        = "218300"
 const DEPRECIATION_ACCOUNT_CODE = "281830"
 const EXPENSE_ACCOUNT_CODE      = "681120"
+
+// Rubricas restantes do Bilan — immobilisations incorporelles (205000) reuses this same
+// Immobilisation model/depreciation engine (see Immobilisation's own schema doc comment: "a
+// future asset class... just needs its own ChartAccount codes, no schema change"), keyed by
+// whichever account code the chosen Expense's FinanceCategory points at.
+const ASSET_CLASSES: Record<string, { depreciationAccountCode: string; expenseAccountCode: string }> = {
+  [ASSET_ACCOUNT_CODE]: { depreciationAccountCode: DEPRECIATION_ACCOUNT_CODE, expenseAccountCode: EXPENSE_ACCOUNT_CODE },
+  "205000": { depreciationAccountCode: "280500", expenseAccountCode: "681110" },
+}
 
 export const GET = withAdminAuth(async (_req, ctx) => {
   const { associationId } = ctx
@@ -38,6 +50,9 @@ export const POST = withAdminAuth(async (req, ctx) => {
 
   let entryValue: number
   let createData: { expenseId?: string; factureRecueId?: string }
+  let assetAccountCode        = ASSET_ACCOUNT_CODE
+  let depreciationAccountCode = DEPRECIATION_ACCOUNT_CODE
+  let expenseAccountCode      = EXPENSE_ACCOUNT_CODE
 
   if (expenseId) {
     const expense = await prisma.expense.findFirst({
@@ -51,11 +66,15 @@ export const POST = withAdminAuth(async (req, ctx) => {
     if (expense.immobilisation) {
       return NextResponse.json({ error: "Cette dépense est déjà liée à une immobilisation." }, { status: 409 })
     }
-    if (expense.category?.accountingCode !== ASSET_ACCOUNT_CODE) {
+    const assetClass = expense.category?.accountingCode ? ASSET_CLASSES[expense.category.accountingCode] : undefined
+    if (!expense.category?.accountingCode || !assetClass) {
       return NextResponse.json({
-        error: `Seul le matériel de bureau et informatique (${ASSET_ACCOUNT_CODE}) est pris en charge pour le moment — la catégorie de cette dépense doit pointer vers ce compte.`,
+        error: `Seuls le matériel de bureau et informatique (${ASSET_ACCOUNT_CODE}) et les immobilisations incorporelles (205000) sont pris en charge — la catégorie de cette dépense doit pointer vers l'un de ces comptes.`,
       }, { status: 422 })
     }
+    assetAccountCode        = expense.category.accountingCode
+    depreciationAccountCode = assetClass.depreciationAccountCode
+    expenseAccountCode      = assetClass.expenseAccountCode
     entryValue = Number(expense.amount)
     createData = { expenseId }
   } else {
@@ -82,9 +101,9 @@ export const POST = withAdminAuth(async (req, ctx) => {
     data: {
       associationId,
       label,
-      assetAccountCode:        ASSET_ACCOUNT_CODE,
-      depreciationAccountCode: DEPRECIATION_ACCOUNT_CODE,
-      expenseAccountCode:      EXPENSE_ACCOUNT_CODE,
+      assetAccountCode,
+      depreciationAccountCode,
+      expenseAccountCode,
       // Taken from the Expense/FactureRecue, never user-submitted — see immobilisationSchema.
       entryValue,
       residualValue,

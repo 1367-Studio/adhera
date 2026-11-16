@@ -67,7 +67,7 @@ export async function computeIncomeStatementPeriod(
 ): Promise<IncomeStatementPeriod> {
   if (!exercice) return emptyPeriod(null)
 
-  const [categories, incomeRows, expenseRows] = await Promise.all([
+  const [categories, incomeRows, expenseRows, depreciationDotation] = await Promise.all([
     prisma.financeCategory.findMany({
       where:  { associationId },
       select: { id: true, key: true, name: true, accountingCode: true, section: true, isDefault: true, type: true },
@@ -86,6 +86,18 @@ export async function computeIncomeStatementPeriod(
     prisma.expense.findMany({
       where:  { associationId, exerciceId: exercice.id, status: "VALIDATED" },
       select: { id: true, amount: true, date: true, description: true, vendor: true, paymentMethod: true, reference: true, categoryId: true, factureRecuePaymentId: true },
+    }),
+    // 681110/681120 (dotations aux amortissements, FORM-107 Fase 2/3) never post as an Expense
+    // row — post-closing-depreciation.ts writes straight to the journal — so this is the one
+    // place computeIncomeStatementPeriod reads JournalLine directly instead of Income/Expense.
+    // See the synthetic line built below for why this has to count toward `result` despite
+    // living in the IMMOBILISATION section, which RESULT_SECTIONS otherwise excludes on purpose.
+    prisma.journalLine.aggregate({
+      where: {
+        journalEntry: { associationId, exerciceId: exercice.id },
+        chartAccount: { code: { in: ["681110", "681120"] } },
+      },
+      _sum: { debit: true, credit: true },
     }),
   ])
 
@@ -166,11 +178,28 @@ export async function computeIncomeStatementPeriod(
     line.transactions.push(detail)
   }
 
+  // The dotation itself (unlike the capital purchase it depreciates) IS a real operating charge
+  // — FORM-107's own spec requires it to reduce `result`, matching the Bilan's journal-derived
+  // result (see computeBilanPeriod). No FinanceCategory/Expense row carries it (it's posted
+  // straight to the journal), so it's never reached by the Income/Expense loops above — built
+  // here directly as a virtual line, same shape as an uncategorized bucket, just placed inside
+  // IMMOBILISATION.expense instead of its own section.
+  const dotationAmount = Number(depreciationDotation._sum.debit ?? 0) - Number(depreciationDotation._sum.credit ?? 0)
+  if (dotationAmount !== 0) {
+    period.sections.IMMOBILISATION.expense.push({
+      categoryId: null, key: "depreciationDotation", name: "Dotations aux amortissements et aux dépréciations",
+      accountingCode: null, isDefault: false, amount: dotationAmount, transactions: [],
+    })
+  }
+
   let totalIncome = period.uncategorizedIncome.amount
   let totalExpense = period.uncategorizedExpense.amount
-  // IMMOBILISATION is excluded here on purpose — a capital-asset purchase/depreciation isn't
-  // a current operating charge, see RESULT_SECTIONS's doc comment. Its lines still exist in
-  // period.sections.IMMOBILISATION for the report to render as an informational section.
+  // IMMOBILISATION is excluded here on purpose — a capital-asset purchase isn't a current
+  // operating charge, see RESULT_SECTIONS's doc comment. Its lines still exist in
+  // period.sections.IMMOBILISATION for the report to render as an informational section. The
+  // dotation line built above is the one deliberate exception: added to totalExpense directly,
+  // outside this loop, instead of changing RESULT_SECTIONS itself (which would also pull the
+  // capital-purchase line into `result` — exactly what FORM-104 excluded it to avoid).
   for (const section of RESULT_SECTIONS) {
     const sectionIncome  = period.sections[section].income.reduce((sum, l) => sum + l.amount, 0)
     const sectionExpense = period.sections[section].expense.reduce((sum, l) => sum + l.amount, 0)
@@ -178,6 +207,7 @@ export async function computeIncomeStatementPeriod(
     totalExpense += sectionExpense
     if (section === "OPERATING") period.resultOperational = sectionIncome - sectionExpense
   }
+  totalExpense += dotationAmount
 
   period.totalIncome  = totalIncome
   period.totalExpense = totalExpense

@@ -919,12 +919,14 @@
       "description": "Assets and liabilities of the organization at the close of the fiscal year.",
       "exerciceLabel": "Fiscal year",
       "rubriqueColumnLabel": "Heading",
-      "noPreviousExercice": "-",
+      "noPreviousExercice": "No comparative available",
       "actif": "Assets",
       "totalActif": "Total assets",
       "passif": "Liabilities & equity",
       "totalPassif": "Total liabilities & equity",
       "noAccountsInRubrique": "No balance in this heading",
+      "exportPdf": "Export PDF",
+      "exportDisabledTooltip": "You can't export a definitive Balance sheet while the issues above remain unresolved.",
       "emptyExercice": {
         "title": "No fiscal year",
         "description": "Create a fiscal year to display the Balance sheet."
@@ -935,13 +937,50 @@
       },
       "rubriques": {
         "immobilisationsCorporelles": "Tangible fixed assets",
+        "immobilisationsIncorporelles": "Intangible fixed assets",
+        "immobilisationsFinancieres": "Financial fixed assets",
         "disponibilites": "Cash & equivalents",
+        "chargesConstateesDavance": "Prepaid expenses",
+        "creances": "Receivables",
+        "stocksEtEnCours": "Inventory",
         "fondsPropres": "Equity",
-        "dettes": "Liabilities"
+        "provisions": "Provisions for liabilities and charges",
+        "dettes": "Liabilities",
+        "produitsConstatesDavance": "Deferred income",
+        "fondsDedies": "Restricted funds"
       },
+      "memoNotice": "Estimate — not recorded in the ledger, excluded from total assets.",
       "accountLabels": {
         "reportANouveau": "Retained earnings",
-        "resultatExercice": "Net income for the year"
+        "resultatExercice": "Net income for the year",
+        "creancesCotisations": "Outstanding membership fees",
+        "creancesFactures": "Outstanding invoices",
+        "stocksEstimatedValue": "Estimated inventory value",
+        "creancesFacturesEnRetard": "Overdue invoices"
+      },
+      "pdf": {
+        "periodLabel": "Period from {start} to {end}"
+      },
+      "drillDown": {
+        "date": "Date",
+        "label": "Label",
+        "origin": "Origin",
+        "debit": "Debit",
+        "credit": "Credit",
+        "noLines": "No entries for this account.",
+        "sourceTypes": {
+          "INCOME": "Income",
+          "INCOME_REVERSAL": "Income reversal",
+          "EXPENSE": "Expense",
+          "EXPENSE_REVERSAL": "Expense reversal",
+          "BANK_TRANSACTION": "Bank transaction",
+          "ACCOUNT_TRANSFER": "Internal transfer",
+          "OPENING_BALANCE": "Opening balance",
+          "IMMOBILISATION_DEPRECIATION": "Depreciation",
+          "IMMOBILISATION_ACQUISITION": "Asset acquisition",
+          "FACTURE_RECUE_PAYMENT": "Supplier payment",
+          "MANUAL": "Manual entry"
+        }
       },
       "issues": {
         "title": "Issues detected",
@@ -949,8 +988,13 @@
           "ACCOUNT_WITHOUT_RUBRIQUE": "Account {code} — {label} has a balance but isn't mapped to any Balance sheet heading.",
           "ACTIF_PASSIF_MISMATCH": "Assets ({actif}) do not match liabilities & equity ({passif}).",
           "OPENING_BALANCE_MISSING": "No opening entry was generated for this fiscal year from \"{previousLabel}\".",
-          "TRIAL_BALANCE_UNBALANCED": "Total debit ({debit}) does not match total credit ({credit}) for this fiscal year."
+          "TRIAL_BALANCE_UNBALANCED": "Total debit ({debit}) does not match total credit ({credit}) for this fiscal year.",
+          "RESULT_DIVERGENCE": "The journal's result ({journal}) differs from the income statement's ({statement}) — the journal may not be caught up for this fiscal year yet (close the fiscal year or re-run the sync)."
         }
+      },
+      "memoNoHistory": "No historical data",
+      "caveats": {
+        "stocksMissingCostPrice": "{count, plural, one {# variant with no purchase cost recorded, excluded from the estimate} other {# variants with no purchase cost recorded, excluded from the estimate}}"
       }
     },
     "compteResultat": {
@@ -2771,7 +2815,8 @@
       },
       "shippableColumn": "Shipping",
       "weightColumn": "Weight (g)",
-      "weightPlaceholder": "500"
+      "weightPlaceholder": "500",
+      "costPriceColumn": "Cost"
     },
     "view": {
       "title": "Shop",

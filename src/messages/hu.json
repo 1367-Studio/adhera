@@ -1419,7 +1419,7 @@
       "description": "Az egyesület eszközei és kötelezettségei a pénzügyi év végén.",
       "exerciceLabel": "Gyakorlat",
       "rubriqueColumnLabel": "Szekció",
-      "noPreviousExercice": "-",
+      "noPreviousExercice": "Összehasonlító információ nem elérhető",
       "actif": "Aktív",
       "totalActif": "Teljes aktív",
       "passif": "Passzív",
@@ -1437,7 +1437,15 @@
         "immobilisationsCorporelles": "Tárgyi tőkeeszközök",
         "disponibilites": "Elérhetőség",
         "fondsPropres": "Equity",
-        "dettes": "Adósságok"
+        "dettes": "Adósságok",
+        "immobilisationsIncorporelles": "Immatani tárgyi eszközök",
+        "immobilisationsFinancieres": "Pénzügyi alapeszközök",
+        "chargesConstateesDavance": "Előre fizetett kiadások",
+        "provisions": "Tartalékok",
+        "produitsConstatesDavance": "Halasztott jövedelem",
+        "creances": "Követelések",
+        "stocksEtEnCours": "Készlet",
+        "fondsDedies": "Korlátozott alapok"
       },
       "issues": {
         "title": "Anomáliák észlelve",
@@ -1445,12 +1453,48 @@
           "ACCOUNT_WITHOUT_RUBRIQUE": "A {code} — {label} számlának egyenlege van, de nincs csatolva semmilyen mérleg-tételhez.",
           "ACTIF_PASSIF_MISMATCH": "Az eszköz ({actif}) nem felel meg a kötelezettségnek ({passif}).",
           "OPENING_BALANCE_MISSING": "Ehhez a gyakorlathoz nem generáltak nyitóbejegyzések a \"{previousLabel}\" által.",
-          "TRIAL_BALANCE_UNBALANCED": "A teljes debet ({debit}) nem egyezik meg az adott pénzügyi év teljes hitelével ({credit})."
+          "TRIAL_BALANCE_UNBALANCED": "A teljes debet ({debit}) nem egyezik meg az adott pénzügyi év teljes hitelével ({credit}).",
+          "RESULT_DIVERGENCE": "A napló ({journal}) eredménye eltér a nyereségkimutatásétól ({statement}) — lehet, hogy a folyóirat még nem naprakész ebben a pénzügyi évben (a pénzügyi év lezárása vagy újraindítása a szinkronizáció)."
         }
       },
       "accountLabels": {
         "reportANouveau": "Tartalékos nyereség",
-        "resultatExercice": "Az év nettó jövedelme"
+        "resultatExercice": "Az év nettó jövedelme",
+        "creancesCotisations": "Fennálló tagságdíjak",
+        "creancesFactures": "Kifizetett számlák",
+        "stocksEstimatedValue": "Becsült készletérték",
+        "creancesFacturesEnRetard": "Késedelmes számlák"
+      },
+      "exportPdf": "PDF exportálás",
+      "exportDisabledTooltip": "Nem lehet végleges mérleget exportálni, amíg a fenti anomáliákat nem javítják.",
+      "pdf": {
+        "periodLabel": "Időszak: {start} – {end}"
+      },
+      "drillDown": {
+        "date": "Dátum",
+        "label": "Címke",
+        "origin": "Eredet",
+        "debit": "Tartozik",
+        "credit": "Követel",
+        "noLines": "Nincs bejegyzés ehhez a fiókhoz.",
+        "sourceTypes": {
+          "INCOME": "Jövedelem",
+          "INCOME_REVERSAL": "Jövedelem megfordítása",
+          "EXPENSE": "Költségek",
+          "EXPENSE_REVERSAL": "Költségek megfordítása",
+          "BANK_TRANSACTION": "Banki tranzakció",
+          "ACCOUNT_TRANSFER": "Belső átvitel",
+          "OPENING_BALANCE": "Nyitó egyenleg",
+          "IMMOBILISATION_DEPRECIATION": "Értékcsökkenés",
+          "IMMOBILISATION_ACQUISITION": "Eszközbeszerzés",
+          "FACTURE_RECUE_PAYMENT": "Beszállítói fizetés",
+          "MANUAL": "Manuális belépés"
+        }
+      },
+      "memoNotice": "Becslés — nem rögzítve a könyvelésben, kizárva a teljes eszközből.",
+      "memoNoHistory": "Nincsenek történelmi adatok",
+      "caveats": {
+        "stocksMissingCostPrice": "{count} variáns, amelyeknek nincs rögzített beszerzési költsége, kizárva a becslésből"
       }
     }
   },
@@ -2672,7 +2716,8 @@
         "nameRequired": "Név szükséges",
         "atLeastOneVariant": "Legalább egy változat szükséges",
         "variantLabelRequired": "Minden változatnak címkével kell rendelkeznie"
-      }
+      },
+      "costPriceColumn": "Költség"
     },
     "view": {
       "title": "Bolt",

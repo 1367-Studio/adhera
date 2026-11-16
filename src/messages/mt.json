@@ -1419,7 +1419,7 @@
       "description": "Assi u obbligazzjonijiet tal-assoċjazzjoni fl-aħħar tas-sena finanzjarja.",
       "exerciceLabel": "Eżerċizzju",
       "rubriqueColumnLabel": "Sezzjoni",
-      "noPreviousExercice": "-",
+      "noPreviousExercice": "M'hemm l-ebda komparazzjoni disponibbli",
       "actif": "Attiv",
       "totalActif": "Total Attiv",
       "passif": "Passiv",
@@ -1437,7 +1437,15 @@
         "immobilisationsCorporelles": "Assi kapitali tanġibbli",
         "disponibilites": "Disponibbiltà",
         "fondsPropres": "Ekwità",
-        "dettes": "Dejn"
+        "dettes": "Dejn",
+        "immobilisationsIncorporelles": "Assi fissi intanġibbli",
+        "immobilisationsFinancieres": "Assi fissi finanzjarji",
+        "chargesConstateesDavance": "Spejjeż imħallsa minn qabel",
+        "provisions": "Riżervi",
+        "produitsConstatesDavance": "Dħul differit",
+        "creances": "Riċevuti",
+        "stocksEtEnCours": "Inventarju",
+        "fondsDedies": "Fondi ristretti"
       },
       "issues": {
         "title": "Anomaliji skoperti",
@@ -1445,12 +1453,48 @@
           "ACCOUNT_WITHOUT_RUBRIQUE": "Il-kont {code} — {label} għandu bilanċ iżda mhuwiex marbut ma' ebda oġġett tal-Bilanċ.",
           "ACTIF_PASSIF_MISMATCH": "L-assi ({actif}) ma jikkorrispondix mal-passività ({passif}).",
           "OPENING_BALANCE_MISSING": "Ma ġewx ġġenerati entitajiet ta' apertura għal dan l-eżerċizzju minn \"{previousLabel}\".",
-          "TRIAL_BALANCE_UNBALANCED": "Id-debitu totali ({debit}) ma jikkorrispondix mat-total tal-kreditu ({credit}) għal din is-sena fiskali."
+          "TRIAL_BALANCE_UNBALANCED": "Id-debitu totali ({debit}) ma jikkorrispondix mat-total tal-kreditu ({credit}) għal din is-sena fiskali.",
+          "RESULT_DIVERGENCE": "Ir-riżultat tal-ġurnal ({journal}) huwa differenti minn dak tal-istqarrija tad-dħul ({statement}) — il-ġurnal jista' għadu ma jkunx aġġornat għal din is-sena finanzjarja (jagħlaq is-sena finanzjarja jew jerġa' jibda sinkronizzazzjoni)."
         }
       },
       "accountLabels": {
         "reportANouveau": "Dħul miżmum",
-        "resultatExercice": "Dħul nett għas-sena"
+        "resultatExercice": "Dħul nett għas-sena",
+        "creancesCotisations": "Ħlasijiet ta' sħubija pendenti",
+        "creancesFactures": "Fatturi pendenti",
+        "stocksEstimatedValue": "Valur stmat tal-inventarju",
+        "creancesFacturesEnRetard": "Fatturi tard"
+      },
+      "exportPdf": "Esporta PDF",
+      "exportDisabledTooltip": "Ma jistax jesporta l-Bilanċ Finali sakemm l-anomaliji ta' hawn fuq jiġu solvuti.",
+      "pdf": {
+        "periodLabel": "Perjodu minn {start} sa {end}"
+      },
+      "drillDown": {
+        "date": "Data",
+        "label": "Label",
+        "origin": "Oriġini",
+        "debit": "Debitu",
+        "credit": "Kreditu",
+        "noLines": "M'hemm l-ebda dħul għal dan il-kont.",
+        "sourceTypes": {
+          "INCOME": "Dħul",
+          "INCOME_REVERSAL": "Inverżjoni tad-dħul",
+          "EXPENSE": "Spejjeż",
+          "EXPENSE_REVERSAL": "Bidla ta' spejjeż",
+          "BANK_TRANSACTION": "Transazzjoni bankarja",
+          "ACCOUNT_TRANSFER": "Trasferiment intern",
+          "OPENING_BALANCE": "Bilanċ tal-ftuħ",
+          "IMMOBILISATION_DEPRECIATION": "Tnaqqis",
+          "IMMOBILISATION_ACQUISITION": "Akkwist ta' assi",
+          "FACTURE_RECUE_PAYMENT": "Ħlas għall-fornitur",
+          "MANUAL": "Dħul manwali"
+        }
+      },
+      "memoNotice": "Stima — mhux irreġistrata fil-ktieb tal-ktieb, eskluża mill-assi totali.",
+      "memoNoHistory": "L-ebda data storika",
+      "caveats": {
+        "stocksMissingCostPrice": "{count} varjanti mingħajr spiża tax-xiri rreġistrata, esklużi mill-istima"
       }
     }
   },
@@ -2672,7 +2716,8 @@
         "nameRequired": "L-isem huwa meħtieġ",
         "atLeastOneVariant": "Huwa meħtieġ mill-inqas varjant wieħed",
         "variantLabelRequired": "Kull varjant irid ikollu tikketta"
-      }
+      },
+      "costPriceColumn": "Spiża"
     },
     "view": {
       "title": "Ħanut",

@@ -1419,7 +1419,7 @@
       "description": "Sócmhainní agus dliteanais an chomhlachais i ndeireadh na bliana airgeadais.",
       "exerciceLabel": "Cleachtadh",
       "rubriqueColumnLabel": "Rannóg",
-      "noPreviousExercice": "-",
+      "noPreviousExercice": "Níl aon chomparáideach ar fáil",
       "actif": "Gníomhach",
       "totalActif": "Iomlán Gníomhach",
       "passif": "Éighníomhach",
@@ -1437,7 +1437,15 @@
         "immobilisationsCorporelles": "Sócmhainní caipitiúla inláimhsithe",
         "disponibilites": "Infhaighteacht",
         "fondsPropres": "Cothromas",
-        "dettes": "Fiacha"
+        "dettes": "Fiacha",
+        "immobilisationsIncorporelles": "Sócmhainní seasta doláimhsithe",
+        "immobilisationsFinancieres": "Sócmhainní seasta airgeadais",
+        "chargesConstateesDavance": "Costais réamhíoctha",
+        "provisions": "Cúlchistí",
+        "produitsConstatesDavance": "Ioncam iarchurtha",
+        "creances": "Infhaighteacht",
+        "stocksEtEnCours": "Fardal",
+        "fondsDedies": "Cistí srianta"
       },
       "issues": {
         "title": "Aimhrialtachtaí aimsithe",
@@ -1445,12 +1453,48 @@
           "ACCOUNT_WITHOUT_RUBRIQUE": "Tá iarmhéid ag an gcuntas {code} - {label} ach níl sé ceangailte le haon mhír de chuid an Chláir Chomhardaithe.",
           "ACTIF_PASSIF_MISMATCH": "Ní fhreagraíonn an tsócmhainn ({actif}) don dliteanas ({passif}).",
           "OPENING_BALANCE_MISSING": "Níor gineadh aon iontrálacha oscailte don chleachtadh seo ó \"{previousLabel}\".",
-          "TRIAL_BALANCE_UNBALANCED": "Ní hionann an dochair iomlán ({debit}) agus an creidmheas iomlán ({credit}) don bhliain fhioscach seo."
+          "TRIAL_BALANCE_UNBALANCED": "Ní hionann an dochair iomlán ({debit}) agus an creidmheas iomlán ({credit}) don bhliain fhioscach seo.",
+          "RESULT_DIVERGENCE": "Tá toradh na hirise ({journal}) difriúil ó thoradh an ráitis ioncaim ({statement}) - b'fhéidir nach bhfuil an iris cothrom le dáta don bhliain fhioscach seo fós (an bhliain fhioscach a dhúnadh nó sioncrónú a atosú)."
         }
       },
       "accountLabels": {
         "reportANouveau": "Tuilleamh coinnithe",
-        "resultatExercice": "Glanioncam don bhliain"
+        "resultatExercice": "Glanioncam don bhliain",
+        "creancesCotisations": "Táillí ballraíochta gan íoc",
+        "creancesFactures": "Sonraisc gan íoc",
+        "stocksEstimatedValue": "Luach fardail measta",
+        "creancesFacturesEnRetard": "Sonraisc thar téarma"
+      },
+      "exportPdf": "Easpórtáil PDF",
+      "exportDisabledTooltip": "Ní féidir Clár Comhardaithe Deiridh a easpórtáil go dtí go socrófar na haimhrialtachtaí thuas.",
+      "pdf": {
+        "periodLabel": "Tréimhse ó {start} go {end}"
+      },
+      "drillDown": {
+        "date": "Dáta",
+        "label": "Lipéad",
+        "origin": "Bunús",
+        "debit": "Dochair",
+        "credit": "Creidmheas",
+        "noLines": "Níl aon iontrálacha don chuntas seo.",
+        "sourceTypes": {
+          "INCOME": "Ioncam",
+          "INCOME_REVERSAL": "Aisiompú ioncaim",
+          "EXPENSE": "Costas",
+          "EXPENSE_REVERSAL": "Aisiompú caiteachais",
+          "BANK_TRANSACTION": "Idirbheart bainc",
+          "ACCOUNT_TRANSFER": "Aistriú inmheánach",
+          "OPENING_BALANCE": "Iarmhéid oscailte",
+          "IMMOBILISATION_DEPRECIATION": "Dímheas",
+          "IMMOBILISATION_ACQUISITION": "Éadáil sócmhainní",
+          "FACTURE_RECUE_PAYMENT": "Íocaíocht soláthróra",
+          "MANUAL": "Iontráil láimhe"
+        }
+      },
+      "memoNotice": "Meastachán — gan taifeadadh sa mhórleabhar, eisiata ó shócmhainní iomlána.",
+      "memoNoHistory": "Gan aon sonraí stairiúla",
+      "caveats": {
+        "stocksMissingCostPrice": "{count} leaganacha gan aon chostas ceannaigh taifeadta, eisiata ón meastachán"
       }
     }
   },
@@ -2672,7 +2716,8 @@
         "nameRequired": "Tá ainm ag teastáil",
         "atLeastOneVariant": "Tá leagan amháin ar a laghad ag teastáil",
         "variantLabelRequired": "Ní mór lipéad a bheith ag gach leagan"
-      }
+      },
+      "costPriceColumn": "Costas"
     },
     "view": {
       "title": "Siopa",

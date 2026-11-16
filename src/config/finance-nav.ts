@@ -4,7 +4,7 @@ import type { Icon } from "@phosphor-icons/react"
 import {
   GaugeIcon, ChartLineIcon, ArrowsLeftRightIcon, TrendUpIcon, TrendDownIcon,
   UploadSimpleIcon, CalculatorIcon, BankIcon, TagIcon, CalendarBlankIcon,
-  ChartBarIcon, ChartPieIcon, FileTextIcon, SlidersIcon, PackageIcon,
+  ChartBarIcon, ChartPieIcon, FileTextIcon, SlidersIcon, PackageIcon, NotePencilIcon,
 } from "@phosphor-icons/react/dist/ssr"
 
 export type FinanceNavGroupKey = "synthese" | "transactions" | "comptabilite" | "rapports"
@@ -38,6 +38,7 @@ export const FINANCE_NAV: FinanceNavGroup[] = [
     { key: "categories",      href: "/dashboard/finances/categories",       icon: TagIcon },
     { key: "exercices",       href: "/dashboard/finances/exercices",        icon: CalendarBlankIcon },
     { key: "immobilisations", href: "/dashboard/finances/immobilisations",  icon: PackageIcon },
+    { key: "journalManual",   href: "/dashboard/finances/journal",          icon: NotePencilIcon },
   ]},
   { key: "rapports", icon: ChartBarIcon, items: [
     { key: "bilan",                  href: "/dashboard/finances/rapports/bilan",              icon: ChartPieIcon },

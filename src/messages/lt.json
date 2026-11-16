@@ -1419,7 +1419,7 @@
       "description": "Asociacijos turtas ir įsipareigojimai finansinių metų pabaigoje.",
       "exerciceLabel": "Fizinis aktyvumas",
       "rubriqueColumnLabel": "Skyrius",
-      "noPreviousExercice": "-",
+      "noPreviousExercice": "Nėra palyginimo",
       "actif": "Aktyvus",
       "totalActif": "Iš viso aktyvus",
       "passif": "Pasyvus",
@@ -1437,7 +1437,15 @@
         "immobilisationsCorporelles": "Materialusis kapitalas",
         "disponibilites": "Prieinamumas",
         "fondsPropres": "Lygybė",
-        "dettes": "Skolos"
+        "dettes": "Skolos",
+        "immobilisationsIncorporelles": "Nematerialus ilgalaikis turtas",
+        "immobilisationsFinancieres": "Finansinis ilgalaikis turtas",
+        "chargesConstateesDavance": "Iš anksto apmokėtos išlaidos",
+        "provisions": "Atidėjiniai",
+        "produitsConstatesDavance": "Atidėtos pajamos",
+        "creances": "Gautinos sumos",
+        "stocksEtEnCours": "Inventorius",
+        "fondsDedies": "Ribotos lėšos"
       },
       "issues": {
         "title": "Aptiktos anomalijos",
@@ -1445,12 +1453,48 @@
           "ACCOUNT_WITHOUT_RUBRIQUE": "Sąskaitos {code} — {label} turi balansą, bet nėra susietas su jokiu balanso elementu.",
           "ACTIF_PASSIF_MISMATCH": "Turtas ({actif}) neatitinka įsipareigojimo ({passif}).",
           "OPENING_BALANCE_MISSING": "Šiai užduočiai nebuvo sugeneruoti jokie pradiniai įrašai iš \"{previousLabel}\".",
-          "TRIAL_BALANCE_UNBALANCED": "Bendras debetas ({debit}) nesutampa su bendru kreditu ({credit}) šiais finansiniais metais."
+          "TRIAL_BALANCE_UNBALANCED": "Bendras debetas ({debit}) nesutampa su bendru kreditu ({credit}) šiais finansiniais metais.",
+          "RESULT_DIVERGENCE": "Žurnalo ({journal}) rezultatas skiriasi nuo pelno (nuostolių) ataskaitos ({statement}) – žurnalas gali dar būti neatnaujintas šiems finansiniams metams (uždaryti finansinius metus arba atnaujinti sinchronizacija)."
         }
       },
       "accountLabels": {
         "reportANouveau": "Nepaskirstytasis pelnas",
-        "resultatExercice": "Metinis grynasis pelnas"
+        "resultatExercice": "Metinis grynasis pelnas",
+        "creancesCotisations": "Neapmokėti narystės mokesčiai",
+        "creancesFactures": "Neapmokėtos sąskaitos faktūros",
+        "stocksEstimatedValue": "Numatoma atsargų vertė",
+        "creancesFacturesEnRetard": "Vėluojančios sąskaitos faktūros"
+      },
+      "exportPdf": "Eksportuoti PDF",
+      "exportDisabledTooltip": "Negaliu eksportuoti galutinės balanso ataskaitos, kol nebus ištaisytos minėtos anomalijos.",
+      "pdf": {
+        "periodLabel": "Laikotarpis nuo {start} iki {end}"
+      },
+      "drillDown": {
+        "date": "Data",
+        "label": "Etiketė",
+        "origin": "Kilmė",
+        "debit": "Debetas",
+        "credit": "Kreditas",
+        "noLines": "Šioje paskyroje įrašų nėra.",
+        "sourceTypes": {
+          "INCOME": "Pajamos",
+          "INCOME_REVERSAL": "Pajamų atšaukimas",
+          "EXPENSE": "Išlaidos",
+          "EXPENSE_REVERSAL": "Išlaidų atšaukimas",
+          "BANK_TRANSACTION": "Banko operacija",
+          "ACCOUNT_TRANSFER": "Vidinis perdavimas",
+          "OPENING_BALANCE": "Atidarymo balansas",
+          "IMMOBILISATION_DEPRECIATION": "Nuvertėjimas",
+          "IMMOBILISATION_ACQUISITION": "Turto įsigijimas",
+          "FACTURE_RECUE_PAYMENT": "Tiekėjų apmokėjimas",
+          "MANUAL": "Rankinis įvedimas"
+        }
+      },
+      "memoNotice": "Įvertinimas — neįrašytas į apskaitos knygą, neįtrauktas į bendrą turtą.",
+      "memoNoHistory": "Nėra istorinių duomenų",
+      "caveats": {
+        "stocksMissingCostPrice": "{count} variantai be pirkimo kainos, neįtraukti į sąmatą"
       }
     }
   },
@@ -2672,7 +2716,8 @@
         "nameRequired": "Reikalingas vardas",
         "atLeastOneVariant": "Reikalingas bent vienas variantas",
         "variantLabelRequired": "Kiekviena variacija turi turėti žymą"
-      }
+      },
+      "costPriceColumn": "Kaina"
     },
     "view": {
       "title": "Parduotuvė",

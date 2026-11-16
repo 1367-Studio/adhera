@@ -1419,7 +1419,7 @@
       "description": "Activos y pasivos de la asociación al final del ejercicio fiscal.",
       "exerciceLabel": "Ejercicio",
       "rubriqueColumnLabel": "Sección",
-      "noPreviousExercice": "-",
+      "noPreviousExercice": "No hay comparativos disponibles",
       "actif": "Activo",
       "totalActif": "Total Activo",
       "passif": "Pasivo",
@@ -1437,7 +1437,15 @@
         "immobilisationsCorporelles": "Activos de capital tangible",
         "disponibilites": "Disponibilidad",
         "fondsPropres": "Equidad",
-        "dettes": "Deudas"
+        "dettes": "Deudas",
+        "immobilisationsIncorporelles": "Activos fijos intangibles",
+        "immobilisationsFinancieres": "Activos fijos financieros",
+        "chargesConstateesDavance": "Gastos prepagados",
+        "provisions": "Provisiones",
+        "produitsConstatesDavance": "Ingresos diferidos",
+        "creances": "Cuentas por cobrar",
+        "stocksEtEnCours": "Inventario",
+        "fondsDedies": "Fondos restringidos"
       },
       "issues": {
         "title": "Anomalías detectadas",
@@ -1445,12 +1453,48 @@
           "ACCOUNT_WITHOUT_RUBRIQUE": "El {code} de la cuenta — {label} tiene un saldo pero no está vinculado a ningún elemento del balance.",
           "ACTIF_PASSIF_MISMATCH": "El activo ({actif}) no corresponde al pasivo ({passif}).",
           "OPENING_BALANCE_MISSING": "No se generaron entradas de apertura para este ejercicio desde \"{previousLabel}\".",
-          "TRIAL_BALANCE_UNBALANCED": "El débito total ({debit}) no coincide con el crédito total ({credit}) de este año fiscal."
+          "TRIAL_BALANCE_UNBALANCED": "El débito total ({debit}) no coincide con el crédito total ({credit}) de este año fiscal.",
+          "RESULT_DIVERGENCE": "El resultado del journal ({journal}) difiere del del estado de resultados ({statement}): el journal puede no estar aún actualizado para este año fiscal (cierre del ejercicio o sincronización de reinicio)."
         }
       },
       "accountLabels": {
         "reportANouveau": "Beneficios retenidos",
-        "resultatExercice": "Ingreso neto del año"
+        "resultatExercice": "Ingreso neto del año",
+        "creancesCotisations": "Cuotas pendientes",
+        "creancesFactures": "Facturas pendientes",
+        "stocksEstimatedValue": "Valor estimado del inventario",
+        "creancesFacturesEnRetard": "Facturas vencidas"
+      },
+      "exportPdf": "Exportar PDF",
+      "exportDisabledTooltip": "No se puede exportar un balance final hasta que se solucionen las anomalías anteriores.",
+      "pdf": {
+        "periodLabel": "Período del {start} al {end}"
+      },
+      "drillDown": {
+        "date": "Fecha",
+        "label": "Etiqueta",
+        "origin": "Origen",
+        "debit": "Débito",
+        "credit": "Crédito",
+        "noLines": "No hay entradas para esta cuenta.",
+        "sourceTypes": {
+          "INCOME": "Ingresos",
+          "INCOME_REVERSAL": "Reversión de ingresos",
+          "EXPENSE": "Gastos",
+          "EXPENSE_REVERSAL": "Reversión de gastos",
+          "BANK_TRANSACTION": "Transacción bancaria",
+          "ACCOUNT_TRANSFER": "Transferencia interna",
+          "OPENING_BALANCE": "Saldo inicial",
+          "IMMOBILISATION_DEPRECIATION": "Depreciación",
+          "IMMOBILISATION_ACQUISITION": "Adquisición de activos",
+          "FACTURE_RECUE_PAYMENT": "Pago al proveedor",
+          "MANUAL": "Entrada manual"
+        }
+      },
+      "memoNotice": "Estimación — no registrada en el libro mayor, excluida del total de activos.",
+      "memoNoHistory": "Sin datos históricos",
+      "caveats": {
+        "stocksMissingCostPrice": "{count} variantes sin coste de compra registrado, excluidas de la estimación"
       }
     }
   },
@@ -2672,7 +2716,8 @@
         "nameRequired": "El nombre es obligatorio",
         "atLeastOneVariant": "Se requiere al menos una variante",
         "variantLabelRequired": "Cada variante debe tener una etiqueta"
-      }
+      },
+      "costPriceColumn": "Coste"
     },
     "view": {
       "title": "Tienda",

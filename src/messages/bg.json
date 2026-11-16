@@ -1419,7 +1419,7 @@
       "description": "Активи и пасиви на асоциацията в края на финансовата година.",
       "exerciceLabel": "Упражнения",
       "rubriqueColumnLabel": "Секция",
-      "noPreviousExercice": "-",
+      "noPreviousExercice": "Няма налична сравнение",
       "actif": "Активна",
       "totalActif": "Total Active",
       "passif": "Пасивно",
@@ -1437,7 +1437,15 @@
         "immobilisationsCorporelles": "Материални капиталови активи",
         "disponibilites": "Наличност",
         "fondsPropres": "Капитал",
-        "dettes": "Дългове"
+        "dettes": "Дългове",
+        "immobilisationsIncorporelles": "Нематериални дълготрайни активи",
+        "immobilisationsFinancieres": "Финансови дълготрайни активи",
+        "chargesConstateesDavance": "Предплатени разходи",
+        "provisions": "Резерви",
+        "produitsConstatesDavance": "Отложен доход",
+        "creances": "Вземания",
+        "stocksEtEnCours": "Инвентар",
+        "fondsDedies": "Ограничени фондове"
       },
       "issues": {
         "title": "Открити аномалии",
@@ -1445,12 +1453,48 @@
           "ACCOUNT_WITHOUT_RUBRIQUE": "Сметката {code} — {label} има баланс, но не е прикрепена към никаква елемент от баланса.",
           "ACTIF_PASSIF_MISMATCH": "Активът ({actif}) не съответства на пасивите ({passif}).",
           "OPENING_BALANCE_MISSING": "Не бяха генерирани начални записи за това упражнение от \"{previousLabel}\".",
-          "TRIAL_BALANCE_UNBALANCED": "Общият дебит ({debit}) не съвпада с общия кредит ({credit}) за тази финансова година."
+          "TRIAL_BALANCE_UNBALANCED": "Общият дебит ({debit}) не съвпада с общия кредит ({credit}) за тази финансова година.",
+          "RESULT_DIVERGENCE": "Резултатът от журнала ({journal}) се различава от този на отчета за приходи и доходи ({statement}) — журналът може все още да не е актуален за тази финансова година (затваряне на фискалната година или рестартиране на синхронизацията)."
         }
       },
       "accountLabels": {
         "reportANouveau": "Неразпределена печалба",
-        "resultatExercice": "Нетна печалба за годината"
+        "resultatExercice": "Нетна печалба за годината",
+        "creancesCotisations": "Неизпълнени членски вноски",
+        "creancesFactures": "Неизпълнени фактури",
+        "stocksEstimatedValue": "Оценена стойност на инвентара",
+        "creancesFacturesEnRetard": "Просрочени фактури"
+      },
+      "exportPdf": "Експорт PDF",
+      "exportDisabledTooltip": "Не може да се експортира окончателен баланс, докато горните аномалии не бъдат поправени.",
+      "pdf": {
+        "periodLabel": "Период от {start} до {end}"
+      },
+      "drillDown": {
+        "date": "Дата",
+        "label": "Етикет",
+        "origin": "Произход",
+        "debit": "Дебит",
+        "credit": "Кредит",
+        "noLines": "Няма записи за този акаунт.",
+        "sourceTypes": {
+          "INCOME": "Доходи",
+          "INCOME_REVERSAL": "Обръщане на доходите",
+          "EXPENSE": "Разходи",
+          "EXPENSE_REVERSAL": "Обръщане на разходите",
+          "BANK_TRANSACTION": "Банкова транзакция",
+          "ACCOUNT_TRANSFER": "Вътрешен трансфер",
+          "OPENING_BALANCE": "Начално балансиране",
+          "IMMOBILISATION_DEPRECIATION": "Обезценяване",
+          "IMMOBILISATION_ACQUISITION": "Придобиване на активи",
+          "FACTURE_RECUE_PAYMENT": "Плащане от доставчика",
+          "MANUAL": "Ръчно въвеждане"
+        }
+      },
+      "memoNotice": "Оценка — не е записана в регистъра, изключена от общите активи.",
+      "memoNoHistory": "Няма исторически данни",
+      "caveats": {
+        "stocksMissingCostPrice": "{count} варианти без записана покупна стойност, изключени от оценката"
       }
     }
   },
@@ -2672,7 +2716,8 @@
         "nameRequired": "Задължително е име",
         "atLeastOneVariant": "Изисква се поне един вариант",
         "variantLabelRequired": "Всеки вариант трябва да има етикет"
-      }
+      },
+      "costPriceColumn": "Себестойност"
     },
     "view": {
       "title": "Магазин",

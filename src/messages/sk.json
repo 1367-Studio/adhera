@@ -1419,7 +1419,7 @@
       "description": "Aktíva a záväzky združenia na konci finančného roka.",
       "exerciceLabel": "Cvičenie",
       "rubriqueColumnLabel": "Sekcia",
-      "noPreviousExercice": "-",
+      "noPreviousExercice": "Porovnanie nie je dostupné",
       "actif": "Aktívne",
       "totalActif": "Total Active",
       "passif": "Pasívne",
@@ -1437,7 +1437,15 @@
         "immobilisationsCorporelles": "Hmotné kapitálové aktíva",
         "disponibilites": "Dostupnosť",
         "fondsPropres": "Ekvita",
-        "dettes": "Dlhy"
+        "dettes": "Dlhy",
+        "immobilisationsIncorporelles": "Nehmotné dlhodobé aktíva",
+        "immobilisationsFinancieres": "Finančné fixné aktíva",
+        "chargesConstateesDavance": "Predplatené výdavky",
+        "provisions": "Rezervy",
+        "produitsConstatesDavance": "Odložený príjem",
+        "creances": "Pohľadávky",
+        "stocksEtEnCours": "Inventár",
+        "fondsDedies": "Obmedzené fondy"
       },
       "issues": {
         "title": "Zistené anomálie",
@@ -1445,12 +1453,48 @@
           "ACCOUNT_WITHOUT_RUBRIQUE": "Účet {code} — {label} má zostatok, ale nie je pripojený k žiadnej položke súvahy.",
           "ACTIF_PASSIF_MISMATCH": "Majetok ({actif}) nezodpovedá záväzku ({passif}).",
           "OPENING_BALANCE_MISSING": "Pre toto cvičenie neboli vygenerované žiadne úvodné položky z \"{previousLabel}\".",
-          "TRIAL_BALANCE_UNBALANCED": "Celkový debet ({debit}) nezodpovedá celkovému kreditu ({credit}) za tento fiškálny rok."
+          "TRIAL_BALANCE_UNBALANCED": "Celkový debet ({debit}) nezodpovedá celkovému kreditu ({credit}) za tento fiškálny rok.",
+          "RESULT_DIVERGENCE": "Výsledok denníka ({journal}) sa líši od výsledku výkazu ziskov a strát ({statement}) — zápisník nemusí byť ešte aktuálny pre tento fiškálny rok (zatvoriť fiškálny rok alebo reštartovať synchronizáciu)."
         }
       },
       "accountLabels": {
         "reportANouveau": "Zadržaný zisk",
-        "resultatExercice": "Čistý zisk za rok"
+        "resultatExercice": "Čistý zisk za rok",
+        "creancesCotisations": "Nesplatené členské poplatky",
+        "creancesFactures": "Nesplatené faktúry",
+        "stocksEstimatedValue": "Odhadovaná hodnota zásob",
+        "creancesFacturesEnRetard": "Nedoplatky faktúr"
+      },
+      "exportPdf": "Exportovať PDF",
+      "exportDisabledTooltip": "Nie je možné exportovať konečnú súvahu, kým nebudú opravené vyššie uvedené anomálie.",
+      "pdf": {
+        "periodLabel": "Obdobie od {start} do {end}"
+      },
+      "drillDown": {
+        "date": "Dátum",
+        "label": "Štítok",
+        "origin": "Pôvod",
+        "debit": "Debet",
+        "credit": "Úver",
+        "noLines": "Pre tento účet nie sú žiadne záznamy.",
+        "sourceTypes": {
+          "INCOME": "Príjmy",
+          "INCOME_REVERSAL": "Zvrátenie príjmu",
+          "EXPENSE": "Náklady",
+          "EXPENSE_REVERSAL": "Zvrátenie nákladov",
+          "BANK_TRANSACTION": "Banková transakcia",
+          "ACCOUNT_TRANSFER": "Interný prevod",
+          "OPENING_BALANCE": "Počiatočný zostatok",
+          "IMMOBILISATION_DEPRECIATION": "Odpisy",
+          "IMMOBILISATION_ACQUISITION": "Získavanie aktív",
+          "FACTURE_RECUE_PAYMENT": "Platba dodávateľom",
+          "MANUAL": "Manuálne zadávanie"
+        }
+      },
+      "memoNotice": "Odhad — nie je zaznamenaný v účtovnej knihe, vylúčený z celkových aktív.",
+      "memoNoHistory": "Žiadne historické údaje",
+      "caveats": {
+        "stocksMissingCostPrice": "{count} variantov bez zaznamenaných nákupných nákladov, vylúčených z odhadu"
       }
     }
   },
@@ -2672,7 +2716,8 @@
         "nameRequired": "Meno je potrebné",
         "atLeastOneVariant": "Vyžaduje sa aspoň jeden variant",
         "variantLabelRequired": "Každá varianta musí mať označenie"
-      }
+      },
+      "costPriceColumn": "Náklady"
     },
     "view": {
       "title": "Obchod",

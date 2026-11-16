@@ -10,6 +10,7 @@ const varianteSchema = z.object({
   id:          z.string().optional(),
   label:       z.string().trim().min(1).max(100),
   price:       z.number().int().min(0),
+  costPrice:   z.number().int().min(0).optional(),
   stock:       z.number().int().min(0).default(0),
   shippable:   z.boolean().default(false),
   weightGrams: z.number().int().positive().optional(),
@@ -92,11 +93,11 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
         if (v.id) {
           await tx.boutiqueVariante.update({
             where: { id: v.id },
-            data:  { label: v.label, price: v.price, stock: v.stock, shippable: v.shippable, weightGrams: v.shippable ? v.weightGrams : null },
+            data:  { label: v.label, price: v.price, costPrice: v.costPrice ?? null, stock: v.stock, shippable: v.shippable, weightGrams: v.shippable ? v.weightGrams : null },
           })
         } else {
           await tx.boutiqueVariante.create({
-            data: { produitId: id, label: v.label, price: v.price, stock: v.stock, shippable: v.shippable, weightGrams: v.shippable ? v.weightGrams : null },
+            data: { produitId: id, label: v.label, price: v.price, costPrice: v.costPrice ?? null, stock: v.stock, shippable: v.shippable, weightGrams: v.shippable ? v.weightGrams : null },
           })
         }
       }
