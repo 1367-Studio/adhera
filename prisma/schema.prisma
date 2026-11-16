@@ -632,58 +632,59 @@ model Association {
   updatedAt                      DateTime            @updatedAt
   deletedAt                      DateTime?
 
-  users                         User[]
-  membres                       Membre[]
-  membreTypes                   MembreType[]
-  evenements                    Evenement[]
-  cotisations                   Cotisation[]
-  actualites                    Actualite[]
-  messageTemplates              MessageTemplate[]
-  automationRules               AutomationRule[]
-  materials                     Material[]
-  activityLogs                  ActivityLog[]
-  dons                          Don[]
-  donationForms                 DonationForm[]
-  donationSubscriptions         DonationSubscription[]
-  cotisationSubscriptions       CotisationSubscription[]
-  cotisationInstallmentPlans    CotisationInstallmentPlan[]
-  membershipForms               MembershipForm[]
-  sitePages                     SitePage[]
-  siteNavMenus                  SiteNavMenu[]
-  membershipAddonPurchases      MembershipAddonPurchase[]
-  membershipCheckoutDrafts      MembershipCheckoutDraft[]
-  sondages                      Sondage[]
-  boutiqueProduits              BoutiqueProduit[]
-  boutiqueCommandes             BoutiqueCommande[]
-  meetings                      Meeting[]
-  exercicesComptables           ExerciceComptable[]
-  bankAccounts                  BankAccount[]
-  bankTransactions              BankTransaction[]
-  financeCategories             FinanceCategory[]
-  incomes                       Income[]
-  expenses                      Expense[]
-  budgetProjects                BudgetProject[]
-  budgetLines                   BudgetLine[]
-  bankReconciliations           BankReconciliation[]
-  accountTransfers              AccountTransfer[]
-  fournisseurs                  Fournisseur[]
-  devis                         Devis[]
-  factures                      Facture[]
-  facturesRecues                FactureRecue[]
-  associationDocuments          AssociationDocument[]
-  paperFormTemplates            PaperFormTemplate[]
-  legalAcceptances              LegalAcceptance[]
-  emailMessages                 EmailMessage[]
-  smsMessages                   SmsMessage[]
-  supportTickets                SupportTicket[]
-  pricingOffer                  PricingOffer?
-  controlAlerts                 MembreControlAlert[]
-  erasureRequests               ErasureRequest[]
-  membreDuplicateMatches        MembreDuplicateMatch[]
-  membreMergeLogs               MembreMergeLog[]
-  membershipTierMergeLogs       MembershipTierMergeLog[]
-  boutiqueResponsable           User?                          @relation("BoutiqueResponsable", fields: [boutiqueResponsableId], references: [id], onDelete: SetNull)
-  donResponsable                User?                          @relation("DonResponsable", fields: [donResponsableId], references: [id], onDelete: SetNull)
+  users                      User[]
+  membres                    Membre[]
+  membreTypes                MembreType[]
+  evenements                 Evenement[]
+  cotisations                Cotisation[]
+  actualites                 Actualite[]
+  messageTemplates           MessageTemplate[]
+  automationRules            AutomationRule[]
+  materials                  Material[]
+  activityLogs               ActivityLog[]
+  dons                       Don[]
+  donationForms              DonationForm[]
+  donationSubscriptions      DonationSubscription[]
+  cotisationSubscriptions    CotisationSubscription[]
+  cotisationInstallmentPlans CotisationInstallmentPlan[]
+  membershipForms            MembershipForm[]
+  sitePages                  SitePage[]
+  siteNavMenus               SiteNavMenu[]
+  membershipAddonPurchases   MembershipAddonPurchase[]
+  membershipCheckoutDrafts   MembershipCheckoutDraft[]
+  sondages                   Sondage[]
+  boutiqueProduits           BoutiqueProduit[]
+  boutiqueCommandes          BoutiqueCommande[]
+  meetings                   Meeting[]
+  exercicesComptables        ExerciceComptable[]
+  bankAccounts               BankAccount[]
+  bankTransactions           BankTransaction[]
+  financeCategories          FinanceCategory[]
+  incomes                    Income[]
+  expenses                   Expense[]
+  budgetProjects             BudgetProject[]
+  budgetLines                BudgetLine[]
+  bankReconciliations        BankReconciliation[]
+  accountTransfers           AccountTransfer[]
+  fournisseurs               Fournisseur[]
+  devis                      Devis[]
+  factures                   Facture[]
+  facturesRecues             FactureRecue[]
+  associationDocuments       AssociationDocument[]
+  paperFormTemplates         PaperFormTemplate[]
+  legalAcceptances           LegalAcceptance[]
+  platformLegalValidations   PlatformLegalValidation[]
+  emailMessages              EmailMessage[]
+  smsMessages                SmsMessage[]
+  supportTickets             SupportTicket[]
+  pricingOffer               PricingOffer?
+  controlAlerts              MembreControlAlert[]
+  erasureRequests            ErasureRequest[]
+  membreDuplicateMatches     MembreDuplicateMatch[]
+  membreMergeLogs            MembreMergeLog[]
+  membershipTierMergeLogs    MembershipTierMergeLog[]
+  boutiqueResponsable        User?                       @relation("BoutiqueResponsable", fields: [boutiqueResponsableId], references: [id], onDelete: SetNull)
+  donResponsable             User?                       @relation("DonResponsable", fields: [donResponsableId], references: [id], onDelete: SetNull)
 
   @@index([customDomainStatus])
 }
@@ -761,6 +762,12 @@ model User {
   termsAcceptedIp         String?
   fiscalPeriodPopupSeenAt DateTime?
 
+  // FORM-113: when true, the dashboard blocks this account behind the platform-legal
+  // validation pop-up (PlatformLegalValidation) until every current-version document is
+  // confirmed. Set directly in the DB (never from app code) for the specific accounts a
+  // compliance request names — false for everyone else, who never pay the pending-check query.
+  requiresLegalValidation Boolean @default(false)
+
   // TOTP 2FA — staff only (role !== MEMBRE), self-service opt-in via the user menu.
   twoFactorEnabled Boolean @default(false)
   twoFactorSecret  String?
@@ -774,26 +781,27 @@ model User {
   lastLoginAt DateTime?
   lastSeenAt  DateTime?
 
-  association              Association?           @relation(fields: [associationId], references: [id])
-  notifications            Notification[]
-  membre                   Membre?
-  passwordResetTokens      PasswordResetToken[]
-  supportTickets           SupportTicket[]
-  supportTicketMessages    SupportTicketMessage[]
-  emailMessages            EmailMessage[]
-  pricingOffersCreated     PricingOffer[]
-  twoFactorBackupCodes     TwoFactorBackupCode[]
-  resolvedControlAlerts    MembreControlAlert[]
-  erasureRequestsMade      ErasureRequest[]       @relation("ErasureRequestedBy")
-  erasureRequestsHeld      ErasureRequest[]       @relation("ErasureHeldBy")
-  dismissedDuplicateMatches MembreDuplicateMatch[]
-  membreMergesPerformed    MembreMergeLog[]
-  membresMerged            Membre[]               @relation("MembreMergedBy")
+  association                   Association?              @relation(fields: [associationId], references: [id])
+  notifications                 Notification[]
+  membre                        Membre?
+  passwordResetTokens           PasswordResetToken[]
+  supportTickets                SupportTicket[]
+  supportTicketMessages         SupportTicketMessage[]
+  emailMessages                 EmailMessage[]
+  pricingOffersCreated          PricingOffer[]
+  twoFactorBackupCodes          TwoFactorBackupCode[]
+  resolvedControlAlerts         MembreControlAlert[]
+  erasureRequestsMade           ErasureRequest[]          @relation("ErasureRequestedBy")
+  erasureRequestsHeld           ErasureRequest[]          @relation("ErasureHeldBy")
+  dismissedDuplicateMatches     MembreDuplicateMatch[]
+  membreMergesPerformed         MembreMergeLog[]
+  membresMerged                 Membre[]                  @relation("MembreMergedBy")
   membershipTierMergesPerformed MembershipTierMergeLog[]
-  boutiqueResponsableFor   Association[]          @relation("BoutiqueResponsable")
-  boutiqueCommandesCreated BoutiqueCommande[]     @relation("BoutiqueCommandeCreatedBy")
-  donsCreatedManually      Don[]
-  donResponsableFor        Association[]          @relation("DonResponsable")
+  boutiqueResponsableFor        Association[]             @relation("BoutiqueResponsable")
+  boutiqueCommandesCreated      BoutiqueCommande[]        @relation("BoutiqueCommandeCreatedBy")
+  donsCreatedManually           Don[]
+  donResponsableFor             Association[]             @relation("DonResponsable")
+  platformLegalValidations      PlatformLegalValidation[]
 
   @@unique([email, associationId])
   @@index([associationId, role])
@@ -1337,12 +1345,12 @@ model Participation {
 // facultatif. Un seul avis par participation (participationId unique), seuls les
 // participants marqués présents peuvent en laisser un (vérifié côté API, pas ici).
 model EvenementAvis {
-  id              String   @id @default(cuid())
-  evenementId     String
-  participationId String   @unique
-  rating          Int
-  comment         String?
-  createdAt       DateTime @default(now())
+  id                  String    @id @default(cuid())
+  evenementId         String
+  participationId     String    @unique
+  rating              Int
+  comment             String?
+  createdAt           DateTime  @default(now())
   // Preuve de consentement à la publication sur le site/réseaux sociaux — posée server-side à
   // la soumission, jamais reprise du client seul. Null = jamais demandé ou refusé. Mirroir exact
   // de Participation.cguvAgreedAt/Don.cguvAgreedAt : pas de rétroactivité, un avis déjà soumis
@@ -1350,11 +1358,11 @@ model EvenementAvis {
   publicationAgreedAt DateTime?
   // Choix d'identification quand publicationAgreedAt est posé — même convention que
   // Don.anonymous/DonationSubscription.anonymous. Sans objet si publicationAgreedAt est null.
-  anonymous           Boolean  @default(false)
+  anonymous           Boolean   @default(false)
   // Sélection éditoriale de l'association — indépendante du consentement : consentir ne publie
   // jamais automatiquement, un admin doit explicitement le choisir depuis la page avaliações de
   // l'événement. Ne peut être vrai que si publicationAgreedAt est posé (vérifié côté API).
-  featuredOnSite      Boolean  @default(false)
+  featuredOnSite      Boolean   @default(false)
 
   evenement     Evenement     @relation(fields: [evenementId], references: [id], onDelete: Cascade)
   participation Participation @relation(fields: [participationId], references: [id], onDelete: Cascade)
@@ -1823,7 +1831,7 @@ model SitePage {
   createdAt        DateTime       @default(now())
   updatedAt        DateTime       @updatedAt
 
-  association Association @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  association Association  @relation(fields: [associationId], references: [id], onDelete: Cascade)
   navMenu     SiteNavMenu? @relation(fields: [navMenuId], references: [id], onDelete: SetNull)
 
   @@unique([associationId, slug])
@@ -2407,20 +2415,20 @@ model MembreDuplicateMatch {
 // needed to recover data, only to answer "who merged what, and what got left behind" without
 // re-deriving it from mergedIntoId pointers scattered across every related table.
 model MembreMergeLog {
-  id                 String   @id @default(cuid())
-  associationId      String
-  primaryMembreId    String
-  secondaryMembreId  String
-  performedById      String
+  id                String   @id @default(cuid())
+  associationId     String
+  primaryMembreId   String
+  secondaryMembreId String
+  performedById     String
   // { fieldName: "PRIMARY" | "SECONDARY" } — which side's value won for each scalar field
   // that differed between the two records.
-  fieldResolutions   Json
+  fieldResolutions  Json
   // { "cotisations": 3, "dons": 1, ... } — rows reassigned to the primary, per relation.
-  relationCounts     Json
+  relationCounts    Json
   // [{ table, id, reason }] — rows left attached to the (now soft-deleted) secondary because
   // reassigning them would have collided with a unique constraint on the primary's side.
-  conflicts          Json
-  createdAt          DateTime @default(now())
+  conflicts         Json
+  createdAt         DateTime @default(now())
 
   association Association @relation(fields: [associationId], references: [id], onDelete: Cascade)
   performedBy User        @relation(fields: [performedById], references: [id])
@@ -3251,31 +3259,31 @@ model Income {
 }
 
 model Expense {
-  id             String        @id @default(cuid())
-  associationId  String
-  exerciceId     String?
-  factureRecueId String?       @unique // set when this row was auto-created from a FactureRecue marked PAYEE — see FactureRecue.expense
-  amount         Decimal       @db.Decimal(10, 2)
-  categoryId     String?
+  id               String        @id @default(cuid())
+  associationId    String
+  exerciceId       String?
+  factureRecueId   String?       @unique // set when this row was auto-created from a FactureRecue marked PAYEE — see FactureRecue.expense
+  amount           Decimal       @db.Decimal(10, 2)
+  categoryId       String?
   // See Income.projectId — same "Orçamento previsto" project link, same SetNull reasoning.
-  projectId      String?
-  date           DateTime
-  vendor         String?
-  description    String?
-  receiptUrl     String?
-  internalNote   String?
-  paymentMethod  String?
-  status         ExpenseStatus @default(DRAFT)
+  projectId        String?
+  date             DateTime
+  vendor           String?
+  description      String?
+  receiptUrl       String?
+  internalNote     String?
+  paymentMethod    String?
+  status           ExpenseStatus @default(DRAFT)
   // Idempotency/traceability key, same role as Income.reference — set to the Stripe
   // paymentIntent/invoice id for auto-created "Frais Stripe"/"Commission Formwise" rows (see
   // connect-stripe-fee.ts) so a redelivered webhook or a refund can find these rows again.
-  reference      String?
+  reference        String?
   // Scaffolding only (see FORM-reformulation plan §15): distinguishes a capital asset
   // purchase from a regular operating expense so a future depreciation/amortization module
   // can exclude immobilisations from the exercice's full charge. No depreciation logic yet.
-  isImmobilisation Boolean     @default(false)
-  createdAt      DateTime      @default(now())
-  updatedAt      DateTime      @updatedAt
+  isImmobilisation Boolean       @default(false)
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
 
   association     Association          @relation(fields: [associationId], references: [id], onDelete: Cascade)
   exercice        ExerciceComptable?   @relation(fields: [exerciceId], references: [id], onDelete: SetNull)
@@ -3663,6 +3671,45 @@ model LegalAcceptance {
   @@index([membreId])
   @@index([userId])
   @@index([guestEmail])
+}
+
+// The six boxes of the FORM-113 mandatory-validation pop-up: Formwise's own five legal
+// documents, plus the "I'm authorized to bind this association" statement, which has no
+// document of its own.
+enum PlatformLegalDocumentSlug {
+  CGU
+  CGV
+  DPA
+  PRIVACY_POLICY
+  MENTIONS_LEGALES
+  ASSOCIATION_AUTHORIZATION
+}
+
+enum PlatformLegalConfirmationType {
+  ACCEPTATION
+  PRISE_DE_CONNAISSANCE
+}
+
+// One row per (account, document, version) confirmation for Formwise's own legal documents —
+// not to be confused with LegalAcceptance, which is for documents an association authors for
+// its own members. Only accounts with User.requiresLegalValidation set are ever checked
+// against this table; everyone else never queries it. Append-only, same reasoning as
+// LegalAcceptance: a later version bump adds new rows rather than touching old ones.
+model PlatformLegalValidation {
+  id               String                        @id @default(cuid())
+  userId           String
+  associationId    String
+  documentSlug     PlatformLegalDocumentSlug
+  version          Int
+  confirmationType PlatformLegalConfirmationType
+  acceptedAt       DateTime                      @default(now())
+  ip               String?
+
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  association Association @relation(fields: [associationId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, documentSlug, version])
+  @@index([associationId])
 }
 
 // Azure Translator cache — keyed by content hash so identical text (even across
