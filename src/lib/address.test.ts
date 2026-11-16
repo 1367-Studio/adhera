@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest"
-import { EMPTY_ADDRESS_FORM_VALUES, addressColumns, addressColumnsPatch, addressFormValues, addressIsFilled, addressWasMigratedFromLegacy, formatAddress, formatAddressLines } from "@/lib/address"
+import { EMPTY_ADDRESS_FORM_VALUES, addressColumns, addressColumnsPatch, addressFormValues, addressIsFilled, addressWasMigratedFromLegacy, countryIsFilled, formatAddress, formatAddressLines } from "@/lib/address"
 
 describe("formatAddress", () => {
   // Le cas qui compte le plus : tous les membres/dons créés avant le découpage du champ
@@ -204,14 +204,14 @@ describe("addressColumnsPatch", () => {
 })
 
 describe("addressIsFilled", () => {
-  it("requires street, postal code, city and country together, not any single one of them", () => {
+  // Le pays n'entre plus dans ce calcul depuis FORM-108 : il a son propre réglage
+  // d'obligation, vérifié séparément par countryIsFilled.
+  it("requires street, postal code and city together, not any single one of them", () => {
     expect(addressIsFilled({ addressStreet: "12 rue de la Paix" })).toBe(false)
     expect(addressIsFilled({ postalCode: "75002" })).toBe(false)
     expect(addressIsFilled({ city: "Paris" })).toBe(false)
-    expect(addressIsFilled({ country: "France" })).toBe(false)
     expect(addressIsFilled({ addressStreet: "12 rue de la Paix", postalCode: "75002" })).toBe(false)
-    expect(addressIsFilled({ addressStreet: "12 rue de la Paix", postalCode: "75002", city: "Paris" })).toBe(false)
-    expect(addressIsFilled({ addressStreet: "12 rue de la Paix", postalCode: "75002", city: "Paris", country: "France" })).toBe(true)
+    expect(addressIsFilled({ addressStreet: "12 rue de la Paix", postalCode: "75002", city: "Paris" })).toBe(true)
   })
 
   it("also accepts the legacy free-text address alone, for a tab left open on the old form", () => {
@@ -220,7 +220,16 @@ describe("addressIsFilled", () => {
 
   it("rejects blank/whitespace-only values the same as absent ones", () => {
     expect(addressIsFilled({ address: "   " })).toBe(false)
-    expect(addressIsFilled({ addressStreet: " ", postalCode: " ", city: " ", country: " " })).toBe(false)
+    expect(addressIsFilled({ addressStreet: " ", postalCode: " ", city: " " })).toBe(false)
+  })
+})
+
+describe("countryIsFilled", () => {
+  it("is true only when the country is a non-blank value", () => {
+    expect(countryIsFilled({ country: "France" })).toBe(true)
+    expect(countryIsFilled({ country: " " })).toBe(false)
+    expect(countryIsFilled({ country: "" })).toBe(false)
+    expect(countryIsFilled({})).toBe(false)
   })
 })
 

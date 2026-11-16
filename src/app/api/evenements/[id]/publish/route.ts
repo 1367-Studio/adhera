@@ -20,7 +20,7 @@ export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
 
   const evenement = await prisma.evenement.findFirst({
     where:   { id, associationId },
-    include: { ticketTypes: true, customFields: true },
+    include: { ticketTypes: true, customFields: true, association: { select: { canIssueTaxReceipts: true } } },
   })
   if (!evenement) return NextResponse.json({ error: "Événement introuvable" }, { status: 404 })
 
@@ -39,6 +39,15 @@ export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
     requireCguvSignature: evenement.requireCguvSignature,
   }))
     return termsContentRequiredResponse()
+
+  // Un reçu fiscal (CERFA) imprime l'adresse complète du participant, pays compris — un
+  // événement qui émettra réellement des reçus (association habilitée + au moins une tarif
+  // active avec receiptMode non NONE) ne peut donc pas laisser l'un des deux facultatif ou
+  // masqué, sous peine de reçus incomplets (FORM-108 a rendu les deux champs indépendants).
+  if (action === "publish" && evenement.association.canIssueTaxReceipts
+      && evenement.ticketTypes.some(tt => tt.active && tt.receiptMode !== "NONE")
+      && (evenement.fieldAddress !== "REQUIRED" || evenement.fieldCountry !== "REQUIRED"))
+    return NextResponse.json({ error: "Cet événement émet des reçus fiscaux : les champs « Adresse postale » et « Pays de résidence » doivent être obligatoires avant de publier." }, { status: 422 })
 
   if (action === "duplicate") {
     const t     = await getTranslations("evenements")
@@ -71,6 +80,7 @@ export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
         requireCguvSignature:   evenement.requireCguvSignature,
         fieldPhone:             evenement.fieldPhone,
         fieldAddress:           evenement.fieldAddress,
+        fieldCountry:           evenement.fieldCountry,
         fieldBirthDate:         evenement.fieldBirthDate,
         fieldGender:            evenement.fieldGender,
         fieldMobile:            evenement.fieldMobile,

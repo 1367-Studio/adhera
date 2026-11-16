@@ -27,7 +27,7 @@ async function generateFormSlug(associationId: string, title: string): Promise<s
 export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   const form = await prisma.donationForm.findFirst({
     where:   { id, associationId: ctx.associationId },
-    include: { tiers: true, customFields: true },
+    include: { tiers: true, customFields: true, association: { select: { canIssueTaxReceipts: true } } },
   })
   if (!form) return NextResponse.json({ error: "Introuvable" }, { status: 404 })
 
@@ -53,6 +53,14 @@ export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   if (action === "publish" && form.tiers.length === 0)
     return NextResponse.json({ error: "Ajoutez au moins un palier avant de publier ce formulaire." }, { status: 422 })
 
+  // Un reçu fiscal (CERFA) imprime l'adresse complète du donateur, pays compris — un
+  // formulaire qui émettra réellement des reçus (association habilitée + au moins un palier
+  // avec receiptMode non NONE) ne peut donc pas laisser l'un des deux facultatif ou masqué,
+  // sous peine de reçus incomplets (FORM-108 a rendu les deux champs indépendants).
+  if (action === "publish" && form.association.canIssueTaxReceipts && form.tiers.some(t => t.receiptMode !== "NONE")
+      && (form.fieldAddress !== "REQUIRED" || form.fieldCountry !== "REQUIRED"))
+    return NextResponse.json({ error: "Ce formulaire émet des reçus fiscaux : les champs « Adresse postale » et « Pays de résidence » doivent être obligatoires avant de publier." }, { status: 422 })
+
   if (action === "duplicate") {
     const t     = await getTranslations("donationForms")
     const title = `${form.title} ${t("duplicateSuffix")}`
@@ -72,6 +80,7 @@ export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
         contactEmail:          form.contactEmail,
         contactPhone:          form.contactPhone,
         fieldAddress:          form.fieldAddress,
+        fieldCountry:          form.fieldCountry,
         fieldBirthDate:        form.fieldBirthDate,
         fieldPhone:            form.fieldPhone,
         fieldMobile:           form.fieldMobile,

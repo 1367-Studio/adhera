@@ -84,6 +84,7 @@ type FormInfo = {
   contactPhone: string | null
   validationMode: ValidationMode
   fieldAddress: FieldRequirement
+  fieldCountry: FieldRequirement
   fieldBirthDate: FieldRequirement
   fieldPhone: FieldRequirement
   fieldMobile: FieldRequirement
@@ -137,12 +138,17 @@ type RegistrantDraft = {
   answers:   Record<string, string>
 }
 
-// Le champ « Adresse » de la matrice de champs standards est satisfait dès que la voie, le
-// code postal, la ville et le pays sont saisis. Le complément n'est jamais obligatoire
-// (voir AddressFields) : il est facultatif par nature. Le checkout applique exactement la
-// même règle.
+// Le champ « Adresse postale » de la matrice de champs standards est satisfait dès que la
+// voie, le code postal et la ville sont saisis. Le complément n'est jamais obligatoire
+// (voir AddressFields) : il est facultatif par nature. Le pays a son propre réglage
+// d'obligation, vérifié à part par countryIsComplete (FORM-108). Le checkout applique
+// exactement la même règle.
 function addressIsComplete(values: AddressFormValues): boolean {
-  return !!values.addressStreet.trim() && !!values.postalCode.trim() && !!values.city.trim() && !!values.country.trim()
+  return !!values.addressStreet.trim() && !!values.postalCode.trim() && !!values.city.trim()
+}
+
+function countryIsComplete(values: AddressFormValues): boolean {
+  return !!values.country.trim()
 }
 
 // Les cinq champs d'adresse tels qu'ils partent au serveur : trimés, et omis quand ils sont
@@ -665,17 +671,15 @@ function MembershipFormPublicFormInner({ slug, formSlug, legalDocuments }: Props
 
   // Même raison que les deux erreurs ci-dessus : AddressFields n'expose pas de blur, ces
   // erreurs n'apparaissent donc qu'après une tentative d'envoi (showAllErrors) — précisément
-  // le moment où le visiteur cherche ce qui manque. Seuls la voie, le code postal, la ville
-  // et le pays peuvent être en erreur, le complément restant toujours facultatif.
-  const addressErrors = (fieldPrefix: string, values: AddressFormValues) =>
-    form?.fieldAddress === "REQUIRED"
-      ? {
-          addressStreet: requiredError(`${fieldPrefix}.addressStreet`, values.addressStreet),
-          postalCode:    requiredError(`${fieldPrefix}.postalCode`,    values.postalCode),
-          city:          requiredError(`${fieldPrefix}.city`,          values.city),
-          country:       requiredError(`${fieldPrefix}.country`,       values.country),
-        }
-      : undefined
+  // le moment où le visiteur cherche ce qui manque. Seules la voie, le code postal et la
+  // ville peuvent être en erreur côté adresse (le complément restant toujours facultatif) ;
+  // le pays a son propre réglage d'obligation, indépendant (FORM-108).
+  const addressErrors = (fieldPrefix: string, values: AddressFormValues) => ({
+    addressStreet: form?.fieldAddress === "REQUIRED" ? requiredError(`${fieldPrefix}.addressStreet`, values.addressStreet) : undefined,
+    postalCode:    form?.fieldAddress === "REQUIRED" ? requiredError(`${fieldPrefix}.postalCode`,    values.postalCode)    : undefined,
+    city:          form?.fieldAddress === "REQUIRED" ? requiredError(`${fieldPrefix}.city`,          values.city)         : undefined,
+    country:       form?.fieldCountry === "REQUIRED" ? requiredError(`${fieldPrefix}.country`,       values.country)      : undefined,
+  })
 
   async function checkEmailTaken() {
     touch("email")
@@ -704,6 +708,7 @@ function MembershipFormPublicFormInner({ slug, formSlug, legalDocuments }: Props
     return !!form && !!rt &&
       !!r.firstName.trim() && !!r.lastName.trim() &&
       (form.fieldAddress   !== "REQUIRED" || addressIsComplete(r.addressValues)) &&
+      (form.fieldCountry   !== "REQUIRED" || countryIsComplete(r.addressValues)) &&
       (form.fieldBirthDate !== "REQUIRED" || r.birthDate.trim()) &&
       (form.fieldPhone     !== "REQUIRED" || r.phone.trim()) &&
       (form.fieldMobile    !== "REQUIRED" || r.mobile.trim()) &&
@@ -728,6 +733,7 @@ function MembershipFormPublicFormInner({ slug, formSlug, legalDocuments }: Props
     // créé qu'au paiement) ni pour accepter les CGUV.
     (!willBeImmediate || isAdminFill || password.length >= PASSWORD_MIN_LENGTH) &&
     (form.fieldAddress   !== "REQUIRED" || addressIsComplete(addressValues)) &&
+    (form.fieldCountry   !== "REQUIRED" || countryIsComplete(addressValues)) &&
     (form.fieldBirthDate !== "REQUIRED" || birthDate.trim()) &&
     (form.fieldPhone     !== "REQUIRED" || phone.trim()) &&
     (form.fieldMobile    !== "REQUIRED" || mobile.trim()) &&
@@ -764,6 +770,7 @@ function MembershipFormPublicFormInner({ slug, formSlug, legalDocuments }: Props
     : requiresTermsAcceptance && !isAdminFill && !conditionsAgreed ? t("blockedConditionsNotAccepted")
     : legalDocuments.length > 0 && !isAdminFill && !legalAccepted ? tLegal("required")
     : (form.fieldAddress   === "REQUIRED" && !addressIsComplete(addressValues))
+      || (form.fieldCountry   === "REQUIRED" && !countryIsComplete(addressValues))
       || (form.fieldBirthDate === "REQUIRED" && !birthDate.trim())
       || (form.fieldPhone     === "REQUIRED" && !phone.trim())
       || (form.fieldMobile    === "REQUIRED" && !mobile.trim())
@@ -1280,11 +1287,14 @@ function MembershipFormPublicFormInner({ slug, formSlug, legalDocuments }: Props
                   </div>
                 )}
 
-                {form.fieldAddress !== "HIDDEN" && (
+                {(form.fieldAddress !== "HIDDEN" || form.fieldCountry !== "HIDDEN") && (
                   <AddressFields
                     value={addressValues}
                     onChange={patch => setAddressValues(prev => ({ ...prev, ...patch }))}
                     required={form.fieldAddress === "REQUIRED"}
+                    showAddress={form.fieldAddress !== "HIDDEN"}
+                    showCountry={form.fieldCountry !== "HIDDEN"}
+                    countryRequired={form.fieldCountry === "REQUIRED"}
                     errors={addressErrors("address", addressValues)}
                   />
                 )}
@@ -1444,11 +1454,14 @@ function MembershipFormPublicFormInner({ slug, formSlug, legalDocuments }: Props
                               {registrantPhotoError(r) && <p className="text-xs text-destructive">{registrantPhotoError(r)}</p>}
                             </div>
                           )}
-                          {form.fieldAddress !== "HIDDEN" && (
+                          {(form.fieldAddress !== "HIDDEN" || form.fieldCountry !== "HIDDEN") && (
                             <AddressFields
                               value={r.addressValues}
                               onChange={patch => updateRegistrant(r.key, { addressValues: { ...r.addressValues, ...patch } })}
                               required={form.fieldAddress === "REQUIRED"}
+                              showAddress={form.fieldAddress !== "HIDDEN"}
+                              showCountry={form.fieldCountry !== "HIDDEN"}
+                              countryRequired={form.fieldCountry === "REQUIRED"}
                               errors={addressErrors(`${r.key}.address`, r.addressValues)}
                               // Le bloc est répété pour chaque adhérent supplémentaire : sans
                               // préfixe, tous les blocs partageraient les mêmes id de champ.

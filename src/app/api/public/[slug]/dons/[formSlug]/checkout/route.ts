@@ -8,7 +8,7 @@ import { parseModules } from "@/lib/modules"
 import { APP_URL } from "@/lib/env"
 import { rateLimit, requestIp } from "@/lib/rate-limit"
 import { isValidSiret } from "@/lib/siret"
-import { ADDRESS_MAX_LENGTHS, addressColumns, addressIsFilled } from "@/lib/address"
+import { ADDRESS_MAX_LENGTHS, addressColumns, addressIsFilled, countryIsFilled } from "@/lib/address"
 import { consentIp } from "@/lib/consent"
 import { acceptLegalDocuments, LegalConsentError } from "@/lib/legal/acceptance"
 import { writeActivityLog } from "@/lib/activity-log"
@@ -157,8 +157,11 @@ export async function POST(
   // Adresse structurée complète (voie + code postal + ville) OU seule adresse héritée en
   // texte libre — jamais un seul sous-champ isolé (voir addressIsFilled dans
   // src/lib/address.ts, même règle que le checkout d'adhésion et l'inscription événement).
+  // Le pays a son propre réglage d'obligation, indépendant de l'adresse (FORM-108).
   if (form.fieldAddress === "REQUIRED" && !addressIsFilled(parsed.data))
-    return NextResponse.json({ error: "Le champ « Adresse » est requis." }, { status: 422 })
+    return NextResponse.json({ error: "Le champ « Adresse postale » est requis." }, { status: 422 })
+  if (form.fieldCountry === "REQUIRED" && !countryIsFilled(parsed.data))
+    return NextResponse.json({ error: "Le champ « Pays de résidence » est requis." }, { status: 422 })
   const standardChecks: [string, string | undefined, string][] = [
     [form.fieldBirthDate, birthDate, "Date de naissance"],
     [form.fieldPhone,     phone,     "Téléphone"],

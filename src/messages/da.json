@@ -59,7 +59,7 @@
     "complementPlaceholder": "Bygning, etage, postkasse…",
     "postalCode": "Postnummer",
     "city": "By",
-    "country": "Land",
+    "country": "Bopælsland",
     "legacyMigratedHint": "Kopieret fra det gamle adressefelt — tjek at det ikke allerede indeholder postnummer og by nedenfor."
   },
   "auth": {
@@ -1907,7 +1907,8 @@
           },
           "mobileLabel": "Mobil",
           "birthDateLabel": "Fødselsdato",
-          "genderLabel": "Køn"
+          "genderLabel": "Køn",
+          "countryLabel": "Bopælsland"
         },
         "products": {
           "title": "Produkter",
@@ -3067,7 +3068,8 @@
           "addOption": "Tilføj en mulighed",
           "removeOption": "Fjern denne mulighed",
           "optionsRequiredError": "Hver liste/valgfelt kræver mindst 2 muligheder.",
-          "duplicateOptionsError": "Mulighederne i et liste/valgfelt skal være unikke."
+          "duplicateOptionsError": "Mulighederne i et liste/valgfelt skal være unikke.",
+          "countryLabel": "Bopælsland"
         },
         "payment": {
           "title": "Betaling",
@@ -3358,7 +3360,8 @@
           "addOption": "Tilføj en mulighed",
           "removeOption": "Fjern denne mulighed",
           "optionsRequiredError": "Hver liste/valgfelt kræver mindst 2 muligheder.",
-          "duplicateOptionsError": "Mulighederne i et liste/valgfelt skal være unikke."
+          "duplicateOptionsError": "Mulighederne i et liste/valgfelt skal være unikke.",
+          "countryLabel": "Bopælsland"
         },
         "payment": {
           "title": "Betaling",

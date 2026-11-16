@@ -78,6 +78,7 @@ type EventInfo = {
   canIssueTaxReceipts: boolean
   fieldPhone:     FieldRequirement
   fieldAddress:   FieldRequirement
+  fieldCountry:   FieldRequirement
   fieldBirthDate: FieldRequirement
   fieldGender:    FieldRequirement
   fieldMobile:    FieldRequirement
@@ -229,6 +230,7 @@ function AttendeeFields({
   customFields,
   fieldPhone,
   fieldAddress,
+  fieldCountry,
   fieldBirthDate,
   fieldGender,
   fieldMobile,
@@ -246,6 +248,7 @@ function AttendeeFields({
   customFields: CustomField[]
   fieldPhone:     FieldRequirement
   fieldAddress:   FieldRequirement
+  fieldCountry:   FieldRequirement
   fieldBirthDate: FieldRequirement
   fieldGender:    FieldRequirement
   fieldMobile:    FieldRequirement
@@ -272,12 +275,12 @@ function AttendeeFields({
     "h-9 w-full rounded-md border bg-background px-3 text-sm outline-none focus:ring-1 focus:ring-ring",
     error ? "border-destructive focus:ring-destructive/30" : "border-input",
   )
-  const addressErrors = fieldAddress === "REQUIRED" && showAllErrors
+  const addressErrors = showAllErrors
     ? {
-        addressStreet: fieldError(attendee.addressStreet, true),
-        postalCode:    fieldError(attendee.postalCode,    true),
-        city:          fieldError(attendee.city,          true),
-        country:       fieldError(attendee.country,       true),
+        addressStreet: fieldAddress === "REQUIRED" ? fieldError(attendee.addressStreet, true) : undefined,
+        postalCode:    fieldAddress === "REQUIRED" ? fieldError(attendee.postalCode,    true) : undefined,
+        city:          fieldAddress === "REQUIRED" ? fieldError(attendee.city,          true) : undefined,
+        country:       fieldCountry === "REQUIRED" ? fieldError(attendee.country,       true) : undefined,
       }
     : undefined
 
@@ -364,13 +367,16 @@ function AttendeeFields({
         </div>
       )}
 
-      {fieldAddress !== "HIDDEN" && (
+      {(fieldAddress !== "HIDDEN" || fieldCountry !== "HIDDEN") && (
         // idPrefix indexé par participant : le bloc est répété une fois par billet, et sans
         // lui les cinq champs porteraient les mêmes id d'un participant à l'autre — cliquer
         // un libellé mettrait alors le focus sur le champ de quelqu'un d'autre.
         <AddressFields
           idPrefix={`attendee-${index}`}
           required={fieldAddress === "REQUIRED"}
+          showAddress={fieldAddress !== "HIDDEN"}
+          showCountry={fieldCountry !== "HIDDEN"}
+          countryRequired={fieldCountry === "REQUIRED"}
           value={{
             addressStreet:     attendee.addressStreet,
             addressComplement: attendee.addressComplement,
@@ -897,9 +903,11 @@ function EvenementRegisterFormInner({ slug, id, legalDocuments }: Props) {
         return !!tt && isTicketTypeAvailable(tt)
       })()) &&
       (event.fieldPhone     !== "REQUIRED" || a.phone.trim()     !== "") &&
-      // Une adresse obligatoire l'est sur les quatre parties qui la rendent postalement
-      // utilisable — le complément reste facultatif, comme dans AddressFields.
-      (event.fieldAddress   !== "REQUIRED" || (a.addressStreet.trim() !== "" && a.postalCode.trim() !== "" && a.city.trim() !== "" && a.country.trim() !== "")) &&
+      // Une adresse obligatoire l'est sur les trois parties qui la rendent postalement
+      // utilisable — le complément reste facultatif, comme dans AddressFields. Le pays est
+      // vérifié à part, indépendamment de l'adresse (FORM-108).
+      (event.fieldAddress   !== "REQUIRED" || (a.addressStreet.trim() !== "" && a.postalCode.trim() !== "" && a.city.trim() !== "")) &&
+      (event.fieldCountry   !== "REQUIRED" || a.country.trim()   !== "") &&
       (event.fieldMobile    !== "REQUIRED" || a.mobile.trim()    !== "") &&
       (event.fieldBirthDate !== "REQUIRED" || a.birthDate.trim() !== "") &&
       (event.fieldGender    !== "REQUIRED" || a.gender !== "") &&
@@ -936,18 +944,19 @@ function EvenementRegisterFormInner({ slug, id, legalDocuments }: Props) {
             email:     a.email.trim(),
             ticketTypeId: hasTicketTypes ? a.ticketTypeId : undefined,
             phone:     a.phone.trim() || undefined,
-            // Envoyés seulement quand le bloc adresse est affiché, mais alors même vides :
-            // sur une réinscription, la route fusionne l'envoi avec la fiche existante, si
-            // bien qu'une clé absente conserve l'ancienne valeur (c'est ce qui protège les
-            // évènements où le champ est masqué) tandis qu'une chaîne vide efface
-            // réellement — un visiteur qui efface son adresse doit pouvoir l'effacer.
+            // Envoyés seulement quand le bloc correspondant est affiché, mais alors même
+            // vides : sur une réinscription, la route fusionne l'envoi avec la fiche
+            // existante, si bien qu'une clé absente conserve l'ancienne valeur (c'est ce qui
+            // protège les évènements où le champ est masqué) tandis qu'une chaîne vide efface
+            // réellement — un visiteur qui efface son adresse doit pouvoir l'effacer. Adresse
+            // et pays sont indépendants l'un de l'autre (FORM-108).
             ...(event.fieldAddress !== "HIDDEN" ? {
               addressStreet:     a.addressStreet.trim(),
               addressComplement: a.addressComplement.trim(),
               postalCode:        a.postalCode.trim(),
               city:              a.city.trim(),
-              country:           a.country.trim(),
             } : {}),
+            ...(event.fieldCountry !== "HIDDEN" ? { country: a.country.trim() } : {}),
             mobile:    a.mobile.trim() || undefined,
             birthDate: a.birthDate || undefined,
             gender:    a.gender || undefined,
@@ -1203,6 +1212,7 @@ function EvenementRegisterFormInner({ slug, id, legalDocuments }: Props) {
                       customFields={event.customFields}
                       fieldPhone={event.fieldPhone}
                       fieldAddress={event.fieldAddress}
+                      fieldCountry={event.fieldCountry}
                       fieldBirthDate={event.fieldBirthDate}
                       fieldGender={event.fieldGender}
                       fieldMobile={event.fieldMobile}

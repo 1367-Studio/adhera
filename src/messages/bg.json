@@ -59,7 +59,7 @@
     "complementPlaceholder": "Сграда, етаж, пощенска кутия…",
     "postalCode": "Пощенски код",
     "city": "Град",
-    "country": "Държава",
+    "country": "Държава на пребиваване",
     "legacyMigratedHint": "Копирано от стария адрес — проверете дали вече не съдържа пощенския код и града по-долу."
   },
   "auth": {
@@ -1907,7 +1907,8 @@
           },
           "mobileLabel": "Мобилни",
           "birthDateLabel": "Дата на раждане",
-          "genderLabel": "Пол"
+          "genderLabel": "Пол",
+          "countryLabel": "Държава на пребиваване"
         },
         "products": {
           "title": "Продукти",
@@ -3067,7 +3068,8 @@
           "addOption": "Добави опция",
           "removeOption": "Премахнете тази опция",
           "optionsRequiredError": "Всеки списък/поле за избор изисква поне 2 опции.",
-          "duplicateOptionsError": "Опциите на поле списък/избор трябва да са уникални."
+          "duplicateOptionsError": "Опциите на поле списък/избор трябва да са уникални.",
+          "countryLabel": "Държава на пребиваване"
         },
         "payment": {
           "title": "Плащане",
@@ -3358,7 +3360,8 @@
           "addOption": "Добави опция",
           "removeOption": "Премахнете тази опция",
           "optionsRequiredError": "Всеки списък/поле за избор изисква поне 2 опции.",
-          "duplicateOptionsError": "Опциите на поле списък/избор трябва да са уникални."
+          "duplicateOptionsError": "Опциите на поле списък/избор трябва да са уникални.",
+          "countryLabel": "Държава на пребиваване"
         },
         "payment": {
           "title": "Плащане",

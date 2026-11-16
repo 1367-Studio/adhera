@@ -98,6 +98,7 @@ export async function GET(
     contactEmail:        form.contactEmail,
     contactPhone:        form.contactPhone,
     fieldAddress:        form.fieldAddress,
+    fieldCountry:        form.fieldCountry,
     fieldBirthDate:      form.fieldBirthDate,
     fieldPhone:          form.fieldPhone,
     fieldMobile:         form.fieldMobile,

@@ -59,7 +59,7 @@
     "complementPlaceholder": "Gebouw, verdieping, brievenbus…",
     "postalCode": "Postcode",
     "city": "Plaats",
-    "country": "Land",
+    "country": "Woonland",
     "legacyMigratedHint": "Gekopieerd uit het oude adresveld — controleer of de postcode en plaats hieronder niet al zijn opgenomen."
   },
   "auth": {
@@ -1907,7 +1907,8 @@
           },
           "mobileLabel": "Mobiel",
           "birthDateLabel": "Geboortedatum",
-          "genderLabel": "Geslacht"
+          "genderLabel": "Geslacht",
+          "countryLabel": "Land van verblijf"
         },
         "products": {
           "title": "Producten",
@@ -3067,7 +3068,8 @@
           "addOption": "Voeg een optie toe",
           "removeOption": "Verwijder deze optie",
           "optionsRequiredError": "Elke lijst/keuzeveld heeft minstens twee opties.",
-          "duplicateOptionsError": "De opties van een lijst/keuzeveld moeten uniek zijn."
+          "duplicateOptionsError": "De opties van een lijst/keuzeveld moeten uniek zijn.",
+          "countryLabel": "Land van verblijf"
         },
         "payment": {
           "title": "Betaling",
@@ -3358,7 +3360,8 @@
           "addOption": "Voeg een optie toe",
           "removeOption": "Verwijder deze optie",
           "optionsRequiredError": "Elke lijst/keuzeveld heeft minstens twee opties.",
-          "duplicateOptionsError": "De opties van een lijst/keuzeveld moeten uniek zijn."
+          "duplicateOptionsError": "De opties van een lijst/keuzeveld moeten uniek zijn.",
+          "countryLabel": "Land van verblijf"
         },
         "payment": {
           "title": "Betaling",

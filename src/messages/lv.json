@@ -59,7 +59,7 @@
     "complementPlaceholder": "Ēka, stāvs, pastkastīte…",
     "postalCode": "Pasta indekss",
     "city": "Pilsēta",
-    "country": "Valsts",
+    "country": "Dzīvesvietas valsts",
     "legacyMigratedHint": "Kopēts no vecā adreses lauka — pārbaudiet, vai tajā jau nav iekļauts zemāk norādītais pasta indekss un pilsēta."
   },
   "auth": {
@@ -1907,7 +1907,8 @@
           },
           "mobileLabel": "Mobilais",
           "birthDateLabel": "Dzimšanas datums",
-          "genderLabel": "Dzimums"
+          "genderLabel": "Dzimums",
+          "countryLabel": "Dzīvesvieta"
         },
         "products": {
           "title": "Produkti",
@@ -3067,7 +3068,8 @@
           "addOption": "Pievienot opciju",
           "removeOption": "Noņem šo iespēju",
           "optionsRequiredError": "Katram saraksta/izvēles laukam nepieciešamas vismaz 2 iespējas.",
-          "duplicateOptionsError": "Saraksta/izvēles lauka opcijām jābūt unikālām."
+          "duplicateOptionsError": "Saraksta/izvēles lauka opcijām jābūt unikālām.",
+          "countryLabel": "Dzīvesvieta"
         },
         "payment": {
           "title": "Maksājums",
@@ -3358,7 +3360,8 @@
           "addOption": "Pievienot opciju",
           "removeOption": "Noņem šo iespēju",
           "optionsRequiredError": "Katram saraksta/izvēles laukam nepieciešamas vismaz 2 iespējas.",
-          "duplicateOptionsError": "Saraksta/izvēles lauka opcijām jābūt unikālām."
+          "duplicateOptionsError": "Saraksta/izvēles lauka opcijām jābūt unikālām.",
+          "countryLabel": "Dzīvesvieta"
         },
         "payment": {
           "title": "Maksājums",

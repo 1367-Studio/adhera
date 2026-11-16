@@ -20,6 +20,7 @@ const updateSchema = z.object({
   validationMode:       z.enum(["IMMEDIATE", "REQUEST"]).optional(),
 
   fieldAddress:   z.enum(["HIDDEN", "OPTIONAL", "REQUIRED"]).optional(),
+  fieldCountry:   z.enum(["HIDDEN", "OPTIONAL", "REQUIRED"]).optional(),
   fieldBirthDate: z.enum(["HIDDEN", "OPTIONAL", "REQUIRED"]).optional(),
   fieldPhone:     z.enum(["HIDDEN", "OPTIONAL", "REQUIRED"]).optional(),
   fieldMobile:    z.enum(["HIDDEN", "OPTIONAL", "REQUIRED"]).optional(),
@@ -58,7 +59,12 @@ export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
 export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   const form = await prisma.membershipForm.findFirst({
     where:  { id, associationId: ctx.associationId },
-    select: { id: true, title: true, status: true, visibility: true, siteSectionId: true, opensAt: true, closesAt: true, conditions: true, attachments: true, requireCguvSignature: true },
+    select: {
+      id: true, title: true, status: true, visibility: true, siteSectionId: true, opensAt: true, closesAt: true,
+      conditions: true, attachments: true, requireCguvSignature: true, fieldAddress: true, fieldCountry: true,
+      association: { select: { canIssueTaxReceipts: true } },
+      tiers:       { select: { receiptMode: true } },
+    },
   })
   if (!form) return NextResponse.json({ error: "Introuvable" }, { status: 404 })
 
@@ -92,6 +98,15 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   if (finalVisibility === "SITE" && !finalSiteSectionId)
     return NextResponse.json({ error: "Choisissez une section du site sur laquelle publier ce formulaire." }, { status: 422 })
 
+  // Même garde-fou qu'à la publication (voir publish/route.ts) — un formulaire déjà publié et
+  // qui émet des reçus fiscaux ne doit pas pouvoir se retrouver, par une simple édition de la
+  // matrice de champs, avec l'adresse ou le pays plus obligatoires (FORM-108).
+  const finalFieldAddress = data.fieldAddress !== undefined ? data.fieldAddress : form.fieldAddress
+  const finalFieldCountry = data.fieldCountry !== undefined ? data.fieldCountry : form.fieldCountry
+  if (form.status === "PUBLISHED" && form.association.canIssueTaxReceipts && form.tiers.some(t => t.receiptMode !== "NONE")
+      && (finalFieldAddress !== "REQUIRED" || finalFieldCountry !== "REQUIRED"))
+    return NextResponse.json({ error: "Ce formulaire émet des reçus fiscaux : les champs « Adresse postale » et « Pays de résidence » doivent rester obligatoires." }, { status: 422 })
+
   // Two PUBLISHED forms can't both occupy the same site section — mirrors AssoConnect, where
   // picking a page already bound to another collect isn't allowed either. status here is the
   // form's own (this route never changes it — see /publish for that), so this only fires once
@@ -118,6 +133,7 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
       ...(data.contactPhone         !== undefined ? { contactPhone: data.contactPhone }                    : {}),
       ...(data.validationMode       !== undefined ? { validationMode: data.validationMode }                : {}),
       ...(data.fieldAddress         !== undefined ? { fieldAddress: data.fieldAddress }                    : {}),
+      ...(data.fieldCountry         !== undefined ? { fieldCountry: data.fieldCountry }                    : {}),
       ...(data.fieldBirthDate       !== undefined ? { fieldBirthDate: data.fieldBirthDate }                : {}),
       ...(data.fieldPhone           !== undefined ? { fieldPhone: data.fieldPhone }                        : {}),
       ...(data.fieldMobile          !== undefined ? { fieldMobile: data.fieldMobile }                      : {}),

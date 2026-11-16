@@ -59,7 +59,7 @@
     "complementPlaceholder": "Budynek, piętro, skrzynka…",
     "postalCode": "Kod pocztowy",
     "city": "Miasto",
-    "country": "Kraj",
+    "country": "Kraj zamieszkania",
     "legacyMigratedHint": "Skopiowano ze starego pola adresu — sprawdź, czy nie zawiera już kodu pocztowego i miasta podanych poniżej."
   },
   "auth": {
@@ -1907,7 +1907,8 @@
           },
           "mobileLabel": "Mobilność",
           "birthDateLabel": "Data urodzenia",
-          "genderLabel": "Płeć"
+          "genderLabel": "Płeć",
+          "countryLabel": "Kraj zamieszkania"
         },
         "products": {
           "title": "Produkty",
@@ -3067,7 +3068,8 @@
           "addOption": "Dodaj opcję",
           "removeOption": "Usuń tę opcję",
           "optionsRequiredError": "Każda lista/pole wyboru wymaga co najmniej 2 opcji.",
-          "duplicateOptionsError": "Opcje pola listy/wyboru muszą być unikalne."
+          "duplicateOptionsError": "Opcje pola listy/wyboru muszą być unikalne.",
+          "countryLabel": "Kraj zamieszkania"
         },
         "payment": {
           "title": "Płatność",
@@ -3358,7 +3360,8 @@
           "addOption": "Dodaj opcję",
           "removeOption": "Usuń tę opcję",
           "optionsRequiredError": "Każda lista/pole wyboru wymaga co najmniej 2 opcji.",
-          "duplicateOptionsError": "Opcje pola listy/wyboru muszą być unikalne."
+          "duplicateOptionsError": "Opcje pola listy/wyboru muszą być unikalne.",
+          "countryLabel": "Kraj zamieszkania"
         },
         "payment": {
           "title": "Płatność",

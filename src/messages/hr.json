@@ -59,7 +59,7 @@
     "complementPlaceholder": "Zgrada, kat, poštanski sandučić…",
     "postalCode": "Poštanski broj",
     "city": "Grad",
-    "country": "Država",
+    "country": "Država prebivališta",
     "legacyMigratedHint": "Kopirano iz starog polja adrese — provjerite da već ne sadrži poštanski broj i grad u nastavku."
   },
   "auth": {
@@ -1907,7 +1907,8 @@
           },
           "mobileLabel": "Mobilni",
           "birthDateLabel": "Datum rođenja",
-          "genderLabel": "Spol"
+          "genderLabel": "Spol",
+          "countryLabel": "Zemlja prebivališta"
         },
         "products": {
           "title": "Proizvodi",
@@ -3067,7 +3068,8 @@
           "addOption": "Dodaj opciju",
           "removeOption": "Uklonite ovu opciju",
           "optionsRequiredError": "Svaki popis/polje za izbor zahtijeva barem 2 opcije.",
-          "duplicateOptionsError": "Opcije polja popisa/izbora moraju biti jedinstvene."
+          "duplicateOptionsError": "Opcije polja popisa/izbora moraju biti jedinstvene.",
+          "countryLabel": "Zemlja prebivališta"
         },
         "payment": {
           "title": "Plaćanje",
@@ -3358,7 +3360,8 @@
           "addOption": "Dodaj opciju",
           "removeOption": "Uklonite ovu opciju",
           "optionsRequiredError": "Svaki popis/polje za izbor zahtijeva barem 2 opcije.",
-          "duplicateOptionsError": "Opcije polja popisa/izbora moraju biti jedinstvene."
+          "duplicateOptionsError": "Opcije polja popisa/izbora moraju biti jedinstvene.",
+          "countryLabel": "Zemlja prebivališta"
         },
         "payment": {
           "title": "Plaćanje",
