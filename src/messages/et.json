@@ -1420,7 +1420,7 @@
       "description": "Ühingu varad ja kohustused majandusaasta lõpus.",
       "exerciceLabel": "Harjutus",
       "rubriqueColumnLabel": "Sektsioon",
-      "noPreviousExercice": "-",
+      "noPreviousExercice": "Võrdlust pole saadaval",
       "actif": "Aktiivne",
       "totalActif": "Total Active",
       "passif": "Passiivne",
@@ -1438,7 +1438,15 @@
         "immobilisationsCorporelles": "Materiaalsed kapitalivarad",
         "disponibilites": "Saadavus",
         "fondsPropres": "Õiglus",
-        "dettes": "Võlad"
+        "dettes": "Võlad",
+        "immobilisationsIncorporelles": "Immateriaalsed põhivarad",
+        "immobilisationsFinancieres": "Finantspõhivara",
+        "chargesConstateesDavance": "Ettemakstud kulud",
+        "provisions": "Reservid",
+        "produitsConstatesDavance": "Edasilükatud tulu",
+        "creances": "Nõuded",
+        "stocksEtEnCours": "Inventar",
+        "fondsDedies": "Piiratud vahendid"
       },
       "issues": {
         "title": "Anomaaliad tuvastatud",
@@ -1446,12 +1454,48 @@
           "ACCOUNT_WITHOUT_RUBRIQUE": "Konto {code} — {label} omab saldo, kuid see ei ole seotud ühegi bilansiaruandega.",
           "ACTIF_PASSIF_MISMATCH": "Vara ({actif}) ei vasta kohustusele ({passif}).",
           "OPENING_BALANCE_MISSING": "Selle harjutuse jaoks ei genereeritud avakirjeid \"{previousLabel}\" kaudu.",
-          "TRIAL_BALANCE_UNBALANCED": "Kogu deebetsumma ({debit}) ei ühti selle majandusaasta kogukrediidiga ({credit})."
+          "TRIAL_BALANCE_UNBALANCED": "Kogu deebetsumma ({debit}) ei ühti selle majandusaasta kogukrediidiga ({credit}).",
+          "RESULT_DIVERGENCE": "Päeviku ({journal}) tulemus erineb kasumiaruande ({statement}) omast — päevik ei pruugi veel selle majandusaasta jaoks ajakohane olla (sulge majandusaasta või alusta sünkroniseerimist uuesti)."
         }
       },
       "accountLabels": {
         "reportANouveau": "Jaotamata kasum",
-        "resultatExercice": "Aasta puhaskasum"
+        "resultatExercice": "Aasta puhaskasum",
+        "creancesCotisations": "Tasumata liikmemaksud",
+        "creancesFactures": "Tasumata arved",
+        "stocksEstimatedValue": "Hinnanguline laoseisu väärtus",
+        "creancesFacturesEnRetard": "Hilinenud arved"
+      },
+      "exportPdf": "Ekspordi PDF",
+      "exportDisabledTooltip": "Lõplikku bilanssi ei saa eksportida enne, kui ülaltoodud anomaaliad on parandatud.",
+      "pdf": {
+        "periodLabel": "Periood {start} – {end}"
+      },
+      "drillDown": {
+        "date": "Kuupäev",
+        "label": "Silt",
+        "origin": "Päritolu",
+        "debit": "Deebet",
+        "credit": "Krediit",
+        "noLines": "Sellel kontol pole kirjeid.",
+        "sourceTypes": {
+          "INCOME": "Tulu",
+          "INCOME_REVERSAL": "Tulu pööramine",
+          "EXPENSE": "Kulud",
+          "EXPENSE_REVERSAL": "Kulude pööramine",
+          "BANK_TRANSACTION": "Pangatehing",
+          "ACCOUNT_TRANSFER": "Sisemine ülekandmine",
+          "OPENING_BALANCE": "Avasaldo",
+          "IMMOBILISATION_DEPRECIATION": "Amortisatsioon",
+          "IMMOBILISATION_ACQUISITION": "Varade omandamine",
+          "FACTURE_RECUE_PAYMENT": "Tarnija maksmine",
+          "MANUAL": "Käsitsi sisenemine"
+        }
+      },
+      "memoNotice": "Hinnang — ei ole pearaamatus registreeritud, välja arvatud kogu varadest.",
+      "memoNoHistory": "Ajaloolisi andmeid pole",
+      "caveats": {
+        "stocksMissingCostPrice": "{count} variandid, millel ostukulu ei ole registreeritud, hinnangust välja jäetud"
       }
     }
   },
@@ -2672,7 +2716,8 @@
         "nameRequired": "Nimi on vajalik",
         "atLeastOneVariant": "Vähemalt üks variant on vajalik",
         "variantLabelRequired": "Igal variandil peab olema silt"
-      }
+      },
+      "costPriceColumn": "Omahind"
     },
     "view": {
       "title": "Pood",

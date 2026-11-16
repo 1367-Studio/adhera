@@ -2891,6 +2891,11 @@ model BoutiqueVariante {
   produitId   String
   label       String
   price       Int
+  // Coût d'achat unitaire (centimes), distinct de `price` (prix de vente) — alimente
+  // l'estimation "Stocks et en-cours" du Bilan (FORM-107, rubricas restantes). Null pour les
+  // variantes créées avant ce champ : traité comme 0 dans ce calcul plutôt que de bloquer quoi
+  // que ce soit — voir bilan.ts.
+  costPrice   Int?
   stock       Int      @default(0)
   // Quand shippable = true, weightGrams est obligatoire (validé côté API) — utilisé pour
   // calculer le poids total du colis lors de la cotation de frais de livraison Sendcloud.

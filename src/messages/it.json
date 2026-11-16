@@ -1420,7 +1420,7 @@
       "description": "Beni e passività dell'associazione alla fine dell'anno finanziario.",
       "exerciceLabel": "Esercizio",
       "rubriqueColumnLabel": "Sezione",
-      "noPreviousExercice": "-",
+      "noPreviousExercice": "Non è disponibile un comparativo",
       "actif": "Attivo",
       "totalActif": "Totale Attivo",
       "passif": "Passivo",
@@ -1438,7 +1438,15 @@
         "immobilisationsCorporelles": "Beni di capitale tangibile",
         "disponibilites": "Disponibilità",
         "fondsPropres": "Equity",
-        "dettes": "Debiti"
+        "dettes": "Debiti",
+        "immobilisationsIncorporelles": "Immobilizzazioni immateriali",
+        "immobilisationsFinancieres": "Beni fissi finanziari",
+        "chargesConstateesDavance": "Spese prepagate",
+        "provisions": "Accantonamenti",
+        "produitsConstatesDavance": "Reddito differito",
+        "creances": "Crediti",
+        "stocksEtEnCours": "Inventario",
+        "fondsDedies": "Fondi a restrizioni"
       },
       "issues": {
         "title": "Anomalie rilevate",
@@ -1446,12 +1454,48 @@
           "ACCOUNT_WITHOUT_RUBRIQUE": "Il {code} del conto — {label} ha un saldo ma non è collegato a nessuna voce del bilancio.",
           "ACTIF_PASSIF_MISMATCH": "L'asset ({actif}) non corrisponde alla passività ({passif}).",
           "OPENING_BALANCE_MISSING": "Non sono state generate voci di apertura per questo esercizio da \"{previousLabel}\".",
-          "TRIAL_BALANCE_UNBALANCED": "Il debito totale ({debit}) non corrisponde al credito totale ({credit}) per questo anno fiscale."
+          "TRIAL_BALANCE_UNBALANCED": "Il debito totale ({debit}) non corrisponde al credito totale ({credit}) per questo anno fiscale.",
+          "RESULT_DIVERGENCE": "Il risultato del journal ({journal}) differisce da quello del conto economico ({statement}) — il journal potrebbe non essere ancora aggiornato per questo anno fiscale (chiudere l'anno fiscale o riavviare la sincronizzazione)."
         }
       },
       "accountLabels": {
         "reportANouveau": "Utili portati a nuovo",
-        "resultatExercice": "Reddito netto per l'anno"
+        "resultatExercice": "Reddito netto per l'anno",
+        "creancesCotisations": "Quote associative residue",
+        "creancesFactures": "Fatture in sospeso",
+        "stocksEstimatedValue": "Valore stimato dell'inventario",
+        "creancesFacturesEnRetard": "Fatture scadute"
+      },
+      "exportPdf": "Esporta PDF",
+      "exportDisabledTooltip": "Impossibile esportare un bilancio finale finché le anomalie sopra riportate non saranno risolte.",
+      "pdf": {
+        "periodLabel": "Periodo dal {start} al {end}"
+      },
+      "drillDown": {
+        "date": "Data",
+        "label": "Etichetta",
+        "origin": "Origine",
+        "debit": "Addebito",
+        "credit": "Credito",
+        "noLines": "Nessuna voce per questo account.",
+        "sourceTypes": {
+          "INCOME": "Reddito",
+          "INCOME_REVERSAL": "Inversione del reddito",
+          "EXPENSE": "Spese",
+          "EXPENSE_REVERSAL": "Inversione delle spese",
+          "BANK_TRANSACTION": "Transazione bancaria",
+          "ACCOUNT_TRANSFER": "Trasferimento interno",
+          "OPENING_BALANCE": "Saldo iniziale",
+          "IMMOBILISATION_DEPRECIATION": "Ammortamento",
+          "IMMOBILISATION_ACQUISITION": "Acquisizione di beni",
+          "FACTURE_RECUE_PAYMENT": "Pagamento al fornitore",
+          "MANUAL": "Inserimento manuale"
+        }
+      },
+      "memoNotice": "Stima — non registrata nel registro, esclusa dal totale degli asset.",
+      "memoNoHistory": "Nessun dato storico",
+      "caveats": {
+        "stocksMissingCostPrice": "{count} varianti senza costo di acquisto registrato, escluse dalla stima"
       }
     }
   },
@@ -2672,7 +2716,8 @@
         "nameRequired": "Il nome è richiesto",
         "atLeastOneVariant": "È richiesta almeno una variante",
         "variantLabelRequired": "Ogni variante deve avere un'etichetta"
-      }
+      },
+      "costPriceColumn": "Costo"
     },
     "view": {
       "title": "Negozio",

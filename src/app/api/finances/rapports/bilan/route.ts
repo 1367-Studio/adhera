@@ -3,7 +3,7 @@ import { prisma } from "@/lib/prisma/client"
 import { withAdminAuth } from "@/lib/api-wrapper"
 import { computeBilanPeriod } from "@/lib/finance/bilan"
 import { findPreviousExercice } from "@/lib/finance/income-statement"
-import { validateOpeningBalance, validateTrialBalance } from "@/lib/finance/journal/validate-journal"
+import { validateOpeningBalance, validateTrialBalance, validateResultDivergence } from "@/lib/finance/journal/validate-journal"
 
 // ?exerciceId — defaults to the most recent exercice when omitted, same contract as
 // /api/finances/rapports/compte-resultat.
@@ -26,12 +26,16 @@ export const GET = withAdminAuth(async (req, ctx) => {
     : exercices[exercices.length - 1]
 
   const previous = findPreviousExercice(exercices, current)
+  // Créances/Stocks (FORM-107 Grupo B) are "right now" snapshots with no historical trail —
+  // only show them next to the association's chronologically latest exercice, never a past one.
+  const isLatestExercice = current.id === exercices[exercices.length - 1].id
 
-  const [currentPeriod, previousPeriod, openingIssues, trialBalanceIssues] = await Promise.all([
-    computeBilanPeriod(associationId, current),
+  const [currentPeriod, previousPeriod, openingIssues, trialBalanceIssues, resultDivergenceIssues] = await Promise.all([
+    computeBilanPeriod(associationId, current, { includeMemo: isLatestExercice }),
     computeBilanPeriod(associationId, previous),
     validateOpeningBalance(associationId, current.id),
     validateTrialBalance(associationId, current.id),
+    validateResultDivergence(associationId, current.id),
   ])
   // A Bilan with a missing opening entry (or an unbalanced trial balance, which should never
   // happen by construction — see postJournalEntry — but is checked anyway as a defense against
@@ -39,7 +43,7 @@ export const GET = withAdminAuth(async (req, ctx) => {
   // just silently missing the same prior-exercice baseline. Surface it as a real issue on the
   // period being shown instead of leaving it only reachable via validateJournalForExercice,
   // which nothing currently calls.
-  currentPeriod.issues = [...currentPeriod.issues, ...openingIssues, ...trialBalanceIssues]
+  currentPeriod.issues = [...currentPeriod.issues, ...openingIssues, ...trialBalanceIssues, ...resultDivergenceIssues]
 
   return NextResponse.json({
     exercices: exercices.map(e => ({ id: e.id, label: e.label, startDate: e.startDate, endDate: e.endDate })),

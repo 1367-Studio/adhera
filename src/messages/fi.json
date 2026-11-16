@@ -1420,7 +1420,7 @@
       "description": "Yhdistyksen varat ja velat tilikauden lopussa.",
       "exerciceLabel": "Harjoitus",
       "rubriqueColumnLabel": "Osasto",
-      "noPreviousExercice": "-",
+      "noPreviousExercice": "Vertailutietoa ei ole saatavilla",
       "actif": "Aktiivinen",
       "totalActif": "Total Active",
       "passif": "Passiivinen",
@@ -1438,7 +1438,15 @@
         "immobilisationsCorporelles": "Aineelliset pääomavarat",
         "disponibilites": "Saatavuus",
         "fondsPropres": "Oma pääoma",
-        "dettes": "Velat"
+        "dettes": "Velat",
+        "immobilisationsIncorporelles": "Aineettomat kiinteät omaisuuserät",
+        "immobilisationsFinancieres": "Rahoituskiinteät varat",
+        "chargesConstateesDavance": "Ennakkoon maksetut kulut",
+        "provisions": "Varaukset",
+        "produitsConstatesDavance": "Lykätty tulo",
+        "creances": "Saatavuudet",
+        "stocksEtEnCours": "Varasto",
+        "fondsDedies": "Rajoitetut varat"
       },
       "issues": {
         "title": "Poikkeavuuksia havaittu",
@@ -1446,12 +1454,48 @@
           "ACCOUNT_WITHOUT_RUBRIQUE": "Tilillä {code} — {label} on saldo, mutta se ei ole sidottu mihinkään taseen erään.",
           "ACTIF_PASSIF_MISMATCH": "Omaisuuserä ({actif}) ei vastaa velkaa ({passif}).",
           "OPENING_BALANCE_MISSING": "Tälle harjoitukselle ei tuotettu aloitusmerkintöjä \"{previousLabel}\":sta.",
-          "TRIAL_BALANCE_UNBALANCED": "Kokonaisdebet ({debit}) ei vastaa tämän tilikauden kokonaisluottoa ({credit})."
+          "TRIAL_BALANCE_UNBALANCED": "Kokonaisdebet ({debit}) ei vastaa tämän tilikauden kokonaisluottoa ({credit}).",
+          "RESULT_DIVERGENCE": "Päiväkirjan ({journal}) tulos poikkeaa tuloslaskelman ({statement}) tuloksesta — päiväkirja ei välttämättä ole vielä ajan tasalla tälle tilikaudelle (sulje tilivuosi tai aloita synkronointi uudelleen)."
         }
       },
       "accountLabels": {
         "reportANouveau": "Kertyneet tulokset",
-        "resultatExercice": "Vuoden nettotulos"
+        "resultatExercice": "Vuoden nettotulos",
+        "creancesCotisations": "Maksamattomat jäsenmaksut",
+        "creancesFactures": "Maksamattomia laskuja",
+        "stocksEstimatedValue": "Arvioitu varaston arvo",
+        "creancesFacturesEnRetard": "Myöhästyneet laskut"
+      },
+      "exportPdf": "Vie PDF",
+      "exportDisabledTooltip": "Lopullista taseraporttia ei voi viedä ennen kuin yllä mainitut poikkeamat on korjattu.",
+      "pdf": {
+        "periodLabel": "Ajanjakso {start}–{end}"
+      },
+      "drillDown": {
+        "date": "Päivämäärä",
+        "label": "Etiketti",
+        "origin": "Alkuperä",
+        "debit": "Debit",
+        "credit": "Luotto",
+        "noLines": "Tälle tilille ei ole merkintöjä.",
+        "sourceTypes": {
+          "INCOME": "Tulot",
+          "INCOME_REVERSAL": "Tulojen kääntyminen",
+          "EXPENSE": "Kustannukset",
+          "EXPENSE_REVERSAL": "Kulujen kääntäminen",
+          "BANK_TRANSACTION": "Pankkitapahtuma",
+          "ACCOUNT_TRANSFER": "Sisäinen siirto",
+          "OPENING_BALANCE": "Avaussaldo",
+          "IMMOBILISATION_DEPRECIATION": "Arvon aleneminen",
+          "IMMOBILISATION_ACQUISITION": "Omaisuuden hankinta",
+          "FACTURE_RECUE_PAYMENT": "Toimittajan maksu",
+          "MANUAL": "Manuaalinen syöttö"
+        }
+      },
+      "memoNotice": "Arvio — ei kirjattu tilikirjaan, poissuljettu kokonaisvaroista.",
+      "memoNoHistory": "Ei historiallista tietoa",
+      "caveats": {
+        "stocksMissingCostPrice": "{count} variantit, joilla ei ole ostokustannuksia kirjattu, poistettu arviosta"
       }
     }
   },
@@ -2672,7 +2716,8 @@
         "nameRequired": "Nimi vaaditaan",
         "atLeastOneVariant": "Vähintään yksi variantti vaaditaan",
         "variantLabelRequired": "Jokaisella variantilla täytyy olla oma tunniste"
-      }
+      },
+      "costPriceColumn": "Kustannus"
     },
     "view": {
       "title": "Kauppa",

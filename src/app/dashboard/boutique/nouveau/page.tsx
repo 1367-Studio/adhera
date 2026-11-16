@@ -16,10 +16,10 @@ import { SelectField } from "@/components/ui/select-field"
 import { useFinanceCategories } from "@/hooks/use-finance-categories"
 import { useHasAccess } from "@/lib/user-context"
 
-type VarianteRow = { _key: string; label: string; price: number; stock: string; shippable: boolean; weightGrams: string }
+type VarianteRow = { _key: string; label: string; price: number; costPrice: number; stock: string; shippable: boolean; weightGrams: string }
 
 function newVariante(): VarianteRow {
-  return { _key: crypto.randomUUID(), label: "", price: 0, stock: "0", shippable: false, weightGrams: "" }
+  return { _key: crypto.randomUUID(), label: "", price: 0, costPrice: 0, stock: "0", shippable: false, weightGrams: "" }
 }
 
 // FORM-34: creating a product needs "boutique" edit — a "read" user who lands here by URL
@@ -65,6 +65,7 @@ function NouveauProduitForm() {
       const parsed = variantes.map(v => ({
         label:       v.label.trim(),
         price:       Math.round(v.price * 100),
+        costPrice:   v.costPrice > 0 ? Math.round(v.costPrice * 100) : undefined,
         stock:       parseInt(v.stock, 10) || 0,
         shippable:   v.shippable,
         weightGrams: v.shippable ? parseInt(v.weightGrams, 10) || undefined : undefined,
@@ -193,9 +194,10 @@ function NouveauProduitForm() {
             </h2>
 
             <div className="space-y-2">
-              <div className="grid grid-cols-[1fr_130px_70px_60px_90px_32px] gap-2 px-1">
+              <div className="grid grid-cols-[1fr_120px_120px_70px_60px_90px_32px] gap-2 px-1">
                 <p className="text-xs text-muted-foreground font-medium">{t("form.variantLabelColumn")}</p>
                 <p className="text-xs text-muted-foreground font-medium">{t("form.priceColumn")}</p>
+                <p className="text-xs text-muted-foreground font-medium">{t("form.costPriceColumn")}</p>
                 <p className="text-xs text-muted-foreground font-medium">{t("form.stockColumn")}</p>
                 <p className="text-xs text-muted-foreground font-medium text-center">{t("form.shippableColumn")}</p>
                 <p className="text-xs text-muted-foreground font-medium">{t("form.weightColumn")}</p>
@@ -203,7 +205,7 @@ function NouveauProduitForm() {
               </div>
 
               {variantes.map(v => (
-                <div key={v._key} className="grid grid-cols-[1fr_130px_70px_60px_90px_32px] gap-2 items-center">
+                <div key={v._key} className="grid grid-cols-[1fr_120px_120px_70px_60px_90px_32px] gap-2 items-center">
                   <Input
                     className="h-9"
                     placeholder={t("form.variantLabelPlaceholder")}
@@ -213,6 +215,10 @@ function NouveauProduitForm() {
                   <CurrencyInput
                     value={v.price}
                     onChange={euros => updateVariante(v._key, "price", euros)}
+                  />
+                  <CurrencyInput
+                    value={v.costPrice}
+                    onChange={euros => updateVariante(v._key, "costPrice", euros)}
                   />
                   <Input
                     className="h-9"

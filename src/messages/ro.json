@@ -1420,7 +1420,7 @@
       "description": "Active și pasive ale asociației la sfârșitul anului financiar.",
       "exerciceLabel": "Exercițiu",
       "rubriqueColumnLabel": "Secțiune",
-      "noPreviousExercice": "-",
+      "noPreviousExercice": "Nu există o comparație disponibilă",
       "actif": "Activitate",
       "totalActif": "Total Activ",
       "passif": "Pasiv",
@@ -1438,7 +1438,15 @@
         "immobilisationsCorporelles": "Active de capital tangibil",
         "disponibilites": "Disponibilitate",
         "fondsPropres": "Acțiuni",
-        "dettes": "Datorii"
+        "dettes": "Datorii",
+        "immobilisationsIncorporelles": "Active fixe intangibile",
+        "immobilisationsFinancieres": "Active fixe financiare",
+        "chargesConstateesDavance": "Cheltuieli plătite în avans",
+        "provisions": "Provizioane",
+        "produitsConstatesDavance": "Venit amânat",
+        "creances": "Creanțe",
+        "stocksEtEnCours": "Inventar",
+        "fondsDedies": "Fonduri restricționate"
       },
       "issues": {
         "title": "Anomalii detectate",
@@ -1446,12 +1454,48 @@
           "ACCOUNT_WITHOUT_RUBRIQUE": "Contul {code} — {label} are un sold, dar nu este atașat niciunui element din Bilanț.",
           "ACTIF_PASSIF_MISMATCH": "Activul ({actif}) nu corespunde pasivului ({passif}).",
           "OPENING_BALANCE_MISSING": "Nu au fost generate intrări de deschidere pentru acest exercițiu din \"{previousLabel}\".",
-          "TRIAL_BALANCE_UNBALANCED": "Debitul total ({debit}) nu corespunde cu creditul total ({credit}) pentru acest an fiscal."
+          "TRIAL_BALANCE_UNBALANCED": "Debitul total ({debit}) nu corespunde cu creditul total ({credit}) pentru acest an fiscal.",
+          "RESULT_DIVERGENCE": "Rezultatul jurnalului ({journal}) diferă de cel al contului de profit și pierdere ({statement}) — jurnalul poate să nu fie încă actualizat pentru acest exercițiu fiscal (închiderea anului fiscal sau sincronizarea reluată)."
         }
       },
       "accountLabels": {
         "reportANouveau": "Câștiguri reținute",
-        "resultatExercice": "Venit net pentru an"
+        "resultatExercice": "Venit net pentru an",
+        "creancesCotisations": "Taxe restante de membru",
+        "creancesFactures": "Facturi restante",
+        "stocksEstimatedValue": "Valoarea estimată a stocului",
+        "creancesFacturesEnRetard": "Facturi restante"
+      },
+      "exportPdf": "Export PDF",
+      "exportDisabledTooltip": "Nu se poate exporta un Bilanț Final până când anomaliile de mai sus nu sunt corectate.",
+      "pdf": {
+        "periodLabel": "Perioada {start} – {end}"
+      },
+      "drillDown": {
+        "date": "Data",
+        "label": "Etichetă",
+        "origin": "Origine",
+        "debit": "Debit",
+        "credit": "Credit",
+        "noLines": "Nicio înregistrare pentru acest cont.",
+        "sourceTypes": {
+          "INCOME": "Venituri",
+          "INCOME_REVERSAL": "Inversarea veniturilor",
+          "EXPENSE": "Cheltuieli",
+          "EXPENSE_REVERSAL": "Inversarea cheltuielilor",
+          "BANK_TRANSACTION": "Tranzacție bancară",
+          "ACCOUNT_TRANSFER": "Transfer intern",
+          "OPENING_BALANCE": "Balansul de deschidere",
+          "IMMOBILISATION_DEPRECIATION": "Amortizare",
+          "IMMOBILISATION_ACQUISITION": "Achiziția de active",
+          "FACTURE_RECUE_PAYMENT": "Plata furnizorului",
+          "MANUAL": "Intrare manuală"
+        }
+      },
+      "memoNotice": "Estimare — neînregistrată în registru, exclusă din totalul activelor.",
+      "memoNoHistory": "Fără date istorice",
+      "caveats": {
+        "stocksMissingCostPrice": "{count} variante fără cost de achiziție înregistrat, excluse din estimare"
       }
     }
   },
@@ -2672,7 +2716,8 @@
         "nameRequired": "Este necesar numele",
         "atLeastOneVariant": "Este necesară cel puțin o variantă",
         "variantLabelRequired": "Fiecare variantă trebuie să aibă o etichetă"
-      }
+      },
+      "costPriceColumn": "Cost"
     },
     "view": {
       "title": "Magazin",

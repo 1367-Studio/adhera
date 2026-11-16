@@ -1,16 +1,21 @@
 // src/lib/finance/journal/validate-journal.ts
-// Structural health checks on the ledger itself, plus (FORM-107 Fase 4) the richer Bilan
+// Structural health checks on the ledger itself, plus (FORM-107 Fase 4/5) the richer Bilan
 // validation now that the rubrique mapping exists: conta sem rubrica and ativo≠passivo are
 // delegated to computeBilanPeriod itself (bilan.ts), since computing the Bilan and detecting
-// those two conditions are the same pass over the same JournalLine rows. Divergência de
-// resultado (journal result vs. the Compte de résultat's category-based result) is NOT
-// implemented here: the two are expected to genuinely differ once any depreciation has been
-// posted (681110/681120 are real CHARGE postings in the journal, but FinanceSection.IMMOBILISATION
-// is deliberately excluded from computeIncomeStatementPeriod's `result` — see RESULT_SECTIONS in
-// income-statement-shared.ts), so a strict equality check would alarm on expected behavior
-// rather than a real bug. Revisit only if/when the two are meant to be reconciled by design.
+// those two conditions are the same pass over the same JournalLine rows.
+//
+// validateResultDivergence (below) compares the journal's own result against the Compte de
+// résultat's — the two now agree by construction once depreciation is folded into both (see
+// income-statement.ts's dotation line), with one real, expected exception: Income/Expense rows
+// only reach the journal via a write-time hook on a few flows, or via ensurePostedJournalEntries
+// (only ever run at exercice closing or by the backfill script) — see post-income-expense.ts's
+// own doc comment. A still-open exercice whose activity hasn't been caught up yet will
+// genuinely diverge, and that's exactly the condition FORM-107 wants surfaced: don't treat the
+// Bilan as definitive until the journal has caught up (close the exercice, or re-run the
+// backfill script).
 import { prisma } from "@/lib/prisma/client"
 import { computeBilanPeriod } from "@/lib/finance/bilan"
+import { computeIncomeStatementPeriod } from "@/lib/finance/income-statement"
 import type { BilanValidationIssue } from "@/lib/finance/bilan-shared"
 
 // Same code+params shape as BilanValidationIssue (see that type's doc comment) — a caller
@@ -76,11 +81,38 @@ export async function validateBilan(associationId: string, exerciceId: string): 
   return bilan.issues
 }
 
+// Compares the journal's own result for the exercice (computeBilanPeriod's `resultOfPeriod`,
+// the live classe 6/7 fold) against the Compte de résultat's `result` for the same exercice.
+// They're computed from entirely different source tables (JournalLine vs. Income/Expense), so
+// agreement isn't automatic — see this module's doc comment for the one real cause of a
+// legitimate divergence (the journal hasn't caught up with this exercice's activity yet).
+export async function validateResultDivergence(associationId: string, exerciceId: string): Promise<JournalValidationIssue[]> {
+  const exercice = await prisma.exerciceComptable.findUnique({
+    where:  { id: exerciceId },
+    select: { id: true, label: true, startDate: true, endDate: true },
+  })
+  if (!exercice) return []
+
+  const [bilan, statement] = await Promise.all([
+    computeBilanPeriod(associationId, exercice),
+    computeIncomeStatementPeriod(associationId, exercice),
+  ])
+
+  const journalCents    = Math.round(bilan.resultOfPeriod * 100)
+  const statementCents  = Math.round(statement.result * 100)
+  if (journalCents !== statementCents) {
+    const fmt = (cents: number) => (cents / 100).toLocaleString("fr-FR", { style: "currency", currency: "EUR" })
+    return [{ code: "RESULT_DIVERGENCE", params: { journal: fmt(journalCents), statement: fmt(statementCents) } }]
+  }
+  return []
+}
+
 export async function validateJournalForExercice(associationId: string, exerciceId: string): Promise<JournalValidationIssue[]> {
-  const [opening, trialBalance, bilan] = await Promise.all([
+  const [opening, trialBalance, bilan, resultDivergence] = await Promise.all([
     validateOpeningBalance(associationId, exerciceId),
     validateTrialBalance(associationId, exerciceId),
     validateBilan(associationId, exerciceId),
+    validateResultDivergence(associationId, exerciceId),
   ])
-  return [...opening, ...trialBalance, ...bilan]
+  return [...opening, ...trialBalance, ...bilan, ...resultDivergence]
 }

@@ -1420,7 +1420,7 @@
       "description": "Premoženje in obveznosti združenja ob koncu finančnega leta.",
       "exerciceLabel": "Vadba",
       "rubriqueColumnLabel": "Oddelek",
-      "noPreviousExercice": "-",
+      "noPreviousExercice": "Primerjava ni na voljo",
       "actif": "Aktivni",
       "totalActif": "Celotna aktivnost",
       "passif": "Pasivni",
@@ -1438,7 +1438,15 @@
         "immobilisationsCorporelles": "Otipljiva kapitalska sredstva",
         "disponibilites": "Razpoložljivost",
         "fondsPropres": "Pravičnost",
-        "dettes": "Dolgovi"
+        "dettes": "Dolgovi",
+        "immobilisationsIncorporelles": "Neoprijemljiva osnovna sredstva",
+        "immobilisationsFinancieres": "Finančna osnovna sredstva",
+        "chargesConstateesDavance": "Predplačani stroški",
+        "provisions": "Rezervacije",
+        "produitsConstatesDavance": "Odloženi dohodek",
+        "creances": "Terjatve",
+        "stocksEtEnCours": "Inventar",
+        "fondsDedies": "Omejena sredstva"
       },
       "issues": {
         "title": "Zaznane anomalije",
@@ -1446,12 +1454,48 @@
           "ACCOUNT_WITHOUT_RUBRIQUE": "Račun {code} — {label} ima stanje, vendar ni vezan na nobeno postavko bilance stanja.",
           "ACTIF_PASSIF_MISMATCH": "Sredstvo ({actif}) ne ustreza obveznosti ({passif}).",
           "OPENING_BALANCE_MISSING": "Za to vajo iz \"{previousLabel} ni bilo ustvarjenih odprtih vnosov\".",
-          "TRIAL_BALANCE_UNBALANCED": "Skupni bremen ({debit}) se ne ujema s skupnim dobropisom ({credit}) za to fiskalno leto."
+          "TRIAL_BALANCE_UNBALANCED": "Skupni bremen ({debit}) se ne ujema s skupnim dobropisom ({credit}) za to fiskalno leto.",
+          "RESULT_DIVERGENCE": "Rezultat dnevnika ({journal}) se razlikuje od rezultata izkazka poslovnega izida ({statement}) — dnevnik morda še ni posodobljen za to poslovno leto (zaprete fiskalno leto ali ponovno zaženete sinhronizacijo)."
         }
       },
       "accountLabels": {
         "reportANouveau": "Zadržani dobiček",
-        "resultatExercice": "Čisti dobiček za leto"
+        "resultatExercice": "Čisti dobiček za leto",
+        "creancesCotisations": "Neporavnane članarine",
+        "creancesFactures": "Neporavnani računi",
+        "stocksEstimatedValue": "Ocenjena vrednost zalog",
+        "creancesFacturesEnRetard": "Zapadli računi"
+      },
+      "exportPdf": "Izvoz PDF",
+      "exportDisabledTooltip": "Ni mogoče izvoziti končne bilance stanja, dokler zgornje anomalije niso odpravljene.",
+      "pdf": {
+        "periodLabel": "Obdobje od {start} do {end}"
+      },
+      "drillDown": {
+        "date": "Datum",
+        "label": "Oznaka",
+        "origin": "Izvor",
+        "debit": "Debet",
+        "credit": "Kredit",
+        "noLines": "Za ta račun ni vnosov.",
+        "sourceTypes": {
+          "INCOME": "Dohodek",
+          "INCOME_REVERSAL": "Obrat dohodka",
+          "EXPENSE": "Stroški",
+          "EXPENSE_REVERSAL": "Obrat stroškov",
+          "BANK_TRANSACTION": "Bančna transakcija",
+          "ACCOUNT_TRANSFER": "Notranji prenos",
+          "OPENING_BALANCE": "Začetno stanje",
+          "IMMOBILISATION_DEPRECIATION": "Amortizacija",
+          "IMMOBILISATION_ACQUISITION": "Pridobivanje sredstev",
+          "FACTURE_RECUE_PAYMENT": "Plačilo dobaviteljem",
+          "MANUAL": "Ročni vnos"
+        }
+      },
+      "memoNotice": "Ocena — ni zabeležena v knjigi, izključena iz skupnih sredstev.",
+      "memoNoHistory": "Ni zgodovinskih podatkov",
+      "caveats": {
+        "stocksMissingCostPrice": "{count} različic brez zabeleženega nakupnega stroška, izključene iz ocene"
       }
     }
   },
@@ -2672,7 +2716,8 @@
         "nameRequired": "Ime je potrebno",
         "atLeastOneVariant": "Potrebna je vsaj ena različica",
         "variantLabelRequired": "Vsaka različica mora imeti oznako"
-      }
+      },
+      "costPriceColumn": "Stroški"
     },
     "view": {
       "title": "Trgovina",

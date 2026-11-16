@@ -3,11 +3,19 @@
 import { useState } from "react"
 import { useQuery, keepPreviousData } from "@tanstack/react-query"
 import { useTranslations } from "next-intl"
-import { WarningCircleIcon } from "@phosphor-icons/react/dist/ssr"
+import { WarningCircleIcon, DownloadSimpleIcon } from "@phosphor-icons/react/dist/ssr"
 import { PageHeader } from "@/components/ui/page-header"
+import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { EmptyState } from "@/components/ui/empty-state"
-import type { BilanAccountRow, BilanPeriod, BilanRubrique, BilanSideKey } from "@/lib/finance/bilan-shared"
+import type { BilanAccountRow, BilanPeriod, BilanRubrique, BilanSide, BilanSideKey } from "@/lib/finance/bilan-shared"
+import { sanitizeForFilename } from "@/lib/finance/income-statement-shared"
+import { exportBilanPdf, type BilanPdfRow } from "@/lib/pdf/bilan-pdf-client"
+import { JournalLineDrillDownModal, type JournalDrillDown } from "@/components/finances/journal-line-drill-down"
+
+// The virtual "Résultat de l'exercice" fold and the Grupo B memo rows (see computeBilanPeriod)
+// have no real JournalLine rows to drill into — neither is a postable account.
+const NON_DRILLABLE_PREFIXES = ["virtual:", "memo:"]
 
 type ExerciceOption = { id: string; label: string; startDate: string; endDate: string }
 
@@ -45,18 +53,27 @@ function accountLabel(account: BilanAccountRow, t: ReturnType<typeof useTranslat
   return account.code ? `${account.code} — ${account.label}` : account.label
 }
 
-function SideTable({ side, sideKey, previous, hasPrevious, previousYearLabel, currentYearLabel }: {
+// The N-1 column is always rendered — per FORM-107, a missing comparative must say so
+// explicitly ("Comparatif indisponible", already the fallback baked into previousYearLabel),
+// never just vanish as if nothing was ever going to be there.
+function SideTable({ side, sideKey, previous, previousYearLabel, currentYearLabel, onOpenDrillDown }: {
   side:              BilanPeriod["actif"]
   sideKey:           BilanSideKey
   previous:          BilanPeriod | null
-  hasPrevious:       boolean
   previousYearLabel: string | undefined
   currentYearLabel:  string | undefined
+  onOpenDrillDown:   (account: BilanAccountRow) => void
 }) {
   const t = useTranslations("finances.bilan")
   const titleKey = sideKey === "ACTIF" ? "actif" : "passif"
   const totalKey = sideKey === "ACTIF" ? "totalActif" : "totalPassif"
   const previousSide = previous ? (sideKey === "ACTIF" ? previous.actif : previous.passif) : null
+
+  // Memo rubriques (Créances, Stocks — see ComputeBilanOptions) render after the real total,
+  // behind a divider and a fixed notice, so "Total actif" never silently includes a figure
+  // that isn't actually in the ledger.
+  const journalRubriques = side.rubriques.filter(r => !r.isMemo)
+  const memoRubriques    = side.rubriques.filter(r => r.isMemo && r.accounts.length > 0)
 
   return (
     <div className="min-w-0">
@@ -67,27 +84,38 @@ function SideTable({ side, sideKey, previous, hasPrevious, previousYearLabel, cu
             <tr className="border-b bg-muted/40">
               <th className="py-2 pl-4 pr-3 text-left font-medium text-muted-foreground">{t("rubriqueColumnLabel")}</th>
               <th className="py-2 px-3 text-right font-medium text-muted-foreground w-32">{currentYearLabel}</th>
-              {hasPrevious && (
-                <th className="py-2 pr-4 pl-3 text-right font-medium text-muted-foreground w-32">{previousYearLabel}</th>
-              )}
+              <th className="py-2 pr-4 pl-3 text-right font-medium text-muted-foreground w-32">{previousYearLabel}</th>
             </tr>
           </thead>
           <tbody>
-            {side.rubriques.map(rubrique => (
+            {journalRubriques.map(rubrique => (
               <RubriqueBlock
                 key={rubrique.key}
                 rubrique={rubrique}
                 previousRubrique={previousRubriqueFor(previous, sideKey, rubrique.key)}
-                hasPrevious={hasPrevious}
+                onOpenDrillDown={onOpenDrillDown}
               />
             ))}
             <tr className="border-t-2 border-foreground/20">
               <td className="py-2 pl-4 pr-3 font-semibold">{t(totalKey)}</td>
               <td className="py-2 px-3 text-right font-semibold tabular-nums">{fmt(side.total)}</td>
-              {hasPrevious && (
-                <td className="py-2 pr-4 pl-3 text-right font-semibold tabular-nums text-muted-foreground">{fmt(previousSide?.total ?? 0)}</td>
-              )}
+              <td className="py-2 pr-4 pl-3 text-right font-semibold tabular-nums text-muted-foreground">{previousSide ? fmt(previousSide.total) : ""}</td>
             </tr>
+            {memoRubriques.length > 0 && (
+              <tr className="border-t border-dashed">
+                <td colSpan={3} className="pt-3 pb-1 pl-4 text-xs italic text-muted-foreground">
+                  {t("memoNotice")}
+                </td>
+              </tr>
+            )}
+            {memoRubriques.map(rubrique => (
+              <RubriqueBlock
+                key={rubrique.key}
+                rubrique={rubrique}
+                previousRubrique={null}
+                onOpenDrillDown={onOpenDrillDown}
+              />
+            ))}
           </tbody>
         </table>
       </div>
@@ -95,39 +123,55 @@ function SideTable({ side, sideKey, previous, hasPrevious, previousYearLabel, cu
   )
 }
 
-function RubriqueBlock({ rubrique, previousRubrique, hasPrevious }: {
+function RubriqueBlock({ rubrique, previousRubrique, onOpenDrillDown }: {
   rubrique:         BilanRubrique
   previousRubrique: BilanRubrique | null
-  hasPrevious:      boolean
+  onOpenDrillDown:  (account: BilanAccountRow) => void
 }) {
   const t = useTranslations("finances.bilan")
   const previousTotal = previousRubrique?.total ?? 0
   if (rubrique.accounts.length === 0 && previousTotal === 0) return null
 
   const previousByAccountId = new Map((previousRubrique?.accounts ?? []).map(a => [a.chartAccountId, a.amount]))
+  // Memo rubriques (Créances, Stocks) never carry a previous-period figure — they're a live
+  // snapshot with no historical trail (see ComputeBilanOptions) — so a blank N-1 cell here
+  // would read as missing data next to a header that otherwise shows a real prior exercice.
+  // Say so explicitly instead of leaving it blank.
+  const previousCell = (value: number | undefined) => {
+    if (rubrique.isMemo) return <span className="italic text-muted-foreground/60">{t("memoNoHistory")}</span>
+    return value !== undefined ? fmt(value) : ""
+  }
 
   return (
     <>
       <tr className="border-b">
-        <td colSpan={hasPrevious ? 3 : 2} className="pt-3 pb-1 pl-4">
+        <td colSpan={3} className="pt-3 pb-1 pl-4">
           <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
             {t(`rubriques.${rubrique.key}`)}
           </div>
         </td>
       </tr>
-      {rubrique.accounts.length > 0 ? rubrique.accounts.map(account => (
-        <tr key={account.chartAccountId} className="border-b last:border-0">
-          <td className="py-1.5 pl-4 pr-3 text-muted-foreground">{accountLabel(account, t)}</td>
-          <td className="py-1.5 px-3 text-right tabular-nums">{fmt(account.amount)}</td>
-          {hasPrevious && (
+      {rubrique.accounts.length > 0 ? rubrique.accounts.map(account => {
+        const clickable = !NON_DRILLABLE_PREFIXES.some(p => account.chartAccountId.startsWith(p))
+        return (
+          <tr
+            key={account.chartAccountId}
+            className={`border-b last:border-0 ${clickable ? "cursor-pointer hover:bg-muted/40" : ""}`}
+            role={clickable ? "button" : undefined}
+            tabIndex={clickable ? 0 : undefined}
+            onClick={clickable ? () => onOpenDrillDown(account) : undefined}
+            onKeyDown={clickable ? (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onOpenDrillDown(account) } } : undefined}
+          >
+            <td className="py-1.5 pl-4 pr-3 text-muted-foreground">{accountLabel(account, t)}</td>
+            <td className="py-1.5 px-3 text-right tabular-nums">{fmt(account.amount)}</td>
             <td className="py-1.5 pr-4 pl-3 text-right tabular-nums text-muted-foreground">
-              {previousByAccountId.has(account.chartAccountId) ? fmt(previousByAccountId.get(account.chartAccountId)!) : ""}
+              {previousCell(previousByAccountId.get(account.chartAccountId))}
             </td>
-          )}
-        </tr>
-      )) : (
+          </tr>
+        )
+      }) : (
         <tr className="border-b last:border-0">
-          <td colSpan={hasPrevious ? 3 : 2} className="py-2 pl-4 text-xs text-muted-foreground italic">
+          <td colSpan={3} className="py-2 pl-4 text-xs text-muted-foreground italic">
             {t("noAccountsInRubrique")}
           </td>
         </tr>
@@ -135,17 +179,67 @@ function RubriqueBlock({ rubrique, previousRubrique, hasPrevious }: {
       <tr className="border-b last:border-0">
         <td className="py-1.5 pl-4 pr-3 text-sm font-medium">{t(`rubriques.${rubrique.key}`)}</td>
         <td className="py-1.5 px-3 text-right text-sm font-medium tabular-nums">{fmt(rubrique.total)}</td>
-        {hasPrevious && (
-          <td className="py-1.5 pr-4 pl-3 text-right text-sm font-medium tabular-nums text-muted-foreground">{fmt(previousTotal)}</td>
-        )}
+        <td className="py-1.5 pr-4 pl-3 text-right text-sm font-medium tabular-nums text-muted-foreground">
+          {previousCell(previousRubrique ? previousTotal : undefined)}
+        </td>
       </tr>
+      {rubrique.caveat && (
+        <tr className="border-b last:border-0">
+          <td colSpan={3} className="py-1 pl-4 pr-3 text-xs italic text-muted-foreground">
+            {t(`caveats.${rubrique.caveat.labelKey}`, { count: rubrique.caveat.count })}
+          </td>
+        </tr>
+      )}
     </>
   )
+}
+
+// Mirrors RubriqueBlock's own render/skip rules exactly — the PDF must show the same rubriques,
+// accounts and totals as the screen (FORM-107's "le PDF et la tela usam o mesmo cálculo").
+function buildPdfRows(side: BilanSide, previousSide: BilanSide | null, t: ReturnType<typeof useTranslations>, totalLabel: string): BilanPdfRow[] {
+  const rows: BilanPdfRow[] = []
+
+  function pushRubrique(rubrique: BilanSide["rubriques"][number]) {
+    // Memo rubriques (Créances, Stocks) structurally exist on every period's BilanSide (just
+    // empty on past ones — see computeBilanPeriod), so a plain lookup here would find an
+    // empty-but-present rubrique and print "0,00 €" for the prior exercice — unlike the screen,
+    // which deliberately shows no prior-period figure for them at all (see RubriqueBlock).
+    // Force the same null here so the PDF and the screen never disagree.
+    const previousRubrique = rubrique.isMemo ? null : (previousSide?.rubriques.find(r => r.key === rubrique.key) ?? null)
+    const previousTotal = previousRubrique?.total ?? 0
+    if (rubrique.accounts.length === 0 && previousTotal === 0) return
+
+    const previousByAccountId = new Map((previousRubrique?.accounts ?? []).map(a => [a.chartAccountId, a.amount]))
+    const rubriqueLabel = t(`rubriques.${rubrique.key}`)
+    rows.push({ label: rubriqueLabel, current: null, previous: null, bold: true })
+    for (const account of rubrique.accounts) {
+      rows.push({
+        label:    accountLabel(account, t),
+        current:  account.amount,
+        previous: previousByAccountId.has(account.chartAccountId) ? previousByAccountId.get(account.chartAccountId)! : null,
+      })
+    }
+    rows.push({ label: rubriqueLabel, current: rubrique.total, previous: previousRubrique ? previousTotal : null, bold: true })
+    if (rubrique.caveat) {
+      rows.push({ label: t(`caveats.${rubrique.caveat.labelKey}`, { count: rubrique.caveat.count }), current: null, previous: null })
+    }
+  }
+
+  const journalRubriques = side.rubriques.filter(r => !r.isMemo)
+  const memoRubriques    = side.rubriques.filter(r => r.isMemo && r.accounts.length > 0)
+  journalRubriques.forEach(pushRubrique)
+  rows.push({ label: totalLabel, current: side.total, previous: previousSide ? previousSide.total : null, bold: true })
+  if (memoRubriques.length > 0) {
+    rows.push({ label: t("memoNotice"), current: null, previous: null })
+    memoRubriques.forEach(pushRubrique)
+  }
+  return rows
 }
 
 export function BilanView() {
   const t = useTranslations("finances.bilan")
   const [exerciceId, setExerciceId] = useState("")
+  const [drillDown, setDrillDown] = useState<JournalDrillDown | null>(null)
 
   const { data, isLoading } = useQuery({
     queryKey: ["bilan", exerciceId],
@@ -161,19 +255,50 @@ export function BilanView() {
   const selectedExerciceId = exerciceId || current?.exercice?.id || ""
   const selectedExercice   = exercices.find(e => e.id === selectedExerciceId)
 
-  const hasPrevious   = Boolean(previous?.exercice)
-  const previousLabel = previous?.exercice?.label ?? t("noPreviousExercice")
-
   const currentYearLabel  = selectedExercice?.label
-  const previousYearLabel = previous?.exercice?.label ?? previousLabel
+  const previousYearLabel = previous?.exercice?.label ?? t("noPreviousExercice")
 
   const noExercice = !isLoading && exercices.length === 0
+  // Memo rubriques (Créances, Stocks) count too — they're real, useful information even on an
+  // exercice that has nothing journalized yet (see computeBilanPeriod/ComputeBilanOptions).
   const hasLedgerActivity = Boolean(
     current && (current.actif.rubriques.some(r => r.accounts.length > 0) || current.passif.rubriques.some(r => r.accounts.length > 0)),
   )
   const periodRange = selectedExercice
     ? `${fmtExerciceDate(selectedExercice.startDate)} → ${fmtExerciceDate(selectedExercice.endDate)}`
     : null
+
+  // Exporting IS the "validate as definitive" action FORM-107 asks for — there's no separate
+  // persisted Bilan record to lock, so the gate is simply: don't let a treasurer walk away with
+  // a PDF of a Bilan that has unresolved issues (missing opening entry, account without a
+  // rubrique, actif≠passif, or a result divergence). The draft itself — this screen, with its
+  // warning banner — stays visible either way.
+  const exportDisabled = !current?.exercice || current.issues.length > 0
+
+  function openDrillDown(account: BilanAccountRow) {
+    if (!current?.exercice) return
+    setDrillDown({ title: accountLabel(account, t), chartAccountId: account.chartAccountId, exerciceId: current.exercice.id })
+  }
+
+  function exportPdf() {
+    if (!current?.exercice) return
+    const periodLabel = t("pdf.periodLabel", {
+      start: fmtExerciceDate(current.exercice.startDate),
+      end:   fmtExerciceDate(current.exercice.endDate),
+    })
+    exportBilanPdf({
+      title:          t("title"),
+      rubriqueLabel:  t("rubriqueColumnLabel"),
+      currentLabel:   currentYearLabel ?? current.exercice.label,
+      previousLabel:  previousYearLabel,
+      actifTitle:     t("actif"),
+      passifTitle:    t("passif"),
+      actifRows:      buildPdfRows(current.actif, previous?.actif ?? null, t, t("totalActif")),
+      passifRows:     buildPdfRows(current.passif, previous?.passif ?? null, t, t("totalPassif")),
+      periodLabel,
+      fileNameSuffix: sanitizeForFilename(current.exercice.label),
+    })
+  }
 
   return (
     <div className="space-y-4">
@@ -183,17 +308,25 @@ export function BilanView() {
         action={
           !noExercice && (
             <div className="flex flex-col gap-1">
-              <Select
-                value={selectedExerciceId}
-                onValueChange={(v) => setExerciceId(v ?? selectedExerciceId)}
-              >
-                <SelectTrigger className="w-44">
-                  <SelectValue>{selectedExercice?.label ?? t("exerciceLabel")}</SelectValue>
-                </SelectTrigger>
-                <SelectContent>
-                  {exercices.map(e => <SelectItem key={e.id} value={e.id}>{e.label}</SelectItem>)}
-                </SelectContent>
-              </Select>
+              <div className="flex items-center gap-2">
+                <Select
+                  value={selectedExerciceId}
+                  onValueChange={(v) => setExerciceId(v ?? selectedExerciceId)}
+                >
+                  <SelectTrigger className="w-44">
+                    <SelectValue>{selectedExercice?.label ?? t("exerciceLabel")}</SelectValue>
+                  </SelectTrigger>
+                  <SelectContent>
+                    {exercices.map(e => <SelectItem key={e.id} value={e.id}>{e.label}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+                <span title={exportDisabled && current ? t("exportDisabledTooltip") : undefined}>
+                  <Button size="sm" variant="outline" disabled={exportDisabled} onClick={exportPdf}>
+                    <DownloadSimpleIcon className="mr-1.5 size-4" />
+                    {t("exportPdf")}
+                  </Button>
+                </span>
+              </div>
               {periodRange && <span className="text-xs text-muted-foreground pl-0.5">{periodRange}</span>}
             </div>
           )
@@ -221,15 +354,19 @@ export function BilanView() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <SideTable
               side={current.actif} sideKey="ACTIF" previous={previous}
-              hasPrevious={hasPrevious} previousYearLabel={previousYearLabel} currentYearLabel={currentYearLabel}
+              previousYearLabel={previousYearLabel} currentYearLabel={currentYearLabel}
+              onOpenDrillDown={openDrillDown}
             />
             <SideTable
               side={current.passif} sideKey="PASSIF" previous={previous}
-              hasPrevious={hasPrevious} previousYearLabel={previousYearLabel} currentYearLabel={currentYearLabel}
+              previousYearLabel={previousYearLabel} currentYearLabel={currentYearLabel}
+              onOpenDrillDown={openDrillDown}
             />
           </div>
         </>
       )}
+
+      <JournalLineDrillDownModal drillDown={drillDown} onClose={() => setDrillDown(null)} />
     </div>
   )
 }

@@ -10,6 +10,7 @@ import { paidSalesItemWhere, productSalesTotals } from "@/lib/boutique/sales-sta
 const varianteSchema = z.object({
   label:       z.string().trim().min(1).max(100),
   price:       z.number().int().min(0),
+  costPrice:   z.number().int().min(0).optional(),
   stock:       z.number().int().min(0).default(0),
   shippable:   z.boolean().default(false),
   weightGrams: z.number().int().positive().optional(),
