@@ -31,13 +31,6 @@ export function evenementHasFee(evenement: Pick<EvenementForTicketPayment, "pric
   return evenement.ticketTypes.length > 0 || (evenement.price != null && Number(evenement.price) > 0)
 }
 
-const INCOME_DESCRIPTION_METHOD_LABEL: Record<EvenementPaymentMethod, string> = {
-  STRIPE:   "carte en ligne",
-  ESPECES:  "espèces",
-  CHEQUE:   "chèque",
-  VIREMENT: "virement",
-}
-
 export async function markParticipationPaid(transaction: TxClient, params: {
   associationId: string
   evenement:     EvenementForTicketPayment
@@ -109,7 +102,7 @@ export async function markParticipationPaid(transaction: TxClient, params: {
       participationId: participation.id,
       amount,
       paymentMethod: method,
-      description:   `Billet (${INCOME_DESCRIPTION_METHOD_LABEL[method]}) — ${evenement.title}${ticketLabel} — ${participation.firstName} ${participation.lastName}`,
+      description:   `Billet — ${evenement.title}${ticketLabel} — ${participation.firstName} ${participation.lastName}`,
       source:        "MANUAL",
       status:        "PAID",
       date:          paidAt,
