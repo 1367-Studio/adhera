@@ -7,12 +7,16 @@ import { useTranslations } from "next-intl"
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
+import { SelectField } from "@/components/ui/select-field"
 import { apiErrorMessage } from "@/lib/api-error"
+
+type AccountingRegime = "ACCRUAL" | "CASH"
 
 type BankData = {
   website: string | null
   iban:    string | null
   bic:     string | null
+  accountingRegime: AccountingRegime
 }
 
 interface BankSettingsProps {
@@ -28,12 +32,14 @@ export function BankSettings({ canEdit, data }: BankSettingsProps) {
   const [website, setWebsite] = useState(data.website ?? "")
   const [iban, setIban]       = useState(data.iban ?? "")
   const [bic, setBic]         = useState(data.bic ?? "")
+  const [accountingRegime, setAccountingRegime] = useState<AccountingRegime>(data.accountingRegime)
   const [dirty, setDirty]     = useState(false)
 
   useEffect(() => {
     setWebsite(data.website ?? "")
     setIban(data.iban ?? "")
     setBic(data.bic ?? "")
+    setAccountingRegime(data.accountingRegime)
     setDirty(false)
   }, [data])
 
@@ -42,7 +48,7 @@ export function BankSettings({ canEdit, data }: BankSettingsProps) {
       const res = await fetch("/api/association/bank", {
         method:  "PATCH",
         headers: { "Content-Type": "application/json" },
-        body:    JSON.stringify({ website, iban, bic }),
+        body:    JSON.stringify({ website, iban, bic, accountingRegime }),
       })
       if (!res.ok) throw new Error(await apiErrorMessage(res, tCommon("error")))
       return res.json() as Promise<BankData>
@@ -51,6 +57,7 @@ export function BankSettings({ canEdit, data }: BankSettingsProps) {
       setWebsite(saved.website ?? "")
       setIban(saved.iban ?? "")
       setBic(saved.bic ?? "")
+      setAccountingRegime(saved.accountingRegime)
       qc.invalidateQueries({ queryKey: ["association"] })
       toast.success(t("toasts.updated"))
       setDirty(false)
@@ -100,6 +107,20 @@ export function BankSettings({ canEdit, data }: BankSettingsProps) {
               className="font-mono text-xs"
             />
           </div>
+        </div>
+
+        <div className="space-y-1">
+          <SelectField
+            label={t("accountingRegime")}
+            disabled={!canEdit}
+            value={accountingRegime}
+            onValueChange={(v) => { setAccountingRegime(v as AccountingRegime); setDirty(true) }}
+            options={[
+              { value: "CASH",    label: t("accountingRegimeCash") },
+              { value: "ACCRUAL", label: t("accountingRegimeAccrual") },
+            ]}
+          />
+          <p className="text-xs text-muted-foreground">{t("accountingRegimeHint")}</p>
         </div>
       </div>
 

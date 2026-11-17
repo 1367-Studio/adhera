@@ -41,6 +41,7 @@
     "location": "Atrašanās vieta",
     "choosePlaceholder": "Izvēlies...",
     "allPlaceholder": "Visi",
+    "noOptionsPlaceholder": "Nav pieejamas iespējas",
     "previousPage": "Iepriekšējā lapa",
     "nextPage": "Nākamā lapa",
     "paginationRange": "{from}–{to} / {total}",
@@ -51,7 +52,7 @@
     "addressPlaceholder": "Salle des fêtes, 12 rue de la Paix, Parīze...",
     "viewOnGoogleMaps": "Skatīt Google Maps",
     "backToSite": "Atpakaļ uz vietni",
-    "noOptionsPlaceholder": "Nav pieejamas iespējas"
+    "period": {}
   },
   "address": {
     "street": "Adrese",
@@ -62,6 +63,7 @@
     "country": "Dzīvesvietas valsts",
     "legacyMigratedHint": "Kopēts no vecā adreses lauka — pārbaudiet, vai tajā jau nav iekļauts zemāk norādītais pasta indekss un pilsēta."
   },
+  "avis": {},
   "auth": {
     "layout": {
       "imageAlt": "Pieslēgties",
@@ -91,7 +93,8 @@
         "connecting": "Pierakstīšanās…",
         "or": "vai",
         "continueWithGoogle": "Turpiniet ar Google"
-      }
+      },
+      "twoFactor": {}
     },
     "register": {
       "pageTitle": "Izveido kontu",
@@ -118,9 +121,6 @@
         "passwordLabel": "Parole",
         "passwordPlaceholder": "Min. 8 varoņi",
         "passwordGoogleHint": "Šai pirmajai konta izveidei izvēlieties paroli. Pēc tam varat pieslēgties Google.",
-        "legalDocsAcceptPrefix": "Esmu izlasījis visu",
-        "legalDocsLinkLabel": "Formwise juridiskie dokumenti",
-        "legalDocsAcceptSuffix": "un es pieņemu pakalpojuma lietošanas noteikumus.",
         "continueToPayment": "Turpiniet norēķināties",
         "perkTrialDays": "{days} Brīvās dienas",
         "perkNoCommitment": "Bez saistībām",
@@ -129,7 +129,10 @@
         "startTrial": "Sāc manu bezmaksas izmēģinājumu",
         "createAccount": "Izveidot kontu",
         "perkNoCard": "Kredītkarte nav nepieciešama",
-        "createAccountError": "Kļūdu radīšanas konts"
+        "createAccountError": "Kļūdu radīšanas konts",
+        "legalDocsAcceptPrefix": "Esmu izlasījis visu",
+        "legalDocsLinkLabel": "Formwise juridiskie dokumenti",
+        "legalDocsAcceptSuffix": "un es pieņemu pakalpojuma lietošanas noteikumus."
       },
       "payment": {
         "paymentError": "Maksājuma kļūda",
@@ -649,13 +652,16 @@
         "enLitige": "Strīdā",
         "annulee": "Atcelts"
       },
-      "unmarkPaidWarning": "Šis dokuments pašlaik ir apmaksāts — šī statusa noņemšana noņems izdevumus, ko tas radīja finansēs, kā arī jebkādu bankas saskaņošanu.",
-      "markPaidNotice": "Atzīmējot šo dokumentu kā apmaksātu, automātiski tiks izveidots atbilstošs izdevums finanšu pārskatos.",
       "file": "Dokuments",
+      "payment": {
+        "toasts": {}
+      },
       "toasts": {
         "uploadError": "Dokumenta augšupielādes kļūda",
         "networkError": "Tīkla kļūdu augšupielāde — mēģiniet vēlreiz"
-      }
+      },
+      "unmarkPaidWarning": "Šis dokuments pašlaik ir apmaksāts — šī statusa noņemšana noņems izdevumus, ko tas radīja finansēs, kā arī jebkādu bankas saskaņošanu.",
+      "markPaidNotice": "Atzīmējot šo dokumentu kā apmaksātu, automātiski tiks izveidots atbilstošs izdevums finanšu pārskatos."
     }
   },
   "dashboard": {
@@ -862,7 +868,8 @@
       "userMenu": {
         "title": "Tavs profils",
         "description": "Rediģē savu profilu, nomaini paroli un izraksties no šīs izvēlnes."
-      }
+      },
+      "help": {}
     }
   },
   "finances": {
@@ -893,9 +900,213 @@
       "title": "Drīzumā",
       "description": "Šī funkcija ir izstrādē."
     },
+    "immobilisationsView": {
+      "columns": {},
+      "toasts": {},
+      "drillDown": {}
+    },
+    "immobilisationForm": {},
+    "journalManual": {},
+    "bilan": {
+      "title": "Bilance",
+      "description": "Asociācijas aktīvi un saistības finanšu gada beigās.",
+      "exerciceLabel": "Vingrinājumi",
+      "rubriqueColumnLabel": "Sadaļa",
+      "noPreviousExercice": "Nav pieejams salīdzinājums",
+      "actif": "Aktīva",
+      "totalActif": "Kopējais aktīvais",
+      "passif": "Pasīvs",
+      "totalPassif": "Kopējās saistības",
+      "noAccountsInRubrique": "Šajā sadaļā nav līdzsvara",
+      "exportPdf": "PDF eksports",
+      "exportDisabledTooltip": "Nav iespējams eksportēt galīgo bilanci, kamēr iepriekš minētās anomālijas nav novērstas.",
+      "emptyExercice": {
+        "title": "Nav fiskālā gada",
+        "description": "Izveidojiet jaunu finanšu gadu, lai skatītu bilanci."
+      },
+      "emptyLedger": {
+        "title": "Nav grāmatvedības ierakstu",
+        "description": "Bilance tiks parādīta, tiklīdz šajā finanšu gadā būs reģistrēti ienākumi, izdevumi vai pamatlīdzekļi."
+      },
+      "rubriques": {
+        "immobilisationsCorporelles": "Taustāmie kapitāla aktīvi",
+        "immobilisationsIncorporelles": "Nemateriālie pamatlīdzekļi",
+        "immobilisationsFinancieres": "Finanšu pamatlīdzekļi",
+        "disponibilites": "Pieejamība",
+        "chargesConstateesDavance": "Iepriekš apmaksāti izdevumi",
+        "creances": "Saņemamais parāds",
+        "stocksEtEnCours": "Inventārs",
+        "fondsPropres": "Kapitāls",
+        "provisions": "Rezerves",
+        "dettes": "Parādi",
+        "produitsConstatesDavance": "Atliktie ienākumi",
+        "fondsDedies": "Ierobežotie līdzekļi"
+      },
+      "memoNotice": "Novērtējums — nav ierakstīts grāmatā, izslēgts no kopējiem aktīviem.",
+      "accountLabels": {
+        "reportANouveau": "Nesadalītā peļņa",
+        "resultatExercice": "Gada tīrā peļņa",
+        "creancesCotisations": "Neapmaksātās biedru maksas",
+        "creancesFactures": "Neapmaksātie rēķini",
+        "stocksEstimatedValue": "Aptuvenā krājumu vērtība",
+        "creancesFacturesEnRetard": "Nokavētie rēķini"
+      },
+      "pdf": {
+        "periodLabel": "Periods no {start} līdz {end}"
+      },
+      "drillDown": {
+        "date": "Datums",
+        "label": "Etiķete",
+        "origin": "Izcelsme",
+        "debit": "Debets",
+        "credit": "Kredīts",
+        "noLines": "Šim kontam nav ierakstu.",
+        "sourceTypes": {
+          "INCOME": "Ienākumi",
+          "INCOME_REVERSAL": "Ienākumu apgriešana",
+          "EXPENSE": "Izdevumi",
+          "EXPENSE_REVERSAL": "Izdevumu apgriešana",
+          "BANK_TRANSACTION": "Bankas darījums",
+          "ACCOUNT_TRANSFER": "Iekšējā pāreja",
+          "OPENING_BALANCE": "Atklāšanas bilance",
+          "IMMOBILISATION_DEPRECIATION": "Nolietojums",
+          "IMMOBILISATION_ACQUISITION": "Aktīvu iegāde",
+          "FACTURE_RECUE_PAYMENT": "Piegādātāju maksājums",
+          "MANUAL": "Manuāla ievade"
+        }
+      },
+      "issues": {
+        "title": "Konstatētās anomālijas",
+        "messages": {
+          "ACCOUNT_WITHOUT_RUBRIQUE": "Kontam {code} — {label} ir bilance, bet tas nav piesaistīts nevienam bilances punktam.",
+          "ACTIF_PASSIF_MISMATCH": "Aktīvs ({actif}) neatbilst saistībām ({passif}).",
+          "OPENING_BALANCE_MISSING": "Šim uzdevumam no \"{previousLabel}\" netika ģenerēti ievadi.",
+          "TRIAL_BALANCE_UNBALANCED": "Kopējais debets ({debit}) neatbilst kopējam kredītam ({credit}) šajā fiskālajā gadā.",
+          "RESULT_DIVERGENCE": "Žurnāla ({journal}) rezultāts atšķiras no peļņas vai zaudējumu pārskata ({statement}) rezultātiem — žurnāls var vēl nebūt atjaunināts šim fiskālajam gadam (finanšu gada slēgšana vai atsākšanas sinhronizācija)."
+        }
+      },
+      "memoNoHistory": "Nav vēsturisku datu",
+      "caveats": {
+        "stocksMissingCostPrice": "{count} varianti bez norādītām pirkuma izmaksām, izslēgti no tāmes"
+      }
+    },
+    "compteResultat": {
+      "title": "Peļņas un zaudējumu aprēķins",
+      "description": "Pārskata gada finanšu rezultāts salīdzinājumā ar iepriekšējo gadu.",
+      "exerciceLabel": "Pārskata gads",
+      "categoryColumnLabel": "Kategorija",
+      "noPreviousExercice": "-",
+      "noPreviousExerciceMessage": "Nav pieejams iepriekšējais pārskata gads",
+      "export": "Eksportēt",
+      "exportExcel": "Eksportēt Excel (detalizēti)",
+      "exportPdf": "Eksportēt PDF",
+      "products": "Ieņēmumi",
+      "totalProducts": "Ieņēmumi kopā",
+      "expenses": "Izdevumi",
+      "totalExpenses": "Izdevumi kopā",
+      "result": "Pārskata gada rezultāts",
+      "resultZero": "Pārskata gada rezultāts: 0 €",
+      "surplus": "Pārskata gada pārpalikums",
+      "deficit": "Pārskata gada deficīts",
+      "operationalResult": "Pamatdarbības rezultāts",
+      "uncategorized": "Jākategorizē",
+      "uncategorizedAlertIncome": "{count, plural, zero {# ieņēmumu jākategorizē} one {# ieņēmums jākategorizē} other {# ieņēmumi jākategorizē}}",
+      "uncategorizedAlertExpense": "{count, plural, zero {# izdevumu jākategorizē} one {# izdevums jākategorizē} other {# izdevumi jākategorizē}}",
+      "expandSection": "Rādīt",
+      "collapseSection": "Slēpt",
+      "noCategoriesInSection": "Šajā sadaļā nav nevienas kategorijas",
+      "sections": {
+        "FINANCIAL": "Finanšu",
+        "EXCEPTIONAL": "Ārkārtas",
+        "OTHER": "Cits"
+      },
+      "inKind": {
+        "title": "Brīvprātīgie ziedojumi natūrā",
+        "employmentHeader": "Ieguldījumu izmantošana",
+        "amountHeader": "Summa",
+        "receivedHeader": "Saņemtie ieguldījumi",
+        "totalEmployments": "Kopējais darba vietu skaits",
+        "totalReceived": "Kopējie ieguldījumi",
+        "note": "Šie bezmaksas ieguldījumi tiek vērtēti eiro. Tie neizraisa naudas plūsmu un nemaina finanšu gada rezultātu."
+      },
+      "drillDown": {
+        "date": "Datums",
+        "origin": "Izcelsme",
+        "person": "Persona",
+        "payment": "Maksājums",
+        "amount": "Summa",
+        "categorize": "Kategorizēt",
+        "categorizePlaceholder": "Izvēlēties kategoriju",
+        "noTransactions": "Nav darījumu",
+        "categorizeSuccess": "Darījums kategorizēts"
+      },
+      "pdf": {
+        "periodLabel": "Periods no {start} līdz {end}",
+        "operatingIncome": "PAMATDARBĪBAS IEŅĒMUMI",
+        "operatingExpense": "PAMATDARBĪBAS IZDEVUMI",
+        "operatingResult": "PAMATDARBĪBAS REZULTĀTS",
+        "financialIncome": "FINANŠU IEŅĒMUMI",
+        "financialExpense": "FINANŠU IZDEVUMI",
+        "financialResult": "FINANŠU REZULTĀTS",
+        "exceptionalIncome": "ĀRKĀRTAS IEŅĒMUMI",
+        "exceptionalExpense": "ĀRKĀRTAS IZDEVUMI",
+        "exceptionalResult": "ĀRKĀRTAS REZULTĀTS",
+        "otherIncome": "CITI IEŅĒMUMI",
+        "otherExpense": "CITI IZDEVUMI",
+        "otherResult": "CITU IEŅĒMUMU UN IZDEVUMU REZULTĀTS",
+        "uncategorizedSection": "KATEGORIZĒJAMIE DARĪJUMI",
+        "uncategorizedIncomeLabel": "Kategorizējamie ieņēmumi",
+        "uncategorizedExpenseLabel": "Kategorizējamie izdevumi",
+        "total": "Kopā",
+        "grandTotal": "KOPĀ",
+        "categoryColumn": "Kategorija",
+        "inKindTitle": "Brīvprātīgie ziedojumi natūrā",
+        "inKindEmploymentHeader": "Ieguldījumu izmantošana",
+        "inKindAmountHeader": "Summa",
+        "inKindReceivedHeader": "Saņemtie ieguldījumi",
+        "inKindTotalEmployments": "Kopējais darba vietu skaits",
+        "inKindTotalReceived": "Kopējie ieguldījumi",
+        "inKindNote": "Šie bezmaksas ieguldījumi tiek vērtēti eiro. Tie neizraisa naudas plūsmu un nemaina finanšu gada rezultātu."
+      },
+      "csv": {
+        "date": "Datums",
+        "type": "Veids",
+        "typeIncome": "Ieņēmums",
+        "typeExpense": "Izdevums",
+        "category": "Kategorija",
+        "uncategorized": "Jākategorizē",
+        "accountingCode": "Grāmatvedības kods",
+        "description": "Apraksts",
+        "amount": "Summa",
+        "paymentMethod": "Maksājuma veids",
+        "origin": "Izcelsme",
+        "reference": "Atsauce",
+        "exercice": "Pārskata gads"
+      },
+      "emptyExercice": {
+        "title": "Nav pārskata gada",
+        "description": "Izveidojiet pārskata gadu, lai ģenerētu peļņas un zaudējumu aprēķinu."
+      }
+    },
+    "previsionnel": {
+      "emptyExercice": {},
+      "tabs": {},
+      "card": {},
+      "columns": {},
+      "export": {},
+      "toasts": {},
+      "copyBudget": {
+        "toasts": {}
+      },
+      "projectsTab": {
+        "noProjects": {},
+        "toasts": {}
+      }
+    },
     "categoryForm": {
       "name": "Nosaukums",
       "namePlaceholder": "Piemērs: Ieguldījums",
+      "noMatchingCategory": "Nav atbilstības kategorijas",
       "type": "Tips",
       "typeIncome": "Ieņēmums",
       "typeExpense": "Izdevumi",
@@ -920,8 +1131,7 @@
       "sectionUnverifiedNote": "Šis konts netiek atpazīts — pārbaudiet sadaļu vai izvēlieties to no paplašinātajām opcijām.",
       "sectionToVerify": "Sadaļa, ko pārbaudīt",
       "advancedOptions": "Paplašinātās opcijas",
-      "revertToAutoSection": "Atpakaļ uz automātisko sadaļu",
-      "noMatchingCategory": "Nav atbilstības kategorijas"
+      "revertToAutoSection": "Atpakaļ uz automātisko sadaļu"
     },
     "bankAccountForm": {
       "bankName": "Bankas nosaukums",
@@ -1056,6 +1266,13 @@
         "deleted": "Konts dzēsts"
       }
     },
+    "transferForm": {
+      "toasts": {}
+    },
+    "transfersView": {
+      "columns": {},
+      "description": "Šeit ieraksti pārskaitījumus, kas jau veikti starp jūsu asociācijas bankas kontiem. Formāli reģistrē pārskaitījumu, nepārvietojot naudu."
+    },
     "categoriesView": {
       "title": "Kategorijas",
       "description": "Pārvaldiet ieņēmumu un izdevumu kategorijas.",
@@ -1066,7 +1283,6 @@
       "newCategoryTitle": "Jauna kategorija",
       "editCategoryTitle": "Rediģēšanas kategorija",
       "deleteConfirmTitle": "Dzēst šo kategoriju?",
-      "deleteConfirmInUse": "« {name} tiek izmantots ar {count, plural, one {# ieņēmumi/izdevumi} other {# ieņēmumi/izdevumi}}. Šie ieraksti tiks mainīti uz \"Nekategorizēti\".",
       "toasts": {
         "created": "Kategorija izveidota",
         "updated": "Atjauninātā kategorija",
@@ -1077,7 +1293,8 @@
       "customCategory": "Izveido pielāgotu kategoriju",
       "alreadyExists": "Jau konfigurēts",
       "archivedReactivateHint": "Arhivēts — klikšķiniet, lai aktivizētu",
-      "custom": "Pielāgota"
+      "custom": "Pielāgota",
+      "deleteConfirmInUse": "« {name} tiek izmantots ar {count, plural, one {# ieņēmumi/izdevumi} other {# ieņēmumi/izdevumi}}. Šie ieraksti tiks mainīti uz \"Nekategorizēti\"."
     },
     "incomesView": {
       "title": "Ieņēmumi",
@@ -1315,187 +1532,6 @@
       "typeIncome": "Ieņēmums",
       "typeExpense": "Izdevumi",
       "confirm": "Apstiprināt izlīgumu"
-    },
-    "compteResultat": {
-      "title": "Peļņas un zaudējumu aprēķins",
-      "description": "Pārskata gada finanšu rezultāts salīdzinājumā ar iepriekšējo gadu.",
-      "exerciceLabel": "Pārskata gads",
-      "noPreviousExercice": "-",
-      "export": "Eksportēt",
-      "exportExcel": "Eksportēt Excel (detalizēti)",
-      "exportPdf": "Eksportēt PDF",
-      "products": "Ieņēmumi",
-      "totalProducts": "Ieņēmumi kopā",
-      "expenses": "Izdevumi",
-      "totalExpenses": "Izdevumi kopā",
-      "result": "Pārskata gada rezultāts",
-      "surplus": "Pārskata gada pārpalikums",
-      "deficit": "Pārskata gada deficīts",
-      "emptyExercice": {
-        "title": "Nav pārskata gada",
-        "description": "Izveidojiet pārskata gadu, lai ģenerētu peļņas un zaudējumu aprēķinu."
-      },
-      "noPreviousExerciceMessage": "Nav pieejams iepriekšējais pārskata gads",
-      "resultZero": "Pārskata gada rezultāts: 0 €",
-      "operationalResult": "Pamatdarbības rezultāts",
-      "uncategorized": "Jākategorizē",
-      "uncategorizedAlertIncome": "{count, plural, zero {# ieņēmumu jākategorizē} one {# ieņēmums jākategorizē} other {# ieņēmumi jākategorizē}}",
-      "uncategorizedAlertExpense": "{count, plural, zero {# izdevumu jākategorizē} one {# izdevums jākategorizē} other {# izdevumi jākategorizē}}",
-      "expandSection": "Rādīt",
-      "collapseSection": "Slēpt",
-      "noCategoriesInSection": "Šajā sadaļā nav nevienas kategorijas",
-      "sections": {
-        "FINANCIAL": "Finanšu",
-        "EXCEPTIONAL": "Ārkārtas",
-        "OTHER": "Cits"
-      },
-      "drillDown": {
-        "date": "Datums",
-        "origin": "Izcelsme",
-        "person": "Persona",
-        "payment": "Maksājums",
-        "amount": "Summa",
-        "categorize": "Kategorizēt",
-        "categorizePlaceholder": "Izvēlēties kategoriju",
-        "noTransactions": "Nav darījumu",
-        "categorizeSuccess": "Darījums kategorizēts"
-      },
-      "pdf": {
-        "periodLabel": "Periods no {start} līdz {end}",
-        "operatingIncome": "PAMATDARBĪBAS IEŅĒMUMI",
-        "operatingExpense": "PAMATDARBĪBAS IZDEVUMI",
-        "operatingResult": "PAMATDARBĪBAS REZULTĀTS",
-        "financialIncome": "FINANŠU IEŅĒMUMI",
-        "financialExpense": "FINANŠU IZDEVUMI",
-        "financialResult": "FINANŠU REZULTĀTS",
-        "exceptionalIncome": "ĀRKĀRTAS IEŅĒMUMI",
-        "exceptionalExpense": "ĀRKĀRTAS IZDEVUMI",
-        "exceptionalResult": "ĀRKĀRTAS REZULTĀTS",
-        "otherIncome": "CITI IEŅĒMUMI",
-        "otherExpense": "CITI IZDEVUMI",
-        "otherResult": "CITU IEŅĒMUMU UN IZDEVUMU REZULTĀTS",
-        "uncategorizedSection": "KATEGORIZĒJAMIE DARĪJUMI",
-        "uncategorizedIncomeLabel": "Kategorizējamie ieņēmumi",
-        "uncategorizedExpenseLabel": "Kategorizējamie izdevumi",
-        "total": "Kopā",
-        "grandTotal": "KOPĀ",
-        "categoryColumn": "Kategorija",
-        "inKindTitle": "Brīvprātīgie ziedojumi natūrā",
-        "inKindEmploymentHeader": "Ieguldījumu izmantošana",
-        "inKindAmountHeader": "Summa",
-        "inKindReceivedHeader": "Saņemtie ieguldījumi",
-        "inKindTotalEmployments": "Kopējais darba vietu skaits",
-        "inKindTotalReceived": "Kopējie ieguldījumi",
-        "inKindNote": "Šie bezmaksas ieguldījumi tiek vērtēti eiro. Tie neizraisa naudas plūsmu un nemaina finanšu gada rezultātu."
-      },
-      "csv": {
-        "date": "Datums",
-        "type": "Veids",
-        "typeIncome": "Ieņēmums",
-        "typeExpense": "Izdevums",
-        "category": "Kategorija",
-        "uncategorized": "Jākategorizē",
-        "accountingCode": "Grāmatvedības kods",
-        "description": "Apraksts",
-        "amount": "Summa",
-        "paymentMethod": "Maksājuma veids",
-        "origin": "Izcelsme",
-        "reference": "Atsauce",
-        "exercice": "Pārskata gads"
-      },
-      "categoryColumnLabel": "Kategorija",
-      "inKind": {
-        "title": "Brīvprātīgie ziedojumi natūrā",
-        "employmentHeader": "Ieguldījumu izmantošana",
-        "amountHeader": "Summa",
-        "receivedHeader": "Saņemtie ieguldījumi",
-        "totalEmployments": "Kopējais darba vietu skaits",
-        "totalReceived": "Kopējie ieguldījumi",
-        "note": "Šie bezmaksas ieguldījumi tiek vērtēti eiro. Tie neizraisa naudas plūsmu un nemaina finanšu gada rezultātu."
-      }
-    },
-    "bilan": {
-      "title": "Bilance",
-      "description": "Asociācijas aktīvi un saistības finanšu gada beigās.",
-      "exerciceLabel": "Vingrinājumi",
-      "rubriqueColumnLabel": "Sadaļa",
-      "noPreviousExercice": "Nav pieejams salīdzinājums",
-      "actif": "Aktīva",
-      "totalActif": "Kopējais aktīvais",
-      "passif": "Pasīvs",
-      "totalPassif": "Kopējās saistības",
-      "noAccountsInRubrique": "Šajā sadaļā nav līdzsvara",
-      "emptyExercice": {
-        "title": "Nav fiskālā gada",
-        "description": "Izveidojiet jaunu finanšu gadu, lai skatītu bilanci."
-      },
-      "emptyLedger": {
-        "title": "Nav grāmatvedības ierakstu",
-        "description": "Bilance tiks parādīta, tiklīdz šajā finanšu gadā būs reģistrēti ienākumi, izdevumi vai pamatlīdzekļi."
-      },
-      "rubriques": {
-        "immobilisationsCorporelles": "Taustāmie kapitāla aktīvi",
-        "disponibilites": "Pieejamība",
-        "fondsPropres": "Kapitāls",
-        "dettes": "Parādi",
-        "immobilisationsIncorporelles": "Nemateriālie pamatlīdzekļi",
-        "immobilisationsFinancieres": "Finanšu pamatlīdzekļi",
-        "chargesConstateesDavance": "Iepriekš apmaksāti izdevumi",
-        "provisions": "Rezerves",
-        "produitsConstatesDavance": "Atliktie ienākumi",
-        "creances": "Saņemamais parāds",
-        "stocksEtEnCours": "Inventārs",
-        "fondsDedies": "Ierobežotie līdzekļi"
-      },
-      "issues": {
-        "title": "Konstatētās anomālijas",
-        "messages": {
-          "ACCOUNT_WITHOUT_RUBRIQUE": "Kontam {code} — {label} ir bilance, bet tas nav piesaistīts nevienam bilances punktam.",
-          "ACTIF_PASSIF_MISMATCH": "Aktīvs ({actif}) neatbilst saistībām ({passif}).",
-          "OPENING_BALANCE_MISSING": "Šim uzdevumam no \"{previousLabel}\" netika ģenerēti ievadi.",
-          "TRIAL_BALANCE_UNBALANCED": "Kopējais debets ({debit}) neatbilst kopējam kredītam ({credit}) šajā fiskālajā gadā.",
-          "RESULT_DIVERGENCE": "Žurnāla ({journal}) rezultāts atšķiras no peļņas vai zaudējumu pārskata ({statement}) rezultātiem — žurnāls var vēl nebūt atjaunināts šim fiskālajam gadam (finanšu gada slēgšana vai atsākšanas sinhronizācija)."
-        }
-      },
-      "accountLabels": {
-        "reportANouveau": "Nesadalītā peļņa",
-        "resultatExercice": "Gada tīrā peļņa",
-        "creancesCotisations": "Neapmaksātās biedru maksas",
-        "creancesFactures": "Neapmaksātie rēķini",
-        "stocksEstimatedValue": "Aptuvenā krājumu vērtība",
-        "creancesFacturesEnRetard": "Nokavētie rēķini"
-      },
-      "exportPdf": "PDF eksports",
-      "exportDisabledTooltip": "Nav iespējams eksportēt galīgo bilanci, kamēr iepriekš minētās anomālijas nav novērstas.",
-      "pdf": {
-        "periodLabel": "Periods no {start} līdz {end}"
-      },
-      "drillDown": {
-        "date": "Datums",
-        "label": "Etiķete",
-        "origin": "Izcelsme",
-        "debit": "Debets",
-        "credit": "Kredīts",
-        "noLines": "Šim kontam nav ierakstu.",
-        "sourceTypes": {
-          "INCOME": "Ienākumi",
-          "INCOME_REVERSAL": "Ienākumu apgriešana",
-          "EXPENSE": "Izdevumi",
-          "EXPENSE_REVERSAL": "Izdevumu apgriešana",
-          "BANK_TRANSACTION": "Bankas darījums",
-          "ACCOUNT_TRANSFER": "Iekšējā pāreja",
-          "OPENING_BALANCE": "Atklāšanas bilance",
-          "IMMOBILISATION_DEPRECIATION": "Nolietojums",
-          "IMMOBILISATION_ACQUISITION": "Aktīvu iegāde",
-          "FACTURE_RECUE_PAYMENT": "Piegādātāju maksājums",
-          "MANUAL": "Manuāla ievade"
-        }
-      },
-      "memoNotice": "Novērtējums — nav ierakstīts grāmatā, izslēgts no kopējiem aktīviem.",
-      "memoNoHistory": "Nav vēsturisku datu",
-      "caveats": {
-        "stocksMissingCostPrice": "{count} varianti bez norādītām pirkuma izmaksām, izslēgti no tāmes"
-      }
     }
   },
   "evenements": {
@@ -1711,6 +1747,7 @@
         "dateLabel": "Sākuma datums",
         "createButton": "Izveidot"
       },
+      "summary": {},
       "bilan": {
         "show": "Rādīt kopsavilkumu",
         "hide": "Paslēpt kopsavilkumu",
@@ -1928,6 +1965,9 @@
         "qrRevoked": "QR kods atspējots",
         "noMembersToExport": "Nav dalībnieku, ko eksportēt",
         "linkCopied": "Saite nokopēta"
+      },
+      "payment": {
+        "methods": {}
       }
     },
     "avaliacoes": {
@@ -1982,6 +2022,7 @@
           "standardFieldsHint": "Lauki pieprasīti reģistrācijas brīdī",
           "phoneLabel": "Telefons",
           "addressLabel": "Adrese",
+          "countryLabel": "Dzīvesvieta",
           "requirement": {
             "hidden": "Maskēts",
             "optional": "Pēc izvēles",
@@ -1989,8 +2030,7 @@
           },
           "mobileLabel": "Mobilais",
           "birthDateLabel": "Dzimšanas datums",
-          "genderLabel": "Dzimums",
-          "countryLabel": "Dzīvesvieta"
+          "genderLabel": "Dzimums"
         },
         "products": {
           "title": "Produkti",
@@ -2310,6 +2350,7 @@
       "liveSince": "Turpinās kopš tā laika {mins} min",
       "durationLessThanMin": "< 1 min",
       "durationMin": "{mins} min",
+      "activeMeetingWarning": {},
       "toasts": {
         "meetingStarted": "Sanāksme sākusies",
         "meetingScheduled": "Plānotā sapulce",
@@ -2785,6 +2826,7 @@
       "restockNoticePlural": "{count, plural, one {Neizņemšanas preces krājums tiks atjaunots.} other {Nesavākto priekšmetu krājumi tiks atjaunoti.}}",
       "restockNoticeStatic": "Nesavākto priekšmetu krājumi tiks atjaunoti."
     },
+    "refundModal": {},
     "stripeConfirm": {
       "title": "Atzīmēt kā apmaksātu?",
       "descriptionSimple": "Šī Stripe komanda ({amount}) tiks atzīmēts kā apmaksāts manuāli.",
@@ -3121,6 +3163,7 @@
           "title": "Forma",
           "standardFieldsHint": "Ziedotāja pieprasītie lauki",
           "addressLabel": "Adrese",
+          "countryLabel": "Dzīvesvieta",
           "birthDateLabel": "Dzimšanas datums",
           "phoneLabel": "Fiksētais tālrunis",
           "mobileLabel": "Mobilais",
@@ -3151,8 +3194,7 @@
           "addOption": "Pievienot opciju",
           "removeOption": "Noņem šo iespēju",
           "optionsRequiredError": "Katram saraksta/izvēles laukam nepieciešamas vismaz 2 iespējas.",
-          "duplicateOptionsError": "Saraksta/izvēles lauka opcijām jābūt unikālām.",
-          "countryLabel": "Dzīvesvieta"
+          "duplicateOptionsError": "Saraksta/izvēles lauka opcijām jābūt unikālām."
         },
         "payment": {
           "title": "Maksājums",
@@ -3411,6 +3453,7 @@
           "title": "Forma",
           "standardFieldsHint": "Lauki pieprasīti reģistrācijas brīdī",
           "addressLabel": "Adrese",
+          "countryLabel": "Dzīvesvieta",
           "birthDateLabel": "Dzimšanas datums",
           "phoneLabel": "Fiksētais tālrunis",
           "mobileLabel": "Mobilais",
@@ -3443,8 +3486,7 @@
           "addOption": "Pievienot opciju",
           "removeOption": "Noņem šo iespēju",
           "optionsRequiredError": "Katram saraksta/izvēles laukam nepieciešamas vismaz 2 iespējas.",
-          "duplicateOptionsError": "Saraksta/izvēles lauka opcijām jābūt unikālām.",
-          "countryLabel": "Dzīvesvieta"
+          "duplicateOptionsError": "Saraksta/izvēles lauka opcijām jābūt unikālām."
         },
         "payment": {
           "title": "Maksājums",
@@ -3698,6 +3740,7 @@
         "required": "Nepieciešams"
       }
     },
+    "blockEditor": {},
     "rulesManager": {
       "title": "Automatizācijas noteikumi",
       "subtitle": "Automātiskas nosūtīšanas pēc kalendāra vai notikuma.",
@@ -3987,7 +4030,11 @@
       "bicColon": "BIC : {value}",
       "toasts": {
         "updated": "Atjaunināta kontaktinformācija"
-      }
+      },
+      "accountingRegime": "Izdevumu atmaksu grāmatvedības režīms",
+      "accountingRegimeHint": "Nosaka, kad tiek iesniegts atlīdzības pieprasījums: apstiprināšanas brīdī (saistības) vai faktiskā maksājuma brīdī (skaidrā naudā).",
+      "accountingRegimeCash": "Naudas uzskaite",
+      "accountingRegimeAccrual": "Saistību grāmatvedība"
     },
     "membreTypes": {
       "name": "Nosaukums",
@@ -4014,7 +4061,12 @@
       "title": "Vizuālā identitāte",
       "subtitle": "Logotips redzams informācijas panelī, piedāvājumus/rēķinus, apmeklējuma lapu un publisko mājaslapu.",
       "logo": "Logotips",
+      "footerStyles": {},
+      "footer": {
+        "socialPlatforms": {}
+      },
       "proOnlyText": "Pielāgotais logotips (informācijas panelis, citāti/rēķini, darba laika uzskaite) ir rezervēts Pro plānam. Pārejiet uz nākamo plānu sadaļā Abonēšana, lai to aktivizētu.",
+      "preview": {},
       "toasts": {
         "updated": "Atjaunināta vizuālā identitāte",
         "uploadError": "Kļūdu augšupielādes logotips"
@@ -4057,10 +4109,10 @@
       "status": {
         "trial": "Bezmaksas izmēģinājums",
         "active": "Aktīva",
+        "paymentPending": "Maksājums notiek",
         "pastDue": "Kavēta maksājuma",
         "suspended": "Apturēts",
-        "cancelled": "Atcelts",
-        "paymentPending": "Maksājums notiek"
+        "cancelled": "Atcelts"
       },
       "planLabel": "Formula {tier}",
       "membersCount": "{count} / {limit} Dalībnieki",
@@ -4181,6 +4233,16 @@
       "subtitleTrialExpired": "Jūsu bezmaksas izmēģinājums ir beidzies. Izvēlieties plānu un ievadiet maksājuma metodi, lai turpinātu.",
       "confirmButtonSubscribe": "Apstiprini un abonē"
     },
+    "teamAccess": {
+      "columns": {},
+      "summary": {},
+      "profiles": {},
+      "levels": {},
+      "areas": {
+        "sensible": "Sensitīvi dalībnieku dati"
+      },
+      "toasts": {}
+    },
     "erasureRequests": {
       "title": "Datu dzēšana (VDAR)",
       "description": "Pieprasījumi neatgriezeniski dzēst biedra personas datus saskaņā ar VDAR 17. pantu. Tie tiek automātiski apstrādāti katru nakti, izņemot tos, kas ir aizturēti.",
@@ -4221,11 +4283,6 @@
       },
       "automaticOrigin": "Automātiski atzīmēts — neaktīvs vairāk nekā 3 gadus",
       "inactiveSince": "pameta {date}"
-    },
-    "teamAccess": {
-      "areas": {
-        "sensible": "Sensitīvi dalībnieku dati"
-      }
     }
   },
   "cotisations": {
@@ -4315,28 +4372,6 @@
       "allCategories": "Visas kategorijas",
       "allRenewals": "Visi atjaunojumi",
       "resetFilters": "Atiestatīt",
-      "renewal": {
-        "automatic": "Automātiska",
-        "manual": "Manuāla"
-      },
-      "summary": {
-        "aPagar": " · {amount} kopējā",
-        "recebido": " · {amount} saņemts",
-        "saldo": " · {amount} atlikums"
-      },
-      "distribution": {
-        "show": "Skatīt sadalījumu",
-        "hide": "Slēpt sadalījumu",
-        "category": "Dalības kategorija",
-        "renewal": "Atjaunošana",
-        "count": "Ieguldījumu skaits",
-        "aPagar": "Kopējā summa",
-        "recebido": "Saņemtā summa",
-        "saldo": "Atlikušais līdzsvars",
-        "total": "Kopā",
-        "noCategory": "Bez kategorijas",
-        "empty": "Neviena dalības maksa neatbilst šiem filtriem."
-      },
       "mergeTiers": {
         "filterOption": "Apvienot dublikātu kategorijas",
         "title": "Apvienot dublikātu kategorijas",
@@ -4359,6 +4394,28 @@
         "priceFreeAmount": "Bezmaksas summa",
         "priceFreeAmountFrom": "Bezmaksas summa no {amount}",
         "priceRecurring": "{amount}/gads"
+      },
+      "renewal": {
+        "automatic": "Automātiska",
+        "manual": "Manuāla"
+      },
+      "summary": {
+        "aPagar": " · {amount} kopējā",
+        "recebido": " · {amount} saņemts",
+        "saldo": " · {amount} atlikums"
+      },
+      "distribution": {
+        "show": "Skatīt sadalījumu",
+        "hide": "Slēpt sadalījumu",
+        "category": "Dalības kategorija",
+        "renewal": "Atjaunošana",
+        "count": "Ieguldījumu skaits",
+        "aPagar": "Kopējā summa",
+        "recebido": "Saņemtā summa",
+        "saldo": "Atlikušais līdzsvars",
+        "total": "Kopā",
+        "noCategory": "Bez kategorijas",
+        "empty": "Neviena dalības maksa neatbilst šiem filtriem."
       }
     },
     "reminderModal": {
@@ -4423,6 +4480,24 @@
       "annulee": "Šis ziedojums ir atcelts."
     }
   },
+  "groupes": {
+    "view": {
+      "statusFilter": {},
+      "columns": {},
+      "statusBadge": {},
+      "actions": {},
+      "toasts": {}
+    },
+    "form": {},
+    "detail": {
+      "appelColumns": {}
+    },
+    "appel": {
+      "counts": {},
+      "status": {},
+      "toasts": {}
+    }
+  },
   "membres": {
     "form": {
       "status": {
@@ -4450,6 +4525,11 @@
         "femme": "Sieviete"
       },
       "groupeSanguinNone": "Nav precizēts",
+      "imageRights": {
+        "unknown": "Nav norādīts",
+        "granted": "Jā",
+        "refused": "Nē"
+      },
       "tailleTshirtNone": "Nav precizēts",
       "preferredLocaleNone": "Nav precizēts",
       "preferredLocaleHint": "Izvēlētā valoda ļaus šim biedram sūtīt e-pastus un paziņojumus viņa vēlamajā valodā.",
@@ -4481,14 +4561,14 @@
         "allergies": "Zināmās alerģijas",
         "allergiesPlaceholder": "Arahīdi, ziedputekšņi...",
         "type": "Locekļa tips",
-        "preferredLocale": "Saziņas valoda",
-        "spokenLanguage": "Runātā valoda",
-        "cotisationTier": "Dalības maksa",
-        "guardianName": "Likumiskais pārstāvis {number} — vārds",
-        "guardianPhone": "Likumiskais pārstāvis {number} — tālrunis",
         "imageRights": "Tiesības uz attēlu",
         "notes": "Piezīmes",
-        "notesPlaceholder": "Noderīga informācija par šo biedru (nodarbības, piezīmes…)"
+        "notesPlaceholder": "Noderīga informācija par šo biedru (nodarbības, piezīmes…)",
+        "guardianName": "Likumiskais pārstāvis {number} — vārds",
+        "guardianPhone": "Likumiskais pārstāvis {number} — tālrunis",
+        "preferredLocale": "Saziņas valoda",
+        "spokenLanguage": "Runātā valoda",
+        "cotisationTier": "Dalības maksa"
       },
       "invitationNotice": "Uz šo adresi tiks nosūtīts ielūguma e-pasts ar identifikatoriem.",
       "tierNone": "Nav cenu (noklusējuma uzvedība)",
@@ -4509,18 +4589,7 @@
         "management": "Biedra pārvaldība"
       },
       "invalidFormToast": "Neizdevās saglabāt. Ja problēma turpinās, sazinieties ar atbalstu.",
-      "customFieldsLoading": "Notiek pieteikuma veidlapas atbilžu ielāde…",
-      "imageRights": {
-        "unknown": "Nav norādīts",
-        "granted": "Jā",
-        "refused": "Nē"
-      }
-    },
-    "fichePdf": {
-      "title": "DALĪBNIEKA PROFILS",
-      "subtitle": "Veidlapa jāaizpilda jaunajam biedram",
-      "signature": "Paraksts",
-      "date": "Datums"
+      "customFieldsLoading": "Notiek pieteikuma veidlapas atbilžu ielāde…"
     },
     "actions": {
       "add": "Pievienot biedru",
@@ -4570,13 +4639,13 @@
         "firstName": "Vārds",
         "lastName": "Uzvārds",
         "address": "Adrese",
+        "country": "Kantrī",
+        "countryPlaceholder": "Visas valstis",
+        "countryLoadError": "Valstis ielādējas nevar. Mēģiniet vēlreiz pēc brīža.",
         "birthDateFrom": "Dzimis pēc",
         "birthDateTo": "Dzimis agrāk",
         "apply": "Piesakies",
-        "reset": "Atiestatīt",
-        "country": "Kantrī",
-        "countryPlaceholder": "Visas valstis",
-        "countryLoadError": "Valstis ielādējas nevar. Mēģiniet vēlreiz pēc brīža."
+        "reset": "Atiestatīt"
       },
       "statusOptions": {
         "pending": "Gaida",
@@ -4635,6 +4704,13 @@
       "cotisationButton": "Dalības maksa",
       "createAccessButton": "Izveidot piekļuvi",
       "roleButton": "Loma",
+      "eraseData": {
+        "button": "Dzēst datus (VDAR)",
+        "confirmTitle": "Pieprasīt neatgriezenisku {name} datu dzēšanu?",
+        "confirmDescription": "Šī darbība reģistrē dzēšanas pieprasījumu saskaņā ar VDAR 17. pantu. Biedrs saņems apstiprinājuma e-pastu, un pēc tam viņa personas dati tiks neatgriezeniski anonimizēti nākamajā automātiskajā apstrādē, ja pieprasījums netiks aizturēts.",
+        "toastSuccess": "Dzēšanas pieprasījums reģistrēts",
+        "requestLabel": "VDAR dzēšana"
+      },
       "contact": "Kontakti",
       "noContactInfo": "Nav kontaktinformācijas",
       "memberSinceColon": "Loceklis kopš: {date}",
@@ -4751,13 +4827,6 @@
         "rejectConfirmTitle": "Noraidīt šo lūgumu?",
         "rejectConfirmDescription": "{name} mainīsies uz \"Neaktīvs\" statusu un nevarēs pieslēgties. Pieprasījums un tā atbildes uz formu tiek saglabātas."
       },
-      "eraseData": {
-        "button": "Dzēst datus (VDAR)",
-        "confirmTitle": "Pieprasīt neatgriezenisku {name} datu dzēšanu?",
-        "confirmDescription": "Šī darbība reģistrē dzēšanas pieprasījumu saskaņā ar VDAR 17. pantu. Biedrs saņems apstiprinājuma e-pastu, un pēc tam viņa personas dati tiks neatgriezeniski anonimizēti nākamajā automātiskajā apstrādē, ja pieprasījums netiks aizturēts.",
-        "toastSuccess": "Dzēšanas pieprasījums reģistrēts",
-        "requestLabel": "VDAR dzēšana"
-      },
       "noCommande": "Šim kontaktam nav veikala pirkumu.",
       "commandeStatus": {
         "PENDING": "Gaida",
@@ -4847,6 +4916,11 @@
       "inMessagesSection": " sadaļā Ziņojumi.",
       "messageSectionLabel": "Ziņojums",
       "saveAsTemplate": "Saglabāt kā veidni",
+      "subjectLabel": "Mērķis",
+      "subjectPlaceholder": "E-pasta temats...",
+      "subjectTooLong": "Temats ir pārāk garš: {length}/{max} rakstzīmes — sūtot tiks noraidīts.",
+      "bodyLabel": "Ziņojuma saturs",
+      "bodyPlaceholder": "Uzraksti savu ziņu...",
       "language": {
         "title": "Sūtīšanas valoda",
         "modeOriginal": "Oriģinālā valoda",
@@ -4871,11 +4945,6 @@
         "autoNoEffect": "Nevienam pašreizējam saņēmējam nav citas vēlamās valodas kā franču — visi saņems oriģinālo versiju.",
         "autoExternalNote": "{count, plural, one {# ārējais e-pasts (oriģinālvaloda)} other {# ārējie e-pasti (oriģinālvaloda)}}"
       },
-      "subjectLabel": "Mērķis",
-      "subjectPlaceholder": "E-pasta temats...",
-      "subjectTooLong": "Temats ir pārāk garš: {length}/{max} rakstzīmes — sūtot tiks noraidīts.",
-      "bodyLabel": "Ziņojuma saturs",
-      "bodyPlaceholder": "Uzraksti savu ziņu...",
       "continue": "Turpiniet",
       "confirmSendTitle": "Kuģošanas apstiprinājums",
       "confirmSendDescription": "Šis e-pasts tiks nosūtīts uz {recipients}. Šī rīcība ir neatgriezeniska.",
@@ -4892,6 +4961,9 @@
       "recipientsActive": "{count, plural, one {# aktīvais biedrs} other {# aktīvie biedri}}",
       "externalOnlyCount": "{count, plural, one {# ārējais e-pasts} other {# ārējie e-pasti}}",
       "recipientsWithExternal": "{members} + {count, plural, one {# ārējais e-pasts} other {# ārējie e-pasti}}",
+      "attachments": {
+        "errors": {}
+      },
       "toasts": {
         "selectType": "Izvēlieties locekļa tipu",
         "selectMember": "Izvēlieties vismaz vienu biedru vai pievienojiet ārēju e-pastu",
@@ -5291,6 +5363,12 @@
         "genericError": "Kļūda"
       },
       "importedNote": "Importēts no AssoConnect — {collecte}"
+    },
+    "fichePdf": {
+      "title": "DALĪBNIEKA PROFILS",
+      "subtitle": "Veidlapa jāaizpilda jaunajam biedram",
+      "signature": "Paraksts",
+      "date": "Datums"
     }
   },
   "memberCard": {
@@ -5393,8 +5471,8 @@
       "actualites": "Ziņas",
       "membership": "Pievienojies asociācijai",
       "dons": "Ziedo",
-      "contact": "Kontakti",
-      "boutique": "Veikals"
+      "boutique": "Veikals",
+      "contact": "Kontakti"
     },
     "defaultTitles": {
       "hero": "Laipni lūdzam",
@@ -5402,9 +5480,9 @@
       "events": "Gaidāmie pasākumi",
       "membership": "Pievienojies asociācijai",
       "dons": "Ziedo",
+      "boutique": "Veikals",
       "actualites": "Ziņas",
-      "contact": "Kontakti",
-      "boutique": "Veikals"
+      "contact": "Kontakti"
     },
     "view": {
       "uploadFailedWarning": "{count, plural, one {# attēlu nevarēja lejupielādēt.} other {# attēlus nevarēja augšupielādēt.}}",
@@ -5448,9 +5526,9 @@
       "noSections": "Nav sadaļas. Pievienojiet vienu zemāk.",
       "addSection": "Pievienot sadaļu",
       "donsModuleDisabled": "Ziedojumu modulis atspējots — neredzams publiskajā vietnē",
+      "boutiqueModuleDisabled": "Veikala modulis atspējots — nav redzams publiskajā vietnē",
       "deleteSectionTitle": "Dzēst sadaļu",
-      "deleteSectionDescription": "Šī rīcība ir neatgriezeniska.",
-      "boutiqueModuleDisabled": "Veikala modulis atspējots — nav redzams publiskajā vietnē"
+      "deleteSectionDescription": "Šī rīcība ir neatgriezeniska."
     },
     "sectionSheet": {
       "editTitle": "Rediģēt — {label}",
@@ -5471,6 +5549,8 @@
       "eventsLimitHint": "Notikumi automātiski tiek izņemti no tava kalendāra.",
       "actualitesLimit": "Ziņu vienību skaits, ko rādīt",
       "actualitesLimitHint": "Vietnē tiks rādītas tikai pirmās N ziņas.",
+      "boutiqueLimit": "Rādāmo produktu skaits",
+      "boutiqueLimitHint": "Vietnē tiks rādīti tikai pirmie N aktīvie produkti.",
       "membershipIntro": "Ievada teksts",
       "membershipIntroPlaceholder": "Aizpildiet šo veidlapu, lai pieteiktos biedrībai...",
       "membershipHint": "Pieprasījumi parādās biedru sarakstā ar statusu \"Gaida\".",
@@ -5491,9 +5571,7 @@
       "apply": "Piesakies",
       "discardTitle": "Ignorēt izmaiņas?",
       "discardDescription": "Nepiemērotās izmaiņas tiks zaudētas.",
-      "discardConfirm": "Ignorēt",
-      "boutiqueLimit": "Rādāmo produktu skaits",
-      "boutiqueLimitHint": "Vietnē tiks rādīti tikai pirmie N aktīvie produkti."
+      "discardConfirm": "Ignorēt"
     },
     "preview": {
       "donsNoForm": "Nav izvēlēta ziedojumu veidlapa — neredzams publiskajā vietnē"
@@ -5502,6 +5580,12 @@
       "viewSite": "Skatīt mājaslapu",
       "logoUrl": "Logotipa URL (pēc izvēles)",
       "footerText": "Kājenes teksts"
+    },
+    "aiAssistant": {},
+    "builderSwitch": {
+      "confirmOn": {},
+      "confirmOff": {},
+      "toasts": {}
     }
   },
   "richTextEditor": {
@@ -5514,6 +5598,21 @@
     "heading1": "Virsraksts 1",
     "heading2": "Virsraksts 2",
     "heading3": "Virsraksts 3"
+  },
+  "paperFormTemplates": {
+    "columns": {},
+    "toasts": {},
+    "deleteConfirm": {},
+    "leaveWarning": {},
+    "targetGroups": {},
+    "targets": {},
+    "renderErrors": {},
+    "editor": {
+      "columns": {}
+    },
+    "activity": {
+      "fields": {}
+    }
   },
   "associationDocuments": {
     "title": "Asociācijas dokumenti",
@@ -5560,6 +5659,9 @@
     "notFound": "Šis dokuments netika atrasts.",
     "backToList": "Atpakaļ uz dokumentiem"
   },
+  "formDraft": {},
+  "legalConsent": {},
+  "publicDocuments": {},
   "portalMembre": {
     "associationDocuments": {
       "title": "Asociācijas dokumenti",
@@ -5606,6 +5708,15 @@
       "viewShop": "Skatu veikals",
       "orderPlacedTitle": "Pasūtījums reģistrēts!",
       "orderPlacedDescription": "Jūsu pasūtījums gaida samaksu. Administrācija sazināsies ar jums, lai pabeigtu darījumu.",
+      "paymentSuccessTitle": "Maksājums apstiprināts!",
+      "paymentSuccessDescription": "Paldies par pirkumu! Jums nosūtīts apstiprinājuma e-pasts ar kvīti.",
+      "stockAdjustedNotice": "Dažu preču krājums ir mainījies — jūsu grozs tika pielāgots, pārskatiet to pirms turpināt.",
+      "trackOrderButton": "Izsekot manam pasūtījumam",
+      "trackingPageTitle": "Pasūtījuma izsekošana",
+      "trackingStatusPending": "Gaida maksājumu",
+      "trackingStatusPaid": "Pasūtījums apmaksāts",
+      "trackingStatusCancelled": "Pasūtījums atcelts",
+      "trackingNotFound": "Pasūtījums nav atrasts",
       "myOrdersButton": "Manas pavēles",
       "continueShopping": "Turpiniet iepirkties",
       "maxStockReached": "Max Stock Sasniegts",
@@ -5643,16 +5754,7 @@
         "orderError": "Kļūda pasūtījuma laikā",
         "orderUpdated": "Atjauninātā secība",
         "orderCancelled": "Pasūtījums atcelts"
-      },
-      "paymentSuccessTitle": "Maksājums apstiprināts!",
-      "paymentSuccessDescription": "Paldies par pirkumu! Jums nosūtīts apstiprinājuma e-pasts ar kvīti.",
-      "stockAdjustedNotice": "Dažu preču krājums ir mainījies — jūsu grozs tika pielāgots, pārskatiet to pirms turpināt.",
-      "trackOrderButton": "Izsekot manam pasūtījumam",
-      "trackingPageTitle": "Pasūtījuma izsekošana",
-      "trackingStatusPending": "Gaida maksājumu",
-      "trackingStatusPaid": "Pasūtījums apmaksāts",
-      "trackingStatusCancelled": "Pasūtījums atcelts",
-      "trackingNotFound": "Pasūtījums nav atrasts"
+      }
     },
     "dons": {
       "title": "Mani ziedojumi",
@@ -5953,7 +6055,8 @@
         "communication": "Sakari",
         "finances": "Finanses",
         "outils": "Instrumenti"
-      }
+      },
+      "reimbursements": "Izdevumu atmaksas"
     },
     "backofficeSidebar": {
       "backoffice": "Backoffice",
@@ -5989,6 +6092,7 @@
       },
       "logout": "Izrakstīšanās"
     },
+    "twoFactorSettingsModal": {},
     "changePasswordModal": {
       "title": "Paroles maiņa",
       "currentPasswordLabel": "Pašreizējā parole",
@@ -6130,6 +6234,7 @@
       "daysWithoutCotisation": "Dienas bez ieguldījuma",
       "status": "Statuss"
     },
+    "originSources": {},
     "empty": "Nav kontroles brīdinājumu.",
     "resolveAction": "Atrisināt",
     "resolveConfirmTitle": "Atrisināt šo brīdinājumu?",
@@ -6147,7 +6252,169 @@
     "autoResolvedLabel": "(automātiski)",
     "emptyForSearch": "Nav rezultātu vaicājumam \"{search}\"."
   },
+  "help": {
+    "tabs": {},
+    "callout": {},
+    "assistant": {
+      "examples": {},
+      "examplesDocs": {},
+      "tools": {}
+    },
+    "changelog": {
+      "kind": {}
+    },
+    "releaseNotes": {},
+    "news": {},
+    "faqPopup": {},
+    "popupCarousel": {},
+    "footer": {}
+  },
+  "boutiqueShipping": {},
+  "paperFormScan": {
+    "steps": {},
+    "upload": {
+      "camera": {}
+    },
+    "reading": {},
+    "viewer": {},
+    "editor": {},
+    "review": {},
+    "status": {},
+    "result": {},
+    "notesValues": {},
+    "validation": {},
+    "leaveWarning": {},
+    "restartWarning": {}
+  },
   "formTermsEditor": {
     "contentRequired": "Jums jāaizpilda lauks “{conditionsLabel}” vai jāaugšupielādē dokuments."
+  },
+  "membreDuplicates": {
+    "list": {
+      "matchedFields": {},
+      "columns": {},
+      "status": {}
+    },
+    "merge": {
+      "fields": {},
+      "relations": {}
+    },
+    "backoffice": {
+      "columns": {}
+    }
+  },
+  "reimbursements": {
+    "view": {
+      "title": "Izdevumu atmaksas",
+      "newRequest": "Jauns pieprasījums",
+      "export": "Eksports",
+      "myRequests": "Mani lūgumi",
+      "allRequests": "Visi pieprasījumi",
+      "allRequesters": "Visiem pretendentiem",
+      "allCategories": "Visas kategorijas",
+      "dateFrom": "No",
+      "dateTo": "Uz",
+      "allStatuses": "Visi statusi",
+      "summary": "{pending} Gaida — {pendingAmount} · {approved} Saņemt atmaksu — {approvedAmount} · {reimbursed} Atmaksāts — {reimbursedAmount}",
+      "noRequest": "Nav atmaksas pieprasījumu",
+      "columns": {
+        "subject": "Mērķis",
+        "date": "Datums",
+        "amount": "Summa",
+        "status": "Statuss"
+      },
+      "status": {
+        "draft": "Drafts",
+        "pendingApproval": "Gaida apstiprinājumu",
+        "needsCorrection": "Jālabo",
+        "approved": "Apstiprināts",
+        "rejected": "Noraidīts",
+        "reimbursed": "Atmaksāts",
+        "cancelled": "Atcelts"
+      },
+      "actions": {
+        "view": "Skatīt",
+        "submit": "Iesniegt",
+        "cancel": "Atcelt"
+      },
+      "toasts": {
+        "created": "Pieprasījums izveidots",
+        "updated": "Atjauninājuma pieprasījums",
+        "deleted": "Pieprasījums dzēsts",
+        "submitted": "Pieteikums iesniegts apstiprināšanai",
+        "cancelled": "Pieprasījums atcelts",
+        "approved": "Pieteikums apstiprināts",
+        "correctionRequested": "Nepieciešama korekcija",
+        "rejected": "Pieprasījums noraidīts",
+        "reimbursed": "Reģistrēta atmaksa"
+      },
+      "deleteConfirmTitle": "Dzēst šo melnrakstu?",
+      "deleteConfirmDescription": "Šī rīcība ir neatgriezeniska.",
+      "cancelConfirmTitle": "Atcelt šo pieprasījumu?",
+      "cancelConfirmDescription": "Pieteicējs tiks informēts par atcelšanu.",
+      "cancelReasonLabel": "Atcelšanas iemesls"
+    },
+    "form": {
+      "subject": "Mērķis",
+      "subjectPlaceholder": "Piemēram, reģionālo sanāksmju ceļojums",
+      "comment": "Komentāri",
+      "commentPlaceholder": "Papildu informācija",
+      "event": "Saistīts notikums",
+      "project": "Saistītais projekts",
+      "noProject": "Nav projekta",
+      "noEvent": "Nav pasākumu",
+      "items": "Izdevumi",
+      "addItem": "Pievienot izdevumu",
+      "noItems": "Nav papildu maksas",
+      "itemDate": "Izdevumu datums",
+      "itemDescription": "Apraksts",
+      "itemAmount": "Summa",
+      "itemCategory": "Kategorija",
+      "itemReceipt": "Pamatojums",
+      "total": "Kopumā",
+      "duplicateWarning": "Līdzīgas izmaksas (tas pats datums, tāda pati summa) jau pastāv citā jūsu pieprasījumā.",
+      "toasts": {
+        "uploadError": "Kļūda, sūtot kvīti",
+        "networkError": "Tīkla kļūda, sūtot kvīti"
+      }
+    },
+    "detail": {
+      "notFound": "Atmaksas pieprasījums nav atrasts",
+      "history": "Vēsture",
+      "correctionFrom": "Labojums pieprasīts {name}",
+      "rejectedBy": "Noraidīts {name}",
+      "reimbursedOn": "Atmaksāts {date} autors {method}",
+      "selfApprovalBlockedNotice": "Jūs nevarat apstiprināt savu pieprasījumu. Tam jābūt apstiprinātam administratoram vai citam pilnvarotam amatpersonai.",
+      "viewReceipt": "Skatīt atbalsta dokumentus",
+      "immobilisationTag": "Pamatlīdzekļi",
+      "approveButton": "Apstiprini",
+      "requestCorrectionButton": "Pieprasiet labojumu",
+      "rejectButton": "Atsakies",
+      "correctionCommentLabel": "Labojuma komentārs",
+      "rejectionReasonLabel": "Atteikuma iemesls",
+      "deleteItemConfirmTitle": "Likvidēt šo izdevumu?",
+      "toasts": {
+        "itemAdded": "Papildu izdevumi",
+        "itemUpdated": "Atjauninātie izdevumi",
+        "itemDeleted": "Izdevumi noņemti"
+      }
+    },
+    "register": {
+      "title": "Saglabājiet atmaksu",
+      "registerButton": "Saglabājiet atmaksu",
+      "date": "Atmaksas datums",
+      "paymentMethod": "Maksājuma metode",
+      "bankAccount": "Bankas konts",
+      "noBankAccountHint": "Bankas konts nav izveidots — pievienojiet to Finanses> Kontos vai izvēlieties Skaidra nauda.",
+      "transaction": "Importēta bankas darījuma saskaņošana (pēc izvēles)",
+      "noTransaction": "Nepietuvojies tagad",
+      "reference": "Atsauce",
+      "submit": "Saglabāt",
+      "methods": {
+        "virement": "Pāreja",
+        "cheque": "Pārbaudīts",
+        "especes": "Sugas"
+      }
+    }
   }
 }

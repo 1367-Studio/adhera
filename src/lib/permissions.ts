@@ -21,7 +21,7 @@
 export const ACCESS_AREAS = [
   "dashboard", "membres", "sensible", "adhesions", "dons", "evenements", "boutique",
   "communication", "actualites", "comptabilite", "reunions", "materiel", "site", "documents",
-  "groupes",
+  "groupes", "reimbursements",
 ] as const
 
 export type AccessArea  = (typeof ACCESS_AREAS)[number]
@@ -50,6 +50,11 @@ export const ACCESS_AREA_LABELS: Record<AccessArea, string> = {
   site:          "Site web",
   documents:     "Documents de l'association",
   groupes:       "Groupes et appels de présence",
+  // FORM-93: does NOT gate creating your own reimbursement request or editing your own draft —
+  // every staff role can always do that. It only gates "voir/gérer toutes les demandes" (any
+  // other requester's request, approving, registering a reimbursement) — see
+  // src/lib/finance/reimbursement-access.ts.
+  reimbursements: "Remboursements de frais (voir et gérer toutes les demandes)",
 }
 
 export type AreaLevels = Record<AccessArea, AccessLevel>
@@ -98,6 +103,9 @@ export const ROLE_PROFILES: Record<StaffRole, ResolvedPermissions> = {
       dashboard: "read", membres: "edit", sensible: "read", adhesions: "edit", dons: "edit", evenements: "edit",
       boutique: "edit", communication: "none", actualites: "edit", comptabilite: "edit",
       reunions: "edit", materiel: "edit", site: "none", documents: "edit", groupes: "none",
+      // FORM-93: the treasurer needs to see/approve everyone's requests and register
+      // reimbursements by default — "the financial responsible" the ticket describes.
+      reimbursements: "edit",
     },
   },
   SECRETAIRE: {
@@ -106,9 +114,12 @@ export const ROLE_PROFILES: Record<StaffRole, ResolvedPermissions> = {
       dashboard: "read", membres: "edit", sensible: "read", adhesions: "read", dons: "none", evenements: "edit",
       boutique: "edit", communication: "edit", actualites: "edit", comptabilite: "none",
       reunions: "edit", materiel: "edit", site: "none", documents: "edit", groupes: "edit",
+      reimbursements: "none",
     },
   },
-  // A volunteer with no bureau position: nothing until an administrator grants areas.
+  // A volunteer with no bureau position: nothing until an administrator grants areas. Can
+  // still create/edit their OWN reimbursement request though — that's unconditional on any
+  // staff role, not gated by this area (see reimbursement-access.ts).
   EQUIPE: { administrator: false, areas: { ...allAreasAt("none"), dashboard: "read" } },
 }
 

@@ -41,6 +41,7 @@
     "location": "Lokacija",
     "choosePlaceholder": "Izberi...",
     "allPlaceholder": "Vsi",
+    "noOptionsPlaceholder": "Ni na voljo nobenih možnosti",
     "previousPage": "Prejšnja stran",
     "nextPage": "Naslednja stran",
     "paginationRange": "{from}–{to} / {total}",
@@ -51,7 +52,7 @@
     "addressPlaceholder": "Salle des fêtes, 12 rue de la Paix, Pariz...",
     "viewOnGoogleMaps": "Oglejte si na Google Maps",
     "backToSite": "Nazaj na spletno mesto",
-    "noOptionsPlaceholder": "Ni na voljo nobenih možnosti"
+    "period": {}
   },
   "address": {
     "street": "Naslov",
@@ -62,6 +63,7 @@
     "country": "Država prebivališča",
     "legacyMigratedHint": "Kopirano iz starega polja za naslov — preverite, da že ne vsebuje spodnje poštne številke in kraja."
   },
+  "avis": {},
   "auth": {
     "layout": {
       "imageAlt": "Prijava",
@@ -91,7 +93,8 @@
         "connecting": "Prijavljanje…",
         "or": "ali",
         "continueWithGoogle": "Nadaljujte z Googlom"
-      }
+      },
+      "twoFactor": {}
     },
     "register": {
       "pageTitle": "Ustvarite račun",
@@ -118,9 +121,6 @@
         "passwordLabel": "Geslo",
         "passwordPlaceholder": "Min. 8 znakov",
         "passwordGoogleHint": "Za to prvo ustvarjanje računa izberite geslo. Nato se lahko prijavite z Googlom.",
-        "legalDocsAcceptPrefix": "Prebral sem vse",
-        "legalDocsLinkLabel": "Pravni dokumenti Formwise",
-        "legalDocsAcceptSuffix": "in sprejemam pogoje uporabe storitve.",
         "continueToPayment": "Nadaljujte s plačilom",
         "perkTrialDays": "{days} Prosti dnevi",
         "perkNoCommitment": "Brez obveznosti",
@@ -129,7 +129,10 @@
         "startTrial": "Začni mojo brezplačno preizkusno obdobje",
         "createAccount": "Ustvari račun",
         "perkNoCard": "Kreditna kartica ni potrebna",
-        "createAccountError": "Račun za ustvarjanje napake"
+        "createAccountError": "Račun za ustvarjanje napake",
+        "legalDocsAcceptPrefix": "Prebral sem vse",
+        "legalDocsLinkLabel": "Pravni dokumenti Formwise",
+        "legalDocsAcceptSuffix": "in sprejemam pogoje uporabe storitve."
       },
       "payment": {
         "paymentError": "Napaka pri plačilu",
@@ -649,13 +652,16 @@
         "enLitige": "V sporu",
         "annulee": "Preklicano"
       },
-      "unmarkPaidWarning": "Ta dokument je trenutno plačan — odstranitev tega statusa bo odpravila stroške, ki jih je povzročil v financah, pa tudi kakršnokoli bančno usklajevanje.",
-      "markPaidNotice": "Označevanje tega dokumenta kot plačanega bo samodejno ustvarilo ustrezni strošek v finančnem izkazu.",
       "file": "Dokument",
+      "payment": {
+        "toasts": {}
+      },
       "toasts": {
         "uploadError": "Napaka pri nalaganju dokumenta",
         "networkError": "Nalaganje omrežne napake — poskusite znova"
-      }
+      },
+      "unmarkPaidWarning": "Ta dokument je trenutno plačan — odstranitev tega statusa bo odpravila stroške, ki jih je povzročil v financah, pa tudi kakršnokoli bančno usklajevanje.",
+      "markPaidNotice": "Označevanje tega dokumenta kot plačanega bo samodejno ustvarilo ustrezni strošek v finančnem izkazu."
     }
   },
   "dashboard": {
@@ -862,7 +868,8 @@
       "userMenu": {
         "title": "Tvoj profil",
         "description": "Uredite svoj profil, spremenite geslo in se odjavite iz tega menija."
-      }
+      },
+      "help": {}
     }
   },
   "finances": {
@@ -893,9 +900,213 @@
       "title": "Kmalu prihaja",
       "description": "Ta funkcija je v razvoju."
     },
+    "immobilisationsView": {
+      "columns": {},
+      "toasts": {},
+      "drillDown": {}
+    },
+    "immobilisationForm": {},
+    "journalManual": {},
+    "bilan": {
+      "title": "Bilanca",
+      "description": "Premoženje in obveznosti združenja ob koncu finančnega leta.",
+      "exerciceLabel": "Vadba",
+      "rubriqueColumnLabel": "Oddelek",
+      "noPreviousExercice": "Primerjava ni na voljo",
+      "actif": "Aktivni",
+      "totalActif": "Celotna aktivnost",
+      "passif": "Pasivni",
+      "totalPassif": "Skupne obveznosti",
+      "noAccountsInRubrique": "V tem delu ni ravnotežja",
+      "exportPdf": "Izvoz PDF",
+      "exportDisabledTooltip": "Ni mogoče izvoziti končne bilance stanja, dokler zgornje anomalije niso odpravljene.",
+      "emptyExercice": {
+        "title": "Brez fiskalnega leta",
+        "description": "Ustvarite novo fiskalno leto za ogled bilance stanja."
+      },
+      "emptyLedger": {
+        "title": "Brez računovodskih vnosov",
+        "description": "Bilanca stanja bo prikazana takoj, ko bodo v tem finančnem letu zabeleženi prihodki, odhodki ali osnovna sredstva."
+      },
+      "rubriques": {
+        "immobilisationsCorporelles": "Otipljiva kapitalska sredstva",
+        "immobilisationsIncorporelles": "Neoprijemljiva osnovna sredstva",
+        "immobilisationsFinancieres": "Finančna osnovna sredstva",
+        "disponibilites": "Razpoložljivost",
+        "chargesConstateesDavance": "Predplačani stroški",
+        "creances": "Terjatve",
+        "stocksEtEnCours": "Inventar",
+        "fondsPropres": "Pravičnost",
+        "provisions": "Rezervacije",
+        "dettes": "Dolgovi",
+        "produitsConstatesDavance": "Odloženi dohodek",
+        "fondsDedies": "Omejena sredstva"
+      },
+      "memoNotice": "Ocena — ni zabeležena v knjigi, izključena iz skupnih sredstev.",
+      "accountLabels": {
+        "reportANouveau": "Zadržani dobiček",
+        "resultatExercice": "Čisti dobiček za leto",
+        "creancesCotisations": "Neporavnane članarine",
+        "creancesFactures": "Neporavnani računi",
+        "stocksEstimatedValue": "Ocenjena vrednost zalog",
+        "creancesFacturesEnRetard": "Zapadli računi"
+      },
+      "pdf": {
+        "periodLabel": "Obdobje od {start} do {end}"
+      },
+      "drillDown": {
+        "date": "Datum",
+        "label": "Oznaka",
+        "origin": "Izvor",
+        "debit": "Debet",
+        "credit": "Kredit",
+        "noLines": "Za ta račun ni vnosov.",
+        "sourceTypes": {
+          "INCOME": "Dohodek",
+          "INCOME_REVERSAL": "Obrat dohodka",
+          "EXPENSE": "Stroški",
+          "EXPENSE_REVERSAL": "Obrat stroškov",
+          "BANK_TRANSACTION": "Bančna transakcija",
+          "ACCOUNT_TRANSFER": "Notranji prenos",
+          "OPENING_BALANCE": "Začetno stanje",
+          "IMMOBILISATION_DEPRECIATION": "Amortizacija",
+          "IMMOBILISATION_ACQUISITION": "Pridobivanje sredstev",
+          "FACTURE_RECUE_PAYMENT": "Plačilo dobaviteljem",
+          "MANUAL": "Ročni vnos"
+        }
+      },
+      "issues": {
+        "title": "Zaznane anomalije",
+        "messages": {
+          "ACCOUNT_WITHOUT_RUBRIQUE": "Račun {code} — {label} ima stanje, vendar ni vezan na nobeno postavko bilance stanja.",
+          "ACTIF_PASSIF_MISMATCH": "Sredstvo ({actif}) ne ustreza obveznosti ({passif}).",
+          "OPENING_BALANCE_MISSING": "Za to vajo iz \"{previousLabel} ni bilo ustvarjenih odprtih vnosov\".",
+          "TRIAL_BALANCE_UNBALANCED": "Skupni bremen ({debit}) se ne ujema s skupnim dobropisom ({credit}) za to fiskalno leto.",
+          "RESULT_DIVERGENCE": "Rezultat dnevnika ({journal}) se razlikuje od rezultata izkazka poslovnega izida ({statement}) — dnevnik morda še ni posodobljen za to poslovno leto (zaprete fiskalno leto ali ponovno zaženete sinhronizacijo)."
+        }
+      },
+      "memoNoHistory": "Ni zgodovinskih podatkov",
+      "caveats": {
+        "stocksMissingCostPrice": "{count} različic brez zabeleženega nakupnega stroška, izključene iz ocene"
+      }
+    },
+    "compteResultat": {
+      "title": "Izkaz poslovnega izida",
+      "description": "Finančni rezultat poslovnega leta v primerjavi s preteklim letom.",
+      "exerciceLabel": "Poslovno leto",
+      "categoryColumnLabel": "Kategorija",
+      "noPreviousExercice": "-",
+      "noPreviousExerciceMessage": "Ni razpoložljivega predhodnega poslovnega leta",
+      "export": "Izvozi",
+      "exportExcel": "Izvozi Excel (podrobno)",
+      "exportPdf": "Izvozi PDF",
+      "products": "Prihodki",
+      "totalProducts": "Prihodki skupaj",
+      "expenses": "Odhodki",
+      "totalExpenses": "Odhodki skupaj",
+      "result": "Rezultat poslovnega leta",
+      "resultZero": "Rezultat poslovnega leta: 0 €",
+      "surplus": "Presežek poslovnega leta",
+      "deficit": "Primanjkljaj poslovnega leta",
+      "operationalResult": "Poslovni izid",
+      "uncategorized": "Za kategorizacijo",
+      "uncategorizedAlertIncome": "{count, plural, one {# prihodek je treba kategorizirati} two {# prihodka je treba kategorizirati} few {# prihodki je treba kategorizirati} other {# prihodkov je treba kategorizirati}}",
+      "uncategorizedAlertExpense": "{count, plural, one {# odhodek je treba kategorizirati} two {# odhodka je treba kategorizirati} few {# odhodki je treba kategorizirati} other {# odhodkov je treba kategorizirati}}",
+      "expandSection": "Prikaži",
+      "collapseSection": "Skrij",
+      "noCategoriesInSection": "V tem razdelku ni kategorije",
+      "sections": {
+        "FINANCIAL": "Finančno",
+        "EXCEPTIONAL": "Izredno",
+        "OTHER": "Drugo"
+      },
+      "inKind": {
+        "title": "Prostovoljni prispevki v naravi",
+        "employmentHeader": "Uporaba prispevkov",
+        "amountHeader": "Znesek",
+        "receivedHeader": "Prejeti prispevki",
+        "totalEmployments": "Skupno število delovnih mest",
+        "totalReceived": "Skupni prispevki",
+        "note": "Ti brezplačni prispevki so vredni v evrih. Ne povzročajo nobenega premika denarja in ne spreminjajo rezultata finančnega leta."
+      },
+      "drillDown": {
+        "date": "Datum",
+        "origin": "Izvor",
+        "person": "Oseba",
+        "payment": "Plačilo",
+        "amount": "Znesek",
+        "categorize": "Kategoriziraj",
+        "categorizePlaceholder": "Izberi kategorijo",
+        "noTransactions": "Ni transakcij",
+        "categorizeSuccess": "Transakcija kategorizirana"
+      },
+      "pdf": {
+        "periodLabel": "Obdobje od {start} do {end}",
+        "operatingIncome": "POSLOVNI PRIHODKI",
+        "operatingExpense": "POSLOVNI ODHODKI",
+        "operatingResult": "POSLOVNI IZID",
+        "financialIncome": "FINANČNI PRIHODKI",
+        "financialExpense": "FINANČNI ODHODKI",
+        "financialResult": "FINANČNI IZID",
+        "exceptionalIncome": "IZREDNI PRIHODKI",
+        "exceptionalExpense": "IZREDNI ODHODKI",
+        "exceptionalResult": "IZREDNI IZID",
+        "otherIncome": "DRUGI PRIHODKI",
+        "otherExpense": "DRUGI ODHODKI",
+        "otherResult": "IZID IZ DRUGIH PRIHODKOV IN ODHODKOV",
+        "uncategorizedSection": "TRANSAKCIJE ZA KATEGORIZACIJO",
+        "uncategorizedIncomeLabel": "Prihodki za kategorizacijo",
+        "uncategorizedExpenseLabel": "Odhodki za kategorizacijo",
+        "total": "Skupaj",
+        "grandTotal": "SKUPAJ",
+        "categoryColumn": "Kategorija",
+        "inKindTitle": "Prostovoljni prispevki v naravi",
+        "inKindEmploymentHeader": "Uporaba prispevkov",
+        "inKindAmountHeader": "Znesek",
+        "inKindReceivedHeader": "Prejeti prispevki",
+        "inKindTotalEmployments": "Skupno število delovnih mest",
+        "inKindTotalReceived": "Skupni prispevki",
+        "inKindNote": "Ti brezplačni prispevki so vredni v evrih. Ne povzročajo nobenega premika denarja in ne spreminjajo rezultata finančnega leta."
+      },
+      "csv": {
+        "date": "Datum",
+        "type": "Vrsta",
+        "typeIncome": "Prihodek",
+        "typeExpense": "Odhodek",
+        "category": "Kategorija",
+        "uncategorized": "Za kategorizacijo",
+        "accountingCode": "Računovodska koda",
+        "description": "Opis",
+        "amount": "Znesek",
+        "paymentMethod": "Način plačila",
+        "origin": "Izvor",
+        "reference": "Referenca",
+        "exercice": "Poslovno leto"
+      },
+      "emptyExercice": {
+        "title": "Ni poslovnega leta",
+        "description": "Ustvarite poslovno leto za ustvarjanje izkaza poslovnega izida."
+      }
+    },
+    "previsionnel": {
+      "emptyExercice": {},
+      "tabs": {},
+      "card": {},
+      "columns": {},
+      "export": {},
+      "toasts": {},
+      "copyBudget": {
+        "toasts": {}
+      },
+      "projectsTab": {
+        "noProjects": {},
+        "toasts": {}
+      }
+    },
     "categoryForm": {
       "name": "Ime",
       "namePlaceholder": "Primer: prispevki",
+      "noMatchingCategory": "Ni ujemanja kategorije",
       "type": "Vrsta",
       "typeIncome": "Prihodek",
       "typeExpense": "Stroški",
@@ -920,8 +1131,7 @@
       "sectionUnverifiedNote": "Ta račun ni prepoznan — preverite razdelek ali ga izberite med naprednimi možnostmi.",
       "sectionToVerify": "Odsek za preverjanje",
       "advancedOptions": "Napredne možnosti",
-      "revertToAutoSection": "Nazaj na avtomatski del",
-      "noMatchingCategory": "Ni ujemanja kategorije"
+      "revertToAutoSection": "Nazaj na avtomatski del"
     },
     "bankAccountForm": {
       "bankName": "Ime banke",
@@ -1056,6 +1266,13 @@
         "deleted": "Račun izbrisan"
       }
     },
+    "transferForm": {
+      "toasts": {}
+    },
+    "transfersView": {
+      "columns": {},
+      "description": "Tukaj zabeležite že opravljene prenose med bančnimi računi vašega združenja. Obrazec zabeleži prenos brez prenosa denarja."
+    },
     "categoriesView": {
       "title": "Kategorije",
       "description": "Upravljajte kategorije prihodkov in odhodkov.",
@@ -1066,7 +1283,6 @@
       "newCategoryTitle": "Nova kategorija",
       "editCategoryTitle": "Uredi Kategorija",
       "deleteConfirmTitle": "Izbrisati to kategorijo?",
-      "deleteConfirmInUse": "« {name} uporablja {count, plural, one {# prihodki/izdatki} other {# prihodki/izdatki}}. Ti vnosi se bodo spremenili v \"Nekategorizirano\".",
       "toasts": {
         "created": "Ustvarjena kategorija",
         "updated": "Posodobljena kategorija",
@@ -1077,7 +1293,8 @@
       "customCategory": "Ustvarite prilagojeno kategorijo",
       "alreadyExists": "Že konfigurirano",
       "archivedReactivateHint": "Arhivirano — kliknite za ponovno aktivacijo",
-      "custom": "Prilagojena"
+      "custom": "Prilagojena",
+      "deleteConfirmInUse": "« {name} uporablja {count, plural, one {# prihodki/izdatki} other {# prihodki/izdatki}}. Ti vnosi se bodo spremenili v \"Nekategorizirano\"."
     },
     "incomesView": {
       "title": "Prihodki",
@@ -1315,187 +1532,6 @@
       "typeIncome": "Prihodek",
       "typeExpense": "Stroški",
       "confirm": "Potrdite spravo"
-    },
-    "compteResultat": {
-      "title": "Izkaz poslovnega izida",
-      "description": "Finančni rezultat poslovnega leta v primerjavi s preteklim letom.",
-      "exerciceLabel": "Poslovno leto",
-      "noPreviousExercice": "-",
-      "export": "Izvozi",
-      "exportExcel": "Izvozi Excel (podrobno)",
-      "exportPdf": "Izvozi PDF",
-      "products": "Prihodki",
-      "totalProducts": "Prihodki skupaj",
-      "expenses": "Odhodki",
-      "totalExpenses": "Odhodki skupaj",
-      "result": "Rezultat poslovnega leta",
-      "surplus": "Presežek poslovnega leta",
-      "deficit": "Primanjkljaj poslovnega leta",
-      "emptyExercice": {
-        "title": "Ni poslovnega leta",
-        "description": "Ustvarite poslovno leto za ustvarjanje izkaza poslovnega izida."
-      },
-      "noPreviousExerciceMessage": "Ni razpoložljivega predhodnega poslovnega leta",
-      "resultZero": "Rezultat poslovnega leta: 0 €",
-      "operationalResult": "Poslovni izid",
-      "uncategorized": "Za kategorizacijo",
-      "uncategorizedAlertIncome": "{count, plural, one {# prihodek je treba kategorizirati} two {# prihodka je treba kategorizirati} few {# prihodki je treba kategorizirati} other {# prihodkov je treba kategorizirati}}",
-      "uncategorizedAlertExpense": "{count, plural, one {# odhodek je treba kategorizirati} two {# odhodka je treba kategorizirati} few {# odhodki je treba kategorizirati} other {# odhodkov je treba kategorizirati}}",
-      "expandSection": "Prikaži",
-      "collapseSection": "Skrij",
-      "noCategoriesInSection": "V tem razdelku ni kategorije",
-      "sections": {
-        "FINANCIAL": "Finančno",
-        "EXCEPTIONAL": "Izredno",
-        "OTHER": "Drugo"
-      },
-      "drillDown": {
-        "date": "Datum",
-        "origin": "Izvor",
-        "person": "Oseba",
-        "payment": "Plačilo",
-        "amount": "Znesek",
-        "categorize": "Kategoriziraj",
-        "categorizePlaceholder": "Izberi kategorijo",
-        "noTransactions": "Ni transakcij",
-        "categorizeSuccess": "Transakcija kategorizirana"
-      },
-      "pdf": {
-        "periodLabel": "Obdobje od {start} do {end}",
-        "operatingIncome": "POSLOVNI PRIHODKI",
-        "operatingExpense": "POSLOVNI ODHODKI",
-        "operatingResult": "POSLOVNI IZID",
-        "financialIncome": "FINANČNI PRIHODKI",
-        "financialExpense": "FINANČNI ODHODKI",
-        "financialResult": "FINANČNI IZID",
-        "exceptionalIncome": "IZREDNI PRIHODKI",
-        "exceptionalExpense": "IZREDNI ODHODKI",
-        "exceptionalResult": "IZREDNI IZID",
-        "otherIncome": "DRUGI PRIHODKI",
-        "otherExpense": "DRUGI ODHODKI",
-        "otherResult": "IZID IZ DRUGIH PRIHODKOV IN ODHODKOV",
-        "uncategorizedSection": "TRANSAKCIJE ZA KATEGORIZACIJO",
-        "uncategorizedIncomeLabel": "Prihodki za kategorizacijo",
-        "uncategorizedExpenseLabel": "Odhodki za kategorizacijo",
-        "total": "Skupaj",
-        "grandTotal": "SKUPAJ",
-        "categoryColumn": "Kategorija",
-        "inKindTitle": "Prostovoljni prispevki v naravi",
-        "inKindEmploymentHeader": "Uporaba prispevkov",
-        "inKindAmountHeader": "Znesek",
-        "inKindReceivedHeader": "Prejeti prispevki",
-        "inKindTotalEmployments": "Skupno število delovnih mest",
-        "inKindTotalReceived": "Skupni prispevki",
-        "inKindNote": "Ti brezplačni prispevki so vredni v evrih. Ne povzročajo nobenega premika denarja in ne spreminjajo rezultata finančnega leta."
-      },
-      "csv": {
-        "date": "Datum",
-        "type": "Vrsta",
-        "typeIncome": "Prihodek",
-        "typeExpense": "Odhodek",
-        "category": "Kategorija",
-        "uncategorized": "Za kategorizacijo",
-        "accountingCode": "Računovodska koda",
-        "description": "Opis",
-        "amount": "Znesek",
-        "paymentMethod": "Način plačila",
-        "origin": "Izvor",
-        "reference": "Referenca",
-        "exercice": "Poslovno leto"
-      },
-      "categoryColumnLabel": "Kategorija",
-      "inKind": {
-        "title": "Prostovoljni prispevki v naravi",
-        "employmentHeader": "Uporaba prispevkov",
-        "amountHeader": "Znesek",
-        "receivedHeader": "Prejeti prispevki",
-        "totalEmployments": "Skupno število delovnih mest",
-        "totalReceived": "Skupni prispevki",
-        "note": "Ti brezplačni prispevki so vredni v evrih. Ne povzročajo nobenega premika denarja in ne spreminjajo rezultata finančnega leta."
-      }
-    },
-    "bilan": {
-      "title": "Bilanca",
-      "description": "Premoženje in obveznosti združenja ob koncu finančnega leta.",
-      "exerciceLabel": "Vadba",
-      "rubriqueColumnLabel": "Oddelek",
-      "noPreviousExercice": "Primerjava ni na voljo",
-      "actif": "Aktivni",
-      "totalActif": "Celotna aktivnost",
-      "passif": "Pasivni",
-      "totalPassif": "Skupne obveznosti",
-      "noAccountsInRubrique": "V tem delu ni ravnotežja",
-      "emptyExercice": {
-        "title": "Brez fiskalnega leta",
-        "description": "Ustvarite novo fiskalno leto za ogled bilance stanja."
-      },
-      "emptyLedger": {
-        "title": "Brez računovodskih vnosov",
-        "description": "Bilanca stanja bo prikazana takoj, ko bodo v tem finančnem letu zabeleženi prihodki, odhodki ali osnovna sredstva."
-      },
-      "rubriques": {
-        "immobilisationsCorporelles": "Otipljiva kapitalska sredstva",
-        "disponibilites": "Razpoložljivost",
-        "fondsPropres": "Pravičnost",
-        "dettes": "Dolgovi",
-        "immobilisationsIncorporelles": "Neoprijemljiva osnovna sredstva",
-        "immobilisationsFinancieres": "Finančna osnovna sredstva",
-        "chargesConstateesDavance": "Predplačani stroški",
-        "provisions": "Rezervacije",
-        "produitsConstatesDavance": "Odloženi dohodek",
-        "creances": "Terjatve",
-        "stocksEtEnCours": "Inventar",
-        "fondsDedies": "Omejena sredstva"
-      },
-      "issues": {
-        "title": "Zaznane anomalije",
-        "messages": {
-          "ACCOUNT_WITHOUT_RUBRIQUE": "Račun {code} — {label} ima stanje, vendar ni vezan na nobeno postavko bilance stanja.",
-          "ACTIF_PASSIF_MISMATCH": "Sredstvo ({actif}) ne ustreza obveznosti ({passif}).",
-          "OPENING_BALANCE_MISSING": "Za to vajo iz \"{previousLabel} ni bilo ustvarjenih odprtih vnosov\".",
-          "TRIAL_BALANCE_UNBALANCED": "Skupni bremen ({debit}) se ne ujema s skupnim dobropisom ({credit}) za to fiskalno leto.",
-          "RESULT_DIVERGENCE": "Rezultat dnevnika ({journal}) se razlikuje od rezultata izkazka poslovnega izida ({statement}) — dnevnik morda še ni posodobljen za to poslovno leto (zaprete fiskalno leto ali ponovno zaženete sinhronizacijo)."
-        }
-      },
-      "accountLabels": {
-        "reportANouveau": "Zadržani dobiček",
-        "resultatExercice": "Čisti dobiček za leto",
-        "creancesCotisations": "Neporavnane članarine",
-        "creancesFactures": "Neporavnani računi",
-        "stocksEstimatedValue": "Ocenjena vrednost zalog",
-        "creancesFacturesEnRetard": "Zapadli računi"
-      },
-      "exportPdf": "Izvoz PDF",
-      "exportDisabledTooltip": "Ni mogoče izvoziti končne bilance stanja, dokler zgornje anomalije niso odpravljene.",
-      "pdf": {
-        "periodLabel": "Obdobje od {start} do {end}"
-      },
-      "drillDown": {
-        "date": "Datum",
-        "label": "Oznaka",
-        "origin": "Izvor",
-        "debit": "Debet",
-        "credit": "Kredit",
-        "noLines": "Za ta račun ni vnosov.",
-        "sourceTypes": {
-          "INCOME": "Dohodek",
-          "INCOME_REVERSAL": "Obrat dohodka",
-          "EXPENSE": "Stroški",
-          "EXPENSE_REVERSAL": "Obrat stroškov",
-          "BANK_TRANSACTION": "Bančna transakcija",
-          "ACCOUNT_TRANSFER": "Notranji prenos",
-          "OPENING_BALANCE": "Začetno stanje",
-          "IMMOBILISATION_DEPRECIATION": "Amortizacija",
-          "IMMOBILISATION_ACQUISITION": "Pridobivanje sredstev",
-          "FACTURE_RECUE_PAYMENT": "Plačilo dobaviteljem",
-          "MANUAL": "Ročni vnos"
-        }
-      },
-      "memoNotice": "Ocena — ni zabeležena v knjigi, izključena iz skupnih sredstev.",
-      "memoNoHistory": "Ni zgodovinskih podatkov",
-      "caveats": {
-        "stocksMissingCostPrice": "{count} različic brez zabeleženega nakupnega stroška, izključene iz ocene"
-      }
     }
   },
   "evenements": {
@@ -1711,6 +1747,7 @@
         "dateLabel": "Datum začetka",
         "createButton": "Ustvarjaj"
       },
+      "summary": {},
       "bilan": {
         "show": "Prikaži pregled",
         "hide": "Skrij pregled",
@@ -1928,6 +1965,9 @@
         "qrRevoked": "QR koda onemogočena",
         "noMembersToExport": "Brez članov za izvoz",
         "linkCopied": "Povezava kopirana"
+      },
+      "payment": {
+        "methods": {}
       }
     },
     "avaliacoes": {
@@ -1982,6 +2022,7 @@
           "standardFieldsHint": "Polja zahtevana ob registraciji",
           "phoneLabel": "Telefon",
           "addressLabel": "Nagovor",
+          "countryLabel": "Država prebivališča",
           "requirement": {
             "hidden": "Maskirani",
             "optional": "Opcijsko",
@@ -1989,8 +2030,7 @@
           },
           "mobileLabel": "Mobilni",
           "birthDateLabel": "Datum rojstva",
-          "genderLabel": "Spol",
-          "countryLabel": "Država prebivališča"
+          "genderLabel": "Spol"
         },
         "products": {
           "title": "Izdelki",
@@ -2310,6 +2350,7 @@
       "liveSince": "Od takrat naprej {mins} min",
       "durationLessThanMin": "< 1 min",
       "durationMin": "{mins} min",
+      "activeMeetingWarning": {},
       "toasts": {
         "meetingStarted": "Sestanek se je začel",
         "meetingScheduled": "Načrtovani sestanek",
@@ -2785,6 +2826,7 @@
       "restockNoticePlural": "{count, plural, one {Zaloga predmeta, ki ni bil umaknjen, bo obnovljena.} other {Zaloga nepobranih predmetov bo obnovljena.}}",
       "restockNoticeStatic": "Zaloga nepobranih predmetov bo obnovljena."
     },
+    "refundModal": {},
     "stripeConfirm": {
       "title": "Označiti kot plačano?",
       "descriptionSimple": "Ta ukaz Stripe ({amount}) bo ročno označen kot plačan.",
@@ -3121,6 +3163,7 @@
           "title": "Oblika",
           "standardFieldsHint": "Polja, zahtevana od donatorja",
           "addressLabel": "Nagovor",
+          "countryLabel": "Država prebivališča",
           "birthDateLabel": "Datum rojstva",
           "phoneLabel": "Stacionarni telefon",
           "mobileLabel": "Mobilni",
@@ -3151,8 +3194,7 @@
           "addOption": "Dodaj možnost",
           "removeOption": "Odstranite to možnost",
           "optionsRequiredError": "Vsako polje seznama/izbire zahteva vsaj 2 možnosti.",
-          "duplicateOptionsError": "Možnosti polja seznama/izbire morajo biti edinstvene.",
-          "countryLabel": "Država prebivališča"
+          "duplicateOptionsError": "Možnosti polja seznama/izbire morajo biti edinstvene."
         },
         "payment": {
           "title": "Plačilo",
@@ -3411,6 +3453,7 @@
           "title": "Oblika",
           "standardFieldsHint": "Polja zahtevana ob registraciji",
           "addressLabel": "Nagovor",
+          "countryLabel": "Država prebivališča",
           "birthDateLabel": "Datum rojstva",
           "phoneLabel": "Stacionarni telefon",
           "mobileLabel": "Mobilni",
@@ -3443,8 +3486,7 @@
           "addOption": "Dodaj možnost",
           "removeOption": "Odstranite to možnost",
           "optionsRequiredError": "Vsako polje seznama/izbire zahteva vsaj 2 možnosti.",
-          "duplicateOptionsError": "Možnosti polja seznama/izbire morajo biti edinstvene.",
-          "countryLabel": "Država prebivališča"
+          "duplicateOptionsError": "Možnosti polja seznama/izbire morajo biti edinstvene."
         },
         "payment": {
           "title": "Plačilo",
@@ -3698,6 +3740,7 @@
         "required": "Obvezno"
       }
     },
+    "blockEditor": {},
     "rulesManager": {
       "title": "Avtomatizacijska pravila",
       "subtitle": "Samodejna pošiljanja po koledarju ali dogodku.",
@@ -3987,7 +4030,11 @@
       "bicColon": "BIC : {value}",
       "toasts": {
         "updated": "Posodobljeni kontaktni podatki"
-      }
+      },
+      "accountingRegime": "Računovodski režim za povračila stroškov",
+      "accountingRegimeHint": "Določa, kdaj je zahteva za povračilo vložena: ob odobritvi (zavezi) ali ob dejanskem plačilu (gotovina).",
+      "accountingRegimeCash": "Denarno računovodstvo",
+      "accountingRegimeAccrual": "Računovodstvo zavez"
     },
     "membreTypes": {
       "name": "Ime",
@@ -4014,7 +4061,12 @@
       "title": "Vizualna identiteta",
       "subtitle": "Logotip je prikazan na nadzorni plošči, v ponudbah/računih, na seznamu prisotnosti in na javni spletni strani.",
       "logo": "Logotip",
+      "footerStyles": {},
+      "footer": {
+        "socialPlatforms": {}
+      },
       "proOnlyText": "Prilagojen logotip (nadzorna plošča, ponudbe/računi, časovni list) je rezerviran za Pro paket. Nadgradite na naslednji paket v zavihku Naročnina, da ga aktivirate.",
+      "preview": {},
       "toasts": {
         "updated": "Posodobljena vizualna identiteta",
         "uploadError": "Napaka pri nalaganju logotipa"
@@ -4057,10 +4109,10 @@
       "status": {
         "trial": "Brezplačna preizkusna različica",
         "active": "Aktivni",
+        "paymentPending": "Plačilo v teku",
         "pastDue": "Zamude pri plačilu",
         "suspended": "Suspendiran",
-        "cancelled": "Preklicano",
-        "paymentPending": "Plačilo v teku"
+        "cancelled": "Preklicano"
       },
       "planLabel": "Formula {tier}",
       "membersCount": "{count} / {limit} Člani",
@@ -4181,6 +4233,16 @@
       "subtitleTrialExpired": "Vaša brezplačna preizkusna doba je potekla. Izberite paket in vnesite način plačila za nadaljevanje.",
       "confirmButtonSubscribe": "Potrdite in naročite se"
     },
+    "teamAccess": {
+      "columns": {},
+      "summary": {},
+      "profiles": {},
+      "levels": {},
+      "areas": {
+        "sensible": "Občutljivi podatki članov"
+      },
+      "toasts": {}
+    },
     "erasureRequests": {
       "title": "Brisanje podatkov (GDPR)",
       "description": "Zahteve za dokončno brisanje osebnih podatkov člana, v skladu s 17. členom GDPR. Samodejno se obdelajo vsako noč, razen tistih, ki so zadržane.",
@@ -4221,11 +4283,6 @@
       },
       "automaticOrigin": "Samodejno označeno — nedejaven več kot 3 leta",
       "inactiveSince": "odšel/odšla {date}"
-    },
-    "teamAccess": {
-      "areas": {
-        "sensible": "Občutljivi podatki članov"
-      }
     }
   },
   "cotisations": {
@@ -4315,28 +4372,6 @@
       "allCategories": "Vse kategorije",
       "allRenewals": "Vse obnovitve",
       "resetFilters": "Ponastavitev",
-      "renewal": {
-        "automatic": "Samodejno",
-        "manual": "Ročno"
-      },
-      "summary": {
-        "aPagar": " · {amount} skupaj",
-        "recebido": " · {amount} prejeto",
-        "saldo": " · {amount} preostane za plačilo"
-      },
-      "distribution": {
-        "show": "Prikaži porazdelitev",
-        "hide": "Skrij porazdelitev",
-        "category": "Kategorija članstva",
-        "renewal": "Obnovitev",
-        "count": "Število prispevkov",
-        "aPagar": "Skupni znesek",
-        "recebido": "Prejeti znesek",
-        "saldo": "Preostalo stanje",
-        "total": "Skupaj",
-        "noCategory": "Brez kategorije",
-        "empty": "Noben prispevek ne ustreza tem filtrom."
-      },
       "mergeTiers": {
         "filterOption": "Združite podvojene kategorije",
         "title": "Združite podvojene kategorije",
@@ -4359,6 +4394,28 @@
         "priceFreeAmount": "Brezplačna količina",
         "priceFreeAmountFrom": "Brezplačen znesek od {amount}",
         "priceRecurring": "{amount}/leto"
+      },
+      "renewal": {
+        "automatic": "Samodejno",
+        "manual": "Ročno"
+      },
+      "summary": {
+        "aPagar": " · {amount} skupaj",
+        "recebido": " · {amount} prejeto",
+        "saldo": " · {amount} preostane za plačilo"
+      },
+      "distribution": {
+        "show": "Prikaži porazdelitev",
+        "hide": "Skrij porazdelitev",
+        "category": "Kategorija članstva",
+        "renewal": "Obnovitev",
+        "count": "Število prispevkov",
+        "aPagar": "Skupni znesek",
+        "recebido": "Prejeti znesek",
+        "saldo": "Preostalo stanje",
+        "total": "Skupaj",
+        "noCategory": "Brez kategorije",
+        "empty": "Noben prispevek ne ustreza tem filtrom."
       }
     },
     "reminderModal": {
@@ -4423,6 +4480,24 @@
       "annulee": "Ta prispevek je bil preklican."
     }
   },
+  "groupes": {
+    "view": {
+      "statusFilter": {},
+      "columns": {},
+      "statusBadge": {},
+      "actions": {},
+      "toasts": {}
+    },
+    "form": {},
+    "detail": {
+      "appelColumns": {}
+    },
+    "appel": {
+      "counts": {},
+      "status": {},
+      "toasts": {}
+    }
+  },
   "membres": {
     "form": {
       "status": {
@@ -4450,6 +4525,11 @@
         "femme": "Ženske"
       },
       "groupeSanguinNone": "Ni navedeno",
+      "imageRights": {
+        "unknown": "Ni navedeno",
+        "granted": "Da",
+        "refused": "Ne"
+      },
       "tailleTshirtNone": "Ni navedeno",
       "preferredLocaleNone": "Ni navedeno",
       "preferredLocaleHint": "Izbrani jezik bo omogočil pošiljanje e-pošte in sporočil temu članu v njegovem priljubljenem jeziku.",
@@ -4481,14 +4561,14 @@
         "allergies": "Znane alergije",
         "allergiesPlaceholder": "Arachide, cvetni prah...",
         "type": "Tip člena",
-        "preferredLocale": "Komunikacijski jezik",
-        "spokenLanguage": "Govorjeni jezik",
-        "cotisationTier": "Članarina",
-        "guardianName": "Zakoniti skrbnik {number} — ime",
-        "guardianPhone": "Zakoniti skrbnik {number} — telefon",
         "imageRights": "Pravica do slike",
         "notes": "Opombe",
-        "notesPlaceholder": "Koristne informacije o tem članu (tečaji, opombe…)"
+        "notesPlaceholder": "Koristne informacije o tem članu (tečaji, opombe…)",
+        "guardianName": "Zakoniti skrbnik {number} — ime",
+        "guardianPhone": "Zakoniti skrbnik {number} — telefon",
+        "preferredLocale": "Komunikacijski jezik",
+        "spokenLanguage": "Govorjeni jezik",
+        "cotisationTier": "Članarina"
       },
       "invitationNotice": "Na ta naslov bo poslano vabilo z identifikatorji.",
       "tierNone": "Brez določanja cen (privzeto vedenje)",
@@ -4509,18 +4589,7 @@
         "management": "Upravljanje člana"
       },
       "invalidFormToast": "Shranjevanje ni uspelo. Če se težava ponavlja, se obrnite na podporo.",
-      "customFieldsLoading": "Nalaganje odgovorov iz pristopnega obrazca…",
-      "imageRights": {
-        "unknown": "Ni navedeno",
-        "granted": "Da",
-        "refused": "Ne"
-      }
-    },
-    "fichePdf": {
-      "title": "PROFIL ČLANA",
-      "subtitle": "Obrazec, ki ga mora izpolniti novi član",
-      "signature": "Podpis",
-      "date": "Datum"
+      "customFieldsLoading": "Nalaganje odgovorov iz pristopnega obrazca…"
     },
     "actions": {
       "add": "Dodajte člana",
@@ -4570,13 +4639,13 @@
         "firstName": "Ime",
         "lastName": "Priimek",
         "address": "Nagovor",
+        "country": "Država",
+        "countryPlaceholder": "Vse države",
+        "countryLoadError": "Ni mogoče naložiti držav. Poskusi znova čez trenutek.",
         "birthDateFrom": "Rojeni po",
         "birthDateTo": "Rojeni pred",
         "apply": "Prijavite se",
-        "reset": "Ponastavitev",
-        "country": "Država",
-        "countryPlaceholder": "Vse države",
-        "countryLoadError": "Ni mogoče naložiti držav. Poskusi znova čez trenutek."
+        "reset": "Ponastavitev"
       },
       "statusOptions": {
         "pending": "V teku",
@@ -4635,6 +4704,13 @@
       "cotisationButton": "Članarina",
       "createAccessButton": "Ustvari dostop",
       "roleButton": "Vloga",
+      "eraseData": {
+        "button": "Izbriši podatke (GDPR)",
+        "confirmTitle": "Zahtevati dokončno brisanje podatkov {name}?",
+        "confirmDescription": "To dejanje registrira zahtevo za brisanje v skladu s 17. členom GDPR. Član bo prejel e-poštno sporočilo s potrditvijo, nato pa bodo njegovi osebni podatki nepreklicno anonimizirani ob naslednji samodejni obdelavi, razen če je zahteva zadržana.",
+        "toastSuccess": "Zahteva za brisanje registrirana",
+        "requestLabel": "GDPR izbris"
+      },
       "contact": "Stik",
       "noContactInfo": "Brez kontaktnih podatkov",
       "memberSinceColon": "Član od: {date}",
@@ -4751,13 +4827,6 @@
         "rejectConfirmTitle": "Zavrniti to prošnjo?",
         "rejectConfirmDescription": "{name} se spremeni v status \"Neaktiven\" in se ne bo mogel prijaviti. Zahteva in njeni odgovori na obrazec ostajajo ohranjeni."
       },
-      "eraseData": {
-        "button": "Izbriši podatke (GDPR)",
-        "confirmTitle": "Zahtevati dokončno brisanje podatkov {name}?",
-        "confirmDescription": "To dejanje registrira zahtevo za brisanje v skladu s 17. členom GDPR. Član bo prejel e-poštno sporočilo s potrditvijo, nato pa bodo njegovi osebni podatki nepreklicno anonimizirani ob naslednji samodejni obdelavi, razen če je zahteva zadržana.",
-        "toastSuccess": "Zahteva za brisanje registrirana",
-        "requestLabel": "GDPR izbris"
-      },
       "noCommande": "Ta stik nima nakupov v trgovini.",
       "commandeStatus": {
         "PENDING": "V teku",
@@ -4847,6 +4916,11 @@
       "inMessagesSection": " v razdelku Sporočila.",
       "messageSectionLabel": "Sporočilo",
       "saveAsTemplate": "Shrani kot predlogo",
+      "subjectLabel": "Namen",
+      "subjectPlaceholder": "Predmet e-pošte...",
+      "subjectTooLong": "Zadeva je predolga: {length}/{max} znakov — pri pošiljanju bo zavrnjena.",
+      "bodyLabel": "Telo sporočila",
+      "bodyPlaceholder": "Napiši svoje sporočilo...",
       "language": {
         "title": "Jezik pošiljanja",
         "modeOriginal": "Izvirni jezik",
@@ -4871,11 +4945,6 @@
         "autoNoEffect": "Noben trenutni prejemnik nima drugega prednostnega jezika kot francoščina — vsi bodo prejeli izvirno različico.",
         "autoExternalNote": "{count, plural, one {# zunanji e-poštni naslov (izvirni jezik)} other {# zunanjih e-poštnih naslovov (izvirni jezik)}}"
       },
-      "subjectLabel": "Namen",
-      "subjectPlaceholder": "Predmet e-pošte...",
-      "subjectTooLong": "Zadeva je predolga: {length}/{max} znakov — pri pošiljanju bo zavrnjena.",
-      "bodyLabel": "Telo sporočila",
-      "bodyPlaceholder": "Napiši svoje sporočilo...",
       "continue": "Nadaljuj",
       "confirmSendTitle": "Potrditev pošiljanja",
       "confirmSendDescription": "Ta e-pošta bo poslana na {recipients}. To dejanje je nepovratno.",
@@ -4892,6 +4961,9 @@
       "recipientsActive": "{count, plural, one {# aktivni član} other {# aktivni člani}}",
       "externalOnlyCount": "{count, plural, one {# zunanji e-poštni naslov} other {# zunanja e-poštna sporočila}}",
       "recipientsWithExternal": "{members} + {count, plural, one {# zunanji e-poštni naslov} other {# zunanja e-poštna sporočila}}",
+      "attachments": {
+        "errors": {}
+      },
       "toasts": {
         "selectType": "Izberite vrsto člana",
         "selectMember": "Izberite vsaj enega člana ali dodajte zunanji e-poštni naslov",
@@ -5291,6 +5363,12 @@
         "genericError": "Napaka"
       },
       "importedNote": "Uvoženo iz AssoConnect — {collecte}"
+    },
+    "fichePdf": {
+      "title": "PROFIL ČLANA",
+      "subtitle": "Obrazec, ki ga mora izpolniti novi član",
+      "signature": "Podpis",
+      "date": "Datum"
     }
   },
   "memberCard": {
@@ -5393,8 +5471,8 @@
       "actualites": "Novice",
       "membership": "Pridružite se združenju",
       "dons": "Donirajte",
-      "contact": "Stik",
-      "boutique": "Trgovina"
+      "boutique": "Trgovina",
+      "contact": "Stik"
     },
     "defaultTitles": {
       "hero": "Dobrodošli",
@@ -5402,9 +5480,9 @@
       "events": "Prihajajoči dogodki",
       "membership": "Pridružite se združenju",
       "dons": "Donirajte",
+      "boutique": "Trgovina",
       "actualites": "Novice",
-      "contact": "Stik",
-      "boutique": "Trgovina"
+      "contact": "Stik"
     },
     "view": {
       "uploadFailedWarning": "{count, plural, one {# slike ni bilo mogoče prenesti.} other {# slik ni bilo mogoče naložiti.}}",
@@ -5448,9 +5526,9 @@
       "noSections": "Brez odsekov. Dodajte enega spodaj.",
       "addSection": "Dodajte odsek",
       "donsModuleDisabled": "Modul za donacije onemogočen — neviden na javni strani",
+      "boutiqueModuleDisabled": "Modul Trgovina je onemogočen — ni viden na javnem spletnem mestu",
       "deleteSectionTitle": "Odsek za brisanje",
-      "deleteSectionDescription": "To dejanje je nepovratno.",
-      "boutiqueModuleDisabled": "Modul Trgovina je onemogočen — ni viden na javnem spletnem mestu"
+      "deleteSectionDescription": "To dejanje je nepovratno."
     },
     "sectionSheet": {
       "editTitle": "Uredi — {label}",
@@ -5471,6 +5549,8 @@
       "eventsLimitHint": "Dogodki se samodejno izberejo iz vašega koledarja.",
       "actualitesLimit": "Število novic za prikaz",
       "actualitesLimitHint": "Na strani bodo prikazane le prve objave N novic.",
+      "boutiqueLimit": "Število prikazanih izdelkov",
+      "boutiqueLimitHint": "Na spletnem mestu bo prikazanih le prvih N aktivnih izdelkov.",
       "membershipIntro": "Uvodno besedilo",
       "membershipIntroPlaceholder": "Izpolnite ta obrazec za prijavo v združenje...",
       "membershipHint": "Zahteve se pojavijo na seznamu članov s statusom \"V obravnavi\".",
@@ -5491,9 +5571,7 @@
       "apply": "Prijavite se",
       "discardTitle": "Ignorirati spremembe?",
       "discardDescription": "Neuporabljene spremembe bodo izgubljene.",
-      "discardConfirm": "Ignoriraj",
-      "boutiqueLimit": "Število prikazanih izdelkov",
-      "boutiqueLimitHint": "Na spletnem mestu bo prikazanih le prvih N aktivnih izdelkov."
+      "discardConfirm": "Ignoriraj"
     },
     "preview": {
       "donsNoForm": "Obrazec za donacijo ni izbran — neviden na javni strani"
@@ -5502,6 +5580,12 @@
       "viewSite": "Oglejte si spletno stran",
       "logoUrl": "URL logotipa (neobvezno)",
       "footerText": "Besedilo v nogi"
+    },
+    "aiAssistant": {},
+    "builderSwitch": {
+      "confirmOn": {},
+      "confirmOff": {},
+      "toasts": {}
     }
   },
   "richTextEditor": {
@@ -5514,6 +5598,21 @@
     "heading1": "Naslov 1",
     "heading2": "Naslov 2",
     "heading3": "Naslov 3"
+  },
+  "paperFormTemplates": {
+    "columns": {},
+    "toasts": {},
+    "deleteConfirm": {},
+    "leaveWarning": {},
+    "targetGroups": {},
+    "targets": {},
+    "renderErrors": {},
+    "editor": {
+      "columns": {}
+    },
+    "activity": {
+      "fields": {}
+    }
   },
   "associationDocuments": {
     "title": "Dokumenti združenja",
@@ -5560,6 +5659,9 @@
     "notFound": "Tega dokumenta ni bilo mogoče najti.",
     "backToList": "Nazaj na dokumente"
   },
+  "formDraft": {},
+  "legalConsent": {},
+  "publicDocuments": {},
   "portalMembre": {
     "associationDocuments": {
       "title": "Dokumenti združenja",
@@ -5606,6 +5708,15 @@
       "viewShop": "Oglejte si trgovino",
       "orderPlacedTitle": "Naročilo registrirano!",
       "orderPlacedDescription": "Vaše naročilo čaka na plačilo. Uprava vas bo kontaktirala za dokončno odločitev.",
+      "paymentSuccessTitle": "Plačilo potrjeno!",
+      "paymentSuccessDescription": "Hvala za nakup. Poslali smo vam potrditveno e-sporočilo z vašim računom.",
+      "stockAdjustedNotice": "Zaloga nekaterih izdelkov se je spremenila — vaša košarica je bila prilagojena, preverite jo pred nadaljevanjem.",
+      "trackOrderButton": "Sledi moji naročilu",
+      "trackingPageTitle": "Sledenje naročilu",
+      "trackingStatusPending": "Čaka na plačilo",
+      "trackingStatusPaid": "Naročilo plačano",
+      "trackingStatusCancelled": "Naročilo preklicano",
+      "trackingNotFound": "Naročilo ni najdeno",
       "myOrdersButton": "Moja navodila",
       "continueShopping": "Nadaljujte z nakupovanjem",
       "maxStockReached": "Dosežena maksimalna vrednost",
@@ -5643,16 +5754,7 @@
         "orderError": "Napaka med naročilom",
         "orderUpdated": "Posodobljen vrstni red",
         "orderCancelled": "Naročilo preklicano"
-      },
-      "paymentSuccessTitle": "Plačilo potrjeno!",
-      "paymentSuccessDescription": "Hvala za nakup. Poslali smo vam potrditveno e-sporočilo z vašim računom.",
-      "stockAdjustedNotice": "Zaloga nekaterih izdelkov se je spremenila — vaša košarica je bila prilagojena, preverite jo pred nadaljevanjem.",
-      "trackOrderButton": "Sledi moji naročilu",
-      "trackingPageTitle": "Sledenje naročilu",
-      "trackingStatusPending": "Čaka na plačilo",
-      "trackingStatusPaid": "Naročilo plačano",
-      "trackingStatusCancelled": "Naročilo preklicano",
-      "trackingNotFound": "Naročilo ni najdeno"
+      }
     },
     "dons": {
       "title": "Moje donacije",
@@ -5953,7 +6055,8 @@
         "communication": "Komunikacija",
         "finances": "Finance",
         "outils": "Orodja"
-      }
+      },
+      "reimbursements": "Povračila stroškov"
     },
     "backofficeSidebar": {
       "backoffice": "Backoffice",
@@ -5989,6 +6092,7 @@
       },
       "logout": "Odjavi se"
     },
+    "twoFactorSettingsModal": {},
     "changePasswordModal": {
       "title": "Spremeni geslo",
       "currentPasswordLabel": "Trenutno geslo",
@@ -6130,6 +6234,7 @@
       "daysWithoutCotisation": "Dni brez prispevka",
       "status": "Stanje"
     },
+    "originSources": {},
     "empty": "Ni kontrolnih opozoril.",
     "resolveAction": "Reši",
     "resolveConfirmTitle": "Rešiti to opozorilo?",
@@ -6147,7 +6252,169 @@
     "autoResolvedLabel": "(samodejno)",
     "emptyForSearch": "Ni rezultatov za \"{search}\"."
   },
+  "help": {
+    "tabs": {},
+    "callout": {},
+    "assistant": {
+      "examples": {},
+      "examplesDocs": {},
+      "tools": {}
+    },
+    "changelog": {
+      "kind": {}
+    },
+    "releaseNotes": {},
+    "news": {},
+    "faqPopup": {},
+    "popupCarousel": {},
+    "footer": {}
+  },
+  "boutiqueShipping": {},
+  "paperFormScan": {
+    "steps": {},
+    "upload": {
+      "camera": {}
+    },
+    "reading": {},
+    "viewer": {},
+    "editor": {},
+    "review": {},
+    "status": {},
+    "result": {},
+    "notesValues": {},
+    "validation": {},
+    "leaveWarning": {},
+    "restartWarning": {}
+  },
   "formTermsEditor": {
     "contentRequired": "Izpolniti morate polje »{conditionsLabel}« ali naložiti dokument."
+  },
+  "membreDuplicates": {
+    "list": {
+      "matchedFields": {},
+      "columns": {},
+      "status": {}
+    },
+    "merge": {
+      "fields": {},
+      "relations": {}
+    },
+    "backoffice": {
+      "columns": {}
+    }
+  },
+  "reimbursements": {
+    "view": {
+      "title": "Povračila stroškov",
+      "newRequest": "Nova zahteva",
+      "export": "Izvoz",
+      "myRequests": "Moje prošnje",
+      "allRequests": "Vse zahteve",
+      "allRequesters": "Vsi kandidati",
+      "allCategories": "Vse kategorije",
+      "dateFrom": "Od",
+      "dateTo": "Za",
+      "allStatuses": "Vsi statusi",
+      "summary": "{pending} V teku — {pendingAmount} · {approved} za vračilo — {approvedAmount} · {reimbursed} povrnjeno — {reimbursedAmount}",
+      "noRequest": "Brez zahtevkov za vračilo denarja",
+      "columns": {
+        "subject": "Namen",
+        "date": "Datum",
+        "amount": "Znesek",
+        "status": "Status"
+      },
+      "status": {
+        "draft": "Osnutek",
+        "pendingApproval": "Čaka se na odobritev",
+        "needsCorrection": "Za popravek",
+        "approved": "Odobreno",
+        "rejected": "Zavrnjeno",
+        "reimbursed": "Povrnjeno",
+        "cancelled": "Preklicano"
+      },
+      "actions": {
+        "view": "Glej",
+        "submit": "Pošlji",
+        "cancel": "Prekliči"
+      },
+      "toasts": {
+        "created": "Zahteva ustvarjena",
+        "updated": "Zahteva za posodobitev",
+        "deleted": "Zahteva izbrisana",
+        "submitted": "Vloga vložena v odobritev",
+        "cancelled": "Zahteva preklicana",
+        "approved": "Vloga odobrena",
+        "correctionRequested": "Zahteva za popravek",
+        "rejected": "Zahteva zavrnjena",
+        "reimbursed": "Zabeleženo vračilo"
+      },
+      "deleteConfirmTitle": "Izbrisati ta osnutek?",
+      "deleteConfirmDescription": "To dejanje je nepovratno.",
+      "cancelConfirmTitle": "Prekliči to zahtevo?",
+      "cancelConfirmDescription": "Prijavitelj bo obveščen o preklicu.",
+      "cancelReasonLabel": "Razlog za preklic"
+    },
+    "form": {
+      "subject": "Namen",
+      "subjectPlaceholder": "Npr. Potovanja na regionalna srečanja",
+      "comment": "Komentar",
+      "commentPlaceholder": "Neobvezne podrobnosti",
+      "event": "Sorodni dogodek",
+      "project": "Povezani projekt",
+      "noProject": "Brez projekta",
+      "noEvent": "Brez dogodkov",
+      "items": "Stroški",
+      "addItem": "Dodaj strošek",
+      "noItems": "Brez dodatnih stroškov",
+      "itemDate": "Datum porabe",
+      "itemDescription": "Opis",
+      "itemAmount": "Znesek",
+      "itemCategory": "Kategorija",
+      "itemReceipt": "Utemeljitev",
+      "total": "Skupaj",
+      "duplicateWarning": "Podoben strošek (enak datum, enak znesek) že obstaja v drugi vaši zahtevi.",
+      "toasts": {
+        "uploadError": "Napaka pri pošiljanju potrdila",
+        "networkError": "Omrežna napaka pri pošiljanju potrdila"
+      }
+    },
+    "detail": {
+      "notFound": "Zahteva za vračilo denarja ni bila najdena",
+      "history": "Zgodovina",
+      "correctionFrom": "Popravek je zahteval {name}",
+      "rejectedBy": "Zavrnjeno s strani {name}",
+      "reimbursedOn": "Povrnjeno dne {date} avtor {method}",
+      "selfApprovalBlockedNotice": "Lastne zahteve ne morete odobriti. Odobriti jo mora administrator ali drug pooblaščeni uradnik.",
+      "viewReceipt": "Oglejte si podporne dokumente",
+      "immobilisationTag": "Osnovna sredstva",
+      "approveButton": "Odobri",
+      "requestCorrectionButton": "Zahtevajte popravek",
+      "rejectButton": "Zavrni",
+      "correctionCommentLabel": "Komentar popravka",
+      "rejectionReasonLabel": "Razlog za zavrnitev",
+      "deleteItemConfirmTitle": "Odpraviti ta strošek?",
+      "toasts": {
+        "itemAdded": "Dodatni stroški",
+        "itemUpdated": "Posodobljen strošek",
+        "itemDeleted": "Strošek odstranjen"
+      }
+    },
+    "register": {
+      "title": "Shrani vračilo",
+      "registerButton": "Shrani vračilo",
+      "date": "Datum vračila",
+      "paymentMethod": "Način plačila",
+      "bankAccount": "Bančni račun",
+      "noBankAccountHint": "Brez odprtja bančnega računa — dodajte ga v Finance> Računi ali izberite Gotovina.",
+      "transaction": "Uskladite uvoženo bančno transakcijo (neobvezno)",
+      "noTransaction": "Ne približuj se zdaj",
+      "reference": "Viri",
+      "submit": "Shrani",
+      "methods": {
+        "virement": "Prenos",
+        "cheque": "Preveri",
+        "especes": "Vrste"
+      }
+    }
   }
 }

@@ -675,6 +675,120 @@
       }
     }
   },
+  "reimbursements": {
+    "view": {
+      "title": "Expense reimbursements",
+      "newRequest": "New request",
+      "export": "Export",
+      "myRequests": "My requests",
+      "allRequests": "All requests",
+      "allRequesters": "All applicants",
+      "allCategories": "All categories",
+      "dateFrom": "Of",
+      "dateTo": "To",
+      "allStatuses": "All statuses",
+      "summary": "{pending} Pending — {pendingAmount} · {approved} to be refunded — {approvedAmount} · {reimbursed} reimbursed — {reimbursedAmount}",
+      "noRequest": "No refund requests",
+      "columns": {
+        "subject": "Purpose",
+        "date": "Date",
+        "amount": "Amount",
+        "status": "Status"
+      },
+      "status": {
+        "draft": "Draft",
+        "pendingApproval": "Awaiting approval",
+        "needsCorrection": "To be corrected",
+        "approved": "Approved",
+        "rejected": "Refused",
+        "reimbursed": "Refunded",
+        "cancelled": "Cancelled"
+      },
+      "actions": {
+        "view": "See",
+        "submit": "Submit",
+        "cancel": "Cancel"
+      },
+      "toasts": {
+        "created": "Request created",
+        "updated": "Update request",
+        "deleted": "Request deleted",
+        "submitted": "Application submitted for approval",
+        "cancelled": "Request canceled",
+        "approved": "Application approved",
+        "correctionRequested": "Correction requested",
+        "rejected": "Request denied",
+        "reimbursed": "Recorded refund"
+      },
+      "deleteConfirmTitle": "Delete this draft?",
+      "deleteConfirmDescription": "This action is irreversible.",
+      "cancelConfirmTitle": "Cancel this request?",
+      "cancelConfirmDescription": "The applicant will be notified of the cancellation.",
+      "cancelReasonLabel": "Reason for cancellation"
+    },
+    "form": {
+      "subject": "Purpose",
+      "subjectPlaceholder": "Ex. Regional meeting travel",
+      "comment": "Commentary",
+      "commentPlaceholder": "Optional details",
+      "event": "Related event",
+      "project": "Associated project",
+      "noProject": "No project",
+      "noEvent": "No events",
+      "items": "Expenses",
+      "addItem": "Add an expense",
+      "noItems": "No additional fees",
+      "itemDate": "Date of expenditure",
+      "itemDescription": "Description",
+      "itemAmount": "Amount",
+      "itemCategory": "Category",
+      "itemReceipt": "Justification",
+      "total": "Total",
+      "duplicateWarning": "A similar expense (same date, same amount) already exists in another of your requests.",
+      "toasts": {
+        "uploadError": "Error when sending the receipt",
+        "networkError": "Network error when sending the receipt"
+      }
+    },
+    "detail": {
+      "notFound": "Refund request not found",
+      "history": "History",
+      "correctionFrom": "Correction requested by {name}",
+      "rejectedBy": "Refused by {name}",
+      "reimbursedOn": "Refunded on {date} by {method}",
+      "selfApprovalBlockedNotice": "You cannot approve your own request. It must be approved by an administrator or another authorized official.",
+      "viewReceipt": "See the supporting documents",
+      "immobilisationTag": "Fixed assets",
+      "approveButton": "Approve",
+      "requestCorrectionButton": "Request a correction",
+      "rejectButton": "Refuse",
+      "correctionCommentLabel": "Correction comment",
+      "rejectionReasonLabel": "Reason for refusal",
+      "deleteItemConfirmTitle": "Eliminate this expense?",
+      "toasts": {
+        "itemAdded": "Added expense",
+        "itemUpdated": "Updated expense",
+        "itemDeleted": "Expense removed"
+      }
+    },
+    "register": {
+      "title": "Save the refund",
+      "registerButton": "Save the refund",
+      "date": "Refund date",
+      "paymentMethod": "Payment method",
+      "bankAccount": "Bank account",
+      "noBankAccountHint": "No bank account set up — add one in Finance> Accounts, or choose Cash.",
+      "transaction": "Reconcile an imported bank transaction (optional)",
+      "noTransaction": "Do not bring closer now",
+      "reference": "Reference",
+      "submit": "Save",
+      "methods": {
+        "virement": "Transfer",
+        "cheque": "Check",
+        "especes": "Species"
+      }
+    }
+  },
   "dashboard": {
     "pageTitle": "Dashboard",
     "subtitle": "Overview of your association",
@@ -1276,6 +1390,7 @@
     },
     "transfersView": {
       "title": "Internal transfers",
+      "description": "Record here the transfers already made between your association''s bank accounts. Formwise records the transfer without moving any money.",
       "add": "Transfer",
       "newTransferTitle": "New transfer between accounts",
       "editTransferTitle": "Edit transfer",
@@ -4130,6 +4245,10 @@
       "websitePlaceholder": "my-association.org",
       "iban": "Account number",
       "bic": "Routing number",
+      "accountingRegime": "Accounting regime for expense reimbursements",
+      "accountingRegimeHint": "Determines when a reimbursement request is posted: at approval (commitment) or at actual payment (cash).",
+      "accountingRegimeCash": "Cash accounting",
+      "accountingRegimeAccrual": "Commitment accounting",
       "previewTitle": "Preview on the document",
       "bankDetails": "Bank details",
       "ibanColon": "Account: {value}",
@@ -6530,6 +6649,7 @@
       "finances": "Financial tracking",
       "devis": "Quotes",
       "factures": "Invoices",
+      "reimbursements": "Expense reimbursements",
       "fournisseurs": "Suppliers",
       "dons": "Donations",
       "reunions": "Meetings",

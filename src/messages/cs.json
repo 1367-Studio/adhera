@@ -41,6 +41,7 @@
     "location": "Poloha",
     "choosePlaceholder": "Vyber si...",
     "allPlaceholder": "Všichni",
+    "noOptionsPlaceholder": "Žádné možnosti nejsou k dispozici",
     "previousPage": "Předchozí stránka",
     "nextPage": "Další stránka",
     "paginationRange": "{from}–{to} na {total}",
@@ -51,7 +52,7 @@
     "addressPlaceholder": "Salle des fêtes, 12 rue de la Paix, Paříž...",
     "viewOnGoogleMaps": "Podívejte se na Google Maps",
     "backToSite": "Zpět na web",
-    "noOptionsPlaceholder": "Žádné možnosti nejsou k dispozici"
+    "period": {}
   },
   "address": {
     "street": "Adresa",
@@ -62,6 +63,7 @@
     "country": "Země bydliště",
     "legacyMigratedHint": "Zkopírováno ze starého pole adresy – zkontrolujte, zda již neobsahuje PSČ a město uvedené níže."
   },
+  "avis": {},
   "auth": {
     "layout": {
       "imageAlt": "Přihlásit se",
@@ -91,7 +93,8 @@
         "connecting": "Přihlašování…",
         "or": "nebo",
         "continueWithGoogle": "Pokračujte s Googlem"
-      }
+      },
+      "twoFactor": {}
     },
     "register": {
       "pageTitle": "Vytvořte si účet",
@@ -118,9 +121,6 @@
         "passwordLabel": "Heslo",
         "passwordPlaceholder": "Min. 8 znaků",
         "passwordGoogleHint": "Pro první vytvoření účtu zvolte heslo. Poté se můžete přihlásit pomocí Googlu.",
-        "legalDocsAcceptPrefix": "Přečetl jsem všechny",
-        "legalDocsLinkLabel": "Právní dokumenty Formwise",
-        "legalDocsAcceptSuffix": "a přijímám podmínky užívání služby.",
         "continueToPayment": "Pokračujte k pokladně",
         "perkTrialDays": "{days} Volné dny",
         "perkNoCommitment": "Žádná povinnost",
@@ -129,7 +129,10 @@
         "startTrial": "Začněte s bezplatnou zkušební verzí",
         "createAccount": "Vytvořit účet",
         "perkNoCard": "Není potřeba kreditní karta",
-        "createAccountError": "Chyba při vytváření účtu"
+        "createAccountError": "Chyba při vytváření účtu",
+        "legalDocsAcceptPrefix": "Přečetl jsem všechny",
+        "legalDocsLinkLabel": "Právní dokumenty Formwise",
+        "legalDocsAcceptSuffix": "a přijímám podmínky užívání služby."
       },
       "payment": {
         "paymentError": "Chyba při platbě",
@@ -649,13 +652,16 @@
         "enLitige": "Spor",
         "annulee": "Zrušeno"
       },
-      "unmarkPaidWarning": "Tento dokument je aktuálně zaplacen — odstranění tohoto statusu odstraní náklady, které ve financích vznikly, stejně jako jakékoli bankovní smíření.",
-      "markPaidNotice": "Označením tohoto dokumentu jako zaplaceného automaticky vznikne odpovídající výdaj ve finančním výkazu.",
       "file": "Dokument",
+      "payment": {
+        "toasts": {}
+      },
       "toasts": {
         "uploadError": "Chyba při nahrávání dokumentu",
         "networkError": "Nahrávání síťové chyby — zkuste to znovu"
-      }
+      },
+      "unmarkPaidWarning": "Tento dokument je aktuálně zaplacen — odstranění tohoto statusu odstraní náklady, které ve financích vznikly, stejně jako jakékoli bankovní smíření.",
+      "markPaidNotice": "Označením tohoto dokumentu jako zaplaceného automaticky vznikne odpovídající výdaj ve finančním výkazu."
     }
   },
   "dashboard": {
@@ -862,7 +868,8 @@
       "userMenu": {
         "title": "Váš profil",
         "description": "Upravte svůj profil, změňte heslo a odhlaste se z tohoto menu."
-      }
+      },
+      "help": {}
     }
   },
   "finances": {
@@ -893,9 +900,213 @@
       "title": "Brzy",
       "description": "Tato funkce je ve vývoji."
     },
+    "immobilisationsView": {
+      "columns": {},
+      "toasts": {},
+      "drillDown": {}
+    },
+    "immobilisationForm": {},
+    "journalManual": {},
+    "bilan": {
+      "title": "Rozvaha",
+      "description": "Majetek a závazky sdružení na konci finančního roku.",
+      "exerciceLabel": "Cvičení",
+      "rubriqueColumnLabel": "Sekce",
+      "noPreviousExercice": "Srovnání není k dispozici",
+      "actif": "Aktivní",
+      "totalActif": "Total Active",
+      "passif": "Pasivní",
+      "totalPassif": "Celkové závazky",
+      "noAccountsInRubrique": "V této části není žádná rovnováha",
+      "exportPdf": "Exportovat PDF",
+      "exportDisabledTooltip": "Nelze exportovat konečnou rozvahu, dokud nejsou výše uvedené anomálie opraveny.",
+      "emptyExercice": {
+        "title": "Žádný fiskální rok",
+        "description": "Vytvořte nový fiskální rok pro zobrazení rozvahy."
+      },
+      "emptyLedger": {
+        "title": "Žádné účetní položky",
+        "description": "Rozvaha bude zobrazena jakmile budou v tomto finančním roce zaznamenány příjmy, výdaje nebo dlouhodobá aktiva."
+      },
+      "rubriques": {
+        "immobilisationsCorporelles": "Hmatatelný kapitál",
+        "immobilisationsIncorporelles": "Nehmotná dlouhodobá aktiva",
+        "immobilisationsFinancieres": "Finanční fixní aktiva",
+        "disponibilites": "Dostupnost",
+        "chargesConstateesDavance": "Předplacené výdaje",
+        "creances": "Pohledávky",
+        "stocksEtEnCours": "Inventář",
+        "fondsPropres": "Spravedlnost",
+        "provisions": "Rezervy",
+        "dettes": "Dluhy",
+        "produitsConstatesDavance": "Odložený příjem",
+        "fondsDedies": "Omezené fondy"
+      },
+      "memoNotice": "Odhad — nezaznamenán v účetní knize, vyloučen z celkových aktiv.",
+      "accountLabels": {
+        "reportANouveau": "Zadržený zisk",
+        "resultatExercice": "Čistý zisk za rok",
+        "creancesCotisations": "Nedoplacené členské poplatky",
+        "creancesFactures": "Nevyřízené faktury",
+        "stocksEstimatedValue": "Odhadovaná hodnota zásob",
+        "creancesFacturesEnRetard": "Dlužné faktury"
+      },
+      "pdf": {
+        "periodLabel": "Období od {start} do {end}"
+      },
+      "drillDown": {
+        "date": "Datum",
+        "label": "Štítek",
+        "origin": "Původ",
+        "debit": "Debet",
+        "credit": "Kredit",
+        "noLines": "Žádné záznamy pro tento účet.",
+        "sourceTypes": {
+          "INCOME": "Příjmy",
+          "INCOME_REVERSAL": "Obrat příjmů",
+          "EXPENSE": "Náklady",
+          "EXPENSE_REVERSAL": "Zvrácení nákladů",
+          "BANK_TRANSACTION": "Bankovní transakce",
+          "ACCOUNT_TRANSFER": "Interní převod",
+          "OPENING_BALANCE": "Počáteční bilance",
+          "IMMOBILISATION_DEPRECIATION": "Odpisy",
+          "IMMOBILISATION_ACQUISITION": "Akvizice aktiv",
+          "FACTURE_RECUE_PAYMENT": "Platba dodavatelům",
+          "MANUAL": "Ruční zadávání"
+        }
+      },
+      "issues": {
+        "title": "Zjištěné anomálie",
+        "messages": {
+          "ACCOUNT_WITHOUT_RUBRIQUE": "Účet {code} — {label} má zůstatek, ale není připojen k žádné položce rozvahy.",
+          "ACTIF_PASSIF_MISMATCH": "Majetek ({actif}) neodpovídá závazku ({passif}).",
+          "OPENING_BALANCE_MISSING": "Pro toto cvičení nebyly z \"{previousLabel}\" vygenerovány žádné úvodní záznamy.",
+          "TRIAL_BALANCE_UNBALANCED": "Celkový debet ({debit}) neodpovídá celkovému kreditu ({credit}) za tento fiskální rok.",
+          "RESULT_DIVERGENCE": "Výsledek účetního listu ({journal}) se liší od výsledku výkazu zisku a ztráty ({statement}) — musí být ještě neaktuální pro tento fiskální rok (uzavření fiskálního roku nebo restartování synchronizace)."
+        }
+      },
+      "memoNoHistory": "Žádná historická data",
+      "caveats": {
+        "stocksMissingCostPrice": "{count} variant bez zaznamenané nákupní ceny, vyjmuté z odhadu"
+      }
+    },
+    "compteResultat": {
+      "title": "Výsledovka",
+      "description": "Finanční výsledek účetního období ve srovnání s předchozím obdobím.",
+      "exerciceLabel": "Účetní období",
+      "categoryColumnLabel": "Kategorie",
+      "noPreviousExercice": "-",
+      "noPreviousExerciceMessage": "Žádné předchozí účetní období není k dispozici",
+      "export": "Exportovat",
+      "exportExcel": "Exportovat Excel (podrobně)",
+      "exportPdf": "Exportovat PDF",
+      "products": "Výnosy",
+      "totalProducts": "Výnosy celkem",
+      "expenses": "Náklady",
+      "totalExpenses": "Náklady celkem",
+      "result": "Výsledek období",
+      "resultZero": "Výsledek účetního období: 0 €",
+      "surplus": "Přebytek období",
+      "deficit": "Schodek období",
+      "operationalResult": "Provozní výsledek",
+      "uncategorized": "Ke kategorizaci",
+      "uncategorizedAlertIncome": "{count, plural, one {# příjem je třeba kategorizovat} other {# příjmy je třeba kategorizovat}}",
+      "uncategorizedAlertExpense": "{count, plural, one {# výdaj je třeba kategorizovat} other {# výdaje je třeba kategorizovat}}",
+      "expandSection": "Zobrazit",
+      "collapseSection": "Skrýt",
+      "noCategoriesInSection": "V této sekci není žádná kategorie",
+      "sections": {
+        "FINANCIAL": "Finanční",
+        "EXCEPTIONAL": "Mimořádné",
+        "OTHER": "Ostatní"
+      },
+      "inKind": {
+        "title": "Dobrovolné příspěvky naturálně",
+        "employmentHeader": "Využití příspěvků",
+        "amountHeader": "Množství",
+        "receivedHeader": "Přijaté příspěvky",
+        "totalEmployments": "Celkový počet pracovních míst",
+        "totalReceived": "Celkové příspěvky",
+        "note": "Tyto bezplatné příspěvky jsou oceněny v eurech. Nevedou k žádnému pohybu peněz a nemění výsledek finančního roku."
+      },
+      "drillDown": {
+        "date": "Datum",
+        "origin": "Původ",
+        "person": "Osoba",
+        "payment": "Platba",
+        "amount": "Částka",
+        "categorize": "Kategorizovat",
+        "categorizePlaceholder": "Vybrat kategorii",
+        "noTransactions": "Žádné transakce",
+        "categorizeSuccess": "Transakce kategorizována"
+      },
+      "pdf": {
+        "periodLabel": "Období od {start} do {end}",
+        "operatingIncome": "PROVOZNÍ VÝNOSY",
+        "operatingExpense": "PROVOZNÍ NÁKLADY",
+        "operatingResult": "PROVOZNÍ VÝSLEDEK",
+        "financialIncome": "FINANČNÍ VÝNOSY",
+        "financialExpense": "FINANČNÍ NÁKLADY",
+        "financialResult": "FINANČNÍ VÝSLEDEK",
+        "exceptionalIncome": "MIMOŘÁDNÉ VÝNOSY",
+        "exceptionalExpense": "MIMOŘÁDNÉ NÁKLADY",
+        "exceptionalResult": "MIMOŘÁDNÝ VÝSLEDEK",
+        "otherIncome": "OSTATNÍ VÝNOSY",
+        "otherExpense": "OSTATNÍ NÁKLADY",
+        "otherResult": "VÝSLEDEK Z OSTATNÍCH VÝNOSŮ A NÁKLADŮ",
+        "uncategorizedSection": "TRANSAKCE KE KATEGORIZACI",
+        "uncategorizedIncomeLabel": "Příjmy ke kategorizaci",
+        "uncategorizedExpenseLabel": "Výdaje ke kategorizaci",
+        "total": "Celkem",
+        "grandTotal": "CELKEM",
+        "categoryColumn": "Kategorie",
+        "inKindTitle": "Dobrovolné příspěvky naturálně",
+        "inKindEmploymentHeader": "Využití příspěvků",
+        "inKindAmountHeader": "Množství",
+        "inKindReceivedHeader": "Přijaté příspěvky",
+        "inKindTotalEmployments": "Celkový počet pracovních míst",
+        "inKindTotalReceived": "Celkové příspěvky",
+        "inKindNote": "Tyto bezplatné příspěvky jsou oceněny v eurech. Nevedou k žádnému pohybu peněz a nemění výsledek finančního roku."
+      },
+      "csv": {
+        "date": "Datum",
+        "type": "Typ",
+        "typeIncome": "Příjem",
+        "typeExpense": "Výdaj",
+        "category": "Kategorie",
+        "uncategorized": "Ke kategorizaci",
+        "accountingCode": "Účetní kód",
+        "description": "Popis",
+        "amount": "Částka",
+        "paymentMethod": "Způsob platby",
+        "origin": "Původ",
+        "reference": "Reference",
+        "exercice": "Účetní období"
+      },
+      "emptyExercice": {
+        "title": "Žádné účetní období",
+        "description": "Vytvořte účetní období pro vygenerování výsledovky."
+      }
+    },
+    "previsionnel": {
+      "emptyExercice": {},
+      "tabs": {},
+      "card": {},
+      "columns": {},
+      "export": {},
+      "toasts": {},
+      "copyBudget": {
+        "toasts": {}
+      },
+      "projectsTab": {
+        "noProjects": {},
+        "toasts": {}
+      }
+    },
     "categoryForm": {
       "name": "Jméno",
       "namePlaceholder": "Např: Příspěvky",
+      "noMatchingCategory": "Žádná párová kategorie",
       "type": "Typ",
       "typeIncome": "Příjem",
       "typeExpense": "Náklady",
@@ -920,8 +1131,7 @@
       "sectionUnverifiedNote": "Tento účet není rozpoznán — zkontrolujte sekci nebo jej vyberte z pokročilých možností.",
       "sectionToVerify": "Sekce k ověření",
       "advancedOptions": "Pokročilé možnosti",
-      "revertToAutoSection": "Zpět k automatické části",
-      "noMatchingCategory": "Žádná párová kategorie"
+      "revertToAutoSection": "Zpět k automatické části"
     },
     "bankAccountForm": {
       "bankName": "Název banky",
@@ -1056,6 +1266,13 @@
         "deleted": "Účet smazán"
       }
     },
+    "transferForm": {
+      "toasts": {}
+    },
+    "transfersView": {
+      "columns": {},
+      "description": "Zaznamenejte zde již provedené převody mezi bankovními účty vaší asociace. Formálně zaznamenává převod bez převodu peněz."
+    },
     "categoriesView": {
       "title": "Kategorie",
       "description": "Spravujte kategorie příjmů a výdajů.",
@@ -1066,7 +1283,6 @@
       "newCategoryTitle": "Nová kategorie",
       "editCategoryTitle": "Editovat kategorii",
       "deleteConfirmTitle": "Smazat tuto kategorii?",
-      "deleteConfirmInUse": "« {name} používá {count, plural, one {# příjmy/výdaje} other {# příjmy/výdaje}}. Tyto záznamy se změní na \"Nekategorizováno\".",
       "toasts": {
         "created": "Vytvořená kategorie",
         "updated": "Aktualizovaná kategorie",
@@ -1077,7 +1293,8 @@
       "customCategory": "Vytvořte vlastní kategorii",
       "alreadyExists": "Již nakonfigurováno",
       "archivedReactivateHint": "Archivováno — klikněte pro opětovnou aktivaci",
-      "custom": "Přizpůsobená"
+      "custom": "Přizpůsobená",
+      "deleteConfirmInUse": "« {name} používá {count, plural, one {# příjmy/výdaje} other {# příjmy/výdaje}}. Tyto záznamy se změní na \"Nekategorizováno\"."
     },
     "incomesView": {
       "title": "Příjmy",
@@ -1315,187 +1532,6 @@
       "typeIncome": "Příjem",
       "typeExpense": "Náklady",
       "confirm": "Validujte smírčí jednání"
-    },
-    "compteResultat": {
-      "title": "Výsledovka",
-      "description": "Finanční výsledek účetního období ve srovnání s předchozím obdobím.",
-      "exerciceLabel": "Účetní období",
-      "noPreviousExercice": "-",
-      "export": "Exportovat",
-      "exportExcel": "Exportovat Excel (podrobně)",
-      "exportPdf": "Exportovat PDF",
-      "products": "Výnosy",
-      "totalProducts": "Výnosy celkem",
-      "expenses": "Náklady",
-      "totalExpenses": "Náklady celkem",
-      "result": "Výsledek období",
-      "surplus": "Přebytek období",
-      "deficit": "Schodek období",
-      "emptyExercice": {
-        "title": "Žádné účetní období",
-        "description": "Vytvořte účetní období pro vygenerování výsledovky."
-      },
-      "noPreviousExerciceMessage": "Žádné předchozí účetní období není k dispozici",
-      "resultZero": "Výsledek účetního období: 0 €",
-      "operationalResult": "Provozní výsledek",
-      "uncategorized": "Ke kategorizaci",
-      "uncategorizedAlertIncome": "{count, plural, one {# příjem je třeba kategorizovat} other {# příjmy je třeba kategorizovat}}",
-      "uncategorizedAlertExpense": "{count, plural, one {# výdaj je třeba kategorizovat} other {# výdaje je třeba kategorizovat}}",
-      "expandSection": "Zobrazit",
-      "collapseSection": "Skrýt",
-      "noCategoriesInSection": "V této sekci není žádná kategorie",
-      "sections": {
-        "FINANCIAL": "Finanční",
-        "EXCEPTIONAL": "Mimořádné",
-        "OTHER": "Ostatní"
-      },
-      "drillDown": {
-        "date": "Datum",
-        "origin": "Původ",
-        "person": "Osoba",
-        "payment": "Platba",
-        "amount": "Částka",
-        "categorize": "Kategorizovat",
-        "categorizePlaceholder": "Vybrat kategorii",
-        "noTransactions": "Žádné transakce",
-        "categorizeSuccess": "Transakce kategorizována"
-      },
-      "pdf": {
-        "periodLabel": "Období od {start} do {end}",
-        "operatingIncome": "PROVOZNÍ VÝNOSY",
-        "operatingExpense": "PROVOZNÍ NÁKLADY",
-        "operatingResult": "PROVOZNÍ VÝSLEDEK",
-        "financialIncome": "FINANČNÍ VÝNOSY",
-        "financialExpense": "FINANČNÍ NÁKLADY",
-        "financialResult": "FINANČNÍ VÝSLEDEK",
-        "exceptionalIncome": "MIMOŘÁDNÉ VÝNOSY",
-        "exceptionalExpense": "MIMOŘÁDNÉ NÁKLADY",
-        "exceptionalResult": "MIMOŘÁDNÝ VÝSLEDEK",
-        "otherIncome": "OSTATNÍ VÝNOSY",
-        "otherExpense": "OSTATNÍ NÁKLADY",
-        "otherResult": "VÝSLEDEK Z OSTATNÍCH VÝNOSŮ A NÁKLADŮ",
-        "uncategorizedSection": "TRANSAKCE KE KATEGORIZACI",
-        "uncategorizedIncomeLabel": "Příjmy ke kategorizaci",
-        "uncategorizedExpenseLabel": "Výdaje ke kategorizaci",
-        "total": "Celkem",
-        "grandTotal": "CELKEM",
-        "categoryColumn": "Kategorie",
-        "inKindTitle": "Dobrovolné příspěvky naturálně",
-        "inKindEmploymentHeader": "Využití příspěvků",
-        "inKindAmountHeader": "Množství",
-        "inKindReceivedHeader": "Přijaté příspěvky",
-        "inKindTotalEmployments": "Celkový počet pracovních míst",
-        "inKindTotalReceived": "Celkové příspěvky",
-        "inKindNote": "Tyto bezplatné příspěvky jsou oceněny v eurech. Nevedou k žádnému pohybu peněz a nemění výsledek finančního roku."
-      },
-      "csv": {
-        "date": "Datum",
-        "type": "Typ",
-        "typeIncome": "Příjem",
-        "typeExpense": "Výdaj",
-        "category": "Kategorie",
-        "uncategorized": "Ke kategorizaci",
-        "accountingCode": "Účetní kód",
-        "description": "Popis",
-        "amount": "Částka",
-        "paymentMethod": "Způsob platby",
-        "origin": "Původ",
-        "reference": "Reference",
-        "exercice": "Účetní období"
-      },
-      "categoryColumnLabel": "Kategorie",
-      "inKind": {
-        "title": "Dobrovolné příspěvky naturálně",
-        "employmentHeader": "Využití příspěvků",
-        "amountHeader": "Množství",
-        "receivedHeader": "Přijaté příspěvky",
-        "totalEmployments": "Celkový počet pracovních míst",
-        "totalReceived": "Celkové příspěvky",
-        "note": "Tyto bezplatné příspěvky jsou oceněny v eurech. Nevedou k žádnému pohybu peněz a nemění výsledek finančního roku."
-      }
-    },
-    "bilan": {
-      "title": "Rozvaha",
-      "description": "Majetek a závazky sdružení na konci finančního roku.",
-      "exerciceLabel": "Cvičení",
-      "rubriqueColumnLabel": "Sekce",
-      "noPreviousExercice": "Srovnání není k dispozici",
-      "actif": "Aktivní",
-      "totalActif": "Total Active",
-      "passif": "Pasivní",
-      "totalPassif": "Celkové závazky",
-      "noAccountsInRubrique": "V této části není žádná rovnováha",
-      "emptyExercice": {
-        "title": "Žádný fiskální rok",
-        "description": "Vytvořte nový fiskální rok pro zobrazení rozvahy."
-      },
-      "emptyLedger": {
-        "title": "Žádné účetní položky",
-        "description": "Rozvaha bude zobrazena jakmile budou v tomto finančním roce zaznamenány příjmy, výdaje nebo dlouhodobá aktiva."
-      },
-      "rubriques": {
-        "immobilisationsCorporelles": "Hmatatelný kapitál",
-        "disponibilites": "Dostupnost",
-        "fondsPropres": "Spravedlnost",
-        "dettes": "Dluhy",
-        "immobilisationsIncorporelles": "Nehmotná dlouhodobá aktiva",
-        "immobilisationsFinancieres": "Finanční fixní aktiva",
-        "chargesConstateesDavance": "Předplacené výdaje",
-        "provisions": "Rezervy",
-        "produitsConstatesDavance": "Odložený příjem",
-        "creances": "Pohledávky",
-        "stocksEtEnCours": "Inventář",
-        "fondsDedies": "Omezené fondy"
-      },
-      "issues": {
-        "title": "Zjištěné anomálie",
-        "messages": {
-          "ACCOUNT_WITHOUT_RUBRIQUE": "Účet {code} — {label} má zůstatek, ale není připojen k žádné položce rozvahy.",
-          "ACTIF_PASSIF_MISMATCH": "Majetek ({actif}) neodpovídá závazku ({passif}).",
-          "OPENING_BALANCE_MISSING": "Pro toto cvičení nebyly z \"{previousLabel}\" vygenerovány žádné úvodní záznamy.",
-          "TRIAL_BALANCE_UNBALANCED": "Celkový debet ({debit}) neodpovídá celkovému kreditu ({credit}) za tento fiskální rok.",
-          "RESULT_DIVERGENCE": "Výsledek účetního listu ({journal}) se liší od výsledku výkazu zisku a ztráty ({statement}) — musí být ještě neaktuální pro tento fiskální rok (uzavření fiskálního roku nebo restartování synchronizace)."
-        }
-      },
-      "accountLabels": {
-        "reportANouveau": "Zadržený zisk",
-        "resultatExercice": "Čistý zisk za rok",
-        "creancesCotisations": "Nedoplacené členské poplatky",
-        "creancesFactures": "Nevyřízené faktury",
-        "stocksEstimatedValue": "Odhadovaná hodnota zásob",
-        "creancesFacturesEnRetard": "Dlužné faktury"
-      },
-      "exportPdf": "Exportovat PDF",
-      "exportDisabledTooltip": "Nelze exportovat konečnou rozvahu, dokud nejsou výše uvedené anomálie opraveny.",
-      "pdf": {
-        "periodLabel": "Období od {start} do {end}"
-      },
-      "drillDown": {
-        "date": "Datum",
-        "label": "Štítek",
-        "origin": "Původ",
-        "debit": "Debet",
-        "credit": "Kredit",
-        "noLines": "Žádné záznamy pro tento účet.",
-        "sourceTypes": {
-          "INCOME": "Příjmy",
-          "INCOME_REVERSAL": "Obrat příjmů",
-          "EXPENSE": "Náklady",
-          "EXPENSE_REVERSAL": "Zvrácení nákladů",
-          "BANK_TRANSACTION": "Bankovní transakce",
-          "ACCOUNT_TRANSFER": "Interní převod",
-          "OPENING_BALANCE": "Počáteční bilance",
-          "IMMOBILISATION_DEPRECIATION": "Odpisy",
-          "IMMOBILISATION_ACQUISITION": "Akvizice aktiv",
-          "FACTURE_RECUE_PAYMENT": "Platba dodavatelům",
-          "MANUAL": "Ruční zadávání"
-        }
-      },
-      "memoNotice": "Odhad — nezaznamenán v účetní knize, vyloučen z celkových aktiv.",
-      "memoNoHistory": "Žádná historická data",
-      "caveats": {
-        "stocksMissingCostPrice": "{count} variant bez zaznamenané nákupní ceny, vyjmuté z odhadu"
-      }
     }
   },
   "evenements": {
@@ -1711,6 +1747,7 @@
         "dateLabel": "Datum začátku",
         "createButton": "Vytvořit"
       },
+      "summary": {},
       "bilan": {
         "show": "Zobrazit přehled",
         "hide": "Skrýt přehled",
@@ -1928,6 +1965,9 @@
         "qrRevoked": "QR kód deaktivován",
         "noMembersToExport": "Žádní členové k exportu",
         "linkCopied": "Odkaz zkopírován"
+      },
+      "payment": {
+        "methods": {}
       }
     },
     "avaliacoes": {
@@ -1982,6 +2022,7 @@
           "standardFieldsHint": "Pole požadovaná při registraci",
           "phoneLabel": "Telefon",
           "addressLabel": "Adresa",
+          "countryLabel": "Země pobytu",
           "requirement": {
             "hidden": "Maskovaný",
             "optional": "Volitelné",
@@ -1989,8 +2030,7 @@
           },
           "mobileLabel": "Mobilní",
           "birthDateLabel": "Datum narození",
-          "genderLabel": "Pohlaví",
-          "countryLabel": "Země pobytu"
+          "genderLabel": "Pohlaví"
         },
         "products": {
           "title": "Produkty",
@@ -2310,6 +2350,7 @@
       "liveSince": "Probíhá od té doby {mins} min",
       "durationLessThanMin": "< 1 min",
       "durationMin": "{mins} min",
+      "activeMeetingWarning": {},
       "toasts": {
         "meetingStarted": "Zahájení schůze",
         "meetingScheduled": "Plánované setkání",
@@ -2785,6 +2826,7 @@
       "restockNoticePlural": "{count, plural, one {Zásoba nevybraného zboží bude obnovena.} other {Zásoby nevyzvednutých předmětů budou obnoveny.}}",
       "restockNoticeStatic": "Zásoby nevyzvednutých předmětů budou obnoveny."
     },
+    "refundModal": {},
     "stripeConfirm": {
       "title": "Označit jako zaplacené?",
       "descriptionSimple": "Tento příkaz Stripe ({amount}) bude označeno jako zaplaceno ručně.",
@@ -3121,6 +3163,7 @@
           "title": "Forma",
           "standardFieldsHint": "Pole požadovaná od dárce",
           "addressLabel": "Adresa",
+          "countryLabel": "Země pobytu",
           "birthDateLabel": "Datum narození",
           "phoneLabel": "Pevná linka",
           "mobileLabel": "Mobilní",
@@ -3151,8 +3194,7 @@
           "addOption": "Přidat možnost",
           "removeOption": "Tuto možnost odstranit",
           "optionsRequiredError": "Každé pole pro seznam/volbu potřebuje alespoň 2 možnosti.",
-          "duplicateOptionsError": "Možnosti pole pro seznam/volbu musí být jedinečné.",
-          "countryLabel": "Země pobytu"
+          "duplicateOptionsError": "Možnosti pole pro seznam/volbu musí být jedinečné."
         },
         "payment": {
           "title": "Platba",
@@ -3411,6 +3453,7 @@
           "title": "Forma",
           "standardFieldsHint": "Pole požadovaná při registraci",
           "addressLabel": "Adresa",
+          "countryLabel": "Země pobytu",
           "birthDateLabel": "Datum narození",
           "phoneLabel": "Pevná linka",
           "mobileLabel": "Mobilní",
@@ -3443,8 +3486,7 @@
           "addOption": "Přidat možnost",
           "removeOption": "Tuto možnost odstranit",
           "optionsRequiredError": "Každé pole pro seznam/volbu potřebuje alespoň 2 možnosti.",
-          "duplicateOptionsError": "Možnosti pole pro seznam/volbu musí být jedinečné.",
-          "countryLabel": "Země pobytu"
+          "duplicateOptionsError": "Možnosti pole pro seznam/volbu musí být jedinečné."
         },
         "payment": {
           "title": "Platba",
@@ -3698,6 +3740,7 @@
         "required": "Povinné"
       }
     },
+    "blockEditor": {},
     "rulesManager": {
       "title": "Automatizační pravidla",
       "subtitle": "Automatické vysílání podle kalendáře nebo události.",
@@ -3987,7 +4030,11 @@
       "bicColon": "BIC : {value}",
       "toasts": {
         "updated": "Aktualizované kontaktní informace"
-      }
+      },
+      "accountingRegime": "Účetní režim pro náhrady výdajů",
+      "accountingRegimeHint": "Určuje, kdy je žádost o proplacení odeslána: při schválení (závazek) nebo při skutečné platbě (hotovost).",
+      "accountingRegimeCash": "Účetnictví hotovosti",
+      "accountingRegimeAccrual": "Účtování závazků"
     },
     "membreTypes": {
       "name": "Jméno",
@@ -4014,7 +4061,12 @@
       "title": "Vizuální identita",
       "subtitle": "Logo zobrazené na dashboardu, v nabídkách/fakturách, docházce a na veřejných webových stránkách.",
       "logo": "Logo",
+      "footerStyles": {},
+      "footer": {
+        "socialPlatforms": {}
+      },
       "proOnlyText": "Vlastní logo (dashboard, nabídky/faktury, časový list) je vyhrazeno pro Pro tarif. Upgradujte na další tarif v záložce Předplatné a aktivujte ho.",
+      "preview": {},
       "toasts": {
         "updated": "Aktualizovaná vizuální identita",
         "uploadError": "Chyba při nahrávání loga"
@@ -4057,10 +4109,10 @@
       "status": {
         "trial": "Bezplatná zkušební verze",
         "active": "Aktivní",
+        "paymentPending": "Platba v průběhu",
         "pastDue": "Opožděná platba",
         "suspended": "Suspendován",
-        "cancelled": "Zrušeno",
-        "paymentPending": "Platba v průběhu"
+        "cancelled": "Zrušeno"
       },
       "planLabel": "Vzorec {tier}",
       "membersCount": "{count} / {limit} Členové",
@@ -4181,6 +4233,16 @@
       "subtitleTrialExpired": "Vaše bezplatná zkušební doba skončila. Vyberte si tarif a zadejte platební metodu, abyste mohli pokračovat.",
       "confirmButtonSubscribe": "Potvrďte a přihlaste se k odběru"
     },
+    "teamAccess": {
+      "columns": {},
+      "summary": {},
+      "profiles": {},
+      "levels": {},
+      "areas": {
+        "sensible": "Citlivé údaje členů"
+      },
+      "toasts": {}
+    },
     "erasureRequests": {
       "title": "Výmaz údajů (GDPR)",
       "description": "Žádosti o trvalé vymazání osobních údajů člena podle článku 17 GDPR. Zpracovávají se automaticky každou noc, pokud nejsou pozastaveny.",
@@ -4221,11 +4283,6 @@
       },
       "automaticOrigin": "Automaticky označeno — neaktivní více než 3 roky",
       "inactiveSince": "odešel dne {date}"
-    },
-    "teamAccess": {
-      "areas": {
-        "sensible": "Citlivé údaje členů"
-      }
     }
   },
   "cotisations": {
@@ -4315,28 +4372,6 @@
       "allCategories": "Všechny kategorie",
       "allRenewals": "Všechna obnovení",
       "resetFilters": "Reset",
-      "renewal": {
-        "automatic": "Automatické",
-        "manual": "Ruční"
-      },
-      "summary": {
-        "aPagar": " · {amount} celkem",
-        "recebido": " · {amount} přijato",
-        "saldo": " · {amount} zbývá uhradit"
-      },
-      "distribution": {
-        "show": "Zobrazit rozdělení",
-        "hide": "Skrýt rozdělení",
-        "category": "Kategorie členství",
-        "renewal": "Obnovení",
-        "count": "Počet příspěvků",
-        "aPagar": "Celková částka",
-        "recebido": "Obdržela částka",
-        "saldo": "Zbývající zůstatek",
-        "total": "Celkem",
-        "noCategory": "Bez kategorie",
-        "empty": "Žádný příspěvek neodpovídá těmto filtrům."
-      },
       "mergeTiers": {
         "filterOption": "Sloučení duplicitních kategorií",
         "title": "Sloučení duplicitních kategorií",
@@ -4359,6 +4394,28 @@
         "priceFreeAmount": "Volná částka",
         "priceFreeAmountFrom": "Zdarma částka z {amount}",
         "priceRecurring": "{amount}/rok"
+      },
+      "renewal": {
+        "automatic": "Automatické",
+        "manual": "Ruční"
+      },
+      "summary": {
+        "aPagar": " · {amount} celkem",
+        "recebido": " · {amount} přijato",
+        "saldo": " · {amount} zbývá uhradit"
+      },
+      "distribution": {
+        "show": "Zobrazit rozdělení",
+        "hide": "Skrýt rozdělení",
+        "category": "Kategorie členství",
+        "renewal": "Obnovení",
+        "count": "Počet příspěvků",
+        "aPagar": "Celková částka",
+        "recebido": "Obdržela částka",
+        "saldo": "Zbývající zůstatek",
+        "total": "Celkem",
+        "noCategory": "Bez kategorie",
+        "empty": "Žádný příspěvek neodpovídá těmto filtrům."
       }
     },
     "reminderModal": {
@@ -4423,6 +4480,24 @@
       "annulee": "Tento příspěvek byl zrušen."
     }
   },
+  "groupes": {
+    "view": {
+      "statusFilter": {},
+      "columns": {},
+      "statusBadge": {},
+      "actions": {},
+      "toasts": {}
+    },
+    "form": {},
+    "detail": {
+      "appelColumns": {}
+    },
+    "appel": {
+      "counts": {},
+      "status": {},
+      "toasts": {}
+    }
+  },
   "membres": {
     "form": {
       "status": {
@@ -4450,6 +4525,11 @@
         "femme": "Ženy"
       },
       "groupeSanguinNone": "Není specifikováno",
+      "imageRights": {
+        "unknown": "Neuvedeno",
+        "granted": "Ano",
+        "refused": "Ne"
+      },
       "tailleTshirtNone": "Není specifikováno",
       "preferredLocaleNone": "Není specifikováno",
       "preferredLocaleHint": "Vybraný jazyk umožní zasílat tomuto členovi e-maily a sdělení v jeho preferovaném jazyce.",
@@ -4481,14 +4561,14 @@
         "allergies": "Známé alergie",
         "allergiesPlaceholder": "Arachidy, pyl...",
         "type": "Typ člena",
-        "preferredLocale": "Komunikační jazyk",
-        "spokenLanguage": "Mluvený jazyk",
-        "cotisationTier": "Členský poplatek",
-        "guardianName": "Zákonný zástupce {number} — jméno",
-        "guardianPhone": "Zákonný zástupce {number} — telefon",
         "imageRights": "Právo k obrazu",
         "notes": "Poznámky",
-        "notesPlaceholder": "Užitečné informace o tomto členovi (kurzy, poznámky…)"
+        "notesPlaceholder": "Užitečné informace o tomto členovi (kurzy, poznámky…)",
+        "guardianName": "Zákonný zástupce {number} — jméno",
+        "guardianPhone": "Zákonný zástupce {number} — telefon",
+        "preferredLocale": "Komunikační jazyk",
+        "spokenLanguage": "Mluvený jazyk",
+        "cotisationTier": "Členský poplatek"
       },
       "invitationNotice": "Na tuto adresu bude zaslán pozvánkový e-mail s identifikátory.",
       "tierNone": "Žádné stanovování cen (výchozí chování)",
@@ -4509,18 +4589,7 @@
         "management": "Správa člena"
       },
       "invalidFormToast": "Uložení se nezdařilo. Pokud problém přetrvává, kontaktujte podporu.",
-      "customFieldsLoading": "Načítání odpovědí z přihlašovacího formuláře…",
-      "imageRights": {
-        "unknown": "Neuvedeno",
-        "granted": "Ano",
-        "refused": "Ne"
-      }
-    },
-    "fichePdf": {
-      "title": "PROFIL ČLENA",
-      "subtitle": "Formulář má vyplnit nový člen",
-      "signature": "Podpis",
-      "date": "Datum"
+      "customFieldsLoading": "Načítání odpovědí z přihlašovacího formuláře…"
     },
     "actions": {
       "add": "Přidejte člena",
@@ -4570,13 +4639,13 @@
         "firstName": "Křestní jméno",
         "lastName": "Příjmení",
         "address": "Adresa",
+        "country": "Země",
+        "countryPlaceholder": "Všechny země",
+        "countryLoadError": "Nelze načíst země. Zkuste to za chvíli znovu.",
         "birthDateFrom": "Narozen po",
         "birthDateTo": "Narození před",
         "apply": "Přihlaste se",
-        "reset": "Reset",
-        "country": "Země",
-        "countryPlaceholder": "Všechny země",
-        "countryLoadError": "Nelze načíst země. Zkuste to za chvíli znovu."
+        "reset": "Reset"
       },
       "statusOptions": {
         "pending": "Čeká",
@@ -4635,6 +4704,13 @@
       "cotisationButton": "Členský poplatek",
       "createAccessButton": "Vytvořit přístup",
       "roleButton": "Role",
+      "eraseData": {
+        "button": "Vymazat údaje (GDPR)",
+        "confirmTitle": "Požádat o trvalé vymazání údajů uživatele {name}?",
+        "confirmDescription": "Tímto se zaregistruje žádost o výmaz podle čl. 17 GDPR. Člen obdrží potvrzovací e-mail a jeho osobní údaje budou nenávratně anonymizovány při dalším automatickém zpracování, pokud nebude žádost pozastavena.",
+        "toastSuccess": "Žádost o výmaz byla zaregistrována",
+        "requestLabel": "Výmaz GDPR"
+      },
       "contact": "Kontakt",
       "noContactInfo": "Žádné kontaktní údaje",
       "memberSinceColon": "Člen od té doby: {date}",
@@ -4751,13 +4827,6 @@
         "rejectConfirmTitle": "Odmítnout tuto žádost?",
         "rejectConfirmDescription": "{name} se změní na \"Neaktivní\" a nebude možné se přihlásit. Žádost a její odpovědi na formulář zůstávají zachovány."
       },
-      "eraseData": {
-        "button": "Vymazat údaje (GDPR)",
-        "confirmTitle": "Požádat o trvalé vymazání údajů uživatele {name}?",
-        "confirmDescription": "Tímto se zaregistruje žádost o výmaz podle čl. 17 GDPR. Člen obdrží potvrzovací e-mail a jeho osobní údaje budou nenávratně anonymizovány při dalším automatickém zpracování, pokud nebude žádost pozastavena.",
-        "toastSuccess": "Žádost o výmaz byla zaregistrována",
-        "requestLabel": "Výmaz GDPR"
-      },
       "noCommande": "Tento kontakt nemá žádné nákupy v obchodě.",
       "commandeStatus": {
         "PENDING": "Čeká",
@@ -4847,6 +4916,11 @@
       "inMessagesSection": " v sekci Zprávy.",
       "messageSectionLabel": "Zpráva",
       "saveAsTemplate": "Uložit jako šablonu",
+      "subjectLabel": "Účel",
+      "subjectPlaceholder": "Předmět e-mailu...",
+      "subjectTooLong": "Předmět je příliš dlouhý: {length}/{max} znaků — při odeslání bude odmítnut.",
+      "bodyLabel": "Tělo zprávy",
+      "bodyPlaceholder": "Napiš svou zprávu...",
       "language": {
         "title": "Jazyk odeslání",
         "modeOriginal": "Původní jazyk",
@@ -4871,11 +4945,6 @@
         "autoNoEffect": "Žádný aktuální příjemce nemá jiný preferovaný jazyk než francouzštinu — všichni dostanou původní verzi.",
         "autoExternalNote": "{count, plural, one {# externí e-mail (původní jazyk)} few {# externí e-maily (původní jazyk)} other {# externích e-mailů (původní jazyk)}}"
       },
-      "subjectLabel": "Účel",
-      "subjectPlaceholder": "Předmět e-mailu...",
-      "subjectTooLong": "Předmět je příliš dlouhý: {length}/{max} znaků — při odeslání bude odmítnut.",
-      "bodyLabel": "Tělo zprávy",
-      "bodyPlaceholder": "Napiš svou zprávu...",
       "continue": "Pokračovat",
       "confirmSendTitle": "Potvrzení odeslání",
       "confirmSendDescription": "Tento e-mail bude zaslán na {recipients}. Tento čin je nevratný.",
@@ -4892,6 +4961,9 @@
       "recipientsActive": "{count, plural, one {# aktivní člen} other {# aktivní členové}}",
       "externalOnlyCount": "{count, plural, one {# externí e-mail} other {# externí e-maily}}",
       "recipientsWithExternal": "{members} + {count, plural, one {# externí e-mail} other {# externí e-maily}}",
+      "attachments": {
+        "errors": {}
+      },
       "toasts": {
         "selectType": "Vyberte typ člena",
         "selectMember": "Vyberte alespoň jednoho člena nebo přidejte externí e-mail",
@@ -5291,6 +5363,12 @@
         "genericError": "Chyba"
       },
       "importedNote": "Importováno z AssoConnect — {collecte}"
+    },
+    "fichePdf": {
+      "title": "PROFIL ČLENA",
+      "subtitle": "Formulář má vyplnit nový člen",
+      "signature": "Podpis",
+      "date": "Datum"
     }
   },
   "memberCard": {
@@ -5393,8 +5471,8 @@
       "actualites": "Zprávy",
       "membership": "Přidejte se k asociaci",
       "dons": "Darujte",
-      "contact": "Kontakt",
-      "boutique": "Obchod"
+      "boutique": "Obchod",
+      "contact": "Kontakt"
     },
     "defaultTitles": {
       "hero": "Vítejte",
@@ -5402,9 +5480,9 @@
       "events": "Nadcházející akce",
       "membership": "Přidejte se k asociaci",
       "dons": "Darujte",
+      "boutique": "Obchod",
       "actualites": "Zprávy",
-      "contact": "Kontakt",
-      "boutique": "Obchod"
+      "contact": "Kontakt"
     },
     "view": {
       "uploadFailedWarning": "{count, plural, one {# obrázek nebylo možné stáhnout.} other {# obrázky nebylo možné nahrát.}}",
@@ -5448,9 +5526,9 @@
       "noSections": "Žádné sekce. Přidejte jednu dole.",
       "addSection": "Přidat sekci",
       "donsModuleDisabled": "Modul darů deaktivován — neviditelný na veřejném webu",
+      "boutiqueModuleDisabled": "Modul Obchod je vypnutý — na veřejném webu není vidět",
       "deleteSectionTitle": "Sekce smazat",
-      "deleteSectionDescription": "Tento čin je nevratný.",
-      "boutiqueModuleDisabled": "Modul Obchod je vypnutý — na veřejném webu není vidět"
+      "deleteSectionDescription": "Tento čin je nevratný."
     },
     "sectionSheet": {
       "editTitle": "Edit — {label}",
@@ -5471,6 +5549,8 @@
       "eventsLimitHint": "Události jsou automaticky vybírány z vašeho kalendáře.",
       "actualitesLimit": "Počet zpráv k vystavení",
       "actualitesLimitHint": "Na webu se zobrazí pouze první zveřejněné N zprávy.",
+      "boutiqueLimit": "Počet zobrazených produktů",
+      "boutiqueLimitHint": "Na webu se zobrazí pouze prvních N aktivních produktů.",
       "membershipIntro": "Úvodní text",
       "membershipIntroPlaceholder": "Vyplňte tento formulář a přihláste se do asociace...",
       "membershipHint": "Žádosti se objevují v seznamu členů se statusem \"Čekám\".",
@@ -5491,9 +5571,7 @@
       "apply": "Přihlaste se",
       "discardTitle": "Ignorovat změny?",
       "discardDescription": "Neaplikované změny budou ztraceny.",
-      "discardConfirm": "Ignorujte",
-      "boutiqueLimit": "Počet zobrazených produktů",
-      "boutiqueLimitHint": "Na webu se zobrazí pouze prvních N aktivních produktů."
+      "discardConfirm": "Ignorujte"
     },
     "preview": {
       "donsNoForm": "Není vybrán žádný formulář pro dar — neviditelný na veřejném webu"
@@ -5502,6 +5580,12 @@
       "viewSite": "Podívejte se na webové stránky",
       "logoUrl": "URL loga (volitelné)",
       "footerText": "Text v patě"
+    },
+    "aiAssistant": {},
+    "builderSwitch": {
+      "confirmOn": {},
+      "confirmOff": {},
+      "toasts": {}
     }
   },
   "richTextEditor": {
@@ -5514,6 +5598,21 @@
     "heading1": "Nadpis 1",
     "heading2": "Nadpis 2",
     "heading3": "Nadpis 3"
+  },
+  "paperFormTemplates": {
+    "columns": {},
+    "toasts": {},
+    "deleteConfirm": {},
+    "leaveWarning": {},
+    "targetGroups": {},
+    "targets": {},
+    "renderErrors": {},
+    "editor": {
+      "columns": {}
+    },
+    "activity": {
+      "fields": {}
+    }
   },
   "associationDocuments": {
     "title": "Dokumenty asociace",
@@ -5560,6 +5659,9 @@
     "notFound": "Tento dokument nebyl nalezen.",
     "backToList": "Zpět na dokumenty"
   },
+  "formDraft": {},
+  "legalConsent": {},
+  "publicDocuments": {},
   "portalMembre": {
     "associationDocuments": {
       "title": "Dokumenty asociace",
@@ -5606,6 +5708,15 @@
       "viewShop": "Zobrazit obchod",
       "orderPlacedTitle": "Objednávka zaregistrována!",
       "orderPlacedDescription": "Vaše objednávka čeká na platbu. Vedení vás kontaktuje, aby vše dokončilo.",
+      "paymentSuccessTitle": "Platba potvrzena!",
+      "paymentSuccessDescription": "Děkujeme za váš nákup. Byl vám odeslán potvrzovací e-mail s účtenkou.",
+      "stockAdjustedNotice": "Sklad u některých položek se změnil — váš košík byl upraven, zkontrolujte jej před pokračováním.",
+      "trackOrderButton": "Sledovat objednávku",
+      "trackingPageTitle": "Sledování objednávky",
+      "trackingStatusPending": "Čeká na platbu",
+      "trackingStatusPaid": "Objednávka zaplacena",
+      "trackingStatusCancelled": "Objednávka zrušena",
+      "trackingNotFound": "Objednávka nenalezena",
       "myOrdersButton": "Mé rozkazy",
       "continueShopping": "Pokračujte v nakupování",
       "maxStockReached": "Max Stock Dosaženo",
@@ -5643,16 +5754,7 @@
         "orderError": "Chyba při rozkazu",
         "orderUpdated": "Aktualizované pořadí",
         "orderCancelled": "Objednávka zrušena"
-      },
-      "paymentSuccessTitle": "Platba potvrzena!",
-      "paymentSuccessDescription": "Děkujeme za váš nákup. Byl vám odeslán potvrzovací e-mail s účtenkou.",
-      "stockAdjustedNotice": "Sklad u některých položek se změnil — váš košík byl upraven, zkontrolujte jej před pokračováním.",
-      "trackOrderButton": "Sledovat objednávku",
-      "trackingPageTitle": "Sledování objednávky",
-      "trackingStatusPending": "Čeká na platbu",
-      "trackingStatusPaid": "Objednávka zaplacena",
-      "trackingStatusCancelled": "Objednávka zrušena",
-      "trackingNotFound": "Objednávka nenalezena"
+      }
     },
     "dons": {
       "title": "Mé dary",
@@ -5953,7 +6055,8 @@
         "communication": "Komunikace",
         "finances": "Finance",
         "outils": "Nástroje"
-      }
+      },
+      "reimbursements": "Náhrady výdajů"
     },
     "backofficeSidebar": {
       "backoffice": "Backoffice",
@@ -5989,6 +6092,7 @@
       },
       "logout": "Odhlásit se"
     },
+    "twoFactorSettingsModal": {},
     "changePasswordModal": {
       "title": "Změnit heslo",
       "currentPasswordLabel": "Aktuální heslo",
@@ -6130,6 +6234,7 @@
       "daysWithoutCotisation": "Dní bez příspěvku",
       "status": "Stav"
     },
+    "originSources": {},
     "empty": "Žádná kontrolní upozornění.",
     "resolveAction": "Vyřešit",
     "resolveConfirmTitle": "Vyřešit toto upozornění?",
@@ -6147,7 +6252,169 @@
     "autoResolvedLabel": "(auto)",
     "emptyForSearch": "Žádné výsledky pro \"{search}\"."
   },
+  "help": {
+    "tabs": {},
+    "callout": {},
+    "assistant": {
+      "examples": {},
+      "examplesDocs": {},
+      "tools": {}
+    },
+    "changelog": {
+      "kind": {}
+    },
+    "releaseNotes": {},
+    "news": {},
+    "faqPopup": {},
+    "popupCarousel": {},
+    "footer": {}
+  },
+  "boutiqueShipping": {},
+  "paperFormScan": {
+    "steps": {},
+    "upload": {
+      "camera": {}
+    },
+    "reading": {},
+    "viewer": {},
+    "editor": {},
+    "review": {},
+    "status": {},
+    "result": {},
+    "notesValues": {},
+    "validation": {},
+    "leaveWarning": {},
+    "restartWarning": {}
+  },
   "formTermsEditor": {
     "contentRequired": "Musíte vyplnit pole „{conditionsLabel}“ nebo nahrát dokument."
+  },
+  "membreDuplicates": {
+    "list": {
+      "matchedFields": {},
+      "columns": {},
+      "status": {}
+    },
+    "merge": {
+      "fields": {},
+      "relations": {}
+    },
+    "backoffice": {
+      "columns": {}
+    }
+  },
+  "reimbursements": {
+    "view": {
+      "title": "Náhrady výdajů",
+      "newRequest": "Nová žádost",
+      "export": "Export",
+      "myRequests": "Mé požadavky",
+      "allRequests": "Všechny požadavky",
+      "allRequesters": "Všichni žadatelé",
+      "allCategories": "Všechny kategorie",
+      "dateFrom": "Z",
+      "dateTo": "Do",
+      "allStatuses": "Všechny stavy",
+      "summary": "{pending} Čeká se — {pendingAmount} · {approved} k vrácení — {approvedAmount} · {reimbursed} proplaceno — {reimbursedAmount}",
+      "noRequest": "Žádné žádosti o vrácení peněz",
+      "columns": {
+        "subject": "Účel",
+        "date": "Datum",
+        "amount": "Výše",
+        "status": "Stav"
+      },
+      "status": {
+        "draft": "Draft",
+        "pendingApproval": "Čeká na schválení",
+        "needsCorrection": "K opravě",
+        "approved": "Schváleno",
+        "rejected": "Odmítnuto",
+        "reimbursed": "Vráceno",
+        "cancelled": "Zrušeno"
+      },
+      "actions": {
+        "view": "Viz",
+        "submit": "Odeslat",
+        "cancel": "Zrušit"
+      },
+      "toasts": {
+        "created": "Žádost vytvořena",
+        "updated": "Žádost o aktualizaci",
+        "deleted": "Žádost smazána",
+        "submitted": "Žádost podána ke schválení",
+        "cancelled": "Žádost zrušena",
+        "approved": "Žádost schválena",
+        "correctionRequested": "Žádost o opravu",
+        "rejected": "Žádost zamítnuta",
+        "reimbursed": "Zaznamenáná refundace"
+      },
+      "deleteConfirmTitle": "Smazat tento návrh?",
+      "deleteConfirmDescription": "Tento čin je nevratný.",
+      "cancelConfirmTitle": "Zrušit tuto žádost?",
+      "cancelConfirmDescription": "Žadatel bude o zrušení informován.",
+      "cancelReasonLabel": "Důvod zrušení"
+    },
+    "form": {
+      "subject": "Účel",
+      "subjectPlaceholder": "Např. Regionální schůzky",
+      "comment": "Komentář",
+      "commentPlaceholder": "Volitelné detaily",
+      "event": "Související akce",
+      "project": "Související projekt",
+      "noProject": "Žádný projekt",
+      "noEvent": "Žádné akce",
+      "items": "Výdaje",
+      "addItem": "Přidat výdaj",
+      "noItems": "Žádné další poplatky",
+      "itemDate": "Datum výdajů",
+      "itemDescription": "Popis",
+      "itemAmount": "Výše",
+      "itemCategory": "Kategorie",
+      "itemReceipt": "Odůvodnění",
+      "total": "Celkem",
+      "duplicateWarning": "Podobný výdaj (stejné datum, stejná částka) už existuje v jiné z vašich žádostí.",
+      "toasts": {
+        "uploadError": "Chyba při odesílání účtenky",
+        "networkError": "Chyba sítě při odesílání účtenky"
+      }
+    },
+    "detail": {
+      "notFound": "Žádost o vrácení peněz nebyla nalezena",
+      "history": "Historie",
+      "correctionFrom": "Oprava požadovaná {name}",
+      "rejectedBy": "Zamítnuto {name}",
+      "reimbursedOn": "Vráceno dne {date} od {method}",
+      "selfApprovalBlockedNotice": "Nemůžete schválit vlastní žádost. Musí ji schválit správce nebo jiný oprávněný úředník.",
+      "viewReceipt": "Viz podpůrné dokumenty",
+      "immobilisationTag": "Dlouhodobý majetek",
+      "approveButton": "Schválit",
+      "requestCorrectionButton": "Požádat o opravu",
+      "rejectButton": "Odmítnout",
+      "correctionCommentLabel": "Poznámka k opravě",
+      "rejectionReasonLabel": "Důvod zamítnutí",
+      "deleteItemConfirmTitle": "Zrušit tyto výdaje?",
+      "toasts": {
+        "itemAdded": "Přidané náklady",
+        "itemUpdated": "Aktualizovaný výdaj",
+        "itemDeleted": "Výdaj odstraněn"
+      }
+    },
+    "register": {
+      "title": "Uložte si refundaci",
+      "registerButton": "Uložte si refundaci",
+      "date": "Datum vrácení peněz",
+      "paymentMethod": "Platební metoda",
+      "bankAccount": "Bankovní účet",
+      "noBankAccountHint": "Nemáte nastavený bankovní účet — přidejte ho do Financí> Účtů nebo vyberte Hotovost.",
+      "transaction": "Sladění importované bankovní transakce (volitelné)",
+      "noTransaction": "Teď se nepřibližuj",
+      "reference": "Reference",
+      "submit": "Uložit",
+      "methods": {
+        "virement": "Převod",
+        "cheque": "Zkontrolováno",
+        "especes": "Druhy"
+      }
+    }
   }
 }

@@ -186,6 +186,9 @@ export const reconcileActionSchema = z.object({
   incomeId:          z.string().optional(),
   expenseId:         z.string().optional(),
   transferId:        z.string().optional(),
+  // FORM-93 — reconciles at the payment level (one ReimbursementRequest ↔ one bank
+  // transaction), not per materialized Expense item.
+  reimbursementRequestId: z.string().optional(),
 })
 
 export type ReconcileActionInput = z.infer<typeof reconcileActionSchema>

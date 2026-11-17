@@ -41,6 +41,7 @@
     "location": "Locatie",
     "choosePlaceholder": "Kies...",
     "allPlaceholder": "Allemaal",
+    "noOptionsPlaceholder": "Geen opties beschikbaar",
     "previousPage": "Vorige pagina",
     "nextPage": "Volgende pagina",
     "paginationRange": "{from}–{to} / {total}",
@@ -51,7 +52,7 @@
     "addressPlaceholder": "Salle des fêtes, 12 rue de la Paix, Parijs...",
     "viewOnGoogleMaps": "Zie op Google Maps",
     "backToSite": "Terug naar de site",
-    "noOptionsPlaceholder": "Geen opties beschikbaar"
+    "period": {}
   },
   "address": {
     "street": "Adres",
@@ -62,6 +63,7 @@
     "country": "Woonland",
     "legacyMigratedHint": "Gekopieerd uit het oude adresveld — controleer of de postcode en plaats hieronder niet al zijn opgenomen."
   },
+  "avis": {},
   "auth": {
     "layout": {
       "imageAlt": "Log in",
@@ -91,7 +93,8 @@
         "connecting": "Bezig met inloggen…",
         "or": "of",
         "continueWithGoogle": "Ga verder met Google"
-      }
+      },
+      "twoFactor": {}
     },
     "register": {
       "pageTitle": "Maak een account aan",
@@ -118,9 +121,6 @@
         "passwordLabel": "Wachtwoord",
         "passwordPlaceholder": "Min. 8 tekens",
         "passwordGoogleHint": "Voor deze eerste accountaanmaak kies je een wachtwoord. Je kunt vervolgens inloggen met Google.",
-        "legalDocsAcceptPrefix": "Ik heb alle",
-        "legalDocsLinkLabel": "Juridische documenten van Formwise",
-        "legalDocsAcceptSuffix": "en ik accepteer de gebruiksvoorwaarden van de dienst.",
         "continueToPayment": "Blijf afrekenen",
         "perkTrialDays": "{days} Vrije dagen",
         "perkNoCommitment": "Geen verplichting",
@@ -129,7 +129,10 @@
         "startTrial": "Start mijn gratis proefperiode",
         "createAccount": "Account aanmaken",
         "perkNoCard": "Geen creditcard nodig",
-        "createAccountError": "Fout account aanmaken"
+        "createAccountError": "Fout account aanmaken",
+        "legalDocsAcceptPrefix": "Ik heb alle",
+        "legalDocsLinkLabel": "Juridische documenten van Formwise",
+        "legalDocsAcceptSuffix": "en ik accepteer de gebruiksvoorwaarden van de dienst."
       },
       "payment": {
         "paymentError": "Betalingsfout",
@@ -649,13 +652,16 @@
         "enLitige": "In discussie",
         "annulee": "Geannuleerd"
       },
-      "unmarkPaidWarning": "Dit document is momenteel betaald — het verwijderen van deze status verwijdert de kosten die het in Finance heeft veroorzaakt, evenals eventuele bankafstemming.",
-      "markPaidNotice": "Het markeren van dit document als betaald creëert automatisch een bijbehorende uitgave in Financiën.",
       "file": "Document",
+      "payment": {
+        "toasts": {}
+      },
       "toasts": {
         "uploadError": "Fout bij het uploaden van het document",
         "networkError": "Netwerkfout uploaden — probeer het opnieuw"
-      }
+      },
+      "unmarkPaidWarning": "Dit document is momenteel betaald — het verwijderen van deze status verwijdert de kosten die het in Finance heeft veroorzaakt, evenals eventuele bankafstemming.",
+      "markPaidNotice": "Het markeren van dit document als betaald creëert automatisch een bijbehorende uitgave in Financiën."
     }
   },
   "dashboard": {
@@ -862,7 +868,8 @@
       "userMenu": {
         "title": "Jouw profiel",
         "description": "Bewerk je profiel, verander je wachtwoord en log uit via dit menu."
-      }
+      },
+      "help": {}
     }
   },
   "finances": {
@@ -893,9 +900,213 @@
       "title": "Binnenkort",
       "description": "Deze functie is in ontwikkeling."
     },
+    "immobilisationsView": {
+      "columns": {},
+      "toasts": {},
+      "drillDown": {}
+    },
+    "immobilisationForm": {},
+    "journalManual": {},
+    "bilan": {
+      "title": "Balans",
+      "description": "Bezittingen en passiva van de vereniging aan het einde van het boekjaar.",
+      "exerciceLabel": "Oefening",
+      "rubriqueColumnLabel": "Sectie",
+      "noPreviousExercice": "Geen vergelijkingsmethode beschikbaar",
+      "actif": "Actief",
+      "totalActif": "Totaal actief",
+      "passif": "Passief",
+      "totalPassif": "Totale verplichtingen",
+      "noAccountsInRubrique": "Geen balans in dit deel",
+      "exportPdf": "PDF exporteren",
+      "exportDisabledTooltip": "Kan geen eindbalans exporteren totdat bovenstaande anomalieën zijn opgelost.",
+      "emptyExercice": {
+        "title": "Geen boekjaar",
+        "description": "Maak een nieuw boekjaar aan om de balans te bekijken."
+      },
+      "emptyLedger": {
+        "title": "Geen boekhoudkundige boekingen",
+        "description": "De balans wordt weergegeven zodra inkomsten, uitgaven of vaste activa in dit boekjaar zijn geboekt."
+      },
+      "rubriques": {
+        "immobilisationsCorporelles": "Tastbare kapitaalactiva",
+        "immobilisationsIncorporelles": "Immateriële vaste activa",
+        "immobilisationsFinancieres": "Financiële vaste activa",
+        "disponibilites": "Beschikbaarheid",
+        "chargesConstateesDavance": "Vooruitbetaalde kosten",
+        "creances": "Debiteuren",
+        "stocksEtEnCours": "Inventaris",
+        "fondsPropres": "Aandelen",
+        "provisions": "Voorzieningen",
+        "dettes": "Schulden",
+        "produitsConstatesDavance": "Uitgestelde inkomsten",
+        "fondsDedies": "Beperkte fondsen"
+      },
+      "memoNotice": "Schatting — niet geregistreerd in het grootboek, uitgesloten van de totale activa.",
+      "accountLabels": {
+        "reportANouveau": "Ingehouden winsten",
+        "resultatExercice": "Nettowinst van het jaar",
+        "creancesCotisations": "Uitstaande lidmaatschapsbijdragen",
+        "creancesFactures": "Uitstaande facturen",
+        "stocksEstimatedValue": "Geschatte voorraadwaarde",
+        "creancesFacturesEnRetard": "Achterstallige facturen"
+      },
+      "pdf": {
+        "periodLabel": "Periode van {start} tot {end}"
+      },
+      "drillDown": {
+        "date": "Datum",
+        "label": "Label",
+        "origin": "Oorsprong",
+        "debit": "Debet",
+        "credit": "Krediet",
+        "noLines": "Geen vermeldingen voor dit account.",
+        "sourceTypes": {
+          "INCOME": "Inkomen",
+          "INCOME_REVERSAL": "Inkomensomkering",
+          "EXPENSE": "Kosten",
+          "EXPENSE_REVERSAL": "Kostenomkering",
+          "BANK_TRANSACTION": "Banktransactie",
+          "ACCOUNT_TRANSFER": "Interne overdracht",
+          "OPENING_BALANCE": "Openingsbalans",
+          "IMMOBILISATION_DEPRECIATION": "Afschrijving",
+          "IMMOBILISATION_ACQUISITION": "Activa-acquisitie",
+          "FACTURE_RECUE_PAYMENT": "Leveranciersbetaling",
+          "MANUAL": "Handmatige invoer"
+        }
+      },
+      "issues": {
+        "title": "Anomalieën gedetecteerd",
+        "messages": {
+          "ACCOUNT_WITHOUT_RUBRIQUE": "De rekening {code} — {label} heeft een saldo, maar is niet gekoppeld aan een saldopost.",
+          "ACTIF_PASSIF_MISMATCH": "Het actief ({actif}) komt niet overeen met de verplichting ({passif}).",
+          "OPENING_BALANCE_MISSING": "Er werden geen openingsvermeldingen voor deze oefening gegenereerd vanuit \"{previousLabel}\".",
+          "TRIAL_BALANCE_UNBALANCED": "De totale debet ({debit}) komt niet overeen met het totale credit ({credit}) voor dit boekjaar.",
+          "RESULT_DIVERGENCE": "Het resultaat van het journaal ({journal}) verschilt van dat van de winst- en verliesrekening ({statement}) — het journaal is mogelijk nog niet up-to-date voor dit boekjaar (het boekjaar afsluiten of synchronisatie herstarten)."
+        }
+      },
+      "memoNoHistory": "Geen historische gegevens",
+      "caveats": {
+        "stocksMissingCostPrice": "{count} varianten zonder aankoopprijs geregistreerd, uitgesloten van de schatting"
+      }
+    },
+    "compteResultat": {
+      "title": "Resultatenrekening",
+      "description": "Financieel resultaat van het boekjaar, vergeleken met het voorgaande boekjaar.",
+      "exerciceLabel": "Boekjaar",
+      "categoryColumnLabel": "Categorie",
+      "noPreviousExercice": "-",
+      "noPreviousExerciceMessage": "Geen vorig boekjaar beschikbaar",
+      "export": "Exporteren",
+      "exportExcel": "Excel exporteren (gedetailleerd)",
+      "exportPdf": "PDF exporteren",
+      "products": "Opbrengsten",
+      "totalProducts": "Totale opbrengsten",
+      "expenses": "Kosten",
+      "totalExpenses": "Totale kosten",
+      "result": "Resultaat van het boekjaar",
+      "resultZero": "Resultaat van het boekjaar: 0 €",
+      "surplus": "Overschot van het boekjaar",
+      "deficit": "Tekort van het boekjaar",
+      "operationalResult": "Operationeel resultaat",
+      "uncategorized": "Te categoriseren",
+      "uncategorizedAlertIncome": "{count, plural, one {# inkomst moet worden gecategoriseerd} other {# inkomsten moeten worden gecategoriseerd}}",
+      "uncategorizedAlertExpense": "{count, plural, one {# uitgave moet worden gecategoriseerd} other {# uitgaven moeten worden gecategoriseerd}}",
+      "expandSection": "Weergeven",
+      "collapseSection": "Verbergen",
+      "noCategoriesInSection": "Geen categorie in deze sectie",
+      "sections": {
+        "FINANCIAL": "Financieel",
+        "EXCEPTIONAL": "Uitzonderlijk",
+        "OTHER": "Overig"
+      },
+      "inKind": {
+        "title": "Vrijwillige bijdragen in natura",
+        "employmentHeader": "Gebruik van bijdragen",
+        "amountHeader": "Bedrag",
+        "receivedHeader": "Ontvangen bijdragen",
+        "totalEmployments": "Totaal aantal banen",
+        "totalReceived": "Totale bijdragen",
+        "note": "Deze gratis bijdragen zijn gewaardeerd in euro's. Ze leiden niet tot geldverplaatsing en veranderen het resultaat van het boekjaar niet."
+      },
+      "drillDown": {
+        "date": "Datum",
+        "origin": "Herkomst",
+        "person": "Persoon",
+        "payment": "Betaling",
+        "amount": "Bedrag",
+        "categorize": "Categoriseren",
+        "categorizePlaceholder": "Kies een categorie",
+        "noTransactions": "Geen transacties",
+        "categorizeSuccess": "Transactie gecategoriseerd"
+      },
+      "pdf": {
+        "periodLabel": "Periode van {start} tot {end}",
+        "operatingIncome": "BEDRIJFSOPBRENGSTEN",
+        "operatingExpense": "BEDRIJFSKOSTEN",
+        "operatingResult": "BEDRIJFSRESULTAAT",
+        "financialIncome": "FINANCIËLE OPBRENGSTEN",
+        "financialExpense": "FINANCIËLE KOSTEN",
+        "financialResult": "FINANCIEEL RESULTAAT",
+        "exceptionalIncome": "UITZONDERLIJKE OPBRENGSTEN",
+        "exceptionalExpense": "UITZONDERLIJKE KOSTEN",
+        "exceptionalResult": "UITZONDERLIJK RESULTAAT",
+        "otherIncome": "OVERIGE OPBRENGSTEN",
+        "otherExpense": "OVERIGE KOSTEN",
+        "otherResult": "RESULTAAT UIT OVERIGE OPBRENGSTEN EN KOSTEN",
+        "uncategorizedSection": "TE CATEGORISEREN TRANSACTIES",
+        "uncategorizedIncomeLabel": "Te categoriseren inkomsten",
+        "uncategorizedExpenseLabel": "Te categoriseren uitgaven",
+        "total": "Totaal",
+        "grandTotal": "TOTAAL",
+        "categoryColumn": "Categorie",
+        "inKindTitle": "Vrijwillige bijdragen in natura",
+        "inKindEmploymentHeader": "Gebruik van bijdragen",
+        "inKindAmountHeader": "Bedrag",
+        "inKindReceivedHeader": "Ontvangen bijdragen",
+        "inKindTotalEmployments": "Totaal aantal banen",
+        "inKindTotalReceived": "Totale bijdragen",
+        "inKindNote": "Deze gratis bijdragen zijn gewaardeerd in euro's. Ze leiden niet tot geldverplaatsing en veranderen het resultaat van het boekjaar niet."
+      },
+      "csv": {
+        "date": "Datum",
+        "type": "Type",
+        "typeIncome": "Inkomst",
+        "typeExpense": "Uitgave",
+        "category": "Categorie",
+        "uncategorized": "Te categoriseren",
+        "accountingCode": "Boekhoudcode",
+        "description": "Omschrijving",
+        "amount": "Bedrag",
+        "paymentMethod": "Betaalmethode",
+        "origin": "Herkomst",
+        "reference": "Referentie",
+        "exercice": "Boekjaar"
+      },
+      "emptyExercice": {
+        "title": "Geen boekjaar",
+        "description": "Maak een boekjaar aan om de resultatenrekening te genereren."
+      }
+    },
+    "previsionnel": {
+      "emptyExercice": {},
+      "tabs": {},
+      "card": {},
+      "columns": {},
+      "export": {},
+      "toasts": {},
+      "copyBudget": {
+        "toasts": {}
+      },
+      "projectsTab": {
+        "noProjects": {},
+        "toasts": {}
+      }
+    },
     "categoryForm": {
       "name": "Naam",
       "namePlaceholder": "Bijvoorbeeld: Bijdragen",
+      "noMatchingCategory": "Geen overeenkomende categorie",
       "type": "Type",
       "typeIncome": "Inkomst",
       "typeExpense": "Kosten",
@@ -920,8 +1131,7 @@
       "sectionUnverifiedNote": "Dit account wordt niet herkend — controleer de sectie of kies het uit de geavanceerde opties.",
       "sectionToVerify": "Sectie om te controleren",
       "advancedOptions": "Geavanceerde opties",
-      "revertToAutoSection": "Terug naar het automatische gedeelte",
-      "noMatchingCategory": "Geen overeenkomende categorie"
+      "revertToAutoSection": "Terug naar het automatische gedeelte"
     },
     "bankAccountForm": {
       "bankName": "Banknaam",
@@ -1056,6 +1266,13 @@
         "deleted": "Account verwijderd"
       }
     },
+    "transferForm": {
+      "toasts": {}
+    },
+    "transfersView": {
+      "columns": {},
+      "description": "Registreer hier de overboekingen die al zijn gedaan tussen de bankrekeningen van uw vereniging. Formwise registreert de overboeking zonder geld over te maken."
+    },
     "categoriesView": {
       "title": "Categorieën",
       "description": "Beheer de categorieën van omzet en kosten.",
@@ -1066,7 +1283,6 @@
       "newCategoryTitle": "Nieuwe categorie",
       "editCategoryTitle": "Bewerkingscategorie",
       "deleteConfirmTitle": "Deze categorie verwijderen?",
-      "deleteConfirmInUse": "« {name} wordt gebruikt door {count, plural, one {# inkomsten/uitgaven} other {# inkomsten/uitgaven}}. Deze vermeldingen veranderen naar \"Ongecategoriseerd\".",
       "toasts": {
         "created": "Aangemaakte categorie",
         "updated": "Bijgewerkte categorie",
@@ -1077,7 +1293,8 @@
       "customCategory": "Maak een aangepaste categorie aan",
       "alreadyExists": "Al geconfigureerd",
       "archivedReactivateHint": "Gearchiveerd — klik om te heractiveren",
-      "custom": "Aangepast"
+      "custom": "Aangepast",
+      "deleteConfirmInUse": "« {name} wordt gebruikt door {count, plural, one {# inkomsten/uitgaven} other {# inkomsten/uitgaven}}. Deze vermeldingen veranderen naar \"Ongecategoriseerd\"."
     },
     "incomesView": {
       "title": "Inkomsten",
@@ -1315,187 +1532,6 @@
       "typeIncome": "Inkomst",
       "typeExpense": "Kosten",
       "confirm": "Valideer de bemiddeling"
-    },
-    "compteResultat": {
-      "title": "Resultatenrekening",
-      "description": "Financieel resultaat van het boekjaar, vergeleken met het voorgaande boekjaar.",
-      "exerciceLabel": "Boekjaar",
-      "noPreviousExercice": "-",
-      "export": "Exporteren",
-      "exportExcel": "Excel exporteren (gedetailleerd)",
-      "exportPdf": "PDF exporteren",
-      "products": "Opbrengsten",
-      "totalProducts": "Totale opbrengsten",
-      "expenses": "Kosten",
-      "totalExpenses": "Totale kosten",
-      "result": "Resultaat van het boekjaar",
-      "surplus": "Overschot van het boekjaar",
-      "deficit": "Tekort van het boekjaar",
-      "emptyExercice": {
-        "title": "Geen boekjaar",
-        "description": "Maak een boekjaar aan om de resultatenrekening te genereren."
-      },
-      "noPreviousExerciceMessage": "Geen vorig boekjaar beschikbaar",
-      "resultZero": "Resultaat van het boekjaar: 0 €",
-      "operationalResult": "Operationeel resultaat",
-      "uncategorized": "Te categoriseren",
-      "uncategorizedAlertIncome": "{count, plural, one {# inkomst moet worden gecategoriseerd} other {# inkomsten moeten worden gecategoriseerd}}",
-      "uncategorizedAlertExpense": "{count, plural, one {# uitgave moet worden gecategoriseerd} other {# uitgaven moeten worden gecategoriseerd}}",
-      "expandSection": "Weergeven",
-      "collapseSection": "Verbergen",
-      "noCategoriesInSection": "Geen categorie in deze sectie",
-      "sections": {
-        "FINANCIAL": "Financieel",
-        "EXCEPTIONAL": "Uitzonderlijk",
-        "OTHER": "Overig"
-      },
-      "drillDown": {
-        "date": "Datum",
-        "origin": "Herkomst",
-        "person": "Persoon",
-        "payment": "Betaling",
-        "amount": "Bedrag",
-        "categorize": "Categoriseren",
-        "categorizePlaceholder": "Kies een categorie",
-        "noTransactions": "Geen transacties",
-        "categorizeSuccess": "Transactie gecategoriseerd"
-      },
-      "pdf": {
-        "periodLabel": "Periode van {start} tot {end}",
-        "operatingIncome": "BEDRIJFSOPBRENGSTEN",
-        "operatingExpense": "BEDRIJFSKOSTEN",
-        "operatingResult": "BEDRIJFSRESULTAAT",
-        "financialIncome": "FINANCIËLE OPBRENGSTEN",
-        "financialExpense": "FINANCIËLE KOSTEN",
-        "financialResult": "FINANCIEEL RESULTAAT",
-        "exceptionalIncome": "UITZONDERLIJKE OPBRENGSTEN",
-        "exceptionalExpense": "UITZONDERLIJKE KOSTEN",
-        "exceptionalResult": "UITZONDERLIJK RESULTAAT",
-        "otherIncome": "OVERIGE OPBRENGSTEN",
-        "otherExpense": "OVERIGE KOSTEN",
-        "otherResult": "RESULTAAT UIT OVERIGE OPBRENGSTEN EN KOSTEN",
-        "uncategorizedSection": "TE CATEGORISEREN TRANSACTIES",
-        "uncategorizedIncomeLabel": "Te categoriseren inkomsten",
-        "uncategorizedExpenseLabel": "Te categoriseren uitgaven",
-        "total": "Totaal",
-        "grandTotal": "TOTAAL",
-        "categoryColumn": "Categorie",
-        "inKindTitle": "Vrijwillige bijdragen in natura",
-        "inKindEmploymentHeader": "Gebruik van bijdragen",
-        "inKindAmountHeader": "Bedrag",
-        "inKindReceivedHeader": "Ontvangen bijdragen",
-        "inKindTotalEmployments": "Totaal aantal banen",
-        "inKindTotalReceived": "Totale bijdragen",
-        "inKindNote": "Deze gratis bijdragen zijn gewaardeerd in euro's. Ze leiden niet tot geldverplaatsing en veranderen het resultaat van het boekjaar niet."
-      },
-      "csv": {
-        "date": "Datum",
-        "type": "Type",
-        "typeIncome": "Inkomst",
-        "typeExpense": "Uitgave",
-        "category": "Categorie",
-        "uncategorized": "Te categoriseren",
-        "accountingCode": "Boekhoudcode",
-        "description": "Omschrijving",
-        "amount": "Bedrag",
-        "paymentMethod": "Betaalmethode",
-        "origin": "Herkomst",
-        "reference": "Referentie",
-        "exercice": "Boekjaar"
-      },
-      "categoryColumnLabel": "Categorie",
-      "inKind": {
-        "title": "Vrijwillige bijdragen in natura",
-        "employmentHeader": "Gebruik van bijdragen",
-        "amountHeader": "Bedrag",
-        "receivedHeader": "Ontvangen bijdragen",
-        "totalEmployments": "Totaal aantal banen",
-        "totalReceived": "Totale bijdragen",
-        "note": "Deze gratis bijdragen zijn gewaardeerd in euro's. Ze leiden niet tot geldverplaatsing en veranderen het resultaat van het boekjaar niet."
-      }
-    },
-    "bilan": {
-      "title": "Balans",
-      "description": "Bezittingen en passiva van de vereniging aan het einde van het boekjaar.",
-      "exerciceLabel": "Oefening",
-      "rubriqueColumnLabel": "Sectie",
-      "noPreviousExercice": "Geen vergelijkingsmethode beschikbaar",
-      "actif": "Actief",
-      "totalActif": "Totaal actief",
-      "passif": "Passief",
-      "totalPassif": "Totale verplichtingen",
-      "noAccountsInRubrique": "Geen balans in dit deel",
-      "emptyExercice": {
-        "title": "Geen boekjaar",
-        "description": "Maak een nieuw boekjaar aan om de balans te bekijken."
-      },
-      "emptyLedger": {
-        "title": "Geen boekhoudkundige boekingen",
-        "description": "De balans wordt weergegeven zodra inkomsten, uitgaven of vaste activa in dit boekjaar zijn geboekt."
-      },
-      "rubriques": {
-        "immobilisationsCorporelles": "Tastbare kapitaalactiva",
-        "disponibilites": "Beschikbaarheid",
-        "fondsPropres": "Aandelen",
-        "dettes": "Schulden",
-        "immobilisationsIncorporelles": "Immateriële vaste activa",
-        "immobilisationsFinancieres": "Financiële vaste activa",
-        "chargesConstateesDavance": "Vooruitbetaalde kosten",
-        "provisions": "Voorzieningen",
-        "produitsConstatesDavance": "Uitgestelde inkomsten",
-        "creances": "Debiteuren",
-        "stocksEtEnCours": "Inventaris",
-        "fondsDedies": "Beperkte fondsen"
-      },
-      "issues": {
-        "title": "Anomalieën gedetecteerd",
-        "messages": {
-          "ACCOUNT_WITHOUT_RUBRIQUE": "De rekening {code} — {label} heeft een saldo, maar is niet gekoppeld aan een saldopost.",
-          "ACTIF_PASSIF_MISMATCH": "Het actief ({actif}) komt niet overeen met de verplichting ({passif}).",
-          "OPENING_BALANCE_MISSING": "Er werden geen openingsvermeldingen voor deze oefening gegenereerd vanuit \"{previousLabel}\".",
-          "TRIAL_BALANCE_UNBALANCED": "De totale debet ({debit}) komt niet overeen met het totale credit ({credit}) voor dit boekjaar.",
-          "RESULT_DIVERGENCE": "Het resultaat van het journaal ({journal}) verschilt van dat van de winst- en verliesrekening ({statement}) — het journaal is mogelijk nog niet up-to-date voor dit boekjaar (het boekjaar afsluiten of synchronisatie herstarten)."
-        }
-      },
-      "accountLabels": {
-        "reportANouveau": "Ingehouden winsten",
-        "resultatExercice": "Nettowinst van het jaar",
-        "creancesCotisations": "Uitstaande lidmaatschapsbijdragen",
-        "creancesFactures": "Uitstaande facturen",
-        "stocksEstimatedValue": "Geschatte voorraadwaarde",
-        "creancesFacturesEnRetard": "Achterstallige facturen"
-      },
-      "exportPdf": "PDF exporteren",
-      "exportDisabledTooltip": "Kan geen eindbalans exporteren totdat bovenstaande anomalieën zijn opgelost.",
-      "pdf": {
-        "periodLabel": "Periode van {start} tot {end}"
-      },
-      "drillDown": {
-        "date": "Datum",
-        "label": "Label",
-        "origin": "Oorsprong",
-        "debit": "Debet",
-        "credit": "Krediet",
-        "noLines": "Geen vermeldingen voor dit account.",
-        "sourceTypes": {
-          "INCOME": "Inkomen",
-          "INCOME_REVERSAL": "Inkomensomkering",
-          "EXPENSE": "Kosten",
-          "EXPENSE_REVERSAL": "Kostenomkering",
-          "BANK_TRANSACTION": "Banktransactie",
-          "ACCOUNT_TRANSFER": "Interne overdracht",
-          "OPENING_BALANCE": "Openingsbalans",
-          "IMMOBILISATION_DEPRECIATION": "Afschrijving",
-          "IMMOBILISATION_ACQUISITION": "Activa-acquisitie",
-          "FACTURE_RECUE_PAYMENT": "Leveranciersbetaling",
-          "MANUAL": "Handmatige invoer"
-        }
-      },
-      "memoNotice": "Schatting — niet geregistreerd in het grootboek, uitgesloten van de totale activa.",
-      "memoNoHistory": "Geen historische gegevens",
-      "caveats": {
-        "stocksMissingCostPrice": "{count} varianten zonder aankoopprijs geregistreerd, uitgesloten van de schatting"
-      }
     }
   },
   "evenements": {
@@ -1711,6 +1747,7 @@
         "dateLabel": "Startdatum",
         "createButton": "Creëer"
       },
+      "summary": {},
       "bilan": {
         "show": "Overzicht tonen",
         "hide": "Overzicht verbergen",
@@ -1928,6 +1965,9 @@
         "qrRevoked": "QR-code uitgeschakeld",
         "noMembersToExport": "Geen leden om te exporteren",
         "linkCopied": "Link gekopieerd"
+      },
+      "payment": {
+        "methods": {}
       }
     },
     "avaliacoes": {
@@ -1982,6 +2022,7 @@
           "standardFieldsHint": "Velden aangevraagd bij registratie",
           "phoneLabel": "Telefoon",
           "addressLabel": "Adres",
+          "countryLabel": "Land van verblijf",
           "requirement": {
             "hidden": "Gemaskerd",
             "optional": "Optioneel",
@@ -1989,8 +2030,7 @@
           },
           "mobileLabel": "Mobiel",
           "birthDateLabel": "Geboortedatum",
-          "genderLabel": "Geslacht",
-          "countryLabel": "Land van verblijf"
+          "genderLabel": "Geslacht"
         },
         "products": {
           "title": "Producten",
@@ -2310,6 +2350,7 @@
       "liveSince": "Sinds deze tijd aan de gang {mins} Min",
       "durationLessThanMin": "< 1 min",
       "durationMin": "{mins} Min",
+      "activeMeetingWarning": {},
       "toasts": {
         "meetingStarted": "Vergadering begonnen",
         "meetingScheduled": "Geplande vergadering",
@@ -2785,6 +2826,7 @@
       "restockNoticePlural": "{count, plural, one {De voorraad van het niet teruggetrokken artikel wordt hersteld.} other {De voorraad niet-opgehaalde spullen zal worden hersteld.}}",
       "restockNoticeStatic": "De voorraad niet-opgehaalde spullen zal worden hersteld."
     },
+    "refundModal": {},
     "stripeConfirm": {
       "title": "Als betaald markeren?",
       "descriptionSimple": "Dit Stripe-commando ({amount}) als handmatig betaald worden gemarkeerd.",
@@ -3121,6 +3163,7 @@
           "title": "Vorm",
           "standardFieldsHint": "Velden aangevraagd bij de donor",
           "addressLabel": "Adres",
+          "countryLabel": "Land van verblijf",
           "birthDateLabel": "Geboortedatum",
           "phoneLabel": "Vaste telefoon",
           "mobileLabel": "Mobiel",
@@ -3151,8 +3194,7 @@
           "addOption": "Voeg een optie toe",
           "removeOption": "Verwijder deze optie",
           "optionsRequiredError": "Elke lijst/keuzeveld heeft minstens twee opties.",
-          "duplicateOptionsError": "De opties van een lijst/keuzeveld moeten uniek zijn.",
-          "countryLabel": "Land van verblijf"
+          "duplicateOptionsError": "De opties van een lijst/keuzeveld moeten uniek zijn."
         },
         "payment": {
           "title": "Betaling",
@@ -3411,6 +3453,7 @@
           "title": "Vorm",
           "standardFieldsHint": "Velden aangevraagd bij registratie",
           "addressLabel": "Adres",
+          "countryLabel": "Land van verblijf",
           "birthDateLabel": "Geboortedatum",
           "phoneLabel": "Vaste telefoon",
           "mobileLabel": "Mobiel",
@@ -3443,8 +3486,7 @@
           "addOption": "Voeg een optie toe",
           "removeOption": "Verwijder deze optie",
           "optionsRequiredError": "Elke lijst/keuzeveld heeft minstens twee opties.",
-          "duplicateOptionsError": "De opties van een lijst/keuzeveld moeten uniek zijn.",
-          "countryLabel": "Land van verblijf"
+          "duplicateOptionsError": "De opties van een lijst/keuzeveld moeten uniek zijn."
         },
         "payment": {
           "title": "Betaling",
@@ -3698,6 +3740,7 @@
         "required": "Verplicht"
       }
     },
+    "blockEditor": {},
     "rulesManager": {
       "title": "Automatiseringsregels",
       "subtitle": "Automatische verzendingen volgens een kalender of evenement.",
@@ -3987,7 +4030,11 @@
       "bicColon": "BIC : {value}",
       "toasts": {
         "updated": "Bijgewerkte contactgegevens"
-      }
+      },
+      "accountingRegime": "Boekhoudstelsel voor onkostenvergoedingen",
+      "accountingRegimeHint": "Bepaalt wanneer een terugbetalingsverzoek wordt ingediend: bij goedkeuring (verplichting) of bij daadwerkelijke betaling (contant).",
+      "accountingRegimeCash": "Kasboekhouding",
+      "accountingRegimeAccrual": "Commitment accounting"
     },
     "membreTypes": {
       "name": "Naam",
@@ -4014,7 +4061,12 @@
       "title": "Visuele identiteit",
       "subtitle": "Logo weergegeven op het dashboard, offertes/facturen, aanwezigheidslijst en openbare website.",
       "logo": "Logo",
+      "footerStyles": {},
+      "footer": {
+        "socialPlatforms": {}
+      },
       "proOnlyText": "Het aangepaste logo (dashboard, offertes/facturen, urenstaat) is gereserveerd voor het Pro-abonnement. Upgrade naar het volgende abonnement in het tabblad Abonnement om het te activeren.",
+      "preview": {},
       "toasts": {
         "updated": "Bijgewerkte visuele identiteit",
         "uploadError": "Fout bij uploaden van logo"
@@ -4057,10 +4109,10 @@
       "status": {
         "trial": "Gratis proefperiode",
         "active": "Actief",
+        "paymentPending": "Betaling in uitvoering",
         "pastDue": "Te late betaling",
         "suspended": "Geschorst",
-        "cancelled": "Geannuleerd",
-        "paymentPending": "Betaling in uitvoering"
+        "cancelled": "Geannuleerd"
       },
       "planLabel": "Formule {tier}",
       "membersCount": "{count} / {limit} Leden",
@@ -4181,6 +4233,16 @@
       "subtitleTrialExpired": "Je gratis proefperiode is voorbij. Kies een abonnement en voer een betaalmethode in om door te gaan.",
       "confirmButtonSubscribe": "Bevestig en abonneer je"
     },
+    "teamAccess": {
+      "columns": {},
+      "summary": {},
+      "profiles": {},
+      "levels": {},
+      "areas": {
+        "sensible": "Gevoelige gegevens van leden"
+      },
+      "toasts": {}
+    },
     "erasureRequests": {
       "title": "Gegevenswissing (AVG)",
       "description": "Verzoeken om definitieve verwijdering van de persoonsgegevens van een lid, conform artikel 17 van de AVG. Worden elke nacht automatisch verwerkt, tenzij ze in de wacht staan.",
@@ -4221,11 +4283,6 @@
       },
       "automaticOrigin": "Automatisch gemarkeerd — meer dan 3 jaar inactief",
       "inactiveSince": "vertrokken op {date}"
-    },
-    "teamAccess": {
-      "areas": {
-        "sensible": "Gevoelige gegevens van leden"
-      }
     }
   },
   "cotisations": {
@@ -4315,28 +4372,6 @@
       "allCategories": "Alle categorieën",
       "allRenewals": "Alle verlengingen",
       "resetFilters": "Reset",
-      "renewal": {
-        "automatic": "Automatisch",
-        "manual": "Handmatig"
-      },
-      "summary": {
-        "aPagar": " · {amount} totaal",
-        "recebido": " · {amount} ontvangen",
-        "saldo": " · {amount} openstaand"
-      },
-      "distribution": {
-        "show": "Verdeling bekijken",
-        "hide": "Verdeling verbergen",
-        "category": "Lidmaatschapscategorie",
-        "renewal": "Verlenging",
-        "count": "Aantal bijdragen",
-        "aPagar": "Totaal bedrag",
-        "recebido": "Ontvangen bedrag",
-        "saldo": "Resterende saldo",
-        "total": "Totaal",
-        "noCategory": "Geen categorie",
-        "empty": "Geen bijdragen komen overeen met deze filters."
-      },
       "mergeTiers": {
         "filterOption": "Dubbele categorieën samenvoegen",
         "title": "Dubbele categorieën samenvoegen",
@@ -4359,6 +4394,28 @@
         "priceFreeAmount": "Gratis bedrag",
         "priceFreeAmountFrom": "Gratis bedrag van {amount}",
         "priceRecurring": "{amount}/jaar"
+      },
+      "renewal": {
+        "automatic": "Automatisch",
+        "manual": "Handmatig"
+      },
+      "summary": {
+        "aPagar": " · {amount} totaal",
+        "recebido": " · {amount} ontvangen",
+        "saldo": " · {amount} openstaand"
+      },
+      "distribution": {
+        "show": "Verdeling bekijken",
+        "hide": "Verdeling verbergen",
+        "category": "Lidmaatschapscategorie",
+        "renewal": "Verlenging",
+        "count": "Aantal bijdragen",
+        "aPagar": "Totaal bedrag",
+        "recebido": "Ontvangen bedrag",
+        "saldo": "Resterende saldo",
+        "total": "Totaal",
+        "noCategory": "Geen categorie",
+        "empty": "Geen bijdragen komen overeen met deze filters."
       }
     },
     "reminderModal": {
@@ -4423,6 +4480,24 @@
       "annulee": "Deze bijdrage is geannuleerd."
     }
   },
+  "groupes": {
+    "view": {
+      "statusFilter": {},
+      "columns": {},
+      "statusBadge": {},
+      "actions": {},
+      "toasts": {}
+    },
+    "form": {},
+    "detail": {
+      "appelColumns": {}
+    },
+    "appel": {
+      "counts": {},
+      "status": {},
+      "toasts": {}
+    }
+  },
   "membres": {
     "form": {
       "status": {
@@ -4450,6 +4525,11 @@
         "femme": "Vrouwelijk"
       },
       "groupeSanguinNone": "Niet gespecificeerd",
+      "imageRights": {
+        "unknown": "Niet opgegeven",
+        "granted": "Ja",
+        "refused": "Nee"
+      },
       "tailleTshirtNone": "Niet gespecificeerd",
       "preferredLocaleNone": "Niet gespecificeerd",
       "preferredLocaleHint": "De geselecteerde taal maakt het mogelijk om dit lid e-mails en communicatie in zijn of haar voorkeurstaal te sturen.",
@@ -4481,14 +4561,14 @@
         "allergies": "Bekende allergieën",
         "allergiesPlaceholder": "Arachides, stuifmeel...",
         "type": "Lidtype",
-        "preferredLocale": "Communicatietaal",
-        "spokenLanguage": "Gesproken taal",
-        "cotisationTier": "Lidmaatschapsbijdrage",
-        "guardianName": "Wettelijke voogd {number} — naam",
-        "guardianPhone": "Wettelijke voogd {number} — telefoon",
         "imageRights": "Beeldrecht",
         "notes": "Notities",
-        "notesPlaceholder": "Nuttige informatie over dit lid (cursussen, opmerkingen…)"
+        "notesPlaceholder": "Nuttige informatie over dit lid (cursussen, opmerkingen…)",
+        "guardianName": "Wettelijke voogd {number} — naam",
+        "guardianPhone": "Wettelijke voogd {number} — telefoon",
+        "preferredLocale": "Communicatietaal",
+        "spokenLanguage": "Gesproken taal",
+        "cotisationTier": "Lidmaatschapsbijdrage"
       },
       "invitationNotice": "Een uitnodigingsmail met de identificaties wordt naar dit adres gestuurd.",
       "tierNone": "Geen prijsstelling (standaardgedrag)",
@@ -4509,18 +4589,7 @@
         "management": "Ledenbeheer"
       },
       "invalidFormToast": "Opslaan mislukt. Neem contact op met support als het probleem aanhoudt.",
-      "customFieldsLoading": "Antwoorden van het aanmeldformulier laden…",
-      "imageRights": {
-        "unknown": "Niet opgegeven",
-        "granted": "Ja",
-        "refused": "Nee"
-      }
-    },
-    "fichePdf": {
-      "title": "LEDENPROFIEL",
-      "subtitle": "Formulier dat door het nieuwe lid moet worden ingevuld",
-      "signature": "Handtekening",
-      "date": "Datum"
+      "customFieldsLoading": "Antwoorden van het aanmeldformulier laden…"
     },
     "actions": {
       "add": "Voeg een lid toe",
@@ -4570,13 +4639,13 @@
         "firstName": "Voornaam",
         "lastName": "Achternaam",
         "address": "Adres",
+        "country": "Land",
+        "countryPlaceholder": "Alle landen",
+        "countryLoadError": "Landen kunnen niet laden. Probeer het zo opnieuw.",
         "birthDateFrom": "Geboren daarna",
         "birthDateTo": "Geboren daarvoor",
         "apply": "Solliciteer",
-        "reset": "Reset",
-        "country": "Land",
-        "countryPlaceholder": "Alle landen",
-        "countryLoadError": "Landen kunnen niet laden. Probeer het zo opnieuw."
+        "reset": "Reset"
       },
       "statusOptions": {
         "pending": "In behandeling",
@@ -4635,6 +4704,13 @@
       "cotisationButton": "Lidmaatschapsbijdrage",
       "createAccessButton": "Toegang creëren",
       "roleButton": "Rol",
+      "eraseData": {
+        "button": "Gegevens wissen (AVG)",
+        "confirmTitle": "Definitieve verwijdering van de gegevens van {name} aanvragen?",
+        "confirmDescription": "Dit registreert een AVG artikel 17-verzoek tot verwijdering. Het lid ontvangt een bevestigingsmail, waarna de persoonsgegevens onomkeerbaar worden geanonimiseerd bij de volgende automatische verwerking, tenzij het verzoek in de wacht wordt gezet.",
+        "toastSuccess": "Wisverzoek geregistreerd",
+        "requestLabel": "AVG-wissing"
+      },
       "contact": "Contact",
       "noContactInfo": "Geen contactgegevens",
       "memberSinceColon": "Lid sinds: {date}",
@@ -4751,13 +4827,6 @@
         "rejectConfirmTitle": "Dit verzoek weigeren?",
         "rejectConfirmDescription": "{name} zal veranderen naar de status \"Inactief\" en kan niet inloggen. Het verzoek en de antwoorden op het formulier worden behouden."
       },
-      "eraseData": {
-        "button": "Gegevens wissen (AVG)",
-        "confirmTitle": "Definitieve verwijdering van de gegevens van {name} aanvragen?",
-        "confirmDescription": "Dit registreert een AVG artikel 17-verzoek tot verwijdering. Het lid ontvangt een bevestigingsmail, waarna de persoonsgegevens onomkeerbaar worden geanonimiseerd bij de volgende automatische verwerking, tenzij het verzoek in de wacht wordt gezet.",
-        "toastSuccess": "Wisverzoek geregistreerd",
-        "requestLabel": "AVG-wissing"
-      },
       "noCommande": "Geen winkelaankopen voor dit contact.",
       "commandeStatus": {
         "PENDING": "In behandeling",
@@ -4847,6 +4916,11 @@
       "inMessagesSection": " in de sectie Berichten.",
       "messageSectionLabel": "Boodschap",
       "saveAsTemplate": "Sla op als sjabloon",
+      "subjectLabel": "Doel",
+      "subjectPlaceholder": "Onderwerp van de e-mail...",
+      "subjectTooLong": "Onderwerp te lang: {length}/{max} tekens — wordt geweigerd bij verzending.",
+      "bodyLabel": "Berichtinhoud",
+      "bodyPlaceholder": "Schrijf je bericht...",
       "language": {
         "title": "Verzendtaal",
         "modeOriginal": "Oorspronkelijke taal",
@@ -4871,11 +4945,6 @@
         "autoNoEffect": "Geen enkele huidige ontvanger heeft een andere voorkeurstaal dan Frans — iedereen ontvangt de oorspronkelijke versie.",
         "autoExternalNote": "{count, plural, one {# extern e-mailadres (oorspronkelijke taal)} other {# externe e-mailadressen (oorspronkelijke taal)}}"
       },
-      "subjectLabel": "Doel",
-      "subjectPlaceholder": "Onderwerp van de e-mail...",
-      "subjectTooLong": "Onderwerp te lang: {length}/{max} tekens — wordt geweigerd bij verzending.",
-      "bodyLabel": "Berichtinhoud",
-      "bodyPlaceholder": "Schrijf je bericht...",
       "continue": "Ga verder",
       "confirmSendTitle": "Verzendbevestiging",
       "confirmSendDescription": "Deze e-mail zal worden verzonden naar {recipients}. Deze handeling is onomkeerbaar.",
@@ -4892,6 +4961,9 @@
       "recipientsActive": "{count, plural, one {# actief lid} other {# actieve leden}}",
       "externalOnlyCount": "{count, plural, one {# externe e-mail} other {# externe e-mails}}",
       "recipientsWithExternal": "{members} + {count, plural, one {# externe e-mail} other {# externe e-mails}}",
+      "attachments": {
+        "errors": {}
+      },
       "toasts": {
         "selectType": "Selecteer een Lidtype",
         "selectMember": "Selecteer ten minste één lid of voeg een externe e-mailadres toe",
@@ -5291,6 +5363,12 @@
         "genericError": "Fout"
       },
       "importedNote": "Geïmporteerd van AssoConnect — {collecte}"
+    },
+    "fichePdf": {
+      "title": "LEDENPROFIEL",
+      "subtitle": "Formulier dat door het nieuwe lid moet worden ingevuld",
+      "signature": "Handtekening",
+      "date": "Datum"
     }
   },
   "memberCard": {
@@ -5393,8 +5471,8 @@
       "actualites": "Nieuws",
       "membership": "Word lid van de vereniging",
       "dons": "Doneer",
-      "contact": "Contact",
-      "boutique": "Winkel"
+      "boutique": "Winkel",
+      "contact": "Contact"
     },
     "defaultTitles": {
       "hero": "Welkom",
@@ -5402,9 +5480,9 @@
       "events": "Aankomende evenementen",
       "membership": "Word lid van de vereniging",
       "dons": "Doneer",
+      "boutique": "Winkel",
       "actualites": "Nieuws",
-      "contact": "Contact",
-      "boutique": "Winkel"
+      "contact": "Contact"
     },
     "view": {
       "uploadFailedWarning": "{count, plural, one {# afbeelding kon niet worden gedownload.} other {# afbeeldingen konden niet worden geüpload.}}",
@@ -5448,9 +5526,9 @@
       "noSections": "Geen secties. Voeg er één onder toe.",
       "addSection": "Voeg een sectie toe",
       "donsModuleDisabled": "Donatiemodule uitgeschakeld — onzichtbaar op de openbare site",
+      "boutiqueModuleDisabled": "Winkelmodule uitgeschakeld — niet zichtbaar op de openbare site",
       "deleteSectionTitle": "Sectie verwijderen",
-      "deleteSectionDescription": "Deze handeling is onomkeerbaar.",
-      "boutiqueModuleDisabled": "Winkelmodule uitgeschakeld — niet zichtbaar op de openbare site"
+      "deleteSectionDescription": "Deze handeling is onomkeerbaar."
     },
     "sectionSheet": {
       "editTitle": "Bewerking — {label}",
@@ -5471,6 +5549,8 @@
       "eventsLimitHint": "Evenementen worden automatisch uit je agenda gehaald.",
       "actualitesLimit": "Aantal nieuwsitems om te tonen",
       "actualitesLimitHint": "Alleen het eerste gepubliceerde N-nieuws wordt op de site weergegeven.",
+      "boutiqueLimit": "Aantal weer te geven producten",
+      "boutiqueLimitHint": "Alleen de eerste N actieve producten worden op de site getoond.",
       "membershipIntro": "Inleidende tekst",
       "membershipIntroPlaceholder": "Vul dit formulier in om je aan te melden voor toetreding tot de vereniging...",
       "membershipHint": "Verzoeken verschijnen in de lijst van leden met de status \"In behandeling\".",
@@ -5491,9 +5571,7 @@
       "apply": "Solliciteer",
       "discardTitle": "Veranderingen negeren?",
       "discardDescription": "Niet-toegepaste wijzigingen gaan verloren.",
-      "discardConfirm": "Negeer",
-      "boutiqueLimit": "Aantal weer te geven producten",
-      "boutiqueLimitHint": "Alleen de eerste N actieve producten worden op de site getoond."
+      "discardConfirm": "Negeer"
     },
     "preview": {
       "donsNoForm": "Geen donatieformulier gekozen — onzichtbaar op de openbare site"
@@ -5502,6 +5580,12 @@
       "viewSite": "Zie de website",
       "logoUrl": "Logo URL (optioneel)",
       "footerText": "Footertekst"
+    },
+    "aiAssistant": {},
+    "builderSwitch": {
+      "confirmOn": {},
+      "confirmOff": {},
+      "toasts": {}
     }
   },
   "richTextEditor": {
@@ -5514,6 +5598,21 @@
     "heading1": "Kop 1",
     "heading2": "Kop 2",
     "heading3": "Kop 3"
+  },
+  "paperFormTemplates": {
+    "columns": {},
+    "toasts": {},
+    "deleteConfirm": {},
+    "leaveWarning": {},
+    "targetGroups": {},
+    "targets": {},
+    "renderErrors": {},
+    "editor": {
+      "columns": {}
+    },
+    "activity": {
+      "fields": {}
+    }
   },
   "associationDocuments": {
     "title": "Verenigingsdocumenten",
@@ -5560,6 +5659,9 @@
     "notFound": "Dit document kan niet worden gevonden.",
     "backToList": "Terug naar documenten"
   },
+  "formDraft": {},
+  "legalConsent": {},
+  "publicDocuments": {},
   "portalMembre": {
     "associationDocuments": {
       "title": "Verenigingsdocumenten",
@@ -5606,6 +5708,15 @@
       "viewShop": "Bekijk Shop",
       "orderPlacedTitle": "Bestelling geregistreerd!",
       "orderPlacedDescription": "Je bestelling wacht op betaling. De administratie neemt contact met je op om het af te ronden.",
+      "paymentSuccessTitle": "Betaling bevestigd!",
+      "paymentSuccessDescription": "Bedankt voor uw aankoop. Er is een bevestigingsmail met uw bon naar u verzonden.",
+      "stockAdjustedNotice": "De voorraad van sommige artikelen is gewijzigd — uw winkelwagen is aangepast, controleer deze voordat u verdergaat.",
+      "trackOrderButton": "Mijn bestelling volgen",
+      "trackingPageTitle": "Bestelling volgen",
+      "trackingStatusPending": "In afwachting van betaling",
+      "trackingStatusPaid": "Bestelling betaald",
+      "trackingStatusCancelled": "Bestelling geannuleerd",
+      "trackingNotFound": "Bestelling niet gevonden",
       "myOrdersButton": "Mijn bevelen",
       "continueShopping": "Blijf winkelen",
       "maxStockReached": "Max Stock Bereikt",
@@ -5643,16 +5754,7 @@
         "orderError": "Fout tijdens opdracht",
         "orderUpdated": "Bijgewerkte volgorde",
         "orderCancelled": "Bestelling geannuleerd"
-      },
-      "paymentSuccessTitle": "Betaling bevestigd!",
-      "paymentSuccessDescription": "Bedankt voor uw aankoop. Er is een bevestigingsmail met uw bon naar u verzonden.",
-      "stockAdjustedNotice": "De voorraad van sommige artikelen is gewijzigd — uw winkelwagen is aangepast, controleer deze voordat u verdergaat.",
-      "trackOrderButton": "Mijn bestelling volgen",
-      "trackingPageTitle": "Bestelling volgen",
-      "trackingStatusPending": "In afwachting van betaling",
-      "trackingStatusPaid": "Bestelling betaald",
-      "trackingStatusCancelled": "Bestelling geannuleerd",
-      "trackingNotFound": "Bestelling niet gevonden"
+      }
     },
     "dons": {
       "title": "Mijn Donaties",
@@ -6019,7 +6121,8 @@
         "communication": "Communicatie",
         "finances": "Financiën",
         "outils": "Gereedschappen"
-      }
+      },
+      "reimbursements": "Onkostenvergoedingen"
     },
     "backofficeSidebar": {
       "backoffice": "Backoffice",
@@ -6055,6 +6158,7 @@
       },
       "logout": "Uitloggen"
     },
+    "twoFactorSettingsModal": {},
     "changePasswordModal": {
       "title": "Wachtwoord wijzigen",
       "currentPasswordLabel": "Huidig wachtwoord",
@@ -6196,6 +6300,7 @@
       "daysWithoutCotisation": "Dagen zonder bijdrage",
       "status": "Status"
     },
+    "originSources": {},
     "empty": "Geen controlemeldingen.",
     "resolveAction": "Oplossen",
     "resolveConfirmTitle": "Deze melding oplossen?",
@@ -6213,7 +6318,169 @@
     "autoResolvedLabel": "(auto)",
     "emptyForSearch": "Geen resultaten voor \"{search}\"."
   },
+  "help": {
+    "tabs": {},
+    "callout": {},
+    "assistant": {
+      "examples": {},
+      "examplesDocs": {},
+      "tools": {}
+    },
+    "changelog": {
+      "kind": {}
+    },
+    "releaseNotes": {},
+    "news": {},
+    "faqPopup": {},
+    "popupCarousel": {},
+    "footer": {}
+  },
+  "boutiqueShipping": {},
+  "paperFormScan": {
+    "steps": {},
+    "upload": {
+      "camera": {}
+    },
+    "reading": {},
+    "viewer": {},
+    "editor": {},
+    "review": {},
+    "status": {},
+    "result": {},
+    "notesValues": {},
+    "validation": {},
+    "leaveWarning": {},
+    "restartWarning": {}
+  },
   "formTermsEditor": {
     "contentRequired": "U moet het veld ‘{conditionsLabel}’ invullen of een document uploaden."
+  },
+  "membreDuplicates": {
+    "list": {
+      "matchedFields": {},
+      "columns": {},
+      "status": {}
+    },
+    "merge": {
+      "fields": {},
+      "relations": {}
+    },
+    "backoffice": {
+      "columns": {}
+    }
+  },
+  "reimbursements": {
+    "view": {
+      "title": "Onkostenvergoedingen",
+      "newRequest": "Nieuw verzoek",
+      "export": "Export",
+      "myRequests": "Mijn verzoeken",
+      "allRequests": "Alle verzoeken",
+      "allRequesters": "Alle aanvragers",
+      "allCategories": "Alle categorieën",
+      "dateFrom": "Van",
+      "dateTo": "Naar",
+      "allStatuses": "Alle statussen",
+      "summary": "{pending} In afwachting — {pendingAmount} · {approved} te worden terugbetaald — {approvedAmount} · {reimbursed} vergoed — {reimbursedAmount}",
+      "noRequest": "Geen terugbetalingsverzoeken",
+      "columns": {
+        "subject": "Doel",
+        "date": "Datum",
+        "amount": "Bedrag",
+        "status": "Status"
+      },
+      "status": {
+        "draft": "Draft",
+        "pendingApproval": "In afwachting van goedkeuring",
+        "needsCorrection": "Nog te corrigeren",
+        "approved": "Goedgekeurd",
+        "rejected": "Geweigerd",
+        "reimbursed": "Terugbetaald",
+        "cancelled": "Geannuleerd"
+      },
+      "actions": {
+        "view": "Zie",
+        "submit": "Indienen",
+        "cancel": "Annuleren"
+      },
+      "toasts": {
+        "created": "Aanvraag aangemaakt",
+        "updated": "Updateverzoek",
+        "deleted": "Verzoek verwijderd",
+        "submitted": "Aanvraag ingediend ter goedkeuring",
+        "cancelled": "Verzoek geannuleerd",
+        "approved": "Aanvraag goedgekeurd",
+        "correctionRequested": "Correctie aangevraagd",
+        "rejected": "Verzoek afgewezen",
+        "reimbursed": "Geregistreerde terugbetaling"
+      },
+      "deleteConfirmTitle": "Deze versie verwijderen?",
+      "deleteConfirmDescription": "Deze actie is onomkeerbaar.",
+      "cancelConfirmTitle": "Dit verzoek annuleren?",
+      "cancelConfirmDescription": "De aanvrager wordt op de hoogte gebracht van de annulering.",
+      "cancelReasonLabel": "Reden voor annulering"
+    },
+    "form": {
+      "subject": "Doel",
+      "subjectPlaceholder": "Bijv. reizen naar regionale bijeenkomsten",
+      "comment": "Commentaar",
+      "commentPlaceholder": "Optionele details",
+      "event": "Gerelateerde gebeurtenis",
+      "project": "Geassocieerd project",
+      "noProject": "Geen project",
+      "noEvent": "Geen evenementen",
+      "items": "Uitgaven",
+      "addItem": "Voeg een kostenpost toe",
+      "noItems": "Geen extra kosten",
+      "itemDate": "Datum van uitgaven",
+      "itemDescription": "Beschrijving",
+      "itemAmount": "Bedrag",
+      "itemCategory": "Categorie",
+      "itemReceipt": "Rechtvaardiging",
+      "total": "Totaal",
+      "duplicateWarning": "Een vergelijkbare uitgave (dezelfde datum, hetzelfde bedrag) bestaat al in een ander van je verzoeken.",
+      "toasts": {
+        "uploadError": "Fout bij het verzenden van de ontvangstbevestiging",
+        "networkError": "Netwerkfout bij het verzenden van de ontvangstbewijs"
+      }
+    },
+    "detail": {
+      "notFound": "Terugbetalingsverzoek niet gevonden",
+      "history": "Geschiedenis",
+      "correctionFrom": "Correctie aangevraagd door {name}",
+      "rejectedBy": "Geweigerd door {name}",
+      "reimbursedOn": "Terugbetaald op {date} door {method}",
+      "selfApprovalBlockedNotice": "U kunt uw eigen verzoek niet goedkeuren. Het moet worden goedgekeurd door een beheerder of een andere bevoegde functionaris.",
+      "viewReceipt": "Zie de ondersteunende documenten",
+      "immobilisationTag": "Vaste activa",
+      "approveButton": "Goedkeuren",
+      "requestCorrectionButton": "Verzoek om correctie",
+      "rejectButton": "Weigeren",
+      "correctionCommentLabel": "Correctiecommentaar",
+      "rejectionReasonLabel": "Reden voor weigering",
+      "deleteItemConfirmTitle": "Deze kosten elimineren?",
+      "toasts": {
+        "itemAdded": "Extra kosten",
+        "itemUpdated": "Bijgewerkte kosten",
+        "itemDeleted": "Kosten verwijderd"
+      }
+    },
+    "register": {
+      "title": "Bespaar de terugbetaling",
+      "registerButton": "Bespaar de terugbetaling",
+      "date": "Terugbetalingsdatum",
+      "paymentMethod": "Betaalmethode",
+      "bankAccount": "Bankrekening",
+      "noBankAccountHint": "Geen bankrekening ingesteld — voeg er een toe in Financiën> Rekeningen, of kies Contant.",
+      "transaction": "Een geïmporteerde banktransactie afstemmen (optioneel)",
+      "noTransaction": "Breng nu niet dichterbij",
+      "reference": "Referentie",
+      "submit": "Opslaan",
+      "methods": {
+        "virement": "Overdracht",
+        "cheque": "Check",
+        "especes": "Soorten"
+      }
+    }
   }
 }

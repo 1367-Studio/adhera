@@ -41,6 +41,7 @@
     "location": "Τοποθεσία",
     "choosePlaceholder": "Επιλέξτε...",
     "allPlaceholder": "Όλα",
+    "noOptionsPlaceholder": "Δεν υπάρχουν διαθέσιμες επιλογές",
     "previousPage": "Προηγούμενη σελίδα",
     "nextPage": "Επόμενη σελίδα",
     "paginationRange": "{from}–{to} από {total}",
@@ -51,7 +52,7 @@
     "addressPlaceholder": "Salle des fêtes, 12 rue de la Paix, Παρίσι...",
     "viewOnGoogleMaps": "Δείτε στο Google Maps",
     "backToSite": "Επιστροφή στον ιστότοπο",
-    "noOptionsPlaceholder": "Δεν υπάρχουν διαθέσιμες επιλογές"
+    "period": {}
   },
   "address": {
     "street": "Διεύθυνση",
@@ -62,6 +63,7 @@
     "country": "Χώρα διαμονής",
     "legacyMigratedHint": "Αντιγράφηκε από το παλιό πεδίο διεύθυνσης — ελέγξτε ότι δεν περιλαμβάνει ήδη τον ταχυδρομικό κώδικα και την πόλη παρακάτω."
   },
+  "avis": {},
   "auth": {
     "layout": {
       "imageAlt": "Σύνδεση",
@@ -91,7 +93,8 @@
         "connecting": "Σύνδεση…",
         "or": "ή",
         "continueWithGoogle": "Συνεχίστε με το Google"
-      }
+      },
+      "twoFactor": {}
     },
     "register": {
       "pageTitle": "Δημιουργία λογαριασμού",
@@ -118,9 +121,6 @@
         "passwordLabel": "Κωδικός πρόσβασης",
         "passwordPlaceholder": "Τουλάχιστον 8 χαρακτήρες",
         "passwordGoogleHint": "Για αυτήν την πρώτη δημιουργία λογαριασμού, επιλέξτε έναν κωδικό πρόσβασης. Στη συνέχεια, μπορείτε να συνδεθείτε με το Google.",
-        "legalDocsAcceptPrefix": "Έχω διαβάσει όλα τα",
-        "legalDocsLinkLabel": "Νομικά έγγραφα του Formwise",
-        "legalDocsAcceptSuffix": "και αποδέχομαι τους όρους χρήσης της υπηρεσίας.",
         "continueToPayment": "Συνεχίστε στο ταμείο",
         "perkTrialDays": "{days} Ελεύθερες μέρες",
         "perkNoCommitment": "Καμία υποχρέωση",
@@ -129,7 +129,10 @@
         "startTrial": "Ξεκινήστε τη δωρεάν δοκιμή μου",
         "createAccount": "Δημιουργία λογαριασμού",
         "perkNoCard": "Δεν απαιτείται πιστωτική κάρτα",
-        "createAccountError": "Σφάλμα κατά τη δημιουργία λογαριασμού"
+        "createAccountError": "Σφάλμα κατά τη δημιουργία λογαριασμού",
+        "legalDocsAcceptPrefix": "Έχω διαβάσει όλα τα",
+        "legalDocsLinkLabel": "Νομικά έγγραφα του Formwise",
+        "legalDocsAcceptSuffix": "και αποδέχομαι τους όρους χρήσης της υπηρεσίας."
       },
       "payment": {
         "paymentError": "Σφάλμα πληρωμής",
@@ -649,13 +652,16 @@
         "enLitige": "Υπό αμφισβήτηση",
         "annulee": "Ακυρώθηκε"
       },
-      "unmarkPaidWarning": "Αυτό το έγγραφο πληρώνεται αυτήν τη στιγμή — η κατάργηση αυτής της κατάστασης θα καταργήσει τη δαπάνη που δημιούργησε στα Οικονομικά, καθώς και οποιαδήποτε τραπεζική συμφωνία.",
-      "markPaidNotice": "Η επισήμανση αυτού του παραστατικού ως πληρωμένου θα δημιουργήσει αυτόματα μια αντίστοιχη έξοδο στα Οικονομικά.",
       "file": "Έγγραφο",
+      "payment": {
+        "toasts": {}
+      },
       "toasts": {
         "uploadError": "Σφάλμα κατά την αποστολή του εγγράφου",
         "networkError": "Μεταφόρτωση σφαλμάτων δικτύου — δοκιμάστε ξανά"
-      }
+      },
+      "unmarkPaidWarning": "Αυτό το έγγραφο πληρώνεται αυτήν τη στιγμή — η κατάργηση αυτής της κατάστασης θα καταργήσει τη δαπάνη που δημιούργησε στα Οικονομικά, καθώς και οποιαδήποτε τραπεζική συμφωνία.",
+      "markPaidNotice": "Η επισήμανση αυτού του παραστατικού ως πληρωμένου θα δημιουργήσει αυτόματα μια αντίστοιχη έξοδο στα Οικονομικά."
     }
   },
   "dashboard": {
@@ -862,7 +868,8 @@
       "userMenu": {
         "title": "Το προφίλ σας",
         "description": "Επεξεργαστείτε το προφίλ σας, αλλάξτε τον κωδικό πρόσβασής σας και αποσυνδεθείτε από αυτό το μενού."
-      }
+      },
+      "help": {}
     }
   },
   "finances": {
@@ -893,9 +900,213 @@
       "title": "Ερχομαι συντομα",
       "description": "Αυτή η δυνατότητα είναι υπό ανάπτυξη."
     },
+    "immobilisationsView": {
+      "columns": {},
+      "toasts": {},
+      "drillDown": {}
+    },
+    "immobilisationForm": {},
+    "journalManual": {},
+    "bilan": {
+      "title": "Ισολογισμός",
+      "description": "Περιουσιακά στοιχεία και υποχρεώσεις του συλλόγου στο τέλος του οικονομικού έτους.",
+      "exerciceLabel": "Άσκηση",
+      "rubriqueColumnLabel": "Τμήμα",
+      "noPreviousExercice": "Δεν υπάρχει διαθέσιμο συγκριτικό",
+      "actif": "Ενεργός",
+      "totalActif": "Σύνολο ενεργών",
+      "passif": "Παθητική",
+      "totalPassif": "Σύνολο υποχρεώσεων",
+      "noAccountsInRubrique": "Δεν υπάρχει ισορροπία σε αυτήν την ενότητα",
+      "exportPdf": "Εξαγωγή PDF",
+      "exportDisabledTooltip": "Αδυναμία εξαγωγής Τελικού Ισολογισμού μέχρι να διορθωθούν οι παραπάνω ανωμαλίες.",
+      "emptyExercice": {
+        "title": "Χωρίς οικονομικό έτος",
+        "description": "Δημιουργήστε ένα νέο οικονομικό έτος για να δείτε τον Ισολογισμό."
+      },
+      "emptyLedger": {
+        "title": "Χωρίς λογιστικές εγγραφές",
+        "description": "Ο ισολογισμός θα εμφανίζεται μόλις εγγραφούν τα έσοδα, οι δαπάνες ή τα πάγια στοιχεία ενεργητικού κατά το τρέχον οικονομικό έτος."
+      },
+      "rubriques": {
+        "immobilisationsCorporelles": "Ενσώματα πάγια στοιχεία ενεργητικού",
+        "immobilisationsIncorporelles": "Άυλα πάγια στοιχεία ενεργητικού",
+        "immobilisationsFinancieres": "Πάγια χρηματοπιστωτικά στοιχεία ενεργητικού",
+        "disponibilites": "Διαθεσιμότητα",
+        "chargesConstateesDavance": "Προπληρωμένα έξοδα",
+        "creances": "Απαιτήσεις",
+        "stocksEtEnCours": "Καταγραφή εμπορευμάτων",
+        "fondsPropres": "Μετοχικό κεφάλαιο",
+        "provisions": "Προβλέψεις",
+        "dettes": "Χρέη",
+        "produitsConstatesDavance": "Αναβαλλόμενο εισόδημα",
+        "fondsDedies": "Περιορισμένα κεφάλαια"
+      },
+      "memoNotice": "Εκτίμηση — δεν καταγράφεται στο καθολικό, εξαιρείται από το σύνολο του ενεργητικού.",
+      "accountLabels": {
+        "reportANouveau": "Κέρδη εις νέον",
+        "resultatExercice": "Καθαρά έσοδα για το έτος",
+        "creancesCotisations": "Εκκρεμείς συνδρομές μελών",
+        "creancesFactures": "Ανεξόφλητα τιμολόγια",
+        "stocksEstimatedValue": "Εκτιμώμενη αξία αποθέματος",
+        "creancesFacturesEnRetard": "Ληξιπρόθεσμα τιμολόγια"
+      },
+      "pdf": {
+        "periodLabel": "Περίοδος από {start} έως {end}"
+      },
+      "drillDown": {
+        "date": "Ημερομηνία",
+        "label": "Ετικέτα",
+        "origin": "Προέλευση",
+        "debit": "Χρέωση",
+        "credit": "Πίστωση",
+        "noLines": "Δεν υπάρχουν καταχωρήσεις για αυτόν τον λογαριασμό.",
+        "sourceTypes": {
+          "INCOME": "Εισόδημα",
+          "INCOME_REVERSAL": "Αντιστροφή εισοδήματος",
+          "EXPENSE": "Έξοδα",
+          "EXPENSE_REVERSAL": "Αντιλογισμός εξόδων",
+          "BANK_TRANSACTION": "Τραπεζική συναλλαγή",
+          "ACCOUNT_TRANSFER": "Εσωτερική μεταφορά",
+          "OPENING_BALANCE": "Αρχικό υπόλοιπο",
+          "IMMOBILISATION_DEPRECIATION": "Απόσβεση",
+          "IMMOBILISATION_ACQUISITION": "Απόκτηση περιουσιακών στοιχείων",
+          "FACTURE_RECUE_PAYMENT": "Πληρωμή προμηθευτή",
+          "MANUAL": "Χειροκίνητη καταχώριση"
+        }
+      },
+      "issues": {
+        "title": "Ανωμαλίες που εντοπίστηκαν",
+        "messages": {
+          "ACCOUNT_WITHOUT_RUBRIQUE": "Ο λογαριασμός {code} — {label} έχει υπόλοιπο αλλά δεν είναι συνδεδεμένος με κανένα στοιχείο του Ισολογισμού.",
+          "ACTIF_PASSIF_MISMATCH": "Το περιουσιακό στοιχείο ({actif}) δεν αντιστοιχεί στην υποχρέωση ({passif}).",
+          "OPENING_BALANCE_MISSING": "Δεν δημιουργήθηκαν αρχικές καταχωρήσεις για αυτήν την άσκηση από το \"{previousLabel}\".",
+          "TRIAL_BALANCE_UNBALANCED": "Η συνολική χρέωση ({debit}) δεν αντιστοιχεί στη συνολική πίστωση ({credit}) για αυτό το οικονομικό έτος.",
+          "RESULT_DIVERGENCE": "Το αποτέλεσμα του ημερολογίου ({journal}) διαφέρει από αυτό της κατάστασης λογαριασμού αποτελεσμάτων ({statement}) — το ημερολόγιο ενδέχεται να μην είναι ακόμη ενημερωμένο για αυτό το οικονομικό έτος (κλείσιμο του οικονομικού έτους ή επανεκκίνηση συγχρονισμού)."
+        }
+      },
+      "memoNoHistory": "Δεν υπάρχουν ιστορικά δεδομένα",
+      "caveats": {
+        "stocksMissingCostPrice": "{count} παραλλαγές χωρίς καταγεγραμμένο κόστος αγοράς, οι οποίες εξαιρούνται από την εκτίμηση"
+      }
+    },
+    "compteResultat": {
+      "title": "Κατάσταση αποτελεσμάτων",
+      "description": "Οικονομικό αποτέλεσμα της χρήσης σε σύγκριση με την προηγούμενη χρήση.",
+      "exerciceLabel": "Χρήση",
+      "categoryColumnLabel": "Κατηγορία",
+      "noPreviousExercice": "-",
+      "noPreviousExerciceMessage": "Δεν υπάρχει διαθέσιμη προηγούμενη χρήση",
+      "export": "Εξαγωγή",
+      "exportExcel": "Εξαγωγή Excel (αναλυτικά)",
+      "exportPdf": "Εξαγωγή PDF",
+      "products": "Έσοδα",
+      "totalProducts": "Σύνολο εσόδων",
+      "expenses": "Έξοδα",
+      "totalExpenses": "Σύνολο εξόδων",
+      "result": "Αποτέλεσμα χρήσης",
+      "resultZero": "Αποτέλεσμα χρήσης: 0 €",
+      "surplus": "Πλεόνασμα χρήσης",
+      "deficit": "Έλλειμμα χρήσης",
+      "operationalResult": "Λειτουργικό αποτέλεσμα",
+      "uncategorized": "Προς κατηγοριοποίηση",
+      "uncategorizedAlertIncome": "{count, plural, one {# έσοδο πρέπει να κατηγοριοποιηθεί} other {# έσοδα πρέπει να κατηγοριοποιηθούν}}",
+      "uncategorizedAlertExpense": "{count, plural, one {# έξοδο πρέπει να κατηγοριοποιηθεί} other {# έξοδα πρέπει να κατηγοριοποιηθούν}}",
+      "expandSection": "Εμφάνιση",
+      "collapseSection": "Απόκρυψη",
+      "noCategoriesInSection": "Καμία κατηγορία σε αυτήν την ενότητα",
+      "sections": {
+        "FINANCIAL": "Χρηματοοικονομικά",
+        "EXCEPTIONAL": "Έκτακτα",
+        "OTHER": "Λοιπά"
+      },
+      "inKind": {
+        "title": "Εθελοντικές συνεισφορές σε είδος",
+        "employmentHeader": "Χρήση των συνεισφορών",
+        "amountHeader": "Ποσό",
+        "receivedHeader": "Εισπραχθείσες εισηγήσεις",
+        "totalEmployments": "Σύνολο θέσεων εργασίας",
+        "totalReceived": "Σύνολο συνεισφορών",
+        "note": "Αυτές οι δωρεάν συνεισφορές αποτιμώνται σε ευρώ. Δεν οδηγούν σε καμία κίνηση χρημάτων και δεν αλλάζουν το αποτέλεσμα του οικονομικού έτους."
+      },
+      "drillDown": {
+        "date": "Ημερομηνία",
+        "origin": "Προέλευση",
+        "person": "Άτομο",
+        "payment": "Πληρωμή",
+        "amount": "Ποσό",
+        "categorize": "Κατηγοριοποίηση",
+        "categorizePlaceholder": "Επιλέξτε κατηγορία",
+        "noTransactions": "Καμία συναλλαγή",
+        "categorizeSuccess": "Η συναλλαγή κατηγοριοποιήθηκε"
+      },
+      "pdf": {
+        "periodLabel": "Περίοδος από {start} έως {end}",
+        "operatingIncome": "ΛΕΙΤΟΥΡΓΙΚΑ ΕΣΟΔΑ",
+        "operatingExpense": "ΛΕΙΤΟΥΡΓΙΚΑ ΕΞΟΔΑ",
+        "operatingResult": "ΛΕΙΤΟΥΡΓΙΚΟ ΑΠΟΤΕΛΕΣΜΑ",
+        "financialIncome": "ΧΡΗΜΑΤΟΟΙΚΟΝΟΜΙΚΑ ΕΣΟΔΑ",
+        "financialExpense": "ΧΡΗΜΑΤΟΟΙΚΟΝΟΜΙΚΑ ΕΞΟΔΑ",
+        "financialResult": "ΧΡΗΜΑΤΟΟΙΚΟΝΟΜΙΚΟ ΑΠΟΤΕΛΕΣΜΑ",
+        "exceptionalIncome": "ΕΚΤΑΚΤΑ ΕΣΟΔΑ",
+        "exceptionalExpense": "ΕΚΤΑΚΤΑ ΕΞΟΔΑ",
+        "exceptionalResult": "ΕΚΤΑΚΤΟ ΑΠΟΤΕΛΕΣΜΑ",
+        "otherIncome": "ΛΟΙΠΑ ΕΣΟΔΑ",
+        "otherExpense": "ΛΟΙΠΑ ΕΞΟΔΑ",
+        "otherResult": "ΑΠΟΤΕΛΕΣΜΑ ΛΟΙΠΩΝ ΕΣΟΔΩΝ ΚΑΙ ΕΞΟΔΩΝ",
+        "uncategorizedSection": "ΣΥΝΑΛΛΑΓΕΣ ΠΡΟΣ ΚΑΤΗΓΟΡΙΟΠΟΙΗΣΗ",
+        "uncategorizedIncomeLabel": "Έσοδα προς κατηγοριοποίηση",
+        "uncategorizedExpenseLabel": "Έξοδα προς κατηγοριοποίηση",
+        "total": "Σύνολο",
+        "grandTotal": "ΣΥΝΟΛΟ",
+        "categoryColumn": "Κατηγορία",
+        "inKindTitle": "Εθελοντικές συνεισφορές σε είδος",
+        "inKindEmploymentHeader": "Χρήση των συνεισφορών",
+        "inKindAmountHeader": "Ποσό",
+        "inKindReceivedHeader": "Εισπραχθείσες εισηγήσεις",
+        "inKindTotalEmployments": "Σύνολο θέσεων εργασίας",
+        "inKindTotalReceived": "Σύνολο συνεισφορών",
+        "inKindNote": "Αυτές οι δωρεάν συνεισφορές αποτιμώνται σε ευρώ. Δεν οδηγούν σε καμία κίνηση χρημάτων και δεν αλλάζουν το αποτέλεσμα του οικονομικού έτους."
+      },
+      "csv": {
+        "date": "Ημερομηνία",
+        "type": "Τύπος",
+        "typeIncome": "Έσοδο",
+        "typeExpense": "Έξοδο",
+        "category": "Κατηγορία",
+        "uncategorized": "Προς κατηγοριοποίηση",
+        "accountingCode": "Λογιστικός κωδικός",
+        "description": "Περιγραφή",
+        "amount": "Ποσό",
+        "paymentMethod": "Τρόπος πληρωμής",
+        "origin": "Προέλευση",
+        "reference": "Αναφορά",
+        "exercice": "Χρήση"
+      },
+      "emptyExercice": {
+        "title": "Καμία χρήση",
+        "description": "Δημιουργήστε μια χρήση για να δημιουργήσετε την κατάσταση αποτελεσμάτων."
+      }
+    },
+    "previsionnel": {
+      "emptyExercice": {},
+      "tabs": {},
+      "card": {},
+      "columns": {},
+      "export": {},
+      "toasts": {},
+      "copyBudget": {
+        "toasts": {}
+      },
+      "projectsTab": {
+        "noProjects": {},
+        "toasts": {}
+      }
+    },
     "categoryForm": {
       "name": "Όνομα",
       "namePlaceholder": "Π.χ.: Συνεισφορές",
+      "noMatchingCategory": "Δεν υπάρχει αντίστοιχη κατηγορία",
       "type": "Τύπος",
       "typeIncome": "Έσοδο",
       "typeExpense": "Έξοδα",
@@ -920,8 +1131,7 @@
       "sectionUnverifiedNote": "Αυτός ο λογαριασμός δεν αναγνωρίζεται — ελέγξτε την ενότητα ή επιλέξτε τον από τις σύνθετες επιλογές.",
       "sectionToVerify": "Ενότητα για έλεγχο",
       "advancedOptions": "Προχωρημένες επιλογές",
-      "revertToAutoSection": "Επιστροφή στην αυτόματη ενότητα",
-      "noMatchingCategory": "Δεν υπάρχει αντίστοιχη κατηγορία"
+      "revertToAutoSection": "Επιστροφή στην αυτόματη ενότητα"
     },
     "bankAccountForm": {
       "bankName": "Όνομα τράπεζας",
@@ -1056,6 +1266,13 @@
         "deleted": "Ο λογαριασμός διαγράφηκε"
       }
     },
+    "transferForm": {
+      "toasts": {}
+    },
+    "transfersView": {
+      "columns": {},
+      "description": "Καταγράψτε εδώ τις μεταφορές που έχουν ήδη γίνει μεταξύ των τραπεζικών λογαριασμών του συλλόγου σας. Η Formwise καταγράφει τη μεταφορά χωρίς να μεταφέρει χρήματα."
+    },
     "categoriesView": {
       "title": "Κατηγορίες",
       "description": "Διαχειριστείτε τις κατηγορίες εσόδων και εξόδων.",
@@ -1066,7 +1283,6 @@
       "newCategoryTitle": "Νέα κατηγορία",
       "editCategoryTitle": "Επεξεργασία κατηγορίας",
       "deleteConfirmTitle": "Να διαγραφεί αυτή η κατηγορία;",
-      "deleteConfirmInUse": "« {name} χρησιμοποιείται από {count, plural, one {# έσοδα/δαπάνες} other {# έσοδα/δαπάνες}}. Αυτές οι καταχωρήσεις θα αλλάξουν σε \"Uncategorized\".",
       "toasts": {
         "created": "Δημιουργήθηκε κατηγορία",
         "updated": "Ενημερωμένη κατηγορία",
@@ -1077,7 +1293,8 @@
       "customCategory": "Δημιουργία προσαρμοσμένης κατηγορίας",
       "alreadyExists": "Έχει ήδη διαμορφωθεί",
       "archivedReactivateHint": "Αρχειοθετήθηκε — κάντε κλικ για επανενεργοποίηση",
-      "custom": "Προσαρμοσμένη"
+      "custom": "Προσαρμοσμένη",
+      "deleteConfirmInUse": "« {name} χρησιμοποιείται από {count, plural, one {# έσοδα/δαπάνες} other {# έσοδα/δαπάνες}}. Αυτές οι καταχωρήσεις θα αλλάξουν σε \"Uncategorized\"."
     },
     "incomesView": {
       "title": "Έσοδα",
@@ -1315,187 +1532,6 @@
       "typeIncome": "Έσοδο",
       "typeExpense": "Έξοδα",
       "confirm": "Επικύρωση της συνδιαλλαγής"
-    },
-    "compteResultat": {
-      "title": "Κατάσταση αποτελεσμάτων",
-      "description": "Οικονομικό αποτέλεσμα της χρήσης σε σύγκριση με την προηγούμενη χρήση.",
-      "exerciceLabel": "Χρήση",
-      "noPreviousExercice": "-",
-      "export": "Εξαγωγή",
-      "exportExcel": "Εξαγωγή Excel (αναλυτικά)",
-      "exportPdf": "Εξαγωγή PDF",
-      "products": "Έσοδα",
-      "totalProducts": "Σύνολο εσόδων",
-      "expenses": "Έξοδα",
-      "totalExpenses": "Σύνολο εξόδων",
-      "result": "Αποτέλεσμα χρήσης",
-      "surplus": "Πλεόνασμα χρήσης",
-      "deficit": "Έλλειμμα χρήσης",
-      "emptyExercice": {
-        "title": "Καμία χρήση",
-        "description": "Δημιουργήστε μια χρήση για να δημιουργήσετε την κατάσταση αποτελεσμάτων."
-      },
-      "noPreviousExerciceMessage": "Δεν υπάρχει διαθέσιμη προηγούμενη χρήση",
-      "resultZero": "Αποτέλεσμα χρήσης: 0 €",
-      "operationalResult": "Λειτουργικό αποτέλεσμα",
-      "uncategorized": "Προς κατηγοριοποίηση",
-      "uncategorizedAlertIncome": "{count, plural, one {# έσοδο πρέπει να κατηγοριοποιηθεί} other {# έσοδα πρέπει να κατηγοριοποιηθούν}}",
-      "uncategorizedAlertExpense": "{count, plural, one {# έξοδο πρέπει να κατηγοριοποιηθεί} other {# έξοδα πρέπει να κατηγοριοποιηθούν}}",
-      "expandSection": "Εμφάνιση",
-      "collapseSection": "Απόκρυψη",
-      "noCategoriesInSection": "Καμία κατηγορία σε αυτήν την ενότητα",
-      "sections": {
-        "FINANCIAL": "Χρηματοοικονομικά",
-        "EXCEPTIONAL": "Έκτακτα",
-        "OTHER": "Λοιπά"
-      },
-      "drillDown": {
-        "date": "Ημερομηνία",
-        "origin": "Προέλευση",
-        "person": "Άτομο",
-        "payment": "Πληρωμή",
-        "amount": "Ποσό",
-        "categorize": "Κατηγοριοποίηση",
-        "categorizePlaceholder": "Επιλέξτε κατηγορία",
-        "noTransactions": "Καμία συναλλαγή",
-        "categorizeSuccess": "Η συναλλαγή κατηγοριοποιήθηκε"
-      },
-      "pdf": {
-        "periodLabel": "Περίοδος από {start} έως {end}",
-        "operatingIncome": "ΛΕΙΤΟΥΡΓΙΚΑ ΕΣΟΔΑ",
-        "operatingExpense": "ΛΕΙΤΟΥΡΓΙΚΑ ΕΞΟΔΑ",
-        "operatingResult": "ΛΕΙΤΟΥΡΓΙΚΟ ΑΠΟΤΕΛΕΣΜΑ",
-        "financialIncome": "ΧΡΗΜΑΤΟΟΙΚΟΝΟΜΙΚΑ ΕΣΟΔΑ",
-        "financialExpense": "ΧΡΗΜΑΤΟΟΙΚΟΝΟΜΙΚΑ ΕΞΟΔΑ",
-        "financialResult": "ΧΡΗΜΑΤΟΟΙΚΟΝΟΜΙΚΟ ΑΠΟΤΕΛΕΣΜΑ",
-        "exceptionalIncome": "ΕΚΤΑΚΤΑ ΕΣΟΔΑ",
-        "exceptionalExpense": "ΕΚΤΑΚΤΑ ΕΞΟΔΑ",
-        "exceptionalResult": "ΕΚΤΑΚΤΟ ΑΠΟΤΕΛΕΣΜΑ",
-        "otherIncome": "ΛΟΙΠΑ ΕΣΟΔΑ",
-        "otherExpense": "ΛΟΙΠΑ ΕΞΟΔΑ",
-        "otherResult": "ΑΠΟΤΕΛΕΣΜΑ ΛΟΙΠΩΝ ΕΣΟΔΩΝ ΚΑΙ ΕΞΟΔΩΝ",
-        "uncategorizedSection": "ΣΥΝΑΛΛΑΓΕΣ ΠΡΟΣ ΚΑΤΗΓΟΡΙΟΠΟΙΗΣΗ",
-        "uncategorizedIncomeLabel": "Έσοδα προς κατηγοριοποίηση",
-        "uncategorizedExpenseLabel": "Έξοδα προς κατηγοριοποίηση",
-        "total": "Σύνολο",
-        "grandTotal": "ΣΥΝΟΛΟ",
-        "categoryColumn": "Κατηγορία",
-        "inKindTitle": "Εθελοντικές συνεισφορές σε είδος",
-        "inKindEmploymentHeader": "Χρήση των συνεισφορών",
-        "inKindAmountHeader": "Ποσό",
-        "inKindReceivedHeader": "Εισπραχθείσες εισηγήσεις",
-        "inKindTotalEmployments": "Σύνολο θέσεων εργασίας",
-        "inKindTotalReceived": "Σύνολο συνεισφορών",
-        "inKindNote": "Αυτές οι δωρεάν συνεισφορές αποτιμώνται σε ευρώ. Δεν οδηγούν σε καμία κίνηση χρημάτων και δεν αλλάζουν το αποτέλεσμα του οικονομικού έτους."
-      },
-      "csv": {
-        "date": "Ημερομηνία",
-        "type": "Τύπος",
-        "typeIncome": "Έσοδο",
-        "typeExpense": "Έξοδο",
-        "category": "Κατηγορία",
-        "uncategorized": "Προς κατηγοριοποίηση",
-        "accountingCode": "Λογιστικός κωδικός",
-        "description": "Περιγραφή",
-        "amount": "Ποσό",
-        "paymentMethod": "Τρόπος πληρωμής",
-        "origin": "Προέλευση",
-        "reference": "Αναφορά",
-        "exercice": "Χρήση"
-      },
-      "categoryColumnLabel": "Κατηγορία",
-      "inKind": {
-        "title": "Εθελοντικές συνεισφορές σε είδος",
-        "employmentHeader": "Χρήση των συνεισφορών",
-        "amountHeader": "Ποσό",
-        "receivedHeader": "Εισπραχθείσες εισηγήσεις",
-        "totalEmployments": "Σύνολο θέσεων εργασίας",
-        "totalReceived": "Σύνολο συνεισφορών",
-        "note": "Αυτές οι δωρεάν συνεισφορές αποτιμώνται σε ευρώ. Δεν οδηγούν σε καμία κίνηση χρημάτων και δεν αλλάζουν το αποτέλεσμα του οικονομικού έτους."
-      }
-    },
-    "bilan": {
-      "title": "Ισολογισμός",
-      "description": "Περιουσιακά στοιχεία και υποχρεώσεις του συλλόγου στο τέλος του οικονομικού έτους.",
-      "exerciceLabel": "Άσκηση",
-      "rubriqueColumnLabel": "Τμήμα",
-      "noPreviousExercice": "Δεν υπάρχει διαθέσιμο συγκριτικό",
-      "actif": "Ενεργός",
-      "totalActif": "Σύνολο ενεργών",
-      "passif": "Παθητική",
-      "totalPassif": "Σύνολο υποχρεώσεων",
-      "noAccountsInRubrique": "Δεν υπάρχει ισορροπία σε αυτήν την ενότητα",
-      "emptyExercice": {
-        "title": "Χωρίς οικονομικό έτος",
-        "description": "Δημιουργήστε ένα νέο οικονομικό έτος για να δείτε τον Ισολογισμό."
-      },
-      "emptyLedger": {
-        "title": "Χωρίς λογιστικές εγγραφές",
-        "description": "Ο ισολογισμός θα εμφανίζεται μόλις εγγραφούν τα έσοδα, οι δαπάνες ή τα πάγια στοιχεία ενεργητικού κατά το τρέχον οικονομικό έτος."
-      },
-      "rubriques": {
-        "immobilisationsCorporelles": "Ενσώματα πάγια στοιχεία ενεργητικού",
-        "disponibilites": "Διαθεσιμότητα",
-        "fondsPropres": "Μετοχικό κεφάλαιο",
-        "dettes": "Χρέη",
-        "immobilisationsIncorporelles": "Άυλα πάγια στοιχεία ενεργητικού",
-        "immobilisationsFinancieres": "Πάγια χρηματοπιστωτικά στοιχεία ενεργητικού",
-        "chargesConstateesDavance": "Προπληρωμένα έξοδα",
-        "provisions": "Προβλέψεις",
-        "produitsConstatesDavance": "Αναβαλλόμενο εισόδημα",
-        "creances": "Απαιτήσεις",
-        "stocksEtEnCours": "Καταγραφή εμπορευμάτων",
-        "fondsDedies": "Περιορισμένα κεφάλαια"
-      },
-      "issues": {
-        "title": "Ανωμαλίες που εντοπίστηκαν",
-        "messages": {
-          "ACCOUNT_WITHOUT_RUBRIQUE": "Ο λογαριασμός {code} — {label} έχει υπόλοιπο αλλά δεν είναι συνδεδεμένος με κανένα στοιχείο του Ισολογισμού.",
-          "ACTIF_PASSIF_MISMATCH": "Το περιουσιακό στοιχείο ({actif}) δεν αντιστοιχεί στην υποχρέωση ({passif}).",
-          "OPENING_BALANCE_MISSING": "Δεν δημιουργήθηκαν αρχικές καταχωρήσεις για αυτήν την άσκηση από το \"{previousLabel}\".",
-          "TRIAL_BALANCE_UNBALANCED": "Η συνολική χρέωση ({debit}) δεν αντιστοιχεί στη συνολική πίστωση ({credit}) για αυτό το οικονομικό έτος.",
-          "RESULT_DIVERGENCE": "Το αποτέλεσμα του ημερολογίου ({journal}) διαφέρει από αυτό της κατάστασης λογαριασμού αποτελεσμάτων ({statement}) — το ημερολόγιο ενδέχεται να μην είναι ακόμη ενημερωμένο για αυτό το οικονομικό έτος (κλείσιμο του οικονομικού έτους ή επανεκκίνηση συγχρονισμού)."
-        }
-      },
-      "accountLabels": {
-        "reportANouveau": "Κέρδη εις νέον",
-        "resultatExercice": "Καθαρά έσοδα για το έτος",
-        "creancesCotisations": "Εκκρεμείς συνδρομές μελών",
-        "creancesFactures": "Ανεξόφλητα τιμολόγια",
-        "stocksEstimatedValue": "Εκτιμώμενη αξία αποθέματος",
-        "creancesFacturesEnRetard": "Ληξιπρόθεσμα τιμολόγια"
-      },
-      "exportPdf": "Εξαγωγή PDF",
-      "exportDisabledTooltip": "Αδυναμία εξαγωγής Τελικού Ισολογισμού μέχρι να διορθωθούν οι παραπάνω ανωμαλίες.",
-      "pdf": {
-        "periodLabel": "Περίοδος από {start} έως {end}"
-      },
-      "drillDown": {
-        "date": "Ημερομηνία",
-        "label": "Ετικέτα",
-        "origin": "Προέλευση",
-        "debit": "Χρέωση",
-        "credit": "Πίστωση",
-        "noLines": "Δεν υπάρχουν καταχωρήσεις για αυτόν τον λογαριασμό.",
-        "sourceTypes": {
-          "INCOME": "Εισόδημα",
-          "INCOME_REVERSAL": "Αντιστροφή εισοδήματος",
-          "EXPENSE": "Έξοδα",
-          "EXPENSE_REVERSAL": "Αντιλογισμός εξόδων",
-          "BANK_TRANSACTION": "Τραπεζική συναλλαγή",
-          "ACCOUNT_TRANSFER": "Εσωτερική μεταφορά",
-          "OPENING_BALANCE": "Αρχικό υπόλοιπο",
-          "IMMOBILISATION_DEPRECIATION": "Απόσβεση",
-          "IMMOBILISATION_ACQUISITION": "Απόκτηση περιουσιακών στοιχείων",
-          "FACTURE_RECUE_PAYMENT": "Πληρωμή προμηθευτή",
-          "MANUAL": "Χειροκίνητη καταχώριση"
-        }
-      },
-      "memoNotice": "Εκτίμηση — δεν καταγράφεται στο καθολικό, εξαιρείται από το σύνολο του ενεργητικού.",
-      "memoNoHistory": "Δεν υπάρχουν ιστορικά δεδομένα",
-      "caveats": {
-        "stocksMissingCostPrice": "{count} παραλλαγές χωρίς καταγεγραμμένο κόστος αγοράς, οι οποίες εξαιρούνται από την εκτίμηση"
-      }
     }
   },
   "evenements": {
@@ -1711,6 +1747,7 @@
         "dateLabel": "Ημερομηνία έναρξης",
         "createButton": "Δημιουργία"
       },
+      "summary": {},
       "bilan": {
         "show": "Εμφάνιση απολογισμού",
         "hide": "Απόκρυψη απολογισμού",
@@ -1928,6 +1965,9 @@
         "qrRevoked": "Ο κωδικός QR είναι απενεργοποιημένος",
         "noMembersToExport": "Δεν υπάρχουν μέλη για εξαγωγή",
         "linkCopied": "Ο σύνδεσμος αντιγράφηκε"
+      },
+      "payment": {
+        "methods": {}
       }
     },
     "avaliacoes": {
@@ -1982,6 +2022,7 @@
           "standardFieldsHint": "Πεδία που ζητούνται κατά την εγγραφή",
           "phoneLabel": "Τηλέφωνο",
           "addressLabel": "Διεύθυνση",
+          "countryLabel": "Χώρα διαμονής",
           "requirement": {
             "hidden": "Μασκοφόρος",
             "optional": "Προαιρετικός",
@@ -1989,8 +2030,7 @@
           },
           "mobileLabel": "Κινητό",
           "birthDateLabel": "Ημερομηνία γέννησης",
-          "genderLabel": "Φύλο",
-          "countryLabel": "Χώρα διαμονής"
+          "genderLabel": "Φύλο"
         },
         "products": {
           "title": "Προϊόντα",
@@ -2310,6 +2350,7 @@
       "liveSince": "Σε εξέλιξη από τότε {mins} ελάχ.",
       "durationLessThanMin": "< 1 min",
       "durationMin": "{mins} ελάχ.",
+      "activeMeetingWarning": {},
       "toasts": {
         "meetingStarted": "Έναρξη σύσκεψης",
         "meetingScheduled": "Προγραμματισμένη συνάντηση",
@@ -2785,6 +2826,7 @@
       "restockNoticePlural": "{count, plural, one {Το απόθεμα του προϊόντος που δεν αποσύρθηκε θα αποκατασταθεί.} other {Το απόθεμα των μη συλλεγθέντων αντικειμένων θα αποκατασταθεί.}}",
       "restockNoticeStatic": "Το απόθεμα των μη συλλεγθέντων αντικειμένων θα αποκατασταθεί."
     },
+    "refundModal": {},
     "stripeConfirm": {
       "title": "Επισήμανση ως πληρωμένη;",
       "descriptionSimple": "Αυτή η εντολή Stripe ({amount}) θα επισημανθεί ως πληρωμένο χειροκίνητα.",
@@ -3121,6 +3163,7 @@
           "title": "Μορφή",
           "standardFieldsHint": "Πεδία που ζητούνται από τον δότη",
           "addressLabel": "Διεύθυνση",
+          "countryLabel": "Χώρα διαμονής",
           "birthDateLabel": "Ημερομηνία γέννησης",
           "phoneLabel": "Σταθερό τηλέφωνο",
           "mobileLabel": "Κινητό",
@@ -3151,8 +3194,7 @@
           "addOption": "Προσθήκη επιλογής",
           "removeOption": "Κατάργηση αυτής της επιλογής",
           "optionsRequiredError": "Κάθε πεδίο λίστας/επιλογής χρειάζεται τουλάχιστον 2 επιλογές.",
-          "duplicateOptionsError": "Οι επιλογές ενός πεδίου λίστας/επιλογής πρέπει να είναι μοναδικές.",
-          "countryLabel": "Χώρα διαμονής"
+          "duplicateOptionsError": "Οι επιλογές ενός πεδίου λίστας/επιλογής πρέπει να είναι μοναδικές."
         },
         "payment": {
           "title": "Πληρωμή",
@@ -3411,6 +3453,7 @@
           "title": "Μορφή",
           "standardFieldsHint": "Πεδία που ζητούνται κατά την εγγραφή",
           "addressLabel": "Διεύθυνση",
+          "countryLabel": "Χώρα διαμονής",
           "birthDateLabel": "Ημερομηνία γέννησης",
           "phoneLabel": "Σταθερό τηλέφωνο",
           "mobileLabel": "Κινητό",
@@ -3443,8 +3486,7 @@
           "addOption": "Προσθήκη επιλογής",
           "removeOption": "Κατάργηση αυτής της επιλογής",
           "optionsRequiredError": "Κάθε πεδίο λίστας/επιλογής χρειάζεται τουλάχιστον 2 επιλογές.",
-          "duplicateOptionsError": "Οι επιλογές ενός πεδίου λίστας/επιλογής πρέπει να είναι μοναδικές.",
-          "countryLabel": "Χώρα διαμονής"
+          "duplicateOptionsError": "Οι επιλογές ενός πεδίου λίστας/επιλογής πρέπει να είναι μοναδικές."
         },
         "payment": {
           "title": "Πληρωμή",
@@ -3698,6 +3740,7 @@
         "required": "Απαιτείται"
       }
     },
+    "blockEditor": {},
     "rulesManager": {
       "title": "Κανόνες αυτοματισμού",
       "subtitle": "Αυτόματες αποστολές σύμφωνα με ημερολόγιο ή συμβάν.",
@@ -3987,7 +4030,11 @@
       "bicColon": "BIC : {value}",
       "toasts": {
         "updated": "Ενημερωμένα στοιχεία επικοινωνίας"
-      }
+      },
+      "accountingRegime": "Λογιστικό καθεστώς για τις αποζημιώσεις εξόδων",
+      "accountingRegimeHint": "Καθορίζει πότε υποβάλλεται αίτημα αποζημίωσης: κατά την έγκριση (δέσμευση) ή κατά την πραγματική πληρωμή (μετρητά).",
+      "accountingRegimeCash": "Λογιστική μετρητών",
+      "accountingRegimeAccrual": "Λογιστική δεσμεύσεων"
     },
     "membreTypes": {
       "name": "Όνομα",
@@ -4014,7 +4061,12 @@
       "title": "Οπτική ταυτότητα",
       "subtitle": "Το λογότυπο εμφανίζεται στον πίνακα ελέγχου, τις προσφορές/τιμολόγια, το φύλλο παρουσίας και τον δημόσιο ιστότοπο.",
       "logo": "Λογότυπο",
+      "footerStyles": {},
+      "footer": {
+        "socialPlatforms": {}
+      },
       "proOnlyText": "Το προσαρμοσμένο λογότυπο (πίνακας ελέγχου, προσφορές/τιμολόγια, φύλλο χρόνου) δεσμεύεται για το πρόγραμμα Pro. Κάντε αναβάθμιση στο επόμενο πρόγραμμα στην καρτέλα Συνδρομή για να το ενεργοποιήσετε.",
+      "preview": {},
       "toasts": {
         "updated": "Ενημερωμένη οπτική ταυτότητα",
         "uploadError": "Σφάλμα κατά τη μεταφόρτωση λογότυπου"
@@ -4057,10 +4109,10 @@
       "status": {
         "trial": "Δωρεάν δοκιμή",
         "active": "Ενεργός",
+        "paymentPending": "Πληρωμή σε εξέλιξη",
         "pastDue": "Καθυστέρηση πληρωμής",
         "suspended": "Ανασταλεί",
-        "cancelled": "Ακυρώθηκε",
-        "paymentPending": "Πληρωμή σε εξέλιξη"
+        "cancelled": "Ακυρώθηκε"
       },
       "planLabel": "Φόρμουλα {tier}",
       "membersCount": "{count} / {limit} Μέλη",
@@ -4181,6 +4233,16 @@
       "subtitleTrialExpired": "Η δωρεάν δοκιμή σας τελείωσε. Επιλέξτε ένα πρόγραμμα και εισαγάγετε έναν τρόπο πληρωμής για να συνεχίσετε.",
       "confirmButtonSubscribe": "Επιβεβαιώστε και εγγραφείτε"
     },
+    "teamAccess": {
+      "columns": {},
+      "summary": {},
+      "profiles": {},
+      "levels": {},
+      "areas": {
+        "sensible": "Ευαίσθητα δεδομένα μελών"
+      },
+      "toasts": {}
+    },
     "erasureRequests": {
       "title": "Διαγραφή δεδομένων (ΓΚΠΔ)",
       "description": "Αιτήματα οριστικής διαγραφής των προσωπικών δεδομένων ενός μέλους, σύμφωνα με το άρθρο 17 του ΓΚΠΔ. Επεξεργάζονται αυτόματα κάθε βράδυ, εκτός αν έχουν τεθεί σε αναστολή.",
@@ -4221,11 +4283,6 @@
       },
       "automaticOrigin": "Σημειώθηκε αυτόματα — ανενεργός για περισσότερα από 3 χρόνια",
       "inactiveSince": "αποχώρησε στις {date}"
-    },
-    "teamAccess": {
-      "areas": {
-        "sensible": "Ευαίσθητα δεδομένα μελών"
-      }
     }
   },
   "cotisations": {
@@ -4315,28 +4372,6 @@
       "allCategories": "Όλες οι κατηγορίες",
       "allRenewals": "Όλες οι ανανεώσεις",
       "resetFilters": "Επαναφορά",
-      "renewal": {
-        "automatic": "Αυτόματη",
-        "manual": "Χειροκίνητη"
-      },
-      "summary": {
-        "aPagar": " · {amount} σύνολο",
-        "recebido": " · {amount} εισπράχθηκαν",
-        "saldo": " · {amount} εκκρεμές"
-      },
-      "distribution": {
-        "show": "Προβολή κατανομής",
-        "hide": "Απόκρυψη κατανομής",
-        "category": "Κατηγορία μέλους",
-        "renewal": "Ανανέωση",
-        "count": "Αριθμός συνεισφορών",
-        "aPagar": "Συνολικό ποσό",
-        "recebido": "Εισπραχθέν ποσό",
-        "saldo": "Υπόλοιπο",
-        "total": "Σύνολο",
-        "noCategory": "Χωρίς κατηγορία",
-        "empty": "Καμία συνδρομή δεν ταιριάζει με αυτά τα φίλτρα."
-      },
       "mergeTiers": {
         "filterOption": "Συγχώνευση διπλών κατηγοριών",
         "title": "Συγχώνευση διπλών κατηγοριών",
@@ -4359,6 +4394,28 @@
         "priceFreeAmount": "Δωρεάν ποσό",
         "priceFreeAmountFrom": "Δωρεάν ποσό από {amount}",
         "priceRecurring": "{amount}/έτος"
+      },
+      "renewal": {
+        "automatic": "Αυτόματη",
+        "manual": "Χειροκίνητη"
+      },
+      "summary": {
+        "aPagar": " · {amount} σύνολο",
+        "recebido": " · {amount} εισπράχθηκαν",
+        "saldo": " · {amount} εκκρεμές"
+      },
+      "distribution": {
+        "show": "Προβολή κατανομής",
+        "hide": "Απόκρυψη κατανομής",
+        "category": "Κατηγορία μέλους",
+        "renewal": "Ανανέωση",
+        "count": "Αριθμός συνεισφορών",
+        "aPagar": "Συνολικό ποσό",
+        "recebido": "Εισπραχθέν ποσό",
+        "saldo": "Υπόλοιπο",
+        "total": "Σύνολο",
+        "noCategory": "Χωρίς κατηγορία",
+        "empty": "Καμία συνδρομή δεν ταιριάζει με αυτά τα φίλτρα."
       }
     },
     "reminderModal": {
@@ -4423,6 +4480,24 @@
       "annulee": "Η συνεισφορά αυτή ακυρώθηκε."
     }
   },
+  "groupes": {
+    "view": {
+      "statusFilter": {},
+      "columns": {},
+      "statusBadge": {},
+      "actions": {},
+      "toasts": {}
+    },
+    "form": {},
+    "detail": {
+      "appelColumns": {}
+    },
+    "appel": {
+      "counts": {},
+      "status": {},
+      "toasts": {}
+    }
+  },
   "membres": {
     "form": {
       "status": {
@@ -4450,6 +4525,11 @@
         "femme": "Θηλυκός"
       },
       "groupeSanguinNone": "Δεν διευκρινίζεται",
+      "imageRights": {
+        "unknown": "Δεν έχει δηλωθεί",
+        "granted": "Ναι",
+        "refused": "Όχι"
+      },
       "tailleTshirtNone": "Δεν διευκρινίζεται",
       "preferredLocaleNone": "Δεν διευκρινίζεται",
       "preferredLocaleHint": "Η επιλεγμένη γλώσσα θα επιτρέψει την αποστολή email και επικοινωνιών σε αυτό το μέλος στην προτιμώμενη γλώσσα του.",
@@ -4481,14 +4561,14 @@
         "allergies": "Γνωστές αλλεργίες",
         "allergiesPlaceholder": "Αραχειρίδες, γύρη...",
         "type": "Τύπος μέλους",
-        "preferredLocale": "Γλώσσα επικοινωνίας",
-        "spokenLanguage": "Γλώσσα που μιλάς",
-        "cotisationTier": "Συνδρομή μέλους",
-        "guardianName": "Κηδεμόνας {number} — όνομα",
-        "guardianPhone": "Κηδεμόνας {number} — τηλέφωνο",
         "imageRights": "Δικαίωμα εικόνας",
         "notes": "Σημειώσεις",
-        "notesPlaceholder": "Χρήσιμες πληροφορίες για αυτό το μέλος (μαθήματα, παρατηρήσεις…)"
+        "notesPlaceholder": "Χρήσιμες πληροφορίες για αυτό το μέλος (μαθήματα, παρατηρήσεις…)",
+        "guardianName": "Κηδεμόνας {number} — όνομα",
+        "guardianPhone": "Κηδεμόνας {number} — τηλέφωνο",
+        "preferredLocale": "Γλώσσα επικοινωνίας",
+        "spokenLanguage": "Γλώσσα που μιλάς",
+        "cotisationTier": "Συνδρομή μέλους"
       },
       "invitationNotice": "Ένα email πρόσκλησης με τα αναγνωριστικά θα σταλεί σε αυτήν τη διεύθυνση.",
       "tierNone": "Χωρίς τιμολόγηση (προεπιλεγμένη συμπεριφορά)",
@@ -4509,18 +4589,7 @@
         "management": "Διαχείριση μέλους"
       },
       "invalidFormToast": "Δεν ήταν δυνατή η αποθήκευση. Επικοινωνήστε με την υποστήριξη αν το πρόβλημα παραμένει.",
-      "customFieldsLoading": "Φόρτωση απαντήσεων φόρμας εγγραφής…",
-      "imageRights": {
-        "unknown": "Δεν έχει δηλωθεί",
-        "granted": "Ναι",
-        "refused": "Όχι"
-      }
-    },
-    "fichePdf": {
-      "title": "ΠΡΟΦΊΛ ΜΕΛΏΝ",
-      "subtitle": "Έντυπο που πρέπει να συμπληρωθεί από το νέο μέλος",
-      "signature": "Υπογραφή",
-      "date": "Ημερομηνία"
+      "customFieldsLoading": "Φόρτωση απαντήσεων φόρμας εγγραφής…"
     },
     "actions": {
       "add": "Προσθήκη μέλους",
@@ -4570,13 +4639,13 @@
         "firstName": "Όνομα",
         "lastName": "Επώνυμο",
         "address": "Διεύθυνση",
+        "country": "Χώρα",
+        "countryPlaceholder": "Όλες οι χώρες",
+        "countryLoadError": "Δεν είναι δυνατή η φόρτωση χωρών. Δοκιμάστε ξανά σε λίγο.",
         "birthDateFrom": "Γεννημένοι μετά",
         "birthDateTo": "Γεννημένος πριν",
         "apply": "Εφαρμογή",
-        "reset": "Επαναφορά",
-        "country": "Χώρα",
-        "countryPlaceholder": "Όλες οι χώρες",
-        "countryLoadError": "Δεν είναι δυνατή η φόρτωση χωρών. Δοκιμάστε ξανά σε λίγο."
+        "reset": "Επαναφορά"
       },
       "statusOptions": {
         "pending": "Σε εκκρεμότητα",
@@ -4635,6 +4704,13 @@
       "cotisationButton": "Συνδρομή μέλους",
       "createAccessButton": "Δημιουργία πρόσβασης",
       "roleButton": "Ρόλος",
+      "eraseData": {
+        "button": "Διαγραφή δεδομένων (ΓΚΠΔ)",
+        "confirmTitle": "Αίτημα οριστικής διαγραφής των δεδομένων του/της {name};",
+        "confirmDescription": "Αυτό καταχωρεί αίτημα διαγραφής βάσει του άρθρου 17 του ΓΚΠΔ. Το μέλος θα λάβει e-mail επιβεβαίωσης και τα προσωπικά του δεδομένα θα ανωνυμοποιηθούν αμετάκλητα στην επόμενη αυτόματη επεξεργασία, εκτός αν το αίτημα τεθεί σε αναστολή.",
+        "toastSuccess": "Το αίτημα διαγραφής καταχωρήθηκε",
+        "requestLabel": "Διαγραφή ΓΚΠΔ"
+      },
       "contact": "Επικοινωνία",
       "noContactInfo": "Δεν υπάρχουν στοιχεία επικοινωνίας",
       "memberSinceColon": "Μέλος από: {date}",
@@ -4751,13 +4827,6 @@
         "rejectConfirmTitle": "Να αρνηθείτε αυτό το αίτημα;",
         "rejectConfirmDescription": "{name} θα αλλάξει σε κατάσταση \"Ανενεργό\" και δεν θα μπορεί να συνδεθεί. Το αίτημα και οι απαντήσεις του στη φόρμα διατηρούνται."
       },
-      "eraseData": {
-        "button": "Διαγραφή δεδομένων (ΓΚΠΔ)",
-        "confirmTitle": "Αίτημα οριστικής διαγραφής των δεδομένων του/της {name};",
-        "confirmDescription": "Αυτό καταχωρεί αίτημα διαγραφής βάσει του άρθρου 17 του ΓΚΠΔ. Το μέλος θα λάβει e-mail επιβεβαίωσης και τα προσωπικά του δεδομένα θα ανωνυμοποιηθούν αμετάκλητα στην επόμενη αυτόματη επεξεργασία, εκτός αν το αίτημα τεθεί σε αναστολή.",
-        "toastSuccess": "Το αίτημα διαγραφής καταχωρήθηκε",
-        "requestLabel": "Διαγραφή ΓΚΠΔ"
-      },
       "noCommande": "Καμία αγορά καταστήματος για αυτήν την επαφή.",
       "commandeStatus": {
         "PENDING": "Σε εκκρεμότητα",
@@ -4847,6 +4916,11 @@
       "inMessagesSection": " στην ενότητα «Μηνύματα».",
       "messageSectionLabel": "Μήνυμα",
       "saveAsTemplate": "Αποθήκευση ως πρότυπο",
+      "subjectLabel": "Σκοπός",
+      "subjectPlaceholder": "Θέμα του email...",
+      "subjectTooLong": "Το θέμα είναι πολύ μεγάλο: {length}/{max} χαρακτήρες — θα απορριφθεί κατά την αποστολή.",
+      "bodyLabel": "Σώμα μηνύματος",
+      "bodyPlaceholder": "Γράψτε το μήνυμά σας...",
       "language": {
         "title": "Γλώσσα αποστολής",
         "modeOriginal": "Αρχική γλώσσα",
@@ -4871,11 +4945,6 @@
         "autoNoEffect": "Κανένας τρέχων παραλήπτης δεν έχει προτιμώμενη γλώσσα διαφορετική από τα γαλλικά — όλοι θα λάβουν την αρχική έκδοση.",
         "autoExternalNote": "{count, plural, one {# εξωτερικό email (αρχική γλώσσα)} other {# εξωτερικά email (αρχική γλώσσα)}}"
       },
-      "subjectLabel": "Σκοπός",
-      "subjectPlaceholder": "Θέμα του email...",
-      "subjectTooLong": "Το θέμα είναι πολύ μεγάλο: {length}/{max} χαρακτήρες — θα απορριφθεί κατά την αποστολή.",
-      "bodyLabel": "Σώμα μηνύματος",
-      "bodyPlaceholder": "Γράψτε το μήνυμά σας...",
       "continue": "Συνέχεια",
       "confirmSendTitle": "Επιβεβαίωση αποστολής",
       "confirmSendDescription": "Αυτό το email θα σταλεί στη διεύθυνση {recipients}. Αυτή η ενέργεια είναι μη αναστρέψιμη.",
@@ -4892,6 +4961,9 @@
       "recipientsActive": "{count, plural, one {# ενεργό μέλος} other {# ενεργά μέλη}}",
       "externalOnlyCount": "{count, plural, one {# εξωτερικό email} other {# εξωτερικά μηνύματα ηλεκτρονικού ταχυδρομείου}}",
       "recipientsWithExternal": "{members} + {count, plural, one {# εξωτερικό email} other {# εξωτερικά μηνύματα ηλεκτρονικού ταχυδρομείου}}",
+      "attachments": {
+        "errors": {}
+      },
       "toasts": {
         "selectType": "Επιλέξτε έναν τύπο μέλους",
         "selectMember": "Επιλέξτε τουλάχιστον ένα μέλος ή προσθέστε ένα εξωτερικό email",
@@ -5291,6 +5363,12 @@
         "genericError": "Λάθος"
       },
       "importedNote": "Εισαγωγή από το AssoConnect — {collecte}"
+    },
+    "fichePdf": {
+      "title": "ΠΡΟΦΊΛ ΜΕΛΏΝ",
+      "subtitle": "Έντυπο που πρέπει να συμπληρωθεί από το νέο μέλος",
+      "signature": "Υπογραφή",
+      "date": "Ημερομηνία"
     }
   },
   "memberCard": {
@@ -5393,8 +5471,8 @@
       "actualites": "Νέα",
       "membership": "Γίνετε μέλος του συλλόγου",
       "dons": "Δωρεά",
-      "contact": "Επικοινωνία",
-      "boutique": "Κατάστημα"
+      "boutique": "Κατάστημα",
+      "contact": "Επικοινωνία"
     },
     "defaultTitles": {
       "hero": "Καλωσόρισμα",
@@ -5402,9 +5480,9 @@
       "events": "Προσεχείς εκδηλώσεις",
       "membership": "Γίνετε μέλος του συλλόγου",
       "dons": "Δωρεά",
+      "boutique": "Κατάστημα",
       "actualites": "Νέα",
-      "contact": "Επικοινωνία",
-      "boutique": "Κατάστημα"
+      "contact": "Επικοινωνία"
     },
     "view": {
       "uploadFailedWarning": "{count, plural, one {Δεν ήταν δυνατή η λήψη # εικόνας.} other {# εικόνες δεν ήταν δυνατό να μεταφορτωθούν.}}",
@@ -5448,9 +5526,9 @@
       "noSections": "Χωρίς ενότητες. Προσθέστε ένα παρακάτω.",
       "addSection": "Προσθήκη ενότητας",
       "donsModuleDisabled": "Η ενότητα δωρεών είναι απενεργοποιημένη — αόρατη στον δημόσιο ιστότοπο",
+      "boutiqueModuleDisabled": "Η ενότητα Κατάστημα είναι απενεργοποιημένη — δεν εμφανίζεται στον δημόσιο ιστότοπο",
       "deleteSectionTitle": "Διαγραφή ενότητας",
-      "deleteSectionDescription": "Αυτή η ενέργεια είναι μη αναστρέψιμη.",
-      "boutiqueModuleDisabled": "Η ενότητα Κατάστημα είναι απενεργοποιημένη — δεν εμφανίζεται στον δημόσιο ιστότοπο"
+      "deleteSectionDescription": "Αυτή η ενέργεια είναι μη αναστρέψιμη."
     },
     "sectionSheet": {
       "editTitle": "Επεξεργασία — {label}",
@@ -5471,6 +5549,8 @@
       "eventsLimitHint": "Τα συμβάντα αποσύρονται αυτόματα από το ημερολόγιό σας.",
       "actualitesLimit": "Αριθμός ειδήσεων προς εμφάνιση",
       "actualitesLimitHint": "Μόνο οι πρώτες ειδήσεις N που δημοσιεύονται θα εμφανίζονται στον ιστότοπο.",
+      "boutiqueLimit": "Αριθμός προϊόντων προς εμφάνιση",
+      "boutiqueLimitHint": "Στον ιστότοπο θα εμφανίζονται μόνο τα πρώτα Ν ενεργά προϊόντα.",
       "membershipIntro": "Εισαγωγικό κείμενο",
       "membershipIntroPlaceholder": "Συμπληρώστε αυτή τη φόρμα για να κάνετε αίτηση για να γίνετε μέλος του συλλόγου...",
       "membershipHint": "Τα αιτήματα εμφανίζονται στη λίστα των μελών με κατάσταση \"Σε εκκρεμότητα\".",
@@ -5491,9 +5571,7 @@
       "apply": "Εφαρμογή",
       "discardTitle": "Να αγνοήσετε τις αλλαγές;",
       "discardDescription": "Οι αλλαγές που δεν έχουν εφαρμοστεί θα χαθούν.",
-      "discardConfirm": "Παράβλεψη",
-      "boutiqueLimit": "Αριθμός προϊόντων προς εμφάνιση",
-      "boutiqueLimitHint": "Στον ιστότοπο θα εμφανίζονται μόνο τα πρώτα Ν ενεργά προϊόντα."
+      "discardConfirm": "Παράβλεψη"
     },
     "preview": {
       "donsNoForm": "Δεν έχει επιλεγεί φόρμα δωρεάς — αόρατο στον δημόσιο ιστότοπο"
@@ -5502,6 +5580,12 @@
       "viewSite": "Δείτε την ιστοσελίδα",
       "logoUrl": "URL λογότυπου (προαιρετικό)",
       "footerText": "Κείμενο υποσέλιδου"
+    },
+    "aiAssistant": {},
+    "builderSwitch": {
+      "confirmOn": {},
+      "confirmOff": {},
+      "toasts": {}
     }
   },
   "richTextEditor": {
@@ -5514,6 +5598,21 @@
     "heading1": "Επικεφαλίδα 1",
     "heading2": "Επικεφαλίδα 2",
     "heading3": "Επικεφαλίδα 3"
+  },
+  "paperFormTemplates": {
+    "columns": {},
+    "toasts": {},
+    "deleteConfirm": {},
+    "leaveWarning": {},
+    "targetGroups": {},
+    "targets": {},
+    "renderErrors": {},
+    "editor": {
+      "columns": {}
+    },
+    "activity": {
+      "fields": {}
+    }
   },
   "associationDocuments": {
     "title": "Έγγραφα συλλόγου",
@@ -5560,6 +5659,9 @@
     "notFound": "Αυτό το έγγραφο δεν βρέθηκε.",
     "backToList": "Επιστροφή στα έγγραφα"
   },
+  "formDraft": {},
+  "legalConsent": {},
+  "publicDocuments": {},
   "portalMembre": {
     "associationDocuments": {
       "title": "Έγγραφα συλλόγου",
@@ -5606,6 +5708,15 @@
       "viewShop": "Προβολή καταστήματος",
       "orderPlacedTitle": "Η παραγγελία καταχωρήθηκε!",
       "orderPlacedDescription": "Η παραγγελία σας αναμένει πληρωμή. Η διοίκηση θα επικοινωνήσει μαζί σας για οριστικοποίηση.",
+      "paymentSuccessTitle": "Η πληρωμή επιβεβαιώθηκε!",
+      "paymentSuccessDescription": "Ευχαριστούμε για την αγορά σας. Σας έχει σταλεί email επιβεβαίωσης με την απόδειξή σας.",
+      "stockAdjustedNotice": "Το απόθεμα ορισμένων προϊόντων άλλαξε — το καλάθι σας προσαρμόστηκε, ελέγξτε το πριν συνεχίσετε.",
+      "trackOrderButton": "Παρακολούθηση παραγγελίας",
+      "trackingPageTitle": "Παρακολούθηση παραγγελίας",
+      "trackingStatusPending": "Σε αναμονή πληρωμής",
+      "trackingStatusPaid": "Η παραγγελία πληρώθηκε",
+      "trackingStatusCancelled": "Η παραγγελία ακυρώθηκε",
+      "trackingNotFound": "Η παραγγελία δεν βρέθηκε",
       "myOrdersButton": "Οι παραγγελίες μου",
       "continueShopping": "Συνεχίστε τις αγορές σας",
       "maxStockReached": "Μέγιστο απόθεμα που επιτεύχθηκε",
@@ -5643,16 +5754,7 @@
         "orderError": "Σφάλμα κατά την παραγγελία",
         "orderUpdated": "Ενημερωμένη παραγγελία",
         "orderCancelled": "Η παραγγελία ακυρώθηκε"
-      },
-      "paymentSuccessTitle": "Η πληρωμή επιβεβαιώθηκε!",
-      "paymentSuccessDescription": "Ευχαριστούμε για την αγορά σας. Σας έχει σταλεί email επιβεβαίωσης με την απόδειξή σας.",
-      "stockAdjustedNotice": "Το απόθεμα ορισμένων προϊόντων άλλαξε — το καλάθι σας προσαρμόστηκε, ελέγξτε το πριν συνεχίσετε.",
-      "trackOrderButton": "Παρακολούθηση παραγγελίας",
-      "trackingPageTitle": "Παρακολούθηση παραγγελίας",
-      "trackingStatusPending": "Σε αναμονή πληρωμής",
-      "trackingStatusPaid": "Η παραγγελία πληρώθηκε",
-      "trackingStatusCancelled": "Η παραγγελία ακυρώθηκε",
-      "trackingNotFound": "Η παραγγελία δεν βρέθηκε"
+      }
     },
     "dons": {
       "title": "Οι δωρεές μου",
@@ -5953,7 +6055,8 @@
         "communication": "Επικοινωνία",
         "finances": "Οικονομικά",
         "outils": "Εργαλεία"
-      }
+      },
+      "reimbursements": "Αποζημιώσεις εξόδων"
     },
     "backofficeSidebar": {
       "backoffice": "Backoffice",
@@ -5989,6 +6092,7 @@
       },
       "logout": "Αποσύνδεση"
     },
+    "twoFactorSettingsModal": {},
     "changePasswordModal": {
       "title": "Αλλαγή κωδικού πρόσβασης",
       "currentPasswordLabel": "Τρέχων κωδικός πρόσβασης",
@@ -6130,6 +6234,7 @@
       "daysWithoutCotisation": "Ημέρες χωρίς συνεισφορά",
       "status": "Κατάσταση"
     },
+    "originSources": {},
     "empty": "Δεν υπάρχουν ειδοποιήσεις ελέγχου.",
     "resolveAction": "Επίλυση",
     "resolveConfirmTitle": "Επίλυση αυτής της ειδοποίησης;",
@@ -6147,7 +6252,169 @@
     "autoResolvedLabel": "(αυτόματα)",
     "emptyForSearch": "Δεν υπάρχουν αποτελέσματα για «{search}»."
   },
+  "help": {
+    "tabs": {},
+    "callout": {},
+    "assistant": {
+      "examples": {},
+      "examplesDocs": {},
+      "tools": {}
+    },
+    "changelog": {
+      "kind": {}
+    },
+    "releaseNotes": {},
+    "news": {},
+    "faqPopup": {},
+    "popupCarousel": {},
+    "footer": {}
+  },
+  "boutiqueShipping": {},
+  "paperFormScan": {
+    "steps": {},
+    "upload": {
+      "camera": {}
+    },
+    "reading": {},
+    "viewer": {},
+    "editor": {},
+    "review": {},
+    "status": {},
+    "result": {},
+    "notesValues": {},
+    "validation": {},
+    "leaveWarning": {},
+    "restartWarning": {}
+  },
   "formTermsEditor": {
     "contentRequired": "Πρέπει να συμπληρώσετε το πεδίο «{conditionsLabel}» ή να ανεβάσετε ένα έγγραφο."
+  },
+  "membreDuplicates": {
+    "list": {
+      "matchedFields": {},
+      "columns": {},
+      "status": {}
+    },
+    "merge": {
+      "fields": {},
+      "relations": {}
+    },
+    "backoffice": {
+      "columns": {}
+    }
+  },
+  "reimbursements": {
+    "view": {
+      "title": "Αποζημιώσεις εξόδων",
+      "newRequest": "Νέο αίτημα",
+      "export": "Εξαγωγή",
+      "myRequests": "Τα αιτήματά μου",
+      "allRequests": "Όλα τα αιτήματα",
+      "allRequesters": "Όλοι οι αιτούντες",
+      "allCategories": "Όλες οι κατηγορίες",
+      "dateFrom": "Από",
+      "dateTo": "Προς",
+      "allStatuses": "Όλες οι καταστάσεις",
+      "summary": "{pending} Εκκρεμεί — {pendingAmount} · {approved} προς επιστροφή χρημάτων — {approvedAmount} · {reimbursed} αποζημιώθηκε — {reimbursedAmount}",
+      "noRequest": "Καμία αίτηση επιστροφής χρημάτων",
+      "columns": {
+        "subject": "Σκοπός",
+        "date": "Ημερομηνία",
+        "amount": "Ποσό",
+        "status": "Κατάσταση"
+      },
+      "status": {
+        "draft": "Draft",
+        "pendingApproval": "Αναμονή έγκρισης",
+        "needsCorrection": "Προς διόρθωση",
+        "approved": "Εγκεκριμένο",
+        "rejected": "Αρνήθηκε",
+        "reimbursed": "Επιστράφηκαν",
+        "cancelled": "Ακυρώθηκε"
+      },
+      "actions": {
+        "view": "Δείτε",
+        "submit": "Υποβολή",
+        "cancel": "Ακύρωση"
+      },
+      "toasts": {
+        "created": "Δημιουργία αιτήματος",
+        "updated": "Αίτημα ενημέρωσης",
+        "deleted": "Αίτημα διαγράφηκε",
+        "submitted": "Υποβλήθηκε αίτηση για έγκριση",
+        "cancelled": "Το αίτημα ακυρώθηκε",
+        "approved": "Η αίτηση εγκρίθηκε",
+        "correctionRequested": "Ζητήθηκε διόρθωση",
+        "rejected": "Το αίτημα απορρίφθηκε",
+        "reimbursed": "Καταγεγραμμένη επιστροφή χρημάτων"
+      },
+      "deleteConfirmTitle": "Να διαγράψω αυτό το προσχέδιο;",
+      "deleteConfirmDescription": "Αυτή η ενέργεια είναι μη αναστρέψιμη.",
+      "cancelConfirmTitle": "Να ακυρώσω αυτό το αίτημα;",
+      "cancelConfirmDescription": "Ο αιτών θα ενημερωθεί για την ακύρωση.",
+      "cancelReasonLabel": "Λόγος ακύρωσης"
+    },
+    "form": {
+      "subject": "Σκοπός",
+      "subjectPlaceholder": "Π.χ. Περιφερειακά ταξίδια συναντήσεων",
+      "comment": "Σχόλια",
+      "commentPlaceholder": "Προαιρετικές λεπτομέρειες",
+      "event": "Σχετική εκδήλωση",
+      "project": "Σχετικό έργο",
+      "noProject": "Κανένα έργο",
+      "noEvent": "Καμία εκδήλωση",
+      "items": "Έξοδα",
+      "addItem": "Προσθήκη δαπάνης",
+      "noItems": "Χωρίς επιπλέον χρεώσεις",
+      "itemDate": "Ημερομηνία δαπάνης",
+      "itemDescription": "Περιγραφή",
+      "itemAmount": "Ποσό",
+      "itemCategory": "Κατηγορία",
+      "itemReceipt": "Δικαιολόγηση",
+      "total": "Σύνολο",
+      "duplicateWarning": "Ένα παρόμοιο έξοδο (ίδια ημερομηνία, ίδιο ποσό) υπάρχει ήδη σε άλλο από τα αιτήματά σας.",
+      "toasts": {
+        "uploadError": "Σφάλμα κατά την αποστολή της απόδειξης",
+        "networkError": "Σφάλμα δικτύου κατά την αποστολή της απόδειξης"
+      }
+    },
+    "detail": {
+      "notFound": "Το αίτημα επιστροφής χρημάτων δεν βρέθηκε",
+      "history": "Ιστορία",
+      "correctionFrom": "Διόρθωση που ζητήθηκε από {name}",
+      "rejectedBy": "Απορρίφθηκε από {name}",
+      "reimbursedOn": "Επιστράφηκε στις {date} από {method}",
+      "selfApprovalBlockedNotice": "Δεν μπορείτε να εγκρίνετε το δικό σας αίτημα. Πρέπει να εγκριθεί από διαχειριστή ή άλλο εξουσιοδοτημένο υπάλληλο.",
+      "viewReceipt": "Δείτε τα υποστηρικτικά έγγραφα",
+      "immobilisationTag": "Πάγια περιουσιακά στοιχεία",
+      "approveButton": "Έγκριση",
+      "requestCorrectionButton": "Ζητήστε διόρθωση",
+      "rejectButton": "Αρνούμαι",
+      "correctionCommentLabel": "Σχόλιο διόρθωσης",
+      "rejectionReasonLabel": "Λόγος άρνησης",
+      "deleteItemConfirmTitle": "Να εξαλείψω αυτό το έξοδο;",
+      "toasts": {
+        "itemAdded": "Πρόσθετο κόστος",
+        "itemUpdated": "Ενημερωμένη δαπάνη",
+        "itemDeleted": "Έξοδα αφαιρέθηκαν"
+      }
+    },
+    "register": {
+      "title": "Αποθηκεύστε την επιστροφή χρημάτων",
+      "registerButton": "Αποθηκεύστε την επιστροφή χρημάτων",
+      "date": "Ημερομηνία επιστροφής χρημάτων",
+      "paymentMethod": "Τρόπος πληρωμής",
+      "bankAccount": "Τραπεζικός λογαριασμός",
+      "noBankAccountHint": "Δεν έχει δημιουργηθεί τραπεζικός λογαριασμός — προσθέστε έναν στα Οικονομικά> Λογαριασμοί ή επιλέξτε Μετρητά.",
+      "transaction": "Συμφωνία εισαγόμενης τραπεζικής συναλλαγής (προαιρετικό)",
+      "noTransaction": "Μην πλησιάζεις τώρα",
+      "reference": "Αναφορά",
+      "submit": "Αποθήκευση",
+      "methods": {
+        "virement": "Μεταφορά",
+        "cheque": "Έλεγχος",
+        "especes": "Είδη"
+      }
+    }
   }
 }
