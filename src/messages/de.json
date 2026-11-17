@@ -710,6 +710,120 @@
       }
     }
   },
+  "reimbursements": {
+    "view": {
+      "title": "Kostenerstattungen",
+      "newRequest": "Neue Anfrage",
+      "export": "Export",
+      "myRequests": "Meine Wünsche",
+      "allRequests": "Alle Anfragen",
+      "allRequesters": "Alle Antragsteller",
+      "allCategories": "Alle Kategorien",
+      "dateFrom": "Von",
+      "dateTo": "Zu",
+      "allStatuses": "Alle Statusse",
+      "summary": "{pending} Anhängig — {pendingAmount} · {approved} zu erstatten — {approvedAmount} · {reimbursed} erstattet — {reimbursedAmount}",
+      "noRequest": "Keine Rückerstattungsanträge",
+      "columns": {
+        "subject": "Zweck",
+        "date": "Datum",
+        "amount": "Betrag",
+        "status": "Status"
+      },
+      "status": {
+        "draft": "Entwurf",
+        "pendingApproval": "Wartet auf die Genehmigung",
+        "needsCorrection": "Noch zu korrigieren",
+        "approved": "Genehmigt",
+        "rejected": "Abgelehnt",
+        "reimbursed": "Erstattet",
+        "cancelled": "Abgesagt"
+      },
+      "actions": {
+        "view": "Siehe",
+        "submit": "Einreichen",
+        "cancel": "Abbrechen"
+      },
+      "toasts": {
+        "created": "Anfrage erstellt",
+        "updated": "Aktualisierungsanfrage",
+        "deleted": "Anfrage gelöscht",
+        "submitted": "Antrag zur Genehmigung eingereicht",
+        "cancelled": "Anfrage abgesagt",
+        "approved": "Antrag genehmigt",
+        "correctionRequested": "Korrektur angefordert",
+        "rejected": "Antrag abgelehnt",
+        "reimbursed": "Eingetragene Rückerstattung"
+      },
+      "deleteConfirmTitle": "Diesen Entwurf löschen?",
+      "deleteConfirmDescription": "Diese Maßnahme ist irreversibel.",
+      "cancelConfirmTitle": "Diese Anfrage stornieren?",
+      "cancelConfirmDescription": "Der Antragsteller wird über die Kündigung informiert.",
+      "cancelReasonLabel": "Grund für die Absage"
+    },
+    "form": {
+      "subject": "Zweck",
+      "subjectPlaceholder": "Z. B. Reisen zu regionalen Treffen",
+      "comment": "Kommentar",
+      "commentPlaceholder": "Optionale Details",
+      "event": "Verwandte Veranstaltung",
+      "project": "Assoziiertes Projekt",
+      "noProject": "Kein Projekt",
+      "noEvent": "Keine Veranstaltungen",
+      "items": "Ausgaben",
+      "addItem": "Einen Aufwand hinzufügen",
+      "noItems": "Keine zusätzlichen Gebühren",
+      "itemDate": "Ausgabendatum",
+      "itemDescription": "Beschreibung",
+      "itemAmount": "Betrag",
+      "itemCategory": "Kategorie",
+      "itemReceipt": "Begründung",
+      "total": "Gesamt",
+      "duplicateWarning": "Eine ähnliche Ausgabe (gleiches Datum, gleicher Betrag) existiert bereits in einer anderen deiner Anfragen.",
+      "toasts": {
+        "uploadError": "Fehler beim Versand der Quittung",
+        "networkError": "Netzwerkfehler beim Versand der Quittung"
+      }
+    },
+    "detail": {
+      "notFound": "Rückerstattungsantrag nicht gefunden",
+      "history": "Geschichte",
+      "correctionFrom": "Korrektur angefordert von {name}",
+      "rejectedBy": "Abgelehnt von {name}",
+      "reimbursedOn": "Erstattet am {date} von {method}",
+      "selfApprovalBlockedNotice": "Sie können Ihren eigenen Antrag nicht genehmigen. Er muss von einem Administrator oder einem anderen bevollmächtigten Beamten genehmigt werden.",
+      "viewReceipt": "Siehe die unterstützenden Dokumente",
+      "immobilisationTag": "Anlagevermögen",
+      "approveButton": "Genehmigt",
+      "requestCorrectionButton": "Eine Korrektur anfordern",
+      "rejectButton": "Ablehnen",
+      "correctionCommentLabel": "Korrekturkommentar",
+      "rejectionReasonLabel": "Grund für die Ablehnung",
+      "deleteItemConfirmTitle": "Diese Ausgabe eliminieren?",
+      "toasts": {
+        "itemAdded": "Zusätzliche Kosten",
+        "itemUpdated": "Aktualisierte Ausgaben",
+        "itemDeleted": "Ausgaben entfernt"
+      }
+    },
+    "register": {
+      "title": "Sparen Sie die Rückerstattung",
+      "registerButton": "Sparen Sie die Rückerstattung",
+      "date": "Rückerstattungsdatum",
+      "paymentMethod": "Zahlungsmethode",
+      "bankAccount": "Bankkonto",
+      "noBankAccountHint": "Kein Bankkonto eingerichtet – fügen Sie eines in Finanzen> Konten hinzu oder wählen Sie Bargeld.",
+      "transaction": "Eine importierte Banktransaktion abgleichen (optional)",
+      "noTransaction": "Bring dich jetzt nicht näher",
+      "reference": "Referenz",
+      "submit": "Speichern",
+      "methods": {
+        "virement": "Transfer",
+        "cheque": "Check",
+        "especes": "Arten"
+      }
+    }
+  },
   "dashboard": {
     "pageTitle": "Dashboard",
     "subtitle": "Überblick über Ihre Vereinigung",
@@ -1484,6 +1598,7 @@
     },
     "transfersView": {
       "title": "Interne Versetzungen",
+      "description": "Verzeichne hier die bereits zwischen den Bankkonten deines Verbands getätigten Überweisungen. Formwise verzeichnet die Überweisung, ohne Geld zu bewegen.",
       "add": "Transfer",
       "newTransferTitle": "Neue Überweisung zwischen Konten",
       "editTransferTitle": "Bearbeiten Übertragung",
@@ -4349,6 +4464,10 @@
       "websitePlaceholder": "mon-association.fr",
       "iban": "IBAN",
       "bic": "BIC",
+      "accountingRegime": "Buchhaltungsregelung für Kostenerstattungen",
+      "accountingRegimeHint": "Bestimmt, wann ein Rückerstattungsantrag gestellt wird: bei Genehmigung (Verpflichtung) oder bei tatsächlicher Zahlung (Barzahlung).",
+      "accountingRegimeCash": "Kassenbuchhaltung",
+      "accountingRegimeAccrual": "Verpflichtungsbuchhaltung",
       "previewTitle": "Dokumentvorschau",
       "bankDetails": "Bankdaten",
       "ibanColon": "IBAN : {value}",
@@ -6863,6 +6982,7 @@
       "finances": "Finanzüberwachung",
       "devis": "Angebote",
       "factures": "Rechnungen",
+      "reimbursements": "Kostenerstattungen",
       "fournisseurs": "Lieferanten",
       "dons": "Spenden",
       "reunions": "Treffen",

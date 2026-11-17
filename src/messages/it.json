@@ -710,6 +710,120 @@
       }
     }
   },
+  "reimbursements": {
+    "view": {
+      "title": "Rimborsi delle spese",
+      "newRequest": "Nuova richiesta",
+      "export": "Esportazione",
+      "myRequests": "Le mie richieste",
+      "allRequests": "Tutte le richieste",
+      "allRequesters": "Tutti i candidati",
+      "allCategories": "Tutte le categorie",
+      "dateFrom": "Di",
+      "dateTo": "A",
+      "allStatuses": "Tutti gli stati",
+      "summary": "{pending} In attesa — {pendingAmount} · {approved} da rimborsare — {approvedAmount} · {reimbursed} rimborsato — {reimbursedAmount}",
+      "noRequest": "Nessuna richiesta di rimborso",
+      "columns": {
+        "subject": "Scopo",
+        "date": "Data",
+        "amount": "Importo",
+        "status": "Stato"
+      },
+      "status": {
+        "draft": "Bozza",
+        "pendingApproval": "In attesa di approvazione",
+        "needsCorrection": "Da correggere",
+        "approved": "Approvato",
+        "rejected": "Rifiutato",
+        "reimbursed": "Rimborsato",
+        "cancelled": "Cancellato"
+      },
+      "actions": {
+        "view": "Vedi",
+        "submit": "Invia",
+        "cancel": "Annulla"
+      },
+      "toasts": {
+        "created": "Richiesta creata",
+        "updated": "Richiesta di aggiornamento",
+        "deleted": "Richiesta eliminata",
+        "submitted": "Domanda presentata per l''approvazione",
+        "cancelled": "Richiesta annullata",
+        "approved": "Domanda approvata",
+        "correctionRequested": "Richiesto correzione",
+        "rejected": "Richiesta respinta",
+        "reimbursed": "Rimborso registrato"
+      },
+      "deleteConfirmTitle": "Cancellare questa bozza?",
+      "deleteConfirmDescription": "Questa azione è irreversibile.",
+      "cancelConfirmTitle": "Annullare questa richiesta?",
+      "cancelConfirmDescription": "Il richiedente sarà informato della cancellazione.",
+      "cancelReasonLabel": "Motivo della cancellazione"
+    },
+    "form": {
+      "subject": "Scopo",
+      "subjectPlaceholder": "Es. Viaggi per riunioni regionali",
+      "comment": "Commento",
+      "commentPlaceholder": "Dettagli opzionali",
+      "event": "Evento correlato",
+      "project": "Progetto associato",
+      "noProject": "Nessun progetto",
+      "noEvent": "Nessun evento",
+      "items": "Spese",
+      "addItem": "Aggiungi una spesa",
+      "noItems": "Nessuna tariffa aggiuntiva",
+      "itemDate": "Data della spesa",
+      "itemDescription": "Descrizione",
+      "itemAmount": "Importo",
+      "itemCategory": "Categoria",
+      "itemReceipt": "Giustificazione",
+      "total": "Totale",
+      "duplicateWarning": "Una spesa simile (stessa data, stesso importo) esiste già in un''altra delle tue richieste.",
+      "toasts": {
+        "uploadError": "Errore durante l''invio della ricevuta",
+        "networkError": "Errore di rete durante l''invio della ricevuta"
+      }
+    },
+    "detail": {
+      "notFound": "Richiesta di rimborso non trovata",
+      "history": "Storia",
+      "correctionFrom": "Correzione richiesta da {name}",
+      "rejectedBy": "Rifiutato da {name}",
+      "reimbursedOn": "Rimborsato il {date} di {method}",
+      "selfApprovalBlockedNotice": "Non puoi approvare la tua richiesta. Deve essere approvata da un amministratore o da un altro funzionario autorizzato.",
+      "viewReceipt": "Vedi i documenti di supporto",
+      "immobilisationTag": "Immobilizzazioni",
+      "approveButton": "Approva",
+      "requestCorrectionButton": "Richiedi una correzione",
+      "rejectButton": "Rifiuta",
+      "correctionCommentLabel": "Commento di correzione",
+      "rejectionReasonLabel": "Motivo del rifiuto",
+      "deleteItemConfirmTitle": "Eliminare questa spesa?",
+      "toasts": {
+        "itemAdded": "Costo aggiuntivo",
+        "itemUpdated": "Spesa aggiornata",
+        "itemDeleted": "Spesa rimossa"
+      }
+    },
+    "register": {
+      "title": "Salva il rimborso",
+      "registerButton": "Salva il rimborso",
+      "date": "Data del rimborso",
+      "paymentMethod": "Metodo di pagamento",
+      "bankAccount": "Conto bancario",
+      "noBankAccountHint": "Nessun conto bancario aperto — aggiungine uno in Finanza> Conti oppure scegli Contanti.",
+      "transaction": "Riconcilia una transazione bancaria importata (opzionale)",
+      "noTransaction": "Non avvicinarti ora",
+      "reference": "Riferimento",
+      "submit": "Salva",
+      "methods": {
+        "virement": "Trasferimento",
+        "cheque": "Verifica",
+        "especes": "Specie"
+      }
+    }
+  },
   "dashboard": {
     "pageTitle": "Cruscotto",
     "subtitle": "Panoramica della tua associazione",
@@ -1484,6 +1598,7 @@
     },
     "transfersView": {
       "title": "Trasferimenti interni",
+      "description": "Registra qui i trasferimenti già effettuati tra i conti bancari della tua associazione. Registrare formalmente il trasferimento senza spostare alcun denaro.",
       "add": "Trasferimento",
       "newTransferTitle": "Nuovo trasferimento tra conti",
       "editTransferTitle": "Modifica Trasferimento",
@@ -4349,6 +4464,10 @@
       "websitePlaceholder": "mon-association.fr",
       "iban": "IBAN",
       "bic": "BIC",
+      "accountingRegime": "Regime contabile per i rimborsi delle spese",
+      "accountingRegimeHint": "Determina quando viene inviata una richiesta di rimborso: all''approvazione (impegno) o al pagamento effettivo (in contanti).",
+      "accountingRegimeCash": "Contabilità di cassa",
+      "accountingRegimeAccrual": "Contabilità degli impegni",
       "previewTitle": "Anteprima del documento",
       "bankDetails": "Dati bancari",
       "ibanColon": "IBAN : {value}",
@@ -6863,6 +6982,7 @@
       "finances": "Monitoraggio finanziario",
       "devis": "Preventivi",
       "factures": "Fatture",
+      "reimbursements": "Rimborsi delle spese",
       "fournisseurs": "Fornitori",
       "dons": "Donazioni",
       "reunions": "Incontri",

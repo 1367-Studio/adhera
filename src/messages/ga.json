@@ -710,6 +710,120 @@
       }
     }
   },
+  "reimbursements": {
+    "view": {
+      "title": "Aisíocaíochtaí costais",
+      "newRequest": "Iarratas nua",
+      "export": "Onnmhairiú",
+      "myRequests": "Mo chuid iarrataí",
+      "allRequests": "Gach iarratas",
+      "allRequesters": "Gach iarratasóir",
+      "allCategories": "Gach catagóir",
+      "dateFrom": "De",
+      "dateTo": "Go",
+      "allStatuses": "Gach stádas",
+      "summary": "{pending} Ar feitheamh — {pendingAmount} · {approved} le haisíoc — {approvedAmount} · {reimbursed} aisíoctha — {reimbursedAmount}",
+      "noRequest": "Gan iarratais ar aisíocaíocht",
+      "columns": {
+        "subject": "Cuspóir",
+        "date": "Dáta",
+        "amount": "Méid",
+        "status": "Stádas"
+      },
+      "status": {
+        "draft": "Dréacht",
+        "pendingApproval": "Ag fanacht le ceadú",
+        "needsCorrection": "Le ceartú",
+        "approved": "Ceadaithe",
+        "rejected": "Diúltaithe",
+        "reimbursed": "Aisíoctha",
+        "cancelled": "Cealaithe"
+      },
+      "actions": {
+        "view": "Féach",
+        "submit": "Cuir isteach",
+        "cancel": "Cuir ar ceal"
+      },
+      "toasts": {
+        "created": "Iarratas cruthaithe",
+        "updated": "Iarratas nuashonraithe",
+        "deleted": "Iarratas scriosta",
+        "submitted": "Iarratas a cuireadh isteach lena cheadú",
+        "cancelled": "Cuireadh an t-iarratas ar ceal",
+        "approved": "Iarratas formheasta",
+        "correctionRequested": "Ceartú iarrtha",
+        "rejected": "Diúltaíodh don iarratas",
+        "reimbursed": "Aisíocaíocht thaifeadta"
+      },
+      "deleteConfirmTitle": "An dréacht seo a scriosadh?",
+      "deleteConfirmDescription": "Tá an gníomh seo do-aisiompaithe.",
+      "cancelConfirmTitle": "An t-iarratas seo a chur ar ceal?",
+      "cancelConfirmDescription": "Cuirfear an t-iarratasóir ar an eolas faoin gcealú.",
+      "cancelReasonLabel": "Cúis leis an gcealú"
+    },
+    "form": {
+      "subject": "Cuspóir",
+      "subjectPlaceholder": "M.sh. taisteal le cruinnithe réigiúnacha",
+      "comment": "Tráchtaireacht",
+      "commentPlaceholder": "Sonraí roghnacha",
+      "event": "Imeacht gaolmhar",
+      "project": "Tionscadal gaolmhar",
+      "noProject": "Gan tionscadal",
+      "noEvent": "Gan aon imeachtaí",
+      "items": "Costais",
+      "addItem": "Cuir costas leis",
+      "noItems": "Gan aon táillí breise",
+      "itemDate": "Dáta an chaiteachais",
+      "itemDescription": "Cur síos",
+      "itemAmount": "Méid",
+      "itemCategory": "Catagóir",
+      "itemReceipt": "Údarú",
+      "total": "Iomlán",
+      "duplicateWarning": "Tá costas cosúil leis sin (an dáta céanna, an méid céanna) ann cheana féin i gceann eile de d''iarratais.",
+      "toasts": {
+        "uploadError": "Earráid agus an admháil á seoladh",
+        "networkError": "Earráid líonra agus an admháil á sheoladh"
+      }
+    },
+    "detail": {
+      "notFound": "Níor aimsíodh iarratas aisíocaíochta",
+      "history": "Stair",
+      "correctionFrom": "Ceartú iarrtha ag {name}",
+      "rejectedBy": "Diúltaithe ag {name}",
+      "reimbursedOn": "Aisíoctha ar {date} le {method}",
+      "selfApprovalBlockedNotice": "Ní féidir leat d''iarratas féin a cheadú. Caithfidh riarthóir nó oifigeach údaraithe eile é a cheadú.",
+      "viewReceipt": "Féach ar na doiciméid tacaíochta",
+      "immobilisationTag": "Sócmhainní seasta",
+      "approveButton": "Formheas",
+      "requestCorrectionButton": "Iarr ceartúchán",
+      "rejectButton": "Diúltaigh",
+      "correctionCommentLabel": "Trácht ceartúcháin",
+      "rejectionReasonLabel": "Cúis leis an diúltú",
+      "deleteItemConfirmTitle": "An costas seo a bhaint?",
+      "toasts": {
+        "itemAdded": "Costas breise",
+        "itemUpdated": "Caiteachas nuashonraithe",
+        "itemDeleted": "Baineadh an costas"
+      }
+    },
+    "register": {
+      "title": "Sábháil an aisíocaíocht",
+      "registerButton": "Sábháil an aisíocaíocht",
+      "date": "Dáta aisíocaíochta",
+      "paymentMethod": "Modh íocaíochta",
+      "bankAccount": "Cuntas bainc",
+      "noBankAccountHint": "Gan cuntas bainc a chur ar bun — cuir ceann leis in Airgeadas> Cuntais, nó roghnaigh Airgead Tirim.",
+      "transaction": "Idirbheart bainc allmhairithe a réiteach (roghnach)",
+      "noTransaction": "Ná tabhair níos gaire anois",
+      "reference": "Tagairt",
+      "submit": "Sábháil",
+      "methods": {
+        "virement": "Aistriú",
+        "cheque": "Seiceáil",
+        "especes": "Speicis"
+      }
+    }
+  },
   "dashboard": {
     "pageTitle": "Dashboard",
     "subtitle": "Forbhreathnú ar do chumann",
@@ -1484,6 +1598,7 @@
     },
     "transfersView": {
       "title": "Aistrithe inmheánacha",
+      "description": "Taifead anseo na haistrithe a rinneadh cheana idir cuntais bhainc do chumainn. Taifeadann Formwise an t-aistriú gan aon airgead a bhogadh.",
       "add": "Aistriú",
       "newTransferTitle": "Aistriú nua idir cuntais",
       "editTransferTitle": "Cuir Aistriú in Eagar",
@@ -4349,6 +4464,10 @@
       "websitePlaceholder": "mon-association.fr",
       "iban": "IBAN",
       "bic": "BIC",
+      "accountingRegime": "Córas cuntasaíochta le haghaidh aisíocaíochtaí caiteachais",
+      "accountingRegimeHint": "Cinneann sé cathain a chuirtear iarratas aisíocaíochta suas: ag ceadú (tiomantas) nó ag íocaíocht iarbhír (airgead tirim).",
+      "accountingRegimeCash": "Cuntasaíocht airgid",
+      "accountingRegimeAccrual": "Cuntasaíocht thiomantais",
       "previewTitle": "Réamhamharc Cáipéise",
       "bankDetails": "Sonraí bainc",
       "ibanColon": "IBAN : {value}",
@@ -6863,6 +6982,7 @@
       "finances": "Faireachán airgeadais",
       "devis": "Meastacháin",
       "factures": "Sonraisc",
+      "reimbursements": "Aisíocaíochtaí costais",
       "fournisseurs": "Soláthraithe",
       "dons": "Síntiúis",
       "reunions": "Cruinnithe",

@@ -710,6 +710,120 @@
       }
     }
   },
+  "reimbursements": {
+    "view": {
+      "title": "Reembolsos de gastos",
+      "newRequest": "Nueva petición",
+      "export": "Exportación",
+      "myRequests": "Mis peticiones",
+      "allRequests": "Todas las solicitudes",
+      "allRequesters": "Todos los solicitantes",
+      "allCategories": "Todas las categorías",
+      "dateFrom": "De",
+      "dateTo": "A",
+      "allStatuses": "Todos los estados",
+      "summary": "{pending} Pendiente — {pendingAmount} · {approved} a reembolsar — {approvedAmount} · {reimbursed} reembolsado — {reimbursedAmount}",
+      "noRequest": "No hay solicitudes de reembolso",
+      "columns": {
+        "subject": "Propósito",
+        "date": "Fecha",
+        "amount": "Cantidad",
+        "status": "Estado"
+      },
+      "status": {
+        "draft": "Draft",
+        "pendingApproval": "A la espera de aprobación",
+        "needsCorrection": "A corregir",
+        "approved": "Aprobado",
+        "rejected": "Rechazado",
+        "reimbursed": "Reembolsado",
+        "cancelled": "Cancelado"
+      },
+      "actions": {
+        "view": "Véase",
+        "submit": "Enviar",
+        "cancel": "Cancelar"
+      },
+      "toasts": {
+        "created": "Solicitud creada",
+        "updated": "Solicitud de actualización",
+        "deleted": "Solicitud eliminada",
+        "submitted": "Solicitud presentada para su aprobación",
+        "cancelled": "Solicitud cancelada",
+        "approved": "Solicitud aprobada",
+        "correctionRequested": "Se solicita corrección",
+        "rejected": "Solicitud denegada",
+        "reimbursed": "Reembolso registrado"
+      },
+      "deleteConfirmTitle": "¿Borrar este borrador?",
+      "deleteConfirmDescription": "Esta acción es irreversible.",
+      "cancelConfirmTitle": "¿Cancelar esta petición?",
+      "cancelConfirmDescription": "El solicitante será notificado de la cancelación.",
+      "cancelReasonLabel": "Motivo de la cancelación"
+    },
+    "form": {
+      "subject": "Propósito",
+      "subjectPlaceholder": "Ej. Viajes a reuniones regionales",
+      "comment": "Comentario",
+      "commentPlaceholder": "Detalles opcionales",
+      "event": "Evento relacionado",
+      "project": "Proyecto asociado",
+      "noProject": "Sin proyecto",
+      "noEvent": "Sin eventos",
+      "items": "Gastos",
+      "addItem": "Añade un gasto",
+      "noItems": "Sin cargos adicionales",
+      "itemDate": "Fecha del gasto",
+      "itemDescription": "Descripción",
+      "itemAmount": "Cantidad",
+      "itemCategory": "Categoría",
+      "itemReceipt": "Justificación",
+      "total": "Total",
+      "duplicateWarning": "Un gasto similar (misma fecha, misma cantidad) ya existe en otra de tus solicitudes.",
+      "toasts": {
+        "uploadError": "Error al enviar el recibo",
+        "networkError": "Error de red al enviar el recibo"
+      }
+    },
+    "detail": {
+      "notFound": "Solicitud de reembolso no encontrada",
+      "history": "Historia",
+      "correctionFrom": "Corrección solicitada por {name}",
+      "rejectedBy": "Rechazado por {name}",
+      "reimbursedOn": "Reembolsado el {date} por {method}",
+      "selfApprovalBlockedNotice": "No puede aprobar su propia solicitud. Debe ser aprobada por un administrador u otro funcionario autorizado.",
+      "viewReceipt": "Consulte los documentos de apoyo",
+      "immobilisationTag": "Activos fijos",
+      "approveButton": "Aprobar",
+      "requestCorrectionButton": "Solicitar una corrección",
+      "rejectButton": "Rechazar",
+      "correctionCommentLabel": "Comentario de corrección",
+      "rejectionReasonLabel": "Motivo de la negativa",
+      "deleteItemConfirmTitle": "¿Eliminar este gasto?",
+      "toasts": {
+        "itemAdded": "Gasto adicional",
+        "itemUpdated": "Gasto actualizado",
+        "itemDeleted": "Gasto eliminado"
+      }
+    },
+    "register": {
+      "title": "Guarda el reembolso",
+      "registerButton": "Guarda el reembolso",
+      "date": "Fecha de reembolso",
+      "paymentMethod": "Método de pago",
+      "bankAccount": "Cuenta bancaria",
+      "noBankAccountHint": "No hay cuenta bancaria configurada — añade una en Finanzas> Cuentas o elige Efectivo.",
+      "transaction": "Conciliar una transacción bancaria importada (opcional)",
+      "noTransaction": "No te acerques ahora",
+      "reference": "Referencia",
+      "submit": "Guardar",
+      "methods": {
+        "virement": "Transferencia",
+        "cheque": "Check",
+        "especes": "Especies"
+      }
+    }
+  },
   "dashboard": {
     "pageTitle": "Panel de control",
     "subtitle": "Resumen de su asociación",
@@ -1484,6 +1598,7 @@
     },
     "transfersView": {
       "title": "Transferencias internas",
+      "description": "Registra aquí las transferencias ya realizadas entre las cuentas bancarias de tu asociación. Registra formalmente la transferencia sin mover ningún dinero.",
       "add": "Transferencia",
       "newTransferTitle": "Nueva transferencia entre cuentas",
       "editTransferTitle": "Edición transferencia",
@@ -4349,6 +4464,10 @@
       "websitePlaceholder": "mi-asociacion.org",
       "iban": "IBAN",
       "bic": "BIC",
+      "accountingRegime": "Régimen contable para reembolsos de gastos",
+      "accountingRegimeHint": "Determina cuándo se presenta una solicitud de reembolso: en la aprobación (compromiso) o en el pago efectivo (en efectivo).",
+      "accountingRegimeCash": "Contabilidad de caja",
+      "accountingRegimeAccrual": "Contabilidad de compromisos",
       "previewTitle": "Vista previa en el documento",
       "bankDetails": "Datos bancarios",
       "ibanColon": "IBAN: {value}",
@@ -6863,6 +6982,7 @@
       "finances": "Seguimiento financiero",
       "devis": "Presupuestos",
       "factures": "Facturas",
+      "reimbursements": "Reembolsos de gastos",
       "fournisseurs": "Proveedores",
       "dons": "Donaciones",
       "reunions": "Reuniones",

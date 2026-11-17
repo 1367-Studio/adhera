@@ -30,10 +30,13 @@ interface DocumentUploadProps {
    *  or cancels the form before ever saving (see [[project-devis-facture-fournisseur-modules]]). */
   lazy?: boolean
   onFilePending?: (blobUrl: string, file: File, prefix: string) => void
+  /** FORM-93: forwarded to the native file input so mobile browsers default straight to the
+   *  camera instead of the generic file picker — opt-in, every other caller is unaffected. */
+  capture?: "environment"
 }
 
 export function DocumentUpload({
-  value, onChange, prefix = "receipts", accept = DEFAULT_ACCEPT, fileLabel, id, describedBy, lazy = false, onFilePending,
+  value, onChange, prefix = "receipts", accept = DEFAULT_ACCEPT, fileLabel, id, describedBy, lazy = false, onFilePending, capture,
 }: DocumentUploadProps) {
   const t = useTranslations("documentUpload")
   const [uploading, setUploading] = useState(false)
@@ -136,6 +139,7 @@ export function DocumentUpload({
         aria-describedby={describedBy}
         type="file"
         accept={accept}
+        capture={capture}
         className="sr-only"
         onChange={changeEvent => { const pickedFile = changeEvent.target.files?.[0]; if (pickedFile) handleFile(pickedFile) }}
       />

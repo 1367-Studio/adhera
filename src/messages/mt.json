@@ -710,6 +710,120 @@
       }
     }
   },
+  "reimbursements": {
+    "view": {
+      "title": "Rimborsi ta'' spejjeż",
+      "newRequest": "Talba ġdida",
+      "export": "Esportazzjoni",
+      "myRequests": "It-talbiet tiegħi",
+      "allRequests": "It-talbiet kollha",
+      "allRequesters": "L-applikanti kollha",
+      "allCategories": "Il-kategoriji kollha",
+      "dateFrom": "Ta''",
+      "dateTo": "Għal",
+      "allStatuses": "L-istatus kollu",
+      "summary": "{pending} Pendenti — {pendingAmount} · {approved} li għandu jiġi rifuż — {approvedAmount} · {reimbursed} rimborsat — {reimbursedAmount}",
+      "noRequest": "L-ebda talbiet ta'' rifużjoni",
+      "columns": {
+        "subject": "Għan",
+        "date": "Data",
+        "amount": "Ammont",
+        "status": "Status"
+      },
+      "status": {
+        "draft": "Abbozz",
+        "pendingApproval": "Nistennew l-approvazzjoni",
+        "needsCorrection": "Għandu jiġi kkorrett",
+        "approved": "Approvat",
+        "rejected": "Irrifjutat",
+        "reimbursed": "Rifuż",
+        "cancelled": "Ikkanċellat"
+      },
+      "actions": {
+        "view": "Ara",
+        "submit": "Ibgħat",
+        "cancel": "Ikkanċella"
+      },
+      "toasts": {
+        "created": "Talba maħluqa",
+        "updated": "Talba għall-aġġornament",
+        "deleted": "Talba mħassra",
+        "submitted": "Applikazzjoni sottomessa għall-approvazzjoni",
+        "cancelled": "It-talba ġiet ikkanċellata",
+        "approved": "Applikazzjoni approvata",
+        "correctionRequested": "Korrezzjoni mitluba",
+        "rejected": "Talba miċħuda",
+        "reimbursed": "Rifużjoni rreġistrata"
+      },
+      "deleteConfirmTitle": "Tħassar dan id-draft?",
+      "deleteConfirmDescription": "Din l-azzjoni hija irreversibbli.",
+      "cancelConfirmTitle": "Tħassar din it-talba?",
+      "cancelConfirmDescription": "L-applikant se jiġi infurmat dwar il-kanċellazzjoni.",
+      "cancelReasonLabel": "Raġuni għall-kanċellazzjoni"
+    },
+    "form": {
+      "subject": "Għan",
+      "subjectPlaceholder": "Eż. Vjaġġ għal laqgħat reġjonali",
+      "comment": "Kummenti",
+      "commentPlaceholder": "Dettalji fakultattivi",
+      "event": "Avveniment relatat",
+      "project": "Proġett assoċjat",
+      "noProject": "L-ebda proġett",
+      "noEvent": "L-ebda avveniment",
+      "items": "Spejjeż",
+      "addItem": "Żid spejjeż",
+      "noItems": "L-ebda ħlasijiet addizzjonali",
+      "itemDate": "Data tal-ispejjeż",
+      "itemDescription": "Deskrizzjoni",
+      "itemAmount": "Ammont",
+      "itemCategory": "Kategorija",
+      "itemReceipt": "Ġustifikazzjoni",
+      "total": "Totali",
+      "duplicateWarning": "Spejjeż simili (l-istess data, l-istess ammont) diġà teżisti f''waħda mit-talbiet tiegħek.",
+      "toasts": {
+        "uploadError": "Żball meta tibgħat ir-riċevuta",
+        "networkError": "Żball tan-netwerk meta tibgħat ir-riċevuta"
+      }
+    },
+    "detail": {
+      "notFound": "Talba ta'' rifużjoni ma nstabx",
+      "history": "Storja",
+      "correctionFrom": "Korrezzjoni mitluba minn {name}",
+      "rejectedBy": "Irrifjutat minn {name}",
+      "reimbursedOn": "Rifuż fuq {date} minn {method}",
+      "selfApprovalBlockedNotice": "Ma tistax tapprova t-talba tiegħek stess. Għandha tiġi approvata minn amministratur jew uffiċjal awtorizzat ieħor.",
+      "viewReceipt": "Ara d-dokumenti ta'' appoġġ",
+      "immobilisationTag": "Assi fissi",
+      "approveButton": "Approva",
+      "requestCorrectionButton": "Itlob korrezzjoni",
+      "rejectButton": "Irrifjuta",
+      "correctionCommentLabel": "Kumment ta'' korrezzjoni",
+      "rejectionReasonLabel": "Raġuni għar-rifjut",
+      "deleteItemConfirmTitle": "Tneħħi din l-ispejjeż?",
+      "toasts": {
+        "itemAdded": "Spejjeż miżjuda",
+        "itemUpdated": "Spejjeż aġġornati",
+        "itemDeleted": "Spejjeż imneħħija"
+      }
+    },
+    "register": {
+      "title": "Iffranka r-rifużjoni",
+      "registerButton": "Iffranka r-rifużjoni",
+      "date": "Data tar-rifużjoni",
+      "paymentMethod": "Metodu ta'' ħlas",
+      "bankAccount": "Kont bankarju",
+      "noBankAccountHint": "M''hemmx kont bankarju stabbilit — żid wieħed f''Finanzi> Kontijiet, jew agħżel Flus kontanti.",
+      "transaction": "Ikkonċilja transazzjoni bankarja importata (għażla)",
+      "noTransaction": "Tħallix li tersaq eqreb issa",
+      "reference": "Referenza",
+      "submit": "Issejvja",
+      "methods": {
+        "virement": "Trasferiment",
+        "cheque": "Iċċekkja",
+        "especes": "Speċi"
+      }
+    }
+  },
   "dashboard": {
     "pageTitle": "Dashboard",
     "subtitle": "Ħarsa ġenerali lejn l-assoċjazzjoni tiegħek",
@@ -1484,6 +1598,7 @@
     },
     "transfersView": {
       "title": "Trasferimenti interni",
+      "description": "Irreġistra hawn it-trasferimenti li diġà saru bejn il-kontijiet bankarji tal-assoċjazzjoni tiegħek. Formalment jirreġistra t-trasferiment mingħajr ma jimxi flus.",
       "add": "Trasferiment",
       "newTransferTitle": "Trasferiment ġdid bejn kontijiet",
       "editTransferTitle": "Edit Transfer",
@@ -4349,6 +4464,10 @@
       "websitePlaceholder": "mon-association.fr",
       "iban": "IBAN",
       "bic": "BIC",
+      "accountingRegime": "Regolament kontabbli għar-rimborsi tal-ispejjeż",
+      "accountingRegimeHint": "Jiddetermina meta tiġi ppubblikata talba ta'' rifużjoni: fl-approvazzjoni (impenn) jew fil-ħlas reali (flus kontanti).",
+      "accountingRegimeCash": "Kontabilità tal-flus kontanti",
+      "accountingRegimeAccrual": "Kontabilità ta'' impenn",
       "previewTitle": "Preview tad-Dokument",
       "bankDetails": "Dettalji tal-Bank",
       "ibanColon": "IBAN : {value}",
@@ -6863,6 +6982,7 @@
       "finances": "Monitoraġġ finanzjarju",
       "devis": "Kwotazzjonijiet",
       "factures": "Fatturi",
+      "reimbursements": "Rimborsi ta'' spejjeż",
       "fournisseurs": "Fornituri",
       "dons": "Donazzjonijiet",
       "reunions": "Laqgħat",

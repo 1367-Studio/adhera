@@ -710,6 +710,120 @@
       }
     }
   },
+  "reimbursements": {
+    "view": {
+      "title": "Költségtérítések",
+      "newRequest": "Új kérés",
+      "export": "Export",
+      "myRequests": "Kéréseim",
+      "allRequests": "Minden kérés",
+      "allRequesters": "Minden jelentkező",
+      "allCategories": "Minden kategória",
+      "dateFrom": "Of",
+      "dateTo": "Hogy",
+      "allStatuses": "Minden státusz",
+      "summary": "{pending} Függőben — {pendingAmount} · {approved} visszatérítendő — {approvedAmount} · {reimbursed} megtérítve — {reimbursedAmount}",
+      "noRequest": "Nincs visszatérítési kérelem",
+      "columns": {
+        "subject": "Cél",
+        "date": "Dátum",
+        "amount": "Összeg",
+        "status": "Állapot"
+      },
+      "status": {
+        "draft": "Vázlat",
+        "pendingApproval": "Jóváhagyásra vár",
+        "needsCorrection": "Javítandó",
+        "approved": "Jóváhagyva",
+        "rejected": "Elutasították",
+        "reimbursed": "Visszatérítés",
+        "cancelled": "Törölve"
+      },
+      "actions": {
+        "view": "Lásd",
+        "submit": "Beküldés",
+        "cancel": "Törlés"
+      },
+      "toasts": {
+        "created": "Kérés létrehozva",
+        "updated": "Frissítési kérelem",
+        "deleted": "Kérelem törölve",
+        "submitted": "Jóváhagyásra benyújtott kérelem",
+        "cancelled": "Kérelem törölve",
+        "approved": "Kérelem jóváhagyva",
+        "correctionRequested": "Javítás kérve",
+        "rejected": "Kérelem elutasítva",
+        "reimbursed": "Rögzített visszatérítés"
+      },
+      "deleteConfirmTitle": "Törölni ezt a vázlatot?",
+      "deleteConfirmDescription": "Ez a cselekedet visszafordíthatatlan.",
+      "cancelConfirmTitle": "Törölni ezt a kérést?",
+      "cancelConfirmDescription": "A kérelmezőt értesítik a törlésről.",
+      "cancelReasonLabel": "A lemondás oka"
+    },
+    "form": {
+      "subject": "Cél",
+      "subjectPlaceholder": "Pl. Regionális találkozók utazása",
+      "comment": "Kommentár",
+      "commentPlaceholder": "Opcionális részletek",
+      "event": "Kapcsolódó esemény",
+      "project": "Kapcsolódó projekt",
+      "noProject": "Nincs projekt",
+      "noEvent": "Nincsenek események",
+      "items": "Költségek",
+      "addItem": "Kiadás hozzáadása",
+      "noItems": "Nincsenek további díjak",
+      "itemDate": "Kiadás dátuma",
+      "itemDescription": "Leírás",
+      "itemAmount": "Összeg",
+      "itemCategory": "Kategória",
+      "itemReceipt": "Indoklás",
+      "total": "Összesen",
+      "duplicateWarning": "Hasonló költség (ugyanaz a dátum, ugyanannyi összeg) már létezik egy másik kérésedben.",
+      "toasts": {
+        "uploadError": "Hiba a nyugta küldésekor",
+        "networkError": "Hálózati hiba a nyugta küldésekor"
+      }
+    },
+    "detail": {
+      "notFound": "Visszatérítési kérelem nem található",
+      "history": "Történelem",
+      "correctionFrom": "Javítást kért {name}",
+      "rejectedBy": "Elutasítva {name}",
+      "reimbursedOn": "Visszatérítés dátuma {date} írta {method}",
+      "selfApprovalBlockedNotice": "Nem hagyhatja jóvá a saját kérelmét. Ezt egy rendszergazda vagy más hivatalos tisztviselőnek kell jóváhagynia.",
+      "viewReceipt": "Lásd a támogató dokumentumokat",
+      "immobilisationTag": "Tárgyi eszközök",
+      "approveButton": "Jóváhagyás",
+      "requestCorrectionButton": "Javítás kérése",
+      "rejectButton": "Elutasít",
+      "correctionCommentLabel": "Javítási megjegyzés",
+      "rejectionReasonLabel": "Elutasítás oka",
+      "deleteItemConfirmTitle": "Megszüntetni ezt a költséget?",
+      "toasts": {
+        "itemAdded": "Hozzáadott költségek",
+        "itemUpdated": "Frissített költség",
+        "itemDeleted": "Költség eltávolítva"
+      }
+    },
+    "register": {
+      "title": "Mentse el a visszatérítést",
+      "registerButton": "Mentse el a visszatérítést",
+      "date": "Visszatérítés dátuma",
+      "paymentMethod": "Fizetési mód",
+      "bankAccount": "Bankszámla",
+      "noBankAccountHint": "Nincs bankszámla létrehozása — adjon hozzá egyet a Pénzügy> Számlák menübe, vagy válassza a Készpénz lehetőséget.",
+      "transaction": "Importált banki tranzakció egyeztetése (opcionális)",
+      "noTransaction": "Ne hozz közelebb most",
+      "reference": "Hivatkozás",
+      "submit": "Mentés",
+      "methods": {
+        "virement": "Áthelyezés",
+        "cheque": "Ellenőrizve",
+        "especes": "Fajok"
+      }
+    }
+  },
   "dashboard": {
     "pageTitle": "Dashboard",
     "subtitle": "Az Ön szövetségének áttekintése",
@@ -1484,6 +1598,7 @@
     },
     "transfersView": {
       "title": "Belső áthelyezések",
+      "description": "Itt rögzítse az egyesület bankszámlái között már végrehajtott átutalásokat. Formwise rögzítse az átutalást anélkül, hogy pénzt mozgatna.",
       "add": "Átigazolás",
       "newTransferTitle": "Új átutalás a számlák között",
       "editTransferTitle": "Szerkesztés áthelyezés",
@@ -4349,6 +4464,10 @@
       "websitePlaceholder": "mon-association.fr",
       "iban": "IBAN",
       "bic": "BIC",
+      "accountingRegime": "Költségtérítési számviteli rendszer",
+      "accountingRegimeHint": "Meghatározza, mikor kerül közzétételre egy visszatérítési kérelem: jóváhagyáskor (elköteleződés) vagy tényleges fizetéskor (készpénz).",
+      "accountingRegimeCash": "Készpénzes számvitel",
+      "accountingRegimeAccrual": "Elkötelezettségi könyvelés",
       "previewTitle": "Dokumentum-előzetes",
       "bankDetails": "Banki adatok",
       "ibanColon": "IBAN : {value}",
@@ -6863,6 +6982,7 @@
       "finances": "Pénzügyi felügyelet",
       "devis": "Árajánlatok",
       "factures": "Számlák",
+      "reimbursements": "Költségtérítések",
       "fournisseurs": "Beszállítók",
       "dons": "Adományok",
       "reunions": "Találkozók",

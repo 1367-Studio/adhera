@@ -710,6 +710,120 @@
       }
     }
   },
+  "reimbursements": {
+    "view": {
+      "title": "Kulude hüvitamine",
+      "newRequest": "Uus päring",
+      "export": "Eksport",
+      "myRequests": "Minu soovid",
+      "allRequests": "Kõik soovid",
+      "allRequesters": "Kõik taotlejad",
+      "allCategories": "Kõik kategooriad",
+      "dateFrom": "Või",
+      "dateTo": "Kuni",
+      "allStatuses": "Kõik staatused",
+      "summary": "{pending} Ootel — {pendingAmount} · {approved} tagastatav — {approvedAmount} · {reimbursed} hüvitatud — {reimbursedAmount}",
+      "noRequest": "Tagasimakse taotlusi ei ole",
+      "columns": {
+        "subject": "Eesmärk",
+        "date": "Kuupäev",
+        "amount": "Summa",
+        "status": "Staatus"
+      },
+      "status": {
+        "draft": "Draft",
+        "pendingApproval": "Ootab heakskiitu",
+        "needsCorrection": "Parandamiseks",
+        "approved": "Heaks kiidetud",
+        "rejected": "Keeldus",
+        "reimbursed": "Tagastatud",
+        "cancelled": "Tühistatud"
+      },
+      "actions": {
+        "view": "Vaata",
+        "submit": "Esita",
+        "cancel": "Tühista"
+      },
+      "toasts": {
+        "created": "Taotlus loodud",
+        "updated": "Uuenduse taotlus",
+        "deleted": "Taotlus kustutatud",
+        "submitted": "Kinnitamiseks esitatud taotlus",
+        "cancelled": "Taotlus tühistatud",
+        "approved": "Taotlus heaks kiidetud",
+        "correctionRequested": "Parandus palutud",
+        "rejected": "Taotlus lükatud tagasi",
+        "reimbursed": "Registreeritud tagasimakse"
+      },
+      "deleteConfirmTitle": "Kustutada see mustand?",
+      "deleteConfirmDescription": "See tegevus on pöördumatu.",
+      "cancelConfirmTitle": "Tühistada see taotlus?",
+      "cancelConfirmDescription": "Taotlejale teatatakse tühistamisest.",
+      "cancelReasonLabel": "Tühistamise põhjus"
+    },
+    "form": {
+      "subject": "Eesmärk",
+      "subjectPlaceholder": "Näide. Regionaalsed kohtumisreisid",
+      "comment": "Kommentaar",
+      "commentPlaceholder": "Valikulised üksikasjad",
+      "event": "Seotud sündmus",
+      "project": "Seotud projekt",
+      "noProject": "Projekti ei ole",
+      "noEvent": "Üritusi ei ole",
+      "items": "Kulud",
+      "addItem": "Lisa kulu",
+      "noItems": "Lisatasusid ei ole",
+      "itemDate": "Kulutamise kuupäev",
+      "itemDescription": "Kirjeldus",
+      "itemAmount": "Summa",
+      "itemCategory": "Kategooria",
+      "itemReceipt": "Põhjendus",
+      "total": "Kokku",
+      "duplicateWarning": "Sarnane kulu (sama kuupäev, sama summa) on juba olemas teises sinu taotluses.",
+      "toasts": {
+        "uploadError": "Viga kviitungi saatmisel",
+        "networkError": "Võrguviga kviitungi saatmisel"
+      }
+    },
+    "detail": {
+      "notFound": "Tagasimakse taotlust ei leitud",
+      "history": "Ajalugu",
+      "correctionFrom": "Parandust taotles {name}",
+      "rejectedBy": "Keeldus {name}",
+      "reimbursedOn": "Tagastatud kuupäeval {date} Autor {method}",
+      "selfApprovalBlockedNotice": "Te ei saa oma taotlust heaks kiita. See peab olema heaks kiidetud administraatori või mõne teise volitatud ametniku poolt.",
+      "viewReceipt": "Vaata toetavaid dokumente",
+      "immobilisationTag": "Põhivara",
+      "approveButton": "Kinnita",
+      "requestCorrectionButton": "Taotle parandust",
+      "rejectButton": "Keelduma",
+      "correctionCommentLabel": "Paranduskommentaar",
+      "rejectionReasonLabel": "Keeldumise põhjus",
+      "deleteItemConfirmTitle": "Eemaldada see kulu?",
+      "toasts": {
+        "itemAdded": "Lisakulud",
+        "itemUpdated": "Uuendatud kulud",
+        "itemDeleted": "Kulud eemaldatud"
+      }
+    },
+    "register": {
+      "title": "Säästa tagasimakse",
+      "registerButton": "Säästa tagasimakse",
+      "date": "Tagasimakse kuupäev",
+      "paymentMethod": "Makseviis",
+      "bankAccount": "Pangakonto",
+      "noBankAccountHint": "Pangakontot pole avada — lisa see Finants> Kontod või vali Sularaha.",
+      "transaction": "Imporditud pangatehingu kokkusobitamine (valikuline)",
+      "noTransaction": "Ära too nüüd lähemale",
+      "reference": "Viide",
+      "submit": "Salvesta",
+      "methods": {
+        "virement": "Ülekanne",
+        "cheque": "Kontroll",
+        "especes": "Liigid"
+      }
+    }
+  },
   "dashboard": {
     "pageTitle": "Dashboard",
     "subtitle": "Ülevaade sinu ühingust",
@@ -1484,6 +1598,7 @@
     },
     "transfersView": {
       "title": "Sisemised ülekanded",
+      "description": "Registreerige siin juba tehtud ülekanded oma ühingu pangakontode vahel. Registreerige ülekanne ametlikult ilma raha liigutamata.",
       "add": "Ülekanne",
       "newTransferTitle": "Uus ülekanne kontode vahel",
       "editTransferTitle": "Muuda ülekannet",
@@ -4349,6 +4464,10 @@
       "websitePlaceholder": "mon-association.fr",
       "iban": "IBAN",
       "bic": "BIC",
+      "accountingRegime": "Kulude hüvitamise arvestusrežiim",
+      "accountingRegimeHint": "Määrab, millal hüvitustaotlus avaldatakse: kinnitamisel (kohustusel) või tegelikul maksel (sularahas).",
+      "accountingRegimeCash": "Sularahaarvestus",
+      "accountingRegimeAccrual": "Kohustuste arvestus",
       "previewTitle": "Dokumendi eelvaade",
       "bankDetails": "Panga andmed",
       "ibanColon": "IBAN : {value}",
@@ -6863,6 +6982,7 @@
       "finances": "Finantsjärelevalve",
       "devis": "Pakkumised",
       "factures": "Arved",
+      "reimbursements": "Kulude hüvitamine",
       "fournisseurs": "Tarnijad",
       "dons": "Annetused",
       "reunions": "Koosolekud",

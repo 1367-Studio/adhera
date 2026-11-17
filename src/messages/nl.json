@@ -710,6 +710,120 @@
       }
     }
   },
+  "reimbursements": {
+    "view": {
+      "title": "Onkostenvergoedingen",
+      "newRequest": "Nieuw verzoek",
+      "export": "Export",
+      "myRequests": "Mijn verzoeken",
+      "allRequests": "Alle verzoeken",
+      "allRequesters": "Alle aanvragers",
+      "allCategories": "Alle categorieën",
+      "dateFrom": "Van",
+      "dateTo": "Naar",
+      "allStatuses": "Alle statussen",
+      "summary": "{pending} In afwachting — {pendingAmount} · {approved} te worden terugbetaald — {approvedAmount} · {reimbursed} vergoed — {reimbursedAmount}",
+      "noRequest": "Geen terugbetalingsverzoeken",
+      "columns": {
+        "subject": "Doel",
+        "date": "Datum",
+        "amount": "Bedrag",
+        "status": "Status"
+      },
+      "status": {
+        "draft": "Draft",
+        "pendingApproval": "In afwachting van goedkeuring",
+        "needsCorrection": "Nog te corrigeren",
+        "approved": "Goedgekeurd",
+        "rejected": "Geweigerd",
+        "reimbursed": "Terugbetaald",
+        "cancelled": "Geannuleerd"
+      },
+      "actions": {
+        "view": "Zie",
+        "submit": "Indienen",
+        "cancel": "Annuleren"
+      },
+      "toasts": {
+        "created": "Aanvraag aangemaakt",
+        "updated": "Updateverzoek",
+        "deleted": "Verzoek verwijderd",
+        "submitted": "Aanvraag ingediend ter goedkeuring",
+        "cancelled": "Verzoek geannuleerd",
+        "approved": "Aanvraag goedgekeurd",
+        "correctionRequested": "Correctie aangevraagd",
+        "rejected": "Verzoek afgewezen",
+        "reimbursed": "Geregistreerde terugbetaling"
+      },
+      "deleteConfirmTitle": "Deze versie verwijderen?",
+      "deleteConfirmDescription": "Deze actie is onomkeerbaar.",
+      "cancelConfirmTitle": "Dit verzoek annuleren?",
+      "cancelConfirmDescription": "De aanvrager wordt op de hoogte gebracht van de annulering.",
+      "cancelReasonLabel": "Reden voor annulering"
+    },
+    "form": {
+      "subject": "Doel",
+      "subjectPlaceholder": "Bijv. reizen naar regionale bijeenkomsten",
+      "comment": "Commentaar",
+      "commentPlaceholder": "Optionele details",
+      "event": "Gerelateerde gebeurtenis",
+      "project": "Geassocieerd project",
+      "noProject": "Geen project",
+      "noEvent": "Geen evenementen",
+      "items": "Uitgaven",
+      "addItem": "Voeg een kostenpost toe",
+      "noItems": "Geen extra kosten",
+      "itemDate": "Datum van uitgaven",
+      "itemDescription": "Beschrijving",
+      "itemAmount": "Bedrag",
+      "itemCategory": "Categorie",
+      "itemReceipt": "Rechtvaardiging",
+      "total": "Totaal",
+      "duplicateWarning": "Een vergelijkbare uitgave (dezelfde datum, hetzelfde bedrag) bestaat al in een ander van je verzoeken.",
+      "toasts": {
+        "uploadError": "Fout bij het verzenden van de ontvangstbevestiging",
+        "networkError": "Netwerkfout bij het verzenden van de ontvangstbewijs"
+      }
+    },
+    "detail": {
+      "notFound": "Terugbetalingsverzoek niet gevonden",
+      "history": "Geschiedenis",
+      "correctionFrom": "Correctie aangevraagd door {name}",
+      "rejectedBy": "Geweigerd door {name}",
+      "reimbursedOn": "Terugbetaald op {date} door {method}",
+      "selfApprovalBlockedNotice": "U kunt uw eigen verzoek niet goedkeuren. Het moet worden goedgekeurd door een beheerder of een andere bevoegde functionaris.",
+      "viewReceipt": "Zie de ondersteunende documenten",
+      "immobilisationTag": "Vaste activa",
+      "approveButton": "Goedkeuren",
+      "requestCorrectionButton": "Verzoek om correctie",
+      "rejectButton": "Weigeren",
+      "correctionCommentLabel": "Correctiecommentaar",
+      "rejectionReasonLabel": "Reden voor weigering",
+      "deleteItemConfirmTitle": "Deze kosten elimineren?",
+      "toasts": {
+        "itemAdded": "Extra kosten",
+        "itemUpdated": "Bijgewerkte kosten",
+        "itemDeleted": "Kosten verwijderd"
+      }
+    },
+    "register": {
+      "title": "Bespaar de terugbetaling",
+      "registerButton": "Bespaar de terugbetaling",
+      "date": "Terugbetalingsdatum",
+      "paymentMethod": "Betaalmethode",
+      "bankAccount": "Bankrekening",
+      "noBankAccountHint": "Geen bankrekening ingesteld — voeg er een toe in Financiën> Rekeningen, of kies Contant.",
+      "transaction": "Een geïmporteerde banktransactie afstemmen (optioneel)",
+      "noTransaction": "Breng nu niet dichterbij",
+      "reference": "Referentie",
+      "submit": "Opslaan",
+      "methods": {
+        "virement": "Overdracht",
+        "cheque": "Check",
+        "especes": "Soorten"
+      }
+    }
+  },
   "dashboard": {
     "pageTitle": "Dashboard",
     "subtitle": "Overzicht van uw vereniging",
@@ -1484,6 +1598,7 @@
     },
     "transfersView": {
       "title": "Interne overdrachten",
+      "description": "Registreer hier de overboekingen die al zijn gedaan tussen de bankrekeningen van uw vereniging. Formwise registreert de overboeking zonder geld over te maken.",
       "add": "Overdracht",
       "newTransferTitle": "Nieuwe overboeking tussen rekeningen",
       "editTransferTitle": "Bewerken Overdracht",
@@ -4349,6 +4464,10 @@
       "websitePlaceholder": "mon-association.fr",
       "iban": "IBAN",
       "bic": "BIC",
+      "accountingRegime": "Boekhoudstelsel voor onkostenvergoedingen",
+      "accountingRegimeHint": "Bepaalt wanneer een terugbetalingsverzoek wordt ingediend: bij goedkeuring (verplichting) of bij daadwerkelijke betaling (contant).",
+      "accountingRegimeCash": "Kasboekhouding",
+      "accountingRegimeAccrual": "Commitment accounting",
       "previewTitle": "Documentvoorbeeld",
       "bankDetails": "Bankgegevens",
       "ibanColon": "IBAN : {value}",
@@ -6863,6 +6982,7 @@
       "finances": "Financiële monitoring",
       "devis": "Offertes",
       "factures": "Facturen",
+      "reimbursements": "Onkostenvergoedingen",
       "fournisseurs": "Leveranciers",
       "dons": "Donaties",
       "reunions": "Vergaderingen",
