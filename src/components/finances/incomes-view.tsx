@@ -163,7 +163,7 @@ export function IncomesView() {
       key: "paymentMethod",
       header: t("finances.incomesView.columns.paymentMethod"),
       className: "w-36",
-      cell: (i) => i.paymentMethod ?? "—",
+      cell: (i) => i.paymentMethod? i.paymentMethod =='ESP'?'ESPECES':i.paymentMethod : "—",
     },
     {
       key: "amount",
