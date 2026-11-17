@@ -59,7 +59,7 @@
     "complementPlaceholder": "Épület, emelet, postaláda…",
     "postalCode": "Irányítószám",
     "city": "Város",
-    "country": "Ország",
+    "country": "Lakóhely szerinti ország",
     "legacyMigratedHint": "A régi cím mezőből másolva – ellenőrizze, hogy nem tartalmazza-e már az alábbi irányítószámot és várost."
   },
   "auth": {
@@ -1907,7 +1907,8 @@
           },
           "mobileLabel": "Mobil",
           "birthDateLabel": "Születési dátum",
-          "genderLabel": "Nemek"
+          "genderLabel": "Nemek",
+          "countryLabel": "Lakóhely"
         },
         "products": {
           "title": "Termékek",
@@ -3067,7 +3068,8 @@
           "addOption": "Opció hozzáadása",
           "removeOption": "Távolítsd el ezt az opciót",
           "optionsRequiredError": "Minden lista/választási mezőhöz legalább 2 opció szükséges.",
-          "duplicateOptionsError": "Egy lista/választási mező opcióinak egyedinek kell lenniük."
+          "duplicateOptionsError": "Egy lista/választási mező opcióinak egyedinek kell lenniük.",
+          "countryLabel": "Lakóhely"
         },
         "payment": {
           "title": "Fizetés",
@@ -3358,7 +3360,8 @@
           "addOption": "Opció hozzáadása",
           "removeOption": "Távolítsd el ezt az opciót",
           "optionsRequiredError": "Minden lista/választási mezőhöz legalább 2 opció szükséges.",
-          "duplicateOptionsError": "Egy lista/választási mező opcióinak egyedinek kell lenniük."
+          "duplicateOptionsError": "Egy lista/választási mező opcióinak egyedinek kell lenniük.",
+          "countryLabel": "Lakóhely"
         },
         "payment": {
           "title": "Fizetés",

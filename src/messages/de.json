@@ -59,7 +59,7 @@
     "complementPlaceholder": "Gebäude, Etage, Briefkasten…",
     "postalCode": "Postleitzahl",
     "city": "Stadt",
-    "country": "Land",
+    "country": "Wohnsitzland",
     "legacyMigratedHint": "Aus dem alten Adressfeld übernommen – prüfen Sie, ob Postleitzahl und Ort unten nicht bereits enthalten sind."
   },
   "auth": {
@@ -1907,7 +1907,8 @@
           },
           "mobileLabel": "Mobil",
           "birthDateLabel": "Geburtsdatum",
-          "genderLabel": "Geschlecht"
+          "genderLabel": "Geschlecht",
+          "countryLabel": "Wohnsitzland"
         },
         "products": {
           "title": "Produkte",
@@ -3067,7 +3068,8 @@
           "addOption": "Fügen Sie eine Option hinzu",
           "removeOption": "Entfernen Sie diese Option",
           "optionsRequiredError": "Jede Liste oder jedes Wahlfeld benötigt mindestens zwei Optionen.",
-          "duplicateOptionsError": "Die Optionen eines Listen- oder Wahlfelds müssen eindeutig sein."
+          "duplicateOptionsError": "Die Optionen eines Listen- oder Wahlfelds müssen eindeutig sein.",
+          "countryLabel": "Wohnsitzland"
         },
         "payment": {
           "title": "Zahlung",
@@ -3358,7 +3360,8 @@
           "addOption": "Fügen Sie eine Option hinzu",
           "removeOption": "Entfernen Sie diese Option",
           "optionsRequiredError": "Jede Liste oder jedes Wahlfeld benötigt mindestens zwei Optionen.",
-          "duplicateOptionsError": "Die Optionen eines Listen- oder Wahlfelds müssen eindeutig sein."
+          "duplicateOptionsError": "Die Optionen eines Listen- oder Wahlfelds müssen eindeutig sein.",
+          "countryLabel": "Wohnsitzland"
         },
         "payment": {
           "title": "Zahlung",

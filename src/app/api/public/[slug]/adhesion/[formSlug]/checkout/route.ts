@@ -26,7 +26,7 @@ import { notifyMembershipSignup } from "@/lib/webhook/membership-notify"
 import { eligibleReceiptAmount } from "@/lib/receipt-eligibility"
 import { isMemberCardAvailable } from "@/lib/member-card/availability"
 import { findInvalidMembershipFormAnswer } from "@/lib/membership-form-answers-validation"
-import { ADDRESS_MAX_LENGTHS, addressColumns, addressIsFilled } from "@/lib/address"
+import { ADDRESS_MAX_LENGTHS, addressColumns, addressIsFilled, countryIsFilled } from "@/lib/address"
 import { SUPPORTED_LOCALES } from "@/i18n/locales"
 import { reportError } from "@/lib/monitoring"
 
@@ -326,10 +326,13 @@ export async function POST(
   // obligatoires — validée ici plutôt que par un schéma zod statique puisqu'elle est
   // configurée par formulaire, même raisonnement que les DonationFormField.
   const { birthDate, phone, mobile, sexe, spokenLanguage, photoUrl: photoUrlValue, preferredLocale } = parsed.data
-  // L'adresse est vérifiée à part : elle tient désormais sur cinq champs, et la forme héritée
-  // en texte libre reste acceptée (voir addressIsFilled).
+  // L'adresse est vérifiée à part : elle tient sur plusieurs champs, et la forme héritée
+  // en texte libre reste acceptée (voir addressIsFilled). Le pays a son propre réglage
+  // d'obligation, indépendant de l'adresse (FORM-108).
   if (form.fieldAddress === "REQUIRED" && !addressIsFilled(parsed.data))
-    return NextResponse.json({ error: "Le champ « Adresse » est requis." }, { status: 422 })
+    return NextResponse.json({ error: "Le champ « Adresse postale » est requis." }, { status: 422 })
+  if (form.fieldCountry === "REQUIRED" && !countryIsFilled(parsed.data))
+    return NextResponse.json({ error: "Le champ « Pays de résidence » est requis." }, { status: 422 })
   const standardChecks: [string, string | undefined, string][] = [
     [form.fieldBirthDate, birthDate, "Date de naissance"],
     [form.fieldPhone,     phone,     "Téléphone"],
@@ -1029,10 +1032,12 @@ async function handleMultiRegistrantCheckout(
 
     // Même matrice de champs standards que le parcours à un seul adhérent, appliquée à
     // chaque personne individuellement — chaque bloc "Adhérent" produit son propre Membre.
-    // Même traitement à part de l'adresse que le parcours à un seul adhérent (voir
-    // addressIsFilled), appliqué à chaque personne.
+    // Même traitement à part de l'adresse et du pays que le parcours à un seul adhérent
+    // (voir addressIsFilled/countryIsFilled), appliqué à chaque personne.
     if (form.fieldAddress === "REQUIRED" && !addressIsFilled(r))
-      return NextResponse.json({ error: `Le champ « Adresse » est requis pour ${r.firstName} ${r.lastName}.` }, { status: 422 })
+      return NextResponse.json({ error: `Le champ « Adresse postale » est requis pour ${r.firstName} ${r.lastName}.` }, { status: 422 })
+    if (form.fieldCountry === "REQUIRED" && !countryIsFilled(r))
+      return NextResponse.json({ error: `Le champ « Pays de résidence » est requis pour ${r.firstName} ${r.lastName}.` }, { status: 422 })
     const standardChecks: [string, string | undefined, string][] = [
       [form.fieldBirthDate, r.birthDate, "Date de naissance"],
       [form.fieldPhone,     r.phone,     "Téléphone"],

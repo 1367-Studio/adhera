@@ -59,7 +59,7 @@
     "complementPlaceholder": "Byggnad, våning, brevlåda…",
     "postalCode": "Postnummer",
     "city": "Ort",
-    "country": "Land",
+    "country": "Bosättningsland",
     "legacyMigratedHint": "Kopierat från det gamla adressfältet — kontrollera att det inte redan innehåller postnumret och orten nedan."
   },
   "auth": {
@@ -1907,7 +1907,8 @@
           },
           "mobileLabel": "Mobil",
           "birthDateLabel": "Födelsedatum",
-          "genderLabel": "Kön"
+          "genderLabel": "Kön",
+          "countryLabel": "Bopnland"
         },
         "products": {
           "title": "Produkter",
@@ -3067,7 +3068,8 @@
           "addOption": "Lägg till ett alternativ",
           "removeOption": "Ta bort detta alternativ",
           "optionsRequiredError": "Varje lista/valfält behöver minst två alternativ.",
-          "duplicateOptionsError": "Alternativen i ett lista/valfält måste vara unika."
+          "duplicateOptionsError": "Alternativen i ett lista/valfält måste vara unika.",
+          "countryLabel": "Bopnland"
         },
         "payment": {
           "title": "Betalning",
@@ -3358,7 +3360,8 @@
           "addOption": "Lägg till ett alternativ",
           "removeOption": "Ta bort detta alternativ",
           "optionsRequiredError": "Varje lista/valfält behöver minst två alternativ.",
-          "duplicateOptionsError": "Alternativen i ett lista/valfält måste vara unika."
+          "duplicateOptionsError": "Alternativen i ett lista/valfält måste vara unika.",
+          "countryLabel": "Bopnland"
         },
         "payment": {
           "title": "Betalning",

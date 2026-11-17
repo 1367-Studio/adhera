@@ -113,6 +113,7 @@ export async function GET(
     contactPhone:         form.contactPhone,
     validationMode:       form.validationMode,
     fieldAddress:         form.fieldAddress,
+    fieldCountry:         form.fieldCountry,
     fieldBirthDate:       form.fieldBirthDate,
     fieldPhone:           form.fieldPhone,
     fieldMobile:          form.fieldMobile,

@@ -6,7 +6,7 @@ import { stripe, connectAccountChargesEnabled, PLATFORM_FEE, stripeFeeCents } fr
 import { APP_URL } from "@/lib/env"
 import { rateLimit, requestIp } from "@/lib/rate-limit"
 import { SPOKEN_LANGUAGE_CODES } from "@/lib/languages"
-import { ADDRESS_MAX_LENGTHS, addressColumns, addressIsFilled } from "@/lib/address"
+import { ADDRESS_MAX_LENGTHS, addressColumns, addressIsFilled, countryIsFilled } from "@/lib/address"
 import { findInvalidMembershipFormAnswer } from "@/lib/membership-form-answers-validation"
 import { acceptLegalDocuments, LegalConsentError } from "@/lib/legal/acceptance"
 import { consentIp } from "@/lib/consent"
@@ -60,7 +60,7 @@ export async function POST(
       adhesionCompletionForm: {
         select: {
           id: true, status: true, conditions: true, attachments: true, requireCguvSignature: true,
-          fieldAddress: true, fieldBirthDate: true, fieldPhone: true, fieldMobile: true,
+          fieldAddress: true, fieldCountry: true, fieldBirthDate: true, fieldPhone: true, fieldMobile: true,
           fieldGender: true, fieldPhoto: true, fieldLanguage: true,
           tiers:        { where: { itemType: "MEMBERSHIP", kind: "ONE_OFF", free: false }, select: { id: true, label: true, freeAmount: true, amount: true } },
           customFields: { select: { id: true, type: true, label: true, required: true, options: true } },
@@ -110,7 +110,9 @@ export async function POST(
 
   const { phone, birthDate, sexe, spokenLanguage, photoUrl: photoUrlValue } = parsed.data
   if (form.fieldAddress === "REQUIRED" && !addressIsFilled(parsed.data))
-    return NextResponse.json({ error: "Le champ « Adresse » est requis." }, { status: 422 })
+    return NextResponse.json({ error: "Le champ « Adresse postale » est requis." }, { status: 422 })
+  if (form.fieldCountry === "REQUIRED" && !countryIsFilled(parsed.data))
+    return NextResponse.json({ error: "Le champ « Pays de résidence » est requis." }, { status: 422 })
   const standardChecks: [string, string | undefined, string][] = [
     [form.fieldBirthDate, birthDate, "Date de naissance"],
     [form.fieldPhone,     phone,     "Téléphone"],

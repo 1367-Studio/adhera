@@ -59,7 +59,7 @@
     "complementPlaceholder": "Pastatas, aukštas, pašto dėžutė…",
     "postalCode": "Pašto kodas",
     "city": "Miestas",
-    "country": "Šalis",
+    "country": "Gyvenamosios vietos šalis",
     "legacyMigratedHint": "Nukopijuota iš senojo adreso lauko — patikrinkite, ar jame jau nėra žemiau nurodyto pašto kodo ir miesto."
   },
   "auth": {
@@ -1907,7 +1907,8 @@
           },
           "mobileLabel": "Mobilusis",
           "birthDateLabel": "Gimimo data",
-          "genderLabel": "Lytis"
+          "genderLabel": "Lytis",
+          "countryLabel": "Gyvenamoji šalis"
         },
         "products": {
           "title": "Produktai",
@@ -3067,7 +3068,8 @@
           "addOption": "Pridėti parinktį",
           "removeOption": "Pašalinkite šią galimybę",
           "optionsRequiredError": "Kiekvienam sąrašo/pasirinkimo laukui reikia bent 2 variantų.",
-          "duplicateOptionsError": "Sąrašo/pasirinkimo lauko variantai turi būti unikalūs."
+          "duplicateOptionsError": "Sąrašo/pasirinkimo lauko variantai turi būti unikalūs.",
+          "countryLabel": "Gyvenamoji šalis"
         },
         "payment": {
           "title": "Mokėjimas",
@@ -3358,7 +3360,8 @@
           "addOption": "Pridėti parinktį",
           "removeOption": "Pašalinkite šią galimybę",
           "optionsRequiredError": "Kiekvienam sąrašo/pasirinkimo laukui reikia bent 2 variantų.",
-          "duplicateOptionsError": "Sąrašo/pasirinkimo lauko variantai turi būti unikalūs."
+          "duplicateOptionsError": "Sąrašo/pasirinkimo lauko variantai turi būti unikalūs.",
+          "countryLabel": "Gyvenamoji šalis"
         },
         "payment": {
           "title": "Mokėjimas",

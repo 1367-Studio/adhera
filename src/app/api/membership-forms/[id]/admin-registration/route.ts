@@ -13,7 +13,7 @@ import { eligibleReceiptAmount } from "@/lib/receipt-eligibility"
 import { currentCotisationYear } from "@/lib/membre-adherent"
 import { writeActivityLog } from "@/lib/activity-log"
 import { SPOKEN_LANGUAGE_CODES } from "@/lib/languages"
-import { ADDRESS_MAX_LENGTHS, addressColumns, addressIsFilled } from "@/lib/address"
+import { ADDRESS_MAX_LENGTHS, addressColumns, addressIsFilled, countryIsFilled } from "@/lib/address"
 import { SUPPORTED_LOCALES } from "@/i18n/locales"
 import { findInvalidMembershipFormAnswer } from "@/lib/membership-form-answers-validation"
 import { reportError } from "@/lib/monitoring"
@@ -97,11 +97,13 @@ export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   // Same field-matrix validation as the public checkout — the manager fills the same form,
   // the same fields stay required.
   const { birthDate, phone, mobile, sexe, spokenLanguage, photoUrl, preferredLocale } = parsed.data
-  // L'adresse est vérifiée à part : elle tient désormais sur cinq champs, et la forme héritée
+  // L'adresse est vérifiée à part : elle tient sur plusieurs champs, et la forme héritée
   // en texte libre reste acceptée — même règle que le checkout public (voir addressIsFilled
-  // dans src/lib/address.ts).
+  // dans src/lib/address.ts). Le pays a son propre réglage d'obligation (FORM-108).
   if (form.fieldAddress === "REQUIRED" && !addressIsFilled(parsed.data))
-    return NextResponse.json({ error: "Le champ « Adresse » est requis." }, { status: 422 })
+    return NextResponse.json({ error: "Le champ « Adresse postale » est requis." }, { status: 422 })
+  if (form.fieldCountry === "REQUIRED" && !countryIsFilled(parsed.data))
+    return NextResponse.json({ error: "Le champ « Pays de résidence » est requis." }, { status: 422 })
   const standardChecks: [string, string | undefined, string][] = [
     [form.fieldBirthDate, birthDate, "Date de naissance"],
     [form.fieldPhone,     phone,     "Téléphone"],

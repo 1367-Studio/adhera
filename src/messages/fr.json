@@ -63,7 +63,7 @@
     "complementPlaceholder": "Bâtiment, étage, boîte aux lettres…",
     "postalCode": "Code postal",
     "city": "Ville",
-    "country": "Pays",
+    "country": "Pays de résidence",
     "legacyMigratedHint": "Copié depuis l'ancien champ adresse : vérifiez qu'il ne contient pas déjà le code postal et la ville ci-dessous."
   },
   "avis": {
@@ -2127,7 +2127,8 @@
           "title": "Formulaire",
           "standardFieldsHint": "Champs demandés à l'inscription",
           "phoneLabel": "Téléphone fixe",
-          "addressLabel": "Adresse",
+          "addressLabel": "Adresse postale",
+          "countryLabel": "Pays de résidence",
           "requirement": {
             "hidden": "Masqué",
             "optional": "Optionnel",
@@ -3292,7 +3293,8 @@
         "fields": {
           "title": "Formulaire",
           "standardFieldsHint": "Champs demandés au donateur",
-          "addressLabel": "Adresse",
+          "addressLabel": "Adresse postale",
+          "countryLabel": "Pays de résidence",
           "birthDateLabel": "Date de naissance",
           "phoneLabel": "Téléphone fixe",
           "mobileLabel": "Téléphone portable",
@@ -3584,7 +3586,8 @@
         "fields": {
           "title": "Formulaire",
           "standardFieldsHint": "Champs demandés à l'inscription",
-          "addressLabel": "Adresse",
+          "addressLabel": "Adresse postale",
+          "countryLabel": "Pays de résidence",
           "birthDateLabel": "Date de naissance",
           "phoneLabel": "Téléphone fixe",
           "mobileLabel": "Téléphone portable",

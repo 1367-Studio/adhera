@@ -24,10 +24,11 @@ const evenementBase = z.object({
   contactEmail: z.string().trim().email("Adresse email invalide").max(200).optional().or(z.literal("")),
   contactPhone: z.string().trim().max(30).optional().or(z.literal("")),
 
-  // Étape "Formulaire" — miroir de MembershipForm.fieldPhone/fieldAddress/fieldBirthDate/
-  // fieldGender/fieldMobile.
+  // Étape "Formulaire" — miroir de MembershipForm.fieldPhone/fieldAddress/fieldCountry/
+  // fieldBirthDate/fieldGender/fieldMobile.
   fieldPhone:     evenementFieldRequirement.optional(),
   fieldAddress:   evenementFieldRequirement.optional(),
+  fieldCountry:   evenementFieldRequirement.optional(),
   fieldBirthDate: evenementFieldRequirement.optional(),
   fieldGender:    evenementFieldRequirement.optional(),
   fieldMobile:    evenementFieldRequirement.optional(),

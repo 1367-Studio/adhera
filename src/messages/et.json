@@ -59,7 +59,7 @@
     "complementPlaceholder": "Hoone, korrus, postkast…",
     "postalCode": "Postiindeks",
     "city": "Linn",
-    "country": "Riik",
+    "country": "Elukohariik",
     "legacyMigratedHint": "Kopeeritud vanast aadressiväljast — kontrollige, et see ei sisalda juba allpool olevat sihtnumbrit ja linna."
   },
   "auth": {
@@ -1907,7 +1907,8 @@
           },
           "mobileLabel": "Mobiilne",
           "birthDateLabel": "Sünnikuupäev",
-          "genderLabel": "Sugu"
+          "genderLabel": "Sugu",
+          "countryLabel": "Elukoht"
         },
         "products": {
           "title": "Tooted",
@@ -3067,7 +3068,8 @@
           "addOption": "Lisa valik",
           "removeOption": "Eemalda see valik",
           "optionsRequiredError": "Iga nimekirja/valikuväli vajab vähemalt kahte valikut.",
-          "duplicateOptionsError": "Nimekirja/valikuvälja valikud peavad olema unikaalsed."
+          "duplicateOptionsError": "Nimekirja/valikuvälja valikud peavad olema unikaalsed.",
+          "countryLabel": "Elukoht"
         },
         "payment": {
           "title": "Makse",
@@ -3358,7 +3360,8 @@
           "addOption": "Lisa valik",
           "removeOption": "Eemalda see valik",
           "optionsRequiredError": "Iga nimekirja/valikuväli vajab vähemalt kahte valikut.",
-          "duplicateOptionsError": "Nimekirja/valikuvälja valikud peavad olema unikaalsed."
+          "duplicateOptionsError": "Nimekirja/valikuvälja valikud peavad olema unikaalsed.",
+          "countryLabel": "Elukoht"
         },
         "payment": {
           "title": "Makse",

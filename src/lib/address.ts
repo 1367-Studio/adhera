@@ -176,27 +176,35 @@ export type AddressPayload = {
 
 const ADDRESS_PAYLOAD_KEYS = ["address", "addressStreet", "addressComplement", "postalCode", "city", "country"] as const
 
-// Le champ « Adresse » d'une matrice de champs standards (adhésion, don, événement) est
-// satisfait de deux façons : par une adresse structurée complète (voie + code postal +
-// ville + pays — exactement ce que le formulaire public rend obligatoire), ou par la seule
-// adresse héritée en texte libre — un onglet resté ouvert sur l'ancien formulaire ne poste
-// que celle-là et ne doit pas se voir refuser. Le complément ne compte jamais : il reste
-// facultatif des deux côtés. Un seul endroit pour cette règle plutôt qu'une copie par
-// route : les routes qui la réimplémentaient localement avaient fini par diverger (voir
-// l'historique de ce fichier).
+// Le champ « Adresse postale » d'une matrice de champs standards (adhésion, don,
+// événement) est satisfait de deux façons : par une adresse structurée complète (voie +
+// code postal + ville — exactement ce que le formulaire public rend obligatoire), ou par
+// la seule adresse héritée en texte libre — un onglet resté ouvert sur l'ancien formulaire
+// ne poste que celle-là et ne doit pas se voir refuser. Le complément ne compte jamais : il
+// reste facultatif des deux côtés.
+//
+// Le pays n'entre plus dans ce calcul (FORM-108) : il a son propre réglage d'obligation
+// (`fieldCountry`), indépendant de celui de l'adresse, donc sa complétude se vérifie à part
+// avec `countryIsFilled` ci-dessous — jamais en l'ajoutant à cette liste. Un seul endroit
+// pour cette règle plutôt qu'une copie par route : les routes qui la réimplémentaient
+// localement avaient fini par diverger (voir l'historique de ce fichier).
 export type SubmittedAddress = {
   address?:       string
   addressStreet?: string
   postalCode?:    string
   city?:          string
-  country?:       string
 }
 
 export function addressIsFilled(submitted: SubmittedAddress): boolean {
   const hasStructuredAddress =
-    !!submitted.addressStreet?.trim() && !!submitted.postalCode?.trim() &&
-    !!submitted.city?.trim() && !!submitted.country?.trim()
+    !!submitted.addressStreet?.trim() && !!submitted.postalCode?.trim() && !!submitted.city?.trim()
   return hasStructuredAddress || !!submitted.address?.trim()
+}
+
+// Le champ « Pays de résidence », lui, n'a qu'un seul sous-champ : sa complétude est juste
+// sa présence, qu'il soit affiché seul ou à côté de l'adresse (voir FORM-108).
+export function countryIsFilled(submitted: { country?: string }): boolean {
+  return !!submitted.country?.trim()
 }
 
 // Vrai quand `addressFormValues` ci-dessus va déposer l'adresse héritée en texte libre dans

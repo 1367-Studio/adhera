@@ -59,7 +59,7 @@
     "complementPlaceholder": "Building, floor, mailbox…",
     "postalCode": "Postal code",
     "city": "City",
-    "country": "Country",
+    "country": "Country of residence",
     "legacyMigratedHint": "Copied from the old address field — check it doesn't already include the postal code and city below."
   },
   "auth": {
@@ -1990,7 +1990,8 @@
           },
           "mobileLabel": "Mobile",
           "birthDateLabel": "Date of birth",
-          "genderLabel": "Gender"
+          "genderLabel": "Gender",
+          "countryLabel": "Country of residence"
         },
         "products": {
           "title": "Products",
@@ -3177,7 +3178,8 @@
           "addOption": "Add an option",
           "removeOption": "Remove this option",
           "optionsRequiredError": "Every dropdown/choice field needs at least 2 options.",
-          "duplicateOptionsError": "Options in a dropdown/choice field must be unique."
+          "duplicateOptionsError": "Options in a dropdown/choice field must be unique.",
+          "countryLabel": "Country of residence"
         },
         "payment": {
           "title": "Payment",
@@ -3473,7 +3475,8 @@
           "addOption": "Add an option",
           "removeOption": "Remove this option",
           "optionsRequiredError": "Every dropdown/choice field needs at least 2 options.",
-          "duplicateOptionsError": "Options in a dropdown/choice field must be unique."
+          "duplicateOptionsError": "Options in a dropdown/choice field must be unique.",
+          "countryLabel": "Country of residence"
         },
         "payment": {
           "title": "Payment",

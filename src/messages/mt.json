@@ -59,7 +59,7 @@
     "complementPlaceholder": "Bini, sular, kaxxa postali…",
     "postalCode": "Kodiċi postali",
     "city": "Belt",
-    "country": "Pajjiż",
+    "country": "Pajjiż ta' residenza",
     "legacyMigratedHint": "Ikkupjat mill-qasam tal-indirizz l-qadim — iċċekkja li ma jkunx diġà jinkludi l-kodiċi postali u l-belt hawn taħt."
   },
   "auth": {
@@ -1907,7 +1907,8 @@
           },
           "mobileLabel": "Mobile",
           "birthDateLabel": "Id-data tat-twelid",
-          "genderLabel": "Ġeneru"
+          "genderLabel": "Ġeneru",
+          "countryLabel": "Pajjiż ta'' residenza"
         },
         "products": {
           "title": "Prodotti",
@@ -3067,7 +3068,8 @@
           "addOption": "Żid għażla",
           "removeOption": "Neħħi din l-għażla",
           "optionsRequiredError": "Kull qasam ta' lista/għażla jeħtieġ mill-inqas 2 għażliet.",
-          "duplicateOptionsError": "L-għażliet ta' qasam ta' lista/għażla jridu jkunu unika."
+          "duplicateOptionsError": "L-għażliet ta' qasam ta' lista/għażla jridu jkunu unika.",
+          "countryLabel": "Pajjiż ta'' residenza"
         },
         "payment": {
           "title": "Ħlas",
@@ -3358,7 +3360,8 @@
           "addOption": "Żid għażla",
           "removeOption": "Neħħi din l-għażla",
           "optionsRequiredError": "Kull qasam ta' lista/għażla jeħtieġ mill-inqas 2 għażliet.",
-          "duplicateOptionsError": "L-għażliet ta' qasam ta' lista/għażla jridu jkunu unika."
+          "duplicateOptionsError": "L-għażliet ta' qasam ta' lista/għażla jridu jkunu unika.",
+          "countryLabel": "Pajjiż ta'' residenza"
         },
         "payment": {
           "title": "Ħlas",

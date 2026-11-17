@@ -59,7 +59,7 @@
     "complementPlaceholder": "Rakennus, kerros, postilaatikko…",
     "postalCode": "Postinumero",
     "city": "Kaupunki",
-    "country": "Maa",
+    "country": "Asuinmaa",
     "legacyMigratedHint": "Kopioitu vanhasta osoitekentästä — tarkista, ettei se jo sisällä alla olevaa postinumeroa ja kaupunkia."
   },
   "auth": {
@@ -1907,7 +1907,8 @@
           },
           "mobileLabel": "Mobiili",
           "birthDateLabel": "Syntymäpäivämäärä",
-          "genderLabel": "Sukupuoli"
+          "genderLabel": "Sukupuoli",
+          "countryLabel": "Asuinmaa"
         },
         "products": {
           "title": "Tuotteet",
@@ -3067,7 +3068,8 @@
           "addOption": "Lisää vaihtoehto",
           "removeOption": "Poista tämä vaihtoehto",
           "optionsRequiredError": "Jokainen lista/valintakenttä tarvitsee vähintään kaksi vaihtoehtoa.",
-          "duplicateOptionsError": "Lista/valintakentän vaihtoehtojen on oltava yksilöllisiä."
+          "duplicateOptionsError": "Lista/valintakentän vaihtoehtojen on oltava yksilöllisiä.",
+          "countryLabel": "Asuinmaa"
         },
         "payment": {
           "title": "Maksu",
@@ -3358,7 +3360,8 @@
           "addOption": "Lisää vaihtoehto",
           "removeOption": "Poista tämä vaihtoehto",
           "optionsRequiredError": "Jokainen lista/valintakenttä tarvitsee vähintään kaksi vaihtoehtoa.",
-          "duplicateOptionsError": "Lista/valintakentän vaihtoehtojen on oltava yksilöllisiä."
+          "duplicateOptionsError": "Lista/valintakentän vaihtoehtojen on oltava yksilöllisiä.",
+          "countryLabel": "Asuinmaa"
         },
         "payment": {
           "title": "Maksu",

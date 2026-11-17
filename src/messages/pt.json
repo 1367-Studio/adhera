@@ -59,7 +59,7 @@
     "complementPlaceholder": "Edifício, andar, caixa de correio…",
     "postalCode": "Código postal",
     "city": "Cidade",
-    "country": "País",
+    "country": "País de residência",
     "legacyMigratedHint": "Copiado do campo de endereço antigo — verifique se ele já não inclui o código postal e a cidade abaixo."
   },
   "auth": {
@@ -1949,7 +1949,8 @@
           },
           "mobileLabel": "Celular",
           "birthDateLabel": "Data de nascimento",
-          "genderLabel": "Gênero"
+          "genderLabel": "Gênero",
+          "countryLabel": "País de residência"
         },
         "products": {
           "title": "Produtos",
@@ -3118,7 +3119,8 @@
           "addOption": "Adicionar uma opção",
           "removeOption": "Remover esta opção",
           "optionsRequiredError": "Todo campo de lista/escolha precisa de pelo menos 2 opções.",
-          "duplicateOptionsError": "As opções de um campo de lista/escolha devem ser únicas."
+          "duplicateOptionsError": "As opções de um campo de lista/escolha devem ser únicas.",
+          "countryLabel": "País de residência"
         },
         "payment": {
           "title": "Pagamento",
@@ -3411,7 +3413,8 @@
           "addOption": "Adicionar uma opção",
           "removeOption": "Remover esta opção",
           "optionsRequiredError": "Todo campo de lista/escolha precisa de pelo menos 2 opções.",
-          "duplicateOptionsError": "As opções de um campo de lista/escolha devem ser únicas."
+          "duplicateOptionsError": "As opções de um campo de lista/escolha devem ser únicas.",
+          "countryLabel": "País de residência"
         },
         "payment": {
           "title": "Pagamento",

@@ -59,7 +59,7 @@
     "complementPlaceholder": "Budova, poschodie, schránka…",
     "postalCode": "PSČ",
     "city": "Mesto",
-    "country": "Krajina",
+    "country": "Krajina bydliska",
     "legacyMigratedHint": "Skopírované zo starého poľa adresy – skontrolujte, či už neobsahuje nižšie uvedené PSČ a mesto."
   },
   "auth": {
@@ -1907,7 +1907,8 @@
           },
           "mobileLabel": "Mobilné zariadenia",
           "birthDateLabel": "Dátum narodenia",
-          "genderLabel": "Pohlavie"
+          "genderLabel": "Pohlavie",
+          "countryLabel": "Krajina pobytu"
         },
         "products": {
           "title": "Produkty",
@@ -3067,7 +3068,8 @@
           "addOption": "Pridať možnosť",
           "removeOption": "Odstráňte túto možnosť",
           "optionsRequiredError": "Každý zoznam/pole na výber potrebuje aspoň 2 možnosti.",
-          "duplicateOptionsError": "Možnosti zoznamu/poľa na výber musia byť jedinečné."
+          "duplicateOptionsError": "Možnosti zoznamu/poľa na výber musia byť jedinečné.",
+          "countryLabel": "Krajina pobytu"
         },
         "payment": {
           "title": "Platba",
@@ -3358,7 +3360,8 @@
           "addOption": "Pridať možnosť",
           "removeOption": "Odstráňte túto možnosť",
           "optionsRequiredError": "Každý zoznam/pole na výber potrebuje aspoň 2 možnosti.",
-          "duplicateOptionsError": "Možnosti zoznamu/poľa na výber musia byť jedinečné."
+          "duplicateOptionsError": "Možnosti zoznamu/poľa na výber musia byť jedinečné.",
+          "countryLabel": "Krajina pobytu"
         },
         "payment": {
           "title": "Platba",

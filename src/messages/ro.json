@@ -59,7 +59,7 @@
     "complementPlaceholder": "Clădire, etaj, cutie poștală…",
     "postalCode": "Cod poștal",
     "city": "Oraș",
-    "country": "Țară",
+    "country": "Țara de reședință",
     "legacyMigratedHint": "Copiat din vechiul câmp de adresă — verificați dacă nu conține deja codul poștal și orașul de mai jos."
   },
   "auth": {
@@ -1907,7 +1907,8 @@
           },
           "mobileLabel": "Mobil",
           "birthDateLabel": "Data nașterii",
-          "genderLabel": "Gen"
+          "genderLabel": "Gen",
+          "countryLabel": "Țara de reședință"
         },
         "products": {
           "title": "Produse",
@@ -3067,7 +3068,8 @@
           "addOption": "Adaugă o opțiune",
           "removeOption": "Elimină această opțiune",
           "optionsRequiredError": "Fiecare listă/câmp de alegere are nevoie de cel puțin 2 opțiuni.",
-          "duplicateOptionsError": "Opțiunile unui câmp listă/alegere trebuie să fie unice."
+          "duplicateOptionsError": "Opțiunile unui câmp listă/alegere trebuie să fie unice.",
+          "countryLabel": "Țara de reședință"
         },
         "payment": {
           "title": "Plata",
@@ -3358,7 +3360,8 @@
           "addOption": "Adaugă o opțiune",
           "removeOption": "Elimină această opțiune",
           "optionsRequiredError": "Fiecare listă/câmp de alegere are nevoie de cel puțin 2 opțiuni.",
-          "duplicateOptionsError": "Opțiunile unui câmp listă/alegere trebuie să fie unice."
+          "duplicateOptionsError": "Opțiunile unui câmp listă/alegere trebuie să fie unice.",
+          "countryLabel": "Țara de reședință"
         },
         "payment": {
           "title": "Plata",

@@ -38,6 +38,7 @@ type CompletionData = {
   requireCguvSignature: boolean
   online:          boolean
   fieldAddress:    FieldRequirement
+  fieldCountry:    FieldRequirement
   fieldBirthDate:  FieldRequirement
   fieldPhone:      FieldRequirement
   fieldMobile:     FieldRequirement
@@ -133,7 +134,9 @@ export default function CompletarAdesaoPage() {
 
   const selectedTier = data?.tiers.find(t => t.id === tierId)
   const addressRequired = data?.fieldAddress === "REQUIRED"
-  const addressFilled = !!addressValues.addressStreet.trim() && !!addressValues.postalCode.trim() && !!addressValues.city.trim() && !!addressValues.country.trim()
+  const addressFilled = !!addressValues.addressStreet.trim() && !!addressValues.postalCode.trim() && !!addressValues.city.trim()
+  const countryRequired = data?.fieldCountry === "REQUIRED"
+  const countryFilled = !!addressValues.country.trim()
 
   // Empty editor markup or a "required" flag with nothing to accept must not block the visitor.
   const requiresTermsAcceptance = !!data && publicFormTerms({
@@ -151,6 +154,7 @@ export default function CompletarAdesaoPage() {
     && (data.fieldLanguage !== "REQUIRED" || !!spokenLanguage)
     && (data.fieldPhoto !== "REQUIRED" || !!photoUrl.trim())
     && (!addressRequired || addressFilled)
+    && (!countryRequired || countryFilled)
     && data.customFields.every(f => !f.required || !!answers[f.id]?.trim())
     && (!requiresTermsAcceptance || conditionsAgreed)
     && (data.legalDocuments.length === 0 || legalAccepted)
@@ -313,15 +317,18 @@ export default function CompletarAdesaoPage() {
               error={requiredError("mobile", mobile, data.fieldMobile === "REQUIRED")}
             />
           )}
-          {data.fieldAddress !== "HIDDEN" && (
+          {(data.fieldAddress !== "HIDDEN" || data.fieldCountry !== "HIDDEN") && (
             <AddressFields
               value={addressValues} onChange={patch => setAddressValues(v => ({ ...v, ...patch }))}
               required={addressRequired}
-              errors={touched.address && addressRequired && !addressFilled ? {
-                addressStreet: !addressValues.addressStreet.trim() ? "Requis" : undefined,
-                postalCode:    !addressValues.postalCode.trim()    ? "Requis" : undefined,
-                city:          !addressValues.city.trim()          ? "Requis" : undefined,
-                country:       !addressValues.country.trim()       ? "Requis" : undefined,
+              showAddress={data.fieldAddress !== "HIDDEN"}
+              showCountry={data.fieldCountry !== "HIDDEN"}
+              countryRequired={countryRequired}
+              errors={touched.address ? {
+                addressStreet: addressRequired && !addressValues.addressStreet.trim() ? "Requis" : undefined,
+                postalCode:    addressRequired && !addressValues.postalCode.trim()    ? "Requis" : undefined,
+                city:          addressRequired && !addressValues.city.trim()          ? "Requis" : undefined,
+                country:       countryRequired && !addressValues.country.trim()       ? "Requis" : undefined,
               } : undefined}
             />
           )}

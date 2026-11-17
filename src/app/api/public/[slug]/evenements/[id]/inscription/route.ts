@@ -5,7 +5,7 @@ import { storedRowRequiresTermsAcceptance } from "@/lib/form-terms-response"
 import { prisma } from "@/lib/prisma/client"
 import { evenementRefWhere } from "@/lib/slug"
 import { isEvenementOver } from "@/lib/evenement-timing"
-import { ADDRESS_MAX_LENGTHS, addressColumns, addressColumnsPatch, addressIsFilled, type AddressInput } from "@/lib/address"
+import { ADDRESS_MAX_LENGTHS, addressColumns, addressColumnsPatch, addressIsFilled, countryIsFilled, type AddressInput } from "@/lib/address"
 import { parseModules } from "@/lib/modules"
 import { stripe, connectAccountChargesEnabled, platformFeeRate, stripeFeeCents } from "@/lib/stripe"
 import { APP_URL } from "@/lib/env"
@@ -225,10 +225,14 @@ export async function POST(
       if (requirement === "REQUIRED" && !a[key as keyof typeof a])
         return NextResponse.json({ error: `Le champ « ${label} » est requis.` }, { status: 422 })
     }
-    // L'adresse est vérifiée à part : elle tient désormais sur cinq champs, et la forme
-    // héritée en texte libre reste acceptée (voir addressIsFilled dans src/lib/address.ts).
+    // L'adresse et le pays sont vérifiés à part, et indépendamment l'un de l'autre (FORM-108) :
+    // l'adresse tient sur plusieurs champs et la forme héritée en texte libre reste acceptée
+    // (voir addressIsFilled dans src/lib/address.ts), tandis que le pays a son propre réglage
+    // d'obligation.
     if (evenement.fieldAddress === "REQUIRED" && !addressIsFilled(a))
-      return NextResponse.json({ error: "Le champ « Adresse » est requis." }, { status: 422 })
+      return NextResponse.json({ error: "Le champ « Adresse postale » est requis." }, { status: 422 })
+    if (evenement.fieldCountry === "REQUIRED" && !countryIsFilled(a))
+      return NextResponse.json({ error: "Le champ « Pays de résidence » est requis." }, { status: 422 })
   }
 
   // Custom fields are admin-defined per event, so their validation can't be a static
