@@ -5,6 +5,17 @@
 
 const EPSILON = 0.01
 
+// Payment methods are stored as short codes; "ESP" renders as "Espèces" everywhere a method
+// is shown to a user, matching how "VIR" already renders as "Virement" (FORM-110).
+const COTISATION_PAYMENT_METHOD_LABELS: Record<string, string> = {
+  ESP: "Espèces",
+  VIR: "Virement",
+}
+
+export function cotisationPaymentMethodLabel(method: string): string {
+  return COTISATION_PAYMENT_METHOD_LABELS[method] ?? method
+}
+
 export type DisplayInstallment = { id?: string; amount: number; dueDate: string | Date }
 
 // Which échéances look covered by payments received so far, in due-date order.
