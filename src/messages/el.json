@@ -710,6 +710,120 @@
       }
     }
   },
+  "reimbursements": {
+    "view": {
+      "title": "Αποζημιώσεις εξόδων",
+      "newRequest": "Νέο αίτημα",
+      "export": "Εξαγωγή",
+      "myRequests": "Τα αιτήματά μου",
+      "allRequests": "Όλα τα αιτήματα",
+      "allRequesters": "Όλοι οι αιτούντες",
+      "allCategories": "Όλες οι κατηγορίες",
+      "dateFrom": "Από",
+      "dateTo": "Προς",
+      "allStatuses": "Όλες οι καταστάσεις",
+      "summary": "{pending} Εκκρεμεί — {pendingAmount} · {approved} προς επιστροφή χρημάτων — {approvedAmount} · {reimbursed} αποζημιώθηκε — {reimbursedAmount}",
+      "noRequest": "Καμία αίτηση επιστροφής χρημάτων",
+      "columns": {
+        "subject": "Σκοπός",
+        "date": "Ημερομηνία",
+        "amount": "Ποσό",
+        "status": "Κατάσταση"
+      },
+      "status": {
+        "draft": "Draft",
+        "pendingApproval": "Αναμονή έγκρισης",
+        "needsCorrection": "Προς διόρθωση",
+        "approved": "Εγκεκριμένο",
+        "rejected": "Αρνήθηκε",
+        "reimbursed": "Επιστράφηκαν",
+        "cancelled": "Ακυρώθηκε"
+      },
+      "actions": {
+        "view": "Δείτε",
+        "submit": "Υποβολή",
+        "cancel": "Ακύρωση"
+      },
+      "toasts": {
+        "created": "Δημιουργία αιτήματος",
+        "updated": "Αίτημα ενημέρωσης",
+        "deleted": "Αίτημα διαγράφηκε",
+        "submitted": "Υποβλήθηκε αίτηση για έγκριση",
+        "cancelled": "Το αίτημα ακυρώθηκε",
+        "approved": "Η αίτηση εγκρίθηκε",
+        "correctionRequested": "Ζητήθηκε διόρθωση",
+        "rejected": "Το αίτημα απορρίφθηκε",
+        "reimbursed": "Καταγεγραμμένη επιστροφή χρημάτων"
+      },
+      "deleteConfirmTitle": "Να διαγράψω αυτό το προσχέδιο;",
+      "deleteConfirmDescription": "Αυτή η ενέργεια είναι μη αναστρέψιμη.",
+      "cancelConfirmTitle": "Να ακυρώσω αυτό το αίτημα;",
+      "cancelConfirmDescription": "Ο αιτών θα ενημερωθεί για την ακύρωση.",
+      "cancelReasonLabel": "Λόγος ακύρωσης"
+    },
+    "form": {
+      "subject": "Σκοπός",
+      "subjectPlaceholder": "Π.χ. Περιφερειακά ταξίδια συναντήσεων",
+      "comment": "Σχόλια",
+      "commentPlaceholder": "Προαιρετικές λεπτομέρειες",
+      "event": "Σχετική εκδήλωση",
+      "project": "Σχετικό έργο",
+      "noProject": "Κανένα έργο",
+      "noEvent": "Καμία εκδήλωση",
+      "items": "Έξοδα",
+      "addItem": "Προσθήκη δαπάνης",
+      "noItems": "Χωρίς επιπλέον χρεώσεις",
+      "itemDate": "Ημερομηνία δαπάνης",
+      "itemDescription": "Περιγραφή",
+      "itemAmount": "Ποσό",
+      "itemCategory": "Κατηγορία",
+      "itemReceipt": "Δικαιολόγηση",
+      "total": "Σύνολο",
+      "duplicateWarning": "Ένα παρόμοιο έξοδο (ίδια ημερομηνία, ίδιο ποσό) υπάρχει ήδη σε άλλο από τα αιτήματά σας.",
+      "toasts": {
+        "uploadError": "Σφάλμα κατά την αποστολή της απόδειξης",
+        "networkError": "Σφάλμα δικτύου κατά την αποστολή της απόδειξης"
+      }
+    },
+    "detail": {
+      "notFound": "Το αίτημα επιστροφής χρημάτων δεν βρέθηκε",
+      "history": "Ιστορία",
+      "correctionFrom": "Διόρθωση που ζητήθηκε από {name}",
+      "rejectedBy": "Απορρίφθηκε από {name}",
+      "reimbursedOn": "Επιστράφηκε στις {date} από {method}",
+      "selfApprovalBlockedNotice": "Δεν μπορείτε να εγκρίνετε το δικό σας αίτημα. Πρέπει να εγκριθεί από διαχειριστή ή άλλο εξουσιοδοτημένο υπάλληλο.",
+      "viewReceipt": "Δείτε τα υποστηρικτικά έγγραφα",
+      "immobilisationTag": "Πάγια περιουσιακά στοιχεία",
+      "approveButton": "Έγκριση",
+      "requestCorrectionButton": "Ζητήστε διόρθωση",
+      "rejectButton": "Αρνούμαι",
+      "correctionCommentLabel": "Σχόλιο διόρθωσης",
+      "rejectionReasonLabel": "Λόγος άρνησης",
+      "deleteItemConfirmTitle": "Να εξαλείψω αυτό το έξοδο;",
+      "toasts": {
+        "itemAdded": "Πρόσθετο κόστος",
+        "itemUpdated": "Ενημερωμένη δαπάνη",
+        "itemDeleted": "Έξοδα αφαιρέθηκαν"
+      }
+    },
+    "register": {
+      "title": "Αποθηκεύστε την επιστροφή χρημάτων",
+      "registerButton": "Αποθηκεύστε την επιστροφή χρημάτων",
+      "date": "Ημερομηνία επιστροφής χρημάτων",
+      "paymentMethod": "Τρόπος πληρωμής",
+      "bankAccount": "Τραπεζικός λογαριασμός",
+      "noBankAccountHint": "Δεν έχει δημιουργηθεί τραπεζικός λογαριασμός — προσθέστε έναν στα Οικονομικά> Λογαριασμοί ή επιλέξτε Μετρητά.",
+      "transaction": "Συμφωνία εισαγόμενης τραπεζικής συναλλαγής (προαιρετικό)",
+      "noTransaction": "Μην πλησιάζεις τώρα",
+      "reference": "Αναφορά",
+      "submit": "Αποθήκευση",
+      "methods": {
+        "virement": "Μεταφορά",
+        "cheque": "Έλεγχος",
+        "especes": "Είδη"
+      }
+    }
+  },
   "dashboard": {
     "pageTitle": "Ταμπλό",
     "subtitle": "Επισκόπηση του συλλόγου σας",
@@ -1484,6 +1598,7 @@
     },
     "transfersView": {
       "title": "Εσωτερικές μεταφορές",
+      "description": "Καταγράψτε εδώ τις μεταφορές που έχουν ήδη γίνει μεταξύ των τραπεζικών λογαριασμών του συλλόγου σας. Η Formwise καταγράφει τη μεταφορά χωρίς να μεταφέρει χρήματα.",
       "add": "Μεταφορά",
       "newTransferTitle": "Νέα μεταφορά μεταξύ λογαριασμών",
       "editTransferTitle": "Επεξεργασία μεταφοράς",
@@ -4349,6 +4464,10 @@
       "websitePlaceholder": "mon-association.fr",
       "iban": "ΙΒΑΝ",
       "bic": "BIC",
+      "accountingRegime": "Λογιστικό καθεστώς για τις αποζημιώσεις εξόδων",
+      "accountingRegimeHint": "Καθορίζει πότε υποβάλλεται αίτημα αποζημίωσης: κατά την έγκριση (δέσμευση) ή κατά την πραγματική πληρωμή (μετρητά).",
+      "accountingRegimeCash": "Λογιστική μετρητών",
+      "accountingRegimeAccrual": "Λογιστική δεσμεύσεων",
       "previewTitle": "Προεπισκόπηση εγγράφου",
       "bankDetails": "Τραπεζικά στοιχεία",
       "ibanColon": "IBAN : {value}",
@@ -6863,6 +6982,7 @@
       "finances": "Οικονομική παρακολούθηση",
       "devis": "Προσφορές",
       "factures": "Τιμολόγια",
+      "reimbursements": "Αποζημιώσεις εξόδων",
       "fournisseurs": "Προμηθευτές",
       "dons": "Δωρεές",
       "reunions": "Συναντήσεις",

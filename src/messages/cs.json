@@ -710,6 +710,120 @@
       }
     }
   },
+  "reimbursements": {
+    "view": {
+      "title": "Náhrady výdajů",
+      "newRequest": "Nová žádost",
+      "export": "Export",
+      "myRequests": "Mé požadavky",
+      "allRequests": "Všechny požadavky",
+      "allRequesters": "Všichni žadatelé",
+      "allCategories": "Všechny kategorie",
+      "dateFrom": "Z",
+      "dateTo": "Do",
+      "allStatuses": "Všechny stavy",
+      "summary": "{pending} Čeká se — {pendingAmount} · {approved} k vrácení — {approvedAmount} · {reimbursed} proplaceno — {reimbursedAmount}",
+      "noRequest": "Žádné žádosti o vrácení peněz",
+      "columns": {
+        "subject": "Účel",
+        "date": "Datum",
+        "amount": "Výše",
+        "status": "Stav"
+      },
+      "status": {
+        "draft": "Draft",
+        "pendingApproval": "Čeká na schválení",
+        "needsCorrection": "K opravě",
+        "approved": "Schváleno",
+        "rejected": "Odmítnuto",
+        "reimbursed": "Vráceno",
+        "cancelled": "Zrušeno"
+      },
+      "actions": {
+        "view": "Viz",
+        "submit": "Odeslat",
+        "cancel": "Zrušit"
+      },
+      "toasts": {
+        "created": "Žádost vytvořena",
+        "updated": "Žádost o aktualizaci",
+        "deleted": "Žádost smazána",
+        "submitted": "Žádost podána ke schválení",
+        "cancelled": "Žádost zrušena",
+        "approved": "Žádost schválena",
+        "correctionRequested": "Žádost o opravu",
+        "rejected": "Žádost zamítnuta",
+        "reimbursed": "Zaznamenáná refundace"
+      },
+      "deleteConfirmTitle": "Smazat tento návrh?",
+      "deleteConfirmDescription": "Tento čin je nevratný.",
+      "cancelConfirmTitle": "Zrušit tuto žádost?",
+      "cancelConfirmDescription": "Žadatel bude o zrušení informován.",
+      "cancelReasonLabel": "Důvod zrušení"
+    },
+    "form": {
+      "subject": "Účel",
+      "subjectPlaceholder": "Např. Regionální schůzky",
+      "comment": "Komentář",
+      "commentPlaceholder": "Volitelné detaily",
+      "event": "Související akce",
+      "project": "Související projekt",
+      "noProject": "Žádný projekt",
+      "noEvent": "Žádné akce",
+      "items": "Výdaje",
+      "addItem": "Přidat výdaj",
+      "noItems": "Žádné další poplatky",
+      "itemDate": "Datum výdajů",
+      "itemDescription": "Popis",
+      "itemAmount": "Výše",
+      "itemCategory": "Kategorie",
+      "itemReceipt": "Odůvodnění",
+      "total": "Celkem",
+      "duplicateWarning": "Podobný výdaj (stejné datum, stejná částka) už existuje v jiné z vašich žádostí.",
+      "toasts": {
+        "uploadError": "Chyba při odesílání účtenky",
+        "networkError": "Chyba sítě při odesílání účtenky"
+      }
+    },
+    "detail": {
+      "notFound": "Žádost o vrácení peněz nebyla nalezena",
+      "history": "Historie",
+      "correctionFrom": "Oprava požadovaná {name}",
+      "rejectedBy": "Zamítnuto {name}",
+      "reimbursedOn": "Vráceno dne {date} od {method}",
+      "selfApprovalBlockedNotice": "Nemůžete schválit vlastní žádost. Musí ji schválit správce nebo jiný oprávněný úředník.",
+      "viewReceipt": "Viz podpůrné dokumenty",
+      "immobilisationTag": "Dlouhodobý majetek",
+      "approveButton": "Schválit",
+      "requestCorrectionButton": "Požádat o opravu",
+      "rejectButton": "Odmítnout",
+      "correctionCommentLabel": "Poznámka k opravě",
+      "rejectionReasonLabel": "Důvod zamítnutí",
+      "deleteItemConfirmTitle": "Zrušit tyto výdaje?",
+      "toasts": {
+        "itemAdded": "Přidané náklady",
+        "itemUpdated": "Aktualizovaný výdaj",
+        "itemDeleted": "Výdaj odstraněn"
+      }
+    },
+    "register": {
+      "title": "Uložte si refundaci",
+      "registerButton": "Uložte si refundaci",
+      "date": "Datum vrácení peněz",
+      "paymentMethod": "Platební metoda",
+      "bankAccount": "Bankovní účet",
+      "noBankAccountHint": "Nemáte nastavený bankovní účet — přidejte ho do Financí> Účtů nebo vyberte Hotovost.",
+      "transaction": "Sladění importované bankovní transakce (volitelné)",
+      "noTransaction": "Teď se nepřibližuj",
+      "reference": "Reference",
+      "submit": "Uložit",
+      "methods": {
+        "virement": "Převod",
+        "cheque": "Zkontrolováno",
+        "especes": "Druhy"
+      }
+    }
+  },
   "dashboard": {
     "pageTitle": "Dashboard",
     "subtitle": "Přehled vaší asociace",
@@ -1484,6 +1598,7 @@
     },
     "transfersView": {
       "title": "Vnitřní přesuny",
+      "description": "Zaznamenejte zde již provedené převody mezi bankovními účty vaší asociace. Formálně zaznamenává převod bez převodu peněz.",
       "add": "Přesun",
       "newTransferTitle": "Nový převod mezi účty",
       "editTransferTitle": "Edit Transfer",
@@ -4349,6 +4464,10 @@
       "websitePlaceholder": "mon-association.fr",
       "iban": "IBAN",
       "bic": "BIC",
+      "accountingRegime": "Účetní režim pro náhrady výdajů",
+      "accountingRegimeHint": "Určuje, kdy je žádost o proplacení odeslána: při schválení (závazek) nebo při skutečné platbě (hotovost).",
+      "accountingRegimeCash": "Účetnictví hotovosti",
+      "accountingRegimeAccrual": "Účtování závazků",
       "previewTitle": "Náhled dokumentu",
       "bankDetails": "Bankovní údaje",
       "ibanColon": "IBAN: {value}",
@@ -6863,6 +6982,7 @@
       "finances": "Finanční monitorování",
       "devis": "Nabídky",
       "factures": "Faktury",
+      "reimbursements": "Náhrady výdajů",
       "fournisseurs": "Dodavatelé",
       "dons": "Dary",
       "reunions": "Setkání",

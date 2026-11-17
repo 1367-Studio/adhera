@@ -710,6 +710,120 @@
       }
     }
   },
+  "reimbursements": {
+    "view": {
+      "title": "Remboursements de frais",
+      "newRequest": "Nouvelle demande",
+      "export": "Exporter",
+      "myRequests": "Mes demandes",
+      "allRequests": "Toutes les demandes",
+      "allRequesters": "Tous les demandeurs",
+      "allCategories": "Toutes les catégories",
+      "dateFrom": "Du",
+      "dateTo": "Au",
+      "allStatuses": "Tous les statuts",
+      "summary": "{pending} en attente — {pendingAmount} · {approved} à rembourser — {approvedAmount} · {reimbursed} remboursées — {reimbursedAmount}",
+      "noRequest": "Aucune demande de remboursement",
+      "columns": {
+        "subject": "Objet",
+        "date": "Date",
+        "amount": "Montant",
+        "status": "Statut"
+      },
+      "status": {
+        "draft": "Brouillon",
+        "pendingApproval": "En attente d'approbation",
+        "needsCorrection": "À corriger",
+        "approved": "Approuvée",
+        "rejected": "Refusée",
+        "reimbursed": "Remboursée",
+        "cancelled": "Annulée"
+      },
+      "actions": {
+        "view": "Voir",
+        "submit": "Soumettre",
+        "cancel": "Annuler"
+      },
+      "toasts": {
+        "created": "Demande créée",
+        "updated": "Demande mise à jour",
+        "deleted": "Demande supprimée",
+        "submitted": "Demande soumise pour approbation",
+        "cancelled": "Demande annulée",
+        "approved": "Demande approuvée",
+        "correctionRequested": "Correction demandée",
+        "rejected": "Demande refusée",
+        "reimbursed": "Remboursement enregistré"
+      },
+      "deleteConfirmTitle": "Supprimer ce brouillon ?",
+      "deleteConfirmDescription": "Cette action est irréversible.",
+      "cancelConfirmTitle": "Annuler cette demande ?",
+      "cancelConfirmDescription": "Le demandeur sera notifié de l'annulation.",
+      "cancelReasonLabel": "Motif de l'annulation"
+    },
+    "form": {
+      "subject": "Objet",
+      "subjectPlaceholder": "Ex. Déplacement réunion régionale",
+      "comment": "Commentaire",
+      "commentPlaceholder": "Précisions facultatives",
+      "event": "Événement associé",
+      "project": "Projet associé",
+      "noProject": "Aucun projet",
+      "noEvent": "Aucun événement",
+      "items": "Dépenses",
+      "addItem": "Ajouter une dépense",
+      "noItems": "Aucune dépense ajoutée",
+      "itemDate": "Date de la dépense",
+      "itemDescription": "Description",
+      "itemAmount": "Montant",
+      "itemCategory": "Catégorie",
+      "itemReceipt": "Justificatif",
+      "total": "Total",
+      "duplicateWarning": "Une dépense similaire (même date, même montant) existe déjà dans une autre de vos demandes.",
+      "toasts": {
+        "uploadError": "Erreur lors de l'envoi du justificatif",
+        "networkError": "Erreur réseau lors de l'envoi du justificatif"
+      }
+    },
+    "detail": {
+      "notFound": "Demande de remboursement introuvable",
+      "history": "Historique",
+      "correctionFrom": "Correction demandée par {name}",
+      "rejectedBy": "Refusée par {name}",
+      "reimbursedOn": "Remboursée le {date} par {method}",
+      "selfApprovalBlockedNotice": "Vous ne pouvez pas approuver votre propre demande. Elle doit être validée par un·e administrateur·rice ou un autre responsable autorisé.",
+      "viewReceipt": "Voir le justificatif",
+      "immobilisationTag": "Actif immobilisé",
+      "approveButton": "Approuver",
+      "requestCorrectionButton": "Demander une correction",
+      "rejectButton": "Refuser",
+      "correctionCommentLabel": "Commentaire de correction",
+      "rejectionReasonLabel": "Motif du refus",
+      "deleteItemConfirmTitle": "Supprimer cette dépense ?",
+      "toasts": {
+        "itemAdded": "Dépense ajoutée",
+        "itemUpdated": "Dépense mise à jour",
+        "itemDeleted": "Dépense supprimée"
+      }
+    },
+    "register": {
+      "title": "Enregistrer le remboursement",
+      "registerButton": "Enregistrer le remboursement",
+      "date": "Date du remboursement",
+      "paymentMethod": "Moyen de paiement",
+      "bankAccount": "Compte bancaire",
+      "noBankAccountHint": "Aucun compte bancaire configuré — ajoutez-en un dans Finances > Comptes, ou choisissez Espèces.",
+      "transaction": "Rapprocher une transaction bancaire importée (optionnel)",
+      "noTransaction": "Ne pas rapprocher maintenant",
+      "reference": "Référence",
+      "submit": "Enregistrer",
+      "methods": {
+        "virement": "Virement",
+        "cheque": "Chèque",
+        "especes": "Espèces"
+      }
+    }
+  },
   "dashboard": {
     "pageTitle": "Tableau de bord",
     "subtitle": "Vue d'ensemble de votre association",
@@ -4350,6 +4464,10 @@
       "websitePlaceholder": "mon-association.fr",
       "iban": "IBAN",
       "bic": "BIC",
+      "accountingRegime": "Régime comptable des remboursements de frais",
+      "accountingRegimeHint": "Détermine quand une demande de remboursement est comptabilisée : à l'approbation (engagement) ou au paiement effectif (caisse).",
+      "accountingRegimeCash": "Comptabilité de caisse",
+      "accountingRegimeAccrual": "Comptabilité d'engagement",
       "previewTitle": "Aperçu sur le document",
       "bankDetails": "Coordonnées bancaires",
       "ibanColon": "IBAN : {value}",
@@ -6864,6 +6982,7 @@
       "finances": "Suivi financier",
       "devis": "Devis",
       "factures": "Factures",
+      "reimbursements": "Remboursements de frais",
       "fournisseurs": "Fournisseurs",
       "dons": "Dons",
       "reunions": "Réunions",

@@ -710,6 +710,120 @@
       }
     }
   },
+  "reimbursements": {
+    "view": {
+      "title": "Udgiftsrefusioner",
+      "newRequest": "Ny anmodning",
+      "export": "Eksport",
+      "myRequests": "Mine ønsker",
+      "allRequests": "Alle anmodninger",
+      "allRequesters": "Alle ansøgere",
+      "allCategories": "Alle kategorier",
+      "dateFrom": "Af",
+      "dateTo": "Til",
+      "allStatuses": "Alle statusser",
+      "summary": "{pending} Afventende — {pendingAmount} · {approved} skal refunderes — {approvedAmount} · {reimbursed} refunderet — {reimbursedAmount}",
+      "noRequest": "Ingen anmodninger om refundering",
+      "columns": {
+        "subject": "Formål",
+        "date": "Dato",
+        "amount": "Beløb",
+        "status": "Status"
+      },
+      "status": {
+        "draft": "Draft",
+        "pendingApproval": "Afventer godkendelse",
+        "needsCorrection": "Skal rettes",
+        "approved": "Godkendt",
+        "rejected": "Afvist",
+        "reimbursed": "Refunderet",
+        "cancelled": "Aflyst"
+      },
+      "actions": {
+        "view": "Se",
+        "submit": "Indsend",
+        "cancel": "Annuller"
+      },
+      "toasts": {
+        "created": "Anmodning oprettet",
+        "updated": "Opdateringsanmodning",
+        "deleted": "Anmodning slettet",
+        "submitted": "Ansøgning indsendt til godkendelse",
+        "cancelled": "Anmodning annulleret",
+        "approved": "Ansøgning godkendt",
+        "correctionRequested": "Rettelse anmodet",
+        "rejected": "Anmodning afvist",
+        "reimbursed": "Registreret tilbagebetaling"
+      },
+      "deleteConfirmTitle": "Slette dette udkast?",
+      "deleteConfirmDescription": "Denne handling er irreversibel.",
+      "cancelConfirmTitle": "Annullere denne anmodning?",
+      "cancelConfirmDescription": "Ansøgeren vil blive underrettet om annulleringen.",
+      "cancelReasonLabel": "Årsag til afbestilling"
+    },
+    "form": {
+      "subject": "Formål",
+      "subjectPlaceholder": "F.eks. rejser til regionale møder",
+      "comment": "Kommentar",
+      "commentPlaceholder": "Valgfrie detaljer",
+      "event": "Relateret begivenhed",
+      "project": "Tilknyttet projekt",
+      "noProject": "Intet projekt",
+      "noEvent": "Ingen begivenheder",
+      "items": "Udgifter",
+      "addItem": "Tilføj en udgift",
+      "noItems": "Ingen ekstra gebyrer",
+      "itemDate": "Udgiftsdato",
+      "itemDescription": "Beskrivelse",
+      "itemAmount": "Beløb",
+      "itemCategory": "Kategori",
+      "itemReceipt": "Begrundelse",
+      "total": "Total",
+      "duplicateWarning": "En lignende udgift (samme dato, samme beløb) findes allerede i en anden af dine anmodninger.",
+      "toasts": {
+        "uploadError": "Fejl ved afsendelse af kvitteringen",
+        "networkError": "Netværksfejl ved afsendelse af kvitteringen"
+      }
+    },
+    "detail": {
+      "notFound": "Anmodning om refundering ikke fundet",
+      "history": "Historie",
+      "correctionFrom": "Rettelse anmodet af {name}",
+      "rejectedBy": "Afvist af {name}",
+      "reimbursedOn": "Refunderet den {date} af {method}",
+      "selfApprovalBlockedNotice": "Du kan ikke godkende din egen anmodning. Den skal godkendes af en administrator eller en anden bemyndiget embedsmand.",
+      "viewReceipt": "Se de understøttende dokumenter",
+      "immobilisationTag": "Anlægsaktiver",
+      "approveButton": "Godkend",
+      "requestCorrectionButton": "Anmod om en rettelse",
+      "rejectButton": "Afvis",
+      "correctionCommentLabel": "Rettelseskommentar",
+      "rejectionReasonLabel": "Begrundelse for afslag",
+      "deleteItemConfirmTitle": "Eliminere denne udgift?",
+      "toasts": {
+        "itemAdded": "Ekstra omkostninger",
+        "itemUpdated": "Opdateret udgift",
+        "itemDeleted": "Udgift fjernet"
+      }
+    },
+    "register": {
+      "title": "Gem refunderingen",
+      "registerButton": "Gem refunderingen",
+      "date": "Refusionsdato",
+      "paymentMethod": "Betalingsmetode",
+      "bankAccount": "Bankkonto",
+      "noBankAccountHint": "Ingen bankkonto oprettet — tilføj en i Finans> Konti, eller vælg Kontanter.",
+      "transaction": "Afstemme en importeret banktransaktion (valgfrit)",
+      "noTransaction": "Kom ikke tættere på nu",
+      "reference": "Reference",
+      "submit": "Gem",
+      "methods": {
+        "virement": "Overførsel",
+        "cheque": "Check",
+        "especes": "Arter"
+      }
+    }
+  },
   "dashboard": {
     "pageTitle": "Dashboard",
     "subtitle": "Oversigt over din forening",
@@ -1484,6 +1598,7 @@
     },
     "transfersView": {
       "title": "Interne overførsler",
+      "description": "Registrer her de overførsler, der allerede er foretaget mellem din forenings bankkonti. Formwise registrerer overførslen uden at flytte penge.",
       "add": "Overførsel",
       "newTransferTitle": "Ny overførsel mellem konti",
       "editTransferTitle": "Rediger Overførsel",
@@ -4349,6 +4464,10 @@
       "websitePlaceholder": "mon-association.fr",
       "iban": "IBAN",
       "bic": "BIC",
+      "accountingRegime": "Regnskabsregime for udgiftsrefusioner",
+      "accountingRegimeHint": "Bestemmer, hvornår en refusionsanmodning indgives: ved godkendelse (forpligtelse) eller ved faktisk betaling (kontant).",
+      "accountingRegimeCash": "Kontantregnskab",
+      "accountingRegimeAccrual": "Forpligtelsesregnskab",
       "previewTitle": "Dokumentforhåndsvisning",
       "bankDetails": "Bankoplysninger",
       "ibanColon": "IBAN : {value}",
@@ -6863,6 +6982,7 @@
       "finances": "Finansiel overvågning",
       "devis": "Tilbud",
       "factures": "Fakturaer",
+      "reimbursements": "Udgiftsrefusioner",
       "fournisseurs": "Leverandører",
       "dons": "Donationer",
       "reunions": "Møder",

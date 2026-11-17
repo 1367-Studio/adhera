@@ -247,6 +247,25 @@ enum ExpenseStatus {
   CANCELLED
 }
 
+enum AccountingRegime {
+  ACCRUAL
+  CASH
+}
+
+// FORM-93: the expense-reimbursement request workflow. DRAFT/NEEDS_CORRECTION are the only
+// states the requester can still edit; PENDING_APPROVAL locks it for the approver's decision;
+// APPROVED/REJECTED/REIMBURSED/CANCELLED are terminal except APPROVED, which can still move to
+// CANCELLED (an authorized, logged withdrawal with accounting reversal) or REIMBURSED.
+enum ReimbursementStatus {
+  DRAFT
+  PENDING_APPROVAL
+  NEEDS_CORRECTION
+  APPROVED
+  REJECTED
+  REIMBURSED
+  CANCELLED
+}
+
 enum MatchedBy {
   AUTO
   USER
@@ -515,6 +534,12 @@ model Association {
   objet                          String?
   organismeCategory              OrganismeCategory   @default(ASSOCIATION_LOI_1901)
   organismeCategoryDetail        String?
+  // FORM-93: which accounting regime drives reimbursement postings — ACCRUAL recognizes the
+  // charge (and the 467 "dû au bénévole" liability) at approval time, settling 467 against
+  // tresorerie only once reimbursed; CASH recognizes the charge only when the reimbursement is
+  // actually paid. Defaults to CASH because that's what the whole ledger (FORM-107) has always
+  // done implicitly — no existing association's behavior changes until it opts into ACCRUAL.
+  accountingRegime               AccountingRegime    @default(CASH)
   // "groq" | "openai" | "mistral" — see src/lib/ai/client.ts SUPPORTED_PROVIDERS. Null
   // means the association hasn't configured BYOK yet (falls back to the platform's Groq
   // key, see platformClient in the same file).
@@ -689,6 +714,8 @@ model Association {
   grupos                     Grupo[]
   boutiqueResponsable        User?                       @relation("BoutiqueResponsable", fields: [boutiqueResponsableId], references: [id], onDelete: SetNull)
   donResponsable             User?                       @relation("DonResponsable", fields: [donResponsableId], references: [id], onDelete: SetNull)
+  reimbursementRequests      ReimbursementRequest[]
+  reimbursements             Reimbursement[]
 
   @@index([customDomainStatus])
 }
@@ -807,6 +834,11 @@ model User {
   donResponsableFor             Association[]             @relation("DonResponsable")
   grupoResponsabilites          GrupoResponsavel[]
   platformLegalValidations      PlatformLegalValidation[]
+  reimbursementRequestsMade     ReimbursementRequest[]    @relation("ReimbursementRequester")
+  reimbursementDecisions        ReimbursementRequest[]    @relation("ReimbursementDecider")
+  reimbursementCancellations    ReimbursementRequest[]    @relation("ReimbursementCanceller")
+  reimbursementsRegistered      Reimbursement[]
+  reimbursementLiabilityAccount ChartAccount?
 
   @@unique([email, associationId])
   @@index([associationId, role])
@@ -1165,15 +1197,16 @@ model Evenement {
   createdAt              DateTime                  @default(now())
   updatedAt              DateTime                  @updatedAt
 
-  association    Association             @relation(fields: [associationId], references: [id])
-  participations Participation[]
-  actualites     Actualite[]
-  customFields   EvenementCustomField[]
-  ticketTypes    EvenementTicketType[]
-  dons           Don[]
-  avis           EvenementAvis[]
-  products       EvenementProduct[]
-  discountCodes  EvenementDiscountCode[]
+  association           Association             @relation(fields: [associationId], references: [id])
+  participations        Participation[]
+  actualites            Actualite[]
+  customFields          EvenementCustomField[]
+  ticketTypes           EvenementTicketType[]
+  dons                  Don[]
+  avis                  EvenementAvis[]
+  products              EvenementProduct[]
+  discountCodes         EvenementDiscountCode[]
+  reimbursementRequests ReimbursementRequest[]
 
   @@unique([associationId, slug])
   @@index([associationId, date])
@@ -3132,11 +3165,12 @@ model BankAccount {
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 
-  association  Association       @relation(fields: [associationId], references: [id], onDelete: Cascade)
-  transactions BankTransaction[]
-  transfersOut AccountTransfer[] @relation("TransferFromAccount")
-  transfersIn  AccountTransfer[] @relation("TransferToAccount")
-  chartAccount ChartAccount?
+  association    Association       @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  transactions   BankTransaction[]
+  transfersOut   AccountTransfer[] @relation("TransferFromAccount")
+  transfersIn    AccountTransfer[] @relation("TransferToAccount")
+  chartAccount   ChartAccount?
+  reimbursements Reimbursement[]
 
   @@index([associationId])
 }
@@ -3243,6 +3277,7 @@ model FinanceCategory {
   boutiqueCommandeItems BoutiqueCommandeItem[]
   materials             Material[]
   budgetLines           BudgetLine[]
+  reimbursementItems    ReimbursementItem[]
 
   @@index([associationId, type])
   // Real constraint against the default-category reseed, or a race, ever creating two ACTIVE
@@ -3276,10 +3311,11 @@ model BudgetProject {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
-  association Association  @relation(fields: [associationId], references: [id], onDelete: Cascade)
-  budgetLines BudgetLine[]
-  incomes     Income[]
-  expenses    Expense[]
+  association           Association            @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  budgetLines           BudgetLine[]
+  incomes               Income[]
+  expenses              Expense[]
+  reimbursementRequests ReimbursementRequest[]
 
   @@index([associationId, archivedAt])
 }
@@ -3410,6 +3446,9 @@ model Expense {
   reconciliations     BankReconciliation[]
   journalEntries      JournalEntry[]
   immobilisation      Immobilisation?
+  // FORM-93: set when this row was materialized from a reimbursement-request line item (one
+  // Expense per item, so a multi-category request splits correctly) — see ReimbursementItem.
+  reimbursementItem   ReimbursementItem?
 
   @@index([associationId, status])
   @@index([associationId, date])
@@ -3418,32 +3457,144 @@ model Expense {
 }
 
 model BankReconciliation {
-  id                String    @id @default(cuid())
-  associationId     String
-  bankTransactionId String    @unique
-  incomeId          String?   @unique
-  expenseId         String?   @unique
+  id                     String    @id @default(cuid())
+  associationId          String
+  bankTransactionId      String    @unique
+  incomeId               String?   @unique
+  expenseId              String?   @unique
   // NOT @unique, unlike incomeId/expenseId — a single AccountTransfer has two legs (the debit
   // in fromAccount, the credit in toAccount), each its own imported BankTransaction, so the SAME
   // transferId legitimately appears on up to two BankReconciliation rows. Exactly one of
-  // incomeId/expenseId/transferId is set per row — enforced in src/app/api/finances/reconcile/
-  // route.ts, same place the incomeId/expenseId XOR already was.
-  transferId        String?
-  matchScore        Int       @default(0)
-  matchedBy         MatchedBy @default(AUTO)
-  matchedAt         DateTime  @default(now())
-  matchedByUserId   String?
-  createdAt         DateTime  @default(now())
-  updatedAt         DateTime  @updatedAt
+  // incomeId/expenseId/transferId/reimbursementRequestId is set per row — enforced in
+  // src/app/api/finances/reconcile/route.ts, same place the incomeId/expenseId XOR already was.
+  transferId             String?
+  // FORM-93: reconciles at the payment level, not per expense item — one reimbursement payment
+  // can cover several categorized ReimbursementItem/Expense rows, so this points at the
+  // ReimbursementRequest rather than at any single materialized Expense.
+  reimbursementRequestId String?   @unique
+  matchScore             Int       @default(0)
+  matchedBy              MatchedBy @default(AUTO)
+  matchedAt              DateTime  @default(now())
+  matchedByUserId        String?
+  createdAt              DateTime  @default(now())
+  updatedAt              DateTime  @updatedAt
 
-  association     Association      @relation(fields: [associationId], references: [id], onDelete: Cascade)
-  bankTransaction BankTransaction  @relation(fields: [bankTransactionId], references: [id], onDelete: Cascade)
-  income          Income?          @relation(fields: [incomeId], references: [id], onDelete: SetNull)
-  expense         Expense?         @relation(fields: [expenseId], references: [id], onDelete: SetNull)
-  transfer        AccountTransfer? @relation(fields: [transferId], references: [id], onDelete: SetNull)
+  association          Association           @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  bankTransaction      BankTransaction       @relation(fields: [bankTransactionId], references: [id], onDelete: Cascade)
+  income               Income?               @relation(fields: [incomeId], references: [id], onDelete: SetNull)
+  expense              Expense?              @relation(fields: [expenseId], references: [id], onDelete: SetNull)
+  transfer             AccountTransfer?      @relation(fields: [transferId], references: [id], onDelete: SetNull)
+  reimbursementRequest ReimbursementRequest? @relation(fields: [reimbursementRequestId], references: [id], onDelete: SetNull)
 
   @@index([associationId])
   @@index([transferId])
+}
+
+// FORM-93: the expense-reimbursement request header. One request can span several categories —
+// see ReimbursementItem, one row per expense line, each materializing its own single-category
+// Expense so existing reports (income-statement.ts, budget.ts) that read Expense directly keep
+// seeing reimbursed charges without any changes on their side.
+model ReimbursementRequest {
+  id                String              @id @default(cuid())
+  associationId     String
+  requesterId       String
+  subject           String
+  comment           String?
+  // Same "Orçamento previsto" project link Income/Expense already use to tie a record to an
+  // activity.
+  projectId         String?
+  // Ticket wording is "Evento ou projeto associado" — the two are independent optional links
+  // here (not an XOR), since nothing elsewhere in the app enforces mutual exclusion between
+  // an event and a project either.
+  eventId           String?
+  status            ReimbursementStatus @default(DRAFT)
+  // Denormalized sum of items.amount, recomputed whenever an item is added/edited/removed —
+  // avoids re-aggregating on every list/detail read.
+  totalAmount       Decimal             @default(0) @db.Decimal(10, 2)
+  // Mandatory comment set by the approver on a NEEDS_CORRECTION decision.
+  correctionComment String?
+  // Mandatory justification set by the approver on a REJECTED decision.
+  rejectionReason   String?
+  submittedAt       DateTime?
+  decidedAt         DateTime?
+  decidedByUserId   String?
+  cancelledAt       DateTime?
+  cancelledByUserId String?
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+
+  association        Association         @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  requester          User                @relation("ReimbursementRequester", fields: [requesterId], references: [id])
+  decidedBy          User?               @relation("ReimbursementDecider", fields: [decidedByUserId], references: [id], onDelete: SetNull)
+  cancelledBy        User?               @relation("ReimbursementCanceller", fields: [cancelledByUserId], references: [id], onDelete: SetNull)
+  project            BudgetProject?      @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  event              Evenement?          @relation(fields: [eventId], references: [id], onDelete: SetNull)
+  items              ReimbursementItem[]
+  reimbursement      Reimbursement?
+  journalEntries     JournalEntry[]
+  bankReconciliation BankReconciliation?
+
+  @@index([associationId, status])
+  @@index([associationId, requesterId])
+}
+
+// FORM-93: one expense line of a ReimbursementRequest. categoryId/receiptUrl are mandatory here
+// (unlike their optional counterparts on Expense) because the ticket requires both per item
+// before a request can be submitted — see the submit route's validation.
+model ReimbursementItem {
+  id                     String   @id @default(cuid())
+  reimbursementRequestId String
+  date                   DateTime
+  description            String
+  amount                 Decimal  @db.Decimal(10, 2)
+  categoryId             String
+  receiptUrl             String
+  receiptFileName        String?
+  order                  Int      @default(0)
+  // Ticket: "compras que constituam um ativo imobilizado devem seguir o tratamento adequado
+  // na classe 2" — same flag and same meaning as Expense.isImmobilisation (FORM-107 Fase 2),
+  // carried through to the materialized Expense so it becomes eligible for an Immobilisation
+  // depreciation schedule exactly like any other capitalized purchase. Stored here (not just
+  // read off the materialized Expense) because materialization happens later — at approval
+  // under ACCRUAL, at reimbursement under CASH — so the choice has to survive until then.
+  isImmobilisation       Boolean  @default(false)
+  // Set once the request reaches the point this item's charge is recognized (APPROVED under
+  // ACCRUAL regime, REIMBURSED under CASH regime) — see post-reimbursement.ts.
+  expenseId              String?  @unique
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
+
+  request  ReimbursementRequest @relation(fields: [reimbursementRequestId], references: [id], onDelete: Cascade)
+  category FinanceCategory      @relation(fields: [categoryId], references: [id], onDelete: Restrict)
+  expense  Expense?             @relation(fields: [expenseId], references: [id], onDelete: SetNull)
+
+  @@index([reimbursementRequestId])
+}
+
+// FORM-93: records the actual payment once a reimbursement is paid out (outside Formwise) and
+// registered here. One row per ReimbursementRequest — v1 only supports reimbursing the full
+// approved amount, never a partial one.
+model Reimbursement {
+  id                     String   @id @default(cuid())
+  associationId          String
+  reimbursementRequestId String   @unique
+  date                   DateTime
+  // "VIREMENT" | "CHEQUE" | "ESPECES" — plain string, same app-level literal-union convention
+  // as Expense.paymentMethod.
+  paymentMethod          String
+  // Null only for ESPECES (posts against the shared caisse account instead of a specific bank
+  // account) — see resolveTresorerieAccount.
+  bankAccountId          String?
+  reference              String?
+  registeredByUserId     String
+  createdAt              DateTime @default(now())
+
+  association  Association          @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  request      ReimbursementRequest @relation(fields: [reimbursementRequestId], references: [id], onDelete: Restrict)
+  bankAccount  BankAccount?         @relation(fields: [bankAccountId], references: [id], onDelete: SetNull)
+  registeredBy User                 @relation(fields: [registeredByUserId], references: [id])
+
+  @@index([associationId])
 }
 
 enum ChartAccountNature {
@@ -3464,33 +3615,40 @@ enum NormalBalanceSide {
 // association from the same reference list (see chart-accounts-seed.ts) so the two stay in sync
 // by code instead of becoming two independently-maintained sources of truth. See FORM-107.
 model ChartAccount {
-  id            String             @id @default(cuid())
-  associationId String
-  code          String // canonical 6-digit PCG code — see normalizeAccountingCode
-  label         String
-  nature        ChartAccountNature
+  id                       String             @id @default(cuid())
+  associationId            String
+  code                     String // canonical 6-digit PCG code — see normalizeAccountingCode
+  label                    String
+  nature                   ChartAccountNature
   // Which side a positive balance normally sits on — DEBIT for ACTIF/CHARGE, CREDIT for
   // PASSIF/PRODUIT. Drives the sign convention the Bilan/trial-balance calculations use to turn
   // raw debit/credit sums into a single signed balance per account.
-  normalSide    NormalBalanceSide
+  normalSide               NormalBalanceSide
   // True for every account seeded from REFERENCE_ACCOUNTS/LEDGER_INFRASTRUCTURE_ACCOUNTS; false
   // for one created by hand for a case the reference list doesn't cover yet.
-  isSystem      Boolean            @default(true)
+  isSystem                 Boolean            @default(true)
   // Set only for the one dynamically-generated 512xxx account per BankAccount — the stable link
   // post-income-expense.ts uses to find "the ledger account for this specific bank account"
   // without matching on label text. Null for every other account (including 531000/511000/
   // 471000, which are shared/global, not per-bank-account).
-  bankAccountId String?            @unique
-  archivedAt    DateTime?
-  createdAt     DateTime           @default(now())
-  updatedAt     DateTime           @updatedAt
+  bankAccountId            String?            @unique
+  // FORM-93: set only for the one dynamically-generated 467xxx account per requester who has
+  // had at least one ACCRUAL-regime approval — the stable link post-reimbursement.ts uses to
+  // find "the liability account for this specific person" without matching on label text.
+  // Created lazily (ensurePersonLiabilityAccount), never pre-seeded. Null for every other
+  // account, same posture as bankAccountId above.
+  reimbursementPayeeUserId String?            @unique
+  archivedAt               DateTime?
+  createdAt                DateTime           @default(now())
+  updatedAt                DateTime           @updatedAt
 
-  association  Association   @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  association        Association   @relation(fields: [associationId], references: [id], onDelete: Cascade)
   // SetNull, not Cascade — deleting a BankAccount must not erase the ledger account or the
   // JournalLine history already posted against it; it only loses the live link back to the
   // (now gone) BankAccount row.
-  bankAccount  BankAccount?  @relation(fields: [bankAccountId], references: [id], onDelete: SetNull)
-  journalLines JournalLine[]
+  bankAccount        BankAccount?  @relation(fields: [bankAccountId], references: [id], onDelete: SetNull)
+  reimbursementPayee User?         @relation(fields: [reimbursementPayeeUserId], references: [id], onDelete: SetNull)
+  journalLines       JournalLine[]
 
   @@unique([associationId, code])
   @@index([associationId, nature])
@@ -3507,6 +3665,13 @@ enum JournalSourceType {
   IMMOBILISATION_DEPRECIATION
   IMMOBILISATION_ACQUISITION
   FACTURE_RECUE_PAYMENT
+  // FORM-93, ACCRUAL regime only — settles a requester's 467 "dû au bénévole" liability against
+  // tresorerie when the reimbursement is paid. The per-item charge recognition itself (at
+  // approval under ACCRUAL, or at reimbursement under CASH) reuses plain EXPENSE/
+  // EXPENSE_REVERSAL, since it's ordinary expense recognition — only this settlement leg is
+  // structurally new (same shape as FACTURE_RECUE_PAYMENT: clear a recognized payable against
+  // tresorerie).
+  REIMBURSEMENT_SETTLEMENT
   MANUAL
 }
 
@@ -3536,19 +3701,23 @@ model JournalEntry {
   // Optional link to the source document, purely for the Bilan's rubrique → comptes → écritures
   // → document d'origine drill-down. Not unique: an INCOME_REVERSAL entry points at the same
   // incomeId as the original INCOME entry it reverses.
-  incomeId              String?
-  expenseId             String?
-  bankTransactionId     String?
-  accountTransferId     String?
+  incomeId               String?
+  expenseId              String?
+  bankTransactionId      String?
+  accountTransferId      String?
   // FORM-107 Fase 3 — set only on a FACTURE_RECUE_PAYMENT entry posted against an
   // Immobilisation-linked FactureRecue (no Expense exists for that case — see
   // FactureRecuePayment's doc comment); each points at its own specific payment row.
-  factureRecuePaymentId String?
+  factureRecuePaymentId  String?
   // Set only on the one IMMOBILISATION_ACQUISITION entry a FactureRecue-origin Immobilisation
   // gets when created (see Immobilisation.factureRecueId). The Expense-origin path posts no
   // separate acquisition entry — see postIncomeToJournal/postExpenseToJournal's own doc
   // comment on why the generic Expense posting already covers that case.
-  immobilisationId      String?
+  immobilisationId       String?
+  // FORM-93: set only on the one REIMBURSEMENT_SETTLEMENT entry a request gets when its
+  // reimbursement is registered (ACCRUAL regime) — never on the per-item EXPENSE entries,
+  // those keep using expenseId like any other Expense posting.
+  reimbursementRequestId String?
 
   association                Association                 @relation(fields: [associationId], references: [id], onDelete: Cascade)
   exercice                   ExerciceComptable           @relation(fields: [exerciceId], references: [id], onDelete: Restrict)
@@ -3558,6 +3727,7 @@ model JournalEntry {
   accountTransfer            AccountTransfer?            @relation(fields: [accountTransferId], references: [id], onDelete: SetNull)
   factureRecuePayment        FactureRecuePayment?        @relation(fields: [factureRecuePaymentId], references: [id], onDelete: SetNull)
   immobilisation             Immobilisation?             @relation(fields: [immobilisationId], references: [id], onDelete: SetNull)
+  reimbursementRequest       ReimbursementRequest?       @relation(fields: [reimbursementRequestId], references: [id], onDelete: SetNull)
   lines                      JournalLine[]
   immobilisationDepreciation ImmobilisationDepreciation?
 
@@ -3565,6 +3735,7 @@ model JournalEntry {
   @@index([associationId, sourceType])
   @@index([incomeId])
   @@index([expenseId])
+  @@index([reimbursementRequestId])
 }
 
 model JournalLine {

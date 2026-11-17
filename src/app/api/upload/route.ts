@@ -15,14 +15,20 @@ const MAX_SIZE = MAX_FUNCTION_UPLOAD_BYTES
 // SECRETAIRE only — an EQUIPE member (no bureau position) couldn't upload at all. Kept
 // equivalent here: at least edit access somewhere, so a volunteer granted zero areas still
 // can't push files into storage they then have nothing to attach them to.
+//
+// FORM-93 exception: a volunteer granted zero areas can still create their OWN reimbursement
+// request (unconditional on any staff role — see reimbursement-access.ts), and that request's
+// items each need a mandatory receipt. Without this, the "at least one edit area" rule above
+// would block the one upload they actually do have something to attach to.
 export const POST = withAdminAuth(async (req, ctx) => {
-  const canUpload = ctx.permissions.administrator
-    || Object.values(ctx.permissions.areas).some(level => level === "edit")
-  if (!canUpload) return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
-
   const formData = await req.formData()
   const file     = formData.get("file")   as File   | null
   const prefix   = (formData.get("prefix") as string) || "adhera"
+
+  const canUpload = ctx.permissions.administrator
+    || Object.values(ctx.permissions.areas).some(level => level === "edit")
+    || prefix === "reimbursement-receipts"
+  if (!canUpload) return NextResponse.json({ error: "Unauthorized" }, { status: 403 })
 
   if (!file) return NextResponse.json({ error: "Aucun fichier fourni" }, { status: 400 })
   if (file.size > MAX_SIZE)

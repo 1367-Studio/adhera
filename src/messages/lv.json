@@ -710,6 +710,120 @@
       }
     }
   },
+  "reimbursements": {
+    "view": {
+      "title": "Izdevumu atmaksas",
+      "newRequest": "Jauns pieprasījums",
+      "export": "Eksports",
+      "myRequests": "Mani lūgumi",
+      "allRequests": "Visi pieprasījumi",
+      "allRequesters": "Visiem pretendentiem",
+      "allCategories": "Visas kategorijas",
+      "dateFrom": "No",
+      "dateTo": "Uz",
+      "allStatuses": "Visi statusi",
+      "summary": "{pending} Gaida — {pendingAmount} · {approved} Saņemt atmaksu — {approvedAmount} · {reimbursed} Atmaksāts — {reimbursedAmount}",
+      "noRequest": "Nav atmaksas pieprasījumu",
+      "columns": {
+        "subject": "Mērķis",
+        "date": "Datums",
+        "amount": "Summa",
+        "status": "Statuss"
+      },
+      "status": {
+        "draft": "Drafts",
+        "pendingApproval": "Gaida apstiprinājumu",
+        "needsCorrection": "Jālabo",
+        "approved": "Apstiprināts",
+        "rejected": "Noraidīts",
+        "reimbursed": "Atmaksāts",
+        "cancelled": "Atcelts"
+      },
+      "actions": {
+        "view": "Skatīt",
+        "submit": "Iesniegt",
+        "cancel": "Atcelt"
+      },
+      "toasts": {
+        "created": "Pieprasījums izveidots",
+        "updated": "Atjauninājuma pieprasījums",
+        "deleted": "Pieprasījums dzēsts",
+        "submitted": "Pieteikums iesniegts apstiprināšanai",
+        "cancelled": "Pieprasījums atcelts",
+        "approved": "Pieteikums apstiprināts",
+        "correctionRequested": "Nepieciešama korekcija",
+        "rejected": "Pieprasījums noraidīts",
+        "reimbursed": "Reģistrēta atmaksa"
+      },
+      "deleteConfirmTitle": "Dzēst šo melnrakstu?",
+      "deleteConfirmDescription": "Šī rīcība ir neatgriezeniska.",
+      "cancelConfirmTitle": "Atcelt šo pieprasījumu?",
+      "cancelConfirmDescription": "Pieteicējs tiks informēts par atcelšanu.",
+      "cancelReasonLabel": "Atcelšanas iemesls"
+    },
+    "form": {
+      "subject": "Mērķis",
+      "subjectPlaceholder": "Piemēram, reģionālo sanāksmju ceļojums",
+      "comment": "Komentāri",
+      "commentPlaceholder": "Papildu informācija",
+      "event": "Saistīts notikums",
+      "project": "Saistītais projekts",
+      "noProject": "Nav projekta",
+      "noEvent": "Nav pasākumu",
+      "items": "Izdevumi",
+      "addItem": "Pievienot izdevumu",
+      "noItems": "Nav papildu maksas",
+      "itemDate": "Izdevumu datums",
+      "itemDescription": "Apraksts",
+      "itemAmount": "Summa",
+      "itemCategory": "Kategorija",
+      "itemReceipt": "Pamatojums",
+      "total": "Kopumā",
+      "duplicateWarning": "Līdzīgas izmaksas (tas pats datums, tāda pati summa) jau pastāv citā jūsu pieprasījumā.",
+      "toasts": {
+        "uploadError": "Kļūda, sūtot kvīti",
+        "networkError": "Tīkla kļūda, sūtot kvīti"
+      }
+    },
+    "detail": {
+      "notFound": "Atmaksas pieprasījums nav atrasts",
+      "history": "Vēsture",
+      "correctionFrom": "Labojums pieprasīts {name}",
+      "rejectedBy": "Noraidīts {name}",
+      "reimbursedOn": "Atmaksāts {date} autors {method}",
+      "selfApprovalBlockedNotice": "Jūs nevarat apstiprināt savu pieprasījumu. Tam jābūt apstiprinātam administratoram vai citam pilnvarotam amatpersonai.",
+      "viewReceipt": "Skatīt atbalsta dokumentus",
+      "immobilisationTag": "Pamatlīdzekļi",
+      "approveButton": "Apstiprini",
+      "requestCorrectionButton": "Pieprasiet labojumu",
+      "rejectButton": "Atsakies",
+      "correctionCommentLabel": "Labojuma komentārs",
+      "rejectionReasonLabel": "Atteikuma iemesls",
+      "deleteItemConfirmTitle": "Likvidēt šo izdevumu?",
+      "toasts": {
+        "itemAdded": "Papildu izdevumi",
+        "itemUpdated": "Atjauninātie izdevumi",
+        "itemDeleted": "Izdevumi noņemti"
+      }
+    },
+    "register": {
+      "title": "Saglabājiet atmaksu",
+      "registerButton": "Saglabājiet atmaksu",
+      "date": "Atmaksas datums",
+      "paymentMethod": "Maksājuma metode",
+      "bankAccount": "Bankas konts",
+      "noBankAccountHint": "Bankas konts nav izveidots — pievienojiet to Finanses> Kontos vai izvēlieties Skaidra nauda.",
+      "transaction": "Importēta bankas darījuma saskaņošana (pēc izvēles)",
+      "noTransaction": "Nepietuvojies tagad",
+      "reference": "Atsauce",
+      "submit": "Saglabāt",
+      "methods": {
+        "virement": "Pāreja",
+        "cheque": "Pārbaudīts",
+        "especes": "Sugas"
+      }
+    }
+  },
   "dashboard": {
     "pageTitle": "Informācijas panelis",
     "subtitle": "Jūsu asociācijas pārskats",
@@ -1484,6 +1598,7 @@
     },
     "transfersView": {
       "title": "Iekšējie pārejas procesi",
+      "description": "Šeit ieraksti pārskaitījumus, kas jau veikti starp jūsu asociācijas bankas kontiem. Formāli reģistrē pārskaitījumu, nepārvietojot naudu.",
       "add": "Pāreja",
       "newTransferTitle": "Jauns pārskaitījums starp kontiem",
       "editTransferTitle": "Rediģēt Pārsūtīt",
@@ -4349,6 +4464,10 @@
       "websitePlaceholder": "mon-association.fr",
       "iban": "IBAN",
       "bic": "BIC",
+      "accountingRegime": "Izdevumu atmaksu grāmatvedības režīms",
+      "accountingRegimeHint": "Nosaka, kad tiek iesniegts atlīdzības pieprasījums: apstiprināšanas brīdī (saistības) vai faktiskā maksājuma brīdī (skaidrā naudā).",
+      "accountingRegimeCash": "Naudas uzskaite",
+      "accountingRegimeAccrual": "Saistību grāmatvedība",
       "previewTitle": "Dokumentu priekšskatījums",
       "bankDetails": "Bankas dati",
       "ibanColon": "IBAN : {value}",
@@ -6863,6 +6982,7 @@
       "finances": "Finanšu uzraudzība",
       "devis": "Piedāvājumi",
       "factures": "Rēķini",
+      "reimbursements": "Izdevumu atmaksas",
       "fournisseurs": "Piegādātāji",
       "dons": "Ziedojumi",
       "reunions": "Sanāksmes",

@@ -16,7 +16,7 @@ export const POST = withAdminAuth(async (req, ctx) => {
     return NextResponse.json({ error: parsed.error.issues }, { status: 422 })
   }
 
-  const { bankTransactionId, action, incomeId, expenseId, transferId } = parsed.data
+  const { bankTransactionId, action, incomeId, expenseId, transferId, reimbursementRequestId } = parsed.data
 
   const tx = await prisma.bankTransaction.findFirst({
     where:   { id: bankTransactionId, associationId },
@@ -40,12 +40,12 @@ export const POST = withAdminAuth(async (req, ctx) => {
   }
 
   if (action === "MATCH") {
-    const targetCount = [incomeId, expenseId, transferId].filter(Boolean).length
+    const targetCount = [incomeId, expenseId, transferId, reimbursementRequestId].filter(Boolean).length
     if (targetCount === 0) {
-      return NextResponse.json({ error: "incomeId, expenseId ou transferId requis pour MATCH" }, { status: 422 })
+      return NextResponse.json({ error: "incomeId, expenseId, transferId ou reimbursementRequestId requis pour MATCH" }, { status: 422 })
     }
     if (targetCount > 1) {
-      return NextResponse.json({ error: "Un seul de incomeId, expenseId ou transferId peut être fourni" }, { status: 422 })
+      return NextResponse.json({ error: "Un seul de incomeId, expenseId, transferId ou reimbursementRequestId peut être fourni" }, { status: 422 })
     }
     if (tx.status === "MATCHED") {
       return NextResponse.json({ error: "Transaction déjà conciliée" }, { status: 409 })
@@ -151,6 +151,37 @@ export const POST = withAdminAuth(async (req, ctx) => {
         ])
 
         await writeActivityLog({ associationId, actorId: userId, action: "TX_MATCHED_TRANSFER", entity: "BankTransaction", entityId: bankTransactionId, label: tx.label, metadata: { transferId } })
+      } else if (reimbursementRequestId) {
+        // FORM-93 — supports reconciling retroactively from the generic Conciliation screen,
+        // in addition to the inline pick offered at reimbursement-registration time. Only a
+        // REIMBURSED request can be matched: that's the point in the workflow where the
+        // payment actually happened.
+        const request = await prisma.reimbursementRequest.findFirst({ where: { id: reimbursementRequestId, associationId } })
+        if (!request) return NextResponse.json({ error: "Demande de remboursement introuvable" }, { status: 404 })
+        if (request.status !== "REIMBURSED") {
+          return NextResponse.json({ error: "Cette demande n'a pas encore été remboursée" }, { status: 422 })
+        }
+
+        const matchScore = computeMatchScore(
+          { amount: tx.amount, transactionDate: tx.transactionDate, label: tx.label },
+          { amount: request.totalAmount, date: tx.transactionDate, reference: null, membre: null },
+        )
+
+        await prisma.$transaction([
+          prisma.bankReconciliation.create({
+            data: {
+              associationId,
+              bankTransactionId,
+              reimbursementRequestId,
+              matchScore,
+              matchedBy:       "USER",
+              matchedByUserId: userId,
+            },
+          }),
+          prisma.bankTransaction.update({ where: { id: bankTransactionId }, data: { status: "MATCHED" } }),
+        ])
+
+        await writeActivityLog({ associationId, actorId: userId, action: "TX_MATCHED_REIMBURSEMENT", entity: "BankTransaction", entityId: bankTransactionId, label: tx.label, metadata: { reimbursementRequestId } })
       }
     } catch (err) {
       if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2002") {

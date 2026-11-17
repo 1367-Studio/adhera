@@ -32,6 +32,8 @@ export interface PostJournalEntryInput {
   // FORM-107 Fase 3
   factureRecuePaymentId?: string | null
   immobilisationId?:      string | null
+  // FORM-93
+  reimbursementRequestId?: string | null
   lines:              PostJournalEntryLine[]
 }
 
@@ -87,6 +89,7 @@ export async function postJournalEntry(input: PostJournalEntryInput): Promise<Po
         accountTransferId: input.accountTransferId ?? null,
         factureRecuePaymentId: input.factureRecuePaymentId ?? null,
         immobilisationId:      input.immobilisationId ?? null,
+        reimbursementRequestId: input.reimbursementRequestId ?? null,
         lines: {
           create: input.lines.map((l, order) => ({
             chartAccountId: l.chartAccountId,

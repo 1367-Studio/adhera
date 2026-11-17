@@ -4,6 +4,7 @@
 // shape (find-or-create by a stable key, never touch an account the association already has),
 // but the "key" here is the PCG `code`, not FinanceCategory.key.
 import { prisma } from "@/lib/prisma/client"
+import { Prisma } from "@prisma/client"
 import { REFERENCE_ACCOUNTS, LEDGER_INFRASTRUCTURE_ACCOUNTS } from "@/lib/finance/chart-of-accounts"
 
 export interface ChartAccountSeedResult {
@@ -96,4 +97,39 @@ export async function resolveChartAccountByCode(associationId: string, code: str
   return prisma.chartAccount.findUnique({
     where: { associationId_code: { associationId, code } },
   })
+}
+
+// FORM-93: find-or-create the one 467xxx "dû au bénévole" ChartAccount for a given requester —
+// same bankAccountId-style stable link as the 512xxx accounts above, except created lazily on
+// that person's first ACCRUAL-regime approval instead of bulk-seeded, since requesters appear
+// unpredictably rather than being a small, stable set like bank accounts.
+export async function ensurePersonLiabilityAccount(associationId: string, userId: string) {
+  const existing = await prisma.chartAccount.findUnique({ where: { reimbursementPayeeUserId: userId } })
+  if (existing) return existing
+
+  const count = await prisma.chartAccount.count({ where: { associationId, code: { startsWith: "467" } } })
+  const user  = await prisma.user.findUnique({ where: { id: userId }, select: { name: true } })
+  const code  = `467${String(count + 1).padStart(3, "0")}`
+
+  try {
+    return await prisma.chartAccount.create({
+      data: {
+        associationId,
+        code,
+        label:      `Dû à ${user?.name ?? "bénévole"} (remboursement de frais)`,
+        nature:     "PASSIF",
+        normalSide: "CREDIT",
+        isSystem:   true,
+        reimbursementPayeeUserId: userId,
+      },
+    })
+  } catch (err) {
+    // P2002 race — same tolerance as ensureChartAccounts: a concurrent approval for the same
+    // person created the account between our read above and this write.
+    if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2002") {
+      const concurrent = await prisma.chartAccount.findUnique({ where: { reimbursementPayeeUserId: userId } })
+      if (concurrent) return concurrent
+    }
+    throw err
+  }
 }

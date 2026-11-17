@@ -710,6 +710,120 @@
       }
     }
   },
+  "reimbursements": {
+    "view": {
+      "title": "Zwroty kosztów",
+      "newRequest": "Nowe zgłoszenie",
+      "export": "Eksport",
+      "myRequests": "Moje prośby",
+      "allRequests": "Wszystkie zgłoszenia",
+      "allRequesters": "Wszyscy kandydaci",
+      "allCategories": "Wszystkie kategorie",
+      "dateFrom": "Z",
+      "dateTo": "Do",
+      "allStatuses": "Wszystkie statusy",
+      "summary": "{pending} Oczekuje — {pendingAmount} · {approved} do zwrotu — {approvedAmount} · {reimbursed} zwrot — {reimbursedAmount}",
+      "noRequest": "Brak wniosków o zwrot pieniędzy",
+      "columns": {
+        "subject": "Cel",
+        "date": "Data",
+        "amount": "Kwota",
+        "status": "Status"
+      },
+      "status": {
+        "draft": "Draft",
+        "pendingApproval": "Oczekuje na zatwierdzenie",
+        "needsCorrection": "Do poprawienia",
+        "approved": "Zatwierdzono",
+        "rejected": "Odmowa",
+        "reimbursed": "Zwrócono",
+        "cancelled": "Anulowane"
+      },
+      "actions": {
+        "view": "Zobacz",
+        "submit": "Wyślij",
+        "cancel": "Anuluj"
+      },
+      "toasts": {
+        "created": "Żądanie utworzone",
+        "updated": "Prośba o aktualizację",
+        "deleted": "Żądanie usunięte",
+        "submitted": "Wniosek złożony do zatwierdzenia",
+        "cancelled": "Wniosek anulowany",
+        "approved": "Wniosek zatwierdzony",
+        "correctionRequested": "Prośba o poprawkę",
+        "rejected": "Prośba odrzucona",
+        "reimbursed": "Zarejestrowany zwrot"
+      },
+      "deleteConfirmTitle": "Usunąć ten szkic?",
+      "deleteConfirmDescription": "To działanie jest nieodwracalne.",
+      "cancelConfirmTitle": "Anulować tę prośbę?",
+      "cancelConfirmDescription": "Wnioskodawca zostanie powiadomiony o anulacji.",
+      "cancelReasonLabel": "Powód anulowania"
+    },
+    "form": {
+      "subject": "Cel",
+      "subjectPlaceholder": "Np. Regionalne podróże na spotkania",
+      "comment": "Komentarz",
+      "commentPlaceholder": "Szczegóły opcjonalne",
+      "event": "Powiązane wydarzenie",
+      "project": "Projekt powiązany",
+      "noProject": "Brak projektu",
+      "noEvent": "Brak wydarzeń",
+      "items": "Wydatki",
+      "addItem": "Dodaj wydatek",
+      "noItems": "Brak dodatkowych opłat",
+      "itemDate": "Data wydatków",
+      "itemDescription": "Opis",
+      "itemAmount": "Kwota",
+      "itemCategory": "Kategoria",
+      "itemReceipt": "Uzasadnienie",
+      "total": "Razem",
+      "duplicateWarning": "Podobny wydatek (ta sama data, ta sama kwota) już istnieje w innym z Twoich wniosków.",
+      "toasts": {
+        "uploadError": "Błąd podczas wysyłania paragonu",
+        "networkError": "Błąd sieci podczas wysyłania paragonu"
+      }
+    },
+    "detail": {
+      "notFound": "Nie znaleziono wniosku o zwrot pieniędzy",
+      "history": "Historia",
+      "correctionFrom": "Sprostowanie żądane przez {name}",
+      "rejectedBy": "Odrzucone przez {name}",
+      "reimbursedOn": "Zwrot w dniu {date} autor: {method}",
+      "selfApprovalBlockedNotice": "Nie możesz zatwierdzić własnego wniosku. Musi on zostać zatwierdzony przez administratora lub innego upoważnionego urzędnika.",
+      "viewReceipt": "Zobacz dokumenty wspierające",
+      "immobilisationTag": "Środki trwałe",
+      "approveButton": "Zatwierdz",
+      "requestCorrectionButton": "Poproś o korektę",
+      "rejectButton": "Odrzuć",
+      "correctionCommentLabel": "Komentarz korekty",
+      "rejectionReasonLabel": "Powód odmowy",
+      "deleteItemConfirmTitle": "Eliminować ten wydatek?",
+      "toasts": {
+        "itemAdded": "Dodatkowe koszty",
+        "itemUpdated": "Zaktualizowany koszt",
+        "itemDeleted": "Koszt usunięty"
+      }
+    },
+    "register": {
+      "title": "Oszczędź zwrot pieniędzy",
+      "registerButton": "Oszczędź zwrot pieniędzy",
+      "date": "Data zwrotu",
+      "paymentMethod": "Metoda płatności",
+      "bankAccount": "Konto bankowe",
+      "noBankAccountHint": "Brak zakładania konta bankowego — dodaj je w Finansach> Kontach lub wybierz Gotówka.",
+      "transaction": "Uzgadnij importowaną transakcję bankową (opcjonalnie)",
+      "noTransaction": "Nie zbliżaj się teraz",
+      "reference": "Bibliografia",
+      "submit": "Zapisz",
+      "methods": {
+        "virement": "Transfer",
+        "cheque": "Sprawdzone",
+        "especes": "Gatunki"
+      }
+    }
+  },
   "dashboard": {
     "pageTitle": "Dashboard",
     "subtitle": "Przegląd Twojego stowarzyszenia",
@@ -1484,6 +1598,7 @@
     },
     "transfersView": {
       "title": "Transfery wewnętrzne",
+      "description": "Zapisz tutaj już dokonane przelewy między kontami bankowymi Twojego stowarzyszenia. Formalnie rejestruje przelew bez przelewu pieniędzy.",
       "add": "Przeniesienie",
       "newTransferTitle": "Nowy transfer między kontami",
       "editTransferTitle": "Edycja Transfer",
@@ -4349,6 +4464,10 @@
       "websitePlaceholder": "mon-association.fr",
       "iban": "IBAN",
       "bic": "BIC",
+      "accountingRegime": "Reżim rachunkowy zwrotów kosztów",
+      "accountingRegimeHint": "Określa, kiedy wniosek o zwrot zostanie opublikowany: przy zatwierdzeniu (zobowiązaniu) lub przy faktycznej płatności (gotówka).",
+      "accountingRegimeCash": "Rachunkowość gotówkowa",
+      "accountingRegimeAccrual": "Rachunkowość zobowiązań",
       "previewTitle": "Podgląd dokumentu",
       "bankDetails": "Dane bankowe",
       "ibanColon": "IBAN: {value}",
@@ -6863,6 +6982,7 @@
       "finances": "Monitorowanie finansowe",
       "devis": "Oferty",
       "factures": "Faktury",
+      "reimbursements": "Zwroty kosztów",
       "fournisseurs": "Dostawcy",
       "dons": "Darowizny",
       "reunions": "Spotkania",

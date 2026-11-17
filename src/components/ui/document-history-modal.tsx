@@ -6,7 +6,7 @@ import { Modal } from "@/components/ui/modal"
 import { ActivityLogList, type ActivityLogEntry } from "@/components/ui/activity-log-list"
 
 interface Props {
-  entity:         "Devis" | "Facture"
+  entity:         "Devis" | "Facture" | "ReimbursementRequest"
   entityId:       string
   documentNumber?: string
   open:           boolean

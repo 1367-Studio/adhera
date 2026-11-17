@@ -710,6 +710,120 @@
       }
     }
   },
+  "reimbursements": {
+    "view": {
+      "title": "Възстановяване на разходи",
+      "newRequest": "Нова заявка",
+      "export": "Износ",
+      "myRequests": "Моите заявки",
+      "allRequests": "Всички заявки",
+      "allRequesters": "Всички кандидати",
+      "allCategories": "Всички категории",
+      "dateFrom": "От",
+      "dateTo": "До",
+      "allStatuses": "Всички статуси",
+      "summary": "{pending} В очакване — {pendingAmount} · {approved} да бъде възстановено — {approvedAmount} · {reimbursed} възстановен — {reimbursedAmount}",
+      "noRequest": "Няма искания за възстановяване на суми",
+      "columns": {
+        "subject": "Цел",
+        "date": "Дата",
+        "amount": "Размер",
+        "status": "Статус"
+      },
+      "status": {
+        "draft": "Драфт",
+        "pendingApproval": "Очаква одобрение",
+        "needsCorrection": "Трябва да бъде коригирано",
+        "approved": "Одобрено",
+        "rejected": "Отказано",
+        "reimbursed": "Възстановена сума",
+        "cancelled": "Отменено"
+      },
+      "actions": {
+        "view": "Вижте",
+        "submit": "Изпрати",
+        "cancel": "Отказ"
+      },
+      "toasts": {
+        "created": "Заявка е създадена",
+        "updated": "Заявка за актуализация",
+        "deleted": "Заявката е изтрита",
+        "submitted": "Заявление е подавано за одобрение",
+        "cancelled": "Заявката е отменена",
+        "approved": "Заявлението е одобрено",
+        "correctionRequested": "Поискана корекция",
+        "rejected": "Заявката е отхвърлена",
+        "reimbursed": "Записано възстановяване"
+      },
+      "deleteConfirmTitle": "Да изтрия тази чернова?",
+      "deleteConfirmDescription": "Това действие е необратимо.",
+      "cancelConfirmTitle": "Да отменя тази заявка?",
+      "cancelConfirmDescription": "Кандидатът ще бъде уведомен за анулирането.",
+      "cancelReasonLabel": "Причина за анулиране"
+    },
+    "form": {
+      "subject": "Цел",
+      "subjectPlaceholder": "Напр. Регионални срещи, пътувания",
+      "comment": "Коментар",
+      "commentPlaceholder": "Опционални детайли",
+      "event": "Свързано събитие",
+      "project": "Свързан проект",
+      "noProject": "Няма проект",
+      "noEvent": "Няма събития",
+      "items": "Разходи",
+      "addItem": "Добавяне на разход",
+      "noItems": "Без допълнителни такси",
+      "itemDate": "Дата на разход",
+      "itemDescription": "Описание",
+      "itemAmount": "Размер",
+      "itemCategory": "Категория",
+      "itemReceipt": "Обосновка",
+      "total": "Общо",
+      "duplicateWarning": "Подобен разход (същата дата, същата сума) вече съществува в друга от вашите заявки.",
+      "toasts": {
+        "uploadError": "Грешка при изпращане на касовата бележка",
+        "networkError": "Мрежова грешка при изпращане на касовата бележка"
+      }
+    },
+    "detail": {
+      "notFound": "Заявката за възстановяване не е намерена",
+      "history": "История",
+      "correctionFrom": "Искана корекция от {name}",
+      "rejectedBy": "Отказано от {name}",
+      "reimbursedOn": "Възстановяване на {date} от {method}",
+      "selfApprovalBlockedNotice": "Не можете да одобрите собствената си заявка. Тя трябва да бъде одобрена от администратор или друг упълномощен служител.",
+      "viewReceipt": "Вижте придружителните документи",
+      "immobilisationTag": "Дълготрайни активи",
+      "approveButton": "Одобри",
+      "requestCorrectionButton": "Поискайте корекция",
+      "rejectButton": "Отказвайте",
+      "correctionCommentLabel": "Коментар за корекция",
+      "rejectionReasonLabel": "Причина за отказа",
+      "deleteItemConfirmTitle": "Да премахнете този разход?",
+      "toasts": {
+        "itemAdded": "Допълнителни разходи",
+        "itemUpdated": "Актуализирани разходи",
+        "itemDeleted": "Разходите, премахнати"
+      }
+    },
+    "register": {
+      "title": "Спестете възстановяването",
+      "registerButton": "Спестете възстановяването",
+      "date": "Дата на възстановяване",
+      "paymentMethod": "Метод на плащане",
+      "bankAccount": "Банкова сметка",
+      "noBankAccountHint": "Няма открита банкова сметка — добавете я във Финанси> сметки или изберете Кеш.",
+      "transaction": "Съгласуване на импортирана банкова транзакция (по избор)",
+      "noTransaction": "Не се приближавай сега",
+      "reference": "Референция",
+      "submit": "Запази",
+      "methods": {
+        "virement": "Трансфер",
+        "cheque": "Проверка",
+        "especes": "Видове"
+      }
+    }
+  },
   "dashboard": {
     "pageTitle": "Табло",
     "subtitle": "Преглед на вашата асоциация",
@@ -1484,6 +1598,7 @@
     },
     "transfersView": {
       "title": "Вътрешни трансфери",
+      "description": "Запишете тук вече направените преводи между банковите сметки на вашата асоциация. Formwise записва превода без прехвърляне на пари.",
       "add": "Трансфер",
       "newTransferTitle": "Нов трансфер между сметки",
       "editTransferTitle": "Редакция Трансфер",
@@ -4349,6 +4464,10 @@
       "websitePlaceholder": "mon-association.fr",
       "iban": "IBAN",
       "bic": "BIC",
+      "accountingRegime": "Счетоводен режим за възстановяване на разходи",
+      "accountingRegimeHint": "Определя кога се подава искане за възстановяване: при одобрение (ангажимент) или при действително плащане (в брой).",
+      "accountingRegimeCash": "Касово счетоводство",
+      "accountingRegimeAccrual": "Счетоводство на ангажименти",
       "previewTitle": "Преглед на документа",
       "bankDetails": "Банкови данни",
       "ibanColon": "IBAN : {value}",
@@ -6863,6 +6982,7 @@
       "finances": "Финансов мониторинг",
       "devis": "Оферти",
       "factures": "Фактури",
+      "reimbursements": "Възстановяване на разходи",
       "fournisseurs": "Доставчици",
       "dons": "Дарения",
       "reunions": "Срещи",
