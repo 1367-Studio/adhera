@@ -287,18 +287,24 @@ export function ReimbursementsView() {
           width="w-48"
         />
 
-        <DateField
-          label={t("reimbursements.view.dateFrom")}
-          value={dateFrom}
-          onChange={(v) => { setDateFrom(v); setPage(1) }}
-          className="w-36"
-        />
-        <DateField
-          label={t("reimbursements.view.dateTo")}
-          value={dateTo}
-          onChange={(v) => { setDateTo(v); setPage(1) }}
-          className="w-36"
-        />
+        <div className="flex items-center gap-1.5">
+          <label className="text-xs text-muted-foreground">{t("reimbursements.view.dateFrom")}</label>
+          <DateField
+            value={dateFrom}
+            max={dateTo || undefined}
+            onChange={(v) => { setDateFrom(v); setPage(1) }}
+            className="w-36"
+          />
+        </div>
+        <div className="flex items-center gap-1.5">
+          <label className="text-xs text-muted-foreground">{t("reimbursements.view.dateTo")}</label>
+          <DateField
+            value={dateTo}
+            min={dateFrom || undefined}
+            onChange={(v) => { setDateTo(v); setPage(1) }}
+            className="w-36"
+          />
+        </div>
       </div>
 
       <DataTable

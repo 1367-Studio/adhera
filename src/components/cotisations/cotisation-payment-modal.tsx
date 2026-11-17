@@ -13,19 +13,13 @@ import { SelectField } from "@/components/ui/select-field"
 import { FormField } from "@/components/ui/form-field"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
-import { installmentBalances, type DisplayInstallment } from "@/lib/cotisation-display"
+import { installmentBalances, cotisationPaymentMethodLabel, type DisplayInstallment } from "@/lib/cotisation-display"
 import { cn } from "@/lib/utils"
 
 type Method = "CB" | "CHQ" | "ESP" | "VIR" | "En ligne" | "Autre"
 
-const methodOptions: { value: Method; label: string }[] = [
-  { value: "CB",       label: "CB"       },
-  { value: "CHQ",      label: "CHQ"      },
-  { value: "ESP",      label: "ESP"      },
-  { value: "VIR",      label: "Virement" },
-  { value: "En ligne", label: "En ligne" },
-  { value: "Autre",    label: "Autre"    },
-]
+const methodOptions: { value: Method; label: string }[] = (["CB", "CHQ", "ESP", "VIR", "En ligne", "Autre"] as Method[])
+  .map(value => ({ value, label: cotisationPaymentMethodLabel(value) }))
 
 const EPSILON = 0.01
 const CUSTOM_CHOICE = "custom"

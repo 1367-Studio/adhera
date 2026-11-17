@@ -7,6 +7,7 @@ import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import { TrashIcon } from "@phosphor-icons/react/dist/ssr";
 import { useRemoveCotisationPayment } from "@/hooks/use-cotisations"
+import { cotisationPaymentMethodLabel } from "@/lib/cotisation-display"
 import { Modal } from "@/components/ui/modal"
 import { ConfirmDialog } from "@/components/ui/confirm-dialog"
 import { Button } from "@/components/ui/button"
@@ -54,7 +55,7 @@ export function CotisationPaymentsModal({ cotisationId, payments, open, onOpenCh
                 <div>
                   <p className="font-medium tabular-nums">{fmt(p.amount)}</p>
                   <p className="text-xs text-muted-foreground">
-                    {p.method} · {format(new Date(p.paidAt), "dd/MM/yyyy", { locale: fr })}
+                    {cotisationPaymentMethodLabel(p.method)} · {format(new Date(p.paidAt), "dd/MM/yyyy", { locale: fr })}
                     {p.note && <> · {p.note}</>}
                   </p>
                 </div>
