@@ -6,7 +6,7 @@ import { prisma } from "@/lib/prisma/client"
 import { parseModules } from "@/lib/modules"
 import { rateLimit, requestIp } from "@/lib/rate-limit"
 import { assertMemberLimit, MemberLimitReachedError, MEMBER_LIMIT_VISITOR_MESSAGE } from "@/lib/plan-limits"
-import { CURRENT_TERMS_VERSION, consentIp } from "@/lib/consent"
+import { getCurrentTermsVersion, consentIp } from "@/lib/consent"
 import { APP_URL } from "@/lib/env"
 import { reportError } from "@/lib/monitoring"
 
@@ -85,6 +85,7 @@ export async function POST(
   // new User row.
   const passwordHash = await bcrypt.hash(password, 12)
   const amountCents  = Math.round(Number(assoc.cotisationDefaultAmount) * 100)
+  const termsVersion = await getCurrentTermsVersion()
 
   const subscriptionMeta = {
     kind:            "cotisation",
@@ -96,7 +97,7 @@ export async function POST(
     typeId:          typeId || "",
     passwordHash,
     termsAcceptedIp: acceptedIp ?? "",
-    termsVersion:    CURRENT_TERMS_VERSION,
+    termsVersion,
   }
 
   const successUrl = `${APP_URL}/${slug}?payment=success#adhesion`

@@ -158,10 +158,9 @@
         "passwordLabel": "Passwort",
         "passwordPlaceholder": "Mindestens 8 Zeichen",
         "passwordGoogleHint": "Für diese erste Kontoerstellung wählen Sie ein Passwort. Sie können sich dann mit Google anmelden.",
-        "acceptTermsPrefix": "Ich akzeptiere die",
-        "termsOfService": "Nutzungsbedingungen",
-        "acceptTermsAnd": "und die",
-        "privacyPolicy": "Datenschutzerklärung",
+        "legalDocsAcceptPrefix": "Ich habe alle gelesen",
+        "legalDocsLinkLabel": "Rechtliche Dokumente der Formwise",
+        "legalDocsAcceptSuffix": "und ich akzeptiere die Nutzungsbedingungen des Services.",
         "continueToPayment": "Weiter zum Kassen",
         "perkTrialDays": "{days} Freitage",
         "perkNoCommitment": "Keine Verpflichtung",
@@ -5220,6 +5219,12 @@
       "invalidFormToast": "Speichern nicht möglich. Wenden Sie sich an den Support, falls das Problem weiterhin besteht.",
       "customFieldsLoading": "Antworten des Anmeldeformulars werden geladen…"
     },
+    "fichePdf": {
+      "title": "MITGLIEDERPROFIL",
+      "subtitle": "Formular, das vom neuen Mitglied auszufüllen ist",
+      "signature": "Unterschrift",
+      "date": "Datum"
+    },
     "actions": {
       "add": "Mitglied hinzufügen",
       "edit": "Bearbeiten Mitglied",
@@ -7037,10 +7042,6 @@
       "security": "Sicherheit",
       "legalDocuments": {
         "title": "Rechtsdokumente",
-        "mentionsLegales": "Rechtliche Mitteilung",
-        "cgu": "UGC",
-        "cgs": "CGV",
-        "politiqueConfidentialite": "Datenschutzerklärung",
         "opensNewTab": "Öffnet einen neuen Tab"
       },
       "logout": "Ausloggen"

@@ -158,10 +158,9 @@
         "passwordLabel": "Parool",
         "passwordPlaceholder": "Min. 8 tähemärki",
         "passwordGoogleHint": "Esimeseks konto loomiseks vali parool. Seejärel saad Google'iga sisse logida.",
-        "acceptTermsPrefix": "Ma nõustun",
-        "termsOfService": "Teenistustingimused",
-        "acceptTermsAnd": "ja",
-        "privacyPolicy": "Privaatsuspoliitika",
+        "legalDocsAcceptPrefix": "Olen lugenud kõik",
+        "legalDocsLinkLabel": "Formwise õigusdokumendid",
+        "legalDocsAcceptSuffix": "ja nõustun teenuse kasutustingimustega.",
         "continueToPayment": "Jätka laenutamist",
         "perkTrialDays": "{days} Vabal päeval",
         "perkNoCommitment": "Kohustust ei ole",
@@ -5220,6 +5219,12 @@
       "invalidFormToast": "Salvestamine ebaõnnestus. Kui probleem püsib, võtke ühendust toega.",
       "customFieldsLoading": "Liitumisvormi vastuste laadimine…"
     },
+    "fichePdf": {
+      "title": "LIIKME PROFIIL",
+      "subtitle": "Uus liige peab täitma vormi",
+      "signature": "Allkiri",
+      "date": "Kuupäev"
+    },
     "actions": {
       "add": "Lisa liige",
       "edit": "Redigeeri liige",
@@ -7037,10 +7042,6 @@
       "security": "Turvalisus",
       "legalDocuments": {
         "title": "Õiguslikud dokumendid",
-        "mentionsLegales": "Juriidiline teade",
-        "cgu": "UGC",
-        "cgs": "CGV",
-        "politiqueConfidentialite": "Privaatsuspoliitika",
         "opensNewTab": "Avab uue vahekaardi"
       },
       "logout": "Logi välja"

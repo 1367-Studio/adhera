@@ -158,10 +158,9 @@
         "passwordLabel": "Password",
         "passwordPlaceholder": "Min. 8 characters",
         "passwordGoogleHint": "For this first account creation, choose a password. You'll then be able to sign in with Google.",
-        "acceptTermsPrefix": "I accept the",
-        "termsOfService": "Terms of Service",
-        "acceptTermsAnd": "and the",
-        "privacyPolicy": "privacy policy",
+        "legalDocsAcceptPrefix": "I have read all the",
+        "legalDocsLinkLabel": "Formwise legal documents",
+        "legalDocsAcceptSuffix": "and I accept the terms of use of the service.",
         "continueToPayment": "Continue to payment",
         "perkTrialDays": "{days} free days",
         "perkNoCommitment": "No commitment",
@@ -7043,10 +7042,6 @@
       "security": "Security",
       "legalDocuments": {
         "title": "Legal documents",
-        "mentionsLegales": "Legal notice",
-        "cgu": "Terms of use",
-        "cgs": "Terms of service",
-        "politiqueConfidentialite": "Privacy policy",
         "opensNewTab": "Opens in a new tab"
       },
       "logout": "Sign out"
