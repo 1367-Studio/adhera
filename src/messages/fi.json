@@ -118,10 +118,9 @@
         "passwordLabel": "Salasana",
         "passwordPlaceholder": "Min. 8 merkkiä",
         "passwordGoogleHint": "Ensimmäistä tilin luomista varten valitse salasana. Voit sitten kirjautua sisään Googlella.",
-        "acceptTermsPrefix": "Hyväksyn",
-        "termsOfService": "Käyttöehdot",
-        "acceptTermsAnd": "ja",
-        "privacyPolicy": "Tietosuojakäytäntö",
+        "legalDocsAcceptPrefix": "Olen lukenut kaikki",
+        "legalDocsLinkLabel": "Formwise oikeudelliset asiakirjat",
+        "legalDocsAcceptSuffix": "ja hyväksyn palvelun käyttöehdot.",
         "continueToPayment": "Jatka kassaa",
         "perkTrialDays": "{days} Vapaapäivät",
         "perkNoCommitment": "Ei velvoitetta",
@@ -4433,6 +4432,12 @@
         "refused": "Ei"
       }
     },
+    "fichePdf": {
+      "title": "JÄSENPROFIILI",
+      "subtitle": "Uuden jäsenen täytettävä lomake",
+      "signature": "Allekirjoitus",
+      "date": "Päivämäärä"
+    },
     "actions": {
       "add": "Lisää jäsen",
       "edit": "Muokkausjäsen",
@@ -5896,10 +5901,6 @@
       "changePassword": "Vaihda salasana",
       "legalDocuments": {
         "title": "Oikeudelliset asiakirjat",
-        "mentionsLegales": "Oikeudellinen ilmoitus",
-        "cgu": "UGC",
-        "cgs": "CGV",
-        "politiqueConfidentialite": "Tietosuojakäytäntö",
         "opensNewTab": "Avaa uuden välilehden"
       },
       "logout": "Kirjaudu ulos"

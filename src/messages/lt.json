@@ -118,10 +118,9 @@
         "passwordLabel": "Slaptažodis",
         "passwordPlaceholder": "Min. 8 veikėjai",
         "passwordGoogleHint": "Pirmajam paskyros kūrimui pasirinkite slaptažodį. Tuomet galite prisijungti per Google.",
-        "acceptTermsPrefix": "Aš priimu",
-        "termsOfService": "Tarnybos sąlygos",
-        "acceptTermsAnd": "ir",
-        "privacyPolicy": "Privatumo politika",
+        "legalDocsAcceptPrefix": "Aš perskaičiau visus",
+        "legalDocsLinkLabel": "Formwise teisiniai dokumentai",
+        "legalDocsAcceptSuffix": "ir sutinku su paslaugos naudojimo sąlygomis.",
         "continueToPayment": "Tęsti atsiskaitymą",
         "perkTrialDays": "{days} Laisvos dienos",
         "perkNoCommitment": "Jokių įsipareigojimų",
@@ -4433,6 +4432,12 @@
         "refused": "Ne"
       }
     },
+    "fichePdf": {
+      "title": "NARIO PROFILIS",
+      "subtitle": "Formą turi užpildyti naujasis narys",
+      "signature": "Parašas",
+      "date": "Data"
+    },
     "actions": {
       "add": "Pridėti narį",
       "edit": "Redaguoti narys",
@@ -5896,10 +5901,6 @@
       "changePassword": "Pakeisti slaptažodį",
       "legalDocuments": {
         "title": "Teisiniai dokumentai",
-        "mentionsLegales": "Teisinis pranešimas",
-        "cgu": "UGC",
-        "cgs": "CGV",
-        "politiqueConfidentialite": "Privatumo politika",
         "opensNewTab": "Atidaro naują skirtuką"
       },
       "logout": "Atsijungti"

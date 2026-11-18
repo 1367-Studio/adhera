@@ -104,7 +104,7 @@ export default async function AssociationDetailPage({ params }: { params: Promis
     where:  { associationId: id, deletedAt: null, role: { not: "MEMBRE" } },
     select: {
       id: true, name: true, email: true, role: true, twoFactorEnabled: true,
-      lastLoginAt: true, lastSeenAt: true,
+      lastLoginAt: true, lastSeenAt: true, termsAcceptedAt: true, termsVersion: true,
     },
     orderBy: { email: "asc" },
   })
@@ -190,6 +190,12 @@ export default async function AssociationDetailPage({ params }: { params: Promis
                           {" · "}
                           Dernière activité : <LastActivityDate date={staffUser.lastSeenAt} />
                         </p>
+                        {staffUser.termsAcceptedAt && (
+                          <p className="text-xs text-muted-foreground">
+                            Documents légaux acceptés le : {new Date(staffUser.termsAcceptedAt).toLocaleString("fr-FR")}
+                            {staffUser.termsVersion && ` (version ${staffUser.termsVersion})`}
+                          </p>
+                        )}
                       </li>
                     ))}
                   </ul>

@@ -118,10 +118,9 @@
         "passwordLabel": "Password",
         "passwordPlaceholder": "Minimu 8 karattri",
         "passwordGoogleHint": "Għal din l-ewwel ħolqien ta' kont, agħżel password. Imbagħad tista' tidħol ma' Google.",
-        "acceptTermsPrefix": "Naċċetta l-",
-        "termsOfService": "Termini u Kundizzjonijiet tas-Servizz",
-        "acceptTermsAnd": "u l-",
-        "privacyPolicy": "Politika dwar il-Privatezza",
+        "legalDocsAcceptPrefix": "Qrajt kollox",
+        "legalDocsLinkLabel": "Dokumenti legali ta' Formwise",
+        "legalDocsAcceptSuffix": "u naċċetta t-termini ta'' użu tas-servizz.",
         "continueToPayment": "Kompli biex iċċekkja",
         "perkTrialDays": "{days} Ġranet ħielsa",
         "perkNoCommitment": "L-ebda obbligu",
@@ -4433,6 +4432,12 @@
         "refused": "Le"
       }
     },
+    "fichePdf": {
+      "title": "PROFIL TAL-MEMBRU",
+      "subtitle": "Formola li għandha timtela mill-membru ġdid",
+      "signature": "Firma",
+      "date": "Data"
+    },
     "actions": {
       "add": "Żid membru",
       "edit": "Membru ta' Editjar",
@@ -5896,10 +5901,6 @@
       "changePassword": "Biddel il-Password",
       "legalDocuments": {
         "title": "Dokumenti legali",
-        "mentionsLegales": "Avviż legali",
-        "cgu": "UGC",
-        "cgs": "CGV",
-        "politiqueConfidentialite": "Politika dwar il-Privatezza",
         "opensNewTab": "Tiftaħ tab ġdid"
       },
       "logout": "Logout"

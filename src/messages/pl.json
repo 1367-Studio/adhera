@@ -118,10 +118,9 @@
         "passwordLabel": "Hasło",
         "passwordPlaceholder": "Min. 8 znaków",
         "passwordGoogleHint": "Aby założyć pierwsze konto, wybierz hasło. Następnie możesz zalogować się przez Google.",
-        "acceptTermsPrefix": "Akceptuję",
-        "termsOfService": "Warunki korzystania z usług",
-        "acceptTermsAnd": "oraz",
-        "privacyPolicy": "Polityka prywatności",
+        "legalDocsAcceptPrefix": "Przeczytałem wszystkie",
+        "legalDocsLinkLabel": "Dokumenty prawne Formwise",
+        "legalDocsAcceptSuffix": "i akceptuję warunki korzystania z usługi.",
         "continueToPayment": "Kontynuuj do kasy",
         "perkTrialDays": "{days} Wolne dni",
         "perkNoCommitment": "Bez zobowiązań",
@@ -4433,6 +4432,12 @@
         "refused": "Nie"
       }
     },
+    "fichePdf": {
+      "title": "PROFIL CZŁONKA",
+      "subtitle": "Formularz do wypełnienia przez nowego członka",
+      "signature": "Podpis",
+      "date": "Data"
+    },
     "actions": {
       "add": "Dodaj członka",
       "edit": "Edytuj Członko.",
@@ -5896,10 +5901,6 @@
       "changePassword": "Zmień hasło",
       "legalDocuments": {
         "title": "Dokumenty prawne",
-        "mentionsLegales": "Powiadomienie prawne",
-        "cgu": "UGC",
-        "cgs": "CGV",
-        "politiqueConfidentialite": "Polityka prywatności",
         "opensNewTab": "Otwiera nową kartę"
       },
       "logout": "Wyloguj się"

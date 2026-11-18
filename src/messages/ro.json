@@ -118,10 +118,9 @@
         "passwordLabel": "Parolă",
         "passwordPlaceholder": "Min. 8 caractere",
         "passwordGoogleHint": "Pentru această primă creare a contului, alege o parolă. Apoi te poți conecta cu Google.",
-        "acceptTermsPrefix": "Accept",
-        "termsOfService": "Termeni și Condiții de Serviciu",
-        "acceptTermsAnd": "iar",
-        "privacyPolicy": "Politica de confidențialitate",
+        "legalDocsAcceptPrefix": "Am citit toate",
+        "legalDocsLinkLabel": "Documentele legale ale Formwise",
+        "legalDocsAcceptSuffix": "și accept termenii de utilizare ai serviciului.",
         "continueToPayment": "Continuă să finalizezi",
         "perkTrialDays": "{days} Zile libere",
         "perkNoCommitment": "Nicio obligație",
@@ -4433,6 +4432,12 @@
         "refused": "Nu"
       }
     },
+    "fichePdf": {
+      "title": "PROFIL MEMBRU",
+      "subtitle": "Formular ce trebuie completat de noul membru",
+      "signature": "Semnătură",
+      "date": "Date"
+    },
     "actions": {
       "add": "Adaugă un membru",
       "edit": "Editare Membru",
@@ -5896,10 +5901,6 @@
       "changePassword": "Schimbă parola",
       "legalDocuments": {
         "title": "Documente legale",
-        "mentionsLegales": "Notificare legală",
-        "cgu": "UGC",
-        "cgs": "CGV",
-        "politiqueConfidentialite": "Politica de confidențialitate",
         "opensNewTab": "Se deschide o filă nouă"
       },
       "logout": "Deconectează-te"

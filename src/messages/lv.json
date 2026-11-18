@@ -118,10 +118,9 @@
         "passwordLabel": "Parole",
         "passwordPlaceholder": "Min. 8 varoņi",
         "passwordGoogleHint": "Šai pirmajai konta izveidei izvēlieties paroli. Pēc tam varat pieslēgties Google.",
-        "acceptTermsPrefix": "Es pieņemu",
-        "termsOfService": "Dienesta noteikumi un nosacījumi",
-        "acceptTermsAnd": "un",
-        "privacyPolicy": "Privātuma politika",
+        "legalDocsAcceptPrefix": "Esmu izlasījis visu",
+        "legalDocsLinkLabel": "Formwise juridiskie dokumenti",
+        "legalDocsAcceptSuffix": "un es pieņemu pakalpojuma lietošanas noteikumus.",
         "continueToPayment": "Turpiniet norēķināties",
         "perkTrialDays": "{days} Brīvās dienas",
         "perkNoCommitment": "Bez saistībām",
@@ -4433,6 +4432,12 @@
         "refused": "Nē"
       }
     },
+    "fichePdf": {
+      "title": "DALĪBNIEKA PROFILS",
+      "subtitle": "Veidlapa jāaizpilda jaunajam biedram",
+      "signature": "Paraksts",
+      "date": "Datums"
+    },
     "actions": {
       "add": "Pievienot biedru",
       "edit": "Rediģēt biedrs",
@@ -5896,10 +5901,6 @@
       "changePassword": "Paroles maiņa",
       "legalDocuments": {
         "title": "Juridiskie dokumenti",
-        "mentionsLegales": "Juridiskais paziņojums",
-        "cgu": "UGC",
-        "cgs": "CGV",
-        "politiqueConfidentialite": "Privātuma politika",
         "opensNewTab": "Atver jaunu cilni"
       },
       "logout": "Izrakstīšanās"

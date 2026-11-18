@@ -118,10 +118,9 @@
         "passwordLabel": "Lösenord",
         "passwordPlaceholder": "Min. 8 tecken",
         "passwordGoogleHint": "För detta första kontoskapande, välj ett lösenord. Du kan sedan logga in med Google.",
-        "acceptTermsPrefix": "Jag accepterar",
-        "termsOfService": "Villkor och villkor för tjänsten",
-        "acceptTermsAnd": "och",
-        "privacyPolicy": "Integritetspolicy",
+        "legalDocsAcceptPrefix": "Jag har läst allt",
+        "legalDocsLinkLabel": "Juridiska dokument från Formwise",
+        "legalDocsAcceptSuffix": "och jag accepterar användarvillkoren för tjänsten.",
         "continueToPayment": "Fortsätt att checka ut",
         "perkTrialDays": "{days} Lediga dagar",
         "perkNoCommitment": "Ingen förpliktelse",
@@ -4433,6 +4432,12 @@
         "refused": "Nej"
       }
     },
+    "fichePdf": {
+      "title": "MEDLEMSPROFIL",
+      "subtitle": "Formulär som ska fyllas i av den nya medlemmen",
+      "signature": "Signatur",
+      "date": "Datum"
+    },
     "actions": {
       "add": "Lägg till en medlem",
       "edit": "Redigera Medlem",
@@ -5896,10 +5901,6 @@
       "changePassword": "Byt lösenord",
       "legalDocuments": {
         "title": "Juridiska dokument",
-        "mentionsLegales": "Juridisk notis",
-        "cgu": "UGC",
-        "cgs": "CGV",
-        "politiqueConfidentialite": "Integritetspolicy",
         "opensNewTab": "Öppnar en ny flik"
       },
       "logout": "Logga ut"

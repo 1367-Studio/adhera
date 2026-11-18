@@ -118,10 +118,9 @@
         "passwordLabel": "Κωδικός πρόσβασης",
         "passwordPlaceholder": "Τουλάχιστον 8 χαρακτήρες",
         "passwordGoogleHint": "Για αυτήν την πρώτη δημιουργία λογαριασμού, επιλέξτε έναν κωδικό πρόσβασης. Στη συνέχεια, μπορείτε να συνδεθείτε με το Google.",
-        "acceptTermsPrefix": "Αποδέχομαι την",
-        "termsOfService": "Όροι και Προϋποθέσεις Παροχής Υπηρεσιών",
-        "acceptTermsAnd": "και το",
-        "privacyPolicy": "Πολιτική Απορρήτου",
+        "legalDocsAcceptPrefix": "Έχω διαβάσει όλα τα",
+        "legalDocsLinkLabel": "Νομικά έγγραφα του Formwise",
+        "legalDocsAcceptSuffix": "και αποδέχομαι τους όρους χρήσης της υπηρεσίας.",
         "continueToPayment": "Συνεχίστε στο ταμείο",
         "perkTrialDays": "{days} Ελεύθερες μέρες",
         "perkNoCommitment": "Καμία υποχρέωση",
@@ -4433,6 +4432,12 @@
         "refused": "Όχι"
       }
     },
+    "fichePdf": {
+      "title": "ΠΡΟΦΊΛ ΜΕΛΏΝ",
+      "subtitle": "Έντυπο που πρέπει να συμπληρωθεί από το νέο μέλος",
+      "signature": "Υπογραφή",
+      "date": "Ημερομηνία"
+    },
     "actions": {
       "add": "Προσθήκη μέλους",
       "edit": "Επεξεργασία μέλους",
@@ -5896,10 +5901,6 @@
       "changePassword": "Αλλαγή κωδικού πρόσβασης",
       "legalDocuments": {
         "title": "Νομικά έγγραφα",
-        "mentionsLegales": "Ανακοίνωση νομικού περιεχομένου",
-        "cgu": "UGC",
-        "cgs": "ΚΓΣ",
-        "politiqueConfidentialite": "Πολιτική Απορρήτου",
         "opensNewTab": "Ανοίγει νέα καρτέλα"
       },
       "logout": "Αποσύνδεση"

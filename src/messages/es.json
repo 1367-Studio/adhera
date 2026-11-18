@@ -118,10 +118,9 @@
         "passwordLabel": "Contraseña",
         "passwordPlaceholder": "Mín. 8 caracteres",
         "passwordGoogleHint": "Para esta primera creación de cuenta, elige una contraseña. Luego podrás iniciar sesión con Google.",
-        "acceptTermsPrefix": "Acepto los",
-        "termsOfService": "Términos de Servicio",
-        "acceptTermsAnd": "y la",
-        "privacyPolicy": "política de privacidad",
+        "legalDocsAcceptPrefix": "He leído todo el",
+        "legalDocsLinkLabel": "Documentos legales de Formwise",
+        "legalDocsAcceptSuffix": "y acepto los términos de uso del servicio.",
         "continueToPayment": "Continuar al pago",
         "perkTrialDays": "{days} días gratis",
         "perkNoCommitment": "Sin compromiso",
@@ -4433,6 +4432,12 @@
         "refused": "No"
       }
     },
+    "fichePdf": {
+      "title": "PERFIL DEL MIEMBRO",
+      "subtitle": "Formulario que debe completar el nuevo miembro",
+      "signature": "Firma",
+      "date": "Fecha"
+    },
     "actions": {
       "add": "Añadir miembro",
       "edit": "Editar miembro",
@@ -5962,10 +5967,6 @@
       "changePassword": "Cambiar contraseña",
       "legalDocuments": {
         "title": "Documentos legales",
-        "mentionsLegales": "Aviso legal",
-        "cgu": "Condiciones de uso",
-        "cgs": "Condiciones de servicio",
-        "politiqueConfidentialite": "Política de privacidad",
         "opensNewTab": "Se abre en una nueva pestaña"
       },
       "logout": "Cerrar sesión"
