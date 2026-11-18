@@ -21,6 +21,7 @@ import { CotisationForm } from "@/components/cotisations/cotisation-form"
 import { SendReminderModal } from "@/components/cotisations/send-reminder-modal"
 import { CotisationPaymentModal } from "@/components/cotisations/cotisation-payment-modal"
 import { PENDING_COTISATION_STATUSES, NO_CATEGORY_FILTER } from "@/lib/cotisation-filters"
+import { cotisationPaymentMethodLabel } from "@/lib/cotisation-display"
 import { CotisationPaymentsModal } from "@/components/cotisations/cotisation-payments-modal"
 import { CotisationsDistribution } from "@/components/cotisations/cotisations-distribution"
 import { MergeDuplicateTiersModal } from "@/components/cotisations/merge-duplicate-tiers-modal"
@@ -402,7 +403,7 @@ export function CotisationsView() {
       className: "max-w-32",
       cell: (c) => {
         const methods = [...new Set(c.payments.map(p => p.method))]
-        const label = methods.join(" + ")
+        const label = methods.map(cotisationPaymentMethodLabel).join(" + ")
         return methods.length
           ? <span className="block truncate text-sm" title={label}>{label}</span>
           : <span className="text-muted-foreground text-xs">—</span>
