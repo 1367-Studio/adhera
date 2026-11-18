@@ -4945,6 +4945,12 @@
       "invalidFormToast": "Impossible d'enregistrer. Contactez le support si le problème persiste.",
       "customFieldsLoading": "Chargement des réponses au formulaire d'adhésion…"
     },
+    "fichePdf": {
+      "title": "FICHE MEMBRE",
+      "subtitle": "Fiche à compléter par le nouveau membre",
+      "signature": "Signature",
+      "date": "Date"
+    },
     "actions": {
       "add": "Ajouter un membre",
       "edit": "Modifier le membre",

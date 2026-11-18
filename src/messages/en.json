@@ -4680,6 +4680,12 @@
       "invalidFormToast": "Couldn't save. Contact support if the problem persists.",
       "customFieldsLoading": "Loading membership form answers…"
     },
+    "fichePdf": {
+      "title": "MEMBER FORM",
+      "subtitle": "Form to be completed by the new member",
+      "signature": "Signature",
+      "date": "Date"
+    },
     "actions": {
       "add": "Add a member",
       "edit": "Edit member",
