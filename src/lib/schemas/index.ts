@@ -15,7 +15,7 @@ export const registerSchema = z.object({
   lastName:        z.string().min(1, "Nom requis"),
   email:           z.string().email("Email invalide"),
   password:        z.string().min(8, "Min. 8 caractères"),
-  acceptedTerms:   z.literal(true, { message: "Vous devez accepter les CGV et la politique de confidentialité" }),
+  acceptedTerms:   z.literal(true, { message: "Vous devez accepter les documents légaux de Formwise" }),
 })
 
 export type RegisterInput = z.infer<typeof registerSchema>

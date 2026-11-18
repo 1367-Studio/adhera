@@ -10,7 +10,8 @@ import { generateUniqueSlug } from "@/lib/slug"
 import { sendEmail } from "@/lib/mail"
 import { adminWelcomeEmail } from "@/lib/email"
 import { APP_URL } from "@/lib/env"
-import { CURRENT_TERMS_VERSION, consentIp } from "@/lib/consent"
+import { consentIp } from "@/lib/consent"
+import { getCurrentLegalDocumentsVersion } from "@/lib/legal/platform-documents"
 import { writeActivityLog } from "@/lib/activity-log"
 import { SUPPORTED_LOCALES } from "@/i18n/locales"
 import { reportError } from "@/lib/monitoring"
@@ -76,6 +77,9 @@ export async function POST(req: Request) {
 
   const { associationName, city, firstName, lastName, email, password, customerId: browserCustomerId, paymentMethodId, plan, tier, offerToken, locale, attribution } = parsed.data
   const acceptedIp = consentIp(req)
+  // Resolved before the transaction below — it's a (cached) external read, not something to
+  // hold a DB transaction open for.
+  const legalDocumentsVersion = await getCurrentLegalDocumentsVersion()
 
   // Custom-pricing signup link: claimed atomically (PENDING → USED) before anything else
   // touches Stripe or the DB, so two people opening the same link — or a retry — can't
@@ -233,7 +237,7 @@ export async function POST(req: Request) {
           role:            "ADMIN",
           associationId:   association.id,
           termsAcceptedAt: new Date(),
-          termsVersion:    CURRENT_TERMS_VERSION,
+          termsVersion:    legalDocumentsVersion,
           termsAcceptedIp: acceptedIp,
         },
       })

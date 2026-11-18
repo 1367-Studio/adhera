@@ -118,10 +118,9 @@
         "passwordLabel": "Adgangskode",
         "passwordPlaceholder": "Min. 8 tegn",
         "passwordGoogleHint": "Til denne første kontooprettelse skal du vælge en adgangskode. Du kan derefter logge ind med Google.",
-        "acceptTermsPrefix": "Jeg accepterer",
-        "termsOfService": "Vilkår og betingelser for brug",
-        "acceptTermsAnd": "og",
-        "privacyPolicy": "Privatlivspolitik",
+        "legalDocsAcceptPrefix": "Jeg har læst alle",
+        "legalDocsLinkLabel": "Juridiske dokumenter fra Formwise",
+        "legalDocsAcceptSuffix": "og jeg accepterer brugsvilkårene for tjenesten.",
         "continueToPayment": "Fortsæt med at tjekke ud",
         "perkTrialDays": "{days} Fridage",
         "perkNoCommitment": "Ingen forpligtelse",
@@ -4433,6 +4432,12 @@
         "refused": "Nej"
       }
     },
+    "fichePdf": {
+      "title": "MEDLEMSPROFIL",
+      "subtitle": "Formular, der skal udfyldes af det nye medlem",
+      "signature": "Underskrift",
+      "date": "Dato"
+    },
     "actions": {
       "add": "Tilføj et medlem",
       "edit": "Rediger Medlem",
@@ -5896,10 +5901,6 @@
       "changePassword": "Ændr adgangskode",
       "legalDocuments": {
         "title": "Juridiske dokumenter",
-        "mentionsLegales": "Juridisk meddelelse",
-        "cgu": "UGC",
-        "cgs": "CGV",
-        "politiqueConfidentialite": "Privatlivspolitik",
         "opensNewTab": "Åbner en ny fane"
       },
       "logout": "Log ud"

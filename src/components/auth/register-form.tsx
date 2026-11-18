@@ -7,8 +7,8 @@ import { CheckboxField } from "@/components/ui/checkbox-field"
 import { FormField } from "@/components/ui/form-field"
 import { APP_NAME } from "@/config/brand"
 import { signInWithGoogleDashboard } from "@/lib/auth/actions"
-import { PRIVACY_URL, TERMS_URL } from "@/lib/consent"
 import { BASE_PATH } from "@/lib/env"
+import { LEGAL_DOCUMENTS_PAGE_URL } from "@/lib/legal/platform-documents"
 import type { OfferPhase } from "@/lib/pricing-offers"
 import { registerSchema, type RegisterInput } from "@/lib/schemas"
 import { attributionFromSearchParams, readSignupAttribution, storeSignupAttribution } from "@/lib/signup-attribution"
@@ -262,14 +262,11 @@ function StepInfo({
         id="accepted-terms"
         label={
           <>
-            {t("acceptTermsPrefix")}{" "}
-            <a href={TERMS_URL} target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-foreground">
-              {t("termsOfService")}
+            {t("legalDocsAcceptPrefix")}{" "}
+            <a href={LEGAL_DOCUMENTS_PAGE_URL} target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-foreground">
+              {t("legalDocsLinkLabel")}
             </a>{" "}
-            {t("acceptTermsAnd")}{" "}
-            <a href={PRIVACY_URL} target="_blank" rel="noopener noreferrer" className="underline underline-offset-2 hover:text-foreground">
-              {t("privacyPolicy")}
-            </a>
+            {t("legalDocsAcceptSuffix")}
           </>
         }
         error={errors.acceptedTerms?.message}

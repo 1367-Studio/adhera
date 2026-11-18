@@ -11,7 +11,7 @@ import { parseModules } from "@/lib/modules"
 import { APP_URL } from "@/lib/env"
 import { rateLimit, requestIp } from "@/lib/rate-limit"
 import { assertMemberLimit, MemberLimitReachedError, MEMBER_LIMIT_VISITOR_MESSAGE, resolveEmailBranding } from "@/lib/plan-limits"
-import { CURRENT_TERMS_VERSION, consentIp } from "@/lib/consent"
+import { getCurrentTermsVersion, consentIp } from "@/lib/consent"
 import { acceptLegalDocuments, LegalConsentError } from "@/lib/legal/acceptance"
 import { currentCotisationYear } from "@/lib/membre-adherent"
 import { writeActivityLog } from "@/lib/activity-log"
@@ -274,6 +274,7 @@ export async function POST(
   if (!form) return NextResponse.json({ error: "Formulaire introuvable" }, { status: 404 })
 
   const now = new Date()
+  const termsVersion = await getCurrentTermsVersion()
   if (form.opensAt && form.opensAt > now) return NextResponse.json({ error: "Ce formulaire n'est pas encore ouvert." }, { status: 422 })
   if (form.closesAt && form.closesAt < now) return NextResponse.json({ error: "Ce formulaire est fermé." }, { status: 422 })
 
@@ -437,7 +438,7 @@ export async function POST(
           pendingTierId: tier.id,
           answers:       Object.keys(answers).length ? answers : undefined,
           termsAcceptedAt: parsed.data.conditionsAgreed ? now : undefined,
-          termsVersion:    parsed.data.conditionsAgreed ? CURRENT_TERMS_VERSION : undefined,
+          termsVersion:    parsed.data.conditionsAgreed ? termsVersion : undefined,
           termsAcceptedIp: parsed.data.conditionsAgreed ? (acceptedIp ?? undefined) : undefined,
         },
       })
@@ -468,7 +469,7 @@ export async function POST(
         const user = await tx.user.create({
           data: {
             email, name: `${firstName} ${lastName}`, passwordHash, role: "MEMBRE", associationId: assoc.id,
-            termsAcceptedAt: now, termsVersion: CURRENT_TERMS_VERSION, termsAcceptedIp: acceptedIp ?? undefined,
+            termsAcceptedAt: now, termsVersion, termsAcceptedIp: acceptedIp ?? undefined,
           },
         })
         const membre = await tx.membre.create({
@@ -610,7 +611,7 @@ export async function POST(
         const user = await tx.user.create({
           data: {
             email, name: `${firstName} ${lastName}`, passwordHash, role: "MEMBRE", associationId: assoc.id,
-            termsAcceptedAt: now, termsVersion: CURRENT_TERMS_VERSION, termsAcceptedIp: acceptedIp ?? undefined,
+            termsAcceptedAt: now, termsVersion, termsAcceptedIp: acceptedIp ?? undefined,
           },
         })
         const membre = await tx.membre.create({
@@ -742,7 +743,7 @@ export async function POST(
     preferredLocale:  preferredLocale || "",
     answers:          JSON.stringify(answers),
     termsAcceptedIp:  acceptedIp ?? "",
-    termsVersion:     CURRENT_TERMS_VERSION,
+    termsVersion:     termsVersion,
     // Le webhook ne peut pas déduire la part "adhésion" de session.amount_total une fois que
     // des options (montant variable) sont mêlées au même paiement — snapshotée ici plutôt que
     // recalculée côté webhook.
@@ -969,6 +970,7 @@ async function handleMultiRegistrantCheckout(
   req: Request, slug: string, formSlug: string, data: z.infer<typeof multiSchema>,
 ): Promise<NextResponse> {
   const now = new Date()
+  const termsVersion = await getCurrentTermsVersion()
 
   // Pretend success without touching the DB or Stripe — same anti-bot convention as the
   // single-registrant path.
@@ -1163,7 +1165,7 @@ async function handleMultiRegistrantCheckout(
             pendingTierId: tier.id,
             answers:       Object.keys(answers).length ? answers : undefined,
             termsAcceptedAt: data.conditionsAgreed ? now : undefined,
-            termsVersion:    data.conditionsAgreed ? CURRENT_TERMS_VERSION : undefined,
+            termsVersion:    data.conditionsAgreed ? termsVersion : undefined,
             termsAcceptedIp: data.conditionsAgreed ? (acceptedIp ?? undefined) : undefined,
           },
         })

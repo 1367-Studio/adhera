@@ -118,10 +118,9 @@
         "passwordLabel": "Lozinka",
         "passwordPlaceholder": "Min. 8 znakova",
         "passwordGoogleHint": "Za prvo kreiranje računa odaberite lozinku. Zatim se možete prijaviti putem Googlea.",
-        "acceptTermsPrefix": "Prihvaćam",
-        "termsOfService": "Uvjeti korištenja",
-        "acceptTermsAnd": "i",
-        "privacyPolicy": "Politika privatnosti",
+        "legalDocsAcceptPrefix": "Pročitao sam sve",
+        "legalDocsLinkLabel": "Pravni dokumenti Formwise",
+        "legalDocsAcceptSuffix": "i prihvaćam uvjete korištenja usluge.",
         "continueToPayment": "Nastavite s naplatom",
         "perkTrialDays": "{days} Slobodni dani",
         "perkNoCommitment": "Nema obveze",
@@ -4433,6 +4432,12 @@
         "refused": "Ne"
       }
     },
+    "fichePdf": {
+      "title": "PROFIL ČLANA",
+      "subtitle": "Obrazac mora ispuniti novi član",
+      "signature": "Potpis",
+      "date": "Datum"
+    },
     "actions": {
       "add": "Dodajte člana",
       "edit": "Uredi član",
@@ -5896,10 +5901,6 @@
       "changePassword": "Promijeni lozinku",
       "legalDocuments": {
         "title": "Pravni dokumenti",
-        "mentionsLegales": "Pravna obavijest",
-        "cgu": "UGC",
-        "cgs": "CGV",
-        "politiqueConfidentialite": "Politika privatnosti",
         "opensNewTab": "Otvara novu karticu"
       },
       "logout": "Odjavi se"
