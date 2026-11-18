@@ -158,10 +158,9 @@
         "passwordLabel": "Wachtwoord",
         "passwordPlaceholder": "Min. 8 tekens",
         "passwordGoogleHint": "Voor deze eerste accountaanmaak kies je een wachtwoord. Je kunt vervolgens inloggen met Google.",
-        "acceptTermsPrefix": "Ik accepteer de",
-        "termsOfService": "Gebruiksvoorwaarden",
-        "acceptTermsAnd": "en de",
-        "privacyPolicy": "Privacybeleid",
+        "legalDocsAcceptPrefix": "Ik heb alle",
+        "legalDocsLinkLabel": "Juridische documenten van Formwise",
+        "legalDocsAcceptSuffix": "en ik accepteer de gebruiksvoorwaarden van de dienst.",
         "continueToPayment": "Blijf afrekenen",
         "perkTrialDays": "{days} Vrije dagen",
         "perkNoCommitment": "Geen verplichting",
@@ -5220,6 +5219,12 @@
       "invalidFormToast": "Opslaan mislukt. Neem contact op met support als het probleem aanhoudt.",
       "customFieldsLoading": "Antwoorden van het aanmeldformulier laden…"
     },
+    "fichePdf": {
+      "title": "LEDENPROFIEL",
+      "subtitle": "Formulier dat door het nieuwe lid moet worden ingevuld",
+      "signature": "Handtekening",
+      "date": "Datum"
+    },
     "actions": {
       "add": "Voeg een lid toe",
       "edit": "Bewerking Lid",
@@ -7037,10 +7042,6 @@
       "security": "Beveiliging",
       "legalDocuments": {
         "title": "Juridische documenten",
-        "mentionsLegales": "Juridische kennisgeving",
-        "cgu": "UGC",
-        "cgs": "CGV",
-        "politiqueConfidentialite": "Privacybeleid",
         "opensNewTab": "Opent een nieuw tabblad"
       },
       "logout": "Uitloggen"

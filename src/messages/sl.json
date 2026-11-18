@@ -158,10 +158,9 @@
         "passwordLabel": "Geslo",
         "passwordPlaceholder": "Min. 8 znakov",
         "passwordGoogleHint": "Za to prvo ustvarjanje računa izberite geslo. Nato se lahko prijavite z Googlom.",
-        "acceptTermsPrefix": "Sprejemam",
-        "termsOfService": "Pogoji uporabe",
-        "acceptTermsAnd": "in",
-        "privacyPolicy": "Politika zasebnosti",
+        "legalDocsAcceptPrefix": "Prebral sem vse",
+        "legalDocsLinkLabel": "Pravni dokumenti Formwise",
+        "legalDocsAcceptSuffix": "in sprejemam pogoje uporabe storitve.",
         "continueToPayment": "Nadaljujte s plačilom",
         "perkTrialDays": "{days} Prosti dnevi",
         "perkNoCommitment": "Brez obveznosti",
@@ -5220,6 +5219,12 @@
       "invalidFormToast": "Shranjevanje ni uspelo. Če se težava ponavlja, se obrnite na podporo.",
       "customFieldsLoading": "Nalaganje odgovorov iz pristopnega obrazca…"
     },
+    "fichePdf": {
+      "title": "PROFIL ČLANA",
+      "subtitle": "Obrazec, ki ga mora izpolniti novi član",
+      "signature": "Podpis",
+      "date": "Datum"
+    },
     "actions": {
       "add": "Dodajte člana",
       "edit": "Uredi člana",
@@ -7037,10 +7042,6 @@
       "security": "Varnost",
       "legalDocuments": {
         "title": "Pravni dokumenti",
-        "mentionsLegales": "Pravno obvestilo",
-        "cgu": "UGC",
-        "cgs": "CGV",
-        "politiqueConfidentialite": "Politika zasebnosti",
         "opensNewTab": "Odpre nov zavihek"
       },
       "logout": "Odjavi se"

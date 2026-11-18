@@ -158,10 +158,9 @@
         "passwordLabel": "Pasfhocal",
         "passwordPlaceholder": "Min. 8 carachtair",
         "passwordGoogleHint": "Maidir leis an gcéad chruthú cuntais seo, roghnaigh pasfhocal. Is féidir leat síniú isteach ansin le Google.",
-        "acceptTermsPrefix": "Glacaim leis an",
-        "termsOfService": "Téarmaí agus Coinníollacha Seirbhíse",
-        "acceptTermsAnd": "agus an",
-        "privacyPolicy": "Polasaí Príobháideachais",
+        "legalDocsAcceptPrefix": "Léigh mé na",
+        "legalDocsLinkLabel": "Doiciméid dhlíthiúla Formwise",
+        "legalDocsAcceptSuffix": "agus glacaim le téarmaí úsáide na seirbhíse.",
         "continueToPayment": "Lean ar aghaidh leis an tseiceáil amach",
         "perkTrialDays": "{days} Laethanta saor in aisce",
         "perkNoCommitment": "Gan aon oibleagáid",
@@ -5220,6 +5219,12 @@
       "invalidFormToast": "Níorbh fhéidir sábháil. Déan teagmháil leis an tacaíocht mura réitítear an fhadhb.",
       "customFieldsLoading": "Freagraí na foirme ballraíochta á lódáil…"
     },
+    "fichePdf": {
+      "title": "PRÓIFÍL BALL",
+      "subtitle": "Foirm le comhlánú ag an mball nua",
+      "signature": "Síniú",
+      "date": "Dáta"
+    },
     "actions": {
       "add": "Cuir ball leis",
       "edit": "Cuir Ball in Eagar",
@@ -7037,10 +7042,6 @@
       "security": "Slándáil",
       "legalDocuments": {
         "title": "Doiciméid dhlíthiúla",
-        "mentionsLegales": "Fógra dlíthiúil",
-        "cgu": "UGC",
-        "cgs": "CGV",
-        "politiqueConfidentialite": "Polasaí Príobháideachais",
         "opensNewTab": "Osclaíonn sé cluaisín nua"
       },
       "logout": "Logáil Amach"

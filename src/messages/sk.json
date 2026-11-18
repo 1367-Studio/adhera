@@ -158,10 +158,9 @@
         "passwordLabel": "Heslo",
         "passwordPlaceholder": "Min. 8 znakov",
         "passwordGoogleHint": "Pri prvom vytvorení účtu si vyberte heslo. Potom sa môžete prihlásiť cez Google.",
-        "acceptTermsPrefix": "Prijímam",
-        "termsOfService": "Podmienky používania",
-        "acceptTermsAnd": "a",
-        "privacyPolicy": "Zásady ochrany súkromia",
+        "legalDocsAcceptPrefix": "Prečítal som všetky",
+        "legalDocsLinkLabel": "Právne dokumenty Formwise",
+        "legalDocsAcceptSuffix": "a súhlasím s podmienkami používania služby.",
         "continueToPayment": "Pokračujte k pokladni",
         "perkTrialDays": "{days} Voľné dni",
         "perkNoCommitment": "Žiadna povinnosť",
@@ -5220,6 +5219,12 @@
       "invalidFormToast": "Uloženie sa nepodarilo. Ak problém pretrváva, kontaktujte podporu.",
       "customFieldsLoading": "Načítavanie odpovedí z prihlasovacieho formulára…"
     },
+    "fichePdf": {
+      "title": "PROFIL ČLENA",
+      "subtitle": "Formulár, ktorý má vyplniť nový člen",
+      "signature": "Podpis",
+      "date": "Dátum"
+    },
     "actions": {
       "add": "Pridať člena",
       "edit": "Edit Member",
@@ -7037,10 +7042,6 @@
       "security": "Bezpečnosť",
       "legalDocuments": {
         "title": "Právne dokumenty",
-        "mentionsLegales": "Právne oznámenie",
-        "cgu": "UGC",
-        "cgs": "CGV",
-        "politiqueConfidentialite": "Zásady ochrany súkromia",
         "opensNewTab": "Otvára novú kartu"
       },
       "logout": "Odhlásiť sa"

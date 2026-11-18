@@ -11,30 +11,17 @@ import {
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { logout } from "@/lib/auth/actions"
 import { BASE_PATH } from "@/lib/env"
+import { LEGAL_DOCUMENTS_PAGE_URL } from "@/lib/legal/platform-documents"
 import { cn } from "@/lib/utils"
 import { ProfileEditModal }        from "./profile-edit-modal"
 import { ChangePasswordModal }     from "./change-password-modal"
 import { TwoFactorSettingsModal }  from "./two-factor-settings-modal"
-
-// Adhera runs embedded under formwise.fr/app — these legal pages live on the marketing
-// site (formwise-latest repo, Sanity-backed) instead of being duplicated here. They sit in
-// this menu rather than in Paramètres so every role reaches them: managers, portal members
-// and super admins.
-const LEGAL_LINKS = [
-  { key: "mentionsLegales",             href: "https://www.formwise.fr/fr/legal-notice/" },
-  { key: "cgu",                         href: "https://www.formwise.fr/fr/terms-of-use/" },
-  { key: "cgs",                         href: "https://www.formwise.fr/fr/terms-of-service/" },
-  { key: "politiqueConfidentialite",    href: "https://www.formwise.fr/fr/privacy-policy/" },
-] as const
 
 function getRoleLabels(t: ReturnType<typeof useTranslations>): Record<string, string> {
   return {
@@ -126,30 +113,17 @@ export function UserMenu({ user, logoutRedirect, className, avatarClassName }: U
           <DropdownMenuSeparator />
 
           <DropdownMenuGroup>
-            <DropdownMenuSub>
-              <DropdownMenuSubTrigger>
-                <ScalesIcon className="mr-2 size-4" />
-                {t("legalDocuments.title")}
-              </DropdownMenuSubTrigger>
-              {/* No side/align override: as a submenu, Base UI's positioner flips it to the
-                  left when the right edge is too close, then drops it below the trigger and
-                  shifts it back inside the viewport when neither side fits (phones). */}
-              <DropdownMenuSubContent>
-                {LEGAL_LINKS.map(legalLink => (
-                  // A real <a> (middle-click, copy link, status bar URL) rather than
-                  // window.open; Menu.Item still closes the menu on click, which
-                  // Menu.LinkItem wouldn't by default.
-                  <DropdownMenuItem
-                    key={legalLink.key}
-                    render={<a href={legalLink.href} target="_blank" rel="noopener noreferrer" />}
-                  >
-                    <span className="flex-1">{t(`legalDocuments.${legalLink.key}`)}</span>
-                    <ArrowSquareOutIcon className="size-3.5 text-muted-foreground" aria-hidden />
-                    <span className="sr-only">{t("legalDocuments.opensNewTab")}</span>
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuSubContent>
-            </DropdownMenuSub>
+            {/* A real <a> (middle-click, copy link, status bar URL) rather than window.open;
+                Menu.Item still closes the menu on click, which Menu.LinkItem wouldn't by
+                default. */}
+            <DropdownMenuItem
+              render={<a href={LEGAL_DOCUMENTS_PAGE_URL} target="_blank" rel="noopener noreferrer" />}
+            >
+              <ScalesIcon className="mr-2 size-4" />
+              <span className="flex-1">{t("legalDocuments.title")}</span>
+              <ArrowSquareOutIcon className="size-3.5 text-muted-foreground" aria-hidden />
+              <span className="sr-only">{t("legalDocuments.opensNewTab")}</span>
+            </DropdownMenuItem>
           </DropdownMenuGroup>
 
           <DropdownMenuSeparator />

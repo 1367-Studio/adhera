@@ -158,10 +158,9 @@
         "passwordLabel": "Heslo",
         "passwordPlaceholder": "Min. 8 znaků",
         "passwordGoogleHint": "Pro první vytvoření účtu zvolte heslo. Poté se můžete přihlásit pomocí Googlu.",
-        "acceptTermsPrefix": "Přijímám",
-        "termsOfService": "Podmínky služby",
-        "acceptTermsAnd": "a",
-        "privacyPolicy": "Zásady ochrany osobních údajů",
+        "legalDocsAcceptPrefix": "Přečetl jsem všechny",
+        "legalDocsLinkLabel": "Právní dokumenty Formwise",
+        "legalDocsAcceptSuffix": "a přijímám podmínky užívání služby.",
         "continueToPayment": "Pokračujte k pokladně",
         "perkTrialDays": "{days} Volné dny",
         "perkNoCommitment": "Žádná povinnost",
@@ -5220,6 +5219,12 @@
       "invalidFormToast": "Uložení se nezdařilo. Pokud problém přetrvává, kontaktujte podporu.",
       "customFieldsLoading": "Načítání odpovědí z přihlašovacího formuláře…"
     },
+    "fichePdf": {
+      "title": "PROFIL ČLENA",
+      "subtitle": "Formulář má vyplnit nový člen",
+      "signature": "Podpis",
+      "date": "Datum"
+    },
     "actions": {
       "add": "Přidejte člena",
       "edit": "Editovat člene",
@@ -7037,10 +7042,6 @@
       "security": "Bezpečnost",
       "legalDocuments": {
         "title": "Právní dokumenty",
-        "mentionsLegales": "Právní oznámení",
-        "cgu": "UGC",
-        "cgs": "CGV",
-        "politiqueConfidentialite": "Zásady ochrany osobních údajů",
         "opensNewTab": "Otevře novou kartu"
       },
       "logout": "Odhlásit se"

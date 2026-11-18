@@ -158,10 +158,9 @@
         "passwordLabel": "Jelszó",
         "passwordPlaceholder": "Min. 8 karakter",
         "passwordGoogleHint": "Az első fiók létrehozásához válassz jelszót. Ezután bejelentkezhetsz a Google-on.",
-        "acceptTermsPrefix": "Elfogadom a",
-        "termsOfService": "Szolgáltatási feltételek",
-        "acceptTermsAnd": "és a",
-        "privacyPolicy": "Adatvédelmi szabályzat",
+        "legalDocsAcceptPrefix": "Elolvastam az összes",
+        "legalDocsLinkLabel": "A Formwise jogi dokumentumai",
+        "legalDocsAcceptSuffix": "és elfogadom a szolgáltatás használati feltételeit.",
         "continueToPayment": "Folytasd a fizetést",
         "perkTrialDays": "{days} Szabadnapok",
         "perkNoCommitment": "Nincs kötelezettség",
@@ -5220,6 +5219,12 @@
       "invalidFormToast": "A mentés nem sikerült. Ha a probléma továbbra is fennáll, forduljon az ügyfélszolgálathoz.",
       "customFieldsLoading": "A belépési űrlap válaszainak betöltése…"
     },
+    "fichePdf": {
+      "title": "TAGPROFIL",
+      "subtitle": "Az új tagnak kitöltendő űrlap",
+      "signature": "Aláírás",
+      "date": "Dátum"
+    },
     "actions": {
       "add": "Tag hozzáadása",
       "edit": "Szerkesztés tag",
@@ -7037,10 +7042,6 @@
       "security": "Biztonság",
       "legalDocuments": {
         "title": "Jogi dokumentumok",
-        "mentionsLegales": "Jogi közlemény",
-        "cgu": "UGC",
-        "cgs": "CGV",
-        "politiqueConfidentialite": "Adatvédelmi szabályzat",
         "opensNewTab": "Új oldal nyílik meg"
       },
       "logout": "Kilépés"

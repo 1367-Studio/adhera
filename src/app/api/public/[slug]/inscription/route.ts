@@ -4,7 +4,7 @@ import { z } from "zod"
 import { parseModules } from "@/lib/modules"
 import { rateLimit, requestIp } from "@/lib/rate-limit"
 import { assertMemberLimit, MemberLimitReachedError, MEMBER_LIMIT_VISITOR_MESSAGE } from "@/lib/plan-limits"
-import { CURRENT_TERMS_VERSION, consentIp } from "@/lib/consent"
+import { getCurrentTermsVersion, consentIp } from "@/lib/consent"
 import { writeActivityLog } from "@/lib/activity-log"
 import { ADDRESS_MAX_LENGTHS, addressColumns } from "@/lib/address"
 import { SUPPORTED_LOCALES } from "@/i18n/locales"
@@ -56,6 +56,7 @@ export async function POST(
 
   const { firstName, lastName, email, phone, typeId, locale } = parsed.data
   const acceptedIp = consentIp(req)
+  const termsVersion = await getCurrentTermsVersion()
 
   // Prevent duplicate by email
   if (email) {
@@ -114,7 +115,7 @@ export async function POST(
       associationId:   assoc.id,
       typeId:          typeId ?? null,
       termsAcceptedAt: new Date(),
-      termsVersion:    CURRENT_TERMS_VERSION,
+      termsVersion,
       termsAcceptedIp: acceptedIp,
     },
   })

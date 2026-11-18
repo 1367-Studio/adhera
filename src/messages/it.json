@@ -158,10 +158,9 @@
         "passwordLabel": "Password",
         "passwordPlaceholder": "Min. 8 caratteri",
         "passwordGoogleHint": "Per questa prima creazione di account, scegli una password. Puoi poi accedere con Google.",
-        "acceptTermsPrefix": "Accetto il",
-        "termsOfService": "Termini e Condizioni di Servizio",
-        "acceptTermsAnd": "e il",
-        "privacyPolicy": "Informativa sulla privacy",
+        "legalDocsAcceptPrefix": "Ho letto tutto il",
+        "legalDocsLinkLabel": "Documenti legali di Formwise",
+        "legalDocsAcceptSuffix": "e accetto i termini di utilizzo del servizio.",
         "continueToPayment": "Continua a pagare",
         "perkTrialDays": "{days} Giornate libere",
         "perkNoCommitment": "Nessun obbligo",
@@ -5220,6 +5219,12 @@
       "invalidFormToast": "Impossibile salvare. Contatta l'assistenza se il problema persiste.",
       "customFieldsLoading": "Caricamento delle risposte al modulo di adesione…"
     },
+    "fichePdf": {
+      "title": "PROFILO DEL MEMBRO",
+      "subtitle": "Modulo da compilare dal nuovo membro",
+      "signature": "Firma",
+      "date": "Data"
+    },
     "actions": {
       "add": "Aggiungi un membro",
       "edit": "Modifica Membro",
@@ -7037,10 +7042,6 @@
       "security": "Sicurezza",
       "legalDocuments": {
         "title": "Documenti legali",
-        "mentionsLegales": "Avviso legale",
-        "cgu": "CGU",
-        "cgs": "CGV",
-        "politiqueConfidentialite": "Informativa sulla privacy",
         "opensNewTab": "Apre una nuova scheda"
       },
       "logout": "Disconnettiti"
