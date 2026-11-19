@@ -828,6 +828,7 @@
     "subtitle": "Vue d'ensemble de votre association",
     "customize": {
       "customize": "Personnaliser",
+      "tooltip": "Personnaliser le tableau de bord",
       "done": "Terminé",
       "reset": "Réinitialiser",
       "dragHint": "Glisser pour réorganiser",

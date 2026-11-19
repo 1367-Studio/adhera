@@ -828,6 +828,7 @@
     "subtitle": "Jūsų asociacijos apžvalga",
     "customize": {
       "customize": "Pritaikyk",
+      "tooltip": "Pritaikykite prietaisų skydelį",
       "done": "Baigta",
       "reset": "Atstatymas",
       "dragHint": "Tempkite, kad pertvarkytumėte",

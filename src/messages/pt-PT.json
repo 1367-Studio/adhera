@@ -828,6 +828,7 @@
     "subtitle": "Visão geral da sua associação",
     "customize": {
       "customize": "Personalizar",
+      "tooltip": "Personalizar o painel de controlo",
       "done": "Concluído",
       "reset": "Repor",
       "dragHint": "Arraste para reordenar",

@@ -828,6 +828,7 @@
     "subtitle": "Panoramica della tua associazione",
     "customize": {
       "customize": "Personalizza",
+      "tooltip": "Personalizza il dashboard",
       "done": "Completato",
       "reset": "Reset",
       "dragHint": "Trascina per riorganizzare",

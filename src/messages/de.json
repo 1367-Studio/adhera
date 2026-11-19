@@ -828,6 +828,7 @@
     "subtitle": "Überblick über Ihre Vereinigung",
     "customize": {
       "customize": "Anpassen",
+      "tooltip": "Das Dashboard anpassen",
       "done": "Abgeschlossen",
       "reset": "Reset",
       "dragHint": "Ziehen zum Umarrangieren",

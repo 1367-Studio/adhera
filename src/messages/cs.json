@@ -828,6 +828,7 @@
     "subtitle": "Přehled vaší asociace",
     "customize": {
       "customize": "Přizpůsobit",
+      "tooltip": "Přizpůsobte dashboard",
       "done": "Dokončeno",
       "reset": "Reset",
       "dragHint": "Tah pro přeskupení",
