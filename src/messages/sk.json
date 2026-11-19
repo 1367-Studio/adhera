@@ -669,6 +669,7 @@
     "subtitle": "Prehľad vašej asociácie",
     "customize": {
       "customize": "Prispôsobenie",
+      "tooltip": "Prispôsobte dashboard",
       "done": "Dokončené",
       "reset": "Reset",
       "dragHint": "Ťah na preusporiadanie",

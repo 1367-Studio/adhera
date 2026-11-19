@@ -12,7 +12,7 @@ import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { useEvenementsPaginated, useEvenementsSummary, useDeleteEvenement } from "@/hooks/use-evenements"
 import { PageHeader } from "@/components/ui/page-header"
 import { StatTile } from "@/components/dashboard/widgets/stat-tile"
@@ -69,10 +69,13 @@ export function EvenementsView() {
   const t = useTranslations()
   const tCommon = useTranslations("common")
   const router = useRouter()
+  const searchParams = useSearchParams()
   const qc = useQueryClient()
   // FORM-34: a "read" user browses events, attendance and reviews but changes nothing.
   const canEditEvenements = useHasAccess("evenements", "edit")
-  const [view, setView]                   = useState<ViewMode>("list")
+  // Dashboard Agenda card's "Voir le calendrier" lands here with ?view=calendar — same
+  // deep-link convention as the "À traiter" bar's ?overdue=1 (see materiel-view.tsx).
+  const [view, setView]                   = useState<ViewMode>(() => (searchParams.get("view") === "calendar" ? "calendar" : "list"))
   const [page, setPage]                   = useState(1)
   const [searchInput, setSearchInput]     = useState("")
   const [search, setSearch]               = useState("")

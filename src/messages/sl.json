@@ -669,6 +669,7 @@
     "subtitle": "Pregled vaše zveze",
     "customize": {
       "customize": "Prilagodite",
+      "tooltip": "Prilagodite nadzorno ploščo",
       "done": "Dokončano",
       "reset": "Ponastavitev",
       "dragHint": "Povleci za preureditev",

@@ -669,6 +669,7 @@
     "subtitle": "Az Ön szövetségének áttekintése",
     "customize": {
       "customize": "Testreszabás",
+      "tooltip": "Testreszabhatja a műszerfalat",
       "done": "Befejezve",
       "reset": "Reset",
       "dragHint": "Drag átrendezéshez",

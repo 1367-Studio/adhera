@@ -669,6 +669,7 @@
     "subtitle": "Jūsu asociācijas pārskats",
     "customize": {
       "customize": "Pielāgot",
+      "tooltip": "Pielāgojiet vadības paneli",
       "done": "Pabeigts",
       "reset": "Atiestatīt",
       "dragHint": "Velciet, lai pārkārtotu",

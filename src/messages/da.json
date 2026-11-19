@@ -669,6 +669,7 @@
     "subtitle": "Oversigt over din forening",
     "customize": {
       "customize": "Tilpas",
+      "tooltip": "Tilpas dashboardet",
       "done": "Færdiggjort",
       "reset": "Nulstil",
       "dragHint": "Træk for at omarrangere",

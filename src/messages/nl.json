@@ -669,6 +669,7 @@
     "subtitle": "Overzicht van uw vereniging",
     "customize": {
       "customize": "Aanpassen",
+      "tooltip": "Pas het dashboard aan",
       "done": "Voltooid",
       "reset": "Reset",
       "dragHint": "Sleep om te herschikken",

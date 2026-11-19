@@ -794,6 +794,7 @@
     "subtitle": "Overview of your association",
     "customize": {
       "customize": "Customize",
+      "tooltip": "Customize the dashboard",
       "done": "Done",
       "reset": "Reset",
       "dragHint": "Drag to reorder",

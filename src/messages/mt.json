@@ -669,6 +669,7 @@
     "subtitle": "Ħarsa ġenerali lejn l-assoċjazzjoni tiegħek",
     "customize": {
       "customize": "Personalizza",
+      "tooltip": "Ippersonalizza d-dashboard",
       "done": "Komplut",
       "reset": "Reset",
       "dragHint": "Drag biex jerġa' jarranġa",
