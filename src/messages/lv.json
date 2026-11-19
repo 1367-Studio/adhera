@@ -674,6 +674,29 @@
       "dragHint": "Velciet, lai pārkārtotu",
       "resizeHint": "Pavelc stūri, lai mainītu izmēru"
     },
+    "actionsTodo": {
+      "trigger": "Veicamie soļi",
+      "empty": "Viss ir atjaunināts, nav nekādu darbību, ko risināt.",
+      "snooze": "Atlikt šo rīcību",
+      "snoozeDialogTitle": "Atlikt šo rīcību",
+      "snoozeDialogDescription": "Darbība jums paliek slēpta līdz tam datumam, tad atkal parādās, ja vēl ir lietas, kas jāapstrādā.",
+      "snoozeUntilLabel": "Atlikts līdz",
+      "confirm": "Apstiprini",
+      "loadError": "Nevar ielādēt vajadzīgās darbības.",
+      "snoozedSectionTitle": "{count, plural, one {# darbība atlikta} other {# darbības atliktas}}",
+      "snoozedUntil": "Līdz {date}",
+      "cancelSnooze": "Atcelt rezervāciju",
+      "actionLabels": {
+        "voirEtRelancer": "Skatīt un atjaunot",
+        "examiner": "Eksaminētājs",
+        "consulter": "Konsultācija"
+      },
+      "rows": {
+        "cotisations-en-retard": "{count, plural, one {# nokavētā dalības maksa} other {# nokavētie ieguldījumi}}",
+        "adhesions-a-valider": "{count, plural, one {# biedra statusu apstiprināšanai} other {# biedru statuss, kas jāapstiprina}}",
+        "cheques-a-traiter": "{count, plural, one {# pārbaude, lai apstrādātu} other {# pārbaudes apstrādei}}"
+      }
+    },
     "stats": {
       "activeMembers": "Aktīvie biedri",
       "eventsThisMonth": "Šī mēneša notikumi",

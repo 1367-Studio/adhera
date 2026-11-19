@@ -674,6 +674,29 @@
       "dragHint": "Drag järjestääksesi uudelleen",
       "resizeHint": "Vedä kulmaa koon muuttamiseksi"
     },
+    "actionsTodo": {
+      "trigger": "Toimenpiteet",
+      "empty": "Kaikki on ajan tasalla, ei toimenpiteitä hoidettavana.",
+      "snooze": "Lykkää tätä toimenpidettä",
+      "snoozeDialogTitle": "Lykkää tätä toimenpidettä",
+      "snoozeDialogDescription": "Toiminto pysyy piilossa sinulta siihen päivään asti, mutta ilmestyy uudelleen, jos käsittelyä on vielä käsiteltävänä.",
+      "snoozeUntilLabel": "Siirretty siihen asti",
+      "confirm": "Vahvista",
+      "loadError": "Suoritettavia toimintoja ei voitu ladata.",
+      "snoozedSectionTitle": "{count, plural, one {# toiminta keskeytetty} other {# toimenpiteet tauolle}}",
+      "snoozedUntil": "Kunnes {date}",
+      "cancelSnooze": "Peruuta pidätys",
+      "actionLabels": {
+        "voirEtRelancer": "Katso ja käynnistä se uudelleen",
+        "examiner": "Tarkastaja",
+        "consulter": "Konsultoi"
+      },
+      "rows": {
+        "cotisations-en-retard": "{count, plural, one {# myöhässä oleva jäsenmaksu} other {# myöhästyneet maksut}}",
+        "adhesions-a-valider": "{count, plural, one {# jäsenyys vahvistettavana} other {# jäsenyydet validoitava}}",
+        "cheques-a-traiter": "{count, plural, one {# tarkistus käsittelyyn} other {# tarkistukset käsiteltäväksi}}"
+      }
+    },
     "stats": {
       "activeMembers": "Aktiiviset jäsenet",
       "eventsThisMonth": "Tämän kuukauden tapahtumat",

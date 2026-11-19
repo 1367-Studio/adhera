@@ -674,6 +674,29 @@
       "dragHint": "Arrastrar para reordenar",
       "resizeHint": "Arrastra la esquina para redimensionar"
     },
+    "actionsTodo": {
+      "trigger": "Acciones a tomar",
+      "empty": "Todo está actualizado, no hay ninguna acción que gestionar.",
+      "snooze": "Aplazar esta acción",
+      "snoozeDialogTitle": "Aplazar esta acción",
+      "snoozeDialogDescription": "La acción permanece oculta para ti hasta esa fecha y luego reaparece si aún quedan casos por procesar.",
+      "snoozeUntilLabel": "Pospuesto hasta",
+      "confirm": "Confirma",
+      "loadError": "No se pueden cargar las acciones que se deben realizar.",
+      "snoozedSectionTitle": "{count, plural, one {# acción suspendida} other {# acciones suspendidas}}",
+      "snoozedUntil": "Hasta que {date}",
+      "cancelSnooze": "Cancelar la retención",
+      "actionLabels": {
+        "voirEtRelancer": "Ver y relanzar",
+        "examiner": "Examinador",
+        "consulter": "Consulta"
+      },
+      "rows": {
+        "cotisations-en-retard": "{count, plural, one {# cuota de membresía atrasada} other {# contribuciones atrasadas}}",
+        "adhesions-a-valider": "{count, plural, one {# de pertenencia a validar} other {# membresías a validar}}",
+        "cheques-a-traiter": "{count, plural, one {# cheque para procesar} other {# cheques a procesar}}"
+      }
+    },
     "stats": {
       "activeMembers": "Miembros activos",
       "eventsThisMonth": "Eventos este mes",

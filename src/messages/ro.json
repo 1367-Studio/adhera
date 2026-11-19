@@ -674,6 +674,29 @@
       "dragHint": "Tragere la rearanjare",
       "resizeHint": "Trage colțul pentru a redimensiona"
     },
+    "actionsTodo": {
+      "trigger": "Acțiuni de întreprins",
+      "empty": "Totul este la zi, nicio acțiune de gestionat.",
+      "snooze": "Amânați această acțiune",
+      "snoozeDialogTitle": "Amânați această acțiune",
+      "snoozeDialogDescription": "Acțiunea rămâne ascunsă pentru tine până la acea dată, apoi reapare dacă mai sunt cazuri de procesat.",
+      "snoozeUntilLabel": "Amânat până",
+      "confirm": "Confirmă",
+      "loadError": "Nu se pot încărca acțiunile ce urmează să fie efectuate.",
+      "snoozedSectionTitle": "{count, plural, one {# acțiune suspendată} other {# acțiuni suspendate}}",
+      "snoozedUntil": "Până când {date}",
+      "cancelSnooze": "Anulează blocarea",
+      "actionLabels": {
+        "voirEtRelancer": "Vezi și relansează",
+        "examiner": "Examinator",
+        "consulter": "Consultă"
+      },
+      "rows": {
+        "cotisations-en-retard": "{count, plural, one {# cotizație de membru restantă} other {# contribuții întârziate}}",
+        "adhesions-a-valider": "{count, plural, one {# de validat} other {# de validat calitatea de membru}}",
+        "cheques-a-traiter": "{count, plural, one {# verificare pentru procesare} other {# verificări de procesat}}"
+      }
+    },
     "stats": {
       "activeMembers": "Membri activi",
       "eventsThisMonth": "Evenimente din această lună",

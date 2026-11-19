@@ -674,6 +674,29 @@
       "dragHint": "Drag átrendezéshez",
       "resizeHint": "Húzd a sarkot a méret módosításához"
     },
+    "actionsTodo": {
+      "trigger": "Teendők",
+      "empty": "Minden naprakész, nincs mit intézni.",
+      "snooze": "A lépés elhalasztása",
+      "snoozeDialogTitle": "A lépés elhalasztása",
+      "snoozeDialogDescription": "A művelet addig rejtve marad előtted, majd újra megjelenik, ha még vannak ügy, amelyeket feldolgozni kell.",
+      "snoozeUntilLabel": "Elhalasztva addig",
+      "confirm": "Megerősítés",
+      "loadError": "Nem sikerült betölteni a végrehajtandó műveleteket.",
+      "snoozedSectionTitle": "{count, plural, one {# intézkedés felfüggesztés} other {# felfüggesztett intézkedések}}",
+      "snoozedUntil": "Egészen addig. {date}",
+      "cancelSnooze": "Zárolás megszakítása",
+      "actionLabels": {
+        "voirEtRelancer": "Nézze meg és indítsa újra",
+        "examiner": "Vizsgáló",
+        "consulter": "Konzultáció"
+      },
+      "rows": {
+        "cotisations-en-retard": "{count, plural, one {# lejárt tagsági díj} other {# esedékes hozzájárulások}}",
+        "adhesions-a-valider": "{count, plural, one {# tagság érvényesítendő} other {# érvényesítendő tagságok}}",
+        "cheques-a-traiter": "{count, plural, one {# ellenőrzés a feldolgozáshoz} other {# ellenőrzések feldolgozása}}"
+      }
+    },
     "stats": {
       "activeMembers": "Aktív tagok",
       "eventsThisMonth": "A hónap eseményei",

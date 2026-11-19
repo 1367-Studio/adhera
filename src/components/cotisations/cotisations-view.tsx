@@ -11,6 +11,7 @@ import {
   useCotisationsPaginated, useCreateCotisation, useUpdateCotisation, useDeleteCotisation,
   useCotisationsDistribution, useCotisationTierOptions, type RenewalMode,
 } from "@/hooks/use-cotisations"
+import { useActionsTodoHighlight } from "@/hooks/use-actions-todo-highlight"
 import { useQuery } from "@tanstack/react-query"
 import type { CotisationInput } from "@/lib/schemas"
 import { PageHeader } from "@/components/ui/page-header"
@@ -142,6 +143,8 @@ export function CotisationsView() {
   const { data: result, isLoading } = useCotisationsPaginated(page, PAGE_SIZE, filters)
   const cotisations = (result?.data ?? []) as Cotisation[]
   const summary = result?.summary ?? { count: 0, aPagar: 0, recebido: 0, saldo: 0 }
+  // Flashes the rows a dashboard "Actions à faire" link just filtered down to (FORM-119).
+  useActionsTodoHighlight(!isLoading)
 
   const { data: tierOptionsData } = useCotisationTierOptions()
   const tierOptions       = tierOptionsData?.tiers ?? []

@@ -778,6 +778,10 @@ model User {
   // parseDashboardLayout(), same shape as Association.modules falling back to
   // DEFAULT_MODULES via parseModules().
   dashboardLayout Json?
+  // Per-user "Reporter" snoozes for the dashboard's "Actions à faire" panel (FORM-119):
+  // Record<actionKey, ISO-date-string>, read through parseDashboardActionSnoozes() —
+  // same per-user-JSON-preference convention as dashboardLayout above, never trusted raw.
+  dashboardActionSnoozes Json?
   associationId   String?
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt

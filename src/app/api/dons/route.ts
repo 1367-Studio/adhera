@@ -30,9 +30,17 @@ export const GET = withAdminAuth(async (req, ctx) => {
   // besides "paid" this table needs to surface, so an admin has somewhere to see and
   // action them. Mutually exclusive with receiptsOnly (a pending don has no receipt yet).
   const pendingOnly   = searchParams.get("pendingOnly") === "true"
+  // Narrows the pending bucket to one method — used by the dashboard's "Actions à faire"
+  // panel (FORM-119) "chèques à traiter" row, whose link must land on exactly the chèques
+  // it counted, not the full ESPECES+CHEQUE+VIREMENT pending bucket.
+  const pendingMethodParam = searchParams.get("pendingMethod")
+  const PENDING_METHODS = ["ESPECES", "CHEQUE", "VIREMENT"]
+  const pendingMethod = pendingMethodParam && PENDING_METHODS.includes(pendingMethodParam)
+    ? pendingMethodParam
+    : undefined
 
   const where: Record<string, unknown> = pendingOnly
-    ? { associationId, paidAt: null, paymentMethod: { in: ["ESPECES", "CHEQUE", "VIREMENT"] } }
+    ? { associationId, paidAt: null, paymentMethod: pendingMethod ?? { in: ["ESPECES", "CHEQUE", "VIREMENT"] } }
     : {
         associationId,
         paidAt: { not: null },

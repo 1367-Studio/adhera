@@ -674,6 +674,29 @@
       "dragHint": "Drag, et ümber korraldada",
       "resizeHint": "Lohista nurka, et suurust muuta"
     },
+    "actionsTodo": {
+      "trigger": "Tegevused, mida teha",
+      "empty": "Kõik on ajakohane, pole mingit tegevust.",
+      "snooze": "Lükata see samm edasi",
+      "snoozeDialogTitle": "Lükata see samm edasi",
+      "snoozeDialogDescription": "Toiming jääb sinu jaoks varjatuks kuni selle kuupäevani ja ilmub uuesti, kui on veel lahendamist vajavaid juhtumeid.",
+      "snoozeUntilLabel": "Edasi lükatud kuni",
+      "confirm": "Kinnita",
+      "loadError": "Ei õnnestu laadida vajalikke toiminguid.",
+      "snoozedSectionTitle": "{count, plural, one {# tegevus peatati} other {# tegevused on ootele pandud}}",
+      "snoozedUntil": "Kuni {date}",
+      "cancelSnooze": "Tühista peatamine",
+      "actionLabels": {
+        "voirEtRelancer": "Vaata ja taaskäivita",
+        "examiner": "Eksamineerija",
+        "consulter": "Konsulteeri"
+      },
+      "rows": {
+        "cotisations-en-retard": "{count, plural, one {# hilinenud liikmemaksu} other {# hilinenud sissemaksed}}",
+        "adhesions-a-valider": "{count, plural, one {# liikmelisuse valideerimine} other {# valideeritavad liikmelisused}}",
+        "cheques-a-traiter": "{count, plural, one {# kontrolli protsessi} other {# kontrollid töötlemiseks}}"
+      }
+    },
     "stats": {
       "activeMembers": "Aktiivsed liikmed",
       "eventsThisMonth": "Selle kuu sündmused",

@@ -674,6 +674,29 @@
       "dragHint": "Tarraing le hatheagrú",
       "resizeHint": "Tarraing an choirnéal chun méid a athrú"
     },
+    "actionsTodo": {
+      "trigger": "Gníomhartha le déanamh",
+      "empty": "Tá gach rud cothrom le dáta, níl aon ghníomh le láimhseáil.",
+      "snooze": "Cuir an gníomh seo ar athló",
+      "snoozeDialogTitle": "Cuir an gníomh seo ar athló",
+      "snoozeDialogDescription": "Fanann an gníomh i bhfolach duit go dtí an dáta sin, agus ansin tagann sé ar ais má tá cásanna fós le próiseáil.",
+      "snoozeUntilLabel": "Curtha ar athló go dtí",
+      "confirm": "Deimhnigh",
+      "loadError": "Ní féidir na gníomhartha atá le déanamh a luchtú.",
+      "snoozedSectionTitle": "{count, plural, one {# gníomh curtha ar fionraí} other {# gníomhartha curtha ar fionraí}}",
+      "snoozedUntil": "Go dtí {date}",
+      "cancelSnooze": "Cealaigh an coinneáil",
+      "actionLabels": {
+        "voirEtRelancer": "Féach agus athsheoladh",
+        "examiner": "Scrúdaitheoir",
+        "consulter": "Téigh i gcomhairle"
+      },
+      "rows": {
+        "cotisations-en-retard": "{count, plural, one {# táille ballraíochta atá thar téarma} other {# ranníocaíochtaí thar téarma}}",
+        "adhesions-a-valider": "{count, plural, one {# ballraíocht le bailíochtú} other {# ballraíochtaí le bailíochtú}}",
+        "cheques-a-traiter": "{count, plural, one {# seiceáil le próiseáil} other {# seiceálacha le próiseáil}}"
+      }
+    },
     "stats": {
       "activeMembers": "Baill Ghníomhacha",
       "eventsThisMonth": "Imeachtaí na míosa seo",

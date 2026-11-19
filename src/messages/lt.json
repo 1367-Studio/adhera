@@ -674,6 +674,29 @@
       "dragHint": "Tempkite, kad pertvarkytumėte",
       "resizeHint": "Tempkite kampą, kad sumažintumėte dydį"
     },
+    "actionsTodo": {
+      "trigger": "Veiksmai, kuriuos reikia atlikti",
+      "empty": "Viskas atnaujinta, jokių veiksmų.",
+      "snooze": "Atidėkite šį veiksmą",
+      "snoozeDialogTitle": "Atidėkite šį veiksmą",
+      "snoozeDialogDescription": "Veiksmas lieka paslėptas iki tos datos, o jei dar yra bylų, vėl pasirodo.",
+      "snoozeUntilLabel": "Atidėta iki",
+      "confirm": "Patvirtinkite",
+      "loadError": "Negaliu įkelti veiksmų, kuriuos reikia atlikti.",
+      "snoozedSectionTitle": "{count, plural, one {# veiksmas sustabdytas} other {# veiksmai sustabdyti}}",
+      "snoozedUntil": "Kol {date}",
+      "cancelSnooze": "Atšaukti rezervaciją",
+      "actionLabels": {
+        "voirEtRelancer": "Žiūrėti ir perleisti",
+        "examiner": "Egzaminuotojas",
+        "consulter": "Konsultuotis"
+      },
+      "rows": {
+        "cotisations-en-retard": "{count, plural, one {# vėluojantis narystės mokestis} other {# vėluojantys indėliai}}",
+        "adhesions-a-valider": "{count, plural, one {# narystė turi būti patvirtinta} other {# narystės, kurios turi būti patvirtintos}}",
+        "cheques-a-traiter": "{count, plural, one {# patikrinti apdorojimą} other {# patikrinimai apdorojimui}}"
+      }
+    },
     "stats": {
       "activeMembers": "Aktyvūs nariai",
       "eventsThisMonth": "Šio mėnesio įvykiai",
