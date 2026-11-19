@@ -833,44 +833,40 @@
       "dragHint": "Ziehen zum Umarrangieren",
       "resizeHint": "Ziehe die Ecke, um die Größe anzupassen"
     },
-    "actionsTodo": {
-      "trigger": "Zu ergreifende Maßnahmen",
-      "empty": "Alles ist auf dem neuesten Stand, keine Aktion zu bewältigen.",
-      "snooze": "Diese Aktion verschieben",
-      "snoozeDialogTitle": "Diese Aktion verschieben",
-      "snoozeDialogDescription": "Die Aktion bleibt bis zu diesem Datum für Sie verborgen und erscheint dann wieder, wenn noch Fälle zu bearbeiten sind.",
-      "snoozeUntilLabel": "Verschoben bis",
-      "confirm": "Bestätigen",
-      "loadError": "Die auszuführenden Aktionen können nicht geladen werden.",
-      "snoozedSectionTitle": "{count, plural, one {# Aktion auf Eis gelegt} other {# Aktionen, die auf Eis gelegt wurden}}",
-      "snoozedUntil": "Bis {date}",
-      "cancelSnooze": "Sperre aufheben",
-      "actionLabels": {
-        "voirEtRelancer": "Siehe und Neustart",
-        "examiner": "Prüfer",
-        "consulter": "Konsultieren"
-      },
-      "rows": {
-        "cotisations-en-retard": "{count, plural, one {# überfällige Mitgliedsgebühr} other {# überfällige Beiträge}}",
-        "adhesions-a-valider": "{count, plural, one {# Mitgliedschaft zu validieren} other {# Mitgliedschaften zu validieren}}",
-        "cheques-a-traiter": "{count, plural, one {# Prüfung zum Verfahren} other {# Prüfungen zu bearbeiten}}"
+    "aTraiter": {
+      "title": "Behandelt zu werden",
+      "empty": "Im Moment gibt es nichts zu tun",
+      "loadError": "Zu verarbeitende Aktionen können nicht geladen werden.",
+      "items": {
+        "cotisationsEnAttente": "{count, plural, one {# ausstehende Mitgliedsgebühr} other {# ausstehende Beiträge}}",
+        "donsAEncaisser": "{count, plural, one {# Geschenk, das eingelöst werden soll} other {# Spenden einzusammeln}}",
+        "materielEnRetard": "{count, plural, one {# späte Materialrenditen} other {# späte Materialrenditen}}"
       }
     },
     "stats": {
-      "activeMembers": "Aktive Mitglieder",
-      "eventsThisMonth": "Veranstaltungen in diesem Monat",
-      "cotisationsPending": "Ausstehende Beiträge",
       "financialBalance": "Finanzbilanz",
       "donationsReceived": "Eingegangene Spenden {year}"
     },
-    "nextEvent": {
-      "title": "Nächstes Event",
-      "empty": "Keine bevorstehenden Veranstaltungen."
+    "agenda": {
+      "title": "Tagesordnung",
+      "eventsThisMonth": "{count, plural, one {# Veranstaltung diesen Monat} other {# Veranstaltungen in diesem Monat}}",
+      "ongoing": "In Bearbeitung",
+      "viewCalendar": "Siehe den Kalender",
+      "empty": "Keine Veranstaltungen stehen an."
     },
     "cotisations": {
       "title": "Beiträge {year}",
       "collectedThisYear": "Dieses Jahr habe ich es eingelöst",
-      "pendingPayment": "{count} Warten auf Zahlung"
+      "remaining": "{amount} noch zu empfangen",
+      "pendingPayment": "{count} Warten auf Zahlung",
+      "viewAll": "Sehen Sie sich die Gebühren an"
+    },
+    "activiteRecente": {
+      "title": "Jüngste Aktivitäten",
+      "tabs": {
+        "commandes": "Bestellungen",
+        "dons": "Spenden"
+      }
     },
     "recentDonations": {
       "title": "Jüngste Spenden",
@@ -906,6 +902,7 @@
       "categoryTitle": "Einnahmen nach Kategorie — {year}"
     },
     "memberSummary": {
+      "title": "Mitglieder",
       "total": "{count, plural, one {# Mitglied} other {# Mitglieder}}",
       "active": "{count, plural, one {# aktiv} other {# aktiv}}",
       "inactive": "{count, plural, one {# inaktiv} other {# inaktiv}}"
@@ -2974,7 +2971,8 @@
         "disponibles": "Verfügbar",
         "enPret": "Leihgabe",
         "reserves": "Reserviert",
-        "maintenance": "Instandhaltung"
+        "maintenance": "Instandhaltung",
+        "enRetard": "Spät"
       },
       "pendingRequests": "Anhängige Anträge",
       "accept": "Akzeptieren",
@@ -2996,7 +2994,8 @@
         "reserves": "Reserviert",
         "maintenance": "Instandhaltung",
         "horsService": "Außer Dienst",
-        "perdus": "Verloren"
+        "perdus": "Verloren",
+        "enRetard": "Spät"
       },
       "noArticles": "Keine Artikel",
       "noResults": "Keine Ergebnisse",

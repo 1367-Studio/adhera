@@ -833,44 +833,40 @@
       "dragHint": "Drag järjestääksesi uudelleen",
       "resizeHint": "Vedä kulmaa koon muuttamiseksi"
     },
-    "actionsTodo": {
-      "trigger": "Toimenpiteet",
-      "empty": "Kaikki on ajan tasalla, ei toimenpiteitä hoidettavana.",
-      "snooze": "Lykkää tätä toimenpidettä",
-      "snoozeDialogTitle": "Lykkää tätä toimenpidettä",
-      "snoozeDialogDescription": "Toiminto pysyy piilossa sinulta siihen päivään asti, mutta ilmestyy uudelleen, jos käsittelyä on vielä käsiteltävänä.",
-      "snoozeUntilLabel": "Siirretty siihen asti",
-      "confirm": "Vahvista",
-      "loadError": "Suoritettavia toimintoja ei voitu ladata.",
-      "snoozedSectionTitle": "{count, plural, one {# toiminta keskeytetty} other {# toimenpiteet tauolle}}",
-      "snoozedUntil": "Kunnes {date}",
-      "cancelSnooze": "Peruuta pidätys",
-      "actionLabels": {
-        "voirEtRelancer": "Katso ja käynnistä se uudelleen",
-        "examiner": "Tarkastaja",
-        "consulter": "Konsultoi"
-      },
-      "rows": {
-        "cotisations-en-retard": "{count, plural, one {# myöhässä oleva jäsenmaksu} other {# myöhästyneet maksut}}",
-        "adhesions-a-valider": "{count, plural, one {# jäsenyys vahvistettavana} other {# jäsenyydet validoitava}}",
-        "cheques-a-traiter": "{count, plural, one {# tarkistus käsittelyyn} other {# tarkistukset käsiteltäväksi}}"
+    "aTraiter": {
+      "title": "Hoidettavaksi",
+      "empty": "Ei tällä hetkellä mitään hoidettavaa",
+      "loadError": "Toimintoja ei voi ladata käsiteltäviä.",
+      "items": {
+        "cotisationsEnAttente": "{count, plural, one {# vireillä oleva jäsenmaksu} other {# vireillä olevat maksut}}",
+        "donsAEncaisser": "{count, plural, one {# lahja lunastettavaksi} other {# lahjoituksia kerättäväksi}}",
+        "materielEnRetard": "{count, plural, one {# myöhäisen materiaalin palautukset} other {# myöhäisen materiaalin palautukset}}"
       }
     },
     "stats": {
-      "activeMembers": "Aktiiviset jäsenet",
-      "eventsThisMonth": "Tämän kuukauden tapahtumat",
-      "cotisationsPending": "Odottavat lahjoitukset",
       "financialBalance": "Taloudellinen tasapaino",
       "donationsReceived": "Vastaanotetut lahjoitukset {year}"
     },
-    "nextEvent": {
-      "title": "Seuraava tapahtuma",
-      "empty": "Ei tulevia tapahtumia."
+    "agenda": {
+      "title": "Esityslista",
+      "eventsThisMonth": "{count, plural, one {# tapahtuma tässä kuussa} other {# tapahtumat tässä kuussa}}",
+      "ongoing": "Käynnissä",
+      "viewCalendar": "Katso kalenteri",
+      "empty": "Ei tapahtumia tulossa."
     },
     "cotisations": {
       "title": "Panokset {year}",
       "collectedThisYear": "Lunastettu tänä vuonna",
-      "pendingPayment": "{count} Maksua odottaa"
+      "remaining": "{amount} jäljellä oleva vastaanotto",
+      "pendingPayment": "{count} Maksua odottaa",
+      "viewAll": "Katso maksut"
+    },
+    "activiteRecente": {
+      "title": "Viimeaikainen toiminta",
+      "tabs": {
+        "commandes": "Tilaukset",
+        "dons": "Lahjoitukset"
+      }
     },
     "recentDonations": {
       "title": "Viimeaikaiset lahjoitukset",
@@ -906,6 +902,7 @@
       "categoryTitle": "Tulot kategorioittain — {year}"
     },
     "memberSummary": {
+      "title": "Jäsenet",
       "total": "{count, plural, one {# jäsen} other {# jäsentä}}",
       "active": "{count, plural, one {# aktiivinen} other {# aktiivista}}",
       "inactive": "{count, plural, one {# passiivinen} other {# passiivista}}"
@@ -2974,7 +2971,8 @@
         "disponibles": "Saatavilla",
         "enPret": "Lainassa",
         "reserves": "Varattu",
-        "maintenance": "Huolto"
+        "maintenance": "Huolto",
+        "enRetard": "Myöhäinen"
       },
       "pendingRequests": "Vireillä olevat hakemukset",
       "accept": "Hyväksy",
@@ -2996,7 +2994,8 @@
         "reserves": "Varattu",
         "maintenance": "Huolto",
         "horsService": "Pois käytöstä",
-        "perdus": "Kadonnut"
+        "perdus": "Kadonnut",
+        "enRetard": "Myöhäinen"
       },
       "noArticles": "Ei artikkeleita",
       "noResults": "Ei tuloksia",

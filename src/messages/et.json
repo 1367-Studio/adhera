@@ -833,44 +833,40 @@
       "dragHint": "Drag, et ümber korraldada",
       "resizeHint": "Lohista nurka, et suurust muuta"
     },
-    "actionsTodo": {
-      "trigger": "Tegevused, mida teha",
-      "empty": "Kõik on ajakohane, pole mingit tegevust.",
-      "snooze": "Lükata see samm edasi",
-      "snoozeDialogTitle": "Lükata see samm edasi",
-      "snoozeDialogDescription": "Toiming jääb sinu jaoks varjatuks kuni selle kuupäevani ja ilmub uuesti, kui on veel lahendamist vajavaid juhtumeid.",
-      "snoozeUntilLabel": "Edasi lükatud kuni",
-      "confirm": "Kinnita",
-      "loadError": "Ei õnnestu laadida vajalikke toiminguid.",
-      "snoozedSectionTitle": "{count, plural, one {# tegevus peatati} other {# tegevused on ootele pandud}}",
-      "snoozedUntil": "Kuni {date}",
-      "cancelSnooze": "Tühista peatamine",
-      "actionLabels": {
-        "voirEtRelancer": "Vaata ja taaskäivita",
-        "examiner": "Eksamineerija",
-        "consulter": "Konsulteeri"
-      },
-      "rows": {
-        "cotisations-en-retard": "{count, plural, one {# hilinenud liikmemaksu} other {# hilinenud sissemaksed}}",
-        "adhesions-a-valider": "{count, plural, one {# liikmelisuse valideerimine} other {# valideeritavad liikmelisused}}",
-        "cheques-a-traiter": "{count, plural, one {# kontrolli protsessi} other {# kontrollid töötlemiseks}}"
+    "aTraiter": {
+      "title": "Ravi",
+      "empty": "Hetkel pole midagi tegeleda",
+      "loadError": "Ei õnnestu laadida töödeldavaid toiminguid.",
+      "items": {
+        "cotisationsEnAttente": "{count, plural, one {# ootel liikmemaksu} other {# ootel sissemaksed}}",
+        "donsAEncaisser": "{count, plural, one {# kingitus, mida tuleb lunastada} other {# annetusi kogumiseks}}",
+        "materielEnRetard": "{count, plural, one {# hilise materjali tagastus} other {# hilise materjali tagastus}}"
       }
     },
     "stats": {
-      "activeMembers": "Aktiivsed liikmed",
-      "eventsThisMonth": "Selle kuu sündmused",
-      "cotisationsPending": "Ootel panused",
       "financialBalance": "Finantssaldo",
       "donationsReceived": "Saadud annetused {year}"
     },
-    "nextEvent": {
-      "title": "Järgmine võistlus",
-      "empty": "Tulevasi üritusi ei ole."
+    "agenda": {
+      "title": "Päevakord",
+      "eventsThisMonth": "{count, plural, one {# selle kuu sündmus} other {# selle kuu sündmusi}}",
+      "ongoing": "Töös",
+      "viewCalendar": "Vaata kalendrit",
+      "empty": "Ühtegi üritust ei tule."
     },
     "cotisations": {
       "title": "Panused {year}",
       "collectedThisYear": "Sel aastal lunastatud",
-      "pendingPayment": "{count} Ootab makset"
+      "remaining": "{amount} Järelejäänud",
+      "pendingPayment": "{count} Ootab makset",
+      "viewAll": "Vaata tasusid"
+    },
+    "activiteRecente": {
+      "title": "Hiljutine tegevus",
+      "tabs": {
+        "commandes": "Tellimused",
+        "dons": "Annetused"
+      }
     },
     "recentDonations": {
       "title": "Hiljutised annetused",
@@ -906,6 +902,7 @@
       "categoryTitle": "Kviitungid kategooriate kaupa — {year}"
     },
     "memberSummary": {
+      "title": "Liikmed",
       "total": "{count, plural, one {# liige} other {# liiget}}",
       "active": "{count, plural, one {# aktiivne} other {# aktiivset}}",
       "inactive": "{count, plural, one {# mitteaktiivne} other {# mitteaktiivset}}"
@@ -2974,7 +2971,8 @@
         "disponibles": "Saadaval",
         "enPret": "Laenul",
         "reserves": "Reserveeritud",
-        "maintenance": "Hooldus"
+        "maintenance": "Hooldus",
+        "enRetard": "Hiline"
       },
       "pendingRequests": "Ootel olevad taotlused",
       "accept": "Nõustun",
@@ -2996,7 +2994,8 @@
         "reserves": "Reserveeritud",
         "maintenance": "Hooldus",
         "horsService": "Teenistusest väljas",
-        "perdus": "Kadunud"
+        "perdus": "Kadunud",
+        "enRetard": "Hiline"
       },
       "noArticles": "Artikleid ei ole",
       "noResults": "Tulemusi ei ole",

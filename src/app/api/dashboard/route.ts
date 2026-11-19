@@ -45,6 +45,7 @@ export const GET = withAdminAuth(async (req, ctx) => {
     cotisationsEnAttente,
     cotisationsPayees,
     cotisationsPartielles,
+    cotisationsRestantes,
     totalIncomes,
     totalExpenses,
     prochainEvenement,
@@ -53,6 +54,7 @@ export const GET = withAdminAuth(async (req, ctx) => {
     materielEmpruntsListe,
     donsAnnee,
     donsEnAttente,
+    donsEnAttenteCount,
   ] = await Promise.all([
     prisma.membre.count({ where: { associationId, status: "ACTIF", deletedAt: null } }),
     // Every status counts as a member (PENDING/INACTIF/SUSPENDU included) — the header
@@ -81,6 +83,14 @@ export const GET = withAdminAuth(async (req, ctx) => {
       where: { associationId, status: { in: ["PARTIELLEMENT_PAYEE", "EN_RETARD"] }, year },
       _sum: { amountPaid: true },
     }),
+    // Reste à percevoir — solde dû sur les cotisations pas encore soldées de l'année. Même
+    // filtre de statuts que cotisationsEnAttente ci-dessus ; pas de prise en compte des
+    // échéanciers (nextAmountDue) ici, ce chiffre n'a besoin que d'un ordre de grandeur pour
+    // la carte Cotisations du dashboard, pas du prochain euro exact dû.
+    prisma.cotisation.aggregate({
+      where: { associationId, status: { in: ["EN_ATTENTE", "PARTIELLEMENT_PAYEE", "EN_RETARD"] }, year, membre: { deletedAt: null } },
+      _sum: { amount: true, amountPaid: true },
+    }),
     prisma.income.aggregate({
       where: { associationId, status: "PAID" },
       _sum: { amount: true },
@@ -92,7 +102,7 @@ export const GET = withAdminAuth(async (req, ctx) => {
     prisma.evenement.findFirst({
       where: { associationId, ...evenementNotOverWhere(now) },
       orderBy: { date: "asc" },
-      select: { id: true, title: true, date: true, location: true },
+      select: { id: true, title: true, date: true, endDate: true, location: true },
     }),
     // Pending orders need action (encaisser a manual one, chase up a stalled Stripe one) —
     // ranked ahead of already-settled sales the admin can't act on anymore, but the list
@@ -163,6 +173,13 @@ export const GET = withAdminAuth(async (req, ctx) => {
           select:  DON_CARD_SELECT,
         })
       : [],
+    // Total count behind the "Dons à encaisser" shortcut — donsEnAttente above is capped at
+    // 5 for the recent-donations card and can't be reused as a badge count.
+    canSeeDons
+      ? prisma.don.count({
+          where: { associationId, paidAt: null, paymentMethod: { in: ["ESPECES", "CHEQUE", "VIREMENT"] } },
+        })
+      : 0,
   ])
 
   // Both "fill the remaining slots" queries depend on a count from the batch above, so they
@@ -211,6 +228,10 @@ export const GET = withAdminAuth(async (req, ctx) => {
 
   const solde = Number(totalIncomes._sum.amount ?? 0) - Number(totalExpenses._sum.amount ?? 0)
   const cotisationsEncaissees = Number(cotisationsPayees._sum.amount ?? 0) + Number(cotisationsPartielles._sum.amountPaid ?? 0)
+  // Clamped to 0: an overpayment on an individual pending cotisation (duplicate payment, a
+  // refund not yet reflected) could otherwise push this negative — "-5,00 € restant à
+  // percevoir" reads as nonsensical on a dashboard summary card.
+  const cotisationsResteAPercevoir = Math.max(0, Number(cotisationsRestantes._sum.amount ?? 0) - Number(cotisationsRestantes._sum.amountPaid ?? 0))
 
   // Same PENDING-block-then-PAID-block shape as ventesRecentes above, so the card can find
   // the boundary by watching for a status change between two consecutive rows.
@@ -229,11 +250,19 @@ export const GET = withAdminAuth(async (req, ctx) => {
     evenementsMois,
     cotisationsEnAttente,
     cotisationsEncaissees,
+    cotisationsResteAPercevoir,
     // null (not 0) for a user without Comptabilité, like donsRecus below.
     solde: canSeeBalance ? solde : null,
     donsRecus,
     donsRecents,
-    prochainEvenement,
+    // null (not 0) for a role that can't see dons, mirroring donsRecus above.
+    donsEnAttenteCount: canSeeDons ? donsEnAttenteCount : null,
+    prochainEvenement: prochainEvenement && {
+      ...prochainEvenement,
+      // evenementNotOverWhere already guarantees this event hasn't ended — so "started" is
+      // enough to mean "en cours" without re-checking the end bound.
+      enCours: prochainEvenement.date <= now,
+    },
     ventesRecentes,
     materielEnRetardCount,
     materielEmpruntsListe: materielEmpruntsListe.map(l => ({

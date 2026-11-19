@@ -833,44 +833,40 @@
       "dragHint": "Arraste para reordenar",
       "resizeHint": "Arraste o canto para redimensionar"
     },
-    "actionsTodo": {
-      "trigger": "Ações a serem tomadas",
-      "empty": "Está tudo atualizado, nenhuma ação a resolver.",
-      "snooze": "Adiar esta ação",
-      "snoozeDialogTitle": "Adiar esta ação",
-      "snoozeDialogDescription": "A ação permanece oculta para você até essa data, e depois reaparece se ainda houver casos a serem processados.",
-      "snoozeUntilLabel": "Adiado até",
-      "confirm": "Confirme",
-      "loadError": "Não foi possível carregar as ações a serem realizadas.",
-      "snoozedSectionTitle": "{count, plural, one {# ação suspensa} other {# ações suspensas}}",
-      "snoozedUntil": "Até {date}",
-      "cancelSnooze": "Cancelar a retenção",
-      "actionLabels": {
-        "voirEtRelancer": "Veja e reinicie",
-        "examiner": "Examinador",
-        "consulter": "Consulte"
-      },
-      "rows": {
-        "cotisations-en-retard": "{count, plural, one {# taxa de associação atrasada} other {# contribuições atrasadas}}",
-        "adhesions-a-valider": "{count, plural, one {# a ser validada} other {# filiações a serem validadas}}",
-        "cheques-a-traiter": "{count, plural, one {# verificação para processar} other {# cheques a serem processados}}"
+    "aTraiter": {
+      "title": "Para ser tratado",
+      "empty": "Nada com o que lidar no momento",
+      "loadError": "Não foi possível carregar ações a serem processadas.",
+      "items": {
+        "cotisationsEnAttente": "{count, plural, one {# taxa de associação pendente} other {# contribuições pendentes}}",
+        "donsAEncaisser": "{count, plural, one {# presente a ser descontado} other {# doações para arrecadar}}",
+        "materielEnRetard": "{count, plural, one {# retornos tardios de material} other {# retornos tardios de material}}"
       }
     },
     "stats": {
-      "activeMembers": "Membros ativos",
-      "eventsThisMonth": "Eventos este mês",
-      "cotisationsPending": "Mensalidades pendentes",
       "financialBalance": "Saldo financeiro",
       "donationsReceived": "Doações recebidas {year}"
     },
-    "nextEvent": {
-      "title": "Próximo evento",
-      "empty": "Nenhum evento próximo."
+    "agenda": {
+      "title": "Agenda",
+      "eventsThisMonth": "{count, plural, one {# evento este mês} other {# eventos deste mês}}",
+      "ongoing": "Em andamento",
+      "viewCalendar": "Veja o calendário",
+      "empty": "Sem eventos a caminho."
     },
     "cotisations": {
       "title": "Mensalidades {year}",
       "collectedThisYear": "arrecadado este ano",
-      "pendingPayment": "{count} aguardando pagamento"
+      "remaining": "{amount} restantes a serem recebidos",
+      "pendingPayment": "{count} aguardando pagamento",
+      "viewAll": "Veja as taxas"
+    },
+    "activiteRecente": {
+      "title": "Atividade recente",
+      "tabs": {
+        "commandes": "Pedidos",
+        "dons": "Doações"
+      }
     },
     "recentDonations": {
       "title": "Doações recentes",
@@ -906,6 +902,7 @@
       "categoryTitle": "Receitas por categoria — {year}"
     },
     "memberSummary": {
+      "title": "Membros",
       "total": "{count, plural, one {# membro} other {# membros}}",
       "active": "{count, plural, one {# ativo} other {# ativos}}",
       "inactive": "{count, plural, one {# inativo} other {# inativos}}"
@@ -2974,7 +2971,8 @@
         "disponibles": "Disponíveis",
         "enPret": "Emprestados",
         "reserves": "Reservados",
-        "maintenance": "Manutenção"
+        "maintenance": "Manutenção",
+        "enRetard": "Tarde"
       },
       "pendingRequests": "Solicitações pendentes",
       "accept": "Aceitar",
@@ -2996,7 +2994,8 @@
         "reserves": "Reservados",
         "maintenance": "Manutenção",
         "horsService": "Fora de serviço",
-        "perdus": "Perdidos"
+        "perdus": "Perdidos",
+        "enRetard": "Tarde"
       },
       "noArticles": "Nenhum item",
       "noResults": "Nenhum resultado",

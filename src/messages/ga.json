@@ -833,44 +833,40 @@
       "dragHint": "Tarraing le hatheagrú",
       "resizeHint": "Tarraing an choirnéal chun méid a athrú"
     },
-    "actionsTodo": {
-      "trigger": "Gníomhartha le déanamh",
-      "empty": "Tá gach rud cothrom le dáta, níl aon ghníomh le láimhseáil.",
-      "snooze": "Cuir an gníomh seo ar athló",
-      "snoozeDialogTitle": "Cuir an gníomh seo ar athló",
-      "snoozeDialogDescription": "Fanann an gníomh i bhfolach duit go dtí an dáta sin, agus ansin tagann sé ar ais má tá cásanna fós le próiseáil.",
-      "snoozeUntilLabel": "Curtha ar athló go dtí",
-      "confirm": "Deimhnigh",
-      "loadError": "Ní féidir na gníomhartha atá le déanamh a luchtú.",
-      "snoozedSectionTitle": "{count, plural, one {# gníomh curtha ar fionraí} other {# gníomhartha curtha ar fionraí}}",
-      "snoozedUntil": "Go dtí {date}",
-      "cancelSnooze": "Cealaigh an coinneáil",
-      "actionLabels": {
-        "voirEtRelancer": "Féach agus athsheoladh",
-        "examiner": "Scrúdaitheoir",
-        "consulter": "Téigh i gcomhairle"
-      },
-      "rows": {
-        "cotisations-en-retard": "{count, plural, one {# táille ballraíochta atá thar téarma} other {# ranníocaíochtaí thar téarma}}",
-        "adhesions-a-valider": "{count, plural, one {# ballraíocht le bailíochtú} other {# ballraíochtaí le bailíochtú}}",
-        "cheques-a-traiter": "{count, plural, one {# seiceáil le próiseáil} other {# seiceálacha le próiseáil}}"
+    "aTraiter": {
+      "title": "Le cóireáil",
+      "empty": "Níl aon rud le déileáil leis faoi láthair",
+      "loadError": "Ní féidir gníomhartha le próiseáil a luchtú.",
+      "items": {
+        "cotisationsEnAttente": "{count, plural, one {# táille ballraíochta ar feitheamh} other {# ranníocaíochtaí ar feitheamh}}",
+        "donsAEncaisser": "{count, plural, one {# bronntanas le hairgeadú} other {# síntiúis le bailiú}}",
+        "materielEnRetard": "{count, plural, one {# torthaí déanacha ábhair} other {# torthaí déanacha ábhair}}"
       }
     },
     "stats": {
-      "activeMembers": "Baill Ghníomhacha",
-      "eventsThisMonth": "Imeachtaí na míosa seo",
-      "cotisationsPending": "Ranníocaíochtaí ar feitheamh",
       "financialBalance": "Iarmhéid airgeadais",
       "donationsReceived": "Síntiúis a fuarthas {year}"
     },
-    "nextEvent": {
-      "title": "An chéad imeacht eile",
-      "empty": "Níl aon imeachtaí le teacht."
+    "agenda": {
+      "title": "Clár oibre",
+      "eventsThisMonth": "{count, plural, one {# imeacht an mhí seo} other {# imeachtaí an mhí seo}}",
+      "ongoing": "Ar siúl",
+      "viewCalendar": "Féach ar an bhféilire",
+      "empty": "Níl aon imeachtaí ag teacht aníos."
     },
     "cotisations": {
       "title": "Ranníocaíochtaí {year}",
       "collectedThisYear": "Airgead tirim i mbliana",
-      "pendingPayment": "{count} Ag fanacht le híocaíocht"
+      "remaining": "{amount} atá fágtha le fáil",
+      "pendingPayment": "{count} Ag fanacht le híocaíocht",
+      "viewAll": "Féach ar na táillí"
+    },
+    "activiteRecente": {
+      "title": "Gníomhaíocht le déanaí",
+      "tabs": {
+        "commandes": "Orduithe",
+        "dons": "Deonacháin"
+      }
     },
     "recentDonations": {
       "title": "Síntiúis le déanaí",
@@ -906,6 +902,7 @@
       "categoryTitle": "Fáltais de réir catagóir— {year}"
     },
     "memberSummary": {
+      "title": "Baill",
       "total": "{count, plural, one {# comhalta} other {# comhaltaí}}",
       "active": "{count, plural, one {# gníomhach} other {# gníomhach}}",
       "inactive": "{count, plural, one {# neamhghníomhach} other {# neamhghníomhach}}"
@@ -2974,7 +2971,8 @@
         "disponibles": "Ar Fáil",
         "enPret": "Ar iasacht",
         "reserves": "Forchoimeádta",
-        "maintenance": "Cothabháil"
+        "maintenance": "Cothabháil",
+        "enRetard": "Déanach"
       },
       "pendingRequests": "Iarratais ar feitheamh",
       "accept": "Glac leis",
@@ -2996,7 +2994,8 @@
         "reserves": "Forchoimeádta",
         "maintenance": "Cothabháil",
         "horsService": "As seirbhís",
-        "perdus": "Caillte"
+        "perdus": "Caillte",
+        "enRetard": "Déanach"
       },
       "noArticles": "Gan ailt",
       "noResults": "Gan toradh",

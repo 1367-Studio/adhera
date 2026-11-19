@@ -833,44 +833,40 @@
       "dragHint": "Σύρετε για αναδιάταξη",
       "resizeHint": "Σύρετε τη γωνία για αλλαγή μεγέθους"
     },
-    "actionsTodo": {
-      "trigger": "Ενέργειες που πρέπει να γίνουν",
-      "empty": "Όλα είναι ενημερωμένα, δεν υπάρχει κάποια ενέργεια να διαχειριστώ.",
-      "snooze": "Αναβάλετε αυτή την ενέργεια",
-      "snoozeDialogTitle": "Αναβάλετε αυτή την ενέργεια",
-      "snoozeDialogDescription": "Η ενέργεια παραμένει κρυφή για εσάς μέχρι εκείνη την ημερομηνία και μετά επανεμφανίζεται αν υπάρχουν ακόμα υποθέσεις προς επεξεργασία.",
-      "snoozeUntilLabel": "Αναβλήθηκε μέχρι",
-      "confirm": "Επιβεβαίωση",
-      "loadError": "Αδυναμία φόρτωσης των ενεργειών που πρέπει να γίνουν.",
-      "snoozedSectionTitle": "{count, plural, one {# ενέργεια αναβάλλεται} other {# ενέργειες που τίθενται σε αναμονή}}",
-      "snoozedUntil": "Μέχρι {date}",
-      "cancelSnooze": "Ακύρωση της κράτησης",
-      "actionLabels": {
-        "voirEtRelancer": "Δείτε και επανεκκινήστε",
-        "examiner": "Εξεταστής",
-        "consulter": "Συμβουλευτείτε"
-      },
-      "rows": {
-        "cotisations-en-retard": "{count, plural, one {# καθυστερημένη συνδρομή} other {# καθυστερημένες εισφορές}}",
-        "adhesions-a-valider": "{count, plural, one {# η συμμετοχή θα επικυρωθεί} other {# μέλη προς επικύρωση}}",
-        "cheques-a-traiter": "{count, plural, one {# έλεγχος για επεξεργασία} other {# έλεγχοι προς επεξεργασία}}"
+    "aTraiter": {
+      "title": "Προς θεραπεία",
+      "empty": "Τίποτα να αντιμετωπίσω αυτή τη στιγμή",
+      "loadError": "Αδυναμία φόρτωσης ενεργειών προς επεξεργασία.",
+      "items": {
+        "cotisationsEnAttente": "{count, plural, one {# εκκρεμεί συνδρομή} other {# εκκρεμείς συνεισφορές}}",
+        "donsAEncaisser": "{count, plural, one {# δώρο που θα εξαργυρωθεί} other {# δωρεές προς συλλογή}}",
+        "materielEnRetard": "{count, plural, one {# καθυστερημένες επιστροφές υλικών} other {# καθυστερημένες επιστροφές υλικών}}"
       }
     },
     "stats": {
-      "activeMembers": "Ενεργά Μέλη",
-      "eventsThisMonth": "Εκδηλώσεις αυτού του μήνα",
-      "cotisationsPending": "Εκκρεμείς συνεισφορές",
       "financialBalance": "Χρηματοοικονομική ισορροπία",
       "donationsReceived": "Δωρεές που ελήφθησαν {year}"
     },
-    "nextEvent": {
-      "title": "Επόμενη εκδήλωση",
-      "empty": "Δεν υπάρχουν επερχόμενες εκδηλώσεις."
+    "agenda": {
+      "title": "Ημερήσια διάταξη",
+      "eventsThisMonth": "{count, plural, one {# εκδήλωση αυτόν τον μήνα} other {# εκδηλώσεις αυτόν τον μήνα}}",
+      "ongoing": "Σε εξέλιξη",
+      "viewCalendar": "Δείτε το ημερολόγιο",
+      "empty": "Δεν έρχονται εκδηλώσεις."
     },
     "cotisations": {
       "title": "Συνεισφορές {year}",
       "collectedThisYear": "Εξαργύρωση φέτος",
-      "pendingPayment": "{count} Αναμονή πληρωμής"
+      "remaining": "{amount} Απομένει να ληφθεί",
+      "pendingPayment": "{count} Αναμονή πληρωμής",
+      "viewAll": "Δείτε τα τέλη"
+    },
+    "activiteRecente": {
+      "title": "Πρόσφατη δραστηριότητα",
+      "tabs": {
+        "commandes": "Παραγγελίες",
+        "dons": "Δωρεές"
+      }
     },
     "recentDonations": {
       "title": "Πρόσφατες Δωρεές",
@@ -906,6 +902,7 @@
       "categoryTitle": "Παραλαβές ανά κατηγορία — {year}"
     },
     "memberSummary": {
+      "title": "Μέλη",
       "total": "{count, plural, one {# μέλος} other {# μέλη}}",
       "active": "{count, plural, one {# ενεργό} other {# ενεργά}}",
       "inactive": "{count, plural, one {# ανενεργό} other {# ανενεργά}}"
@@ -2974,7 +2971,8 @@
         "disponibles": "Διαθέσιμο",
         "enPret": "Δανεικός",
         "reserves": "Με επιφύλαξη",
-        "maintenance": "Συντήρηση"
+        "maintenance": "Συντήρηση",
+        "enRetard": "Αργά"
       },
       "pendingRequests": "Εκκρεμείς αιτήσεις",
       "accept": "Αποδοχή",
@@ -2996,7 +2994,8 @@
         "reserves": "Με επιφύλαξη",
         "maintenance": "Συντήρηση",
         "horsService": "Εκτός λειτουργίας",
-        "perdus": "Χαμένος"
+        "perdus": "Χαμένος",
+        "enRetard": "Αργά"
       },
       "noArticles": "Δεν υπάρχουν άρθρα",
       "noResults": "Κανένα αποτέλεσμα",

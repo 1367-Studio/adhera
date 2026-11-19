@@ -833,44 +833,40 @@
       "dragHint": "Drag biex jerġa' jarranġa",
       "resizeHint": "Iċċaqlaq il-kantuniera biex tirranġa d-daqs"
     },
-    "actionsTodo": {
-      "trigger": "Azzjonijiet li għandhom jittieħdu",
-      "empty": "Kollox huwa aġġornat, m''hemm l-ebda azzjoni biex tittratta.",
-      "snooze": "Ipposponi din l-azzjoni",
-      "snoozeDialogTitle": "Ipposponi din l-azzjoni",
-      "snoozeDialogDescription": "L-azzjoni tibqa'' moħbija għalik sa dik id-data, imbagħad terġa'' tidher jekk għad hemm każijiet x''jiġu pproċessati.",
-      "snoozeUntilLabel": "Posposta sa",
-      "confirm": "Ikkonferma",
-      "loadError": "Ma jistax jitħaddem l-azzjonijiet li għandhom isiru.",
-      "snoozedSectionTitle": "{count, plural, one {# azzjoni ġiet sospiża} other {# azzjonijiet imwaqqfa}}",
-      "snoozedUntil": "Sakemm {date}",
-      "cancelSnooze": "Ikkanċella l-hold",
-      "actionLabels": {
-        "voirEtRelancer": "Ara u erġa'' tniedi",
-        "examiner": "Eżaminatur",
-        "consulter": "Konsulta"
-      },
-      "rows": {
-        "cotisations-en-retard": "{count, plural, one {# miżata ta'' membru tard} other {# kontribuzzjonijiet tard}}",
-        "adhesions-a-valider": "{count, plural, one {# -membri li għandhom jiġu vvalidati} other {# membri li għandhom jiġu vvalidati}}",
-        "cheques-a-traiter": "{count, plural, one {# ċekk biex jipproċessa} other {# ċekkijiet biex jiġu pproċessati}}"
+    "aTraiter": {
+      "title": "Biex jittrattaw",
+      "empty": "M''hemm xejn x''nindirizza bħalissa",
+      "loadError": "Ma jistax jitħaddem azzjonijiet biex jiġu pproċessati.",
+      "items": {
+        "cotisationsEnAttente": "{count, plural, one {# ħlas ta'' membru pendenti} other {# kontribuzzjonijiet pendenti}}",
+        "donsAEncaisser": "{count, plural, one {# rigal li għandu jiġi mħallas} other {# donazzjonijiet biex jinġabru}}",
+        "materielEnRetard": "{count, plural, one {# Ritorn tard tal-materjal} other {# Ritorn tard tal-materjal}}"
       }
     },
     "stats": {
-      "activeMembers": "Membri Attivi",
-      "eventsThisMonth": "Avvenimenti ta' dan ix-xahar",
-      "cotisationsPending": "Kontribuzzjonijiet pendenti",
       "financialBalance": "Bilanċ finanzjarju",
       "donationsReceived": "Donazzjonijiet riċevuti {year}"
     },
-    "nextEvent": {
-      "title": "Avveniment li jmiss",
-      "empty": "L-ebda avveniment li ġej."
+    "agenda": {
+      "title": "Aġenda",
+      "eventsThisMonth": "{count, plural, one {# -avveniment dan ix-xahar} other {# avvenimenti dan ix-xahar}}",
+      "ongoing": "Għaddej",
+      "viewCalendar": "Ara l-kalendarju",
+      "empty": "M''hemm l-ebda avveniment li ġej."
     },
     "cotisations": {
       "title": "Kontribuzzjonijiet {year}",
       "collectedThisYear": "Għamlu flus din is-sena",
-      "pendingPayment": "{count} qed jistennew il-ħlas"
+      "remaining": "{amount} fadal biex jintlaħaq",
+      "pendingPayment": "{count} qed jistennew il-ħlas",
+      "viewAll": "Ara l-ħlasijiet"
+    },
+    "activiteRecente": {
+      "title": "Attività riċenti",
+      "tabs": {
+        "commandes": "Ordnijiet",
+        "dons": "Donazzjonijiet"
+      }
     },
     "recentDonations": {
       "title": "Donazzjonijiet Riċenti",
@@ -906,6 +902,7 @@
       "categoryTitle": "Irċevuti skont il-kategorija — {year}"
     },
     "memberSummary": {
+      "title": "Membri",
       "total": "{count, plural, one {# membru} other {# membri}}",
       "active": "{count, plural, one {# attiv} other {# attivi}}",
       "inactive": "{count, plural, one {# inattiv} other {# inattivi}}"
@@ -2974,7 +2971,8 @@
         "disponibles": "Disponibbli",
         "enPret": "Fuq self",
         "reserves": "Riservat",
-        "maintenance": "Manutenzjoni"
+        "maintenance": "Manutenzjoni",
+        "enRetard": "Tard"
       },
       "pendingRequests": "Applikazzjonijiet pendenti",
       "accept": "Aċċetta",
@@ -2996,7 +2994,8 @@
         "reserves": "Riservat",
         "maintenance": "Manutenzjoni",
         "horsService": "Barra mis-servizz",
-        "perdus": "Mitlufa"
+        "perdus": "Mitlufa",
+        "enRetard": "Tard"
       },
       "noArticles": "L-ebda artikli",
       "noResults": "L-ebda riżultat",
