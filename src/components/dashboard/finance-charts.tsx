@@ -274,9 +274,12 @@ export function IncomeByCategoryChart() {
           <YAxis hide />
           <Tooltip content={<CategoryTip />} cursor={{ fill: pal.cursor }} />
           <Bar dataKey="amount" fill={pal.sequential} radius={[8, 8, 0, 0]} animationDuration={500} animationEasing="ease-out">
-            {/* White, inside the bar near its top — reads against the solid fill
-                instead of needing room for an external label at every bar height. */}
-            <LabelList dataKey="amount" position="insideTop" offset={10} formatter={(v: unknown) => fmt(Number(v))} style={{ fontSize: 11, fill: "#fff", fontFamily: "inherit" }} />
+            {/* Outside, above the bar — on the panel background rather than the bar fill,
+                so it's legible with one color at every bar height. A hardcoded white
+                "insideTop" label read fine on tall bars but landed near/below a short
+                bar's top edge (e.g. Billetterie, Boutique), going illegible against the
+                light background and crowding the category name on the axis below. */}
+            <LabelList dataKey="amount" position="top" offset={8} formatter={(v: unknown) => fmt(Number(v))} style={{ fontSize: 11, fill: pal.axis, fontFamily: "inherit" }} />
           </Bar>
         </BarChart>
       </ResponsiveContainer>
