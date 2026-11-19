@@ -828,6 +828,7 @@
     "subtitle": "Forbhreathnú ar do chumann",
     "customize": {
       "customize": "Saincheap",
+      "tooltip": "Saincheap an painéal",
       "done": "Críochnaithe",
       "reset": "Athshocraigh",
       "dragHint": "Tarraing le hatheagrú",

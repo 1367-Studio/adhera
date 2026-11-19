@@ -15,6 +15,7 @@ import { PencilSimpleIcon, CheckIcon, ArrowCounterClockwiseIcon } from "@phospho
 import { cn } from "@/lib/utils"
 import { useCurrentUser, useModules } from "@/lib/user-context"
 import { Button } from "@/components/ui/button"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { ATraiterBar } from "@/components/dashboard/a-traiter-bar"
 import { SortableWidget } from "@/components/dashboard/sortable-widget"
 import { MembresSummaryCard } from "@/components/dashboard/widgets/membres-summary-card"
@@ -235,12 +236,27 @@ export function TableauDeBord({ initialLayout }: Props) {
               <ArrowCounterClockwiseIcon className="mr-1.5 size-3.5" /> {tCustomize("reset")}
             </Button>
           )}
-          <Button variant="outline" size="sm" onClick={() => setEditMode(v => !v)}>
-            {editMode
-              ? <><CheckIcon className="mr-1.5 size-3.5" /> {tCustomize("done")}</>
-              : <><PencilSimpleIcon className="mr-1.5 size-3.5" /> {tCustomize("customize")}</>
-            }
-          </Button>
+          {editMode ? (
+            <Button variant="outline" size="sm" onClick={() => setEditMode(false)}>
+              <CheckIcon className="mr-1.5 size-3.5" /> {tCustomize("done")}
+            </Button>
+          ) : (
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger render={
+                  <Button
+                    variant="outline"
+                    size="icon-sm"
+                    onClick={() => setEditMode(true)}
+                    aria-label={tCustomize("tooltip")}
+                  />
+                }>
+                  <PencilSimpleIcon className="size-3.5" />
+                </TooltipTrigger>
+                <TooltipContent>{tCustomize("tooltip")}</TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          )}
         </div>
       </div>
 

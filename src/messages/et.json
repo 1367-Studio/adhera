@@ -828,6 +828,7 @@
     "subtitle": "Ülevaade sinu ühingust",
     "customize": {
       "customize": "Kohanda",
+      "tooltip": "Kohanda juhtpaneeli",
       "done": "Valmis",
       "reset": "Lähtestamine",
       "dragHint": "Drag, et ümber korraldada",

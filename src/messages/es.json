@@ -828,6 +828,7 @@
     "subtitle": "Resumen de su asociación",
     "customize": {
       "customize": "Personalizar",
+      "tooltip": "Personalizar el panel de control",
       "done": "Listo",
       "reset": "Restablecer",
       "dragHint": "Arrastrar para reordenar",

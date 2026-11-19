@@ -828,6 +828,7 @@
     "subtitle": "Prezentare generală a asociației tale",
     "customize": {
       "customize": "Personalizare",
+      "tooltip": "Personalizați tabloul de bord",
       "done": "Finalizat",
       "reset": "Resetare",
       "dragHint": "Tragere la rearanjare",

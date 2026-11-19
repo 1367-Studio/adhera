@@ -828,6 +828,7 @@
     "subtitle": "Przegląd Twojego stowarzyszenia",
     "customize": {
       "customize": "Dostosuj",
+      "tooltip": "Dostosuj pulpit nawigacyjny",
       "done": "Ukończone",
       "reset": "Reset",
       "dragHint": "Przeciągnij, aby przearanżować",

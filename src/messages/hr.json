@@ -828,6 +828,7 @@
     "subtitle": "Pregled vaše udruge",
     "customize": {
       "customize": "Prilagodi",
+      "tooltip": "Prilagodite nadzornu ploču",
       "done": "Dovršeno",
       "reset": "Reset",
       "dragHint": "Povuci za preuređivanje",

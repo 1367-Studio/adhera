@@ -828,6 +828,7 @@
     "subtitle": "Yleiskatsaus yhdistyksestäsi",
     "customize": {
       "customize": "Muokkaa",
+      "tooltip": "Mukauta hallintapaneelia",
       "done": "Valmis",
       "reset": "Nollaus",
       "dragHint": "Drag järjestääksesi uudelleen",

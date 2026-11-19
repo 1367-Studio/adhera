@@ -59,7 +59,7 @@ export function AgendaCard({ evenementsMois, prochainEvenement, isLoading }: Pro
           ) : (
             <p className="text-sm text-muted-foreground">{t("empty")}</p>
           )}
-          <Link href="/dashboard/evenements" className="text-xs text-muted-foreground hover:underline flex items-center gap-1 pt-1">
+          <Link href="/dashboard/evenements?view=calendar" className="text-xs text-muted-foreground hover:underline flex items-center gap-1 pt-1">
             {t("viewCalendar")}
             <ArrowRightIcon className="size-3" />
           </Link>
