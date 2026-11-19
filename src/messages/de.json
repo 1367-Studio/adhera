@@ -833,6 +833,29 @@
       "dragHint": "Ziehen zum Umarrangieren",
       "resizeHint": "Ziehe die Ecke, um die Größe anzupassen"
     },
+    "actionsTodo": {
+      "trigger": "Zu ergreifende Maßnahmen",
+      "empty": "Alles ist auf dem neuesten Stand, keine Aktion zu bewältigen.",
+      "snooze": "Diese Aktion verschieben",
+      "snoozeDialogTitle": "Diese Aktion verschieben",
+      "snoozeDialogDescription": "Die Aktion bleibt bis zu diesem Datum für Sie verborgen und erscheint dann wieder, wenn noch Fälle zu bearbeiten sind.",
+      "snoozeUntilLabel": "Verschoben bis",
+      "confirm": "Bestätigen",
+      "loadError": "Die auszuführenden Aktionen können nicht geladen werden.",
+      "snoozedSectionTitle": "{count, plural, one {# Aktion auf Eis gelegt} other {# Aktionen, die auf Eis gelegt wurden}}",
+      "snoozedUntil": "Bis {date}",
+      "cancelSnooze": "Sperre aufheben",
+      "actionLabels": {
+        "voirEtRelancer": "Siehe und Neustart",
+        "examiner": "Prüfer",
+        "consulter": "Konsultieren"
+      },
+      "rows": {
+        "cotisations-en-retard": "{count, plural, one {# überfällige Mitgliedsgebühr} other {# überfällige Beiträge}}",
+        "adhesions-a-valider": "{count, plural, one {# Mitgliedschaft zu validieren} other {# Mitgliedschaften zu validieren}}",
+        "cheques-a-traiter": "{count, plural, one {# Prüfung zum Verfahren} other {# Prüfungen zu bearbeiten}}"
+      }
+    },
     "stats": {
       "activeMembers": "Aktive Mitglieder",
       "eventsThisMonth": "Veranstaltungen in diesem Monat",

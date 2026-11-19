@@ -833,6 +833,29 @@
       "dragHint": "Przeciągnij, aby przearanżować",
       "resizeHint": "Przeciągnij róg, aby zmienić rozmiar"
     },
+    "actionsTodo": {
+      "trigger": "Działania do podjęcia",
+      "empty": "Wszystko jest aktualne, nie trzeba się tym zajmować.",
+      "snooze": "Odroczenie tej akcji",
+      "snoozeDialogTitle": "Odroczenie tej akcji",
+      "snoozeDialogDescription": "Akcja pozostaje dla Ciebie ukryta do tego dnia, a potem pojawia się ponownie, jeśli są jeszcze sprawy do przetworzenia.",
+      "snoozeUntilLabel": "Przełożone do czasu",
+      "confirm": "Potwierdź",
+      "loadError": "Nie można załadować działań do wykonania.",
+      "snoozedSectionTitle": "{count, plural, one {# wstrzymanie działań} other {# wstrzymane działania}}",
+      "snoozedUntil": "Aż do {date}",
+      "cancelSnooze": "Anuluj blokadę",
+      "actionLabels": {
+        "voirEtRelancer": "Zobacz i wznowić",
+        "examiner": "Egzaminator",
+        "consulter": "Konsultacja"
+      },
+      "rows": {
+        "cotisations-en-retard": "{count, plural, one {# zaległą składkę członkowską} other {# zaległe składki}}",
+        "adhesions-a-valider": "{count, plural, one {# członkostwo do weryfikacji} other {# członkostwa do weryfikacji}}",
+        "cheques-a-traiter": "{count, plural, one {# sprawdź do przetworzenia} other {# sprawdzenia do przetworzenia}}"
+      }
+    },
     "stats": {
       "activeMembers": "Aktywni członkowie",
       "eventsThisMonth": "Wydarzenia w tym miesiącu",

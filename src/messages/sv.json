@@ -833,6 +833,29 @@
       "dragHint": "Dra för att omarrangera",
       "resizeHint": "Dra hörnet för att ändra storlek"
     },
+    "actionsTodo": {
+      "trigger": "Åtgärder att vidta",
+      "empty": "Allt är uppdaterat, ingen åtgärd att hantera.",
+      "snooze": "Skjut upp denna åtgärd",
+      "snoozeDialogTitle": "Skjut upp denna åtgärd",
+      "snoozeDialogDescription": "Åtgärden förblir dold för dig fram till det datumet, och dyker sedan upp igen om det fortfarande finns ärenden att bearbeta.",
+      "snoozeUntilLabel": "Uppskjuten till",
+      "confirm": "Bekräfta",
+      "loadError": "Kan inte ladda de åtgärder som ska göras.",
+      "snoozedSectionTitle": "{count, plural, one {# åtgärd satt på is} other {# åtgärder som satts på is}}",
+      "snoozedUntil": "Tills {date}",
+      "cancelSnooze": "Avbryt spärren",
+      "actionLabels": {
+        "voirEtRelancer": "Se och återlansera",
+        "examiner": "Examinator",
+        "consulter": "Konsultera"
+      },
+      "rows": {
+        "cotisations-en-retard": "{count, plural, one {# försenad medlemsavgift} other {# försenade bidrag}}",
+        "adhesions-a-valider": "{count, plural, one {# medlemskap som ska valideras} other {# medlemskap som ska valideras}}",
+        "cheques-a-traiter": "{count, plural, one {# kontroll för att behandla} other {# kontroller att behandla}}"
+      }
+    },
     "stats": {
       "activeMembers": "Aktiva medlemmar",
       "eventsThisMonth": "Evenemang denna månad",

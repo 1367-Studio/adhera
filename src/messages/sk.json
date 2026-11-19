@@ -833,6 +833,29 @@
       "dragHint": "Ťah na preusporiadanie",
       "resizeHint": "Potiahnite roh na zmenu veľkosti"
     },
+    "actionsTodo": {
+      "trigger": "Kroky, ktoré treba prijať",
+      "empty": "Všetko je aktuálne, nie je potrebné nič riešiť.",
+      "snooze": "Odložiť túto akciu",
+      "snoozeDialogTitle": "Odložiť túto akciu",
+      "snoozeDialogDescription": "Akcia zostáva pre vás skrytá až do tohto dátumu, potom sa znovu objaví, ak sú ešte prípady na spracovanie.",
+      "snoozeUntilLabel": "Odložené až do",
+      "confirm": "Potvrdiť",
+      "loadError": "Nie je možné načítať akcie, ktoré sa majú vykonať.",
+      "snoozedSectionTitle": "{count, plural, one {# akcia pozastavená} other {# kroky pozastavené}}",
+      "snoozedUntil": "Až kým {date}",
+      "cancelSnooze": "Zrušiť blokáciu",
+      "actionLabels": {
+        "voirEtRelancer": "Vidieť a znovu spustiť",
+        "examiner": "Skúšajúci",
+        "consulter": "Konzultácia"
+      },
+      "rows": {
+        "cotisations-en-retard": "{count, plural, one {# oneskorený členský poplatok} other {# oneskorené príspevky}}",
+        "adhesions-a-valider": "{count, plural, one {# členstvo na overenie} other {# členstvá na overenie}}",
+        "cheques-a-traiter": "{count, plural, one {# skontrolovať spracovanie} other {# kontroly na spracovanie}}"
+      }
+    },
     "stats": {
       "activeMembers": "Aktívni členovia",
       "eventsThisMonth": "Udalosti tohto mesiaca",

@@ -833,6 +833,29 @@
       "dragHint": "Sleep om te herschikken",
       "resizeHint": "Sleep de hoek om de grootte te wijzigen"
     },
+    "actionsTodo": {
+      "trigger": "Acties die moeten worden genomen",
+      "empty": "Alles is up-to-date, er is geen actie om mee te doen.",
+      "snooze": "Deze actie uitstellen",
+      "snoozeDialogTitle": "Deze actie uitstellen",
+      "snoozeDialogDescription": "De actie blijft voor u verborgen tot die datum en verschijnt dan weer als er nog zaken te verwerken zijn.",
+      "snoozeUntilLabel": "Uitgesteld tot",
+      "confirm": "Bevestig",
+      "loadError": "Kan de te doen acties niet laden.",
+      "snoozedSectionTitle": "{count, plural, one {# actie opgeschort} other {# acties die op pauze zijn gezet}}",
+      "snoozedUntil": "Tot {date}",
+      "cancelSnooze": "Annuleer de wacht",
+      "actionLabels": {
+        "voirEtRelancer": "Zie en herlanceren",
+        "examiner": "Examinator",
+        "consulter": "Overleg"
+      },
+      "rows": {
+        "cotisations-en-retard": "{count, plural, one {# achterstallige lidmaatschapsbijdrage} other {# achterstallige bijdragen}}",
+        "adhesions-a-valider": "{count, plural, one {# lidmaatschap te valideren} other {# lidmaatschappen te valideren}}",
+        "cheques-a-traiter": "{count, plural, one {# check to process} other {# controles die moeten worden verwerkt}}"
+      }
+    },
     "stats": {
       "activeMembers": "Actieve leden",
       "eventsThisMonth": "Evenementen deze maand",

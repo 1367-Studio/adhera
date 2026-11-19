@@ -833,6 +833,29 @@
       "dragHint": "Drag to reorder",
       "resizeHint": "Drag the corner to resize"
     },
+    "actionsTodo": {
+      "trigger": "Actions to take",
+      "empty": "Everything is up to date, no action to handle.",
+      "snooze": "Postpone this action",
+      "snoozeDialogTitle": "Postpone this action",
+      "snoozeDialogDescription": "The action remains hidden for you until that date, then reappears if there are still cases to process.",
+      "snoozeUntilLabel": "Postponed until",
+      "confirm": "Confirm",
+      "loadError": "Unable to load the actions to be done.",
+      "snoozedSectionTitle": "{count, plural, one {# action put on hold} other {# actions put on hold}}",
+      "snoozedUntil": "Until {date}",
+      "cancelSnooze": "Cancel the hold",
+      "actionLabels": {
+        "voirEtRelancer": "See and relaunch",
+        "examiner": "Examiner",
+        "consulter": "Consult"
+      },
+      "rows": {
+        "cotisations-en-retard": "{count, plural, one {# overdue membership fee} other {# overdue contributions}}",
+        "adhesions-a-valider": "{count, plural, one {# membership to be validated} other {# memberships to be validated}}",
+        "cheques-a-traiter": "{count, plural, one {# check to process} other {# checks to process}}"
+      }
+    },
     "stats": {
       "activeMembers": "Active members",
       "eventsThisMonth": "Events this month",

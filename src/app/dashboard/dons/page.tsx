@@ -15,6 +15,7 @@ import {
 } from "@phosphor-icons/react/dist/ssr";
 import { useCurrentUser, useHasAccess, useModules, useIsAdministrator } from "@/lib/user-context"
 import { useSiteConfig } from "@/hooks/use-site-config"
+import { useActionsTodoHighlight } from "@/hooks/use-actions-todo-highlight"
 import { publishConfirmDescription } from "@/lib/dons/publish-confirm-description"
 import type { DonationFormPlacement } from "@/lib/dons/site-section-picks"
 import { SECTION_LABELS } from "@/types/site-config"
@@ -339,14 +340,21 @@ function DonsPageInner() {
   // ─── Dons hors ligne en attente d'encaissement ─────────────────────────
   const [pendingPage, setPendingPage] = useState(1)
   const PENDING_PAGE_SIZE = 25
+  // Deep-link from the dashboard's "Actions à faire" panel (FORM-119) "chèques à traiter"
+  // row — narrows this table to the exact method it counted, instead of the full
+  // ESPECES+CHEQUE+VIREMENT pending bucket.
+  const pendingMethod = searchParams.get("pendingMethod")
 
   const { data: pendingResult, isLoading: loadingPending } = useQuery<DonsResult>({
-    queryKey:  ["dashboard-dons-pending", pendingPage],
-    queryFn:   () => fetch(`/api/dons?pendingOnly=true&page=${pendingPage}&limit=${PENDING_PAGE_SIZE}`).then(r => r.json()),
+    queryKey:  ["dashboard-dons-pending", pendingPage, pendingMethod],
+    queryFn:   () => fetch(`/api/dons?pendingOnly=true&page=${pendingPage}&limit=${PENDING_PAGE_SIZE}${pendingMethod ? `&pendingMethod=${pendingMethod}` : ""}`).then(r => r.json()),
     enabled:   tab === "dons",
     staleTime: 0,
   })
   const pendingDons = pendingResult?.data ?? []
+  // Flashes the pending-dons rows a dashboard "Actions à faire" link just filtered down to
+  // (FORM-119) — scoped to that table alone so the paid-dons list below doesn't flash too.
+  useActionsTodoHighlight(!loadingPending, '[data-highlight-scope="pending-dons"]')
 
   // Deep-link from a "new donation" notification/e-mail (see notify.ts): land on the "dons"
   // tab and briefly highlight the row so the responsable doesn't have to hunt for it in the
@@ -895,7 +903,7 @@ function DonsPageInner() {
               empty last page (e.g. right after encaissing the only item on it) would hide
               the whole section instead of just showing an empty table. */}
           {!!pendingResult?.total && (
-            <div className="space-y-2">
+            <div className="space-y-2" data-highlight-scope="pending-dons">
               <p className="text-sm font-medium">{t("donationsView.pendingTitle")}</p>
               <DataTable
                 columns={pendingColumns}
