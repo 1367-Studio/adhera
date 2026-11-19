@@ -3,7 +3,7 @@
 import Link from "next/link"
 import { useTranslations, useLocale } from "next-intl"
 import { format } from "date-fns"
-import { HeartIcon, ArrowRightIcon } from "@phosphor-icons/react/dist/ssr"
+import { ArrowRightIcon } from "@phosphor-icons/react/dist/ssr"
 import { cn } from "@/lib/utils"
 import { getDateFnsLocale } from "@/lib/date-fns-locale"
 import type { Locale } from "@/i18n/locales"
@@ -29,6 +29,8 @@ interface Props {
   isLoading:   boolean
 }
 
+// Content-only (no wrapper/title): one tab's content inside the merged `ActiviteRecenteCard`
+// widget (FORM-120), which owns the outer rounded-lg bg-muted/60 shell and the tab switcher.
 // Deliberately not a list of links, unlike RecentOrdersCard: there is no per-don detail
 // route (/dashboard/dons/[id] is the donation *form* editor), so rows stay plain text and
 // only the footer navigates — no hover affordance promising something that doesn't exist.
@@ -43,11 +45,7 @@ export function RecentDonationsCard({ donsRecents, isLoading }: Props) {
   }
 
   return (
-    <div className="rounded-lg bg-muted/60 p-6 space-y-3 flex flex-col min-h-0 overflow-hidden">
-      <div className="flex items-center gap-2">
-        <HeartIcon className="size-4.5 text-muted-foreground" />
-        <span className="text-base font-medium">{t("title")}</span>
-      </div>
+    <div className="flex min-h-0 flex-col">
       {isLoading ? (
         <div className="h-12 rounded-lg bg-muted animate-pulse" />
       ) : donsRecents.length ? (

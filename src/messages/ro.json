@@ -833,44 +833,40 @@
       "dragHint": "Tragere la rearanjare",
       "resizeHint": "Trage colțul pentru a redimensiona"
     },
-    "actionsTodo": {
-      "trigger": "Acțiuni de întreprins",
-      "empty": "Totul este la zi, nicio acțiune de gestionat.",
-      "snooze": "Amânați această acțiune",
-      "snoozeDialogTitle": "Amânați această acțiune",
-      "snoozeDialogDescription": "Acțiunea rămâne ascunsă pentru tine până la acea dată, apoi reapare dacă mai sunt cazuri de procesat.",
-      "snoozeUntilLabel": "Amânat până",
-      "confirm": "Confirmă",
-      "loadError": "Nu se pot încărca acțiunile ce urmează să fie efectuate.",
-      "snoozedSectionTitle": "{count, plural, one {# acțiune suspendată} other {# acțiuni suspendate}}",
-      "snoozedUntil": "Până când {date}",
-      "cancelSnooze": "Anulează blocarea",
-      "actionLabels": {
-        "voirEtRelancer": "Vezi și relansează",
-        "examiner": "Examinator",
-        "consulter": "Consultă"
-      },
-      "rows": {
-        "cotisations-en-retard": "{count, plural, one {# cotizație de membru restantă} other {# contribuții întârziate}}",
-        "adhesions-a-valider": "{count, plural, one {# de validat} other {# de validat calitatea de membru}}",
-        "cheques-a-traiter": "{count, plural, one {# verificare pentru procesare} other {# verificări de procesat}}"
+    "aTraiter": {
+      "title": "Să fie tratat",
+      "empty": "Nimic cu care să te ocupi momentan",
+      "loadError": "Nu se pot încărca acțiunile ce urmează a fi procesate.",
+      "items": {
+        "cotisationsEnAttente": "{count, plural, one {# cotizație de membru restantă} other {# contribuții în așteptare}}",
+        "donsAEncaisser": "{count, plural, one {# cadoul de încasat} other {# donații de colectat}}",
+        "materielEnRetard": "{count, plural, one {# reveniri târzii ale materialelor} other {# reveniri târzii ale materialelor}}"
       }
     },
     "stats": {
-      "activeMembers": "Membri activi",
-      "eventsThisMonth": "Evenimente din această lună",
-      "cotisationsPending": "Contribuții în așteptare",
       "financialBalance": "Echilibrul financiar",
       "donationsReceived": "Donațiile primite {year}"
     },
-    "nextEvent": {
-      "title": "Următorul eveniment",
-      "empty": "Nu există evenimente viitoare."
+    "agenda": {
+      "title": "Ordinea de zi",
+      "eventsThisMonth": "{count, plural, one {# eveniment luna aceasta} other {# evenimente luna aceasta}}",
+      "ongoing": "În curs de desfășurare",
+      "viewCalendar": "Vezi calendarul",
+      "empty": "Nu urmează evenimente."
     },
     "cotisations": {
       "title": "Contribuții {year}",
       "collectedThisYear": "Am încasat anul acesta",
-      "pendingPayment": "{count} în așteptarea plății"
+      "remaining": "{amount} rămase de primit",
+      "pendingPayment": "{count} în așteptarea plății",
+      "viewAll": "Vezi taxele"
+    },
+    "activiteRecente": {
+      "title": "Activitate recentă",
+      "tabs": {
+        "commandes": "Comenzi",
+        "dons": "Donații"
+      }
     },
     "recentDonations": {
       "title": "Donații recente",
@@ -906,6 +902,7 @@
       "categoryTitle": "Chitanțe pe categorii — {year}"
     },
     "memberSummary": {
+      "title": "Membri",
       "total": "{count, plural, one {# membru} other {# membri}}",
       "active": "{count, plural, one {# activ} other {# activi}}",
       "inactive": "{count, plural, one {# inactiv} other {# inactivi}}"
@@ -2974,7 +2971,8 @@
         "disponibles": "Disponibil",
         "enPret": "În împrumut",
         "reserves": "Rezervat",
-        "maintenance": "Întreținere"
+        "maintenance": "Întreținere",
+        "enRetard": "Târziu"
       },
       "pendingRequests": "Cereri în așteptare",
       "accept": "Acceptă",
@@ -2996,7 +2994,8 @@
         "reserves": "Rezervat",
         "maintenance": "Întreținere",
         "horsService": "Ieșire din serviciu",
-        "perdus": "Pierdut"
+        "perdus": "Pierdut",
+        "enRetard": "Târziu"
       },
       "noArticles": "Fără articole",
       "noResults": "Niciun rezultat",

@@ -833,44 +833,40 @@
       "dragHint": "Glisser pour réorganiser",
       "resizeHint": "Glisser le coin pour redimensionner"
     },
-    "actionsTodo": {
-      "trigger": "Actions à faire",
-      "empty": "Tout est à jour, aucune action à traiter.",
-      "snooze": "Reporter cette action",
-      "snoozeDialogTitle": "Reporter cette action",
-      "snoozeDialogDescription": "L'action reste masquée pour vous jusqu'à cette date, puis réapparaît si des dossiers restent à traiter.",
-      "snoozeUntilLabel": "Reporter jusqu'au",
-      "confirm": "Confirmer",
-      "loadError": "Impossible de charger les actions à faire.",
-      "snoozedSectionTitle": "{count, plural, one {# action mise en attente} other {# actions mises en attente}}",
-      "snoozedUntil": "Jusqu'au {date}",
-      "cancelSnooze": "Annuler la mise en attente",
-      "actionLabels": {
-        "voirEtRelancer": "Voir et relancer",
-        "examiner": "Examiner",
-        "consulter": "Consulter"
-      },
-      "rows": {
-        "cotisations-en-retard": "{count, plural, one {# cotisation en retard} other {# cotisations en retard}}",
-        "adhesions-a-valider": "{count, plural, one {# adhésion à valider} other {# adhésions à valider}}",
-        "cheques-a-traiter": "{count, plural, one {# chèque à traiter} other {# chèques à traiter}}"
+    "aTraiter": {
+      "title": "À traiter",
+      "empty": "Rien à traiter pour le moment",
+      "loadError": "Impossible de charger les actions à traiter.",
+      "items": {
+        "cotisationsEnAttente": "{count, plural, one {# cotisation en attente} other {# cotisations en attente}}",
+        "donsAEncaisser": "{count, plural, one {# don à encaisser} other {# dons à encaisser}}",
+        "materielEnRetard": "{count, plural, one {# retour de matériel en retard} other {# retours de matériel en retard}}"
       }
     },
     "stats": {
-      "activeMembers": "Membres actifs",
-      "eventsThisMonth": "Événements ce mois",
-      "cotisationsPending": "Cotisations en attente",
       "financialBalance": "Solde financier",
       "donationsReceived": "Dons reçus {year}"
     },
-    "nextEvent": {
-      "title": "Prochain événement",
+    "agenda": {
+      "title": "Agenda",
+      "eventsThisMonth": "{count, plural, one {# événement ce mois} other {# événements ce mois}}",
+      "ongoing": "En cours",
+      "viewCalendar": "Voir le calendrier",
       "empty": "Aucun événement à venir."
     },
     "cotisations": {
       "title": "Cotisations {year}",
       "collectedThisYear": "encaissé cette année",
-      "pendingPayment": "{count} en attente de paiement"
+      "remaining": "{amount} restant à percevoir",
+      "pendingPayment": "{count} en attente de paiement",
+      "viewAll": "Voir les cotisations"
+    },
+    "activiteRecente": {
+      "title": "Activité récente",
+      "tabs": {
+        "commandes": "Commandes",
+        "dons": "Dons"
+      }
     },
     "recentDonations": {
       "title": "Dons récents",
@@ -906,6 +902,7 @@
       "categoryTitle": "Recettes par catégorie — {year}"
     },
     "memberSummary": {
+      "title": "Membres",
       "total": "{count, plural, one {# membre} other {# membres}}",
       "active": "{count, plural, one {# actif} other {# actifs}}",
       "inactive": "{count, plural, one {# inactif} other {# inactifs}}"
@@ -2974,7 +2971,8 @@
         "disponibles": "Disponibles",
         "enPret": "En prêt",
         "reserves": "Réservés",
-        "maintenance": "Maintenance"
+        "maintenance": "Maintenance",
+        "enRetard": "En retard"
       },
       "pendingRequests": "Demandes en attente",
       "accept": "Accepter",
@@ -2996,7 +2994,8 @@
         "reserves": "Réservés",
         "maintenance": "Maintenance",
         "horsService": "Hors service",
-        "perdus": "Perdus"
+        "perdus": "Perdus",
+        "enRetard": "En retard"
       },
       "noArticles": "Aucun article",
       "noResults": "Aucun résultat",

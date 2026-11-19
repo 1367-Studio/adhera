@@ -833,44 +833,40 @@
       "dragHint": "Przeciągnij, aby przearanżować",
       "resizeHint": "Przeciągnij róg, aby zmienić rozmiar"
     },
-    "actionsTodo": {
-      "trigger": "Działania do podjęcia",
-      "empty": "Wszystko jest aktualne, nie trzeba się tym zajmować.",
-      "snooze": "Odroczenie tej akcji",
-      "snoozeDialogTitle": "Odroczenie tej akcji",
-      "snoozeDialogDescription": "Akcja pozostaje dla Ciebie ukryta do tego dnia, a potem pojawia się ponownie, jeśli są jeszcze sprawy do przetworzenia.",
-      "snoozeUntilLabel": "Przełożone do czasu",
-      "confirm": "Potwierdź",
-      "loadError": "Nie można załadować działań do wykonania.",
-      "snoozedSectionTitle": "{count, plural, one {# wstrzymanie działań} other {# wstrzymane działania}}",
-      "snoozedUntil": "Aż do {date}",
-      "cancelSnooze": "Anuluj blokadę",
-      "actionLabels": {
-        "voirEtRelancer": "Zobacz i wznowić",
-        "examiner": "Egzaminator",
-        "consulter": "Konsultacja"
-      },
-      "rows": {
-        "cotisations-en-retard": "{count, plural, one {# zaległą składkę członkowską} other {# zaległe składki}}",
-        "adhesions-a-valider": "{count, plural, one {# członkostwo do weryfikacji} other {# członkostwa do weryfikacji}}",
-        "cheques-a-traiter": "{count, plural, one {# sprawdź do przetworzenia} other {# sprawdzenia do przetworzenia}}"
+    "aTraiter": {
+      "title": "Do leczenia",
+      "empty": "Na razie nie ma z czym się mierzyć",
+      "loadError": "Nie można załadować akcji do przetworzenia.",
+      "items": {
+        "cotisationsEnAttente": "{count, plural, one {# oczekującej opłaty członkowskiej} other {# oczekujących wpłat}}",
+        "donsAEncaisser": "{count, plural, one {# prezent do zrealizowania} other {# darowizny do zebrania}}",
+        "materielEnRetard": "{count, plural, one {# opóźnione zwroty materiałów} other {# opóźnione zwroty materiałów}}"
       }
     },
     "stats": {
-      "activeMembers": "Aktywni członkowie",
-      "eventsThisMonth": "Wydarzenia w tym miesiącu",
-      "cotisationsPending": "Oczekujące wpłaty",
       "financialBalance": "Bilans finansowy",
       "donationsReceived": "Otrzymane darowizny {year}"
     },
-    "nextEvent": {
-      "title": "Następne wydarzenie",
-      "empty": "Brak nadchodzących wydarzeń."
+    "agenda": {
+      "title": "Porządek obrad",
+      "eventsThisMonth": "{count, plural, one {# wydarzenie w tym miesiącu} other {# wydarzenia w tym miesiącu}}",
+      "ongoing": "W trakcie realizacji",
+      "viewCalendar": "Zobacz kalendarz",
+      "empty": "Nie ma żadnych nadchodzących wydarzeń."
     },
     "cotisations": {
       "title": "Wkład {year}",
       "collectedThisYear": "Zrealizowane w tym roku",
-      "pendingPayment": "{count} oczekuje na wypłatę"
+      "remaining": "{amount} pozostały do odebrania",
+      "pendingPayment": "{count} oczekuje na wypłatę",
+      "viewAll": "Zobacz opłaty"
+    },
+    "activiteRecente": {
+      "title": "Ostatnia działalność",
+      "tabs": {
+        "commandes": "Zamówienia",
+        "dons": "Darowizny"
+      }
     },
     "recentDonations": {
       "title": "Najnowsze darowizny",
@@ -906,6 +902,7 @@
       "categoryTitle": "Paragony według kategorii — {year}"
     },
     "memberSummary": {
+      "title": "Członkowie",
       "total": "{count, plural, one {# członek} other {# członków}}",
       "active": "{count, plural, one {# aktywny} other {# aktywnych}}",
       "inactive": "{count, plural, one {# nieaktywny} other {# nieaktywnych}}"
@@ -2974,7 +2971,8 @@
         "disponibles": "Dostępne",
         "enPret": "Wypożyczenie",
         "reserves": "Zarezerwowany",
-        "maintenance": "Konserwacja"
+        "maintenance": "Konserwacja",
+        "enRetard": "Późny"
       },
       "pendingRequests": "Oczekujące wnioski",
       "accept": "Akceptuj",
@@ -2996,7 +2994,8 @@
         "reserves": "Zarezerwowany",
         "maintenance": "Konserwacja",
         "horsService": "Wyłączenie z eksploatacji",
-        "perdus": "Zagubiony"
+        "perdus": "Zagubiony",
+        "enRetard": "Późny"
       },
       "noArticles": "Brak artykułów",
       "noResults": "Brak wyników",

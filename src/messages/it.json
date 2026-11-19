@@ -833,44 +833,40 @@
       "dragHint": "Trascina per riorganizzare",
       "resizeHint": "Trascina l'angolo per ridimensionarlo"
     },
-    "actionsTodo": {
-      "trigger": "Azioni da intraprendere",
-      "empty": "Tutto è aggiornato, nessuna azione da gestire.",
-      "snooze": "Rinviate questa azione",
-      "snoozeDialogTitle": "Rinviate questa azione",
-      "snoozeDialogDescription": "L''azione rimane nascosta per te fino a quella data, poi riappare se ci sono ancora casi da trattare.",
-      "snoozeUntilLabel": "Posticipato fino a",
-      "confirm": "Conferma",
-      "loadError": "Impossibile caricare le azioni da eseguire.",
-      "snoozedSectionTitle": "{count, plural, one {# azione sospesa} other {# azioni sospese}}",
-      "snoozedUntil": "Fino a quando {date}",
-      "cancelSnooze": "Annulla la blocca",
-      "actionLabels": {
-        "voirEtRelancer": "Vedi e rilancia",
-        "examiner": "Esaminatore",
-        "consulter": "Consulta"
-      },
-      "rows": {
-        "cotisations-en-retard": "{count, plural, one {# quota iscrizione in ritardo} other {# contributi in ritardo}}",
-        "adhesions-a-valider": "{count, plural, one {# da convalidare l''iscrizione} other {# iscrizioni da validare}}",
-        "cheques-a-traiter": "{count, plural, one {# controllo per processare} other {# assegni da elaborare}}"
+    "aTraiter": {
+      "title": "Da curare",
+      "empty": "Niente di cui occuparsi al momento",
+      "loadError": "Impossibile caricare le azioni da elaborare.",
+      "items": {
+        "cotisationsEnAttente": "{count, plural, one {# tariffa associativa pendente} other {# contributi pendenti}}",
+        "donsAEncaisser": "{count, plural, one {# regalo da incassare} other {# donazioni da raccogliere}}",
+        "materielEnRetard": "{count, plural, one {# riporti tardi di materiale} other {# riporti tardi di materiale}}"
       }
     },
     "stats": {
-      "activeMembers": "Membri attivi",
-      "eventsThisMonth": "Eventi di questo mese",
-      "cotisationsPending": "Contributi in sospeso",
       "financialBalance": "Saldo finanziario",
       "donationsReceived": "Donazioni ricevute {year}"
     },
-    "nextEvent": {
-      "title": "Prossimo evento",
-      "empty": "Nessun evento imminente."
+    "agenda": {
+      "title": "Ordine del giorno",
+      "eventsThisMonth": "{count, plural, one {# evento di questo mese} other {# eventi di questo mese}}",
+      "ongoing": "In corso",
+      "viewCalendar": "Consulta il calendario",
+      "empty": "Nessun evento in programma."
     },
     "cotisations": {
       "title": "Contributi {year}",
       "collectedThisYear": "Ho incassato quest'anno",
-      "pendingPayment": "{count} in attesa di pagamento"
+      "remaining": "{amount} Rimane da ricevere",
+      "pendingPayment": "{count} in attesa di pagamento",
+      "viewAll": "Vedi le tariffe"
+    },
+    "activiteRecente": {
+      "title": "Attività recente",
+      "tabs": {
+        "commandes": "Ordini",
+        "dons": "Donazioni"
+      }
     },
     "recentDonations": {
       "title": "Donazioni recenti",
@@ -906,6 +902,7 @@
       "categoryTitle": "Ricevute per categoria — {year}"
     },
     "memberSummary": {
+      "title": "Membri",
       "total": "{count, plural, one {# membro} other {# membri}}",
       "active": "{count, plural, one {# attivo} other {# attivi}}",
       "inactive": "{count, plural, one {# inattivo} other {# inattivi}}"
@@ -2974,7 +2971,8 @@
         "disponibles": "Disponibile",
         "enPret": "In prestito",
         "reserves": "Riservato",
-        "maintenance": "Manutenzione"
+        "maintenance": "Manutenzione",
+        "enRetard": "Tardi"
       },
       "pendingRequests": "Domande in sospeso",
       "accept": "Accetta",
@@ -2996,7 +2994,8 @@
         "reserves": "Riservato",
         "maintenance": "Manutenzione",
         "horsService": "Fuori servizio",
-        "perdus": "Perso"
+        "perdus": "Perso",
+        "enRetard": "Tardi"
       },
       "noArticles": "Nessun articolo",
       "noResults": "Nessun risultato",

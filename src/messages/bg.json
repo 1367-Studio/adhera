@@ -833,44 +833,40 @@
       "dragHint": "Дръпнете за пренареждане",
       "resizeHint": "Плъзни ъгъла, за да промениш размера"
     },
-    "actionsTodo": {
-      "trigger": "Действия, които трябва да се предприемат",
-      "empty": "Всичко е актуално, няма никакви действия.",
-      "snooze": "Отложете това действие",
-      "snoozeDialogTitle": "Отложете това действие",
-      "snoozeDialogDescription": "Действието остава скрито за вас до тази дата, след което се появява отново, ако все още има дела за обработка.",
-      "snoozeUntilLabel": "Отложено до",
-      "confirm": "Потвърдете",
-      "loadError": "Не може да се заредят действията, които трябва да се изпълнят.",
-      "snoozedSectionTitle": "{count, plural, one {# действие е отложено} other {# действия са поставени на пауза}}",
-      "snoozedUntil": "Докато {date}",
-      "cancelSnooze": "Отмени задържането",
-      "actionLabels": {
-        "voirEtRelancer": "Вижте и рестартирайте",
-        "examiner": "Examiner",
-        "consulter": "Консултирайте се"
-      },
-      "rows": {
-        "cotisations-en-retard": "{count, plural, one {# просрочена членска такса} other {# просрочени вноски}}",
-        "adhesions-a-valider": "{count, plural, one {# членството да бъде валидирано} other {# членства, които трябва да бъдат валидирани}}",
-        "cheques-a-traiter": "{count, plural, one {# проверка за обработка} other {# проверки за обработка}}"
+    "aTraiter": {
+      "title": "Ще бъде лекуван",
+      "empty": "Няма с какво да се занимава в момента",
+      "loadError": "Не може да се заредят действия за обработка.",
+      "items": {
+        "cotisationsEnAttente": "{count, plural, one {# висяща членска такса} other {# чакащи вноски}}",
+        "donsAEncaisser": "{count, plural, one {# подарък, който да бъде осребрен} other {# дарения за събиране}}",
+        "materielEnRetard": "{count, plural, one {# закъснели материали} other {# закъснели материали}}"
       }
     },
     "stats": {
-      "activeMembers": "Активни членове",
-      "eventsThisMonth": "Събития този месец",
-      "cotisationsPending": "Предстоящи приноси",
       "financialBalance": "Финансов баланс",
       "donationsReceived": "Получени дарения {year}"
     },
-    "nextEvent": {
-      "title": "Следващо събитие",
+    "agenda": {
+      "title": "Дневен ред",
+      "eventsThisMonth": "{count, plural, one {# събитие този месец} other {# събития този месец}}",
+      "ongoing": "В процес на изпълнение",
+      "viewCalendar": "Вижте календара",
       "empty": "Няма предстоящи събития."
     },
     "cotisations": {
       "title": "Приноси {year}",
       "collectedThisYear": "Възползвах се тази година",
-      "pendingPayment": "{count} Очакване на плащане"
+      "remaining": "{amount} остава да бъде получено",
+      "pendingPayment": "{count} Очакване на плащане",
+      "viewAll": "Вижте таксите"
+    },
+    "activiteRecente": {
+      "title": "Скорошна дейност",
+      "tabs": {
+        "commandes": "Поръчки",
+        "dons": "Дарения"
+      }
     },
     "recentDonations": {
       "title": "Скорошни дарения",
@@ -906,6 +902,7 @@
       "categoryTitle": "Приходи по категории — {year}"
     },
     "memberSummary": {
+      "title": "Членове",
       "total": "{count, plural, one {# член} other {# членове}}",
       "active": "{count, plural, one {# активен} other {# активни}}",
       "inactive": "{count, plural, one {# неактивен} other {# неактивни}}"
@@ -2974,7 +2971,8 @@
         "disponibles": "Налични",
         "enPret": "Под наем",
         "reserves": "Запазено",
-        "maintenance": "Поддръжка"
+        "maintenance": "Поддръжка",
+        "enRetard": "Късно"
       },
       "pendingRequests": "Висящи кандидатури",
       "accept": "Приемам",
@@ -2996,7 +2994,8 @@
         "reserves": "Запазено",
         "maintenance": "Поддръжка",
         "horsService": "Извън експлоатация",
-        "perdus": "Изгубени"
+        "perdus": "Изгубени",
+        "enRetard": "Късно"
       },
       "noArticles": "Без статии",
       "noResults": "Няма резултати",

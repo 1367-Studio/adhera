@@ -833,44 +833,40 @@
       "dragHint": "Velciet, lai pārkārtotu",
       "resizeHint": "Pavelc stūri, lai mainītu izmēru"
     },
-    "actionsTodo": {
-      "trigger": "Veicamie soļi",
-      "empty": "Viss ir atjaunināts, nav nekādu darbību, ko risināt.",
-      "snooze": "Atlikt šo rīcību",
-      "snoozeDialogTitle": "Atlikt šo rīcību",
-      "snoozeDialogDescription": "Darbība jums paliek slēpta līdz tam datumam, tad atkal parādās, ja vēl ir lietas, kas jāapstrādā.",
-      "snoozeUntilLabel": "Atlikts līdz",
-      "confirm": "Apstiprini",
-      "loadError": "Nevar ielādēt vajadzīgās darbības.",
-      "snoozedSectionTitle": "{count, plural, one {# darbība atlikta} other {# darbības atliktas}}",
-      "snoozedUntil": "Līdz {date}",
-      "cancelSnooze": "Atcelt rezervāciju",
-      "actionLabels": {
-        "voirEtRelancer": "Skatīt un atjaunot",
-        "examiner": "Eksaminētājs",
-        "consulter": "Konsultācija"
-      },
-      "rows": {
-        "cotisations-en-retard": "{count, plural, one {# nokavētā dalības maksa} other {# nokavētie ieguldījumi}}",
-        "adhesions-a-valider": "{count, plural, one {# biedra statusu apstiprināšanai} other {# biedru statuss, kas jāapstiprina}}",
-        "cheques-a-traiter": "{count, plural, one {# pārbaude, lai apstrādātu} other {# pārbaudes apstrādei}}"
+    "aTraiter": {
+      "title": "Lai tiktu ārstēts",
+      "empty": "Šobrīd nav ar ko nodarboties",
+      "loadError": "Nav iespējams ielādēt apstrādājamās darbības.",
+      "items": {
+        "cotisationsEnAttente": "{count, plural, one {# gaidošā biedra maksa} other {# gaidāmie ieguldījumi}}",
+        "donsAEncaisser": "{count, plural, one {# dāvana tiks izņemta} other {# ziedojumus vākšanai}}",
+        "materielEnRetard": "{count, plural, one {# Vēlā materiāla atgriešanās} other {# Vēlā materiāla atgriešanās}}"
       }
     },
     "stats": {
-      "activeMembers": "Aktīvie biedri",
-      "eventsThisMonth": "Šī mēneša notikumi",
-      "cotisationsPending": "Gaidošie ieguldījumi",
       "financialBalance": "Finanšu bilance",
       "donationsReceived": "Saņemtie ziedojumi {year}"
     },
-    "nextEvent": {
-      "title": "Nākamais pasākums",
-      "empty": "Nav gaidāmu pasākumu."
+    "agenda": {
+      "title": "Darba kārtība",
+      "eventsThisMonth": "{count, plural, one {# pasākums šomēnes} other {# notikumi šomēnes}}",
+      "ongoing": "Procesā",
+      "viewCalendar": "Skatīt kalendāru",
+      "empty": "Nekādu pasākumu nebūs."
     },
     "cotisations": {
       "title": "Ieguldījums {year}",
       "collectedThisYear": "Šogad to izmantoju",
-      "pendingPayment": "{count} gaida samaksu"
+      "remaining": "{amount} kas vēl jāsaņem",
+      "pendingPayment": "{count} gaida samaksu",
+      "viewAll": "Skatīt maksas"
+    },
+    "activiteRecente": {
+      "title": "Nesenā darbība",
+      "tabs": {
+        "commandes": "Ordeņi",
+        "dons": "Ziedojumi"
+      }
     },
     "recentDonations": {
       "title": "Nesenie ziedojumi",
@@ -906,6 +902,7 @@
       "categoryTitle": "Ieņēmumi pēc kategorijām — {year}"
     },
     "memberSummary": {
+      "title": "Dalībnieki",
       "total": "{count, plural, one {# biedrs} other {# biedri}}",
       "active": "{count, plural, one {# aktīvs} other {# aktīvi}}",
       "inactive": "{count, plural, one {# neaktīvs} other {# neaktīvi}}"
@@ -2974,7 +2971,8 @@
         "disponibles": "Pieejams",
         "enPret": "Aizdevumā",
         "reserves": "Rezervēts",
-        "maintenance": "Uzturēšana"
+        "maintenance": "Uzturēšana",
+        "enRetard": "Vēlu"
       },
       "pendingRequests": "Gaidošie pieteikumi",
       "accept": "Pieņemt",
@@ -2996,7 +2994,8 @@
         "reserves": "Rezervēts",
         "maintenance": "Uzturēšana",
         "horsService": "Izņemts no ekspluatācijas",
-        "perdus": "Pazudis"
+        "perdus": "Pazudis",
+        "enRetard": "Vēlu"
       },
       "noArticles": "Nav rakstu",
       "noResults": "Nav rezultātu",
