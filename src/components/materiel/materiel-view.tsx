@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useMemo, useEffect } from "react"
+import { useSearchParams } from "next/navigation"
 import {
   PlusIcon, PackageIcon, MapPinIcon, ClockIcon, CheckIcon, XIcon, WarningCircleIcon,
   CheckCircleIcon, HandshakeIcon, CalendarCheckIcon, WrenchIcon,
@@ -18,6 +19,7 @@ import { Badge } from "@/components/ui/badge"
 import { SearchInput } from "@/components/ui/search-input"
 import { cn } from "@/lib/utils"
 import { useHasAccess } from "@/lib/user-context"
+import { useActionsTodoHighlight } from "@/hooks/use-actions-todo-highlight"
 
 type Translator = ReturnType<typeof useTranslations>
 
@@ -37,6 +39,9 @@ function matchesStatusFilter(material: Material, filterValue: string): boolean {
   if (filterValue === "EN_USE")     return material.status === "EN_USE" || material.loanedQty > material.reservedQty
   if (filterValue === "RESERVE")    return material.reservedQty > 0
   if (filterValue === "DISPONIBLE") return material.status === "DISPONIBLE" && material.availableQty > 0
+  // Dashboard "À traiter" shortcut — overdueCount is the same CONFIRME + expectedReturnAt <
+  // now + returnedAt: null count the API already computes (api/materiel/route.ts).
+  if (filterValue === "OVERDUE")    return material.overdueCount > 0
   return material.status === filterValue
 }
 
@@ -49,6 +54,7 @@ function getFilterOptions(t: Translator) {
     { value: "EN_MAINTENANCE", label: t("materiel.view.filters.maintenance")   },
     { value: "HORS_SERVICE",   label: t("materiel.view.filters.horsService")   },
     { value: "PERDU",          label: t("materiel.view.filters.perdus")        },
+    { value: "OVERDUE",        label: t("materiel.view.filters.enRetard")      },
   ]
 }
 
@@ -121,6 +127,7 @@ function MaterialCard({ material, onClick }: { material: Material; onClick: () =
   return (
     <button
       type="button"
+      data-row-id={material.id}
       onClick={onClick}
       className="w-full text-left rounded-lg border bg-card hover:bg-muted/30 transition-colors p-4 space-y-3"
     >
@@ -188,9 +195,12 @@ export function MaterielView() {
   const filterOptions = getFilterOptions(t)
   // FORM-34: a "read" user browses the inventory and its loans but adds nothing.
   const canEditMateriel = useHasAccess("materiel", "edit")
+  const searchParams = useSearchParams()
   const [searchInput,  setSearchInput]  = useState("")
   const [search,       setSearch]       = useState("")
-  const [statusFilter, setStatusFilter] = useState<string>("ALL")
+  // Dashboard "À traiter" shortcut lands here with ?overdue=1 — same deep-link convention as
+  // membres-view.tsx's status=PENDING.
+  const [statusFilter, setStatusFilter] = useState<string>(() => (searchParams.get("overdue") ? "OVERDUE" : "ALL"))
   const [createOpen,   setCreateOpen]   = useState(false)
   const [selected,     setSelected]     = useState<Material | null>(null)
   const [sheetOpen,    setSheetOpen]    = useState(false)
@@ -201,6 +211,8 @@ export function MaterielView() {
   }, [searchInput])
 
   const { data: materials = [], isLoading } = useMateriel(search || undefined)
+
+  useActionsTodoHighlight(!isLoading)
 
   const filtered = useMemo(
     () => materials.filter(material => matchesStatusFilter(material, statusFilter)),
@@ -218,6 +230,7 @@ export function MaterielView() {
       enPret:      countMatching("EN_USE"),
       reserve:     countMatching("RESERVE"),
       maintenance: countMatching("EN_MAINTENANCE"),
+      enRetard:    countMatching("OVERDUE"),
     }
   }, [materials])
 
@@ -241,13 +254,17 @@ export function MaterielView() {
       {/* Same StatTile as the dashboard, Dons, Boutique and Finances. Each tile applies its
           status filter to the list below. */}
       {!isLoading && materials.length > 0 && (
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
+        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
           {[
             { filterValue: "ALL",            label: t("materiel.view.statsLabels.articles"),    value: stats.total,       icon: PackageIcon },
             { filterValue: "DISPONIBLE",     label: t("materiel.view.statsLabels.disponibles"), value: stats.disponible,  icon: CheckCircleIcon },
             { filterValue: "EN_USE",         label: t("materiel.view.statsLabels.enPret"),      value: stats.enPret,      icon: HandshakeIcon },
             { filterValue: "RESERVE",        label: t("materiel.view.statsLabels.reserves"),    value: stats.reserve,     icon: CalendarCheckIcon },
             { filterValue: "EN_MAINTENANCE", label: t("materiel.view.statsLabels.maintenance"), value: stats.maintenance, icon: WrenchIcon },
+            // Lands via the dashboard's "À traiter" shortcut (?overdue=1) — without a tile
+            // here, nothing on this page visually confirmed the count that brought someone
+            // here, only the already-filtered list itself.
+            { filterValue: "OVERDUE",        label: t("materiel.view.statsLabels.enRetard"),    value: stats.enRetard,    icon: WarningCircleIcon },
           ].map(statTile => (
             <StatTile
               key={statTile.filterValue}

@@ -674,44 +674,40 @@
       "dragHint": "Drag átrendezéshez",
       "resizeHint": "Húzd a sarkot a méret módosításához"
     },
-    "actionsTodo": {
-      "trigger": "Teendők",
-      "empty": "Minden naprakész, nincs mit intézni.",
-      "snooze": "A lépés elhalasztása",
-      "snoozeDialogTitle": "A lépés elhalasztása",
-      "snoozeDialogDescription": "A művelet addig rejtve marad előtted, majd újra megjelenik, ha még vannak ügy, amelyeket feldolgozni kell.",
-      "snoozeUntilLabel": "Elhalasztva addig",
-      "confirm": "Megerősítés",
-      "loadError": "Nem sikerült betölteni a végrehajtandó műveleteket.",
-      "snoozedSectionTitle": "{count, plural, one {# intézkedés felfüggesztés} other {# felfüggesztett intézkedések}}",
-      "snoozedUntil": "Egészen addig. {date}",
-      "cancelSnooze": "Zárolás megszakítása",
-      "actionLabels": {
-        "voirEtRelancer": "Nézze meg és indítsa újra",
-        "examiner": "Vizsgáló",
-        "consulter": "Konzultáció"
-      },
-      "rows": {
-        "cotisations-en-retard": "{count, plural, one {# lejárt tagsági díj} other {# esedékes hozzájárulások}}",
-        "adhesions-a-valider": "{count, plural, one {# tagság érvényesítendő} other {# érvényesítendő tagságok}}",
-        "cheques-a-traiter": "{count, plural, one {# ellenőrzés a feldolgozáshoz} other {# ellenőrzések feldolgozása}}"
+    "aTraiter": {
+      "title": "Kezelendő",
+      "empty": "Jelenleg nincs mit kezelni",
+      "loadError": "Nem lehet betölteni a feldolgozandó műveleteket.",
+      "items": {
+        "cotisationsEnAttente": "{count, plural, one {# függőben lévő tagsági díj} other {# függőben lévő hozzájárulások}}",
+        "donsAEncaisser": "{count, plural, one {# beváltandó ajándék} other {# adományokat gyűjteni}}",
+        "materielEnRetard": "{count, plural, one {# késői anyag visszatérítése} other {# késői anyag visszatérítése}}"
       }
     },
     "stats": {
-      "activeMembers": "Aktív tagok",
-      "eventsThisMonth": "A hónap eseményei",
-      "cotisationsPending": "Függőben lévő hozzájárulások",
       "financialBalance": "Pénzügyi mérleg",
       "donationsReceived": "Befogadott adományok {year}"
     },
-    "nextEvent": {
-      "title": "Következő esemény",
-      "empty": "Nincsenek közelgő események."
+    "agenda": {
+      "title": "Napirend",
+      "eventsThisMonth": "{count, plural, one {# esemény ebben a hónapban} other {# esemény ebben a hónapban}}",
+      "ongoing": "Folyamatban",
+      "viewCalendar": "Nézze meg a naptárt",
+      "empty": "Nincs esemény közelgő."
     },
     "cotisations": {
       "title": "Hozzájárulások {year}",
       "collectedThisYear": "Idén bevált",
-      "pendingPayment": "{count} Fizetésre várva"
+      "remaining": "{amount} még beérkezésre vár",
+      "pendingPayment": "{count} Fizetésre várva",
+      "viewAll": "Tekintse meg a díjakat"
+    },
+    "activiteRecente": {
+      "title": "Legutóbbi tevékenység",
+      "tabs": {
+        "commandes": "Megrendelések",
+        "dons": "Adományok"
+      }
     },
     "recentDonations": {
       "title": "Legutóbbi adományok",
@@ -747,6 +743,7 @@
       "categoryTitle": "Bevételek kategóriák szerint — {year}"
     },
     "memberSummary": {
+      "title": "Tagok",
       "total": "{count, plural, one {# tag} other {# tag}}",
       "active": "{count, plural, one {# aktív} other {# aktív}}",
       "inactive": "{count, plural, one {# inaktív} other {# inaktív}}"
@@ -2588,7 +2585,8 @@
         "disponibles": "Elérhető",
         "enPret": "Kölcsönbe",
         "reserves": "Fenntartott",
-        "maintenance": "Karbantartás"
+        "maintenance": "Karbantartás",
+        "enRetard": "Késő"
       },
       "pendingRequests": "Függőben lévő pályázatok",
       "accept": "Elfogadom",
@@ -2610,7 +2608,8 @@
         "reserves": "Fenntartott",
         "maintenance": "Karbantartás",
         "horsService": "Szolgálaton kívül",
-        "perdus": "Elveszett"
+        "perdus": "Elveszett",
+        "enRetard": "Késő"
       },
       "noArticles": "Nincsenek cikkek",
       "noResults": "Nincs eredmény",

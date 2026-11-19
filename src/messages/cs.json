@@ -674,44 +674,40 @@
       "dragHint": "Tah pro přeskupení",
       "resizeHint": "Táhnout roh pro změnu velikosti"
     },
-    "actionsTodo": {
-      "trigger": "Kroky k přijetí",
-      "empty": "Všechno je aktuální, žádná akce k řešení.",
-      "snooze": "Odložit tuto akci",
-      "snoozeDialogTitle": "Odložit tuto akci",
-      "snoozeDialogDescription": "Akce zůstává do té doby skrytá, pak se znovu objeví, pokud jsou ještě případy k vyřízení.",
-      "snoozeUntilLabel": "Odloženo do",
-      "confirm": "Potvrdit",
-      "loadError": "Nelze načíst akce, které mají být provedeny.",
-      "snoozedSectionTitle": "{count, plural, one {# opatření pozastavena} other {# opatření pozastavena}}",
-      "snoozedUntil": "Až do {date}",
-      "cancelSnooze": "Zrušit blokaci",
-      "actionLabels": {
-        "voirEtRelancer": "Vidět a znovu spustit",
-        "examiner": "Zkoušející",
-        "consulter": "Konzultace"
-      },
-      "rows": {
-        "cotisations-en-retard": "{count, plural, one {# opožděný členský poplatek} other {# dlužné příspěvky}}",
-        "adhesions-a-valider": "{count, plural, one {# členství k ověření} other {# členství k ověření}}",
-        "cheques-a-traiter": "{count, plural, one {# kontrola ke zpracování} other {# kontroly ke zpracování}}"
+    "aTraiter": {
+      "title": "K léčbě",
+      "empty": "Momentálně není co řešit",
+      "loadError": "Nelze načíst akce určené ke zpracování.",
+      "items": {
+        "cotisationsEnAttente": "{count, plural, one {# čekající členský poplatek} other {# čekající příspěvky}}",
+        "donsAEncaisser": "{count, plural, one {# dárek k vyplacení} other {# dary k vybrání}}",
+        "materielEnRetard": "{count, plural, one {# pozdní vrácení materiálu} other {# pozdní vrácení materiálu}}"
       }
     },
     "stats": {
-      "activeMembers": "Aktivní členové",
-      "eventsThisMonth": "Události tohoto měsíce",
-      "cotisationsPending": "Čekání na příspěvky",
       "financialBalance": "Finanční rovnováha",
       "donationsReceived": "Přijaté dary {year}"
     },
-    "nextEvent": {
-      "title": "Další událost",
-      "empty": "Žádné nadcházející akce."
+    "agenda": {
+      "title": "Program",
+      "eventsThisMonth": "{count, plural, one {# akce tento měsíc} other {# akce tento měsíc}}",
+      "ongoing": "Probíhá",
+      "viewCalendar": "Podívejte se do kalendáře",
+      "empty": "Žádné akce v nadcházejícím období."
     },
     "cotisations": {
       "title": "Příspěvky {year}",
       "collectedThisYear": "Letos jsem to vyplatil",
-      "pendingPayment": "{count} čeká na platbu"
+      "remaining": "{amount} Zbývající k přijetí",
+      "pendingPayment": "{count} čeká na platbu",
+      "viewAll": "Zobrazit poplatky"
+    },
+    "activiteRecente": {
+      "title": "Nedávná činnost",
+      "tabs": {
+        "commandes": "Objednávky",
+        "dons": "Dary"
+      }
     },
     "recentDonations": {
       "title": "Nedávné dary",
@@ -747,6 +743,7 @@
       "categoryTitle": "Účtenky podle kategorií — {year}"
     },
     "memberSummary": {
+      "title": "Členové",
       "total": "{count, plural, one {# člen} other {# členů}}",
       "active": "{count, plural, one {# aktivní} other {# aktivních}}",
       "inactive": "{count, plural, one {# neaktivní} other {# neaktivních}}"
@@ -2588,7 +2585,8 @@
         "disponibles": "Dostupné",
         "enPret": "Na hostování",
         "reserves": "Rezervováno",
-        "maintenance": "Údržba"
+        "maintenance": "Údržba",
+        "enRetard": "Pozdní"
       },
       "pendingRequests": "Nečekané žádosti",
       "accept": "Přijmout",
@@ -2610,7 +2608,8 @@
         "reserves": "Rezervováno",
         "maintenance": "Údržba",
         "horsService": "Vyřazení ze služby",
-        "perdus": "Ztraceno"
+        "perdus": "Ztraceno",
+        "enRetard": "Pozdní"
       },
       "noArticles": "Žádné články",
       "noResults": "Žádné výsledky",

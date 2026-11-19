@@ -674,44 +674,40 @@
       "dragHint": "Sleep om te herschikken",
       "resizeHint": "Sleep de hoek om de grootte te wijzigen"
     },
-    "actionsTodo": {
-      "trigger": "Acties die moeten worden genomen",
-      "empty": "Alles is up-to-date, er is geen actie om mee te doen.",
-      "snooze": "Deze actie uitstellen",
-      "snoozeDialogTitle": "Deze actie uitstellen",
-      "snoozeDialogDescription": "De actie blijft voor u verborgen tot die datum en verschijnt dan weer als er nog zaken te verwerken zijn.",
-      "snoozeUntilLabel": "Uitgesteld tot",
-      "confirm": "Bevestig",
-      "loadError": "Kan de te doen acties niet laden.",
-      "snoozedSectionTitle": "{count, plural, one {# actie opgeschort} other {# acties die op pauze zijn gezet}}",
-      "snoozedUntil": "Tot {date}",
-      "cancelSnooze": "Annuleer de wacht",
-      "actionLabels": {
-        "voirEtRelancer": "Zie en herlanceren",
-        "examiner": "Examinator",
-        "consulter": "Overleg"
-      },
-      "rows": {
-        "cotisations-en-retard": "{count, plural, one {# achterstallige lidmaatschapsbijdrage} other {# achterstallige bijdragen}}",
-        "adhesions-a-valider": "{count, plural, one {# lidmaatschap te valideren} other {# lidmaatschappen te valideren}}",
-        "cheques-a-traiter": "{count, plural, one {# check to process} other {# controles die moeten worden verwerkt}}"
+    "aTraiter": {
+      "title": "Behandeld te worden",
+      "empty": "Niets om je op dit moment bezig te houden",
+      "loadError": "Kan acties die verwerkt moeten worden niet laden.",
+      "items": {
+        "cotisationsEnAttente": "{count, plural, one {# lopende lidmaatschapsbijdrage} other {# openstaande bijdragen}}",
+        "donsAEncaisser": "{count, plural, one {# cadeau om te verzilveren} other {# donaties om in te zamelen}}",
+        "materielEnRetard": "{count, plural, one {# late materiaalopbrengsten} other {# late materiaalopbrengsten}}"
       }
     },
     "stats": {
-      "activeMembers": "Actieve leden",
-      "eventsThisMonth": "Evenementen deze maand",
-      "cotisationsPending": "Uitstaande bijdragen",
       "financialBalance": "Financiële balans",
       "donationsReceived": "Ontvangen donaties {year}"
     },
-    "nextEvent": {
-      "title": "Volgend evenement",
-      "empty": "Geen aankomende evenementen."
+    "agenda": {
+      "title": "Agenda",
+      "eventsThisMonth": "{count, plural, one {# evenement deze maand} other {# evenementen deze maand}}",
+      "ongoing": "In uitvoering",
+      "viewCalendar": "Zie de kalender",
+      "empty": "Er komen geen evenementen aan."
     },
     "cotisations": {
       "title": "Bijdragen {year}",
       "collectedThisYear": "Dit jaar heb ik het geld geïncasht",
-      "pendingPayment": "{count} Wacht op betaling"
+      "remaining": "{amount} Nog te ontvangen",
+      "pendingPayment": "{count} Wacht op betaling",
+      "viewAll": "Bekijk de kosten"
+    },
+    "activiteRecente": {
+      "title": "Recente activiteit",
+      "tabs": {
+        "commandes": "Bestellingen",
+        "dons": "Donaties"
+      }
     },
     "recentDonations": {
       "title": "Recente donaties",
@@ -747,6 +743,7 @@
       "categoryTitle": "Ontvangsten per categorie — {year}"
     },
     "memberSummary": {
+      "title": "Leden",
       "total": "{count, plural, one {# lid} other {# leden}}",
       "active": "{count, plural, one {# actief} other {# actief}}",
       "inactive": "{count, plural, one {# inactief} other {# inactief}}"
@@ -2588,7 +2585,8 @@
         "disponibles": "Beschikbaar",
         "enPret": "In bruikleen",
         "reserves": "Gereserveerd",
-        "maintenance": "Onderhoud"
+        "maintenance": "Onderhoud",
+        "enRetard": "Late"
       },
       "pendingRequests": "Lopende aanvragen",
       "accept": "Accepteer",
@@ -2610,7 +2608,8 @@
         "reserves": "Gereserveerd",
         "maintenance": "Onderhoud",
         "horsService": "Buiten dienst",
-        "perdus": "Verloren"
+        "perdus": "Verloren",
+        "enRetard": "Late"
       },
       "noArticles": "Geen artikelen",
       "noResults": "Geen resultaten",

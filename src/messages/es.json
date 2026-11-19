@@ -674,44 +674,40 @@
       "dragHint": "Arrastrar para reordenar",
       "resizeHint": "Arrastra la esquina para redimensionar"
     },
-    "actionsTodo": {
-      "trigger": "Acciones a tomar",
-      "empty": "Todo está actualizado, no hay ninguna acción que gestionar.",
-      "snooze": "Aplazar esta acción",
-      "snoozeDialogTitle": "Aplazar esta acción",
-      "snoozeDialogDescription": "La acción permanece oculta para ti hasta esa fecha y luego reaparece si aún quedan casos por procesar.",
-      "snoozeUntilLabel": "Pospuesto hasta",
-      "confirm": "Confirma",
-      "loadError": "No se pueden cargar las acciones que se deben realizar.",
-      "snoozedSectionTitle": "{count, plural, one {# acción suspendida} other {# acciones suspendidas}}",
-      "snoozedUntil": "Hasta que {date}",
-      "cancelSnooze": "Cancelar la retención",
-      "actionLabels": {
-        "voirEtRelancer": "Ver y relanzar",
-        "examiner": "Examinador",
-        "consulter": "Consulta"
-      },
-      "rows": {
-        "cotisations-en-retard": "{count, plural, one {# cuota de membresía atrasada} other {# contribuciones atrasadas}}",
-        "adhesions-a-valider": "{count, plural, one {# de pertenencia a validar} other {# membresías a validar}}",
-        "cheques-a-traiter": "{count, plural, one {# cheque para procesar} other {# cheques a procesar}}"
+    "aTraiter": {
+      "title": "Ser tratado",
+      "empty": "No hay nada con qué lidiar en este momento",
+      "loadError": "No se pueden cargar acciones para procesarse.",
+      "items": {
+        "cotisationsEnAttente": "{count, plural, one {# cuota de membresía pendiente} other {# contribuciones pendientes}}",
+        "donsAEncaisser": "{count, plural, one {# regalo que se cobra} other {# donaciones para recaudar}}",
+        "materielEnRetard": "{count, plural, one {# Retornos tardíos de material} other {# Retornos tardíos de material}}"
       }
     },
     "stats": {
-      "activeMembers": "Miembros activos",
-      "eventsThisMonth": "Eventos este mes",
-      "cotisationsPending": "Cuotas pendientes",
       "financialBalance": "Saldo financiero",
       "donationsReceived": "Donaciones recibidas {year}"
     },
-    "nextEvent": {
-      "title": "Próximo evento",
-      "empty": "No hay eventos próximos."
+    "agenda": {
+      "title": "Orden del día",
+      "eventsThisMonth": "{count, plural, one {# evento este mes} other {# eventos este mes}}",
+      "ongoing": "En curso",
+      "viewCalendar": "Consulta el calendario",
+      "empty": "No hay eventos próximas."
     },
     "cotisations": {
       "title": "Cuotas {year}",
       "collectedThisYear": "recaudado este año",
-      "pendingPayment": "{count} pendiente(s) de pago"
+      "remaining": "{amount} Restantes por recibir",
+      "pendingPayment": "{count} pendiente(s) de pago",
+      "viewAll": "Consulta las tarifas"
+    },
+    "activiteRecente": {
+      "title": "Actividad reciente",
+      "tabs": {
+        "commandes": "Pedidos",
+        "dons": "Donaciones"
+      }
     },
     "recentDonations": {
       "title": "Donaciones recientes",
@@ -747,6 +743,7 @@
       "categoryTitle": "Ingresos por categoría — {year}"
     },
     "memberSummary": {
+      "title": "Miembros",
       "total": "{count, plural, one {# miembro} other {# miembros}}",
       "active": "{count, plural, one {# activo} other {# activos}}",
       "inactive": "{count, plural, one {# inactivo} other {# inactivos}}"
@@ -2588,7 +2585,8 @@
         "disponibles": "Disponibles",
         "enPret": "En préstamo",
         "reserves": "Reservados",
-        "maintenance": "Mantenimiento"
+        "maintenance": "Mantenimiento",
+        "enRetard": "Tarde"
       },
       "pendingRequests": "Solicitudes pendientes",
       "accept": "Aceptar",
@@ -2610,7 +2608,8 @@
         "reserves": "Reservados",
         "maintenance": "Mantenimiento",
         "horsService": "Fuera de servicio",
-        "perdus": "Perdidos"
+        "perdus": "Perdidos",
+        "enRetard": "Tarde"
       },
       "noArticles": "Ningún artículo",
       "noResults": "Ningún resultado",

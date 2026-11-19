@@ -674,44 +674,40 @@
       "dragHint": "Træk for at omarrangere",
       "resizeHint": "Træk hjørnet for at ændre størrelsen"
     },
-    "actionsTodo": {
-      "trigger": "Handlinger, der skal tages",
-      "empty": "Alt er opdateret, ingen handling at håndtere.",
-      "snooze": "Udsæt denne handling",
-      "snoozeDialogTitle": "Udsæt denne handling",
-      "snoozeDialogDescription": "Handlingen forbliver skjult for dig indtil den dato, og dukker så op igen, hvis der stadig er sager, der skal behandles.",
-      "snoozeUntilLabel": "Udsat til",
-      "confirm": "Bekræft",
-      "loadError": "Kan ikke indlæse de handlinger, der skal udføres.",
-      "snoozedSectionTitle": "{count, plural, one {# handling sat på pause} other {# handlinger sat på pause}}",
-      "snoozedUntil": "Indtil {date}",
-      "cancelSnooze": "Opskær holdet",
-      "actionLabels": {
-        "voirEtRelancer": "Se og genlancering",
-        "examiner": "Examinator",
-        "consulter": "Konsultér"
-      },
-      "rows": {
-        "cotisations-en-retard": "{count, plural, one {# forsinket medlemsgebyr} other {# forsinkede bidrag}}",
-        "adhesions-a-valider": "{count, plural, one {# medlemskab skal valideres} other {# medlemskaber skal valideres}}",
-        "cheques-a-traiter": "{count, plural, one {# tjek for at behandle} other {# tjek skal behandles}}"
+    "aTraiter": {
+      "title": "At blive behandlet",
+      "empty": "Intet at håndtere lige nu",
+      "loadError": "Kan ikke indlæse handlinger, der skal behandles.",
+      "items": {
+        "cotisationsEnAttente": "{count, plural, one {# udestående medlemsgebyr} other {# ventende bidrag}}",
+        "donsAEncaisser": "{count, plural, one {# gave, der skal indløses} other {# donationer til indsamling}}",
+        "materielEnRetard": "{count, plural, one {# sene materialeafkast} other {# sene materialeafkast}}"
       }
     },
     "stats": {
-      "activeMembers": "Aktive medlemmer",
-      "eventsThisMonth": "Begivenheder denne måned",
-      "cotisationsPending": "Afventende bidrag",
       "financialBalance": "Finansiel balance",
       "donationsReceived": "Modtagne donationer {year}"
     },
-    "nextEvent": {
-      "title": "Næste begivenhed",
-      "empty": "Ingen kommende arrangementer."
+    "agenda": {
+      "title": "Dagsorden",
+      "eventsThisMonth": "{count, plural, one {# event denne måned} other {# begivenheder denne måned}}",
+      "ongoing": "Under udvikling",
+      "viewCalendar": "Se kalenderen",
+      "empty": "Ingen begivenheder på vej."
     },
     "cotisations": {
       "title": "Bidrag {year}",
       "collectedThisYear": "Indløste i år",
-      "pendingPayment": "{count} Afventer betaling"
+      "remaining": "{amount} Resterende at modtage",
+      "pendingPayment": "{count} Afventer betaling",
+      "viewAll": "Se gebyrerne"
+    },
+    "activiteRecente": {
+      "title": "Seneste aktivitet",
+      "tabs": {
+        "commandes": "Ordrer",
+        "dons": "Donationer"
+      }
     },
     "recentDonations": {
       "title": "Seneste donationer",
@@ -747,6 +743,7 @@
       "categoryTitle": "Indtægter efter kategori — {year}"
     },
     "memberSummary": {
+      "title": "Medlemmer",
       "total": "{count, plural, one {# medlem} other {# medlemmer}}",
       "active": "{count, plural, one {# aktiv} other {# aktive}}",
       "inactive": "{count, plural, one {# inaktiv} other {# inaktive}}"
@@ -2588,7 +2585,8 @@
         "disponibles": "Tilgængelig",
         "enPret": "På lån",
         "reserves": "Reserveret",
-        "maintenance": "Vedligeholdelse"
+        "maintenance": "Vedligeholdelse",
+        "enRetard": "Sen"
       },
       "pendingRequests": "Verserende ansøgninger",
       "accept": "Accepter",
@@ -2610,7 +2608,8 @@
         "reserves": "Reserveret",
         "maintenance": "Vedligeholdelse",
         "horsService": "Ude af drift",
-        "perdus": "Lost"
+        "perdus": "Lost",
+        "enRetard": "Sen"
       },
       "noArticles": "Ingen artikler",
       "noResults": "Ingen resultater",

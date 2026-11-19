@@ -799,44 +799,40 @@
       "dragHint": "Drag to reorder",
       "resizeHint": "Drag the corner to resize"
     },
-    "actionsTodo": {
-      "trigger": "Actions to take",
-      "empty": "Everything is up to date, no action to handle.",
-      "snooze": "Postpone this action",
-      "snoozeDialogTitle": "Postpone this action",
-      "snoozeDialogDescription": "The action remains hidden for you until that date, then reappears if there are still cases to process.",
-      "snoozeUntilLabel": "Postponed until",
-      "confirm": "Confirm",
-      "loadError": "Unable to load the actions to be done.",
-      "snoozedSectionTitle": "{count, plural, one {# action put on hold} other {# actions put on hold}}",
-      "snoozedUntil": "Until {date}",
-      "cancelSnooze": "Cancel the hold",
-      "actionLabels": {
-        "voirEtRelancer": "See and relaunch",
-        "examiner": "Examiner",
-        "consulter": "Consult"
-      },
-      "rows": {
-        "cotisations-en-retard": "{count, plural, one {# overdue membership fee} other {# overdue contributions}}",
-        "adhesions-a-valider": "{count, plural, one {# membership to be validated} other {# memberships to be validated}}",
-        "cheques-a-traiter": "{count, plural, one {# check to process} other {# checks to process}}"
+    "aTraiter": {
+      "title": "To be treated",
+      "empty": "Nothing to deal with at the moment",
+      "loadError": "Unable to load actions to be processed.",
+      "items": {
+        "cotisationsEnAttente": "{count, plural, one {# pending membership fee} other {# pending contributions}}",
+        "donsAEncaisser": "{count, plural, one {# gift to be cashed} other {# donations to collect}}",
+        "materielEnRetard": "{count, plural, one {# late material returns} other {# late material returns}}"
       }
     },
     "stats": {
-      "activeMembers": "Active members",
-      "eventsThisMonth": "Events this month",
-      "cotisationsPending": "Pending membership fees",
       "financialBalance": "Financial balance",
       "donationsReceived": "Donations received {year}"
     },
-    "nextEvent": {
-      "title": "Next event",
-      "empty": "No upcoming events."
+    "agenda": {
+      "title": "Agenda",
+      "eventsThisMonth": "{count, plural, one {# event this month} other {# events this month}}",
+      "ongoing": "In progress",
+      "viewCalendar": "See the calendar",
+      "empty": "No events coming up."
     },
     "cotisations": {
       "title": "Membership fees {year}",
       "collectedThisYear": "collected this year",
-      "pendingPayment": "{count} awaiting payment"
+      "remaining": "{amount} remaining to be received",
+      "pendingPayment": "{count} awaiting payment",
+      "viewAll": "See the fees"
+    },
+    "activiteRecente": {
+      "title": "Recent activity",
+      "tabs": {
+        "commandes": "Orders",
+        "dons": "Donations"
+      }
     },
     "recentDonations": {
       "title": "Recent donations",
@@ -872,6 +868,7 @@
       "categoryTitle": "Income by category — {year}"
     },
     "memberSummary": {
+      "title": "Members",
       "total": "{count, plural, one {# member} other {# members}}",
       "active": "{count, plural, one {# active} other {# active}}",
       "inactive": "{count, plural, one {# inactive} other {# inactive}}"
@@ -2757,7 +2754,8 @@
         "disponibles": "Available",
         "enPret": "On loan",
         "reserves": "Reserved",
-        "maintenance": "Maintenance"
+        "maintenance": "Maintenance",
+        "enRetard": "Late"
       },
       "pendingRequests": "Pending requests",
       "accept": "Accept",
@@ -2779,7 +2777,8 @@
         "reserves": "Reserved",
         "maintenance": "Maintenance",
         "horsService": "Out of service",
-        "perdus": "Lost"
+        "perdus": "Lost",
+        "enRetard": "Late"
       },
       "noArticles": "No items",
       "noResults": "No results",

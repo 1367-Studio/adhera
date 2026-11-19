@@ -3,6 +3,7 @@
 import Link from "next/link"
 import { useQuery } from "@tanstack/react-query"
 import { useTranslations } from "next-intl"
+import { UsersIcon } from "@phosphor-icons/react/dist/ssr"
 import { cn } from "@/lib/utils"
 import { useIsAdministrator } from "@/lib/user-context"
 import { memberUsageLevel, memberUsagePercent, type MemberUsageLevel } from "@/lib/member-usage"
@@ -26,16 +27,17 @@ const LEVEL_TEXT_CLASS: Record<MemberUsageLevel, string> = {
 interface Props {
   totalCount:  number | null
   activeCount: number | null
+  isLoading:   boolean
 }
 
-// Member counts as a plain typography line, plan usage as a thin bar — sits right under
-// the page header, independent of the stat tiles below it.
-export function MemberSummary({ totalCount, activeCount }: Props) {
-  const t = useTranslations("dashboard")
+// Widget version of the former standalone <MemberSummary> (member-summary.tsx, now removed)
+// — FORM-120 folds "actifs/total/inactifs + jauge de capacité" into one card inside the
+// widget grid (drag/resize/visibility like every other widget) instead of a flat row always
+// pinned above it. Same data, same /api/dashboard/member-usage query (own query so a Stripe
+// hiccup only blanks the bar, not the whole card).
+export function MembresSummaryCard({ totalCount, activeCount, isLoading }: Props) {
+  const t = useTranslations("dashboard.memberSummary")
 
-  // Own query (see /api/dashboard/member-usage): a Stripe hiccup only hides the bar.
-  // staleTime: the limit only moves on a plan change, not worth refetching on every
-  // dashboard remount.
   const { data: usage } = useQuery<MemberUsage>({
     queryKey:  ["dashboard", "member-usage"],
     staleTime: 5 * 60 * 1000,
@@ -49,18 +51,27 @@ export function MemberSummary({ totalCount, activeCount }: Props) {
   const hasCounts = totalCount != null && activeCount != null
 
   return (
-    <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-2 text-sm">
-      <p className="text-muted-foreground tabular-nums">
-        {hasCounts ? (
-          <>
-            <span className="font-medium text-foreground">{t("memberSummary.total", { count: totalCount })}</span>
-            {" · "}{t("memberSummary.active", { count: activeCount })}
-            {" · "}{t("memberSummary.inactive", { count: Math.max(0, totalCount - activeCount) })}
-          </>
-        ) : "…"}
-      </p>
-
-      {usage && <MemberUsageBar activeCount={usage.activeCount} limit={usage.limit} />}
+    <div className="rounded-lg bg-muted/60 p-6 space-y-3">
+      <div className="flex items-center gap-2">
+        <UsersIcon className="size-4.5 text-muted-foreground" />
+        <span className="text-base font-medium">{t("title")}</span>
+      </div>
+      {isLoading ? (
+        <div className="h-12 rounded-lg bg-muted animate-pulse" />
+      ) : (
+        <div className="space-y-3">
+          <p className="text-sm text-muted-foreground tabular-nums">
+            {hasCounts ? (
+              <>
+                <span className="font-medium text-foreground">{t("active", { count: activeCount })}</span>
+                {" · "}{t("total", { count: totalCount })}
+                {" · "}{t("inactive", { count: Math.max(0, totalCount! - activeCount!) })}
+              </>
+            ) : "…"}
+          </p>
+          {usage && <MemberUsageBar activeCount={usage.activeCount} limit={usage.limit} />}
+        </div>
+      )}
     </div>
   )
 }
@@ -88,7 +99,7 @@ function MemberUsageBar({ activeCount, limit }: MemberUsage) {
         aria-valuemin={0}
         aria-valuemax={limit}
         aria-valuenow={Math.min(activeCount, limit)}
-        className="h-1.5 w-32 overflow-hidden rounded-full bg-muted"
+        className="h-1.5 w-full overflow-hidden rounded-full bg-muted"
       >
         <div className={cn("h-full rounded-full", BAR_FILL_CLASS[level])} style={{ width: `${percent}%` }} />
       </div>
@@ -96,13 +107,13 @@ function MemberUsageBar({ activeCount, limit }: MemberUsage) {
   )
 
   if (!isAdministrator) {
-    return <div className="flex items-center gap-3 text-muted-foreground">{usageContent}</div>
+    return <div className="space-y-1.5 text-xs text-muted-foreground">{usageContent}</div>
   }
 
   return (
     <Link
       href={BILLING_SETTINGS_PATH}
-      className="flex items-center gap-3 rounded-md text-muted-foreground transition-colors outline-none hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/50"
+      className="block space-y-1.5 rounded-md text-xs text-muted-foreground outline-none transition-colors hover:text-foreground focus-visible:ring-3 focus-visible:ring-ring/50"
     >
       {usageContent}
     </Link>

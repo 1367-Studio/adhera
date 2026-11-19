@@ -3,23 +3,25 @@ import { hasAccess, type AccessArea, type ResolvedPermissions } from "@/lib/perm
 
 // Canonical order = today's default, hardcoded visual order — a brand-new user (no saved
 // dashboardLayout) sees exactly this, unchanged from before drag-and-drop existed.
+//
+// FORM-120 regrouped the former 13 widgets (5 stat tiles + 2 charts + 6 summary cards) into
+// these 6 — each now shows what used to take 2-4 separate cards (e.g. membres-summary folds
+// in the actifs/total/inactifs + capacité jauge that used to live outside the widget grid
+// entirely). parseDashboardLayout() below already tolerates ids disappearing/appearing
+// between releases, so this rename needed no migration script.
+// Order chosen so same-height widgets land next to each other: the grid uses plain
+// (sparse) auto-flow, not `grid-auto-flow: dense` (see the grid div in tableau-de-bord), so
+// two adjacent widgets of different heights leave a permanent empty gap the layout never
+// backfills. membres-summary/agenda-summary are both h:2 (clean row); cotisations-card and
+// finances-overview are both w:4 (always their own full row, no adjacency gap possible).
+// activite-recente (h:3) next to loaned-material (h:2) is the one unavoidable mismatch, left
+// for last so any resulting gap trails at the bottom of the page rather than interrupting it.
 export const DASHBOARD_WIDGET_IDS = [
-  "stat-membres",
-  "stat-evenements",
-  "stat-cotisations",
-  "stat-solde",
-  "stat-dons",
-  // The two charts sit right under the stat tiles, which is where they have always
-  // appeared: as one `finance-charts` widget declared last they were dragged up here by
-  // `grid-auto-flow: dense`. That's gone now that widget order is authoritative, so the
-  // position they actually had is declared rather than emergent.
-  "cotisations-gauge",
-  "income-expense-chart",
-  "next-event",
-  "cotisations-summary",
-  "income-by-category",
-  "recent-orders",
-  "dons-recents",
+  "membres-summary",
+  "agenda-summary",
+  "cotisations-card",
+  "finances-overview",
+  "activite-recente",
   "loaned-material",
 ] as const
 
@@ -47,33 +49,42 @@ export const DASHBOARD_WIDGET_META: Record<DashboardWidgetId, {
   moduleKey: keyof AssocModules | (keyof AssocModules)[] | null
   // Area (FORM-34) the user must be able to read to see the widget — the same area that
   // gates the page the tile links to and the API behind its figures, so nobody gets a tile
-  // onto a page they cannot open (e.g. the balance for someone without Comptabilité).
-  area:      AccessArea
+  // onto a page they cannot open (e.g. the balance for someone without Comptabilité). An
+  // array means "any of these areas is enough" — for a widget merging content that used to
+  // be gated independently (e.g. activite-recente = former boutique-only + dons-only cards),
+  // a single area would silently drop the whole card for a user who only had the other one.
+  area:      AccessArea | AccessArea[]
   // Starting size, used for a brand-new dashboard and whenever a widget appears in a saved
   // layout that predates it. Only a default — the user resizes from the Personnaliser mode.
   w:         number
   h:         number
 }> = {
-  // h:2 (not 1): Figma's KPI tiles read close to square against their column width —
-  // a single row unit left them a wide, short rectangle instead.
-  "stat-membres":         { moduleKey: null,          area: "membres",      w: 1, h: 2 },
-  "stat-evenements":      { moduleKey: "evenements",  area: "evenements",   w: 1, h: 2 },
-  "stat-cotisations":     { moduleKey: "cotisations", area: "adhesions",    w: 1, h: 2 },
-  "stat-solde":           { moduleKey: "finances",    area: "comptabilite", w: 1, h: 2 },
-  "stat-dons":            { moduleKey: "dons",        area: "dons",         w: 1, h: 2 },
-  "cotisations-gauge":    { moduleKey: "cotisations", area: "adhesions",    w: 2, h: 3 },
-  "income-expense-chart": { moduleKey: "finances",    area: "comptabilite", w: 2, h: 3 },
-  "next-event":           { moduleKey: "evenements",  area: "evenements",   w: 2, h: 2 },
-  "cotisations-summary":  { moduleKey: "cotisations", area: "adhesions",    w: 2, h: 2 },
-  "income-by-category":   { moduleKey: "finances",    area: "comptabilite", w: 2, h: 2 },
-  "recent-orders":        { moduleKey: "boutique",    area: "boutique",     w: 2, h: 3 },
-  "dons-recents":         { moduleKey: "dons",        area: "dons",         w: 2, h: 3 },
-  "loaned-material":      { moduleKey: "materiel",    area: "materiel",     w: 2, h: 2 },
+  "membres-summary":   { moduleKey: null,          area: "membres",      w: 2, h: 2 },
+  "agenda-summary":    { moduleKey: "evenements",  area: "evenements",   w: 2, h: 2 },
+  // w:4 (not 2): the merged header summary (encaissé/reste à percevoir/en attente) plus the
+  // full 5-status gauge legend doesn't fit a 2-column h:3 slot without the grid's
+  // overflow-hidden clipping it — see sortable-widget.tsx's `[&>*]:h-full overflow-hidden`.
+  // Full width also means this card is always alone on its row, so it can never create the
+  // kind of adjacency gap a narrower, taller-than-its-neighbor card would.
+  "cotisations-card":  { moduleKey: "cotisations", area: "adhesions",    w: 4, h: 4 },
+  // Still gated on "comptabilite" alone (not a union with "dons") — the charts and solde are
+  // the dominant content. A user with only dons access and no comptabilite loses the merged
+  // card entirely rather than a standalone dons tile; see finances-overview-card.tsx's own
+  // comment on hiding (not "—") the dons mini-stat for the inverse case.
+  "finances-overview": { moduleKey: "finances",    area: "comptabilite", w: 4, h: 4 },
+  // boutique OR dons — either module alone still has recent activity worth a tab, and the
+  // area gate mirrors that: a user with only "dons" read access (no "boutique") still needs
+  // to see this card for their Dons tab, same as the reverse. A single area here would have
+  // silently hidden the whole card — including the tab they *do* have permission for — for
+  // anyone missing the other one.
+  "activite-recente":  { moduleKey: ["boutique", "dons"], area: ["boutique", "dons"], w: 2, h: 3 },
+  "loaned-material":   { moduleKey: "materiel",    area: "materiel",     w: 2, h: 2 },
 }
 
 export function isDashboardWidgetVisible(id: DashboardWidgetId, modules: AssocModules, permissions: ResolvedPermissions): boolean {
   const { moduleKey, area } = DASHBOARD_WIDGET_META[id]
-  if (!hasAccess(permissions, area, "read")) return false
+  const areas = Array.isArray(area) ? area : [area]
+  if (!areas.some(a => hasAccess(permissions, a, "read"))) return false
   if (!moduleKey) return true
   if (Array.isArray(moduleKey)) return moduleKey.some(moduleName => modules[moduleName])
   return modules[moduleKey]

@@ -674,44 +674,40 @@
       "dragHint": "Dra för att omarrangera",
       "resizeHint": "Dra hörnet för att ändra storlek"
     },
-    "actionsTodo": {
-      "trigger": "Åtgärder att vidta",
-      "empty": "Allt är uppdaterat, ingen åtgärd att hantera.",
-      "snooze": "Skjut upp denna åtgärd",
-      "snoozeDialogTitle": "Skjut upp denna åtgärd",
-      "snoozeDialogDescription": "Åtgärden förblir dold för dig fram till det datumet, och dyker sedan upp igen om det fortfarande finns ärenden att bearbeta.",
-      "snoozeUntilLabel": "Uppskjuten till",
-      "confirm": "Bekräfta",
-      "loadError": "Kan inte ladda de åtgärder som ska göras.",
-      "snoozedSectionTitle": "{count, plural, one {# åtgärd satt på is} other {# åtgärder som satts på is}}",
-      "snoozedUntil": "Tills {date}",
-      "cancelSnooze": "Avbryt spärren",
-      "actionLabels": {
-        "voirEtRelancer": "Se och återlansera",
-        "examiner": "Examinator",
-        "consulter": "Konsultera"
-      },
-      "rows": {
-        "cotisations-en-retard": "{count, plural, one {# försenad medlemsavgift} other {# försenade bidrag}}",
-        "adhesions-a-valider": "{count, plural, one {# medlemskap som ska valideras} other {# medlemskap som ska valideras}}",
-        "cheques-a-traiter": "{count, plural, one {# kontroll för att behandla} other {# kontroller att behandla}}"
+    "aTraiter": {
+      "title": "Att behandlas",
+      "empty": "Inget att ta itu med just nu",
+      "loadError": "Kan inte ladda åtgärder som ska bearvas.",
+      "items": {
+        "cotisationsEnAttente": "{count, plural, one {# utestående medlemsavgift} other {# utestående bidrag}}",
+        "donsAEncaisser": "{count, plural, one {# gåva att lösa in} other {# donationer att samla in}}",
+        "materielEnRetard": "{count, plural, one {# sena materialavkastningar} other {# sena materialavkastningar}}"
       }
     },
     "stats": {
-      "activeMembers": "Aktiva medlemmar",
-      "eventsThisMonth": "Evenemang denna månad",
-      "cotisationsPending": "Utestående bidrag",
       "financialBalance": "Finansiell balans",
       "donationsReceived": "Mottagna donationer {year}"
     },
-    "nextEvent": {
-      "title": "Nästa evenemang",
-      "empty": "Inga kommande evenemang."
+    "agenda": {
+      "title": "Agenda",
+      "eventsThisMonth": "{count, plural, one {# evenemang denna månad} other {# evenemang denna månad}}",
+      "ongoing": "Under utveckling",
+      "viewCalendar": "Se kalendern",
+      "empty": "Inga evenemang på gång."
     },
     "cotisations": {
       "title": "Bidrag {year}",
       "collectedThisYear": "Löste in i år",
-      "pendingPayment": "{count} Väntar på betalning"
+      "remaining": "{amount} återstående att ta emot",
+      "pendingPayment": "{count} Väntar på betalning",
+      "viewAll": "Se avgifterna"
+    },
+    "activiteRecente": {
+      "title": "Senaste aktiviteten",
+      "tabs": {
+        "commandes": "Beställningar",
+        "dons": "Donationer"
+      }
     },
     "recentDonations": {
       "title": "Senaste donationer",
@@ -747,6 +743,7 @@
       "categoryTitle": "Intäkter per kategori — {year}"
     },
     "memberSummary": {
+      "title": "Medlemmar",
       "total": "{count, plural, one {# medlem} other {# medlemmar}}",
       "active": "{count, plural, one {# aktiv} other {# aktiva}}",
       "inactive": "{count, plural, one {# inaktiv} other {# inaktiva}}"
@@ -2588,7 +2585,8 @@
         "disponibles": "Tillgänglig",
         "enPret": "På lån",
         "reserves": "Reserverad",
-        "maintenance": "Underhåll"
+        "maintenance": "Underhåll",
+        "enRetard": "Sent"
       },
       "pendingRequests": "Pågående ansökningar",
       "accept": "Acceptera",
@@ -2610,7 +2608,8 @@
         "reserves": "Reserverad",
         "maintenance": "Underhåll",
         "horsService": "Ur tjänst",
-        "perdus": "Lost"
+        "perdus": "Lost",
+        "enRetard": "Sent"
       },
       "noArticles": "Inga artiklar",
       "noResults": "Inga resultat",

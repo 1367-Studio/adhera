@@ -674,44 +674,40 @@
       "dragHint": "Povleci za preureditev",
       "resizeHint": "Povlecite kot za spremembo velikosti"
     },
-    "actionsTodo": {
-      "trigger": "Ukrepi, ki jih je treba sprejeti",
-      "empty": "Vse je posodobljeno, ni bilo treba ukrepati.",
-      "snooze": "Preložiti to dejanje",
-      "snoozeDialogTitle": "Preložiti to dejanje",
-      "snoozeDialogDescription": "Dejanje ostane skrito do tega datuma, nato pa se ponovno pojavi, če so še primeri za obdelavo.",
-      "snoozeUntilLabel": "Preloženo do",
-      "confirm": "Potrdi",
-      "loadError": "Ni mogoče naložiti dejanj, ki jih je treba izvesti.",
-      "snoozedSectionTitle": "{count, plural, one {# akcija začasno ustavljena} other {# dejanja začasno ustavljena}}",
-      "snoozedUntil": "Dokler {date}",
-      "cancelSnooze": "Prekliči zadržanje",
-      "actionLabels": {
-        "voirEtRelancer": "Oglejte si in ponovno zaženite",
-        "examiner": "Izpraševalec",
-        "consulter": "Posvetujte se"
-      },
-      "rows": {
-        "cotisations-en-retard": "{count, plural, one {# zapadla članarina} other {# zapadli prispevki}}",
-        "adhesions-a-valider": "{count, plural, one {# članstvo, ki ga je treba potrditi} other {# članstva, ki jih je treba potrditi}}",
-        "cheques-a-traiter": "{count, plural, one {# preverjanje za obdelavo} other {# preverjanja za obdelavo}}"
+    "aTraiter": {
+      "title": "Za zdravljenje",
+      "empty": "Trenutno ni ničesar, s čimer bi se moral ukvarjati",
+      "loadError": "Ni mogoče naložiti dejanj za obdelavo.",
+      "items": {
+        "cotisationsEnAttente": "{count, plural, one {# čakajoča članarina} other {# čakajočih prispevkov}}",
+        "donsAEncaisser": "{count, plural, one {# darilo za unovčenje} other {# donacije za zbiranje}}",
+        "materielEnRetard": "{count, plural, one {# pozne vračila materiala} other {# pozne vračila materiala}}"
       }
     },
     "stats": {
-      "activeMembers": "Aktivni člani",
-      "eventsThisMonth": "Dogodki ta mesec",
-      "cotisationsPending": "Čakajoče prispevke",
       "financialBalance": "Finančno ravnovesje",
       "donationsReceived": "Prejete donacije {year}"
     },
-    "nextEvent": {
-      "title": "Naslednji dogodek",
+    "agenda": {
+      "title": "Dnevni red",
+      "eventsThisMonth": "{count, plural, one {# dogodek ta mesec} other {# dogodkov ta mesec}}",
+      "ongoing": "V teku",
+      "viewCalendar": "Oglejte si koledar",
       "empty": "Nobenih prihajajočih dogodkov."
     },
     "cotisations": {
       "title": "Prispevki {year}",
       "collectedThisYear": "Unovčeno letos",
-      "pendingPayment": "{count} čaka na plačilo"
+      "remaining": "{amount} Preostalo za prejetje",
+      "pendingPayment": "{count} čaka na plačilo",
+      "viewAll": "Oglejte si pristojbine"
+    },
+    "activiteRecente": {
+      "title": "Nedavne dejavnosti",
+      "tabs": {
+        "commandes": "Naročila",
+        "dons": "Donacije"
+      }
     },
     "recentDonations": {
       "title": "Nedavne donacije",
@@ -747,6 +743,7 @@
       "categoryTitle": "Prihodki po kategorijah — {year}"
     },
     "memberSummary": {
+      "title": "Člani",
       "total": "{count, plural, one {# član} other {# članov}}",
       "active": "{count, plural, one {# aktiven} other {# aktivnih}}",
       "inactive": "{count, plural, one {# neaktiven} other {# neaktivnih}}"
@@ -2588,7 +2585,8 @@
         "disponibles": "Na voljo",
         "enPret": "Na posoji",
         "reserves": "Rezervirano",
-        "maintenance": "Vzdrževanje"
+        "maintenance": "Vzdrževanje",
+        "enRetard": "Pozni"
       },
       "pendingRequests": "Prijave v teku",
       "accept": "Sprejmi",
@@ -2610,7 +2608,8 @@
         "reserves": "Rezervirano",
         "maintenance": "Vzdrževanje",
         "horsService": "Izven uporabe",
-        "perdus": "Izgubljen"
+        "perdus": "Izgubljen",
+        "enRetard": "Pozni"
       },
       "noArticles": "Brez člankov",
       "noResults": "Brez rezultatov",

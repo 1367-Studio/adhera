@@ -674,44 +674,40 @@
       "dragHint": "Tempkite, kad pertvarkytumėte",
       "resizeHint": "Tempkite kampą, kad sumažintumėte dydį"
     },
-    "actionsTodo": {
-      "trigger": "Veiksmai, kuriuos reikia atlikti",
-      "empty": "Viskas atnaujinta, jokių veiksmų.",
-      "snooze": "Atidėkite šį veiksmą",
-      "snoozeDialogTitle": "Atidėkite šį veiksmą",
-      "snoozeDialogDescription": "Veiksmas lieka paslėptas iki tos datos, o jei dar yra bylų, vėl pasirodo.",
-      "snoozeUntilLabel": "Atidėta iki",
-      "confirm": "Patvirtinkite",
-      "loadError": "Negaliu įkelti veiksmų, kuriuos reikia atlikti.",
-      "snoozedSectionTitle": "{count, plural, one {# veiksmas sustabdytas} other {# veiksmai sustabdyti}}",
-      "snoozedUntil": "Kol {date}",
-      "cancelSnooze": "Atšaukti rezervaciją",
-      "actionLabels": {
-        "voirEtRelancer": "Žiūrėti ir perleisti",
-        "examiner": "Egzaminuotojas",
-        "consulter": "Konsultuotis"
-      },
-      "rows": {
-        "cotisations-en-retard": "{count, plural, one {# vėluojantis narystės mokestis} other {# vėluojantys indėliai}}",
-        "adhesions-a-valider": "{count, plural, one {# narystė turi būti patvirtinta} other {# narystės, kurios turi būti patvirtintos}}",
-        "cheques-a-traiter": "{count, plural, one {# patikrinti apdorojimą} other {# patikrinimai apdorojimui}}"
+    "aTraiter": {
+      "title": "Gydymui",
+      "empty": "Šiuo metu nėra su kuo tvarkytis",
+      "loadError": "Nepavyksta įkelti veiksmų, kuriuos reikia apdoroti.",
+      "items": {
+        "cotisationsEnAttente": "{count, plural, one {# laukiamas narystės mokestis} other {# laukiančios įmokos}}",
+        "donsAEncaisser": "{count, plural, one {# dovana bus išgryninta} other {# aukų rinkimui}}",
+        "materielEnRetard": "{count, plural, one {# Vėlyvoji medžiaga sugrįžta} other {# Vėlyvoji medžiaga sugrįžta}}"
       }
     },
     "stats": {
-      "activeMembers": "Aktyvūs nariai",
-      "eventsThisMonth": "Šio mėnesio įvykiai",
-      "cotisationsPending": "Laukiami įnašai",
       "financialBalance": "Finansinė pusiausvyra",
       "donationsReceived": "Gautos aukos {year}"
     },
-    "nextEvent": {
-      "title": "Kitas renginys",
-      "empty": "Artėjančių renginių nėra."
+    "agenda": {
+      "title": "Darbotvarkė",
+      "eventsThisMonth": "{count, plural, one {# renginys šį mėnesį} other {# šio mėnesio įvykiai}}",
+      "ongoing": "Vykdoma",
+      "viewCalendar": "Žr. kalendorių",
+      "empty": "Jokių renginių nebus."
     },
     "cotisations": {
       "title": "Indėlis {year}",
       "collectedThisYear": "Šiemet išgrynintas",
-      "pendingPayment": "{count} laukia apmokėjimo"
+      "remaining": "{amount} liko būti priimta",
+      "pendingPayment": "{count} laukia apmokėjimo",
+      "viewAll": "Peržiūrėkite mokesčius"
+    },
+    "activiteRecente": {
+      "title": "Naujausia veikla",
+      "tabs": {
+        "commandes": "Ordinai",
+        "dons": "Aukos"
+      }
     },
     "recentDonations": {
       "title": "Naujausios aukos",
@@ -747,6 +743,7 @@
       "categoryTitle": "Kvitos pagal kategorijas — {year}"
     },
     "memberSummary": {
+      "title": "Nariai",
       "total": "{count, plural, one {# narys} other {# nariai}}",
       "active": "{count, plural, one {# aktyvus} other {# aktyvūs}}",
       "inactive": "{count, plural, one {# neaktyvus} other {# neaktyvūs}}"
@@ -2588,7 +2585,8 @@
         "disponibles": "Prieinama",
         "enPret": "Paskolintas",
         "reserves": "Rezervuota",
-        "maintenance": "Priežiūra"
+        "maintenance": "Priežiūra",
+        "enRetard": "Vėluoju"
       },
       "pendingRequests": "Laukiančios paraiškos",
       "accept": "Priimti",
@@ -2610,7 +2608,8 @@
         "reserves": "Rezervuota",
         "maintenance": "Priežiūra",
         "horsService": "Išėjęs iš tarnybos",
-        "perdus": "Pasiklydę"
+        "perdus": "Pasiklydę",
+        "enRetard": "Vėluoju"
       },
       "noArticles": "Jokių straipsnių",
       "noResults": "Rezultatų nėra",

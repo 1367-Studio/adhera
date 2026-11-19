@@ -3,10 +3,10 @@
 import Link from "next/link"
 import { useTranslations, useLocale } from "next-intl"
 import { format } from "date-fns"
-import { ShoppingBagIcon, ArrowRightIcon } from "@phosphor-icons/react/dist/ssr"
 import { cn } from "@/lib/utils"
 import { getDateFnsLocale } from "@/lib/date-fns-locale"
 import type { Locale } from "@/i18n/locales"
+import { ArrowRightIcon } from "@phosphor-icons/react/dist/ssr"
 
 type Vente = {
   id:          string
@@ -26,15 +26,13 @@ interface Props {
   isLoading: boolean
 }
 
+// Content-only (no wrapper/title): one tab's content inside the merged `ActiviteRecenteCard`
+// widget (FORM-120), which owns the outer rounded-lg bg-muted/60 shell and the tab switcher.
 export function RecentOrdersCard({ ventesRecentes, isLoading }: Props) {
   const t = useTranslations("dashboard.recentOrders")
   const dateFnsLocale = getDateFnsLocale(useLocale() as Locale)
   return (
-    <div className="rounded-lg bg-muted/60 p-6 space-y-3 flex flex-col min-h-0 overflow-hidden">
-      <div className="flex items-center gap-2">
-        <ShoppingBagIcon className="size-4.5 text-muted-foreground" />
-        <span className="text-base font-medium">{t("title")}</span>
-      </div>
+    <div className="flex min-h-0 flex-col">
       {isLoading ? (
         <div className="h-12 rounded-lg bg-muted animate-pulse" />
       ) : ventesRecentes.length ? (
