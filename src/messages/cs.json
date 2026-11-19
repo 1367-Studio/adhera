@@ -833,6 +833,29 @@
       "dragHint": "Tah pro přeskupení",
       "resizeHint": "Táhnout roh pro změnu velikosti"
     },
+    "actionsTodo": {
+      "trigger": "Kroky k přijetí",
+      "empty": "Všechno je aktuální, žádná akce k řešení.",
+      "snooze": "Odložit tuto akci",
+      "snoozeDialogTitle": "Odložit tuto akci",
+      "snoozeDialogDescription": "Akce zůstává do té doby skrytá, pak se znovu objeví, pokud jsou ještě případy k vyřízení.",
+      "snoozeUntilLabel": "Odloženo do",
+      "confirm": "Potvrdit",
+      "loadError": "Nelze načíst akce, které mají být provedeny.",
+      "snoozedSectionTitle": "{count, plural, one {# opatření pozastavena} other {# opatření pozastavena}}",
+      "snoozedUntil": "Až do {date}",
+      "cancelSnooze": "Zrušit blokaci",
+      "actionLabels": {
+        "voirEtRelancer": "Vidět a znovu spustit",
+        "examiner": "Zkoušející",
+        "consulter": "Konzultace"
+      },
+      "rows": {
+        "cotisations-en-retard": "{count, plural, one {# opožděný členský poplatek} other {# dlužné příspěvky}}",
+        "adhesions-a-valider": "{count, plural, one {# členství k ověření} other {# členství k ověření}}",
+        "cheques-a-traiter": "{count, plural, one {# kontrola ke zpracování} other {# kontroly ke zpracování}}"
+      }
+    },
     "stats": {
       "activeMembers": "Aktivní členové",
       "eventsThisMonth": "Události tohoto měsíce",

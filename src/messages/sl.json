@@ -833,6 +833,29 @@
       "dragHint": "Povleci za preureditev",
       "resizeHint": "Povlecite kot za spremembo velikosti"
     },
+    "actionsTodo": {
+      "trigger": "Ukrepi, ki jih je treba sprejeti",
+      "empty": "Vse je posodobljeno, ni bilo treba ukrepati.",
+      "snooze": "Preložiti to dejanje",
+      "snoozeDialogTitle": "Preložiti to dejanje",
+      "snoozeDialogDescription": "Dejanje ostane skrito do tega datuma, nato pa se ponovno pojavi, če so še primeri za obdelavo.",
+      "snoozeUntilLabel": "Preloženo do",
+      "confirm": "Potrdi",
+      "loadError": "Ni mogoče naložiti dejanj, ki jih je treba izvesti.",
+      "snoozedSectionTitle": "{count, plural, one {# akcija začasno ustavljena} other {# dejanja začasno ustavljena}}",
+      "snoozedUntil": "Dokler {date}",
+      "cancelSnooze": "Prekliči zadržanje",
+      "actionLabels": {
+        "voirEtRelancer": "Oglejte si in ponovno zaženite",
+        "examiner": "Izpraševalec",
+        "consulter": "Posvetujte se"
+      },
+      "rows": {
+        "cotisations-en-retard": "{count, plural, one {# zapadla članarina} other {# zapadli prispevki}}",
+        "adhesions-a-valider": "{count, plural, one {# članstvo, ki ga je treba potrditi} other {# članstva, ki jih je treba potrditi}}",
+        "cheques-a-traiter": "{count, plural, one {# preverjanje za obdelavo} other {# preverjanja za obdelavo}}"
+      }
+    },
     "stats": {
       "activeMembers": "Aktivni člani",
       "eventsThisMonth": "Dogodki ta mesec",

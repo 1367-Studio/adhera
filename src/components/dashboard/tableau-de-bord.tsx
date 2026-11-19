@@ -13,12 +13,15 @@ import { SortableContext, rectSortingStrategy, sortableKeyboardCoordinates, arra
 import { restrictToParentElement } from "@dnd-kit/modifiers"
 import {
   UsersIcon, CalendarBlankIcon, CoinsIcon, BankIcon, HeartIcon,
-  PencilSimpleIcon, CheckIcon, ArrowCounterClockwiseIcon,
+  PencilSimpleIcon, CheckIcon, ArrowCounterClockwiseIcon, CaretDownIcon,
 } from "@phosphor-icons/react/dist/ssr";
 import { cn } from "@/lib/utils"
 import { useCurrentUser, useModules } from "@/lib/user-context"
 import { usePalette } from "@/lib/finance-palette"
 import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
+import { ActionsTodoPanel } from "@/components/dashboard/actions-todo-panel"
+import type { DashboardActionRow } from "@/lib/dashboard-actions"
 import { CotisationsGaugeCard, IncomeExpenseChart, IncomeByCategoryChart } from "@/components/dashboard/finance-charts"
 import { SortableWidget } from "@/components/dashboard/sortable-widget"
 import { StatTile } from "@/components/dashboard/widgets/stat-tile"
@@ -96,9 +99,10 @@ interface Props {
 }
 
 export function TableauDeBord({ initialLayout }: Props) {
-  const t          = useTranslations()
-  const tCustomize = useTranslations("dashboard.customize")
-  const modules    = useModules()
+  const t           = useTranslations()
+  const tCustomize  = useTranslations("dashboard.customize")
+  const tActionsTodo = useTranslations("dashboard.actionsTodo")
+  const modules     = useModules()
   const { permissions } = useCurrentUser()
   const pal        = usePalette()
   const { data, isLoading } = useQuery<DashboardData>({
@@ -109,6 +113,20 @@ export function TableauDeBord({ initialLayout }: Props) {
       return res.json()
     },
   })
+
+  const { data: actionsData, isLoading: actionsLoading, isError: actionsError } = useQuery<{
+    rows:        DashboardActionRow[]
+    badgeCount:  number
+    snoozedRows: (DashboardActionRow & { snoozedUntil: string })[]
+  }>({
+    queryKey: ["dashboard-actions"],
+    queryFn:  async () => {
+      const res = await fetch("/api/dashboard/actions")
+      if (!res.ok) throw new Error(t("common.error"))
+      return res.json()
+    },
+  })
+  const [actionsOpen, setActionsOpen] = useState(false)
 
   const [layout, setLayout]     = useState<DashboardWidget[]>(initialLayout)
   const [editMode, setEditMode] = useState(false)
@@ -283,19 +301,24 @@ export function TableauDeBord({ initialLayout }: Props) {
 
   return (
     <div className="space-y-6 py-4">
-      <div className="flex items-start justify-between gap-4">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <h1 className="text-[2.5rem] leading-none font-medium tracking-tight">{t("dashboard.pageTitle")}</h1>
+          <h1 className="text-[1.75rem] leading-none font-medium tracking-tight sm:text-[2.5rem]">{t("dashboard.pageTitle")}</h1>
           <p className="text-base text-muted-foreground mt-1.5">
             {t("dashboard.subtitle")}
           </p>
         </div>
-        <div className="flex shrink-0 items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2 sm:shrink-0">
           {editMode && (
             <Button variant="ghost" size="sm" onClick={handleReset}>
               <ArrowCounterClockwiseIcon className="mr-1.5 size-3.5" /> {tCustomize("reset")}
             </Button>
           )}
+          <Button variant="outline" size="sm" aria-expanded={actionsOpen} onClick={() => setActionsOpen(v => !v)}>
+            {tActionsTodo("trigger")}
+            {!!actionsData?.badgeCount && <Badge variant="warning" className="ml-1.5">{actionsData.badgeCount}</Badge>}
+            <CaretDownIcon className={cn("size-3.5 transition-transform", actionsOpen && "rotate-180")} />
+          </Button>
           <Button variant="outline" size="sm" onClick={() => setEditMode(v => !v)}>
             {editMode
               ? <><CheckIcon className="mr-1.5 size-3.5" /> {tCustomize("done")}</>
@@ -309,6 +332,15 @@ export function TableauDeBord({ initialLayout }: Props) {
         totalCount={data?.membresTotal ?? null}
         activeCount={data?.membresActifs ?? null}
       />
+
+      {actionsOpen && (
+        <ActionsTodoPanel
+          rows={actionsData?.rows ?? []}
+          snoozedRows={actionsData?.snoozedRows ?? []}
+          isLoading={actionsLoading}
+          isError={actionsError}
+        />
+      )}
 
       <DndContext
         sensors={sensors}

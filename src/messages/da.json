@@ -833,6 +833,29 @@
       "dragHint": "Træk for at omarrangere",
       "resizeHint": "Træk hjørnet for at ændre størrelsen"
     },
+    "actionsTodo": {
+      "trigger": "Handlinger, der skal tages",
+      "empty": "Alt er opdateret, ingen handling at håndtere.",
+      "snooze": "Udsæt denne handling",
+      "snoozeDialogTitle": "Udsæt denne handling",
+      "snoozeDialogDescription": "Handlingen forbliver skjult for dig indtil den dato, og dukker så op igen, hvis der stadig er sager, der skal behandles.",
+      "snoozeUntilLabel": "Udsat til",
+      "confirm": "Bekræft",
+      "loadError": "Kan ikke indlæse de handlinger, der skal udføres.",
+      "snoozedSectionTitle": "{count, plural, one {# handling sat på pause} other {# handlinger sat på pause}}",
+      "snoozedUntil": "Indtil {date}",
+      "cancelSnooze": "Opskær holdet",
+      "actionLabels": {
+        "voirEtRelancer": "Se og genlancering",
+        "examiner": "Examinator",
+        "consulter": "Konsultér"
+      },
+      "rows": {
+        "cotisations-en-retard": "{count, plural, one {# forsinket medlemsgebyr} other {# forsinkede bidrag}}",
+        "adhesions-a-valider": "{count, plural, one {# medlemskab skal valideres} other {# medlemskaber skal valideres}}",
+        "cheques-a-traiter": "{count, plural, one {# tjek for at behandle} other {# tjek skal behandles}}"
+      }
+    },
     "stats": {
       "activeMembers": "Aktive medlemmer",
       "eventsThisMonth": "Begivenheder denne måned",

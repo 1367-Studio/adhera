@@ -833,6 +833,29 @@
       "dragHint": "Glisser pour réorganiser",
       "resizeHint": "Glisser le coin pour redimensionner"
     },
+    "actionsTodo": {
+      "trigger": "Actions à faire",
+      "empty": "Tout est à jour, aucune action à traiter.",
+      "snooze": "Reporter cette action",
+      "snoozeDialogTitle": "Reporter cette action",
+      "snoozeDialogDescription": "L'action reste masquée pour vous jusqu'à cette date, puis réapparaît si des dossiers restent à traiter.",
+      "snoozeUntilLabel": "Reporter jusqu'au",
+      "confirm": "Confirmer",
+      "loadError": "Impossible de charger les actions à faire.",
+      "snoozedSectionTitle": "{count, plural, one {# action mise en attente} other {# actions mises en attente}}",
+      "snoozedUntil": "Jusqu'au {date}",
+      "cancelSnooze": "Annuler la mise en attente",
+      "actionLabels": {
+        "voirEtRelancer": "Voir et relancer",
+        "examiner": "Examiner",
+        "consulter": "Consulter"
+      },
+      "rows": {
+        "cotisations-en-retard": "{count, plural, one {# cotisation en retard} other {# cotisations en retard}}",
+        "adhesions-a-valider": "{count, plural, one {# adhésion à valider} other {# adhésions à valider}}",
+        "cheques-a-traiter": "{count, plural, one {# chèque à traiter} other {# chèques à traiter}}"
+      }
+    },
     "stats": {
       "activeMembers": "Membres actifs",
       "eventsThisMonth": "Événements ce mois",

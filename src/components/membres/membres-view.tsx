@@ -37,7 +37,8 @@ import { useQuery } from "@tanstack/react-query"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
 import { useTranslations } from "next-intl"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
+import { useActionsTodoHighlight } from "@/hooks/use-actions-todo-highlight"
 import { useEffect, useRef, useState } from "react"
 import { toast } from "sonner"
 
@@ -215,6 +216,7 @@ const PAGE_SIZE = 20
 export function MembresView() {
   const t                               = useTranslations()
   const router                          = useRouter()
+  const searchParams                    = useSearchParams()
   const currentUser                     = useCurrentUser()
   const modules                         = useModules()
   const memberCardEnabled               = useMemberCardEnabled()
@@ -228,7 +230,10 @@ export function MembresView() {
   const [page, setPage]                 = useState(1)
   const [searchInput, setSearchInput]   = useState("")
   const [search, setSearch]             = useState("")
-  const [statusFilter, setStatusFilter] = useState<string>("")
+  // Pré-rempli depuis l'URL : l'accueil renvoie ici avec ?status=… (FORM-119) pour ouvrir
+  // directement sur les adhésions en attente plutôt que sur la liste entière — même
+  // convention que cotisations-view.tsx.
+  const [statusFilter, setStatusFilter] = useState<string>(() => searchParams.get("status") ?? "")
   const [typeFilter, setTypeFilter]     = useState<string>("")
   const [adherentFilter, setAdherentFilter] = useState<string>("")
   const [sortFilter, setSortFilter]         = useState<string>("")
@@ -298,6 +303,8 @@ export function MembresView() {
   const { data: types = [] } = useMembreTypes()
   const { data: countryOptions = [], isError: countryOptionsError, isLoading: countryOptionsLoading } = useMembreCountryOptions()
   const { data: result, isLoading } = useMembresPaginated(page, PAGE_SIZE, filters)
+  // Flashes the rows a dashboard "Actions à faire" link just filtered down to (FORM-119).
+  useActionsTodoHighlight(!isLoading)
   const { data: stats } = useQuery<MembresStats>({
     queryKey: ["membres", "stats"],
     queryFn:  () => fetch("/api/membres/stats").then(r => r.json()),

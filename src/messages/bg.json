@@ -833,6 +833,29 @@
       "dragHint": "Дръпнете за пренареждане",
       "resizeHint": "Плъзни ъгъла, за да промениш размера"
     },
+    "actionsTodo": {
+      "trigger": "Действия, които трябва да се предприемат",
+      "empty": "Всичко е актуално, няма никакви действия.",
+      "snooze": "Отложете това действие",
+      "snoozeDialogTitle": "Отложете това действие",
+      "snoozeDialogDescription": "Действието остава скрито за вас до тази дата, след което се появява отново, ако все още има дела за обработка.",
+      "snoozeUntilLabel": "Отложено до",
+      "confirm": "Потвърдете",
+      "loadError": "Не може да се заредят действията, които трябва да се изпълнят.",
+      "snoozedSectionTitle": "{count, plural, one {# действие е отложено} other {# действия са поставени на пауза}}",
+      "snoozedUntil": "Докато {date}",
+      "cancelSnooze": "Отмени задържането",
+      "actionLabels": {
+        "voirEtRelancer": "Вижте и рестартирайте",
+        "examiner": "Examiner",
+        "consulter": "Консултирайте се"
+      },
+      "rows": {
+        "cotisations-en-retard": "{count, plural, one {# просрочена членска такса} other {# просрочени вноски}}",
+        "adhesions-a-valider": "{count, plural, one {# членството да бъде валидирано} other {# членства, които трябва да бъдат валидирани}}",
+        "cheques-a-traiter": "{count, plural, one {# проверка за обработка} other {# проверки за обработка}}"
+      }
+    },
     "stats": {
       "activeMembers": "Активни членове",
       "eventsThisMonth": "Събития този месец",

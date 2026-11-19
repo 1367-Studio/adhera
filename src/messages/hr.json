@@ -833,6 +833,29 @@
       "dragHint": "Povuci za preuređivanje",
       "resizeHint": "Povuci kut za promjenu veličine"
     },
+    "actionsTodo": {
+      "trigger": "Akcije koje treba poduzeti",
+      "empty": "Sve je ažurirano, nema nikakvih radnji.",
+      "snooze": "Odgoditi ovu radnju",
+      "snoozeDialogTitle": "Odgoditi ovu radnju",
+      "snoozeDialogDescription": "Radnja ostaje skrivena za vas do tog datuma, a zatim se ponovno pojavljuje ako još ima slučajeva za obradu.",
+      "snoozeUntilLabel": "Odgođeno do",
+      "confirm": "Potvrdi",
+      "loadError": "Nije moguće učitati radnje koje treba izvršiti.",
+      "snoozedSectionTitle": "{count, plural, one {# akcija stavljena na čekanje} other {# radnje stavljene na čekanje}}",
+      "snoozedUntil": "Do {date}",
+      "cancelSnooze": "Otkaži blokadu",
+      "actionLabels": {
+        "voirEtRelancer": "Pogledajte i ponovno pokrenite",
+        "examiner": "Ispitivač",
+        "consulter": "Konzultirajte se"
+      },
+      "rows": {
+        "cotisations-en-retard": "{count, plural, one {# neplaćene članarine} other {# zaostale doprinose}}",
+        "adhesions-a-valider": "{count, plural, one {# članstvo koje treba potvrditi} other {# članstva koja treba potvrditi}}",
+        "cheques-a-traiter": "{count, plural, one {# provjera za obradu} other {# provjere za obradu}}"
+      }
+    },
     "stats": {
       "activeMembers": "Aktivni članovi",
       "eventsThisMonth": "Događaji ovog mjeseca",
