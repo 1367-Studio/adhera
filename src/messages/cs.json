@@ -834,14 +834,32 @@
       "dragHint": "Tah pro přeskupení",
       "resizeHint": "Táhnout roh pro změnu velikosti"
     },
-    "aTraiter": {
-      "title": "K léčbě",
-      "empty": "Momentálně není co řešit",
-      "loadError": "Nelze načíst akce určené ke zpracování.",
-      "items": {
-        "cotisationsEnAttente": "{count, plural, one {# čekající členský poplatek} other {# čekající příspěvky}}",
-        "donsAEncaisser": "{count, plural, one {# dárek k vyplacení} other {# dary k vybrání}}",
-        "materielEnRetard": "{count, plural, one {# pozdní vrácení materiálu} other {# pozdní vrácení materiálu}}"
+    "actionsTodo": {
+      "trigger": "Kroky k přijetí",
+      "badgeHint": "{count, plural, one {# kategorie čekajících akcí} other {# kategorií čekajících akcí}}",
+      "empty": "Všechno je aktuální, žádná akce k řešení.",
+      "snooze": "Odložit tuto akci",
+      "snoozeDialogTitle": "Odložit tuto akci",
+      "snoozeDialogDescription": "Akce zůstává do té doby skrytá, pak se znovu objeví, pokud jsou ještě případy k vyřízení.",
+      "snoozeUntilLabel": "Odloženo do",
+      "confirm": "Potvrdit",
+      "loadError": "Nelze načíst akce, které mají být provedeny.",
+      "snoozedSectionTitle": "{count, plural, one {# opatření pozastavena} other {# opatření pozastavena}}",
+      "snoozedUntil": "Až do {date}",
+      "cancelSnooze": "Zrušit blokaci",
+      "actionLabels": {
+        "voirEtRelancer": "Vidět a znovu spustit",
+        "examiner": "Zkoušející",
+        "consulter": "Konzultace"
+      },
+      "rows": {
+        "cotisations-en-attente": "{count, plural, one {# čekající členský poplatek} other {# čekající příspěvky}}",
+        "materiel-en-retard": "{count, plural, one {# pozdní vrácení materiálu} other {# pozdní vrácení materiálu}}",
+        "membres-a-valider": "{count, plural, one {# člena k ověření} other {# členové k ověření}}",
+        "dons-a-encaisser": "{count, plural, one {# dárek k vyplacení} other {# dary k vybrání}}",
+        "rapprochement-bancaire": "{count, plural, one {# operace k porovnání} other {# operace k porovnání}}",
+        "notes-de-frais-a-valider": "{count, plural, one {# výkaz výdajů k ověření} other {# výkazy výdajů k ověření}}",
+        "commandes-a-preparer": "{count, plural, one {# pokyn k přípravě} other {# rozkazy k přípravě}}"
       }
     },
     "stats": {
@@ -1845,13 +1863,13 @@
       "description": "Spojte importované bankovní transakce s vašimi příjmy a výdaji.",
       "statusFilters": {
         "all": "Všichni",
-        "unmatched": "Nesmířeni",
+        "unmatched": "K porovnání",
         "matched": "Smířený",
         "ignored": "Ignorováno",
         "duplicate": "Duplikáty"
       },
       "status": {
-        "unmatched": "Nesmířeni",
+        "unmatched": "K porovnání",
         "matched": "Smířený",
         "pending": "Čeká",
         "ignored": "Ignorováno",
@@ -3199,7 +3217,11 @@
         "cancelOrder": "Zrušit",
         "downloadReceipt": "Stáhněte si účtenku",
         "editPaymentMethod": "Změňte platební metodu",
-        "refundOrder": "Splácení"
+        "refundOrder": "Splácení",
+        "markPrepared": "Označte jako připravené",
+        "cancelPrepared": "Zrušit přípravu",
+        "delegatePreparation": "Příprava delegovaná na třetí stranu",
+        "resumePreparation": "Příprava životopisu"
       },
       "noProduct": "Žádné produkty",
       "noOrder": "Žádné rozkazy",
@@ -3214,11 +3236,14 @@
       },
       "othersCount": "{count, plural, one {+# ostatní} other {+# ostatní}}",
       "statusFilterAll": "Všichni",
+      "statusFilterToPrepare": "Připravit se",
       "salesCountLabel": "Počet prodejů",
       "revenueTotalLabel": "Celkové tržby",
       "unitsSold": "{count, plural, one {# prodaný kus} few {# prodané kusy} many {# prodaného kusu} other {# prodaných kusů}}",
       "pendingCountLabel": "Čekající objednávky",
       "pendingAmountLabel": "Čekající částka",
+      "toPrepareCountLabel": "Rozkazy k přípravě",
+      "toPrepareAmountLabel": "Částka k přípravě",
       "cancelledCountLabel": "Zrušené objednávky",
       "cancelledAmountLabel": "Zrušená částka",
       "deleteProduitTitle": "Odstraňte produkt",

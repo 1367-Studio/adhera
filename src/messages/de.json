@@ -834,14 +834,32 @@
       "dragHint": "Ziehen zum Umarrangieren",
       "resizeHint": "Ziehe die Ecke, um die Größe anzupassen"
     },
-    "aTraiter": {
-      "title": "Behandelt zu werden",
-      "empty": "Im Moment gibt es nichts zu tun",
-      "loadError": "Zu verarbeitende Aktionen können nicht geladen werden.",
-      "items": {
-        "cotisationsEnAttente": "{count, plural, one {# ausstehende Mitgliedsgebühr} other {# ausstehende Beiträge}}",
-        "donsAEncaisser": "{count, plural, one {# Geschenk, das eingelöst werden soll} other {# Spenden einzusammeln}}",
-        "materielEnRetard": "{count, plural, one {# späte Materialrenditen} other {# späte Materialrenditen}}"
+    "actionsTodo": {
+      "trigger": "Zu ergreifende Maßnahmen",
+      "badgeHint": "{count, plural, one {# ausstehende Aktionskategorie} other {# Kategorien ausstehender Aktionen}}",
+      "empty": "Alles ist auf dem neuesten Stand, keine Aktion zu bewältigen.",
+      "snooze": "Diese Aktion verschieben",
+      "snoozeDialogTitle": "Diese Aktion verschieben",
+      "snoozeDialogDescription": "Die Aktion bleibt bis zu diesem Datum für Sie verborgen und erscheint dann wieder, wenn noch Fälle zu bearbeiten sind.",
+      "snoozeUntilLabel": "Verschoben bis",
+      "confirm": "Bestätigen",
+      "loadError": "Die auszuführenden Aktionen können nicht geladen werden.",
+      "snoozedSectionTitle": "{count, plural, one {# Aktion auf Eis gelegt} other {# Aktionen, die auf Eis gelegt wurden}}",
+      "snoozedUntil": "Bis {date}",
+      "cancelSnooze": "Sperre aufheben",
+      "actionLabels": {
+        "voirEtRelancer": "Siehe und Neustart",
+        "examiner": "Prüfer",
+        "consulter": "Konsultieren"
+      },
+      "rows": {
+        "cotisations-en-attente": "{count, plural, one {# ausstehende Mitgliedsgebühr} other {# ausstehende Beiträge}}",
+        "materiel-en-retard": "{count, plural, one {# späte Materialrenditen} other {# späte Materialrenditen}}",
+        "membres-a-valider": "{count, plural, one {# Mitglied zum Validieren} other {# Mitglieder zu validieren}}",
+        "dons-a-encaisser": "{count, plural, one {# Geschenk, das eingelöst werden soll} other {# Spenden einzusammeln}}",
+        "rapprochement-bancaire": "{count, plural, one {# zu vergleichende Operation} other {# Operationen zum Vergleichen}}",
+        "notes-de-frais-a-valider": "{count, plural, one {# Ausgabenbericht zu validieren} other {# Ausgabenberichte zu validieren}}",
+        "commandes-a-preparer": "{count, plural, one {# Vorbereitungsauftrag} other {# Befehle zur Vorbereitung}}"
       }
     },
     "stats": {
@@ -1845,13 +1863,13 @@
       "description": "Verknüpfe importierte Banktransaktionen mit deinen Einnahmen und Ausgaben.",
       "statusFilters": {
         "all": "Alle",
-        "unmatched": "Unversöhnt",
+        "unmatched": "Zum Vergleich",
         "matched": "Versöhnt",
         "ignored": "Ignoriert",
         "duplicate": "Duplikate"
       },
       "status": {
-        "unmatched": "Unversöhnt",
+        "unmatched": "Zum Vergleich",
         "matched": "Versöhnt",
         "pending": "Ausstehend",
         "ignored": "Ignoriert",
@@ -3199,7 +3217,11 @@
         "cancelOrder": "Stornieren",
         "downloadReceipt": "Laden Sie die Quittung herunter",
         "editPaymentMethod": "Änderung der Zahlungsmethode",
-        "refundOrder": "Rückzahlung"
+        "refundOrder": "Rückzahlung",
+        "markPrepared": "Markieren Sie als vorbereitet",
+        "cancelPrepared": "Vorbereitung abbrechen",
+        "delegatePreparation": "An eine dritte Partei delegierte Vorbereitung",
+        "resumePreparation": "Erstellung des Lebenslaufs"
       },
       "noProduct": "Keine Produkte",
       "noOrder": "Keine Befehle",
@@ -3214,11 +3236,14 @@
       },
       "othersCount": "{count, plural, one {+# andere} other {+# anderen}}",
       "statusFilterAll": "Alle",
+      "statusFilterToPrepare": "Zur Vorbereitung",
       "salesCountLabel": "Anzahl der Verkäufe",
       "revenueTotalLabel": "Gesamtumsatz",
       "unitsSold": "{count, plural, one {# verkauft} other {# verkauft}}",
       "pendingCountLabel": "Ausstehende Bestellungen",
       "pendingAmountLabel": "Ausstehender Betrag",
+      "toPrepareCountLabel": "Befehle zur Vorbereitung",
+      "toPrepareAmountLabel": "Zu erstellender Betrag",
       "cancelledCountLabel": "Stornierte Bestellungen",
       "cancelledAmountLabel": "Stornierter Betrag",
       "deleteProduitTitle": "Produkt entfernen",

@@ -834,14 +834,32 @@
       "dragHint": "Przeciągnij, aby przearanżować",
       "resizeHint": "Przeciągnij róg, aby zmienić rozmiar"
     },
-    "aTraiter": {
-      "title": "Do leczenia",
-      "empty": "Na razie nie ma z czym się mierzyć",
-      "loadError": "Nie można załadować akcji do przetworzenia.",
-      "items": {
-        "cotisationsEnAttente": "{count, plural, one {# oczekującej opłaty członkowskiej} other {# oczekujących wpłat}}",
-        "donsAEncaisser": "{count, plural, one {# prezent do zrealizowania} other {# darowizny do zebrania}}",
-        "materielEnRetard": "{count, plural, one {# opóźnione zwroty materiałów} other {# opóźnione zwroty materiałów}}"
+    "actionsTodo": {
+      "trigger": "Działania do podjęcia",
+      "badgeHint": "{count, plural, one {# kategoria oczekujących działań} other {# kategorie oczekujących działań}}",
+      "empty": "Wszystko jest aktualne, nie trzeba się tym zajmować.",
+      "snooze": "Odroczenie tej akcji",
+      "snoozeDialogTitle": "Odroczenie tej akcji",
+      "snoozeDialogDescription": "Akcja pozostaje dla Ciebie ukryta do tego dnia, a potem pojawia się ponownie, jeśli są jeszcze sprawy do przetworzenia.",
+      "snoozeUntilLabel": "Przełożone do czasu",
+      "confirm": "Potwierdź",
+      "loadError": "Nie można załadować działań do wykonania.",
+      "snoozedSectionTitle": "{count, plural, one {# wstrzymanie działań} other {# wstrzymane działania}}",
+      "snoozedUntil": "Aż do {date}",
+      "cancelSnooze": "Anuluj blokadę",
+      "actionLabels": {
+        "voirEtRelancer": "Zobacz i wznowić",
+        "examiner": "Egzaminator",
+        "consulter": "Konsultacja"
+      },
+      "rows": {
+        "cotisations-en-attente": "{count, plural, one {# oczekującej opłaty członkowskiej} other {# oczekujących wpłat}}",
+        "materiel-en-retard": "{count, plural, one {# opóźnione zwroty materiałów} other {# opóźnione zwroty materiałów}}",
+        "membres-a-valider": "{count, plural, one {# członka do weryfikacji} other {# członków do weryfikacji}}",
+        "dons-a-encaisser": "{count, plural, one {# prezent do zrealizowania} other {# darowizny do zebrania}}",
+        "rapprochement-bancaire": "{count, plural, one {# operacja do porównania} other {# operacje do porównania}}",
+        "notes-de-frais-a-valider": "{count, plural, one {# raport wydatków do weryfikacji} other {# raporty wydatków do weryfikacji}}",
+        "commandes-a-preparer": "{count, plural, one {# porządek przygotowania} other {# rozkazy przygotowania}}"
       }
     },
     "stats": {
@@ -1845,13 +1863,13 @@
       "description": "Powiązaj importowane transakcje bankowe z przychodami i wydatkami.",
       "statusFilters": {
         "all": "Wszyscy",
-        "unmatched": "Niepojednani",
+        "unmatched": "Do porównania",
         "matched": "Pojednanie",
         "ignored": "Zignorowane",
         "duplicate": "Duplikaty"
       },
       "status": {
-        "unmatched": "Niepojednani",
+        "unmatched": "Do porównania",
         "matched": "Pojednanie",
         "pending": "Oczekuje",
         "ignored": "Zignorowane",
@@ -3199,7 +3217,11 @@
         "cancelOrder": "Anuluj",
         "downloadReceipt": "Pobierz paragon",
         "editPaymentMethod": "Zmień metodę płatności",
-        "refundOrder": "Spłata"
+        "refundOrder": "Spłata",
+        "markPrepared": "Oznacz jako przygotowane",
+        "cancelPrepared": "Anuluj przygotowania",
+        "delegatePreparation": "Przygotowanie delegowane osobie trzeciej",
+        "resumePreparation": "Przygotowanie CV"
       },
       "noProduct": "Brak produktów",
       "noOrder": "Brak rozkazów",
@@ -3214,11 +3236,14 @@
       },
       "othersCount": "{count, plural, one {+# inne} other {+# innych}}",
       "statusFilterAll": "Wszyscy",
+      "statusFilterToPrepare": "Przygotować się",
       "salesCountLabel": "Liczba sprzedaży",
       "revenueTotalLabel": "Przychód całkowity",
       "unitsSold": "{count, plural, one {# sprzedana sztuka} few {# sprzedane sztuki} many {# sprzedanych sztuk} other {# sprzedanej sztuki}}",
       "pendingCountLabel": "Zamówienia oczekujące",
       "pendingAmountLabel": "Kwota oczekująca",
+      "toPrepareCountLabel": "Rozkazy przygotowania",
+      "toPrepareAmountLabel": "Ilość do przygotowania",
       "cancelledCountLabel": "Zamówienia anulowane",
       "cancelledAmountLabel": "Kwota anulowana",
       "deleteProduitTitle": "Usuń produkt",

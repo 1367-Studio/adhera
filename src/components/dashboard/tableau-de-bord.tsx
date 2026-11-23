@@ -11,12 +11,14 @@ import {
 } from "@dnd-kit/core"
 import { SortableContext, rectSortingStrategy, sortableKeyboardCoordinates, arrayMove } from "@dnd-kit/sortable"
 import { restrictToParentElement } from "@dnd-kit/modifiers"
-import { PencilSimpleIcon, CheckIcon, ArrowCounterClockwiseIcon } from "@phosphor-icons/react/dist/ssr";
+import { PencilSimpleIcon, CheckIcon, ArrowCounterClockwiseIcon, CaretDownIcon } from "@phosphor-icons/react/dist/ssr";
 import { cn } from "@/lib/utils"
 import { useCurrentUser, useModules } from "@/lib/user-context"
 import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
-import { ATraiterBar } from "@/components/dashboard/a-traiter-bar"
+import { ActionsTodoPanel } from "@/components/dashboard/actions-todo-panel"
+import type { DashboardActionRow } from "@/lib/dashboard-actions"
 import { SortableWidget } from "@/components/dashboard/sortable-widget"
 import { MembresSummaryCard } from "@/components/dashboard/widgets/membres-summary-card"
 import { AgendaCard } from "@/components/dashboard/widgets/agenda-card"
@@ -94,7 +96,8 @@ export function TableauDeBord({ initialLayout }: Props) {
   const tCustomize = useTranslations("dashboard.customize")
   const modules    = useModules()
   const { permissions } = useCurrentUser()
-  const { data, isLoading, isError } = useQuery<DashboardData>({
+  const tActionsTodo = useTranslations("dashboard.actionsTodo")
+  const { data, isLoading } = useQuery<DashboardData>({
     queryKey: ["dashboard"],
     queryFn:  async () => {
       const res = await fetch("/api/dashboard")
@@ -102,6 +105,20 @@ export function TableauDeBord({ initialLayout }: Props) {
       return res.json()
     },
   })
+
+  const { data: actionsData, isLoading: actionsLoading, isError: actionsError } = useQuery<{
+    rows:        DashboardActionRow[]
+    badgeCount:  number
+    snoozedRows: (DashboardActionRow & { snoozedUntil: string })[]
+  }>({
+    queryKey: ["dashboard-actions"],
+    queryFn:  async () => {
+      const res = await fetch("/api/dashboard/actions")
+      if (!res.ok) throw new Error(t("common.error"))
+      return res.json()
+    },
+  })
+  const [actionsOpen, setActionsOpen] = useState(false)
 
   const [layout, setLayout]     = useState<DashboardWidget[]>(initialLayout)
   const [editMode, setEditMode] = useState(false)
@@ -236,6 +253,24 @@ export function TableauDeBord({ initialLayout }: Props) {
               <ArrowCounterClockwiseIcon className="mr-1.5 size-3.5" /> {tCustomize("reset")}
             </Button>
           )}
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger render={
+                <Button variant="outline" size="sm" aria-expanded={actionsOpen} onClick={() => setActionsOpen(v => !v)} />
+              }>
+                {tActionsTodo("trigger")}
+                {!!actionsData?.badgeCount && <Badge variant="warning" className="ml-1.5">{actionsData.badgeCount}</Badge>}
+                <CaretDownIcon className={cn("ml-1 size-3.5 transition-transform", actionsOpen && "rotate-180")} />
+              </TooltipTrigger>
+              {/* The badge counts categories ("3 types d'action"), not the total number of
+                  dossiers across them — a cotisation backlog of 40 and a single late loan
+                  both read as "1" if that's all that's pending. Spelled out on hover since
+                  that's not obvious from the number alone. */}
+              <TooltipContent>
+                {actionsData?.badgeCount ? tActionsTodo("badgeHint", { count: actionsData.badgeCount }) : tActionsTodo("trigger")}
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
           {editMode ? (
             <Button variant="outline" size="sm" onClick={() => setEditMode(false)}>
               <CheckIcon className="mr-1.5 size-3.5" /> {tCustomize("done")}
@@ -260,13 +295,14 @@ export function TableauDeBord({ initialLayout }: Props) {
         </div>
       </div>
 
-      <ATraiterBar
-        cotisationsEnAttente={data?.cotisationsEnAttente ?? null}
-        donsEnAttenteCount={data?.donsEnAttenteCount ?? null}
-        materielEnRetardCount={data?.materielEnRetardCount ?? null}
-        isLoading={isLoading}
-        isError={isError}
-      />
+      {actionsOpen && (
+        <ActionsTodoPanel
+          rows={actionsData?.rows ?? []}
+          snoozedRows={actionsData?.snoozedRows ?? []}
+          isLoading={actionsLoading}
+          isError={actionsError}
+        />
+      )}
 
       <DndContext
         sensors={sensors}

@@ -7,7 +7,7 @@ import { useTranslations } from "next-intl"
 import { toast } from "sonner"
 import { format } from "date-fns"
 import { fr } from "date-fns/locale"
-import { PlusIcon, ShoppingBagIcon, PackageIcon, ShoppingCartIcon, EyeIcon, ArchiveIcon, NotePencilIcon, MoneyIcon, FileArrowDownIcon, PencilSimpleIcon, ArrowCounterClockwiseIcon, GearIcon, ShoppingBagOpenIcon, TrendUpIcon } from "@phosphor-icons/react/dist/ssr";
+import { PlusIcon, ShoppingBagIcon, PackageIcon, ShoppingCartIcon, EyeIcon, ArchiveIcon, NotePencilIcon, MoneyIcon, FileArrowDownIcon, PencilSimpleIcon, ArrowCounterClockwiseIcon, GearIcon, ShoppingBagOpenIcon, TrendUpIcon, XCircleIcon } from "@phosphor-icons/react/dist/ssr";
 import { PageHeader } from "@/components/ui/page-header"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -24,6 +24,7 @@ import { AddManualCommandeModal } from "@/components/boutique/add-manual-command
 import { BoutiqueResponsableModal } from "@/components/boutique/boutique-responsable-modal"
 import { StatTile } from "@/components/dashboard/widgets/stat-tile"
 import { formatPeriodLabel } from "@/lib/finance/period-label"
+import { useActionsTodoHighlight } from "@/hooks/use-actions-todo-highlight"
 
 type Translator = ReturnType<typeof useTranslations>
 
@@ -79,6 +80,10 @@ type Commande = {
   shippingCountry:      string | null
   shippingCost:         number
   shippingCarrierLabel: string | null
+  // Drives the dashboard's "Commandes boutique à préparer" action (FORM-119) — see
+  // BoutiqueCommande.requiresPreparation's schema comment.
+  requiresPreparation:  boolean
+  preparedAt:           string | null
 }
 
 // Response of GET /api/boutique/commandes — the card figures cover every commande matching
@@ -95,10 +100,11 @@ type CommandeListResult = {
 // Card labels per status filter: sales/revenue for "Toutes" and "Payée" (both count PAID
 // commandes), otherwise what the filtered list contains — see kpiStatusForFilter.
 const KPI_LABEL_KEYS: Record<string, { count: string; amount: string }> = {
-  ALL:       { count: "view.salesCountLabel",      amount: "view.revenueTotalLabel" },
-  PAID:      { count: "view.salesCountLabel",      amount: "view.revenueTotalLabel" },
-  PENDING:   { count: "view.pendingCountLabel",    amount: "view.pendingAmountLabel" },
-  CANCELLED: { count: "view.cancelledCountLabel",  amount: "view.cancelledAmountLabel" },
+  ALL:        { count: "view.salesCountLabel",      amount: "view.revenueTotalLabel" },
+  PAID:       { count: "view.salesCountLabel",      amount: "view.revenueTotalLabel" },
+  PENDING:    { count: "view.pendingCountLabel",    amount: "view.pendingAmountLabel" },
+  CANCELLED:  { count: "view.cancelledCountLabel",  amount: "view.cancelledAmountLabel" },
+  TO_PREPARE: { count: "view.toPrepareCountLabel",  amount: "view.toPrepareAmountLabel" },
 }
 
 // GET /api/boutique/produits/stats — best sellers on PAID commandes, at most 4, already ranked.
@@ -163,7 +169,10 @@ function BoutiquePageInner() {
   const STATUS_COMMANDE_LABEL       = getCommandeStatusLabel(t)
   const [tab, setTab]               = useState<Tab>(searchParams.get("tab") === "commandes" ? "commandes" : "produits")
   const [deleteTarget, setDeleteTarget] = useState<Produit | null>(null)
-  const [statusFilter, setStatusFilter] = useState<string>("ALL")
+  // TO_PREPARE is a client-only sentinel (not a real BoutiqueCommandeStatus) — mapped to
+  // ?needsPreparation=1 below instead of ?status=. Pre-selected when arriving from the
+  // dashboard's "Commandes boutique à préparer" action (FORM-119).
+  const [statusFilter, setStatusFilter] = useState<string>(() => searchParams.get("needsPreparation") === "1" ? "TO_PREPARE" : "ALL")
   const [payTarget, setPayTarget]         = useState<Commande | null>(null)
   const [editItems, setEditItems]         = useState<EditableItem[]>([])
   const [manualPaymentType, setManualPaymentType] = useState("")
@@ -182,7 +191,10 @@ function BoutiquePageInner() {
     staleTime: 0,
   })
 
-  const commandeParams = new URLSearchParams({ limit: "50", ...(statusFilter !== "ALL" ? { status: statusFilter } : {}) })
+  const commandeParams = new URLSearchParams({
+    limit: "50",
+    ...(statusFilter === "TO_PREPARE" ? { needsPreparation: "1" } : statusFilter !== "ALL" ? { status: statusFilter } : {}),
+  })
   const { data: commandeResult, isLoading: loadingCommandes } = useQuery<CommandeListResult>({
     queryKey:  ["boutique-commandes", statusFilter],
     queryFn:   () => fetch(`/api/boutique/commandes?${commandeParams}`).then(r => r.json()),
@@ -198,6 +210,12 @@ function BoutiquePageInner() {
     enabled:   tab === "produits",
     staleTime: 0,
   })
+
+  // Deep-link from the dashboard's "Commandes boutique à préparer" action (FORM-119): no
+  // single row to point at — the filter itself (needsPreparation) is the point — so flash
+  // every row the "À préparer" filter landed on, same convention as every other
+  // actions-todo destination.
+  useActionsTodoHighlight(tab === "commandes" && !loadingCommandes)
 
   // Deep-link from the dashboard's "Ventes récentes" card: land on the right tab and
   // briefly highlight the row so the admin doesn't have to hunt for it in the list.
@@ -263,6 +281,20 @@ function BoutiquePageInner() {
         return r.json()
       }),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ["boutique-commandes"] }); toast.success(t("view.toasts.refundSuccess")) },
+    onError:   (e) => toast.error(e instanceof Error ? e.message : tCommon("error")),
+  })
+
+  const updatePreparation = useMutation({
+    mutationFn: ({ id, requiresPreparation, prepared }: { id: string; requiresPreparation?: boolean; prepared?: boolean }) =>
+      fetch(`/api/boutique/commandes/${id}/preparation`, {
+        method:  "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body:    JSON.stringify({ requiresPreparation, prepared }),
+      }).then(async r => {
+        if (!r.ok) throw new Error((await r.json()).error ?? tCommon("error"))
+        return r.json()
+      }),
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ["boutique-commandes"] }); toast.success(t("view.toasts.orderUpdated")) },
     onError:   (e) => toast.error(e instanceof Error ? e.message : tCommon("error")),
   })
 
@@ -532,6 +564,14 @@ function BoutiquePageInner() {
             ...(canEditBoutique && c.paymentMethod === "MANUAL" ? [
               { label: t("view.actions.editPaymentMethod"), icon: <PencilSimpleIcon className="size-3.5" />, onClick: () => openCorrectModal(c) },
             ] : []),
+            ...(canEditBoutique && c.requiresPreparation ? [
+              c.preparedAt
+                ? { label: t("view.actions.cancelPrepared"), icon: <XCircleIcon className="size-3.5" />, onClick: () => updatePreparation.mutate({ id: c.id, prepared: false }) }
+                : { label: t("view.actions.markPrepared"), icon: <ShoppingBagOpenIcon className="size-3.5" />, onClick: () => updatePreparation.mutate({ id: c.id, prepared: true }) },
+            ] : []),
+            ...(canEditBoutique ? [
+              { label: c.requiresPreparation ? t("view.actions.delegatePreparation") : t("view.actions.resumePreparation"), icon: <PackageIcon className="size-3.5" />, onClick: () => updatePreparation.mutate({ id: c.id, requiresPreparation: !c.requiresPreparation }) },
+            ] : []),
             ...(canRefundCommandes ? [
               { label: t("view.actions.refundOrder"), icon: <ArrowCounterClockwiseIcon className="size-3.5" />, onClick: () => openRefundModal(c), destructive: true, separator: true },
             ] : []),
@@ -553,6 +593,20 @@ function BoutiquePageInner() {
     setTab(nextTab)
     const params = new URLSearchParams(searchParams.toString())
     params.set("tab", nextTab)
+    router.replace(`/dashboard/boutique?${params}`, { scroll: false })
+  }
+
+  // Same idea as changeTab: without this, picking a different pill after landing on
+  // ?needsPreparation=1 from the dashboard only changes local state — a refresh re-reads the
+  // still-present URL param and snaps straight back to "À préparer" regardless of what was
+  // picked.
+  function changeStatusFilter(next: string) {
+    setStatusFilter(next)
+    const params = new URLSearchParams(searchParams.toString())
+    params.delete("needsPreparation")
+    params.delete("status")
+    if (next === "TO_PREPARE") params.set("needsPreparation", "1")
+    else if (next !== "ALL") params.set("status", next)
     router.replace(`/dashboard/boutique?${params}`, { scroll: false })
   }
 
@@ -651,11 +705,11 @@ function BoutiquePageInner() {
             />
           </div>
           <div className="flex gap-2">
-            {(["ALL", "PENDING", "PAID", "CANCELLED"] as const).map(s => (
+            {(["ALL", "PENDING", "PAID", "TO_PREPARE", "CANCELLED"] as const).map(s => (
               <button
                 key={s}
                 type="button"
-                onClick={() => setStatusFilter(s)}
+                onClick={() => changeStatusFilter(s)}
                 className={cn(
                   "rounded-md border px-3 h-8 inline-flex items-center text-xs font-medium transition-colors",
                   statusFilter === s
@@ -663,7 +717,7 @@ function BoutiquePageInner() {
                     : "text-muted-foreground hover:text-foreground hover:border-foreground/40",
                 )}
               >
-                {s === "ALL" ? t("view.statusFilterAll") : STATUS_COMMANDE_LABEL[s]}
+                {s === "ALL" ? t("view.statusFilterAll") : s === "TO_PREPARE" ? t("view.statusFilterToPrepare") : STATUS_COMMANDE_LABEL[s]}
               </button>
             ))}
           </div>

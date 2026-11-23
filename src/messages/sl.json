@@ -834,14 +834,32 @@
       "dragHint": "Povleci za preureditev",
       "resizeHint": "Povlecite kot za spremembo velikosti"
     },
-    "aTraiter": {
-      "title": "Za zdravljenje",
-      "empty": "Trenutno ni ničesar, s čimer bi se moral ukvarjati",
-      "loadError": "Ni mogoče naložiti dejanj za obdelavo.",
-      "items": {
-        "cotisationsEnAttente": "{count, plural, one {# čakajoča članarina} other {# čakajočih prispevkov}}",
-        "donsAEncaisser": "{count, plural, one {# darilo za unovčenje} other {# donacije za zbiranje}}",
-        "materielEnRetard": "{count, plural, one {# pozne vračila materiala} other {# pozne vračila materiala}}"
+    "actionsTodo": {
+      "trigger": "Ukrepi, ki jih je treba sprejeti",
+      "badgeHint": "{count, plural, one {# kategorija čakajočih dejanj} other {# kategorije čakajočih ukrepov}}",
+      "empty": "Vse je posodobljeno, ni bilo treba ukrepati.",
+      "snooze": "Preložiti to dejanje",
+      "snoozeDialogTitle": "Preložiti to dejanje",
+      "snoozeDialogDescription": "Dejanje ostane skrito do tega datuma, nato pa se ponovno pojavi, če so še primeri za obdelavo.",
+      "snoozeUntilLabel": "Preloženo do",
+      "confirm": "Potrdi",
+      "loadError": "Ni mogoče naložiti dejanj, ki jih je treba izvesti.",
+      "snoozedSectionTitle": "{count, plural, one {# akcija začasno ustavljena} other {# dejanja začasno ustavljena}}",
+      "snoozedUntil": "Dokler {date}",
+      "cancelSnooze": "Prekliči zadržanje",
+      "actionLabels": {
+        "voirEtRelancer": "Oglejte si in ponovno zaženite",
+        "examiner": "Izpraševalec",
+        "consulter": "Posvetujte se"
+      },
+      "rows": {
+        "cotisations-en-attente": "{count, plural, one {# čakajoča članarina} other {# čakajočih prispevkov}}",
+        "materiel-en-retard": "{count, plural, one {# pozne vračila materiala} other {# pozne vračila materiala}}",
+        "membres-a-valider": "{count, plural, one {# član za preverjanje} other {# članov, ki jih je treba potrditi}}",
+        "dons-a-encaisser": "{count, plural, one {# darilo za unovčenje} other {# donacije za zbiranje}}",
+        "rapprochement-bancaire": "{count, plural, one {# operacija za primerjavo} other {# operacij za primerjavo}}",
+        "notes-de-frais-a-valider": "{count, plural, one {# poročila o stroških za potrditev} other {# poročila o stroških za preverjanje}}",
+        "commandes-a-preparer": "{count, plural, one {# navodila za pripravo} other {# ukazi za pripravo}}"
       }
     },
     "stats": {
@@ -1845,13 +1863,13 @@
       "description": "Povežite uvožene bančne transakcije s svojimi prihodki in odhodki.",
       "statusFilters": {
         "all": "Vsi",
-        "unmatched": "Nespravljeni",
+        "unmatched": "Za primerjavo",
         "matched": "Sprava",
         "ignored": "Prezrto",
         "duplicate": "Duplikati"
       },
       "status": {
-        "unmatched": "Nespravljeni",
+        "unmatched": "Za primerjavo",
         "matched": "Sprava",
         "pending": "V teku",
         "ignored": "Prezrto",
@@ -3199,7 +3217,11 @@
         "cancelOrder": "Prekliči",
         "downloadReceipt": "Prenesite račun",
         "editPaymentMethod": "Spremeni način plačila",
-        "refundOrder": "Povračilo"
+        "refundOrder": "Povračilo",
+        "markPrepared": "Označi kot pripravljeno",
+        "cancelPrepared": "Prekliči pripravo",
+        "delegatePreparation": "Priprava, delegirana tretji osebi",
+        "resumePreparation": "Priprava življenjepisa"
       },
       "noProduct": "Brez izdelkov",
       "noOrder": "Brez ukazov",
@@ -3214,11 +3236,14 @@
       },
       "othersCount": "{count, plural, one {+# drugo} other {+# drugih}}",
       "statusFilterAll": "Vsi",
+      "statusFilterToPrepare": "Za pripravo",
       "salesCountLabel": "Število prodaj",
       "revenueTotalLabel": "Skupni prihodki",
       "unitsSold": "{count, plural, one {# prodan} two {# prodana} few {# prodani} other {# prodanih}}",
       "pendingCountLabel": "Naročila v čakanju",
       "pendingAmountLabel": "Znesek v čakanju",
+      "toPrepareCountLabel": "Ukazi za pripravo",
+      "toPrepareAmountLabel": "Znesek za pripravo",
       "cancelledCountLabel": "Preklicana naročila",
       "cancelledAmountLabel": "Preklicani znesek",
       "deleteProduitTitle": "Odstrani izdelek",

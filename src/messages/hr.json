@@ -834,14 +834,32 @@
       "dragHint": "Povuci za preuređivanje",
       "resizeHint": "Povuci kut za promjenu veličine"
     },
-    "aTraiter": {
-      "title": "Za liječenje",
-      "empty": "Trenutno nema s čim se baviti",
-      "loadError": "Nije moguće učitati radnje za obradu.",
-      "items": {
-        "cotisationsEnAttente": "{count, plural, one {# članarina na čekanju} other {# neriješene doprinose}}",
-        "donsAEncaisser": "{count, plural, one {# poklon koji treba unovčiti} other {# donacije za prikupljanje}}",
-        "materielEnRetard": "{count, plural, one {# kasni povrati materijala} other {# kasni povrati materijala}}"
+    "actionsTodo": {
+      "trigger": "Akcije koje treba poduzeti",
+      "badgeHint": "{count, plural, one {# kategorija čekajućih radnji} other {# kategorija neriješenih radnji}}",
+      "empty": "Sve je ažurirano, nema nikakvih radnji.",
+      "snooze": "Odgoditi ovu radnju",
+      "snoozeDialogTitle": "Odgoditi ovu radnju",
+      "snoozeDialogDescription": "Radnja ostaje skrivena za vas do tog datuma, a zatim se ponovno pojavljuje ako još ima slučajeva za obradu.",
+      "snoozeUntilLabel": "Odgođeno do",
+      "confirm": "Potvrdi",
+      "loadError": "Nije moguće učitati radnje koje treba izvršiti.",
+      "snoozedSectionTitle": "{count, plural, one {# akcija stavljena na čekanje} other {# radnje stavljene na čekanje}}",
+      "snoozedUntil": "Do {date}",
+      "cancelSnooze": "Otkaži blokadu",
+      "actionLabels": {
+        "voirEtRelancer": "Pogledajte i ponovno pokrenite",
+        "examiner": "Ispitivač",
+        "consulter": "Konzultirajte se"
+      },
+      "rows": {
+        "cotisations-en-attente": "{count, plural, one {# članarina na čekanju} other {# neriješene doprinose}}",
+        "materiel-en-retard": "{count, plural, one {# kasni povrati materijala} other {# kasni povrati materijala}}",
+        "membres-a-valider": "{count, plural, one {# član za provjeru} other {# članova koje treba potvrditi}}",
+        "dons-a-encaisser": "{count, plural, one {# poklon koji treba unovčiti} other {# donacije za prikupljanje}}",
+        "rapprochement-bancaire": "{count, plural, one {# operacija za usporedbu} other {# operacija za usporedbu}}",
+        "notes-de-frais-a-valider": "{count, plural, one {# izvještaj o troškovima koji treba potvrditi} other {# izvještaje o troškovima treba validirati}}",
+        "commandes-a-preparer": "{count, plural, one {# redoslijed pripreme} other {# naredbe za pripremu}}"
       }
     },
     "stats": {
@@ -1845,13 +1863,13 @@
       "description": "Povežite uvezene bankovne transakcije s vašim prihodima i troškovima.",
       "statusFilters": {
         "all": "Svi",
-        "unmatched": "Nepomireni",
+        "unmatched": "Za usporedbu",
         "matched": "Pomireni",
         "ignored": "Ignorirano",
         "duplicate": "Duplikati"
       },
       "status": {
-        "unmatched": "Nepomireni",
+        "unmatched": "Za usporedbu",
         "matched": "Pomireni",
         "pending": "Na čekanju",
         "ignored": "Ignorirano",
@@ -3199,7 +3217,11 @@
         "cancelOrder": "Otkaži",
         "downloadReceipt": "Preuzmite račun",
         "editPaymentMethod": "Promijenite način plaćanja",
-        "refundOrder": "Povrat"
+        "refundOrder": "Povrat",
+        "markPrepared": "Označi kao pripremljeno",
+        "cancelPrepared": "Otkaži pripremu",
+        "delegatePreparation": "Priprema delegirana trećoj strani",
+        "resumePreparation": "Priprema životopisa"
       },
       "noProduct": "Nema proizvoda",
       "noOrder": "Nema naredbi",
@@ -3214,11 +3236,14 @@
       },
       "othersCount": "{count, plural, one {+# ostalo} other {+# drugih}}",
       "statusFilterAll": "Svi",
+      "statusFilterToPrepare": "Pripremiti se",
       "salesCountLabel": "Broj prodaja",
       "revenueTotalLabel": "Ukupni prihod",
       "unitsSold": "{count, plural, one {# prodan} few {# prodana} other {# prodanih}}",
       "pendingCountLabel": "Narudžbe na čekanju",
       "pendingAmountLabel": "Iznos na čekanju",
+      "toPrepareCountLabel": "Naredbe za pripremu",
+      "toPrepareAmountLabel": "Iznos za pripremu",
       "cancelledCountLabel": "Otkazane narudžbe",
       "cancelledAmountLabel": "Otkazani iznos",
       "deleteProduitTitle": "Uklonite proizvod",

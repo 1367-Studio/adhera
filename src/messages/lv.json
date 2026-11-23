@@ -834,14 +834,32 @@
       "dragHint": "Velciet, lai pārkārtotu",
       "resizeHint": "Pavelc stūri, lai mainītu izmēru"
     },
-    "aTraiter": {
-      "title": "Lai tiktu ārstēts",
-      "empty": "Šobrīd nav ar ko nodarboties",
-      "loadError": "Nav iespējams ielādēt apstrādājamās darbības.",
-      "items": {
-        "cotisationsEnAttente": "{count, plural, one {# gaidošā biedra maksa} other {# gaidāmie ieguldījumi}}",
-        "donsAEncaisser": "{count, plural, one {# dāvana tiks izņemta} other {# ziedojumus vākšanai}}",
-        "materielEnRetard": "{count, plural, one {# Vēlā materiāla atgriešanās} other {# Vēlā materiāla atgriešanās}}"
+    "actionsTodo": {
+      "trigger": "Veicamie soļi",
+      "badgeHint": "{count, plural, one {# gaidošo darbību kategorija} other {# kategorijas gaidāmajām darbībām}}",
+      "empty": "Viss ir atjaunināts, nav nekādu darbību, ko risināt.",
+      "snooze": "Atlikt šo rīcību",
+      "snoozeDialogTitle": "Atlikt šo rīcību",
+      "snoozeDialogDescription": "Darbība jums paliek slēpta līdz tam datumam, tad atkal parādās, ja vēl ir lietas, kas jāapstrādā.",
+      "snoozeUntilLabel": "Atlikts līdz",
+      "confirm": "Apstiprini",
+      "loadError": "Nevar ielādēt vajadzīgās darbības.",
+      "snoozedSectionTitle": "{count, plural, one {# darbība atlikta} other {# darbības atliktas}}",
+      "snoozedUntil": "Līdz {date}",
+      "cancelSnooze": "Atcelt rezervāciju",
+      "actionLabels": {
+        "voirEtRelancer": "Skatīt un atjaunot",
+        "examiner": "Eksaminētājs",
+        "consulter": "Konsultācija"
+      },
+      "rows": {
+        "cotisations-en-attente": "{count, plural, one {# gaidošā biedra maksa} other {# gaidāmie ieguldījumi}}",
+        "materiel-en-retard": "{count, plural, one {# Vēlā materiāla atgriešanās} other {# Vēlā materiāla atgriešanās}}",
+        "membres-a-valider": "{count, plural, one {# biedrs, kuru apstiprināt} other {# biedri, kas tiks apstiprināti}}",
+        "dons-a-encaisser": "{count, plural, one {# dāvana tiks izņemta} other {# ziedojumus vākšanai}}",
+        "rapprochement-bancaire": "{count, plural, one {# operācija, kas jāsalīdzina} other {# operācijas, ko salīdzināt}}",
+        "notes-de-frais-a-valider": "{count, plural, one {# izdevumu atskaite jāapstiprina} other {# izdevumu atskaites jāapstiprina}}",
+        "commandes-a-preparer": "{count, plural, one {# sagatavošanās kārtība} other {# pavēles sagatavoties}}"
       }
     },
     "stats": {
@@ -1845,13 +1863,13 @@
       "description": "Sasaistiet importētos bankas darījumus ar saviem ienākumiem un izdevumiem.",
       "statusFilters": {
         "all": "Visi",
-        "unmatched": "Nesamierināti",
+        "unmatched": "Salīdzināšanai",
         "matched": "Samierināts",
         "ignored": "Ignorēts",
         "duplicate": "Dublikāti"
       },
       "status": {
-        "unmatched": "Nesamierināti",
+        "unmatched": "Salīdzināšanai",
         "matched": "Samierināts",
         "pending": "Gaida",
         "ignored": "Ignorēts",
@@ -3199,7 +3217,11 @@
         "cancelOrder": "Atcelt",
         "downloadReceipt": "Lejupielādējiet kvīti",
         "editPaymentMethod": "Mainīt maksājuma metodi",
-        "refundOrder": "Atmaksāt"
+        "refundOrder": "Atmaksāt",
+        "markPrepared": "Atzīmēt kā sagatavots",
+        "cancelPrepared": "Atcelšanas sagatavošana",
+        "delegatePreparation": "Sagatavošana tika deleģēta trešajai personai",
+        "resumePreparation": "CV sagatavošana"
       },
       "noProduct": "Nav produktu",
       "noOrder": "Nav pavēļu",
@@ -3214,11 +3236,14 @@
       },
       "othersCount": "{count, plural, one {+# cits} other {+# citi}}",
       "statusFilterAll": "Visi",
+      "statusFilterToPrepare": "Lai sagatavotos",
       "salesCountLabel": "Pārdošanu skaits",
       "revenueTotalLabel": "Kopējie ieņēmumi",
       "unitsSold": "{count, plural, zero {# pārdoti} one {# pārdots} other {# pārdoti}}",
       "pendingCountLabel": "Gaidošie pasūtījumi",
       "pendingAmountLabel": "Gaidošā summa",
+      "toPrepareCountLabel": "Rīkojumi sagatavoties",
+      "toPrepareAmountLabel": "Jāsagatavo",
       "cancelledCountLabel": "Atceltie pasūtījumi",
       "cancelledAmountLabel": "Atceltā summa",
       "deleteProduitTitle": "Noņemt produktu",

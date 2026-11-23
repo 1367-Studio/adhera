@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { toast } from "sonner"
 import { useTranslations } from "next-intl"
 import { format } from "date-fns"
@@ -26,6 +26,7 @@ import { DateField } from "@/components/ui/date-field"
 import { ReimbursementForm } from "@/components/reimbursements/reimbursement-form"
 import { useCurrentUser, useHasAccess } from "@/lib/user-context"
 import { BASE_PATH } from "@/lib/env"
+import { useActionsTodoHighlight } from "@/hooks/use-actions-todo-highlight"
 
 type ReimbursementStatus = "DRAFT" | "PENDING_APPROVAL" | "NEEDS_CORRECTION" | "APPROVED" | "REJECTED" | "REIMBURSED" | "CANCELLED"
 
@@ -61,13 +62,16 @@ function getStatusBadge(t: Translator): Record<ReimbursementStatus, { label: str
 export function ReimbursementsView() {
   const t = useTranslations()
   const router = useRouter()
+  const searchParams = useSearchParams()
   const currentUser = useCurrentUser()
   const canViewAll = useHasAccess("reimbursements", "read")
 
   const [page, setPage] = useState(1)
   const [showAll, setShowAll]       = useState(canViewAll)
   const [requesterFilter, setRequesterFilter] = useState("")
-  const [statusFilter, setStatusFilter]       = useState("")
+  // Deep-link from the dashboard's "Notes de frais à valider" action (FORM-119): pre-fill
+  // from ?status=, same pattern as membres-view.tsx's statusFilter.
+  const [statusFilter, setStatusFilter]       = useState(() => searchParams.get("status") ?? "")
   const [categoryFilter, setCategoryFilter]   = useState("")
   const [dateFrom, setDateFrom] = useState("")
   const [dateTo, setDateTo]     = useState("")
@@ -86,6 +90,7 @@ export function ReimbursementsView() {
     dateTo:      dateTo || undefined,
   }
   const { data: result, isLoading } = useReimbursementsPaginated(page, PAGE_SIZE, filters)
+  useActionsTodoHighlight(!isLoading)
   // Mirrors the list's own requesterId scope — the summary line must always agree with what
   // the table below it is actually showing, not silently fall back to association-wide totals
   // while the list itself is filtered to "Mes demandes".
