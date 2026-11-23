@@ -834,14 +834,32 @@
       "dragHint": "Σύρετε για αναδιάταξη",
       "resizeHint": "Σύρετε τη γωνία για αλλαγή μεγέθους"
     },
-    "aTraiter": {
-      "title": "Προς θεραπεία",
-      "empty": "Τίποτα να αντιμετωπίσω αυτή τη στιγμή",
-      "loadError": "Αδυναμία φόρτωσης ενεργειών προς επεξεργασία.",
-      "items": {
-        "cotisationsEnAttente": "{count, plural, one {# εκκρεμεί συνδρομή} other {# εκκρεμείς συνεισφορές}}",
-        "donsAEncaisser": "{count, plural, one {# δώρο που θα εξαργυρωθεί} other {# δωρεές προς συλλογή}}",
-        "materielEnRetard": "{count, plural, one {# καθυστερημένες επιστροφές υλικών} other {# καθυστερημένες επιστροφές υλικών}}"
+    "actionsTodo": {
+      "trigger": "Ενέργειες που πρέπει να γίνουν",
+      "badgeHint": "{count, plural, one {# κατηγορία εκκρεμούς ενέργειας} other {# κατηγορίες εκκρεμών ενεργειών}}",
+      "empty": "Όλα είναι ενημερωμένα, δεν υπάρχει κάποια ενέργεια να διαχειριστώ.",
+      "snooze": "Αναβάλετε αυτή την ενέργεια",
+      "snoozeDialogTitle": "Αναβάλετε αυτή την ενέργεια",
+      "snoozeDialogDescription": "Η ενέργεια παραμένει κρυφή για εσάς μέχρι εκείνη την ημερομηνία και μετά επανεμφανίζεται αν υπάρχουν ακόμα υποθέσεις προς επεξεργασία.",
+      "snoozeUntilLabel": "Αναβλήθηκε μέχρι",
+      "confirm": "Επιβεβαίωση",
+      "loadError": "Αδυναμία φόρτωσης των ενεργειών που πρέπει να γίνουν.",
+      "snoozedSectionTitle": "{count, plural, one {# ενέργεια αναβάλλεται} other {# ενέργειες που τίθενται σε αναμονή}}",
+      "snoozedUntil": "Μέχρι {date}",
+      "cancelSnooze": "Ακύρωση της κράτησης",
+      "actionLabels": {
+        "voirEtRelancer": "Δείτε και επανεκκινήστε",
+        "examiner": "Εξεταστής",
+        "consulter": "Συμβουλευτείτε"
+      },
+      "rows": {
+        "cotisations-en-attente": "{count, plural, one {# εκκρεμεί συνδρομή} other {# εκκρεμείς συνεισφορές}}",
+        "materiel-en-retard": "{count, plural, one {# καθυστερημένες επιστροφές υλικών} other {# καθυστερημένες επιστροφές υλικών}}",
+        "membres-a-valider": "{count, plural, one {# μέλος για επικύρωση} other {# μέλη προς επικύρωση}}",
+        "dons-a-encaisser": "{count, plural, one {# δώρο που θα εξαργυρωθεί} other {# δωρεές προς συλλογή}}",
+        "rapprochement-bancaire": "{count, plural, one {# λειτουργία προς σύγκριση} other {# λειτουργίες προς σύγκριση}}",
+        "notes-de-frais-a-valider": "{count, plural, one {# αναφορά εξόδων προς επικύρωση} other {# εκθέσεις εξόδων προς επικύρωση}}",
+        "commandes-a-preparer": "{count, plural, one {# παραγγελία για προετοιμασία} other {# παραγγελίες για προετοιμασία}}"
       }
     },
     "stats": {
@@ -1845,13 +1863,13 @@
       "description": "Συσχετίστε τις εισαγόμενες τραπεζικές συναλλαγές με τα έσοδα και τα έξοδά σας.",
       "statusFilters": {
         "all": "Όλα",
-        "unmatched": "Ασυμφιλίωτος",
+        "unmatched": "Προς σύγκριση",
         "matched": "Συνδιαλλαγή",
         "ignored": "Αγνοήθηκε",
         "duplicate": "Διπλότυπα"
       },
       "status": {
-        "unmatched": "Ασυμφιλίωτος",
+        "unmatched": "Προς σύγκριση",
         "matched": "Συνδιαλλαγή",
         "pending": "Σε εκκρεμότητα",
         "ignored": "Αγνοήθηκε",
@@ -3199,7 +3217,11 @@
         "cancelOrder": "Ακύρωση",
         "downloadReceipt": "Κατεβάστε την απόδειξη",
         "editPaymentMethod": "Αλλαγή του τρόπου πληρωμής",
-        "refundOrder": "Αποπληρωμή"
+        "refundOrder": "Αποπληρωμή",
+        "markPrepared": "Σήμανση ως έτοιμο",
+        "cancelPrepared": "Ακύρωση προετοιμασίας",
+        "delegatePreparation": "Η προετοιμασία έχει ανατεθεί σε τρίτο μέρος",
+        "resumePreparation": "Προετοιμασία βιογραφικού"
       },
       "noProduct": "Κανένα προϊόν",
       "noOrder": "Χωρίς παραγγελίες",
@@ -3214,11 +3236,14 @@
       },
       "othersCount": "{count, plural, one {+# άλλο} other {+# άλλα}}",
       "statusFilterAll": "Όλα",
+      "statusFilterToPrepare": "Για την προετοιμασία",
       "salesCountLabel": "Αριθμός πωλήσεων",
       "revenueTotalLabel": "Συνολικά έσοδα",
       "unitsSold": "{count, plural, one {# πωλήθηκε} other {# πωλήθηκαν}}",
       "pendingCountLabel": "Εκκρεμείς παραγγελίες",
       "pendingAmountLabel": "Εκκρεμές ποσό",
+      "toPrepareCountLabel": "Εντολές για προετοιμασία",
+      "toPrepareAmountLabel": "Ποσότητα προς προετοιμασία",
       "cancelledCountLabel": "Ακυρωμένες παραγγελίες",
       "cancelledAmountLabel": "Ακυρωμένο ποσό",
       "deleteProduitTitle": "Αφαίρεση προϊόντος",

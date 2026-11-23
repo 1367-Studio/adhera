@@ -834,14 +834,32 @@
       "dragHint": "Ťah na preusporiadanie",
       "resizeHint": "Potiahnite roh na zmenu veľkosti"
     },
-    "aTraiter": {
-      "title": "Byť liečený",
-      "empty": "Momentálne nemám čo riešiť",
-      "loadError": "Nie je možné načítať akcie na spracovanie.",
-      "items": {
-        "cotisationsEnAttente": "{count, plural, one {# čakajúci členský poplatok} other {# čakajúce príspevky}}",
-        "donsAEncaisser": "{count, plural, one {# darček na vyplatenie} other {# dary na zber}}",
-        "materielEnRetard": "{count, plural, one {# oneskorené návraty materiálu} other {# oneskorené návraty materiálu}}"
+    "actionsTodo": {
+      "trigger": "Kroky, ktoré treba prijať",
+      "badgeHint": "{count, plural, one {# kategória čakajúcich akcií} other {# kategórie čakajúcich akcií}}",
+      "empty": "Všetko je aktuálne, nie je potrebné nič riešiť.",
+      "snooze": "Odložiť túto akciu",
+      "snoozeDialogTitle": "Odložiť túto akciu",
+      "snoozeDialogDescription": "Akcia zostáva pre vás skrytá až do tohto dátumu, potom sa znovu objaví, ak sú ešte prípady na spracovanie.",
+      "snoozeUntilLabel": "Odložené až do",
+      "confirm": "Potvrdiť",
+      "loadError": "Nie je možné načítať akcie, ktoré sa majú vykonať.",
+      "snoozedSectionTitle": "{count, plural, one {# akcia pozastavená} other {# kroky pozastavené}}",
+      "snoozedUntil": "Až kým {date}",
+      "cancelSnooze": "Zrušiť blokáciu",
+      "actionLabels": {
+        "voirEtRelancer": "Vidieť a znovu spustiť",
+        "examiner": "Skúšajúci",
+        "consulter": "Konzultácia"
+      },
+      "rows": {
+        "cotisations-en-attente": "{count, plural, one {# čakajúci členský poplatok} other {# čakajúce príspevky}}",
+        "materiel-en-retard": "{count, plural, one {# oneskorené návraty materiálu} other {# oneskorené návraty materiálu}}",
+        "membres-a-valider": "{count, plural, one {# člen na overenie} other {# členov na overenie}}",
+        "dons-a-encaisser": "{count, plural, one {# darček na vyplatenie} other {# dary na zber}}",
+        "rapprochement-bancaire": "{count, plural, one {# operácia na porovnanie} other {# operácie na porovnanie}}",
+        "notes-de-frais-a-valider": "{count, plural, one {# výkaz výdavkov na overenie} other {# výdavkové správy na overenie}}",
+        "commandes-a-preparer": "{count, plural, one {# poradie na prípravu} other {# rozkazy na prípravu}}"
       }
     },
     "stats": {
@@ -1845,13 +1863,13 @@
       "description": "Spojte importované bankové transakcie s vašimi príjmami a výdavkami.",
       "statusFilters": {
         "all": "Všetko",
-        "unmatched": "Nezmierení",
+        "unmatched": "Na porovnanie",
         "matched": "Zmierený",
         "ignored": "Ignorované",
         "duplicate": "Duplikáty"
       },
       "status": {
-        "unmatched": "Nezmierení",
+        "unmatched": "Na porovnanie",
         "matched": "Zmierený",
         "pending": "Čaká sa",
         "ignored": "Ignorované",
@@ -3199,7 +3217,11 @@
         "cancelOrder": "Zrušiť",
         "downloadReceipt": "Stiahnite si účtenku",
         "editPaymentMethod": "Zmena platobnej metódy",
-        "refundOrder": "Splácanie"
+        "refundOrder": "Splácanie",
+        "markPrepared": "Označte ako pripravené",
+        "cancelPrepared": "Zrušiť prípravu",
+        "delegatePreparation": "Príprava delegovaná na tretiu stranu",
+        "resumePreparation": "Príprava životopisu"
       },
       "noProduct": "Žiadne produkty",
       "noOrder": "Žiadne rozkazy",
@@ -3214,11 +3236,14 @@
       },
       "othersCount": "{count, plural, one {+# iné} other {+# ďalších}}",
       "statusFilterAll": "Všetko",
+      "statusFilterToPrepare": "Na prípravu",
       "salesCountLabel": "Počet predajov",
       "revenueTotalLabel": "Celkové tržby",
       "unitsSold": "{count, plural, one {# predaný kus} few {# predané kusy} many {# predaného kusu} other {# predaných kusov}}",
       "pendingCountLabel": "Čakajúce objednávky",
       "pendingAmountLabel": "Čakajúca suma",
+      "toPrepareCountLabel": "Rozkazy na prípravu",
+      "toPrepareAmountLabel": "Suma na prípravu",
       "cancelledCountLabel": "Zrušené objednávky",
       "cancelledAmountLabel": "Zrušená suma",
       "deleteProduitTitle": "Odstrániť produkt",

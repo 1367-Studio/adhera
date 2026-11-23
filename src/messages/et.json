@@ -834,14 +834,32 @@
       "dragHint": "Drag, et ümber korraldada",
       "resizeHint": "Lohista nurka, et suurust muuta"
     },
-    "aTraiter": {
-      "title": "Ravi",
-      "empty": "Hetkel pole midagi tegeleda",
-      "loadError": "Ei õnnestu laadida töödeldavaid toiminguid.",
-      "items": {
-        "cotisationsEnAttente": "{count, plural, one {# ootel liikmemaksu} other {# ootel sissemaksed}}",
-        "donsAEncaisser": "{count, plural, one {# kingitus, mida tuleb lunastada} other {# annetusi kogumiseks}}",
-        "materielEnRetard": "{count, plural, one {# hilise materjali tagastus} other {# hilise materjali tagastus}}"
+    "actionsTodo": {
+      "trigger": "Tegevused, mida teha",
+      "badgeHint": "{count, plural, one {# ootel oleva tegevuse kategooria} other {# ootel toimingute kategooriad}}",
+      "empty": "Kõik on ajakohane, pole mingit tegevust.",
+      "snooze": "Lükata see samm edasi",
+      "snoozeDialogTitle": "Lükata see samm edasi",
+      "snoozeDialogDescription": "Toiming jääb sinu jaoks varjatuks kuni selle kuupäevani ja ilmub uuesti, kui on veel lahendamist vajavaid juhtumeid.",
+      "snoozeUntilLabel": "Edasi lükatud kuni",
+      "confirm": "Kinnita",
+      "loadError": "Ei õnnestu laadida vajalikke toiminguid.",
+      "snoozedSectionTitle": "{count, plural, one {# tegevus peatati} other {# tegevused on ootele pandud}}",
+      "snoozedUntil": "Kuni {date}",
+      "cancelSnooze": "Tühista peatamine",
+      "actionLabels": {
+        "voirEtRelancer": "Vaata ja taaskäivita",
+        "examiner": "Eksamineerija",
+        "consulter": "Konsulteeri"
+      },
+      "rows": {
+        "cotisations-en-attente": "{count, plural, one {# ootel liikmemaksu} other {# ootel sissemaksed}}",
+        "materiel-en-retard": "{count, plural, one {# hilise materjali tagastus} other {# hilise materjali tagastus}}",
+        "membres-a-valider": "{count, plural, one {# liige valideerimiseks} other {# valideeritavad liikmed}}",
+        "dons-a-encaisser": "{count, plural, one {# kingitus, mida tuleb lunastada} other {# annetusi kogumiseks}}",
+        "rapprochement-bancaire": "{count, plural, one {# operatsiooni, mida võrrelda} other {# operatsioonid võrrelda}}",
+        "notes-de-frais-a-valider": "{count, plural, one {# kuluaruanne valideerimiseks} other {# kuluaruanded, mida valideerida}}",
+        "commandes-a-preparer": "{count, plural, one {# ettevalmistuskäsk} other {# ettevalmistuskäsk}}"
       }
     },
     "stats": {
@@ -1845,13 +1863,13 @@
       "description": "Seosta imporditud pangatehingud oma sissetuleku ja kuludega.",
       "statusFilters": {
         "all": "Kõik",
-        "unmatched": "Leppimata",
+        "unmatched": "Võrdluseks",
         "matched": "Lepitatud",
         "ignored": "Ignoreeritud",
         "duplicate": "Duplikaadid"
       },
       "status": {
-        "unmatched": "Leppimata",
+        "unmatched": "Võrdluseks",
         "matched": "Lepitatud",
         "pending": "Ootel",
         "ignored": "Ignoreeritud",
@@ -3199,7 +3217,11 @@
         "cancelOrder": "Tühista",
         "downloadReceipt": "Laadi alla kviitung",
         "editPaymentMethod": "Muuda makseviisi",
-        "refundOrder": "Tagasimakse"
+        "refundOrder": "Tagasimakse",
+        "markPrepared": "Märgi ettevalmistatuks",
+        "cancelPrepared": "Tühista ettevalmistus",
+        "delegatePreparation": "Ettevalmistus delegeeritud kolmandale osapoolele",
+        "resumePreparation": "CV ettevalmistamine"
       },
       "noProduct": "Tooteid ei ole",
       "noOrder": "Käske ei ole",
@@ -3214,11 +3236,14 @@
       },
       "othersCount": "{count, plural, one {+# muud} other {+# teised}}",
       "statusFilterAll": "Kõik",
+      "statusFilterToPrepare": "Valmistumiseks",
       "salesCountLabel": "Müükide arv",
       "revenueTotalLabel": "Kogutulu",
       "unitsSold": "{count, plural, one {# müüdud} other {# müüdud}}",
       "pendingCountLabel": "Ootel tellimused",
       "pendingAmountLabel": "Ootel summa",
+      "toPrepareCountLabel": "Ettevalmistuskäsk",
+      "toPrepareAmountLabel": "Valmistamiseks mõeldud summa",
       "cancelledCountLabel": "Tühistatud tellimused",
       "cancelledAmountLabel": "Tühistatud summa",
       "deleteProduitTitle": "Eemalda toode",

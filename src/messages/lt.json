@@ -834,14 +834,32 @@
       "dragHint": "Tempkite, kad pertvarkytumėte",
       "resizeHint": "Tempkite kampą, kad sumažintumėte dydį"
     },
-    "aTraiter": {
-      "title": "Gydymui",
-      "empty": "Šiuo metu nėra su kuo tvarkytis",
-      "loadError": "Nepavyksta įkelti veiksmų, kuriuos reikia apdoroti.",
-      "items": {
-        "cotisationsEnAttente": "{count, plural, one {# laukiamas narystės mokestis} other {# laukiančios įmokos}}",
-        "donsAEncaisser": "{count, plural, one {# dovana bus išgryninta} other {# aukų rinkimui}}",
-        "materielEnRetard": "{count, plural, one {# Vėlyvoji medžiaga sugrįžta} other {# Vėlyvoji medžiaga sugrįžta}}"
+    "actionsTodo": {
+      "trigger": "Veiksmai, kuriuos reikia atlikti",
+      "badgeHint": "{count, plural, one {# laukiančių veiksmų kategorija} other {# laukiančių veiksmų kategorijos}}",
+      "empty": "Viskas atnaujinta, jokių veiksmų.",
+      "snooze": "Atidėkite šį veiksmą",
+      "snoozeDialogTitle": "Atidėkite šį veiksmą",
+      "snoozeDialogDescription": "Veiksmas lieka paslėptas iki tos datos, o jei dar yra bylų, vėl pasirodo.",
+      "snoozeUntilLabel": "Atidėta iki",
+      "confirm": "Patvirtinkite",
+      "loadError": "Negaliu įkelti veiksmų, kuriuos reikia atlikti.",
+      "snoozedSectionTitle": "{count, plural, one {# veiksmas sustabdytas} other {# veiksmai sustabdyti}}",
+      "snoozedUntil": "Kol {date}",
+      "cancelSnooze": "Atšaukti rezervaciją",
+      "actionLabels": {
+        "voirEtRelancer": "Žiūrėti ir perleisti",
+        "examiner": "Egzaminuotojas",
+        "consulter": "Konsultuotis"
+      },
+      "rows": {
+        "cotisations-en-attente": "{count, plural, one {# laukiamas narystės mokestis} other {# laukiančios įmokos}}",
+        "materiel-en-retard": "{count, plural, one {# Vėlyvoji medžiaga sugrįžta} other {# Vėlyvoji medžiaga sugrįžta}}",
+        "membres-a-valider": "{count, plural, one {# narys patvirtinti} other {# nariai turi būti patvirtinti}}",
+        "dons-a-encaisser": "{count, plural, one {# dovana bus išgryninta} other {# aukų rinkimui}}",
+        "rapprochement-bancaire": "{count, plural, one {# operacija bus lyginama} other {# operacijų palyginimui}}",
+        "notes-de-frais-a-valider": "{count, plural, one {# išlaidų ataskaita turi būti patvirtinta} other {# išlaidų ataskaitas, kurios turi būti patvirtintos}}",
+        "commandes-a-preparer": "{count, plural, one {# pasiruošimo tvarka} other {# įsakymų pasiruošti}}"
       }
     },
     "stats": {
@@ -1845,13 +1863,13 @@
       "description": "Susieti importuotas banko operacijas su savo pajamomis ir išlaidomis.",
       "statusFilters": {
         "all": "Visi",
-        "unmatched": "Nesusitaikę",
+        "unmatched": "Palyginimui",
         "matched": "Susitaikęs",
         "ignored": "Ignoruota",
         "duplicate": "Dublikatai"
       },
       "status": {
-        "unmatched": "Nesusitaikę",
+        "unmatched": "Palyginimui",
         "matched": "Susitaikęs",
         "pending": "Laukiama",
         "ignored": "Ignoruota",
@@ -3199,7 +3217,11 @@
         "cancelOrder": "Atšaukti",
         "downloadReceipt": "Atsisiųskite kvitą",
         "editPaymentMethod": "Pakeiskite mokėjimo būdą",
-        "refundOrder": "Grąžinimas"
+        "refundOrder": "Grąžinimas",
+        "markPrepared": "Pažymėkite kaip paruoštą",
+        "cancelPrepared": "Atšaukimo paruošimas",
+        "delegatePreparation": "Paruošimas perduotas trečiajai šaliai",
+        "resumePreparation": "Gyvenimo aprašymo rengimas"
       },
       "noProduct": "Jokių produktų",
       "noOrder": "Jokių įsakymų",
@@ -3214,11 +3236,14 @@
       },
       "othersCount": "{count, plural, one {+# kitas} other {+# kiti}}",
       "statusFilterAll": "Visi",
+      "statusFilterToPrepare": "Pasiruošti",
       "salesCountLabel": "Pardavimų skaičius",
       "revenueTotalLabel": "Bendros pajamos",
       "unitsSold": "{count, plural, one {# parduotas} few {# parduoti} many {# parduoto} other {# parduotų}}",
       "pendingCountLabel": "Laukiantys užsakymai",
       "pendingAmountLabel": "Laukiama suma",
+      "toPrepareCountLabel": "Įsakymai pasiruošti",
+      "toPrepareAmountLabel": "Paruošimo suma",
       "cancelledCountLabel": "Atšaukti užsakymai",
       "cancelledAmountLabel": "Atšaukta suma",
       "deleteProduitTitle": "Pašalinti produktą",

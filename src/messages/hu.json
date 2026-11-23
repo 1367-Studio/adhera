@@ -834,14 +834,32 @@
       "dragHint": "Drag átrendezéshez",
       "resizeHint": "Húzd a sarkot a méret módosításához"
     },
-    "aTraiter": {
-      "title": "Kezelendő",
-      "empty": "Jelenleg nincs mit kezelni",
-      "loadError": "Nem lehet betölteni a feldolgozandó műveleteket.",
-      "items": {
-        "cotisationsEnAttente": "{count, plural, one {# függőben lévő tagsági díj} other {# függőben lévő hozzájárulások}}",
-        "donsAEncaisser": "{count, plural, one {# beváltandó ajándék} other {# adományokat gyűjteni}}",
-        "materielEnRetard": "{count, plural, one {# késői anyag visszatérítése} other {# késői anyag visszatérítése}}"
+    "actionsTodo": {
+      "trigger": "Teendők",
+      "badgeHint": "{count, plural, one {# függő műveleti kategória} other {# függőben lévő intézkedés kategóriái}}",
+      "empty": "Minden naprakész, nincs mit intézni.",
+      "snooze": "A lépés elhalasztása",
+      "snoozeDialogTitle": "A lépés elhalasztása",
+      "snoozeDialogDescription": "A művelet addig rejtve marad előtted, majd újra megjelenik, ha még vannak ügy, amelyeket feldolgozni kell.",
+      "snoozeUntilLabel": "Elhalasztva addig",
+      "confirm": "Megerősítés",
+      "loadError": "Nem sikerült betölteni a végrehajtandó műveleteket.",
+      "snoozedSectionTitle": "{count, plural, one {# intézkedés felfüggesztés} other {# felfüggesztett intézkedések}}",
+      "snoozedUntil": "Egészen addig. {date}",
+      "cancelSnooze": "Zárolás megszakítása",
+      "actionLabels": {
+        "voirEtRelancer": "Nézze meg és indítsa újra",
+        "examiner": "Vizsgáló",
+        "consulter": "Konzultáció"
+      },
+      "rows": {
+        "cotisations-en-attente": "{count, plural, one {# függőben lévő tagsági díj} other {# függőben lévő hozzájárulások}}",
+        "materiel-en-retard": "{count, plural, one {# késői anyag visszatérítése} other {# késői anyag visszatérítése}}",
+        "membres-a-valider": "{count, plural, one {# tagot kell érvényesíteni} other {# érvényesítendő tagok}}",
+        "dons-a-encaisser": "{count, plural, one {# beváltandó ajándék} other {# adományokat gyűjteni}}",
+        "rapprochement-bancaire": "{count, plural, one {# összehasonlítandó művelet} other {# összehasonlítható műveletek}}",
+        "notes-de-frais-a-valider": "{count, plural, one {# érvényesítendő költségjelentés} other {# érvényesítendő költségjelentések}}",
+        "commandes-a-preparer": "{count, plural, one {# előkészítési parancs} other {# előkészítési parancsok}}"
       }
     },
     "stats": {
@@ -1845,13 +1863,13 @@
       "description": "Kapcsold be az importált banki tranzakciókat a jövedelmeddel és kiadásaiddal.",
       "statusFilters": {
         "all": "Mind",
-        "unmatched": "Kibékülés nélkül",
+        "unmatched": "Összehasonlításra kerül",
         "matched": "Megbékélve",
         "ignored": "Figyelmen kívül hagyva",
         "duplicate": "Másolatok"
       },
       "status": {
-        "unmatched": "Kibékülés nélkül",
+        "unmatched": "Összehasonlításra kerül",
         "matched": "Megbékélve",
         "pending": "Függőben",
         "ignored": "Figyelmen kívül hagyva",
@@ -3199,7 +3217,11 @@
         "cancelOrder": "Mégse",
         "downloadReceipt": "Töltse le a nyugtát",
         "editPaymentMethod": "Változtasd meg a fizetési módot",
-        "refundOrder": "Visszafizetés"
+        "refundOrder": "Visszafizetés",
+        "markPrepared": "Előkészítettként jelölje meg",
+        "cancelPrepared": "Előkészület törlése",
+        "delegatePreparation": "A felkészülés harmadik félre bízva",
+        "resumePreparation": "Önéletrajz előkészítése"
       },
       "noProduct": "Nincsenek termékek",
       "noOrder": "Nincs parancs",
@@ -3214,11 +3236,14 @@
       },
       "othersCount": "{count, plural, one {+# egyéb} other {+# más}}",
       "statusFilterAll": "Mind",
+      "statusFilterToPrepare": "Előkészülni",
       "salesCountLabel": "Eladások száma",
       "revenueTotalLabel": "Teljes bevétel",
       "unitsSold": "{count, plural, one {# eladva} other {# eladva}}",
       "pendingCountLabel": "Függőben lévő rendelések",
       "pendingAmountLabel": "Függőben lévő összeg",
+      "toPrepareCountLabel": "Előkészületi utasítások",
+      "toPrepareAmountLabel": "Előkészítendő összeg",
       "cancelledCountLabel": "Törölt rendelések",
       "cancelledAmountLabel": "Törölt összeg",
       "deleteProduitTitle": "Termék eltávolítása",

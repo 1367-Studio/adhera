@@ -834,14 +834,32 @@
       "dragHint": "Drag to reorder",
       "resizeHint": "Drag the corner to resize"
     },
-    "aTraiter": {
-      "title": "To be treated",
-      "empty": "Nothing to deal with at the moment",
-      "loadError": "Unable to load actions to be processed.",
-      "items": {
-        "cotisationsEnAttente": "{count, plural, one {# pending membership fee} other {# pending contributions}}",
-        "donsAEncaisser": "{count, plural, one {# gift to be cashed} other {# donations to collect}}",
-        "materielEnRetard": "{count, plural, one {# late material returns} other {# late material returns}}"
+    "actionsTodo": {
+      "trigger": "Actions to take",
+      "badgeHint": "{count, plural, one {# pending action category} other {# categories of pending action}}",
+      "empty": "Everything is up to date, no action to handle.",
+      "snooze": "Postpone this action",
+      "snoozeDialogTitle": "Postpone this action",
+      "snoozeDialogDescription": "The action remains hidden for you until that date, then reappears if there are still cases to process.",
+      "snoozeUntilLabel": "Postponed until",
+      "confirm": "Confirm",
+      "loadError": "Unable to load the actions to be done.",
+      "snoozedSectionTitle": "{count, plural, one {# action put on hold} other {# actions put on hold}}",
+      "snoozedUntil": "Until {date}",
+      "cancelSnooze": "Cancel the hold",
+      "actionLabels": {
+        "voirEtRelancer": "See and relaunch",
+        "examiner": "Examiner",
+        "consulter": "Consult"
+      },
+      "rows": {
+        "cotisations-en-attente": "{count, plural, one {# pending membership fee} other {# pending contributions}}",
+        "materiel-en-retard": "{count, plural, one {# late material returns} other {# late material returns}}",
+        "membres-a-valider": "{count, plural, one {# member to validate} other {# members to be validated}}",
+        "dons-a-encaisser": "{count, plural, one {# gift to be cashed} other {# donations to collect}}",
+        "rapprochement-bancaire": "{count, plural, one {# operation to be compared} other {# operations to compare}}",
+        "notes-de-frais-a-valider": "{count, plural, one {# expense report to be validated} other {# expense reports to be validated}}",
+        "commandes-a-preparer": "{count, plural, one {# order to prepare} other {# orders to prepare}}"
       }
     },
     "stats": {
@@ -1845,13 +1863,13 @@
       "description": "Match imported bank transactions to your income and expenses.",
       "statusFilters": {
         "all": "All",
-        "unmatched": "Unmatched",
+        "unmatched": "To be compared",
         "matched": "Matched",
         "ignored": "Ignored",
         "duplicate": "Duplicates"
       },
       "status": {
-        "unmatched": "Unmatched",
+        "unmatched": "To be compared",
         "matched": "Matched",
         "pending": "Pending",
         "ignored": "Ignored",
@@ -3199,7 +3217,11 @@
         "cancelOrder": "Cancel",
         "downloadReceipt": "Download receipt",
         "editPaymentMethod": "Edit payment method",
-        "refundOrder": "Refund"
+        "refundOrder": "Refund",
+        "markPrepared": "Mark as prepared",
+        "cancelPrepared": "Cancel preparation",
+        "delegatePreparation": "Preparation delegated to a third party",
+        "resumePreparation": "Resume preparation"
       },
       "noProduct": "No products",
       "noOrder": "No orders",
@@ -3214,11 +3236,14 @@
       },
       "othersCount": "{count, plural, one {+# other} other {+# others}}",
       "statusFilterAll": "All",
+      "statusFilterToPrepare": "To prepare",
       "salesCountLabel": "Number of sales",
       "revenueTotalLabel": "Total revenue",
       "unitsSold": "{count, plural, one {# sold} other {# sold}}",
       "pendingCountLabel": "Pending orders",
       "pendingAmountLabel": "Pending amount",
+      "toPrepareCountLabel": "Orders to prepare",
+      "toPrepareAmountLabel": "Amount to prepare",
       "cancelledCountLabel": "Cancelled orders",
       "cancelledAmountLabel": "Cancelled amount",
       "deleteProduitTitle": "Delete product",

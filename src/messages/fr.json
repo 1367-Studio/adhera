@@ -834,14 +834,32 @@
       "dragHint": "Glisser pour réorganiser",
       "resizeHint": "Glisser le coin pour redimensionner"
     },
-    "aTraiter": {
-      "title": "À traiter",
-      "empty": "Rien à traiter pour le moment",
-      "loadError": "Impossible de charger les actions à traiter.",
-      "items": {
-        "cotisationsEnAttente": "{count, plural, one {# cotisation en attente} other {# cotisations en attente}}",
-        "donsAEncaisser": "{count, plural, one {# don à encaisser} other {# dons à encaisser}}",
-        "materielEnRetard": "{count, plural, one {# retour de matériel en retard} other {# retours de matériel en retard}}"
+    "actionsTodo": {
+      "trigger": "Actions à faire",
+      "badgeHint": "{count, plural, one {# catégorie d'action en attente} other {# catégories d'action en attente}}",
+      "empty": "Tout est à jour, aucune action à traiter.",
+      "snooze": "Reporter cette action",
+      "snoozeDialogTitle": "Reporter cette action",
+      "snoozeDialogDescription": "L'action reste masquée pour vous jusqu'à cette date, puis réapparaît si des dossiers restent à traiter.",
+      "snoozeUntilLabel": "Reporter jusqu'au",
+      "confirm": "Confirmer",
+      "loadError": "Impossible de charger les actions à faire.",
+      "snoozedSectionTitle": "{count, plural, one {# action mise en attente} other {# actions mises en attente}}",
+      "snoozedUntil": "Jusqu'au {date}",
+      "cancelSnooze": "Annuler la mise en attente",
+      "actionLabels": {
+        "voirEtRelancer": "Voir et relancer",
+        "examiner": "Examiner",
+        "consulter": "Consulter"
+      },
+      "rows": {
+        "cotisations-en-attente": "{count, plural, one {# cotisation en attente} other {# cotisations en attente}}",
+        "materiel-en-retard": "{count, plural, one {# retour de matériel en retard} other {# retours de matériel en retard}}",
+        "membres-a-valider": "{count, plural, one {# membre à valider} other {# membres à valider}}",
+        "dons-a-encaisser": "{count, plural, one {# don à encaisser} other {# dons à encaisser}}",
+        "rapprochement-bancaire": "{count, plural, one {# opération à rapprocher} other {# opérations à rapprocher}}",
+        "notes-de-frais-a-valider": "{count, plural, one {# note de frais à valider} other {# notes de frais à valider}}",
+        "commandes-a-preparer": "{count, plural, one {# commande à préparer} other {# commandes à préparer}}"
       }
     },
     "stats": {
@@ -1845,13 +1863,13 @@
       "description": "Associez les transactions bancaires importées à vos recettes et dépenses.",
       "statusFilters": {
         "all": "Tous",
-        "unmatched": "Non conciliés",
+        "unmatched": "À rapprocher",
         "matched": "Conciliés",
         "ignored": "Ignorés",
         "duplicate": "Doublons"
       },
       "status": {
-        "unmatched": "Non concilié",
+        "unmatched": "À rapprocher",
         "matched": "Concilié",
         "pending": "En attente",
         "ignored": "Ignoré",
@@ -3199,7 +3217,11 @@
         "cancelOrder": "Annuler",
         "downloadReceipt": "Télécharger le reçu",
         "editPaymentMethod": "Modifier le moyen de paiement",
-        "refundOrder": "Rembourser"
+        "refundOrder": "Rembourser",
+        "markPrepared": "Marquer comme préparée",
+        "cancelPrepared": "Annuler la préparation",
+        "delegatePreparation": "Préparation déléguée à un tiers",
+        "resumePreparation": "Reprendre la préparation"
       },
       "noProduct": "Aucun produit",
       "noOrder": "Aucune commande",
@@ -3214,11 +3236,14 @@
       },
       "othersCount": "{count, plural, one {+# autre} other {+# autres}}",
       "statusFilterAll": "Toutes",
+      "statusFilterToPrepare": "À préparer",
       "salesCountLabel": "Nombre de ventes",
       "revenueTotalLabel": "Revenu total",
       "unitsSold": "{count, plural, one {# vendu} other {# vendus}}",
       "pendingCountLabel": "Commandes en attente",
       "pendingAmountLabel": "Montant en attente",
+      "toPrepareCountLabel": "Commandes à préparer",
+      "toPrepareAmountLabel": "Montant à préparer",
       "cancelledCountLabel": "Commandes annulées",
       "cancelledAmountLabel": "Montant annulé",
       "deleteProduitTitle": "Supprimer le produit",

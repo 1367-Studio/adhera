@@ -834,14 +834,32 @@
       "dragHint": "Tarraing le hatheagrú",
       "resizeHint": "Tarraing an choirnéal chun méid a athrú"
     },
-    "aTraiter": {
-      "title": "Le cóireáil",
-      "empty": "Níl aon rud le déileáil leis faoi láthair",
-      "loadError": "Ní féidir gníomhartha le próiseáil a luchtú.",
-      "items": {
-        "cotisationsEnAttente": "{count, plural, one {# táille ballraíochta ar feitheamh} other {# ranníocaíochtaí ar feitheamh}}",
-        "donsAEncaisser": "{count, plural, one {# bronntanas le hairgeadú} other {# síntiúis le bailiú}}",
-        "materielEnRetard": "{count, plural, one {# torthaí déanacha ábhair} other {# torthaí déanacha ábhair}}"
+    "actionsTodo": {
+      "trigger": "Gníomhartha le déanamh",
+      "badgeHint": "{count, plural, one {# catagóir gnímh atá ar feitheamh} other {# catagóirí gnímh atá ar feitheamh}}",
+      "empty": "Tá gach rud cothrom le dáta, níl aon ghníomh le láimhseáil.",
+      "snooze": "Cuir an gníomh seo ar athló",
+      "snoozeDialogTitle": "Cuir an gníomh seo ar athló",
+      "snoozeDialogDescription": "Fanann an gníomh i bhfolach duit go dtí an dáta sin, agus ansin tagann sé ar ais má tá cásanna fós le próiseáil.",
+      "snoozeUntilLabel": "Curtha ar athló go dtí",
+      "confirm": "Deimhnigh",
+      "loadError": "Ní féidir na gníomhartha atá le déanamh a luchtú.",
+      "snoozedSectionTitle": "{count, plural, one {# gníomh curtha ar fionraí} other {# gníomhartha curtha ar fionraí}}",
+      "snoozedUntil": "Go dtí {date}",
+      "cancelSnooze": "Cealaigh an coinneáil",
+      "actionLabels": {
+        "voirEtRelancer": "Féach agus athsheoladh",
+        "examiner": "Scrúdaitheoir",
+        "consulter": "Téigh i gcomhairle"
+      },
+      "rows": {
+        "cotisations-en-attente": "{count, plural, one {# táille ballraíochta ar feitheamh} other {# ranníocaíochtaí ar feitheamh}}",
+        "materiel-en-retard": "{count, plural, one {# torthaí déanacha ábhair} other {# torthaí déanacha ábhair}}",
+        "membres-a-valider": "{count, plural, one {# ball le bailíochtú} other {# baill le bailíochtú}}",
+        "dons-a-encaisser": "{count, plural, one {# bronntanas le hairgeadú} other {# síntiúis le bailiú}}",
+        "rapprochement-bancaire": "{count, plural, one {# oibríocht atá le comparáid} other {# oibríochtaí le comparáid}}",
+        "notes-de-frais-a-valider": "{count, plural, one {# tuarascáil caiteachais le bailíochtú} other {# tuarascálacha caiteachais le bailíochtú}}",
+        "commandes-a-preparer": "{count, plural, one {# le hullmhú} other {# orduithe le hullmhú}}"
       }
     },
     "stats": {
@@ -1845,13 +1863,13 @@
       "description": "Comhcheangail idirbhearta bainc iompórtáilte le d'ioncam agus do chaiteachais.",
       "statusFilters": {
         "all": "Gach rud",
-        "unmatched": "Neamhréitithe",
+        "unmatched": "Le cur i gcomparáid",
         "matched": "Réiteach",
         "ignored": "Neamhaird Déanta",
         "duplicate": "Dúblaí"
       },
       "status": {
-        "unmatched": "Neamhréitithe",
+        "unmatched": "Le cur i gcomparáid",
         "matched": "Réiteach",
         "pending": "Ar feitheamh",
         "ignored": "Neamhaird Déanta",
@@ -3199,7 +3217,11 @@
         "cancelOrder": "Cuir ar ceal",
         "downloadReceipt": "Íoslódáil an admháil",
         "editPaymentMethod": "Athraigh an modh íocaíochta",
-        "refundOrder": "Aisíoc"
+        "refundOrder": "Aisíoc",
+        "markPrepared": "Marcáil mar ullmhaithe",
+        "cancelPrepared": "Cealaigh an t-ullmhúchán",
+        "delegatePreparation": "Ullmhúchán arna tharmligean chuig tríú páirtí",
+        "resumePreparation": "Ullmhúchán CV"
       },
       "noProduct": "Gan aon táirgí",
       "noOrder": "Gan aon orduithe",
@@ -3214,11 +3236,14 @@
       },
       "othersCount": "{count, plural, one {+# eile} other {+# daoine eile}}",
       "statusFilterAll": "Gach rud",
+      "statusFilterToPrepare": "Chun ullmhú",
       "salesCountLabel": "Líon díolachán",
       "revenueTotalLabel": "Ioncam iomlán",
       "unitsSold": "{count, plural, one {# díolta} other {# díolta}}",
       "pendingCountLabel": "Orduithe ar feitheamh",
       "pendingAmountLabel": "Méid ar feitheamh",
+      "toPrepareCountLabel": "Orduithe le hullmhú",
+      "toPrepareAmountLabel": "Méid le hullmhú",
       "cancelledCountLabel": "Orduithe cealaithe",
       "cancelledAmountLabel": "Méid cealaithe",
       "deleteProduitTitle": "Bain Táirge",

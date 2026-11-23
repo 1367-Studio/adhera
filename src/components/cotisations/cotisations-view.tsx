@@ -100,9 +100,14 @@ export function CotisationsView() {
   const [page, setPage]                 = useState(1)
   const [searchInput, setSearchInput]   = useState("")
   const [search, setSearch]             = useState("")
-  const [yearFilter, setYearFilter]     = useState<number>(currentYear)
-  // Pré-rempli depuis l'URL : l'accueil renvoie ici avec ?status=… pour ouvrir directement
-  // sur les cotisations à encaisser plutôt que sur la liste entière.
+  // Pré-rempli depuis l'URL : l'accueil renvoie ici avec ?status=…&year=… pour ouvrir
+  // directement sur les cotisations à encaisser plutôt que sur la liste entière — le
+  // dashboard pointe vers l'année la plus ancienne encore impayée (FORM-119), pas
+  // nécessairement l'année en cours, puisqu'une dette d'une année précédente reste due.
+  const [yearFilter, setYearFilter]     = useState<number>(() => {
+    const fromUrl = parseInt(searchParams.get("year") ?? "", 10)
+    return Number.isInteger(fromUrl) ? fromUrl : currentYear
+  })
   const [statusFilter, setStatusFilter] = useState<string>(() => searchParams.get("status") ?? "")
   const [tierFilter, setTierFilter]         = useState("")
   const [renewalFilter, setRenewalFilter]   = useState<RenewalMode | "">("")

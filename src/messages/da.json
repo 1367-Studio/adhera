@@ -834,14 +834,32 @@
       "dragHint": "Træk for at omarrangere",
       "resizeHint": "Træk hjørnet for at ændre størrelsen"
     },
-    "aTraiter": {
-      "title": "At blive behandlet",
-      "empty": "Intet at håndtere lige nu",
-      "loadError": "Kan ikke indlæse handlinger, der skal behandles.",
-      "items": {
-        "cotisationsEnAttente": "{count, plural, one {# udestående medlemsgebyr} other {# ventende bidrag}}",
-        "donsAEncaisser": "{count, plural, one {# gave, der skal indløses} other {# donationer til indsamling}}",
-        "materielEnRetard": "{count, plural, one {# sene materialeafkast} other {# sene materialeafkast}}"
+    "actionsTodo": {
+      "trigger": "Handlinger, der skal tages",
+      "badgeHint": "{count, plural, one {# kategori for ventende handling} other {# kategorier af ventende handlinger}}",
+      "empty": "Alt er opdateret, ingen handling at håndtere.",
+      "snooze": "Udsæt denne handling",
+      "snoozeDialogTitle": "Udsæt denne handling",
+      "snoozeDialogDescription": "Handlingen forbliver skjult for dig indtil den dato, og dukker så op igen, hvis der stadig er sager, der skal behandles.",
+      "snoozeUntilLabel": "Udsat til",
+      "confirm": "Bekræft",
+      "loadError": "Kan ikke indlæse de handlinger, der skal udføres.",
+      "snoozedSectionTitle": "{count, plural, one {# handling sat på pause} other {# handlinger sat på pause}}",
+      "snoozedUntil": "Indtil {date}",
+      "cancelSnooze": "Opskær holdet",
+      "actionLabels": {
+        "voirEtRelancer": "Se og genlancering",
+        "examiner": "Examinator",
+        "consulter": "Konsultér"
+      },
+      "rows": {
+        "cotisations-en-attente": "{count, plural, one {# udestående medlemsgebyr} other {# ventende bidrag}}",
+        "materiel-en-retard": "{count, plural, one {# sene materialeafkast} other {# sene materialeafkast}}",
+        "membres-a-valider": "{count, plural, one {# medlem til at validere} other {# medlemmer, der skal valideres}}",
+        "dons-a-encaisser": "{count, plural, one {# gave, der skal indløses} other {# donationer til indsamling}}",
+        "rapprochement-bancaire": "{count, plural, one {# operation, der skal sammenlignes} other {# operationer at sammenligne}}",
+        "notes-de-frais-a-valider": "{count, plural, one {# udgiftsrapport, der skal valideres} other {# udgiftsrapporter, der skal valideres}}",
+        "commandes-a-preparer": "{count, plural, one {# for at forberede} other {# ordrer til forberedelse}}"
       }
     },
     "stats": {
@@ -1845,13 +1863,13 @@
       "description": "Sammensæt importerede banktransaktioner med dine indtægter og udgifter.",
       "statusFilters": {
         "all": "Alle",
-        "unmatched": "Uforsonet",
+        "unmatched": "At sammenligne",
         "matched": "Forligt",
         "ignored": "Ignoreret",
         "duplicate": "Dubletter"
       },
       "status": {
-        "unmatched": "Uforsonet",
+        "unmatched": "At sammenligne",
         "matched": "Forligt",
         "pending": "Afventer",
         "ignored": "Ignoreret",
@@ -3199,7 +3217,11 @@
         "cancelOrder": "Annuller",
         "downloadReceipt": "Download kvitteringen",
         "editPaymentMethod": "Skift betalingsmetode",
-        "refundOrder": "Tilbagebetaling"
+        "refundOrder": "Tilbagebetaling",
+        "markPrepared": "Markér som forberedt",
+        "cancelPrepared": "Aflys forberedelsen",
+        "delegatePreparation": "Forberedelse delegeret til en tredjepart",
+        "resumePreparation": "Forberedelse af CV"
       },
       "noProduct": "Ingen produkter",
       "noOrder": "Ingen ordrer",
@@ -3214,11 +3236,14 @@
       },
       "othersCount": "{count, plural, one {+# andet} other {+# andre}}",
       "statusFilterAll": "Alle",
+      "statusFilterToPrepare": "At forberede",
       "salesCountLabel": "Antal salg",
       "revenueTotalLabel": "Samlet omsætning",
       "unitsSold": "{count, plural, one {# solgt} other {# solgt}}",
       "pendingCountLabel": "Afventende ordrer",
       "pendingAmountLabel": "Afventende beløb",
+      "toPrepareCountLabel": "Ordrer til forberedelse",
+      "toPrepareAmountLabel": "Beløb, der skal forberedes",
       "cancelledCountLabel": "Annullerede ordrer",
       "cancelledAmountLabel": "Annulleret beløb",
       "deleteProduitTitle": "Fjern produktet",
