@@ -121,6 +121,9 @@
         "passwordLabel": "Lösenord",
         "passwordPlaceholder": "Min. 8 tecken",
         "passwordGoogleHint": "För detta första kontoskapande, välj ett lösenord. Du kan sedan logga in med Google.",
+        "legalDocsAcceptPrefix": "Jag har läst allt",
+        "legalDocsLinkLabel": "Juridiska dokument från Formwise",
+        "legalDocsAcceptSuffix": "och jag accepterar användarvillkoren för tjänsten.",
         "continueToPayment": "Fortsätt att checka ut",
         "perkTrialDays": "{days} Lediga dagar",
         "perkNoCommitment": "Ingen förpliktelse",
@@ -129,10 +132,7 @@
         "startTrial": "Starta min gratis provperiod",
         "createAccount": "Skapa konto",
         "perkNoCard": "Inget kreditkort krävs",
-        "createAccountError": "Felskapande konto",
-        "legalDocsAcceptPrefix": "Jag har läst allt",
-        "legalDocsLinkLabel": "Juridiska dokument från Formwise",
-        "legalDocsAcceptSuffix": "och jag accepterar användarvillkoren för tjänsten."
+        "createAccountError": "Felskapande konto"
       },
       "payment": {
         "paymentError": "Betalningsfel",
@@ -664,6 +664,120 @@
       "markPaidNotice": "Att markera detta dokument som betalt skapar automatiskt en motsvarande utgift i Ekonomiavdelningen."
     }
   },
+  "reimbursements": {
+    "view": {
+      "title": "Kostnadsersättningar",
+      "newRequest": "Ny förfrågan",
+      "export": "Export",
+      "myRequests": "Mina önskemål",
+      "allRequests": "Alla förfrågningar",
+      "allRequesters": "Alla sökande",
+      "allCategories": "Alla kategorier",
+      "dateFrom": "Av",
+      "dateTo": "Till",
+      "allStatuses": "Alla statusar",
+      "summary": "{pending} Väntar — {pendingAmount} · {approved} att återbetalas — {approvedAmount} · {reimbursed} Återbetald — {reimbursedAmount}",
+      "noRequest": "Inga återbetalningsbegäranden",
+      "columns": {
+        "subject": "Syfte",
+        "date": "Datum",
+        "amount": "Belopp",
+        "status": "Status"
+      },
+      "status": {
+        "draft": "Draft",
+        "pendingApproval": "Väntar på godkännande",
+        "needsCorrection": "Att rätta till",
+        "approved": "Godkänt",
+        "rejected": "Avvisade",
+        "reimbursed": "Återbetalt",
+        "cancelled": "Inställd"
+      },
+      "actions": {
+        "view": "Se",
+        "submit": "Skicka in",
+        "cancel": "Avsluta"
+      },
+      "toasts": {
+        "created": "Begäran skapad",
+        "updated": "Uppdateringsförfrågan",
+        "deleted": "Begäran borttagen",
+        "submitted": "Ansökan som lämnas in för godkännande",
+        "cancelled": "Begäran annullerad",
+        "approved": "Ansökan godkänd",
+        "correctionRequested": "Korrigering begärd",
+        "rejected": "Begäran avslåss",
+        "reimbursed": "Registrerad återbetalning"
+      },
+      "deleteConfirmTitle": "Radera detta utkast?",
+      "deleteConfirmDescription": "Denna handling är oåterkallelig.",
+      "cancelConfirmTitle": "Avbryt denna begäran?",
+      "cancelConfirmDescription": "Sökanden kommer att underrättas om uppsägningen.",
+      "cancelReasonLabel": "Anledning till avbokning"
+    },
+    "form": {
+      "subject": "Syfte",
+      "subjectPlaceholder": "Exempelvis regionala mötesresor",
+      "comment": "Kommentar",
+      "commentPlaceholder": "Valfria detaljer",
+      "event": "Relaterat evenemang",
+      "project": "Associerat projekt",
+      "noProject": "Inget projekt",
+      "noEvent": "Inga evenemang",
+      "items": "Utgifter",
+      "addItem": "Lägg till en kostnad",
+      "noItems": "Inga extra avgifter",
+      "itemDate": "Utgiftsdatum",
+      "itemDescription": "Beskrivning",
+      "itemAmount": "Belopp",
+      "itemCategory": "Kategori",
+      "itemReceipt": "Motivering",
+      "total": "Totalt",
+      "duplicateWarning": "En liknande kostnad (samma datum, samma belopp) finns redan i en annan av dina förfrågningar.",
+      "toasts": {
+        "uploadError": "Fel vid sändning av kvittot",
+        "networkError": "Nätverksfel vid skickande av kvittot"
+      }
+    },
+    "detail": {
+      "notFound": "Återbetalningsbegäran hittades inte",
+      "history": "Historia",
+      "correctionFrom": "Korrigering begärd av {name}",
+      "rejectedBy": "Vägrat av {name}",
+      "reimbursedOn": "Återbetald den {date} av {method}",
+      "selfApprovalBlockedNotice": "Du kan inte godkänna din egen begäran. Den måste godkännas av en administratör eller annan auktoriserad tjänsteman.",
+      "viewReceipt": "Se de stödjande dokumenten",
+      "immobilisationTag": "Anläggningstillgångar",
+      "approveButton": "Godkänn",
+      "requestCorrectionButton": "Begär en korrigering",
+      "rejectButton": "Vägra",
+      "correctionCommentLabel": "Korrigeringskommentar",
+      "rejectionReasonLabel": "Skäl till avslag",
+      "deleteItemConfirmTitle": "Eliminera denna utgift?",
+      "toasts": {
+        "itemAdded": "Extra kostnad",
+        "itemUpdated": "Uppdaterad kostnad",
+        "itemDeleted": "Kostnad borttagen"
+      }
+    },
+    "register": {
+      "title": "Spara återbetalningen",
+      "registerButton": "Spara återbetalningen",
+      "date": "Återbetalningsdatum",
+      "paymentMethod": "Betalningsmetod",
+      "bankAccount": "Bankkonto",
+      "noBankAccountHint": "Inget bankkonto upprättat — lägg till ett i Ekonomi> Konton eller välj Kontanter.",
+      "transaction": "Stäm av en importerad banktransaktion (valfritt)",
+      "noTransaction": "Ta inte närmare nu",
+      "reference": "Referens",
+      "submit": "Spara",
+      "methods": {
+        "virement": "Överföring",
+        "cheque": "Check",
+        "especes": "Arter"
+      }
+    }
+  },
   "dashboard": {
     "pageTitle": "Dashboard",
     "subtitle": "Översikt över din förening",
@@ -676,14 +790,7 @@
       "resizeHint": "Dra hörnet för att ändra storlek"
     },
     "aTraiter": {
-      "title": "Att behandlas",
-      "empty": "Inget att ta itu med just nu",
-      "loadError": "Kan inte ladda åtgärder som ska bearvas.",
-      "items": {
-        "cotisationsEnAttente": "{count, plural, one {# utestående medlemsavgift} other {# utestående bidrag}}",
-        "donsAEncaisser": "{count, plural, one {# gåva att lösa in} other {# donationer att samla in}}",
-        "materielEnRetard": "{count, plural, one {# sena materialavkastningar} other {# sena materialavkastningar}}"
-      }
+      "items": {}
     },
     "stats": {
       "financialBalance": "Finansiell balans",
@@ -755,6 +862,34 @@
       "nearLimit": "Gränsen närmar sig",
       "almostReached": "Gränsen nästan nådd",
       "limitReached": "Gränsen nådd"
+    },
+    "actionsTodo": {
+      "trigger": "Åtgärder att vidta",
+      "badgeHint": "{count, plural, one {# kategori för pågående åtgärder} other {# kategorier av pågående åtgärder}}",
+      "empty": "Allt är uppdaterat, ingen åtgärd att hantera.",
+      "snooze": "Skjut upp denna åtgärd",
+      "snoozeDialogTitle": "Skjut upp denna åtgärd",
+      "snoozeDialogDescription": "Åtgärden förblir dold för dig fram till det datumet, och dyker sedan upp igen om det fortfarande finns ärenden att bearbeta.",
+      "snoozeUntilLabel": "Uppskjuten till",
+      "confirm": "Bekräfta",
+      "loadError": "Kan inte ladda de åtgärder som ska göras.",
+      "snoozedSectionTitle": "{count, plural, one {# åtgärd satt på is} other {# åtgärder som satts på is}}",
+      "snoozedUntil": "Tills {date}",
+      "cancelSnooze": "Avbryt spärren",
+      "actionLabels": {
+        "voirEtRelancer": "Se och återlansera",
+        "examiner": "Examinator",
+        "consulter": "Konsultera"
+      },
+      "rows": {
+        "cotisations-en-attente": "{count, plural, one {# utestående medlemsavgift} other {# utestående bidrag}}",
+        "materiel-en-retard": "{count, plural, one {# sena materialavkastningar} other {# sena materialavkastningar}}",
+        "membres-a-valider": "{count, plural, one {# medlem validera} other {# medlemmar som ska valideras}}",
+        "dons-a-encaisser": "{count, plural, one {# gåva att lösa in} other {# donationer att samla in}}",
+        "rapprochement-bancaire": "{count, plural, one {# operation som ska jämföras} other {# operationer att jämföra}}",
+        "notes-de-frais-a-valider": "{count, plural, one {# utgiftsrapport som ska valideras} other {# utgiftsrapporter som ska valideras}}",
+        "commandes-a-preparer": "{count, plural, one {# beställning att förbereda} other {# order att förbereda}}"
+      }
     }
   },
   "notifications": {
@@ -1291,8 +1426,8 @@
       "toasts": {}
     },
     "transfersView": {
-      "columns": {},
-      "description": "Registrera här de överföringar som redan gjorts mellan din förenings bankkonton. Formwise registrerar överföringen utan att flytta några pengar."
+      "description": "Registrera här de överföringar som redan gjorts mellan din förenings bankkonton. Formwise registrerar överföringen utan att flytta några pengar.",
+      "columns": {}
     },
     "categoriesView": {
       "title": "Kategorier",
@@ -1500,13 +1635,13 @@
       "description": "Koppla importerade banktransaktioner till dina inkomster och utgifter.",
       "statusFilters": {
         "all": "Alla",
-        "unmatched": "Oförsonade",
+        "unmatched": "Att jämföras",
         "matched": "Förlikat",
         "ignored": "Ignoreras",
         "duplicate": "Dubbletter"
       },
       "status": {
-        "unmatched": "Oförsonade",
+        "unmatched": "Att jämföras",
         "matched": "Förlikat",
         "pending": "Väntar",
         "ignored": "Ignoreras",
@@ -2807,7 +2942,11 @@
         "markPaid": "Mark Betalade",
         "cancelOrder": "Avbryt",
         "downloadReceipt": "Ladda ner kvittot",
-        "editPaymentMethod": "Byt betalningsmetod"
+        "editPaymentMethod": "Byt betalningsmetod",
+        "markPrepared": "Markera som förberedd",
+        "cancelPrepared": "Avboka förberedelserna",
+        "delegatePreparation": "Förberedelse delegerad till en tredje part",
+        "resumePreparation": "CV-förberedelse"
       },
       "noProduct": "Inga produkter",
       "noOrder": "Inga order",
@@ -2839,7 +2978,10 @@
         "productDeleted": "Utgången produkt",
         "deleteError": "Felborttagning",
         "orderUpdated": "Uppdaterad ordning"
-      }
+      },
+      "statusFilterToPrepare": "För att förbereda",
+      "toPrepareCountLabel": "Order att förbereda",
+      "toPrepareAmountLabel": "Beloppet att förbereda"
     },
     "payModal": {
       "title": "Kontantanvisning",
@@ -4047,17 +4189,17 @@
       "websitePlaceholder": "mon-association.fr",
       "iban": "IBAN",
       "bic": "BIC",
+      "accountingRegime": "Redovisningssystem för kostnadsersättningar",
+      "accountingRegimeHint": "Bestämmer när en återbetalningsbegäran registreras: vid godkännande (åtagande) eller vid faktisk betalning (kontant).",
+      "accountingRegimeCash": "Kassaredovisning",
+      "accountingRegimeAccrual": "Åtaganderedovisning",
       "previewTitle": "Dokumentförhandsgranskning",
       "bankDetails": "Bankuppgifter",
       "ibanColon": "IBAN: {value}",
       "bicColon": "BIC: {value}",
       "toasts": {
         "updated": "Uppdaterad kontaktinformation"
-      },
-      "accountingRegime": "Redovisningssystem för kostnadsersättningar",
-      "accountingRegimeHint": "Bestämmer när en återbetalningsbegäran registreras: vid godkännande (åtagande) eller vid faktisk betalning (kontant).",
-      "accountingRegimeCash": "Kassaredovisning",
-      "accountingRegimeAccrual": "Åtaganderedovisning"
+      }
     },
     "membreTypes": {
       "name": "Namn",
@@ -4613,6 +4755,12 @@
       },
       "invalidFormToast": "Det gick inte att spara. Kontakta supporten om problemet kvarstår.",
       "customFieldsLoading": "Läser in svar från anslutningsformuläret…"
+    },
+    "fichePdf": {
+      "title": "MEDLEMSPROFIL",
+      "subtitle": "Formulär som ska fyllas i av den nya medlemmen",
+      "signature": "Signatur",
+      "date": "Datum"
     },
     "actions": {
       "add": "Lägg till en medlem",
@@ -5386,12 +5534,6 @@
         "genericError": "Fel"
       },
       "importedNote": "Importerad från AssoConnect — {collecte}"
-    },
-    "fichePdf": {
-      "title": "MEDLEMSPROFIL",
-      "subtitle": "Formulär som ska fyllas i av den nya medlemmen",
-      "signature": "Signatur",
-      "date": "Datum"
     }
   },
   "memberCard": {
@@ -6061,6 +6203,7 @@
       "finances": "Finansiell övervakning",
       "devis": "Offerter",
       "factures": "Fakturor",
+      "reimbursements": "Kostnadsersättningar",
       "fournisseurs": "Leverantörer",
       "dons": "Donationer",
       "reunions": "Möten",
@@ -6078,8 +6221,7 @@
         "communication": "Kommunikation",
         "finances": "Finans",
         "outils": "Verktyg"
-      },
-      "reimbursements": "Kostnadsersättningar"
+      }
     },
     "backofficeSidebar": {
       "backoffice": "Backoffice",
@@ -6324,120 +6466,6 @@
     },
     "backoffice": {
       "columns": {}
-    }
-  },
-  "reimbursements": {
-    "view": {
-      "title": "Kostnadsersättningar",
-      "newRequest": "Ny förfrågan",
-      "export": "Export",
-      "myRequests": "Mina önskemål",
-      "allRequests": "Alla förfrågningar",
-      "allRequesters": "Alla sökande",
-      "allCategories": "Alla kategorier",
-      "dateFrom": "Av",
-      "dateTo": "Till",
-      "allStatuses": "Alla statusar",
-      "summary": "{pending} Väntar — {pendingAmount} · {approved} att återbetalas — {approvedAmount} · {reimbursed} Återbetald — {reimbursedAmount}",
-      "noRequest": "Inga återbetalningsbegäranden",
-      "columns": {
-        "subject": "Syfte",
-        "date": "Datum",
-        "amount": "Belopp",
-        "status": "Status"
-      },
-      "status": {
-        "draft": "Draft",
-        "pendingApproval": "Väntar på godkännande",
-        "needsCorrection": "Att rätta till",
-        "approved": "Godkänt",
-        "rejected": "Avvisade",
-        "reimbursed": "Återbetalt",
-        "cancelled": "Inställd"
-      },
-      "actions": {
-        "view": "Se",
-        "submit": "Skicka in",
-        "cancel": "Avsluta"
-      },
-      "toasts": {
-        "created": "Begäran skapad",
-        "updated": "Uppdateringsförfrågan",
-        "deleted": "Begäran borttagen",
-        "submitted": "Ansökan som lämnas in för godkännande",
-        "cancelled": "Begäran annullerad",
-        "approved": "Ansökan godkänd",
-        "correctionRequested": "Korrigering begärd",
-        "rejected": "Begäran avslåss",
-        "reimbursed": "Registrerad återbetalning"
-      },
-      "deleteConfirmTitle": "Radera detta utkast?",
-      "deleteConfirmDescription": "Denna handling är oåterkallelig.",
-      "cancelConfirmTitle": "Avbryt denna begäran?",
-      "cancelConfirmDescription": "Sökanden kommer att underrättas om uppsägningen.",
-      "cancelReasonLabel": "Anledning till avbokning"
-    },
-    "form": {
-      "subject": "Syfte",
-      "subjectPlaceholder": "Exempelvis regionala mötesresor",
-      "comment": "Kommentar",
-      "commentPlaceholder": "Valfria detaljer",
-      "event": "Relaterat evenemang",
-      "project": "Associerat projekt",
-      "noProject": "Inget projekt",
-      "noEvent": "Inga evenemang",
-      "items": "Utgifter",
-      "addItem": "Lägg till en kostnad",
-      "noItems": "Inga extra avgifter",
-      "itemDate": "Utgiftsdatum",
-      "itemDescription": "Beskrivning",
-      "itemAmount": "Belopp",
-      "itemCategory": "Kategori",
-      "itemReceipt": "Motivering",
-      "total": "Totalt",
-      "duplicateWarning": "En liknande kostnad (samma datum, samma belopp) finns redan i en annan av dina förfrågningar.",
-      "toasts": {
-        "uploadError": "Fel vid sändning av kvittot",
-        "networkError": "Nätverksfel vid skickande av kvittot"
-      }
-    },
-    "detail": {
-      "notFound": "Återbetalningsbegäran hittades inte",
-      "history": "Historia",
-      "correctionFrom": "Korrigering begärd av {name}",
-      "rejectedBy": "Vägrat av {name}",
-      "reimbursedOn": "Återbetald den {date} av {method}",
-      "selfApprovalBlockedNotice": "Du kan inte godkänna din egen begäran. Den måste godkännas av en administratör eller annan auktoriserad tjänsteman.",
-      "viewReceipt": "Se de stödjande dokumenten",
-      "immobilisationTag": "Anläggningstillgångar",
-      "approveButton": "Godkänn",
-      "requestCorrectionButton": "Begär en korrigering",
-      "rejectButton": "Vägra",
-      "correctionCommentLabel": "Korrigeringskommentar",
-      "rejectionReasonLabel": "Skäl till avslag",
-      "deleteItemConfirmTitle": "Eliminera denna utgift?",
-      "toasts": {
-        "itemAdded": "Extra kostnad",
-        "itemUpdated": "Uppdaterad kostnad",
-        "itemDeleted": "Kostnad borttagen"
-      }
-    },
-    "register": {
-      "title": "Spara återbetalningen",
-      "registerButton": "Spara återbetalningen",
-      "date": "Återbetalningsdatum",
-      "paymentMethod": "Betalningsmetod",
-      "bankAccount": "Bankkonto",
-      "noBankAccountHint": "Inget bankkonto upprättat — lägg till ett i Ekonomi> Konton eller välj Kontanter.",
-      "transaction": "Stäm av en importerad banktransaktion (valfritt)",
-      "noTransaction": "Ta inte närmare nu",
-      "reference": "Referens",
-      "submit": "Spara",
-      "methods": {
-        "virement": "Överföring",
-        "cheque": "Check",
-        "especes": "Arter"
-      }
     }
   }
 }

@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { useSearchParams } from "next/navigation"
 import { toast } from "sonner"
 import { useTranslations } from "next-intl"
 import { format } from "date-fns"
@@ -22,6 +23,7 @@ import type { IncomeInput, ExpenseInput } from "@/lib/schemas"
 import { useCreateIncome } from "@/hooks/use-incomes"
 import { useCreateExpense } from "@/hooks/use-expenses"
 import { useHasAccess } from "@/lib/user-context"
+import { useActionsTodoHighlight } from "@/hooks/use-actions-todo-highlight"
 
 type BankTx = {
   id:              string
@@ -66,8 +68,11 @@ export function ReconciliationView() {
   const t = useTranslations()
   // FORM-34: a Comptabilité reader browses the bank lines but cannot match, ignore or create from them.
   const canEditComptabilite = useHasAccess("comptabilite", "edit")
+  const searchParams = useSearchParams()
   const [page, setPage]               = useState(1)
-  const [statusFilter, setStatusFilter] = useState("UNMATCHED")
+  // Deep-link from the dashboard's "Rapprochement bancaire" action (FORM-119): pre-fill
+  // from ?status=, same pattern as membres-view.tsx's statusFilter.
+  const [statusFilter, setStatusFilter] = useState(() => searchParams.get("status") ?? "UNMATCHED")
   const [accountFilter, setAccountFilter] = useState("")
   const [matchModal, setMatchModal]   = useState<BankTx | null>(null)
   const [incomeModal, setIncomeModal] = useState<BankTx | null>(null)
@@ -82,6 +87,8 @@ export function ReconciliationView() {
 
   const { data: result, isLoading } = useBankTransactions(page, PAGE_SIZE, filters)
   const transactions = (result?.data ?? []) as BankTx[]
+
+  useActionsTodoHighlight(!isLoading)
 
   const reconcileMutation     = useReconcile()
   const reactivateMutation    = useReactivateTransaction()

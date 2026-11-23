@@ -121,6 +121,9 @@
         "passwordLabel": "Password",
         "passwordPlaceholder": "Min. 8 caratteri",
         "passwordGoogleHint": "Per questa prima creazione di account, scegli una password. Puoi poi accedere con Google.",
+        "legalDocsAcceptPrefix": "Ho letto tutto il",
+        "legalDocsLinkLabel": "Documenti legali di Formwise",
+        "legalDocsAcceptSuffix": "e accetto i termini di utilizzo del servizio.",
         "continueToPayment": "Continua a pagare",
         "perkTrialDays": "{days} Giornate libere",
         "perkNoCommitment": "Nessun obbligo",
@@ -129,10 +132,7 @@
         "startTrial": "Inizia la mia prova gratuita",
         "createAccount": "Crea account",
         "perkNoCard": "Nessuna carta di credito richiesta",
-        "createAccountError": "Errore nella creazione dell'account",
-        "legalDocsAcceptPrefix": "Ho letto tutto il",
-        "legalDocsLinkLabel": "Documenti legali di Formwise",
-        "legalDocsAcceptSuffix": "e accetto i termini di utilizzo del servizio."
+        "createAccountError": "Errore nella creazione dell'account"
       },
       "payment": {
         "paymentError": "Errore di pagamento",
@@ -664,6 +664,120 @@
       "markPaidNotice": "Contrassegnare questo documento come pagato creerà automaticamente una spesa corrispondente nelle Finanziarie."
     }
   },
+  "reimbursements": {
+    "view": {
+      "title": "Rimborsi delle spese",
+      "newRequest": "Nuova richiesta",
+      "export": "Esportazione",
+      "myRequests": "Le mie richieste",
+      "allRequests": "Tutte le richieste",
+      "allRequesters": "Tutti i candidati",
+      "allCategories": "Tutte le categorie",
+      "dateFrom": "Di",
+      "dateTo": "A",
+      "allStatuses": "Tutti gli stati",
+      "summary": "{pending} In attesa — {pendingAmount} · {approved} da rimborsare — {approvedAmount} · {reimbursed} rimborsato — {reimbursedAmount}",
+      "noRequest": "Nessuna richiesta di rimborso",
+      "columns": {
+        "subject": "Scopo",
+        "date": "Data",
+        "amount": "Importo",
+        "status": "Stato"
+      },
+      "status": {
+        "draft": "Bozza",
+        "pendingApproval": "In attesa di approvazione",
+        "needsCorrection": "Da correggere",
+        "approved": "Approvato",
+        "rejected": "Rifiutato",
+        "reimbursed": "Rimborsato",
+        "cancelled": "Cancellato"
+      },
+      "actions": {
+        "view": "Vedi",
+        "submit": "Invia",
+        "cancel": "Annulla"
+      },
+      "toasts": {
+        "created": "Richiesta creata",
+        "updated": "Richiesta di aggiornamento",
+        "deleted": "Richiesta eliminata",
+        "submitted": "Domanda presentata per l''approvazione",
+        "cancelled": "Richiesta annullata",
+        "approved": "Domanda approvata",
+        "correctionRequested": "Richiesto correzione",
+        "rejected": "Richiesta respinta",
+        "reimbursed": "Rimborso registrato"
+      },
+      "deleteConfirmTitle": "Cancellare questa bozza?",
+      "deleteConfirmDescription": "Questa azione è irreversibile.",
+      "cancelConfirmTitle": "Annullare questa richiesta?",
+      "cancelConfirmDescription": "Il richiedente sarà informato della cancellazione.",
+      "cancelReasonLabel": "Motivo della cancellazione"
+    },
+    "form": {
+      "subject": "Scopo",
+      "subjectPlaceholder": "Es. Viaggi per riunioni regionali",
+      "comment": "Commento",
+      "commentPlaceholder": "Dettagli opzionali",
+      "event": "Evento correlato",
+      "project": "Progetto associato",
+      "noProject": "Nessun progetto",
+      "noEvent": "Nessun evento",
+      "items": "Spese",
+      "addItem": "Aggiungi una spesa",
+      "noItems": "Nessuna tariffa aggiuntiva",
+      "itemDate": "Data della spesa",
+      "itemDescription": "Descrizione",
+      "itemAmount": "Importo",
+      "itemCategory": "Categoria",
+      "itemReceipt": "Giustificazione",
+      "total": "Totale",
+      "duplicateWarning": "Una spesa simile (stessa data, stesso importo) esiste già in un''altra delle tue richieste.",
+      "toasts": {
+        "uploadError": "Errore durante l''invio della ricevuta",
+        "networkError": "Errore di rete durante l''invio della ricevuta"
+      }
+    },
+    "detail": {
+      "notFound": "Richiesta di rimborso non trovata",
+      "history": "Storia",
+      "correctionFrom": "Correzione richiesta da {name}",
+      "rejectedBy": "Rifiutato da {name}",
+      "reimbursedOn": "Rimborsato il {date} di {method}",
+      "selfApprovalBlockedNotice": "Non puoi approvare la tua richiesta. Deve essere approvata da un amministratore o da un altro funzionario autorizzato.",
+      "viewReceipt": "Vedi i documenti di supporto",
+      "immobilisationTag": "Immobilizzazioni",
+      "approveButton": "Approva",
+      "requestCorrectionButton": "Richiedi una correzione",
+      "rejectButton": "Rifiuta",
+      "correctionCommentLabel": "Commento di correzione",
+      "rejectionReasonLabel": "Motivo del rifiuto",
+      "deleteItemConfirmTitle": "Eliminare questa spesa?",
+      "toasts": {
+        "itemAdded": "Costo aggiuntivo",
+        "itemUpdated": "Spesa aggiornata",
+        "itemDeleted": "Spesa rimossa"
+      }
+    },
+    "register": {
+      "title": "Salva il rimborso",
+      "registerButton": "Salva il rimborso",
+      "date": "Data del rimborso",
+      "paymentMethod": "Metodo di pagamento",
+      "bankAccount": "Conto bancario",
+      "noBankAccountHint": "Nessun conto bancario aperto — aggiungine uno in Finanza> Conti oppure scegli Contanti.",
+      "transaction": "Riconcilia una transazione bancaria importata (opzionale)",
+      "noTransaction": "Non avvicinarti ora",
+      "reference": "Riferimento",
+      "submit": "Salva",
+      "methods": {
+        "virement": "Trasferimento",
+        "cheque": "Verifica",
+        "especes": "Specie"
+      }
+    }
+  },
   "dashboard": {
     "pageTitle": "Cruscotto",
     "subtitle": "Panoramica della tua associazione",
@@ -676,14 +790,7 @@
       "resizeHint": "Trascina l'angolo per ridimensionarlo"
     },
     "aTraiter": {
-      "title": "Da curare",
-      "empty": "Niente di cui occuparsi al momento",
-      "loadError": "Impossibile caricare le azioni da elaborare.",
-      "items": {
-        "cotisationsEnAttente": "{count, plural, one {# tariffa associativa pendente} other {# contributi pendenti}}",
-        "donsAEncaisser": "{count, plural, one {# regalo da incassare} other {# donazioni da raccogliere}}",
-        "materielEnRetard": "{count, plural, one {# riporti tardi di materiale} other {# riporti tardi di materiale}}"
-      }
+      "items": {}
     },
     "stats": {
       "financialBalance": "Saldo finanziario",
@@ -755,6 +862,34 @@
       "nearLimit": "Limite quasi raggiunto",
       "almostReached": "Limite quasi esaurito",
       "limitReached": "Limite raggiunto"
+    },
+    "actionsTodo": {
+      "trigger": "Azioni da intraprendere",
+      "badgeHint": "{count, plural, one {# categoria di azione pendente} other {# categorie di azioni in attesa}}",
+      "empty": "Tutto è aggiornato, nessuna azione da gestire.",
+      "snooze": "Rinviate questa azione",
+      "snoozeDialogTitle": "Rinviate questa azione",
+      "snoozeDialogDescription": "L''azione rimane nascosta per te fino a quella data, poi riappare se ci sono ancora casi da trattare.",
+      "snoozeUntilLabel": "Posticipato fino a",
+      "confirm": "Conferma",
+      "loadError": "Impossibile caricare le azioni da eseguire.",
+      "snoozedSectionTitle": "{count, plural, one {# azione sospesa} other {# azioni sospese}}",
+      "snoozedUntil": "Fino a quando {date}",
+      "cancelSnooze": "Annulla la blocca",
+      "actionLabels": {
+        "voirEtRelancer": "Vedi e rilancia",
+        "examiner": "Esaminatore",
+        "consulter": "Consulta"
+      },
+      "rows": {
+        "cotisations-en-attente": "{count, plural, one {# tariffa associativa pendente} other {# contributi pendenti}}",
+        "materiel-en-retard": "{count, plural, one {# riporti tardi di materiale} other {# riporti tardi di materiale}}",
+        "membres-a-valider": "{count, plural, one {# membro da validare} other {# membri da convalidare}}",
+        "dons-a-encaisser": "{count, plural, one {# regalo da incassare} other {# donazioni da raccogliere}}",
+        "rapprochement-bancaire": "{count, plural, one {# operazione da confrontare} other {# operazioni da confrontare}}",
+        "notes-de-frais-a-valider": "{count, plural, one {# rapporto spese da validare} other {# i report di spesa da convalidare}}",
+        "commandes-a-preparer": "{count, plural, one {# per preparare} other {# ordini di preparazione}}"
+      }
     }
   },
   "notifications": {
@@ -1291,8 +1426,8 @@
       "toasts": {}
     },
     "transfersView": {
-      "columns": {},
-      "description": "Registra qui i trasferimenti già effettuati tra i conti bancari della tua associazione. Registrare formalmente il trasferimento senza spostare alcun denaro."
+      "description": "Registra qui i trasferimenti già effettuati tra i conti bancari della tua associazione. Registrare formalmente il trasferimento senza spostare alcun denaro.",
+      "columns": {}
     },
     "categoriesView": {
       "title": "Categorie",
@@ -1500,13 +1635,13 @@
       "description": "Associa le transazioni bancarie importate ai tuoi redditi e spese.",
       "statusFilters": {
         "all": "Tutti",
-        "unmatched": "Non riconciliati",
+        "unmatched": "Da confrontare",
         "matched": "Conciliato",
         "ignored": "Ignorato",
         "duplicate": "Duplicati"
       },
       "status": {
-        "unmatched": "Non riconciliati",
+        "unmatched": "Da confrontare",
         "matched": "Conciliato",
         "pending": "In attesa",
         "ignored": "Ignorato",
@@ -2807,7 +2942,11 @@
         "markPaid": "Mark Paid",
         "cancelOrder": "Annulla",
         "downloadReceipt": "Scarica la ricevuta",
-        "editPaymentMethod": "Cambia il metodo di pagamento"
+        "editPaymentMethod": "Cambia il metodo di pagamento",
+        "markPrepared": "Segna come preparato",
+        "cancelPrepared": "Annullare la preparazione",
+        "delegatePreparation": "Preparazione delegata a una terza parte",
+        "resumePreparation": "Preparazione del curriculum"
       },
       "noProduct": "Nessun prodotto",
       "noOrder": "Nessun ordine",
@@ -2839,7 +2978,10 @@
         "productDeleted": "Prodotto dismesso",
         "deleteError": "Eliminazione degli errori",
         "orderUpdated": "Ordine aggiornato"
-      }
+      },
+      "statusFilterToPrepare": "Per prepararsi",
+      "toPrepareCountLabel": "Ordini da preparare",
+      "toPrepareAmountLabel": "Quantità da preparare"
     },
     "payModal": {
       "title": "Vaglia di cassa",
@@ -4047,17 +4189,17 @@
       "websitePlaceholder": "mon-association.fr",
       "iban": "IBAN",
       "bic": "BIC",
+      "accountingRegime": "Regime contabile per i rimborsi delle spese",
+      "accountingRegimeHint": "Determina quando viene inviata una richiesta di rimborso: all''approvazione (impegno) o al pagamento effettivo (in contanti).",
+      "accountingRegimeCash": "Contabilità di cassa",
+      "accountingRegimeAccrual": "Contabilità degli impegni",
       "previewTitle": "Anteprima del documento",
       "bankDetails": "Dati bancari",
       "ibanColon": "IBAN : {value}",
       "bicColon": "BIC : {value}",
       "toasts": {
         "updated": "Informazioni di contatto aggiornate"
-      },
-      "accountingRegime": "Regime contabile per i rimborsi delle spese",
-      "accountingRegimeHint": "Determina quando viene inviata una richiesta di rimborso: all''approvazione (impegno) o al pagamento effettivo (in contanti).",
-      "accountingRegimeCash": "Contabilità di cassa",
-      "accountingRegimeAccrual": "Contabilità degli impegni"
+      }
     },
     "membreTypes": {
       "name": "Nome",
@@ -4613,6 +4755,12 @@
       },
       "invalidFormToast": "Impossibile salvare. Contatta l'assistenza se il problema persiste.",
       "customFieldsLoading": "Caricamento delle risposte al modulo di adesione…"
+    },
+    "fichePdf": {
+      "title": "PROFILO DEL MEMBRO",
+      "subtitle": "Modulo da compilare dal nuovo membro",
+      "signature": "Firma",
+      "date": "Data"
     },
     "actions": {
       "add": "Aggiungi un membro",
@@ -5386,12 +5534,6 @@
         "genericError": "Errore"
       },
       "importedNote": "Importato da AssoConnect — {collecte}"
-    },
-    "fichePdf": {
-      "title": "PROFILO DEL MEMBRO",
-      "subtitle": "Modulo da compilare dal nuovo membro",
-      "signature": "Firma",
-      "date": "Data"
     }
   },
   "memberCard": {
@@ -6127,6 +6269,7 @@
       "finances": "Monitoraggio finanziario",
       "devis": "Preventivi",
       "factures": "Fatture",
+      "reimbursements": "Rimborsi delle spese",
       "fournisseurs": "Fornitori",
       "dons": "Donazioni",
       "reunions": "Incontri",
@@ -6144,8 +6287,7 @@
         "communication": "Comunicazione",
         "finances": "Finanza",
         "outils": "Strumenti"
-      },
-      "reimbursements": "Rimborsi delle spese"
+      }
     },
     "backofficeSidebar": {
       "backoffice": "Backoffice",
@@ -6390,120 +6532,6 @@
     },
     "backoffice": {
       "columns": {}
-    }
-  },
-  "reimbursements": {
-    "view": {
-      "title": "Rimborsi delle spese",
-      "newRequest": "Nuova richiesta",
-      "export": "Esportazione",
-      "myRequests": "Le mie richieste",
-      "allRequests": "Tutte le richieste",
-      "allRequesters": "Tutti i candidati",
-      "allCategories": "Tutte le categorie",
-      "dateFrom": "Di",
-      "dateTo": "A",
-      "allStatuses": "Tutti gli stati",
-      "summary": "{pending} In attesa — {pendingAmount} · {approved} da rimborsare — {approvedAmount} · {reimbursed} rimborsato — {reimbursedAmount}",
-      "noRequest": "Nessuna richiesta di rimborso",
-      "columns": {
-        "subject": "Scopo",
-        "date": "Data",
-        "amount": "Importo",
-        "status": "Stato"
-      },
-      "status": {
-        "draft": "Bozza",
-        "pendingApproval": "In attesa di approvazione",
-        "needsCorrection": "Da correggere",
-        "approved": "Approvato",
-        "rejected": "Rifiutato",
-        "reimbursed": "Rimborsato",
-        "cancelled": "Cancellato"
-      },
-      "actions": {
-        "view": "Vedi",
-        "submit": "Invia",
-        "cancel": "Annulla"
-      },
-      "toasts": {
-        "created": "Richiesta creata",
-        "updated": "Richiesta di aggiornamento",
-        "deleted": "Richiesta eliminata",
-        "submitted": "Domanda presentata per l''approvazione",
-        "cancelled": "Richiesta annullata",
-        "approved": "Domanda approvata",
-        "correctionRequested": "Richiesto correzione",
-        "rejected": "Richiesta respinta",
-        "reimbursed": "Rimborso registrato"
-      },
-      "deleteConfirmTitle": "Cancellare questa bozza?",
-      "deleteConfirmDescription": "Questa azione è irreversibile.",
-      "cancelConfirmTitle": "Annullare questa richiesta?",
-      "cancelConfirmDescription": "Il richiedente sarà informato della cancellazione.",
-      "cancelReasonLabel": "Motivo della cancellazione"
-    },
-    "form": {
-      "subject": "Scopo",
-      "subjectPlaceholder": "Es. Viaggi per riunioni regionali",
-      "comment": "Commento",
-      "commentPlaceholder": "Dettagli opzionali",
-      "event": "Evento correlato",
-      "project": "Progetto associato",
-      "noProject": "Nessun progetto",
-      "noEvent": "Nessun evento",
-      "items": "Spese",
-      "addItem": "Aggiungi una spesa",
-      "noItems": "Nessuna tariffa aggiuntiva",
-      "itemDate": "Data della spesa",
-      "itemDescription": "Descrizione",
-      "itemAmount": "Importo",
-      "itemCategory": "Categoria",
-      "itemReceipt": "Giustificazione",
-      "total": "Totale",
-      "duplicateWarning": "Una spesa simile (stessa data, stesso importo) esiste già in un''altra delle tue richieste.",
-      "toasts": {
-        "uploadError": "Errore durante l''invio della ricevuta",
-        "networkError": "Errore di rete durante l''invio della ricevuta"
-      }
-    },
-    "detail": {
-      "notFound": "Richiesta di rimborso non trovata",
-      "history": "Storia",
-      "correctionFrom": "Correzione richiesta da {name}",
-      "rejectedBy": "Rifiutato da {name}",
-      "reimbursedOn": "Rimborsato il {date} di {method}",
-      "selfApprovalBlockedNotice": "Non puoi approvare la tua richiesta. Deve essere approvata da un amministratore o da un altro funzionario autorizzato.",
-      "viewReceipt": "Vedi i documenti di supporto",
-      "immobilisationTag": "Immobilizzazioni",
-      "approveButton": "Approva",
-      "requestCorrectionButton": "Richiedi una correzione",
-      "rejectButton": "Rifiuta",
-      "correctionCommentLabel": "Commento di correzione",
-      "rejectionReasonLabel": "Motivo del rifiuto",
-      "deleteItemConfirmTitle": "Eliminare questa spesa?",
-      "toasts": {
-        "itemAdded": "Costo aggiuntivo",
-        "itemUpdated": "Spesa aggiornata",
-        "itemDeleted": "Spesa rimossa"
-      }
-    },
-    "register": {
-      "title": "Salva il rimborso",
-      "registerButton": "Salva il rimborso",
-      "date": "Data del rimborso",
-      "paymentMethod": "Metodo di pagamento",
-      "bankAccount": "Conto bancario",
-      "noBankAccountHint": "Nessun conto bancario aperto — aggiungine uno in Finanza> Conti oppure scegli Contanti.",
-      "transaction": "Riconcilia una transazione bancaria importata (opzionale)",
-      "noTransaction": "Non avvicinarti ora",
-      "reference": "Riferimento",
-      "submit": "Salva",
-      "methods": {
-        "virement": "Trasferimento",
-        "cheque": "Verifica",
-        "especes": "Specie"
-      }
     }
   }
 }

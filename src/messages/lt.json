@@ -121,6 +121,9 @@
         "passwordLabel": "Slaptažodis",
         "passwordPlaceholder": "Min. 8 veikėjai",
         "passwordGoogleHint": "Pirmajam paskyros kūrimui pasirinkite slaptažodį. Tuomet galite prisijungti per Google.",
+        "legalDocsAcceptPrefix": "Aš perskaičiau visus",
+        "legalDocsLinkLabel": "Formwise teisiniai dokumentai",
+        "legalDocsAcceptSuffix": "ir sutinku su paslaugos naudojimo sąlygomis.",
         "continueToPayment": "Tęsti atsiskaitymą",
         "perkTrialDays": "{days} Laisvos dienos",
         "perkNoCommitment": "Jokių įsipareigojimų",
@@ -129,10 +132,7 @@
         "startTrial": "Pradėk mano nemokamą bandomąją versiją",
         "createAccount": "Sukurti paskyrą",
         "perkNoCard": "Kreditinė kortelė nereikalinga",
-        "createAccountError": "Klaidų kūrimo paskyra",
-        "legalDocsAcceptPrefix": "Aš perskaičiau visus",
-        "legalDocsLinkLabel": "Formwise teisiniai dokumentai",
-        "legalDocsAcceptSuffix": "ir sutinku su paslaugos naudojimo sąlygomis."
+        "createAccountError": "Klaidų kūrimo paskyra"
       },
       "payment": {
         "paymentError": "Mokėjimo klaida",
@@ -664,6 +664,120 @@
       "markPaidNotice": "Pažymėjus šį dokumentą kaip apmokėtą, automatiškai sukurs atitinkamas išlaidas Finansuose."
     }
   },
+  "reimbursements": {
+    "view": {
+      "title": "Išlaidų kompensavimas",
+      "newRequest": "Naujas prašymas",
+      "export": "Eksportas",
+      "myRequests": "Mano prašymai",
+      "allRequests": "Visi prašymai",
+      "allRequesters": "Visi kandidatai",
+      "allCategories": "Visos kategorijos",
+      "dateFrom": "Apie",
+      "dateTo": "Iki",
+      "allStatuses": "Visos būsenos",
+      "summary": "{pending} Laukiama — {pendingAmount} · {approved} Grąžinti pinigus — {approvedAmount} · {reimbursed} Kompensuota — {reimbursedAmount}",
+      "noRequest": "Jokių pinigų grąžinimo prašymų",
+      "columns": {
+        "subject": "Paskirtis",
+        "date": "Data",
+        "amount": "Suma",
+        "status": "Statusas"
+      },
+      "status": {
+        "draft": "Draftas",
+        "pendingApproval": "Laukia patvirtinimo",
+        "needsCorrection": "Reikia pataisyti",
+        "approved": "Patvirtinta",
+        "rejected": "Atsisakė",
+        "reimbursed": "Grąžinta",
+        "cancelled": "Atšaukta"
+      },
+      "actions": {
+        "view": "Žiūrėkite",
+        "submit": "Pateikti",
+        "cancel": "Atšaukti"
+      },
+      "toasts": {
+        "created": "Užklausa sukurta",
+        "updated": "Atnaujinimo užklausa",
+        "deleted": "Užklausa ištrinta",
+        "submitted": "Paraiška pateikta patvirtinimui",
+        "cancelled": "Užklausa atšaukta",
+        "approved": "Paraiška patvirtinta",
+        "correctionRequested": "Prašoma pataisymo",
+        "rejected": "Prašymas atmestas",
+        "reimbursed": "Įrašytas grąžinimas"
+      },
+      "deleteConfirmTitle": "Ištrinti šį juodraštį?",
+      "deleteConfirmDescription": "Šis veiksmas yra negrįžtamas.",
+      "cancelConfirmTitle": "Atšaukti šį prašymą?",
+      "cancelConfirmDescription": "Pareiškėjas bus informuotas apie atšaukimą.",
+      "cancelReasonLabel": "Atšaukimo priežastis"
+    },
+    "form": {
+      "subject": "Paskirtis",
+      "subjectPlaceholder": "Pvz., kelionės į regioninius susitikimus",
+      "comment": "Komentaras",
+      "commentPlaceholder": "Papildoma informacija",
+      "event": "Susijęs įvykis",
+      "project": "Susijęs projektas",
+      "noProject": "Nėra projekto",
+      "noEvent": "Jokių renginių",
+      "items": "Išlaidos",
+      "addItem": "Pridėti išlaidas",
+      "noItems": "Jokių papildomų mokesčių",
+      "itemDate": "Išlaidų data",
+      "itemDescription": "Aprašymas",
+      "itemAmount": "Suma",
+      "itemCategory": "Kategorija",
+      "itemReceipt": "Pateisinimas",
+      "total": "Iš viso",
+      "duplicateWarning": "Panašios išlaidos (ta pati data, ta pati suma) jau egzistuoja kitame jūsų prašyme.",
+      "toasts": {
+        "uploadError": "Klaida siunčiant kvitą",
+        "networkError": "Tinklo klaida siunčiant kvitą"
+      }
+    },
+    "detail": {
+      "notFound": "Grąžinimo prašymas nerastas",
+      "history": "Istorija",
+      "correctionFrom": "Pataisymas pateiktas {name}",
+      "rejectedBy": "Atmesta {name}",
+      "reimbursedOn": "Grąžinta už {date} autorius {method}",
+      "selfApprovalBlockedNotice": "Jūs negalite patvirtinti savo prašymo. Jį turi patvirtinti administratorius arba kitas įgaliotas pareigūnas.",
+      "viewReceipt": "Žr. papildomus dokumentus",
+      "immobilisationTag": "Ilgalaikis turtas",
+      "approveButton": "Patvirtinti",
+      "requestCorrectionButton": "Prašykite pataisymo",
+      "rejectButton": "Atsisakyk",
+      "correctionCommentLabel": "Pataisymo komentaras",
+      "rejectionReasonLabel": "Atsisakymo priežastis",
+      "deleteItemConfirmTitle": "Pašalinti šias išlaidas?",
+      "toasts": {
+        "itemAdded": "Papildomos išlaidos",
+        "itemUpdated": "Atnaujintos išlaidos",
+        "itemDeleted": "Išlaidos pašalintos"
+      }
+    },
+    "register": {
+      "title": "Taupyk pinigus",
+      "registerButton": "Taupyk pinigus",
+      "date": "Pinigų grąžinimo data",
+      "paymentMethod": "Mokėjimo būdas",
+      "bankAccount": "Banko sąskaita",
+      "noBankAccountHint": "Banko sąskaitos neatsidarė – pridėkite ją Finansų> sąskaitų skyriuje arba pasirinkite Grynuosius pinigus.",
+      "transaction": "Importuotos banko operacijos suderinimas (pasirinktinai)",
+      "noTransaction": "Nepriartėk dabar",
+      "reference": "Nuoroda",
+      "submit": "Išsaugoti",
+      "methods": {
+        "virement": "Perkėlimas",
+        "cheque": "Patikrinta",
+        "especes": "Rūšys"
+      }
+    }
+  },
   "dashboard": {
     "pageTitle": "Dashboard",
     "subtitle": "Jūsų asociacijos apžvalga",
@@ -676,14 +790,7 @@
       "resizeHint": "Tempkite kampą, kad sumažintumėte dydį"
     },
     "aTraiter": {
-      "title": "Gydymui",
-      "empty": "Šiuo metu nėra su kuo tvarkytis",
-      "loadError": "Nepavyksta įkelti veiksmų, kuriuos reikia apdoroti.",
-      "items": {
-        "cotisationsEnAttente": "{count, plural, one {# laukiamas narystės mokestis} other {# laukiančios įmokos}}",
-        "donsAEncaisser": "{count, plural, one {# dovana bus išgryninta} other {# aukų rinkimui}}",
-        "materielEnRetard": "{count, plural, one {# Vėlyvoji medžiaga sugrįžta} other {# Vėlyvoji medžiaga sugrįžta}}"
-      }
+      "items": {}
     },
     "stats": {
       "financialBalance": "Finansinė pusiausvyra",
@@ -755,6 +862,34 @@
       "nearLimit": "Limitas artėja",
       "almostReached": "Limitas beveik pasiektas",
       "limitReached": "Limitas pasiektas"
+    },
+    "actionsTodo": {
+      "trigger": "Veiksmai, kuriuos reikia atlikti",
+      "badgeHint": "{count, plural, one {# laukiančių veiksmų kategorija} other {# laukiančių veiksmų kategorijos}}",
+      "empty": "Viskas atnaujinta, jokių veiksmų.",
+      "snooze": "Atidėkite šį veiksmą",
+      "snoozeDialogTitle": "Atidėkite šį veiksmą",
+      "snoozeDialogDescription": "Veiksmas lieka paslėptas iki tos datos, o jei dar yra bylų, vėl pasirodo.",
+      "snoozeUntilLabel": "Atidėta iki",
+      "confirm": "Patvirtinkite",
+      "loadError": "Negaliu įkelti veiksmų, kuriuos reikia atlikti.",
+      "snoozedSectionTitle": "{count, plural, one {# veiksmas sustabdytas} other {# veiksmai sustabdyti}}",
+      "snoozedUntil": "Kol {date}",
+      "cancelSnooze": "Atšaukti rezervaciją",
+      "actionLabels": {
+        "voirEtRelancer": "Žiūrėti ir perleisti",
+        "examiner": "Egzaminuotojas",
+        "consulter": "Konsultuotis"
+      },
+      "rows": {
+        "cotisations-en-attente": "{count, plural, one {# laukiamas narystės mokestis} other {# laukiančios įmokos}}",
+        "materiel-en-retard": "{count, plural, one {# Vėlyvoji medžiaga sugrįžta} other {# Vėlyvoji medžiaga sugrįžta}}",
+        "membres-a-valider": "{count, plural, one {# narys patvirtinti} other {# nariai turi būti patvirtinti}}",
+        "dons-a-encaisser": "{count, plural, one {# dovana bus išgryninta} other {# aukų rinkimui}}",
+        "rapprochement-bancaire": "{count, plural, one {# operacija bus lyginama} other {# operacijų palyginimui}}",
+        "notes-de-frais-a-valider": "{count, plural, one {# išlaidų ataskaita turi būti patvirtinta} other {# išlaidų ataskaitas, kurios turi būti patvirtintos}}",
+        "commandes-a-preparer": "{count, plural, one {# pasiruošimo tvarka} other {# įsakymų pasiruošti}}"
+      }
     }
   },
   "notifications": {
@@ -1291,8 +1426,8 @@
       "toasts": {}
     },
     "transfersView": {
-      "columns": {},
-      "description": "Čia užfiksuokite jau atliktus pervedimus tarp jūsų asociacijos banko sąskaitų. Formalus pervedimas įrašomas neperkeliant jokių pinigų."
+      "description": "Čia užfiksuokite jau atliktus pervedimus tarp jūsų asociacijos banko sąskaitų. Formalus pervedimas įrašomas neperkeliant jokių pinigų.",
+      "columns": {}
     },
     "categoriesView": {
       "title": "Kategorijos",
@@ -1500,13 +1635,13 @@
       "description": "Susieti importuotas banko operacijas su savo pajamomis ir išlaidomis.",
       "statusFilters": {
         "all": "Visi",
-        "unmatched": "Nesusitaikę",
+        "unmatched": "Palyginimui",
         "matched": "Susitaikęs",
         "ignored": "Ignoruota",
         "duplicate": "Dublikatai"
       },
       "status": {
-        "unmatched": "Nesusitaikę",
+        "unmatched": "Palyginimui",
         "matched": "Susitaikęs",
         "pending": "Laukiama",
         "ignored": "Ignoruota",
@@ -2807,7 +2942,11 @@
         "markPaid": "Markas Peiklas",
         "cancelOrder": "Atšaukti",
         "downloadReceipt": "Atsisiųskite kvitą",
-        "editPaymentMethod": "Pakeiskite mokėjimo būdą"
+        "editPaymentMethod": "Pakeiskite mokėjimo būdą",
+        "markPrepared": "Pažymėkite kaip paruoštą",
+        "cancelPrepared": "Atšaukimo paruošimas",
+        "delegatePreparation": "Paruošimas perduotas trečiajai šaliai",
+        "resumePreparation": "Gyvenimo aprašymo rengimas"
       },
       "noProduct": "Jokių produktų",
       "noOrder": "Jokių įsakymų",
@@ -2839,7 +2978,10 @@
         "productDeleted": "Nutrauktas produktas",
         "deleteError": "Klaidų šalinimas",
         "orderUpdated": "Atnaujinta tvarka"
-      }
+      },
+      "statusFilterToPrepare": "Pasiruošti",
+      "toPrepareCountLabel": "Įsakymai pasiruošti",
+      "toPrepareAmountLabel": "Paruošimo suma"
     },
     "payModal": {
       "title": "Pinigų pavedimas",
@@ -4047,17 +4189,17 @@
       "websitePlaceholder": "mon-association.fr",
       "iban": "IBAN",
       "bic": "BIC",
+      "accountingRegime": "Išlaidų kompensavimo apskaitos režimas",
+      "accountingRegimeHint": "Nustato, kada pateikiamas kompensacijos prašymas: patvirtinimo metu (įsipareigojimas) arba faktinio mokėjimo metu (grynaisiais).",
+      "accountingRegimeCash": "Pinigų apskaita",
+      "accountingRegimeAccrual": "Įsipareigojimų apskaita",
       "previewTitle": "Dokumento peržiūra",
       "bankDetails": "Banko duomenys",
       "ibanColon": "IBAN : {value}",
       "bicColon": "BIC : {value}",
       "toasts": {
         "updated": "Atnaujinta kontaktinė informacija"
-      },
-      "accountingRegime": "Išlaidų kompensavimo apskaitos režimas",
-      "accountingRegimeHint": "Nustato, kada pateikiamas kompensacijos prašymas: patvirtinimo metu (įsipareigojimas) arba faktinio mokėjimo metu (grynaisiais).",
-      "accountingRegimeCash": "Pinigų apskaita",
-      "accountingRegimeAccrual": "Įsipareigojimų apskaita"
+      }
     },
     "membreTypes": {
       "name": "Vardas, pavadinimas",
@@ -4613,6 +4755,12 @@
       },
       "invalidFormToast": "Nepavyko išsaugoti. Jei problema tęsiasi, susisiekite su pagalba.",
       "customFieldsLoading": "Įkeliami narystės formos atsakymai…"
+    },
+    "fichePdf": {
+      "title": "NARIO PROFILIS",
+      "subtitle": "Formą turi užpildyti naujasis narys",
+      "signature": "Parašas",
+      "date": "Data"
     },
     "actions": {
       "add": "Pridėti narį",
@@ -5386,12 +5534,6 @@
         "genericError": "Klaida"
       },
       "importedNote": "Importuota iš AssoConnect — {collecte}"
-    },
-    "fichePdf": {
-      "title": "NARIO PROFILIS",
-      "subtitle": "Formą turi užpildyti naujasis narys",
-      "signature": "Parašas",
-      "date": "Data"
     }
   },
   "memberCard": {
@@ -6061,6 +6203,7 @@
       "finances": "Finansinė stebėsena",
       "devis": "Pasiūlymai",
       "factures": "Sąskaitos faktūros",
+      "reimbursements": "Išlaidų kompensavimas",
       "fournisseurs": "Tiekėjai",
       "dons": "Aukos",
       "reunions": "Susitikimai",
@@ -6078,8 +6221,7 @@
         "communication": "Ryšiai",
         "finances": "Finansai",
         "outils": "Įrankiai"
-      },
-      "reimbursements": "Išlaidų kompensavimas"
+      }
     },
     "backofficeSidebar": {
       "backoffice": "Backoffice",
@@ -6324,120 +6466,6 @@
     },
     "backoffice": {
       "columns": {}
-    }
-  },
-  "reimbursements": {
-    "view": {
-      "title": "Išlaidų kompensavimas",
-      "newRequest": "Naujas prašymas",
-      "export": "Eksportas",
-      "myRequests": "Mano prašymai",
-      "allRequests": "Visi prašymai",
-      "allRequesters": "Visi kandidatai",
-      "allCategories": "Visos kategorijos",
-      "dateFrom": "Apie",
-      "dateTo": "Iki",
-      "allStatuses": "Visos būsenos",
-      "summary": "{pending} Laukiama — {pendingAmount} · {approved} Grąžinti pinigus — {approvedAmount} · {reimbursed} Kompensuota — {reimbursedAmount}",
-      "noRequest": "Jokių pinigų grąžinimo prašymų",
-      "columns": {
-        "subject": "Paskirtis",
-        "date": "Data",
-        "amount": "Suma",
-        "status": "Statusas"
-      },
-      "status": {
-        "draft": "Draftas",
-        "pendingApproval": "Laukia patvirtinimo",
-        "needsCorrection": "Reikia pataisyti",
-        "approved": "Patvirtinta",
-        "rejected": "Atsisakė",
-        "reimbursed": "Grąžinta",
-        "cancelled": "Atšaukta"
-      },
-      "actions": {
-        "view": "Žiūrėkite",
-        "submit": "Pateikti",
-        "cancel": "Atšaukti"
-      },
-      "toasts": {
-        "created": "Užklausa sukurta",
-        "updated": "Atnaujinimo užklausa",
-        "deleted": "Užklausa ištrinta",
-        "submitted": "Paraiška pateikta patvirtinimui",
-        "cancelled": "Užklausa atšaukta",
-        "approved": "Paraiška patvirtinta",
-        "correctionRequested": "Prašoma pataisymo",
-        "rejected": "Prašymas atmestas",
-        "reimbursed": "Įrašytas grąžinimas"
-      },
-      "deleteConfirmTitle": "Ištrinti šį juodraštį?",
-      "deleteConfirmDescription": "Šis veiksmas yra negrįžtamas.",
-      "cancelConfirmTitle": "Atšaukti šį prašymą?",
-      "cancelConfirmDescription": "Pareiškėjas bus informuotas apie atšaukimą.",
-      "cancelReasonLabel": "Atšaukimo priežastis"
-    },
-    "form": {
-      "subject": "Paskirtis",
-      "subjectPlaceholder": "Pvz., kelionės į regioninius susitikimus",
-      "comment": "Komentaras",
-      "commentPlaceholder": "Papildoma informacija",
-      "event": "Susijęs įvykis",
-      "project": "Susijęs projektas",
-      "noProject": "Nėra projekto",
-      "noEvent": "Jokių renginių",
-      "items": "Išlaidos",
-      "addItem": "Pridėti išlaidas",
-      "noItems": "Jokių papildomų mokesčių",
-      "itemDate": "Išlaidų data",
-      "itemDescription": "Aprašymas",
-      "itemAmount": "Suma",
-      "itemCategory": "Kategorija",
-      "itemReceipt": "Pateisinimas",
-      "total": "Iš viso",
-      "duplicateWarning": "Panašios išlaidos (ta pati data, ta pati suma) jau egzistuoja kitame jūsų prašyme.",
-      "toasts": {
-        "uploadError": "Klaida siunčiant kvitą",
-        "networkError": "Tinklo klaida siunčiant kvitą"
-      }
-    },
-    "detail": {
-      "notFound": "Grąžinimo prašymas nerastas",
-      "history": "Istorija",
-      "correctionFrom": "Pataisymas pateiktas {name}",
-      "rejectedBy": "Atmesta {name}",
-      "reimbursedOn": "Grąžinta už {date} autorius {method}",
-      "selfApprovalBlockedNotice": "Jūs negalite patvirtinti savo prašymo. Jį turi patvirtinti administratorius arba kitas įgaliotas pareigūnas.",
-      "viewReceipt": "Žr. papildomus dokumentus",
-      "immobilisationTag": "Ilgalaikis turtas",
-      "approveButton": "Patvirtinti",
-      "requestCorrectionButton": "Prašykite pataisymo",
-      "rejectButton": "Atsisakyk",
-      "correctionCommentLabel": "Pataisymo komentaras",
-      "rejectionReasonLabel": "Atsisakymo priežastis",
-      "deleteItemConfirmTitle": "Pašalinti šias išlaidas?",
-      "toasts": {
-        "itemAdded": "Papildomos išlaidos",
-        "itemUpdated": "Atnaujintos išlaidos",
-        "itemDeleted": "Išlaidos pašalintos"
-      }
-    },
-    "register": {
-      "title": "Taupyk pinigus",
-      "registerButton": "Taupyk pinigus",
-      "date": "Pinigų grąžinimo data",
-      "paymentMethod": "Mokėjimo būdas",
-      "bankAccount": "Banko sąskaita",
-      "noBankAccountHint": "Banko sąskaitos neatsidarė – pridėkite ją Finansų> sąskaitų skyriuje arba pasirinkite Grynuosius pinigus.",
-      "transaction": "Importuotos banko operacijos suderinimas (pasirinktinai)",
-      "noTransaction": "Nepriartėk dabar",
-      "reference": "Nuoroda",
-      "submit": "Išsaugoti",
-      "methods": {
-        "virement": "Perkėlimas",
-        "cheque": "Patikrinta",
-        "especes": "Rūšys"
-      }
     }
   }
 }

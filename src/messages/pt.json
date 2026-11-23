@@ -796,14 +796,32 @@
       "dragHint": "Arraste para reordenar",
       "resizeHint": "Arraste o canto para redimensionar"
     },
-    "aTraiter": {
-      "title": "Para ser tratado",
-      "empty": "Nada com o que lidar no momento",
-      "loadError": "Não foi possível carregar ações a serem processadas.",
-      "items": {
-        "cotisationsEnAttente": "{count, plural, one {# taxa de associação pendente} other {# contribuições pendentes}}",
-        "donsAEncaisser": "{count, plural, one {# presente a ser descontado} other {# doações para arrecadar}}",
-        "materielEnRetard": "{count, plural, one {# retornos tardios de material} other {# retornos tardios de material}}"
+    "actionsTodo": {
+      "trigger": "Ações a serem tomadas",
+      "badgeHint": "{count, plural, one {# categoria de ação pendente} other {# categorias de ação pendente}}",
+      "empty": "Está tudo atualizado, nenhuma ação a resolver.",
+      "snooze": "Adiar esta ação",
+      "snoozeDialogTitle": "Adiar esta ação",
+      "snoozeDialogDescription": "A ação permanece oculta para você até essa data, e depois reaparece se ainda houver casos a serem processados.",
+      "snoozeUntilLabel": "Adiado até",
+      "confirm": "Confirme",
+      "loadError": "Não foi possível carregar as ações a serem realizadas.",
+      "snoozedSectionTitle": "{count, plural, one {# ação suspensa} other {# ações suspensas}}",
+      "snoozedUntil": "Até {date}",
+      "cancelSnooze": "Cancelar a retenção",
+      "actionLabels": {
+        "voirEtRelancer": "Veja e reinicie",
+        "examiner": "Examinador",
+        "consulter": "Consulte"
+      },
+      "rows": {
+        "cotisations-en-attente": "{count, plural, one {# taxa de associação pendente} other {# contribuições pendentes}}",
+        "materiel-en-retard": "{count, plural, one {# retornos tardios de material} other {# retornos tardios de material}}",
+        "membres-a-valider": "{count, plural, one {# membro a validar} other {# membros a serem validados}}",
+        "dons-a-encaisser": "{count, plural, one {# presente a ser descontado} other {# doações para arrecadar}}",
+        "rapprochement-bancaire": "{count, plural, one {# operação a ser comparada} other {# operações a comparar}}",
+        "notes-de-frais-a-valider": "{count, plural, one {# relatório de despesas a ser validado} other {# relatórios de despesas a serem validados}}",
+        "commandes-a-preparer": "{count, plural, one {# para preparar} other {# ordens para preparar}}"
       }
     },
     "stats": {
@@ -1536,13 +1554,13 @@
       "description": "Associe as transações bancárias importadas às suas receitas e despesas.",
       "statusFilters": {
         "all": "Todas",
-        "unmatched": "Não conciliadas",
+        "unmatched": "A ser comparado",
         "matched": "Conciliadas",
         "ignored": "Ignoradas",
         "duplicate": "Duplicadas"
       },
       "status": {
-        "unmatched": "Não conciliada",
+        "unmatched": "A ser comparado",
         "matched": "Conciliada",
         "pending": "Pendente",
         "ignored": "Ignorada",
@@ -2924,7 +2942,11 @@
         "cancelOrder": "Cancelar",
         "downloadReceipt": "Baixar recibo",
         "editPaymentMethod": "Editar forma de pagamento",
-        "refundOrder": "Reembolsar"
+        "refundOrder": "Reembolsar",
+        "markPrepared": "Marque como preparado",
+        "cancelPrepared": "Cancelar preparação",
+        "delegatePreparation": "Preparação delegada a um terceiro",
+        "resumePreparation": "Preparação do currículo"
       },
       "noProduct": "Nenhum produto",
       "noOrder": "Nenhum pedido",
@@ -2939,11 +2961,14 @@
       },
       "othersCount": "{count, plural, one {+# outro} other {+# outros}}",
       "statusFilterAll": "Todos",
+      "statusFilterToPrepare": "Para preparar",
       "salesCountLabel": "Número de vendas",
       "revenueTotalLabel": "Receita total",
       "unitsSold": "{count, plural, one {# vendido} other {# vendidos}}",
       "pendingCountLabel": "Pedidos pendentes",
       "pendingAmountLabel": "Valor pendente",
+      "toPrepareCountLabel": "Ordens para preparação",
+      "toPrepareAmountLabel": "Quantidade a preparar",
       "cancelledCountLabel": "Pedidos cancelados",
       "cancelledAmountLabel": "Valor cancelado",
       "deleteProduitTitle": "Excluir o produto",

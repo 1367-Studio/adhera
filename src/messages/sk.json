@@ -121,6 +121,9 @@
         "passwordLabel": "Heslo",
         "passwordPlaceholder": "Min. 8 znakov",
         "passwordGoogleHint": "Pri prvom vytvorení účtu si vyberte heslo. Potom sa môžete prihlásiť cez Google.",
+        "legalDocsAcceptPrefix": "Prečítal som všetky",
+        "legalDocsLinkLabel": "Právne dokumenty Formwise",
+        "legalDocsAcceptSuffix": "a súhlasím s podmienkami používania služby.",
         "continueToPayment": "Pokračujte k pokladni",
         "perkTrialDays": "{days} Voľné dni",
         "perkNoCommitment": "Žiadna povinnosť",
@@ -129,10 +132,7 @@
         "startTrial": "Začnite moju bezplatnú skúšobnú verziu",
         "createAccount": "Vytvoriť účet",
         "perkNoCard": "Kreditná karta nie je potrebná",
-        "createAccountError": "Chyba pri vytváraní účtu",
-        "legalDocsAcceptPrefix": "Prečítal som všetky",
-        "legalDocsLinkLabel": "Právne dokumenty Formwise",
-        "legalDocsAcceptSuffix": "a súhlasím s podmienkami používania služby."
+        "createAccountError": "Chyba pri vytváraní účtu"
       },
       "payment": {
         "paymentError": "Chyba pri platbe",
@@ -664,6 +664,120 @@
       "markPaidNotice": "Označenie tohto dokumentu ako zaplateného automaticky vytvorí zodpovedajúci výdavok vo finančných výkazoch."
     }
   },
+  "reimbursements": {
+    "view": {
+      "title": "Preplácanie výdavkov",
+      "newRequest": "Nová požiadavka",
+      "export": "Export",
+      "myRequests": "Moje požiadavky",
+      "allRequests": "Všetky požiadavky",
+      "allRequesters": "Všetci uchádzači",
+      "allCategories": "Všetky kategórie",
+      "dateFrom": "Z",
+      "dateTo": "Na",
+      "allStatuses": "Všetky stavy",
+      "summary": "{pending} Čakajúce — {pendingAmount} · {approved} na vrátenie peňazí — {approvedAmount} · {reimbursed} preplatené — {reimbursedAmount}",
+      "noRequest": "Žiadne žiadosti o vrátenie peňazí",
+      "columns": {
+        "subject": "Účel",
+        "date": "Dátum",
+        "amount": "Výška",
+        "status": "Stav"
+      },
+      "status": {
+        "draft": "Draft",
+        "pendingApproval": "Čaká sa na schválenie",
+        "needsCorrection": "Na opravu",
+        "approved": "Schválené",
+        "rejected": "Odmietnuté",
+        "reimbursed": "Vrátené",
+        "cancelled": "Zrušené"
+      },
+      "actions": {
+        "view": "Pozri",
+        "submit": "Odoslať",
+        "cancel": "Zrušiť"
+      },
+      "toasts": {
+        "created": "Žiadosť vytvorená",
+        "updated": "Žiadosť o aktualizáciu",
+        "deleted": "Žiadosť odstránená",
+        "submitted": "Žiadosť podaná na schválenie",
+        "cancelled": "Žiadosť zrušená",
+        "approved": "Žiadosť schválená",
+        "correctionRequested": "Žiadosť o opravu",
+        "rejected": "Žiadosť zamietnutá",
+        "reimbursed": "Zaznamenaná refundácia"
+      },
+      "deleteConfirmTitle": "Vymazať tento návrh?",
+      "deleteConfirmDescription": "Tento čin je nezvratný.",
+      "cancelConfirmTitle": "Zrušiť túto žiadosť?",
+      "cancelConfirmDescription": "Žiadateľ bude o zrušení informovaný.",
+      "cancelReasonLabel": "Dôvod zrušenia"
+    },
+    "form": {
+      "subject": "Účel",
+      "subjectPlaceholder": "Napr. Cestovanie na regionálne stretnutia",
+      "comment": "Komentár",
+      "commentPlaceholder": "Voliteľné detaily",
+      "event": "Súvisiace podujatie",
+      "project": "Súvisiaci projekt",
+      "noProject": "Žiadny projekt",
+      "noEvent": "Žiadne podujatia",
+      "items": "Výdavky",
+      "addItem": "Pridať výdavok",
+      "noItems": "Žiadne ďalšie poplatky",
+      "itemDate": "Dátum výdavkov",
+      "itemDescription": "Popis",
+      "itemAmount": "Výška",
+      "itemCategory": "Kategória",
+      "itemReceipt": "Odôvodnenie",
+      "total": "Celkom",
+      "duplicateWarning": "Podobný výdavok (rovnaký dátum, rovnaká suma) už existuje v inej z vašich žiadostí.",
+      "toasts": {
+        "uploadError": "Chyba pri odosielaní potvrdenia",
+        "networkError": "Sieťová chyba pri odosielaní potvrdenia"
+      }
+    },
+    "detail": {
+      "notFound": "Žiadosť o vrátenie peňazí nebola nájdená",
+      "history": "História",
+      "correctionFrom": "Oprava požadovaná {name}",
+      "rejectedBy": "Zamietnuté {name}",
+      "reimbursedOn": "Vrátené dňa {date} od {method}",
+      "selfApprovalBlockedNotice": "Nemôžete schváliť vlastnú žiadosť. Musí ju schváliť správca alebo iný oprávnený úradník.",
+      "viewReceipt": "Pozrite si podporné dokumenty",
+      "immobilisationTag": "Dlhodobý majetok",
+      "approveButton": "Schváliť",
+      "requestCorrectionButton": "Požiadať o opravu",
+      "rejectButton": "Odmietnuť",
+      "correctionCommentLabel": "Komentár k oprave",
+      "rejectionReasonLabel": "Dôvod zamietnutia",
+      "deleteItemConfirmTitle": "Odstrániť tieto náklady?",
+      "toasts": {
+        "itemAdded": "Dodatočné náklady",
+        "itemUpdated": "Aktualizovaný výdavok",
+        "itemDeleted": "Výdavok odstránený"
+      }
+    },
+    "register": {
+      "title": "Uložte si vrátenie peňazí",
+      "registerButton": "Uložte si vrátenie peňazí",
+      "date": "Dátum vrátenia peňazí",
+      "paymentMethod": "Spôsob platby",
+      "bankAccount": "Bankový účet",
+      "noBankAccountHint": "Nemáte nastavený bankový účet — pridajte ho vo Financiách> Účtoch alebo vyberte Hotovosť.",
+      "transaction": "Zosúladiť importovanú bankovú transakciu (voliteľné)",
+      "noTransaction": "Nepribližuj sa teraz",
+      "reference": "Referencie",
+      "submit": "Uložiť",
+      "methods": {
+        "virement": "Prestup",
+        "cheque": "Skontrolované",
+        "especes": "Druhy"
+      }
+    }
+  },
   "dashboard": {
     "pageTitle": "Dashboard",
     "subtitle": "Prehľad vašej asociácie",
@@ -676,14 +790,7 @@
       "resizeHint": "Potiahnite roh na zmenu veľkosti"
     },
     "aTraiter": {
-      "title": "Byť liečený",
-      "empty": "Momentálne nemám čo riešiť",
-      "loadError": "Nie je možné načítať akcie na spracovanie.",
-      "items": {
-        "cotisationsEnAttente": "{count, plural, one {# čakajúci členský poplatok} other {# čakajúce príspevky}}",
-        "donsAEncaisser": "{count, plural, one {# darček na vyplatenie} other {# dary na zber}}",
-        "materielEnRetard": "{count, plural, one {# oneskorené návraty materiálu} other {# oneskorené návraty materiálu}}"
-      }
+      "items": {}
     },
     "stats": {
       "financialBalance": "Finančná bilancia",
@@ -755,6 +862,34 @@
       "nearLimit": "Limit sa blíži",
       "almostReached": "Limit takmer dosiahnutý",
       "limitReached": "Limit dosiahnutý"
+    },
+    "actionsTodo": {
+      "trigger": "Kroky, ktoré treba prijať",
+      "badgeHint": "{count, plural, one {# kategória čakajúcich akcií} other {# kategórie čakajúcich akcií}}",
+      "empty": "Všetko je aktuálne, nie je potrebné nič riešiť.",
+      "snooze": "Odložiť túto akciu",
+      "snoozeDialogTitle": "Odložiť túto akciu",
+      "snoozeDialogDescription": "Akcia zostáva pre vás skrytá až do tohto dátumu, potom sa znovu objaví, ak sú ešte prípady na spracovanie.",
+      "snoozeUntilLabel": "Odložené až do",
+      "confirm": "Potvrdiť",
+      "loadError": "Nie je možné načítať akcie, ktoré sa majú vykonať.",
+      "snoozedSectionTitle": "{count, plural, one {# akcia pozastavená} other {# kroky pozastavené}}",
+      "snoozedUntil": "Až kým {date}",
+      "cancelSnooze": "Zrušiť blokáciu",
+      "actionLabels": {
+        "voirEtRelancer": "Vidieť a znovu spustiť",
+        "examiner": "Skúšajúci",
+        "consulter": "Konzultácia"
+      },
+      "rows": {
+        "cotisations-en-attente": "{count, plural, one {# čakajúci členský poplatok} other {# čakajúce príspevky}}",
+        "materiel-en-retard": "{count, plural, one {# oneskorené návraty materiálu} other {# oneskorené návraty materiálu}}",
+        "membres-a-valider": "{count, plural, one {# člen na overenie} other {# členov na overenie}}",
+        "dons-a-encaisser": "{count, plural, one {# darček na vyplatenie} other {# dary na zber}}",
+        "rapprochement-bancaire": "{count, plural, one {# operácia na porovnanie} other {# operácie na porovnanie}}",
+        "notes-de-frais-a-valider": "{count, plural, one {# výkaz výdavkov na overenie} other {# výdavkové správy na overenie}}",
+        "commandes-a-preparer": "{count, plural, one {# poradie na prípravu} other {# rozkazy na prípravu}}"
+      }
     }
   },
   "notifications": {
@@ -1291,8 +1426,8 @@
       "toasts": {}
     },
     "transfersView": {
-      "columns": {},
-      "description": "Zaznamenajte tu už uskutočnené prevody medzi bankovými účtami vašej asociácie. Formálne zaznamenáva prevod bez prevodu peňazí."
+      "description": "Zaznamenajte tu už uskutočnené prevody medzi bankovými účtami vašej asociácie. Formálne zaznamenáva prevod bez prevodu peňazí.",
+      "columns": {}
     },
     "categoriesView": {
       "title": "Kategórie",
@@ -1500,13 +1635,13 @@
       "description": "Spojte importované bankové transakcie s vašimi príjmami a výdavkami.",
       "statusFilters": {
         "all": "Všetko",
-        "unmatched": "Nezmierení",
+        "unmatched": "Na porovnanie",
         "matched": "Zmierený",
         "ignored": "Ignorované",
         "duplicate": "Duplikáty"
       },
       "status": {
-        "unmatched": "Nezmierení",
+        "unmatched": "Na porovnanie",
         "matched": "Zmierený",
         "pending": "Čaká sa",
         "ignored": "Ignorované",
@@ -2807,7 +2942,11 @@
         "markPaid": "Mark Paid",
         "cancelOrder": "Zrušiť",
         "downloadReceipt": "Stiahnite si účtenku",
-        "editPaymentMethod": "Zmena platobnej metódy"
+        "editPaymentMethod": "Zmena platobnej metódy",
+        "markPrepared": "Označte ako pripravené",
+        "cancelPrepared": "Zrušiť prípravu",
+        "delegatePreparation": "Príprava delegovaná na tretiu stranu",
+        "resumePreparation": "Príprava životopisu"
       },
       "noProduct": "Žiadne produkty",
       "noOrder": "Žiadne rozkazy",
@@ -2839,7 +2978,10 @@
         "productDeleted": "Ukončený produkt",
         "deleteError": "Chybné mazanie",
         "orderUpdated": "Aktualizované poradie"
-      }
+      },
+      "statusFilterToPrepare": "Na prípravu",
+      "toPrepareCountLabel": "Rozkazy na prípravu",
+      "toPrepareAmountLabel": "Suma na prípravu"
     },
     "payModal": {
       "title": "Hotovostná poukážka",
@@ -4047,17 +4189,17 @@
       "websitePlaceholder": "mon-association.fr",
       "iban": "IBAN",
       "bic": "BIC",
+      "accountingRegime": "Účtovný režim pre preplácanie výdavkov",
+      "accountingRegimeHint": "Určuje, kedy je žiadosť o preplatenie odoslaná: pri schválení (záväzku) alebo pri skutočnej platbe (hotovosť).",
+      "accountingRegimeCash": "Hotovostné účtovníctvo",
+      "accountingRegimeAccrual": "Účtovníctvo záväzkov",
       "previewTitle": "Náhľad dokumentu",
       "bankDetails": "Bankové údaje",
       "ibanColon": "IBAN: {value}",
       "bicColon": "BIC : {value}",
       "toasts": {
         "updated": "Aktualizované kontaktné informácie"
-      },
-      "accountingRegime": "Účtovný režim pre preplácanie výdavkov",
-      "accountingRegimeHint": "Určuje, kedy je žiadosť o preplatenie odoslaná: pri schválení (záväzku) alebo pri skutočnej platbe (hotovosť).",
-      "accountingRegimeCash": "Hotovostné účtovníctvo",
-      "accountingRegimeAccrual": "Účtovníctvo záväzkov"
+      }
     },
     "membreTypes": {
       "name": "Názov",
@@ -4613,6 +4755,12 @@
       },
       "invalidFormToast": "Uloženie sa nepodarilo. Ak problém pretrváva, kontaktujte podporu.",
       "customFieldsLoading": "Načítavanie odpovedí z prihlasovacieho formulára…"
+    },
+    "fichePdf": {
+      "title": "PROFIL ČLENA",
+      "subtitle": "Formulár, ktorý má vyplniť nový člen",
+      "signature": "Podpis",
+      "date": "Dátum"
     },
     "actions": {
       "add": "Pridať člena",
@@ -5386,12 +5534,6 @@
         "genericError": "Chyba"
       },
       "importedNote": "Importované z AssoConnect — {collecte}"
-    },
-    "fichePdf": {
-      "title": "PROFIL ČLENA",
-      "subtitle": "Formulár, ktorý má vyplniť nový člen",
-      "signature": "Podpis",
-      "date": "Dátum"
     }
   },
   "memberCard": {
@@ -6061,6 +6203,7 @@
       "finances": "Finančné monitorovanie",
       "devis": "Ponuky",
       "factures": "Faktúry",
+      "reimbursements": "Preplácanie výdavkov",
       "fournisseurs": "Dodávatelia",
       "dons": "Dary",
       "reunions": "Stretnutia",
@@ -6078,8 +6221,7 @@
         "communication": "Komunikácia",
         "finances": "Financie",
         "outils": "Nástroje"
-      },
-      "reimbursements": "Preplácanie výdavkov"
+      }
     },
     "backofficeSidebar": {
       "backoffice": "Backoffice",
@@ -6324,120 +6466,6 @@
     },
     "backoffice": {
       "columns": {}
-    }
-  },
-  "reimbursements": {
-    "view": {
-      "title": "Preplácanie výdavkov",
-      "newRequest": "Nová požiadavka",
-      "export": "Export",
-      "myRequests": "Moje požiadavky",
-      "allRequests": "Všetky požiadavky",
-      "allRequesters": "Všetci uchádzači",
-      "allCategories": "Všetky kategórie",
-      "dateFrom": "Z",
-      "dateTo": "Na",
-      "allStatuses": "Všetky stavy",
-      "summary": "{pending} Čakajúce — {pendingAmount} · {approved} na vrátenie peňazí — {approvedAmount} · {reimbursed} preplatené — {reimbursedAmount}",
-      "noRequest": "Žiadne žiadosti o vrátenie peňazí",
-      "columns": {
-        "subject": "Účel",
-        "date": "Dátum",
-        "amount": "Výška",
-        "status": "Stav"
-      },
-      "status": {
-        "draft": "Draft",
-        "pendingApproval": "Čaká sa na schválenie",
-        "needsCorrection": "Na opravu",
-        "approved": "Schválené",
-        "rejected": "Odmietnuté",
-        "reimbursed": "Vrátené",
-        "cancelled": "Zrušené"
-      },
-      "actions": {
-        "view": "Pozri",
-        "submit": "Odoslať",
-        "cancel": "Zrušiť"
-      },
-      "toasts": {
-        "created": "Žiadosť vytvorená",
-        "updated": "Žiadosť o aktualizáciu",
-        "deleted": "Žiadosť odstránená",
-        "submitted": "Žiadosť podaná na schválenie",
-        "cancelled": "Žiadosť zrušená",
-        "approved": "Žiadosť schválená",
-        "correctionRequested": "Žiadosť o opravu",
-        "rejected": "Žiadosť zamietnutá",
-        "reimbursed": "Zaznamenaná refundácia"
-      },
-      "deleteConfirmTitle": "Vymazať tento návrh?",
-      "deleteConfirmDescription": "Tento čin je nezvratný.",
-      "cancelConfirmTitle": "Zrušiť túto žiadosť?",
-      "cancelConfirmDescription": "Žiadateľ bude o zrušení informovaný.",
-      "cancelReasonLabel": "Dôvod zrušenia"
-    },
-    "form": {
-      "subject": "Účel",
-      "subjectPlaceholder": "Napr. Cestovanie na regionálne stretnutia",
-      "comment": "Komentár",
-      "commentPlaceholder": "Voliteľné detaily",
-      "event": "Súvisiace podujatie",
-      "project": "Súvisiaci projekt",
-      "noProject": "Žiadny projekt",
-      "noEvent": "Žiadne podujatia",
-      "items": "Výdavky",
-      "addItem": "Pridať výdavok",
-      "noItems": "Žiadne ďalšie poplatky",
-      "itemDate": "Dátum výdavkov",
-      "itemDescription": "Popis",
-      "itemAmount": "Výška",
-      "itemCategory": "Kategória",
-      "itemReceipt": "Odôvodnenie",
-      "total": "Celkom",
-      "duplicateWarning": "Podobný výdavok (rovnaký dátum, rovnaká suma) už existuje v inej z vašich žiadostí.",
-      "toasts": {
-        "uploadError": "Chyba pri odosielaní potvrdenia",
-        "networkError": "Sieťová chyba pri odosielaní potvrdenia"
-      }
-    },
-    "detail": {
-      "notFound": "Žiadosť o vrátenie peňazí nebola nájdená",
-      "history": "História",
-      "correctionFrom": "Oprava požadovaná {name}",
-      "rejectedBy": "Zamietnuté {name}",
-      "reimbursedOn": "Vrátené dňa {date} od {method}",
-      "selfApprovalBlockedNotice": "Nemôžete schváliť vlastnú žiadosť. Musí ju schváliť správca alebo iný oprávnený úradník.",
-      "viewReceipt": "Pozrite si podporné dokumenty",
-      "immobilisationTag": "Dlhodobý majetok",
-      "approveButton": "Schváliť",
-      "requestCorrectionButton": "Požiadať o opravu",
-      "rejectButton": "Odmietnuť",
-      "correctionCommentLabel": "Komentár k oprave",
-      "rejectionReasonLabel": "Dôvod zamietnutia",
-      "deleteItemConfirmTitle": "Odstrániť tieto náklady?",
-      "toasts": {
-        "itemAdded": "Dodatočné náklady",
-        "itemUpdated": "Aktualizovaný výdavok",
-        "itemDeleted": "Výdavok odstránený"
-      }
-    },
-    "register": {
-      "title": "Uložte si vrátenie peňazí",
-      "registerButton": "Uložte si vrátenie peňazí",
-      "date": "Dátum vrátenia peňazí",
-      "paymentMethod": "Spôsob platby",
-      "bankAccount": "Bankový účet",
-      "noBankAccountHint": "Nemáte nastavený bankový účet — pridajte ho vo Financiách> Účtoch alebo vyberte Hotovosť.",
-      "transaction": "Zosúladiť importovanú bankovú transakciu (voliteľné)",
-      "noTransaction": "Nepribližuj sa teraz",
-      "reference": "Referencie",
-      "submit": "Uložiť",
-      "methods": {
-        "virement": "Prestup",
-        "cheque": "Skontrolované",
-        "especes": "Druhy"
-      }
     }
   }
 }

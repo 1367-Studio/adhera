@@ -121,6 +121,9 @@
         "passwordLabel": "Wachtwoord",
         "passwordPlaceholder": "Min. 8 tekens",
         "passwordGoogleHint": "Voor deze eerste accountaanmaak kies je een wachtwoord. Je kunt vervolgens inloggen met Google.",
+        "legalDocsAcceptPrefix": "Ik heb alle",
+        "legalDocsLinkLabel": "Juridische documenten van Formwise",
+        "legalDocsAcceptSuffix": "en ik accepteer de gebruiksvoorwaarden van de dienst.",
         "continueToPayment": "Blijf afrekenen",
         "perkTrialDays": "{days} Vrije dagen",
         "perkNoCommitment": "Geen verplichting",
@@ -129,10 +132,7 @@
         "startTrial": "Start mijn gratis proefperiode",
         "createAccount": "Account aanmaken",
         "perkNoCard": "Geen creditcard nodig",
-        "createAccountError": "Fout account aanmaken",
-        "legalDocsAcceptPrefix": "Ik heb alle",
-        "legalDocsLinkLabel": "Juridische documenten van Formwise",
-        "legalDocsAcceptSuffix": "en ik accepteer de gebruiksvoorwaarden van de dienst."
+        "createAccountError": "Fout account aanmaken"
       },
       "payment": {
         "paymentError": "Betalingsfout",
@@ -664,6 +664,120 @@
       "markPaidNotice": "Het markeren van dit document als betaald creëert automatisch een bijbehorende uitgave in Financiën."
     }
   },
+  "reimbursements": {
+    "view": {
+      "title": "Onkostenvergoedingen",
+      "newRequest": "Nieuw verzoek",
+      "export": "Export",
+      "myRequests": "Mijn verzoeken",
+      "allRequests": "Alle verzoeken",
+      "allRequesters": "Alle aanvragers",
+      "allCategories": "Alle categorieën",
+      "dateFrom": "Van",
+      "dateTo": "Naar",
+      "allStatuses": "Alle statussen",
+      "summary": "{pending} In afwachting — {pendingAmount} · {approved} te worden terugbetaald — {approvedAmount} · {reimbursed} vergoed — {reimbursedAmount}",
+      "noRequest": "Geen terugbetalingsverzoeken",
+      "columns": {
+        "subject": "Doel",
+        "date": "Datum",
+        "amount": "Bedrag",
+        "status": "Status"
+      },
+      "status": {
+        "draft": "Draft",
+        "pendingApproval": "In afwachting van goedkeuring",
+        "needsCorrection": "Nog te corrigeren",
+        "approved": "Goedgekeurd",
+        "rejected": "Geweigerd",
+        "reimbursed": "Terugbetaald",
+        "cancelled": "Geannuleerd"
+      },
+      "actions": {
+        "view": "Zie",
+        "submit": "Indienen",
+        "cancel": "Annuleren"
+      },
+      "toasts": {
+        "created": "Aanvraag aangemaakt",
+        "updated": "Updateverzoek",
+        "deleted": "Verzoek verwijderd",
+        "submitted": "Aanvraag ingediend ter goedkeuring",
+        "cancelled": "Verzoek geannuleerd",
+        "approved": "Aanvraag goedgekeurd",
+        "correctionRequested": "Correctie aangevraagd",
+        "rejected": "Verzoek afgewezen",
+        "reimbursed": "Geregistreerde terugbetaling"
+      },
+      "deleteConfirmTitle": "Deze versie verwijderen?",
+      "deleteConfirmDescription": "Deze actie is onomkeerbaar.",
+      "cancelConfirmTitle": "Dit verzoek annuleren?",
+      "cancelConfirmDescription": "De aanvrager wordt op de hoogte gebracht van de annulering.",
+      "cancelReasonLabel": "Reden voor annulering"
+    },
+    "form": {
+      "subject": "Doel",
+      "subjectPlaceholder": "Bijv. reizen naar regionale bijeenkomsten",
+      "comment": "Commentaar",
+      "commentPlaceholder": "Optionele details",
+      "event": "Gerelateerde gebeurtenis",
+      "project": "Geassocieerd project",
+      "noProject": "Geen project",
+      "noEvent": "Geen evenementen",
+      "items": "Uitgaven",
+      "addItem": "Voeg een kostenpost toe",
+      "noItems": "Geen extra kosten",
+      "itemDate": "Datum van uitgaven",
+      "itemDescription": "Beschrijving",
+      "itemAmount": "Bedrag",
+      "itemCategory": "Categorie",
+      "itemReceipt": "Rechtvaardiging",
+      "total": "Totaal",
+      "duplicateWarning": "Een vergelijkbare uitgave (dezelfde datum, hetzelfde bedrag) bestaat al in een ander van je verzoeken.",
+      "toasts": {
+        "uploadError": "Fout bij het verzenden van de ontvangstbevestiging",
+        "networkError": "Netwerkfout bij het verzenden van de ontvangstbewijs"
+      }
+    },
+    "detail": {
+      "notFound": "Terugbetalingsverzoek niet gevonden",
+      "history": "Geschiedenis",
+      "correctionFrom": "Correctie aangevraagd door {name}",
+      "rejectedBy": "Geweigerd door {name}",
+      "reimbursedOn": "Terugbetaald op {date} door {method}",
+      "selfApprovalBlockedNotice": "U kunt uw eigen verzoek niet goedkeuren. Het moet worden goedgekeurd door een beheerder of een andere bevoegde functionaris.",
+      "viewReceipt": "Zie de ondersteunende documenten",
+      "immobilisationTag": "Vaste activa",
+      "approveButton": "Goedkeuren",
+      "requestCorrectionButton": "Verzoek om correctie",
+      "rejectButton": "Weigeren",
+      "correctionCommentLabel": "Correctiecommentaar",
+      "rejectionReasonLabel": "Reden voor weigering",
+      "deleteItemConfirmTitle": "Deze kosten elimineren?",
+      "toasts": {
+        "itemAdded": "Extra kosten",
+        "itemUpdated": "Bijgewerkte kosten",
+        "itemDeleted": "Kosten verwijderd"
+      }
+    },
+    "register": {
+      "title": "Bespaar de terugbetaling",
+      "registerButton": "Bespaar de terugbetaling",
+      "date": "Terugbetalingsdatum",
+      "paymentMethod": "Betaalmethode",
+      "bankAccount": "Bankrekening",
+      "noBankAccountHint": "Geen bankrekening ingesteld — voeg er een toe in Financiën> Rekeningen, of kies Contant.",
+      "transaction": "Een geïmporteerde banktransactie afstemmen (optioneel)",
+      "noTransaction": "Breng nu niet dichterbij",
+      "reference": "Referentie",
+      "submit": "Opslaan",
+      "methods": {
+        "virement": "Overdracht",
+        "cheque": "Check",
+        "especes": "Soorten"
+      }
+    }
+  },
   "dashboard": {
     "pageTitle": "Dashboard",
     "subtitle": "Overzicht van uw vereniging",
@@ -676,14 +790,7 @@
       "resizeHint": "Sleep de hoek om de grootte te wijzigen"
     },
     "aTraiter": {
-      "title": "Behandeld te worden",
-      "empty": "Niets om je op dit moment bezig te houden",
-      "loadError": "Kan acties die verwerkt moeten worden niet laden.",
-      "items": {
-        "cotisationsEnAttente": "{count, plural, one {# lopende lidmaatschapsbijdrage} other {# openstaande bijdragen}}",
-        "donsAEncaisser": "{count, plural, one {# cadeau om te verzilveren} other {# donaties om in te zamelen}}",
-        "materielEnRetard": "{count, plural, one {# late materiaalopbrengsten} other {# late materiaalopbrengsten}}"
-      }
+      "items": {}
     },
     "stats": {
       "financialBalance": "Financiële balans",
@@ -755,6 +862,34 @@
       "nearLimit": "Limiet bijna bereikt",
       "almostReached": "Limiet vrijwel bereikt",
       "limitReached": "Limiet bereikt"
+    },
+    "actionsTodo": {
+      "trigger": "Acties die moeten worden genomen",
+      "badgeHint": "{count, plural, one {# openstaande actiecategorie} other {# categorieën van lopende acties}}",
+      "empty": "Alles is up-to-date, er is geen actie om mee te doen.",
+      "snooze": "Deze actie uitstellen",
+      "snoozeDialogTitle": "Deze actie uitstellen",
+      "snoozeDialogDescription": "De actie blijft voor u verborgen tot die datum en verschijnt dan weer als er nog zaken te verwerken zijn.",
+      "snoozeUntilLabel": "Uitgesteld tot",
+      "confirm": "Bevestig",
+      "loadError": "Kan de te doen acties niet laden.",
+      "snoozedSectionTitle": "{count, plural, one {# actie opgeschort} other {# acties die op pauze zijn gezet}}",
+      "snoozedUntil": "Tot {date}",
+      "cancelSnooze": "Annuleer de wacht",
+      "actionLabels": {
+        "voirEtRelancer": "Zie en herlanceren",
+        "examiner": "Examinator",
+        "consulter": "Overleg"
+      },
+      "rows": {
+        "cotisations-en-attente": "{count, plural, one {# lopende lidmaatschapsbijdrage} other {# openstaande bijdragen}}",
+        "materiel-en-retard": "{count, plural, one {# late materiaalopbrengsten} other {# late materiaalopbrengsten}}",
+        "membres-a-valider": "{count, plural, one {# lid te valideren} other {# leden te valideren}}",
+        "dons-a-encaisser": "{count, plural, one {# cadeau om te verzilveren} other {# donaties om in te zamelen}}",
+        "rapprochement-bancaire": "{count, plural, one {# te vergelijken operatie} other {# operaties om te vergelijken}}",
+        "notes-de-frais-a-valider": "{count, plural, one {# onkostenrapport te valideren} other {# onkostenrapporten te valideren}}",
+        "commandes-a-preparer": "{count, plural, one {# om voor te bereiden} other {# orders om voor te bereiden}}"
+      }
     }
   },
   "notifications": {
@@ -1291,8 +1426,8 @@
       "toasts": {}
     },
     "transfersView": {
-      "columns": {},
-      "description": "Registreer hier de overboekingen die al zijn gedaan tussen de bankrekeningen van uw vereniging. Formwise registreert de overboeking zonder geld over te maken."
+      "description": "Registreer hier de overboekingen die al zijn gedaan tussen de bankrekeningen van uw vereniging. Formwise registreert de overboeking zonder geld over te maken.",
+      "columns": {}
     },
     "categoriesView": {
       "title": "Categorieën",
@@ -1500,13 +1635,13 @@
       "description": "Koppel geïmporteerde banktransacties aan je inkomsten en uitgaven.",
       "statusFilters": {
         "all": "Allemaal",
-        "unmatched": "Onverzoend",
+        "unmatched": "Om te vergelijken",
         "matched": "Verzoend",
         "ignored": "Genegeerd",
         "duplicate": "Duplicaten"
       },
       "status": {
-        "unmatched": "Onverzoend",
+        "unmatched": "Om te vergelijken",
         "matched": "Verzoend",
         "pending": "In behandeling",
         "ignored": "Genegeerd",
@@ -2807,7 +2942,11 @@
         "markPaid": "Mark Betaalde",
         "cancelOrder": "Annuleren",
         "downloadReceipt": "Download het bonnetje",
-        "editPaymentMethod": "Verander de betaalmethode"
+        "editPaymentMethod": "Verander de betaalmethode",
+        "markPrepared": "Merk als voorbereid",
+        "cancelPrepared": "Annuleer de voorbereiding",
+        "delegatePreparation": "Voorbereiding gedelegeerd aan een derde partij",
+        "resumePreparation": "Voorbereiding van het cv"
       },
       "noProduct": "Geen producten",
       "noOrder": "Geen bevelen",
@@ -2839,7 +2978,10 @@
         "productDeleted": "Stopgezet product",
         "deleteError": "Fout verwijderen",
         "orderUpdated": "Bijgewerkte volgorde"
-      }
+      },
+      "statusFilterToPrepare": "Om zich voor te bereiden",
+      "toPrepareCountLabel": "Orders tot voorbereiding",
+      "toPrepareAmountLabel": "Te bereiden bedrag"
     },
     "payModal": {
       "title": "Cashwissel",
@@ -4047,17 +4189,17 @@
       "websitePlaceholder": "mon-association.fr",
       "iban": "IBAN",
       "bic": "BIC",
+      "accountingRegime": "Boekhoudstelsel voor onkostenvergoedingen",
+      "accountingRegimeHint": "Bepaalt wanneer een terugbetalingsverzoek wordt ingediend: bij goedkeuring (verplichting) of bij daadwerkelijke betaling (contant).",
+      "accountingRegimeCash": "Kasboekhouding",
+      "accountingRegimeAccrual": "Commitment accounting",
       "previewTitle": "Documentvoorbeeld",
       "bankDetails": "Bankgegevens",
       "ibanColon": "IBAN : {value}",
       "bicColon": "BIC : {value}",
       "toasts": {
         "updated": "Bijgewerkte contactgegevens"
-      },
-      "accountingRegime": "Boekhoudstelsel voor onkostenvergoedingen",
-      "accountingRegimeHint": "Bepaalt wanneer een terugbetalingsverzoek wordt ingediend: bij goedkeuring (verplichting) of bij daadwerkelijke betaling (contant).",
-      "accountingRegimeCash": "Kasboekhouding",
-      "accountingRegimeAccrual": "Commitment accounting"
+      }
     },
     "membreTypes": {
       "name": "Naam",
@@ -4613,6 +4755,12 @@
       },
       "invalidFormToast": "Opslaan mislukt. Neem contact op met support als het probleem aanhoudt.",
       "customFieldsLoading": "Antwoorden van het aanmeldformulier laden…"
+    },
+    "fichePdf": {
+      "title": "LEDENPROFIEL",
+      "subtitle": "Formulier dat door het nieuwe lid moet worden ingevuld",
+      "signature": "Handtekening",
+      "date": "Datum"
     },
     "actions": {
       "add": "Voeg een lid toe",
@@ -5386,12 +5534,6 @@
         "genericError": "Fout"
       },
       "importedNote": "Geïmporteerd van AssoConnect — {collecte}"
-    },
-    "fichePdf": {
-      "title": "LEDENPROFIEL",
-      "subtitle": "Formulier dat door het nieuwe lid moet worden ingevuld",
-      "signature": "Handtekening",
-      "date": "Datum"
     }
   },
   "memberCard": {
@@ -6127,6 +6269,7 @@
       "finances": "Financiële monitoring",
       "devis": "Offertes",
       "factures": "Facturen",
+      "reimbursements": "Onkostenvergoedingen",
       "fournisseurs": "Leveranciers",
       "dons": "Donaties",
       "reunions": "Vergaderingen",
@@ -6144,8 +6287,7 @@
         "communication": "Communicatie",
         "finances": "Financiën",
         "outils": "Gereedschappen"
-      },
-      "reimbursements": "Onkostenvergoedingen"
+      }
     },
     "backofficeSidebar": {
       "backoffice": "Backoffice",
@@ -6390,120 +6532,6 @@
     },
     "backoffice": {
       "columns": {}
-    }
-  },
-  "reimbursements": {
-    "view": {
-      "title": "Onkostenvergoedingen",
-      "newRequest": "Nieuw verzoek",
-      "export": "Export",
-      "myRequests": "Mijn verzoeken",
-      "allRequests": "Alle verzoeken",
-      "allRequesters": "Alle aanvragers",
-      "allCategories": "Alle categorieën",
-      "dateFrom": "Van",
-      "dateTo": "Naar",
-      "allStatuses": "Alle statussen",
-      "summary": "{pending} In afwachting — {pendingAmount} · {approved} te worden terugbetaald — {approvedAmount} · {reimbursed} vergoed — {reimbursedAmount}",
-      "noRequest": "Geen terugbetalingsverzoeken",
-      "columns": {
-        "subject": "Doel",
-        "date": "Datum",
-        "amount": "Bedrag",
-        "status": "Status"
-      },
-      "status": {
-        "draft": "Draft",
-        "pendingApproval": "In afwachting van goedkeuring",
-        "needsCorrection": "Nog te corrigeren",
-        "approved": "Goedgekeurd",
-        "rejected": "Geweigerd",
-        "reimbursed": "Terugbetaald",
-        "cancelled": "Geannuleerd"
-      },
-      "actions": {
-        "view": "Zie",
-        "submit": "Indienen",
-        "cancel": "Annuleren"
-      },
-      "toasts": {
-        "created": "Aanvraag aangemaakt",
-        "updated": "Updateverzoek",
-        "deleted": "Verzoek verwijderd",
-        "submitted": "Aanvraag ingediend ter goedkeuring",
-        "cancelled": "Verzoek geannuleerd",
-        "approved": "Aanvraag goedgekeurd",
-        "correctionRequested": "Correctie aangevraagd",
-        "rejected": "Verzoek afgewezen",
-        "reimbursed": "Geregistreerde terugbetaling"
-      },
-      "deleteConfirmTitle": "Deze versie verwijderen?",
-      "deleteConfirmDescription": "Deze actie is onomkeerbaar.",
-      "cancelConfirmTitle": "Dit verzoek annuleren?",
-      "cancelConfirmDescription": "De aanvrager wordt op de hoogte gebracht van de annulering.",
-      "cancelReasonLabel": "Reden voor annulering"
-    },
-    "form": {
-      "subject": "Doel",
-      "subjectPlaceholder": "Bijv. reizen naar regionale bijeenkomsten",
-      "comment": "Commentaar",
-      "commentPlaceholder": "Optionele details",
-      "event": "Gerelateerde gebeurtenis",
-      "project": "Geassocieerd project",
-      "noProject": "Geen project",
-      "noEvent": "Geen evenementen",
-      "items": "Uitgaven",
-      "addItem": "Voeg een kostenpost toe",
-      "noItems": "Geen extra kosten",
-      "itemDate": "Datum van uitgaven",
-      "itemDescription": "Beschrijving",
-      "itemAmount": "Bedrag",
-      "itemCategory": "Categorie",
-      "itemReceipt": "Rechtvaardiging",
-      "total": "Totaal",
-      "duplicateWarning": "Een vergelijkbare uitgave (dezelfde datum, hetzelfde bedrag) bestaat al in een ander van je verzoeken.",
-      "toasts": {
-        "uploadError": "Fout bij het verzenden van de ontvangstbevestiging",
-        "networkError": "Netwerkfout bij het verzenden van de ontvangstbewijs"
-      }
-    },
-    "detail": {
-      "notFound": "Terugbetalingsverzoek niet gevonden",
-      "history": "Geschiedenis",
-      "correctionFrom": "Correctie aangevraagd door {name}",
-      "rejectedBy": "Geweigerd door {name}",
-      "reimbursedOn": "Terugbetaald op {date} door {method}",
-      "selfApprovalBlockedNotice": "U kunt uw eigen verzoek niet goedkeuren. Het moet worden goedgekeurd door een beheerder of een andere bevoegde functionaris.",
-      "viewReceipt": "Zie de ondersteunende documenten",
-      "immobilisationTag": "Vaste activa",
-      "approveButton": "Goedkeuren",
-      "requestCorrectionButton": "Verzoek om correctie",
-      "rejectButton": "Weigeren",
-      "correctionCommentLabel": "Correctiecommentaar",
-      "rejectionReasonLabel": "Reden voor weigering",
-      "deleteItemConfirmTitle": "Deze kosten elimineren?",
-      "toasts": {
-        "itemAdded": "Extra kosten",
-        "itemUpdated": "Bijgewerkte kosten",
-        "itemDeleted": "Kosten verwijderd"
-      }
-    },
-    "register": {
-      "title": "Bespaar de terugbetaling",
-      "registerButton": "Bespaar de terugbetaling",
-      "date": "Terugbetalingsdatum",
-      "paymentMethod": "Betaalmethode",
-      "bankAccount": "Bankrekening",
-      "noBankAccountHint": "Geen bankrekening ingesteld — voeg er een toe in Financiën> Rekeningen, of kies Contant.",
-      "transaction": "Een geïmporteerde banktransactie afstemmen (optioneel)",
-      "noTransaction": "Breng nu niet dichterbij",
-      "reference": "Referentie",
-      "submit": "Opslaan",
-      "methods": {
-        "virement": "Overdracht",
-        "cheque": "Check",
-        "especes": "Soorten"
-      }
     }
   }
 }

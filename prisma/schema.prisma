@@ -3023,6 +3023,13 @@ model BoutiqueCommande {
   // Nom du service choisi par l'acheteur parmi les options cotées (ex: "Colissimo Domicile")
   // — traçabilité pour l'admin, pas juste un montant brut.
   shippingCarrierLabel  String?
+  // Defaults true for every order. An admin flips this off on an order a third party
+  // fulfills (not the association) so it stops counting toward the dashboard's "Commandes
+  // boutique à préparer" action (FORM-119) — see dashboard-actions.ts.
+  requiresPreparation   Boolean                @default(true)
+  // Set when an admin marks the order as prepared — drives the same "à préparer" count
+  // alongside requiresPreparation above.
+  preparedAt            DateTime?
   // Set only when an admin records the sale directly in the dashboard (POST
   // /api/boutique/commandes) — null for every self-service order (portal/public checkout).
   // Drives the "notifier le responsable" default (unchecked when the admin IS the

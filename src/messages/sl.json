@@ -121,6 +121,9 @@
         "passwordLabel": "Geslo",
         "passwordPlaceholder": "Min. 8 znakov",
         "passwordGoogleHint": "Za to prvo ustvarjanje računa izberite geslo. Nato se lahko prijavite z Googlom.",
+        "legalDocsAcceptPrefix": "Prebral sem vse",
+        "legalDocsLinkLabel": "Pravni dokumenti Formwise",
+        "legalDocsAcceptSuffix": "in sprejemam pogoje uporabe storitve.",
         "continueToPayment": "Nadaljujte s plačilom",
         "perkTrialDays": "{days} Prosti dnevi",
         "perkNoCommitment": "Brez obveznosti",
@@ -129,10 +132,7 @@
         "startTrial": "Začni mojo brezplačno preizkusno obdobje",
         "createAccount": "Ustvari račun",
         "perkNoCard": "Kreditna kartica ni potrebna",
-        "createAccountError": "Račun za ustvarjanje napake",
-        "legalDocsAcceptPrefix": "Prebral sem vse",
-        "legalDocsLinkLabel": "Pravni dokumenti Formwise",
-        "legalDocsAcceptSuffix": "in sprejemam pogoje uporabe storitve."
+        "createAccountError": "Račun za ustvarjanje napake"
       },
       "payment": {
         "paymentError": "Napaka pri plačilu",
@@ -664,6 +664,120 @@
       "markPaidNotice": "Označevanje tega dokumenta kot plačanega bo samodejno ustvarilo ustrezni strošek v finančnem izkazu."
     }
   },
+  "reimbursements": {
+    "view": {
+      "title": "Povračila stroškov",
+      "newRequest": "Nova zahteva",
+      "export": "Izvoz",
+      "myRequests": "Moje prošnje",
+      "allRequests": "Vse zahteve",
+      "allRequesters": "Vsi kandidati",
+      "allCategories": "Vse kategorije",
+      "dateFrom": "Od",
+      "dateTo": "Za",
+      "allStatuses": "Vsi statusi",
+      "summary": "{pending} V teku — {pendingAmount} · {approved} za vračilo — {approvedAmount} · {reimbursed} povrnjeno — {reimbursedAmount}",
+      "noRequest": "Brez zahtevkov za vračilo denarja",
+      "columns": {
+        "subject": "Namen",
+        "date": "Datum",
+        "amount": "Znesek",
+        "status": "Status"
+      },
+      "status": {
+        "draft": "Osnutek",
+        "pendingApproval": "Čaka se na odobritev",
+        "needsCorrection": "Za popravek",
+        "approved": "Odobreno",
+        "rejected": "Zavrnjeno",
+        "reimbursed": "Povrnjeno",
+        "cancelled": "Preklicano"
+      },
+      "actions": {
+        "view": "Glej",
+        "submit": "Pošlji",
+        "cancel": "Prekliči"
+      },
+      "toasts": {
+        "created": "Zahteva ustvarjena",
+        "updated": "Zahteva za posodobitev",
+        "deleted": "Zahteva izbrisana",
+        "submitted": "Vloga vložena v odobritev",
+        "cancelled": "Zahteva preklicana",
+        "approved": "Vloga odobrena",
+        "correctionRequested": "Zahteva za popravek",
+        "rejected": "Zahteva zavrnjena",
+        "reimbursed": "Zabeleženo vračilo"
+      },
+      "deleteConfirmTitle": "Izbrisati ta osnutek?",
+      "deleteConfirmDescription": "To dejanje je nepovratno.",
+      "cancelConfirmTitle": "Prekliči to zahtevo?",
+      "cancelConfirmDescription": "Prijavitelj bo obveščen o preklicu.",
+      "cancelReasonLabel": "Razlog za preklic"
+    },
+    "form": {
+      "subject": "Namen",
+      "subjectPlaceholder": "Npr. Potovanja na regionalna srečanja",
+      "comment": "Komentar",
+      "commentPlaceholder": "Neobvezne podrobnosti",
+      "event": "Sorodni dogodek",
+      "project": "Povezani projekt",
+      "noProject": "Brez projekta",
+      "noEvent": "Brez dogodkov",
+      "items": "Stroški",
+      "addItem": "Dodaj strošek",
+      "noItems": "Brez dodatnih stroškov",
+      "itemDate": "Datum porabe",
+      "itemDescription": "Opis",
+      "itemAmount": "Znesek",
+      "itemCategory": "Kategorija",
+      "itemReceipt": "Utemeljitev",
+      "total": "Skupaj",
+      "duplicateWarning": "Podoben strošek (enak datum, enak znesek) že obstaja v drugi vaši zahtevi.",
+      "toasts": {
+        "uploadError": "Napaka pri pošiljanju potrdila",
+        "networkError": "Omrežna napaka pri pošiljanju potrdila"
+      }
+    },
+    "detail": {
+      "notFound": "Zahteva za vračilo denarja ni bila najdena",
+      "history": "Zgodovina",
+      "correctionFrom": "Popravek je zahteval {name}",
+      "rejectedBy": "Zavrnjeno s strani {name}",
+      "reimbursedOn": "Povrnjeno dne {date} avtor {method}",
+      "selfApprovalBlockedNotice": "Lastne zahteve ne morete odobriti. Odobriti jo mora administrator ali drug pooblaščeni uradnik.",
+      "viewReceipt": "Oglejte si podporne dokumente",
+      "immobilisationTag": "Osnovna sredstva",
+      "approveButton": "Odobri",
+      "requestCorrectionButton": "Zahtevajte popravek",
+      "rejectButton": "Zavrni",
+      "correctionCommentLabel": "Komentar popravka",
+      "rejectionReasonLabel": "Razlog za zavrnitev",
+      "deleteItemConfirmTitle": "Odpraviti ta strošek?",
+      "toasts": {
+        "itemAdded": "Dodatni stroški",
+        "itemUpdated": "Posodobljen strošek",
+        "itemDeleted": "Strošek odstranjen"
+      }
+    },
+    "register": {
+      "title": "Shrani vračilo",
+      "registerButton": "Shrani vračilo",
+      "date": "Datum vračila",
+      "paymentMethod": "Način plačila",
+      "bankAccount": "Bančni račun",
+      "noBankAccountHint": "Brez odprtja bančnega računa — dodajte ga v Finance> Računi ali izberite Gotovina.",
+      "transaction": "Uskladite uvoženo bančno transakcijo (neobvezno)",
+      "noTransaction": "Ne približuj se zdaj",
+      "reference": "Viri",
+      "submit": "Shrani",
+      "methods": {
+        "virement": "Prenos",
+        "cheque": "Preveri",
+        "especes": "Vrste"
+      }
+    }
+  },
   "dashboard": {
     "pageTitle": "Nadzorna plošča",
     "subtitle": "Pregled vaše zveze",
@@ -676,14 +790,7 @@
       "resizeHint": "Povlecite kot za spremembo velikosti"
     },
     "aTraiter": {
-      "title": "Za zdravljenje",
-      "empty": "Trenutno ni ničesar, s čimer bi se moral ukvarjati",
-      "loadError": "Ni mogoče naložiti dejanj za obdelavo.",
-      "items": {
-        "cotisationsEnAttente": "{count, plural, one {# čakajoča članarina} other {# čakajočih prispevkov}}",
-        "donsAEncaisser": "{count, plural, one {# darilo za unovčenje} other {# donacije za zbiranje}}",
-        "materielEnRetard": "{count, plural, one {# pozne vračila materiala} other {# pozne vračila materiala}}"
-      }
+      "items": {}
     },
     "stats": {
       "financialBalance": "Finančno ravnovesje",
@@ -755,6 +862,34 @@
       "nearLimit": "Omejitev se bliža",
       "almostReached": "Omejitev skoraj dosežena",
       "limitReached": "Omejitev dosežena"
+    },
+    "actionsTodo": {
+      "trigger": "Ukrepi, ki jih je treba sprejeti",
+      "badgeHint": "{count, plural, one {# kategorija čakajočih dejanj} other {# kategorije čakajočih ukrepov}}",
+      "empty": "Vse je posodobljeno, ni bilo treba ukrepati.",
+      "snooze": "Preložiti to dejanje",
+      "snoozeDialogTitle": "Preložiti to dejanje",
+      "snoozeDialogDescription": "Dejanje ostane skrito do tega datuma, nato pa se ponovno pojavi, če so še primeri za obdelavo.",
+      "snoozeUntilLabel": "Preloženo do",
+      "confirm": "Potrdi",
+      "loadError": "Ni mogoče naložiti dejanj, ki jih je treba izvesti.",
+      "snoozedSectionTitle": "{count, plural, one {# akcija začasno ustavljena} other {# dejanja začasno ustavljena}}",
+      "snoozedUntil": "Dokler {date}",
+      "cancelSnooze": "Prekliči zadržanje",
+      "actionLabels": {
+        "voirEtRelancer": "Oglejte si in ponovno zaženite",
+        "examiner": "Izpraševalec",
+        "consulter": "Posvetujte se"
+      },
+      "rows": {
+        "cotisations-en-attente": "{count, plural, one {# čakajoča članarina} other {# čakajočih prispevkov}}",
+        "materiel-en-retard": "{count, plural, one {# pozne vračila materiala} other {# pozne vračila materiala}}",
+        "membres-a-valider": "{count, plural, one {# član za preverjanje} other {# članov, ki jih je treba potrditi}}",
+        "dons-a-encaisser": "{count, plural, one {# darilo za unovčenje} other {# donacije za zbiranje}}",
+        "rapprochement-bancaire": "{count, plural, one {# operacija za primerjavo} other {# operacij za primerjavo}}",
+        "notes-de-frais-a-valider": "{count, plural, one {# poročila o stroških za potrditev} other {# poročila o stroških za preverjanje}}",
+        "commandes-a-preparer": "{count, plural, one {# navodila za pripravo} other {# ukazi za pripravo}}"
+      }
     }
   },
   "notifications": {
@@ -1291,8 +1426,8 @@
       "toasts": {}
     },
     "transfersView": {
-      "columns": {},
-      "description": "Tukaj zabeležite že opravljene prenose med bančnimi računi vašega združenja. Obrazec zabeleži prenos brez prenosa denarja."
+      "description": "Tukaj zabeležite že opravljene prenose med bančnimi računi vašega združenja. Obrazec zabeleži prenos brez prenosa denarja.",
+      "columns": {}
     },
     "categoriesView": {
       "title": "Kategorije",
@@ -1500,13 +1635,13 @@
       "description": "Povežite uvožene bančne transakcije s svojimi prihodki in odhodki.",
       "statusFilters": {
         "all": "Vsi",
-        "unmatched": "Nespravljeni",
+        "unmatched": "Za primerjavo",
         "matched": "Sprava",
         "ignored": "Prezrto",
         "duplicate": "Duplikati"
       },
       "status": {
-        "unmatched": "Nespravljeni",
+        "unmatched": "Za primerjavo",
         "matched": "Sprava",
         "pending": "V teku",
         "ignored": "Prezrto",
@@ -2807,7 +2942,11 @@
         "markPaid": "Mark Paid",
         "cancelOrder": "Prekliči",
         "downloadReceipt": "Prenesite račun",
-        "editPaymentMethod": "Spremeni način plačila"
+        "editPaymentMethod": "Spremeni način plačila",
+        "markPrepared": "Označi kot pripravljeno",
+        "cancelPrepared": "Prekliči pripravo",
+        "delegatePreparation": "Priprava, delegirana tretji osebi",
+        "resumePreparation": "Priprava življenjepisa"
       },
       "noProduct": "Brez izdelkov",
       "noOrder": "Brez ukazov",
@@ -2839,7 +2978,10 @@
         "productDeleted": "Ukinjeni izdelki",
         "deleteError": "Brisanje napake",
         "orderUpdated": "Posodobljen vrstni red"
-      }
+      },
+      "statusFilterToPrepare": "Za pripravo",
+      "toPrepareCountLabel": "Ukazi za pripravo",
+      "toPrepareAmountLabel": "Znesek za pripravo"
     },
     "payModal": {
       "title": "Plačilni nalog",
@@ -4047,17 +4189,17 @@
       "websitePlaceholder": "mon-association.fr",
       "iban": "IBAN",
       "bic": "BIC",
+      "accountingRegime": "Računovodski režim za povračila stroškov",
+      "accountingRegimeHint": "Določa, kdaj je zahteva za povračilo vložena: ob odobritvi (zavezi) ali ob dejanskem plačilu (gotovina).",
+      "accountingRegimeCash": "Denarno računovodstvo",
+      "accountingRegimeAccrual": "Računovodstvo zavez",
       "previewTitle": "Predogled dokumenta",
       "bankDetails": "Bančni podatki",
       "ibanColon": "IBAN : {value}",
       "bicColon": "BIC : {value}",
       "toasts": {
         "updated": "Posodobljeni kontaktni podatki"
-      },
-      "accountingRegime": "Računovodski režim za povračila stroškov",
-      "accountingRegimeHint": "Določa, kdaj je zahteva za povračilo vložena: ob odobritvi (zavezi) ali ob dejanskem plačilu (gotovina).",
-      "accountingRegimeCash": "Denarno računovodstvo",
-      "accountingRegimeAccrual": "Računovodstvo zavez"
+      }
     },
     "membreTypes": {
       "name": "Ime",
@@ -4613,6 +4755,12 @@
       },
       "invalidFormToast": "Shranjevanje ni uspelo. Če se težava ponavlja, se obrnite na podporo.",
       "customFieldsLoading": "Nalaganje odgovorov iz pristopnega obrazca…"
+    },
+    "fichePdf": {
+      "title": "PROFIL ČLANA",
+      "subtitle": "Obrazec, ki ga mora izpolniti novi član",
+      "signature": "Podpis",
+      "date": "Datum"
     },
     "actions": {
       "add": "Dodajte člana",
@@ -5386,12 +5534,6 @@
         "genericError": "Napaka"
       },
       "importedNote": "Uvoženo iz AssoConnect — {collecte}"
-    },
-    "fichePdf": {
-      "title": "PROFIL ČLANA",
-      "subtitle": "Obrazec, ki ga mora izpolniti novi član",
-      "signature": "Podpis",
-      "date": "Datum"
     }
   },
   "memberCard": {
@@ -6061,6 +6203,7 @@
       "finances": "Finančno spremljanje",
       "devis": "Ponudbe",
       "factures": "Računi",
+      "reimbursements": "Povračila stroškov",
       "fournisseurs": "Dobavitelji",
       "dons": "Donacije",
       "reunions": "Sestanki",
@@ -6078,8 +6221,7 @@
         "communication": "Komunikacija",
         "finances": "Finance",
         "outils": "Orodja"
-      },
-      "reimbursements": "Povračila stroškov"
+      }
     },
     "backofficeSidebar": {
       "backoffice": "Backoffice",
@@ -6324,120 +6466,6 @@
     },
     "backoffice": {
       "columns": {}
-    }
-  },
-  "reimbursements": {
-    "view": {
-      "title": "Povračila stroškov",
-      "newRequest": "Nova zahteva",
-      "export": "Izvoz",
-      "myRequests": "Moje prošnje",
-      "allRequests": "Vse zahteve",
-      "allRequesters": "Vsi kandidati",
-      "allCategories": "Vse kategorije",
-      "dateFrom": "Od",
-      "dateTo": "Za",
-      "allStatuses": "Vsi statusi",
-      "summary": "{pending} V teku — {pendingAmount} · {approved} za vračilo — {approvedAmount} · {reimbursed} povrnjeno — {reimbursedAmount}",
-      "noRequest": "Brez zahtevkov za vračilo denarja",
-      "columns": {
-        "subject": "Namen",
-        "date": "Datum",
-        "amount": "Znesek",
-        "status": "Status"
-      },
-      "status": {
-        "draft": "Osnutek",
-        "pendingApproval": "Čaka se na odobritev",
-        "needsCorrection": "Za popravek",
-        "approved": "Odobreno",
-        "rejected": "Zavrnjeno",
-        "reimbursed": "Povrnjeno",
-        "cancelled": "Preklicano"
-      },
-      "actions": {
-        "view": "Glej",
-        "submit": "Pošlji",
-        "cancel": "Prekliči"
-      },
-      "toasts": {
-        "created": "Zahteva ustvarjena",
-        "updated": "Zahteva za posodobitev",
-        "deleted": "Zahteva izbrisana",
-        "submitted": "Vloga vložena v odobritev",
-        "cancelled": "Zahteva preklicana",
-        "approved": "Vloga odobrena",
-        "correctionRequested": "Zahteva za popravek",
-        "rejected": "Zahteva zavrnjena",
-        "reimbursed": "Zabeleženo vračilo"
-      },
-      "deleteConfirmTitle": "Izbrisati ta osnutek?",
-      "deleteConfirmDescription": "To dejanje je nepovratno.",
-      "cancelConfirmTitle": "Prekliči to zahtevo?",
-      "cancelConfirmDescription": "Prijavitelj bo obveščen o preklicu.",
-      "cancelReasonLabel": "Razlog za preklic"
-    },
-    "form": {
-      "subject": "Namen",
-      "subjectPlaceholder": "Npr. Potovanja na regionalna srečanja",
-      "comment": "Komentar",
-      "commentPlaceholder": "Neobvezne podrobnosti",
-      "event": "Sorodni dogodek",
-      "project": "Povezani projekt",
-      "noProject": "Brez projekta",
-      "noEvent": "Brez dogodkov",
-      "items": "Stroški",
-      "addItem": "Dodaj strošek",
-      "noItems": "Brez dodatnih stroškov",
-      "itemDate": "Datum porabe",
-      "itemDescription": "Opis",
-      "itemAmount": "Znesek",
-      "itemCategory": "Kategorija",
-      "itemReceipt": "Utemeljitev",
-      "total": "Skupaj",
-      "duplicateWarning": "Podoben strošek (enak datum, enak znesek) že obstaja v drugi vaši zahtevi.",
-      "toasts": {
-        "uploadError": "Napaka pri pošiljanju potrdila",
-        "networkError": "Omrežna napaka pri pošiljanju potrdila"
-      }
-    },
-    "detail": {
-      "notFound": "Zahteva za vračilo denarja ni bila najdena",
-      "history": "Zgodovina",
-      "correctionFrom": "Popravek je zahteval {name}",
-      "rejectedBy": "Zavrnjeno s strani {name}",
-      "reimbursedOn": "Povrnjeno dne {date} avtor {method}",
-      "selfApprovalBlockedNotice": "Lastne zahteve ne morete odobriti. Odobriti jo mora administrator ali drug pooblaščeni uradnik.",
-      "viewReceipt": "Oglejte si podporne dokumente",
-      "immobilisationTag": "Osnovna sredstva",
-      "approveButton": "Odobri",
-      "requestCorrectionButton": "Zahtevajte popravek",
-      "rejectButton": "Zavrni",
-      "correctionCommentLabel": "Komentar popravka",
-      "rejectionReasonLabel": "Razlog za zavrnitev",
-      "deleteItemConfirmTitle": "Odpraviti ta strošek?",
-      "toasts": {
-        "itemAdded": "Dodatni stroški",
-        "itemUpdated": "Posodobljen strošek",
-        "itemDeleted": "Strošek odstranjen"
-      }
-    },
-    "register": {
-      "title": "Shrani vračilo",
-      "registerButton": "Shrani vračilo",
-      "date": "Datum vračila",
-      "paymentMethod": "Način plačila",
-      "bankAccount": "Bančni račun",
-      "noBankAccountHint": "Brez odprtja bančnega računa — dodajte ga v Finance> Računi ali izberite Gotovina.",
-      "transaction": "Uskladite uvoženo bančno transakcijo (neobvezno)",
-      "noTransaction": "Ne približuj se zdaj",
-      "reference": "Viri",
-      "submit": "Shrani",
-      "methods": {
-        "virement": "Prenos",
-        "cheque": "Preveri",
-        "especes": "Vrste"
-      }
     }
   }
 }

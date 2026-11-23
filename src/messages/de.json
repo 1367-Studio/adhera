@@ -121,6 +121,9 @@
         "passwordLabel": "Passwort",
         "passwordPlaceholder": "Mindestens 8 Zeichen",
         "passwordGoogleHint": "Für diese erste Kontoerstellung wählen Sie ein Passwort. Sie können sich dann mit Google anmelden.",
+        "legalDocsAcceptPrefix": "Ich habe alle gelesen",
+        "legalDocsLinkLabel": "Rechtliche Dokumente der Formwise",
+        "legalDocsAcceptSuffix": "und ich akzeptiere die Nutzungsbedingungen des Services.",
         "continueToPayment": "Weiter zum Kassen",
         "perkTrialDays": "{days} Freitage",
         "perkNoCommitment": "Keine Verpflichtung",
@@ -129,10 +132,7 @@
         "startTrial": "Starte meine kostenlose Testphase",
         "createAccount": "Konto erstellen",
         "perkNoCard": "Keine Kreditkarte erforderlich",
-        "createAccountError": "Fehler-Kontoerstellung",
-        "legalDocsAcceptPrefix": "Ich habe alle gelesen",
-        "legalDocsLinkLabel": "Rechtliche Dokumente der Formwise",
-        "legalDocsAcceptSuffix": "und ich akzeptiere die Nutzungsbedingungen des Services."
+        "createAccountError": "Fehler-Kontoerstellung"
       },
       "payment": {
         "paymentError": "Zahlungsfehler",
@@ -664,6 +664,120 @@
       "markPaidNotice": "Das Markieren dieses Dokuments als bezahlt erzeugt automatisch eine entsprechende Ausgabe in der Finanzabteilung."
     }
   },
+  "reimbursements": {
+    "view": {
+      "title": "Kostenerstattungen",
+      "newRequest": "Neue Anfrage",
+      "export": "Export",
+      "myRequests": "Meine Wünsche",
+      "allRequests": "Alle Anfragen",
+      "allRequesters": "Alle Antragsteller",
+      "allCategories": "Alle Kategorien",
+      "dateFrom": "Von",
+      "dateTo": "Zu",
+      "allStatuses": "Alle Statusse",
+      "summary": "{pending} Anhängig — {pendingAmount} · {approved} zu erstatten — {approvedAmount} · {reimbursed} erstattet — {reimbursedAmount}",
+      "noRequest": "Keine Rückerstattungsanträge",
+      "columns": {
+        "subject": "Zweck",
+        "date": "Datum",
+        "amount": "Betrag",
+        "status": "Status"
+      },
+      "status": {
+        "draft": "Entwurf",
+        "pendingApproval": "Wartet auf die Genehmigung",
+        "needsCorrection": "Noch zu korrigieren",
+        "approved": "Genehmigt",
+        "rejected": "Abgelehnt",
+        "reimbursed": "Erstattet",
+        "cancelled": "Abgesagt"
+      },
+      "actions": {
+        "view": "Siehe",
+        "submit": "Einreichen",
+        "cancel": "Abbrechen"
+      },
+      "toasts": {
+        "created": "Anfrage erstellt",
+        "updated": "Aktualisierungsanfrage",
+        "deleted": "Anfrage gelöscht",
+        "submitted": "Antrag zur Genehmigung eingereicht",
+        "cancelled": "Anfrage abgesagt",
+        "approved": "Antrag genehmigt",
+        "correctionRequested": "Korrektur angefordert",
+        "rejected": "Antrag abgelehnt",
+        "reimbursed": "Eingetragene Rückerstattung"
+      },
+      "deleteConfirmTitle": "Diesen Entwurf löschen?",
+      "deleteConfirmDescription": "Diese Maßnahme ist irreversibel.",
+      "cancelConfirmTitle": "Diese Anfrage stornieren?",
+      "cancelConfirmDescription": "Der Antragsteller wird über die Kündigung informiert.",
+      "cancelReasonLabel": "Grund für die Absage"
+    },
+    "form": {
+      "subject": "Zweck",
+      "subjectPlaceholder": "Z. B. Reisen zu regionalen Treffen",
+      "comment": "Kommentar",
+      "commentPlaceholder": "Optionale Details",
+      "event": "Verwandte Veranstaltung",
+      "project": "Assoziiertes Projekt",
+      "noProject": "Kein Projekt",
+      "noEvent": "Keine Veranstaltungen",
+      "items": "Ausgaben",
+      "addItem": "Einen Aufwand hinzufügen",
+      "noItems": "Keine zusätzlichen Gebühren",
+      "itemDate": "Ausgabendatum",
+      "itemDescription": "Beschreibung",
+      "itemAmount": "Betrag",
+      "itemCategory": "Kategorie",
+      "itemReceipt": "Begründung",
+      "total": "Gesamt",
+      "duplicateWarning": "Eine ähnliche Ausgabe (gleiches Datum, gleicher Betrag) existiert bereits in einer anderen deiner Anfragen.",
+      "toasts": {
+        "uploadError": "Fehler beim Versand der Quittung",
+        "networkError": "Netzwerkfehler beim Versand der Quittung"
+      }
+    },
+    "detail": {
+      "notFound": "Rückerstattungsantrag nicht gefunden",
+      "history": "Geschichte",
+      "correctionFrom": "Korrektur angefordert von {name}",
+      "rejectedBy": "Abgelehnt von {name}",
+      "reimbursedOn": "Erstattet am {date} von {method}",
+      "selfApprovalBlockedNotice": "Sie können Ihren eigenen Antrag nicht genehmigen. Er muss von einem Administrator oder einem anderen bevollmächtigten Beamten genehmigt werden.",
+      "viewReceipt": "Siehe die unterstützenden Dokumente",
+      "immobilisationTag": "Anlagevermögen",
+      "approveButton": "Genehmigt",
+      "requestCorrectionButton": "Eine Korrektur anfordern",
+      "rejectButton": "Ablehnen",
+      "correctionCommentLabel": "Korrekturkommentar",
+      "rejectionReasonLabel": "Grund für die Ablehnung",
+      "deleteItemConfirmTitle": "Diese Ausgabe eliminieren?",
+      "toasts": {
+        "itemAdded": "Zusätzliche Kosten",
+        "itemUpdated": "Aktualisierte Ausgaben",
+        "itemDeleted": "Ausgaben entfernt"
+      }
+    },
+    "register": {
+      "title": "Sparen Sie die Rückerstattung",
+      "registerButton": "Sparen Sie die Rückerstattung",
+      "date": "Rückerstattungsdatum",
+      "paymentMethod": "Zahlungsmethode",
+      "bankAccount": "Bankkonto",
+      "noBankAccountHint": "Kein Bankkonto eingerichtet – fügen Sie eines in Finanzen> Konten hinzu oder wählen Sie Bargeld.",
+      "transaction": "Eine importierte Banktransaktion abgleichen (optional)",
+      "noTransaction": "Bring dich jetzt nicht näher",
+      "reference": "Referenz",
+      "submit": "Speichern",
+      "methods": {
+        "virement": "Transfer",
+        "cheque": "Check",
+        "especes": "Arten"
+      }
+    }
+  },
   "dashboard": {
     "pageTitle": "Dashboard",
     "subtitle": "Überblick über Ihre Vereinigung",
@@ -676,14 +790,7 @@
       "resizeHint": "Ziehe die Ecke, um die Größe anzupassen"
     },
     "aTraiter": {
-      "title": "Behandelt zu werden",
-      "empty": "Im Moment gibt es nichts zu tun",
-      "loadError": "Zu verarbeitende Aktionen können nicht geladen werden.",
-      "items": {
-        "cotisationsEnAttente": "{count, plural, one {# ausstehende Mitgliedsgebühr} other {# ausstehende Beiträge}}",
-        "donsAEncaisser": "{count, plural, one {# Geschenk, das eingelöst werden soll} other {# Spenden einzusammeln}}",
-        "materielEnRetard": "{count, plural, one {# späte Materialrenditen} other {# späte Materialrenditen}}"
-      }
+      "items": {}
     },
     "stats": {
       "financialBalance": "Finanzbilanz",
@@ -755,6 +862,34 @@
       "nearLimit": "Limit bald erreicht",
       "almostReached": "Limit fast erreicht",
       "limitReached": "Limit erreicht"
+    },
+    "actionsTodo": {
+      "trigger": "Zu ergreifende Maßnahmen",
+      "badgeHint": "{count, plural, one {# ausstehende Aktionskategorie} other {# Kategorien ausstehender Aktionen}}",
+      "empty": "Alles ist auf dem neuesten Stand, keine Aktion zu bewältigen.",
+      "snooze": "Diese Aktion verschieben",
+      "snoozeDialogTitle": "Diese Aktion verschieben",
+      "snoozeDialogDescription": "Die Aktion bleibt bis zu diesem Datum für Sie verborgen und erscheint dann wieder, wenn noch Fälle zu bearbeiten sind.",
+      "snoozeUntilLabel": "Verschoben bis",
+      "confirm": "Bestätigen",
+      "loadError": "Die auszuführenden Aktionen können nicht geladen werden.",
+      "snoozedSectionTitle": "{count, plural, one {# Aktion auf Eis gelegt} other {# Aktionen, die auf Eis gelegt wurden}}",
+      "snoozedUntil": "Bis {date}",
+      "cancelSnooze": "Sperre aufheben",
+      "actionLabels": {
+        "voirEtRelancer": "Siehe und Neustart",
+        "examiner": "Prüfer",
+        "consulter": "Konsultieren"
+      },
+      "rows": {
+        "cotisations-en-attente": "{count, plural, one {# ausstehende Mitgliedsgebühr} other {# ausstehende Beiträge}}",
+        "materiel-en-retard": "{count, plural, one {# späte Materialrenditen} other {# späte Materialrenditen}}",
+        "membres-a-valider": "{count, plural, one {# Mitglied zum Validieren} other {# Mitglieder zu validieren}}",
+        "dons-a-encaisser": "{count, plural, one {# Geschenk, das eingelöst werden soll} other {# Spenden einzusammeln}}",
+        "rapprochement-bancaire": "{count, plural, one {# zu vergleichende Operation} other {# Operationen zum Vergleichen}}",
+        "notes-de-frais-a-valider": "{count, plural, one {# Ausgabenbericht zu validieren} other {# Ausgabenberichte zu validieren}}",
+        "commandes-a-preparer": "{count, plural, one {# Vorbereitungsauftrag} other {# Befehle zur Vorbereitung}}"
+      }
     }
   },
   "notifications": {
@@ -1291,8 +1426,8 @@
       "toasts": {}
     },
     "transfersView": {
-      "columns": {},
-      "description": "Verzeichne hier die bereits zwischen den Bankkonten deines Verbands getätigten Überweisungen. Formwise verzeichnet die Überweisung, ohne Geld zu bewegen."
+      "description": "Verzeichne hier die bereits zwischen den Bankkonten deines Verbands getätigten Überweisungen. Formwise verzeichnet die Überweisung, ohne Geld zu bewegen.",
+      "columns": {}
     },
     "categoriesView": {
       "title": "Kategorien",
@@ -1500,13 +1635,13 @@
       "description": "Verknüpfe importierte Banktransaktionen mit deinen Einnahmen und Ausgaben.",
       "statusFilters": {
         "all": "Alle",
-        "unmatched": "Unversöhnt",
+        "unmatched": "Zum Vergleich",
         "matched": "Versöhnt",
         "ignored": "Ignoriert",
         "duplicate": "Duplikate"
       },
       "status": {
-        "unmatched": "Unversöhnt",
+        "unmatched": "Zum Vergleich",
         "matched": "Versöhnt",
         "pending": "Ausstehend",
         "ignored": "Ignoriert",
@@ -2807,7 +2942,11 @@
         "markPaid": "Mark Paid",
         "cancelOrder": "Stornieren",
         "downloadReceipt": "Laden Sie die Quittung herunter",
-        "editPaymentMethod": "Änderung der Zahlungsmethode"
+        "editPaymentMethod": "Änderung der Zahlungsmethode",
+        "markPrepared": "Markieren Sie als vorbereitet",
+        "cancelPrepared": "Vorbereitung abbrechen",
+        "delegatePreparation": "An eine dritte Partei delegierte Vorbereitung",
+        "resumePreparation": "Erstellung des Lebenslaufs"
       },
       "noProduct": "Keine Produkte",
       "noOrder": "Keine Befehle",
@@ -2839,7 +2978,10 @@
         "productDeleted": "Eingestelltes Produkt",
         "deleteError": "Fehler beim Löschen",
         "orderUpdated": "Aktualisierte Reihenfolge"
-      }
+      },
+      "statusFilterToPrepare": "Zur Vorbereitung",
+      "toPrepareCountLabel": "Befehle zur Vorbereitung",
+      "toPrepareAmountLabel": "Zu erstellender Betrag"
     },
     "payModal": {
       "title": "Baranweisung",
@@ -4047,17 +4189,17 @@
       "websitePlaceholder": "mon-association.fr",
       "iban": "IBAN",
       "bic": "BIC",
+      "accountingRegime": "Buchhaltungsregelung für Kostenerstattungen",
+      "accountingRegimeHint": "Bestimmt, wann ein Rückerstattungsantrag gestellt wird: bei Genehmigung (Verpflichtung) oder bei tatsächlicher Zahlung (Barzahlung).",
+      "accountingRegimeCash": "Kassenbuchhaltung",
+      "accountingRegimeAccrual": "Verpflichtungsbuchhaltung",
       "previewTitle": "Dokumentvorschau",
       "bankDetails": "Bankdaten",
       "ibanColon": "IBAN : {value}",
       "bicColon": "BIC: {value}",
       "toasts": {
         "updated": "Aktualisierte Kontaktinformationen"
-      },
-      "accountingRegime": "Buchhaltungsregelung für Kostenerstattungen",
-      "accountingRegimeHint": "Bestimmt, wann ein Rückerstattungsantrag gestellt wird: bei Genehmigung (Verpflichtung) oder bei tatsächlicher Zahlung (Barzahlung).",
-      "accountingRegimeCash": "Kassenbuchhaltung",
-      "accountingRegimeAccrual": "Verpflichtungsbuchhaltung"
+      }
     },
     "membreTypes": {
       "name": "Name",
@@ -4613,6 +4755,12 @@
       },
       "invalidFormToast": "Speichern nicht möglich. Wenden Sie sich an den Support, falls das Problem weiterhin besteht.",
       "customFieldsLoading": "Antworten des Anmeldeformulars werden geladen…"
+    },
+    "fichePdf": {
+      "title": "MITGLIEDERPROFIL",
+      "subtitle": "Formular, das vom neuen Mitglied auszufüllen ist",
+      "signature": "Unterschrift",
+      "date": "Datum"
     },
     "actions": {
       "add": "Mitglied hinzufügen",
@@ -5386,12 +5534,6 @@
         "genericError": "Fehler"
       },
       "importedNote": "Importiert von AssoConnect — {collecte}"
-    },
-    "fichePdf": {
-      "title": "MITGLIEDERPROFIL",
-      "subtitle": "Formular, das vom neuen Mitglied auszufüllen ist",
-      "signature": "Unterschrift",
-      "date": "Datum"
     }
   },
   "memberCard": {
@@ -6127,6 +6269,7 @@
       "finances": "Finanzüberwachung",
       "devis": "Angebote",
       "factures": "Rechnungen",
+      "reimbursements": "Kostenerstattungen",
       "fournisseurs": "Lieferanten",
       "dons": "Spenden",
       "reunions": "Treffen",
@@ -6144,8 +6287,7 @@
         "communication": "Kommunikation",
         "finances": "Finanzen",
         "outils": "Werkzeuge"
-      },
-      "reimbursements": "Kostenerstattungen"
+      }
     },
     "backofficeSidebar": {
       "backoffice": "Backoffice",
@@ -6390,120 +6532,6 @@
     },
     "backoffice": {
       "columns": {}
-    }
-  },
-  "reimbursements": {
-    "view": {
-      "title": "Kostenerstattungen",
-      "newRequest": "Neue Anfrage",
-      "export": "Export",
-      "myRequests": "Meine Wünsche",
-      "allRequests": "Alle Anfragen",
-      "allRequesters": "Alle Antragsteller",
-      "allCategories": "Alle Kategorien",
-      "dateFrom": "Von",
-      "dateTo": "Zu",
-      "allStatuses": "Alle Statusse",
-      "summary": "{pending} Anhängig — {pendingAmount} · {approved} zu erstatten — {approvedAmount} · {reimbursed} erstattet — {reimbursedAmount}",
-      "noRequest": "Keine Rückerstattungsanträge",
-      "columns": {
-        "subject": "Zweck",
-        "date": "Datum",
-        "amount": "Betrag",
-        "status": "Status"
-      },
-      "status": {
-        "draft": "Entwurf",
-        "pendingApproval": "Wartet auf die Genehmigung",
-        "needsCorrection": "Noch zu korrigieren",
-        "approved": "Genehmigt",
-        "rejected": "Abgelehnt",
-        "reimbursed": "Erstattet",
-        "cancelled": "Abgesagt"
-      },
-      "actions": {
-        "view": "Siehe",
-        "submit": "Einreichen",
-        "cancel": "Abbrechen"
-      },
-      "toasts": {
-        "created": "Anfrage erstellt",
-        "updated": "Aktualisierungsanfrage",
-        "deleted": "Anfrage gelöscht",
-        "submitted": "Antrag zur Genehmigung eingereicht",
-        "cancelled": "Anfrage abgesagt",
-        "approved": "Antrag genehmigt",
-        "correctionRequested": "Korrektur angefordert",
-        "rejected": "Antrag abgelehnt",
-        "reimbursed": "Eingetragene Rückerstattung"
-      },
-      "deleteConfirmTitle": "Diesen Entwurf löschen?",
-      "deleteConfirmDescription": "Diese Maßnahme ist irreversibel.",
-      "cancelConfirmTitle": "Diese Anfrage stornieren?",
-      "cancelConfirmDescription": "Der Antragsteller wird über die Kündigung informiert.",
-      "cancelReasonLabel": "Grund für die Absage"
-    },
-    "form": {
-      "subject": "Zweck",
-      "subjectPlaceholder": "Z. B. Reisen zu regionalen Treffen",
-      "comment": "Kommentar",
-      "commentPlaceholder": "Optionale Details",
-      "event": "Verwandte Veranstaltung",
-      "project": "Assoziiertes Projekt",
-      "noProject": "Kein Projekt",
-      "noEvent": "Keine Veranstaltungen",
-      "items": "Ausgaben",
-      "addItem": "Einen Aufwand hinzufügen",
-      "noItems": "Keine zusätzlichen Gebühren",
-      "itemDate": "Ausgabendatum",
-      "itemDescription": "Beschreibung",
-      "itemAmount": "Betrag",
-      "itemCategory": "Kategorie",
-      "itemReceipt": "Begründung",
-      "total": "Gesamt",
-      "duplicateWarning": "Eine ähnliche Ausgabe (gleiches Datum, gleicher Betrag) existiert bereits in einer anderen deiner Anfragen.",
-      "toasts": {
-        "uploadError": "Fehler beim Versand der Quittung",
-        "networkError": "Netzwerkfehler beim Versand der Quittung"
-      }
-    },
-    "detail": {
-      "notFound": "Rückerstattungsantrag nicht gefunden",
-      "history": "Geschichte",
-      "correctionFrom": "Korrektur angefordert von {name}",
-      "rejectedBy": "Abgelehnt von {name}",
-      "reimbursedOn": "Erstattet am {date} von {method}",
-      "selfApprovalBlockedNotice": "Sie können Ihren eigenen Antrag nicht genehmigen. Er muss von einem Administrator oder einem anderen bevollmächtigten Beamten genehmigt werden.",
-      "viewReceipt": "Siehe die unterstützenden Dokumente",
-      "immobilisationTag": "Anlagevermögen",
-      "approveButton": "Genehmigt",
-      "requestCorrectionButton": "Eine Korrektur anfordern",
-      "rejectButton": "Ablehnen",
-      "correctionCommentLabel": "Korrekturkommentar",
-      "rejectionReasonLabel": "Grund für die Ablehnung",
-      "deleteItemConfirmTitle": "Diese Ausgabe eliminieren?",
-      "toasts": {
-        "itemAdded": "Zusätzliche Kosten",
-        "itemUpdated": "Aktualisierte Ausgaben",
-        "itemDeleted": "Ausgaben entfernt"
-      }
-    },
-    "register": {
-      "title": "Sparen Sie die Rückerstattung",
-      "registerButton": "Sparen Sie die Rückerstattung",
-      "date": "Rückerstattungsdatum",
-      "paymentMethod": "Zahlungsmethode",
-      "bankAccount": "Bankkonto",
-      "noBankAccountHint": "Kein Bankkonto eingerichtet – fügen Sie eines in Finanzen> Konten hinzu oder wählen Sie Bargeld.",
-      "transaction": "Eine importierte Banktransaktion abgleichen (optional)",
-      "noTransaction": "Bring dich jetzt nicht näher",
-      "reference": "Referenz",
-      "submit": "Speichern",
-      "methods": {
-        "virement": "Transfer",
-        "cheque": "Check",
-        "especes": "Arten"
-      }
     }
   }
 }

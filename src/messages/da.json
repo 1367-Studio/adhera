@@ -121,6 +121,9 @@
         "passwordLabel": "Adgangskode",
         "passwordPlaceholder": "Min. 8 tegn",
         "passwordGoogleHint": "Til denne første kontooprettelse skal du vælge en adgangskode. Du kan derefter logge ind med Google.",
+        "legalDocsAcceptPrefix": "Jeg har læst alle",
+        "legalDocsLinkLabel": "Juridiske dokumenter fra Formwise",
+        "legalDocsAcceptSuffix": "og jeg accepterer brugsvilkårene for tjenesten.",
         "continueToPayment": "Fortsæt med at tjekke ud",
         "perkTrialDays": "{days} Fridage",
         "perkNoCommitment": "Ingen forpligtelse",
@@ -129,10 +132,7 @@
         "startTrial": "Start min gratis prøveperiode",
         "createAccount": "Opret konto",
         "perkNoCard": "Ingen kreditkort kræves",
-        "createAccountError": "Fejloprettelse af konto",
-        "legalDocsAcceptPrefix": "Jeg har læst alle",
-        "legalDocsLinkLabel": "Juridiske dokumenter fra Formwise",
-        "legalDocsAcceptSuffix": "og jeg accepterer brugsvilkårene for tjenesten."
+        "createAccountError": "Fejloprettelse af konto"
       },
       "payment": {
         "paymentError": "Betalingsfejl",
@@ -664,6 +664,120 @@
       "markPaidNotice": "Hvis du markerer dette dokument som betalt, vil det automatisk oprette en tilsvarende udgift i Finansafdelingen."
     }
   },
+  "reimbursements": {
+    "view": {
+      "title": "Udgiftsrefusioner",
+      "newRequest": "Ny anmodning",
+      "export": "Eksport",
+      "myRequests": "Mine ønsker",
+      "allRequests": "Alle anmodninger",
+      "allRequesters": "Alle ansøgere",
+      "allCategories": "Alle kategorier",
+      "dateFrom": "Af",
+      "dateTo": "Til",
+      "allStatuses": "Alle statusser",
+      "summary": "{pending} Afventende — {pendingAmount} · {approved} skal refunderes — {approvedAmount} · {reimbursed} refunderet — {reimbursedAmount}",
+      "noRequest": "Ingen anmodninger om refundering",
+      "columns": {
+        "subject": "Formål",
+        "date": "Dato",
+        "amount": "Beløb",
+        "status": "Status"
+      },
+      "status": {
+        "draft": "Draft",
+        "pendingApproval": "Afventer godkendelse",
+        "needsCorrection": "Skal rettes",
+        "approved": "Godkendt",
+        "rejected": "Afvist",
+        "reimbursed": "Refunderet",
+        "cancelled": "Aflyst"
+      },
+      "actions": {
+        "view": "Se",
+        "submit": "Indsend",
+        "cancel": "Annuller"
+      },
+      "toasts": {
+        "created": "Anmodning oprettet",
+        "updated": "Opdateringsanmodning",
+        "deleted": "Anmodning slettet",
+        "submitted": "Ansøgning indsendt til godkendelse",
+        "cancelled": "Anmodning annulleret",
+        "approved": "Ansøgning godkendt",
+        "correctionRequested": "Rettelse anmodet",
+        "rejected": "Anmodning afvist",
+        "reimbursed": "Registreret tilbagebetaling"
+      },
+      "deleteConfirmTitle": "Slette dette udkast?",
+      "deleteConfirmDescription": "Denne handling er irreversibel.",
+      "cancelConfirmTitle": "Annullere denne anmodning?",
+      "cancelConfirmDescription": "Ansøgeren vil blive underrettet om annulleringen.",
+      "cancelReasonLabel": "Årsag til afbestilling"
+    },
+    "form": {
+      "subject": "Formål",
+      "subjectPlaceholder": "F.eks. rejser til regionale møder",
+      "comment": "Kommentar",
+      "commentPlaceholder": "Valgfrie detaljer",
+      "event": "Relateret begivenhed",
+      "project": "Tilknyttet projekt",
+      "noProject": "Intet projekt",
+      "noEvent": "Ingen begivenheder",
+      "items": "Udgifter",
+      "addItem": "Tilføj en udgift",
+      "noItems": "Ingen ekstra gebyrer",
+      "itemDate": "Udgiftsdato",
+      "itemDescription": "Beskrivelse",
+      "itemAmount": "Beløb",
+      "itemCategory": "Kategori",
+      "itemReceipt": "Begrundelse",
+      "total": "Total",
+      "duplicateWarning": "En lignende udgift (samme dato, samme beløb) findes allerede i en anden af dine anmodninger.",
+      "toasts": {
+        "uploadError": "Fejl ved afsendelse af kvitteringen",
+        "networkError": "Netværksfejl ved afsendelse af kvitteringen"
+      }
+    },
+    "detail": {
+      "notFound": "Anmodning om refundering ikke fundet",
+      "history": "Historie",
+      "correctionFrom": "Rettelse anmodet af {name}",
+      "rejectedBy": "Afvist af {name}",
+      "reimbursedOn": "Refunderet den {date} af {method}",
+      "selfApprovalBlockedNotice": "Du kan ikke godkende din egen anmodning. Den skal godkendes af en administrator eller en anden bemyndiget embedsmand.",
+      "viewReceipt": "Se de understøttende dokumenter",
+      "immobilisationTag": "Anlægsaktiver",
+      "approveButton": "Godkend",
+      "requestCorrectionButton": "Anmod om en rettelse",
+      "rejectButton": "Afvis",
+      "correctionCommentLabel": "Rettelseskommentar",
+      "rejectionReasonLabel": "Begrundelse for afslag",
+      "deleteItemConfirmTitle": "Eliminere denne udgift?",
+      "toasts": {
+        "itemAdded": "Ekstra omkostninger",
+        "itemUpdated": "Opdateret udgift",
+        "itemDeleted": "Udgift fjernet"
+      }
+    },
+    "register": {
+      "title": "Gem refunderingen",
+      "registerButton": "Gem refunderingen",
+      "date": "Refusionsdato",
+      "paymentMethod": "Betalingsmetode",
+      "bankAccount": "Bankkonto",
+      "noBankAccountHint": "Ingen bankkonto oprettet — tilføj en i Finans> Konti, eller vælg Kontanter.",
+      "transaction": "Afstemme en importeret banktransaktion (valgfrit)",
+      "noTransaction": "Kom ikke tættere på nu",
+      "reference": "Reference",
+      "submit": "Gem",
+      "methods": {
+        "virement": "Overførsel",
+        "cheque": "Check",
+        "especes": "Arter"
+      }
+    }
+  },
   "dashboard": {
     "pageTitle": "Dashboard",
     "subtitle": "Oversigt over din forening",
@@ -676,14 +790,7 @@
       "resizeHint": "Træk hjørnet for at ændre størrelsen"
     },
     "aTraiter": {
-      "title": "At blive behandlet",
-      "empty": "Intet at håndtere lige nu",
-      "loadError": "Kan ikke indlæse handlinger, der skal behandles.",
-      "items": {
-        "cotisationsEnAttente": "{count, plural, one {# udestående medlemsgebyr} other {# ventende bidrag}}",
-        "donsAEncaisser": "{count, plural, one {# gave, der skal indløses} other {# donationer til indsamling}}",
-        "materielEnRetard": "{count, plural, one {# sene materialeafkast} other {# sene materialeafkast}}"
-      }
+      "items": {}
     },
     "stats": {
       "financialBalance": "Finansiel balance",
@@ -755,6 +862,34 @@
       "nearLimit": "Grænsen nærmer sig",
       "almostReached": "Grænsen er næsten nået",
       "limitReached": "Grænsen er nået"
+    },
+    "actionsTodo": {
+      "trigger": "Handlinger, der skal tages",
+      "badgeHint": "{count, plural, one {# kategori for ventende handling} other {# kategorier af ventende handlinger}}",
+      "empty": "Alt er opdateret, ingen handling at håndtere.",
+      "snooze": "Udsæt denne handling",
+      "snoozeDialogTitle": "Udsæt denne handling",
+      "snoozeDialogDescription": "Handlingen forbliver skjult for dig indtil den dato, og dukker så op igen, hvis der stadig er sager, der skal behandles.",
+      "snoozeUntilLabel": "Udsat til",
+      "confirm": "Bekræft",
+      "loadError": "Kan ikke indlæse de handlinger, der skal udføres.",
+      "snoozedSectionTitle": "{count, plural, one {# handling sat på pause} other {# handlinger sat på pause}}",
+      "snoozedUntil": "Indtil {date}",
+      "cancelSnooze": "Opskær holdet",
+      "actionLabels": {
+        "voirEtRelancer": "Se og genlancering",
+        "examiner": "Examinator",
+        "consulter": "Konsultér"
+      },
+      "rows": {
+        "cotisations-en-attente": "{count, plural, one {# udestående medlemsgebyr} other {# ventende bidrag}}",
+        "materiel-en-retard": "{count, plural, one {# sene materialeafkast} other {# sene materialeafkast}}",
+        "membres-a-valider": "{count, plural, one {# medlem til at validere} other {# medlemmer, der skal valideres}}",
+        "dons-a-encaisser": "{count, plural, one {# gave, der skal indløses} other {# donationer til indsamling}}",
+        "rapprochement-bancaire": "{count, plural, one {# operation, der skal sammenlignes} other {# operationer at sammenligne}}",
+        "notes-de-frais-a-valider": "{count, plural, one {# udgiftsrapport, der skal valideres} other {# udgiftsrapporter, der skal valideres}}",
+        "commandes-a-preparer": "{count, plural, one {# for at forberede} other {# ordrer til forberedelse}}"
+      }
     }
   },
   "notifications": {
@@ -1291,8 +1426,8 @@
       "toasts": {}
     },
     "transfersView": {
-      "columns": {},
-      "description": "Registrer her de overførsler, der allerede er foretaget mellem din forenings bankkonti. Formwise registrerer overførslen uden at flytte penge."
+      "description": "Registrer her de overførsler, der allerede er foretaget mellem din forenings bankkonti. Formwise registrerer overførslen uden at flytte penge.",
+      "columns": {}
     },
     "categoriesView": {
       "title": "Kategorier",
@@ -1500,13 +1635,13 @@
       "description": "Sammensæt importerede banktransaktioner med dine indtægter og udgifter.",
       "statusFilters": {
         "all": "Alle",
-        "unmatched": "Uforsonet",
+        "unmatched": "At sammenligne",
         "matched": "Forligt",
         "ignored": "Ignoreret",
         "duplicate": "Dubletter"
       },
       "status": {
-        "unmatched": "Uforsonet",
+        "unmatched": "At sammenligne",
         "matched": "Forligt",
         "pending": "Afventer",
         "ignored": "Ignoreret",
@@ -2807,7 +2942,11 @@
         "markPaid": "Mark Betalt",
         "cancelOrder": "Annuller",
         "downloadReceipt": "Download kvitteringen",
-        "editPaymentMethod": "Skift betalingsmetode"
+        "editPaymentMethod": "Skift betalingsmetode",
+        "markPrepared": "Markér som forberedt",
+        "cancelPrepared": "Aflys forberedelsen",
+        "delegatePreparation": "Forberedelse delegeret til en tredjepart",
+        "resumePreparation": "Forberedelse af CV"
       },
       "noProduct": "Ingen produkter",
       "noOrder": "Ingen ordrer",
@@ -2839,7 +2978,10 @@
         "productDeleted": "Udgået produkt",
         "deleteError": "Fejlsletning",
         "orderUpdated": "Opdateret ordre"
-      }
+      },
+      "statusFilterToPrepare": "At forberede",
+      "toPrepareCountLabel": "Ordrer til forberedelse",
+      "toPrepareAmountLabel": "Beløb, der skal forberedes"
     },
     "payModal": {
       "title": "Kontantordre",
@@ -4047,17 +4189,17 @@
       "websitePlaceholder": "mon-association.fr",
       "iban": "IBAN",
       "bic": "BIC",
+      "accountingRegime": "Regnskabsregime for udgiftsrefusioner",
+      "accountingRegimeHint": "Bestemmer, hvornår en refusionsanmodning indgives: ved godkendelse (forpligtelse) eller ved faktisk betaling (kontant).",
+      "accountingRegimeCash": "Kontantregnskab",
+      "accountingRegimeAccrual": "Forpligtelsesregnskab",
       "previewTitle": "Dokumentforhåndsvisning",
       "bankDetails": "Bankoplysninger",
       "ibanColon": "IBAN : {value}",
       "bicColon": "BIC: {value}",
       "toasts": {
         "updated": "Opdaterede kontaktoplysninger"
-      },
-      "accountingRegime": "Regnskabsregime for udgiftsrefusioner",
-      "accountingRegimeHint": "Bestemmer, hvornår en refusionsanmodning indgives: ved godkendelse (forpligtelse) eller ved faktisk betaling (kontant).",
-      "accountingRegimeCash": "Kontantregnskab",
-      "accountingRegimeAccrual": "Forpligtelsesregnskab"
+      }
     },
     "membreTypes": {
       "name": "Navn",
@@ -4613,6 +4755,12 @@
       },
       "invalidFormToast": "Kunne ikke gemme. Kontakt support, hvis problemet fortsætter.",
       "customFieldsLoading": "Indlæser svar fra optagelsesformularen…"
+    },
+    "fichePdf": {
+      "title": "MEDLEMSPROFIL",
+      "subtitle": "Formular, der skal udfyldes af det nye medlem",
+      "signature": "Underskrift",
+      "date": "Dato"
     },
     "actions": {
       "add": "Tilføj et medlem",
@@ -5386,12 +5534,6 @@
         "genericError": "Fejl"
       },
       "importedNote": "Importeret fra AssoConnect — {collecte}"
-    },
-    "fichePdf": {
-      "title": "MEDLEMSPROFIL",
-      "subtitle": "Formular, der skal udfyldes af det nye medlem",
-      "signature": "Underskrift",
-      "date": "Dato"
     }
   },
   "memberCard": {
@@ -6061,6 +6203,7 @@
       "finances": "Finansiel overvågning",
       "devis": "Tilbud",
       "factures": "Fakturaer",
+      "reimbursements": "Udgiftsrefusioner",
       "fournisseurs": "Leverandører",
       "dons": "Donationer",
       "reunions": "Møder",
@@ -6078,8 +6221,7 @@
         "communication": "Kommunikation",
         "finances": "Finansiering",
         "outils": "Værktøjer"
-      },
-      "reimbursements": "Udgiftsrefusioner"
+      }
     },
     "backofficeSidebar": {
       "backoffice": "Backoffice",
@@ -6324,120 +6466,6 @@
     },
     "backoffice": {
       "columns": {}
-    }
-  },
-  "reimbursements": {
-    "view": {
-      "title": "Udgiftsrefusioner",
-      "newRequest": "Ny anmodning",
-      "export": "Eksport",
-      "myRequests": "Mine ønsker",
-      "allRequests": "Alle anmodninger",
-      "allRequesters": "Alle ansøgere",
-      "allCategories": "Alle kategorier",
-      "dateFrom": "Af",
-      "dateTo": "Til",
-      "allStatuses": "Alle statusser",
-      "summary": "{pending} Afventende — {pendingAmount} · {approved} skal refunderes — {approvedAmount} · {reimbursed} refunderet — {reimbursedAmount}",
-      "noRequest": "Ingen anmodninger om refundering",
-      "columns": {
-        "subject": "Formål",
-        "date": "Dato",
-        "amount": "Beløb",
-        "status": "Status"
-      },
-      "status": {
-        "draft": "Draft",
-        "pendingApproval": "Afventer godkendelse",
-        "needsCorrection": "Skal rettes",
-        "approved": "Godkendt",
-        "rejected": "Afvist",
-        "reimbursed": "Refunderet",
-        "cancelled": "Aflyst"
-      },
-      "actions": {
-        "view": "Se",
-        "submit": "Indsend",
-        "cancel": "Annuller"
-      },
-      "toasts": {
-        "created": "Anmodning oprettet",
-        "updated": "Opdateringsanmodning",
-        "deleted": "Anmodning slettet",
-        "submitted": "Ansøgning indsendt til godkendelse",
-        "cancelled": "Anmodning annulleret",
-        "approved": "Ansøgning godkendt",
-        "correctionRequested": "Rettelse anmodet",
-        "rejected": "Anmodning afvist",
-        "reimbursed": "Registreret tilbagebetaling"
-      },
-      "deleteConfirmTitle": "Slette dette udkast?",
-      "deleteConfirmDescription": "Denne handling er irreversibel.",
-      "cancelConfirmTitle": "Annullere denne anmodning?",
-      "cancelConfirmDescription": "Ansøgeren vil blive underrettet om annulleringen.",
-      "cancelReasonLabel": "Årsag til afbestilling"
-    },
-    "form": {
-      "subject": "Formål",
-      "subjectPlaceholder": "F.eks. rejser til regionale møder",
-      "comment": "Kommentar",
-      "commentPlaceholder": "Valgfrie detaljer",
-      "event": "Relateret begivenhed",
-      "project": "Tilknyttet projekt",
-      "noProject": "Intet projekt",
-      "noEvent": "Ingen begivenheder",
-      "items": "Udgifter",
-      "addItem": "Tilføj en udgift",
-      "noItems": "Ingen ekstra gebyrer",
-      "itemDate": "Udgiftsdato",
-      "itemDescription": "Beskrivelse",
-      "itemAmount": "Beløb",
-      "itemCategory": "Kategori",
-      "itemReceipt": "Begrundelse",
-      "total": "Total",
-      "duplicateWarning": "En lignende udgift (samme dato, samme beløb) findes allerede i en anden af dine anmodninger.",
-      "toasts": {
-        "uploadError": "Fejl ved afsendelse af kvitteringen",
-        "networkError": "Netværksfejl ved afsendelse af kvitteringen"
-      }
-    },
-    "detail": {
-      "notFound": "Anmodning om refundering ikke fundet",
-      "history": "Historie",
-      "correctionFrom": "Rettelse anmodet af {name}",
-      "rejectedBy": "Afvist af {name}",
-      "reimbursedOn": "Refunderet den {date} af {method}",
-      "selfApprovalBlockedNotice": "Du kan ikke godkende din egen anmodning. Den skal godkendes af en administrator eller en anden bemyndiget embedsmand.",
-      "viewReceipt": "Se de understøttende dokumenter",
-      "immobilisationTag": "Anlægsaktiver",
-      "approveButton": "Godkend",
-      "requestCorrectionButton": "Anmod om en rettelse",
-      "rejectButton": "Afvis",
-      "correctionCommentLabel": "Rettelseskommentar",
-      "rejectionReasonLabel": "Begrundelse for afslag",
-      "deleteItemConfirmTitle": "Eliminere denne udgift?",
-      "toasts": {
-        "itemAdded": "Ekstra omkostninger",
-        "itemUpdated": "Opdateret udgift",
-        "itemDeleted": "Udgift fjernet"
-      }
-    },
-    "register": {
-      "title": "Gem refunderingen",
-      "registerButton": "Gem refunderingen",
-      "date": "Refusionsdato",
-      "paymentMethod": "Betalingsmetode",
-      "bankAccount": "Bankkonto",
-      "noBankAccountHint": "Ingen bankkonto oprettet — tilføj en i Finans> Konti, eller vælg Kontanter.",
-      "transaction": "Afstemme en importeret banktransaktion (valgfrit)",
-      "noTransaction": "Kom ikke tættere på nu",
-      "reference": "Reference",
-      "submit": "Gem",
-      "methods": {
-        "virement": "Overførsel",
-        "cheque": "Check",
-        "especes": "Arter"
-      }
     }
   }
 }

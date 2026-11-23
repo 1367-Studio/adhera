@@ -121,6 +121,9 @@
         "passwordLabel": "Salasana",
         "passwordPlaceholder": "Min. 8 merkkiä",
         "passwordGoogleHint": "Ensimmäistä tilin luomista varten valitse salasana. Voit sitten kirjautua sisään Googlella.",
+        "legalDocsAcceptPrefix": "Olen lukenut kaikki",
+        "legalDocsLinkLabel": "Formwise oikeudelliset asiakirjat",
+        "legalDocsAcceptSuffix": "ja hyväksyn palvelun käyttöehdot.",
         "continueToPayment": "Jatka kassaa",
         "perkTrialDays": "{days} Vapaapäivät",
         "perkNoCommitment": "Ei velvoitetta",
@@ -129,10 +132,7 @@
         "startTrial": "Aloita ilmainen kokeilujaksoni",
         "createAccount": "Luo tili",
         "perkNoCard": "Luottokorttia ei tarvita",
-        "createAccountError": "Virhe tilin luomisessa",
-        "legalDocsAcceptPrefix": "Olen lukenut kaikki",
-        "legalDocsLinkLabel": "Formwise oikeudelliset asiakirjat",
-        "legalDocsAcceptSuffix": "ja hyväksyn palvelun käyttöehdot."
+        "createAccountError": "Virhe tilin luomisessa"
       },
       "payment": {
         "paymentError": "Maksuvirhe",
@@ -664,6 +664,120 @@
       "markPaidNotice": "Tämän asiakirjan merkitseminen maksetuksi luo automaattisesti vastaavan kulun Taloustietoihin."
     }
   },
+  "reimbursements": {
+    "view": {
+      "title": "Kulujen korvaukset",
+      "newRequest": "Uusi pyyntö",
+      "export": "Vienti",
+      "myRequests": "Omat pyyntöni",
+      "allRequests": "Kaikki pyynnöt",
+      "allRequesters": "Kaikki hakijat",
+      "allCategories": "Kaikki kategoriat",
+      "dateFrom": "Tai",
+      "dateTo": "To",
+      "allStatuses": "Kaikki tilat",
+      "summary": "{pending} Odottamassa — {pendingAmount} · {approved} palautettava — {approvedAmount} · {reimbursed} korvattu — {reimbursedAmount}",
+      "noRequest": "Ei hyvityspyyntöjä",
+      "columns": {
+        "subject": "Tarkoitus",
+        "date": "Päivämäärä",
+        "amount": "Määrä",
+        "status": "Tila"
+      },
+      "status": {
+        "draft": "Draft",
+        "pendingApproval": "Odottaa hyväksyntää",
+        "needsCorrection": "Korjattava",
+        "approved": "Hyväksytty",
+        "rejected": "Kieltäytyi",
+        "reimbursed": "Hyvitetty",
+        "cancelled": "Peruttu"
+      },
+      "actions": {
+        "view": "Katso",
+        "submit": "Lähetä",
+        "cancel": "Peruuta"
+      },
+      "toasts": {
+        "created": "Pyyntö luotu",
+        "updated": "Päivityspyyntö",
+        "deleted": "Pyyntö poistettu",
+        "submitted": "Hyväksyttäväksi jätetty hakemus",
+        "cancelled": "Pyyntö peruutettu",
+        "approved": "Hakemus hyväksytty",
+        "correctionRequested": "Korjausta pyydetty",
+        "rejected": "Pyyntö hylätty",
+        "reimbursed": "Kirjattu palautus"
+      },
+      "deleteConfirmTitle": "Poistaa tämä luonnoks?",
+      "deleteConfirmDescription": "Tämä toimenpide on peruuttamaton.",
+      "cancelConfirmTitle": "Peruuta tämä pyyntö?",
+      "cancelConfirmDescription": "Hakijalle ilmoitetaan peruutuksesta.",
+      "cancelReasonLabel": "Peruutuksen syy"
+    },
+    "form": {
+      "subject": "Tarkoitus",
+      "subjectPlaceholder": "Eks. Alueelliset kokousmatkat",
+      "comment": "Kommentaari",
+      "commentPlaceholder": "Valinnaiset tiedot",
+      "event": "Aiheeseen liittyvä tapahtuma",
+      "project": "Liittyvä projekti",
+      "noProject": "Ei projektia",
+      "noEvent": "Ei tapahtumia",
+      "items": "Kulut",
+      "addItem": "Lisää kulu",
+      "noItems": "Ei lisämaksuja",
+      "itemDate": "Menojen päivämäärä",
+      "itemDescription": "Kuvaus",
+      "itemAmount": "Määrä",
+      "itemCategory": "Kategoria",
+      "itemReceipt": "Perustelu",
+      "total": "Yhteensä",
+      "duplicateWarning": "Samanlainen kulu (sama päivämäärä, sama summa) on jo olemassa toisessa pyynnössäsi.",
+      "toasts": {
+        "uploadError": "Virhe kuitin lähetyksessä",
+        "networkError": "Verkkovirhe kuitin lähetyksessä"
+      }
+    },
+    "detail": {
+      "notFound": "Hyvityspyyntöä ei löytynyt",
+      "history": "Historia",
+      "correctionFrom": "Korjaus pyydetty {name}",
+      "rejectedBy": "Hylätty {name}",
+      "reimbursedOn": "Hyvitys päivämäärällä {date} kirjoittanut {method}",
+      "selfApprovalBlockedNotice": "Et voi hyväksyä omaa pyyntöäsi. Sen on oltava hyväksytty ylläpitäjän tai muun valtuutetun viranomaisen toimesta.",
+      "viewReceipt": "Katso tukiasiakirjat",
+      "immobilisationTag": "Käyttöomaisuus",
+      "approveButton": "Hyväksy",
+      "requestCorrectionButton": "Pyydä korjausta",
+      "rejectButton": "hylätä",
+      "correctionCommentLabel": "Korjauskommentti",
+      "rejectionReasonLabel": "Kieltäytymisen syy",
+      "deleteItemConfirmTitle": "Poistaa tämä kulu?",
+      "toasts": {
+        "itemAdded": "Lisäkuluja",
+        "itemUpdated": "Päivitetty kulu",
+        "itemDeleted": "Kulut poistettu"
+      }
+    },
+    "register": {
+      "title": "Säästä hyvitys",
+      "registerButton": "Säästä hyvitys",
+      "date": "Hyvityspäivä",
+      "paymentMethod": "Maksutapa",
+      "bankAccount": "Pankkitili",
+      "noBankAccountHint": "Ei pankkitiliä — lisää tili Rahoitus> Tilit -osioon tai valitse Käteinen.",
+      "transaction": "Täsmäytä tuontipankkitapahtuma (valinnainen)",
+      "noTransaction": "Älä lähennä nyt",
+      "reference": "Viite",
+      "submit": "Tallenna",
+      "methods": {
+        "virement": "Siirto",
+        "cheque": "Tarkistettu",
+        "especes": "Lajit"
+      }
+    }
+  },
   "dashboard": {
     "pageTitle": "Hallintapaneeli",
     "subtitle": "Yleiskatsaus yhdistyksestäsi",
@@ -676,14 +790,7 @@
       "resizeHint": "Vedä kulmaa koon muuttamiseksi"
     },
     "aTraiter": {
-      "title": "Hoidettavaksi",
-      "empty": "Ei tällä hetkellä mitään hoidettavaa",
-      "loadError": "Toimintoja ei voi ladata käsiteltäviä.",
-      "items": {
-        "cotisationsEnAttente": "{count, plural, one {# vireillä oleva jäsenmaksu} other {# vireillä olevat maksut}}",
-        "donsAEncaisser": "{count, plural, one {# lahja lunastettavaksi} other {# lahjoituksia kerättäväksi}}",
-        "materielEnRetard": "{count, plural, one {# myöhäisen materiaalin palautukset} other {# myöhäisen materiaalin palautukset}}"
-      }
+      "items": {}
     },
     "stats": {
       "financialBalance": "Taloudellinen tasapaino",
@@ -755,6 +862,34 @@
       "nearLimit": "Raja lähestyy",
       "almostReached": "Raja lähes täynnä",
       "limitReached": "Raja täynnä"
+    },
+    "actionsTodo": {
+      "trigger": "Toimenpiteet",
+      "badgeHint": "{count, plural, one {# odottava toimenpidekategoria} other {# odottavien toimenpiteiden kategoriat}}",
+      "empty": "Kaikki on ajan tasalla, ei toimenpiteitä hoidettavana.",
+      "snooze": "Lykkää tätä toimenpidettä",
+      "snoozeDialogTitle": "Lykkää tätä toimenpidettä",
+      "snoozeDialogDescription": "Toiminto pysyy piilossa sinulta siihen päivään asti, mutta ilmestyy uudelleen, jos käsittelyä on vielä käsiteltävänä.",
+      "snoozeUntilLabel": "Siirretty siihen asti",
+      "confirm": "Vahvista",
+      "loadError": "Suoritettavia toimintoja ei voitu ladata.",
+      "snoozedSectionTitle": "{count, plural, one {# toiminta keskeytetty} other {# toimenpiteet tauolle}}",
+      "snoozedUntil": "Kunnes {date}",
+      "cancelSnooze": "Peruuta pidätys",
+      "actionLabels": {
+        "voirEtRelancer": "Katso ja käynnistä se uudelleen",
+        "examiner": "Tarkastaja",
+        "consulter": "Konsultoi"
+      },
+      "rows": {
+        "cotisations-en-attente": "{count, plural, one {# vireillä oleva jäsenmaksu} other {# vireillä olevat maksut}}",
+        "materiel-en-retard": "{count, plural, one {# myöhäisen materiaalin palautukset} other {# myöhäisen materiaalin palautukset}}",
+        "membres-a-valider": "{count, plural, one {# jäsen validoitava} other {# validoitavia jäseniä}}",
+        "dons-a-encaisser": "{count, plural, one {# lahja lunastettavaksi} other {# lahjoituksia kerättäväksi}}",
+        "rapprochement-bancaire": "{count, plural, one {# vertailtava operaatio} other {# operaatioita vertailtavaksi}}",
+        "notes-de-frais-a-valider": "{count, plural, one {# tarkistettava kuluraportti} other {# tarkistettavat kuluraportit}}",
+        "commandes-a-preparer": "{count, plural, one {# valmistelukäsky} other {# määräyksiä valmistella}}"
+      }
     }
   },
   "notifications": {
@@ -1291,8 +1426,8 @@
       "toasts": {}
     },
     "transfersView": {
-      "columns": {},
-      "description": "Kirjaa tähän jo tehdyt siirrot yhdistyksesi pankkitilien välillä. Kirjaa siirto muodollisesti ilman rahan siirtoa."
+      "description": "Kirjaa tähän jo tehdyt siirrot yhdistyksesi pankkitilien välillä. Kirjaa siirto muodollisesti ilman rahan siirtoa.",
+      "columns": {}
     },
     "categoriesView": {
       "title": "Kategoriat",
@@ -1500,13 +1635,13 @@
       "description": "Yhdistä tuontipankkitapahtumat tuloihisi ja menoihisi.",
       "statusFilters": {
         "all": "Kaikki",
-        "unmatched": "Sovittamaton",
+        "unmatched": "Vertailukelpoinen",
         "matched": "Sociliated",
         "ignored": "Jätetty huomiotta",
         "duplicate": "Kaksoiskappaleet"
       },
       "status": {
-        "unmatched": "Sovittamaton",
+        "unmatched": "Vertailukelpoinen",
         "matched": "Sociliated",
         "pending": "Vireillä",
         "ignored": "Jätetty huomiotta",
@@ -2807,7 +2942,11 @@
         "markPaid": "Mark Paid",
         "cancelOrder": "Peruuta",
         "downloadReceipt": "Lataa kuitti",
-        "editPaymentMethod": "Vaihda maksutapaa"
+        "editPaymentMethod": "Vaihda maksutapaa",
+        "markPrepared": "Merkitse valmistelluksi",
+        "cancelPrepared": "Peruuta valmistelu",
+        "delegatePreparation": "Valmistelu delegoitu kolmannelle osapuolelle",
+        "resumePreparation": "Ansioluettelon valmistelu"
       },
       "noProduct": "Ei tuotteita",
       "noOrder": "Ei käskyjä",
@@ -2839,7 +2978,10 @@
         "productDeleted": "Lopetettu tuote",
         "deleteError": "Virheen poisto",
         "orderUpdated": "Päivitetty järjestys"
-      }
+      },
+      "statusFilterToPrepare": "Valmistautua",
+      "toPrepareCountLabel": "Valmistelukäskyt",
+      "toPrepareAmountLabel": "Valmisteltava määrä"
     },
     "payModal": {
       "title": "Kassatilaus",
@@ -4047,17 +4189,17 @@
       "websitePlaceholder": "mon-association.fr",
       "iban": "IBAN",
       "bic": "BIC",
+      "accountingRegime": "Kirjanpitojärjestelmä kulujen korvauksille",
+      "accountingRegimeHint": "Määrittää, milloin korvauspyyntö julkaistaan: hyväksyntä (sitoumus) vai varsinainen maksu (käteinen).",
+      "accountingRegimeCash": "Käteiskirjanpito",
+      "accountingRegimeAccrual": "Sitoumuskirjanpito",
       "previewTitle": "Asiakirjan esikatselu",
       "bankDetails": "Pankkitiedot",
       "ibanColon": "IBAN : {value}",
       "bicColon": "BIC : {value}",
       "toasts": {
         "updated": "Päivitetyt yhteystiedot"
-      },
-      "accountingRegime": "Kirjanpitojärjestelmä kulujen korvauksille",
-      "accountingRegimeHint": "Määrittää, milloin korvauspyyntö julkaistaan: hyväksyntä (sitoumus) vai varsinainen maksu (käteinen).",
-      "accountingRegimeCash": "Käteiskirjanpito",
-      "accountingRegimeAccrual": "Sitoumuskirjanpito"
+      }
     },
     "membreTypes": {
       "name": "Nimi",
@@ -4613,6 +4755,12 @@
       },
       "invalidFormToast": "Tallennus epäonnistui. Ota yhteyttä tukeen, jos ongelma jatkuu.",
       "customFieldsLoading": "Ladataan liittymislomakkeen vastauksia…"
+    },
+    "fichePdf": {
+      "title": "JÄSENPROFIILI",
+      "subtitle": "Uuden jäsenen täytettävä lomake",
+      "signature": "Allekirjoitus",
+      "date": "Päivämäärä"
     },
     "actions": {
       "add": "Lisää jäsen",
@@ -5386,12 +5534,6 @@
         "genericError": "Virhe"
       },
       "importedNote": "Tuotu AssoConnectista — {collecte}"
-    },
-    "fichePdf": {
-      "title": "JÄSENPROFIILI",
-      "subtitle": "Uuden jäsenen täytettävä lomake",
-      "signature": "Allekirjoitus",
-      "date": "Päivämäärä"
     }
   },
   "memberCard": {
@@ -6061,6 +6203,7 @@
       "finances": "Taloudellinen seuranta",
       "devis": "Tarjoukset",
       "factures": "Laskut",
+      "reimbursements": "Kulujen korvaukset",
       "fournisseurs": "Toimittajat",
       "dons": "Lahjoitukset",
       "reunions": "Kokoukset",
@@ -6078,8 +6221,7 @@
         "communication": "Viestintä",
         "finances": "Rahoitus",
         "outils": "Työkalut"
-      },
-      "reimbursements": "Kulujen korvaukset"
+      }
     },
     "backofficeSidebar": {
       "backoffice": "Backoffice",
@@ -6324,120 +6466,6 @@
     },
     "backoffice": {
       "columns": {}
-    }
-  },
-  "reimbursements": {
-    "view": {
-      "title": "Kulujen korvaukset",
-      "newRequest": "Uusi pyyntö",
-      "export": "Vienti",
-      "myRequests": "Omat pyyntöni",
-      "allRequests": "Kaikki pyynnöt",
-      "allRequesters": "Kaikki hakijat",
-      "allCategories": "Kaikki kategoriat",
-      "dateFrom": "Tai",
-      "dateTo": "To",
-      "allStatuses": "Kaikki tilat",
-      "summary": "{pending} Odottamassa — {pendingAmount} · {approved} palautettava — {approvedAmount} · {reimbursed} korvattu — {reimbursedAmount}",
-      "noRequest": "Ei hyvityspyyntöjä",
-      "columns": {
-        "subject": "Tarkoitus",
-        "date": "Päivämäärä",
-        "amount": "Määrä",
-        "status": "Tila"
-      },
-      "status": {
-        "draft": "Draft",
-        "pendingApproval": "Odottaa hyväksyntää",
-        "needsCorrection": "Korjattava",
-        "approved": "Hyväksytty",
-        "rejected": "Kieltäytyi",
-        "reimbursed": "Hyvitetty",
-        "cancelled": "Peruttu"
-      },
-      "actions": {
-        "view": "Katso",
-        "submit": "Lähetä",
-        "cancel": "Peruuta"
-      },
-      "toasts": {
-        "created": "Pyyntö luotu",
-        "updated": "Päivityspyyntö",
-        "deleted": "Pyyntö poistettu",
-        "submitted": "Hyväksyttäväksi jätetty hakemus",
-        "cancelled": "Pyyntö peruutettu",
-        "approved": "Hakemus hyväksytty",
-        "correctionRequested": "Korjausta pyydetty",
-        "rejected": "Pyyntö hylätty",
-        "reimbursed": "Kirjattu palautus"
-      },
-      "deleteConfirmTitle": "Poistaa tämä luonnoks?",
-      "deleteConfirmDescription": "Tämä toimenpide on peruuttamaton.",
-      "cancelConfirmTitle": "Peruuta tämä pyyntö?",
-      "cancelConfirmDescription": "Hakijalle ilmoitetaan peruutuksesta.",
-      "cancelReasonLabel": "Peruutuksen syy"
-    },
-    "form": {
-      "subject": "Tarkoitus",
-      "subjectPlaceholder": "Eks. Alueelliset kokousmatkat",
-      "comment": "Kommentaari",
-      "commentPlaceholder": "Valinnaiset tiedot",
-      "event": "Aiheeseen liittyvä tapahtuma",
-      "project": "Liittyvä projekti",
-      "noProject": "Ei projektia",
-      "noEvent": "Ei tapahtumia",
-      "items": "Kulut",
-      "addItem": "Lisää kulu",
-      "noItems": "Ei lisämaksuja",
-      "itemDate": "Menojen päivämäärä",
-      "itemDescription": "Kuvaus",
-      "itemAmount": "Määrä",
-      "itemCategory": "Kategoria",
-      "itemReceipt": "Perustelu",
-      "total": "Yhteensä",
-      "duplicateWarning": "Samanlainen kulu (sama päivämäärä, sama summa) on jo olemassa toisessa pyynnössäsi.",
-      "toasts": {
-        "uploadError": "Virhe kuitin lähetyksessä",
-        "networkError": "Verkkovirhe kuitin lähetyksessä"
-      }
-    },
-    "detail": {
-      "notFound": "Hyvityspyyntöä ei löytynyt",
-      "history": "Historia",
-      "correctionFrom": "Korjaus pyydetty {name}",
-      "rejectedBy": "Hylätty {name}",
-      "reimbursedOn": "Hyvitys päivämäärällä {date} kirjoittanut {method}",
-      "selfApprovalBlockedNotice": "Et voi hyväksyä omaa pyyntöäsi. Sen on oltava hyväksytty ylläpitäjän tai muun valtuutetun viranomaisen toimesta.",
-      "viewReceipt": "Katso tukiasiakirjat",
-      "immobilisationTag": "Käyttöomaisuus",
-      "approveButton": "Hyväksy",
-      "requestCorrectionButton": "Pyydä korjausta",
-      "rejectButton": "hylätä",
-      "correctionCommentLabel": "Korjauskommentti",
-      "rejectionReasonLabel": "Kieltäytymisen syy",
-      "deleteItemConfirmTitle": "Poistaa tämä kulu?",
-      "toasts": {
-        "itemAdded": "Lisäkuluja",
-        "itemUpdated": "Päivitetty kulu",
-        "itemDeleted": "Kulut poistettu"
-      }
-    },
-    "register": {
-      "title": "Säästä hyvitys",
-      "registerButton": "Säästä hyvitys",
-      "date": "Hyvityspäivä",
-      "paymentMethod": "Maksutapa",
-      "bankAccount": "Pankkitili",
-      "noBankAccountHint": "Ei pankkitiliä — lisää tili Rahoitus> Tilit -osioon tai valitse Käteinen.",
-      "transaction": "Täsmäytä tuontipankkitapahtuma (valinnainen)",
-      "noTransaction": "Älä lähennä nyt",
-      "reference": "Viite",
-      "submit": "Tallenna",
-      "methods": {
-        "virement": "Siirto",
-        "cheque": "Tarkistettu",
-        "especes": "Lajit"
-      }
     }
   }
 }

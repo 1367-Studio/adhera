@@ -121,6 +121,9 @@
         "passwordLabel": "Parolă",
         "passwordPlaceholder": "Min. 8 caractere",
         "passwordGoogleHint": "Pentru această primă creare a contului, alege o parolă. Apoi te poți conecta cu Google.",
+        "legalDocsAcceptPrefix": "Am citit toate",
+        "legalDocsLinkLabel": "Documentele legale ale Formwise",
+        "legalDocsAcceptSuffix": "și accept termenii de utilizare ai serviciului.",
         "continueToPayment": "Continuă să finalizezi",
         "perkTrialDays": "{days} Zile libere",
         "perkNoCommitment": "Nicio obligație",
@@ -129,10 +132,7 @@
         "startTrial": "Începe perioada mea de probă gratuită",
         "createAccount": "Creează cont",
         "perkNoCard": "Nu este nevoie de card de credit",
-        "createAccountError": "Crearea contului de eroare",
-        "legalDocsAcceptPrefix": "Am citit toate",
-        "legalDocsLinkLabel": "Documentele legale ale Formwise",
-        "legalDocsAcceptSuffix": "și accept termenii de utilizare ai serviciului."
+        "createAccountError": "Crearea contului de eroare"
       },
       "payment": {
         "paymentError": "Eroare de plată",
@@ -664,6 +664,120 @@
       "markPaidNotice": "Marcarea acestui document ca plătită va crea automat o cheltuială corespunzătoare în Finanțe."
     }
   },
+  "reimbursements": {
+    "view": {
+      "title": "Rambursări de cheltuieli",
+      "newRequest": "Cerere nouă",
+      "export": "Export",
+      "myRequests": "Cererile mele",
+      "allRequests": "Toate cererile",
+      "allRequesters": "Toți solicitanții",
+      "allCategories": "Toate categoriile",
+      "dateFrom": "De",
+      "dateTo": "Către",
+      "allStatuses": "Toate stările",
+      "summary": "{pending} În așteptare — {pendingAmount} · {approved} de rambursat — {approvedAmount} · {reimbursed} rambursat — {reimbursedAmount}",
+      "noRequest": "Fără cereri de rambursare",
+      "columns": {
+        "subject": "Scop",
+        "date": "Date",
+        "amount": "Sumă",
+        "status": "Statut"
+      },
+      "status": {
+        "draft": "Draft",
+        "pendingApproval": "În așteptarea aprobării",
+        "needsCorrection": "De corectat",
+        "approved": "Aprobat",
+        "rejected": "Refuzat",
+        "reimbursed": "Rambursat",
+        "cancelled": "Anulat"
+      },
+      "actions": {
+        "view": "Vezi",
+        "submit": "Trimite",
+        "cancel": "Anulează"
+      },
+      "toasts": {
+        "created": "Cerere creată",
+        "updated": "Cerere de actualizare",
+        "deleted": "Cerere ștearsă",
+        "submitted": "Cerere depusă pentru aprobare",
+        "cancelled": "Cerere anulată",
+        "approved": "Cererea a fost aprobată",
+        "correctionRequested": "Se solicită corectare",
+        "rejected": "Cerere respinsă",
+        "reimbursed": "Rambursare înregistrată"
+      },
+      "deleteConfirmTitle": "Să șterg acest draft?",
+      "deleteConfirmDescription": "Această acțiune este ireversibilă.",
+      "cancelConfirmTitle": "Să anulez această cerere?",
+      "cancelConfirmDescription": "Solicitantul va fi informat cu privire la anulare.",
+      "cancelReasonLabel": "Motivul anulării"
+    },
+    "form": {
+      "subject": "Scop",
+      "subjectPlaceholder": "Ex. Călătorii la întâlniri regionale",
+      "comment": "Comentariu",
+      "commentPlaceholder": "Detalii opționale",
+      "event": "Eveniment înrudit",
+      "project": "Proiect asociat",
+      "noProject": "Fără proiect",
+      "noEvent": "Fără evenimente",
+      "items": "Cheltuieli",
+      "addItem": "Adaugă o cheltuială",
+      "noItems": "Fără taxe suplimentare",
+      "itemDate": "Data cheltuielilor",
+      "itemDescription": "Descriere",
+      "itemAmount": "Sumă",
+      "itemCategory": "Categorie",
+      "itemReceipt": "Justificare",
+      "total": "Total",
+      "duplicateWarning": "O cheltuială similară (aceeași dată, aceeași sumă) există deja într-o altă dintre cererile tale.",
+      "toasts": {
+        "uploadError": "Eroare la trimiterea chitanței",
+        "networkError": "Eroare de rețea la trimiterea chitanței"
+      }
+    },
+    "detail": {
+      "notFound": "Cerere de rambursare negăsită",
+      "history": "Istorie",
+      "correctionFrom": "Corectare solicitată de {name}",
+      "rejectedBy": "Refuzat de {name}",
+      "reimbursedOn": "Rambursat pe {date} de {method}",
+      "selfApprovalBlockedNotice": "Nu puteți aproba propria cerere. Trebuie aprobată de un administrator sau de un alt oficial autorizat.",
+      "viewReceipt": "Vezi documentele suport",
+      "immobilisationTag": "Active fixe",
+      "approveButton": "Aprobă",
+      "requestCorrectionButton": "Solicitați o corectare",
+      "rejectButton": "Refuză",
+      "correctionCommentLabel": "Comentariu de corectare",
+      "rejectionReasonLabel": "Motivul refuzului",
+      "deleteItemConfirmTitle": "Să eliminăm această cheltuială?",
+      "toasts": {
+        "itemAdded": "Cheltuieli suplimentare",
+        "itemUpdated": "Cheltuieli actualizate",
+        "itemDeleted": "Cheltuieli eliminate"
+      }
+    },
+    "register": {
+      "title": "Economisește rambursarea",
+      "registerButton": "Economisește rambursarea",
+      "date": "Data rambursării",
+      "paymentMethod": "Metoda de plată",
+      "bankAccount": "Cont bancar",
+      "noBankAccountHint": "Nu este creat niciun cont bancar — adăugați unul în Finanțe> Conturi sau alegeți Numerar.",
+      "transaction": "Reconciliază o tranzacție bancară importată (opțional)",
+      "noTransaction": "Nu te apropia acum",
+      "reference": "Referință",
+      "submit": "Salvează",
+      "methods": {
+        "virement": "Transfer",
+        "cheque": "Verifică",
+        "especes": "Specii"
+      }
+    }
+  },
   "dashboard": {
     "pageTitle": "Dashboard",
     "subtitle": "Prezentare generală a asociației tale",
@@ -676,14 +790,7 @@
       "resizeHint": "Trage colțul pentru a redimensiona"
     },
     "aTraiter": {
-      "title": "Să fie tratat",
-      "empty": "Nimic cu care să te ocupi momentan",
-      "loadError": "Nu se pot încărca acțiunile ce urmează a fi procesate.",
-      "items": {
-        "cotisationsEnAttente": "{count, plural, one {# cotizație de membru restantă} other {# contribuții în așteptare}}",
-        "donsAEncaisser": "{count, plural, one {# cadoul de încasat} other {# donații de colectat}}",
-        "materielEnRetard": "{count, plural, one {# reveniri târzii ale materialelor} other {# reveniri târzii ale materialelor}}"
-      }
+      "items": {}
     },
     "stats": {
       "financialBalance": "Echilibrul financiar",
@@ -755,6 +862,34 @@
       "nearLimit": "Limită aproape atinsă",
       "almostReached": "Limită aproape epuizată",
       "limitReached": "Limită atinsă"
+    },
+    "actionsTodo": {
+      "trigger": "Acțiuni de întreprins",
+      "badgeHint": "{count, plural, one {# categorie de acțiune în așteptare} other {# categorii de acțiuni în așteptare}}",
+      "empty": "Totul este la zi, nicio acțiune de gestionat.",
+      "snooze": "Amânați această acțiune",
+      "snoozeDialogTitle": "Amânați această acțiune",
+      "snoozeDialogDescription": "Acțiunea rămâne ascunsă pentru tine până la acea dată, apoi reapare dacă mai sunt cazuri de procesat.",
+      "snoozeUntilLabel": "Amânat până",
+      "confirm": "Confirmă",
+      "loadError": "Nu se pot încărca acțiunile ce urmează să fie efectuate.",
+      "snoozedSectionTitle": "{count, plural, one {# acțiune suspendată} other {# acțiuni suspendate}}",
+      "snoozedUntil": "Până când {date}",
+      "cancelSnooze": "Anulează blocarea",
+      "actionLabels": {
+        "voirEtRelancer": "Vezi și relansează",
+        "examiner": "Examinator",
+        "consulter": "Consultă"
+      },
+      "rows": {
+        "cotisations-en-attente": "{count, plural, one {# cotizație de membru restantă} other {# contribuții în așteptare}}",
+        "materiel-en-retard": "{count, plural, one {# reveniri târzii ale materialelor} other {# reveniri târzii ale materialelor}}",
+        "membres-a-valider": "{count, plural, one {# membru de validat} other {# membri care urmează să fie validați}}",
+        "dons-a-encaisser": "{count, plural, one {# cadoul de încasat} other {# donații de colectat}}",
+        "rapprochement-bancaire": "{count, plural, one {# operațiune ce urmează a fi comparată} other {# operațiuni de comparat}}",
+        "notes-de-frais-a-valider": "{count, plural, one {# raport de cheltuieli care trebuie validat} other {# de validat rapoartele de cheltuieli}}",
+        "commandes-a-preparer": "{count, plural, one {# pentru pregătire} other {# ordine de pregătire}}"
+      }
     }
   },
   "notifications": {
@@ -1291,8 +1426,8 @@
       "toasts": {}
     },
     "transfersView": {
-      "columns": {},
-      "description": "Înregistrați aici transferurile deja efectuate între conturile bancare ale asociației dumneavoastră. Formwise înregistrează transferul fără a muta bani."
+      "description": "Înregistrați aici transferurile deja efectuate între conturile bancare ale asociației dumneavoastră. Formwise înregistrează transferul fără a muta bani.",
+      "columns": {}
     },
     "categoriesView": {
       "title": "Categorii",
@@ -1500,13 +1635,13 @@
       "description": "Asociază tranzacțiile bancare importate cu veniturile și cheltuielile tale.",
       "statusFilters": {
         "all": "Toate",
-        "unmatched": "Neîmpăcat",
+        "unmatched": "De comparat",
         "matched": "Conciliat",
         "ignored": "Ignorat",
         "duplicate": "Duplicate"
       },
       "status": {
-        "unmatched": "Neîmpăcat",
+        "unmatched": "De comparat",
         "matched": "Conciliat",
         "pending": "În așteptare",
         "ignored": "Ignorat",
@@ -2807,7 +2942,11 @@
         "markPaid": "Mark Paid",
         "cancelOrder": "Anulează",
         "downloadReceipt": "Descarcă chitanța",
-        "editPaymentMethod": "Schimbă metoda de plată"
+        "editPaymentMethod": "Schimbă metoda de plată",
+        "markPrepared": "Marcați conform pregătirii",
+        "cancelPrepared": "Anulează pregătirea",
+        "delegatePreparation": "Pregătirea delegată unei terțe părți",
+        "resumePreparation": "Pregătirea CV-ului"
       },
       "noProduct": "Fără produse",
       "noOrder": "Fără ordine",
@@ -2839,7 +2978,10 @@
         "productDeleted": "Produs întrerupt",
         "deleteError": "Ștergerea erorilor",
         "orderUpdated": "Ordine actualizată"
-      }
+      },
+      "statusFilterToPrepare": "Pentru a pregăti",
+      "toPrepareCountLabel": "Ordine de pregătire",
+      "toPrepareAmountLabel": "Sumă de pregătit"
     },
     "payModal": {
       "title": "Mandat de numerar",
@@ -4047,17 +4189,17 @@
       "websitePlaceholder": "mon-association.fr",
       "iban": "IBAN",
       "bic": "BIC",
+      "accountingRegime": "Regimul contabil pentru rambursările cheltuielilor",
+      "accountingRegimeHint": "Stabilește când este înscrisă o cerere de rambursare: la aprobare (angajament) sau la plata efectivă (numerar).",
+      "accountingRegimeCash": "Contabilitatea numerarului",
+      "accountingRegimeAccrual": "Contabilitatea angajamentelor",
       "previewTitle": "Previzualizare documentului",
       "bankDetails": "Detalii bancare",
       "ibanColon": "IBAN : {value}",
       "bicColon": "BIC : {value}",
       "toasts": {
         "updated": "Informații de contact actualizate"
-      },
-      "accountingRegime": "Regimul contabil pentru rambursările cheltuielilor",
-      "accountingRegimeHint": "Stabilește când este înscrisă o cerere de rambursare: la aprobare (angajament) sau la plata efectivă (numerar).",
-      "accountingRegimeCash": "Contabilitatea numerarului",
-      "accountingRegimeAccrual": "Contabilitatea angajamentelor"
+      }
     },
     "membreTypes": {
       "name": "Nume",
@@ -4613,6 +4755,12 @@
       },
       "invalidFormToast": "Salvarea a eșuat. Contactați asistența dacă problema persistă.",
       "customFieldsLoading": "Se încarcă răspunsurile din formularul de aderare…"
+    },
+    "fichePdf": {
+      "title": "PROFIL MEMBRU",
+      "subtitle": "Formular ce trebuie completat de noul membru",
+      "signature": "Semnătură",
+      "date": "Date"
     },
     "actions": {
       "add": "Adaugă un membru",
@@ -5386,12 +5534,6 @@
         "genericError": "Eroare"
       },
       "importedNote": "Importat de la AssoConnect — {collecte}"
-    },
-    "fichePdf": {
-      "title": "PROFIL MEMBRU",
-      "subtitle": "Formular ce trebuie completat de noul membru",
-      "signature": "Semnătură",
-      "date": "Date"
     }
   },
   "memberCard": {
@@ -6061,6 +6203,7 @@
       "finances": "Monitorizarea financiară",
       "devis": "Oferte",
       "factures": "Facturi",
+      "reimbursements": "Rambursări de cheltuieli",
       "fournisseurs": "Furnizori",
       "dons": "Donații",
       "reunions": "Întâlniri",
@@ -6078,8 +6221,7 @@
         "communication": "Comunicare",
         "finances": "Finanțe",
         "outils": "Unelte"
-      },
-      "reimbursements": "Rambursări de cheltuieli"
+      }
     },
     "backofficeSidebar": {
       "backoffice": "Backoffice",
@@ -6324,120 +6466,6 @@
     },
     "backoffice": {
       "columns": {}
-    }
-  },
-  "reimbursements": {
-    "view": {
-      "title": "Rambursări de cheltuieli",
-      "newRequest": "Cerere nouă",
-      "export": "Export",
-      "myRequests": "Cererile mele",
-      "allRequests": "Toate cererile",
-      "allRequesters": "Toți solicitanții",
-      "allCategories": "Toate categoriile",
-      "dateFrom": "De",
-      "dateTo": "Către",
-      "allStatuses": "Toate stările",
-      "summary": "{pending} În așteptare — {pendingAmount} · {approved} de rambursat — {approvedAmount} · {reimbursed} rambursat — {reimbursedAmount}",
-      "noRequest": "Fără cereri de rambursare",
-      "columns": {
-        "subject": "Scop",
-        "date": "Date",
-        "amount": "Sumă",
-        "status": "Statut"
-      },
-      "status": {
-        "draft": "Draft",
-        "pendingApproval": "În așteptarea aprobării",
-        "needsCorrection": "De corectat",
-        "approved": "Aprobat",
-        "rejected": "Refuzat",
-        "reimbursed": "Rambursat",
-        "cancelled": "Anulat"
-      },
-      "actions": {
-        "view": "Vezi",
-        "submit": "Trimite",
-        "cancel": "Anulează"
-      },
-      "toasts": {
-        "created": "Cerere creată",
-        "updated": "Cerere de actualizare",
-        "deleted": "Cerere ștearsă",
-        "submitted": "Cerere depusă pentru aprobare",
-        "cancelled": "Cerere anulată",
-        "approved": "Cererea a fost aprobată",
-        "correctionRequested": "Se solicită corectare",
-        "rejected": "Cerere respinsă",
-        "reimbursed": "Rambursare înregistrată"
-      },
-      "deleteConfirmTitle": "Să șterg acest draft?",
-      "deleteConfirmDescription": "Această acțiune este ireversibilă.",
-      "cancelConfirmTitle": "Să anulez această cerere?",
-      "cancelConfirmDescription": "Solicitantul va fi informat cu privire la anulare.",
-      "cancelReasonLabel": "Motivul anulării"
-    },
-    "form": {
-      "subject": "Scop",
-      "subjectPlaceholder": "Ex. Călătorii la întâlniri regionale",
-      "comment": "Comentariu",
-      "commentPlaceholder": "Detalii opționale",
-      "event": "Eveniment înrudit",
-      "project": "Proiect asociat",
-      "noProject": "Fără proiect",
-      "noEvent": "Fără evenimente",
-      "items": "Cheltuieli",
-      "addItem": "Adaugă o cheltuială",
-      "noItems": "Fără taxe suplimentare",
-      "itemDate": "Data cheltuielilor",
-      "itemDescription": "Descriere",
-      "itemAmount": "Sumă",
-      "itemCategory": "Categorie",
-      "itemReceipt": "Justificare",
-      "total": "Total",
-      "duplicateWarning": "O cheltuială similară (aceeași dată, aceeași sumă) există deja într-o altă dintre cererile tale.",
-      "toasts": {
-        "uploadError": "Eroare la trimiterea chitanței",
-        "networkError": "Eroare de rețea la trimiterea chitanței"
-      }
-    },
-    "detail": {
-      "notFound": "Cerere de rambursare negăsită",
-      "history": "Istorie",
-      "correctionFrom": "Corectare solicitată de {name}",
-      "rejectedBy": "Refuzat de {name}",
-      "reimbursedOn": "Rambursat pe {date} de {method}",
-      "selfApprovalBlockedNotice": "Nu puteți aproba propria cerere. Trebuie aprobată de un administrator sau de un alt oficial autorizat.",
-      "viewReceipt": "Vezi documentele suport",
-      "immobilisationTag": "Active fixe",
-      "approveButton": "Aprobă",
-      "requestCorrectionButton": "Solicitați o corectare",
-      "rejectButton": "Refuză",
-      "correctionCommentLabel": "Comentariu de corectare",
-      "rejectionReasonLabel": "Motivul refuzului",
-      "deleteItemConfirmTitle": "Să eliminăm această cheltuială?",
-      "toasts": {
-        "itemAdded": "Cheltuieli suplimentare",
-        "itemUpdated": "Cheltuieli actualizate",
-        "itemDeleted": "Cheltuieli eliminate"
-      }
-    },
-    "register": {
-      "title": "Economisește rambursarea",
-      "registerButton": "Economisește rambursarea",
-      "date": "Data rambursării",
-      "paymentMethod": "Metoda de plată",
-      "bankAccount": "Cont bancar",
-      "noBankAccountHint": "Nu este creat niciun cont bancar — adăugați unul în Finanțe> Conturi sau alegeți Numerar.",
-      "transaction": "Reconciliază o tranzacție bancară importată (opțional)",
-      "noTransaction": "Nu te apropia acum",
-      "reference": "Referință",
-      "submit": "Salvează",
-      "methods": {
-        "virement": "Transfer",
-        "cheque": "Verifică",
-        "especes": "Specii"
-      }
     }
   }
 }
