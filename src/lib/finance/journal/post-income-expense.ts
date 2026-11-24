@@ -237,3 +237,60 @@ export async function ensurePostedJournalEntries(
   }
   return { posted, reversed }
 }
+
+export interface UnpostableSummary { count: number; amount: number }
+
+// Dry run of postIncomeToJournal/postExpenseToJournal's own category-resolution eligibility
+// check, without writing anything — lets the Bilan warn about rows that will NEVER post via
+// ensurePostedJournalEntries (a category with no accountingCode, or an Expense with no
+// categoryId at all), as opposed to a row that's merely pending catch-up (which that same
+// catch-up already fixes). Memoizes resolveChartAccountByCode by code locally: it already
+// no-ops without a query when code is null (the common case here), so the only real queries
+// are for distinct non-null codes, not one per row.
+export async function findUnpostableEntries(associationId: string, exerciceId: string): Promise<UnpostableSummary> {
+  // Same precondition postIncomeToJournal/postExpenseToJournal enforce before resolving —
+  // without this, an association that has never posted anything yet (chart of accounts not
+  // seeded) would show every single row as "unpostable" instead of correctly showing none,
+  // since resolveChartAccountByCode would find no ChartAccount at all for any code.
+  await ensureChartAccounts(associationId)
+
+  const [{ categoriesById, categoriesByKey }, incomes, expenses] = await Promise.all([
+    loadCategoryMaps(associationId),
+    prisma.income.findMany({
+      where:  { associationId, exerciceId, status: "PAID" },
+      select: {
+        amount: true, categoryId: true, cotisationPaymentId: true, donId: true,
+        commandeId: true, participationId: true, facturePaymentId: true, description: true,
+      },
+    }),
+    prisma.expense.findMany({
+      where:  { associationId, exerciceId, status: "VALIDATED" },
+      select: { amount: true, categoryId: true },
+    }),
+  ])
+
+  const accountCache = new Map<string, Awaited<ReturnType<typeof resolveChartAccountByCode>>>()
+  async function resolveCached(code: string | null | undefined) {
+    if (!code) return null
+    if (!accountCache.has(code)) accountCache.set(code, await resolveChartAccountByCode(associationId, code))
+    return accountCache.get(code)!
+  }
+
+  let count = 0
+  let amount = 0
+  for (const income of incomes) {
+    const resolved = resolveIncomeCategory(income, categoriesById, categoriesByKey)
+    if (!(await resolveCached(resolved?.accountingCode))) {
+      count++
+      amount += Number(income.amount)
+    }
+  }
+  for (const expense of expenses) {
+    const resolved = resolveExpenseCategory(expense, categoriesById)
+    if (!(await resolveCached(resolved?.accountingCode))) {
+      count++
+      amount += Number(expense.amount)
+    }
+  }
+  return { count, amount }
+}

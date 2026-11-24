@@ -1244,7 +1244,8 @@
           "ACTIF_PASSIF_MISMATCH": "Tillgången ({actif}) motsvarar inte skulden ({passif}).",
           "OPENING_BALANCE_MISSING": "Inga inledande poster genererades för denna övning från \"{previousLabel}\".",
           "TRIAL_BALANCE_UNBALANCED": "Den totala debetbeloppet ({debit}) motsvarar inte den totala krediten ({credit}) för detta räkenskapsår.",
-          "RESULT_DIVERGENCE": "Resultatet av journalen ({journal}) skiljer sig från resultaträkningen ({statement}) — journalen kanske ännu inte är uppdaterad för detta räkenskapsår (stäng räkenskapsåret eller återstart synkronisering)."
+          "RESULT_DIVERGENCE": "Resultatet av journalen ({journal}) skiljer sig från resultaträkningen ({statement}) — journalen kanske ännu inte är uppdaterad för detta räkenskapsår (stäng räkenskapsåret eller återstart synkronisering).",
+          "UNPOSTED_ENTRIES": "Oregistrerade poster: {count} (kategori saknas eller saknar tillhörande bokföringskod) — {amount} som inte återspeglas i denna rapport. Att starta om synkroniseringen räcker inte här, kategorin måste korrigeras."
         }
       },
       "memoNoHistory": "Inga historiska data",

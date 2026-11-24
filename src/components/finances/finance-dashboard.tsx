@@ -22,36 +22,28 @@ type Stats = {
 const currentYear = new Date().getFullYear()
 const yearOptions = Array.from({ length: 5 }, (_, i) => currentYear - i)
 
-function sumAmount(data: unknown): number {
-  const rows = (data as { data?: unknown[] })?.data ?? (Array.isArray(data) ? data : [])
-  return (rows as { amount: string | number }[]).reduce((s, r) => s + Number(r.amount), 0)
-}
-
 async function fetchStats(year: number): Promise<Stats> {
   const dateFrom = `${year}-01-01`
   const dateTo   = `${year}-12-31`
-  const incParams = new URLSearchParams({ dateFrom, dateTo, status: "PAID" })
-  const expParams = new URLSearchParams({ dateFrom, dateTo, status: "VALIDATED" })
-  const [incRes, expRes, txRes, expPendRes, incAllRes, expAllRes] = await Promise.all([
-    fetch(`/api/finances/incomes?${incParams}`),
-    fetch(`/api/finances/expenses?${expParams}`),
+  const yearParams = new URLSearchParams({ dateFrom, dateTo })
+  const [yearRes, allTimeRes, txRes, expPendRes] = await Promise.all([
+    fetch(`/api/finances/rapports/dashboard-stats?${yearParams}`),
+    fetch("/api/finances/rapports/dashboard-stats"),
     fetch("/api/finances/transactions?status=UNMATCHED&limit=1"),
     fetch("/api/finances/expenses?status=DRAFT&limit=1"),
-    fetch("/api/finances/incomes?status=PAID"),
-    fetch("/api/finances/expenses?status=VALIDATED"),
   ])
-  const [incData, expData, txData, pendData, incAllData, expAllData] = await Promise.all([
-    incRes.json(), expRes.json(), txRes.json(), expPendRes.json(), incAllRes.json(), expAllRes.json(),
+  const [yearData, allTimeData, txData, pendData] = await Promise.all([
+    yearRes.json(), allTimeRes.json(), txRes.json(), expPendRes.json(),
   ])
 
-  const totalIncomes  = sumAmount(incData)
-  const totalExpenses = sumAmount(expData)
+  const totalIncomes  = yearData.totalIncome
+  const totalExpenses = yearData.totalExpense
 
   return {
     totalIncomes,
     totalExpenses,
     result:           totalIncomes - totalExpenses,
-    cumulativeResult: sumAmount(incAllData) - sumAmount(expAllData),
+    cumulativeResult: allTimeData.totalIncome - allTimeData.totalExpense,
     unmatched:        txData.total   ?? 0,
     pendingReceipts:  pendData.total ?? 0,
   }

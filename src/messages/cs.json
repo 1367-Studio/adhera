@@ -1244,7 +1244,8 @@
           "ACTIF_PASSIF_MISMATCH": "Majetek ({actif}) neodpovídá závazku ({passif}).",
           "OPENING_BALANCE_MISSING": "Pro toto cvičení nebyly z \"{previousLabel}\" vygenerovány žádné úvodní záznamy.",
           "TRIAL_BALANCE_UNBALANCED": "Celkový debet ({debit}) neodpovídá celkovému kreditu ({credit}) za tento fiskální rok.",
-          "RESULT_DIVERGENCE": "Výsledek účetního listu ({journal}) se liší od výsledku výkazu zisku a ztráty ({statement}) — musí být ještě neaktuální pro tento fiskální rok (uzavření fiskálního roku nebo restartování synchronizace)."
+          "RESULT_DIVERGENCE": "Výsledek účetního listu ({journal}) se liší od výsledku výkazu zisku a ztráty ({statement}) — musí být ještě neaktuální pro tento fiskální rok (uzavření fiskálního roku nebo restartování synchronizace).",
+          "UNPOSTED_ENTRIES": "Nezaznamenáné zápisy: {count} (kategorie chybí nebo nemá přidružený účetní kód) — {amount} není uvedeno v této zprávě. Restartování synchronizace zde nestačí, kategorie musí být opravena."
         }
       },
       "memoNoHistory": "Žádná historická data",

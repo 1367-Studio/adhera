@@ -1244,7 +1244,8 @@
           "ACTIF_PASSIF_MISMATCH": "Aktīvs ({actif}) neatbilst saistībām ({passif}).",
           "OPENING_BALANCE_MISSING": "Šim uzdevumam no \"{previousLabel}\" netika ģenerēti ievadi.",
           "TRIAL_BALANCE_UNBALANCED": "Kopējais debets ({debit}) neatbilst kopējam kredītam ({credit}) šajā fiskālajā gadā.",
-          "RESULT_DIVERGENCE": "Žurnāla ({journal}) rezultāts atšķiras no peļņas vai zaudējumu pārskata ({statement}) rezultātiem — žurnāls var vēl nebūt atjaunināts šim fiskālajam gadam (finanšu gada slēgšana vai atsākšanas sinhronizācija)."
+          "RESULT_DIVERGENCE": "Žurnāla ({journal}) rezultāts atšķiras no peļņas vai zaudējumu pārskata ({statement}) rezultātiem — žurnāls var vēl nebūt atjaunināts šim fiskālajam gadam (finanšu gada slēgšana vai atsākšanas sinhronizācija).",
+          "UNPOSTED_ENTRIES": "Nereģistrētie ieraksti: {count} (kategorija nav vai nav saistīta grāmatvedības koda) — {amount} nav atspoguļots šajā ziņojumā. Sinhronizācijas atsākšana šeit nav pietiekama, kategorija ir jālabo."
         }
       },
       "memoNoHistory": "Nav vēsturisku datu",

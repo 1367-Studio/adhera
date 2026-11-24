@@ -1244,7 +1244,8 @@
           "ACTIF_PASSIF_MISMATCH": "Aktywo ({actif}) nie odpowiada zobowiązaniu ({passif}).",
           "OPENING_BALANCE_MISSING": "Nie wygenerowano żadnych wpisów otwierających się dla tego zadania z \"{previousLabel}\".",
           "TRIAL_BALANCE_UNBALANCED": "Całkowity debet ({debit}) nie pokrywa się z całkowitym kredytem ({credit}) za ten rok fiskalny.",
-          "RESULT_DIVERGENCE": "Wynik księgi ({journal}) różni się od rachunku zysków i strat ({statement}) — dziennik może nie być jeszcze aktualny na ten rok obrotowy (zamknięcie roku fiskalnego lub synchronizacja wznowiona)."
+          "RESULT_DIVERGENCE": "Wynik księgi ({journal}) różni się od rachunku zysków i strat ({statement}) — dziennik może nie być jeszcze aktualny na ten rok obrotowy (zamknięcie roku fiskalnego lub synchronizacja wznowiona).",
+          "UNPOSTED_ENTRIES": "Niezarejestrowane wpisy: {count} (kategoria nieobecna lub bez powiązanego kodu księgowego) — {amount} nie jest to odzwierciedlone w tym raporcie. Ponowne uruchomienie synchronizacji tutaj nie wystarczy, kategoria musi zostać poprawiona."
         }
       },
       "memoNoHistory": "Brak danych historycznych",
