@@ -36,6 +36,40 @@ export function normalizeTierLabel(label: string): string {
     .replace(/\s+/g, " ")
 }
 
+type TierRow = {
+  id:         string
+  label:      string
+  formId:     string
+  kind:       "ONE_OFF" | "RECURRING"
+  amount:     { toString(): string } | null
+  free:       boolean
+  freeAmount: boolean
+  form:       { title: string }
+}
+
+async function enrichTierCandidate(tier: TierRow): Promise<DuplicateTierCandidate> {
+  const [cotisationCount, distinctMembres, subscriptionCount, activeSubscriptionCount] = await Promise.all([
+    prisma.cotisation.count({ where: { tierId: tier.id } }),
+    prisma.cotisation.findMany({ where: { tierId: tier.id }, distinct: ["membreId"], select: { membreId: true } }),
+    prisma.cotisationSubscription.count({ where: { tierId: tier.id } }),
+    prisma.cotisationSubscription.count({ where: { tierId: tier.id, status: { in: ["ACTIVE", "PAST_DUE"] } } }),
+  ])
+  return {
+    id:                tier.id,
+    label:             tier.label,
+    formId:            tier.formId,
+    formTitle:         tier.form.title,
+    kind:              tier.kind,
+    amount:            tier.amount?.toString() ?? null,
+    free:              tier.free,
+    freeAmount:        tier.freeAmount,
+    cotisationCount,
+    membreCount:       distinctMembres.length,
+    subscriptionCount,
+    activeSubscriptionCount,
+  }
+}
+
 // Groups active (non-archived) MembershipTier rows of one association by normalized label,
 // across every MembershipForm it owns — the Cotisations page's "Catégorie" filter is itself
 // association-wide (see /api/cotisations/tier-options), not scoped to a single form, so a
@@ -61,31 +95,28 @@ export async function findDuplicateMembershipTierGroups(associationId: string): 
   const candidateGroups = [...byNormalized.entries()].filter(([, group]) => group.length > 1)
   if (candidateGroups.length === 0) return []
 
-  const groups = await Promise.all(candidateGroups.map(async ([normalizedLabel, group]) => {
-    const tierCandidates = await Promise.all(group.map(async tier => {
-      const [cotisationCount, distinctMembres, subscriptionCount, activeSubscriptionCount] = await Promise.all([
-        prisma.cotisation.count({ where: { tierId: tier.id } }),
-        prisma.cotisation.findMany({ where: { tierId: tier.id }, distinct: ["membreId"], select: { membreId: true } }),
-        prisma.cotisationSubscription.count({ where: { tierId: tier.id } }),
-        prisma.cotisationSubscription.count({ where: { tierId: tier.id, status: { in: ["ACTIVE", "PAST_DUE"] } } }),
-      ])
-      return {
-        id:                tier.id,
-        label:             tier.label,
-        formId:            tier.formId,
-        formTitle:         tier.form.title,
-        kind:              tier.kind,
-        amount:            tier.amount?.toString() ?? null,
-        free:              tier.free,
-        freeAmount:        tier.freeAmount,
-        cotisationCount,
-        membreCount:       distinctMembres.length,
-        subscriptionCount,
-        activeSubscriptionCount,
-      }
-    }))
-    return { normalizedLabel, tiers: tierCandidates }
-  }))
+  const groups = await Promise.all(candidateGroups.map(async ([normalizedLabel, group]) => ({
+    normalizedLabel,
+    tiers: await Promise.all(group.map(enrichTierCandidate)),
+  })))
 
   return groups.sort((a, b) => a.normalizedLabel.localeCompare(b.normalizedLabel))
+}
+
+// Every active tier the admin could possibly merge, regardless of label — the automatic
+// grouping above only ever catches case/accent/whitespace variants of the exact same name, so
+// two categories the admin knows are duplicates in practice ("Tarif adulte", "Tarif adulte 2026")
+// but worded differently would never be suggested. This feeds a manual "pick any two" fallback
+// in MergeDuplicateTiersModal — still just a picker, nothing here merges anything on its own.
+export async function listAllMergeableMembershipTiers(associationId: string): Promise<DuplicateTierCandidate[]> {
+  const tiers = await prisma.membershipTier.findMany({
+    where:  { archivedAt: null, form: { associationId } },
+    select: {
+      id: true, label: true, formId: true, kind: true, amount: true, free: true, freeAmount: true,
+      form: { select: { title: true } },
+    },
+  })
+
+  const candidates = await Promise.all(tiers.map(enrichTierCandidate))
+  return candidates.sort((a, b) => a.label.localeCompare(b.label))
 }
