@@ -695,6 +695,7 @@
         "annulee": "Preklicano"
       },
       "file": "Dokument",
+      "categoryHint": "Če izberete kategorijo, bo strošek evidentiran takoj, ko je račun evidentiran, ne ob plačilu.",
       "payment": {
         "add": "Zabeležite plačilo",
         "title": "Zabeležite plačilo",

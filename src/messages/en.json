@@ -695,6 +695,7 @@
         "annulee": "Cancelled"
       },
       "file": "Document",
+      "categoryHint": "If you choose a category, the expense will be recorded as soon as the invoice is recorded rather than at the time of payment.",
       "payment": {
         "add": "Record a payment",
         "title": "Record a payment",

@@ -695,6 +695,7 @@
         "annulee": "Cancellato"
       },
       "file": "Documento",
+      "categoryHint": "Se scegli una categoria, la spesa verrà registrata non appena la fattura viene registrata anziché al momento del pagamento.",
       "payment": {
         "add": "Registra un pagamento",
         "title": "Registra un pagamento",

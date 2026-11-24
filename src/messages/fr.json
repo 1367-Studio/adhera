@@ -695,6 +695,7 @@
         "annulee": "Annulée"
       },
       "file": "Document",
+      "categoryHint": "Si vous choisissez une catégorie, la dépense sera comptabilisée dès l'enregistrement de la facture plutôt qu'au moment du paiement.",
       "payment": {
         "add": "Enregistrer un paiement",
         "title": "Enregistrer un paiement",

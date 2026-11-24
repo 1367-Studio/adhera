@@ -695,6 +695,7 @@
         "annulee": "Atcelts"
       },
       "file": "Dokuments",
+      "categoryHint": "Ja izvēlaties kategoriju, izdevumi tiks reģistrēti uzreiz pēc rēķina reģistrēšanas, nevis maksājuma brīdī.",
       "payment": {
         "add": "Reģistrēt maksājumu",
         "title": "Reģistrēt maksājumu",

@@ -695,6 +695,7 @@
         "annulee": "Cealaithe"
       },
       "file": "Cáipéis",
+      "categoryHint": "Má roghnaíonn tú catagóir, déanfar an costas a thaifeadadh a luaithe a thaifeadtar an sonrasc seachas tráth na híocaíochta.",
       "payment": {
         "add": "Íocaíocht a thaifeadadh",
         "title": "Íocaíocht a thaifeadadh",

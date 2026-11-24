@@ -695,6 +695,7 @@
         "annulee": "Tühistatud"
       },
       "file": "Dokument",
+      "categoryHint": "Kui valite kategooria, kantakse kulu arvele salvestamisel kohe, mitte makse tegemisel.",
       "payment": {
         "add": "Registreeri makse",
         "title": "Registreeri makse",

@@ -695,6 +695,7 @@
         "annulee": "Geannuleerd"
       },
       "file": "Document",
+      "categoryHint": "Als u een categorie kiest, worden de kosten meteen geboekt zodra de factuur is geregistreerd in plaats van op het moment van betaling.",
       "payment": {
         "add": "Registreer een betaling",
         "title": "Registreer een betaling",

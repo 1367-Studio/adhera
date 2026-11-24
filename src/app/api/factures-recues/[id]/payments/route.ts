@@ -23,17 +23,12 @@ export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
 
   const existing = await prisma.factureRecue.findFirst({
     where:   { id, associationId, deletedAt: null },
-    include: { fournisseur: { select: { companyName: true } }, immobilisation: { select: { id: true } } },
+    include: { fournisseur: { select: { companyName: true } }, immobilisation: { select: { id: true } }, expense: { select: { id: true } } },
   })
   if (!existing) return NextResponse.json({ error: "Document introuvable" }, { status: 404 })
   if (existing.status === "ANNULEE") {
     return NextResponse.json({ error: "Ce document est annulé" }, { status: 409 })
   }
-
-  const association = await prisma.association.findUnique({
-    where:  { id: associationId },
-    select: { accountingRegime: true },
-  })
 
   const body   = await req.json()
   const parsed = factureRecuePaymentSchema.safeParse(body)
@@ -48,10 +43,13 @@ export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   const guard = await closedExerciceGuard(exercice?.status)
   if (guard) return guard
 
-  // FORM-117 — a plain invoice with a chosen category under ACCRUAL regime already recognized
-  // its charge at registration (postFactureRecueCharge); this payment only settles 401000, same
-  // shape as the Immobilisation case, never a new Expense.
-  const isAccrualCategorized = !existing.immobilisation && !!existing.categoryId && association?.accountingRegime === "ACCRUAL"
+  // FORM-117 — gated on whether the accrual charge was actually posted (existing.expense),
+  // never re-derived from the association's CURRENT regime: regime is editable at any time,
+  // and re-deriving from it here would double-recognize the charge (or silently settle a
+  // payable that was never debited) for an invoice whose charge was posted — or deliberately
+  // deferred to the legacy per-payment path — under a regime that has since changed. Once a
+  // charge is recognized one way, this invoice stays on that path for its whole lifetime.
+  const hasAccrualCharge = !existing.immobilisation && !!existing.expense
 
   let createdPaymentId = ""
 
@@ -80,14 +78,15 @@ export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
         amountPaid, total,
       )
 
-      // Immobilisation-linked, or a plain categorized invoice under ACCRUAL regime (FORM-117):
-      // no generic Expense — the payment just settles the payable (404000 or 401000) directly
-      // (see post-facture-recue-payment.ts, called outside this transaction below), since the
-      // charge was already recognized at acquisition/registration. Otherwise, mirrors the old
-      // binary-status flow's single Expense, just one per payment now — now carrying the
-      // chosen category (if any) so the existing postExpenseToJournal/ensurePostedJournalEntries
-      // catch-up can post it under CASH regime without any new posting code.
-      if (!existing.immobilisation && !isAccrualCategorized) {
+      // Immobilisation-linked, or a plain invoice whose accrual charge was already posted
+      // (FORM-117): no generic Expense — the payment just settles the payable (404000 or
+      // 401000) directly (see post-facture-recue-payment.ts, called outside this transaction
+      // below), since the charge was already recognized at acquisition/registration. Otherwise,
+      // mirrors the old binary-status flow's single Expense, just one per payment now — now
+      // carrying the chosen category (if any) so the existing postExpenseToJournal/
+      // ensurePostedJournalEntries catch-up can post it (CASH regime, or an ACCRUAL-regime
+      // invoice whose charge hasn't posted yet) without any new posting code.
+      if (!existing.immobilisation && !hasAccrualCharge) {
         await tx.expense.create({
           data: {
             associationId,
@@ -113,7 +112,7 @@ export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
     // Outside the transaction, same posture as every other journal posting call site
     // (post-journal-entry.ts's own idempotencyKey guard makes a retry after a partial
     // failure here safe).
-    if (existing.immobilisation || isAccrualCategorized) {
+    if (existing.immobilisation || hasAccrualCharge) {
       await postFactureRecuePaymentToJournal(createdPaymentId)
     }
 
