@@ -3892,6 +3892,7 @@
           "eligibleAmountAutoHint": "Automaticky vypočítané: suma zaplatená − {amount}",
           "noMinimumWarning": "Pre túto bezplatnú sadzbu nie je stanovená žiadna minimálna suma, platiaci návštevník nižší ako neoprávnená suma bude zablokovaný z platby. Nastavte minimálnu sumu aspoň {amount}.",
           "installmentsAllowedField": "Autorizujte platbu v splátkach",
+          "installmentsUnavailableWithLicense": "Správa federálnej licencie nedostupná za cenu.",
           "installmentsCountField": "Počet krát",
           "membreTypeNone": "Žiadna",
           "kindField": "Typ",
@@ -3909,7 +3910,27 @@
           "membershipTierRequiredError": "Formulár musí obsahovať aspoň jeden členský poplatok",
           "minAmountRequiredError": "Na každý dar je potrebná minimálna suma",
           "saved": "Registrované sadzby",
-          "saveTiers": "Uložiť tarify"
+          "saveTiers": "Uložiť tarify",
+          "licenseSectionTitle": "Federálna licencia",
+          "licenseEnabledField": "Spravujte federačnú licenciu pre túto sadzbu",
+          "licenseNameField": "Názov licencie",
+          "licenseNamePlaceholder": "Napr. súťažná licencia",
+          "licenseFederationField": "Federácia",
+          "licenseFederationPlaceholder": "Napr. FFF",
+          "licenseSeasonField": "Sezóna",
+          "licenseSeasonPlaceholder": "Príklad 2026/2027",
+          "licenseMandatoryField": "Povinná licencia",
+          "licenseBillingModeField": "Fakturácia",
+          "licenseBillingIncluded": "Zahrnuté v cene",
+          "licenseBillingAdditional": "Dodatočná suma",
+          "licenseAdditionalAmountField": "Príplatok (€)",
+          "licenseAllowDeclareExistingField": "Povoliť deklaráciu už držanej licencie",
+          "licenseFederationRequiredError": "Na aktiváciu licencie federácie je potrebná federácia",
+          "licenseSeasonRequiredError": "Na aktiváciu licencie federácie je potrebná sezóna",
+          "licenseBillingModeRequiredError": "Vyžaduje sa spôsob fakturácie licencie",
+          "licenseAdditionalAmountRequiredError": "Vyžaduje sa dodatočné množstvo licencie",
+          "licenseRecurringChangeWarning": "Zmena tejto sumy mení iba budúce predplatné — existujúci odberatelia naďalej platia sumu stanovenú v čase predplatného.",
+          "licenseAdditionalAmountTooLowError": "Dodatočná suma licencie musí byť aspoň 1 €"
         },
         "fields": {
           "title": "Forma",
@@ -4029,6 +4050,14 @@
       "mobilePlaceholder": "06 12 34 56 78",
       "donationBadge": "(don)",
       "totalLabel": "Celková suma bude vyplatená",
+      "licenseDefaultName": "Federálna licencia",
+      "licenseIncludedNotice": "Licencia Federácie zahrnutá bez ďalších nákladov.",
+      "licenseOptInLabel": "Pridajte licenciu federácie (+{amount})",
+      "licenseMandatoryNotice": "Toto členstvo zahŕňa povinnú licenciu federácie ({amount}).",
+      "licenseDeclareExistingLabel": "Licenciu na túto sezónu už mám",
+      "licenseDeclaredNotice": "Existujúca licencia — čaká sa na overenie asociáciou.",
+      "licenseNumberLabel": "Číslo licencie",
+      "licenseNumberPlaceholder": "Nechajte prázdne, ak ho ešte nemáte",
       "partialReceiptNotice": "Sám {amount} sú daňovo odpočítateľné za toto členstvo.",
       "belowExtraMinimum": "Minimálna suma je {amount}.",
       "belowMinimumAmount": "Minimálna suma pre online platbu je {amount}.",
@@ -4510,6 +4539,8 @@
       "publicPaymentToggleDesc": "Formulár členstva na verejnej stránke vyžaduje okamžitú platbu (vykonávanú ročne) a automaticky aktivuje člena bez manuálneho overovania.",
       "publicPaymentRequiresAmount": "Vyplňte sumu príspevku na aktiváciu tejto možnosti.",
       "connectNotReadyWarning": "Online platby nie sú aktívne — Stripe Connect ešte nie je nastavený ani neprijíma platby (záložka Platby). Medzitým sa verejný formulár vracia do bezplatného streamu a má čakajúce žiadosti o členstvo.",
+      "includeFederativeLicenseInAutoRenewalToggle": "Zahrnúť federálnu licenciu do každoročného automatického inkasa",
+      "includeFederativeLicenseInAutoRenewalToggleDesc": "Keď sadzba naúčtuje svojej federálnej licencii dodatočnú sumu, táto suma sa účtuje znova pri každom automatickom obnovení (opakované predplatné). Ak je zakázaná, účtuje sa iba raz, počas prvého predplatného. Toto nastavenie platí iba pre nové predplatné odohrané po zmene — predplatné už aktívne pokračujú ako predtým.",
       "toasts": {
         "updated": "Aktualizovaná predvolená suma"
       }
@@ -5455,10 +5486,25 @@
         "materiel": "Materiál",
         "groupes": "Skupiny",
         "dons": "Dary",
+        "licenses": "Licencie",
         "historique": "História",
         "emails": "E-maily",
         "sms": "SMS",
         "boutique": "Obchod"
+      },
+      "licenses": {
+        "empty": "Žiadna licencia",
+        "seasonYear": "Členský poplatok {year}",
+        "autoRenewed": "Automaticky obnovované",
+        "declaredByMembreNotice": "Licencia deklarovaná členom — čaká sa na overenie",
+        "deleteConfirmTitle": "Odstrániť túto licenciu?",
+        "deleteConfirmDescription": "Licencia {federation} — {season} bude trvalo ukončený.",
+        "statusField": "Stav",
+        "licenseNumberField": "Číslo licencie",
+        "statusASolicitar": "Pýtať sa",
+        "statusEmAndamento": "Prebieha",
+        "statusValidada": "Overené",
+        "statusARenovar": "Na obnovenie"
       },
       "cotisationStatus": {
         "enAttente": "Čaká sa",
@@ -5507,6 +5553,7 @@
       "donStandalone": "Samostatný dar",
       "donPending": "Čaká na inkaso",
       "showingRecentDons": "Zobrazených {count} najnovších darov z celkových {total}.",
+      "showingRecentLicenses": "Zobrazenie {count} najnovšie licencie na {total} celkovo.",
       "addCotisationTitle": "Pridajte členský poplatok",
       "editCotisationTitle": "Zmeňte členský poplatok",
       "deleteConfirmWithDependants": "Tento člen bude archivovaný a už nebude môcť pristupovať k združeniu. Bude tiež odstránený ako zákonný zástupca združenia. {count} Člen(i): {names}.",
@@ -7041,6 +7088,7 @@
       "membres": "Členovia",
       "evenements": "Podujatia",
       "cotisations": "Príspevky",
+      "licencas": "Licencie",
       "adhesions": "Členstvá",
       "finances": "Finančné monitorovanie",
       "devis": "Ponuky",
@@ -7766,6 +7814,30 @@
       "loading": "Načítavam...",
       "noResults": "Žiadne výsledky.",
       "scanAction": "Skener"
+    }
+  },
+  "licencas": {
+    "title": "Licencie",
+    "description": "Federované licencie pre členov, všetky sadzby a sezóny dokopy.",
+    "export": "Export",
+    "empty": "Žiadna licencia",
+    "statusASolicitar": "Pýtať sa",
+    "statusEmAndamento": "Prebieha",
+    "statusValidada": "Overené",
+    "statusARenovar": "Na obnovenie",
+    "columns": {
+      "membre": "Člen",
+      "tier": "Modalita",
+      "federation": "Federácia",
+      "season": "Sezóna",
+      "licenseNumber": "Číslo licencie",
+      "status": "Stav"
+    },
+    "filters": {
+      "searchPlaceholder": "Vyhľadajte člena...",
+      "allFederations": "Všetky federácie",
+      "allSeasons": "Všetky sezóny",
+      "allStatuses": "Všetky stavy"
     }
   }
 }

@@ -29,6 +29,8 @@ import { findInvalidMembershipFormAnswer } from "@/lib/membership-form-answers-v
 import { ADDRESS_MAX_LENGTHS, addressColumns, addressIsFilled, countryIsFilled } from "@/lib/address"
 import { SUPPORTED_LOCALES } from "@/i18n/locales"
 import { reportError } from "@/lib/monitoring"
+import { resolveLicenseApplication } from "@/lib/membership-license"
+import { notifyNewMembershipLicense } from "@/lib/webhook/membership-license-notify"
 
 // Mirrors the public form's own MIN_AMOUNT floor — the client already refuses to submit
 // below this for any montant-libre option, this is just the server not trusting that alone.
@@ -113,6 +115,11 @@ const schema = z.object({
   spokenLanguage: z.enum(SPOKEN_LANGUAGE_CODES).optional(),
   photoUrl:    z.string().url().max(500).optional(),
   payInInstallments: z.boolean().optional().default(false),
+  // FORM-114 — federative license choice for `tierId`'s own license config, re-validated
+  // server-side via resolveLicenseApplication (never trusted from the client alone).
+  licenseOptIn:             z.boolean().optional(),
+  licenseDeclaredExisting:  z.boolean().optional(),
+  licenseNumber:            z.string().trim().max(50).optional(),
   // The page's own locale (LocaleSwitcher, next-intl) — the visitor already picked it to view
   // the form, so it's captured here rather than asking again. Falls back for preferredLocale
   // below when the form has no explicit fieldPreferredLocale answer.
@@ -257,7 +264,7 @@ export async function POST(
 
   const assoc = await prisma.association.findUnique({
     where:  { slug },
-    select: { id: true, name: true, modules: true, stripeConnectId: true, plan: true, customBrandingEnabled: true, logoUrl: true, canIssueTaxReceipts: true, subscriptionStatus: true, subscriptionAmountCents: true },
+    select: { id: true, name: true, modules: true, stripeConnectId: true, plan: true, customBrandingEnabled: true, logoUrl: true, canIssueTaxReceipts: true, subscriptionStatus: true, subscriptionAmountCents: true, includeFederativeLicenseInAutoRenewal: true },
   })
   if (!assoc) return NextResponse.json({ error: "Association introuvable" }, { status: 404 })
 
@@ -285,6 +292,13 @@ export async function POST(
 
   const tier = form.tiers.find(t => t.id === parsed.data.tierId && t.itemType === "MEMBERSHIP")
   if (!tier) return NextResponse.json({ error: "Tarif invalide" }, { status: 422 })
+
+  // FORM-114 — null when the tier has no federative license, or the visitor hasn't opted into
+  // an optional one / declared an existing one. Re-derived here from the tier's own config
+  // rather than trusted from the client, same reasoning as every other re-priced field below.
+  const licenseApplication = resolveLicenseApplication(tier, parsed.data)
+  const licenseAmount = licenseApplication?.chargeAmount && tier.licenseAdditionalAmount != null
+    ? Number(tier.licenseAdditionalAmount) : 0
 
   // null = comportement historique (année civile, aucune borne explicite). Un
   // MembershipTier.durationMonths rend l'adhésion valable ce nombre de mois à partir de
@@ -408,8 +422,11 @@ export async function POST(
   // ─── Tarif gratuit (sans option payante) ───────────────────────────────────────
   // resolvedProducts.length === 0 est requis ici aussi : sans ça, une tarif gratuite
   // combinée à un produit passait entièrement à côté de Stripe — le membre était créé sans
-  // jamais payer le produit, ni décompter son stock.
-  if (tier.free && totalAddons === 0 && resolvedProducts.length === 0) {
+  // jamais payer le produit, ni décompter son stock. licenseAmount === 0 pour la même raison :
+  // une licence fédérative obligatoire à montant additionnel sur un tarif gratuit doit quand
+  // même être réglée (voir resolveLicenseApplication) — jamais contournée simplement parce que
+  // la modalité elle-même est à 0€.
+  if (tier.free && totalAddons === 0 && resolvedProducts.length === 0 && licenseAmount === 0) {
     try {
       await assertMemberLimit(assoc.id)
     } catch (err) {
@@ -489,7 +506,7 @@ export async function POST(
             answers:       Object.keys(answers).length ? answers : undefined,
           },
         })
-        await tx.cotisation.create({
+        const cotisation = await tx.cotisation.create({
           data: {
             membreId: membre.id, associationId: assoc.id, year: currentCotisationYear(now),
             amount: 0, amountPaid: 0, status: "EXONERE", paidAt: now,
@@ -498,6 +515,17 @@ export async function POST(
             deductibleAmount: eligibleReceiptAmount(0, tier.receiptMode, tier.ineligibleAmount != null ? Number(tier.ineligibleAmount) : null),
           },
         })
+        if (licenseApplication) {
+          await tx.membershipLicense.create({
+            data: {
+              cotisationId: cotisation.id, membreId: membre.id, associationId: assoc.id,
+              federation: licenseApplication.federation, season: licenseApplication.season,
+              licenseNumber: licenseApplication.licenseNumber,
+              status: licenseApplication.declaredByMembre ? "EM_ANDAMENTO" : "A_SOLICITAR",
+              declaredByMembre: licenseApplication.declaredByMembre,
+            },
+          })
+        }
         return { user, membre }
       }))
     } catch (err) {
@@ -521,6 +549,7 @@ export async function POST(
       memberCardUrl: memberCardAvailable ? `${APP_URL}/portal/${slug}/carte` : undefined,
       canIssueTaxReceipts: assoc.canIssueTaxReceipts, receiptMode: tier.receiptMode,
       deductibleAmount: eligibleReceiptAmount(0, tier.receiptMode, tier.ineligibleAmount != null ? Number(tier.ineligibleAmount) : null) ?? undefined,
+      license: licenseApplication ? { federation: licenseApplication.federation, season: licenseApplication.season, declaredByMembre: licenseApplication.declaredByMembre } : undefined,
     }), { associationId: assoc.id, membreId: membre.id, source: "TRANSACTION", sourceId: user.id }).catch(error => reportError(error, { area: "email", action: "adhesion.confirmation-email", extra: { associationId: assoc.id, membershipFormId: form.id, membreId: membre.id } }))
 
     await writeActivityLog({
@@ -528,6 +557,13 @@ export async function POST(
       label: `${firstName} ${lastName} (${form.title})`,
       metadata: { source: "PUBLIC_ADHESION_FORM", formId: form.id, tierId: tier.id },
     })
+
+    if (licenseApplication) {
+      notifyNewMembershipLicense({
+        associationId: assoc.id, membreId: membre.id, memberName: `${firstName} ${lastName}`,
+        federation: licenseApplication.federation, season: licenseApplication.season, declaredByMembre: licenseApplication.declaredByMembre,
+      }).catch(error => reportError(error, { area: "payments", action: "adhesion.notify-new-license", extra: { associationId: assoc.id, membreId: membre.id } }))
+    }
 
     fireEventRule({
       triggerType: "MEMBER_CREATED",
@@ -595,7 +631,7 @@ export async function POST(
   // négatif (voir eligibleReceiptAmount).
   if (tier.receiptMode === "PARTIAL" && tier.ineligibleAmount != null && (membershipAmount ?? 0) < Number(tier.ineligibleAmount))
     return NextResponse.json({ error: "Le montant payé ne peut pas être inférieur au montant non éligible au reçu fiscal configuré pour ce tarif." }, { status: 422 })
-  const amount = (membershipAmount ?? 0) + totalAddons // amount total réellement dû (tarif + options)
+  const amount = (membershipAmount ?? 0) + totalAddons + licenseAmount // amount total réellement dû (tarif + options + licence)
   if (!amount || amount <= 0)
     return NextResponse.json({ error: "Montant invalide" }, { status: 422 })
 
@@ -638,12 +674,27 @@ export async function POST(
         const cotisation = await tx.cotisation.create({
           data: {
             membreId: membre.id, associationId: assoc.id, year: currentCotisationYear(now),
-            amount: membershipAmount ?? 0, status: "EN_ATTENTE",
+            // FORM-114 — licenseAmount (part de la licence fédérative à cobrir, s'il y en a)
+            // rejoint directement Cotisation.amount : contrairement à un don/option embarqué,
+            // la licence n'a pas de modèle de revenu dédié et se paie en une seule inscription
+            // avec l'adhésion elle-même (voir le ticket).
+            amount: (membershipAmount ?? 0) + licenseAmount, status: "EN_ATTENTE",
             membershipFormId: form.id, tierId: tier.id,
             periodStart, periodEnd, receiptMode: tier.receiptMode,
             deductibleAmount: eligibleReceiptAmount(membershipAmount ?? 0, tier.receiptMode, tier.ineligibleAmount != null ? Number(tier.ineligibleAmount) : null),
           },
         })
+        if (licenseApplication) {
+          await tx.membershipLicense.create({
+            data: {
+              cotisationId: cotisation.id, membreId: membre.id, associationId: assoc.id,
+              federation: licenseApplication.federation, season: licenseApplication.season,
+              licenseNumber: licenseApplication.licenseNumber,
+              status: licenseApplication.declaredByMembre ? "EM_ANDAMENTO" : "A_SOLICITAR",
+              declaredByMembre: licenseApplication.declaredByMembre,
+            },
+          })
+        }
         // Un don embarqué payé hors ligne réutilise le même Don.paymentMethod/paidAt: null
         // que le formulaire de don autonome — il apparaît en attente d'encaissement dans
         // /dashboard/dons exactement comme un don payé hors ligne, jusqu'à ce qu'un admin le
@@ -684,6 +735,7 @@ export async function POST(
       canIssueTaxReceipts: assoc.canIssueTaxReceipts, receiptMode: tier.receiptMode,
       deductibleAmount: eligibleReceiptAmount(membershipAmount ?? 0, tier.receiptMode, tier.ineligibleAmount != null ? Number(tier.ineligibleAmount) : null) ?? undefined,
       addons: resolvedAddons.length ? resolvedAddons.map(a => ({ label: a.label, amount: a.amount })) : undefined,
+      license: licenseApplication ? { federation: licenseApplication.federation, season: licenseApplication.season, declaredByMembre: licenseApplication.declaredByMembre } : undefined,
     }), { associationId: assoc.id, membreId: membre.id, source: "TRANSACTION", sourceId: user.id }).catch(error => reportError(error, { area: "email", action: "adhesion.offline-confirmation-email", extra: { associationId: assoc.id, membershipFormId: form.id, membreId: membre.id } }))
 
     await writeActivityLog({
@@ -691,6 +743,13 @@ export async function POST(
       label: `${firstName} ${lastName} (${form.title}, ${paymentMethod})`,
       metadata: { source: "PUBLIC_ADHESION_FORM_OFFLINE", formId: form.id, tierId: tier.id, paymentMethod },
     })
+
+    if (licenseApplication) {
+      notifyNewMembershipLicense({
+        associationId: assoc.id, membreId: membre.id, memberName: `${firstName} ${lastName}`,
+        federation: licenseApplication.federation, season: licenseApplication.season, declaredByMembre: licenseApplication.declaredByMembre,
+      }).catch(error => reportError(error, { area: "payments", action: "adhesion.notify-new-license", extra: { associationId: assoc.id, membreId: membre.id } }))
+    }
 
     fireEventRule({
       triggerType: "MEMBER_CREATED",
@@ -765,6 +824,17 @@ export async function POST(
     durationMonths:   tier.durationMonths ? String(tier.durationMonths) : "",
     receiptMode:      tier.receiptMode,
     deductibleAmount: eligibleReceiptAmount(membershipAmount ?? 0, tier.receiptMode, tier.ineligibleAmount != null ? Number(tier.ineligibleAmount) : null)?.toString() ?? "",
+    // FORM-114 — read by handleMembershipOneOffCheckout/handleCotisationSubscriptionCheckout
+    // to create the MembershipLicense record once payment is confirmed (those webhooks never
+    // see this request's own payload, only Stripe's metadata echo). licenseAmount is the extra
+    // euros actually owed for the license on THIS invoice — already decided here, never
+    // re-derived from tier config webhook-side, same reasoning as membershipAmount itself.
+    licenseApplies:         licenseApplication ? "1" : "",
+    licenseFederation:      licenseApplication?.federation ?? "",
+    licenseSeason:          licenseApplication?.season ?? "",
+    licenseDeclaredByMembre: licenseApplication?.declaredByMembre ? "1" : "",
+    licenseNumber:          licenseApplication?.licenseNumber ?? "",
+    licenseAmount:          String(licenseAmount),
   }
 
   // Une option payante à côté d'une adhésion gratuite n'a rien de "récurrent" en soi — elle
@@ -800,7 +870,12 @@ export async function POST(
   // right after checkout.session.completed, not here. Never combined with addons/extras (see
   // canPayInInstallments in membership-form-public-form.tsx) — the client already hides the
   // option once any extra is selected, this re-checks server-side.
-  if (effectiveKind === "ONE_OFF" && parsed.data.payInInstallments && tier.installmentsAllowed && tier.installmentsCount && resolvedAddons.length === 0) {
+  // FORM-114 — !tier.licenseEnabled, not just licenseAmount === 0: handleMembershipInstallment
+  // Checkout/membership-installments.ts never creates a MembershipLicense at all, so even an
+  // INCLUDED/no-charge license would silently never get tracked if paid this way. A chargeable
+  // one additionally has no InstallmentPlan-equivalent to split it across, same reasoning as
+  // the resolvedAddons guard already here.
+  if (effectiveKind === "ONE_OFF" && parsed.data.payInInstallments && tier.installmentsAllowed && tier.installmentsCount && resolvedAddons.length === 0 && !tier.licenseEnabled) {
     const totalCents = Math.round((membershipAmount ?? 0) * 100)
     // ceil, not round: the last cycle can't carry a smaller top-up amount the way a one-off
     // charge could, so every cycle is priced to guarantee at least the tier's nominal amount
@@ -869,6 +944,16 @@ export async function POST(
       }] : []),
       ...addonLineItems,
       ...productLineItems,
+      // FORM-114 — a one-off tier's license fee is always a single payment, never recurring,
+      // so it's just another non-recurring line item here (same shape as addonLineItems).
+      ...(licenseAmount > 0 ? [{
+        price_data: {
+          currency:     "eur" as const,
+          unit_amount:  Math.round(licenseAmount * 100),
+          product_data: { name: `${tier.licenseName || "Licence fédérative"} — ${assoc.name}` },
+        },
+        quantity: 1,
+      }] : []),
     ]
 
     const grossAmountCents = lineItems.reduce((sum, li) => sum + (li.price_data!.unit_amount ?? 0) * (li.quantity ?? 1), 0)
@@ -933,6 +1018,24 @@ export async function POST(
           quantity: 1,
         },
         ...addonLineItems,
+        // FORM-114 — a recurring tier's license fee becomes a 2nd *recurring* subscription
+        // item (same billing cycle as the membership itself) only when the association has
+        // opted into billing it every renewal; otherwise it's a one-time item like addons
+        // above, charged on this first invoice only, never again. Either way, Cotisation.
+        // amount for every period is read straight off invoice.amount_paid — see
+        // handleCotisationInvoicePaid — never off this nominal line, so both cases stay
+        // correct without further bookkeeping.
+        ...(licenseAmount > 0 ? [{
+          price_data: {
+            currency:     "eur" as const,
+            unit_amount:  Math.round(licenseAmount * 100),
+            ...(assoc.includeFederativeLicenseInAutoRenewal
+              ? { recurring: { interval: "month" as const, interval_count: tier.durationMonths ?? 12 } }
+              : {}),
+            product_data: { name: `${tier.licenseName || "Licence fédérative"} — ${assoc.name}` },
+          },
+          quantity: 1,
+        }] : []),
       ],
       subscription_data: {
         // Non-null: the `else` branch above already returned if this were unset — see the
@@ -978,7 +1081,7 @@ async function handleMultiRegistrantCheckout(
 
   const assoc = await prisma.association.findUnique({
     where:  { slug },
-    select: { id: true, name: true, modules: true, stripeConnectId: true, plan: true, customBrandingEnabled: true, logoUrl: true, canIssueTaxReceipts: true, subscriptionStatus: true, subscriptionAmountCents: true },
+    select: { id: true, name: true, modules: true, stripeConnectId: true, plan: true, customBrandingEnabled: true, logoUrl: true, canIssueTaxReceipts: true, subscriptionStatus: true, subscriptionAmountCents: true, includeFederativeLicenseInAutoRenewal: true },
   })
   if (!assoc) return NextResponse.json({ error: "Association introuvable" }, { status: 404 })
 
@@ -1018,6 +1121,12 @@ async function handleMultiRegistrantCheckout(
     if (!tier) return NextResponse.json({ error: "Tarif invalide" }, { status: 422 })
     if (tier.kind === "RECURRING")
       return NextResponse.json({ error: "Les tarifs récurrents ne sont pas disponibles pour une inscription groupée." }, { status: 422 })
+    // FORM-114 — a federative license is tracked/billed per person; this group flow has no way
+    // to collect a license choice (or its fee) for each of the N registrants, only ever for
+    // registrant 0. Rejected here too, not just hidden client-side (membership-form-public-
+    // form.tsx's multiUsableTiers/canAddRegistrant), as defense against a tampered payload.
+    if (tier.licenseEnabled)
+      return NextResponse.json({ error: `Le tarif « ${tier.label} » gère une licence fédérative et n'est pas disponible pour une inscription groupée.` }, { status: 422 })
 
     const amount = tier.free ? 0 : (tier.freeAmount ? (r.amount ?? 0) : Number(tier.amount))
     if (!tier.free && amount <= 0)

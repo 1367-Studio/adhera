@@ -36,6 +36,7 @@ import {
   GearIcon,
   GlobeIcon,
   HeartIcon,
+  IdentificationCardIcon,
   LifebuoyIcon,
   ListChecksIcon,
   MoneyIcon,
@@ -89,6 +90,7 @@ const navigationItems: NavItem[] = [
   { key: "groupes",       href: "/dashboard/groupes",      icon: ListChecksIcon, moduleKey: "groupes", categoryKey: "adherents" },
   { key: "adhesions",     href: "/dashboard/adhesions",    icon: ClipboardTextIcon, moduleKey: "cotisations", categoryKey: "adherents" },
   { key: "cotisations",   href: "/dashboard/cotisations",  icon: CoinsIcon, moduleKey: "cotisations", categoryKey: "adherents" },
+  { key: "licencas",      href: "/dashboard/licencas",     icon: IdentificationCardIcon, moduleKey: "cotisations", categoryKey: "adherents" },
   // Dons, Événements and Messagerie are daily entry points, so they sit as top-level items
   // right under "Adhérents" instead of inside a category.
   { key: "dons",          href: "/dashboard/dons",         icon: HeartIcon, moduleKey: "dons",        afterCategory: "adherents" },

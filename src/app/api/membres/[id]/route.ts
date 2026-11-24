@@ -63,6 +63,13 @@ export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
       responsable:    RESPONSABLE_SELECT,
       dependants:     { select: { id: true, firstName: true, lastName: true } },
       cotisationSubscription: { select: { id: true, amount: true, status: true, currentPeriodEndsAt: true } },
+      // FORM-114 — federative license tracking, one per season (see MembershipLicense). The
+      // "Licenças" tab only renders when this is non-empty — see membre-detail-view.tsx.
+      licenses: {
+        orderBy: { createdAt: "desc" },
+        take:    50,
+        include: { cotisation: { select: { year: true } } },
+      },
       // Options bought alongside a MembershipForm signup (see membership-tiers-editor.tsx's
       // ADDON item type) — otherwise invisible anywhere in the admin.
       membershipAddonPurchases: { orderBy: { purchasedAt: "desc" }, take: 50 },
@@ -85,7 +92,7 @@ export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
       },
       // Lets the detail view tell "showing the 50 most recent" from "that's really all of them" —
       // a long-standing member can have far more rows than the take:50 caps above return.
-      _count: { select: { cotisations: true, participations: true, materialLoans: true, meetingsAsParticipant: true, boutiqueCommandes: true } },
+      _count: { select: { cotisations: true, participations: true, materialLoans: true, meetingsAsParticipant: true, boutiqueCommandes: true, licenses: true } },
     },
   })
 

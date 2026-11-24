@@ -3892,6 +3892,7 @@
           "eligibleAmountAutoHint": "Υπολογίζεται αυτόματα: ποσό που καταβλήθηκε − {amount}",
           "noMinimumWarning": "Δεν έχει οριστεί ελάχιστο ποσό για αυτήν την τιμή δωρεάν ποσού, ένας επισκέπτης που πληρώνει λιγότερο από το μη επιλέξιμο ποσό θα αποκλειστεί από την πληρωμή. Ορίστε ένα ελάχιστο ποσό τουλάχιστον {amount}.",
           "installmentsAllowedField": "Έγκριση πληρωμής σε δόσεις",
+          "installmentsUnavailableWithLicense": "Μη διαθέσιμο με χρέωση κατά τη διαχείριση άδειας ομοσπονδίας.",
           "installmentsCountField": "Αριθμός φορών",
           "membreTypeNone": "Κανένας",
           "kindField": "Τύπος",
@@ -3909,7 +3910,27 @@
           "membershipTierRequiredError": "Η φόρμα πρέπει να έχει τουλάχιστον μία συνδρομή μέλους",
           "minAmountRequiredError": "Απαιτείται ένα ελάχιστο ποσό για κάθε δωρεά",
           "saved": "Εγγεγραμμένες Τιμές",
-          "saveTiers": "Αποθήκευση τιμολογίων"
+          "saveTiers": "Αποθήκευση τιμολογίων",
+          "licenseSectionTitle": "Άδεια ομοσπονδίας",
+          "licenseEnabledField": "Διαχειριστείτε μια άδεια ομοσπονδίας για αυτήν την τιμή",
+          "licenseNameField": "Όνομα άδειας",
+          "licenseNamePlaceholder": "Π.χ. άδεια αγώνων",
+          "licenseFederationField": "Ομοσπονδία",
+          "licenseFederationPlaceholder": "Π.χ. FFF",
+          "licenseSeasonField": "Σεζόν",
+          "licenseSeasonPlaceholder": "Πρώην 2026/2027",
+          "licenseMandatoryField": "Υποχρεωτική άδεια",
+          "licenseBillingModeField": "Χρέωση",
+          "licenseBillingIncluded": "Συμπεριλαμβάνεται στην τιμή",
+          "licenseBillingAdditional": "Επιπλέον ποσό",
+          "licenseAdditionalAmountField": "Επιπλέον ποσό (€)",
+          "licenseAllowDeclareExistingField": "Επιτρέψτε τη δήλωση ήδη κατεχόμενης άδειας",
+          "licenseFederationRequiredError": "Απαιτείται ομοσπονδία για την ενεργοποίηση της άδειας ομοσπονδίας",
+          "licenseSeasonRequiredError": "Η σεζόν απαιτείται για την ενεργοποίηση της άδειας της ομοσπονδίας",
+          "licenseBillingModeRequiredError": "Απαιτείται η μέθοδος χρέωσης της άδειας",
+          "licenseAdditionalAmountRequiredError": "Απαιτείται επιπλέον ποσότητα άδειας",
+          "licenseRecurringChangeWarning": "Η αλλαγή αυτού του ποσού αλλάζει μόνο τις μελλοντικές συνδρομές — οι υπάρχοντες συνδρομητές συνεχίζουν να πληρώνουν το ποσό που ορίστηκε κατά τη στιγμή της εγγραφής.",
+          "licenseAdditionalAmountTooLowError": "Το επιπλέον ποσό άδειας πρέπει να είναι τουλάχιστον 1€"
         },
         "fields": {
           "title": "Μορφή",
@@ -4029,6 +4050,14 @@
       "mobilePlaceholder": "06 12 34 56 78",
       "donationBadge": "(ντον)",
       "totalLabel": "Σύνολο προς πληρωμή",
+      "licenseDefaultName": "Άδεια ομοσπονδίας",
+      "licenseIncludedNotice": "Συμπεριλαμβάνεται η άδεια της Ομοσπονδίας, χωρίς επιπλέον κόστος.",
+      "licenseOptInLabel": "Προσθέστε την άδεια ομοσπονδίας (+{amount})",
+      "licenseMandatoryNotice": "Αυτή η ιδιότητα μέλους περιλαμβάνει υποχρεωτική άδεια ομοσπονδίας ({amount}).",
+      "licenseDeclareExistingLabel": "Έχω ήδη άδεια για αυτή τη σεζόν",
+      "licenseDeclaredNotice": "Υφιστάμενη άδεια — εκκρεμεί επαλήθευση από τον σύλλογο.",
+      "licenseNumberLabel": "Αριθμός άδειας",
+      "licenseNumberPlaceholder": "Αφήστε το κενό αν δεν το έχετε ακόμα",
       "partialReceiptNotice": "Μόνος {amount} εκπίπτουν φορολογικά για αυτήν τη συνδρομή.",
       "belowExtraMinimum": "Το ελάχιστο ποσό είναι {amount}.",
       "belowMinimumAmount": "Το ελάχιστο ποσό για μια ηλεκτρονική πληρωμή είναι {amount}.",
@@ -4510,6 +4539,8 @@
       "publicPaymentToggleDesc": "Η φόρμα μέλους στον δημόσιο ιστότοπο απαιτεί άμεση πληρωμή (που λαμβάνεται ετησίως) και ενεργοποιεί το μέλος αυτόματα, χωρίς χειροκίνητη επικύρωση.",
       "publicPaymentRequiresAmount": "Συμπληρώστε ένα ποσό συνεισφοράς για να ενεργοποιήσετε αυτήν την επιλογή.",
       "connectNotReadyWarning": "Η ηλεκτρονική πληρωμή δεν είναι ενεργή — Το Stripe Connect δεν έχει ρυθμιστεί ούτε δέχεται πληρωμές ακόμα (καρτέλα Πληρωμές). Στο μεταξύ, η δημόσια φόρμα επιστρέφει στη δωρεάν ροή και έχει εκκρεμή αιτήματα συνδρομής.",
+      "includeFederativeLicenseInAutoRenewalToggle": "Συμπεριλάβετε την άδεια ομοσπονδίας στην ετήσια αυτόματη άμεση χρέωση",
+      "includeFederativeLicenseInAutoRenewalToggleDesc": "Όταν μια τιμή χρεώνει επιπλέον την άδεια ομοσπονδίας της, αυτό το ποσό χρεώνεται ξανά σε κάθε αυτόματη ανανέωση (επαναλαμβανόμενη συνδρομή). Αν είναι απενεργοποιημένη, χρεώνεται μόνο μία φορά, κατά την πρώτη συνδρομή. Αυτή η ρύθμιση ισχύει μόνο για νέες συνδρομές που εγγράφονται μετά την αλλαγή — οι ήδη ενεργές συνδρομές συνεχίζουν όπως πριν.",
       "toasts": {
         "updated": "Επικαιροποιημένο ποσό αθέτησης υποχρέωσης"
       }
@@ -5455,10 +5486,25 @@
         "materiel": "Υλικό",
         "groupes": "Ομάδες",
         "dons": "Δωρεές",
+        "licenses": "Άδειες",
         "historique": "Ιστορικό",
         "emails": "Μηνύματα ηλεκτρονικού ταχυδρομείου",
         "sms": "SMS",
         "boutique": "Κατάστημα"
+      },
+      "licenses": {
+        "empty": "Χωρίς άδεια",
+        "seasonYear": "Συνδρομή μέλους {year}",
+        "autoRenewed": "Αυτόματη ανανέωση",
+        "declaredByMembreNotice": "Άδεια που δηλώθηκε από το μέλος — εκκρεμεί επαλήθευση",
+        "deleteConfirmTitle": "Να αφαιρέσω αυτή την άδεια;",
+        "deleteConfirmDescription": "Η άδεια {federation} — {season} θα διακοπεί οριστικά.",
+        "statusField": "Κατάσταση",
+        "licenseNumberField": "Αριθμός άδειας",
+        "statusASolicitar": "Να ρωτήσω",
+        "statusEmAndamento": "Σε εξέλιξη",
+        "statusValidada": "Επικυρωμένο",
+        "statusARenovar": "Να ανανεωθεί"
       },
       "cotisationStatus": {
         "enAttente": "Σε εκκρεμότητα",
@@ -5507,6 +5553,7 @@
       "donStandalone": "Αυτόνομη δωρεά",
       "donPending": "Σε αναμονή είσπραξης",
       "showingRecentDons": "Εμφανίζονται οι {count} πιο πρόσφατες δωρεές από σύνολο {total}.",
+      "showingRecentLicenses": "Εμφάνιση {count} οι πιο πρόσφατες άδειες στο {total} Συνολικά.",
       "addCotisationTitle": "Προσθέστε μια συνδρομή μέλους",
       "editCotisationTitle": "Αλλαγή της συνδρομής μέλους",
       "deleteConfirmWithDependants": "Αυτό το μέλος θα αρχειοθετηθεί και δεν θα μπορεί πλέον να έχει πρόσβαση στον σύλλογο. Θα αφαιρεθεί επίσης ως νόμιμος κηδεμόνας του συλλόγου. {count} Μέλος(η): {names}.",
@@ -7041,6 +7088,7 @@
       "membres": "Μέλη",
       "evenements": "Εκδηλώσεις",
       "cotisations": "Συνεισφορές",
+      "licencas": "Άδειες",
       "adhesions": "Μέλη",
       "finances": "Οικονομική παρακολούθηση",
       "devis": "Προσφορές",
@@ -7766,6 +7814,30 @@
       "loading": "Φόρτωση...",
       "noResults": "Κανένα αποτέλεσμα.",
       "scanAction": "Σαρωτής"
+    }
+  },
+  "licencas": {
+    "title": "Άδειες",
+    "description": "Ομοσπονδιακές άδειες για μέλη, όλες οι τιμές και οι εποχές μαζί.",
+    "export": "Εξαγωγή",
+    "empty": "Χωρίς άδεια",
+    "statusASolicitar": "Να ρωτήσω",
+    "statusEmAndamento": "Σε εξέλιξη",
+    "statusValidada": "Επικυρωμένο",
+    "statusARenovar": "Να ανανεωθεί",
+    "columns": {
+      "membre": "Μέλος",
+      "tier": "Τρόπος λειτουργίας",
+      "federation": "Ομοσπονδία",
+      "season": "Σεζόν",
+      "licenseNumber": "Αριθμός άδειας",
+      "status": "Κατάσταση"
+    },
+    "filters": {
+      "searchPlaceholder": "Αναζήτηση μέλους...",
+      "allFederations": "Όλες οι ομοσπονδίες",
+      "allSeasons": "Όλες οι εποχές",
+      "allStatuses": "Όλες οι καταστάσεις"
     }
   }
 }

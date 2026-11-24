@@ -23,6 +23,7 @@ export const ASSOCIATION_SAFE_SELECT = {
   canIssueTaxReceipts: true,
   cotisationDefaultAmount: true,
   publicMembershipPaymentEnabled: true,
+  includeFederativeLicenseInAutoRenewal: true,
   accountingRegime: true,
   objet: true,
   organismeCategory: true,

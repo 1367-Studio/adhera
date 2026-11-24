@@ -3892,6 +3892,7 @@
           "eligibleAmountAutoHint": "Automatiškai apskaičiuojama: sumokėta suma − {amount}",
           "noMinimumWarning": "Nėra nustatyta minimali šio nemokamo mokesčio suma – mokantis lankytojas, kurio suma mažesnė už neleistiną sumą, bus užblokuotas nuo mokėjimo. Nustatykite bent minimalų sumą {amount}.",
           "installmentsAllowedField": "Įgaliojate mokėjimą dalimis",
+          "installmentsUnavailableWithLicense": "Neprieinama už federacijos licencijos valdymą.",
           "installmentsCountField": "Kartų skaičius",
           "membreTypeNone": "Nėra",
           "kindField": "Tipas",
@@ -3909,7 +3910,27 @@
           "membershipTierRequiredError": "Formoje turi būti bent vienas narystės mokestis",
           "minAmountRequiredError": "Kiekvienai aukai reikia minimalios sumos",
           "saved": "Registruoti tarifai",
-          "saveTiers": "Išsaugoti tarifus"
+          "saveTiers": "Išsaugoti tarifus",
+          "licenseSectionTitle": "Federacijos licencija",
+          "licenseEnabledField": "Valdyti federacijos licenciją šiam tarifui",
+          "licenseNameField": "Licencijos pavadinimas",
+          "licenseNamePlaceholder": "Pvz., varžybų licencija",
+          "licenseFederationField": "Federacija",
+          "licenseFederationPlaceholder": "Pvz. FFF",
+          "licenseSeasonField": "Sezonas",
+          "licenseSeasonPlaceholder": "Pvz., 2026/2027",
+          "licenseMandatoryField": "Privaloma licencija",
+          "licenseBillingModeField": "Atsiskaitymas",
+          "licenseBillingIncluded": "Įskaičiuota į kainą",
+          "licenseBillingAdditional": "Papildoma suma",
+          "licenseAdditionalAmountField": "Papildoma suma (€)",
+          "licenseAllowDeclareExistingField": "Leisti deklaruoti jau turintį pažymėjimą",
+          "licenseFederationRequiredError": "Norint aktyvuoti federacijos licenciją, reikia federacijos licencijos",
+          "licenseSeasonRequiredError": "Sezonas reikalingas federacijos licencijai aktyvuoti",
+          "licenseBillingModeRequiredError": "Reikalingas licencijos atsiskaitymo būdas",
+          "licenseAdditionalAmountRequiredError": "Reikalinga papildoma licencijos suma",
+          "licenseRecurringChangeWarning": "Keičiant šią sumą keičiasi tik būsimos prenumeratos — esami prenumeratoriai ir toliau moka nustatytą sumą, nustatytą prenumeratos metu.",
+          "licenseAdditionalAmountTooLowError": "Papildoma licencijos suma turi būti ne mažesnė kaip €1"
         },
         "fields": {
           "title": "Forma",
@@ -4029,6 +4050,14 @@
       "mobilePlaceholder": "06 12 34 56 78",
       "donationBadge": "(don)",
       "totalLabel": "Iš viso bus sumokėta",
+      "licenseDefaultName": "Federacijos licencija",
+      "licenseIncludedNotice": "Federacijos licencija įtraukta, be papildomų išlaidų.",
+      "licenseOptInLabel": "Pridėti federacijos licenciją (+{amount})",
+      "licenseMandatoryNotice": "Ši narystė apima privalomą federacijos licenciją ({amount}).",
+      "licenseDeclareExistingLabel": "Šiam sezonui jau turiu licenciją",
+      "licenseDeclaredNotice": "Esama licencija — laukia asociacijos patikrinimo.",
+      "licenseNumberLabel": "Licencijos numeris",
+      "licenseNumberPlaceholder": "Palikite tuščią, jei dar neturite",
       "partialReceiptNotice": "Vienas {amount} Yra atskaitomi iš mokesčių už šią narystę.",
       "belowExtraMinimum": "Minimali suma yra {amount}.",
       "belowMinimumAmount": "Minimali suma internetiniam mokėjimui yra {amount}.",
@@ -4510,6 +4539,8 @@
       "publicPaymentToggleDesc": "Viešosios svetainės narystės forma reikalauja nedelsiant apmokėti (priimama kasmet) ir automatiškai aktyvuoja narį be rankinio patvirtinimo.",
       "publicPaymentRequiresAmount": "Įveskite įnašo sumą, kad aktyvuotumėte šią parinktį.",
       "connectNotReadyWarning": "Internetiniai mokėjimai nėra aktyvūs – Stripe Connect dar neįdiegta ir nepriima mokėjimų (Mokėjimų skirtukas). Tuo tarpu vieša forma grįžta į nemokamą srautą ir laukia narystės prašymai.",
+      "includeFederativeLicenseInAutoRenewalToggle": "Įtraukite federacijos licenciją į metinį automatinį tiesioginį debetą",
+      "includeFederativeLicenseInAutoRenewalToggleDesc": "Kai tarifas prideda federacijos licencijai papildomą sumą, ši suma vėl taikoma kiekvieno automatinio atnaujinimo (pasikartojančios prenumeratos) metu. Jei paslauga išjungta, ji taikoma tik vieną kartą – per pirmąją prenumeratą. Šis nustatymas taikomas tik naujoms prenumeratoms, užsisakiusioms po pakeitimo – jau aktyvios prenumeratos tęsiasi kaip anksčiau.",
       "toasts": {
         "updated": "Atnaujinta numatytoji suma"
       }
@@ -5455,10 +5486,25 @@
         "materiel": "Medžiaga",
         "groupes": "Grupės",
         "dons": "Aukos",
+        "licenses": "Licencijos",
         "historique": "Istorija",
         "emails": "El. laiškai",
         "sms": "SMS",
         "boutique": "Parduotuvė"
+      },
+      "licenses": {
+        "empty": "Be licencijos",
+        "seasonYear": "Narystės mokestis {year}",
+        "autoRenewed": "Automatiškai atnaujinta",
+        "declaredByMembreNotice": "Licencija deklaruota nario — laukiant patvirtinimo",
+        "deleteConfirmTitle": "Pašalinti šią licenciją?",
+        "deleteConfirmDescription": "Licencija {federation} — {season} bus visam laikui nutrauktas.",
+        "statusField": "Statusas",
+        "licenseNumberField": "Licencijos numeris",
+        "statusASolicitar": "Paklausti",
+        "statusEmAndamento": "Vykdoma",
+        "statusValidada": "Patvirtinta",
+        "statusARenovar": "Atnaujinti"
       },
       "cotisationStatus": {
         "enAttente": "Laukiama",
@@ -5507,6 +5553,7 @@
       "donStandalone": "Savarankiška auka",
       "donPending": "Laukiama inkasavimo",
       "showingRecentDons": "Rodoma {count} naujausių aukų iš {total} iš viso.",
+      "showingRecentLicenses": "Eksponavimas {count} Naujausios licencijos {total} Iš viso.",
       "addCotisationTitle": "Pridėkite narystės mokestį",
       "editCotisationTitle": "Pakeiskite narystės mokestį",
       "deleteConfirmWithDependants": "Šis narys bus archyvuotas ir nebegalės prisijungti prie asociacijos. Jis taip pat bus pašalintas iš asociacijos teisėto globėjo pareigų. {count} Narys(-iai): {names}.",
@@ -7041,6 +7088,7 @@
       "membres": "Nariai",
       "evenements": "Renginiai",
       "cotisations": "Indėlis",
+      "licencas": "Licencijos",
       "adhesions": "Narystės",
       "finances": "Finansinė stebėsena",
       "devis": "Pasiūlymai",
@@ -7766,6 +7814,30 @@
       "loading": "Kraunama...",
       "noResults": "Rezultatų nėra.",
       "scanAction": "Skeneris"
+    }
+  },
+  "licencas": {
+    "title": "Licencijos",
+    "description": "Federuotos licencijos nariams, visų tarifų ir sezonų derinys.",
+    "export": "Eksportas",
+    "empty": "Be licencijos",
+    "statusASolicitar": "Paklausti",
+    "statusEmAndamento": "Vykdoma",
+    "statusValidada": "Patvirtinta",
+    "statusARenovar": "Atnaujinti",
+    "columns": {
+      "membre": "Narys",
+      "tier": "Modalumas",
+      "federation": "Federacija",
+      "season": "Sezonas",
+      "licenseNumber": "Licencijos numeris",
+      "status": "Statusas"
+    },
+    "filters": {
+      "searchPlaceholder": "Ieškok nario...",
+      "allFederations": "Visos federacijos",
+      "allSeasons": "Visi sezonai",
+      "allStatuses": "Visos būsenos"
     }
   }
 }

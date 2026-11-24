@@ -3892,6 +3892,7 @@
           "eligibleAmountAutoHint": "Calculated automatically: amount paid − {amount}",
           "noMinimumWarning": "No minimum amount is set for this free-amount tier — a visitor paying less than the non-eligible amount will be blocked at checkout. Set a minimum amount of at least {amount}.",
           "installmentsAllowedField": "Allow payment in installments",
+          "installmentsUnavailableWithLicense": "Unavailable for a tier that manages a federative license.",
           "installmentsCountField": "Number of installments",
           "membreTypeNone": "None",
           "kindField": "Type",
@@ -3909,7 +3910,27 @@
           "membershipTierRequiredError": "The form must have at least one membership tier",
           "minAmountRequiredError": "A minimum amount is required for every donation",
           "saved": "Tiers saved",
-          "saveTiers": "Save tiers"
+          "saveTiers": "Save tiers",
+          "licenseSectionTitle": "Federative license",
+          "licenseEnabledField": "Manage a federative license for this tier",
+          "licenseNameField": "License name",
+          "licenseNamePlaceholder": "E.g. Competition license",
+          "licenseFederationField": "Federation",
+          "licenseFederationPlaceholder": "E.g. FFF",
+          "licenseSeasonField": "Season",
+          "licenseSeasonPlaceholder": "E.g. 2026/2027",
+          "licenseMandatoryField": "Mandatory license",
+          "licenseBillingModeField": "Billing",
+          "licenseBillingIncluded": "Included in the tier",
+          "licenseBillingAdditional": "Additional amount",
+          "licenseAdditionalAmountField": "Additional amount (€)",
+          "licenseAllowDeclareExistingField": "Allow declaring an already-held license",
+          "licenseFederationRequiredError": "The federation is required to enable the federative license",
+          "licenseSeasonRequiredError": "The season is required to enable the federative license",
+          "licenseBillingModeRequiredError": "The license billing mode is required",
+          "licenseAdditionalAmountRequiredError": "The license's additional amount is required",
+          "licenseRecurringChangeWarning": "Changing this amount only affects future subscriptions — members already subscribed keep paying the amount set when they signed up.",
+          "licenseAdditionalAmountTooLowError": "The license's additional amount must be at least €1"
         },
         "fields": {
           "title": "Form",
@@ -4029,6 +4050,14 @@
       "mobilePlaceholder": "07700 900123",
       "donationBadge": "(donation)",
       "totalLabel": "Total due",
+      "licenseDefaultName": "Federative license",
+      "licenseIncludedNotice": "Federative license included, no extra charge.",
+      "licenseOptInLabel": "Add the federative license (+{amount})",
+      "licenseMandatoryNotice": "This membership includes a mandatory federative license ({amount}).",
+      "licenseDeclareExistingLabel": "I already hold a license for this season",
+      "licenseDeclaredNotice": "License already held — pending verification by the association.",
+      "licenseNumberLabel": "License number",
+      "licenseNumberPlaceholder": "Leave blank if you don't have it yet",
       "partialReceiptNotice": "Only {amount} is tax-deductible for this membership.",
       "belowExtraMinimum": "The minimum amount for \"{label}\" is {amount}.",
       "belowMinimumAmount": "The minimum amount for an online payment is {amount}.",
@@ -4510,6 +4539,8 @@
       "publicPaymentToggleDesc": "The public site membership form requires immediate payment (charged every year) and activates the member automatically, with no manual review.",
       "publicPaymentRequiresAmount": "Set a cotisation amount to enable this option.",
       "connectNotReadyWarning": "Online payment isn't active — Stripe Connect isn't set up or can't accept payments yet (Payments tab). Until then, the public form silently falls back to the free flow and files pending membership requests.",
+      "includeFederativeLicenseInAutoRenewalToggle": "Include the federative license in the automatic yearly charge",
+      "includeFederativeLicenseInAutoRenewalToggleDesc": "When a tier bills its federative license as an additional amount, that amount is charged again on every automatic renewal (recurring subscription). Off, it's only charged once, at the first signup. This setting only applies to new subscriptions started after changing it — already-active subscriptions keep billing exactly as they started.",
       "toasts": {
         "updated": "Default amount updated"
       }
@@ -5455,10 +5486,25 @@
         "materiel": "Equipment",
         "groupes": "Groups",
         "dons": "Donations",
+        "licenses": "Licenses",
         "historique": "History",
         "emails": "Emails",
         "sms": "SMS",
         "boutique": "Shop"
+      },
+      "licenses": {
+        "empty": "No license",
+        "seasonYear": "{year} membership fee",
+        "autoRenewed": "Automatically renewed",
+        "declaredByMembreNotice": "License declared by the member — pending verification",
+        "deleteConfirmTitle": "Delete this license?",
+        "deleteConfirmDescription": "The {federation} — {season} license will be permanently deleted.",
+        "statusField": "Status",
+        "licenseNumberField": "License number",
+        "statusASolicitar": "To request",
+        "statusEmAndamento": "In progress",
+        "statusValidada": "Validated",
+        "statusARenovar": "To renew"
       },
       "cotisationStatus": {
         "enAttente": "Pending",
@@ -5507,6 +5553,7 @@
       "donStandalone": "Standalone donation",
       "donPending": "Awaiting encashment",
       "showingRecentDons": "Showing the {count} most recent donations out of {total} total.",
+      "showingRecentLicenses": "Showing the {count} most recent licenses out of {total} total.",
       "addCotisationTitle": "Add a membership fee",
       "editCotisationTitle": "Edit membership fee",
       "deleteConfirmWithDependants": "This member will be archived and will no longer be able to access the association. They will also be removed as legal guardian of {count} member(s): {names}.",
@@ -7041,6 +7088,7 @@
       "membres": "Members",
       "evenements": "Events",
       "cotisations": "Dues",
+      "licencas": "Licenses",
       "adhesions": "Memberships",
       "finances": "Financial tracking",
       "devis": "Quotes",
@@ -7766,6 +7814,30 @@
       "loading": "Loading…",
       "noResults": "No results.",
       "scanAction": "Scan"
+    }
+  },
+  "licencas": {
+    "title": "Licenses",
+    "description": "Federative licenses of members, across every tier and season.",
+    "export": "Export",
+    "empty": "No license",
+    "statusASolicitar": "To request",
+    "statusEmAndamento": "In progress",
+    "statusValidada": "Validated",
+    "statusARenovar": "To renew",
+    "columns": {
+      "membre": "Member",
+      "tier": "Tier",
+      "federation": "Federation",
+      "season": "Season",
+      "licenseNumber": "License number",
+      "status": "Status"
+    },
+    "filters": {
+      "searchPlaceholder": "Search a member…",
+      "allFederations": "All federations",
+      "allSeasons": "All seasons",
+      "allStatuses": "All statuses"
     }
   }
 }

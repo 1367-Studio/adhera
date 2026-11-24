@@ -1229,8 +1229,17 @@ export function membershipSubscriptionStartedEmail(p: {
   canIssueTaxReceipts?: boolean
   receiptMode?:         "NONE" | "FULL" | "PARTIAL"
   deductibleAmount?:    number
+  // Same reasoning as membershipWelcomeEmail's own `license` field — see there.
+  license?: { federation: string; season: string; declaredByMembre: boolean }
 }) {
   const amountStr = p.amount.toLocaleString("fr-FR", { style: "currency", currency: "EUR" })
+  const licenseSentence = p.license
+    ? `<p style="margin:0 0 20px;font-size:14px;line-height:1.6;color:#3f3f46;">
+        ${p.license.declaredByMembre
+          ? `Votre licence ${p.license.federation} (${p.license.season}) déclarée est en attente de vérification par l'association.`
+          : `Votre demande de licence ${p.license.federation} (${p.license.season}) a été enregistrée — l'association s'en occupe.`}
+      </p>`
+    : ""
   const cadenceLabel = p.durationMonths && p.durationMonths !== 12
     ? `Cotisation prélevée tous les ${p.durationMonths} mois`
     : "Cotisation prélevée chaque année"
@@ -1259,6 +1268,7 @@ export function membershipSubscriptionStartedEmail(p: {
       </td></tr>
     </table>
     ${receiptSentence}
+    ${licenseSentence}
     ${btn("Accéder à mon espace membre", p.loginUrl)}`
   return {
     to:       p.email,
@@ -1314,8 +1324,20 @@ export function membershipWelcomeEmail(p: {
   // isMemberCardAvailable) : une adhésion gratuite ou déjà payée en ligne, jamais une
   // adhésion hors ligne en attente d'encaissement ni le premier mois d'un échéancier.
   memberCardUrl?: string
+  // FORM-114 — set whenever this signup created a MembershipLicense (mandatory, or optional
+  // and selected, or declared existing) — see resolveLicenseApplication. Without this, a
+  // member who just declared "I already hold a license" had no confirmation anywhere that it
+  // was recorded and is now pending the club's verification.
+  license?: { federation: string; season: string; declaredByMembre: boolean }
 }) {
   const amountStr = p.amount.toLocaleString("fr-FR", { style: "currency", currency: "EUR" })
+  const licenseSentence = p.license
+    ? `<p style="margin:0 0 20px;font-size:14px;line-height:1.6;color:#3f3f46;">
+        ${p.license.declaredByMembre
+          ? `Votre licence ${p.license.federation} (${p.license.season}) déclarée est en attente de vérification par l'association.`
+          : `Votre demande de licence ${p.license.federation} (${p.license.season}) a été enregistrée — l'association s'en occupe.`}
+      </p>`
+    : ""
   // "le montant ci-dessous", not "votre cotisation" — that total can also carry an addon/don
   // embarqué (see addonsSentence), so it isn't always just the membership fee itself.
   const statusSentence = p.offlinePending
@@ -1372,6 +1394,7 @@ export function membershipWelcomeEmail(p: {
     ${productsSentence}
     ${addonsSentence}
     ${receiptSentence}
+    ${licenseSentence}
     ${p.offlinePending && p.offlineInstructions ? `<p style="margin:0 0 20px;font-size:14px;line-height:1.6;color:#3f3f46;">${p.offlineInstructions}</p>` : ""}
     ${btn("Accéder à mon espace membre", p.loginUrl)}${memberCardButton}`
   return {

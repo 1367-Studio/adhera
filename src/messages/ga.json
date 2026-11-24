@@ -3892,6 +3892,7 @@
           "eligibleAmountAutoHint": "Ríomh go huathoibríoch: an méid a íocadh − {amount}",
           "noMinimumWarning": "Níl aon íosmhéid socraithe don ráta saor in aisce seo, cuirfear bac ar chuairteoir íoctha níos lú ná an méid neamh-incháilithe ó íocaíocht. Socraigh íosmhéid ar a laghad {amount}.",
           "installmentsAllowedField": "Údaraigh íocaíocht i dtráthchodanna",
+          "installmentsUnavailableWithLicense": "Níl sé ar fáil ar phraghas ceadúnas cónaidhme a bhainistiú.",
           "installmentsCountField": "Líon na n-uaireanta",
           "membreTypeNone": "Níl aon cheann",
           "kindField": "Cineál",
@@ -3909,7 +3910,27 @@
           "membershipTierRequiredError": "Ní mór táille ballraíochta amháin ar a laghad a bheith san fhoirm",
           "minAmountRequiredError": "Teastaíonn íosmhéid le haghaidh gach síntiúis",
           "saved": "Rátaí Cláraithe",
-          "saveTiers": "Sábháil na rátaí"
+          "saveTiers": "Sábháil na rátaí",
+          "licenseSectionTitle": "Ceadúnas cónaidhme",
+          "licenseEnabledField": "Bainistigh ceadúnas cónaidhme don ráta seo",
+          "licenseNameField": "Ainm an cheadúnais",
+          "licenseNamePlaceholder": "M.sh. ceadúnas iomaíochta",
+          "licenseFederationField": "Cónaidhm",
+          "licenseFederationPlaceholder": "M.sh. FFF",
+          "licenseSeasonField": "Séasúr",
+          "licenseSeasonPlaceholder": "Ex. 2026/2027",
+          "licenseMandatoryField": "Ceadúnas éigeantach",
+          "licenseBillingModeField": "Billeáil",
+          "licenseBillingIncluded": "San áireamh sa phraghas",
+          "licenseBillingAdditional": "Méid breise",
+          "licenseAdditionalAmountField": "Méid breise (€)",
+          "licenseAllowDeclareExistingField": "Ceadaigh dearbhú ceadúnais atá i seilbh cheana",
+          "licenseFederationRequiredError": "Teastaíonn Cónaidhm chun an ceadúnas cónaidhme a ghníomhachtú",
+          "licenseSeasonRequiredError": "Tá an séasúr riachtanach chun an ceadúnas cónaidhme a ghníomhachtú",
+          "licenseBillingModeRequiredError": "Tá an modh billeála ceadúnais riachtanach",
+          "licenseAdditionalAmountRequiredError": "Tá an méid breise ceadúnais ag teastáil",
+          "licenseRecurringChangeWarning": "Ní athraíonn an méid seo ach síntiúis amach anseo — leanann síntiúsóirí atá ann cheana ag íoc an mhéid a socraíodh tráth an tsíntiúis.",
+          "licenseAdditionalAmountTooLowError": "Caithfidh an méid breise ceadúnais a bheith €1 ar a laghad"
         },
         "fields": {
           "title": "Foirm",
@@ -4029,6 +4050,14 @@
       "mobilePlaceholder": "06 12 34 56 78",
       "donationBadge": "(don)",
       "totalLabel": "Iomlán le híoc",
+      "licenseDefaultName": "Ceadúnas cónaidhme",
+      "licenseIncludedNotice": "Ceadúnas na Cónaidhme san áireamh, gan aon chostas breise.",
+      "licenseOptInLabel": "Cuir an ceadúnas cónaidhme leis (+{amount})",
+      "licenseMandatoryNotice": "Áirítear leis an mballraíocht seo ceadúnas éigeantach cónaidhme ({amount}).",
+      "licenseDeclareExistingLabel": "Tá ceadúnas agam cheana féin don séasúr seo",
+      "licenseDeclaredNotice": "Ceadúnas atá ann cheana — ag fanacht ar fhíorú ag an gcomhlachas.",
+      "licenseNumberLabel": "Uimhir cheadúnais",
+      "licenseNumberPlaceholder": "Fág folamh mura bhfuil sé agat fós",
       "partialReceiptNotice": "Ina n-aonar {amount} inasbhainte ó cháin don bhallraíocht seo.",
       "belowExtraMinimum": "Is é an t-íosmhéid {amount}.",
       "belowMinimumAmount": "Is é an t-íosmhéid d'íocaíocht ar líne ná {amount}.",
@@ -4510,6 +4539,8 @@
       "publicPaymentToggleDesc": "Éilíonn an fhoirm bhallraíochta ar an suíomh poiblí íocaíocht láithreach (a thógtar go bliantúil) agus gníomhaíonn sé an ball go huathoibríoch, gan bailíochtú láimhe.",
       "publicPaymentRequiresAmount": "Líon isteach méid ranníocaíochta chun an rogha seo a ghníomhachtú.",
       "connectNotReadyWarning": "Níl íocaíocht ar líne gníomhach - níl Stripe Connect socraithe nó ag glacadh le híocaíochtaí fós (cluaisín Íocaíochtaí). Idir an dá linn, filleann an fhoirm phoiblí ar an sruth saor in aisce agus tá iarratais ar bhallraíocht ar feitheamh.",
+      "includeFederativeLicenseInAutoRenewalToggle": "Cuir an ceadúnas cónaidhme san áireamh sa dochair dhíreach uathoibríoch bhliantúil",
+      "includeFederativeLicenseInAutoRenewalToggleDesc": "Nuair a ghearrann ráta méid breise ar a cheadúnas cónaidhme, gearrtar an méid sin arís ag gach athnuachan uathoibríoch (síntiús athfhillteach). Má dhíchumasaítear é, gearrtar é ach uair amháin, le linn an chéad síntiúis. Ní bhaineann an socrú seo ach le síntiúis nua a suibscríobhann tar éis athrú — leanann síntiúis atá gníomhach cheana féin mar a bhí roimhe seo.",
       "toasts": {
         "updated": "Méid réamhshocraithe nuashonraithe"
       }
@@ -5455,10 +5486,25 @@
         "materiel": "Ábhar",
         "groupes": "Grúpaí",
         "dons": "Síntiúis",
+        "licenses": "Ceadúnais",
         "historique": "Stair",
         "emails": "Ríomhphoist",
         "sms": "SMS",
         "boutique": "Siopa"
+      },
+      "licenses": {
+        "empty": "Gan ceadúnas",
+        "seasonYear": "Táille ballraíochta {year}",
+        "autoRenewed": "Athnuachan go huathoibríoch",
+        "declaredByMembreNotice": "Ceadúnas dearbhaithe ag an mball — go dtí fíorú",
+        "deleteConfirmTitle": "An ceadúnas seo a bhaint?",
+        "deleteConfirmDescription": "An ceadúnas {federation} — {season} cuirfear deireadh go buan.",
+        "statusField": "Stádas",
+        "licenseNumberField": "Uimhir cheadúnais",
+        "statusASolicitar": "Le fiafraí",
+        "statusEmAndamento": "Ar siúl",
+        "statusValidada": "Bailíochtaithe",
+        "statusARenovar": "Le hathnuachan"
       },
       "cotisationStatus": {
         "enAttente": "Ar feitheamh",
@@ -5507,6 +5553,7 @@
       "donStandalone": "Síntiús neamhspleách",
       "donPending": "Ag feitheamh le bailiú",
       "showingRecentDons": "Ag taispeáint na {count} síntiús is déanaí as {total} ar fad.",
+      "showingRecentLicenses": "Taispeáint de {count} na ceadúnais is déanaí ar {total} san iomlán.",
       "addCotisationTitle": "Cuir táille bhallraíochta leis",
       "editCotisationTitle": "Athraigh an táille ballraíochta",
       "deleteConfirmWithDependants": "Déanfar an ball seo a chartlannú agus ní bheidh sé in ann rochtain a fháil ar an gcumann a thuilleadh. Bainfear é freisin mar chaomhnóir dlíthiúil an chumainn. {count} Comhalta(í): {names}.",
@@ -7041,6 +7088,7 @@
       "membres": "Baill",
       "evenements": "Imeachtaí",
       "cotisations": "Ranníocaíochtaí",
+      "licencas": "Ceadúnais",
       "adhesions": "Ballraíocht",
       "finances": "Faireachán airgeadais",
       "devis": "Meastacháin",
@@ -7766,6 +7814,30 @@
       "loading": "Á Luchtú...",
       "noResults": "Gan aon torthaí.",
       "scanAction": "Scanóir"
+    }
+  },
+  "licencas": {
+    "title": "Ceadúnais",
+    "description": "Ceadúnais chónaidhme do bhaill, gach ráta agus séasúr le chéile.",
+    "export": "Onnmhairiú",
+    "empty": "Gan ceadúnas",
+    "statusASolicitar": "Le fiafraí",
+    "statusEmAndamento": "Ar siúl",
+    "statusValidada": "Bailíochtaithe",
+    "statusARenovar": "Le hathnuachan",
+    "columns": {
+      "membre": "Ball",
+      "tier": "Módúlacht",
+      "federation": "Cónaidhm",
+      "season": "Séasúr",
+      "licenseNumber": "Uimhir cheadúnais",
+      "status": "Stádas"
+    },
+    "filters": {
+      "searchPlaceholder": "Cuardaigh ball...",
+      "allFederations": "Gach cónaidhm",
+      "allSeasons": "Gach séasúr",
+      "allStatuses": "Gach stádas"
     }
   }
 }
