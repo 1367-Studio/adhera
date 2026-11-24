@@ -41,6 +41,7 @@
     "location": "Beliggenhed",
     "choosePlaceholder": "Vælg...",
     "allPlaceholder": "Alle",
+    "noOptionsPlaceholder": "Ingen muligheder tilgængelige",
     "previousPage": "Forrige side",
     "nextPage": "Næste side",
     "paginationRange": "{from}–{to} på {total}",
@@ -51,7 +52,7 @@
     "addressPlaceholder": "Salle des fêtes, 12 rue de la Paix, Paris...",
     "viewOnGoogleMaps": "Se på Google Maps",
     "backToSite": "Tilbage til sitet",
-    "noOptionsPlaceholder": "Ingen muligheder tilgængelige"
+    "period": {}
   },
   "address": {
     "street": "Adresse",
@@ -62,6 +63,7 @@
     "country": "Bopælsland",
     "legacyMigratedHint": "Kopieret fra det gamle adressefelt — tjek at det ikke allerede indeholder postnummer og by nedenfor."
   },
+  "avis": {},
   "auth": {
     "layout": {
       "imageAlt": "Log ind",
@@ -91,7 +93,8 @@
         "connecting": "Logger ind…",
         "or": "eller",
         "continueWithGoogle": "Fortsæt med Google"
-      }
+      },
+      "twoFactor": {}
     },
     "register": {
       "pageTitle": "Opret en konto",
@@ -649,12 +652,130 @@
         "enLitige": "I strid",
         "annulee": "Aflyst"
       },
-      "unmarkPaidWarning": "Dette dokument er i øjeblikket betalt — fjernelse af denne status vil fjerne de udgifter, det har genereret i Finans, samt enhver bankafstemning.",
-      "markPaidNotice": "Hvis du markerer dette dokument som betalt, vil det automatisk oprette en tilsvarende udgift i Finansafdelingen.",
       "file": "Dokument",
+      "categoryHint": "Hvis du vælger en kategori, vil udgiften blive bogført så snart fakturaen er registreret, i stedet for på betalingstidspunktet.",
+      "payment": {
+        "toasts": {}
+      },
       "toasts": {
         "uploadError": "Fejl ved upload af dokumentet",
         "networkError": "Netværksfejl uploader — prøv igen"
+      },
+      "unmarkPaidWarning": "Dette dokument er i øjeblikket betalt — fjernelse af denne status vil fjerne de udgifter, det har genereret i Finans, samt enhver bankafstemning.",
+      "markPaidNotice": "Hvis du markerer dette dokument som betalt, vil det automatisk oprette en tilsvarende udgift i Finansafdelingen."
+    }
+  },
+  "reimbursements": {
+    "view": {
+      "title": "Udgiftsrefusioner",
+      "newRequest": "Ny anmodning",
+      "export": "Eksport",
+      "myRequests": "Mine ønsker",
+      "allRequests": "Alle anmodninger",
+      "allRequesters": "Alle ansøgere",
+      "allCategories": "Alle kategorier",
+      "dateFrom": "Af",
+      "dateTo": "Til",
+      "allStatuses": "Alle statusser",
+      "summary": "{pending} Afventende — {pendingAmount} · {approved} skal refunderes — {approvedAmount} · {reimbursed} refunderet — {reimbursedAmount}",
+      "noRequest": "Ingen anmodninger om refundering",
+      "columns": {
+        "subject": "Formål",
+        "date": "Dato",
+        "amount": "Beløb",
+        "status": "Status"
+      },
+      "status": {
+        "draft": "Draft",
+        "pendingApproval": "Afventer godkendelse",
+        "needsCorrection": "Skal rettes",
+        "approved": "Godkendt",
+        "rejected": "Afvist",
+        "reimbursed": "Refunderet",
+        "cancelled": "Aflyst"
+      },
+      "actions": {
+        "view": "Se",
+        "submit": "Indsend",
+        "cancel": "Annuller"
+      },
+      "toasts": {
+        "created": "Anmodning oprettet",
+        "updated": "Opdateringsanmodning",
+        "deleted": "Anmodning slettet",
+        "submitted": "Ansøgning indsendt til godkendelse",
+        "cancelled": "Anmodning annulleret",
+        "approved": "Ansøgning godkendt",
+        "correctionRequested": "Rettelse anmodet",
+        "rejected": "Anmodning afvist",
+        "reimbursed": "Registreret tilbagebetaling"
+      },
+      "deleteConfirmTitle": "Slette dette udkast?",
+      "deleteConfirmDescription": "Denne handling er irreversibel.",
+      "cancelConfirmTitle": "Annullere denne anmodning?",
+      "cancelConfirmDescription": "Ansøgeren vil blive underrettet om annulleringen.",
+      "cancelReasonLabel": "Årsag til afbestilling"
+    },
+    "form": {
+      "subject": "Formål",
+      "subjectPlaceholder": "F.eks. rejser til regionale møder",
+      "comment": "Kommentar",
+      "commentPlaceholder": "Valgfrie detaljer",
+      "event": "Relateret begivenhed",
+      "project": "Tilknyttet projekt",
+      "noProject": "Intet projekt",
+      "noEvent": "Ingen begivenheder",
+      "items": "Udgifter",
+      "addItem": "Tilføj en udgift",
+      "noItems": "Ingen ekstra gebyrer",
+      "itemDate": "Udgiftsdato",
+      "itemDescription": "Beskrivelse",
+      "itemAmount": "Beløb",
+      "itemCategory": "Kategori",
+      "itemReceipt": "Begrundelse",
+      "total": "Total",
+      "duplicateWarning": "En lignende udgift (samme dato, samme beløb) findes allerede i en anden af dine anmodninger.",
+      "toasts": {
+        "uploadError": "Fejl ved afsendelse af kvitteringen",
+        "networkError": "Netværksfejl ved afsendelse af kvitteringen"
+      }
+    },
+    "detail": {
+      "notFound": "Anmodning om refundering ikke fundet",
+      "history": "Historie",
+      "correctionFrom": "Rettelse anmodet af {name}",
+      "rejectedBy": "Afvist af {name}",
+      "reimbursedOn": "Refunderet den {date} af {method}",
+      "selfApprovalBlockedNotice": "Du kan ikke godkende din egen anmodning. Den skal godkendes af en administrator eller en anden bemyndiget embedsmand.",
+      "viewReceipt": "Se de understøttende dokumenter",
+      "immobilisationTag": "Anlægsaktiver",
+      "approveButton": "Godkend",
+      "requestCorrectionButton": "Anmod om en rettelse",
+      "rejectButton": "Afvis",
+      "correctionCommentLabel": "Rettelseskommentar",
+      "rejectionReasonLabel": "Begrundelse for afslag",
+      "deleteItemConfirmTitle": "Eliminere denne udgift?",
+      "toasts": {
+        "itemAdded": "Ekstra omkostninger",
+        "itemUpdated": "Opdateret udgift",
+        "itemDeleted": "Udgift fjernet"
+      }
+    },
+    "register": {
+      "title": "Gem refunderingen",
+      "registerButton": "Gem refunderingen",
+      "date": "Refusionsdato",
+      "paymentMethod": "Betalingsmetode",
+      "bankAccount": "Bankkonto",
+      "noBankAccountHint": "Ingen bankkonto oprettet — tilføj en i Finans> Konti, eller vælg Kontanter.",
+      "transaction": "Afstemme en importeret banktransaktion (valgfrit)",
+      "noTransaction": "Kom ikke tættere på nu",
+      "reference": "Reference",
+      "submit": "Gem",
+      "methods": {
+        "virement": "Overførsel",
+        "cheque": "Check",
+        "especes": "Arter"
       }
     }
   },
@@ -663,26 +784,64 @@
     "subtitle": "Oversigt over din forening",
     "customize": {
       "customize": "Tilpas",
+      "tooltip": "Tilpas dashboardet",
       "done": "Færdiggjort",
       "reset": "Nulstil",
       "dragHint": "Træk for at omarrangere",
       "resizeHint": "Træk hjørnet for at ændre størrelsen"
     },
+    "actionsTodo": {
+      "trigger": "Handlinger, der skal tages",
+      "badgeHint": "{count, plural, one {# kategori for ventende handling} other {# kategorier af ventende handlinger}}",
+      "empty": "Alt er opdateret, ingen handling at håndtere.",
+      "snooze": "Udsæt denne handling",
+      "snoozeDialogTitle": "Udsæt denne handling",
+      "snoozeDialogDescription": "Handlingen forbliver skjult for dig indtil den dato, og dukker så op igen, hvis der stadig er sager, der skal behandles.",
+      "snoozeUntilLabel": "Udsat til",
+      "confirm": "Bekræft",
+      "loadError": "Kan ikke indlæse de handlinger, der skal udføres.",
+      "snoozedSectionTitle": "{count, plural, one {# handling sat på pause} other {# handlinger sat på pause}}",
+      "snoozedUntil": "Indtil {date}",
+      "cancelSnooze": "Opskær holdet",
+      "actionLabels": {
+        "voirEtRelancer": "Se og genlancering",
+        "examiner": "Examinator",
+        "consulter": "Konsultér"
+      },
+      "rows": {
+        "cotisations-en-attente": "{count, plural, one {# udestående medlemsgebyr} other {# ventende bidrag}}",
+        "materiel-en-retard": "{count, plural, one {# sene materialeafkast} other {# sene materialeafkast}}",
+        "membres-a-valider": "{count, plural, one {# medlem til at validere} other {# medlemmer, der skal valideres}}",
+        "dons-a-encaisser": "{count, plural, one {# gave, der skal indløses} other {# donationer til indsamling}}",
+        "rapprochement-bancaire": "{count, plural, one {# operation, der skal sammenlignes} other {# operationer at sammenligne}}",
+        "notes-de-frais-a-valider": "{count, plural, one {# udgiftsrapport, der skal valideres} other {# udgiftsrapporter, der skal valideres}}",
+        "commandes-a-preparer": "{count, plural, one {# for at forberede} other {# ordrer til forberedelse}}"
+      }
+    },
     "stats": {
-      "activeMembers": "Aktive medlemmer",
-      "eventsThisMonth": "Begivenheder denne måned",
-      "cotisationsPending": "Afventende bidrag",
       "financialBalance": "Finansiel balance",
       "donationsReceived": "Modtagne donationer {year}"
     },
-    "nextEvent": {
-      "title": "Næste begivenhed",
-      "empty": "Ingen kommende arrangementer."
+    "agenda": {
+      "title": "Dagsorden",
+      "eventsThisMonth": "{count, plural, one {# event denne måned} other {# begivenheder denne måned}}",
+      "ongoing": "Under udvikling",
+      "viewCalendar": "Se kalenderen",
+      "empty": "Ingen begivenheder på vej."
     },
     "cotisations": {
       "title": "Bidrag {year}",
       "collectedThisYear": "Indløste i år",
-      "pendingPayment": "{count} Afventer betaling"
+      "remaining": "{amount} Resterende at modtage",
+      "pendingPayment": "{count} Afventer betaling",
+      "viewAll": "Se gebyrerne"
+    },
+    "activiteRecente": {
+      "title": "Seneste aktivitet",
+      "tabs": {
+        "commandes": "Ordrer",
+        "dons": "Donationer"
+      }
     },
     "recentDonations": {
       "title": "Seneste donationer",
@@ -718,6 +877,7 @@
       "categoryTitle": "Indtægter efter kategori — {year}"
     },
     "memberSummary": {
+      "title": "Medlemmer",
       "total": "{count, plural, one {# medlem} other {# medlemmer}}",
       "active": "{count, plural, one {# aktiv} other {# aktive}}",
       "inactive": "{count, plural, one {# inaktiv} other {# inaktive}}"
@@ -728,6 +888,9 @@
       "nearLimit": "Grænsen nærmer sig",
       "almostReached": "Grænsen er næsten nået",
       "limitReached": "Grænsen er nået"
+    },
+    "aTraiter": {
+      "items": {}
     }
   },
   "notifications": {
@@ -862,7 +1025,8 @@
       "userMenu": {
         "title": "Din profil",
         "description": "Rediger din profil, skift din adgangskode, og log ud fra denne menu."
-      }
+      },
+      "help": {}
     }
   },
   "finances": {
@@ -893,9 +1057,219 @@
       "title": "Kommer snart",
       "description": "Denne funktion er under udvikling."
     },
+    "immobilisationsView": {
+      "columns": {},
+      "toasts": {},
+      "drillDown": {}
+    },
+    "immobilisationForm": {},
+    "journalManual": {},
+    "bilan": {
+      "title": "Balance",
+      "description": "Foreningens aktiver og passiver ved regnskabsårets afslutning.",
+      "exerciceLabel": "Motion",
+      "rubriqueColumnLabel": "Sektion",
+      "noPreviousExercice": "Ingen sammenligning tilgængelig",
+      "actif": "Aktiv",
+      "totalActif": "Total aktiv",
+      "passif": "Passiv",
+      "totalPassif": "Samlede forpligtelser",
+      "noAccountsInRubrique": "Ingen balance i denne sektion",
+      "exportPdf": "Eksport PDF",
+      "exportDisabledTooltip": "Kan ikke eksportere en endelig balance, før ovenstående uregelmæssigheder er rettet.",
+      "emptyExercice": {
+        "title": "Intet regnskabsår",
+        "description": "Opret et nyt regnskabsår for at se balancen."
+      },
+      "emptyLedger": {
+        "title": "Ingen regnskabsføringer",
+        "description": "Balancen vil blive vist, så snart indtægter, udgifter eller anlægsaktiver er registreret i dette regnskabsår."
+      },
+      "rubriques": {
+        "immobilisationsCorporelles": "Materielle aktiver",
+        "immobilisationsIncorporelles": "Immaterielle anlægsaktiver",
+        "immobilisationsFinancieres": "Finansielle anlægsaktiver",
+        "disponibilites": "Tilgængelighed",
+        "chargesConstateesDavance": "Forudbetalte udgifter",
+        "creances": "Tilgodehavender",
+        "stocksEtEnCours": "Inventar",
+        "fondsPropres": "Egenkapital",
+        "provisions": "Hensættelser",
+        "dettes": "Gæld",
+        "produitsConstatesDavance": "Udskudt indkomst",
+        "fondsDedies": "Begrænsede midler"
+      },
+      "memoNotice": "Estimat — ikke registreret i hovedbogen, udelukket fra de samlede aktiver.",
+      "accountLabels": {
+        "reportANouveau": "Tilbageholdt indtjening",
+        "resultatExercice": "Nettoresultat for året",
+        "creancesCotisations": "Udestående medlemskontingenter",
+        "creancesFactures": "Udestående fakturaer",
+        "stocksEstimatedValue": "Anslået lagerværdi",
+        "creancesFacturesEnRetard": "Forfaldne fakturaer"
+      },
+      "pdf": {
+        "periodLabel": "Periode fra {start} til {end}"
+      },
+      "drillDown": {
+        "date": "Dato",
+        "label": "Label",
+        "origin": "Oprindelse",
+        "debit": "Debet",
+        "credit": "Kredit",
+        "noLines": "Ingen poster for denne konto.",
+        "sourceTypes": {
+          "INCOME": "Indkomst",
+          "INCOME_REVERSAL": "Indkomstomvending",
+          "EXPENSE": "Udgifter",
+          "EXPENSE_REVERSAL": "Omkostningsomvending",
+          "BANK_TRANSACTION": "Banktransaktion",
+          "ACCOUNT_TRANSFER": "Intern overførsel",
+          "OPENING_BALANCE": "Åbningsbalance",
+          "IMMOBILISATION_DEPRECIATION": "Afskrivning",
+          "IMMOBILISATION_ACQUISITION": "Aktiver erhvervelse",
+          "FACTURE_RECUE_PAYMENT": "Leverandørbetaling",
+          "MANUAL": "Manuel indtastning"
+        }
+      },
+      "issues": {
+        "title": "Anomalier opdaget",
+        "messages": {
+          "ACCOUNT_WITHOUT_RUBRIQUE": "Kontoen {code} — {label} har en saldo, men er ikke knyttet til nogen balance post.",
+          "ACTIF_PASSIF_MISMATCH": "Aktivet ({actif}) svarer ikke til forpligtelsen ({passif}).",
+          "OPENING_BALANCE_MISSING": "Der blev ikke genereret nogen åbningsposter for denne øvelse fra \"{previousLabel}\".",
+          "TRIAL_BALANCE_UNBALANCED": "Den samlede debet ({debit}) matcher ikke den samlede kredit ({credit}) for dette regnskabsår.",
+          "RESULT_DIVERGENCE": "Resultatet af journalen ({journal}) adskiller sig fra resultatopgørelsen ({statement}) — journalen er måske endnu ikke opdateret for dette regnskabsår (luk regnskabsåret eller genstart synkronisering).",
+          "UNPOSTED_ENTRIES": "Uregistrerede poster: {count} (kategori fraværende eller uden tilhørende regnskabskode) — {amount} ikke afspejlet i denne rapport. At genstarte synkroniseringen er ikke nok her, kategorien skal rettes."
+        }
+      },
+      "memoNoHistory": "Ingen historiske data",
+      "caveats": {
+        "stocksMissingCostPrice": "{count} varianter uden registreringsomkostninger, udelukket fra estimatet"
+      },
+      "refreshLedger": "Opdater loggen",
+      "refreshLedgerTooltip": "Denne rapport opdateres ikke i realtid med hver eneste indtægt eller udgift — klik for at synkronisere med de seneste bevægelser.",
+      "refreshLedgerSuccessPosted": "{count, plural, =0 {Ingen ny bevægelse} one {# synkroniseret bevægelse} other {# synkroniserede bevægelser}}",
+      "refreshLedgerSuccessReversed": "{count, plural, =0 {} one {, # annullering anvendt} other {, # afbestillinger anvendt}}",
+      "refreshLedgerError": "Kan ikke opdatere loggen. Prøv venligst igen."
+    },
+    "compteResultat": {
+      "title": "Resultatopgørelse",
+      "description": "Regnskabsårets økonomiske resultat sammenlignet med det foregående år.",
+      "exerciceLabel": "Regnskabsår",
+      "categoryColumnLabel": "Kategori",
+      "noPreviousExercice": "-",
+      "noPreviousExerciceMessage": "Intet tidligere regnskabsår tilgængeligt",
+      "export": "Eksportér",
+      "exportExcel": "Eksportér Excel (detaljeret)",
+      "exportPdf": "Eksportér PDF",
+      "products": "Indtægter",
+      "totalProducts": "Indtægter i alt",
+      "expenses": "Udgifter",
+      "totalExpenses": "Udgifter i alt",
+      "result": "Årets resultat",
+      "resultZero": "Regnskabsårets resultat: 0 €",
+      "surplus": "Årets overskud",
+      "deficit": "Årets underskud",
+      "operationalResult": "Driftsresultat",
+      "uncategorized": "Skal kategoriseres",
+      "uncategorizedAlertIncome": "{count, plural, one {# indtægt skal kategoriseres} other {# indtægter skal kategoriseres}}",
+      "uncategorizedAlertExpense": "{count, plural, one {# udgift skal kategoriseres} other {# udgifter skal kategoriseres}}",
+      "expandSection": "Vis",
+      "collapseSection": "Skjul",
+      "noCategoriesInSection": "Ingen kategori i dette afsnit",
+      "sections": {
+        "FINANCIAL": "Finansielt",
+        "EXCEPTIONAL": "Ekstraordinært",
+        "OTHER": "Andet"
+      },
+      "inKind": {
+        "title": "Frivillige naturaliebidrag",
+        "employmentHeader": "Brug af bidrag",
+        "amountHeader": "Beløb",
+        "receivedHeader": "Modtagne bidrag",
+        "totalEmployments": "Samlede antal job",
+        "totalReceived": "Samlede bidrag",
+        "note": "Disse gratis bidrag er værdisat i euro. De fører ikke til nogen pengestrøm og ændrer ikke regnskabsårets resultat."
+      },
+      "drillDown": {
+        "date": "Dato",
+        "origin": "Oprindelse",
+        "person": "Person",
+        "payment": "Betaling",
+        "amount": "Beløb",
+        "categorize": "Kategorisér",
+        "categorizePlaceholder": "Vælg en kategori",
+        "noTransactions": "Ingen transaktioner",
+        "categorizeSuccess": "Transaktion kategoriseret"
+      },
+      "pdf": {
+        "periodLabel": "Periode fra {start} til {end}",
+        "operatingIncome": "DRIFTSINDTÆGTER",
+        "operatingExpense": "DRIFTSUDGIFTER",
+        "operatingResult": "DRIFTSRESULTAT",
+        "financialIncome": "FINANSIELLE INDTÆGTER",
+        "financialExpense": "FINANSIELLE UDGIFTER",
+        "financialResult": "FINANSIELT RESULTAT",
+        "exceptionalIncome": "EKSTRAORDINÆRE INDTÆGTER",
+        "exceptionalExpense": "EKSTRAORDINÆRE UDGIFTER",
+        "exceptionalResult": "EKSTRAORDINÆRT RESULTAT",
+        "otherIncome": "ANDRE INDTÆGTER",
+        "otherExpense": "ANDRE UDGIFTER",
+        "otherResult": "RESULTAT AF ANDRE INDTÆGTER OG UDGIFTER",
+        "uncategorizedSection": "TRANSAKTIONER DER SKAL KATEGORISERES",
+        "uncategorizedIncomeLabel": "Indtægter der skal kategoriseres",
+        "uncategorizedExpenseLabel": "Udgifter der skal kategoriseres",
+        "total": "I alt",
+        "grandTotal": "TOTAL",
+        "categoryColumn": "Kategori",
+        "inKindTitle": "Frivillige naturaliebidrag",
+        "inKindEmploymentHeader": "Brug af bidrag",
+        "inKindAmountHeader": "Beløb",
+        "inKindReceivedHeader": "Modtagne bidrag",
+        "inKindTotalEmployments": "Samlede antal job",
+        "inKindTotalReceived": "Samlede bidrag",
+        "inKindNote": "Disse gratis bidrag er værdisat i euro. De fører ikke til nogen pengestrøm og ændrer ikke regnskabsårets resultat."
+      },
+      "csv": {
+        "date": "Dato",
+        "type": "Type",
+        "typeIncome": "Indtægt",
+        "typeExpense": "Udgift",
+        "category": "Kategori",
+        "uncategorized": "Skal kategoriseres",
+        "accountingCode": "Kontonummer",
+        "description": "Beskrivelse",
+        "amount": "Beløb",
+        "paymentMethod": "Betalingsmetode",
+        "origin": "Oprindelse",
+        "reference": "Reference",
+        "exercice": "Regnskabsår"
+      },
+      "emptyExercice": {
+        "title": "Intet regnskabsår",
+        "description": "Opret et regnskabsår for at generere resultatopgørelsen."
+      }
+    },
+    "previsionnel": {
+      "emptyExercice": {},
+      "tabs": {},
+      "card": {},
+      "columns": {},
+      "export": {},
+      "toasts": {},
+      "copyBudget": {
+        "toasts": {}
+      },
+      "projectsTab": {
+        "noProjects": {},
+        "toasts": {}
+      }
+    },
     "categoryForm": {
       "name": "Navn",
       "namePlaceholder": "F.eks.: Bidrag",
+      "noMatchingCategory": "Ingen matchende kategori",
       "type": "Type",
       "typeIncome": "Indtægt",
       "typeExpense": "Udgifter",
@@ -920,8 +1294,7 @@
       "sectionUnverifiedNote": "Denne konto genkendes ikke — tjek sektionen eller vælg den fra de avancerede muligheder.",
       "sectionToVerify": "Afsnit for at tjekke",
       "advancedOptions": "Avancerede muligheder",
-      "revertToAutoSection": "Tilbage til den automatiske sektion",
-      "noMatchingCategory": "Ingen matchende kategori"
+      "revertToAutoSection": "Tilbage til den automatiske sektion"
     },
     "bankAccountForm": {
       "bankName": "Banknavn",
@@ -1056,6 +1429,13 @@
         "deleted": "Konto slettet"
       }
     },
+    "transferForm": {
+      "toasts": {}
+    },
+    "transfersView": {
+      "description": "Registrer her de overførsler, der allerede er foretaget mellem din forenings bankkonti. Formwise registrerer overførslen uden at flytte penge.",
+      "columns": {}
+    },
     "categoriesView": {
       "title": "Kategorier",
       "description": "Styr omsætnings- og udgiftskategorier.",
@@ -1066,7 +1446,6 @@
       "newCategoryTitle": "Ny kategori",
       "editCategoryTitle": "Redigerkategori",
       "deleteConfirmTitle": "Slette denne kategori?",
-      "deleteConfirmInUse": "« {name} bruges af {count, plural, one {# indtægter/udgifter} other {# indtægter/udgifter}}. Disse poster ændres til \"Ukategoriseret\".",
       "toasts": {
         "created": "Oprettet kategori",
         "updated": "Opdateret kategori",
@@ -1077,7 +1456,8 @@
       "customCategory": "Opret en brugerdefineret kategori",
       "alreadyExists": "Allerede konfigureret",
       "archivedReactivateHint": "Arkiveret — klik for at genaktivere",
-      "custom": "Tilpasset"
+      "custom": "Tilpasset",
+      "deleteConfirmInUse": "« {name} bruges af {count, plural, one {# indtægter/udgifter} other {# indtægter/udgifter}}. Disse poster ændres til \"Ukategoriseret\"."
     },
     "incomesView": {
       "title": "Indtægter",
@@ -1262,13 +1642,13 @@
       "description": "Sammensæt importerede banktransaktioner med dine indtægter og udgifter.",
       "statusFilters": {
         "all": "Alle",
-        "unmatched": "Uforsonet",
+        "unmatched": "At sammenligne",
         "matched": "Forligt",
         "ignored": "Ignoreret",
         "duplicate": "Dubletter"
       },
       "status": {
-        "unmatched": "Uforsonet",
+        "unmatched": "At sammenligne",
         "matched": "Forligt",
         "pending": "Afventer",
         "ignored": "Ignoreret",
@@ -1314,105 +1694,11 @@
       "suggestedMatches": "Foreslåede kampe",
       "typeIncome": "Indtægt",
       "typeExpense": "Udgifter",
-      "confirm": "Valider forliget"
+      "confirm": "Valider forliget",
+      "selectedCount": "{count, plural, one {# valgt element} other {# valgte elementer}}"
     },
-    "compteResultat": {
-      "title": "Resultatopgørelse",
-      "description": "Regnskabsårets økonomiske resultat sammenlignet med det foregående år.",
-      "exerciceLabel": "Regnskabsår",
-      "noPreviousExercice": "-",
-      "export": "Eksportér",
-      "exportExcel": "Eksportér Excel (detaljeret)",
-      "exportPdf": "Eksportér PDF",
-      "products": "Indtægter",
-      "totalProducts": "Indtægter i alt",
-      "expenses": "Udgifter",
-      "totalExpenses": "Udgifter i alt",
-      "result": "Årets resultat",
-      "surplus": "Årets overskud",
-      "deficit": "Årets underskud",
-      "emptyExercice": {
-        "title": "Intet regnskabsår",
-        "description": "Opret et regnskabsår for at generere resultatopgørelsen."
-      },
-      "noPreviousExerciceMessage": "Intet tidligere regnskabsår tilgængeligt",
-      "resultZero": "Regnskabsårets resultat: 0 €",
-      "operationalResult": "Driftsresultat",
-      "uncategorized": "Skal kategoriseres",
-      "uncategorizedAlertIncome": "{count, plural, one {# indtægt skal kategoriseres} other {# indtægter skal kategoriseres}}",
-      "uncategorizedAlertExpense": "{count, plural, one {# udgift skal kategoriseres} other {# udgifter skal kategoriseres}}",
-      "expandSection": "Vis",
-      "collapseSection": "Skjul",
-      "noCategoriesInSection": "Ingen kategori i dette afsnit",
-      "sections": {
-        "FINANCIAL": "Finansielt",
-        "EXCEPTIONAL": "Ekstraordinært",
-        "OTHER": "Andet"
-      },
-      "drillDown": {
-        "date": "Dato",
-        "origin": "Oprindelse",
-        "person": "Person",
-        "payment": "Betaling",
-        "amount": "Beløb",
-        "categorize": "Kategorisér",
-        "categorizePlaceholder": "Vælg en kategori",
-        "noTransactions": "Ingen transaktioner",
-        "categorizeSuccess": "Transaktion kategoriseret"
-      },
-      "pdf": {
-        "periodLabel": "Periode fra {start} til {end}",
-        "operatingIncome": "DRIFTSINDTÆGTER",
-        "operatingExpense": "DRIFTSUDGIFTER",
-        "operatingResult": "DRIFTSRESULTAT",
-        "financialIncome": "FINANSIELLE INDTÆGTER",
-        "financialExpense": "FINANSIELLE UDGIFTER",
-        "financialResult": "FINANSIELT RESULTAT",
-        "exceptionalIncome": "EKSTRAORDINÆRE INDTÆGTER",
-        "exceptionalExpense": "EKSTRAORDINÆRE UDGIFTER",
-        "exceptionalResult": "EKSTRAORDINÆRT RESULTAT",
-        "otherIncome": "ANDRE INDTÆGTER",
-        "otherExpense": "ANDRE UDGIFTER",
-        "otherResult": "RESULTAT AF ANDRE INDTÆGTER OG UDGIFTER",
-        "uncategorizedSection": "TRANSAKTIONER DER SKAL KATEGORISERES",
-        "uncategorizedIncomeLabel": "Indtægter der skal kategoriseres",
-        "uncategorizedExpenseLabel": "Udgifter der skal kategoriseres",
-        "total": "I alt",
-        "grandTotal": "TOTAL",
-        "categoryColumn": "Kategori",
-        "inKindTitle": "Frivillige naturaliebidrag",
-        "inKindEmploymentHeader": "Brug af bidrag",
-        "inKindAmountHeader": "Beløb",
-        "inKindReceivedHeader": "Modtagne bidrag",
-        "inKindTotalEmployments": "Samlede antal job",
-        "inKindTotalReceived": "Samlede bidrag",
-        "inKindNote": "Disse gratis bidrag er værdisat i euro. De fører ikke til nogen pengestrøm og ændrer ikke regnskabsårets resultat."
-      },
-      "csv": {
-        "date": "Dato",
-        "type": "Type",
-        "typeIncome": "Indtægt",
-        "typeExpense": "Udgift",
-        "category": "Kategori",
-        "uncategorized": "Skal kategoriseres",
-        "accountingCode": "Kontonummer",
-        "description": "Beskrivelse",
-        "amount": "Beløb",
-        "paymentMethod": "Betalingsmetode",
-        "origin": "Oprindelse",
-        "reference": "Reference",
-        "exercice": "Regnskabsår"
-      },
-      "categoryColumnLabel": "Kategori",
-      "inKind": {
-        "title": "Frivillige naturaliebidrag",
-        "employmentHeader": "Brug af bidrag",
-        "amountHeader": "Beløb",
-        "receivedHeader": "Modtagne bidrag",
-        "totalEmployments": "Samlede antal job",
-        "totalReceived": "Samlede bidrag",
-        "note": "Disse gratis bidrag er værdisat i euro. De fører ikke til nogen pengestrøm og ændrer ikke regnskabsårets resultat."
-      }
+    "exerciceGuard": {
+      "closedError": "Denne øvelse er lukket — det er umuligt at oprette eller ændre en post for denne periode."
     }
   },
   "evenements": {
@@ -1628,6 +1914,7 @@
         "dateLabel": "Startdato",
         "createButton": "Opret"
       },
+      "summary": {},
       "bilan": {
         "show": "Vis oversigt",
         "hide": "Skjul oversigt",
@@ -1845,6 +2132,9 @@
         "qrRevoked": "QR-kode deaktiveret",
         "noMembersToExport": "Ingen medlemmer at eksportere",
         "linkCopied": "Link kopieret"
+      },
+      "payment": {
+        "methods": {}
       }
     },
     "avaliacoes": {
@@ -1899,6 +2189,7 @@
           "standardFieldsHint": "Felter anmodes ved registreringen",
           "phoneLabel": "Telefon",
           "addressLabel": "Adresse",
+          "countryLabel": "Bopælsland",
           "requirement": {
             "hidden": "Maskeret",
             "optional": "Valgfrit",
@@ -1906,8 +2197,7 @@
           },
           "mobileLabel": "Mobil",
           "birthDateLabel": "Fødselsdato",
-          "genderLabel": "Køn",
-          "countryLabel": "Bopælsland"
+          "genderLabel": "Køn"
         },
         "products": {
           "title": "Produkter",
@@ -2227,6 +2517,7 @@
       "liveSince": "Igangværende siden {mins} Min",
       "durationLessThanMin": "< 1 min",
       "durationMin": "{mins} Min",
+      "activeMeetingWarning": {},
       "toasts": {
         "meetingStarted": "Mødet startede",
         "meetingScheduled": "Planlagt møde",
@@ -2441,7 +2732,8 @@
         "disponibles": "Tilgængelig",
         "enPret": "På lån",
         "reserves": "Reserveret",
-        "maintenance": "Vedligeholdelse"
+        "maintenance": "Vedligeholdelse",
+        "enRetard": "Sen"
       },
       "pendingRequests": "Verserende ansøgninger",
       "accept": "Accepter",
@@ -2463,7 +2755,8 @@
         "reserves": "Reserveret",
         "maintenance": "Vedligeholdelse",
         "horsService": "Ude af drift",
-        "perdus": "Lost"
+        "perdus": "Lost",
+        "enRetard": "Sen"
       },
       "noArticles": "Ingen artikler",
       "noResults": "Ingen resultater",
@@ -2633,7 +2926,8 @@
         "nameRequired": "Navn er påkrævet",
         "atLeastOneVariant": "Mindst én variant er påkrævet",
         "variantLabelRequired": "Hver variant skal have en etiket"
-      }
+      },
+      "costPriceColumn": "Kostpris"
     },
     "view": {
       "title": "Shop",
@@ -2659,7 +2953,11 @@
         "markPaid": "Mark Betalt",
         "cancelOrder": "Annuller",
         "downloadReceipt": "Download kvitteringen",
-        "editPaymentMethod": "Skift betalingsmetode"
+        "editPaymentMethod": "Skift betalingsmetode",
+        "markPrepared": "Markér som forberedt",
+        "cancelPrepared": "Aflys forberedelsen",
+        "delegatePreparation": "Forberedelse delegeret til en tredjepart",
+        "resumePreparation": "Forberedelse af CV"
       },
       "noProduct": "Ingen produkter",
       "noOrder": "Ingen ordrer",
@@ -2674,11 +2972,14 @@
       },
       "othersCount": "{count, plural, one {+# andet} other {+# andre}}",
       "statusFilterAll": "Alle",
+      "statusFilterToPrepare": "At forberede",
       "salesCountLabel": "Antal salg",
       "revenueTotalLabel": "Samlet omsætning",
       "unitsSold": "{count, plural, one {# solgt} other {# solgt}}",
       "pendingCountLabel": "Afventende ordrer",
       "pendingAmountLabel": "Afventende beløb",
+      "toPrepareCountLabel": "Ordrer til forberedelse",
+      "toPrepareAmountLabel": "Beløb, der skal forberedes",
       "cancelledCountLabel": "Annullerede ordrer",
       "cancelledAmountLabel": "Annulleret beløb",
       "deleteProduitTitle": "Fjern produktet",
@@ -2701,6 +3002,7 @@
       "restockNoticePlural": "{count, plural, one {Lageret af den vare, der ikke er trukket tilbage, vil blive genoprettet.} other {Lageret af uafhentede genstande vil blive genoprettet.}}",
       "restockNoticeStatic": "Lageret af uafhentede genstande vil blive genoprettet."
     },
+    "refundModal": {},
     "stripeConfirm": {
       "title": "Marker som betalt?",
       "descriptionSimple": "Denne Stripe-kommando ({amount}) vil blive markeret som betalt manuelt.",
@@ -3037,6 +3339,7 @@
           "title": "Form",
           "standardFieldsHint": "Felter anmodet fra donoren",
           "addressLabel": "Adresse",
+          "countryLabel": "Bopælsland",
           "birthDateLabel": "Fødselsdato",
           "phoneLabel": "Fastnettelefon",
           "mobileLabel": "Mobil",
@@ -3067,8 +3370,7 @@
           "addOption": "Tilføj en mulighed",
           "removeOption": "Fjern denne mulighed",
           "optionsRequiredError": "Hver liste/valgfelt kræver mindst 2 muligheder.",
-          "duplicateOptionsError": "Mulighederne i et liste/valgfelt skal være unikke.",
-          "countryLabel": "Bopælsland"
+          "duplicateOptionsError": "Mulighederne i et liste/valgfelt skal være unikke."
         },
         "payment": {
           "title": "Betaling",
@@ -3306,6 +3608,7 @@
           "eligibleAmountAutoHint": "Automatisk beregnet: betalt beløb − {amount}",
           "noMinimumWarning": "Der er ikke fastsat noget minimumsbeløb for denne gratis sats; en betalende besøgende under det ikke-berettigede beløb vil blive blokeret fra betaling. Sæt et minimumsbeløb på mindst {amount}.",
           "installmentsAllowedField": "Bekræft betaling i rater",
+          "installmentsUnavailableWithLicense": "Ikke tilgængelig mod betaling ved administration af en federationslicens.",
           "installmentsCountField": "Antal gange",
           "membreTypeNone": "Ingen",
           "kindField": "Type",
@@ -3321,12 +3624,33 @@
           "membershipTierRequiredError": "Formularen skal indeholde mindst ét medlemsgebyr",
           "minAmountRequiredError": "Der kræves et minimumsbeløb for hver donation",
           "saved": "Registrerede satser",
-          "saveTiers": "Gem takster"
+          "saveTiers": "Gem takster",
+          "licenseSectionTitle": "Føderationslicens",
+          "licenseEnabledField": "Administrer en federationslicens for denne sats",
+          "licenseNameField": "Licensnavn",
+          "licenseNamePlaceholder": "F.eks. konkurrencelicens",
+          "licenseFederationField": "Føderation",
+          "licenseFederationPlaceholder": "F.eks. FFF",
+          "licenseSeasonField": "Sæson",
+          "licenseSeasonPlaceholder": "Ex. 2026/2027",
+          "licenseMandatoryField": "Obligatorisk licens",
+          "licenseBillingModeField": "Fakturering",
+          "licenseBillingIncluded": "Inkluderet i prisen",
+          "licenseBillingAdditional": "Yderligere beløb",
+          "licenseAdditionalAmountField": "Yderligere beløb (€)",
+          "licenseAllowDeclareExistingField": "Tillad deklaration af en allerede besat licens",
+          "licenseFederationRequiredError": "Føderation er påkrævet for at aktivere federationslicensen",
+          "licenseSeasonRequiredError": "Sæsonen er nødvendig for at aktivere forbundslicensen",
+          "licenseBillingModeRequiredError": "Licensfaktureringsmetoden er påkrævet",
+          "licenseAdditionalAmountRequiredError": "Det ekstra licensbeløb kræves",
+          "licenseRecurringChangeWarning": "Ændring af dette beløb ændrer kun fremtidige abonnementer — eksisterende abonnenter fortsætter med at betale det beløb, der blev fastsat på tidspunktet for abonnementet.",
+          "licenseAdditionalAmountTooLowError": "Det ekstra licensbeløb skal være mindst €1"
         },
         "fields": {
           "title": "Form",
           "standardFieldsHint": "Felter anmodes ved registreringen",
           "addressLabel": "Adresse",
+          "countryLabel": "Bopælsland",
           "birthDateLabel": "Fødselsdato",
           "phoneLabel": "Fastnettelefon",
           "mobileLabel": "Mobil",
@@ -3359,8 +3683,7 @@
           "addOption": "Tilføj en mulighed",
           "removeOption": "Fjern denne mulighed",
           "optionsRequiredError": "Hver liste/valgfelt kræver mindst 2 muligheder.",
-          "duplicateOptionsError": "Mulighederne i et liste/valgfelt skal være unikke.",
-          "countryLabel": "Bopælsland"
+          "duplicateOptionsError": "Mulighederne i et liste/valgfelt skal være unikke."
         },
         "payment": {
           "title": "Betaling",
@@ -3438,6 +3761,14 @@
       "mobilePlaceholder": "06 12 34 56 78",
       "donationBadge": "(don)",
       "totalLabel": "Samlet beløb skal betales",
+      "licenseDefaultName": "Føderationslicens",
+      "licenseIncludedNotice": "Føderationslicens inkluderet, uden ekstra omkostninger.",
+      "licenseOptInLabel": "Tilføj federationslicensen (+{amount})",
+      "licenseMandatoryNotice": "Dette medlemskab inkluderer en obligatorisk føderationslicens ({amount}).",
+      "licenseDeclareExistingLabel": "Jeg har allerede licens til denne sæson",
+      "licenseDeclaredNotice": "Eksisterende licens — afventer verifikation fra foreningen.",
+      "licenseNumberLabel": "Kørekort",
+      "licenseNumberPlaceholder": "Lad det stå tomt, hvis du ikke har det endnu",
       "partialReceiptNotice": "Alene {amount} er fradragsberettigede for dette medlemskab.",
       "belowExtraMinimum": "Minimumsbeløbet er {amount}.",
       "belowMinimumAmount": "Minimumsbeløbet for en online betaling er {amount}.",
@@ -3614,6 +3945,7 @@
         "required": "Påkrævet"
       }
     },
+    "blockEditor": {},
     "rulesManager": {
       "title": "Automatiseringsregler",
       "subtitle": "Automatiske udsendelser i henhold til en kalender eller begivenhed.",
@@ -3886,6 +4218,8 @@
       "publicPaymentToggleDesc": "Medlemskabsformularen på det offentlige site kræver øjeblikkelig betaling (tages årligt) og aktiverer medlemmet automatisk uden manuel validering.",
       "publicPaymentRequiresAmount": "Udfyld et bidragsbeløb for at aktivere denne mulighed.",
       "connectNotReadyWarning": "Online betaling er ikke aktiv — Stripe Connect er endnu ikke oprettet eller modtager betalinger (fanen Betalinger). I mellemtiden vender den offentlige formular tilbage til den gratis stream og har afventende medlemskabsanmodninger.",
+      "includeFederativeLicenseInAutoRenewalToggle": "Medtag føderationslicensen i den årlige automatiske autograf",
+      "includeFederativeLicenseInAutoRenewalToggleDesc": "Når en takst opkræver et ekstra beløb fra dens federationslicens, opkræves dette beløb igen ved hver automatisk fornyelse (tilbagevendende abonnement). Hvis det er deaktiveret, opkræves det kun én gang, under det første abonnement. Denne indstilling gælder kun for nye abonnementer, der abonneres efter ændring — allerede aktive abonnementer fortsætter som før.",
       "toasts": {
         "updated": "Opdateret standardbeløb"
       }
@@ -3897,6 +4231,10 @@
       "websitePlaceholder": "mon-association.fr",
       "iban": "IBAN",
       "bic": "BIC",
+      "accountingRegime": "Regnskabsregime for udgiftsrefusioner",
+      "accountingRegimeHint": "Bestemmer, hvornår en refusionsanmodning indgives: ved godkendelse (forpligtelse) eller ved faktisk betaling (kontant).",
+      "accountingRegimeCash": "Kontantregnskab",
+      "accountingRegimeAccrual": "Forpligtelsesregnskab",
       "previewTitle": "Dokumentforhåndsvisning",
       "bankDetails": "Bankoplysninger",
       "ibanColon": "IBAN : {value}",
@@ -3930,7 +4268,12 @@
       "title": "Visuel identitet",
       "subtitle": "Logo vist på dashboardet, tilbud/fakturaer, fremmødeliste og offentlig hjemmeside.",
       "logo": "Logo",
+      "footerStyles": {},
+      "footer": {
+        "socialPlatforms": {}
+      },
       "proOnlyText": "Det brugerdefinerede logo (dashboard, tilbud/fakturaer, timeark) er reserveret til Pro-planen. Opgrader til næste plan i Abonnement-fanen for at aktivere den.",
+      "preview": {},
       "toasts": {
         "updated": "Opdateret visuel identitet",
         "uploadError": "Fejl ved upload af logo"
@@ -3973,10 +4316,10 @@
       "status": {
         "trial": "Gratis prøveperiode",
         "active": "Aktiv",
+        "paymentPending": "Betaling under betaling",
         "pastDue": "Sen betaling",
         "suspended": "Suspenderet",
-        "cancelled": "Aflyst",
-        "paymentPending": "Betaling under betaling"
+        "cancelled": "Aflyst"
       },
       "planLabel": "Formel {tier}",
       "membersCount": "{count} / {limit} Medlemmer",
@@ -4097,6 +4440,16 @@
       "subtitleTrialExpired": "Din gratis prøveperiode er slut. Vælg en plan og indtast en betalingsmetode for at fortsætte.",
       "confirmButtonSubscribe": "Bekræft og abonner"
     },
+    "teamAccess": {
+      "columns": {},
+      "summary": {},
+      "profiles": {},
+      "levels": {},
+      "areas": {
+        "sensible": "Medlemmers følsomme data"
+      },
+      "toasts": {}
+    },
     "erasureRequests": {
       "title": "Datasletning (GDPR)",
       "description": "Anmodninger om permanent sletning af et medlems personoplysninger i henhold til artikel 17 i GDPR. Behandles automatisk hver nat, med undtagelse af anmodninger sat på hold.",
@@ -4137,11 +4490,6 @@
       },
       "automaticOrigin": "Automatisk markeret — inaktiv i mere end 3 år",
       "inactiveSince": "forlod den {date}"
-    },
-    "teamAccess": {
-      "areas": {
-        "sensible": "Medlemmers følsomme data"
-      }
     }
   },
   "cotisations": {
@@ -4231,6 +4579,33 @@
       "allCategories": "Alle kategorier",
       "allRenewals": "Alle fornyelser",
       "resetFilters": "Nulstil",
+      "mergeTiers": {
+        "filterOption": "Sammenlægning af duplikerede kategorier",
+        "title": "Sammenlægning af duplikerede kategorier",
+        "description": "Kategorier, hvis navne kun adskiller sig i kasus, accenter eller mellemrum. Intet bliver automatisk slået sammen.",
+        "empty": "Ingen dubletter registreret.",
+        "groupSummary": "{count} kategorier kaldet \"{label}\"",
+        "groupTitle": "Merge til \"{label}\"",
+        "manualAction": "Sammenflettes manuelt to kategorier",
+        "manualTitle": "Sammenlæg to kategorier",
+        "backAction": "Tilbage",
+        "cancelAction": "Annuller",
+        "keepAsPrimary": "Kategori at beholde",
+        "mergeIntoPrimary": "Kategorier til at fusionere ind i den",
+        "tierCounts": "{cotisationCount} Medlemskontingent(e) · {membreCount} Medlem(er)",
+        "mergeAction": "Sammenlægning",
+        "confirmTitle": "Bekræft sammenlægningen",
+        "confirmDescription": "{count}-kategori(er) vil blive slået sammen med \"{primaryLabel}\". {cotisationCount} Medlemsgebyr(er) og {membreCount}-medlemmer(e) vil blive overført. Denne handling er irreversibel, men bevarer al fornyelseshistorik og konfigurationer.",
+        "mergeSuccess": "{count} sammenslået kategori(er).",
+        "mergeErrorGeneric": "Der opstod en fejl under sammenfletningen.",
+        "mismatchWarning": "Bemærk: Disse kategorier har ikke samme faktureringstype, beløb eller metode.",
+        "loadError": "Dubletter kan ikke uploades. Prøv igen om et øjeblik.",
+        "activeSubscriptionWarning": "{count} aktive abonnementer vil blive overført — Stripe-fakturering, der allerede er i gang, ændres ikke automatisk.",
+        "priceFree": "Gratis",
+        "priceFreeAmount": "Gratis beløb",
+        "priceFreeAmountFrom": "Gratis beløb fra {amount}",
+        "priceRecurring": "{amount}/år"
+      },
       "renewal": {
         "automatic": "Automatisk",
         "manual": "Manuel"
@@ -4252,29 +4627,6 @@
         "total": "I alt",
         "noCategory": "Ingen kategori",
         "empty": "Ingen kontingenter matcher disse filtre."
-      },
-      "mergeTiers": {
-        "filterOption": "Sammenlægning af duplikerede kategorier",
-        "title": "Sammenlægning af duplikerede kategorier",
-        "description": "Kategorier, hvis navne kun adskiller sig i kasus, accenter eller mellemrum. Intet bliver automatisk slået sammen.",
-        "empty": "Ingen dubletter registreret.",
-        "groupSummary": "{count} kategorier kaldet \"{label}\"",
-        "groupTitle": "Merge til \"{label}\"",
-        "backAction": "Tilbage",
-        "cancelAction": "Annuller",
-        "keepAsPrimary": "Kategori at beholde",
-        "mergeIntoPrimary": "Kategorier til at fusionere ind i den",
-        "tierCounts": "{cotisationCount} Medlemskontingent(e) · {membreCount} Medlem(er)",
-        "mergeAction": "Sammenlægning",
-        "confirmTitle": "Bekræft sammenlægningen",
-        "confirmDescription": "{count}-kategori(er) vil blive slået sammen med \"{primaryLabel}\". {cotisationCount} Medlemsgebyr(er) og {membreCount}-medlemmer(e) vil blive overført. Denne handling er irreversibel, men bevarer al fornyelseshistorik og konfigurationer.",
-        "mergeSuccess": "{count} sammenslået kategori(er).",
-        "loadError": "Dubletter kan ikke uploades. Prøv igen om et øjeblik.",
-        "activeSubscriptionWarning": "{count} aktive abonnementer vil blive overført — Stripe-fakturering, der allerede er i gang, ændres ikke automatisk.",
-        "priceFree": "Gratis",
-        "priceFreeAmount": "Gratis beløb",
-        "priceFreeAmountFrom": "Gratis beløb fra {amount}",
-        "priceRecurring": "{amount}/år"
       }
     },
     "reminderModal": {
@@ -4339,6 +4691,24 @@
       "annulee": "Dette bidrag er blevet annulleret."
     }
   },
+  "groupes": {
+    "view": {
+      "statusFilter": {},
+      "columns": {},
+      "statusBadge": {},
+      "actions": {},
+      "toasts": {}
+    },
+    "form": {},
+    "detail": {
+      "appelColumns": {}
+    },
+    "appel": {
+      "counts": {},
+      "status": {},
+      "toasts": {}
+    }
+  },
   "membres": {
     "form": {
       "status": {
@@ -4366,6 +4736,11 @@
         "femme": "Kvinde"
       },
       "groupeSanguinNone": "Ikke specificeret",
+      "imageRights": {
+        "unknown": "Ikke angivet",
+        "granted": "Ja",
+        "refused": "Nej"
+      },
       "tailleTshirtNone": "Ikke specificeret",
       "preferredLocaleNone": "Ikke specificeret",
       "preferredLocaleHint": "Det valgte sprog gør det muligt at sende e-mails og kommunikation til dette medlem på deres foretrukne sprog.",
@@ -4397,14 +4772,14 @@
         "allergies": "Kendte allergier",
         "allergiesPlaceholder": "Arachides, pollen...",
         "type": "Medlemstype",
-        "preferredLocale": "Kommunikationssprog",
-        "spokenLanguage": "Sprog, der tales",
-        "cotisationTier": "Medlemskontingent",
-        "guardianName": "Værge {number} — navn",
-        "guardianPhone": "Værge {number} — telefon",
         "imageRights": "Billedrettigheder",
         "notes": "Noter",
-        "notesPlaceholder": "Nyttige oplysninger om dette medlem (kurser, bemærkninger…)"
+        "notesPlaceholder": "Nyttige oplysninger om dette medlem (kurser, bemærkninger…)",
+        "guardianName": "Værge {number} — navn",
+        "guardianPhone": "Værge {number} — telefon",
+        "preferredLocale": "Kommunikationssprog",
+        "spokenLanguage": "Sprog, der tales",
+        "cotisationTier": "Medlemskontingent"
       },
       "invitationNotice": "En invitationsmail med identifikatorerne vil blive sendt til denne adresse.",
       "tierNone": "Ingen prissætning (standardadfærd)",
@@ -4425,12 +4800,7 @@
         "management": "Medlemsadministration"
       },
       "invalidFormToast": "Kunne ikke gemme. Kontakt support, hvis problemet fortsætter.",
-      "customFieldsLoading": "Indlæser svar fra optagelsesformularen…",
-      "imageRights": {
-        "unknown": "Ikke angivet",
-        "granted": "Ja",
-        "refused": "Nej"
-      }
+      "customFieldsLoading": "Indlæser svar fra optagelsesformularen…"
     },
     "fichePdf": {
       "title": "MEDLEMSPROFIL",
@@ -4486,13 +4856,13 @@
         "firstName": "Fornavn",
         "lastName": "Efternavn",
         "address": "Adresse",
+        "country": "Land",
+        "countryPlaceholder": "Alle lande",
+        "countryLoadError": "Kan ikke indlæse lande. Prøv igen om et øjeblik.",
         "birthDateFrom": "Født efter",
         "birthDateTo": "Født før",
         "apply": "Ansøg",
-        "reset": "Nulstil",
-        "country": "Land",
-        "countryPlaceholder": "Alle lande",
-        "countryLoadError": "Kan ikke indlæse lande. Prøv igen om et øjeblik."
+        "reset": "Nulstil"
       },
       "statusOptions": {
         "pending": "Afventer",
@@ -4551,6 +4921,13 @@
       "cotisationButton": "Medlemskontingent",
       "createAccessButton": "Opret adgang",
       "roleButton": "Rolle",
+      "eraseData": {
+        "button": "Slet data (GDPR)",
+        "confirmTitle": "Anmod om permanent sletning af {name}'s data?",
+        "confirmDescription": "Dette registrerer en GDPR artikel 17-anmodning om sletning. Medlemmet modtager en bekræftelses-e-mail, hvorefter deres personoplysninger anonymiseres uigenkaldeligt ved næste automatiske behandling, med mindre anmodningen sættes på hold.",
+        "toastSuccess": "Anmodning om sletning registreret",
+        "requestLabel": "GDPR-sletning"
+      },
       "contact": "Kontakt",
       "noContactInfo": "Ingen kontaktoplysninger",
       "memberSinceColon": "Medlem siden: {date}",
@@ -4595,10 +4972,25 @@
         "reunions": "Møder",
         "materiel": "Materiale",
         "dons": "Donationer",
+        "licenses": "Licenser",
         "historique": "Historik",
         "emails": "E-mails",
         "sms": "SMS",
         "boutique": "Butik"
+      },
+      "licenses": {
+        "empty": "Ingen licens",
+        "seasonYear": "Medlemsgebyr {year}",
+        "autoRenewed": "Automatisk fornyet",
+        "declaredByMembreNotice": "Licens erklæret af medlemmet — afventning af verifikation",
+        "deleteConfirmTitle": "Fjerne denne licens?",
+        "deleteConfirmDescription": "Licensen {federation} — {season} vil blive permanent udfaset.",
+        "statusField": "Status",
+        "licenseNumberField": "Kørekort",
+        "statusASolicitar": "At spørge",
+        "statusEmAndamento": "Under udvikling",
+        "statusValidada": "Valideret",
+        "statusARenovar": "Skal fornyes"
       },
       "cotisationStatus": {
         "enAttente": "Afventer",
@@ -4646,6 +5038,7 @@
       "donStandalone": "Selvstændig donation",
       "donPending": "Afventer indløsning",
       "showingRecentDons": "Viser de {count} seneste donationer ud af {total} i alt.",
+      "showingRecentLicenses": "Visning af {count} Seneste licenser på {total} i alt.",
       "addCotisationTitle": "Tilføj et medlemsgebyr",
       "editCotisationTitle": "Ændr medlemsgebyret",
       "deleteConfirmWithDependants": "Dette medlem vil blive arkiveret og vil ikke længere kunne få adgang til foreningen. Han vil også blive fjernet som foreningens juridiske værge. {count} Medlem(e): {names}.",
@@ -4666,13 +5059,6 @@
         "rejectedToast": "Ansøgning afvist",
         "rejectConfirmTitle": "Afvise denne anmodning?",
         "rejectConfirmDescription": "{name} vil ændre sig til \"Inaktiv\" status og vil ikke kunne logge ind. Anmodningen og dens svar på formularen bevares."
-      },
-      "eraseData": {
-        "button": "Slet data (GDPR)",
-        "confirmTitle": "Anmod om permanent sletning af {name}'s data?",
-        "confirmDescription": "Dette registrerer en GDPR artikel 17-anmodning om sletning. Medlemmet modtager en bekræftelses-e-mail, hvorefter deres personoplysninger anonymiseres uigenkaldeligt ved næste automatiske behandling, med mindre anmodningen sættes på hold.",
-        "toastSuccess": "Anmodning om sletning registreret",
-        "requestLabel": "GDPR-sletning"
       },
       "noCommande": "Ingen butikskøb for denne kontakt.",
       "commandeStatus": {
@@ -4763,6 +5149,11 @@
       "inMessagesSection": " i afsnittet Beskeder.",
       "messageSectionLabel": "Besked",
       "saveAsTemplate": "Gem som skabelon",
+      "subjectLabel": "Formål",
+      "subjectPlaceholder": "Emnet for e-mailen...",
+      "subjectTooLong": "Emnet er for langt: {length}/{max} tegn — det afvises ved afsendelse.",
+      "bodyLabel": "Beskedtekst",
+      "bodyPlaceholder": "Skriv din besked...",
       "language": {
         "title": "Afsendelsessprog",
         "modeOriginal": "Originalsprog",
@@ -4787,11 +5178,6 @@
         "autoNoEffect": "Ingen nuværende modtager har et andet foretrukket sprog end fransk — alle modtager originalversionen.",
         "autoExternalNote": "{count, plural, one {# ekstern e-mail (originalsprog)} other {# eksterne e-mails (originalsprog)}}"
       },
-      "subjectLabel": "Formål",
-      "subjectPlaceholder": "Emnet for e-mailen...",
-      "subjectTooLong": "Emnet er for langt: {length}/{max} tegn — det afvises ved afsendelse.",
-      "bodyLabel": "Beskedtekst",
-      "bodyPlaceholder": "Skriv din besked...",
       "continue": "Fortsæt",
       "confirmSendTitle": "Forsendelsesbekræftelse",
       "confirmSendDescription": "Denne e-mail vil blive sendt til {recipients}. Denne handling er uigenkaldelig.",
@@ -4808,6 +5194,9 @@
       "recipientsActive": "{count, plural, one {# aktivt medlem} other {# aktive medlemmer}}",
       "externalOnlyCount": "{count, plural, one {# ekstern e-mail} other {# eksterne e-mails}}",
       "recipientsWithExternal": "{members} + {count, plural, one {# ekstern e-mail} other {# eksterne e-mails}}",
+      "attachments": {
+        "errors": {}
+      },
       "toasts": {
         "selectType": "Vælg en medlemstype",
         "selectMember": "Vælg mindst ét medlem eller tilføj en ekstern e-mail",
@@ -5309,8 +5698,8 @@
       "actualites": "Nyheder",
       "membership": "Bliv medlem af foreningen",
       "dons": "Donér",
-      "contact": "Kontakt",
-      "boutique": "Butik"
+      "boutique": "Butik",
+      "contact": "Kontakt"
     },
     "defaultTitles": {
       "hero": "Velkommen",
@@ -5318,9 +5707,9 @@
       "events": "Kommende begivenheder",
       "membership": "Bliv medlem af foreningen",
       "dons": "Donér",
+      "boutique": "Butik",
       "actualites": "Nyheder",
-      "contact": "Kontakt",
-      "boutique": "Butik"
+      "contact": "Kontakt"
     },
     "view": {
       "uploadFailedWarning": "{count, plural, one {# billede kunne ikke downloades.} other {# billeder kunne ikke uploades.}}",
@@ -5364,9 +5753,9 @@
       "noSections": "Ingen sektioner. Tilføj en nedenfor.",
       "addSection": "Tilføj et afsnit",
       "donsModuleDisabled": "Donationsmodulet deaktiveret — usynligt på det offentlige site",
+      "boutiqueModuleDisabled": "Butiksmodulet er deaktiveret — skjult på den offentlige side",
       "deleteSectionTitle": "Slet-sektionen",
-      "deleteSectionDescription": "Denne handling er uigenkaldelig.",
-      "boutiqueModuleDisabled": "Butiksmodulet er deaktiveret — skjult på den offentlige side"
+      "deleteSectionDescription": "Denne handling er uigenkaldelig."
     },
     "sectionSheet": {
       "editTitle": "Redigering — {label}",
@@ -5387,6 +5776,8 @@
       "eventsLimitHint": "Begivenheder trækkes automatisk fra din kalender.",
       "actualitesLimit": "Antal nyhedsartikler at vise",
       "actualitesLimitHint": "Kun de første N-nyheder, der offentliggøres, vil blive vist på siden.",
+      "boutiqueLimit": "Antal produkter, der skal vises",
+      "boutiqueLimitHint": "Kun de første N aktive produkter vises på siden.",
       "membershipIntro": "Introduktionstekst",
       "membershipIntroPlaceholder": "Udfyld denne formular for at ansøge om medlemskab af foreningen...",
       "membershipHint": "Anmodninger vises på listen over medlemmer med status \"Afventende\".",
@@ -5407,9 +5798,7 @@
       "apply": "Ansøg",
       "discardTitle": "Ignorere ændringer?",
       "discardDescription": "Uanvendte ændringer vil gå tabt.",
-      "discardConfirm": "Ignorer",
-      "boutiqueLimit": "Antal produkter, der skal vises",
-      "boutiqueLimitHint": "Kun de første N aktive produkter vises på siden."
+      "discardConfirm": "Ignorer"
     },
     "preview": {
       "donsNoForm": "Ingen donationsformular valgt — usynlig på det offentlige site"
@@ -5418,6 +5807,12 @@
       "viewSite": "Se hjemmesiden",
       "logoUrl": "Logo-URL (valgfrit)",
       "footerText": "Footertekst"
+    },
+    "aiAssistant": {},
+    "builderSwitch": {
+      "confirmOn": {},
+      "confirmOff": {},
+      "toasts": {}
     }
   },
   "richTextEditor": {
@@ -5430,6 +5825,21 @@
     "heading1": "Overskrift 1",
     "heading2": "Overskrift 2",
     "heading3": "Overskrift 3"
+  },
+  "paperFormTemplates": {
+    "columns": {},
+    "toasts": {},
+    "deleteConfirm": {},
+    "leaveWarning": {},
+    "targetGroups": {},
+    "targets": {},
+    "renderErrors": {},
+    "editor": {
+      "columns": {}
+    },
+    "activity": {
+      "fields": {}
+    }
   },
   "associationDocuments": {
     "title": "Foreningsdokumenter",
@@ -5476,6 +5886,9 @@
     "notFound": "Dokumentet blev ikke fundet.",
     "backToList": "Tilbage til dokumenterne"
   },
+  "formDraft": {},
+  "legalConsent": {},
+  "publicDocuments": {},
   "portalMembre": {
     "associationDocuments": {
       "title": "Foreningsdokumenter",
@@ -5522,6 +5935,15 @@
       "viewShop": "Se Shop",
       "orderPlacedTitle": "Bestil registreret!",
       "orderPlacedDescription": "Din ordre venter på betaling. Administrationen vil kontakte dig for at færdiggøre det.",
+      "paymentSuccessTitle": "Betaling bekræftet!",
+      "paymentSuccessDescription": "Tak for dit køb. En bekræftelsesmail med din kvittering er sendt til dig.",
+      "stockAdjustedNotice": "Lagerbeholdningen for nogle varer er ændret — din kurv er blevet justeret, gennemgå den før du fortsætter.",
+      "trackOrderButton": "Følg min ordre",
+      "trackingPageTitle": "Ordresporing",
+      "trackingStatusPending": "Afventer betaling",
+      "trackingStatusPaid": "Ordre betalt",
+      "trackingStatusCancelled": "Ordre annulleret",
+      "trackingNotFound": "Ordre ikke fundet",
       "myOrdersButton": "Mine ordrer",
       "continueShopping": "Fortsæt med at handle",
       "maxStockReached": "Max Stock Nået",
@@ -5559,16 +5981,7 @@
         "orderError": "Fejl under ordre",
         "orderUpdated": "Opdateret ordre",
         "orderCancelled": "Ordre annulleret"
-      },
-      "paymentSuccessTitle": "Betaling bekræftet!",
-      "paymentSuccessDescription": "Tak for dit køb. En bekræftelsesmail med din kvittering er sendt til dig.",
-      "stockAdjustedNotice": "Lagerbeholdningen for nogle varer er ændret — din kurv er blevet justeret, gennemgå den før du fortsætter.",
-      "trackOrderButton": "Følg min ordre",
-      "trackingPageTitle": "Ordresporing",
-      "trackingStatusPending": "Afventer betaling",
-      "trackingStatusPaid": "Ordre betalt",
-      "trackingStatusCancelled": "Ordre annulleret",
-      "trackingNotFound": "Ordre ikke fundet"
+      }
     },
     "dons": {
       "title": "Mine donationer",
@@ -5848,10 +6261,12 @@
       "membres": "Medlemmer",
       "evenements": "Begivenheder",
       "cotisations": "Bidrag",
+      "licencas": "Licenser",
       "adhesions": "Medlemskaber",
       "finances": "Finansiel overvågning",
       "devis": "Tilbud",
       "factures": "Fakturaer",
+      "reimbursements": "Udgiftsrefusioner",
       "fournisseurs": "Leverandører",
       "dons": "Donationer",
       "reunions": "Møder",
@@ -5905,6 +6320,7 @@
       },
       "logout": "Log ud"
     },
+    "twoFactorSettingsModal": {},
     "changePasswordModal": {
       "title": "Ændr adgangskode",
       "currentPasswordLabel": "Nuværende adgangskode",
@@ -6046,6 +6462,7 @@
       "daysWithoutCotisation": "Dage uden bidrag",
       "status": "Status"
     },
+    "originSources": {},
     "empty": "Ingen kontrolalarmer.",
     "resolveAction": "Løs",
     "resolveConfirmTitle": "Løs denne alarm?",
@@ -6063,7 +6480,79 @@
     "autoResolvedLabel": "(auto)",
     "emptyForSearch": "Ingen resultater for \"{search}\"."
   },
+  "help": {
+    "tabs": {},
+    "callout": {},
+    "assistant": {
+      "examples": {},
+      "examplesDocs": {},
+      "tools": {}
+    },
+    "changelog": {
+      "kind": {}
+    },
+    "releaseNotes": {},
+    "news": {},
+    "faqPopup": {},
+    "popupCarousel": {},
+    "footer": {}
+  },
+  "boutiqueShipping": {},
+  "paperFormScan": {
+    "steps": {},
+    "upload": {
+      "camera": {}
+    },
+    "reading": {},
+    "viewer": {},
+    "editor": {},
+    "review": {},
+    "status": {},
+    "result": {},
+    "notesValues": {},
+    "validation": {},
+    "leaveWarning": {},
+    "restartWarning": {}
+  },
   "formTermsEditor": {
     "contentRequired": "Du skal udfylde feltet “{conditionsLabel}” eller uploade et dokument."
+  },
+  "membreDuplicates": {
+    "list": {
+      "matchedFields": {},
+      "columns": {},
+      "status": {}
+    },
+    "merge": {
+      "fields": {},
+      "relations": {}
+    },
+    "backoffice": {
+      "columns": {}
+    }
+  },
+  "licencas": {
+    "title": "Licenser",
+    "description": "Fødererede licenser for medlemmer, alle rater og sæsoner samlet.",
+    "export": "Eksport",
+    "empty": "Ingen licens",
+    "statusASolicitar": "At spørge",
+    "statusEmAndamento": "Under udvikling",
+    "statusValidada": "Valideret",
+    "statusARenovar": "Skal fornyes",
+    "columns": {
+      "membre": "Medlem",
+      "tier": "Modalitet",
+      "federation": "Føderation",
+      "season": "Sæson",
+      "licenseNumber": "Kørekort",
+      "status": "Status"
+    },
+    "filters": {
+      "searchPlaceholder": "Søg efter et medlem...",
+      "allFederations": "Alle forbund",
+      "allSeasons": "Alle sæsoner",
+      "allStatuses": "Alle statusser"
+    }
   }
 }

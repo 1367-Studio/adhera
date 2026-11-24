@@ -41,7 +41,17 @@ async function fetchSuggestions(bankTransactionId: string) {
   return res.json()
 }
 
-async function reconcile(data: { bankTransactionId: string; action: "MATCH" | "IGNORE" | "DUPLICATE" | "UNMATCH"; incomeId?: string; expenseId?: string; transferId?: string }) {
+async function reconcile(data: {
+  bankTransactionId: string
+  action:            "MATCH" | "IGNORE" | "DUPLICATE" | "UNMATCH"
+  incomeId?:  string
+  expenseId?: string
+  transferId?: string
+  // FORM-116 block 8 — grouped reconciliation (several Income/Expense rows against one
+  // payout-style bank line).
+  incomeIds?:  string[]
+  expenseIds?: string[]
+}) {
   const res = await fetch("/api/finances/reconcile", {
     method: "POST",
     headers: { "Content-Type": "application/json" },

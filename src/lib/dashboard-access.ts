@@ -29,6 +29,7 @@ export const DASHBOARD_ROUTE_ACCESS: Record<string, DashboardRouteRequirement> =
   // GET /api/membership-forms); a "read" user works from the cotisations list instead.
   "/dashboard/adhesions":             { area: "adhesions", level: "edit" },
   "/dashboard/cotisations":           { area: "adhesions" },
+  "/dashboard/licencas":               { area: "adhesions" },
   "/dashboard/dons":                  { area: "dons" },
   "/dashboard/evenements":            { area: "evenements" },
   "/dashboard/boutique":              { area: "boutique" },
@@ -40,6 +41,10 @@ export const DASHBOARD_ROUTE_ACCESS: Record<string, DashboardRouteRequirement> =
   "/dashboard/finances/import":       { area: "comptabilite", level: "edit" },
   "/dashboard/devis":                 { area: "comptabilite" },
   "/dashboard/factures":              { area: "comptabilite" },
+  // Pas { area: "comptabilite" } : tout rôle staff peut créer/suivre SA PROPRE demande de
+  // remboursement — voir src/lib/finance/reimbursement-access.ts. Voir/gérer les demandes des
+  // autres est filtré côté API (canViewAllReimbursements/canManageReimbursements).
+  "/dashboard/reimbursements":        { staff: true },
   "/dashboard/fournisseurs":          { area: "comptabilite" },
   "/dashboard/reunions":              { area: "reunions" },
   "/dashboard/materiel":              { area: "materiel" },

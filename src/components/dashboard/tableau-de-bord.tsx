@@ -11,24 +11,21 @@ import {
 } from "@dnd-kit/core"
 import { SortableContext, rectSortingStrategy, sortableKeyboardCoordinates, arrayMove } from "@dnd-kit/sortable"
 import { restrictToParentElement } from "@dnd-kit/modifiers"
-import {
-  UsersIcon, CalendarBlankIcon, CoinsIcon, BankIcon, HeartIcon,
-  PencilSimpleIcon, CheckIcon, ArrowCounterClockwiseIcon,
-} from "@phosphor-icons/react/dist/ssr";
+import { PencilSimpleIcon, CheckIcon, ArrowCounterClockwiseIcon, CaretDownIcon } from "@phosphor-icons/react/dist/ssr";
 import { cn } from "@/lib/utils"
 import { useCurrentUser, useModules } from "@/lib/user-context"
-import { usePalette } from "@/lib/finance-palette"
 import { Button } from "@/components/ui/button"
-import { CotisationsGaugeCard, IncomeExpenseChart, IncomeByCategoryChart } from "@/components/dashboard/finance-charts"
+import { Badge } from "@/components/ui/badge"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import { ActionsTodoPanel } from "@/components/dashboard/actions-todo-panel"
+import type { DashboardActionRow } from "@/lib/dashboard-actions"
 import { SortableWidget } from "@/components/dashboard/sortable-widget"
-import { StatTile } from "@/components/dashboard/widgets/stat-tile"
-import { NextEventCard } from "@/components/dashboard/widgets/next-event-card"
-import { CotisationsSummaryCard } from "@/components/dashboard/widgets/cotisations-summary-card"
-import { PENDING_COTISATION_STATUSES } from "@/lib/cotisation-filters"
-import { RecentOrdersCard } from "@/components/dashboard/widgets/recent-orders-card"
-import { RecentDonationsCard } from "@/components/dashboard/widgets/recent-donations-card"
+import { MembresSummaryCard } from "@/components/dashboard/widgets/membres-summary-card"
+import { AgendaCard } from "@/components/dashboard/widgets/agenda-card"
+import { CotisationsCard } from "@/components/dashboard/widgets/cotisations-card"
+import { FinancesOverviewCard } from "@/components/dashboard/widgets/finances-overview-card"
+import { ActiviteRecenteCard } from "@/components/dashboard/widgets/activite-recente-card"
 import { LoanedMaterialCard } from "@/components/dashboard/widgets/loaned-material-card"
-import { MemberSummary } from "@/components/dashboard/member-summary"
 import { setDashboardLayout, resetDashboardLayout } from "@/lib/dashboard/actions"
 import {
   defaultDashboardLayout, isDashboardWidgetVisible,
@@ -42,11 +39,14 @@ type DashboardData = {
   evenementsMois:        number
   cotisationsEnAttente:  number
   cotisationsEncaissees: number
-  // null for a user without Comptabilité (see /api/dashboard) — stat-solde is hidden for them.
+  cotisationsResteAPercevoir: number
+  // null for a user without Comptabilité (see /api/dashboard) — the balance mini-stat is
+  // hidden for them inside finances-overview.
   solde:                 number | null
-  // null for a role that isn't allowed to see donation totals (see /api/dashboard) — the
-  // stat-dons tile is hidden for those roles anyway.
+  // null for a role that isn't allowed to see donation totals (see /api/dashboard).
   donsRecus:             number | null
+  // null for the same role, mirroring donsRecus — drives the "À traiter" dons shortcut.
+  donsEnAttenteCount:    number | null
   // Pending (offline, awaiting encaissement) first, then recent paid dons fill the rest —
   // up to 5 total, same shape and ordering contract as ventesRecentes below.
   donsRecents:           {
@@ -62,7 +62,7 @@ type DashboardData = {
   }[]
   materielEnRetardCount: number
   materielEmpruntsListe: { id: string; materialName: string; borrowerName: string; expectedReturnAt: string | null; isOverdue: boolean }[]
-  prochainEvenement:     { id: string; title: string; date: string; location: string | null } | null
+  prochainEvenement:     { id: string; title: string; date: string; location: string | null; enCours: boolean } | null
   // Pending orders first (need action), then recent PAID sales fill out the rest — up to
   // 5 total. Each row carries its own status since the list can be a mix of both.
   ventesRecentes:        {
@@ -73,10 +73,6 @@ type DashboardData = {
     membre:      { firstName: string; lastName: string } | null
     status:      "PENDING" | "PAID"
   }[]
-}
-
-function fmt(n: number) {
-  return n.toLocaleString("fr-FR", { style: "currency", currency: "EUR" })
 }
 
 // The drag preview floats outside the grid, so it needs a pixel width rather than a column
@@ -100,7 +96,7 @@ export function TableauDeBord({ initialLayout }: Props) {
   const tCustomize = useTranslations("dashboard.customize")
   const modules    = useModules()
   const { permissions } = useCurrentUser()
-  const pal        = usePalette()
+  const tActionsTodo = useTranslations("dashboard.actionsTodo")
   const { data, isLoading } = useQuery<DashboardData>({
     queryKey: ["dashboard"],
     queryFn:  async () => {
@@ -109,6 +105,20 @@ export function TableauDeBord({ initialLayout }: Props) {
       return res.json()
     },
   })
+
+  const { data: actionsData, isLoading: actionsLoading, isError: actionsError } = useQuery<{
+    rows:        DashboardActionRow[]
+    badgeCount:  number
+    snoozedRows: (DashboardActionRow & { snoozedUntil: string })[]
+  }>({
+    queryKey: ["dashboard-actions"],
+    queryFn:  async () => {
+      const res = await fetch("/api/dashboard/actions")
+      if (!res.ok) throw new Error(t("common.error"))
+      return res.json()
+    },
+  })
+  const [actionsOpen, setActionsOpen] = useState(false)
 
   const [layout, setLayout]     = useState<DashboardWidget[]>(initialLayout)
   const [editMode, setEditMode] = useState(false)
@@ -129,10 +139,6 @@ export function TableauDeBord({ initialLayout }: Props) {
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
   )
 
-  const year             = new Date().getFullYear()
-  const cotisationsAlert = !!data?.cotisationsEnAttente
-  const soldePositive    = !data || data.solde === null || data.solde >= 0
-
   const visibleLayout = useMemo(
     () => layout.filter(widget => isDashboardWidgetVisible(widget.id, modules, permissions)),
     [layout, modules, permissions],
@@ -141,89 +147,42 @@ export function TableauDeBord({ initialLayout }: Props) {
   // into drag ordering.
   const visibleIds = useMemo(() => visibleLayout.map(w => w.id), [visibleLayout])
 
-  // Membres/Événements are plain counts with no real financial meaning, so they get no
-  // accent color (null → neutral rendering) instead of an arbitrary one each. Cotisations
-  // and Solde reuse the exact same palette as the charts below (usePalette) — same yellow
-  // for "en attente", same green/red for paid/negative — instead of unrelated Tailwind
-  // shades, so a color means the same thing everywhere on this screen.
   const widgetContent: Record<DashboardWidgetId, ReactNode> = {
-    "stat-membres": (
-      <StatTile
-        label={t("dashboard.stats.activeMembers")}
-        value={data?.membresActifs ?? "—"}
-        icon={UsersIcon}
-        href="/dashboard/membres"
-        accent={null}
+    "membres-summary": (
+      <MembresSummaryCard
+        totalCount={data?.membresTotal ?? null}
+        activeCount={data?.membresActifs ?? null}
         isLoading={isLoading}
-        dark={pal.dark}
       />
     ),
-    "stat-evenements": (
-      <StatTile
-        label={t("dashboard.stats.eventsThisMonth")}
-        value={data?.evenementsMois ?? "—"}
-        icon={CalendarBlankIcon}
-        href="/dashboard/evenements"
-        accent={null}
+    "agenda-summary": (
+      <AgendaCard
+        evenementsMois={data?.evenementsMois ?? 0}
+        prochainEvenement={data?.prochainEvenement ?? null}
         isLoading={isLoading}
-        dark={pal.dark}
       />
     ),
-    "stat-cotisations": (
-      <StatTile
-        label={t("dashboard.stats.cotisationsPending")}
-        value={data?.cotisationsEnAttente ?? "—"}
-        icon={CoinsIcon}
-        // Le compteur additionne EN_ATTENTE + PARTIELLEMENT_PAYEE + EN_RETARD ; sans ce
-        // filtre, le lien atterrissait sur la liste non filtrée et l'utilisateur
-        // sélectionnait ensuite "En attente" seul, qui n'en montre qu'une partie.
-        href={`/dashboard/cotisations?status=${PENDING_COTISATION_STATUSES}`}
-        accent={cotisationsAlert ? pal.enAttente : null}
-        alert={cotisationsAlert}
-        isLoading={isLoading}
-        dark={pal.dark}
-      />
-    ),
-    "stat-solde": (
-      <StatTile
-        label={t("dashboard.stats.financialBalance")}
-        value={data && data.solde !== null ? fmt(data.solde) : "—"}
-        icon={BankIcon}
-        href="/dashboard/finances"
-        accent={soldePositive ? pal.recettes : pal.depenses}
-        isLoading={isLoading}
-        dark={pal.dark}
-      />
-    ),
-    "stat-dons": (
-      <StatTile
-        label={t("dashboard.stats.donationsReceived", { year })}
-        value={data?.donsRecus != null ? fmt(data.donsRecus) : "—"}
-        icon={HeartIcon}
-        // Straight to the donations list, not the forms tab the page defaults to — the
-        // whole point of the tile is to land on the dons themselves.
-        href="/dashboard/dons?tab=dons"
-        accent={null}
-        isLoading={isLoading}
-        dark={pal.dark}
-      />
-    ),
-    "next-event": (
-      <NextEventCard prochainEvenement={data?.prochainEvenement ?? null} isLoading={isLoading} />
-    ),
-    "cotisations-summary": (
-      <CotisationsSummaryCard
+    "cotisations-card": (
+      <CotisationsCard
         cotisationsEncaissees={data?.cotisationsEncaissees ?? 0}
         cotisationsEnAttente={data?.cotisationsEnAttente ?? 0}
+        cotisationsResteAPercevoir={data?.cotisationsResteAPercevoir ?? 0}
         isLoading={isLoading}
       />
     ),
-    "income-by-category": <IncomeByCategoryChart />,
-    "recent-orders": (
-      <RecentOrdersCard ventesRecentes={data?.ventesRecentes ?? []} isLoading={isLoading} />
+    "finances-overview": (
+      <FinancesOverviewCard
+        solde={data?.solde ?? null}
+        donsRecus={data?.donsRecus ?? null}
+        isLoading={isLoading}
+      />
     ),
-    "dons-recents": (
-      <RecentDonationsCard donsRecents={data?.donsRecents ?? []} isLoading={isLoading} />
+    "activite-recente": (
+      <ActiviteRecenteCard
+        ventesRecentes={data?.ventesRecentes ?? []}
+        donsRecents={data?.donsRecents ?? []}
+        isLoading={isLoading}
+      />
     ),
     "loaned-material": (
       <LoanedMaterialCard
@@ -232,8 +191,6 @@ export function TableauDeBord({ initialLayout }: Props) {
         isLoading={isLoading}
       />
     ),
-    "cotisations-gauge":    <CotisationsGaugeCard />,
-    "income-expense-chart": <IncomeExpenseChart />,
   }
 
   function persist(next: DashboardWidget[]) {
@@ -283,32 +240,69 @@ export function TableauDeBord({ initialLayout }: Props) {
 
   return (
     <div className="space-y-6 py-4">
-      <div className="flex items-start justify-between gap-4">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <h1 className="text-[2.5rem] leading-none font-medium tracking-tight">{t("dashboard.pageTitle")}</h1>
+          <h1 className="text-[1.75rem] leading-none font-medium tracking-tight sm:text-[2.5rem]">{t("dashboard.pageTitle")}</h1>
           <p className="text-base text-muted-foreground mt-1.5">
             {t("dashboard.subtitle")}
           </p>
         </div>
-        <div className="flex shrink-0 items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2 sm:shrink-0">
           {editMode && (
             <Button variant="ghost" size="sm" onClick={handleReset}>
               <ArrowCounterClockwiseIcon className="mr-1.5 size-3.5" /> {tCustomize("reset")}
             </Button>
           )}
-          <Button variant="outline" size="sm" onClick={() => setEditMode(v => !v)}>
-            {editMode
-              ? <><CheckIcon className="mr-1.5 size-3.5" /> {tCustomize("done")}</>
-              : <><PencilSimpleIcon className="mr-1.5 size-3.5" /> {tCustomize("customize")}</>
-            }
-          </Button>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger render={
+                <Button variant="outline" size="sm" aria-expanded={actionsOpen} onClick={() => setActionsOpen(v => !v)} />
+              }>
+                {tActionsTodo("trigger")}
+                {!!actionsData?.badgeCount && <Badge variant="warning" className="ml-1.5">{actionsData.badgeCount}</Badge>}
+                <CaretDownIcon className={cn("ml-1 size-3.5 transition-transform", actionsOpen && "rotate-180")} />
+              </TooltipTrigger>
+              {/* The badge counts categories ("3 types d'action"), not the total number of
+                  dossiers across them — a cotisation backlog of 40 and a single late loan
+                  both read as "1" if that's all that's pending. Spelled out on hover since
+                  that's not obvious from the number alone. */}
+              <TooltipContent>
+                {actionsData?.badgeCount ? tActionsTodo("badgeHint", { count: actionsData.badgeCount }) : tActionsTodo("trigger")}
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+          {editMode ? (
+            <Button variant="outline" size="sm" onClick={() => setEditMode(false)}>
+              <CheckIcon className="mr-1.5 size-3.5" /> {tCustomize("done")}
+            </Button>
+          ) : (
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger render={
+                  <Button
+                    variant="outline"
+                    size="icon-sm"
+                    onClick={() => setEditMode(true)}
+                    aria-label={tCustomize("tooltip")}
+                  />
+                }>
+                  <PencilSimpleIcon className="size-3.5" />
+                </TooltipTrigger>
+                <TooltipContent>{tCustomize("tooltip")}</TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          )}
         </div>
       </div>
 
-      <MemberSummary
-        totalCount={data?.membresTotal ?? null}
-        activeCount={data?.membresActifs ?? null}
-      />
+      {actionsOpen && (
+        <ActionsTodoPanel
+          rows={actionsData?.rows ?? []}
+          snoozedRows={actionsData?.snoozedRows ?? []}
+          isLoading={actionsLoading}
+          isError={actionsError}
+        />
+      )}
 
       <DndContext
         sensors={sensors}

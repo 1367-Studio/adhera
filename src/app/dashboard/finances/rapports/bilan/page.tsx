@@ -1,14 +1,5 @@
-import { getTranslations } from "next-intl/server"
-import { PageHeader } from "@/components/ui/page-header"
-import { EmptyState } from "@/components/ui/empty-state"
+import { BilanView } from "@/components/finances/bilan-view"
 
-export default async function BilanPage() {
-  const t  = await getTranslations("finances.nav")
-  const tc = await getTranslations("finances.comingSoon")
-  return (
-    <div className="space-y-4">
-      <PageHeader title={t("bilan")} />
-      <EmptyState title={tc("title")} description={tc("description")} />
-    </div>
-  )
+export default function BilanPage() {
+  return <BilanView />
 }

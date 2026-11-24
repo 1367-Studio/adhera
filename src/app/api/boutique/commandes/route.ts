@@ -29,23 +29,32 @@ export const GET = withAdminAuth(async (req, ctx) => {
   const membreId = searchParams.get("membreId") || undefined
   const page      = Math.max(1, parseInt(searchParams.get("page")  ?? "1",  10))
   const limit     = Math.min(50, parseInt(searchParams.get("limit") ?? "25", 10))
+  // Dashboard's "Commandes boutique à préparer" action (FORM-119) — overrides `status`
+  // rather than combining with it, since "à préparer" only ever means PAID.
+  const needsPreparation = searchParams.get("needsPreparation") === "1"
 
   const where = {
     associationId: ctx.associationId,
     ...(status   ? { status } : {}),
     ...(membreId ? { membreId } : {}),
+    ...(needsPreparation ? { status: "PAID" as const, requiresPreparation: true, preparedAt: null } : {}),
   }
 
   // Commandes tab cards over the whole filtered set, not just this page: the selected status,
   // or PAID (sales) when none is — see kpiStatusForFilter. There is no free-text search on
   // this list, so unlike /api/dons nothing has to be stripped here.
-  const kpiStatus = kpiStatusForFilter(status)
+  // needsPreparation is its own axis (not a status filter) — kpiStatus stays "whole list"
+  // sized below rather than being forced through the PAID/period path meant for the sales
+  // tiles, otherwise the cards above would silently show "toutes les ventes payées cette
+  // période" while the rows below show only the ones still needing preparation.
+  const kpiStatus = needsPreparation ? "PAID" : kpiStatusForFilter(status)
 
   // The sales/revenue figures (kpiStatus PAID) are scoped to the current period — the
   // association's exercice covering today, else the calendar year, same rule as
   // Événements/Dons (see resolveCurrentPeriod). PENDING/CANCELLED have no paidAt to filter on
-  // and aren't "revenue" in the ticket's sense, so they stay all-time.
-  const period = kpiStatus === "PAID" ? await resolveCurrentPeriod(ctx.associationId) : null
+  // and aren't "revenue" in the ticket's sense, so they stay all-time. needsPreparation has no
+  // period either — the action panel's count must match this list exactly, unbounded by date.
+  const period = (kpiStatus === "PAID" && !needsPreparation) ? await resolveCurrentPeriod(ctx.associationId) : null
 
   const [commandes, total, kpiAggregate] = await Promise.all([
     prisma.boutiqueCommande.findMany({
@@ -155,7 +164,7 @@ export const POST = withAdminAuth(async (req, ctx) => {
   let exercice: Awaited<ReturnType<typeof resolveExerciceForDate>> = null
   if (paymentStatus === "PAID") {
     exercice = await resolveExerciceForDate(ctx.associationId, purchaseDateParsed)
-    const exerciceGuard = closedExerciceGuard(exercice?.status)
+    const exerciceGuard = await closedExerciceGuard(exercice?.status)
     if (exerciceGuard) return exerciceGuard
   }
 

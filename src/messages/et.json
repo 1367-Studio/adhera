@@ -41,6 +41,7 @@
     "location": "Asukoht",
     "choosePlaceholder": "Vali...",
     "allPlaceholder": "Kõik",
+    "noOptionsPlaceholder": "Valikuid pole saadaval",
     "previousPage": "Eelmine lehekülg",
     "nextPage": "Järgmine lehekülg",
     "paginationRange": "{from}–{to} / {total}",
@@ -51,7 +52,7 @@
     "addressPlaceholder": "Salle des fêtes, 12 rue de la Paix, Pariis...",
     "viewOnGoogleMaps": "Vaata Google Mapsis",
     "backToSite": "Tagasi saidile",
-    "noOptionsPlaceholder": "Valikuid pole saadaval"
+    "period": {}
   },
   "address": {
     "street": "Aadress",
@@ -62,6 +63,7 @@
     "country": "Elukohariik",
     "legacyMigratedHint": "Kopeeritud vanast aadressiväljast — kontrollige, et see ei sisalda juba allpool olevat sihtnumbrit ja linna."
   },
+  "avis": {},
   "auth": {
     "layout": {
       "imageAlt": "Logi sisse",
@@ -91,7 +93,8 @@
         "connecting": "Sisselogimine…",
         "or": "või",
         "continueWithGoogle": "Jätka Google'iga"
-      }
+      },
+      "twoFactor": {}
     },
     "register": {
       "pageTitle": "Loo konto",
@@ -649,12 +652,130 @@
         "enLitige": "Vaidlus",
         "annulee": "Tühistatud"
       },
-      "unmarkPaidWarning": "See dokument on praegu tasutud — selle staatuse eemaldamine eemaldab finantsvaldkonnas tekitatud kulud ning kõik panga kooskõlastused.",
-      "markPaidNotice": "Selle dokumendi märgistamine tasutuks tekitab automaatselt vastava kulu finantsides.",
       "file": "Dokument",
+      "categoryHint": "Kui valite kategooria, kantakse kulu arvele salvestamisel kohe, mitte makse tegemisel.",
+      "payment": {
+        "toasts": {}
+      },
       "toasts": {
         "uploadError": "Viga dokumendi üleslaadimisel",
         "networkError": "Võrgu vea üleslaadimine — proovi uuesti"
+      },
+      "unmarkPaidWarning": "See dokument on praegu tasutud — selle staatuse eemaldamine eemaldab finantsvaldkonnas tekitatud kulud ning kõik panga kooskõlastused.",
+      "markPaidNotice": "Selle dokumendi märgistamine tasutuks tekitab automaatselt vastava kulu finantsides."
+    }
+  },
+  "reimbursements": {
+    "view": {
+      "title": "Kulude hüvitamine",
+      "newRequest": "Uus päring",
+      "export": "Eksport",
+      "myRequests": "Minu soovid",
+      "allRequests": "Kõik soovid",
+      "allRequesters": "Kõik taotlejad",
+      "allCategories": "Kõik kategooriad",
+      "dateFrom": "Või",
+      "dateTo": "Kuni",
+      "allStatuses": "Kõik staatused",
+      "summary": "{pending} Ootel — {pendingAmount} · {approved} tagastatav — {approvedAmount} · {reimbursed} hüvitatud — {reimbursedAmount}",
+      "noRequest": "Tagasimakse taotlusi ei ole",
+      "columns": {
+        "subject": "Eesmärk",
+        "date": "Kuupäev",
+        "amount": "Summa",
+        "status": "Staatus"
+      },
+      "status": {
+        "draft": "Draft",
+        "pendingApproval": "Ootab heakskiitu",
+        "needsCorrection": "Parandamiseks",
+        "approved": "Heaks kiidetud",
+        "rejected": "Keeldus",
+        "reimbursed": "Tagastatud",
+        "cancelled": "Tühistatud"
+      },
+      "actions": {
+        "view": "Vaata",
+        "submit": "Esita",
+        "cancel": "Tühista"
+      },
+      "toasts": {
+        "created": "Taotlus loodud",
+        "updated": "Uuenduse taotlus",
+        "deleted": "Taotlus kustutatud",
+        "submitted": "Kinnitamiseks esitatud taotlus",
+        "cancelled": "Taotlus tühistatud",
+        "approved": "Taotlus heaks kiidetud",
+        "correctionRequested": "Parandus palutud",
+        "rejected": "Taotlus lükatud tagasi",
+        "reimbursed": "Registreeritud tagasimakse"
+      },
+      "deleteConfirmTitle": "Kustutada see mustand?",
+      "deleteConfirmDescription": "See tegevus on pöördumatu.",
+      "cancelConfirmTitle": "Tühistada see taotlus?",
+      "cancelConfirmDescription": "Taotlejale teatatakse tühistamisest.",
+      "cancelReasonLabel": "Tühistamise põhjus"
+    },
+    "form": {
+      "subject": "Eesmärk",
+      "subjectPlaceholder": "Näide. Regionaalsed kohtumisreisid",
+      "comment": "Kommentaar",
+      "commentPlaceholder": "Valikulised üksikasjad",
+      "event": "Seotud sündmus",
+      "project": "Seotud projekt",
+      "noProject": "Projekti ei ole",
+      "noEvent": "Üritusi ei ole",
+      "items": "Kulud",
+      "addItem": "Lisa kulu",
+      "noItems": "Lisatasusid ei ole",
+      "itemDate": "Kulutamise kuupäev",
+      "itemDescription": "Kirjeldus",
+      "itemAmount": "Summa",
+      "itemCategory": "Kategooria",
+      "itemReceipt": "Põhjendus",
+      "total": "Kokku",
+      "duplicateWarning": "Sarnane kulu (sama kuupäev, sama summa) on juba olemas teises sinu taotluses.",
+      "toasts": {
+        "uploadError": "Viga kviitungi saatmisel",
+        "networkError": "Võrguviga kviitungi saatmisel"
+      }
+    },
+    "detail": {
+      "notFound": "Tagasimakse taotlust ei leitud",
+      "history": "Ajalugu",
+      "correctionFrom": "Parandust taotles {name}",
+      "rejectedBy": "Keeldus {name}",
+      "reimbursedOn": "Tagastatud kuupäeval {date} Autor {method}",
+      "selfApprovalBlockedNotice": "Te ei saa oma taotlust heaks kiita. See peab olema heaks kiidetud administraatori või mõne teise volitatud ametniku poolt.",
+      "viewReceipt": "Vaata toetavaid dokumente",
+      "immobilisationTag": "Põhivara",
+      "approveButton": "Kinnita",
+      "requestCorrectionButton": "Taotle parandust",
+      "rejectButton": "Keelduma",
+      "correctionCommentLabel": "Paranduskommentaar",
+      "rejectionReasonLabel": "Keeldumise põhjus",
+      "deleteItemConfirmTitle": "Eemaldada see kulu?",
+      "toasts": {
+        "itemAdded": "Lisakulud",
+        "itemUpdated": "Uuendatud kulud",
+        "itemDeleted": "Kulud eemaldatud"
+      }
+    },
+    "register": {
+      "title": "Säästa tagasimakse",
+      "registerButton": "Säästa tagasimakse",
+      "date": "Tagasimakse kuupäev",
+      "paymentMethod": "Makseviis",
+      "bankAccount": "Pangakonto",
+      "noBankAccountHint": "Pangakontot pole avada — lisa see Finants> Kontod või vali Sularaha.",
+      "transaction": "Imporditud pangatehingu kokkusobitamine (valikuline)",
+      "noTransaction": "Ära too nüüd lähemale",
+      "reference": "Viide",
+      "submit": "Salvesta",
+      "methods": {
+        "virement": "Ülekanne",
+        "cheque": "Kontroll",
+        "especes": "Liigid"
       }
     }
   },
@@ -663,26 +784,64 @@
     "subtitle": "Ülevaade sinu ühingust",
     "customize": {
       "customize": "Kohanda",
+      "tooltip": "Kohanda juhtpaneeli",
       "done": "Valmis",
       "reset": "Lähtestamine",
       "dragHint": "Drag, et ümber korraldada",
       "resizeHint": "Lohista nurka, et suurust muuta"
     },
+    "actionsTodo": {
+      "trigger": "Tegevused, mida teha",
+      "badgeHint": "{count, plural, one {# ootel oleva tegevuse kategooria} other {# ootel toimingute kategooriad}}",
+      "empty": "Kõik on ajakohane, pole mingit tegevust.",
+      "snooze": "Lükata see samm edasi",
+      "snoozeDialogTitle": "Lükata see samm edasi",
+      "snoozeDialogDescription": "Toiming jääb sinu jaoks varjatuks kuni selle kuupäevani ja ilmub uuesti, kui on veel lahendamist vajavaid juhtumeid.",
+      "snoozeUntilLabel": "Edasi lükatud kuni",
+      "confirm": "Kinnita",
+      "loadError": "Ei õnnestu laadida vajalikke toiminguid.",
+      "snoozedSectionTitle": "{count, plural, one {# tegevus peatati} other {# tegevused on ootele pandud}}",
+      "snoozedUntil": "Kuni {date}",
+      "cancelSnooze": "Tühista peatamine",
+      "actionLabels": {
+        "voirEtRelancer": "Vaata ja taaskäivita",
+        "examiner": "Eksamineerija",
+        "consulter": "Konsulteeri"
+      },
+      "rows": {
+        "cotisations-en-attente": "{count, plural, one {# ootel liikmemaksu} other {# ootel sissemaksed}}",
+        "materiel-en-retard": "{count, plural, one {# hilise materjali tagastus} other {# hilise materjali tagastus}}",
+        "membres-a-valider": "{count, plural, one {# liige valideerimiseks} other {# valideeritavad liikmed}}",
+        "dons-a-encaisser": "{count, plural, one {# kingitus, mida tuleb lunastada} other {# annetusi kogumiseks}}",
+        "rapprochement-bancaire": "{count, plural, one {# operatsiooni, mida võrrelda} other {# operatsioonid võrrelda}}",
+        "notes-de-frais-a-valider": "{count, plural, one {# kuluaruanne valideerimiseks} other {# kuluaruanded, mida valideerida}}",
+        "commandes-a-preparer": "{count, plural, one {# ettevalmistuskäsk} other {# ettevalmistuskäsk}}"
+      }
+    },
     "stats": {
-      "activeMembers": "Aktiivsed liikmed",
-      "eventsThisMonth": "Selle kuu sündmused",
-      "cotisationsPending": "Ootel panused",
       "financialBalance": "Finantssaldo",
       "donationsReceived": "Saadud annetused {year}"
     },
-    "nextEvent": {
-      "title": "Järgmine võistlus",
-      "empty": "Tulevasi üritusi ei ole."
+    "agenda": {
+      "title": "Päevakord",
+      "eventsThisMonth": "{count, plural, one {# selle kuu sündmus} other {# selle kuu sündmusi}}",
+      "ongoing": "Töös",
+      "viewCalendar": "Vaata kalendrit",
+      "empty": "Ühtegi üritust ei tule."
     },
     "cotisations": {
       "title": "Panused {year}",
       "collectedThisYear": "Sel aastal lunastatud",
-      "pendingPayment": "{count} Ootab makset"
+      "remaining": "{amount} Järelejäänud",
+      "pendingPayment": "{count} Ootab makset",
+      "viewAll": "Vaata tasusid"
+    },
+    "activiteRecente": {
+      "title": "Hiljutine tegevus",
+      "tabs": {
+        "commandes": "Tellimused",
+        "dons": "Annetused"
+      }
     },
     "recentDonations": {
       "title": "Hiljutised annetused",
@@ -718,6 +877,7 @@
       "categoryTitle": "Kviitungid kategooriate kaupa — {year}"
     },
     "memberSummary": {
+      "title": "Liikmed",
       "total": "{count, plural, one {# liige} other {# liiget}}",
       "active": "{count, plural, one {# aktiivne} other {# aktiivset}}",
       "inactive": "{count, plural, one {# mitteaktiivne} other {# mitteaktiivset}}"
@@ -728,6 +888,9 @@
       "nearLimit": "Limiit läheneb",
       "almostReached": "Limiit peaaegu täis",
       "limitReached": "Limiit täis"
+    },
+    "aTraiter": {
+      "items": {}
     }
   },
   "notifications": {
@@ -862,7 +1025,8 @@
       "userMenu": {
         "title": "Sinu profiil",
         "description": "Muuda oma profiili, muuda parool ja logi sellest menüüst välja."
-      }
+      },
+      "help": {}
     }
   },
   "finances": {
@@ -893,9 +1057,219 @@
       "title": "Tulen varsti",
       "description": "See funktsioon on arendamisel."
     },
+    "immobilisationsView": {
+      "columns": {},
+      "toasts": {},
+      "drillDown": {}
+    },
+    "immobilisationForm": {},
+    "journalManual": {},
+    "bilan": {
+      "title": "Bilanss",
+      "description": "Ühingu varad ja kohustused majandusaasta lõpus.",
+      "exerciceLabel": "Harjutus",
+      "rubriqueColumnLabel": "Sektsioon",
+      "noPreviousExercice": "Võrdlust pole saadaval",
+      "actif": "Aktiivne",
+      "totalActif": "Total Active",
+      "passif": "Passiivne",
+      "totalPassif": "Kogukohustused",
+      "noAccountsInRubrique": "Selles osas pole tasakaalu",
+      "exportPdf": "Ekspordi PDF",
+      "exportDisabledTooltip": "Lõplikku bilanssi ei saa eksportida enne, kui ülaltoodud anomaaliad on parandatud.",
+      "emptyExercice": {
+        "title": "Eelarveaastat ei ole",
+        "description": "Loo uus majandusaasta, et vaadata bilanssi."
+      },
+      "emptyLedger": {
+        "title": "Raamatupidamiskirjeid ei ole",
+        "description": "Bilanss kuvatakse kohe, kui sellel majandusaastal on registreeritud tulu, kulutused või põhivarad."
+      },
+      "rubriques": {
+        "immobilisationsCorporelles": "Materiaalsed kapitalivarad",
+        "immobilisationsIncorporelles": "Immateriaalsed põhivarad",
+        "immobilisationsFinancieres": "Finantspõhivara",
+        "disponibilites": "Saadavus",
+        "chargesConstateesDavance": "Ettemakstud kulud",
+        "creances": "Nõuded",
+        "stocksEtEnCours": "Inventar",
+        "fondsPropres": "Õiglus",
+        "provisions": "Reservid",
+        "dettes": "Võlad",
+        "produitsConstatesDavance": "Edasilükatud tulu",
+        "fondsDedies": "Piiratud vahendid"
+      },
+      "memoNotice": "Hinnang — ei ole pearaamatus registreeritud, välja arvatud kogu varadest.",
+      "accountLabels": {
+        "reportANouveau": "Jaotamata kasum",
+        "resultatExercice": "Aasta puhaskasum",
+        "creancesCotisations": "Tasumata liikmemaksud",
+        "creancesFactures": "Tasumata arved",
+        "stocksEstimatedValue": "Hinnanguline laoseisu väärtus",
+        "creancesFacturesEnRetard": "Hilinenud arved"
+      },
+      "pdf": {
+        "periodLabel": "Periood {start} – {end}"
+      },
+      "drillDown": {
+        "date": "Kuupäev",
+        "label": "Silt",
+        "origin": "Päritolu",
+        "debit": "Deebet",
+        "credit": "Krediit",
+        "noLines": "Sellel kontol pole kirjeid.",
+        "sourceTypes": {
+          "INCOME": "Tulu",
+          "INCOME_REVERSAL": "Tulu pööramine",
+          "EXPENSE": "Kulud",
+          "EXPENSE_REVERSAL": "Kulude pööramine",
+          "BANK_TRANSACTION": "Pangatehing",
+          "ACCOUNT_TRANSFER": "Sisemine ülekandmine",
+          "OPENING_BALANCE": "Avasaldo",
+          "IMMOBILISATION_DEPRECIATION": "Amortisatsioon",
+          "IMMOBILISATION_ACQUISITION": "Varade omandamine",
+          "FACTURE_RECUE_PAYMENT": "Tarnija maksmine",
+          "MANUAL": "Käsitsi sisenemine"
+        }
+      },
+      "issues": {
+        "title": "Anomaaliad tuvastatud",
+        "messages": {
+          "ACCOUNT_WITHOUT_RUBRIQUE": "Konto {code} — {label} omab saldo, kuid see ei ole seotud ühegi bilansiaruandega.",
+          "ACTIF_PASSIF_MISMATCH": "Vara ({actif}) ei vasta kohustusele ({passif}).",
+          "OPENING_BALANCE_MISSING": "Selle harjutuse jaoks ei genereeritud avakirjeid \"{previousLabel}\" kaudu.",
+          "TRIAL_BALANCE_UNBALANCED": "Kogu deebetsumma ({debit}) ei ühti selle majandusaasta kogukrediidiga ({credit}).",
+          "RESULT_DIVERGENCE": "Päeviku ({journal}) tulemus erineb kasumiaruande ({statement}) omast — päevik ei pruugi veel selle majandusaasta jaoks ajakohane olla (sulge majandusaasta või alusta sünkroniseerimist uuesti).",
+          "UNPOSTED_ENTRIES": "Salvestamata kirjed: {count} (kategooria puudub või puudub seotud raamatupidamiskood) — {amount} see ei kajastu selles aruandes. Sünkroonimise taaskäivitamine ei ole siin piisav, kategooria tuleb parandada."
+        }
+      },
+      "memoNoHistory": "Ajaloolisi andmeid pole",
+      "caveats": {
+        "stocksMissingCostPrice": "{count} variandid, millel ostukulu ei ole registreeritud, hinnangust välja jäetud"
+      },
+      "refreshLedger": "Värskenda logi",
+      "refreshLedgerTooltip": "See aruanne ei ole reaalajas uuendatud iga tulu või kuluga — klõpsake, et sünkroonida viimaste liikumistega.",
+      "refreshLedgerSuccessPosted": "{count, plural, =0 {Uut liikumist ei ole} one {# sünkroniseeritud liikumine} other {# sünkroniseeritud liikumised}}",
+      "refreshLedgerSuccessReversed": "{count, plural, =0 {} one {, # tühistamine rakendatud} other {, # tühistamised}}",
+      "refreshLedgerError": "Logi värskendamine ebaõnnestus. Palun proovige uuesti."
+    },
+    "compteResultat": {
+      "title": "Kasumiaruanne",
+      "description": "Majandusaasta finantstulemus, võrreldes eelmise aastaga.",
+      "exerciceLabel": "Majandusaasta",
+      "categoryColumnLabel": "Kategooria",
+      "noPreviousExercice": "-",
+      "noPreviousExerciceMessage": "Eelmine majandusaasta pole saadaval",
+      "export": "Ekspordi",
+      "exportExcel": "Ekspordi Excel (üksikasjalik)",
+      "exportPdf": "Ekspordi PDF",
+      "products": "Tulud",
+      "totalProducts": "Tulud kokku",
+      "expenses": "Kulud",
+      "totalExpenses": "Kulud kokku",
+      "result": "Majandusaasta tulemus",
+      "resultZero": "Majandusaasta tulemus: 0 €",
+      "surplus": "Majandusaasta ülejääk",
+      "deficit": "Majandusaasta puudujääk",
+      "operationalResult": "Äritegevuse tulemus",
+      "uncategorized": "Kategoriseerimata",
+      "uncategorizedAlertIncome": "{count, plural, one {# tulu tuleb kategoriseerida} other {# tulu tuleb kategoriseerida}}",
+      "uncategorizedAlertExpense": "{count, plural, one {# kulu tuleb kategoriseerida} other {# kulu tuleb kategoriseerida}}",
+      "expandSection": "Näita",
+      "collapseSection": "Peida",
+      "noCategoriesInSection": "Selles jaotises pole ühtegi kategooriat",
+      "sections": {
+        "FINANCIAL": "Finants",
+        "EXCEPTIONAL": "Erakorraline",
+        "OTHER": "Muu"
+      },
+      "inKind": {
+        "title": "Vabatahtlikud annetused naturaalselt",
+        "employmentHeader": "Panuste kasutamine",
+        "amountHeader": "Kogus",
+        "receivedHeader": "Saadud panused",
+        "totalEmployments": "Töökohtade koguarv",
+        "totalReceived": "Kogupanused",
+        "note": "Need tasuta sissemaksed on hinnatud eurodes. Need ei põhjusta rahaliikumist ega muuda majandusaasta tulemust."
+      },
+      "drillDown": {
+        "date": "Kuupäev",
+        "origin": "Päritolu",
+        "person": "Isik",
+        "payment": "Makse",
+        "amount": "Summa",
+        "categorize": "Kategoriseeri",
+        "categorizePlaceholder": "Vali kategooria",
+        "noTransactions": "Tehinguid pole",
+        "categorizeSuccess": "Tehing kategoriseeritud"
+      },
+      "pdf": {
+        "periodLabel": "Periood {start} – {end}",
+        "operatingIncome": "ÄRITULUD",
+        "operatingExpense": "ÄRIKULUD",
+        "operatingResult": "ÄRITEGEVUSE TULEMUS",
+        "financialIncome": "FINANTSTULUD",
+        "financialExpense": "FINANTSKULUD",
+        "financialResult": "FINANTSTULEMUS",
+        "exceptionalIncome": "ERAKORRALISED TULUD",
+        "exceptionalExpense": "ERAKORRALISED KULUD",
+        "exceptionalResult": "ERAKORRALINE TULEMUS",
+        "otherIncome": "MUUD TULUD",
+        "otherExpense": "MUUD KULUD",
+        "otherResult": "MUUDE TULUDE JA KULUDE TULEMUS",
+        "uncategorizedSection": "KATEGORISEERIMATA TEHINGUD",
+        "uncategorizedIncomeLabel": "Kategoriseerimata tulud",
+        "uncategorizedExpenseLabel": "Kategoriseerimata kulud",
+        "total": "Kokku",
+        "grandTotal": "KOKKU",
+        "categoryColumn": "Kategooria",
+        "inKindTitle": "Vabatahtlikud annetused naturaalselt",
+        "inKindEmploymentHeader": "Panuste kasutamine",
+        "inKindAmountHeader": "Kogus",
+        "inKindReceivedHeader": "Saadud panused",
+        "inKindTotalEmployments": "Töökohtade koguarv",
+        "inKindTotalReceived": "Kogupanused",
+        "inKindNote": "Need tasuta sissemaksed on hinnatud eurodes. Need ei põhjusta rahaliikumist ega muuda majandusaasta tulemust."
+      },
+      "csv": {
+        "date": "Kuupäev",
+        "type": "Tüüp",
+        "typeIncome": "Tulu",
+        "typeExpense": "Kulu",
+        "category": "Kategooria",
+        "uncategorized": "Kategoriseerimata",
+        "accountingCode": "Raamatupidamiskood",
+        "description": "Kirjeldus",
+        "amount": "Summa",
+        "paymentMethod": "Makseviis",
+        "origin": "Päritolu",
+        "reference": "Viide",
+        "exercice": "Majandusaasta"
+      },
+      "emptyExercice": {
+        "title": "Majandusaastat pole",
+        "description": "Looge majandusaasta kasumiaruande koostamiseks."
+      }
+    },
+    "previsionnel": {
+      "emptyExercice": {},
+      "tabs": {},
+      "card": {},
+      "columns": {},
+      "export": {},
+      "toasts": {},
+      "copyBudget": {
+        "toasts": {}
+      },
+      "projectsTab": {
+        "noProjects": {},
+        "toasts": {}
+      }
+    },
     "categoryForm": {
       "name": "Nimi",
       "namePlaceholder": "Näiteks: Panused",
+      "noMatchingCategory": "Sobivuskategooria puudub",
       "type": "Tüüp",
       "typeIncome": "Tulu",
       "typeExpense": "Kulud",
@@ -920,8 +1294,7 @@
       "sectionUnverifiedNote": "See konto ei ole tunnustatud — vaata sektsiooni või vali see edasijõudnute valikutest.",
       "sectionToVerify": "Osa kontrollimiseks",
       "advancedOptions": "Täiustatud valikud",
-      "revertToAutoSection": "Tagasi automaatsektsiooni.",
-      "noMatchingCategory": "Sobivuskategooria puudub"
+      "revertToAutoSection": "Tagasi automaatsektsiooni."
     },
     "bankAccountForm": {
       "bankName": "Panga nimi",
@@ -1056,6 +1429,13 @@
         "deleted": "Konto kustutatud"
       }
     },
+    "transferForm": {
+      "toasts": {}
+    },
+    "transfersView": {
+      "description": "Registreerige siin juba tehtud ülekanded oma ühingu pangakontode vahel. Registreerige ülekanne ametlikult ilma raha liigutamata.",
+      "columns": {}
+    },
     "categoriesView": {
       "title": "Kategooriad",
       "description": "Halda tulude ja kulude kategooriaid.",
@@ -1066,7 +1446,6 @@
       "newCategoryTitle": "Uus kategooria",
       "editCategoryTitle": "Muuda kategooriat",
       "deleteConfirmTitle": "Kustutada see kategooria?",
-      "deleteConfirmInUse": "« {name} on kasutusel {count, plural, one {# tulu/kulud} other {# tulu/kulud}}. Need kirjed muutuvad \"Kategoriseerimata\".",
       "toasts": {
         "created": "Loodud kategooria",
         "updated": "Uuendatud kategooria",
@@ -1077,7 +1456,8 @@
       "customCategory": "Loo kohandatud kategooria",
       "alreadyExists": "Juba seadistatud",
       "archivedReactivateHint": "Arhiveeritud — klõpsa taasaktiveerimiseks",
-      "custom": "Kohandatud"
+      "custom": "Kohandatud",
+      "deleteConfirmInUse": "« {name} on kasutusel {count, plural, one {# tulu/kulud} other {# tulu/kulud}}. Need kirjed muutuvad \"Kategoriseerimata\"."
     },
     "incomesView": {
       "title": "Tulud",
@@ -1262,13 +1642,13 @@
       "description": "Seosta imporditud pangatehingud oma sissetuleku ja kuludega.",
       "statusFilters": {
         "all": "Kõik",
-        "unmatched": "Leppimata",
+        "unmatched": "Võrdluseks",
         "matched": "Lepitatud",
         "ignored": "Ignoreeritud",
         "duplicate": "Duplikaadid"
       },
       "status": {
-        "unmatched": "Leppimata",
+        "unmatched": "Võrdluseks",
         "matched": "Lepitatud",
         "pending": "Ootel",
         "ignored": "Ignoreeritud",
@@ -1314,105 +1694,11 @@
       "suggestedMatches": "Soovitatud matšid",
       "typeIncome": "Tulu",
       "typeExpense": "Kulud",
-      "confirm": "Kinnita lepitus"
+      "confirm": "Kinnita lepitus",
+      "selectedCount": "{count, plural, one {# valitud üksus} other {# valitud üksused}}"
     },
-    "compteResultat": {
-      "title": "Kasumiaruanne",
-      "description": "Majandusaasta finantstulemus, võrreldes eelmise aastaga.",
-      "exerciceLabel": "Majandusaasta",
-      "noPreviousExercice": "-",
-      "export": "Ekspordi",
-      "exportExcel": "Ekspordi Excel (üksikasjalik)",
-      "exportPdf": "Ekspordi PDF",
-      "products": "Tulud",
-      "totalProducts": "Tulud kokku",
-      "expenses": "Kulud",
-      "totalExpenses": "Kulud kokku",
-      "result": "Majandusaasta tulemus",
-      "surplus": "Majandusaasta ülejääk",
-      "deficit": "Majandusaasta puudujääk",
-      "emptyExercice": {
-        "title": "Majandusaastat pole",
-        "description": "Looge majandusaasta kasumiaruande koostamiseks."
-      },
-      "noPreviousExerciceMessage": "Eelmine majandusaasta pole saadaval",
-      "resultZero": "Majandusaasta tulemus: 0 €",
-      "operationalResult": "Äritegevuse tulemus",
-      "uncategorized": "Kategoriseerimata",
-      "uncategorizedAlertIncome": "{count, plural, one {# tulu tuleb kategoriseerida} other {# tulu tuleb kategoriseerida}}",
-      "uncategorizedAlertExpense": "{count, plural, one {# kulu tuleb kategoriseerida} other {# kulu tuleb kategoriseerida}}",
-      "expandSection": "Näita",
-      "collapseSection": "Peida",
-      "noCategoriesInSection": "Selles jaotises pole ühtegi kategooriat",
-      "sections": {
-        "FINANCIAL": "Finants",
-        "EXCEPTIONAL": "Erakorraline",
-        "OTHER": "Muu"
-      },
-      "drillDown": {
-        "date": "Kuupäev",
-        "origin": "Päritolu",
-        "person": "Isik",
-        "payment": "Makse",
-        "amount": "Summa",
-        "categorize": "Kategoriseeri",
-        "categorizePlaceholder": "Vali kategooria",
-        "noTransactions": "Tehinguid pole",
-        "categorizeSuccess": "Tehing kategoriseeritud"
-      },
-      "pdf": {
-        "periodLabel": "Periood {start} – {end}",
-        "operatingIncome": "ÄRITULUD",
-        "operatingExpense": "ÄRIKULUD",
-        "operatingResult": "ÄRITEGEVUSE TULEMUS",
-        "financialIncome": "FINANTSTULUD",
-        "financialExpense": "FINANTSKULUD",
-        "financialResult": "FINANTSTULEMUS",
-        "exceptionalIncome": "ERAKORRALISED TULUD",
-        "exceptionalExpense": "ERAKORRALISED KULUD",
-        "exceptionalResult": "ERAKORRALINE TULEMUS",
-        "otherIncome": "MUUD TULUD",
-        "otherExpense": "MUUD KULUD",
-        "otherResult": "MUUDE TULUDE JA KULUDE TULEMUS",
-        "uncategorizedSection": "KATEGORISEERIMATA TEHINGUD",
-        "uncategorizedIncomeLabel": "Kategoriseerimata tulud",
-        "uncategorizedExpenseLabel": "Kategoriseerimata kulud",
-        "total": "Kokku",
-        "grandTotal": "KOKKU",
-        "categoryColumn": "Kategooria",
-        "inKindTitle": "Vabatahtlikud annetused naturaalselt",
-        "inKindEmploymentHeader": "Panuste kasutamine",
-        "inKindAmountHeader": "Kogus",
-        "inKindReceivedHeader": "Saadud panused",
-        "inKindTotalEmployments": "Töökohtade koguarv",
-        "inKindTotalReceived": "Kogupanused",
-        "inKindNote": "Need tasuta sissemaksed on hinnatud eurodes. Need ei põhjusta rahaliikumist ega muuda majandusaasta tulemust."
-      },
-      "csv": {
-        "date": "Kuupäev",
-        "type": "Tüüp",
-        "typeIncome": "Tulu",
-        "typeExpense": "Kulu",
-        "category": "Kategooria",
-        "uncategorized": "Kategoriseerimata",
-        "accountingCode": "Raamatupidamiskood",
-        "description": "Kirjeldus",
-        "amount": "Summa",
-        "paymentMethod": "Makseviis",
-        "origin": "Päritolu",
-        "reference": "Viide",
-        "exercice": "Majandusaasta"
-      },
-      "categoryColumnLabel": "Kategooria",
-      "inKind": {
-        "title": "Vabatahtlikud annetused naturaalselt",
-        "employmentHeader": "Panuste kasutamine",
-        "amountHeader": "Kogus",
-        "receivedHeader": "Saadud panused",
-        "totalEmployments": "Töökohtade koguarv",
-        "totalReceived": "Kogupanused",
-        "note": "Need tasuta sissemaksed on hinnatud eurodes. Need ei põhjusta rahaliikumist ega muuda majandusaasta tulemust."
-      }
+    "exerciceGuard": {
+      "closedError": "See tegevus on suletud — selle perioodi kohta ei ole võimalik luua ega muuta kirjet."
     }
   },
   "evenements": {
@@ -1628,6 +1914,7 @@
         "dateLabel": "Alguskuupäev",
         "createButton": "Loo"
       },
+      "summary": {},
       "bilan": {
         "show": "Näita kokkuvõtet",
         "hide": "Peida kokkuvõte",
@@ -1845,6 +2132,9 @@
         "qrRevoked": "QR-kood keelatud",
         "noMembersToExport": "Eksportimiseks pole liikmeid",
         "linkCopied": "Link kopeeritud"
+      },
+      "payment": {
+        "methods": {}
       }
     },
     "avaliacoes": {
@@ -1899,6 +2189,7 @@
           "standardFieldsHint": "Registreerimisel nõutud väljad",
           "phoneLabel": "Telefon",
           "addressLabel": "Aadress",
+          "countryLabel": "Elukoht",
           "requirement": {
             "hidden": "Maskiga",
             "optional": "Valikuline",
@@ -1906,8 +2197,7 @@
           },
           "mobileLabel": "Mobiilne",
           "birthDateLabel": "Sünnikuupäev",
-          "genderLabel": "Sugu",
-          "countryLabel": "Elukoht"
+          "genderLabel": "Sugu"
         },
         "products": {
           "title": "Tooted",
@@ -2227,6 +2517,7 @@
       "liveSince": "Jätkub sellest ajast {mins} min",
       "durationLessThanMin": "< 1 min",
       "durationMin": "{mins} min",
+      "activeMeetingWarning": {},
       "toasts": {
         "meetingStarted": "Koosolek algas",
         "meetingScheduled": "Planeeritud koosolek",
@@ -2441,7 +2732,8 @@
         "disponibles": "Saadaval",
         "enPret": "Laenul",
         "reserves": "Reserveeritud",
-        "maintenance": "Hooldus"
+        "maintenance": "Hooldus",
+        "enRetard": "Hiline"
       },
       "pendingRequests": "Ootel olevad taotlused",
       "accept": "Nõustun",
@@ -2463,7 +2755,8 @@
         "reserves": "Reserveeritud",
         "maintenance": "Hooldus",
         "horsService": "Teenistusest väljas",
-        "perdus": "Kadunud"
+        "perdus": "Kadunud",
+        "enRetard": "Hiline"
       },
       "noArticles": "Artikleid ei ole",
       "noResults": "Tulemusi ei ole",
@@ -2633,7 +2926,8 @@
         "nameRequired": "Nimi on vajalik",
         "atLeastOneVariant": "Vähemalt üks variant on vajalik",
         "variantLabelRequired": "Igal variandil peab olema silt"
-      }
+      },
+      "costPriceColumn": "Omahind"
     },
     "view": {
       "title": "Pood",
@@ -2659,7 +2953,11 @@
         "markPaid": "Mark Paid",
         "cancelOrder": "Tühista",
         "downloadReceipt": "Laadi alla kviitung",
-        "editPaymentMethod": "Muuda makseviisi"
+        "editPaymentMethod": "Muuda makseviisi",
+        "markPrepared": "Märgi ettevalmistatuks",
+        "cancelPrepared": "Tühista ettevalmistus",
+        "delegatePreparation": "Ettevalmistus delegeeritud kolmandale osapoolele",
+        "resumePreparation": "CV ettevalmistamine"
       },
       "noProduct": "Tooteid ei ole",
       "noOrder": "Käske ei ole",
@@ -2674,11 +2972,14 @@
       },
       "othersCount": "{count, plural, one {+# muud} other {+# teised}}",
       "statusFilterAll": "Kõik",
+      "statusFilterToPrepare": "Valmistumiseks",
       "salesCountLabel": "Müükide arv",
       "revenueTotalLabel": "Kogutulu",
       "unitsSold": "{count, plural, one {# müüdud} other {# müüdud}}",
       "pendingCountLabel": "Ootel tellimused",
       "pendingAmountLabel": "Ootel summa",
+      "toPrepareCountLabel": "Ettevalmistuskäsk",
+      "toPrepareAmountLabel": "Valmistamiseks mõeldud summa",
       "cancelledCountLabel": "Tühistatud tellimused",
       "cancelledAmountLabel": "Tühistatud summa",
       "deleteProduitTitle": "Eemalda toode",
@@ -2701,6 +3002,7 @@
       "restockNoticePlural": "{count, plural, one {Tagastamata eseme laoseis taastatakse.} other {Kogumata esemete varu taastatakse.}}",
       "restockNoticeStatic": "Kogumata esemete varu taastatakse."
     },
+    "refundModal": {},
     "stripeConfirm": {
       "title": "Märgi tasuliseks?",
       "descriptionSimple": "See triibukäsk ({amount}) märgitakse käsitsi tasuliseks.",
@@ -3037,6 +3339,7 @@
           "title": "Vorm",
           "standardFieldsHint": "Doonorilt taotletud väljad",
           "addressLabel": "Aadress",
+          "countryLabel": "Elukoht",
           "birthDateLabel": "Sünnikuupäev",
           "phoneLabel": "Lauatelefon",
           "mobileLabel": "Mobiilne",
@@ -3067,8 +3370,7 @@
           "addOption": "Lisa valik",
           "removeOption": "Eemalda see valik",
           "optionsRequiredError": "Iga nimekirja/valikuväli vajab vähemalt kahte valikut.",
-          "duplicateOptionsError": "Nimekirja/valikuvälja valikud peavad olema unikaalsed.",
-          "countryLabel": "Elukoht"
+          "duplicateOptionsError": "Nimekirja/valikuvälja valikud peavad olema unikaalsed."
         },
         "payment": {
           "title": "Makse",
@@ -3306,6 +3608,7 @@
           "eligibleAmountAutoHint": "Automaatselt arvutatud: makstud summa − {amount}",
           "noMinimumWarning": "Selle tasuta summa jaoks ei ole määratud minimaalset summat, kui külastaja maksab vähem kui mittesobiv summa, blokeeritakse maksmine. Sea miinimumsumma vähemalt {amount}.",
           "installmentsAllowedField": "Luba maksta osamaksetena",
+          "installmentsUnavailableWithLicense": "Föderatsioonilitsentsi haldamise hinna eest ei ole saadaval.",
           "installmentsCountField": "Kordade arv",
           "membreTypeNone": "Puudub",
           "kindField": "Tüüp",
@@ -3321,12 +3624,33 @@
           "membershipTierRequiredError": "Vormil peab olema vähemalt üks liikmemaksu",
           "minAmountRequiredError": "Iga annetuse jaoks on vajalik minimaalne summa",
           "saved": "Registreeritud hinnad",
-          "saveTiers": "Salvesta hinnad"
+          "saveTiers": "Salvesta hinnad",
+          "licenseSectionTitle": "Föderatsiooni litsents",
+          "licenseEnabledField": "Halda federatsioonilitsentsi selle hinna jaoks",
+          "licenseNameField": "Litsentsi nimi",
+          "licenseNamePlaceholder": "Näiteks võistluslitsents",
+          "licenseFederationField": "Föderatsioon",
+          "licenseFederationPlaceholder": "Näiteks. FFF",
+          "licenseSeasonField": "Hooaeg",
+          "licenseSeasonPlaceholder": "Ex. 2026/2027",
+          "licenseMandatoryField": "Kohustuslik litsents",
+          "licenseBillingModeField": "Arveldamine",
+          "licenseBillingIncluded": "Hinna sees",
+          "licenseBillingAdditional": "Lisasumma",
+          "licenseAdditionalAmountField": "Lisasumma (€)",
+          "licenseAllowDeclareExistingField": "Luba juba valduses oleva litsentsi deklareerimine",
+          "licenseFederationRequiredError": "Föderatsiooni litsentsi aktiveerimiseks on vaja föderatsiooni",
+          "licenseSeasonRequiredError": "Föderatsiooni litsentsi aktiveerimiseks on vajalik hooaeg",
+          "licenseBillingModeRequiredError": "Litsentsi arvelduse meetod on kohustuslik",
+          "licenseAdditionalAmountRequiredError": "Täiendav litsentsisumma on vajalik",
+          "licenseRecurringChangeWarning": "Selle summa muutmine muudab ainult tulevasi tellimusi — olemasolevad tellijad maksavad tellimuse ajal määratud summat.",
+          "licenseAdditionalAmountTooLowError": "Lisalitsentsi summa peab olema vähemalt 1 €"
         },
         "fields": {
           "title": "Vorm",
           "standardFieldsHint": "Registreerimisel nõutud väljad",
           "addressLabel": "Aadress",
+          "countryLabel": "Elukoht",
           "birthDateLabel": "Sünnikuupäev",
           "phoneLabel": "Lauatelefon",
           "mobileLabel": "Mobiilne",
@@ -3359,8 +3683,7 @@
           "addOption": "Lisa valik",
           "removeOption": "Eemalda see valik",
           "optionsRequiredError": "Iga nimekirja/valikuväli vajab vähemalt kahte valikut.",
-          "duplicateOptionsError": "Nimekirja/valikuvälja valikud peavad olema unikaalsed.",
-          "countryLabel": "Elukoht"
+          "duplicateOptionsError": "Nimekirja/valikuvälja valikud peavad olema unikaalsed."
         },
         "payment": {
           "title": "Makse",
@@ -3438,6 +3761,14 @@
       "mobilePlaceholder": "06 12 34 56 78",
       "donationBadge": "(don)",
       "totalLabel": "Kokku makstakse",
+      "licenseDefaultName": "Föderatsiooni litsents",
+      "licenseIncludedNotice": "Föderatsioonilitsents on kaasas, ilma lisatasuta.",
+      "licenseOptInLabel": "Lisa föderatsioonilitsents (+{amount})",
+      "licenseMandatoryNotice": "See liikmelisus sisaldab kohustuslikku föderatsiooni litsentsi ({amount}).",
+      "licenseDeclareExistingLabel": "Mul on selleks hooajaks juba litsents olemas",
+      "licenseDeclaredNotice": "Olemasolev litsents — ootab assotsiatsiooni kinnitust.",
+      "licenseNumberLabel": "Litsentsi number",
+      "licenseNumberPlaceholder": "Jäta tühjaks, kui sul seda veel pole.",
       "partialReceiptNotice": "Üksi {amount} on selle liikmelisuse puhul maksuvabastusega.",
       "belowExtraMinimum": "Minimaalne kogus on {amount}.",
       "belowMinimumAmount": "Veebimakse minimaalne summa on {amount}.",
@@ -3614,6 +3945,7 @@
         "required": "Vajalik"
       }
     },
+    "blockEditor": {},
     "rulesManager": {
       "title": "Automatiseerimise reeglid",
       "subtitle": "Automaatsed saatmised vastavalt kalendrile või sündmusele.",
@@ -3886,6 +4218,8 @@
       "publicPaymentToggleDesc": "Avalikul saidil olev liikmevorm nõuab kohest makset (võetakse kord aastas) ja aktiveerib liikme automaatselt, ilma käsitsi kinnitamata.",
       "publicPaymentRequiresAmount": "Täida sissemakse summa, et see valik aktiveerida.",
       "connectNotReadyWarning": "Veebimakse ei ole aktiivne — Stripe Connect pole veel seadistatud ega aktsepteeri makseid (Maksete vahekaart). Vahepeal naaseb avalik vorm tasuta voogu ja seal on ootel liikmelisuse taotlused.",
+      "includeFederativeLicenseInAutoRenewalToggle": "Lisa föderatsioonilitsents aastasesse automaatsesse otsekorraldusse",
+      "includeFederativeLicenseInAutoRenewalToggleDesc": "Kui määr võtab oma föderatsioonilitsentsilt lisasumma, võetakse see summa uuesti iga automaatse uuenduse (korduv tellimus) korral. Kui see on keelatud, võetakse seda ainult korra, esimese tellimuse ajal. See säte kehtib ainult uutele tellimustele, mis on tellitud pärast muutmist — juba aktiivsed tellimused jätkuvad nagu varem.",
       "toasts": {
         "updated": "Uuendatud vaikimisi summa"
       }
@@ -3897,6 +4231,10 @@
       "websitePlaceholder": "mon-association.fr",
       "iban": "IBAN",
       "bic": "BIC",
+      "accountingRegime": "Kulude hüvitamise arvestusrežiim",
+      "accountingRegimeHint": "Määrab, millal hüvitustaotlus avaldatakse: kinnitamisel (kohustusel) või tegelikul maksel (sularahas).",
+      "accountingRegimeCash": "Sularahaarvestus",
+      "accountingRegimeAccrual": "Kohustuste arvestus",
       "previewTitle": "Dokumendi eelvaade",
       "bankDetails": "Panga andmed",
       "ibanColon": "IBAN : {value}",
@@ -3930,7 +4268,12 @@
       "title": "Visuaalne identiteet",
       "subtitle": "Logo kuvatakse armatuurlaual, hinnapakkumistel/arvetel, kohaloleku nimekirjal ja avalikul veebilehel.",
       "logo": "Logo",
+      "footerStyles": {},
+      "footer": {
+        "socialPlatforms": {}
+      },
       "proOnlyText": "Kohandatud logo (armatuurlaud, pakkumised/arved, tööajaleht) on reserveeritud Pro plaanile. Uuenda järgmise plaani juurde Tellimuse vahekaardil, et see aktiveerida.",
+      "preview": {},
       "toasts": {
         "updated": "Uuendatud visuaalne identiteet",
         "uploadError": "Logo üleslaadimise viga"
@@ -3973,10 +4316,10 @@
       "status": {
         "trial": "Tasuta prooviperiood",
         "active": "Aktiivne",
+        "paymentPending": "Makse käimas",
         "pastDue": "Hilinenud makse",
         "suspended": "Peatatud",
-        "cancelled": "Tühistatud",
-        "paymentPending": "Makse käimas"
+        "cancelled": "Tühistatud"
       },
       "planLabel": "Valem {tier}",
       "membersCount": "{count} / {limit} Liikmed",
@@ -4097,6 +4440,16 @@
       "subtitleTrialExpired": "Sinu tasuta prooviperiood on läbi. Vali plaan ja sisesta makseviis, et jätkata.",
       "confirmButtonSubscribe": "Kinnita ja telli"
     },
+    "teamAccess": {
+      "columns": {},
+      "summary": {},
+      "profiles": {},
+      "levels": {},
+      "areas": {
+        "sensible": "Liikmete tundlikud andmed"
+      },
+      "toasts": {}
+    },
     "erasureRequests": {
       "title": "Andmete kustutamine (GDPR)",
       "description": "Taotlused liikme isikuandmete püsivaks kustutamiseks GDPR artikli 17 alusel. Töödeldakse automaatselt igal ööl, välja arvatud ootele seatud taotlused.",
@@ -4137,11 +4490,6 @@
       },
       "automaticOrigin": "Automaatselt märgistatud — tegevuseta rohkem kui 3 aastat",
       "inactiveSince": "lahkus {date}"
-    },
-    "teamAccess": {
-      "areas": {
-        "sensible": "Liikmete tundlikud andmed"
-      }
     }
   },
   "cotisations": {
@@ -4231,6 +4579,33 @@
       "allCategories": "Kõik kategooriad",
       "allRenewals": "Kõik uuendamised",
       "resetFilters": "Lähtestamine",
+      "mergeTiers": {
+        "filterOption": "Ühenda duplikaatkategooriad",
+        "title": "Ühenda duplikaatkategooriad",
+        "description": "Kategooriad, mille nimed erinevad ainult juhtumite, aktsentide või tühikute poolest. Midagi ei liideta automaatselt.",
+        "empty": "Duplikaate ei tuvastatud.",
+        "groupSummary": "{count} kategooriad nimega \"{label}\"",
+        "groupTitle": "Ühenda \"{label}\"",
+        "manualAction": "Kahe kategooria käsitsi ühendamine",
+        "manualTitle": "Ühenda kaks kategooriat",
+        "backAction": "Tagasi",
+        "cancelAction": "Tühista",
+        "keepAsPrimary": "Kategooria, mida hoida",
+        "mergeIntoPrimary": "Kategooriad, millega sellega liituda",
+        "tierCounts": "{cotisationCount} Liikmemaksu(d) · {membreCount} Liikme(d) liikme(d)",
+        "mergeAction": "Ühinemine",
+        "confirmTitle": "Kinnita ühinemine",
+        "confirmDescription": "{count} kategooria(d) liidetakse \"{primaryLabel}\"-ks. {cotisationCount} Liikmetasu(d) ja {membreCount} liikme(d) kantakse üle. See tegevus on pöördumatu, kuid säilitab kogu uuendamise ajaloo ja konfiguratsioonid.",
+        "mergeSuccess": "{count} ühendatud kategooria(d).",
+        "mergeErrorGeneric": "Ühendamise ajal tekkis viga.",
+        "mismatchWarning": "Märkus: neil kategooriatel ei ole sama arveldustüüpi, summat ega meetodit.",
+        "loadError": "Duplikaate ei saa üles laadida. Proovi kohe uuesti.",
+        "activeSubscriptionWarning": "{count} aktiivsed tellimus(id) kantakse üle — Stripe'i arveldus, mis on juba käimas, ei muutu automaatselt.",
+        "priceFree": "Vaba",
+        "priceFreeAmount": "Tasuta summa",
+        "priceFreeAmountFrom": "Tasuta summa aadressilt {amount}",
+        "priceRecurring": "{amount}/aasta"
+      },
       "renewal": {
         "automatic": "Automaatne",
         "manual": "Käsitsi"
@@ -4252,29 +4627,6 @@
         "total": "Kokku",
         "noCategory": "Kategooriata",
         "empty": "Ükski liikmemaks ei vasta neile filtritele."
-      },
-      "mergeTiers": {
-        "filterOption": "Ühenda duplikaatkategooriad",
-        "title": "Ühenda duplikaatkategooriad",
-        "description": "Kategooriad, mille nimed erinevad ainult juhtumite, aktsentide või tühikute poolest. Midagi ei liideta automaatselt.",
-        "empty": "Duplikaate ei tuvastatud.",
-        "groupSummary": "{count} kategooriad nimega \"{label}\"",
-        "groupTitle": "Ühenda \"{label}\"",
-        "backAction": "Tagasi",
-        "cancelAction": "Tühista",
-        "keepAsPrimary": "Kategooria, mida hoida",
-        "mergeIntoPrimary": "Kategooriad, millega sellega liituda",
-        "tierCounts": "{cotisationCount} Liikmemaksu(d) · {membreCount} Liikme(d) liikme(d)",
-        "mergeAction": "Ühinemine",
-        "confirmTitle": "Kinnita ühinemine",
-        "confirmDescription": "{count} kategooria(d) liidetakse \"{primaryLabel}\"-ks. {cotisationCount} Liikmetasu(d) ja {membreCount} liikme(d) kantakse üle. See tegevus on pöördumatu, kuid säilitab kogu uuendamise ajaloo ja konfiguratsioonid.",
-        "mergeSuccess": "{count} ühendatud kategooria(d).",
-        "loadError": "Duplikaate ei saa üles laadida. Proovi kohe uuesti.",
-        "activeSubscriptionWarning": "{count} aktiivsed tellimus(id) kantakse üle — Stripe'i arveldus, mis on juba käimas, ei muutu automaatselt.",
-        "priceFree": "Vaba",
-        "priceFreeAmount": "Tasuta summa",
-        "priceFreeAmountFrom": "Tasuta summa aadressilt {amount}",
-        "priceRecurring": "{amount}/aasta"
       }
     },
     "reminderModal": {
@@ -4339,6 +4691,24 @@
       "annulee": "See annetus on tühistatud."
     }
   },
+  "groupes": {
+    "view": {
+      "statusFilter": {},
+      "columns": {},
+      "statusBadge": {},
+      "actions": {},
+      "toasts": {}
+    },
+    "form": {},
+    "detail": {
+      "appelColumns": {}
+    },
+    "appel": {
+      "counts": {},
+      "status": {},
+      "toasts": {}
+    }
+  },
   "membres": {
     "form": {
       "status": {
@@ -4366,6 +4736,11 @@
         "femme": "Naine"
       },
       "groupeSanguinNone": "Täpsustamata",
+      "imageRights": {
+        "unknown": "Pole määratud",
+        "granted": "Jah",
+        "refused": "Ei"
+      },
       "tailleTshirtNone": "Täpsustamata",
       "preferredLocaleNone": "Täpsustamata",
       "preferredLocaleHint": "Valitud keel võimaldab saata sellele liikmele e-kirju ja teateid tema eelistatud keeles.",
@@ -4397,14 +4772,14 @@
         "allergies": "Tuntud allergiad",
         "allergiesPlaceholder": "Arahhiidid, õietolm...",
         "type": "Liikmetüüp",
-        "preferredLocale": "Suhtluskeel",
-        "spokenLanguage": "Räägitav keel",
-        "cotisationTier": "Liikmemaks",
-        "guardianName": "Seaduslik eestkostja {number} — nimi",
-        "guardianPhone": "Seaduslik eestkostja {number} — telefon",
         "imageRights": "Pildiõigus",
         "notes": "Märkmed",
-        "notesPlaceholder": "Kasulik teave selle liikme kohta (tunnid, märkused…)"
+        "notesPlaceholder": "Kasulik teave selle liikme kohta (tunnid, märkused…)",
+        "guardianName": "Seaduslik eestkostja {number} — nimi",
+        "guardianPhone": "Seaduslik eestkostja {number} — telefon",
+        "preferredLocale": "Suhtluskeel",
+        "spokenLanguage": "Räägitav keel",
+        "cotisationTier": "Liikmemaks"
       },
       "invitationNotice": "Kutse e-kiri koos identifikaatoritega saadetakse sellele aadressile.",
       "tierNone": "Hinnastamist ei tohi (vaikimisi käitumine)",
@@ -4425,12 +4800,7 @@
         "management": "Liikme haldamine"
       },
       "invalidFormToast": "Salvestamine ebaõnnestus. Kui probleem püsib, võtke ühendust toega.",
-      "customFieldsLoading": "Liitumisvormi vastuste laadimine…",
-      "imageRights": {
-        "unknown": "Pole määratud",
-        "granted": "Jah",
-        "refused": "Ei"
-      }
+      "customFieldsLoading": "Liitumisvormi vastuste laadimine…"
     },
     "fichePdf": {
       "title": "LIIKME PROFIIL",
@@ -4486,13 +4856,13 @@
         "firstName": "Eesnimi",
         "lastName": "Perekonnanimi",
         "address": "Aadress",
+        "country": "Maa",
+        "countryPlaceholder": "Kõik riigid",
+        "countryLoadError": "Riike ei saa laadida. Proovi kohe uuesti.",
         "birthDateFrom": "Sündinud pärast",
         "birthDateTo": "Sündinud enne",
         "apply": "Kandideeri",
-        "reset": "Lähtestamine",
-        "country": "Maa",
-        "countryPlaceholder": "Kõik riigid",
-        "countryLoadError": "Riike ei saa laadida. Proovi kohe uuesti."
+        "reset": "Lähtestamine"
       },
       "statusOptions": {
         "pending": "Ootel",
@@ -4551,6 +4921,13 @@
       "cotisationButton": "Liikmemaks",
       "createAccessButton": "Loo ligipääs",
       "roleButton": "Roll",
+      "eraseData": {
+        "button": "Kustuta andmed (GDPR)",
+        "confirmTitle": "Taotleda {name} andmete püsivat kustutamist?",
+        "confirmDescription": "See registreerib GDPR artikli 17 kustutamistaotluse. Liige saab kinnituskirja, misjärel tema isikuandmed anonümiseeritakse pöördumatult järgmisel automaatsel töötlemisel, välja arvatud juhul, kui taotlus seatakse ootele.",
+        "toastSuccess": "Kustutamistaotlus registreeritud",
+        "requestLabel": "GDPR kustutamine"
+      },
       "contact": "Kontakt",
       "noContactInfo": "Kontaktandmed puuduvad",
       "memberSinceColon": "Liige alates: {date}",
@@ -4595,10 +4972,25 @@
         "reunions": "Koosolekud",
         "materiel": "Materjal",
         "dons": "Annetused",
+        "licenses": "Litsentsid",
         "historique": "Ajalugu",
         "emails": "E-kirjad",
         "sms": "SMS",
         "boutique": "Pood"
+      },
+      "licenses": {
+        "empty": "Litsentsi puudub",
+        "seasonYear": "Liikmemaks {year}",
+        "autoRenewed": "Automaatne uuendamine",
+        "declaredByMembreNotice": "Liikme poolt deklareeritud litsents — kontrolli ootel",
+        "deleteConfirmTitle": "Eemaldada see litsents?",
+        "deleteConfirmDescription": "Litsents {federation} — {season} lõpetatakse jäädavalt.",
+        "statusField": "Staatus",
+        "licenseNumberField": "Litsentsi number",
+        "statusASolicitar": "Küsida",
+        "statusEmAndamento": "Töös",
+        "statusValidada": "Valideeritud",
+        "statusARenovar": "Uuendamiseks"
       },
       "cotisationStatus": {
         "enAttente": "Ootel",
@@ -4646,6 +5038,7 @@
       "donStandalone": "Iseseisev annetus",
       "donPending": "Ootab sissenõudmist",
       "showingRecentDons": "Kuvatakse {count} viimast annetust kokku {total}-st.",
+      "showingRecentLicenses": "Kuvamine {count} viimased litsentsid aadressil {total} Kokku.",
       "addCotisationTitle": "Lisa liikmemaksu",
       "editCotisationTitle": "Muuda liikmemaksu",
       "deleteConfirmWithDependants": "See liige arhiveeritakse ja tal ei ole enam juurdepääsu ühingule. Ta eemaldatakse ka ühingu seadusliku eestkostja kohalt. {count} Liikme(d): {names}.",
@@ -4666,13 +5059,6 @@
         "rejectedToast": "Taotlus lükatud tagasi",
         "rejectConfirmTitle": "Keelduda sellest palvest?",
         "rejectConfirmDescription": "{name} muutub olekuks \"Mitteaktiivne\" ja sisse logida ei saa. Taotlus ja selle vastused vormile säilitatakse."
-      },
-      "eraseData": {
-        "button": "Kustuta andmed (GDPR)",
-        "confirmTitle": "Taotleda {name} andmete püsivat kustutamist?",
-        "confirmDescription": "See registreerib GDPR artikli 17 kustutamistaotluse. Liige saab kinnituskirja, misjärel tema isikuandmed anonümiseeritakse pöördumatult järgmisel automaatsel töötlemisel, välja arvatud juhul, kui taotlus seatakse ootele.",
-        "toastSuccess": "Kustutamistaotlus registreeritud",
-        "requestLabel": "GDPR kustutamine"
       },
       "noCommande": "Sellel kontaktil pole poe oste.",
       "commandeStatus": {
@@ -4763,6 +5149,11 @@
       "inMessagesSection": " Sõnumite sektsioonis.",
       "messageSectionLabel": "Sõnum",
       "saveAsTemplate": "Salvesta mallina",
+      "subjectLabel": "Eesmärk",
+      "subjectPlaceholder": "E-kirja teema...",
+      "subjectTooLong": "Teema on liiga pikk: {length}/{max} tähemärki — see lükatakse saatmisel tagasi.",
+      "bodyLabel": "Sõnumi sisu",
+      "bodyPlaceholder": "Kirjuta oma sõnum...",
       "language": {
         "title": "Saatmiskeel",
         "modeOriginal": "Algne keel",
@@ -4787,11 +5178,6 @@
         "autoNoEffect": "Ühelgi praegusel saajal pole prantsuse keelest erinevat eelistatud keelt — kõik saavad originaalversiooni.",
         "autoExternalNote": "{count, plural, one {# väline e-kiri (algkeel)} other {# välist e-kirja (algkeel)}}"
       },
-      "subjectLabel": "Eesmärk",
-      "subjectPlaceholder": "E-kirja teema...",
-      "subjectTooLong": "Teema on liiga pikk: {length}/{max} tähemärki — see lükatakse saatmisel tagasi.",
-      "bodyLabel": "Sõnumi sisu",
-      "bodyPlaceholder": "Kirjuta oma sõnum...",
       "continue": "Jätka",
       "confirmSendTitle": "Saatmise kinnitus",
       "confirmSendDescription": "See e-kiri saadetakse aadressile {recipients}. See tegevus on pöördumatu.",
@@ -4808,6 +5194,9 @@
       "recipientsActive": "{count, plural, one {# aktiivne liige} other {# aktiivsed liikmed}}",
       "externalOnlyCount": "{count, plural, one {# väline e-post} other {# välised e-kirjad}}",
       "recipientsWithExternal": "{members} + {count, plural, one {# väline e-post} other {# välised e-kirjad}}",
+      "attachments": {
+        "errors": {}
+      },
       "toasts": {
         "selectType": "Vali liikmetüüp",
         "selectMember": "Vali vähemalt üks liige või lisa väline e-post",
@@ -5309,8 +5698,8 @@
       "actualites": "Uudised",
       "membership": "Liitu ühinguga",
       "dons": "Annetage",
-      "contact": "Kontakt",
-      "boutique": "Pood"
+      "boutique": "Pood",
+      "contact": "Kontakt"
     },
     "defaultTitles": {
       "hero": "Tere tulemast",
@@ -5318,9 +5707,9 @@
       "events": "Tulevased sündmused",
       "membership": "Liitu ühinguga",
       "dons": "Annetage",
+      "boutique": "Pood",
       "actualites": "Uudised",
-      "contact": "Kontakt",
-      "boutique": "Pood"
+      "contact": "Kontakt"
     },
     "view": {
       "uploadFailedWarning": "{count, plural, one {# pilti ei saanud alla laadida.} other {# pilte ei saanud üles laadida.}}",
@@ -5364,9 +5753,9 @@
       "noSections": "Ühtegi sektsiooni pole. Lisa üks allpool.",
       "addSection": "Lisa sektsioon",
       "donsModuleDisabled": "Annetusmoodul on keelatud — avalikul saidil nähtamatu",
+      "boutiqueModuleDisabled": "Poe moodul on välja lülitatud — avalikul veebisaidil ei kuvata",
       "deleteSectionTitle": "Kustuta sektsioon",
-      "deleteSectionDescription": "See tegevus on pöördumatu.",
-      "boutiqueModuleDisabled": "Poe moodul on välja lülitatud — avalikul veebisaidil ei kuvata"
+      "deleteSectionDescription": "See tegevus on pöördumatu."
     },
     "sectionSheet": {
       "editTitle": "Muuda — {label}",
@@ -5387,6 +5776,8 @@
       "eventsLimitHint": "Sündmused eemaldatakse automaatselt sinu kalendrist.",
       "actualitesLimit": "Kuvatavate uudiste arv",
       "actualitesLimitHint": "Saidil kuvatakse ainult esimene avaldatud N uudis.",
+      "boutiqueLimit": "Kuvatavate toodete arv",
+      "boutiqueLimitHint": "Veebisaidil kuvatakse ainult esimesed N aktiivset toodet.",
       "membershipIntro": "Sissejuhatav tekst",
       "membershipIntroPlaceholder": "Täida see vorm, et kandideerida ühingusse...",
       "membershipHint": "Taotlused kuvatakse liikmete nimekirjas staatusega \"Ootel\".",
@@ -5407,9 +5798,7 @@
       "apply": "Kandideeri",
       "discardTitle": "Ignoreerida muudatusi?",
       "discardDescription": "Rakendamata muudatused kaovad.",
-      "discardConfirm": "Ignoreeri",
-      "boutiqueLimit": "Kuvatavate toodete arv",
-      "boutiqueLimitHint": "Veebisaidil kuvatakse ainult esimesed N aktiivset toodet."
+      "discardConfirm": "Ignoreeri"
     },
     "preview": {
       "donsNoForm": "Annetusvormi pole valitud — avalikul saidil nähtamatu"
@@ -5418,6 +5807,12 @@
       "viewSite": "Vaata veebilehte",
       "logoUrl": "Logo URL (valikuline)",
       "footerText": "Jaluse tekst"
+    },
+    "aiAssistant": {},
+    "builderSwitch": {
+      "confirmOn": {},
+      "confirmOff": {},
+      "toasts": {}
     }
   },
   "richTextEditor": {
@@ -5430,6 +5825,21 @@
     "heading1": "Pealkiri 1",
     "heading2": "Pealkiri 2",
     "heading3": "Pealkiri 3"
+  },
+  "paperFormTemplates": {
+    "columns": {},
+    "toasts": {},
+    "deleteConfirm": {},
+    "leaveWarning": {},
+    "targetGroups": {},
+    "targets": {},
+    "renderErrors": {},
+    "editor": {
+      "columns": {}
+    },
+    "activity": {
+      "fields": {}
+    }
   },
   "associationDocuments": {
     "title": "Ühingu dokumendid",
@@ -5476,6 +5886,9 @@
     "notFound": "Seda dokumenti ei leitud.",
     "backToList": "Tagasi dokumentide juurde"
   },
+  "formDraft": {},
+  "legalConsent": {},
+  "publicDocuments": {},
   "portalMembre": {
     "associationDocuments": {
       "title": "Ühingu dokumendid",
@@ -5522,6 +5935,15 @@
       "viewShop": "Vaata poodi",
       "orderPlacedTitle": "Tellimus registreeritud!",
       "orderPlacedDescription": "Teie tellimus ootab makset. Administratsioon võtab teiega ühendust, et lõplikult kinnitada.",
+      "paymentSuccessTitle": "Makse kinnitatud!",
+      "paymentSuccessDescription": "Täname ostu eest. Teile on saadetud kinnituskiri koos kviitungiga.",
+      "stockAdjustedNotice": "Mõne toote laoseis on muutunud — teie ostukorvi on kohandatud, vaadake see enne jätkamist üle.",
+      "trackOrderButton": "Jälgi mu tellimust",
+      "trackingPageTitle": "Tellimuse jälgimine",
+      "trackingStatusPending": "Ootab makset",
+      "trackingStatusPaid": "Tellimus makstud",
+      "trackingStatusCancelled": "Tellimus tühistatud",
+      "trackingNotFound": "Tellimust ei leitud",
       "myOrdersButton": "Minu käsud",
       "continueShopping": "Jätka ostlemist",
       "maxStockReached": "Max Stock saavutati",
@@ -5559,16 +5981,7 @@
         "orderError": "Viga tellimuse ajal",
         "orderUpdated": "Uuendatud järjekord",
         "orderCancelled": "Tellimus tühistatud"
-      },
-      "paymentSuccessTitle": "Makse kinnitatud!",
-      "paymentSuccessDescription": "Täname ostu eest. Teile on saadetud kinnituskiri koos kviitungiga.",
-      "stockAdjustedNotice": "Mõne toote laoseis on muutunud — teie ostukorvi on kohandatud, vaadake see enne jätkamist üle.",
-      "trackOrderButton": "Jälgi mu tellimust",
-      "trackingPageTitle": "Tellimuse jälgimine",
-      "trackingStatusPending": "Ootab makset",
-      "trackingStatusPaid": "Tellimus makstud",
-      "trackingStatusCancelled": "Tellimus tühistatud",
-      "trackingNotFound": "Tellimust ei leitud"
+      }
     },
     "dons": {
       "title": "Minu annetused",
@@ -5848,10 +6261,12 @@
       "membres": "Liikmed",
       "evenements": "Sündmused",
       "cotisations": "Panused",
+      "licencas": "Litsentsid",
       "adhesions": "Liikmelisused",
       "finances": "Finantsjärelevalve",
       "devis": "Pakkumised",
       "factures": "Arved",
+      "reimbursements": "Kulude hüvitamine",
       "fournisseurs": "Tarnijad",
       "dons": "Annetused",
       "reunions": "Koosolekud",
@@ -5905,6 +6320,7 @@
       },
       "logout": "Logi välja"
     },
+    "twoFactorSettingsModal": {},
     "changePasswordModal": {
       "title": "Muuda parool",
       "currentPasswordLabel": "Praegune parool",
@@ -6046,6 +6462,7 @@
       "daysWithoutCotisation": "Päevi ilma panuseta",
       "status": "Olek"
     },
+    "originSources": {},
     "empty": "Kontrollteateid pole.",
     "resolveAction": "Lahenda",
     "resolveConfirmTitle": "Kas lahendada see teade?",
@@ -6063,7 +6480,79 @@
     "autoResolvedLabel": "(automaatne)",
     "emptyForSearch": "Tulemusi ei leitud päringule \"{search}\"."
   },
+  "help": {
+    "tabs": {},
+    "callout": {},
+    "assistant": {
+      "examples": {},
+      "examplesDocs": {},
+      "tools": {}
+    },
+    "changelog": {
+      "kind": {}
+    },
+    "releaseNotes": {},
+    "news": {},
+    "faqPopup": {},
+    "popupCarousel": {},
+    "footer": {}
+  },
+  "boutiqueShipping": {},
+  "paperFormScan": {
+    "steps": {},
+    "upload": {
+      "camera": {}
+    },
+    "reading": {},
+    "viewer": {},
+    "editor": {},
+    "review": {},
+    "status": {},
+    "result": {},
+    "notesValues": {},
+    "validation": {},
+    "leaveWarning": {},
+    "restartWarning": {}
+  },
   "formTermsEditor": {
     "contentRequired": "Peate täitma välja „{conditionsLabel}“ või üles laadima dokumendi."
+  },
+  "membreDuplicates": {
+    "list": {
+      "matchedFields": {},
+      "columns": {},
+      "status": {}
+    },
+    "merge": {
+      "fields": {},
+      "relations": {}
+    },
+    "backoffice": {
+      "columns": {}
+    }
+  },
+  "licencas": {
+    "title": "Litsentsid",
+    "description": "Föderatiivsed litsentsid liikmetele, kõik hinnad ja hooajad kokku.",
+    "export": "Eksport",
+    "empty": "Litsentsi puudub",
+    "statusASolicitar": "Küsida",
+    "statusEmAndamento": "Töös",
+    "statusValidada": "Valideeritud",
+    "statusARenovar": "Uuendamiseks",
+    "columns": {
+      "membre": "Liige",
+      "tier": "Modaalsus",
+      "federation": "Föderatsioon",
+      "season": "Hooaeg",
+      "licenseNumber": "Litsentsi number",
+      "status": "Staatus"
+    },
+    "filters": {
+      "searchPlaceholder": "Otsi liiget...",
+      "allFederations": "Kõik föderatsioonid",
+      "allSeasons": "Kõik aastaajad",
+      "allStatuses": "Kõik staatused"
+    }
   }
 }

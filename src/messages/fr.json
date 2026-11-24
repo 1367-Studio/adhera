@@ -5,6 +5,7 @@
     "delete": "Supprimer",
     "add": "Ajouter",
     "edit": "Modifier",
+    "view": "Voir le détail",
     "confirm": "Confirmer",
     "close": "Fermer",
     "back": "Retour",
@@ -688,16 +689,138 @@
       "amount": "Montant",
       "statusOptions": {
         "aPayer": "À payer",
+        "partiellementPayee": "Partiellement payée",
         "payee": "Payée",
         "enLitige": "En litige",
         "annulee": "Annulée"
       },
-      "unmarkPaidWarning": "Ce document est actuellement payée — retirer ce statut supprimera la dépense qu'il a générée dans Finances, ainsi que sa réconciliation bancaire éventuelle.",
-      "markPaidNotice": "Marquer ce document comme payée créera automatiquement une dépense correspondante dans Finances.",
       "file": "Document",
+      "categoryHint": "Si vous choisissez une catégorie, la dépense sera comptabilisée dès l'enregistrement de la facture plutôt qu'au moment du paiement.",
+      "payment": {
+        "add": "Enregistrer un paiement",
+        "title": "Enregistrer un paiement",
+        "paidOf": "payé",
+        "toasts": {
+          "recorded": "Paiement enregistré"
+        }
+      },
       "toasts": {
         "uploadError": "Erreur lors de l'upload du document",
         "networkError": "Erreur réseau lors de l'upload — réessayez"
+      }
+    }
+  },
+  "reimbursements": {
+    "view": {
+      "title": "Remboursements de frais",
+      "newRequest": "Nouvelle demande",
+      "export": "Exporter",
+      "myRequests": "Mes demandes",
+      "allRequests": "Toutes les demandes",
+      "allRequesters": "Tous les demandeurs",
+      "allCategories": "Toutes les catégories",
+      "dateFrom": "Du",
+      "dateTo": "Au",
+      "allStatuses": "Tous les statuts",
+      "summary": "{pending} en attente — {pendingAmount} · {approved} à rembourser — {approvedAmount} · {reimbursed} remboursées — {reimbursedAmount}",
+      "noRequest": "Aucune demande de remboursement",
+      "columns": {
+        "subject": "Objet",
+        "date": "Date",
+        "amount": "Montant",
+        "status": "Statut"
+      },
+      "status": {
+        "draft": "Brouillon",
+        "pendingApproval": "En attente d'approbation",
+        "needsCorrection": "À corriger",
+        "approved": "Approuvée",
+        "rejected": "Refusée",
+        "reimbursed": "Remboursée",
+        "cancelled": "Annulée"
+      },
+      "actions": {
+        "view": "Voir",
+        "submit": "Soumettre",
+        "cancel": "Annuler"
+      },
+      "toasts": {
+        "created": "Demande créée",
+        "updated": "Demande mise à jour",
+        "deleted": "Demande supprimée",
+        "submitted": "Demande soumise pour approbation",
+        "cancelled": "Demande annulée",
+        "approved": "Demande approuvée",
+        "correctionRequested": "Correction demandée",
+        "rejected": "Demande refusée",
+        "reimbursed": "Remboursement enregistré"
+      },
+      "deleteConfirmTitle": "Supprimer ce brouillon ?",
+      "deleteConfirmDescription": "Cette action est irréversible.",
+      "cancelConfirmTitle": "Annuler cette demande ?",
+      "cancelConfirmDescription": "Le demandeur sera notifié de l'annulation.",
+      "cancelReasonLabel": "Motif de l'annulation"
+    },
+    "form": {
+      "subject": "Objet",
+      "subjectPlaceholder": "Ex. Déplacement réunion régionale",
+      "comment": "Commentaire",
+      "commentPlaceholder": "Précisions facultatives",
+      "event": "Événement associé",
+      "project": "Projet associé",
+      "noProject": "Aucun projet",
+      "noEvent": "Aucun événement",
+      "items": "Dépenses",
+      "addItem": "Ajouter une dépense",
+      "noItems": "Aucune dépense ajoutée",
+      "itemDate": "Date de la dépense",
+      "itemDescription": "Description",
+      "itemAmount": "Montant",
+      "itemCategory": "Catégorie",
+      "itemReceipt": "Justificatif",
+      "total": "Total",
+      "duplicateWarning": "Une dépense similaire (même date, même montant) existe déjà dans une autre de vos demandes.",
+      "toasts": {
+        "uploadError": "Erreur lors de l'envoi du justificatif",
+        "networkError": "Erreur réseau lors de l'envoi du justificatif"
+      }
+    },
+    "detail": {
+      "notFound": "Demande de remboursement introuvable",
+      "history": "Historique",
+      "correctionFrom": "Correction demandée par {name}",
+      "rejectedBy": "Refusée par {name}",
+      "reimbursedOn": "Remboursée le {date} par {method}",
+      "selfApprovalBlockedNotice": "Vous ne pouvez pas approuver votre propre demande. Elle doit être validée par un·e administrateur·rice ou un autre responsable autorisé.",
+      "viewReceipt": "Voir le justificatif",
+      "immobilisationTag": "Actif immobilisé",
+      "approveButton": "Approuver",
+      "requestCorrectionButton": "Demander une correction",
+      "rejectButton": "Refuser",
+      "correctionCommentLabel": "Commentaire de correction",
+      "rejectionReasonLabel": "Motif du refus",
+      "deleteItemConfirmTitle": "Supprimer cette dépense ?",
+      "toasts": {
+        "itemAdded": "Dépense ajoutée",
+        "itemUpdated": "Dépense mise à jour",
+        "itemDeleted": "Dépense supprimée"
+      }
+    },
+    "register": {
+      "title": "Enregistrer le remboursement",
+      "registerButton": "Enregistrer le remboursement",
+      "date": "Date du remboursement",
+      "paymentMethod": "Moyen de paiement",
+      "bankAccount": "Compte bancaire",
+      "noBankAccountHint": "Aucun compte bancaire configuré — ajoutez-en un dans Finances > Comptes, ou choisissez Espèces.",
+      "transaction": "Rapprocher une transaction bancaire importée (optionnel)",
+      "noTransaction": "Ne pas rapprocher maintenant",
+      "reference": "Référence",
+      "submit": "Enregistrer",
+      "methods": {
+        "virement": "Virement",
+        "cheque": "Chèque",
+        "especes": "Espèces"
       }
     }
   },
@@ -706,26 +829,64 @@
     "subtitle": "Vue d'ensemble de votre association",
     "customize": {
       "customize": "Personnaliser",
+      "tooltip": "Personnaliser le tableau de bord",
       "done": "Terminé",
       "reset": "Réinitialiser",
       "dragHint": "Glisser pour réorganiser",
       "resizeHint": "Glisser le coin pour redimensionner"
     },
+    "actionsTodo": {
+      "trigger": "Actions à faire",
+      "badgeHint": "{count, plural, one {# catégorie d'action en attente} other {# catégories d'action en attente}}",
+      "empty": "Tout est à jour, aucune action à traiter.",
+      "snooze": "Reporter cette action",
+      "snoozeDialogTitle": "Reporter cette action",
+      "snoozeDialogDescription": "L'action reste masquée pour vous jusqu'à cette date, puis réapparaît si des dossiers restent à traiter.",
+      "snoozeUntilLabel": "Reporter jusqu'au",
+      "confirm": "Confirmer",
+      "loadError": "Impossible de charger les actions à faire.",
+      "snoozedSectionTitle": "{count, plural, one {# action mise en attente} other {# actions mises en attente}}",
+      "snoozedUntil": "Jusqu'au {date}",
+      "cancelSnooze": "Annuler la mise en attente",
+      "actionLabels": {
+        "voirEtRelancer": "Voir et relancer",
+        "examiner": "Examiner",
+        "consulter": "Consulter"
+      },
+      "rows": {
+        "cotisations-en-attente": "{count, plural, one {# cotisation en attente} other {# cotisations en attente}}",
+        "materiel-en-retard": "{count, plural, one {# retour de matériel en retard} other {# retours de matériel en retard}}",
+        "membres-a-valider": "{count, plural, one {# membre à valider} other {# membres à valider}}",
+        "dons-a-encaisser": "{count, plural, one {# don à encaisser} other {# dons à encaisser}}",
+        "rapprochement-bancaire": "{count, plural, one {# opération à rapprocher} other {# opérations à rapprocher}}",
+        "notes-de-frais-a-valider": "{count, plural, one {# note de frais à valider} other {# notes de frais à valider}}",
+        "commandes-a-preparer": "{count, plural, one {# commande à préparer} other {# commandes à préparer}}"
+      }
+    },
     "stats": {
-      "activeMembers": "Membres actifs",
-      "eventsThisMonth": "Événements ce mois",
-      "cotisationsPending": "Cotisations en attente",
       "financialBalance": "Solde financier",
       "donationsReceived": "Dons reçus {year}"
     },
-    "nextEvent": {
-      "title": "Prochain événement",
+    "agenda": {
+      "title": "Agenda",
+      "eventsThisMonth": "{count, plural, one {# événement ce mois} other {# événements ce mois}}",
+      "ongoing": "En cours",
+      "viewCalendar": "Voir le calendrier",
       "empty": "Aucun événement à venir."
     },
     "cotisations": {
       "title": "Cotisations {year}",
       "collectedThisYear": "encaissé cette année",
-      "pendingPayment": "{count} en attente de paiement"
+      "remaining": "{amount} restant à percevoir",
+      "pendingPayment": "{count} en attente de paiement",
+      "viewAll": "Voir les cotisations"
+    },
+    "activiteRecente": {
+      "title": "Activité récente",
+      "tabs": {
+        "commandes": "Commandes",
+        "dons": "Dons"
+      }
     },
     "recentDonations": {
       "title": "Dons récents",
@@ -761,6 +922,7 @@
       "categoryTitle": "Recettes par catégorie — {year}"
     },
     "memberSummary": {
+      "title": "Membres",
       "total": "{count, plural, one {# membre} other {# membres}}",
       "active": "{count, plural, one {# actif} other {# actifs}}",
       "inactive": "{count, plural, one {# inactif} other {# inactifs}}"
@@ -924,6 +1086,8 @@
       "import": "Importer",
       "reconciliation": "Conciliation",
       "categories": "Catégories",
+      "immobilisations": "Immobilisations",
+      "journalManual": "Écriture manuelle",
       "reports": "Rapports",
       "bilan": "Bilan",
       "compteResultat": "Compte de résultat",
@@ -939,6 +1103,156 @@
     "comingSoon": {
       "title": "Bientôt disponible",
       "description": "Cette fonctionnalité est en cours de développement."
+    },
+    "immobilisationsView": {
+      "title": "Immobilisations",
+      "description": "Biens amortissables (corporels et incorporels) et leur calendrier de dotation aux amortissements.",
+      "add": "Ajouter",
+      "newTitle": "Nouvelle immobilisation",
+      "noImmobilisations": "Aucune immobilisation",
+      "columns": {
+        "label": "Désignation",
+        "entryValue": "Valeur brute",
+        "accumulated": "Amortissements",
+        "netValue": "Valeur nette",
+        "usageStartDate": "Mise en service"
+      },
+      "deleteConfirmTitle": "Supprimer cette immobilisation ?",
+      "toasts": {
+        "created": "Immobilisation créée",
+        "updated": "Immobilisation mise à jour",
+        "deleted": "Immobilisation supprimée"
+      },
+      "drillDown": {
+        "title": "Dotations aux amortissements",
+        "exercice": "Exercice",
+        "dotation": "Dotation",
+        "accumulated": "Cumul",
+        "netValue": "Valeur nette",
+        "noDepreciations": "Aucune dotation comptabilisée pour le moment"
+      }
+    },
+    "immobilisationForm": {
+      "label": "Désignation",
+      "labelPlaceholder": "Ex: Ordinateur portable — bureau",
+      "expense": "Dépense d'acquisition",
+      "expensePlaceholder": "Choisir une dépense marquée « immobilisation »",
+      "noEligibleExpenses": "Aucune dépense éligible — marquez une dépense comme immobilisation et catégorisez-la sur le compte 218300 (corporelle) ou 205000 (incorporelle).",
+      "entryValue": "Valeur d'entrée",
+      "residualValue": "Valeur résiduelle",
+      "acquisitionDate": "Date d'acquisition",
+      "usageStartDate": "Date de mise en service",
+      "usefulLifeMonths": "Durée d'utilisation (mois)"
+    },
+    "journalManual": {
+      "title": "Écriture manuelle",
+      "description": "Lancez une écriture au journal pour un montant décidé par vous — provision, dépôt de garantie, régularisation — quand aucune fonctionnalité ne le calcule automatiquement.",
+      "newEntry": "Nouvelle écriture",
+      "exercice": "Exercice",
+      "date": "Date",
+      "label": "Libellé",
+      "labelPlaceholder": "Ex: Provision pour litige — dossier 2026-04",
+      "account": "Compte",
+      "accountPlaceholder": "Choisir un compte",
+      "debit": "Débit",
+      "credit": "Crédit",
+      "totals": "Totaux débit / crédit",
+      "addLine": "Ajouter une ligne",
+      "mustBalance": "Le débit et le crédit doivent être égaux et différents de zéro.",
+      "missingAccount": "Chaque ligne doit avoir un compte.",
+      "cancel": "Annuler",
+      "submit": "Lancer l'écriture",
+      "createSuccess": "Écriture créée",
+      "noOpenExercice": "Aucun exercice ouvert — ouvrez ou rouvrez un exercice avant de lancer une écriture manuelle."
+    },
+    "bilan": {
+      "title": "Bilan",
+      "description": "Actif et passif de l'association à la clôture de l'exercice.",
+      "exerciceLabel": "Exercice",
+      "rubriqueColumnLabel": "Rubrique",
+      "noPreviousExercice": "Comparatif indisponible",
+      "actif": "Actif",
+      "totalActif": "Total actif",
+      "passif": "Passif",
+      "totalPassif": "Total passif",
+      "noAccountsInRubrique": "Aucun solde dans cette rubrique",
+      "exportPdf": "Exporter PDF",
+      "exportDisabledTooltip": "Impossible d'exporter un Bilan définitif tant que les anomalies ci-dessus ne sont pas corrigées.",
+      "refreshLedger": "Actualiser le journal",
+      "refreshLedgerTooltip": "Ce rapport n'est pas mis à jour en temps réel à chaque recette ou dépense — cliquez pour synchroniser avec les mouvements les plus récents.",
+      "refreshLedgerSuccessPosted": "{count, plural, =0 {Aucun nouveau mouvement} one {# mouvement synchronisé} other {# mouvements synchronisés}}",
+      "refreshLedgerSuccessReversed": "{count, plural, =0 {} one {, # annulation appliquée} other {, # annulations appliquées}}",
+      "refreshLedgerError": "Impossible d'actualiser le journal. Réessayez.",
+      "emptyExercice": {
+        "title": "Aucun exercice comptable",
+        "description": "Créez un exercice comptable pour afficher le Bilan."
+      },
+      "emptyLedger": {
+        "title": "Aucune écriture comptable",
+        "description": "Le Bilan s'affichera dès que des recettes, dépenses ou immobilisations auront été enregistrées sur cet exercice."
+      },
+      "rubriques": {
+        "immobilisationsCorporelles": "Immobilisations corporelles",
+        "immobilisationsIncorporelles": "Immobilisations incorporelles",
+        "immobilisationsFinancieres": "Immobilisations financières",
+        "disponibilites": "Disponibilités",
+        "chargesConstateesDavance": "Charges constatées d'avance",
+        "creances": "Créances",
+        "stocksEtEnCours": "Stocks et en-cours",
+        "fondsPropres": "Fonds propres",
+        "provisions": "Provisions pour risques et charges",
+        "dettes": "Dettes",
+        "produitsConstatesDavance": "Produits constatés d'avance",
+        "fondsDedies": "Fonds dédiés"
+      },
+      "memoNotice": "Estimation — non comptabilisée, hors total actif.",
+      "accountLabels": {
+        "reportANouveau": "Report à nouveau",
+        "resultatExercice": "Résultat de l'exercice",
+        "creancesCotisations": "Cotisations en attente",
+        "creancesFactures": "Factures en attente",
+        "stocksEstimatedValue": "Valeur du stock estimée",
+        "creancesFacturesEnRetard": "Factures en retard"
+      },
+      "pdf": {
+        "periodLabel": "Période du {start} au {end}"
+      },
+      "drillDown": {
+        "date": "Date",
+        "label": "Libellé",
+        "origin": "Origine",
+        "debit": "Débit",
+        "credit": "Crédit",
+        "noLines": "Aucune écriture pour ce compte.",
+        "sourceTypes": {
+          "INCOME": "Recette",
+          "INCOME_REVERSAL": "Annulation de recette",
+          "EXPENSE": "Dépense",
+          "EXPENSE_REVERSAL": "Annulation de dépense",
+          "BANK_TRANSACTION": "Transaction bancaire",
+          "ACCOUNT_TRANSFER": "Virement interne",
+          "OPENING_BALANCE": "Report à nouveau",
+          "IMMOBILISATION_DEPRECIATION": "Amortissement",
+          "IMMOBILISATION_ACQUISITION": "Acquisition d'immobilisation",
+          "FACTURE_RECUE_PAYMENT": "Paiement fournisseur",
+          "MANUAL": "Saisie manuelle"
+        }
+      },
+      "issues": {
+        "title": "Anomalies détectées",
+        "messages": {
+          "ACCOUNT_WITHOUT_RUBRIQUE": "Le compte {code} — {label} a un solde mais n'est rattaché à aucune rubrique du Bilan.",
+          "ACTIF_PASSIF_MISMATCH": "L'actif ({actif}) ne correspond pas au passif ({passif}).",
+          "OPENING_BALANCE_MISSING": "Aucune écriture d'ouverture générée pour cet exercice à partir de « {previousLabel} ».",
+          "TRIAL_BALANCE_UNBALANCED": "Le total débit ({debit}) ne correspond pas au total crédit ({credit}) pour cet exercice.",
+          "RESULT_DIVERGENCE": "Le résultat du journal ({journal}) diverge de celui du compte de résultat ({statement}) — le journal n'est peut-être pas encore à jour pour cet exercice (clôturez l'exercice ou relancez la synchronisation).",
+          "UNPOSTED_ENTRIES": "Écritures non comptabilisées : {count} (catégorie absente ou sans code comptable associé) — {amount} non reflété dans ce Bilan. Relancer la synchronisation ne suffit pas ici, il faut corriger la catégorie."
+        }
+      },
+      "memoNoHistory": "Pas d'historique",
+      "caveats": {
+        "stocksMissingCostPrice": "{count, plural, one {# variante sans coût d'achat renseigné, exclue de l'estimation} other {# variantes sans coût d'achat renseigné, exclues de l'estimation}}"
+      }
     },
     "compteResultat": {
       "title": "Compte de résultat",
@@ -1233,6 +1547,8 @@
       "internalNote": "Note interne",
       "internalNotePlaceholder": "Note pour le trésorier…",
       "receipt": "Justificatif",
+      "isImmobilisation": "Immobilisation (actif amortissable)",
+      "isImmobilisationHint": "Cochez pour un achat capitalisable (ex: matériel de bureau et informatique) — vous pourrez ensuite créer son calendrier d'amortissement dans Finances > Immobilisations.",
       "toasts": {
         "uploadError": "Erreur lors de l'upload du justificatif",
         "networkError": "Erreur réseau lors de l'upload — réessayez"
@@ -1284,6 +1600,9 @@
         "closedWithLinked": "Exercice clôturé — {count, plural, one {# enregistrement lié} other {# enregistrements liés}} automatiquement",
         "createdWithLinked": "Exercice créé — {count, plural, one {# enregistrement lié} other {# enregistrements liés}} automatiquement"
       }
+    },
+    "exerciceGuard": {
+      "closedError": "Cet exercice est clôturé — impossible de créer ou modifier un enregistrement sur cette période."
     },
     "accountsView": {
       "title": "Comptes bancaires",
@@ -1554,13 +1873,13 @@
       "description": "Associez les transactions bancaires importées à vos recettes et dépenses.",
       "statusFilters": {
         "all": "Tous",
-        "unmatched": "Non conciliés",
+        "unmatched": "À rapprocher",
         "matched": "Conciliés",
         "ignored": "Ignorés",
         "duplicate": "Doublons"
       },
       "status": {
-        "unmatched": "Non concilié",
+        "unmatched": "À rapprocher",
         "matched": "Concilié",
         "pending": "En attente",
         "ignored": "Ignoré",
@@ -1608,6 +1927,7 @@
       "typeIncome": "Recette",
       "typeExpense": "Dépense",
       "typeTransfer": "Transfert interne",
+      "selectedCount": "{count, plural, one {# élément sélectionné} other {# éléments sélectionnés}}",
       "confirm": "Valider la conciliation"
     }
   },
@@ -2681,7 +3001,8 @@
         "disponibles": "Disponibles",
         "enPret": "En prêt",
         "reserves": "Réservés",
-        "maintenance": "Maintenance"
+        "maintenance": "Maintenance",
+        "enRetard": "En retard"
       },
       "pendingRequests": "Demandes en attente",
       "accept": "Accepter",
@@ -2703,7 +3024,8 @@
         "reserves": "Réservés",
         "maintenance": "Maintenance",
         "horsService": "Hors service",
-        "perdus": "Perdus"
+        "perdus": "Perdus",
+        "enRetard": "En retard"
       },
       "noArticles": "Aucun article",
       "noResults": "Aucun résultat",
@@ -2877,7 +3199,8 @@
       },
       "shippableColumn": "Envoi",
       "weightColumn": "Poids (g)",
-      "weightPlaceholder": "500"
+      "weightPlaceholder": "500",
+      "costPriceColumn": "Coût"
     },
     "view": {
       "title": "Boutique",
@@ -2905,7 +3228,11 @@
         "cancelOrder": "Annuler",
         "downloadReceipt": "Télécharger le reçu",
         "editPaymentMethod": "Modifier le moyen de paiement",
-        "refundOrder": "Rembourser"
+        "refundOrder": "Rembourser",
+        "markPrepared": "Marquer comme préparée",
+        "cancelPrepared": "Annuler la préparation",
+        "delegatePreparation": "Préparation déléguée à un tiers",
+        "resumePreparation": "Reprendre la préparation"
       },
       "noProduct": "Aucun produit",
       "noOrder": "Aucune commande",
@@ -2920,11 +3247,14 @@
       },
       "othersCount": "{count, plural, one {+# autre} other {+# autres}}",
       "statusFilterAll": "Toutes",
+      "statusFilterToPrepare": "À préparer",
       "salesCountLabel": "Nombre de ventes",
       "revenueTotalLabel": "Revenu total",
       "unitsSold": "{count, plural, one {# vendu} other {# vendus}}",
       "pendingCountLabel": "Commandes en attente",
       "pendingAmountLabel": "Montant en attente",
+      "toPrepareCountLabel": "Commandes à préparer",
+      "toPrepareAmountLabel": "Montant à préparer",
       "cancelledCountLabel": "Commandes annulées",
       "cancelledAmountLabel": "Montant annulé",
       "deleteProduitTitle": "Supprimer le produit",
@@ -3563,6 +3893,7 @@
           "eligibleAmountAutoHint": "Calculé automatiquement : montant payé − {amount}",
           "noMinimumWarning": "Aucun montant minimum n'est défini pour ce tarif à montant libre un visiteur payant moins que le montant non éligible sera bloqué au paiement. Définissez un montant minimum d'au moins {amount}.",
           "installmentsAllowedField": "Autoriser le paiement en plusieurs fois",
+          "installmentsUnavailableWithLicense": "Indisponible pour un tarif gérant une licence fédérative.",
           "installmentsCountField": "Nombre de fois",
           "membreTypeNone": "Aucun",
           "kindField": "Type",
@@ -3580,7 +3911,27 @@
           "membershipTierRequiredError": "Le formulaire doit avoir au moins un tarif d'adhésion",
           "minAmountRequiredError": "Un montant minimum est requis pour chaque donation",
           "saved": "Tarifs enregistrés",
-          "saveTiers": "Enregistrer les tarifs"
+          "saveTiers": "Enregistrer les tarifs",
+          "licenseSectionTitle": "Licence fédérative",
+          "licenseEnabledField": "Gérer une licence fédérative pour ce tarif",
+          "licenseNameField": "Nom de la licence",
+          "licenseNamePlaceholder": "Ex. Licence compétition",
+          "licenseFederationField": "Fédération",
+          "licenseFederationPlaceholder": "Ex. FFF",
+          "licenseSeasonField": "Saison",
+          "licenseSeasonPlaceholder": "Ex. 2026/2027",
+          "licenseMandatoryField": "Licence obligatoire",
+          "licenseBillingModeField": "Facturation",
+          "licenseBillingIncluded": "Incluse dans le tarif",
+          "licenseBillingAdditional": "Montant additionnel",
+          "licenseAdditionalAmountField": "Montant additionnel (€)",
+          "licenseAllowDeclareExistingField": "Autoriser la déclaration d'une licence déjà possédée",
+          "licenseFederationRequiredError": "La fédération est requise pour activer la licence fédérative",
+          "licenseSeasonRequiredError": "La saison est requise pour activer la licence fédérative",
+          "licenseBillingModeRequiredError": "Le mode de facturation de la licence est requis",
+          "licenseAdditionalAmountRequiredError": "Le montant additionnel de la licence est requis",
+          "licenseRecurringChangeWarning": "Changer ce montant ne modifie que les futurs abonnements — les adhérents déjà abonnés continuent à payer le montant fixé au moment de leur souscription.",
+          "licenseAdditionalAmountTooLowError": "Le montant additionnel de la licence doit être d'au moins 1 €"
         },
         "fields": {
           "title": "Formulaire",
@@ -3700,6 +4051,14 @@
       "mobilePlaceholder": "06 12 34 56 78",
       "donationBadge": "(don)",
       "totalLabel": "Total à régler",
+      "licenseDefaultName": "Licence fédérative",
+      "licenseIncludedNotice": "Licence fédérative incluse, sans frais supplémentaire.",
+      "licenseOptInLabel": "Ajouter la licence fédérative (+{amount})",
+      "licenseMandatoryNotice": "Cette adhésion inclut une licence fédérative obligatoire ({amount}).",
+      "licenseDeclareExistingLabel": "Je possède déjà une licence pour cette saison",
+      "licenseDeclaredNotice": "Licence déjà existante — en attente de vérification par l'association.",
+      "licenseNumberLabel": "Numéro de licence",
+      "licenseNumberPlaceholder": "Laissez vide si vous ne l'avez pas encore",
       "partialReceiptNotice": "Seuls {amount} sont déductibles des impôts pour cette adhésion.",
       "belowExtraMinimum": "Le montant minimum est de {amount}.",
       "belowMinimumAmount": "Le montant minimum pour un paiement en ligne est de {amount}.",
@@ -4181,6 +4540,8 @@
       "publicPaymentToggleDesc": "Le formulaire d'adhésion du site public exige le paiement immédiat (prélevé chaque année) et active le membre automatiquement, sans validation manuelle.",
       "publicPaymentRequiresAmount": "Renseignez un montant de cotisation pour activer cette option.",
       "connectNotReadyWarning": "Le paiement en ligne n'est pas actif — Stripe Connect n'est pas configuré ou n'accepte pas encore les paiements (onglet Paiements). En attendant, le formulaire public revient au flux gratuit et enregistre des demandes d'adhésion en attente.",
+      "includeFederativeLicenseInAutoRenewalToggle": "Inclure la licence fédérative dans le prélèvement annuel automatique",
+      "includeFederativeLicenseInAutoRenewalToggleDesc": "Quand un tarif facture sa licence fédérative en montant additionnel, ce montant est de nouveau prélevé à chaque renouvellement automatique (abonnement récurrent). Désactivé, il n'est prélevé qu'une seule fois, lors de la première adhésion. Ce réglage ne s'applique qu'aux nouveaux abonnements souscrits après l'avoir changé — les abonnements déjà actifs continuent comme avant.",
       "toasts": {
         "updated": "Montant par défaut mis à jour"
       }
@@ -4192,6 +4553,10 @@
       "websitePlaceholder": "mon-association.fr",
       "iban": "IBAN",
       "bic": "BIC",
+      "accountingRegime": "Régime comptable des remboursements de frais",
+      "accountingRegimeHint": "Détermine quand une demande de remboursement est comptabilisée : à l'approbation (engagement) ou au paiement effectif (caisse).",
+      "accountingRegimeCash": "Comptabilité de caisse",
+      "accountingRegimeAccrual": "Comptabilité d'engagement",
       "previewTitle": "Aperçu sur le document",
       "bankDetails": "Coordonnées bancaires",
       "ibanColon": "IBAN : {value}",
@@ -4621,6 +4986,8 @@
         "empty": "Aucun doublon détecté.",
         "groupSummary": "{count} catégories nommées « {label} »",
         "groupTitle": "Fusionner dans « {label} »",
+        "manualAction": "Fusionner manuellement deux catégories",
+        "manualTitle": "Fusionner deux catégories",
         "backAction": "Retour",
         "cancelAction": "Annuler",
         "keepAsPrimary": "Catégorie à conserver",
@@ -4630,6 +4997,8 @@
         "confirmTitle": "Confirmer la fusion",
         "confirmDescription": "{count} catégorie(s) seront fusionnées dans « {primaryLabel} ». {cotisationCount} cotisation(s) et {membreCount} adhérent(s) seront transférés. Cette action est irréversible mais préserve tout l'historique et les configurations de renouvellement.",
         "mergeSuccess": "{count} catégorie(s) fusionnée(s).",
+        "mergeErrorGeneric": "Une erreur est survenue pendant la fusion.",
+        "mismatchWarning": "Attention : ces catégories n'ont pas le même type, montant ou mode de facturation.",
         "loadError": "Impossible de charger les doublons. Réessayez dans un instant.",
         "activeSubscriptionWarning": "{count} abonnement(s) actif(s) seront transférés — la facturation Stripe déjà en cours ne change pas automatiquement.",
         "priceFree": "Gratuit",
@@ -5122,10 +5491,25 @@
         "materiel": "Matériel",
         "groupes": "Groupes",
         "dons": "Dons",
+        "licenses": "Licences",
         "historique": "Historique",
         "emails": "Emails",
         "sms": "SMS",
         "boutique": "Boutique"
+      },
+      "licenses": {
+        "empty": "Aucune licence",
+        "seasonYear": "Cotisation {year}",
+        "autoRenewed": "Renouvelée automatiquement",
+        "declaredByMembreNotice": "Licence déclarée par le membre — en attente de vérification",
+        "deleteConfirmTitle": "Supprimer cette licence ?",
+        "deleteConfirmDescription": "La licence {federation} — {season} sera définitivement supprimée.",
+        "statusField": "Statut",
+        "licenseNumberField": "Numéro de licence",
+        "statusASolicitar": "À demander",
+        "statusEmAndamento": "En cours",
+        "statusValidada": "Validée",
+        "statusARenovar": "À renouveler"
       },
       "cotisationStatus": {
         "enAttente": "En attente",
@@ -5174,6 +5558,7 @@
       "donStandalone": "Don autonome",
       "donPending": "En attente d'encaissement",
       "showingRecentDons": "Affichage des {count} dons les plus récents sur {total} au total.",
+      "showingRecentLicenses": "Affichage des {count} licences les plus récentes sur {total} au total.",
       "addCotisationTitle": "Ajouter une cotisation",
       "editCotisationTitle": "Modifier la cotisation",
       "deleteConfirmWithDependants": "Ce membre sera archivé et ne pourra plus accéder à l'association. Il sera aussi retiré comme responsable légal de {count} membre(s) : {names}.",
@@ -6708,10 +7093,12 @@
       "membres": "Membres",
       "evenements": "Événements",
       "cotisations": "Cotisations",
+      "licencas": "Licences",
       "adhesions": "Adhésions",
       "finances": "Suivi financier",
       "devis": "Devis",
       "factures": "Factures",
+      "reimbursements": "Remboursements de frais",
       "fournisseurs": "Fournisseurs",
       "dons": "Dons",
       "reunions": "Réunions",
@@ -7432,6 +7819,30 @@
       "loading": "Chargement…",
       "noResults": "Aucun résultat.",
       "scanAction": "Scanner"
+    }
+  },
+  "licencas": {
+    "title": "Licences",
+    "description": "Licences fédératives des adhérents, tous tarifs et saisons confondus.",
+    "export": "Exporter",
+    "empty": "Aucune licence",
+    "statusASolicitar": "À demander",
+    "statusEmAndamento": "En cours",
+    "statusValidada": "Validée",
+    "statusARenovar": "À renouveler",
+    "columns": {
+      "membre": "Membre",
+      "tier": "Modalité",
+      "federation": "Fédération",
+      "season": "Saison",
+      "licenseNumber": "Numéro de licence",
+      "status": "Statut"
+    },
+    "filters": {
+      "searchPlaceholder": "Rechercher un membre…",
+      "allFederations": "Toutes les fédérations",
+      "allSeasons": "Toutes les saisons",
+      "allStatuses": "Tous les statuts"
     }
   }
 }

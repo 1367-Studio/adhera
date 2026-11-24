@@ -11,6 +11,7 @@ import {
   useCotisationsPaginated, useCreateCotisation, useUpdateCotisation, useDeleteCotisation,
   useCotisationsDistribution, useCotisationTierOptions, type RenewalMode,
 } from "@/hooks/use-cotisations"
+import { useActionsTodoHighlight } from "@/hooks/use-actions-todo-highlight"
 import { useQuery } from "@tanstack/react-query"
 import type { CotisationInput } from "@/lib/schemas"
 import { PageHeader } from "@/components/ui/page-header"
@@ -99,9 +100,14 @@ export function CotisationsView() {
   const [page, setPage]                 = useState(1)
   const [searchInput, setSearchInput]   = useState("")
   const [search, setSearch]             = useState("")
-  const [yearFilter, setYearFilter]     = useState<number>(currentYear)
-  // Pré-rempli depuis l'URL : l'accueil renvoie ici avec ?status=… pour ouvrir directement
-  // sur les cotisations à encaisser plutôt que sur la liste entière.
+  // Pré-rempli depuis l'URL : l'accueil renvoie ici avec ?status=…&year=… pour ouvrir
+  // directement sur les cotisations à encaisser plutôt que sur la liste entière — le
+  // dashboard pointe vers l'année la plus ancienne encore impayée (FORM-119), pas
+  // nécessairement l'année en cours, puisqu'une dette d'une année précédente reste due.
+  const [yearFilter, setYearFilter]     = useState<number>(() => {
+    const fromUrl = parseInt(searchParams.get("year") ?? "", 10)
+    return Number.isInteger(fromUrl) ? fromUrl : currentYear
+  })
   const [statusFilter, setStatusFilter] = useState<string>(() => searchParams.get("status") ?? "")
   const [tierFilter, setTierFilter]         = useState("")
   const [renewalFilter, setRenewalFilter]   = useState<RenewalMode | "">("")
@@ -142,6 +148,8 @@ export function CotisationsView() {
   const { data: result, isLoading } = useCotisationsPaginated(page, PAGE_SIZE, filters)
   const cotisations = (result?.data ?? []) as Cotisation[]
   const summary = result?.summary ?? { count: 0, aPagar: 0, recebido: 0, saldo: 0 }
+  // Flashes the rows a dashboard "Actions à faire" link just filtered down to (FORM-119).
+  useActionsTodoHighlight(!isLoading)
 
   const { data: tierOptionsData } = useCotisationTierOptions()
   const tierOptions       = tierOptionsData?.tiers ?? []

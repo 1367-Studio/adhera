@@ -24,6 +24,10 @@ const schema = z.object({
   bic: z.string().trim()
     .transform(v => v.replace(/\s+/g, "").toUpperCase())
     .pipe(z.union([z.literal(""), z.string().regex(BIC_REGEX, "BIC invalide")])),
+  // FORM-93 — drives how reimbursement requests post to the ledger (see
+  // src/lib/finance/journal/post-reimbursement.ts). Optional here so this route stays a
+  // plain superset PATCH — omitted leaves the association's current regime untouched.
+  accountingRegime: z.enum(["ACCRUAL", "CASH"]).optional(),
 })
 
 export const PATCH = withAdminAuth(async (req, ctx) => {
@@ -32,10 +36,13 @@ export const PATCH = withAdminAuth(async (req, ctx) => {
   if (!parsed.success)
     return NextResponse.json({ error: parsed.error.issues }, { status: 422 })
 
-  const { website, iban, bic } = parsed.data
+  const { website, iban, bic, accountingRegime } = parsed.data
   const association = await prisma.association.update({
     where: { id: ctx.associationId },
-    data:  { website: website || null, iban: iban || null, bic: bic || null },
+    data:  {
+      website: website || null, iban: iban || null, bic: bic || null,
+      ...(accountingRegime ? { accountingRegime } : {}),
+    },
   })
 
   await writeActivityLog({
@@ -46,5 +53,5 @@ export const PATCH = withAdminAuth(async (req, ctx) => {
     label:         "Coordonnées bancaires",
   })
 
-  return NextResponse.json({ website: association.website, iban: association.iban, bic: association.bic })
+  return NextResponse.json({ website: association.website, iban: association.iban, bic: association.bic, accountingRegime: association.accountingRegime })
 }, { area: "comptabilite" })

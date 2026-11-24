@@ -36,6 +36,7 @@ import {
   GearIcon,
   GlobeIcon,
   HeartIcon,
+  IdentificationCardIcon,
   LifebuoyIcon,
   ListChecksIcon,
   MoneyIcon,
@@ -43,6 +44,7 @@ import {
   PackageIcon,
   PulseIcon,
   ReceiptIcon,
+  HandCoinsIcon,
   ShoppingBagIcon,
   SquaresFourIcon,
   UsersIcon,
@@ -88,6 +90,7 @@ const navigationItems: NavItem[] = [
   { key: "groupes",       href: "/dashboard/groupes",      icon: ListChecksIcon, moduleKey: "groupes", categoryKey: "adherents" },
   { key: "adhesions",     href: "/dashboard/adhesions",    icon: ClipboardTextIcon, moduleKey: "cotisations", categoryKey: "adherents" },
   { key: "cotisations",   href: "/dashboard/cotisations",  icon: CoinsIcon, moduleKey: "cotisations", categoryKey: "adherents" },
+  { key: "licencas",      href: "/dashboard/licencas",     icon: IdentificationCardIcon, moduleKey: "cotisations", categoryKey: "adherents" },
   // Dons, Événements and Messagerie are daily entry points, so they sit as top-level items
   // right under "Adhérents" instead of inside a category.
   { key: "dons",          href: "/dashboard/dons",         icon: HeartIcon, moduleKey: "dons",        afterCategory: "adherents" },
@@ -105,6 +108,7 @@ const navigationItems: NavItem[] = [
   { key: "finances",      href: "/dashboard/finances",     icon: MoneyIcon, moduleKey: "finances",     categoryKey: "finances" },
   { key: "devis",         href: "/dashboard/devis",        icon: FileTextIcon, moduleKey: "devis",        categoryKey: "finances" },
   { key: "factures",      href: "/dashboard/factures",     icon: ReceiptIcon, moduleKey: "factures",     categoryKey: "finances" },
+  { key: "reimbursements", href: "/dashboard/reimbursements", icon: HandCoinsIcon, moduleKey: "reimbursements", categoryKey: "finances" },
   { key: "fournisseurs",  href: "/dashboard/fournisseurs", icon: BuildingsIcon, moduleKey: "fournisseurs", categoryKey: "finances" },
   { key: "site",          href: "/dashboard/site/puck",    icon: GlobeIcon, moduleKey: "site", categoryKey: "outils" },
   { key: "boutique",      href: "/dashboard/boutique",     icon: ShoppingBagIcon, moduleKey: "boutique", categoryKey: "outils" },

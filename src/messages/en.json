@@ -51,7 +51,8 @@
     "dismissTip": "Dismiss tip",
     "addressPlaceholder": "Community hall, 12 Main Street…",
     "viewOnGoogleMaps": "View on Google Maps",
-    "backToSite": "Back to site"
+    "backToSite": "Back to site",
+    "period": {}
   },
   "address": {
     "street": "Address",
@@ -62,6 +63,7 @@
     "country": "Country of residence",
     "legacyMigratedHint": "Copied from the old address field — check it doesn't already include the postal code and city below."
   },
+  "avis": {},
   "auth": {
     "layout": {
       "imageAlt": "Login",
@@ -666,12 +668,130 @@
         "enLitige": "In dispute",
         "annulee": "Cancelled"
       },
-      "unmarkPaidWarning": "This document is currently marked paid — removing this status will delete the expense it generated in Finances, along with any bank reconciliation.",
-      "markPaidNotice": "Marking this document as paid will automatically create a matching expense in Finances.",
       "file": "Document",
+      "payment": {
+        "toasts": {}
+      },
       "toasts": {
         "uploadError": "Error uploading the document",
         "networkError": "Network error during upload — please try again"
+      },
+      "unmarkPaidWarning": "This document is currently marked paid — removing this status will delete the expense it generated in Finances, along with any bank reconciliation.",
+      "markPaidNotice": "Marking this document as paid will automatically create a matching expense in Finances.",
+      "categoryHint": "If you choose a category, the expense will be recorded as soon as the invoice is recorded rather than at the time of payment."
+    }
+  },
+  "reimbursements": {
+    "view": {
+      "title": "Expense reimbursements",
+      "newRequest": "New request",
+      "export": "Export",
+      "myRequests": "My requests",
+      "allRequests": "All requests",
+      "allRequesters": "All applicants",
+      "allCategories": "All categories",
+      "dateFrom": "Of",
+      "dateTo": "To",
+      "allStatuses": "All statuses",
+      "summary": "{pending} Pending — {pendingAmount} · {approved} to be refunded — {approvedAmount} · {reimbursed} reimbursed — {reimbursedAmount}",
+      "noRequest": "No refund requests",
+      "columns": {
+        "subject": "Purpose",
+        "date": "Date",
+        "amount": "Amount",
+        "status": "Status"
+      },
+      "status": {
+        "draft": "Draft",
+        "pendingApproval": "Awaiting approval",
+        "needsCorrection": "To be corrected",
+        "approved": "Approved",
+        "rejected": "Refused",
+        "reimbursed": "Refunded",
+        "cancelled": "Cancelled"
+      },
+      "actions": {
+        "view": "See",
+        "submit": "Submit",
+        "cancel": "Cancel"
+      },
+      "toasts": {
+        "created": "Request created",
+        "updated": "Update request",
+        "deleted": "Request deleted",
+        "submitted": "Application submitted for approval",
+        "cancelled": "Request canceled",
+        "approved": "Application approved",
+        "correctionRequested": "Correction requested",
+        "rejected": "Request denied",
+        "reimbursed": "Recorded refund"
+      },
+      "deleteConfirmTitle": "Delete this draft?",
+      "deleteConfirmDescription": "This action is irreversible.",
+      "cancelConfirmTitle": "Cancel this request?",
+      "cancelConfirmDescription": "The applicant will be notified of the cancellation.",
+      "cancelReasonLabel": "Reason for cancellation"
+    },
+    "form": {
+      "subject": "Purpose",
+      "subjectPlaceholder": "Ex. Regional meeting travel",
+      "comment": "Commentary",
+      "commentPlaceholder": "Optional details",
+      "event": "Related event",
+      "project": "Associated project",
+      "noProject": "No project",
+      "noEvent": "No events",
+      "items": "Expenses",
+      "addItem": "Add an expense",
+      "noItems": "No additional fees",
+      "itemDate": "Date of expenditure",
+      "itemDescription": "Description",
+      "itemAmount": "Amount",
+      "itemCategory": "Category",
+      "itemReceipt": "Justification",
+      "total": "Total",
+      "duplicateWarning": "A similar expense (same date, same amount) already exists in another of your requests.",
+      "toasts": {
+        "uploadError": "Error when sending the receipt",
+        "networkError": "Network error when sending the receipt"
+      }
+    },
+    "detail": {
+      "notFound": "Refund request not found",
+      "history": "History",
+      "correctionFrom": "Correction requested by {name}",
+      "rejectedBy": "Refused by {name}",
+      "reimbursedOn": "Refunded on {date} by {method}",
+      "selfApprovalBlockedNotice": "You cannot approve your own request. It must be approved by an administrator or another authorized official.",
+      "viewReceipt": "See the supporting documents",
+      "immobilisationTag": "Fixed assets",
+      "approveButton": "Approve",
+      "requestCorrectionButton": "Request a correction",
+      "rejectButton": "Refuse",
+      "correctionCommentLabel": "Correction comment",
+      "rejectionReasonLabel": "Reason for refusal",
+      "deleteItemConfirmTitle": "Eliminate this expense?",
+      "toasts": {
+        "itemAdded": "Added expense",
+        "itemUpdated": "Updated expense",
+        "itemDeleted": "Expense removed"
+      }
+    },
+    "register": {
+      "title": "Save the refund",
+      "registerButton": "Save the refund",
+      "date": "Refund date",
+      "paymentMethod": "Payment method",
+      "bankAccount": "Bank account",
+      "noBankAccountHint": "No bank account set up — add one in Finance> Accounts, or choose Cash.",
+      "transaction": "Reconcile an imported bank transaction (optional)",
+      "noTransaction": "Do not bring closer now",
+      "reference": "Reference",
+      "submit": "Save",
+      "methods": {
+        "virement": "Transfer",
+        "cheque": "Check",
+        "especes": "Species"
       }
     }
   },
@@ -680,26 +800,64 @@
     "subtitle": "Overview of your association",
     "customize": {
       "customize": "Customize",
+      "tooltip": "Customize the dashboard",
       "done": "Done",
       "reset": "Reset",
       "dragHint": "Drag to reorder",
       "resizeHint": "Drag the corner to resize"
     },
+    "actionsTodo": {
+      "trigger": "Actions to take",
+      "badgeHint": "{count, plural, one {# pending action category} other {# categories of pending action}}",
+      "empty": "Everything is up to date, no action to handle.",
+      "snooze": "Postpone this action",
+      "snoozeDialogTitle": "Postpone this action",
+      "snoozeDialogDescription": "The action remains hidden for you until that date, then reappears if there are still cases to process.",
+      "snoozeUntilLabel": "Postponed until",
+      "confirm": "Confirm",
+      "loadError": "Unable to load the actions to be done.",
+      "snoozedSectionTitle": "{count, plural, one {# action put on hold} other {# actions put on hold}}",
+      "snoozedUntil": "Until {date}",
+      "cancelSnooze": "Cancel the hold",
+      "actionLabels": {
+        "voirEtRelancer": "See and relaunch",
+        "examiner": "Examiner",
+        "consulter": "Consult"
+      },
+      "rows": {
+        "cotisations-en-attente": "{count, plural, one {# pending membership fee} other {# pending contributions}}",
+        "materiel-en-retard": "{count, plural, one {# late material returns} other {# late material returns}}",
+        "membres-a-valider": "{count, plural, one {# member to validate} other {# members to be validated}}",
+        "dons-a-encaisser": "{count, plural, one {# gift to be cashed} other {# donations to collect}}",
+        "rapprochement-bancaire": "{count, plural, one {# operation to be compared} other {# operations to compare}}",
+        "notes-de-frais-a-valider": "{count, plural, one {# expense report to be validated} other {# expense reports to be validated}}",
+        "commandes-a-preparer": "{count, plural, one {# order to prepare} other {# orders to prepare}}"
+      }
+    },
     "stats": {
-      "activeMembers": "Active members",
-      "eventsThisMonth": "Events this month",
-      "cotisationsPending": "Pending membership fees",
       "financialBalance": "Financial balance",
       "donationsReceived": "Donations received {year}"
     },
-    "nextEvent": {
-      "title": "Next event",
-      "empty": "No upcoming events."
+    "agenda": {
+      "title": "Agenda",
+      "eventsThisMonth": "{count, plural, one {# event this month} other {# events this month}}",
+      "ongoing": "In progress",
+      "viewCalendar": "See the calendar",
+      "empty": "No events coming up."
     },
     "cotisations": {
       "title": "Membership fees {year}",
       "collectedThisYear": "collected this year",
-      "pendingPayment": "{count} awaiting payment"
+      "remaining": "{amount} remaining to be received",
+      "pendingPayment": "{count} awaiting payment",
+      "viewAll": "See the fees"
+    },
+    "activiteRecente": {
+      "title": "Recent activity",
+      "tabs": {
+        "commandes": "Orders",
+        "dons": "Donations"
+      }
     },
     "recentDonations": {
       "title": "Recent donations",
@@ -735,6 +893,7 @@
       "categoryTitle": "Income by category — {year}"
     },
     "memberSummary": {
+      "title": "Members",
       "total": "{count, plural, one {# member} other {# members}}",
       "active": "{count, plural, one {# active} other {# active}}",
       "inactive": "{count, plural, one {# inactive} other {# inactive}}"
@@ -914,11 +1073,109 @@
       "title": "Coming soon",
       "description": "This feature is currently in development."
     },
+    "immobilisationsView": {
+      "columns": {},
+      "toasts": {},
+      "drillDown": {}
+    },
+    "immobilisationForm": {},
+    "journalManual": {},
+    "bilan": {
+      "title": "Balance sheet",
+      "description": "Assets and liabilities of the organization at the close of the fiscal year.",
+      "exerciceLabel": "Fiscal year",
+      "rubriqueColumnLabel": "Heading",
+      "noPreviousExercice": "No comparative available",
+      "actif": "Assets",
+      "totalActif": "Total assets",
+      "passif": "Liabilities & equity",
+      "totalPassif": "Total liabilities & equity",
+      "noAccountsInRubrique": "No balance in this heading",
+      "exportPdf": "Export PDF",
+      "exportDisabledTooltip": "You can't export a definitive Balance sheet while the issues above remain unresolved.",
+      "refreshLedger": "Refresh the log",
+      "refreshLedgerTooltip": "This report is not updated in real time with every income or expense — click to sync with the most recent movements.",
+      "refreshLedgerSuccessPosted": "{count, plural, =0 {No new movement} one {# synchronized movement} other {# synchronized movements}}",
+      "refreshLedgerSuccessReversed": "{count, plural, =0 {} one {, # cancellation applied} other {, # cancellations applied}}",
+      "refreshLedgerError": "Unable to refresh the log. Please try again.",
+      "emptyExercice": {
+        "title": "No fiscal year",
+        "description": "Create a fiscal year to display the Balance sheet."
+      },
+      "emptyLedger": {
+        "title": "No accounting entries",
+        "description": "The Balance sheet will appear once income, expenses or assets have been recorded for this fiscal year."
+      },
+      "rubriques": {
+        "immobilisationsCorporelles": "Tangible fixed assets",
+        "immobilisationsIncorporelles": "Intangible fixed assets",
+        "immobilisationsFinancieres": "Financial fixed assets",
+        "disponibilites": "Cash & equivalents",
+        "chargesConstateesDavance": "Prepaid expenses",
+        "creances": "Receivables",
+        "stocksEtEnCours": "Inventory",
+        "fondsPropres": "Equity",
+        "provisions": "Provisions for liabilities and charges",
+        "dettes": "Liabilities",
+        "produitsConstatesDavance": "Deferred income",
+        "fondsDedies": "Restricted funds"
+      },
+      "memoNotice": "Estimate — not recorded in the ledger, excluded from total assets.",
+      "accountLabels": {
+        "reportANouveau": "Retained earnings",
+        "resultatExercice": "Net income for the year",
+        "creancesCotisations": "Outstanding membership fees",
+        "creancesFactures": "Outstanding invoices",
+        "stocksEstimatedValue": "Estimated inventory value",
+        "creancesFacturesEnRetard": "Overdue invoices"
+      },
+      "pdf": {
+        "periodLabel": "Period from {start} to {end}"
+      },
+      "drillDown": {
+        "date": "Date",
+        "label": "Label",
+        "origin": "Origin",
+        "debit": "Debit",
+        "credit": "Credit",
+        "noLines": "No entries for this account.",
+        "sourceTypes": {
+          "INCOME": "Income",
+          "INCOME_REVERSAL": "Income reversal",
+          "EXPENSE": "Expense",
+          "EXPENSE_REVERSAL": "Expense reversal",
+          "BANK_TRANSACTION": "Bank transaction",
+          "ACCOUNT_TRANSFER": "Internal transfer",
+          "OPENING_BALANCE": "Opening balance",
+          "IMMOBILISATION_DEPRECIATION": "Depreciation",
+          "IMMOBILISATION_ACQUISITION": "Asset acquisition",
+          "FACTURE_RECUE_PAYMENT": "Supplier payment",
+          "MANUAL": "Manual entry"
+        }
+      },
+      "issues": {
+        "title": "Issues detected",
+        "messages": {
+          "ACCOUNT_WITHOUT_RUBRIQUE": "Account {code} — {label} has a balance but isn't mapped to any Balance sheet heading.",
+          "ACTIF_PASSIF_MISMATCH": "Assets ({actif}) do not match liabilities & equity ({passif}).",
+          "OPENING_BALANCE_MISSING": "No opening entry was generated for this fiscal year from \"{previousLabel}\".",
+          "TRIAL_BALANCE_UNBALANCED": "Total debit ({debit}) does not match total credit ({credit}) for this fiscal year.",
+          "RESULT_DIVERGENCE": "The journal's result ({journal}) differs from the income statement's ({statement}) — the journal may not be caught up for this fiscal year yet (close the fiscal year or re-run the sync).",
+          "UNPOSTED_ENTRIES": "Unrecorded entries: {count} (category absent or without associated accounting code) — {amount} not reflected in this Report. Restarting the synchronization is not enough here, the category must be corrected."
+        }
+      },
+      "memoNoHistory": "No historical data",
+      "caveats": {
+        "stocksMissingCostPrice": "{count, plural, one {# variant with no purchase cost recorded, excluded from the estimate} other {# variants with no purchase cost recorded, excluded from the estimate}}"
+      }
+    },
     "compteResultat": {
       "title": "Income statement",
       "description": "Financial result for the fiscal year, compared to the previous year.",
       "exerciceLabel": "Fiscal year",
+      "categoryColumnLabel": "Category",
       "noPreviousExercice": "-",
+      "noPreviousExerciceMessage": "No previous exercice available",
       "export": "Export",
       "exportExcel": "Export Excel",
       "exportPdf": "Export PDF",
@@ -927,14 +1184,9 @@
       "expenses": "Expenses",
       "totalExpenses": "Total expenses",
       "result": "Result for the year",
+      "resultZero": "Result for the period: €0",
       "surplus": "Surplus for the year",
       "deficit": "Deficit for the year",
-      "emptyExercice": {
-        "title": "No fiscal year",
-        "description": "Create a fiscal year to generate the income statement."
-      },
-      "noPreviousExerciceMessage": "No previous exercice available",
-      "resultZero": "Result for the period: €0",
       "operationalResult": "Operating result",
       "uncategorized": "Uncategorized",
       "uncategorizedAlertIncome": "{count, plural, one {# income entry needs to be categorized} other {# income entries need to be categorized}}",
@@ -946,6 +1198,15 @@
         "FINANCIAL": "Financial",
         "EXCEPTIONAL": "Exceptional",
         "OTHER": "Other"
+      },
+      "inKind": {
+        "title": "Voluntary contributions in kind",
+        "employmentHeader": "Use of contributions",
+        "amountHeader": "Amount",
+        "receivedHeader": "Contributions received",
+        "totalEmployments": "Total Jobs",
+        "totalReceived": "Total Contributions",
+        "note": "These free contributions are valued in euros. They do not lead to any movement of money and do not change the result of the financial year."
       },
       "drillDown": {
         "date": "Date",
@@ -1001,15 +1262,24 @@
         "reference": "Reference",
         "exercice": "Fiscal year"
       },
-      "categoryColumnLabel": "Category",
-      "inKind": {
-        "title": "Voluntary contributions in kind",
-        "employmentHeader": "Use of contributions",
-        "amountHeader": "Amount",
-        "receivedHeader": "Contributions received",
-        "totalEmployments": "Total Jobs",
-        "totalReceived": "Total Contributions",
-        "note": "These free contributions are valued in euros. They do not lead to any movement of money and do not change the result of the financial year."
+      "emptyExercice": {
+        "title": "No fiscal year",
+        "description": "Create a fiscal year to generate the income statement."
+      }
+    },
+    "previsionnel": {
+      "emptyExercice": {},
+      "tabs": {},
+      "card": {},
+      "columns": {},
+      "export": {},
+      "toasts": {},
+      "copyBudget": {
+        "toasts": {}
+      },
+      "projectsTab": {
+        "noProjects": {},
+        "toasts": {}
       }
     },
     "categoryForm": {
@@ -1151,6 +1421,9 @@
         "createdWithLinked": "Fiscal year created — {count, plural, one {# record linked} other {# records linked}} automatically"
       }
     },
+    "exerciceGuard": {
+      "closedError": "This exercise is closed — it is impossible to create or modify a record for this period."
+    },
     "accountsView": {
       "title": "Bank accounts",
       "description": "Manage the association's bank accounts.",
@@ -1193,6 +1466,7 @@
     },
     "transfersView": {
       "title": "Internal transfers",
+      "description": "Record here the transfers already made between your association''s bank accounts. Formwise records the transfer without moving any money.",
       "add": "Transfer",
       "newTransferTitle": "New transfer between accounts",
       "editTransferTitle": "Edit transfer",
@@ -1419,13 +1693,13 @@
       "description": "Match imported bank transactions to your income and expenses.",
       "statusFilters": {
         "all": "All",
-        "unmatched": "Unmatched",
+        "unmatched": "To be compared",
         "matched": "Matched",
         "ignored": "Ignored",
         "duplicate": "Duplicates"
       },
       "status": {
-        "unmatched": "Unmatched",
+        "unmatched": "To be compared",
         "matched": "Matched",
         "pending": "Pending",
         "ignored": "Ignored",
@@ -1473,6 +1747,7 @@
       "typeIncome": "Income",
       "typeExpense": "Expense",
       "typeTransfer": "Internal transfer",
+      "selectedCount": "{count, plural, one {# selected item} other {# selected items}}",
       "confirm": "Confirm match"
     }
   },
@@ -1689,6 +1964,7 @@
         "dateLabel": "Start date",
         "createButton": "Create"
       },
+      "summary": {},
       "bilan": {
         "show": "Show summary",
         "hide": "Hide summary",
@@ -1982,6 +2258,7 @@
           "standardFieldsHint": "Fields requested at registration",
           "phoneLabel": "Phone",
           "addressLabel": "Address",
+          "countryLabel": "Country of residence",
           "requirement": {
             "hidden": "Hidden",
             "optional": "Optional",
@@ -1989,8 +2266,7 @@
           },
           "mobileLabel": "Mobile",
           "birthDateLabel": "Date of birth",
-          "genderLabel": "Gender",
-          "countryLabel": "Country of residence"
+          "genderLabel": "Gender"
         },
         "products": {
           "title": "Products",
@@ -2536,7 +2812,8 @@
         "disponibles": "Available",
         "enPret": "On loan",
         "reserves": "Reserved",
-        "maintenance": "Maintenance"
+        "maintenance": "Maintenance",
+        "enRetard": "Late"
       },
       "pendingRequests": "Pending requests",
       "accept": "Accept",
@@ -2558,7 +2835,8 @@
         "reserves": "Reserved",
         "maintenance": "Maintenance",
         "horsService": "Out of service",
-        "perdus": "Lost"
+        "perdus": "Lost",
+        "enRetard": "Late"
       },
       "noArticles": "No items",
       "noResults": "No results",
@@ -2732,7 +3010,8 @@
       },
       "shippableColumn": "Shipping",
       "weightColumn": "Weight (g)",
-      "weightPlaceholder": "500"
+      "weightPlaceholder": "500",
+      "costPriceColumn": "Cost"
     },
     "view": {
       "title": "Shop",
@@ -2760,7 +3039,11 @@
         "cancelOrder": "Cancel",
         "downloadReceipt": "Download receipt",
         "editPaymentMethod": "Edit payment method",
-        "refundOrder": "Refund"
+        "refundOrder": "Refund",
+        "markPrepared": "Mark as prepared",
+        "cancelPrepared": "Cancel preparation",
+        "delegatePreparation": "Preparation delegated to a third party",
+        "resumePreparation": "Resume preparation"
       },
       "noProduct": "No products",
       "noOrder": "No orders",
@@ -2775,11 +3058,14 @@
       },
       "othersCount": "{count, plural, one {+# other} other {+# others}}",
       "statusFilterAll": "All",
+      "statusFilterToPrepare": "To prepare",
       "salesCountLabel": "Number of sales",
       "revenueTotalLabel": "Total revenue",
       "unitsSold": "{count, plural, one {# sold} other {# sold}}",
       "pendingCountLabel": "Pending orders",
       "pendingAmountLabel": "Pending amount",
+      "toPrepareCountLabel": "Orders to prepare",
+      "toPrepareAmountLabel": "Amount to prepare",
       "cancelledCountLabel": "Cancelled orders",
       "cancelledAmountLabel": "Cancelled amount",
       "deleteProduitTitle": "Delete product",
@@ -3147,6 +3433,7 @@
           "title": "Form",
           "standardFieldsHint": "Fields requested from the donor",
           "addressLabel": "Address",
+          "countryLabel": "Country of residence",
           "birthDateLabel": "Date of birth",
           "phoneLabel": "Phone",
           "mobileLabel": "Mobile",
@@ -3177,8 +3464,7 @@
           "addOption": "Add an option",
           "removeOption": "Remove this option",
           "optionsRequiredError": "Every dropdown/choice field needs at least 2 options.",
-          "duplicateOptionsError": "Options in a dropdown/choice field must be unique.",
-          "countryLabel": "Country of residence"
+          "duplicateOptionsError": "Options in a dropdown/choice field must be unique."
         },
         "payment": {
           "title": "Payment",
@@ -3417,6 +3703,7 @@
           "eligibleAmountAutoHint": "Calculated automatically: amount paid − {amount}",
           "noMinimumWarning": "No minimum amount is set for this free-amount tier — a visitor paying less than the non-eligible amount will be blocked at checkout. Set a minimum amount of at least {amount}.",
           "installmentsAllowedField": "Allow payment in installments",
+          "installmentsUnavailableWithLicense": "Unavailable for a tier that manages a federative license.",
           "installmentsCountField": "Number of installments",
           "membreTypeNone": "None",
           "kindField": "Type",
@@ -3434,12 +3721,33 @@
           "membershipTierRequiredError": "The form must have at least one membership tier",
           "minAmountRequiredError": "A minimum amount is required for every donation",
           "saved": "Tiers saved",
-          "saveTiers": "Save tiers"
+          "saveTiers": "Save tiers",
+          "licenseSectionTitle": "Federative license",
+          "licenseEnabledField": "Manage a federative license for this tier",
+          "licenseNameField": "License name",
+          "licenseNamePlaceholder": "E.g. Competition license",
+          "licenseFederationField": "Federation",
+          "licenseFederationPlaceholder": "E.g. FFF",
+          "licenseSeasonField": "Season",
+          "licenseSeasonPlaceholder": "E.g. 2026/2027",
+          "licenseMandatoryField": "Mandatory license",
+          "licenseBillingModeField": "Billing",
+          "licenseBillingIncluded": "Included in the tier",
+          "licenseBillingAdditional": "Additional amount",
+          "licenseAdditionalAmountField": "Additional amount (€)",
+          "licenseAllowDeclareExistingField": "Allow declaring an already-held license",
+          "licenseFederationRequiredError": "The federation is required to enable the federative license",
+          "licenseSeasonRequiredError": "The season is required to enable the federative license",
+          "licenseBillingModeRequiredError": "The license billing mode is required",
+          "licenseAdditionalAmountRequiredError": "The license's additional amount is required",
+          "licenseRecurringChangeWarning": "Changing this amount only affects future subscriptions — members already subscribed keep paying the amount set when they signed up.",
+          "licenseAdditionalAmountTooLowError": "The license's additional amount must be at least €1"
         },
         "fields": {
           "title": "Form",
           "standardFieldsHint": "Fields requested at signup",
           "addressLabel": "Address",
+          "countryLabel": "Country of residence",
           "birthDateLabel": "Date of birth",
           "phoneLabel": "Phone",
           "mobileLabel": "Mobile",
@@ -3474,8 +3782,7 @@
           "addOption": "Add an option",
           "removeOption": "Remove this option",
           "optionsRequiredError": "Every dropdown/choice field needs at least 2 options.",
-          "duplicateOptionsError": "Options in a dropdown/choice field must be unique.",
-          "countryLabel": "Country of residence"
+          "duplicateOptionsError": "Options in a dropdown/choice field must be unique."
         },
         "payment": {
           "title": "Payment",
@@ -3554,6 +3861,14 @@
       "mobilePlaceholder": "07700 900123",
       "donationBadge": "(donation)",
       "totalLabel": "Total due",
+      "licenseDefaultName": "Federative license",
+      "licenseIncludedNotice": "Federative license included, no extra charge.",
+      "licenseOptInLabel": "Add the federative license (+{amount})",
+      "licenseMandatoryNotice": "This membership includes a mandatory federative license ({amount}).",
+      "licenseDeclareExistingLabel": "I already hold a license for this season",
+      "licenseDeclaredNotice": "License already held — pending verification by the association.",
+      "licenseNumberLabel": "License number",
+      "licenseNumberPlaceholder": "Leave blank if you don't have it yet",
       "partialReceiptNotice": "Only {amount} is tax-deductible for this membership.",
       "belowExtraMinimum": "The minimum amount for \"{label}\" is {amount}.",
       "belowMinimumAmount": "The minimum amount for an online payment is {amount}.",
@@ -4035,6 +4350,8 @@
       "publicPaymentToggleDesc": "The public site membership form requires immediate payment (charged every year) and activates the member automatically, with no manual review.",
       "publicPaymentRequiresAmount": "Set a cotisation amount to enable this option.",
       "connectNotReadyWarning": "Online payment isn't active — Stripe Connect isn't set up or can't accept payments yet (Payments tab). Until then, the public form silently falls back to the free flow and files pending membership requests.",
+      "includeFederativeLicenseInAutoRenewalToggle": "Include the federative license in the automatic yearly charge",
+      "includeFederativeLicenseInAutoRenewalToggleDesc": "When a tier bills its federative license as an additional amount, that amount is charged again on every automatic renewal (recurring subscription). Off, it's only charged once, at the first signup. This setting only applies to new subscriptions started after changing it — already-active subscriptions keep billing exactly as they started.",
       "toasts": {
         "updated": "Default amount updated"
       }
@@ -4046,6 +4363,10 @@
       "websitePlaceholder": "my-association.org",
       "iban": "Account number",
       "bic": "Routing number",
+      "accountingRegime": "Accounting regime for expense reimbursements",
+      "accountingRegimeHint": "Determines when a reimbursement request is posted: at approval (commitment) or at actual payment (cash).",
+      "accountingRegimeCash": "Cash accounting",
+      "accountingRegimeAccrual": "Commitment accounting",
       "previewTitle": "Preview on the document",
       "bankDetails": "Bank details",
       "ibanColon": "Account: {value}",
@@ -4156,10 +4477,10 @@
       "status": {
         "trial": "Free trial",
         "active": "Active",
+        "paymentPending": "Payment in progress",
         "pastDue": "Payment overdue",
         "suspended": "Suspended",
-        "cancelled": "Cancelled",
-        "paymentPending": "Payment in progress"
+        "cancelled": "Cancelled"
       },
       "planLabel": "{tier} plan",
       "membersCount": "{count} / {limit} members",
@@ -4489,7 +4810,11 @@
         "priceFree": "Free",
         "priceFreeAmount": "Open amount",
         "priceFreeAmountFrom": "Open amount from {amount}",
-        "priceRecurring": "{amount}/year"
+        "priceRecurring": "{amount}/year",
+        "manualAction": "Manually merge two categories",
+        "manualTitle": "Merge two categories",
+        "mergeErrorGeneric": "An error occurred during the merge.",
+        "mismatchWarning": "Note: these categories do not have the same billing type, amount, or method."
       },
       "renewal": {
         "automatic": "Automatic",
@@ -4582,6 +4907,24 @@
       "enRetard": "The payment deadline has passed.",
       "exonere": "No payment is required.",
       "annulee": "This cotisation has been cancelled."
+    }
+  },
+  "groupes": {
+    "view": {
+      "statusFilter": {},
+      "columns": {},
+      "statusBadge": {},
+      "actions": {},
+      "toasts": {}
+    },
+    "form": {},
+    "detail": {
+      "appelColumns": {}
+    },
+    "appel": {
+      "counts": {},
+      "status": {},
+      "toasts": {}
     }
   },
   "membres": {
@@ -4856,10 +5199,25 @@
         "reunions": "Meetings",
         "materiel": "Equipment",
         "dons": "Donations",
+        "licenses": "Licenses",
         "historique": "History",
         "emails": "Emails",
         "sms": "SMS",
         "boutique": "Shop"
+      },
+      "licenses": {
+        "empty": "No license",
+        "seasonYear": "{year} membership fee",
+        "autoRenewed": "Automatically renewed",
+        "declaredByMembreNotice": "License declared by the member — pending verification",
+        "deleteConfirmTitle": "Delete this license?",
+        "deleteConfirmDescription": "The {federation} — {season} license will be permanently deleted.",
+        "statusField": "Status",
+        "licenseNumberField": "License number",
+        "statusASolicitar": "To request",
+        "statusEmAndamento": "In progress",
+        "statusValidada": "Validated",
+        "statusARenovar": "To renew"
       },
       "cotisationStatus": {
         "enAttente": "Pending",
@@ -4908,6 +5266,7 @@
       "donStandalone": "Standalone donation",
       "donPending": "Awaiting encashment",
       "showingRecentDons": "Showing the {count} most recent donations out of {total} total.",
+      "showingRecentLicenses": "Showing the {count} most recent licenses out of {total} total.",
       "addCotisationTitle": "Add a membership fee",
       "editCotisationTitle": "Edit membership fee",
       "deleteConfirmWithDependants": "This member will be archived and will no longer be able to access the association. They will also be removed as legal guardian of {count} member(s): {names}.",
@@ -5018,6 +5377,12 @@
       "inMessagesSection": " in the Messages section.",
       "messageSectionLabel": "Message",
       "saveAsTemplate": "Save as template",
+      "subjectLabel": "Subject",
+      "subjectPlaceholder": "Email subject…",
+      "subjectTooLong": "Subject too long: {length}/{max} characters — it will be rejected when sending.",
+      "bodyLabel": "Message body",
+      "bodyPlaceholder": "Write your message…",
+      "designTemplateReadonlyHint": "This template uses Visual design mode (images, buttons) — its content can't be edited here. To change it, edit the template in Messages.",
       "language": {
         "title": "Sending language",
         "modeOriginal": "Original language",
@@ -5042,12 +5407,6 @@
         "autoNoEffect": "No current recipient has a preferred language other than French — everyone will receive the original version.",
         "autoExternalNote": "{count, plural, one {# external email (original language)} other {# external emails (original language)}}"
       },
-      "subjectLabel": "Subject",
-      "subjectPlaceholder": "Email subject…",
-      "subjectTooLong": "Subject too long: {length}/{max} characters — it will be rejected when sending.",
-      "bodyLabel": "Message body",
-      "bodyPlaceholder": "Write your message…",
-      "designTemplateReadonlyHint": "This template uses Visual design mode (images, buttons) — its content can't be edited here. To change it, edit the template in Messages.",
       "continue": "Continue",
       "confirmSendTitle": "Send confirmation",
       "confirmSendDescription": "This email will be sent to {recipients}. This action cannot be undone.",
@@ -5610,8 +5969,8 @@
       "actualites": "News",
       "membership": "Join the association",
       "dons": "Make a donation",
-      "contact": "Contact",
-      "boutique": "Store"
+      "boutique": "Store",
+      "contact": "Contact"
     },
     "defaultTitles": {
       "hero": "Welcome",
@@ -5619,9 +5978,9 @@
       "events": "Upcoming events",
       "membership": "Join the association",
       "dons": "Make a donation",
+      "boutique": "Store",
       "actualites": "News",
-      "contact": "Contact",
-      "boutique": "Store"
+      "contact": "Contact"
     },
     "view": {
       "uploadFailedWarning": "{count, plural, one {# image could not be uploaded.} other {# images could not be uploaded.}}",
@@ -5668,9 +6027,9 @@
       "createWithAi": "Create with AI",
       "addSection": "Add a section",
       "donsModuleDisabled": "Donations module disabled — hidden on the public site",
+      "boutiqueModuleDisabled": "Store module disabled — hidden from the public site",
       "deleteSectionTitle": "Delete the section",
-      "deleteSectionDescription": "This action is irreversible.",
-      "boutiqueModuleDisabled": "Store module disabled — hidden from the public site"
+      "deleteSectionDescription": "This action is irreversible."
     },
     "sectionSheet": {
       "editTitle": "Edit — {label}",
@@ -5691,6 +6050,8 @@
       "eventsLimitHint": "Events are automatically pulled from your calendar.",
       "actualitesLimit": "Number of news posts to display",
       "actualitesLimitHint": "Only the first N published news posts will be shown on the site.",
+      "boutiqueLimit": "Number of products to display",
+      "boutiqueLimitHint": "Only the first N active products will be shown on the site.",
       "membershipIntro": "Introductory text",
       "membershipIntroPlaceholder": "Fill out this form to request to join the association…",
       "membershipHint": "Requests appear in the member list with \"Pending\" status.",
@@ -5711,9 +6072,7 @@
       "apply": "Apply",
       "discardTitle": "Discard changes?",
       "discardDescription": "Unapplied changes will be lost.",
-      "discardConfirm": "Discard",
-      "boutiqueLimit": "Number of products to display",
-      "boutiqueLimitHint": "Only the first N active products will be shown on the site."
+      "discardConfirm": "Discard"
     },
     "preview": {
       "donsNoForm": "No donation form selected — hidden on the public site"
@@ -6042,6 +6401,15 @@
       "viewShop": "View shop",
       "orderPlacedTitle": "Order placed!",
       "orderPlacedDescription": "Your order is awaiting payment. The administration will contact you to finalize it.",
+      "paymentSuccessTitle": "Payment confirmed!",
+      "paymentSuccessDescription": "Thank you for your purchase. A confirmation email with your receipt has been sent to you.",
+      "stockAdjustedNotice": "Stock for some items has changed — your cart was adjusted, please review before continuing.",
+      "trackOrderButton": "Track my order",
+      "trackingPageTitle": "Order tracking",
+      "trackingStatusPending": "Awaiting payment",
+      "trackingStatusPaid": "Order paid",
+      "trackingStatusCancelled": "Order cancelled",
+      "trackingNotFound": "Order not found",
       "myOrdersButton": "My orders",
       "continueShopping": "Continue shopping",
       "maxStockReached": "Max stock reached",
@@ -6079,16 +6447,7 @@
         "orderError": "Error placing the order",
         "orderUpdated": "Order updated",
         "orderCancelled": "Order cancelled"
-      },
-      "paymentSuccessTitle": "Payment confirmed!",
-      "paymentSuccessDescription": "Thank you for your purchase. A confirmation email with your receipt has been sent to you.",
-      "stockAdjustedNotice": "Stock for some items has changed — your cart was adjusted, please review before continuing.",
-      "trackOrderButton": "Track my order",
-      "trackingPageTitle": "Order tracking",
-      "trackingStatusPending": "Awaiting payment",
-      "trackingStatusPaid": "Order paid",
-      "trackingStatusCancelled": "Order cancelled",
-      "trackingNotFound": "Order not found"
+      }
     },
     "dons": {
       "title": "My donations",
@@ -6442,10 +6801,12 @@
       "membres": "Members",
       "evenements": "Events",
       "cotisations": "Dues",
+      "licencas": "Licenses",
       "adhesions": "Memberships",
       "finances": "Financial tracking",
       "devis": "Quotes",
       "factures": "Invoices",
+      "reimbursements": "Expense reimbursements",
       "fournisseurs": "Suppliers",
       "dons": "Donations",
       "reunions": "Meetings",
@@ -7165,6 +7526,30 @@
       "loading": "Loading…",
       "noResults": "No results.",
       "scanAction": "Scan"
+    }
+  },
+  "licencas": {
+    "title": "Licenses",
+    "description": "Federative licenses of members, across every tier and season.",
+    "export": "Export",
+    "empty": "No license",
+    "statusASolicitar": "To request",
+    "statusEmAndamento": "In progress",
+    "statusValidada": "Validated",
+    "statusARenovar": "To renew",
+    "columns": {
+      "membre": "Member",
+      "tier": "Tier",
+      "federation": "Federation",
+      "season": "Season",
+      "licenseNumber": "License number",
+      "status": "Status"
+    },
+    "filters": {
+      "searchPlaceholder": "Search a member…",
+      "allFederations": "All federations",
+      "allSeasons": "All seasons",
+      "allStatuses": "All statuses"
     }
   }
 }

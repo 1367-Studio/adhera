@@ -5,6 +5,18 @@ import { withSuperAdminAuth } from "@/lib/api-wrapper"
 import { writeActivityLog, computeAssociationDiff } from "@/lib/activity-log"
 import { revalidatePublicSiteFor } from "@/lib/association/revalidate-site"
 import { reportError } from "@/lib/monitoring"
+import { DEFAULT_MODULES } from "@/lib/modules"
+
+// Derived from DEFAULT_MODULES's own keys rather than hand-listed — a hand-listed copy here
+// is exactly how "reimbursements" went missing when FORM-93 added it to AssocModules: the
+// shape still parsed successfully (zod silently drops unrecognized keys instead of failing),
+// so the toggle UI showed "saved" while the new flag was never actually persisted, and every
+// subsequent save of ANY module wiped it out again (this route replaces the whole `modules`
+// JSON column, it doesn't merge). Deriving the key list here means a future new module can't
+// go missing from this schema the same way.
+const modulesSchema = z.object(
+  Object.fromEntries(Object.keys(DEFAULT_MODULES).map(key => [key, z.boolean()])),
+)
 
 const patchSchema = z.object({
   internalNotes: z.string().optional(),
@@ -15,25 +27,7 @@ const patchSchema = z.object({
   // association — see canUseCustomBranding() in src/lib/plan-limits.ts. null falls back
   // to the plan default (Pro), omitted leaves it untouched.
   customBrandingEnabled: z.boolean().nullable().optional(),
-  modules: z.object({
-    evenements:  z.boolean(),
-    cotisations: z.boolean(),
-    actualites:  z.boolean(),
-    messages:    z.boolean(),
-    materiel:    z.boolean(),
-    site:        z.boolean(),
-    ia:          z.boolean(),
-    dons:        z.boolean(),
-    sondages:    z.boolean(),
-    boutique:    z.boolean(),
-    reunions:    z.boolean(),
-    sms:         z.boolean(),
-    finances:    z.boolean(),
-    fournisseurs: z.boolean(),
-    devis:        z.boolean(),
-    factures:     z.boolean(),
-    groupes:      z.boolean(),
-  }).optional(),
+  modules: modulesSchema.optional(),
 })
 
 export const PATCH = withSuperAdminAuth<{ id: string }>(async (req, ctx, { id }) => {

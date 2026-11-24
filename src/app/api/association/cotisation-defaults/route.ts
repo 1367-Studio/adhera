@@ -13,6 +13,8 @@ const schema = z.object({
   // Optional so the amount can still be saved on its own (existing callers/UI state
   // never send this field) — omitted leaves the flag untouched.
   publicMembershipPaymentEnabled: z.boolean().optional(),
+  // FORM-114 — optional for the same reason as publicMembershipPaymentEnabled above.
+  includeFederativeLicenseInAutoRenewal: z.boolean().optional(),
 }).refine(
   d => !d.publicMembershipPaymentEnabled || d.cotisationDefaultAmount != null,
   { message: "Un montant de cotisation est requis pour activer le paiement en ligne.", path: ["publicMembershipPaymentEnabled"] },
@@ -24,14 +26,15 @@ export const PATCH = withAdminAuth(async (req, ctx) => {
   if (!parsed.success)
     return NextResponse.json({ error: parsed.error.issues }, { status: 422 })
 
-  const { cotisationDefaultAmount, publicMembershipPaymentEnabled } = parsed.data
+  const { cotisationDefaultAmount, publicMembershipPaymentEnabled, includeFederativeLicenseInAutoRenewal } = parsed.data
   const association = await prisma.association.update({
     where: { id: ctx.associationId },
     data:  {
       cotisationDefaultAmount,
       ...(publicMembershipPaymentEnabled !== undefined ? { publicMembershipPaymentEnabled } : {}),
+      ...(includeFederativeLicenseInAutoRenewal !== undefined ? { includeFederativeLicenseInAutoRenewal } : {}),
     },
-    select: { cotisationDefaultAmount: true, publicMembershipPaymentEnabled: true },
+    select: { cotisationDefaultAmount: true, publicMembershipPaymentEnabled: true, includeFederativeLicenseInAutoRenewal: true },
   })
   await revalidatePublicSiteFor(ctx.associationId)
 
@@ -46,5 +49,6 @@ export const PATCH = withAdminAuth(async (req, ctx) => {
   return NextResponse.json({
     cotisationDefaultAmount:        association.cotisationDefaultAmount,
     publicMembershipPaymentEnabled: association.publicMembershipPaymentEnabled,
+    includeFederativeLicenseInAutoRenewal: association.includeFederativeLicenseInAutoRenewal,
   })
 }, { area: "adhesions" })

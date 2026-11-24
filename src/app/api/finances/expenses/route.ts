@@ -69,7 +69,7 @@ export const POST = withAdminAuth(async (req, ctx) => {
   const expenseDate = new Date(date)
 
   const exercice = await resolveExerciceForDate(associationId, expenseDate)
-  const guard = closedExerciceGuard(exercice?.status)
+  const guard = await closedExerciceGuard(exercice?.status)
   if (guard) return guard
 
   const expense = await prisma.expense.create({

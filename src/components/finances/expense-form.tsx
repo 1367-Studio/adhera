@@ -10,6 +10,7 @@ import { expenseSchema, type ExpenseInput } from "@/lib/schemas"
 import { FormField } from "@/components/ui/form-field"
 import { SelectField } from "@/components/ui/select-field"
 import { CurrencyField } from "@/components/ui/currency-field"
+import { CheckboxField } from "@/components/ui/checkbox-field"
 import { DocumentUpload } from "@/components/ui/document-upload"
 import { Button } from "@/components/ui/button"
 import { useFinanceCategories } from "@/hooks/use-finance-categories"
@@ -176,6 +177,15 @@ export function ExpenseForm({ defaultValues, onSubmit, onCancel, loading, locked
 
       <FormField label={t("finances.incomeForm.description")} placeholder={t("finances.expenseForm.descriptionPlaceholder")} error={errors.description?.message} {...register("description")} />
       <FormField label={t("finances.expenseForm.internalNote")} placeholder={t("finances.expenseForm.internalNotePlaceholder")} error={errors.internalNote?.message} {...register("internalNote")} />
+
+      {/* FORM-107 Fase 2 — the only place this flag can be set; a capitalized purchase
+          becomes selectable from Finances > Immobilisations once checked here. */}
+      <CheckboxField
+        label={t("finances.expenseForm.isImmobilisation")}
+        description={t("finances.expenseForm.isImmobilisationHint")}
+        disabled={locked}
+        {...register("isImmobilisation")}
+      />
 
       <div>
         <label className="text-sm font-medium">{t("finances.expenseForm.receipt")}</label>

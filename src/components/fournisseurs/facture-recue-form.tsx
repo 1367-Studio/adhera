@@ -13,6 +13,7 @@ import { TextareaField } from "@/components/ui/textarea-field"
 import { CurrencyField } from "@/components/ui/currency-field"
 import { DocumentUpload } from "@/components/ui/document-upload"
 import { Button } from "@/components/ui/button"
+import { useFinanceCategories } from "@/hooks/use-finance-categories"
 
 interface FactureRecueFormProps {
   defaultValues?: Partial<FactureRecueInput>
@@ -32,20 +33,35 @@ export function FactureRecueForm({ defaultValues, onSubmit, onCancel, loading }:
     { value: "autre",       label: t("fournisseurs.detail.documentTypes.autre")       },
   ]
 
+  // PAYEE/PARTIELLEMENT_PAYEE aren't manual choices (FORM-107 Fase 3) — the backend derives
+  // them from amountPaid vs amount (resolveManualFactureRecueStatus), the same way Facture's
+  // own form excludes them (see facture-form.tsx). This form only ever creates a document, and
+  // a brand-new one always starts at amountPaid=0 — "already paid" is recorded as a real
+  // payment right after creation instead (see the "Enregistrer un paiement" row action).
   const statusOptions = [
     { value: "A_PAYER",   label: t("fournisseurs.document.statusOptions.aPayer")   },
-    { value: "PAYEE",     label: t("fournisseurs.document.statusOptions.payee")    },
     { value: "EN_LITIGE", label: t("fournisseurs.document.statusOptions.enLitige") },
     { value: "ANNULEE",   label: t("fournisseurs.document.statusOptions.annulee")  },
+  ]
+
+  // FORM-117 — optional: leaving it blank keeps today's pre-existing behavior (the document
+  // never reaches the journal). Choosing one lets a plain invoice post an accrual charge at
+  // registration (ACCRUAL regime) or at least carry the category into its payment Expense
+  // (CASH regime) — see postFactureRecueCharge.
+  const { data: categories = [] } = useFinanceCategories("EXPENSE")
+  const categoryOptions = [
+    { value: "", label: t("finances.incomeForm.noCategory") },
+    ...categories.map((c: { id: string; name: string }) => ({ value: c.id, label: c.name })),
   ]
 
   const { register, control, handleSubmit, reset, watch, setValue, formState: { errors } } = useForm<FactureRecueInput>({
     resolver: zodResolver(factureRecueSchema),
     defaultValues: {
-      type:      "facture",
-      status:    "A_PAYER",
-      issueDate: new Date().toISOString().split("T")[0],
-      fileUrl:   "",
+      type:       "facture",
+      status:     "A_PAYER",
+      issueDate:  new Date().toISOString().split("T")[0],
+      fileUrl:    "",
+      categoryId: "",
       ...defaultValues,
     },
     mode: "onSubmit",
@@ -53,16 +69,16 @@ export function FactureRecueForm({ defaultValues, onSubmit, onCancel, loading }:
 
   useEffect(() => {
     reset({
-      type:      "facture",
-      status:    "A_PAYER",
-      issueDate: new Date().toISOString().split("T")[0],
-      fileUrl:   "",
+      type:       "facture",
+      status:     "A_PAYER",
+      issueDate:  new Date().toISOString().split("T")[0],
+      fileUrl:    "",
+      categoryId: "",
       ...defaultValues,
     })
   }, [defaultValues, reset])
 
   const fileUrl       = watch("fileUrl")
-  const watchedStatus = watch("status")
   const pendingFileRef = useRef<{ file: File; prefix: string } | null>(null)
   const [uploading, setUploading] = useState(false)
 
@@ -126,24 +142,25 @@ export function FactureRecueForm({ defaultValues, onSubmit, onCancel, loading }:
         />
       </div>
 
-      <Controller
-        name="status"
-        control={control}
-        render={({ field }) => (
-          <SelectField label={t("membres.form.fields.status")} required options={statusOptions} value={field.value} onValueChange={field.onChange} error={errors.status?.message} />
-        )}
-      />
-      {defaultValues?.status === "PAYEE" && watchedStatus !== "PAYEE" && (
-        <p className="text-xs text-destructive rounded-md border border-destructive/30 bg-destructive/5 px-3 py-2">
-          {t("fournisseurs.document.unmarkPaidWarning")}
-        </p>
-      )}
-      {defaultValues?.status !== "PAYEE" && watchedStatus === "PAYEE" && (
-        <p className="text-xs text-muted-foreground rounded-md border bg-muted/40 px-3 py-2">
-          {t("fournisseurs.document.markPaidNotice")}
-        </p>
-      )}
-
+      <div className="grid grid-cols-2 gap-4">
+        <Controller
+          name="status"
+          control={control}
+          render={({ field }) => (
+            <SelectField label={t("membres.form.fields.status")} required options={statusOptions} value={field.value} onValueChange={field.onChange} error={errors.status?.message} />
+          )}
+        />
+        <Controller
+          name="categoryId"
+          control={control}
+          render={({ field }) => (
+            <SelectField label={t("finances.incomeForm.category")} options={categoryOptions} value={field.value ?? ""} onValueChange={field.onChange} error={errors.categoryId?.message} />
+          )}
+        />
+      </div>
+      <p className="text-xs text-muted-foreground rounded-md border bg-muted/40 px-3 py-2">
+        {t("fournisseurs.document.categoryHint")}
+      </p>
       <div>
         <label className="text-sm font-medium">{t("fournisseurs.document.file")}</label>
         <div className="mt-1.5">

@@ -10,6 +10,8 @@ import { resolveEmailBranding } from "@/lib/plan-limits"
 import { isEvenementOver } from "@/lib/evenement-timing"
 import { reportError } from "@/lib/monitoring"
 import { refundConnectCharge } from "@/lib/webhook/connect-stripe-fee"
+import { reverseIncomeJournalEntry } from "@/lib/finance/journal/post-income-expense"
+import { bankTransactionIdsToRelease } from "@/lib/finance/release-bank-transaction"
 
 // Self-service cancellation for public/guest event registrations (no portal account, so
 // the authenticated flow at src/app/api/portal/evenements/[id]/cancel-ticket/route.ts
@@ -170,10 +172,12 @@ export async function POST(
   const reconciliations = paidIncomes.length
     ? await prisma.bankReconciliation.findMany({
         where:  { incomeId: { in: paidIncomes.map(i => i.id) } },
-        select: { bankTransactionId: true },
+        select: { id: true, bankTransactionId: true },
       })
     : []
-  const txIds = reconciliations.map(r => r.bankTransactionId)
+  // Only release a transaction with NO other reconciliation row left — a grouped
+  // reconciliation (FORM-116 block 8) can still be legitimately matched via sibling rows.
+  const txIds = await bankTransactionIdsToRelease(prisma, reconciliations.map(r => r.bankTransactionId), reconciliations.map(r => r.id))
 
   await prisma.$transaction([
     prisma.participation.update({ where: { id: participation.id }, data: { rsvp: null } }),
@@ -183,6 +187,10 @@ export async function POST(
       : []),
     prisma.income.deleteMany({ where: { id: { in: paidIncomes.map(i => i.id) } } }),
   ])
+
+  // Hard-deleted above, not soft-cancelled — reverse from the ids captured before the delete
+  // (mirrors portal/evenements/[id]/cancel-ticket/route.ts's own comment on why).
+  for (const income of paidIncomes) await reverseIncomeJournalEntry(income.id)
 
   const refunded = refundAmountCents > 0
 

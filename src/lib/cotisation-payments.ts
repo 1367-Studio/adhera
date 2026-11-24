@@ -8,6 +8,8 @@ import { isMemberCardAvailable } from "@/lib/member-card/availability"
 import { APP_URL } from "@/lib/env"
 import { reportError } from "@/lib/monitoring"
 import { getOrCreateDefaultCategory } from "@/lib/finance/resolve-default-category"
+import { syncIncomeJournal } from "@/lib/finance/journal/post-income-expense"
+import { bankTransactionIdsToRelease } from "@/lib/finance/release-bank-transaction"
 
 type TxClient = Prisma.TransactionClient
 
@@ -37,10 +39,15 @@ async function releaseLinkedIncomes(tx: TxClient, paymentIds: string[]) {
   if (incomes.length === 0) return
 
   const incomeIds = incomes.map(i => i.id)
-  const reconciliations = await tx.bankReconciliation.findMany({ where: { incomeId: { in: incomeIds } }, select: { bankTransactionId: true } })
+  const reconciliations = await tx.bankReconciliation.findMany({ where: { incomeId: { in: incomeIds } }, select: { id: true, bankTransactionId: true } })
   await tx.bankReconciliation.deleteMany({ where: { incomeId: { in: incomeIds } } })
   if (reconciliations.length > 0) {
-    await tx.bankTransaction.updateMany({ where: { id: { in: reconciliations.map(r => r.bankTransactionId) } }, data: { status: "UNMATCHED" } })
+    // Only release a transaction that has NO other reconciliation row left — a grouped
+    // reconciliation (FORM-116 block 8) can still be legitimately matched via sibling rows.
+    const toRelease = await bankTransactionIdsToRelease(tx, reconciliations.map(r => r.bankTransactionId), [])
+    if (toRelease.length > 0) {
+      await tx.bankTransaction.updateMany({ where: { id: { in: toRelease } }, data: { status: "UNMATCHED" } })
+    }
   }
   await tx.income.deleteMany({ where: { id: { in: incomeIds } } })
 }
@@ -245,7 +252,7 @@ export async function removeRefundedCotisationPaymentsByReference(
 ) {
   const linkedIncomes = await prisma.income.findMany({
     where:   { associationId, reference, cotisationPaymentId: { not: null } },
-    select:  { cotisationPaymentId: true },
+    select:  { id: true, cotisationPaymentId: true },
     // Deterministic lock order, so two concurrent deliveries of the same group refund can't
     // deadlock on each other's rows.
     orderBy: { cotisationPaymentId: "asc" },
@@ -253,7 +260,7 @@ export async function removeRefundedCotisationPaymentsByReference(
   const paymentIds = linkedIncomes.map(income => income.cotisationPaymentId).filter((paymentId): paymentId is string => paymentId !== null)
   if (paymentIds.length === 0) return []
 
-  return prisma.$transaction(async (tx) => {
+  const result = await prisma.$transaction(async (tx) => {
     const reversedCotisations = []
     for (const paymentId of paymentIds) {
       const reversedCotisation = await removeRefundedCotisationPayment(tx, paymentId)
@@ -292,6 +299,16 @@ export async function removeRefundedCotisationPaymentsByReference(
     // bounded, so a genuinely stuck transaction doesn't hold its rows indefinitely.
     timeout: 60_000,
   })
+
+  // syncIncomeJournal re-reads each Income's current status and reverses (soft-cancel, as set
+  // inside the transaction above) or no-ops — safe to call on every id found up front even
+  // though not all of them necessarily got reversed (a redelivery finds its payment already
+  // gone and skips it; syncIncomeJournal just sees it's not PAID/CANCELLED-but-already-reversed
+  // and does nothing). Always called with the plain `prisma` client, after the transaction
+  // above has already committed — never from inside it.
+  for (const income of linkedIncomes) await syncIncomeJournal(income.id)
+
+  return result
 }
 
 // Idempotency guard for a payment keyed on a Stripe object (an invoice id — see the invoice.paid

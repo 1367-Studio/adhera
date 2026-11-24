@@ -43,6 +43,7 @@ type Association = {
   website: string | null
   iban:    string | null
   bic:     string | null
+  accountingRegime: "ACCRUAL" | "CASH"
   plan:    AssociationPlan
   customBrandingEnabled: boolean | null
   logoUrl: string | null
@@ -52,6 +53,7 @@ type Association = {
   emailFooterSettings: unknown
   cotisationDefaultAmount: string | number | null
   publicMembershipPaymentEnabled: boolean
+  includeFederativeLicenseInAutoRenewal: boolean
 }
 
 type Tab = "general" | "paiements" | "abonnement" | "integrations" | "equipe" | "rgpd"
@@ -244,7 +246,7 @@ function ParametresViewInner() {
             <div className="rounded-lg border bg-card p-6">
               <BankSettings
                 canEdit={canEditFinance}
-                data={{ website: assoc.website, iban: assoc.iban, bic: assoc.bic }}
+                data={{ website: assoc.website, iban: assoc.iban, bic: assoc.bic, accountingRegime: assoc.accountingRegime }}
               />
             </div>
           )}
@@ -255,6 +257,7 @@ function ParametresViewInner() {
                 canEdit={canEditFinance}
                 cotisationDefaultAmount={assoc.cotisationDefaultAmount}
                 publicMembershipPaymentEnabled={assoc.publicMembershipPaymentEnabled}
+                includeFederativeLicenseInAutoRenewal={assoc.includeFederativeLicenseInAutoRenewal}
               />
             </div>
           )}

@@ -2,6 +2,8 @@ import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma/client"
 import { writeActivityLog } from "@/lib/activity-log"
 import { withAdminAuth } from "@/lib/api-wrapper"
+import { reverseIncomeJournalEntry } from "@/lib/finance/journal/post-income-expense"
+import { bankTransactionIdsToRelease } from "@/lib/finance/release-bank-transaction"
 
 // Reverses a cash ("espèces") ticket payment recorded via the mark-paid action — the only
 // way to unstick one, since the guest-removal endpoint refuses to delete a paid participation
@@ -36,10 +38,12 @@ export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id: eveneme
   const reconciliations = paidIncomes.length
     ? await prisma.bankReconciliation.findMany({
         where:  { incomeId: { in: paidIncomes.map(i => i.id) } },
-        select: { bankTransactionId: true },
+        select: { id: true, bankTransactionId: true },
       })
     : []
-  const txIds = reconciliations.map(r => r.bankTransactionId)
+  // Only release a transaction with NO other reconciliation row left — a grouped
+  // reconciliation (FORM-116 block 8) can still be legitimately matched via sibling rows.
+  const txIds = await bankTransactionIdsToRelease(prisma, reconciliations.map(r => r.bankTransactionId), reconciliations.map(r => r.id))
 
   await prisma.$transaction([
     prisma.bankReconciliation.deleteMany({ where: { incomeId: { in: paidIncomes.map(i => i.id) } } }),
@@ -52,6 +56,12 @@ export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id: eveneme
       data:  { ticketPaidAt: null, amount: null },
     }),
   ])
+
+  // The Income rows above are hard-deleted, not soft-cancelled — syncIncomeJournal can't react
+  // to a status it never gets to see, so reverse directly from the ids captured before the
+  // delete (reverseIncomeJournalEntry only needs the JournalEntry's own idempotencyKey, not the
+  // Income row, so it still works here).
+  for (const income of paidIncomes) await reverseIncomeJournalEntry(income.id)
 
   await writeActivityLog({
     associationId,

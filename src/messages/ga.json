@@ -41,6 +41,7 @@
     "location": "Suíomh",
     "choosePlaceholder": "Roghnaigh...",
     "allPlaceholder": "Gach rud",
+    "noOptionsPlaceholder": "Níl aon roghanna ar fáil",
     "previousPage": "An leathanach roimhe seo",
     "nextPage": "An chéad leathanach eile",
     "paginationRange": "{from}–{to} / {total}",
@@ -51,7 +52,7 @@
     "addressPlaceholder": "Salle des fêtes, 12 rue de la Paix, Páras...",
     "viewOnGoogleMaps": "Féach ar Google Maps",
     "backToSite": "Ar ais go dtí an suíomh",
-    "noOptionsPlaceholder": "Níl aon roghanna ar fáil"
+    "period": {}
   },
   "address": {
     "street": "Seoladh",
@@ -62,6 +63,7 @@
     "country": "Tír chónaithe",
     "legacyMigratedHint": "Cóipeáilte ón seanréimse seoltaí — deimhnigh nach bhfuil an cód poist agus an baile thíos ann cheana féin."
   },
+  "avis": {},
   "auth": {
     "layout": {
       "imageAlt": "Logáil isteach",
@@ -91,7 +93,8 @@
         "connecting": "Ag síniú isteach…",
         "or": "nó",
         "continueWithGoogle": "Lean ar aghaidh le Google"
-      }
+      },
+      "twoFactor": {}
     },
     "register": {
       "pageTitle": "Cruthaigh cuntas",
@@ -649,12 +652,130 @@
         "enLitige": "Faoi dhíospóid",
         "annulee": "Cealaithe"
       },
-      "unmarkPaidWarning": "Tá an doiciméad seo íoctha faoi láthair - bainfidh an stádas seo deireadh leis an gcostas a ghineann sé in Airgeadas, chomh maith le haon athmhuintearas bainc.",
-      "markPaidNotice": "Má mharcálann tú an doiciméad seo mar íoctha, cruthófar costas comhfhreagrach go huathoibríoch in Airgeadais.",
       "file": "Cáipéis",
+      "categoryHint": "Má roghnaíonn tú catagóir, déanfar an costas a thaifeadadh a luaithe a thaifeadtar an sonrasc seachas tráth na híocaíochta.",
+      "payment": {
+        "toasts": {}
+      },
       "toasts": {
         "uploadError": "Earráid agus an cháipéis á uaslódáil",
         "networkError": "Uaslódáil earráide líonra — bain triail as arís"
+      },
+      "unmarkPaidWarning": "Tá an doiciméad seo íoctha faoi láthair - bainfidh an stádas seo deireadh leis an gcostas a ghineann sé in Airgeadas, chomh maith le haon athmhuintearas bainc.",
+      "markPaidNotice": "Má mharcálann tú an doiciméad seo mar íoctha, cruthófar costas comhfhreagrach go huathoibríoch in Airgeadais."
+    }
+  },
+  "reimbursements": {
+    "view": {
+      "title": "Aisíocaíochtaí costais",
+      "newRequest": "Iarratas nua",
+      "export": "Onnmhairiú",
+      "myRequests": "Mo chuid iarrataí",
+      "allRequests": "Gach iarratas",
+      "allRequesters": "Gach iarratasóir",
+      "allCategories": "Gach catagóir",
+      "dateFrom": "De",
+      "dateTo": "Go",
+      "allStatuses": "Gach stádas",
+      "summary": "{pending} Ar feitheamh — {pendingAmount} · {approved} le haisíoc — {approvedAmount} · {reimbursed} aisíoctha — {reimbursedAmount}",
+      "noRequest": "Gan iarratais ar aisíocaíocht",
+      "columns": {
+        "subject": "Cuspóir",
+        "date": "Dáta",
+        "amount": "Méid",
+        "status": "Stádas"
+      },
+      "status": {
+        "draft": "Dréacht",
+        "pendingApproval": "Ag fanacht le ceadú",
+        "needsCorrection": "Le ceartú",
+        "approved": "Ceadaithe",
+        "rejected": "Diúltaithe",
+        "reimbursed": "Aisíoctha",
+        "cancelled": "Cealaithe"
+      },
+      "actions": {
+        "view": "Féach",
+        "submit": "Cuir isteach",
+        "cancel": "Cuir ar ceal"
+      },
+      "toasts": {
+        "created": "Iarratas cruthaithe",
+        "updated": "Iarratas nuashonraithe",
+        "deleted": "Iarratas scriosta",
+        "submitted": "Iarratas a cuireadh isteach lena cheadú",
+        "cancelled": "Cuireadh an t-iarratas ar ceal",
+        "approved": "Iarratas formheasta",
+        "correctionRequested": "Ceartú iarrtha",
+        "rejected": "Diúltaíodh don iarratas",
+        "reimbursed": "Aisíocaíocht thaifeadta"
+      },
+      "deleteConfirmTitle": "An dréacht seo a scriosadh?",
+      "deleteConfirmDescription": "Tá an gníomh seo do-aisiompaithe.",
+      "cancelConfirmTitle": "An t-iarratas seo a chur ar ceal?",
+      "cancelConfirmDescription": "Cuirfear an t-iarratasóir ar an eolas faoin gcealú.",
+      "cancelReasonLabel": "Cúis leis an gcealú"
+    },
+    "form": {
+      "subject": "Cuspóir",
+      "subjectPlaceholder": "M.sh. taisteal le cruinnithe réigiúnacha",
+      "comment": "Tráchtaireacht",
+      "commentPlaceholder": "Sonraí roghnacha",
+      "event": "Imeacht gaolmhar",
+      "project": "Tionscadal gaolmhar",
+      "noProject": "Gan tionscadal",
+      "noEvent": "Gan aon imeachtaí",
+      "items": "Costais",
+      "addItem": "Cuir costas leis",
+      "noItems": "Gan aon táillí breise",
+      "itemDate": "Dáta an chaiteachais",
+      "itemDescription": "Cur síos",
+      "itemAmount": "Méid",
+      "itemCategory": "Catagóir",
+      "itemReceipt": "Údarú",
+      "total": "Iomlán",
+      "duplicateWarning": "Tá costas cosúil leis sin (an dáta céanna, an méid céanna) ann cheana féin i gceann eile de d''iarratais.",
+      "toasts": {
+        "uploadError": "Earráid agus an admháil á seoladh",
+        "networkError": "Earráid líonra agus an admháil á sheoladh"
+      }
+    },
+    "detail": {
+      "notFound": "Níor aimsíodh iarratas aisíocaíochta",
+      "history": "Stair",
+      "correctionFrom": "Ceartú iarrtha ag {name}",
+      "rejectedBy": "Diúltaithe ag {name}",
+      "reimbursedOn": "Aisíoctha ar {date} le {method}",
+      "selfApprovalBlockedNotice": "Ní féidir leat d''iarratas féin a cheadú. Caithfidh riarthóir nó oifigeach údaraithe eile é a cheadú.",
+      "viewReceipt": "Féach ar na doiciméid tacaíochta",
+      "immobilisationTag": "Sócmhainní seasta",
+      "approveButton": "Formheas",
+      "requestCorrectionButton": "Iarr ceartúchán",
+      "rejectButton": "Diúltaigh",
+      "correctionCommentLabel": "Trácht ceartúcháin",
+      "rejectionReasonLabel": "Cúis leis an diúltú",
+      "deleteItemConfirmTitle": "An costas seo a bhaint?",
+      "toasts": {
+        "itemAdded": "Costas breise",
+        "itemUpdated": "Caiteachas nuashonraithe",
+        "itemDeleted": "Baineadh an costas"
+      }
+    },
+    "register": {
+      "title": "Sábháil an aisíocaíocht",
+      "registerButton": "Sábháil an aisíocaíocht",
+      "date": "Dáta aisíocaíochta",
+      "paymentMethod": "Modh íocaíochta",
+      "bankAccount": "Cuntas bainc",
+      "noBankAccountHint": "Gan cuntas bainc a chur ar bun — cuir ceann leis in Airgeadas> Cuntais, nó roghnaigh Airgead Tirim.",
+      "transaction": "Idirbheart bainc allmhairithe a réiteach (roghnach)",
+      "noTransaction": "Ná tabhair níos gaire anois",
+      "reference": "Tagairt",
+      "submit": "Sábháil",
+      "methods": {
+        "virement": "Aistriú",
+        "cheque": "Seiceáil",
+        "especes": "Speicis"
       }
     }
   },
@@ -663,26 +784,64 @@
     "subtitle": "Forbhreathnú ar do chumann",
     "customize": {
       "customize": "Saincheap",
+      "tooltip": "Saincheap an painéal",
       "done": "Críochnaithe",
       "reset": "Athshocraigh",
       "dragHint": "Tarraing le hatheagrú",
       "resizeHint": "Tarraing an choirnéal chun méid a athrú"
     },
+    "actionsTodo": {
+      "trigger": "Gníomhartha le déanamh",
+      "badgeHint": "{count, plural, one {# catagóir gnímh atá ar feitheamh} other {# catagóirí gnímh atá ar feitheamh}}",
+      "empty": "Tá gach rud cothrom le dáta, níl aon ghníomh le láimhseáil.",
+      "snooze": "Cuir an gníomh seo ar athló",
+      "snoozeDialogTitle": "Cuir an gníomh seo ar athló",
+      "snoozeDialogDescription": "Fanann an gníomh i bhfolach duit go dtí an dáta sin, agus ansin tagann sé ar ais má tá cásanna fós le próiseáil.",
+      "snoozeUntilLabel": "Curtha ar athló go dtí",
+      "confirm": "Deimhnigh",
+      "loadError": "Ní féidir na gníomhartha atá le déanamh a luchtú.",
+      "snoozedSectionTitle": "{count, plural, one {# gníomh curtha ar fionraí} other {# gníomhartha curtha ar fionraí}}",
+      "snoozedUntil": "Go dtí {date}",
+      "cancelSnooze": "Cealaigh an coinneáil",
+      "actionLabels": {
+        "voirEtRelancer": "Féach agus athsheoladh",
+        "examiner": "Scrúdaitheoir",
+        "consulter": "Téigh i gcomhairle"
+      },
+      "rows": {
+        "cotisations-en-attente": "{count, plural, one {# táille ballraíochta ar feitheamh} other {# ranníocaíochtaí ar feitheamh}}",
+        "materiel-en-retard": "{count, plural, one {# torthaí déanacha ábhair} other {# torthaí déanacha ábhair}}",
+        "membres-a-valider": "{count, plural, one {# ball le bailíochtú} other {# baill le bailíochtú}}",
+        "dons-a-encaisser": "{count, plural, one {# bronntanas le hairgeadú} other {# síntiúis le bailiú}}",
+        "rapprochement-bancaire": "{count, plural, one {# oibríocht atá le comparáid} other {# oibríochtaí le comparáid}}",
+        "notes-de-frais-a-valider": "{count, plural, one {# tuarascáil caiteachais le bailíochtú} other {# tuarascálacha caiteachais le bailíochtú}}",
+        "commandes-a-preparer": "{count, plural, one {# le hullmhú} other {# orduithe le hullmhú}}"
+      }
+    },
     "stats": {
-      "activeMembers": "Baill Ghníomhacha",
-      "eventsThisMonth": "Imeachtaí na míosa seo",
-      "cotisationsPending": "Ranníocaíochtaí ar feitheamh",
       "financialBalance": "Iarmhéid airgeadais",
       "donationsReceived": "Síntiúis a fuarthas {year}"
     },
-    "nextEvent": {
-      "title": "An chéad imeacht eile",
-      "empty": "Níl aon imeachtaí le teacht."
+    "agenda": {
+      "title": "Clár oibre",
+      "eventsThisMonth": "{count, plural, one {# imeacht an mhí seo} other {# imeachtaí an mhí seo}}",
+      "ongoing": "Ar siúl",
+      "viewCalendar": "Féach ar an bhféilire",
+      "empty": "Níl aon imeachtaí ag teacht aníos."
     },
     "cotisations": {
       "title": "Ranníocaíochtaí {year}",
       "collectedThisYear": "Airgead tirim i mbliana",
-      "pendingPayment": "{count} Ag fanacht le híocaíocht"
+      "remaining": "{amount} atá fágtha le fáil",
+      "pendingPayment": "{count} Ag fanacht le híocaíocht",
+      "viewAll": "Féach ar na táillí"
+    },
+    "activiteRecente": {
+      "title": "Gníomhaíocht le déanaí",
+      "tabs": {
+        "commandes": "Orduithe",
+        "dons": "Deonacháin"
+      }
     },
     "recentDonations": {
       "title": "Síntiúis le déanaí",
@@ -718,6 +877,7 @@
       "categoryTitle": "Fáltais de réir catagóir— {year}"
     },
     "memberSummary": {
+      "title": "Baill",
       "total": "{count, plural, one {# comhalta} other {# comhaltaí}}",
       "active": "{count, plural, one {# gníomhach} other {# gníomhach}}",
       "inactive": "{count, plural, one {# neamhghníomhach} other {# neamhghníomhach}}"
@@ -728,6 +888,9 @@
       "nearLimit": "Teorainn ag druidim",
       "almostReached": "Teorainn beagnach bainte amach",
       "limitReached": "Teorainn bainte amach"
+    },
+    "aTraiter": {
+      "items": {}
     }
   },
   "notifications": {
@@ -862,7 +1025,8 @@
       "userMenu": {
         "title": "Do phróifíl",
         "description": "Cuir do phróifíl in eagar, athraigh do phasfhocal, agus logáil amach ón roghchlár seo."
-      }
+      },
+      "help": {}
     }
   },
   "finances": {
@@ -893,9 +1057,219 @@
       "title": "Ag teacht go luath",
       "description": "Tá an ghné seo á fhorbairt."
     },
+    "immobilisationsView": {
+      "columns": {},
+      "toasts": {},
+      "drillDown": {}
+    },
+    "immobilisationForm": {},
+    "journalManual": {},
+    "bilan": {
+      "title": "Comhardú",
+      "description": "Sócmhainní agus dliteanais an chomhlachais i ndeireadh na bliana airgeadais.",
+      "exerciceLabel": "Cleachtadh",
+      "rubriqueColumnLabel": "Rannóg",
+      "noPreviousExercice": "Níl aon chomparáideach ar fáil",
+      "actif": "Gníomhach",
+      "totalActif": "Iomlán Gníomhach",
+      "passif": "Éighníomhach",
+      "totalPassif": "Dliteanais iomlána",
+      "noAccountsInRubrique": "Níl aon chothromaíocht san alt seo",
+      "exportPdf": "Easpórtáil PDF",
+      "exportDisabledTooltip": "Ní féidir Clár Comhardaithe Deiridh a easpórtáil go dtí go socrófar na haimhrialtachtaí thuas.",
+      "emptyExercice": {
+        "title": "Gan aon bhliain fhioscach",
+        "description": "Cruthaigh bliain fhioscach nua chun an Clár Comhardaithe a fheiceáil."
+      },
+      "emptyLedger": {
+        "title": "Gan aon iontrálacha cuntasaíochta",
+        "description": "Taispeánfar an Clár Comhardaithe a luaithe a bheidh ioncam, caiteachas nó sócmhainní seasta taifeadta sa bhliain airgeadais seo."
+      },
+      "rubriques": {
+        "immobilisationsCorporelles": "Sócmhainní caipitiúla inláimhsithe",
+        "immobilisationsIncorporelles": "Sócmhainní seasta doláimhsithe",
+        "immobilisationsFinancieres": "Sócmhainní seasta airgeadais",
+        "disponibilites": "Infhaighteacht",
+        "chargesConstateesDavance": "Costais réamhíoctha",
+        "creances": "Infhaighteacht",
+        "stocksEtEnCours": "Fardal",
+        "fondsPropres": "Cothromas",
+        "provisions": "Cúlchistí",
+        "dettes": "Fiacha",
+        "produitsConstatesDavance": "Ioncam iarchurtha",
+        "fondsDedies": "Cistí srianta"
+      },
+      "memoNotice": "Meastachán — gan taifeadadh sa mhórleabhar, eisiata ó shócmhainní iomlána.",
+      "accountLabels": {
+        "reportANouveau": "Tuilleamh coinnithe",
+        "resultatExercice": "Glanioncam don bhliain",
+        "creancesCotisations": "Táillí ballraíochta gan íoc",
+        "creancesFactures": "Sonraisc gan íoc",
+        "stocksEstimatedValue": "Luach fardail measta",
+        "creancesFacturesEnRetard": "Sonraisc thar téarma"
+      },
+      "pdf": {
+        "periodLabel": "Tréimhse ó {start} go {end}"
+      },
+      "drillDown": {
+        "date": "Dáta",
+        "label": "Lipéad",
+        "origin": "Bunús",
+        "debit": "Dochair",
+        "credit": "Creidmheas",
+        "noLines": "Níl aon iontrálacha don chuntas seo.",
+        "sourceTypes": {
+          "INCOME": "Ioncam",
+          "INCOME_REVERSAL": "Aisiompú ioncaim",
+          "EXPENSE": "Costas",
+          "EXPENSE_REVERSAL": "Aisiompú caiteachais",
+          "BANK_TRANSACTION": "Idirbheart bainc",
+          "ACCOUNT_TRANSFER": "Aistriú inmheánach",
+          "OPENING_BALANCE": "Iarmhéid oscailte",
+          "IMMOBILISATION_DEPRECIATION": "Dímheas",
+          "IMMOBILISATION_ACQUISITION": "Éadáil sócmhainní",
+          "FACTURE_RECUE_PAYMENT": "Íocaíocht soláthróra",
+          "MANUAL": "Iontráil láimhe"
+        }
+      },
+      "issues": {
+        "title": "Aimhrialtachtaí aimsithe",
+        "messages": {
+          "ACCOUNT_WITHOUT_RUBRIQUE": "Tá iarmhéid ag an gcuntas {code} - {label} ach níl sé ceangailte le haon mhír de chuid an Chláir Chomhardaithe.",
+          "ACTIF_PASSIF_MISMATCH": "Ní fhreagraíonn an tsócmhainn ({actif}) don dliteanas ({passif}).",
+          "OPENING_BALANCE_MISSING": "Níor gineadh aon iontrálacha oscailte don chleachtadh seo ó \"{previousLabel}\".",
+          "TRIAL_BALANCE_UNBALANCED": "Ní hionann an dochair iomlán ({debit}) agus an creidmheas iomlán ({credit}) don bhliain fhioscach seo.",
+          "RESULT_DIVERGENCE": "Tá toradh na hirise ({journal}) difriúil ó thoradh an ráitis ioncaim ({statement}) - b'fhéidir nach bhfuil an iris cothrom le dáta don bhliain fhioscach seo fós (an bhliain fhioscach a dhúnadh nó sioncrónú a atosú).",
+          "UNPOSTED_ENTRIES": "Iontrálacha nár taifeadadh: {count} (catagóir as láthair nó gan cód cuntasaíochta gaolmhar) — {amount} nach léirítear sa Tuarascáil seo. Ní leor an sioncrónú a atosú anseo, caithfear an chatagóir a cheartú."
+        }
+      },
+      "memoNoHistory": "Gan aon sonraí stairiúla",
+      "caveats": {
+        "stocksMissingCostPrice": "{count} leaganacha gan aon chostas ceannaigh taifeadta, eisiata ón meastachán"
+      },
+      "refreshLedger": "Athnuachan an loga",
+      "refreshLedgerTooltip": "Ní dhéantar an tuarascáil seo a nuashonrú i bhfíor-am le gach ioncam nó caiteachas — cliceáil chun sioncronú leis na gluaiseachtaí is déanaí.",
+      "refreshLedgerSuccessPosted": "{count, plural, =0 {Gan aon ghluaiseacht nua} one {# gluaiseacht shioncronaithe} other {# gluaiseachtaí sioncrónaithe}}",
+      "refreshLedgerSuccessReversed": "{count, plural, =0 {} one {, # cealú curtha i bhfeidhm} other {, # cealuithe i bhfeidhm}}",
+      "refreshLedgerError": "Ní féidir an log a athnuachan. Bain triail eile as, le do thoil."
+    },
+    "compteResultat": {
+      "title": "Ráiteas Ioncaim",
+      "description": "Toradh airgeadais na bliana airgeadais, i gcomparáid leis an mbliain roimhe sin.",
+      "exerciceLabel": "Bliain airgeadais",
+      "categoryColumnLabel": "Catagóir",
+      "noPreviousExercice": "-",
+      "noPreviousExerciceMessage": "Níl aon bhliain airgeadais roimhe seo ar fáil",
+      "export": "Easpórtáil",
+      "exportExcel": "Easpórtáil Excel (mionsonraithe)",
+      "exportPdf": "Easpórtáil PDF",
+      "products": "Ioncam",
+      "totalProducts": "Ioncam iomlán",
+      "expenses": "Caiteachas",
+      "totalExpenses": "Caiteachas iomlán",
+      "result": "Toradh na bliana",
+      "resultZero": "Toradh na bliana airgeadais: 0 €",
+      "surplus": "Barrachas na bliana",
+      "deficit": "Easnamh na bliana",
+      "operationalResult": "Toradh oibriúcháin",
+      "uncategorized": "Le catagóiriú",
+      "uncategorizedAlertIncome": "{count, plural, one {Ní mór # ioncam a chatagóiriú} other {Ní mór # ioncam a chatagóiriú}}",
+      "uncategorizedAlertExpense": "{count, plural, one {Ní mór # chaiteachas a chatagóiriú} other {Ní mór # gcaiteachas a chatagóiriú}}",
+      "expandSection": "Taispeáin",
+      "collapseSection": "Folaigh",
+      "noCategoriesInSection": "Níl aon chatagóir sa rannán seo",
+      "sections": {
+        "FINANCIAL": "Airgeadais",
+        "EXCEPTIONAL": "Eisceachtúil",
+        "OTHER": "Eile"
+      },
+      "inKind": {
+        "title": "Ranníocaíochtaí deonacha comhchineáil",
+        "employmentHeader": "Ranníocaíochtaí a úsáid",
+        "amountHeader": "Méid",
+        "receivedHeader": "Síntiúis a fuarthas",
+        "totalEmployments": "Poist Iomlána",
+        "totalReceived": "Ranníocaíochtaí Iomlána",
+        "note": "Déantar na ranníocaíochtaí saor in aisce seo a luacháil in euro. Ní bhíonn aon ghluaiseacht airgid mar thoradh orthu agus ní athraíonn siad toradh na bliana airgeadais."
+      },
+      "drillDown": {
+        "date": "Dáta",
+        "origin": "Bunús",
+        "person": "Duine",
+        "payment": "Íocaíocht",
+        "amount": "Méid",
+        "categorize": "Catagóirigh",
+        "categorizePlaceholder": "Roghnaigh catagóir",
+        "noTransactions": "Níl aon idirbheart ann",
+        "categorizeSuccess": "Idirbheart catagóirithe"
+      },
+      "pdf": {
+        "periodLabel": "Tréimhse ó {start} go {end}",
+        "operatingIncome": "IONCAM OIBRIÚCHÁIN",
+        "operatingExpense": "CAITEACHAS OIBRIÚCHÁIN",
+        "operatingResult": "TORADH OIBRIÚCHÁIN",
+        "financialIncome": "IONCAM AIRGEADAIS",
+        "financialExpense": "CAITEACHAS AIRGEADAIS",
+        "financialResult": "TORADH AIRGEADAIS",
+        "exceptionalIncome": "IONCAM EISCEACHTÚIL",
+        "exceptionalExpense": "CAITEACHAS EISCEACHTÚIL",
+        "exceptionalResult": "TORADH EISCEACHTÚIL",
+        "otherIncome": "IONCAM EILE",
+        "otherExpense": "CAITEACHAS EILE",
+        "otherResult": "TORADH Ó IONCAM AGUS CAITEACHAS EILE",
+        "uncategorizedSection": "IDIRBHEARTA LE CATAGÓIRIÚ",
+        "uncategorizedIncomeLabel": "Ioncam le catagóiriú",
+        "uncategorizedExpenseLabel": "Caiteachas le catagóiriú",
+        "total": "Iomlán",
+        "grandTotal": "IOMLÁN",
+        "categoryColumn": "Catagóir",
+        "inKindTitle": "Ranníocaíochtaí deonacha comhchineáil",
+        "inKindEmploymentHeader": "Ranníocaíochtaí a úsáid",
+        "inKindAmountHeader": "Méid",
+        "inKindReceivedHeader": "Síntiúis a fuarthas",
+        "inKindTotalEmployments": "Poist Iomlána",
+        "inKindTotalReceived": "Ranníocaíochtaí Iomlána",
+        "inKindNote": "Déantar na ranníocaíochtaí saor in aisce seo a luacháil in euro. Ní bhíonn aon ghluaiseacht airgid mar thoradh orthu agus ní athraíonn siad toradh na bliana airgeadais."
+      },
+      "csv": {
+        "date": "Dáta",
+        "type": "Cineál",
+        "typeIncome": "Ioncam",
+        "typeExpense": "Caiteachas",
+        "category": "Catagóir",
+        "uncategorized": "Le catagóiriú",
+        "accountingCode": "Cód cuntasaíochta",
+        "description": "Cur síos",
+        "amount": "Méid",
+        "paymentMethod": "Modhíocaíochta",
+        "origin": "Bunús",
+        "reference": "Tagairt",
+        "exercice": "Bliain airgeadais"
+      },
+      "emptyExercice": {
+        "title": "Níl aon bhliain airgeadais ann",
+        "description": "Cruthaigh bliain airgeadais chun an ráiteas ioncaim a ghiniúint."
+      }
+    },
+    "previsionnel": {
+      "emptyExercice": {},
+      "tabs": {},
+      "card": {},
+      "columns": {},
+      "export": {},
+      "toasts": {},
+      "copyBudget": {
+        "toasts": {}
+      },
+      "projectsTab": {
+        "noProjects": {},
+        "toasts": {}
+      }
+    },
     "categoryForm": {
       "name": "Ainm",
       "namePlaceholder": "Ex: Ranníocaíochtaí",
+      "noMatchingCategory": "Gan aon chatagóir meaitseála",
       "type": "Cineál",
       "typeIncome": "Ioncam",
       "typeExpense": "Costas",
@@ -920,8 +1294,7 @@
       "sectionUnverifiedNote": "Ní aithnítear an cuntas seo - seiceáil an t-alt nó roghnaigh é ó na roghanna casta.",
       "sectionToVerify": "Rannóg le seiceáil",
       "advancedOptions": "Ardroghanna",
-      "revertToAutoSection": "Ar ais go dtí an rannóg uathoibríoch",
-      "noMatchingCategory": "Gan aon chatagóir meaitseála"
+      "revertToAutoSection": "Ar ais go dtí an rannóg uathoibríoch"
     },
     "bankAccountForm": {
       "bankName": "Ainm an Bhainc",
@@ -1056,6 +1429,13 @@
         "deleted": "Cuntas scriosta"
       }
     },
+    "transferForm": {
+      "toasts": {}
+    },
+    "transfersView": {
+      "description": "Taifead anseo na haistrithe a rinneadh cheana idir cuntais bhainc do chumainn. Taifeadann Formwise an t-aistriú gan aon airgead a bhogadh.",
+      "columns": {}
+    },
     "categoriesView": {
       "title": "Catagóirí",
       "description": "Catagóirí ioncaim agus caiteachais a bhainistiú.",
@@ -1066,7 +1446,6 @@
       "newCategoryTitle": "Catagóir nua",
       "editCategoryTitle": "Cuir Catagóir in Eagar",
       "deleteConfirmTitle": "Scrios an chatagóir seo?",
-      "deleteConfirmInUse": "« {name} a úsáideann {count, plural, one {# ioncam/caiteachas} other {# ioncam/caiteachas}}. Athróidh na hiontrálacha seo go \"Gan chatagóir\".",
       "toasts": {
         "created": "Catagóir cruthaithe",
         "updated": "Catagóir nuashonraithe",
@@ -1077,7 +1456,8 @@
       "customCategory": "Cruthaigh catagóir saincheaptha",
       "alreadyExists": "Cumraithe cheana féin",
       "archivedReactivateHint": "Cartlainne - cliceáil chun athghníomhachtú a dhéanamh",
-      "custom": "Saincheaptha"
+      "custom": "Saincheaptha",
+      "deleteConfirmInUse": "« {name} a úsáideann {count, plural, one {# ioncam/caiteachas} other {# ioncam/caiteachas}}. Athróidh na hiontrálacha seo go \"Gan chatagóir\"."
     },
     "incomesView": {
       "title": "Ioncam",
@@ -1262,13 +1642,13 @@
       "description": "Comhcheangail idirbhearta bainc iompórtáilte le d'ioncam agus do chaiteachais.",
       "statusFilters": {
         "all": "Gach rud",
-        "unmatched": "Neamhréitithe",
+        "unmatched": "Le cur i gcomparáid",
         "matched": "Réiteach",
         "ignored": "Neamhaird Déanta",
         "duplicate": "Dúblaí"
       },
       "status": {
-        "unmatched": "Neamhréitithe",
+        "unmatched": "Le cur i gcomparáid",
         "matched": "Réiteach",
         "pending": "Ar feitheamh",
         "ignored": "Neamhaird Déanta",
@@ -1314,105 +1694,11 @@
       "suggestedMatches": "Meaitseálacha molta",
       "typeIncome": "Ioncam",
       "typeExpense": "Costas",
-      "confirm": "Bailíochtú an comhréitigh"
+      "confirm": "Bailíochtú an comhréitigh",
+      "selectedCount": "{count, plural, one {# mhír roghnaithe} other {# míreanna roghnaithe}}"
     },
-    "compteResultat": {
-      "title": "Ráiteas Ioncaim",
-      "description": "Toradh airgeadais na bliana airgeadais, i gcomparáid leis an mbliain roimhe sin.",
-      "exerciceLabel": "Bliain airgeadais",
-      "noPreviousExercice": "-",
-      "export": "Easpórtáil",
-      "exportExcel": "Easpórtáil Excel (mionsonraithe)",
-      "exportPdf": "Easpórtáil PDF",
-      "products": "Ioncam",
-      "totalProducts": "Ioncam iomlán",
-      "expenses": "Caiteachas",
-      "totalExpenses": "Caiteachas iomlán",
-      "result": "Toradh na bliana",
-      "surplus": "Barrachas na bliana",
-      "deficit": "Easnamh na bliana",
-      "emptyExercice": {
-        "title": "Níl aon bhliain airgeadais ann",
-        "description": "Cruthaigh bliain airgeadais chun an ráiteas ioncaim a ghiniúint."
-      },
-      "noPreviousExerciceMessage": "Níl aon bhliain airgeadais roimhe seo ar fáil",
-      "resultZero": "Toradh na bliana airgeadais: 0 €",
-      "operationalResult": "Toradh oibriúcháin",
-      "uncategorized": "Le catagóiriú",
-      "uncategorizedAlertIncome": "{count, plural, one {Ní mór # ioncam a chatagóiriú} other {Ní mór # ioncam a chatagóiriú}}",
-      "uncategorizedAlertExpense": "{count, plural, one {Ní mór # chaiteachas a chatagóiriú} other {Ní mór # gcaiteachas a chatagóiriú}}",
-      "expandSection": "Taispeáin",
-      "collapseSection": "Folaigh",
-      "noCategoriesInSection": "Níl aon chatagóir sa rannán seo",
-      "sections": {
-        "FINANCIAL": "Airgeadais",
-        "EXCEPTIONAL": "Eisceachtúil",
-        "OTHER": "Eile"
-      },
-      "drillDown": {
-        "date": "Dáta",
-        "origin": "Bunús",
-        "person": "Duine",
-        "payment": "Íocaíocht",
-        "amount": "Méid",
-        "categorize": "Catagóirigh",
-        "categorizePlaceholder": "Roghnaigh catagóir",
-        "noTransactions": "Níl aon idirbheart ann",
-        "categorizeSuccess": "Idirbheart catagóirithe"
-      },
-      "pdf": {
-        "periodLabel": "Tréimhse ó {start} go {end}",
-        "operatingIncome": "IONCAM OIBRIÚCHÁIN",
-        "operatingExpense": "CAITEACHAS OIBRIÚCHÁIN",
-        "operatingResult": "TORADH OIBRIÚCHÁIN",
-        "financialIncome": "IONCAM AIRGEADAIS",
-        "financialExpense": "CAITEACHAS AIRGEADAIS",
-        "financialResult": "TORADH AIRGEADAIS",
-        "exceptionalIncome": "IONCAM EISCEACHTÚIL",
-        "exceptionalExpense": "CAITEACHAS EISCEACHTÚIL",
-        "exceptionalResult": "TORADH EISCEACHTÚIL",
-        "otherIncome": "IONCAM EILE",
-        "otherExpense": "CAITEACHAS EILE",
-        "otherResult": "TORADH Ó IONCAM AGUS CAITEACHAS EILE",
-        "uncategorizedSection": "IDIRBHEARTA LE CATAGÓIRIÚ",
-        "uncategorizedIncomeLabel": "Ioncam le catagóiriú",
-        "uncategorizedExpenseLabel": "Caiteachas le catagóiriú",
-        "total": "Iomlán",
-        "grandTotal": "IOMLÁN",
-        "categoryColumn": "Catagóir",
-        "inKindTitle": "Ranníocaíochtaí deonacha comhchineáil",
-        "inKindEmploymentHeader": "Ranníocaíochtaí a úsáid",
-        "inKindAmountHeader": "Méid",
-        "inKindReceivedHeader": "Síntiúis a fuarthas",
-        "inKindTotalEmployments": "Poist Iomlána",
-        "inKindTotalReceived": "Ranníocaíochtaí Iomlána",
-        "inKindNote": "Déantar na ranníocaíochtaí saor in aisce seo a luacháil in euro. Ní bhíonn aon ghluaiseacht airgid mar thoradh orthu agus ní athraíonn siad toradh na bliana airgeadais."
-      },
-      "csv": {
-        "date": "Dáta",
-        "type": "Cineál",
-        "typeIncome": "Ioncam",
-        "typeExpense": "Caiteachas",
-        "category": "Catagóir",
-        "uncategorized": "Le catagóiriú",
-        "accountingCode": "Cód cuntasaíochta",
-        "description": "Cur síos",
-        "amount": "Méid",
-        "paymentMethod": "Modhíocaíochta",
-        "origin": "Bunús",
-        "reference": "Tagairt",
-        "exercice": "Bliain airgeadais"
-      },
-      "categoryColumnLabel": "Catagóir",
-      "inKind": {
-        "title": "Ranníocaíochtaí deonacha comhchineáil",
-        "employmentHeader": "Ranníocaíochtaí a úsáid",
-        "amountHeader": "Méid",
-        "receivedHeader": "Síntiúis a fuarthas",
-        "totalEmployments": "Poist Iomlána",
-        "totalReceived": "Ranníocaíochtaí Iomlána",
-        "note": "Déantar na ranníocaíochtaí saor in aisce seo a luacháil in euro. Ní bhíonn aon ghluaiseacht airgid mar thoradh orthu agus ní athraíonn siad toradh na bliana airgeadais."
-      }
+    "exerciceGuard": {
+      "closedError": "Tá an cleachtadh seo dúnta — ní féidir taifead a chruthú ná a mhodhnú don tréimhse seo."
     }
   },
   "evenements": {
@@ -1628,6 +1914,7 @@
         "dateLabel": "Dáta tosaigh",
         "createButton": "Cruthaigh"
       },
+      "summary": {},
       "bilan": {
         "show": "Taispeáin an achoimre",
         "hide": "Folaigh an achoimre",
@@ -1845,6 +2132,9 @@
         "qrRevoked": "Cód QR Díchumasaithe",
         "noMembersToExport": "Níl aon bhaill le honnmhairiú",
         "linkCopied": "Nasc cóipeáilte"
+      },
+      "payment": {
+        "methods": {}
       }
     },
     "avaliacoes": {
@@ -1899,6 +2189,7 @@
           "standardFieldsHint": "Réimsí a iarrtar ag clárú",
           "phoneLabel": "Fón",
           "addressLabel": "Seoladh",
+          "countryLabel": "Tír chónaithe",
           "requirement": {
             "hidden": "Masc",
             "optional": "Roghnach",
@@ -1906,8 +2197,7 @@
           },
           "mobileLabel": "Soghluaiste",
           "birthDateLabel": "Dáta breithe",
-          "genderLabel": "Inscne",
-          "countryLabel": "Tír chónaithe"
+          "genderLabel": "Inscne"
         },
         "products": {
           "title": "Táirgí",
@@ -2227,6 +2517,7 @@
       "liveSince": "Ar siúl ó shin {mins} nóiméad",
       "durationLessThanMin": "< 1 min",
       "durationMin": "{mins} nóiméad",
+      "activeMeetingWarning": {},
       "toasts": {
         "meetingStarted": "Cuireadh tús leis an gcruinniú",
         "meetingScheduled": "Cruinniú sceidealta",
@@ -2441,7 +2732,8 @@
         "disponibles": "Ar Fáil",
         "enPret": "Ar iasacht",
         "reserves": "Forchoimeádta",
-        "maintenance": "Cothabháil"
+        "maintenance": "Cothabháil",
+        "enRetard": "Déanach"
       },
       "pendingRequests": "Iarratais ar feitheamh",
       "accept": "Glac leis",
@@ -2463,7 +2755,8 @@
         "reserves": "Forchoimeádta",
         "maintenance": "Cothabháil",
         "horsService": "As seirbhís",
-        "perdus": "Caillte"
+        "perdus": "Caillte",
+        "enRetard": "Déanach"
       },
       "noArticles": "Gan ailt",
       "noResults": "Gan toradh",
@@ -2633,7 +2926,8 @@
         "nameRequired": "Tá ainm ag teastáil",
         "atLeastOneVariant": "Tá leagan amháin ar a laghad ag teastáil",
         "variantLabelRequired": "Ní mór lipéad a bheith ag gach leagan"
-      }
+      },
+      "costPriceColumn": "Costas"
     },
     "view": {
       "title": "Siopa",
@@ -2659,7 +2953,11 @@
         "markPaid": "Marcáil Íoctha",
         "cancelOrder": "Cuir ar ceal",
         "downloadReceipt": "Íoslódáil an admháil",
-        "editPaymentMethod": "Athraigh an modh íocaíochta"
+        "editPaymentMethod": "Athraigh an modh íocaíochta",
+        "markPrepared": "Marcáil mar ullmhaithe",
+        "cancelPrepared": "Cealaigh an t-ullmhúchán",
+        "delegatePreparation": "Ullmhúchán arna tharmligean chuig tríú páirtí",
+        "resumePreparation": "Ullmhúchán CV"
       },
       "noProduct": "Gan aon táirgí",
       "noOrder": "Gan aon orduithe",
@@ -2674,11 +2972,14 @@
       },
       "othersCount": "{count, plural, one {+# eile} other {+# daoine eile}}",
       "statusFilterAll": "Gach rud",
+      "statusFilterToPrepare": "Chun ullmhú",
       "salesCountLabel": "Líon díolachán",
       "revenueTotalLabel": "Ioncam iomlán",
       "unitsSold": "{count, plural, one {# díolta} other {# díolta}}",
       "pendingCountLabel": "Orduithe ar feitheamh",
       "pendingAmountLabel": "Méid ar feitheamh",
+      "toPrepareCountLabel": "Orduithe le hullmhú",
+      "toPrepareAmountLabel": "Méid le hullmhú",
       "cancelledCountLabel": "Orduithe cealaithe",
       "cancelledAmountLabel": "Méid cealaithe",
       "deleteProduitTitle": "Bain Táirge",
@@ -2701,6 +3002,7 @@
       "restockNoticePlural": "{count, plural, one {Déanfar stoc na míre nár tarraingíodh siar a athbhunú.} other {Déanfar an stoc míreanna neamhbhailithe a athbhunú.}}",
       "restockNoticeStatic": "Déanfar an stoc míreanna neamhbhailithe a athbhunú."
     },
+    "refundModal": {},
     "stripeConfirm": {
       "title": "Marcáil mar íoctha?",
       "descriptionSimple": "An t-ordú Stripe seo ({amount}) a mharcáil mar íoctha de láimh.",
@@ -3037,6 +3339,7 @@
           "title": "Foirm",
           "standardFieldsHint": "Réimsí a iarradh ar an deontóir",
           "addressLabel": "Seoladh",
+          "countryLabel": "Tír chónaithe",
           "birthDateLabel": "Dáta breithe",
           "phoneLabel": "Fón líne talún",
           "mobileLabel": "Soghluaiste",
@@ -3067,8 +3370,7 @@
           "addOption": "Cuir rogha leis",
           "removeOption": "Bain an rogha seo",
           "optionsRequiredError": "Teastaíonn 2 rogha ar a laghad ó gach réimse liosta/rogha.",
-          "duplicateOptionsError": "Ní mór na roghanna i réimse liosta/rogha a bheith uathúil.",
-          "countryLabel": "Tír chónaithe"
+          "duplicateOptionsError": "Ní mór na roghanna i réimse liosta/rogha a bheith uathúil."
         },
         "payment": {
           "title": "Íocaíocht",
@@ -3306,6 +3608,7 @@
           "eligibleAmountAutoHint": "Ríomh go huathoibríoch: an méid a íocadh − {amount}",
           "noMinimumWarning": "Níl aon íosmhéid socraithe don ráta saor in aisce seo, cuirfear bac ar chuairteoir íoctha níos lú ná an méid neamh-incháilithe ó íocaíocht. Socraigh íosmhéid ar a laghad {amount}.",
           "installmentsAllowedField": "Údaraigh íocaíocht i dtráthchodanna",
+          "installmentsUnavailableWithLicense": "Níl sé ar fáil ar phraghas ceadúnas cónaidhme a bhainistiú.",
           "installmentsCountField": "Líon na n-uaireanta",
           "membreTypeNone": "Níl aon cheann",
           "kindField": "Cineál",
@@ -3321,12 +3624,33 @@
           "membershipTierRequiredError": "Ní mór táille ballraíochta amháin ar a laghad a bheith san fhoirm",
           "minAmountRequiredError": "Teastaíonn íosmhéid le haghaidh gach síntiúis",
           "saved": "Rátaí Cláraithe",
-          "saveTiers": "Sábháil na rátaí"
+          "saveTiers": "Sábháil na rátaí",
+          "licenseSectionTitle": "Ceadúnas cónaidhme",
+          "licenseEnabledField": "Bainistigh ceadúnas cónaidhme don ráta seo",
+          "licenseNameField": "Ainm an cheadúnais",
+          "licenseNamePlaceholder": "M.sh. ceadúnas iomaíochta",
+          "licenseFederationField": "Cónaidhm",
+          "licenseFederationPlaceholder": "M.sh. FFF",
+          "licenseSeasonField": "Séasúr",
+          "licenseSeasonPlaceholder": "Ex. 2026/2027",
+          "licenseMandatoryField": "Ceadúnas éigeantach",
+          "licenseBillingModeField": "Billeáil",
+          "licenseBillingIncluded": "San áireamh sa phraghas",
+          "licenseBillingAdditional": "Méid breise",
+          "licenseAdditionalAmountField": "Méid breise (€)",
+          "licenseAllowDeclareExistingField": "Ceadaigh dearbhú ceadúnais atá i seilbh cheana",
+          "licenseFederationRequiredError": "Teastaíonn Cónaidhm chun an ceadúnas cónaidhme a ghníomhachtú",
+          "licenseSeasonRequiredError": "Tá an séasúr riachtanach chun an ceadúnas cónaidhme a ghníomhachtú",
+          "licenseBillingModeRequiredError": "Tá an modh billeála ceadúnais riachtanach",
+          "licenseAdditionalAmountRequiredError": "Tá an méid breise ceadúnais ag teastáil",
+          "licenseRecurringChangeWarning": "Ní athraíonn an méid seo ach síntiúis amach anseo — leanann síntiúsóirí atá ann cheana ag íoc an mhéid a socraíodh tráth an tsíntiúis.",
+          "licenseAdditionalAmountTooLowError": "Caithfidh an méid breise ceadúnais a bheith €1 ar a laghad"
         },
         "fields": {
           "title": "Foirm",
           "standardFieldsHint": "Réimsí a iarrtar ag clárú",
           "addressLabel": "Seoladh",
+          "countryLabel": "Tír chónaithe",
           "birthDateLabel": "Dáta breithe",
           "phoneLabel": "Fón líne talún",
           "mobileLabel": "Soghluaiste",
@@ -3359,8 +3683,7 @@
           "addOption": "Cuir rogha leis",
           "removeOption": "Bain an rogha seo",
           "optionsRequiredError": "Teastaíonn 2 rogha ar a laghad ó gach réimse liosta/rogha.",
-          "duplicateOptionsError": "Ní mór na roghanna i réimse liosta/rogha a bheith uathúil.",
-          "countryLabel": "Tír chónaithe"
+          "duplicateOptionsError": "Ní mór na roghanna i réimse liosta/rogha a bheith uathúil."
         },
         "payment": {
           "title": "Íocaíocht",
@@ -3438,6 +3761,14 @@
       "mobilePlaceholder": "06 12 34 56 78",
       "donationBadge": "(don)",
       "totalLabel": "Iomlán le híoc",
+      "licenseDefaultName": "Ceadúnas cónaidhme",
+      "licenseIncludedNotice": "Ceadúnas na Cónaidhme san áireamh, gan aon chostas breise.",
+      "licenseOptInLabel": "Cuir an ceadúnas cónaidhme leis (+{amount})",
+      "licenseMandatoryNotice": "Áirítear leis an mballraíocht seo ceadúnas éigeantach cónaidhme ({amount}).",
+      "licenseDeclareExistingLabel": "Tá ceadúnas agam cheana féin don séasúr seo",
+      "licenseDeclaredNotice": "Ceadúnas atá ann cheana — ag fanacht ar fhíorú ag an gcomhlachas.",
+      "licenseNumberLabel": "Uimhir cheadúnais",
+      "licenseNumberPlaceholder": "Fág folamh mura bhfuil sé agat fós",
       "partialReceiptNotice": "Ina n-aonar {amount} inasbhainte ó cháin don bhallraíocht seo.",
       "belowExtraMinimum": "Is é an t-íosmhéid {amount}.",
       "belowMinimumAmount": "Is é an t-íosmhéid d'íocaíocht ar líne ná {amount}.",
@@ -3614,6 +3945,7 @@
         "required": "Riachtanach"
       }
     },
+    "blockEditor": {},
     "rulesManager": {
       "title": "Rialacha uathoibrithe",
       "subtitle": "Seoltaí uathoibríocha de réir féilire nó imeachta.",
@@ -3886,6 +4218,8 @@
       "publicPaymentToggleDesc": "Éilíonn an fhoirm bhallraíochta ar an suíomh poiblí íocaíocht láithreach (a thógtar go bliantúil) agus gníomhaíonn sé an ball go huathoibríoch, gan bailíochtú láimhe.",
       "publicPaymentRequiresAmount": "Líon isteach méid ranníocaíochta chun an rogha seo a ghníomhachtú.",
       "connectNotReadyWarning": "Níl íocaíocht ar líne gníomhach - níl Stripe Connect socraithe nó ag glacadh le híocaíochtaí fós (cluaisín Íocaíochtaí). Idir an dá linn, filleann an fhoirm phoiblí ar an sruth saor in aisce agus tá iarratais ar bhallraíocht ar feitheamh.",
+      "includeFederativeLicenseInAutoRenewalToggle": "Cuir an ceadúnas cónaidhme san áireamh sa dochair dhíreach uathoibríoch bhliantúil",
+      "includeFederativeLicenseInAutoRenewalToggleDesc": "Nuair a ghearrann ráta méid breise ar a cheadúnas cónaidhme, gearrtar an méid sin arís ag gach athnuachan uathoibríoch (síntiús athfhillteach). Má dhíchumasaítear é, gearrtar é ach uair amháin, le linn an chéad síntiúis. Ní bhaineann an socrú seo ach le síntiúis nua a suibscríobhann tar éis athrú — leanann síntiúis atá gníomhach cheana féin mar a bhí roimhe seo.",
       "toasts": {
         "updated": "Méid réamhshocraithe nuashonraithe"
       }
@@ -3897,6 +4231,10 @@
       "websitePlaceholder": "mon-association.fr",
       "iban": "IBAN",
       "bic": "BIC",
+      "accountingRegime": "Córas cuntasaíochta le haghaidh aisíocaíochtaí caiteachais",
+      "accountingRegimeHint": "Cinneann sé cathain a chuirtear iarratas aisíocaíochta suas: ag ceadú (tiomantas) nó ag íocaíocht iarbhír (airgead tirim).",
+      "accountingRegimeCash": "Cuntasaíocht airgid",
+      "accountingRegimeAccrual": "Cuntasaíocht thiomantais",
       "previewTitle": "Réamhamharc Cáipéise",
       "bankDetails": "Sonraí bainc",
       "ibanColon": "IBAN : {value}",
@@ -3930,7 +4268,12 @@
       "title": "Aitheantas amhairc",
       "subtitle": "Lógó ar taispeáint ar an bpainéal, luachana / sonraisc, bileog tinrimh agus suíomh gréasáin poiblí.",
       "logo": "Lógó",
+      "footerStyles": {},
+      "footer": {
+        "socialPlatforms": {}
+      },
       "proOnlyText": "Tá an lógó saincheaptha (painéal, luachana / sonraisc, bileog ama) in áirithe don phlean Pro. Uasghrádú go dtí an chéad phlean eile sa chluaisín Síntiús chun é a ghníomhachtú.",
+      "preview": {},
       "toasts": {
         "updated": "Aitheantas amhairc nuashonraithe",
         "uploadError": "Earráid agus lógó á uaslódáil"
@@ -3973,10 +4316,10 @@
       "status": {
         "trial": "Triail Saor in Aisce",
         "active": "Gníomhach",
+        "paymentPending": "Íocaíocht ar siúl",
         "pastDue": "Íocaíocht dhéanach",
         "suspended": "Fionraí",
-        "cancelled": "Cealaithe",
-        "paymentPending": "Íocaíocht ar siúl"
+        "cancelled": "Cealaithe"
       },
       "planLabel": "Foirmle {tier}",
       "membersCount": "{count} / {limit} Baill",
@@ -4097,6 +4440,16 @@
       "subtitleTrialExpired": "Tá do thriail saor in aisce thart. Roghnaigh plean agus cuir isteach modh íocaíochta chun leanúint ar aghaidh.",
       "confirmButtonSubscribe": "Deimhnigh agus liostáil"
     },
+    "teamAccess": {
+      "columns": {},
+      "summary": {},
+      "profiles": {},
+      "levels": {},
+      "areas": {
+        "sensible": "Sonraí íogaire na mBall"
+      },
+      "toasts": {}
+    },
     "erasureRequests": {
       "title": "Scriosadh sonraí (GDPR)",
       "description": "Iarrataí chun sonraí pearsanta baill a scriosadh go buan, faoi Airteagal 17 den GDPR. Déantar iad a phróiseáil go huathoibríoch gach oíche, ach amháin iad siúd atá ar fionraí.",
@@ -4137,11 +4490,6 @@
       },
       "automaticOrigin": "Brataíodh go huathoibríoch — neamhghníomhach le breis agus 3 bliana",
       "inactiveSince": "d'fhág ar {date}"
-    },
-    "teamAccess": {
-      "areas": {
-        "sensible": "Sonraí íogaire na mBall"
-      }
     }
   },
   "cotisations": {
@@ -4231,6 +4579,33 @@
       "allCategories": "Gach catagóir",
       "allRenewals": "Gach athnuachan",
       "resetFilters": "Athshocraigh",
+      "mergeTiers": {
+        "filterOption": "Cumaisc catagóirí dúblacha",
+        "title": "Cumaisc catagóirí dúblacha",
+        "description": "Catagóirí nach bhfuil a n-ainmneacha difriúil ach i gcás, accents, nó spásanna. Ní dhéantar aon rud a chumasc go huathoibríoch.",
+        "empty": "Níor aimsíodh aon dúbailt.",
+        "groupSummary": "{count} catagóirí darb ainm \"{label}\"",
+        "groupTitle": "Cumaisc isteach i \"{label}\"",
+        "manualAction": "Dhá chatagóir a chumasc de láimh",
+        "manualTitle": "Cumaisc dhá chatagóir",
+        "backAction": "Ar ais",
+        "cancelAction": "Cuir ar ceal",
+        "keepAsPrimary": "Catagóir le coinneáil",
+        "mergeIntoPrimary": "Catagóirí le cumasc isteach ann",
+        "tierCounts": "{cotisationCount} Táille Ballraíochta · {membreCount} Ball (í)",
+        "mergeAction": "Cumaisc",
+        "confirmTitle": "Deimhnigh an cumasc",
+        "confirmDescription": "Déanfar catagóir(í) {count} a chumasc i \"{primaryLabel}\". {cotisationCount} Aistreofar táille(í) ballraíochta agus ball(í) {membreCount}. Tá an gníomh seo dochúlaithe ach caomhnaíonn sé gach stair agus cumraíocht athnuachana.",
+        "mergeSuccess": "{count} catagóir (í) cumaiscthe.",
+        "mergeErrorGeneric": "Tharla earráid le linn an chumaisc.",
+        "mismatchWarning": "Nóta: níl an cineál billeála, an méid ná an modh céanna ag na catagóirí seo.",
+        "loadError": "Ní féidir dúbailtí a uaslódáil. Bain triail as arís i gceann tamaill.",
+        "activeSubscriptionWarning": "{count} abonnement(s) actif(s) seront transférés — la facturation Stripe déjà en cours ne change pas automatiquement.",
+        "priceFree": "Saor in Aisce",
+        "priceFreeAmount": "Méid saor in aisce",
+        "priceFreeAmountFrom": "Méid saor in aisce ó {amount}",
+        "priceRecurring": "{amount} / bliain"
+      },
       "renewal": {
         "automatic": "Uathoibríoch",
         "manual": "De láimh"
@@ -4252,29 +4627,6 @@
         "total": "Iomlán",
         "noCategory": "Gan chatagóir",
         "empty": "Níl aon ranníocaíocht ag teacht leis na scagairí seo."
-      },
-      "mergeTiers": {
-        "filterOption": "Cumaisc catagóirí dúblacha",
-        "title": "Cumaisc catagóirí dúblacha",
-        "description": "Catagóirí nach bhfuil a n-ainmneacha difriúil ach i gcás, accents, nó spásanna. Ní dhéantar aon rud a chumasc go huathoibríoch.",
-        "empty": "Níor aimsíodh aon dúbailt.",
-        "groupSummary": "{count} catagóirí darb ainm \"{label}\"",
-        "groupTitle": "Cumaisc isteach i \"{label}\"",
-        "backAction": "Ar ais",
-        "cancelAction": "Cuir ar ceal",
-        "keepAsPrimary": "Catagóir le coinneáil",
-        "mergeIntoPrimary": "Catagóirí le cumasc isteach ann",
-        "tierCounts": "{cotisationCount} Táille Ballraíochta · {membreCount} Ball (í)",
-        "mergeAction": "Cumaisc",
-        "confirmTitle": "Deimhnigh an cumasc",
-        "confirmDescription": "Déanfar catagóir(í) {count} a chumasc i \"{primaryLabel}\". {cotisationCount} Aistreofar táille(í) ballraíochta agus ball(í) {membreCount}. Tá an gníomh seo dochúlaithe ach caomhnaíonn sé gach stair agus cumraíocht athnuachana.",
-        "mergeSuccess": "{count} catagóir (í) cumaiscthe.",
-        "loadError": "Ní féidir dúbailtí a uaslódáil. Bain triail as arís i gceann tamaill.",
-        "activeSubscriptionWarning": "{count} abonnement(s) actif(s) seront transférés — la facturation Stripe déjà en cours ne change pas automatiquement.",
-        "priceFree": "Saor in Aisce",
-        "priceFreeAmount": "Méid saor in aisce",
-        "priceFreeAmountFrom": "Méid saor in aisce ó {amount}",
-        "priceRecurring": "{amount} / bliain"
       }
     },
     "reminderModal": {
@@ -4339,6 +4691,24 @@
       "annulee": "Tá an ranníocaíocht seo curtha ar ceal."
     }
   },
+  "groupes": {
+    "view": {
+      "statusFilter": {},
+      "columns": {},
+      "statusBadge": {},
+      "actions": {},
+      "toasts": {}
+    },
+    "form": {},
+    "detail": {
+      "appelColumns": {}
+    },
+    "appel": {
+      "counts": {},
+      "status": {},
+      "toasts": {}
+    }
+  },
   "membres": {
     "form": {
       "status": {
@@ -4366,6 +4736,11 @@
         "femme": "Mná"
       },
       "groupeSanguinNone": "Gan sonrú",
+      "imageRights": {
+        "unknown": "Gan sonrú",
+        "granted": "Tá",
+        "refused": "Níl"
+      },
       "tailleTshirtNone": "Gan sonrú",
       "preferredLocaleNone": "Gan sonrú",
       "preferredLocaleHint": "Ligfidh an teanga roghnaithe ríomhphoist agus cumarsáid a sheoladh chuig an mball seo ina theanga is fearr leis.",
@@ -4397,14 +4772,14 @@
         "allergies": "Ailléirgí aitheanta",
         "allergiesPlaceholder": "Arachides, pailin...",
         "type": "Cineál Ball",
-        "preferredLocale": "Teanga chumarsáide",
-        "spokenLanguage": "Teanga a labhraítear",
-        "cotisationTier": "Táille ballraíochta",
-        "guardianName": "Caomhnóir dlíthiúil {number} — ainm",
-        "guardianPhone": "Caomhnóir dlíthiúil {number} — fón",
         "imageRights": "Cearta íomhá",
         "notes": "Nótaí",
-        "notesPlaceholder": "Faisnéis úsáideach faoin mball seo (ranganna, nótaí…)"
+        "notesPlaceholder": "Faisnéis úsáideach faoin mball seo (ranganna, nótaí…)",
+        "guardianName": "Caomhnóir dlíthiúil {number} — ainm",
+        "guardianPhone": "Caomhnóir dlíthiúil {number} — fón",
+        "preferredLocale": "Teanga chumarsáide",
+        "spokenLanguage": "Teanga a labhraítear",
+        "cotisationTier": "Táille ballraíochta"
       },
       "invitationNotice": "Seolfar ríomhphost cuireadh leis na haitheantóirí chuig an seoladh seo.",
       "tierNone": "Gan praghsáil (iompar réamhshocraithe)",
@@ -4425,12 +4800,7 @@
         "management": "Bainistíocht bhaill"
       },
       "invalidFormToast": "Níorbh fhéidir sábháil. Déan teagmháil leis an tacaíocht mura réitítear an fhadhb.",
-      "customFieldsLoading": "Freagraí na foirme ballraíochta á lódáil…",
-      "imageRights": {
-        "unknown": "Gan sonrú",
-        "granted": "Tá",
-        "refused": "Níl"
-      }
+      "customFieldsLoading": "Freagraí na foirme ballraíochta á lódáil…"
     },
     "fichePdf": {
       "title": "PRÓIFÍL BALL",
@@ -4486,13 +4856,13 @@
         "firstName": "Céadainm",
         "lastName": "Sloinne",
         "address": "Seoladh",
+        "country": "Tír",
+        "countryPlaceholder": "Gach tír",
+        "countryLoadError": "Ní féidir tíortha a luchtú. Bain triail as arís i gceann nóiméad.",
         "birthDateFrom": "Rugadh tar éis",
         "birthDateTo": "Rugadh roimhe seo",
         "apply": "Déan iarratas",
-        "reset": "Athshocraigh",
-        "country": "Tír",
-        "countryPlaceholder": "Gach tír",
-        "countryLoadError": "Ní féidir tíortha a luchtú. Bain triail as arís i gceann nóiméad."
+        "reset": "Athshocraigh"
       },
       "statusOptions": {
         "pending": "Ar feitheamh",
@@ -4551,6 +4921,13 @@
       "cotisationButton": "Táille ballraíochta",
       "createAccessButton": "Cruthaigh rochtain",
       "roleButton": "Ról",
+      "eraseData": {
+        "button": "Scrios sonraí (GDPR)",
+        "confirmTitle": "Iarr scriosadh buan ar shonraí {name}?",
+        "confirmDescription": "Cláraíonn an gníomh seo iarraidh scriosta faoi Airt. 17 den GDPR. Gheobhaidh an ball ríomhphost deimhnithe, agus ina dhiaidh sin déanfar a shonraí pearsanta a dhíainmniú go dochúlaithe ag an chéad phróiseáil uathoibríoch eile, ach amháin má chuirtear ar fionraí é.",
+        "toastSuccess": "Cláraíodh an iarraidh scriosta",
+        "requestLabel": "Scriosadh GDPR"
+      },
       "contact": "Teagmháil",
       "noContactInfo": "Gan aon eolas teagmhála",
       "memberSinceColon": "Ball ós rud é: {date}",
@@ -4595,10 +4972,25 @@
         "reunions": "Cruinnithe",
         "materiel": "Ábhar",
         "dons": "Síntiúis",
+        "licenses": "Ceadúnais",
         "historique": "Stair",
         "emails": "Ríomhphoist",
         "sms": "SMS",
         "boutique": "Siopa"
+      },
+      "licenses": {
+        "empty": "Gan ceadúnas",
+        "seasonYear": "Táille ballraíochta {year}",
+        "autoRenewed": "Athnuachan go huathoibríoch",
+        "declaredByMembreNotice": "Ceadúnas dearbhaithe ag an mball — go dtí fíorú",
+        "deleteConfirmTitle": "An ceadúnas seo a bhaint?",
+        "deleteConfirmDescription": "An ceadúnas {federation} — {season} cuirfear deireadh go buan.",
+        "statusField": "Stádas",
+        "licenseNumberField": "Uimhir cheadúnais",
+        "statusASolicitar": "Le fiafraí",
+        "statusEmAndamento": "Ar siúl",
+        "statusValidada": "Bailíochtaithe",
+        "statusARenovar": "Le hathnuachan"
       },
       "cotisationStatus": {
         "enAttente": "Ar feitheamh",
@@ -4646,6 +5038,7 @@
       "donStandalone": "Síntiús neamhspleách",
       "donPending": "Ag feitheamh le bailiú",
       "showingRecentDons": "Ag taispeáint na {count} síntiús is déanaí as {total} ar fad.",
+      "showingRecentLicenses": "Taispeáint de {count} na ceadúnais is déanaí ar {total} san iomlán.",
       "addCotisationTitle": "Cuir táille bhallraíochta leis",
       "editCotisationTitle": "Athraigh an táille ballraíochta",
       "deleteConfirmWithDependants": "Déanfar an ball seo a chartlannú agus ní bheidh sé in ann rochtain a fháil ar an gcumann a thuilleadh. Bainfear é freisin mar chaomhnóir dlíthiúil an chumainn. {count} Comhalta(í): {names}.",
@@ -4666,13 +5059,6 @@
         "rejectedToast": "Diúltaíodh an t-iarratas",
         "rejectConfirmTitle": "An bhfuil an t-iarratas seo á dhiúltú?",
         "rejectConfirmDescription": "{name} Athróidh sé go stádas \"Neamhghníomhach\" agus ní bheidh sé in ann logáil isteach. Coinnítear an t-iarratas agus a freagraí ar an bhfoirm."
-      },
-      "eraseData": {
-        "button": "Scrios sonraí (GDPR)",
-        "confirmTitle": "Iarr scriosadh buan ar shonraí {name}?",
-        "confirmDescription": "Cláraíonn an gníomh seo iarraidh scriosta faoi Airt. 17 den GDPR. Gheobhaidh an ball ríomhphost deimhnithe, agus ina dhiaidh sin déanfar a shonraí pearsanta a dhíainmniú go dochúlaithe ag an chéad phróiseáil uathoibríoch eile, ach amháin má chuirtear ar fionraí é.",
-        "toastSuccess": "Cláraíodh an iarraidh scriosta",
-        "requestLabel": "Scriosadh GDPR"
       },
       "noCommande": "Níl aon cheannacháin siopa ag an teagmhálaí seo.",
       "commandeStatus": {
@@ -4763,6 +5149,11 @@
       "inMessagesSection": " sa rannóg Teachtaireachtaí.",
       "messageSectionLabel": "Teachtaireacht",
       "saveAsTemplate": "Sábháil mar theimpléad",
+      "subjectLabel": "Cuspóir",
+      "subjectPlaceholder": "Ábhar an ríomhphoist...",
+      "subjectTooLong": "Tá an t-ábhar rófhada: {length}/{max} carachtar — diúltófar dó ag am seolta.",
+      "bodyLabel": "Corp na teachtaireachta",
+      "bodyPlaceholder": "Scríobh do theachtaireacht...",
       "language": {
         "title": "Teanga sheolta",
         "modeOriginal": "Bunteanga",
@@ -4787,11 +5178,6 @@
         "autoNoEffect": "Níl aon rogha teanga seachas an Fhraincis ag aon fhaighteoir faoi láthair — gheobhaidh gach duine an bunleagan.",
         "autoExternalNote": "{count, plural, one {# ríomhphost seachtrach (bunteanga)} other {# ríomhphost sheachtracha (bunteanga)}}"
       },
-      "subjectLabel": "Cuspóir",
-      "subjectPlaceholder": "Ábhar an ríomhphoist...",
-      "subjectTooLong": "Tá an t-ábhar rófhada: {length}/{max} carachtar — diúltófar dó ag am seolta.",
-      "bodyLabel": "Corp na teachtaireachta",
-      "bodyPlaceholder": "Scríobh do theachtaireacht...",
       "continue": "Lean ar aghaidh",
       "confirmSendTitle": "Dearbhú Loingseoireachta",
       "confirmSendDescription": "Seolfar an ríomhphost seo chuig {recipients}. Tá an gníomh seo dochúlaithe.",
@@ -4808,6 +5194,9 @@
       "recipientsActive": "{count, plural, one {# ball gníomhach} other {# bhaill ghníomhacha}}",
       "externalOnlyCount": "{count, plural, one {# ríomhphost seachtrach} other {# ríomhphoist sheachtracha}}",
       "recipientsWithExternal": "{members} + {count, plural, one {# ríomhphost seachtrach} other {# ríomhphoist sheachtracha}}",
+      "attachments": {
+        "errors": {}
+      },
       "toasts": {
         "selectType": "Roghnaigh Cineál Ball",
         "selectMember": "Roghnaigh ball amháin ar a laghad nó cuir ríomhphost seachtrach leis",
@@ -5309,8 +5698,8 @@
       "actualites": "Nuacht",
       "membership": "Bí páirteach sa chumann",
       "dons": "Síntiús",
-      "contact": "Teagmháil",
-      "boutique": "Siopa"
+      "boutique": "Siopa",
+      "contact": "Teagmháil"
     },
     "defaultTitles": {
       "hero": "Fáilte",
@@ -5318,9 +5707,9 @@
       "events": "Imeachtaí atá le teacht",
       "membership": "Bí páirteach sa chumann",
       "dons": "Síntiús",
+      "boutique": "Siopa",
       "actualites": "Nuacht",
-      "contact": "Teagmháil",
-      "boutique": "Siopa"
+      "contact": "Teagmháil"
     },
     "view": {
       "uploadFailedWarning": "{count, plural, one {Níorbh fhéidir # íomhá a íoslódáil.} other {Níorbh fhéidir # íomhánna a uaslódáil.}}",
@@ -5364,9 +5753,9 @@
       "noSections": "Níl aon ailt. Cuir ceann thíos.",
       "addSection": "Cuir rannóg leis",
       "donsModuleDisabled": "Modúl síntiús díchumasaithe — dofheicthe ar an suíomh poiblí",
+      "boutiqueModuleDisabled": "Modúl an tSiopa díchumasaithe — ní fheictear é ar an suíomh poiblí",
       "deleteSectionTitle": "Scrios alt",
-      "deleteSectionDescription": "Tá an gníomh seo dochúlaithe.",
-      "boutiqueModuleDisabled": "Modúl an tSiopa díchumasaithe — ní fheictear é ar an suíomh poiblí"
+      "deleteSectionDescription": "Tá an gníomh seo dochúlaithe."
     },
     "sectionSheet": {
       "editTitle": "Cuir in Eagar - {label}",
@@ -5387,6 +5776,8 @@
       "eventsLimitHint": "Tarraingítear imeachtaí go huathoibríoch ó d'fhéilire.",
       "actualitesLimit": "Líon na míreanna nuachta le taispeáint",
       "actualitesLimitHint": "Ní thaispeánfar ach an chéad nuacht N a fhoilseofar ar an suíomh.",
+      "boutiqueLimit": "Líon na dtáirgí le taispeáint",
+      "boutiqueLimitHint": "Ní thaispeánfar ar an suíomh ach an chéad N táirgí gníomhacha.",
       "membershipIntro": "Téacs réamhráiteach",
       "membershipIntroPlaceholder": "Líon an fhoirm seo chun iarratas a dhéanamh ar bheith páirteach sa chumann...",
       "membershipHint": "Tá iarratais le feiceáil ar liosta na mball a bhfuil stádas \"Ar feitheamh\" acu.",
@@ -5407,9 +5798,7 @@
       "apply": "Déan iarratas",
       "discardTitle": "Neamhaird a dhéanamh ar athruithe?",
       "discardDescription": "Caillfear athruithe gan chur i bhfeidhm.",
-      "discardConfirm": "Déan neamhaird",
-      "boutiqueLimit": "Líon na dtáirgí le taispeáint",
-      "boutiqueLimitHint": "Ní thaispeánfar ar an suíomh ach an chéad N táirgí gníomhacha."
+      "discardConfirm": "Déan neamhaird"
     },
     "preview": {
       "donsNoForm": "Níor roghnaíodh foirm síntiúis — dofheicthe ar an suíomh poiblí"
@@ -5418,6 +5807,12 @@
       "viewSite": "Féach ar an suíomh gréasáin",
       "logoUrl": "URL an lógó (roghnach)",
       "footerText": "Téacs buntásc"
+    },
+    "aiAssistant": {},
+    "builderSwitch": {
+      "confirmOn": {},
+      "confirmOff": {},
+      "toasts": {}
     }
   },
   "richTextEditor": {
@@ -5430,6 +5825,21 @@
     "heading1": "Ceannteideal 1",
     "heading2": "Ceannteideal 2",
     "heading3": "Ceannteideal 3"
+  },
+  "paperFormTemplates": {
+    "columns": {},
+    "toasts": {},
+    "deleteConfirm": {},
+    "leaveWarning": {},
+    "targetGroups": {},
+    "targets": {},
+    "renderErrors": {},
+    "editor": {
+      "columns": {}
+    },
+    "activity": {
+      "fields": {}
+    }
   },
   "associationDocuments": {
     "title": "Doiciméid an chumainn",
@@ -5476,6 +5886,9 @@
     "notFound": "Níor aimsíodh an doiciméad seo.",
     "backToList": "Ar ais chuig na doiciméid"
   },
+  "formDraft": {},
+  "legalConsent": {},
+  "publicDocuments": {},
   "portalMembre": {
     "associationDocuments": {
       "title": "Doiciméid an chumainn",
@@ -5522,6 +5935,15 @@
       "viewShop": "Féach ar an Siopa",
       "orderPlacedTitle": "Ordú cláraithe!",
       "orderPlacedDescription": "Tá d'ordú ag fanacht le híocaíocht. Rachaidh an riarachán i dteagmháil leat chun críochnú.",
+      "paymentSuccessTitle": "Íocaíocht deimhnithe!",
+      "paymentSuccessDescription": "Go raibh maith agat as do cheannach. Seoladh ríomhphost deimhnithe chugat lena n-áirítear d'admháil.",
+      "stockAdjustedNotice": "Tá athrú tagtha ar stoc roinnt earraí — coigeartaíodh do chairt, seiceáil í sula leanann tú ar aghaidh.",
+      "trackOrderButton": "Rianaigh m'ordú",
+      "trackingPageTitle": "Rianú ordaithe",
+      "trackingStatusPending": "Ag fanacht le híocaíocht",
+      "trackingStatusPaid": "Ordú íoctha",
+      "trackingStatusCancelled": "Ordú cealaithe",
+      "trackingNotFound": "Ordú gan aimsiú",
       "myOrdersButton": "Mo Orduithe",
       "continueShopping": "Lean ar aghaidh ag siopadóireacht",
       "maxStockReached": "Max Stoc Bainte amach",
@@ -5559,16 +5981,7 @@
         "orderError": "Earráid le linn an ordaithe",
         "orderUpdated": "Ord nuashonraithe",
         "orderCancelled": "Ordú curtha ar ceal"
-      },
-      "paymentSuccessTitle": "Íocaíocht deimhnithe!",
-      "paymentSuccessDescription": "Go raibh maith agat as do cheannach. Seoladh ríomhphost deimhnithe chugat lena n-áirítear d'admháil.",
-      "stockAdjustedNotice": "Tá athrú tagtha ar stoc roinnt earraí — coigeartaíodh do chairt, seiceáil í sula leanann tú ar aghaidh.",
-      "trackOrderButton": "Rianaigh m'ordú",
-      "trackingPageTitle": "Rianú ordaithe",
-      "trackingStatusPending": "Ag fanacht le híocaíocht",
-      "trackingStatusPaid": "Ordú íoctha",
-      "trackingStatusCancelled": "Ordú cealaithe",
-      "trackingNotFound": "Ordú gan aimsiú"
+      }
     },
     "dons": {
       "title": "Mo Síntiúis",
@@ -5848,10 +6261,12 @@
       "membres": "Baill",
       "evenements": "Imeachtaí",
       "cotisations": "Ranníocaíochtaí",
+      "licencas": "Ceadúnais",
       "adhesions": "Ballraíocht",
       "finances": "Faireachán airgeadais",
       "devis": "Meastacháin",
       "factures": "Sonraisc",
+      "reimbursements": "Aisíocaíochtaí costais",
       "fournisseurs": "Soláthraithe",
       "dons": "Síntiúis",
       "reunions": "Cruinnithe",
@@ -5905,6 +6320,7 @@
       },
       "logout": "Logáil Amach"
     },
+    "twoFactorSettingsModal": {},
     "changePasswordModal": {
       "title": "Athraigh Pasfhocal",
       "currentPasswordLabel": "Pasfhocal Reatha",
@@ -6046,6 +6462,7 @@
       "daysWithoutCotisation": "Laethanta gan ranníocaíocht",
       "status": "Stádas"
     },
+    "originSources": {},
     "empty": "Níl aon airdeall rialaithe ann.",
     "resolveAction": "Réitigh",
     "resolveConfirmTitle": "An réiteoidh tú an t-airdeall seo?",
@@ -6063,7 +6480,79 @@
     "autoResolvedLabel": "(uathoibríoch)",
     "emptyForSearch": "Gan torthaí do \"{search}\"."
   },
+  "help": {
+    "tabs": {},
+    "callout": {},
+    "assistant": {
+      "examples": {},
+      "examplesDocs": {},
+      "tools": {}
+    },
+    "changelog": {
+      "kind": {}
+    },
+    "releaseNotes": {},
+    "news": {},
+    "faqPopup": {},
+    "popupCarousel": {},
+    "footer": {}
+  },
+  "boutiqueShipping": {},
+  "paperFormScan": {
+    "steps": {},
+    "upload": {
+      "camera": {}
+    },
+    "reading": {},
+    "viewer": {},
+    "editor": {},
+    "review": {},
+    "status": {},
+    "result": {},
+    "notesValues": {},
+    "validation": {},
+    "leaveWarning": {},
+    "restartWarning": {}
+  },
   "formTermsEditor": {
     "contentRequired": "Ní mór duit an réimse “{conditionsLabel}” a líonadh nó doiciméad a uaslódáil."
+  },
+  "membreDuplicates": {
+    "list": {
+      "matchedFields": {},
+      "columns": {},
+      "status": {}
+    },
+    "merge": {
+      "fields": {},
+      "relations": {}
+    },
+    "backoffice": {
+      "columns": {}
+    }
+  },
+  "licencas": {
+    "title": "Ceadúnais",
+    "description": "Ceadúnais chónaidhme do bhaill, gach ráta agus séasúr le chéile.",
+    "export": "Onnmhairiú",
+    "empty": "Gan ceadúnas",
+    "statusASolicitar": "Le fiafraí",
+    "statusEmAndamento": "Ar siúl",
+    "statusValidada": "Bailíochtaithe",
+    "statusARenovar": "Le hathnuachan",
+    "columns": {
+      "membre": "Ball",
+      "tier": "Módúlacht",
+      "federation": "Cónaidhm",
+      "season": "Séasúr",
+      "licenseNumber": "Uimhir cheadúnais",
+      "status": "Stádas"
+    },
+    "filters": {
+      "searchPlaceholder": "Cuardaigh ball...",
+      "allFederations": "Gach cónaidhm",
+      "allSeasons": "Gach séasúr",
+      "allStatuses": "Gach stádas"
+    }
   }
 }

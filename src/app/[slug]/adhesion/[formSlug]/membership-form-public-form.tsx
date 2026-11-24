@@ -34,6 +34,7 @@ import { useInAppBrowserEscape } from "@/hooks/use-in-app-browser-escape"
 import { Label } from "@/components/ui/label"
 import { BASE_PATH } from "@/lib/env"
 import { cn } from "@/lib/utils"
+import { resolveLicenseApplication } from "@/lib/membership-license"
 
 type FieldRequirement = "HIDDEN" | "OPTIONAL" | "REQUIRED"
 type CustomField = { id: string; type: "TEXT" | "NUMBER" | "SELECT"; label: string; required: boolean; options: string[] | null }
@@ -57,6 +58,15 @@ type Tier = {
   // de la saisie (voir partialReceiptAmount ci-dessous).
   deductibleAmount: string | null
   ineligibleAmount: string | null
+  // FORM-114 — federative license config (MEMBERSHIP tiers only — see resolveLicenseApplication).
+  licenseEnabled: boolean
+  licenseName: string | null
+  licenseFederation: string | null
+  licenseSeason: string | null
+  licenseMandatory: boolean
+  licenseBillingMode: "INCLUDED" | "ADDITIONAL" | null
+  licenseAdditionalAmount: string | null
+  licenseAllowDeclareExisting: boolean
 }
 type ValidationMode = "IMMEDIATE" | "REQUEST"
 
@@ -255,6 +265,12 @@ function MembershipFormPublicFormInner({ slug, formSlug, legalDocuments }: Props
   // sélectionné. Un simple compteur suffit ici (pas de "montant libre" comme pour les
   // extras), contrairement à selectedExtraIds/extraAmounts.
   const [productQuantities, setProductQuantities] = useState<Record<string, number>>({})
+  // FORM-114 — federative license choice for the selected (membership) tier. licenseOptIn
+  // only matters when the tier's license is optional; licenseDeclaredExisting only when the
+  // tier allows declaring an already-held license (see resolveLicenseApplication).
+  const [licenseOptIn, setLicenseOptIn] = useState(false)
+  const [licenseDeclaredExisting, setLicenseDeclaredExisting] = useState(false)
+  const [licenseNumber, setLicenseNumber] = useState("")
   const [firstName, setFirstName]   = useState("")
   const [lastName, setLastName]     = useState("")
   const [email, setEmail]           = useState("")
@@ -389,6 +405,14 @@ function MembershipFormPublicFormInner({ slug, formSlug, legalDocuments }: Props
     return null
   }
   const membershipAmount = !selectedTier ? 0 : selectedTier.free ? 0 : selectedTier.freeAmount ? freeAmount : Number(selectedTier.amount ?? 0)
+  // FORM-114 — null when the tier has no federative license, or the visitor hasn't opted into
+  // an optional one / declared an existing one. licenseAmount only ever adds to the total when
+  // chargeAmount is true (ADDITIONAL billing, not declared existing) — see resolveLicenseApplication.
+  const licenseApplication = !selectedTier ? null : resolveLicenseApplication(selectedTier, {
+    licenseOptIn, licenseDeclaredExisting, licenseNumber,
+  })
+  const licenseAmount = licenseApplication?.chargeAmount && selectedTier?.licenseAdditionalAmount != null
+    ? Number(selectedTier.licenseAdditionalAmount) : 0
   // A montant-libre extra with no minimum configured by staff still needs a real floor —
   // otherwise the field defaults to €0 and nothing stops a visitor from submitting it as-is.
   const tierMinimum = (x: Tier) => (x.amount != null ? Number(x.amount) : MIN_AMOUNT)
@@ -427,7 +451,11 @@ function MembershipFormPublicFormInner({ slug, formSlug, legalDocuments }: Props
   const oneOffMembershipTiers = membershipTiers.filter(x => x.kind === "ONE_OFF")
   // The only tiers ever safe to assign to an extra registrant, or to default a newly-added one
   // to — anything else would need an offline method that doesn't exist once isMulti is true.
-  const multiUsableTiers = oneOffMembershipTiers.filter(x => isTierPayable(x, true))
+  // A tier with a federative license is excluded too (FORM-114): license tracking/billing is
+  // per-person, and this group flow has no way to collect a license choice (or its fee) for
+  // each of the N people in the group — only ever for registrant 0 — so it's kept out of the
+  // group flow entirely rather than silently skipping it for everyone but the first registrant.
+  const multiUsableTiers = oneOffMembershipTiers.filter(x => isTierPayable(x, true) && !x.licenseEnabled)
   const isMulti = extraRegistrants.length > 0
   const registrantTier = (r: RegistrantDraft) => oneOffMembershipTiers.find(x => x.id === r.tierId) ?? null
   const registrantAmount = (r: RegistrantDraft) => {
@@ -464,13 +492,15 @@ function MembershipFormPublicFormInner({ slug, formSlug, legalDocuments }: Props
   // since it would instantly become unpayable the moment it flips on. Also requires at least one
   // multiUsableTiers entry so there's something valid to default a newly-added registrant to —
   // a form with only offline-paid tiers and no Stripe simply doesn't offer this feature.
+  // !selectedTier.licenseEnabled (FORM-114): registrant 0 itself must not carry a federative
+  // license into group mode either — same reasoning as multiUsableTiers excluding it above.
   const canAddRegistrant = !isAdminFill && (!isMulti
-    ? !!selectedTier && selectedTier.kind === "ONE_OFF" && isTierPayable(selectedTier, true) && multiUsableTiers.length > 0
+    ? !!selectedTier && selectedTier.kind === "ONE_OFF" && !selectedTier.licenseEnabled && isTierPayable(selectedTier, true) && multiUsableTiers.length > 0
     : extraRegistrants.length + 1 < MAX_REGISTRANTS && multiUsableTiers.length > 0)
 
   // extrasAmount counts in both modes: an option or an embedded donation belongs to the
   // submission, not to one person, so a group buying one owes exactly what a lone member would.
-  const amount = (isMulti ? extraRegistrantsAmount : 0) + membershipAmount + extrasAmount + productsAmount
+  const amount = (isMulti ? extraRegistrantsAmount : 0) + membershipAmount + extrasAmount + productsAmount + licenseAmount
   // A paid membership tier is always immediate as soon as payment is confirmed; so is any
   // paid extra/registrant riding along with an otherwise-free membership (there's nothing
   // sensible to "hold for approval" once money changed hands) — mirrors willBeImmediate in
@@ -488,10 +518,13 @@ function MembershipFormPublicFormInner({ slug, formSlug, legalDocuments }: Props
   // checkout/route.ts + membership-form-products.ts) — un paiement hors-ligne (espèces,
   // chèque, virement) ne passe jamais par ce webhook, donc un produit choisi doit forcer le
   // paiement en ligne, même raisonnement que les extras avec extrasAmount === 0 ci-dessous.
-  const canPayInInstallments = !isAdminFill && !isMulti && !!selectedTier && selectedTier.installmentsAllowed && extrasAmount === 0 && !hasProductsSelected
+  // !selectedTier.licenseEnabled (FORM-114), not just licenseAmount === 0: the installments
+  // webhook (membership-installments.ts) never creates a MembershipLicense at all, so even an
+  // INCLUDED/no-charge license would silently never get tracked if paid this way.
+  const canPayInInstallments = !isAdminFill && !isMulti && !!selectedTier && selectedTier.installmentsAllowed && extrasAmount === 0 && !hasProductsSelected && !selectedTier.licenseEnabled
   // Mirrors canPayInInstallments's own extras/products guard — shown only when that's the
   // actual reason the checkbox isn't there, not whenever installments simply aren't offered.
-  const installmentsHiddenByExtras = !isAdminFill && !isMulti && !!selectedTier && selectedTier.installmentsAllowed && (extrasAmount > 0 || hasProductsSelected)
+  const installmentsHiddenByExtras = !isAdminFill && !isMulti && !!selectedTier && selectedTier.installmentsAllowed && (extrasAmount > 0 || hasProductsSelected || selectedTier.licenseEnabled)
   // A DONATION-only selection no longer blocks offline payment (see checkout/route.ts) — only
   // an ADDON, a Boutique product, or an installment plan still forces Stripe.
   const showOfflineChoice = !isAdminFill && !isMulti && !!selectedTier && needsPayment && selectedTier.kind === "ONE_OFF" && offlineMethods.length > 0 && !hasNonDonationExtraSelected && !hasProductsSelected && !payInInstallments
@@ -860,6 +893,9 @@ function MembershipFormPublicFormInner({ slug, formSlug, legalDocuments }: Props
             amount: !selectedTier.free && selectedTier.freeAmount ? membershipAmount : undefined,
             payInInstallments: canPayInInstallments && payInInstallments ? true : undefined,
             locale: loc,
+            licenseOptIn: licenseOptIn || undefined,
+            licenseDeclaredExisting: licenseDeclaredExisting || undefined,
+            licenseNumber: licenseNumber.trim() || undefined,
             addons: selectedExtras.map(x => ({ tierId: x.id, amount: x.freeAmount ? (extraAmounts[x.id] ?? 0) : undefined })),
             products: Object.entries(productQuantities)
               .filter(([, quantity]) => quantity > 0)
@@ -1088,14 +1124,24 @@ function MembershipFormPublicFormInner({ slug, formSlug, legalDocuments }: Props
                       // Stripe Subscription est lié à un seul Membre, impossible à répartir
                       // entre N personnes (voir checkout/route.ts).
                       const recurringInMulti = isMulti && tier.kind === "RECURRING"
+                      // FORM-114 — a licensed tier can't be registrant 0 once already in group
+                      // mode either, same reasoning as multiUsableTiers/canAddRegistrant above.
+                      const licensedInMulti = isMulti && tier.licenseEnabled
                       const noPaymentMethod = !recurringInMulti && !isTierPayable(tier, isMulti)
-                      const disabled = recurringInMulti || noPaymentMethod
+                      const disabled = recurringInMulti || licensedInMulti || noPaymentMethod
                       return (
                       <button
                         key={tier.id}
                         type="button"
                         disabled={disabled}
-                        onClick={() => { setTierId(tier.id); if (tier.free || tier.kind === "RECURRING") setPaymentMethod("STRIPE") }}
+                        onClick={() => {
+                          setTierId(tier.id)
+                          if (tier.free || tier.kind === "RECURRING") setPaymentMethod("STRIPE")
+                          // A license choice made for one tier doesn't carry over to another —
+                          // e.g. switching away from a tier with an optional license must not
+                          // silently keep charging for it on a tier that never offered one.
+                          setLicenseOptIn(false); setLicenseDeclaredExisting(false); setLicenseNumber("")
+                        }}
                         className={cn(
                           "rounded-md border px-3 py-2 text-sm font-medium transition-colors text-left",
                           disabled ? "opacity-40 cursor-not-allowed" :
@@ -1139,6 +1185,49 @@ function MembershipFormPublicFormInner({ slug, formSlug, legalDocuments }: Props
                         amount: partialReceiptAmount(selectedTier, membershipAmount)!.toLocaleString(loc, { style: "currency", currency: "EUR" }),
                       })}
                     </p>
+                  )}
+                  {/* FORM-114 — hidden in multi-registrant mode: a federative license is tied
+                      to one person, and this group flow has no per-registrant extras today. */}
+                  {!isMulti && selectedTier?.licenseEnabled && (
+                    <div className="space-y-2 rounded-md border border-input p-3">
+                      <p className="text-sm font-medium">
+                        {selectedTier.licenseName || t("licenseDefaultName")}
+                      </p>
+                      {selectedTier.licenseBillingMode === "INCLUDED" && (
+                        <p className="text-xs text-muted-foreground">{t("licenseIncludedNotice")}</p>
+                      )}
+                      {selectedTier.licenseBillingMode === "ADDITIONAL" && !selectedTier.licenseMandatory && (
+                        <CheckboxField
+                          label={t("licenseOptInLabel", {
+                            amount: Number(selectedTier.licenseAdditionalAmount ?? 0).toLocaleString(loc, { style: "currency", currency: "EUR" }),
+                          })}
+                          checked={licenseOptIn}
+                          onChange={e => { setLicenseOptIn(e.target.checked); if (!e.target.checked) setLicenseDeclaredExisting(false) }}
+                        />
+                      )}
+                      {selectedTier.licenseBillingMode === "ADDITIONAL" && selectedTier.licenseMandatory && !selectedTier.licenseAllowDeclareExisting && (
+                        <p className="text-xs text-muted-foreground">
+                          {t("licenseMandatoryNotice", {
+                            amount: Number(selectedTier.licenseAdditionalAmount ?? 0).toLocaleString(loc, { style: "currency", currency: "EUR" }),
+                          })}
+                        </p>
+                      )}
+                      {selectedTier.licenseAllowDeclareExisting && (selectedTier.licenseMandatory || licenseOptIn) && (
+                        <CheckboxField
+                          label={t("licenseDeclareExistingLabel")}
+                          checked={licenseDeclaredExisting}
+                          onChange={e => setLicenseDeclaredExisting(e.target.checked)}
+                        />
+                      )}
+                      {(licenseApplication) && (
+                        <FormField
+                          label={t("licenseNumberLabel")}
+                          placeholder={t("licenseNumberPlaceholder")}
+                          value={licenseNumber}
+                          onChange={e => setLicenseNumber(e.target.value)}
+                        />
+                      )}
+                    </div>
                   )}
                   {canPayInInstallments && selectedTier && (
                     <CheckboxField
@@ -1634,11 +1723,28 @@ function MembershipFormPublicFormInner({ slug, formSlug, legalDocuments }: Props
                   </div>
                 )}
 
+                {needsPayment && licenseAmount > 0 && (
+                  <div className="space-y-1 border-t pt-3 text-sm text-muted-foreground">
+                    <div className="flex items-center justify-between">
+                      <span>{selectedTier?.label}</span>
+                      <span className="tabular-nums">{membershipAmount.toLocaleString(loc, { style: "currency", currency: "EUR" })}</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span>{selectedTier?.licenseName || t("licenseDefaultName")}</span>
+                      <span className="tabular-nums">{licenseAmount.toLocaleString(loc, { style: "currency", currency: "EUR" })}</span>
+                    </div>
+                  </div>
+                )}
                 {needsPayment && (
-                  <div className="flex items-center justify-between text-sm font-medium border-t pt-3">
+                  <div className={cn("flex items-center justify-between text-sm font-medium pt-3", licenseAmount <= 0 && "border-t")}>
                     <span>{t("totalLabel")}</span>
                     <span className="tabular-nums">{amount.toLocaleString(loc, { style: "currency", currency: "EUR" })}</span>
                   </div>
+                )}
+                {selectedTier?.licenseEnabled && licenseApplication && licenseAmount === 0 && selectedTier.licenseBillingMode === "ADDITIONAL" && (
+                  <p className="text-xs text-muted-foreground">
+                    {licenseApplication.declaredByMembre ? t("licenseDeclaredNotice") : null}
+                  </p>
                 )}
                 {belowMinimum && (
                   <p className="text-xs text-destructive">

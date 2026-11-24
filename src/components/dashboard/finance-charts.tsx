@@ -8,10 +8,11 @@ import {
 } from "recharts"
 import { useModules } from "@/lib/user-context"
 import { usePalette } from "@/lib/finance-palette"
+import { cn } from "@/lib/utils"
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-type FinanceChartsData = {
+export type FinanceChartsData = {
   year:             number
   hasCotisations:   boolean
   hasFinances:      boolean
@@ -20,7 +21,10 @@ type FinanceChartsData = {
   incomeByCategory: { name: string; amount: number }[]
 }
 
-function fmt(n: number) {
+// Whole-euro, no cents — exported so FinancesOverviewCard's mini-stats round the same way as
+// the charts they sit directly above, instead of mixing cents (its own formatter, pre-fix)
+// with the whole-euro chart labels right below them in the same card.
+export function fmt(n: number) {
   return new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR", maximumFractionDigits: 0 }).format(n)
 }
 
@@ -84,7 +88,7 @@ function CategoryTip({ active, payload }: {
 // block: neither could be moved or resized without the other, and shrinking the pair left
 // the inner grid still asking for three columns. They're two independent widgets now, and
 // share this hook so the split still costs exactly one fetch (React Query dedupes the key).
-function useFinanceChartsData() {
+export function useFinanceChartsData() {
   const t       = useTranslations()
   const modules = useModules()
 
@@ -102,15 +106,19 @@ function useFinanceChartsData() {
   return { ...query, modules }
 }
 
-// Cotisations — part-to-whole → stacked bar, never a donut
-export function CotisationsGaugeCard() {
+// Cotisations — part-to-whole → stacked bar, never a donut. Content-only (no wrapper/title):
+// embedded inside the merged `CotisationsCard` widget (FORM-120), which owns the outer
+// rounded-lg bg-muted/60 shell and adds the encaissé/reste à percevoir/en attente summary
+// above this bar. Loading/empty states are the caller's responsibility (it already knows
+// `isLoading`/`hasCotisations` from the same useFinanceChartsData() call).
+//
+// formatAmount defaults to this file's own whole-euro `fmt` (fine for a chart legend seen on
+// its own), but CotisationsCard passes its cents-showing formatter instead — the legend sits
+// directly under that card's cents-precise headline figure, and rounding only the legend
+// read as an inconsistency rather than a deliberate choice.
+export function CotisationsGaugeContent({ data, formatAmount = fmt }: { data: FinanceChartsData; formatAmount?: (n: number) => string }) {
   const t   = useTranslations()
   const pal = usePalette()
-  const { data, isLoading, modules } = useFinanceChartsData()
-
-  if (!modules.cotisations) return null
-  if (isLoading) return <div className="h-full min-h-48 rounded-lg bg-muted/60 animate-pulse" />
-  if (!data?.hasCotisations) return null
 
   const cotisationTotal = data.cotisations.reduce((s, c) => s + c.amount, 0)
   const cotisationCount = data.cotisations.reduce((s, c) => s + c.count, 0)
@@ -136,11 +144,10 @@ export function CotisationsGaugeCard() {
   const paidPct    = cotisationTotal > 0 ? Math.round((paidAmount / cotisationTotal) * 100) : 0
 
   return (
-    <div className="relative overflow-hidden rounded-lg bg-muted/60 p-6">
-      <p className="relative mb-1 text-base font-medium">{t("dashboard.cotisations.title", { year: data.year })}</p>
+    <div className="relative">
       {/* Hero figure: % already collected — the one number a progress bar exists to
-          answer, and distinct from the raw totals already listed below/elsewhere. */}
-      <p className="relative mb-4 text-sm font-medium text-muted-foreground">
+          answer, and distinct from the raw totals already listed above by the caller. */}
+      <p className="relative mb-2 text-xs font-medium text-muted-foreground">
         {paidPct}{t("dashboard.charts.collectedPercent")}
       </p>
 
@@ -169,7 +176,7 @@ export function CotisationsGaugeCard() {
             </div>
             <div className="flex items-center gap-3">
               <span className="tabular-nums text-muted-foreground">{c.count}</span>
-              <span className="w-20 text-right tabular-nums font-medium">{fmt(c.amount)}</span>
+              <span className="w-24 text-right tabular-nums font-medium">{formatAmount(c.amount)}</span>
             </div>
           </div>
         ))}
@@ -182,17 +189,15 @@ export function CotisationsGaugeCard() {
 // mockup's own chart exactly (confirmed from its exported overlay SVG: two monotone
 // lines with a gradient fill fading to transparent, blue for paid/income, red for
 // pending/expense) — not the grouped-bar version this briefly became.
-export function IncomeExpenseChart() {
+// Content-only (no wrapper/background): embedded inside the merged `FinancesOverviewCard`
+// widget (FORM-120) alongside IncomeByCategoryChart, side by side when width allows. Loading/
+// empty states are the caller's responsibility (same useFinanceChartsData() call).
+export function IncomeExpenseChart({ data, className }: { data: FinanceChartsData; className?: string }) {
   const t   = useTranslations()
   const pal = usePalette()
-  const { data, isLoading, modules } = useFinanceChartsData()
-
-  if (!modules.finances) return null
-  if (isLoading) return <div className="h-full min-h-48 rounded-lg bg-muted/60 animate-pulse" />
-  if (!data?.hasFinances) return null
 
   return (
-    <div className="flex h-full flex-col rounded-lg bg-muted/60 p-6">
+    <div className={cn("flex h-full min-h-48 flex-col", className)}>
       <p className="mb-4 shrink-0 text-base font-medium">{t("dashboard.charts.trendTitle")}</p>
       {/* Fills whatever height the widget was resized to, instead of the fixed 200px it
           used when the card's height wasn't the user's to choose. */}
@@ -217,7 +222,10 @@ export function IncomeExpenseChart() {
             </defs>
             <CartesianGrid vertical={false} stroke={pal.grid} />
             <XAxis dataKey="label" axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: pal.axis, fontFamily: "inherit" }} />
-            <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: pal.axis, fontFamily: "inherit" }} width={32} />
+            {/* No fixed width: a 5-digit tick ("12 000 €") got clipped against a hardcoded
+                32px — letting Recharts size the axis to its own longest label keeps every
+                graduation fully visible regardless of the association's amounts. */}
+            <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: pal.axis, fontFamily: "inherit" }} />
             <Tooltip content={<MonthlyTip />} cursor={{ stroke: pal.grid, strokeWidth: 1 }} />
             <Legend
               iconType="plainline"
@@ -245,41 +253,38 @@ export function IncomeExpenseChart() {
   )
 }
 
-// Split out from the grid above so the dashboard's left column (Prochain événement +
-// Cotisations) can place it right below Cotisations instead of leaving that column
-// visibly shorter than the right one — same underlying query (shared cache entry via
-// the identical queryKey, so this doesn't cost a second request).
-export function IncomeByCategoryChart() {
+// Content-only (no wrapper/background): embedded inside the merged `FinancesOverviewCard`
+// widget (FORM-120) alongside IncomeExpenseChart, side by side when width allows. Horizontal
+// bars, not vertical — labels on the left (YAxis category), amounts right-aligned outside the
+// bar on the right (LabelList position="right"). A vertical layout with a label above a short
+// bar (e.g. Billetterie, Boutique) had nowhere safe to put the figure without it crowding the
+// category name below; a horizontal bar's "short" axis is its length, not its label's room.
+export function IncomeByCategoryChart({ data }: { data: FinanceChartsData }) {
   const t   = useTranslations()
   const pal = usePalette()
-  const { data, isLoading } = useQuery<FinanceChartsData>({
-    queryKey: ["dashboard", "finance-charts"],
-    queryFn:  async () => {
-      const res = await fetch("/api/dashboard/finance-charts")
-      if (!res.ok) throw new Error(t("common.error"))
-      return res.json()
-    },
-    staleTime: 5 * 60_000,
-  })
-
-  if (isLoading) return <div className="h-48 rounded-lg bg-muted/60 animate-pulse" />
-  if (!data || !data.hasFinances || data.incomeByCategory.length === 0) return null
 
   return (
-    <div className="rounded-lg bg-muted/60 p-6">
+    <div>
       <p className="mb-4 text-base font-medium">{t("dashboard.charts.categoryTitle", { year: data.year })}</p>
-      <ResponsiveContainer width="100%" height={220} debounce={50}>
-        <BarChart data={data.incomeByCategory} margin={{ top: 24, right: 8, bottom: 0, left: 8 }} barCategoryGap="24%">
-          <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: pal.axis, fontFamily: "inherit" }} />
-          <YAxis hide />
+      <ResponsiveContainer width="100%" height={Math.max(160, data.incomeByCategory.length * 44)} debounce={50}>
+        <BarChart
+          data={data.incomeByCategory}
+          layout="vertical"
+          margin={{ top: 4, right: 56, bottom: 4, left: 8 }}
+          barCategoryGap="24%"
+        >
+          <CartesianGrid horizontal={false} stroke={pal.grid} />
+          <XAxis type="number" axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: pal.axis, fontFamily: "inherit" }} />
+          <YAxis
+            type="category" dataKey="name" axisLine={false} tickLine={false}
+            tick={{ fontSize: 12, fill: pal.axis, fontFamily: "inherit" }}
+            width={96}
+          />
           <Tooltip content={<CategoryTip />} cursor={{ fill: pal.cursor }} />
-          <Bar dataKey="amount" fill={pal.sequential} radius={[8, 8, 0, 0]} animationDuration={500} animationEasing="ease-out">
-            {/* Outside, above the bar — on the panel background rather than the bar fill,
-                so it's legible with one color at every bar height. A hardcoded white
-                "insideTop" label read fine on tall bars but landed near/below a short
-                bar's top edge (e.g. Billetterie, Boutique), going illegible against the
-                light background and crowding the category name on the axis below. */}
-            <LabelList dataKey="amount" position="top" offset={8} formatter={(v: unknown) => fmt(Number(v))} style={{ fontSize: 11, fill: pal.axis, fontFamily: "inherit" }} />
+          <Bar dataKey="amount" fill={pal.sequential} radius={[0, 8, 8, 0]} animationDuration={500} animationEasing="ease-out">
+            {/* Outside, past the bar's end — on the panel background rather than the bar
+                fill, so it's legible regardless of how short the bar is. */}
+            <LabelList dataKey="amount" position="right" offset={8} formatter={(v: unknown) => fmt(Number(v))} style={{ fontSize: 11, fill: pal.axis, fontFamily: "inherit" }} />
           </Bar>
         </BarChart>
       </ResponsiveContainer>

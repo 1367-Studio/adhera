@@ -21,7 +21,9 @@ import { APP_URL } from "@/lib/env"
 import { notifyMissingCotisation } from "@/lib/cotisation-alerts"
 import { createMembershipAddonPurchases } from "@/lib/webhook/membership-addons"
 import { notifyNewAddonDonations } from "@/lib/dons/notify"
+import { bookAddonDonationIncome } from "@/lib/dons/book-income"
 import { notifyMembershipSignup } from "@/lib/webhook/membership-notify"
+import { notifyNewMembershipLicense } from "@/lib/webhook/membership-license-notify"
 import { addressColumns } from "@/lib/address"
 import { reportError } from "@/lib/monitoring"
 
@@ -234,6 +236,16 @@ export async function handleCotisationSubscriptionCheckout(session: Stripe.Check
           // subscription produces (see handleCotisationInvoicePaid).
           receiptMode:      (meta.receiptMode as "NONE" | "FULL" | "PARTIAL" | undefined) || "NONE",
           deductibleAmount: meta.deductibleAmount ? Number(meta.deductibleAmount) : null,
+          // FORM-114 — snapshot of the federative-license decision made at signup, same
+          // reasoning as durationMonths/receiptMode above. handleCotisationInvoicePaid only
+          // reads this for this subscription's very first period (there's no previous
+          // Cotisation yet to copy a license from) — every later renewal instead copies the
+          // PREVIOUS period's MembershipLicense if one exists.
+          licenseApplies:          meta.licenseApplies === "1",
+          licenseFederation:       meta.licenseFederation || null,
+          licenseSeason:           meta.licenseSeason || null,
+          licenseDeclaredByMembre: meta.licenseDeclaredByMembre === "1",
+          licenseNumber:           meta.licenseNumber || null,
         },
       })
 
@@ -248,6 +260,12 @@ export async function handleCotisationSubscriptionCheckout(session: Stripe.Check
         email:         meta.email,
         addonsJson:    meta.addons,
         canIssueTaxReceipts: assoc?.canIssueTaxReceipts ?? false,
+      })
+      await bookAddonDonationIncome(tx, {
+        associationId:  meta.associationId,
+        donorFirstName: meta.firstName ?? "",
+        donorLastName:  meta.lastName ?? "",
+        donations,
       })
 
       return { user, membre, cotisationSubscription, donations }
@@ -310,8 +328,18 @@ export async function handleCotisationSubscriptionCheckout(session: Stripe.Check
       canIssueTaxReceipts: assoc.canIssueTaxReceipts,
       receiptMode:         (meta.receiptMode as "NONE" | "FULL" | "PARTIAL" | undefined) || "NONE",
       deductibleAmount:    meta.deductibleAmount ? Number(meta.deductibleAmount) : undefined,
+      license:             meta.licenseApplies === "1" && meta.licenseFederation && meta.licenseSeason
+        ? { federation: meta.licenseFederation, season: meta.licenseSeason, declaredByMembre: meta.licenseDeclaredByMembre === "1" }
+        : undefined,
     }), { associationId: meta.associationId, membreId: created.membre.id, source: "TRANSACTION", sourceId: created.cotisationSubscription.id })
       .catch(error => reportError(error, { area: "email", action: "webhook.cotisation-subscription-started-email", extra: { associationId: meta.associationId, membreId: created.membre.id, cotisationSubscriptionId: created.cotisationSubscription.id } }))
+
+    if (meta.licenseApplies === "1" && meta.licenseFederation && meta.licenseSeason) {
+      notifyNewMembershipLicense({
+        associationId: meta.associationId, membreId: created.membre.id, memberName: `${created.membre.firstName} ${created.membre.lastName}`,
+        federation: meta.licenseFederation, season: meta.licenseSeason, declaredByMembre: meta.licenseDeclaredByMembre === "1",
+      }).catch(error => reportError(error, { area: "webhook", action: "webhook.cotisation-subscription-notify-new-license", extra: { associationId: meta.associationId, membreId: created.membre.id } }))
+    }
 
     // Not fired before this session's own edge-case review — a recurring MembershipForm
     // signup (like the one-off/free/offline paths in checkout/route.ts) is still a real new
@@ -388,7 +416,10 @@ export async function handleCotisationInvoicePaid(invoice: Stripe.Invoice): Prom
 
   const cotisationSub = await prisma.cotisationSubscription.findUnique({
     where:  { stripeSubscriptionId: subscriptionId },
-    select: { id: true, associationId: true, membreId: true, amount: true, membershipFormId: true, tierId: true, durationMonths: true, receiptMode: true, deductibleAmount: true },
+    select: {
+      id: true, associationId: true, membreId: true, amount: true, membershipFormId: true, tierId: true, durationMonths: true, receiptMode: true, deductibleAmount: true,
+      licenseApplies: true, licenseFederation: true, licenseSeason: true, licenseDeclaredByMembre: true, licenseNumber: true,
+    },
   })
   // Not a cotisation subscription — or one whose checkout.session.completed hasn't created the
   // row yet, in which case this first payment must come back later rather than be lost.
@@ -463,7 +494,12 @@ export async function handleCotisationInvoicePaid(invoice: Stripe.Invoice): Prom
       membreId:       cotisationSub.membreId,
       associationId:  cotisationSub.associationId,
       year,
-      amount:         cotisationSub.amount,
+      // FORM-114 — the actual invoice total, not cotisationSub.amount (the base tier's own
+      // nominal price): when a federative license rides as a 2nd recurring subscription item
+      // (see checkout/route.ts), the invoice this creates the Cotisation for can be bigger
+      // than the base price alone, and recordCotisationPayment below must never see a paid
+      // amount exceeding Cotisation.amount (it would read as an overpayment).
+      amount,
       status:         "EN_ATTENTE",
       subscriptionId: cotisationSub.id,
       membershipFormId: cotisationSub.membershipFormId,
@@ -474,6 +510,73 @@ export async function handleCotisationInvoicePaid(invoice: Stripe.Invoice): Prom
       deductibleAmount: cotisationSub.deductibleAmount,
     },
   })
+
+  // FORM-114 — a renewal copies the PREVIOUS period's license if there was one (status
+  // A_RENOVAR, federation/season re-read off the tier's CURRENT config — the club is expected
+  // to keep it up to date each season, see MembershipTier.licenseSeason). The very first
+  // period for this subscription has no previous Cotisation to copy from, so it falls back to
+  // what was decided at signup (see handleCotisationSubscriptionCheckout's snapshot). Either
+  // way, upsert rather than create: a redelivered invoice.paid is already caught by the
+  // alreadyRecorded guard above, but this stays correct even if that guard is ever relaxed.
+  const previousCotisation = await prisma.cotisation.findFirst({
+    where:   { subscriptionId: cotisationSub.id, NOT: { id: cotisation.id } },
+    orderBy: { year: "desc" },
+    select:  { license: { select: { id: true } } },
+  })
+  if (previousCotisation) {
+    if (previousCotisation.license && cotisationSub.tierId) {
+      const tier = await prisma.membershipTier.findUnique({
+        where:  { id: cotisationSub.tierId },
+        select: { licenseEnabled: true, licenseFederation: true, licenseSeason: true },
+      })
+      if (tier?.licenseEnabled && tier.licenseFederation && tier.licenseSeason) {
+        await prisma.membershipLicense.upsert({
+          where:  { cotisationId: cotisation.id },
+          update: {},
+          create: {
+            cotisationId: cotisation.id, membreId: cotisationSub.membreId, associationId: cotisationSub.associationId,
+            federation: tier.licenseFederation, season: tier.licenseSeason,
+            status: "A_RENOVAR", autoRenewed: true,
+          },
+        })
+      } else {
+        // The tier was deleted, or its license config turned off/emptied since the previous
+        // period — this renewal would otherwise silently stop tracking a license the member
+        // had every prior season, with nothing telling the club it happened. Same "make sure
+        // a human finds out" reasoning as the second-same-year-renewal notification above.
+        const membreForAlert = await prisma.membre.findUnique({ where: { id: cotisationSub.membreId }, select: { firstName: true, lastName: true } })
+        const admins = await prisma.user.findMany({
+          where:  { associationId: cotisationSub.associationId, role: { in: ["ADMIN", "PRESIDENT", "TRESORIER"] }, active: true },
+          select: { id: true },
+        })
+        if (admins.length) {
+          await prisma.notification.createMany({
+            data: admins.map(a => ({
+              userId: a.id,
+              title:  "Licence fédérative non renouvelée automatiquement",
+              body:   `${membreForAlert ? `${membreForAlert.firstName} ${membreForAlert.lastName}` : "Un adhérent"} avait une licence fédérative suivie la saison précédente, mais le tarif ne la gère plus (supprimé ou désactivé) — aucun nouveau suivi n'a été créé pour ce renouvellement.`,
+              link:   `/dashboard/membres/${cotisationSub.membreId}`,
+              scope:  "GESTION",
+            })),
+            skipDuplicates: true,
+          })
+          await pusherServer.trigger(`private-association-${cotisationSub.associationId}`, "new-notification", {}).catch(() => {})
+        }
+      }
+    }
+  } else if (cotisationSub.licenseApplies && cotisationSub.licenseFederation && cotisationSub.licenseSeason) {
+    await prisma.membershipLicense.upsert({
+      where:  { cotisationId: cotisation.id },
+      update: {},
+      create: {
+        cotisationId: cotisation.id, membreId: cotisationSub.membreId, associationId: cotisationSub.associationId,
+        federation: cotisationSub.licenseFederation, season: cotisationSub.licenseSeason,
+        licenseNumber: cotisationSub.licenseNumber,
+        status: cotisationSub.licenseDeclaredByMembre ? "EM_ANDAMENTO" : "A_SOLICITAR",
+        declaredByMembre: cotisationSub.licenseDeclaredByMembre,
+      },
+    })
+  }
 
   // Any add-on/embedded donation bought alongside this subscription's first checkout was
   // recorded with cotisationId: null (see createMembershipAddonPurchases in

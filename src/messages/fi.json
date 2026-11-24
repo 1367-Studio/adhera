@@ -41,6 +41,7 @@
     "location": "Sijainti",
     "choosePlaceholder": "Valitse...",
     "allPlaceholder": "Kaikki",
+    "noOptionsPlaceholder": "Vaihtoehtoja ei ole saatavilla",
     "previousPage": "Edellinen sivu",
     "nextPage": "Seuraava sivu",
     "paginationRange": "{from}–{to} / {total}",
@@ -51,7 +52,7 @@
     "addressPlaceholder": "Salle des fêtes, 12 rue de la Paix, Pariisi...",
     "viewOnGoogleMaps": "Katso Google Mapsista",
     "backToSite": "Takaisin sivustolle",
-    "noOptionsPlaceholder": "Vaihtoehtoja ei ole saatavilla"
+    "period": {}
   },
   "address": {
     "street": "Osoite",
@@ -62,6 +63,7 @@
     "country": "Asuinmaa",
     "legacyMigratedHint": "Kopioitu vanhasta osoitekentästä — tarkista, ettei se jo sisällä alla olevaa postinumeroa ja kaupunkia."
   },
+  "avis": {},
   "auth": {
     "layout": {
       "imageAlt": "Kirjaudu sisään",
@@ -91,7 +93,8 @@
         "connecting": "Kirjaudutaan…",
         "or": "tai",
         "continueWithGoogle": "Jatka Googlella"
-      }
+      },
+      "twoFactor": {}
     },
     "register": {
       "pageTitle": "Luo tili",
@@ -649,12 +652,130 @@
         "enLitige": "Kiistanalainen",
         "annulee": "Peruttu"
       },
-      "unmarkPaidWarning": "Tämä asiakirja on tällä hetkellä maksettu — tämän statuksen poistaminen poistaa rahoituksessa aiheutuneet kulut sekä mahdolliset pankkien täsmäytykset.",
-      "markPaidNotice": "Tämän asiakirjan merkitseminen maksetuksi luo automaattisesti vastaavan kulun Taloustietoihin.",
       "file": "Asiakirja",
+      "categoryHint": "Jos valitset kategorian, kulu kirjataan heti, kun lasku on kirjattu, eikä maksuhetkellä.",
+      "payment": {
+        "toasts": {}
+      },
       "toasts": {
         "uploadError": "Virhe asiakirjan lataamisessa",
         "networkError": "Verkkovirheen lataus — kokeile uudelleen"
+      },
+      "unmarkPaidWarning": "Tämä asiakirja on tällä hetkellä maksettu — tämän statuksen poistaminen poistaa rahoituksessa aiheutuneet kulut sekä mahdolliset pankkien täsmäytykset.",
+      "markPaidNotice": "Tämän asiakirjan merkitseminen maksetuksi luo automaattisesti vastaavan kulun Taloustietoihin."
+    }
+  },
+  "reimbursements": {
+    "view": {
+      "title": "Kulujen korvaukset",
+      "newRequest": "Uusi pyyntö",
+      "export": "Vienti",
+      "myRequests": "Omat pyyntöni",
+      "allRequests": "Kaikki pyynnöt",
+      "allRequesters": "Kaikki hakijat",
+      "allCategories": "Kaikki kategoriat",
+      "dateFrom": "Tai",
+      "dateTo": "To",
+      "allStatuses": "Kaikki tilat",
+      "summary": "{pending} Odottamassa — {pendingAmount} · {approved} palautettava — {approvedAmount} · {reimbursed} korvattu — {reimbursedAmount}",
+      "noRequest": "Ei hyvityspyyntöjä",
+      "columns": {
+        "subject": "Tarkoitus",
+        "date": "Päivämäärä",
+        "amount": "Määrä",
+        "status": "Tila"
+      },
+      "status": {
+        "draft": "Draft",
+        "pendingApproval": "Odottaa hyväksyntää",
+        "needsCorrection": "Korjattava",
+        "approved": "Hyväksytty",
+        "rejected": "Kieltäytyi",
+        "reimbursed": "Hyvitetty",
+        "cancelled": "Peruttu"
+      },
+      "actions": {
+        "view": "Katso",
+        "submit": "Lähetä",
+        "cancel": "Peruuta"
+      },
+      "toasts": {
+        "created": "Pyyntö luotu",
+        "updated": "Päivityspyyntö",
+        "deleted": "Pyyntö poistettu",
+        "submitted": "Hyväksyttäväksi jätetty hakemus",
+        "cancelled": "Pyyntö peruutettu",
+        "approved": "Hakemus hyväksytty",
+        "correctionRequested": "Korjausta pyydetty",
+        "rejected": "Pyyntö hylätty",
+        "reimbursed": "Kirjattu palautus"
+      },
+      "deleteConfirmTitle": "Poistaa tämä luonnoks?",
+      "deleteConfirmDescription": "Tämä toimenpide on peruuttamaton.",
+      "cancelConfirmTitle": "Peruuta tämä pyyntö?",
+      "cancelConfirmDescription": "Hakijalle ilmoitetaan peruutuksesta.",
+      "cancelReasonLabel": "Peruutuksen syy"
+    },
+    "form": {
+      "subject": "Tarkoitus",
+      "subjectPlaceholder": "Eks. Alueelliset kokousmatkat",
+      "comment": "Kommentaari",
+      "commentPlaceholder": "Valinnaiset tiedot",
+      "event": "Aiheeseen liittyvä tapahtuma",
+      "project": "Liittyvä projekti",
+      "noProject": "Ei projektia",
+      "noEvent": "Ei tapahtumia",
+      "items": "Kulut",
+      "addItem": "Lisää kulu",
+      "noItems": "Ei lisämaksuja",
+      "itemDate": "Menojen päivämäärä",
+      "itemDescription": "Kuvaus",
+      "itemAmount": "Määrä",
+      "itemCategory": "Kategoria",
+      "itemReceipt": "Perustelu",
+      "total": "Yhteensä",
+      "duplicateWarning": "Samanlainen kulu (sama päivämäärä, sama summa) on jo olemassa toisessa pyynnössäsi.",
+      "toasts": {
+        "uploadError": "Virhe kuitin lähetyksessä",
+        "networkError": "Verkkovirhe kuitin lähetyksessä"
+      }
+    },
+    "detail": {
+      "notFound": "Hyvityspyyntöä ei löytynyt",
+      "history": "Historia",
+      "correctionFrom": "Korjaus pyydetty {name}",
+      "rejectedBy": "Hylätty {name}",
+      "reimbursedOn": "Hyvitys päivämäärällä {date} kirjoittanut {method}",
+      "selfApprovalBlockedNotice": "Et voi hyväksyä omaa pyyntöäsi. Sen on oltava hyväksytty ylläpitäjän tai muun valtuutetun viranomaisen toimesta.",
+      "viewReceipt": "Katso tukiasiakirjat",
+      "immobilisationTag": "Käyttöomaisuus",
+      "approveButton": "Hyväksy",
+      "requestCorrectionButton": "Pyydä korjausta",
+      "rejectButton": "hylätä",
+      "correctionCommentLabel": "Korjauskommentti",
+      "rejectionReasonLabel": "Kieltäytymisen syy",
+      "deleteItemConfirmTitle": "Poistaa tämä kulu?",
+      "toasts": {
+        "itemAdded": "Lisäkuluja",
+        "itemUpdated": "Päivitetty kulu",
+        "itemDeleted": "Kulut poistettu"
+      }
+    },
+    "register": {
+      "title": "Säästä hyvitys",
+      "registerButton": "Säästä hyvitys",
+      "date": "Hyvityspäivä",
+      "paymentMethod": "Maksutapa",
+      "bankAccount": "Pankkitili",
+      "noBankAccountHint": "Ei pankkitiliä — lisää tili Rahoitus> Tilit -osioon tai valitse Käteinen.",
+      "transaction": "Täsmäytä tuontipankkitapahtuma (valinnainen)",
+      "noTransaction": "Älä lähennä nyt",
+      "reference": "Viite",
+      "submit": "Tallenna",
+      "methods": {
+        "virement": "Siirto",
+        "cheque": "Tarkistettu",
+        "especes": "Lajit"
       }
     }
   },
@@ -663,26 +784,64 @@
     "subtitle": "Yleiskatsaus yhdistyksestäsi",
     "customize": {
       "customize": "Muokkaa",
+      "tooltip": "Mukauta hallintapaneelia",
       "done": "Valmis",
       "reset": "Nollaus",
       "dragHint": "Drag järjestääksesi uudelleen",
       "resizeHint": "Vedä kulmaa koon muuttamiseksi"
     },
+    "actionsTodo": {
+      "trigger": "Toimenpiteet",
+      "badgeHint": "{count, plural, one {# odottava toimenpidekategoria} other {# odottavien toimenpiteiden kategoriat}}",
+      "empty": "Kaikki on ajan tasalla, ei toimenpiteitä hoidettavana.",
+      "snooze": "Lykkää tätä toimenpidettä",
+      "snoozeDialogTitle": "Lykkää tätä toimenpidettä",
+      "snoozeDialogDescription": "Toiminto pysyy piilossa sinulta siihen päivään asti, mutta ilmestyy uudelleen, jos käsittelyä on vielä käsiteltävänä.",
+      "snoozeUntilLabel": "Siirretty siihen asti",
+      "confirm": "Vahvista",
+      "loadError": "Suoritettavia toimintoja ei voitu ladata.",
+      "snoozedSectionTitle": "{count, plural, one {# toiminta keskeytetty} other {# toimenpiteet tauolle}}",
+      "snoozedUntil": "Kunnes {date}",
+      "cancelSnooze": "Peruuta pidätys",
+      "actionLabels": {
+        "voirEtRelancer": "Katso ja käynnistä se uudelleen",
+        "examiner": "Tarkastaja",
+        "consulter": "Konsultoi"
+      },
+      "rows": {
+        "cotisations-en-attente": "{count, plural, one {# vireillä oleva jäsenmaksu} other {# vireillä olevat maksut}}",
+        "materiel-en-retard": "{count, plural, one {# myöhäisen materiaalin palautukset} other {# myöhäisen materiaalin palautukset}}",
+        "membres-a-valider": "{count, plural, one {# jäsen validoitava} other {# validoitavia jäseniä}}",
+        "dons-a-encaisser": "{count, plural, one {# lahja lunastettavaksi} other {# lahjoituksia kerättäväksi}}",
+        "rapprochement-bancaire": "{count, plural, one {# vertailtava operaatio} other {# operaatioita vertailtavaksi}}",
+        "notes-de-frais-a-valider": "{count, plural, one {# tarkistettava kuluraportti} other {# tarkistettavat kuluraportit}}",
+        "commandes-a-preparer": "{count, plural, one {# valmistelukäsky} other {# määräyksiä valmistella}}"
+      }
+    },
     "stats": {
-      "activeMembers": "Aktiiviset jäsenet",
-      "eventsThisMonth": "Tämän kuukauden tapahtumat",
-      "cotisationsPending": "Odottavat lahjoitukset",
       "financialBalance": "Taloudellinen tasapaino",
       "donationsReceived": "Vastaanotetut lahjoitukset {year}"
     },
-    "nextEvent": {
-      "title": "Seuraava tapahtuma",
-      "empty": "Ei tulevia tapahtumia."
+    "agenda": {
+      "title": "Esityslista",
+      "eventsThisMonth": "{count, plural, one {# tapahtuma tässä kuussa} other {# tapahtumat tässä kuussa}}",
+      "ongoing": "Käynnissä",
+      "viewCalendar": "Katso kalenteri",
+      "empty": "Ei tapahtumia tulossa."
     },
     "cotisations": {
       "title": "Panokset {year}",
       "collectedThisYear": "Lunastettu tänä vuonna",
-      "pendingPayment": "{count} Maksua odottaa"
+      "remaining": "{amount} jäljellä oleva vastaanotto",
+      "pendingPayment": "{count} Maksua odottaa",
+      "viewAll": "Katso maksut"
+    },
+    "activiteRecente": {
+      "title": "Viimeaikainen toiminta",
+      "tabs": {
+        "commandes": "Tilaukset",
+        "dons": "Lahjoitukset"
+      }
     },
     "recentDonations": {
       "title": "Viimeaikaiset lahjoitukset",
@@ -718,6 +877,7 @@
       "categoryTitle": "Tulot kategorioittain — {year}"
     },
     "memberSummary": {
+      "title": "Jäsenet",
       "total": "{count, plural, one {# jäsen} other {# jäsentä}}",
       "active": "{count, plural, one {# aktiivinen} other {# aktiivista}}",
       "inactive": "{count, plural, one {# passiivinen} other {# passiivista}}"
@@ -728,6 +888,9 @@
       "nearLimit": "Raja lähestyy",
       "almostReached": "Raja lähes täynnä",
       "limitReached": "Raja täynnä"
+    },
+    "aTraiter": {
+      "items": {}
     }
   },
   "notifications": {
@@ -862,7 +1025,8 @@
       "userMenu": {
         "title": "Profiilisi",
         "description": "Muokkaa profiiliasi, vaihda salasanasi ja kirjaudu ulos tästä valikosta."
-      }
+      },
+      "help": {}
     }
   },
   "finances": {
@@ -893,9 +1057,219 @@
       "title": "Tulossa pian",
       "description": "Tämä ominaisuus on kehitteillä."
     },
+    "immobilisationsView": {
+      "columns": {},
+      "toasts": {},
+      "drillDown": {}
+    },
+    "immobilisationForm": {},
+    "journalManual": {},
+    "bilan": {
+      "title": "Tase",
+      "description": "Yhdistyksen varat ja velat tilikauden lopussa.",
+      "exerciceLabel": "Harjoitus",
+      "rubriqueColumnLabel": "Osasto",
+      "noPreviousExercice": "Vertailutietoa ei ole saatavilla",
+      "actif": "Aktiivinen",
+      "totalActif": "Total Active",
+      "passif": "Passiivinen",
+      "totalPassif": "Kokonaisvastuut",
+      "noAccountsInRubrique": "Tässä osiossa ei ole tasapainoa",
+      "exportPdf": "Vie PDF",
+      "exportDisabledTooltip": "Lopullista taseraporttia ei voi viedä ennen kuin yllä mainitut poikkeamat on korjattu.",
+      "emptyExercice": {
+        "title": "Ei tilivuotta",
+        "description": "Luo uusi tilikausi nähdäksesi taseen."
+      },
+      "emptyLedger": {
+        "title": "Ei kirjanpitomerkintöjä",
+        "description": "Tase näytetään heti, kun tulot, menot tai kiinteät varat on kirjattu tilikaudella."
+      },
+      "rubriques": {
+        "immobilisationsCorporelles": "Aineelliset pääomavarat",
+        "immobilisationsIncorporelles": "Aineettomat kiinteät omaisuuserät",
+        "immobilisationsFinancieres": "Rahoituskiinteät varat",
+        "disponibilites": "Saatavuus",
+        "chargesConstateesDavance": "Ennakkoon maksetut kulut",
+        "creances": "Saatavuudet",
+        "stocksEtEnCours": "Varasto",
+        "fondsPropres": "Oma pääoma",
+        "provisions": "Varaukset",
+        "dettes": "Velat",
+        "produitsConstatesDavance": "Lykätty tulo",
+        "fondsDedies": "Rajoitetut varat"
+      },
+      "memoNotice": "Arvio — ei kirjattu tilikirjaan, poissuljettu kokonaisvaroista.",
+      "accountLabels": {
+        "reportANouveau": "Kertyneet tulokset",
+        "resultatExercice": "Vuoden nettotulos",
+        "creancesCotisations": "Maksamattomat jäsenmaksut",
+        "creancesFactures": "Maksamattomia laskuja",
+        "stocksEstimatedValue": "Arvioitu varaston arvo",
+        "creancesFacturesEnRetard": "Myöhästyneet laskut"
+      },
+      "pdf": {
+        "periodLabel": "Ajanjakso {start}–{end}"
+      },
+      "drillDown": {
+        "date": "Päivämäärä",
+        "label": "Etiketti",
+        "origin": "Alkuperä",
+        "debit": "Debit",
+        "credit": "Luotto",
+        "noLines": "Tälle tilille ei ole merkintöjä.",
+        "sourceTypes": {
+          "INCOME": "Tulot",
+          "INCOME_REVERSAL": "Tulojen kääntyminen",
+          "EXPENSE": "Kustannukset",
+          "EXPENSE_REVERSAL": "Kulujen kääntäminen",
+          "BANK_TRANSACTION": "Pankkitapahtuma",
+          "ACCOUNT_TRANSFER": "Sisäinen siirto",
+          "OPENING_BALANCE": "Avaussaldo",
+          "IMMOBILISATION_DEPRECIATION": "Arvon aleneminen",
+          "IMMOBILISATION_ACQUISITION": "Omaisuuden hankinta",
+          "FACTURE_RECUE_PAYMENT": "Toimittajan maksu",
+          "MANUAL": "Manuaalinen syöttö"
+        }
+      },
+      "issues": {
+        "title": "Poikkeavuuksia havaittu",
+        "messages": {
+          "ACCOUNT_WITHOUT_RUBRIQUE": "Tilillä {code} — {label} on saldo, mutta se ei ole sidottu mihinkään taseen erään.",
+          "ACTIF_PASSIF_MISMATCH": "Omaisuuserä ({actif}) ei vastaa velkaa ({passif}).",
+          "OPENING_BALANCE_MISSING": "Tälle harjoitukselle ei tuotettu aloitusmerkintöjä \"{previousLabel}\":sta.",
+          "TRIAL_BALANCE_UNBALANCED": "Kokonaisdebet ({debit}) ei vastaa tämän tilikauden kokonaisluottoa ({credit}).",
+          "RESULT_DIVERGENCE": "Päiväkirjan ({journal}) tulos poikkeaa tuloslaskelman ({statement}) tuloksesta — päiväkirja ei välttämättä ole vielä ajan tasalla tälle tilikaudelle (sulje tilivuosi tai aloita synkronointi uudelleen).",
+          "UNPOSTED_ENTRIES": "Rekisteröimättömät merkinnät: {count} (kategoria puuttuu tai ei siihen liittyvää kirjanpitokoodia) — {amount} ei näy tässä raportissa. Synkronoinnin uudelleenkäynnistys ei riitä tässä, kategoria on korjattava."
+        }
+      },
+      "memoNoHistory": "Ei historiallista tietoa",
+      "caveats": {
+        "stocksMissingCostPrice": "{count} variantit, joilla ei ole ostokustannuksia kirjattu, poistettu arviosta"
+      },
+      "refreshLedger": "Päivitä loki",
+      "refreshLedgerTooltip": "Tätä raporttia ei päivitetä reaaliajassa jokaisesta tulosta tai kulusta — klikkaa synkronoidaksesi viimeisimmät liikkeet.",
+      "refreshLedgerSuccessPosted": "{count, plural, =0 {Ei uutta liikettä} one {# synkronoitu liike} other {# synkronoidut liikkeet}}",
+      "refreshLedgerSuccessReversed": "{count, plural, =0 {} one {, # peruutus on sovellettu} other {, # peruutuksia on sovellettu}}",
+      "refreshLedgerError": "Lokia ei voi päivittää. Yritä uudelleen."
+    },
+    "compteResultat": {
+      "title": "Tuloslaskelma",
+      "description": "Tilikauden taloudellinen tulos verrattuna edelliseen tilikauteen.",
+      "exerciceLabel": "Tilikausi",
+      "categoryColumnLabel": "Kategoria",
+      "noPreviousExercice": "-",
+      "noPreviousExerciceMessage": "Ei edellistä tilikautta saatavilla",
+      "export": "Vie",
+      "exportExcel": "Vie Excel (yksityiskohtainen)",
+      "exportPdf": "Vie PDF",
+      "products": "Tuotot",
+      "totalProducts": "Tuotot yhteensä",
+      "expenses": "Kulut",
+      "totalExpenses": "Kulut yhteensä",
+      "result": "Tilikauden tulos",
+      "resultZero": "Tilikauden tulos: 0 €",
+      "surplus": "Tilikauden ylijäämä",
+      "deficit": "Tilikauden alijäämä",
+      "operationalResult": "Liiketoiminnan tulos",
+      "uncategorized": "Luokittelematta",
+      "uncategorizedAlertIncome": "{count, plural, one {# tulo pitää luokitella} other {# tuloa pitää luokitella}}",
+      "uncategorizedAlertExpense": "{count, plural, one {# meno pitää luokitella} other {# menoa pitää luokitella}}",
+      "expandSection": "Näytä",
+      "collapseSection": "Piilota",
+      "noCategoriesInSection": "Ei luokkia tässä osiossa",
+      "sections": {
+        "FINANCIAL": "Rahoitus",
+        "EXCEPTIONAL": "Satunnainen",
+        "OTHER": "Muu"
+      },
+      "inKind": {
+        "title": "Vapaaehtoiset lahjoitukset luonnonlahjoituksissa",
+        "employmentHeader": "Panosten käyttö",
+        "amountHeader": "Määrä",
+        "receivedHeader": "Saadut panokset",
+        "totalEmployments": "Työpaikkojen kokonaismäärä",
+        "totalReceived": "Kokonaispanokset",
+        "note": "Nämä ilmaiset sijoitukset arvostetaan euroissa. Ne eivät johda rahan liikkeisiin eivätkä muuta tilikauden tulosta."
+      },
+      "drillDown": {
+        "date": "Päivämäärä",
+        "origin": "Alkuperä",
+        "person": "Henkilö",
+        "payment": "Maksu",
+        "amount": "Summa",
+        "categorize": "Luokittele",
+        "categorizePlaceholder": "Valitse luokka",
+        "noTransactions": "Ei tapahtumia",
+        "categorizeSuccess": "Tapahtuma luokiteltu"
+      },
+      "pdf": {
+        "periodLabel": "Ajanjakso {start}–{end}",
+        "operatingIncome": "LIIKETOIMINNAN TUOTOT",
+        "operatingExpense": "LIIKETOIMINNAN KULUT",
+        "operatingResult": "LIIKETOIMINNAN TULOS",
+        "financialIncome": "RAHOITUSTUOTOT",
+        "financialExpense": "RAHOITUSKULUT",
+        "financialResult": "RAHOITUSTULOS",
+        "exceptionalIncome": "SATUNNAISET TUOTOT",
+        "exceptionalExpense": "SATUNNAISET KULUT",
+        "exceptionalResult": "SATUNNAINEN TULOS",
+        "otherIncome": "MUUT TUOTOT",
+        "otherExpense": "MUUT KULUT",
+        "otherResult": "MUIDEN TUOTTOJEN JA KULUJEN TULOS",
+        "uncategorizedSection": "LUOKITTELEMATTOMAT TAPAHTUMAT",
+        "uncategorizedIncomeLabel": "Luokittelemattomat tulot",
+        "uncategorizedExpenseLabel": "Luokittelemattomat menot",
+        "total": "Yhteensä",
+        "grandTotal": "YHTEENSÄ",
+        "categoryColumn": "Kategoria",
+        "inKindTitle": "Vapaaehtoiset lahjoitukset luonnonlahjoituksissa",
+        "inKindEmploymentHeader": "Panosten käyttö",
+        "inKindAmountHeader": "Määrä",
+        "inKindReceivedHeader": "Saadut panokset",
+        "inKindTotalEmployments": "Työpaikkojen kokonaismäärä",
+        "inKindTotalReceived": "Kokonaispanokset",
+        "inKindNote": "Nämä ilmaiset sijoitukset arvostetaan euroissa. Ne eivät johda rahan liikkeisiin eivätkä muuta tilikauden tulosta."
+      },
+      "csv": {
+        "date": "Päivämäärä",
+        "type": "Tyyppi",
+        "typeIncome": "Tulo",
+        "typeExpense": "Meno",
+        "category": "Luokka",
+        "uncategorized": "Luokittelematta",
+        "accountingCode": "Tilinumero",
+        "description": "Kuvaus",
+        "amount": "Summa",
+        "paymentMethod": "Maksutapa",
+        "origin": "Alkuperä",
+        "reference": "Viite",
+        "exercice": "Tilikausi"
+      },
+      "emptyExercice": {
+        "title": "Ei tilikautta",
+        "description": "Luo tilikausi tuloslaskelman luomiseksi."
+      }
+    },
+    "previsionnel": {
+      "emptyExercice": {},
+      "tabs": {},
+      "card": {},
+      "columns": {},
+      "export": {},
+      "toasts": {},
+      "copyBudget": {
+        "toasts": {}
+      },
+      "projectsTab": {
+        "noProjects": {},
+        "toasts": {}
+      }
+    },
     "categoryForm": {
       "name": "Nimi",
       "namePlaceholder": "Esim. Panokset",
+      "noMatchingCategory": "Ei yhteensopivuuskategoriaa",
       "type": "Tyyppi",
       "typeIncome": "Tulo",
       "typeExpense": "Kustannukset",
@@ -920,8 +1294,7 @@
       "sectionUnverifiedNote": "Tätä tiliä ei tunnisteta — tarkista osio tai valitse se edistyneistä vaihtoehdoista.",
       "sectionToVerify": "Tarkistettava osio",
       "advancedOptions": "Edistyneet vaihtoehdot",
-      "revertToAutoSection": "Takaisin automaattiosastolle",
-      "noMatchingCategory": "Ei yhteensopivuuskategoriaa"
+      "revertToAutoSection": "Takaisin automaattiosastolle"
     },
     "bankAccountForm": {
       "bankName": "Pankin nimi",
@@ -1056,6 +1429,13 @@
         "deleted": "Tili poistettu"
       }
     },
+    "transferForm": {
+      "toasts": {}
+    },
+    "transfersView": {
+      "description": "Kirjaa tähän jo tehdyt siirrot yhdistyksesi pankkitilien välillä. Kirjaa siirto muodollisesti ilman rahan siirtoa.",
+      "columns": {}
+    },
     "categoriesView": {
       "title": "Kategoriat",
       "description": "Hallinnoi tulo- ja kulukategorioita.",
@@ -1066,7 +1446,6 @@
       "newCategoryTitle": "Uusi kategoria",
       "editCategoryTitle": "Muokkaa kategoriaa",
       "deleteConfirmTitle": "Poistatko tämä kategoria?",
-      "deleteConfirmInUse": "« {name} on käytössä {count, plural, one {# tulot/menot} other {# tulot/menot}}. Nämä merkinnät muuttuvat muotoon \"Luokittelematon\".",
       "toasts": {
         "created": "Luotu kategoria",
         "updated": "Päivitetty kategoria",
@@ -1077,7 +1456,8 @@
       "customCategory": "Luo oma kategoria",
       "alreadyExists": "Jo konfiguroitu",
       "archivedReactivateHint": "Arkistoitu — klikkaa aktivoidaksesi uudelleen",
-      "custom": "Räätälöity"
+      "custom": "Räätälöity",
+      "deleteConfirmInUse": "« {name} on käytössä {count, plural, one {# tulot/menot} other {# tulot/menot}}. Nämä merkinnät muuttuvat muotoon \"Luokittelematon\"."
     },
     "incomesView": {
       "title": "Tulot",
@@ -1262,13 +1642,13 @@
       "description": "Yhdistä tuontipankkitapahtumat tuloihisi ja menoihisi.",
       "statusFilters": {
         "all": "Kaikki",
-        "unmatched": "Sovittamaton",
+        "unmatched": "Vertailukelpoinen",
         "matched": "Sociliated",
         "ignored": "Jätetty huomiotta",
         "duplicate": "Kaksoiskappaleet"
       },
       "status": {
-        "unmatched": "Sovittamaton",
+        "unmatched": "Vertailukelpoinen",
         "matched": "Sociliated",
         "pending": "Vireillä",
         "ignored": "Jätetty huomiotta",
@@ -1314,105 +1694,11 @@
       "suggestedMatches": "Ehdotetut ottelut",
       "typeIncome": "Tulo",
       "typeExpense": "Kustannukset",
-      "confirm": "Vahvista sovinto"
+      "confirm": "Vahvista sovinto",
+      "selectedCount": "{count, plural, one {# valittu kohde} other {# valittuja kohteita}}"
     },
-    "compteResultat": {
-      "title": "Tuloslaskelma",
-      "description": "Tilikauden taloudellinen tulos verrattuna edelliseen tilikauteen.",
-      "exerciceLabel": "Tilikausi",
-      "noPreviousExercice": "-",
-      "export": "Vie",
-      "exportExcel": "Vie Excel (yksityiskohtainen)",
-      "exportPdf": "Vie PDF",
-      "products": "Tuotot",
-      "totalProducts": "Tuotot yhteensä",
-      "expenses": "Kulut",
-      "totalExpenses": "Kulut yhteensä",
-      "result": "Tilikauden tulos",
-      "surplus": "Tilikauden ylijäämä",
-      "deficit": "Tilikauden alijäämä",
-      "emptyExercice": {
-        "title": "Ei tilikautta",
-        "description": "Luo tilikausi tuloslaskelman luomiseksi."
-      },
-      "noPreviousExerciceMessage": "Ei edellistä tilikautta saatavilla",
-      "resultZero": "Tilikauden tulos: 0 €",
-      "operationalResult": "Liiketoiminnan tulos",
-      "uncategorized": "Luokittelematta",
-      "uncategorizedAlertIncome": "{count, plural, one {# tulo pitää luokitella} other {# tuloa pitää luokitella}}",
-      "uncategorizedAlertExpense": "{count, plural, one {# meno pitää luokitella} other {# menoa pitää luokitella}}",
-      "expandSection": "Näytä",
-      "collapseSection": "Piilota",
-      "noCategoriesInSection": "Ei luokkia tässä osiossa",
-      "sections": {
-        "FINANCIAL": "Rahoitus",
-        "EXCEPTIONAL": "Satunnainen",
-        "OTHER": "Muu"
-      },
-      "drillDown": {
-        "date": "Päivämäärä",
-        "origin": "Alkuperä",
-        "person": "Henkilö",
-        "payment": "Maksu",
-        "amount": "Summa",
-        "categorize": "Luokittele",
-        "categorizePlaceholder": "Valitse luokka",
-        "noTransactions": "Ei tapahtumia",
-        "categorizeSuccess": "Tapahtuma luokiteltu"
-      },
-      "pdf": {
-        "periodLabel": "Ajanjakso {start}–{end}",
-        "operatingIncome": "LIIKETOIMINNAN TUOTOT",
-        "operatingExpense": "LIIKETOIMINNAN KULUT",
-        "operatingResult": "LIIKETOIMINNAN TULOS",
-        "financialIncome": "RAHOITUSTUOTOT",
-        "financialExpense": "RAHOITUSKULUT",
-        "financialResult": "RAHOITUSTULOS",
-        "exceptionalIncome": "SATUNNAISET TUOTOT",
-        "exceptionalExpense": "SATUNNAISET KULUT",
-        "exceptionalResult": "SATUNNAINEN TULOS",
-        "otherIncome": "MUUT TUOTOT",
-        "otherExpense": "MUUT KULUT",
-        "otherResult": "MUIDEN TUOTTOJEN JA KULUJEN TULOS",
-        "uncategorizedSection": "LUOKITTELEMATTOMAT TAPAHTUMAT",
-        "uncategorizedIncomeLabel": "Luokittelemattomat tulot",
-        "uncategorizedExpenseLabel": "Luokittelemattomat menot",
-        "total": "Yhteensä",
-        "grandTotal": "YHTEENSÄ",
-        "categoryColumn": "Kategoria",
-        "inKindTitle": "Vapaaehtoiset lahjoitukset luonnonlahjoituksissa",
-        "inKindEmploymentHeader": "Panosten käyttö",
-        "inKindAmountHeader": "Määrä",
-        "inKindReceivedHeader": "Saadut panokset",
-        "inKindTotalEmployments": "Työpaikkojen kokonaismäärä",
-        "inKindTotalReceived": "Kokonaispanokset",
-        "inKindNote": "Nämä ilmaiset sijoitukset arvostetaan euroissa. Ne eivät johda rahan liikkeisiin eivätkä muuta tilikauden tulosta."
-      },
-      "csv": {
-        "date": "Päivämäärä",
-        "type": "Tyyppi",
-        "typeIncome": "Tulo",
-        "typeExpense": "Meno",
-        "category": "Luokka",
-        "uncategorized": "Luokittelematta",
-        "accountingCode": "Tilinumero",
-        "description": "Kuvaus",
-        "amount": "Summa",
-        "paymentMethod": "Maksutapa",
-        "origin": "Alkuperä",
-        "reference": "Viite",
-        "exercice": "Tilikausi"
-      },
-      "categoryColumnLabel": "Kategoria",
-      "inKind": {
-        "title": "Vapaaehtoiset lahjoitukset luonnonlahjoituksissa",
-        "employmentHeader": "Panosten käyttö",
-        "amountHeader": "Määrä",
-        "receivedHeader": "Saadut panokset",
-        "totalEmployments": "Työpaikkojen kokonaismäärä",
-        "totalReceived": "Kokonaispanokset",
-        "note": "Nämä ilmaiset sijoitukset arvostetaan euroissa. Ne eivät johda rahan liikkeisiin eivätkä muuta tilikauden tulosta."
-      }
+    "exerciceGuard": {
+      "closedError": "Tämä harjoitus on suljettu — tietueen luominen tai muokkaaminen tälle ajanjaksolle on mahdotonta."
     }
   },
   "evenements": {
@@ -1628,6 +1914,7 @@
         "dateLabel": "Aloituspäivä",
         "createButton": "Luo"
       },
+      "summary": {},
       "bilan": {
         "show": "Näytä yhteenveto",
         "hide": "Piilota yhteenveto",
@@ -1845,6 +2132,9 @@
         "qrRevoked": "QR-koodi poistettu käytöstä",
         "noMembersToExport": "Ei jäseniä vientiin",
         "linkCopied": "Linkki kopioitu"
+      },
+      "payment": {
+        "methods": {}
       }
     },
     "avaliacoes": {
@@ -1899,6 +2189,7 @@
           "standardFieldsHint": "Ilmoittautuessa pyydetyt kentät",
           "phoneLabel": "Puhelin",
           "addressLabel": "Osoite",
+          "countryLabel": "Asuinmaa",
           "requirement": {
             "hidden": "Naamioitu",
             "optional": "Valinnainen",
@@ -1906,8 +2197,7 @@
           },
           "mobileLabel": "Mobiili",
           "birthDateLabel": "Syntymäpäivämäärä",
-          "genderLabel": "Sukupuoli",
-          "countryLabel": "Asuinmaa"
+          "genderLabel": "Sukupuoli"
         },
         "products": {
           "title": "Tuotteet",
@@ -2227,6 +2517,7 @@
       "liveSince": "Jatkunut siitä lähtien {mins} min",
       "durationLessThanMin": "< 1 min",
       "durationMin": "{mins} min",
+      "activeMeetingWarning": {},
       "toasts": {
         "meetingStarted": "Kokous alkoi",
         "meetingScheduled": "Sovittu kokous",
@@ -2441,7 +2732,8 @@
         "disponibles": "Saatavilla",
         "enPret": "Lainassa",
         "reserves": "Varattu",
-        "maintenance": "Huolto"
+        "maintenance": "Huolto",
+        "enRetard": "Myöhäinen"
       },
       "pendingRequests": "Vireillä olevat hakemukset",
       "accept": "Hyväksy",
@@ -2463,7 +2755,8 @@
         "reserves": "Varattu",
         "maintenance": "Huolto",
         "horsService": "Pois käytöstä",
-        "perdus": "Kadonnut"
+        "perdus": "Kadonnut",
+        "enRetard": "Myöhäinen"
       },
       "noArticles": "Ei artikkeleita",
       "noResults": "Ei tuloksia",
@@ -2633,7 +2926,8 @@
         "nameRequired": "Nimi vaaditaan",
         "atLeastOneVariant": "Vähintään yksi variantti vaaditaan",
         "variantLabelRequired": "Jokaisella variantilla täytyy olla oma tunniste"
-      }
+      },
+      "costPriceColumn": "Kustannus"
     },
     "view": {
       "title": "Kauppa",
@@ -2659,7 +2953,11 @@
         "markPaid": "Mark Paid",
         "cancelOrder": "Peruuta",
         "downloadReceipt": "Lataa kuitti",
-        "editPaymentMethod": "Vaihda maksutapaa"
+        "editPaymentMethod": "Vaihda maksutapaa",
+        "markPrepared": "Merkitse valmistelluksi",
+        "cancelPrepared": "Peruuta valmistelu",
+        "delegatePreparation": "Valmistelu delegoitu kolmannelle osapuolelle",
+        "resumePreparation": "Ansioluettelon valmistelu"
       },
       "noProduct": "Ei tuotteita",
       "noOrder": "Ei käskyjä",
@@ -2674,11 +2972,14 @@
       },
       "othersCount": "{count, plural, one {+# muuta} other {+# muita}}",
       "statusFilterAll": "Kaikki",
+      "statusFilterToPrepare": "Valmistautua",
       "salesCountLabel": "Myyntien määrä",
       "revenueTotalLabel": "Kokonaistulot",
       "unitsSold": "{count, plural, one {# myyty} other {# myyty}}",
       "pendingCountLabel": "Odottavat tilaukset",
       "pendingAmountLabel": "Odottava summa",
+      "toPrepareCountLabel": "Valmistelukäskyt",
+      "toPrepareAmountLabel": "Valmisteltava määrä",
       "cancelledCountLabel": "Peruutetut tilaukset",
       "cancelledAmountLabel": "Peruutettu summa",
       "deleteProduitTitle": "Poista tuote",
@@ -2701,6 +3002,7 @@
       "restockNoticePlural": "{count, plural, one {Pois ottamattoman tuotteen varasto palautetaan.} other {Keräämättömien tavaroiden varasto palautetaan.}}",
       "restockNoticeStatic": "Keräämättömien tavaroiden varasto palautetaan."
     },
+    "refundModal": {},
     "stripeConfirm": {
       "title": "Merkitä maksetuksi?",
       "descriptionSimple": "Tämä Stripe-komento ({amount}) merkitään maksetuksi manuaalisesti.",
@@ -3037,6 +3339,7 @@
           "title": "Muoto",
           "standardFieldsHint": "Lahjoittajalta pyydetyt kentät",
           "addressLabel": "Osoite",
+          "countryLabel": "Asuinmaa",
           "birthDateLabel": "Syntymäpäivämäärä",
           "phoneLabel": "Lankapuhelin",
           "mobileLabel": "Mobiili",
@@ -3067,8 +3370,7 @@
           "addOption": "Lisää vaihtoehto",
           "removeOption": "Poista tämä vaihtoehto",
           "optionsRequiredError": "Jokainen lista/valintakenttä tarvitsee vähintään kaksi vaihtoehtoa.",
-          "duplicateOptionsError": "Lista/valintakentän vaihtoehtojen on oltava yksilöllisiä.",
-          "countryLabel": "Asuinmaa"
+          "duplicateOptionsError": "Lista/valintakentän vaihtoehtojen on oltava yksilöllisiä."
         },
         "payment": {
           "title": "Maksu",
@@ -3306,6 +3608,7 @@
           "eligibleAmountAutoHint": "Automaattisesti laskettu: maksettu summa − {amount}",
           "noMinimumWarning": "Tälle ilmaiselle summalle ei ole asetettu minimisummaa, ja maksava vierailija, joka on alle kelvottoman summan, estetään maksamasta. Aseta vähimmäissumma vähintään {amount}.",
           "installmentsAllowedField": "Valtuuta maksu erissä",
+          "installmentsUnavailableWithLicense": "Ei saatavilla hintaan liittolisenssin hallinnasta.",
           "installmentsCountField": "Kertojen määrä",
           "membreTypeNone": "Ei mitään",
           "kindField": "Tyyppi",
@@ -3321,12 +3624,33 @@
           "membershipTierRequiredError": "Lomakkeessa on oltava vähintään yksi jäsenmaksu",
           "minAmountRequiredError": "Jokaiselle lahjoitukselle vaaditaan vähimmäissumma",
           "saved": "Rekisteröidyt hinnat",
-          "saveTiers": "Tallenna hinnat"
+          "saveTiers": "Tallenna hinnat",
+          "licenseSectionTitle": "Liittovaltion lisenssi",
+          "licenseEnabledField": "Hallinnoi liittovaltion lisenssiä tälle hinnalle",
+          "licenseNameField": "Lisenssin nimi",
+          "licenseNamePlaceholder": "Eks. Kilpailulupa",
+          "licenseFederationField": "Liitto",
+          "licenseFederationPlaceholder": "Esim. FFF",
+          "licenseSeasonField": "Kausi",
+          "licenseSeasonPlaceholder": "Ex. 2026/2027",
+          "licenseMandatoryField": "Pakollinen lisenssi",
+          "licenseBillingModeField": "Laskutus",
+          "licenseBillingIncluded": "Sisältyy hintaan",
+          "licenseBillingAdditional": "Lisäsumma",
+          "licenseAdditionalAmountField": "Lisäsumma (€)",
+          "licenseAllowDeclareExistingField": "Salli jo hallussa olevan lisenssin ilmoittaminen",
+          "licenseFederationRequiredError": "Federaatio vaaditaan liittolisenssin aktivoimiseen",
+          "licenseSeasonRequiredError": "Kausi vaaditaan liittolisenssin aktivoimiseen",
+          "licenseBillingModeRequiredError": "Lisenssilaskutustapa on pakollinen",
+          "licenseAdditionalAmountRequiredError": "Lisälisenssimäärä vaaditaan",
+          "licenseRecurringChangeWarning": "Tämän summan muuttaminen muuttaa vain tulevia tilauksia — nykyiset tilaajat jatkavat tilauksen yhteydessä asetettua summaa.",
+          "licenseAdditionalAmountTooLowError": "Lisälisenssin on oltava vähintään 1 €"
         },
         "fields": {
           "title": "Muoto",
           "standardFieldsHint": "Ilmoittautuessa pyydetyt kentät",
           "addressLabel": "Osoite",
+          "countryLabel": "Asuinmaa",
           "birthDateLabel": "Syntymäpäivämäärä",
           "phoneLabel": "Lankapuhelin",
           "mobileLabel": "Mobiili",
@@ -3359,8 +3683,7 @@
           "addOption": "Lisää vaihtoehto",
           "removeOption": "Poista tämä vaihtoehto",
           "optionsRequiredError": "Jokainen lista/valintakenttä tarvitsee vähintään kaksi vaihtoehtoa.",
-          "duplicateOptionsError": "Lista/valintakentän vaihtoehtojen on oltava yksilöllisiä.",
-          "countryLabel": "Asuinmaa"
+          "duplicateOptionsError": "Lista/valintakentän vaihtoehtojen on oltava yksilöllisiä."
         },
         "payment": {
           "title": "Maksu",
@@ -3438,6 +3761,14 @@
       "mobilePlaceholder": "06 12 34 56 78",
       "donationBadge": "(don)",
       "totalLabel": "Yhteensä maksettava summa",
+      "licenseDefaultName": "Liittovaltion lisenssi",
+      "licenseIncludedNotice": "Liittovaltion lisenssi sisältyy hintaan, ilman lisäkustannuksia.",
+      "licenseOptInLabel": "Lisää federaatiolisenssi (+{amount})",
+      "licenseMandatoryNotice": "Tämä jäsenyys sisältää pakollisen liittovaltion lisenssin ({amount}).",
+      "licenseDeclareExistingLabel": "Minulla on jo lisenssi tälle kaudelle",
+      "licenseDeclaredNotice": "Voimassa oleva lisenssi — odottaa yhdistyksen vahvistusta.",
+      "licenseNumberLabel": "Lisenssinumero",
+      "licenseNumberPlaceholder": "Jätä tyhjäksi, jos sinulla ei vielä ole sitä",
       "partialReceiptNotice": "Yksin {amount} ovat verovähennyskelpoisia tästä jäsenyydestä.",
       "belowExtraMinimum": "Vähimmäismäärä on {amount}.",
       "belowMinimumAmount": "Verkkomaksun minimisumma on {amount}.",
@@ -3614,6 +3945,7 @@
         "required": "Vaaditaan"
       }
     },
+    "blockEditor": {},
     "rulesManager": {
       "title": "Automaatiosäännöt",
       "subtitle": "Automaattinen lähetykset kalenterin tai tapahtuman mukaan.",
@@ -3886,6 +4218,8 @@
       "publicPaymentToggleDesc": "Julkisella sivustolla oleva jäsenyyslomake vaatii välittömän maksun (joka otetaan vuosittain) ja aktivoi jäsenen automaattisesti ilman manuaalista vahvistusta.",
       "publicPaymentRequiresAmount": "Täytä maksusumma aktivoidaksesi tämän vaihtoehdon.",
       "connectNotReadyWarning": "Verkkomaksu ei ole aktiivinen — Stripe Connect ei ole vielä asetettu eikä hyväksy maksuja (Maksut-välilehti). Sillä välin julkinen lomake palaa ilmaiseen striimiin ja siinä on odottavia jäsenyyspyyntöjä.",
+      "includeFederativeLicenseInAutoRenewalToggle": "Sisällytä liittolisenssi vuosittaiseen automaattiseen suoraveloitukseen",
+      "includeFederativeLicenseInAutoRenewalToggleDesc": "Kun hinta veloittaa federaatiolisenssiltä lisäsumman, tämä summa veloitetaan uudelleen jokaisessa automaattisessa uusimisessa (toistuva tilaus). Jos se on poistettu käytöstä, veloitetaan vain kerran, ensimmäisen tilauksen aikana. Tämä asetus koskee vain uusia tilauksia, jotka on tilattu muutoksen jälkeen — jo aktiiviset tilaukset jatkuvat entisellään.",
       "toasts": {
         "updated": "Päivitetty oletussumma"
       }
@@ -3897,6 +4231,10 @@
       "websitePlaceholder": "mon-association.fr",
       "iban": "IBAN",
       "bic": "BIC",
+      "accountingRegime": "Kirjanpitojärjestelmä kulujen korvauksille",
+      "accountingRegimeHint": "Määrittää, milloin korvauspyyntö julkaistaan: hyväksyntä (sitoumus) vai varsinainen maksu (käteinen).",
+      "accountingRegimeCash": "Käteiskirjanpito",
+      "accountingRegimeAccrual": "Sitoumuskirjanpito",
       "previewTitle": "Asiakirjan esikatselu",
       "bankDetails": "Pankkitiedot",
       "ibanColon": "IBAN : {value}",
@@ -3930,7 +4268,12 @@
       "title": "Visuaalinen identiteetti",
       "subtitle": "Logo näkyy kojelaudassa, tarjouksissa/laskuissa, läsnäololistassa ja julkisella verkkosivustolla.",
       "logo": "Logo",
+      "footerStyles": {},
+      "footer": {
+        "socialPlatforms": {}
+      },
       "proOnlyText": "Mukautettu logo (kojelauta, tarjoukset/laskut, työaikataulukko) on varattu Pro-suunnitelmalle. Päivitä seuraavaan liittymään Tilaus-välilehdellä aktivoidaksesi sen.",
+      "preview": {},
       "toasts": {
         "updated": "Päivitetty visuaalinen identiteetti",
         "uploadError": "Virhe logon lataamisessa"
@@ -3973,10 +4316,10 @@
       "status": {
         "trial": "Ilmainen kokeilujakso",
         "active": "Aktiivinen",
+        "paymentPending": "Maksu kesken",
         "pastDue": "Myöhästynyt maksu",
         "suspended": "Keskeytetty",
-        "cancelled": "Peruttu",
-        "paymentPending": "Maksu kesken"
+        "cancelled": "Peruttu"
       },
       "planLabel": "Kaava {tier}",
       "membersCount": "{count} / {limit} Jäsenet",
@@ -4097,6 +4440,16 @@
       "subtitleTrialExpired": "Ilmainen kokeilujaksosi on ohi. Valitse liittymä ja syötä maksutapa jatkaaksesi.",
       "confirmButtonSubscribe": "Vahvista ja tilaa"
     },
+    "teamAccess": {
+      "columns": {},
+      "summary": {},
+      "profiles": {},
+      "levels": {},
+      "areas": {
+        "sensible": "Jäsenten arkaluonteiset tiedot"
+      },
+      "toasts": {}
+    },
     "erasureRequests": {
       "title": "Tietojen poistaminen (GDPR)",
       "description": "Pyynnöt jäsenen henkilötietojen pysyvästä poistamisesta GDPR:n 17 artiklan mukaisesti. Käsitellään automaattisesti joka yö, paitsi jos pyyntö on asetettu odottamaan.",
@@ -4137,11 +4490,6 @@
       },
       "automaticOrigin": "Merkitty automaattisesti — ei toimintaa yli 3 vuoteen",
       "inactiveSince": "poistui {date}"
-    },
-    "teamAccess": {
-      "areas": {
-        "sensible": "Jäsenten arkaluonteiset tiedot"
-      }
     }
   },
   "cotisations": {
@@ -4231,6 +4579,33 @@
       "allCategories": "Kaikki kategoriat",
       "allRenewals": "Kaikki uusimiset",
       "resetFilters": "Nollaus",
+      "mergeTiers": {
+        "filterOption": "Yhdistä kaksoisluokkat",
+        "title": "Yhdistä kaksoisluokkat",
+        "description": "Kategoriat, joiden nimet eroavat vain sijan, aksenttien tai välilyöntien osalta. Mikään ei yhdistetä automaattisesti.",
+        "empty": "Yhtään kaksoiskappaletta ei havaittu.",
+        "groupSummary": "{count} kategorioita nimeltä \"{label}\"",
+        "groupTitle": "Yhdistä muotoon \"{label}\"",
+        "manualAction": "Yhdistä kaksi kategoriaa manuaalisesti",
+        "manualTitle": "Yhdistä kaksi kategoriaa",
+        "backAction": "Takaisin",
+        "cancelAction": "Peruuta",
+        "keepAsPrimary": "Säilytettävä kategoria",
+        "mergeIntoPrimary": "Kategoriat, jotka yhdistetään siihen",
+        "tierCounts": "{cotisationCount} Jäsenmaksu(t) · {membreCount} Jäsen(t)",
+        "mergeAction": "Yhdistyminen",
+        "confirmTitle": "Vahvista yhdistyminen",
+        "confirmDescription": "{count} kategoria(t) yhdistetään muotoon \"{primaryLabel}\". {cotisationCount} Jäsenmaksu(t) ja {membreCount} jäsen(t) siirretään. Tämä toimenpide on peruuttamaton, mutta säilyttää kaikki uusimishistorian ja asetukset.",
+        "mergeSuccess": "{count} yhdistetyt kategoriat.",
+        "mergeErrorGeneric": "Yhdistämisen aikana tapahtui virhe.",
+        "mismatchWarning": "Huomautus: näillä luokilla ei ole samaa laskutustyyppiä, määrää tai menetelmää.",
+        "loadError": "Kaksoiskappaleita ei voi ladata. Yritä uudelleen hetken kuluttua.",
+        "activeSubscriptionWarning": "{count} aktiiviset tilaukset siirtyvät — jo käynnissä oleva Stripe-laskutus ei muutu automaattisesti.",
+        "priceFree": "Vapaa",
+        "priceFreeAmount": "Ilmainen määrä",
+        "priceFreeAmountFrom": "Ilmainen summa osoitteesta {amount}",
+        "priceRecurring": "{amount}/vuosi"
+      },
       "renewal": {
         "automatic": "Automaattinen",
         "manual": "Manuaalinen"
@@ -4252,29 +4627,6 @@
         "total": "Yhteensä",
         "noCategory": "Ei kategoriaa",
         "empty": "Mikään jäsenmaksu ei vastaa näitä suodattimia."
-      },
-      "mergeTiers": {
-        "filterOption": "Yhdistä kaksoisluokkat",
-        "title": "Yhdistä kaksoisluokkat",
-        "description": "Kategoriat, joiden nimet eroavat vain sijan, aksenttien tai välilyöntien osalta. Mikään ei yhdistetä automaattisesti.",
-        "empty": "Yhtään kaksoiskappaletta ei havaittu.",
-        "groupSummary": "{count} kategorioita nimeltä \"{label}\"",
-        "groupTitle": "Yhdistä muotoon \"{label}\"",
-        "backAction": "Takaisin",
-        "cancelAction": "Peruuta",
-        "keepAsPrimary": "Säilytettävä kategoria",
-        "mergeIntoPrimary": "Kategoriat, jotka yhdistetään siihen",
-        "tierCounts": "{cotisationCount} Jäsenmaksu(t) · {membreCount} Jäsen(t)",
-        "mergeAction": "Yhdistyminen",
-        "confirmTitle": "Vahvista yhdistyminen",
-        "confirmDescription": "{count} kategoria(t) yhdistetään muotoon \"{primaryLabel}\". {cotisationCount} Jäsenmaksu(t) ja {membreCount} jäsen(t) siirretään. Tämä toimenpide on peruuttamaton, mutta säilyttää kaikki uusimishistorian ja asetukset.",
-        "mergeSuccess": "{count} yhdistetyt kategoriat.",
-        "loadError": "Kaksoiskappaleita ei voi ladata. Yritä uudelleen hetken kuluttua.",
-        "activeSubscriptionWarning": "{count} aktiiviset tilaukset siirtyvät — jo käynnissä oleva Stripe-laskutus ei muutu automaattisesti.",
-        "priceFree": "Vapaa",
-        "priceFreeAmount": "Ilmainen määrä",
-        "priceFreeAmountFrom": "Ilmainen summa osoitteesta {amount}",
-        "priceRecurring": "{amount}/vuosi"
       }
     },
     "reminderModal": {
@@ -4339,6 +4691,24 @@
       "annulee": "Tämä lahjoitus on peruttu."
     }
   },
+  "groupes": {
+    "view": {
+      "statusFilter": {},
+      "columns": {},
+      "statusBadge": {},
+      "actions": {},
+      "toasts": {}
+    },
+    "form": {},
+    "detail": {
+      "appelColumns": {}
+    },
+    "appel": {
+      "counts": {},
+      "status": {},
+      "toasts": {}
+    }
+  },
   "membres": {
     "form": {
       "status": {
@@ -4366,6 +4736,11 @@
         "femme": "Nainen"
       },
       "groupeSanguinNone": "Ei määritelty",
+      "imageRights": {
+        "unknown": "Ei ilmoitettu",
+        "granted": "Kyllä",
+        "refused": "Ei"
+      },
       "tailleTshirtNone": "Ei määritelty",
       "preferredLocaleNone": "Ei määritelty",
       "preferredLocaleHint": "Valittu kieli mahdollistaa sähköpostien ja viestien lähettämisen tälle jäsenelle hänen ensisijaisella kielellään.",
@@ -4397,14 +4772,14 @@
         "allergies": "Tunnetut allergiat",
         "allergiesPlaceholder": "Arachideja, siitepölyä...",
         "type": "Jäsentyyppi",
-        "preferredLocale": "Viestintäkieli",
-        "spokenLanguage": "Puhuttu kieli",
-        "cotisationTier": "Jäsenmaksu",
-        "guardianName": "Huoltaja {number} — nimi",
-        "guardianPhone": "Huoltaja {number} — puhelin",
         "imageRights": "Kuvausoikeudet",
         "notes": "Muistiinpanot",
-        "notesPlaceholder": "Hyödyllistä tietoa tästä jäsenestä (kurssit, huomautukset…)"
+        "notesPlaceholder": "Hyödyllistä tietoa tästä jäsenestä (kurssit, huomautukset…)",
+        "guardianName": "Huoltaja {number} — nimi",
+        "guardianPhone": "Huoltaja {number} — puhelin",
+        "preferredLocale": "Viestintäkieli",
+        "spokenLanguage": "Puhuttu kieli",
+        "cotisationTier": "Jäsenmaksu"
       },
       "invitationNotice": "Kutsusähköposti tunnisteineen lähetetään tähän osoitteeseen.",
       "tierNone": "Ei hinnoittelua (oletuskäyttäytyminen)",
@@ -4425,12 +4800,7 @@
         "management": "Jäsenhallinta"
       },
       "invalidFormToast": "Tallennus epäonnistui. Ota yhteyttä tukeen, jos ongelma jatkuu.",
-      "customFieldsLoading": "Ladataan liittymislomakkeen vastauksia…",
-      "imageRights": {
-        "unknown": "Ei ilmoitettu",
-        "granted": "Kyllä",
-        "refused": "Ei"
-      }
+      "customFieldsLoading": "Ladataan liittymislomakkeen vastauksia…"
     },
     "fichePdf": {
       "title": "JÄSENPROFIILI",
@@ -4486,13 +4856,13 @@
         "firstName": "Etunimi",
         "lastName": "Sukunimi",
         "address": "Osoite",
+        "country": "Maa",
+        "countryPlaceholder": "Kaikki maat",
+        "countryLoadError": "Ei voi ladata maita. Yritä uudelleen hetken kuluttua.",
         "birthDateFrom": "Syntynyt sen jälkeen",
         "birthDateTo": "Syntynyt ennen",
         "apply": "Hae",
-        "reset": "Nollaus",
-        "country": "Maa",
-        "countryPlaceholder": "Kaikki maat",
-        "countryLoadError": "Ei voi ladata maita. Yritä uudelleen hetken kuluttua."
+        "reset": "Nollaus"
       },
       "statusOptions": {
         "pending": "Vireillä",
@@ -4551,6 +4921,13 @@
       "cotisationButton": "Jäsenmaksu",
       "createAccessButton": "Luo pääsy",
       "roleButton": "Rooli",
+      "eraseData": {
+        "button": "Poista tiedot (GDPR)",
+        "confirmTitle": "Pyydetäänkö {name} tietojen pysyvää poistamista?",
+        "confirmDescription": "Tämä kirjaa GDPR:n 17 artiklan mukaisen poistopyynnön. Jäsen saa vahvistussähköpostin, jonka jälkeen hänen henkilötietonsa anonymisoidaan peruuttamattomasti seuraavassa automaattisessa käsittelyssä, ellei pyyntöä aseteta odottamaan.",
+        "toastSuccess": "Poistopyyntö kirjattu",
+        "requestLabel": "GDPR-poisto"
+      },
       "contact": "Yhteystiedot",
       "noContactInfo": "Ei yhteystietoja",
       "memberSinceColon": "Jäsen siitä lähtien: {date}",
@@ -4595,10 +4972,25 @@
         "reunions": "Kokoukset",
         "materiel": "Materiaali",
         "dons": "Lahjoitukset",
+        "licenses": "Luvat",
         "historique": "Historia",
         "emails": "Sähköpostit",
         "sms": "SMS",
         "boutique": "Kauppa"
+      },
+      "licenses": {
+        "empty": "Ei ajokorttia",
+        "seasonYear": "Jäsenmaksu {year}",
+        "autoRenewed": "Automaattisesti uusittu",
+        "declaredByMembreNotice": "Jäsenen ilmoittama lisenssi — odottaa vahvistusta",
+        "deleteConfirmTitle": "Poistatko tämän lisenssin?",
+        "deleteConfirmDescription": "Lisenssi {federation} — {season} lopetetaan pysyvästi.",
+        "statusField": "Tila",
+        "licenseNumberField": "Lisenssinumero",
+        "statusASolicitar": "Kysyä",
+        "statusEmAndamento": "Käynnissä",
+        "statusValidada": "Validoitu",
+        "statusARenovar": "Uusittava"
       },
       "cotisationStatus": {
         "enAttente": "Vireillä",
@@ -4646,6 +5038,7 @@
       "donStandalone": "Itsenäinen lahjoitus",
       "donPending": "Odottaa veloitusta",
       "showingRecentDons": "Näytetään {count} viimeisintä lahjoitusta yhteensä {total}:sta.",
+      "showingRecentLicenses": "Näyttö {count} Viimeisimmät lisenssit {total} Yhteensä.",
       "addCotisationTitle": "Lisää jäsenmaksu",
       "editCotisationTitle": "Muuta jäsenmaksua",
       "deleteConfirmWithDependants": "Tämä jäsen arkistoidaan eikä hän enää pääse käsiksi yhdistykseen. Hänet myös poistetaan yhdistyksen laillisen huoltajan asemasta. {count} Jäsen(t): {names}.",
@@ -4666,13 +5059,6 @@
         "rejectedToast": "Hakemus hylätty",
         "rejectConfirmTitle": "Kieltäydytkö tästä pyynnöstä?",
         "rejectConfirmDescription": "{name} muuttuu \"Passiivinen\" -tilaan eikä voi kirjautua sisään. Pyyntö ja sen vastaukset lomakkeeseen säilyvät."
-      },
-      "eraseData": {
-        "button": "Poista tiedot (GDPR)",
-        "confirmTitle": "Pyydetäänkö {name} tietojen pysyvää poistamista?",
-        "confirmDescription": "Tämä kirjaa GDPR:n 17 artiklan mukaisen poistopyynnön. Jäsen saa vahvistussähköpostin, jonka jälkeen hänen henkilötietonsa anonymisoidaan peruuttamattomasti seuraavassa automaattisessa käsittelyssä, ellei pyyntöä aseteta odottamaan.",
-        "toastSuccess": "Poistopyyntö kirjattu",
-        "requestLabel": "GDPR-poisto"
       },
       "noCommande": "Tällä yhteystiedolla ei ole kauppaostoksia.",
       "commandeStatus": {
@@ -4763,6 +5149,11 @@
       "inMessagesSection": " Viestit-osiossa.",
       "messageSectionLabel": "Viesti",
       "saveAsTemplate": "Tallenna mallipohjana",
+      "subjectLabel": "Tarkoitus",
+      "subjectPlaceholder": "Sähköpostin aihe...",
+      "subjectTooLong": "Aihe on liian pitkä: {length}/{max} merkkiä — se hylätään lähetettäessä.",
+      "bodyLabel": "Viestin runko",
+      "bodyPlaceholder": "Kirjoita viestisi...",
       "language": {
         "title": "Lähetyskieli",
         "modeOriginal": "Alkuperäinen kieli",
@@ -4787,11 +5178,6 @@
         "autoNoEffect": "Kenelläkään nykyisellä vastaanottajalla ei ole muuta ensisijaista kieltä kuin ranska — kaikki saavat alkuperäisen version.",
         "autoExternalNote": "{count, plural, one {# ulkoinen sähköposti (alkuperäinen kieli)} other {# ulkoista sähköpostia (alkuperäinen kieli)}}"
       },
-      "subjectLabel": "Tarkoitus",
-      "subjectPlaceholder": "Sähköpostin aihe...",
-      "subjectTooLong": "Aihe on liian pitkä: {length}/{max} merkkiä — se hylätään lähetettäessä.",
-      "bodyLabel": "Viestin runko",
-      "bodyPlaceholder": "Kirjoita viestisi...",
       "continue": "Jatka",
       "confirmSendTitle": "Lähetysvahvistus",
       "confirmSendDescription": "Tämä sähköposti lähetetään {recipients}. Tämä teko on peruuttamaton.",
@@ -4808,6 +5194,9 @@
       "recipientsActive": "{count, plural, one {# aktiivinen jäsen} other {# aktiiviset jäsenet}}",
       "externalOnlyCount": "{count, plural, one {# ulkoinen sähköposti} other {# ulkoiset sähköpostit}}",
       "recipientsWithExternal": "{members} + {count, plural, one {# ulkoinen sähköposti} other {# ulkoiset sähköpostit}}",
+      "attachments": {
+        "errors": {}
+      },
       "toasts": {
         "selectType": "Valitse jäsentyyppi",
         "selectMember": "Valitse vähintään yksi jäsen tai lisää ulkoinen sähköpostiosoite",
@@ -5309,8 +5698,8 @@
       "actualites": "Uutiset",
       "membership": "Liity yhdistykseen",
       "dons": "Lahjoita",
-      "contact": "Yhteystiedot",
-      "boutique": "Kauppa"
+      "boutique": "Kauppa",
+      "contact": "Yhteystiedot"
     },
     "defaultTitles": {
       "hero": "Tervetuloa",
@@ -5318,9 +5707,9 @@
       "events": "Tulevat tapahtumat",
       "membership": "Liity yhdistykseen",
       "dons": "Lahjoita",
+      "boutique": "Kauppa",
       "actualites": "Uutiset",
-      "contact": "Yhteystiedot",
-      "boutique": "Kauppa"
+      "contact": "Yhteystiedot"
     },
     "view": {
       "uploadFailedWarning": "{count, plural, one {# kuvaa ei voitu ladata.} other {# kuvia ei voitu ladata.}}",
@@ -5364,9 +5753,9 @@
       "noSections": "Ei osioita. Lisää yksi alle.",
       "addSection": "Lisää osio",
       "donsModuleDisabled": "Lahjoitusmoduuli poistettu käytöstä — näkymätön julkisella sivustolla",
+      "boutiqueModuleDisabled": "Kauppa-moduuli pois käytöstä — ei näy julkisella sivustolla",
       "deleteSectionTitle": "Poista osio",
-      "deleteSectionDescription": "Tämä teko on peruuttamaton.",
-      "boutiqueModuleDisabled": "Kauppa-moduuli pois käytöstä — ei näy julkisella sivustolla"
+      "deleteSectionDescription": "Tämä teko on peruuttamaton."
     },
     "sectionSheet": {
       "editTitle": "Muokkaus — {label}",
@@ -5387,6 +5776,8 @@
       "eventsLimitHint": "Tapahtumat poistetaan automaattisesti kalenteristasi.",
       "actualitesLimit": "Näytettävien uutisten määrä",
       "actualitesLimitHint": "Sivustolla näytetään vain ensimmäiset N-uutiset.",
+      "boutiqueLimit": "Näytettävien tuotteiden määrä",
+      "boutiqueLimitHint": "Sivustolla näytetään vain ensimmäiset N aktiivista tuotetta.",
       "membershipIntro": "Johdantoteksti",
       "membershipIntroPlaceholder": "Täytä tämä lomake hakeaksesi liittymistä yhdistykseen...",
       "membershipHint": "Pyynnöt näkyvät jäsenten listalla, joiden tila on \"Odottamassa\".",
@@ -5407,9 +5798,7 @@
       "apply": "Hae",
       "discardTitle": "Jättää muutokset huomiotta?",
       "discardDescription": "Soveltamattomat muutokset katoavat.",
-      "discardConfirm": "Jätä huomiotta",
-      "boutiqueLimit": "Näytettävien tuotteiden määrä",
-      "boutiqueLimitHint": "Sivustolla näytetään vain ensimmäiset N aktiivista tuotetta."
+      "discardConfirm": "Jätä huomiotta"
     },
     "preview": {
       "donsNoForm": "Lahjoituslomaketta ei ole valittu — näkymätön julkisella sivustolla"
@@ -5418,6 +5807,12 @@
       "viewSite": "Katso verkkosivusto",
       "logoUrl": "Logon URL (valinnainen)",
       "footerText": "Alatunnisteen teksti"
+    },
+    "aiAssistant": {},
+    "builderSwitch": {
+      "confirmOn": {},
+      "confirmOff": {},
+      "toasts": {}
     }
   },
   "richTextEditor": {
@@ -5430,6 +5825,21 @@
     "heading1": "Otsikko 1",
     "heading2": "Otsikko 2",
     "heading3": "Otsikko 3"
+  },
+  "paperFormTemplates": {
+    "columns": {},
+    "toasts": {},
+    "deleteConfirm": {},
+    "leaveWarning": {},
+    "targetGroups": {},
+    "targets": {},
+    "renderErrors": {},
+    "editor": {
+      "columns": {}
+    },
+    "activity": {
+      "fields": {}
+    }
   },
   "associationDocuments": {
     "title": "Yhdistyksen asiakirjat",
@@ -5476,6 +5886,9 @@
     "notFound": "Asiakirjaa ei löytynyt.",
     "backToList": "Takaisin asiakirjoihin"
   },
+  "formDraft": {},
+  "legalConsent": {},
+  "publicDocuments": {},
   "portalMembre": {
     "associationDocuments": {
       "title": "Yhdistyksen asiakirjat",
@@ -5522,6 +5935,15 @@
       "viewShop": "Katso kauppa",
       "orderPlacedTitle": "Tilaus rekisteröity!",
       "orderPlacedDescription": "Tilauksesi odottaa maksua. Hallinto ottaa sinuun yhteyttä viimeistelyä varten.",
+      "paymentSuccessTitle": "Maksu vahvistettu!",
+      "paymentSuccessDescription": "Kiitos ostoksestasi. Sinulle on lähetetty vahvistussähköposti kuitin kanssa.",
+      "stockAdjustedNotice": "Joidenkin tuotteiden varastosaldo on muuttunut — ostoskoriasi mukautettiin, tarkista se ennen jatkamista.",
+      "trackOrderButton": "Seuraa tilaustani",
+      "trackingPageTitle": "Tilauksen seuranta",
+      "trackingStatusPending": "Odottaa maksua",
+      "trackingStatusPaid": "Tilaus maksettu",
+      "trackingStatusCancelled": "Tilaus peruttu",
+      "trackingNotFound": "Tilausta ei löytynyt",
       "myOrdersButton": "Käskyni",
       "continueShopping": "Jatka ostoksia",
       "maxStockReached": "Max Stock saavutettu",
@@ -5559,16 +5981,7 @@
         "orderError": "Virhe tilauksen aikana",
         "orderUpdated": "Päivitetty järjestys",
         "orderCancelled": "Tilaus peruttu"
-      },
-      "paymentSuccessTitle": "Maksu vahvistettu!",
-      "paymentSuccessDescription": "Kiitos ostoksestasi. Sinulle on lähetetty vahvistussähköposti kuitin kanssa.",
-      "stockAdjustedNotice": "Joidenkin tuotteiden varastosaldo on muuttunut — ostoskoriasi mukautettiin, tarkista se ennen jatkamista.",
-      "trackOrderButton": "Seuraa tilaustani",
-      "trackingPageTitle": "Tilauksen seuranta",
-      "trackingStatusPending": "Odottaa maksua",
-      "trackingStatusPaid": "Tilaus maksettu",
-      "trackingStatusCancelled": "Tilaus peruttu",
-      "trackingNotFound": "Tilausta ei löytynyt"
+      }
     },
     "dons": {
       "title": "Lahjoitukseni",
@@ -5848,10 +6261,12 @@
       "membres": "Jäsenet",
       "evenements": "Tapahtumat",
       "cotisations": "Panokset",
+      "licencas": "Luvat",
       "adhesions": "Jäsenyydet",
       "finances": "Taloudellinen seuranta",
       "devis": "Tarjoukset",
       "factures": "Laskut",
+      "reimbursements": "Kulujen korvaukset",
       "fournisseurs": "Toimittajat",
       "dons": "Lahjoitukset",
       "reunions": "Kokoukset",
@@ -5905,6 +6320,7 @@
       },
       "logout": "Kirjaudu ulos"
     },
+    "twoFactorSettingsModal": {},
     "changePasswordModal": {
       "title": "Vaihda salasana",
       "currentPasswordLabel": "Nykyinen salasana",
@@ -6046,6 +6462,7 @@
       "daysWithoutCotisation": "Päiviä ilman panosta",
       "status": "Tila"
     },
+    "originSources": {},
     "empty": "Ei valvontahälytyksiä.",
     "resolveAction": "Ratkaise",
     "resolveConfirmTitle": "Ratkaistaanko tämä hälytys?",
@@ -6063,7 +6480,79 @@
     "autoResolvedLabel": "(auto)",
     "emptyForSearch": "Ei tuloksia haulle \"{search}\"."
   },
+  "help": {
+    "tabs": {},
+    "callout": {},
+    "assistant": {
+      "examples": {},
+      "examplesDocs": {},
+      "tools": {}
+    },
+    "changelog": {
+      "kind": {}
+    },
+    "releaseNotes": {},
+    "news": {},
+    "faqPopup": {},
+    "popupCarousel": {},
+    "footer": {}
+  },
+  "boutiqueShipping": {},
+  "paperFormScan": {
+    "steps": {},
+    "upload": {
+      "camera": {}
+    },
+    "reading": {},
+    "viewer": {},
+    "editor": {},
+    "review": {},
+    "status": {},
+    "result": {},
+    "notesValues": {},
+    "validation": {},
+    "leaveWarning": {},
+    "restartWarning": {}
+  },
   "formTermsEditor": {
     "contentRequired": "Sinun on täytettävä kenttä ”{conditionsLabel}” tai ladattava asiakirja."
+  },
+  "membreDuplicates": {
+    "list": {
+      "matchedFields": {},
+      "columns": {},
+      "status": {}
+    },
+    "merge": {
+      "fields": {},
+      "relations": {}
+    },
+    "backoffice": {
+      "columns": {}
+    }
+  },
+  "licencas": {
+    "title": "Luvat",
+    "description": "Federated-lisenssit jäsenille, kaikki hinnat ja vuodenajat yhdistettynä.",
+    "export": "Vienti",
+    "empty": "Ei ajokorttia",
+    "statusASolicitar": "Kysyä",
+    "statusEmAndamento": "Käynnissä",
+    "statusValidada": "Validoitu",
+    "statusARenovar": "Uusittava",
+    "columns": {
+      "membre": "Jäsen",
+      "tier": "Toimintatapa",
+      "federation": "Liitto",
+      "season": "Kausi",
+      "licenseNumber": "Lisenssinumero",
+      "status": "Tila"
+    },
+    "filters": {
+      "searchPlaceholder": "Etsi jäsentä...",
+      "allFederations": "Kaikki liitot",
+      "allSeasons": "Kaikki vuodenajat",
+      "allStatuses": "Kaikki tilat"
+    }
   }
 }
