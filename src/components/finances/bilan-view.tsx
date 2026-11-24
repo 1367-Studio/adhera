@@ -1,12 +1,14 @@
 "use client"
 
 import { useState } from "react"
-import { useQuery, keepPreviousData } from "@tanstack/react-query"
+import { useQuery, useQueryClient, keepPreviousData } from "@tanstack/react-query"
 import { useTranslations } from "next-intl"
-import { WarningCircleIcon, DownloadSimpleIcon } from "@phosphor-icons/react/dist/ssr"
+import { toast } from "sonner"
+import { WarningCircleIcon, DownloadSimpleIcon, ArrowsClockwiseIcon } from "@phosphor-icons/react/dist/ssr"
 import { PageHeader } from "@/components/ui/page-header"
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { EmptyState } from "@/components/ui/empty-state"
 import type { BilanAccountRow, BilanPeriod, BilanRubrique, BilanSide, BilanSideKey } from "@/lib/finance/bilan-shared"
 import { sanitizeForFilename } from "@/lib/finance/income-statement-shared"
@@ -238,8 +240,10 @@ function buildPdfRows(side: BilanSide, previousSide: BilanSide | null, t: Return
 
 export function BilanView() {
   const t = useTranslations("finances.bilan")
+  const queryClient = useQueryClient()
   const [exerciceId, setExerciceId] = useState("")
   const [drillDown, setDrillDown] = useState<JournalDrillDown | null>(null)
+  const [refreshing, setRefreshing] = useState(false)
 
   const { data, isLoading } = useQuery({
     queryKey: ["bilan", exerciceId],
@@ -278,6 +282,31 @@ export function BilanView() {
   function openDrillDown(account: BilanAccountRow) {
     if (!current?.exercice) return
     setDrillDown({ title: accountLabel(account, t), chartAccountId: account.chartAccountId, exerciceId: current.exercice.id })
+  }
+
+  // Manual, on-demand sync — see the RESULT_DIVERGENCE issue message below, which already
+  // promises "relancez la synchronisation": this is what makes that promise true. Reuses the
+  // same catch-up (`ensurePostedJournalEntries`) the exercice-closing route runs, just callable
+  // without closing anything (see src/app/api/finances/rapports/bilan/refresh/route.ts).
+  async function refreshLedger() {
+    if (!current?.exercice) return
+    setRefreshing(true)
+    try {
+      const res = await fetch("/api/finances/rapports/bilan/refresh", {
+        method:  "POST",
+        headers: { "Content-Type": "application/json" },
+        body:    JSON.stringify({ exerciceId: current.exercice.id }),
+      })
+      if (!res.ok) throw new Error("refresh failed")
+      const { posted, reversed } = await res.json() as { posted: number; reversed: number }
+      const message = t("refreshLedgerSuccessPosted", { count: posted }) + t("refreshLedgerSuccessReversed", { count: reversed })
+      toast.success(message)
+      await queryClient.invalidateQueries({ queryKey: ["bilan"] })
+    } catch {
+      toast.error(t("refreshLedgerError"))
+    } finally {
+      setRefreshing(false)
+    }
   }
 
   function exportPdf() {
@@ -320,6 +349,15 @@ export function BilanView() {
                     {exercices.map(e => <SelectItem key={e.id} value={e.id}>{e.label}</SelectItem>)}
                   </SelectContent>
                 </Select>
+                <Tooltip>
+                  <TooltipTrigger render={
+                    <Button size="sm" variant="outline" disabled={refreshing || !current?.exercice} onClick={refreshLedger} />
+                  }>
+                    <ArrowsClockwiseIcon className={`mr-1.5 size-4 ${refreshing ? "animate-spin" : ""}`} />
+                    {t("refreshLedger")}
+                  </TooltipTrigger>
+                  <TooltipContent>{t("refreshLedgerTooltip")}</TooltipContent>
+                </Tooltip>
                 <span title={exportDisabled && current ? t("exportDisabledTooltip") : undefined}>
                   <Button size="sm" variant="outline" disabled={exportDisabled} onClick={exportPdf}>
                     <DownloadSimpleIcon className="mr-1.5 size-4" />

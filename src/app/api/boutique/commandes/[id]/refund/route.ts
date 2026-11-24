@@ -13,6 +13,7 @@ import { pusherServer } from "@/lib/pusher-server"
 import { reportError } from "@/lib/monitoring"
 import { refundConnectCharge } from "@/lib/webhook/connect-stripe-fee"
 import { hasAccess } from "@/lib/permissions"
+import { getOrCreateDefaultCategory } from "@/lib/finance/resolve-default-category"
 
 // Target quantities, not deltas — an item not listed keeps its current quantity. Every item
 // at 0 is a full-order refund/cancel; anything else is a partial refund of just those units.
@@ -80,6 +81,14 @@ export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   })
   if (!exists) return NextResponse.json({ error: "Introuvable" }, { status: 404 })
 
+  // Resolved once, outside the transaction below (see getOrCreateDefaultCategory's doc
+  // comment on why it can't run against a `tx` client) — mirrors the exact fallback
+  // book-income.ts substitutes for a null item.categoryId when it first creates these Income
+  // rows. Without reapplying the same substitution here, a remaining item whose own snapshot
+  // is still null would fail to match the Income row's real (fallback) categoryId below and
+  // get wrongly treated as fully refunded — cancelling revenue that's still owed.
+  const fallbackCategoryId = await getOrCreateDefaultCategory(prisma, ctx.associationId, "boutique")
+
   async function applyRefund(tx: Prisma.TransactionClient): Promise<RefundResult> {
     const commande = await tx.boutiqueCommande.findUniqueOrThrow({
       where:   { id },
@@ -142,7 +151,8 @@ export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
     const remaining  = commande.items.map(i => ({ ...i, quantity: targetQty.get(i.id)! })).filter(i => i.quantity > 0)
     const byCategory = new Map<string | null, number>()
     for (const item of remaining) {
-      byCategory.set(item.categoryId, (byCategory.get(item.categoryId) ?? 0) + item.unitPrice * item.quantity)
+      const key = item.categoryId ?? fallbackCategoryId
+      byCategory.set(key, (byCategory.get(key) ?? 0) + item.unitPrice * item.quantity)
     }
     for (const income of productIncomes) {
       const newAmountCts = byCategory.get(income.categoryId) ?? 0

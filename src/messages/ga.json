@@ -1177,6 +1177,11 @@
       "noAccountsInRubrique": "Níl aon chothromaíocht san alt seo",
       "exportPdf": "Easpórtáil PDF",
       "exportDisabledTooltip": "Ní féidir Clár Comhardaithe Deiridh a easpórtáil go dtí go socrófar na haimhrialtachtaí thuas.",
+      "refreshLedger": "Athnuachan an loga",
+      "refreshLedgerTooltip": "Ní dhéantar an tuarascáil seo a nuashonrú i bhfíor-am le gach ioncam nó caiteachas — cliceáil chun sioncronú leis na gluaiseachtaí is déanaí.",
+      "refreshLedgerSuccessPosted": "{count, plural, =0 {Gan aon ghluaiseacht nua} one {# gluaiseacht shioncronaithe} other {# gluaiseachtaí sioncrónaithe}}",
+      "refreshLedgerSuccessReversed": "{count, plural, =0 {} one {, # cealú curtha i bhfeidhm} other {, # cealuithe i bhfeidhm}}",
+      "refreshLedgerError": "Ní féidir an log a athnuachan. Bain triail eile as, le do thoil.",
       "emptyExercice": {
         "title": "Gan aon bhliain fhioscach",
         "description": "Cruthaigh bliain fhioscach nua chun an Clár Comhardaithe a fheiceáil."
@@ -1594,6 +1599,9 @@
         "createdWithLinked": "Bliain fhioscach a cruthaíodh — {count, plural, one {# taifead nasctha} other {# taifid ghaolmhara}} go huathoibríoch"
       }
     },
+    "exerciceGuard": {
+      "closedError": "Tá an cleachtadh seo dúnta — ní féidir taifead a chruthú ná a mhodhnú don tréimhse seo."
+    },
     "accountsView": {
       "title": "Cuntais bhainc",
       "description": "Cuntais bhainc an chumainn a bhainistiú.",
@@ -1917,6 +1925,7 @@
       "typeIncome": "Ioncam",
       "typeExpense": "Costas",
       "typeTransfer": "Aistriú inmheánach",
+      "selectedCount": "{count, plural, one {# mhír roghnaithe} other {# míreanna roghnaithe}}",
       "confirm": "Bailíochtú an comhréitigh"
     }
   },

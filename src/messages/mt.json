@@ -1177,6 +1177,11 @@
       "noAccountsInRubrique": "M'hemm l-ebda bilanċ f'din is-sezzjoni",
       "exportPdf": "Esporta PDF",
       "exportDisabledTooltip": "Ma jistax jesporta l-Bilanċ Finali sakemm l-anomaliji ta' hawn fuq jiġu solvuti.",
+      "refreshLedger": "Irrifreska l-log",
+      "refreshLedgerTooltip": "Dan ir-rapport mhux aġġornat f''ħin reali ma'' kull dħul jew spejjeż — ikklikkja biex tissinkronizza mal-movimenti l-aktar riċenti.",
+      "refreshLedgerSuccessPosted": "{count, plural, =0 {L-ebda moviment ġdid} one {# moviment sinkronizzat} other {# movimenti sinkronizzati}}",
+      "refreshLedgerSuccessReversed": "{count, plural, =0 {} one {, # kanċellazzjoni applikata} other {, # kanċellazzjonijiet applikati}}",
+      "refreshLedgerError": "Ma setax jiġi aġġornat il-log. Jekk jogħġbok erġa'' pprova.",
       "emptyExercice": {
         "title": "L-ebda sena finanzjarja",
         "description": "Oħloq sena finanzjarja ġdida biex tara l-Bilanċ."
@@ -1594,6 +1599,9 @@
         "createdWithLinked": "Sena Finanzjarja Maħluqa — {count, plural, one {# -rekord marbut} other {# rekords relatati}} awtomatikament"
       }
     },
+    "exerciceGuard": {
+      "closedError": "Dan l-eżerċizzju huwa magħluq — huwa impossibbli li toħloq jew timmodifika rekord għal dan il-perjodu."
+    },
     "accountsView": {
       "title": "Kontijiet bankarji",
       "description": "Immaniġġja l-kontijiet bankarji tal-assoċjazzjoni.",
@@ -1917,6 +1925,7 @@
       "typeIncome": "Dħul",
       "typeExpense": "Spejjeż",
       "typeTransfer": "Trasferiment intern",
+      "selectedCount": "{count, plural, one {# oġġett magħżul} other {# magħżula}}",
       "confirm": "Ivvalida l-konċiljazzjoni"
     }
   },

@@ -32,7 +32,7 @@ export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   const reimbursementDate = new Date(date)
 
   const exercice = await resolveExerciceForDate(associationId, reimbursementDate)
-  const guard = closedExerciceGuard(exercice?.status)
+  const guard = await closedExerciceGuard(exercice?.status)
   if (guard) return guard
 
   let bankTransaction: { id: string; amount: unknown; transactionDate: Date; label: string } | null = null

@@ -1177,6 +1177,11 @@
       "noAccountsInRubrique": "Ingen balance i denne sektion",
       "exportPdf": "Eksport PDF",
       "exportDisabledTooltip": "Kan ikke eksportere en endelig balance, før ovenstående uregelmæssigheder er rettet.",
+      "refreshLedger": "Opdater loggen",
+      "refreshLedgerTooltip": "Denne rapport opdateres ikke i realtid med hver eneste indtægt eller udgift — klik for at synkronisere med de seneste bevægelser.",
+      "refreshLedgerSuccessPosted": "{count, plural, =0 {Ingen ny bevægelse} one {# synkroniseret bevægelse} other {# synkroniserede bevægelser}}",
+      "refreshLedgerSuccessReversed": "{count, plural, =0 {} one {, # annullering anvendt} other {, # afbestillinger anvendt}}",
+      "refreshLedgerError": "Kan ikke opdatere loggen. Prøv venligst igen.",
       "emptyExercice": {
         "title": "Intet regnskabsår",
         "description": "Opret et nyt regnskabsår for at se balancen."
@@ -1594,6 +1599,9 @@
         "createdWithLinked": "Skabt regnskabsår — {count, plural, one {# linkede post} other {# relaterede plader}} automatisk"
       }
     },
+    "exerciceGuard": {
+      "closedError": "Denne øvelse er lukket — det er umuligt at oprette eller ændre en post for denne periode."
+    },
     "accountsView": {
       "title": "Bankkonti",
       "description": "Styr foreningens bankkonti.",
@@ -1917,6 +1925,7 @@
       "typeIncome": "Indtægt",
       "typeExpense": "Udgifter",
       "typeTransfer": "Intern overførsel",
+      "selectedCount": "{count, plural, one {# valgt element} other {# valgte elementer}}",
       "confirm": "Valider forliget"
     }
   },

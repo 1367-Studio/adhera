@@ -8,6 +8,8 @@ import { withPortalAuth } from "@/lib/api-wrapper"
 import { isEvenementOver } from "@/lib/evenement-timing"
 import { reportError } from "@/lib/monitoring"
 import { refundConnectCharge } from "@/lib/webhook/connect-stripe-fee"
+import { reverseIncomeJournalEntry } from "@/lib/finance/journal/post-income-expense"
+import { bankTransactionIdsToRelease } from "@/lib/finance/release-bank-transaction"
 
 const bodySchema = z.object({ participationId: z.string().optional() })
 
@@ -137,10 +139,12 @@ export const POST = withPortalAuth<{ id: string }>(async (req, ctx, { id: evenem
   const reconciliations = paidIncomes.length
     ? await prisma.bankReconciliation.findMany({
         where:  { incomeId: { in: paidIncomes.map(i => i.id) } },
-        select: { bankTransactionId: true },
+        select: { id: true, bankTransactionId: true },
       })
     : []
-  const txIds = reconciliations.map(r => r.bankTransactionId)
+  // Only release a transaction with NO other reconciliation row left — a grouped
+  // reconciliation (FORM-116 block 8) can still be legitimately matched via sibling rows.
+  const txIds = await bankTransactionIdsToRelease(prisma, reconciliations.map(r => r.bankTransactionId), reconciliations.map(r => r.id))
 
   // The buyer's own seat was already reset (kept, not deleted) by the claim transaction
   // above, so they can re-reserve later without hitting the one-self-ticket-per-event
@@ -164,6 +168,13 @@ export const POST = withPortalAuth<{ id: string }>(async (req, ctx, { id: evenem
       : []),
     prisma.income.deleteMany({ where: { id: { in: paidIncomes.map(i => i.id) } } }),
   ])
+
+  // Hard-deleted above, not soft-cancelled — reverse from the ids captured before the delete
+  // (reverseIncomeJournalEntry only needs the JournalEntry's idempotencyKey). Only reached once
+  // the Stripe refund above has already succeeded (or there was nothing to refund), never
+  // before — the refund's own rollback happens earlier in this route, with nothing left to
+  // undo here.
+  for (const income of paidIncomes) await reverseIncomeJournalEntry(income.id)
 
   await writeActivityLog({
     associationId,

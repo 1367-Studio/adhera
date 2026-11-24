@@ -4,6 +4,8 @@ import { incomeUpdateSchema } from "@/lib/schemas"
 import { writeActivityLog } from "@/lib/activity-log"
 import { withAdminAuth } from "@/lib/api-wrapper"
 import { closedExerciceGuard } from "@/lib/finance/exercice"
+import { reverseIncomeJournalEntry } from "@/lib/finance/journal/post-income-expense"
+import { bankTransactionIdsToRelease } from "@/lib/finance/release-bank-transaction"
 
 export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   const { associationId, userId } = ctx
@@ -14,7 +16,7 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   })
   if (!existing) return NextResponse.json({ error: "Recette introuvable" }, { status: 404 })
 
-  const closedGuard = closedExerciceGuard(existing.exercice?.status)
+  const closedGuard = await closedExerciceGuard(existing.exercice?.status)
   if (closedGuard) return closedGuard
 
   const body   = await req.json()
@@ -42,9 +44,11 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   // valid — unlink it and reset the transaction, mirroring what DELETE already does.
   const leavesPaid = rest.status !== undefined && rest.status !== "PAID" && existing.status === "PAID"
   const reconciliations = leavesPaid
-    ? await prisma.bankReconciliation.findMany({ where: { incomeId: id }, select: { bankTransactionId: true } })
+    ? await prisma.bankReconciliation.findMany({ where: { incomeId: id }, select: { id: true, bankTransactionId: true } })
     : []
-  const txIds = reconciliations.map(r => r.bankTransactionId)
+  // Only release a transaction with NO other reconciliation row left — a grouped
+  // reconciliation (FORM-116 block 8) can still be legitimately matched via sibling rows.
+  const txIds = await bankTransactionIdsToRelease(prisma, reconciliations.map(r => r.bankTransactionId), reconciliations.map(r => r.id))
 
   const [income] = await prisma.$transaction([
     prisma.income.update({
@@ -79,7 +83,7 @@ export const DELETE = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) =>
   })
   if (!existing) return NextResponse.json({ error: "Recette introuvable" }, { status: 404 })
 
-  const closedGuard = closedExerciceGuard(existing.exercice?.status)
+  const closedGuard = await closedExerciceGuard(existing.exercice?.status)
   if (closedGuard) return closedGuard
 
   if (existing.facturePaymentId) {
@@ -89,9 +93,11 @@ export const DELETE = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) =>
   // Find linked bank transactions before deleting the reconciliation link
   const reconciliations = await prisma.bankReconciliation.findMany({
     where: { incomeId: id },
-    select: { bankTransactionId: true },
+    select: { id: true, bankTransactionId: true },
   })
-  const txIds = reconciliations.map(r => r.bankTransactionId)
+  // Only release a transaction with NO other reconciliation row left — a grouped
+  // reconciliation (FORM-116 block 8) can still be legitimately matched via sibling rows.
+  const txIds = await bankTransactionIdsToRelease(prisma, reconciliations.map(r => r.bankTransactionId), reconciliations.map(r => r.id))
 
   await prisma.$transaction([
     prisma.bankReconciliation.deleteMany({ where: { incomeId: id } }),
@@ -101,6 +107,10 @@ export const DELETE = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) =>
       : []),
     prisma.income.delete({ where: { id } }),
   ])
+
+  // Hard-deleted above, not soft-cancelled — reverse directly from the id, same as every
+  // other hard-delete call site (see cotisations/[id]/route.ts's own comment on why).
+  await reverseIncomeJournalEntry(id)
 
   await writeActivityLog({ associationId, actorId: userId, action: "INCOME_DELETED", entity: "Income", entityId: id })
   return new NextResponse(null, { status: 204 })

@@ -1177,6 +1177,11 @@
       "noAccountsInRubrique": "Tässä osiossa ei ole tasapainoa",
       "exportPdf": "Vie PDF",
       "exportDisabledTooltip": "Lopullista taseraporttia ei voi viedä ennen kuin yllä mainitut poikkeamat on korjattu.",
+      "refreshLedger": "Päivitä loki",
+      "refreshLedgerTooltip": "Tätä raporttia ei päivitetä reaaliajassa jokaisesta tulosta tai kulusta — klikkaa synkronoidaksesi viimeisimmät liikkeet.",
+      "refreshLedgerSuccessPosted": "{count, plural, =0 {Ei uutta liikettä} one {# synkronoitu liike} other {# synkronoidut liikkeet}}",
+      "refreshLedgerSuccessReversed": "{count, plural, =0 {} one {, # peruutus on sovellettu} other {, # peruutuksia on sovellettu}}",
+      "refreshLedgerError": "Lokia ei voi päivittää. Yritä uudelleen.",
       "emptyExercice": {
         "title": "Ei tilivuotta",
         "description": "Luo uusi tilikausi nähdäksesi taseen."
@@ -1594,6 +1599,9 @@
         "createdWithLinked": "Tilikausi luotu — {count, plural, one {# linkitetty tietue} other {# aiheeseen liittyvät tiedot}} Automaattisesti"
       }
     },
+    "exerciceGuard": {
+      "closedError": "Tämä harjoitus on suljettu — tietueen luominen tai muokkaaminen tälle ajanjaksolle on mahdotonta."
+    },
     "accountsView": {
       "title": "Pankkitilit",
       "description": "Hallinnoi yhdistyksen pankkitilejä.",
@@ -1917,6 +1925,7 @@
       "typeIncome": "Tulo",
       "typeExpense": "Kustannukset",
       "typeTransfer": "Sisäinen siirto",
+      "selectedCount": "{count, plural, one {# valittu kohde} other {# valittuja kohteita}}",
       "confirm": "Vahvista sovinto"
     }
   },

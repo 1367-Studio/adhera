@@ -1177,6 +1177,11 @@
       "noAccountsInRubrique": "Šajā sadaļā nav līdzsvara",
       "exportPdf": "PDF eksports",
       "exportDisabledTooltip": "Nav iespējams eksportēt galīgo bilanci, kamēr iepriekš minētās anomālijas nav novērstas.",
+      "refreshLedger": "Atsvaidzināt žurnālu",
+      "refreshLedgerTooltip": "Šis pārskats netiek atjaunināts reāllaikā ar katru ienākumu vai izdevumu — klikšķiniet, lai sinhronizētu ar jaunākajām kustībām.",
+      "refreshLedgerSuccessPosted": "{count, plural, =0 {Nav jaunas kustības} one {# sinhronizētā kustība} other {# sinhronizētās kustības}}",
+      "refreshLedgerSuccessReversed": "{count, plural, =0 {} one {, # atcelšana} other {, # atcelšanas tika piemērotas}}",
+      "refreshLedgerError": "Neizdevās atsvaidzināt žurnālu. Lūdzu, mēģiniet vēlreiz.",
       "emptyExercice": {
         "title": "Nav fiskālā gada",
         "description": "Izveidojiet jaunu finanšu gadu, lai skatītu bilanci."
@@ -1594,6 +1599,9 @@
         "createdWithLinked": "Izveidotais fiskālais gads — {count, plural, one {# saistītais ieraksts} other {# saistītie ieraksti}} Automātiski"
       }
     },
+    "exerciceGuard": {
+      "closedError": "Šis process ir slēgts — nav iespējams izveidot vai mainīt ierakstu par šo periodu."
+    },
     "accountsView": {
       "title": "Bankas konti",
       "description": "Pārvaldiet asociācijas bankas kontus.",
@@ -1917,6 +1925,7 @@
       "typeIncome": "Ieņēmums",
       "typeExpense": "Izdevumi",
       "typeTransfer": "Iekšējā pāreja",
+      "selectedCount": "{count, plural, one {# izvēlētais priekšmets} other {# izvēlētie priekšmeti}}",
       "confirm": "Apstiprināt izlīgumu"
     }
   },

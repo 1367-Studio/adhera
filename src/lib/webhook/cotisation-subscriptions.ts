@@ -21,6 +21,7 @@ import { APP_URL } from "@/lib/env"
 import { notifyMissingCotisation } from "@/lib/cotisation-alerts"
 import { createMembershipAddonPurchases } from "@/lib/webhook/membership-addons"
 import { notifyNewAddonDonations } from "@/lib/dons/notify"
+import { bookAddonDonationIncome } from "@/lib/dons/book-income"
 import { notifyMembershipSignup } from "@/lib/webhook/membership-notify"
 import { addressColumns } from "@/lib/address"
 import { reportError } from "@/lib/monitoring"
@@ -248,6 +249,12 @@ export async function handleCotisationSubscriptionCheckout(session: Stripe.Check
         email:         meta.email,
         addonsJson:    meta.addons,
         canIssueTaxReceipts: assoc?.canIssueTaxReceipts ?? false,
+      })
+      await bookAddonDonationIncome(tx, {
+        associationId:  meta.associationId,
+        donorFirstName: meta.firstName ?? "",
+        donorLastName:  meta.lastName ?? "",
+        donations,
       })
 
       return { user, membre, cotisationSubscription, donations }

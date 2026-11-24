@@ -1177,6 +1177,11 @@
       "noAccountsInRubrique": "V této části není žádná rovnováha",
       "exportPdf": "Exportovat PDF",
       "exportDisabledTooltip": "Nelze exportovat konečnou rozvahu, dokud nejsou výše uvedené anomálie opraveny.",
+      "refreshLedger": "Obnovit protokol",
+      "refreshLedgerTooltip": "Tato zpráva není aktualizována v reálném čase o každý příjem nebo výdaj — klikněte pro synchronizaci s nejaktuálnějšími pohyby.",
+      "refreshLedgerSuccessPosted": "{count, plural, =0 {Žádné nové hnutí} one {# synchronizovaný pohyb} other {# synchronizované pohyby}}",
+      "refreshLedgerSuccessReversed": "{count, plural, =0 {} one {, # uplatněno zrušení} other {, # uplatnění zrušení}}",
+      "refreshLedgerError": "Nelze obnovit protokol. Zkuste to prosím znovu.",
       "emptyExercice": {
         "title": "Žádný fiskální rok",
         "description": "Vytvořte nový fiskální rok pro zobrazení rozvahy."
@@ -1594,6 +1599,9 @@
         "createdWithLinked": "Vytvořený fiskální rok — {count, plural, one {# propojený záznam} other {# související záznamy}} Automaticky"
       }
     },
+    "exerciceGuard": {
+      "closedError": "Toto cvičení je uzavřeno — není možné vytvořit nebo upravit záznam pro toto období."
+    },
     "accountsView": {
       "title": "Bankovní účty",
       "description": "Spravovat bankovní účty sdružení.",
@@ -1917,6 +1925,7 @@
       "typeIncome": "Příjem",
       "typeExpense": "Náklady",
       "typeTransfer": "Interní převod",
+      "selectedCount": "{count, plural, one {# vybraná položka} other {# vybrané položky}}",
       "confirm": "Validujte smírčí jednání"
     }
   },

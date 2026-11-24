@@ -1177,6 +1177,11 @@
       "noAccountsInRubrique": "Brak równowagi w tej części",
       "exportPdf": "Eksport PDF",
       "exportDisabledTooltip": "Nie można wyeksportować Ostatecznego Bilansu Bilansowego, dopóki powyższe anomalie nie zostaną naprawione.",
+      "refreshLedger": "Odśwież dziennik",
+      "refreshLedgerTooltip": "Ten raport nie jest aktualizowany w czasie rzeczywistym o każdy przychód lub wydatki — kliknij, aby zsynchronizować najnowsze ruchy.",
+      "refreshLedgerSuccessPosted": "{count, plural, =0 {Brak nowego ruchu} one {# zsynchronizowany ruch} other {# zsynchronizowane ruchy}}",
+      "refreshLedgerSuccessReversed": "{count, plural, =0 {} one {, # anulowanie zastosowane} other {, # anulowania zastosowano}}",
+      "refreshLedgerError": "Nie można odświeżyć dziennika. Proszę spróbować ponownie.",
       "emptyExercice": {
         "title": "Brak roku fiskalnego",
         "description": "Stwórz nowy rok fiskalny, aby zobaczyć bilans."
@@ -1594,6 +1599,9 @@
         "createdWithLinked": "Utworzony rok fiskalny — {count, plural, one {# powiązany rekord} other {# powiązane dokumenty}} Automatycznie"
       }
     },
+    "exerciceGuard": {
+      "closedError": "To ćwiczenie jest zamknięte — nie jest możliwe utworzenie ani modyfikacja rekordu na ten okres."
+    },
     "accountsView": {
       "title": "Konta bankowe",
       "description": "Zarządzaj kontami bankowymi stowarzyszenia.",
@@ -1917,6 +1925,7 @@
       "typeIncome": "Przychód",
       "typeExpense": "Wydatki",
       "typeTransfer": "Transfer wewnętrzny",
+      "selectedCount": "{count, plural, one {# wybrany element} other {# wybranych przedmiotów}}",
       "confirm": "Zweryfikować pojednanie"
     }
   },

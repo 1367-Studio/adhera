@@ -1177,6 +1177,11 @@
       "noAccountsInRubrique": "Sem equilíbrio nesta seção",
       "exportPdf": "Exportar PDF",
       "exportDisabledTooltip": "Impossível exportar um Balanço Completo até que as anomalias acima sejam corrigidas.",
+      "refreshLedger": "Atualizar livro-razão",
+      "refreshLedgerTooltip": "Este relatório não é atualizado em tempo real com cada receita ou despesa — clique para sincronizar com os movimentos mais recentes.",
+      "refreshLedgerSuccessPosted": "{count, plural, =0 {Nenhum movimento novo} one {# movimento sincronizado} other {# movimentos sincronizados}}",
+      "refreshLedgerSuccessReversed": "{count, plural, =0 {} one {, # cancelamento aplicado} other {, # cancelamentos aplicados}}",
+      "refreshLedgerError": "Não foi possível atualizar o livro-razão. Tente novamente.",
       "emptyExercice": {
         "title": "Sem ano fiscal",
         "description": "Crie um novo ano fiscal para visualizar o Balanço Patrimonial."
@@ -1594,6 +1599,9 @@
         "createdWithLinked": "Exercício criado — {count, plural, one {# lançamento vinculado} other {# lançamentos vinculados}} automaticamente"
       }
     },
+    "exerciceGuard": {
+      "closedError": "Este exercício está encerrado — é impossível criar ou modificar um registro para esse período."
+    },
     "accountsView": {
       "title": "Contas bancárias",
       "description": "Gerencie as contas bancárias da associação.",
@@ -1917,6 +1925,7 @@
       "typeIncome": "Receita",
       "typeExpense": "Despesa",
       "typeTransfer": "Transferência interna",
+      "selectedCount": "{count, plural, one {# item selecionado} other {# itens selecionados}}",
       "confirm": "Confirmar conciliação"
     }
   },

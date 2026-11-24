@@ -1,6 +1,8 @@
 import type { EvenementPaymentMethod, Participation, Prisma } from "@prisma/client"
 import { z } from "zod"
+import { prisma } from "@/lib/prisma/client"
 import { eligibleReceiptAmount } from "@/lib/receipt-eligibility"
+import { getOrCreateDefaultCategory } from "@/lib/finance/resolve-default-category"
 import { ON_SITE_PAYMENT_METHODS, managerOnSitePaymentMethods, type OnSitePaymentMethod } from "@/lib/evenement-payment-methods"
 
 type TxClient = Prisma.TransactionClient
@@ -88,6 +90,16 @@ export async function markParticipationPaid(transaction: TxClient, params: {
   const receiptMode      = tier?.receiptMode ?? "NONE"
   const deductibleAmount = eligibleReceiptAmount(amount, receiptMode, tier?.ineligibleAmount != null ? Number(tier.ineligibleAmount) : null)
 
+  // Resolved via the plain `prisma` client, deliberately not `transaction`, and before any
+  // `transaction` write below — see getOrCreateDefaultCategory's own doc comment (its P2002
+  // race-retry re-reads with a second query that would itself fail if `transaction`'s
+  // transaction was already aborted by a prior statement). Same ordering constraint
+  // bookAddonDonationIncome/bookBoutiqueOrderIncome already follow — without this, a
+  // manually-confirmed (cash/cheque/transfer) ticket's Income posted with no categoryId at
+  // all, unlike the Stripe-webhook ticket branch, leaving it invisible to anything keyed off
+  // the real category row instead of the generic "Événement" origin fallback.
+  const ticketCategoryId = await getOrCreateDefaultCategory(prisma, associationId, "evenements")
+
   const updated = await transaction.participation.update({
     where: { id: participation.id },
     data:  { ticketPaidAt: paidAt, amount, ticketTypeId: tier?.id, paymentMethod: method, receiptMode, deductibleAmount },
@@ -100,6 +112,7 @@ export async function markParticipationPaid(transaction: TxClient, params: {
       exerciceId,
       memberId:        participation.membreId,
       participationId: participation.id,
+      categoryId:      ticketCategoryId,
       amount,
       paymentMethod: method,
       description:   `Billet — ${evenement.title}${ticketLabel} — ${participation.firstName} ${participation.lastName}`,

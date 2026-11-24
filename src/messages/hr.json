@@ -1177,6 +1177,11 @@
       "noAccountsInRubrique": "Nema ravnoteže u ovom dijelu",
       "exportPdf": "Izvezi PDF",
       "exportDisabledTooltip": "Nije moguće izvesti konačnu bilancu dok se gore navedene anomalije ne isprave.",
+      "refreshLedger": "Osvježite zapisnik",
+      "refreshLedgerTooltip": "Ovo izvješće se ne ažurira u stvarnom vremenu sa svakim prihodom ili rashodom — kliknite za sinkronizaciju s najnovijim kretanjima.",
+      "refreshLedgerSuccessPosted": "{count, plural, =0 {Nema novog pokreta} one {# sinkronizirano kretanje} other {# sinkronizirani pokreti}}",
+      "refreshLedgerSuccessReversed": "{count, plural, =0 {} one {, # se primjenjuje poništenje} other {, # primijenjenih otkazivanja}}",
+      "refreshLedgerError": "Nije moguće osvježiti zapisnik. Molimo pokušajte ponovno.",
       "emptyExercice": {
         "title": "Nema fiskalne godine",
         "description": "Kreirajte novu fiskalnu godinu za pregled bilance."
@@ -1594,6 +1599,9 @@
         "createdWithLinked": "Stvarna fiskalna godina — {count, plural, one {# povezani zapis} other {# povezani zapisi}} automatski"
       }
     },
+    "exerciceGuard": {
+      "closedError": "Ova vježba je zatvorena — nemoguće je stvoriti ili izmijeniti zapis za ovo razdoblje."
+    },
     "accountsView": {
       "title": "Bankovni računi",
       "description": "Upravljajte bankovnim računima udruge.",
@@ -1917,6 +1925,7 @@
       "typeIncome": "Prihod",
       "typeExpense": "Troškovi",
       "typeTransfer": "Interni prijenos",
+      "selectedCount": "{count, plural, one {# odabrani predmet} other {# odabranih stavki}}",
       "confirm": "Potvrdite pomirenje"
     }
   },

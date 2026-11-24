@@ -1177,6 +1177,11 @@
       "noAccountsInRubrique": "Geen balans in dit deel",
       "exportPdf": "PDF exporteren",
       "exportDisabledTooltip": "Kan geen eindbalans exporteren totdat bovenstaande anomalieën zijn opgelost.",
+      "refreshLedger": "Vernieuw het logboek",
+      "refreshLedgerTooltip": "Dit rapport wordt niet in realtime bijgewerkt bij elke inkomsten of uitgave — klik om te synchroniseren met de meest recente bewegingen.",
+      "refreshLedgerSuccessPosted": "{count, plural, =0 {Geen nieuwe beweging} one {# gesynchroniseerde beweging} other {# gesynchroniseerde bewegingen}}",
+      "refreshLedgerSuccessReversed": "{count, plural, =0 {} one {, # annulering toegepast} other {, # gehanteerde annuleringen}}",
+      "refreshLedgerError": "Kan het logboek niet verversen. Probeer het opnieuw.",
       "emptyExercice": {
         "title": "Geen boekjaar",
         "description": "Maak een nieuw boekjaar aan om de balans te bekijken."
@@ -1594,6 +1599,9 @@
         "createdWithLinked": "Begrotingsjaar gecreëerd — {count, plural, one {# gekoppelde record} other {# gerelateerde archieven}} Automatisch"
       }
     },
+    "exerciceGuard": {
+      "closedError": "Deze exercitie is gesloten — het is onmogelijk om een record voor deze periode aan te maken of te wijzigen."
+    },
     "accountsView": {
       "title": "Bankrekeningen",
       "description": "Beheer de bankrekeningen van de vereniging.",
@@ -1917,6 +1925,7 @@
       "typeIncome": "Inkomst",
       "typeExpense": "Kosten",
       "typeTransfer": "Interne overdracht",
+      "selectedCount": "{count, plural, one {# geselecteerd item} other {# geselecteerde items}}",
       "confirm": "Valideer de bemiddeling"
     }
   },
