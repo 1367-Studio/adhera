@@ -22,7 +22,7 @@ export const GET = withAdminAuth(async (req, ctx) => {
   if (fournisseurId) where.fournisseurId = fournisseurId
 
   const orderBy = [{ issueDate: "desc" as const }, { createdAt: "desc" as const }]
-  const include = { fournisseur: { select: { id: true, companyName: true } } }
+  const include = { fournisseur: { select: { id: true, companyName: true } }, category: { select: { id: true, name: true } } }
 
   if (!searchParams.has("page")) {
     const data = await prisma.factureRecue.findMany({ where, orderBy, include, take: 500 })
@@ -82,7 +82,7 @@ export const POST = withAdminAuth(async (req, ctx) => {
       notes:      notes      || null,
       categoryId: categoryId || null,
     },
-    include: { fournisseur: { select: { id: true, companyName: true } } },
+    include: { fournisseur: { select: { id: true, companyName: true } }, category: { select: { id: true, name: true } } },
   })
 
   await writeActivityLog({ associationId, actorId: userId, action: "FACTURE_RECUE_CREATED", entity: "FactureRecue", entityId: factureRecue.id, label: factureRecue.number ?? factureRecue.type })

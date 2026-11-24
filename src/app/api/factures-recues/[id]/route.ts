@@ -22,6 +22,7 @@ export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
     where:   { id, associationId, deletedAt: null },
     include: {
       fournisseur: { select: { id: true, companyName: true } },
+      category:    { select: { id: true, name: true } },
       payments:    { orderBy: { paidAt: "desc" } },
       immobilisation: { select: { id: true } },
     },
@@ -105,7 +106,7 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
       ...(fournisseurId !== undefined ? { fournisseurId: fournisseurId || null } : {}),
       ...(categoryId    !== undefined ? { categoryId: categoryId || null } : {}),
     },
-    include: { fournisseur: { select: { id: true, companyName: true } }, payments: { orderBy: { paidAt: "desc" } } },
+    include: { fournisseur: { select: { id: true, companyName: true } }, category: { select: { id: true, name: true } }, payments: { orderBy: { paidAt: "desc" } } },
   })
 
   // Outside the write above, same posture as every other journal call site — postJournalEntry's

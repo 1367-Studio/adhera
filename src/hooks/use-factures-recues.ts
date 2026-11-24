@@ -25,6 +25,10 @@ export type FactureRecue = {
   notes:         string | null
   fournisseurId: string | null
   fournisseur:   { id: string; companyName: string } | null
+  // FORM-117 — optional: set lets this document post an accrual charge at registration
+  // (ACCRUAL regime) or at least carry the category into its payment Expense (CASH regime).
+  categoryId:    string | null
+  category:      { id: string; name: string } | null
   payments?:     FactureRecuePayment[]
 }
 
