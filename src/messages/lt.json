@@ -1138,7 +1138,8 @@
           "ACTIF_PASSIF_MISMATCH": "Turtas ({actif}) neatitinka įsipareigojimo ({passif}).",
           "OPENING_BALANCE_MISSING": "Šiai užduočiai nebuvo sugeneruoti jokie pradiniai įrašai iš \"{previousLabel}\".",
           "TRIAL_BALANCE_UNBALANCED": "Bendras debetas ({debit}) nesutampa su bendru kreditu ({credit}) šiais finansiniais metais.",
-          "RESULT_DIVERGENCE": "Žurnalo ({journal}) rezultatas skiriasi nuo pelno (nuostolių) ataskaitos ({statement}) – žurnalas gali dar būti neatnaujintas šiems finansiniams metams (uždaryti finansinius metus arba atnaujinti sinchronizacija)."
+          "RESULT_DIVERGENCE": "Žurnalo ({journal}) rezultatas skiriasi nuo pelno (nuostolių) ataskaitos ({statement}) – žurnalas gali dar būti neatnaujintas šiems finansiniams metams (uždaryti finansinius metus arba atnaujinti sinchronizacija).",
+          "UNPOSTED_ENTRIES": "Neįrašyti įrašai: {count} (kategorija neturi arba nėra susijusio apskaitos kodo) — {amount} neatsispindi šiame pranešime. Sinchronizacijos paleidimas iš naujo čia nepakanka, kategoriją reikia ištaisyti."
         }
       },
       "memoNoHistory": "Nėra istorinių duomenų",

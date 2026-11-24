@@ -1138,7 +1138,8 @@
           "ACTIF_PASSIF_MISMATCH": "Ní fhreagraíonn an tsócmhainn ({actif}) don dliteanas ({passif}).",
           "OPENING_BALANCE_MISSING": "Níor gineadh aon iontrálacha oscailte don chleachtadh seo ó \"{previousLabel}\".",
           "TRIAL_BALANCE_UNBALANCED": "Ní hionann an dochair iomlán ({debit}) agus an creidmheas iomlán ({credit}) don bhliain fhioscach seo.",
-          "RESULT_DIVERGENCE": "Tá toradh na hirise ({journal}) difriúil ó thoradh an ráitis ioncaim ({statement}) - b'fhéidir nach bhfuil an iris cothrom le dáta don bhliain fhioscach seo fós (an bhliain fhioscach a dhúnadh nó sioncrónú a atosú)."
+          "RESULT_DIVERGENCE": "Tá toradh na hirise ({journal}) difriúil ó thoradh an ráitis ioncaim ({statement}) - b'fhéidir nach bhfuil an iris cothrom le dáta don bhliain fhioscach seo fós (an bhliain fhioscach a dhúnadh nó sioncrónú a atosú).",
+          "UNPOSTED_ENTRIES": "Iontrálacha nár taifeadadh: {count} (catagóir as láthair nó gan cód cuntasaíochta gaolmhar) — {amount} nach léirítear sa Tuarascáil seo. Ní leor an sioncrónú a atosú anseo, caithfear an chatagóir a cheartú."
         }
       },
       "memoNoHistory": "Gan aon sonraí stairiúla",

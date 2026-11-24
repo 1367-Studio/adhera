@@ -1138,7 +1138,8 @@
           "ACTIF_PASSIF_MISMATCH": "Omaisuuserä ({actif}) ei vastaa velkaa ({passif}).",
           "OPENING_BALANCE_MISSING": "Tälle harjoitukselle ei tuotettu aloitusmerkintöjä \"{previousLabel}\":sta.",
           "TRIAL_BALANCE_UNBALANCED": "Kokonaisdebet ({debit}) ei vastaa tämän tilikauden kokonaisluottoa ({credit}).",
-          "RESULT_DIVERGENCE": "Päiväkirjan ({journal}) tulos poikkeaa tuloslaskelman ({statement}) tuloksesta — päiväkirja ei välttämättä ole vielä ajan tasalla tälle tilikaudelle (sulje tilivuosi tai aloita synkronointi uudelleen)."
+          "RESULT_DIVERGENCE": "Päiväkirjan ({journal}) tulos poikkeaa tuloslaskelman ({statement}) tuloksesta — päiväkirja ei välttämättä ole vielä ajan tasalla tälle tilikaudelle (sulje tilivuosi tai aloita synkronointi uudelleen).",
+          "UNPOSTED_ENTRIES": "Rekisteröimättömät merkinnät: {count} (kategoria puuttuu tai ei siihen liittyvää kirjanpitokoodia) — {amount} ei näy tässä raportissa. Synkronoinnin uudelleenkäynnistys ei riitä tässä, kategoria on korjattava."
         }
       },
       "memoNoHistory": "Ei historiallista tietoa",

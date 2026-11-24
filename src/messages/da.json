@@ -1138,7 +1138,8 @@
           "ACTIF_PASSIF_MISMATCH": "Aktivet ({actif}) svarer ikke til forpligtelsen ({passif}).",
           "OPENING_BALANCE_MISSING": "Der blev ikke genereret nogen åbningsposter for denne øvelse fra \"{previousLabel}\".",
           "TRIAL_BALANCE_UNBALANCED": "Den samlede debet ({debit}) matcher ikke den samlede kredit ({credit}) for dette regnskabsår.",
-          "RESULT_DIVERGENCE": "Resultatet af journalen ({journal}) adskiller sig fra resultatopgørelsen ({statement}) — journalen er måske endnu ikke opdateret for dette regnskabsår (luk regnskabsåret eller genstart synkronisering)."
+          "RESULT_DIVERGENCE": "Resultatet af journalen ({journal}) adskiller sig fra resultatopgørelsen ({statement}) — journalen er måske endnu ikke opdateret for dette regnskabsår (luk regnskabsåret eller genstart synkronisering).",
+          "UNPOSTED_ENTRIES": "Uregistrerede poster: {count} (kategori fraværende eller uden tilhørende regnskabskode) — {amount} ikke afspejlet i denne rapport. At genstarte synkroniseringen er ikke nok her, kategorien skal rettes."
         }
       },
       "memoNoHistory": "Ingen historiske data",

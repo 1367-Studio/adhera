@@ -1138,7 +1138,8 @@
           "ACTIF_PASSIF_MISMATCH": "Het actief ({actif}) komt niet overeen met de verplichting ({passif}).",
           "OPENING_BALANCE_MISSING": "Er werden geen openingsvermeldingen voor deze oefening gegenereerd vanuit \"{previousLabel}\".",
           "TRIAL_BALANCE_UNBALANCED": "De totale debet ({debit}) komt niet overeen met het totale credit ({credit}) voor dit boekjaar.",
-          "RESULT_DIVERGENCE": "Het resultaat van het journaal ({journal}) verschilt van dat van de winst- en verliesrekening ({statement}) — het journaal is mogelijk nog niet up-to-date voor dit boekjaar (het boekjaar afsluiten of synchronisatie herstarten)."
+          "RESULT_DIVERGENCE": "Het resultaat van het journaal ({journal}) verschilt van dat van de winst- en verliesrekening ({statement}) — het journaal is mogelijk nog niet up-to-date voor dit boekjaar (het boekjaar afsluiten of synchronisatie herstarten).",
+          "UNPOSTED_ENTRIES": "Niet-geregistreerde vermeldingen: {count} (categorie afwezig of zonder bijbehorende boekhoudcode) — {amount} niet weerspiegeld in dit rapport. Het opnieuw starten van de synchronisatie is hier niet voldoende, de categorie moet worden gecorrigeerd."
         }
       },
       "memoNoHistory": "Geen historische gegevens",

@@ -1138,7 +1138,8 @@
           "ACTIF_PASSIF_MISMATCH": "Imovina ({actif}) ne odgovara obvezi ({passif}).",
           "OPENING_BALANCE_MISSING": "Za ovu vježbu nisu generirani početni unosi iz \"{previousLabel}\".",
           "TRIAL_BALANCE_UNBALANCED": "Ukupno terećenje ({debit}) ne odgovara ukupnom kreditu ({credit}) za ovu fiskalnu godinu.",
-          "RESULT_DIVERGENCE": "Rezultat dnevnika ({journal}) razlikuje se od rezultata računa dobiti i gubitka ({statement}) — dnevnik možda još nije ažuriran za ovu fiskalnu godinu (zatvoriti fiskalnu godinu ili ponovno pokrenuti sinkronizaciju)."
+          "RESULT_DIVERGENCE": "Rezultat dnevnika ({journal}) razlikuje se od rezultata računa dobiti i gubitka ({statement}) — dnevnik možda još nije ažuriran za ovu fiskalnu godinu (zatvoriti fiskalnu godinu ili ponovno pokrenuti sinkronizaciju).",
+          "UNPOSTED_ENTRIES": "Nezabilježeni unosi: {count} (kategorija bez ili bez pripadajućeg računovodstvenog koda) — {amount} nije prikazano u ovom izvještaju. Ponovno pokretanje sinkronizacije ovdje nije dovoljno, kategorija se mora ispraviti."
         }
       },
       "memoNoHistory": "Nema povijesnih podataka",

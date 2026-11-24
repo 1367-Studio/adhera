@@ -1138,7 +1138,8 @@
           "ACTIF_PASSIF_MISMATCH": "Der Vermögenswert ({actif}) entspricht nicht der Verbindlichkeit ({passif}).",
           "OPENING_BALANCE_MISSING": "Für diese Übung wurden keine Eröffnungseinträge aus \"{previousLabel}\" generiert.",
           "TRIAL_BALANCE_UNBALANCED": "Die Gesamt-Soll-Gebühr ({debit}) entspricht nicht dem Gesamt-Kredit ({credit}) für dieses Geschäftsjahr.",
-          "RESULT_DIVERGENCE": "Das Ergebnis des Journal ({journal}) unterscheidet sich von dem der Gewinn- und Verlustrechnung ({statement}) – das Journal ist möglicherweise noch nicht auf dem neuesten Stand für dieses Geschäftsjahr (Haushaltsjahr schließen oder Synchronisation neu starten)."
+          "RESULT_DIVERGENCE": "Das Ergebnis des Journal ({journal}) unterscheidet sich von dem der Gewinn- und Verlustrechnung ({statement}) – das Journal ist möglicherweise noch nicht auf dem neuesten Stand für dieses Geschäftsjahr (Haushaltsjahr schließen oder Synchronisation neu starten).",
+          "UNPOSTED_ENTRIES": "Nicht aufgezeichnete Einträge: {count} (Kategorie fehlend oder ohne zugehörigen Buchführungscode) — {amount} nicht in diesem Bericht widerspiegelt. Das Neustarten der Synchronisation reicht hier nicht aus, die Kategorie muss korrigiert werden."
         }
       },
       "memoNoHistory": "Keine historischen Daten",

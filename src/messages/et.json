@@ -1138,7 +1138,8 @@
           "ACTIF_PASSIF_MISMATCH": "Vara ({actif}) ei vasta kohustusele ({passif}).",
           "OPENING_BALANCE_MISSING": "Selle harjutuse jaoks ei genereeritud avakirjeid \"{previousLabel}\" kaudu.",
           "TRIAL_BALANCE_UNBALANCED": "Kogu deebetsumma ({debit}) ei ühti selle majandusaasta kogukrediidiga ({credit}).",
-          "RESULT_DIVERGENCE": "Päeviku ({journal}) tulemus erineb kasumiaruande ({statement}) omast — päevik ei pruugi veel selle majandusaasta jaoks ajakohane olla (sulge majandusaasta või alusta sünkroniseerimist uuesti)."
+          "RESULT_DIVERGENCE": "Päeviku ({journal}) tulemus erineb kasumiaruande ({statement}) omast — päevik ei pruugi veel selle majandusaasta jaoks ajakohane olla (sulge majandusaasta või alusta sünkroniseerimist uuesti).",
+          "UNPOSTED_ENTRIES": "Salvestamata kirjed: {count} (kategooria puudub või puudub seotud raamatupidamiskood) — {amount} see ei kajastu selles aruandes. Sünkroonimise taaskäivitamine ei ole siin piisav, kategooria tuleb parandada."
         }
       },
       "memoNoHistory": "Ajaloolisi andmeid pole",

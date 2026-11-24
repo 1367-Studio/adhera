@@ -1143,7 +1143,8 @@
           "ACTIF_PASSIF_MISMATCH": "O ativo ({actif}) não corresponde ao passivo ({passif}).",
           "OPENING_BALANCE_MISSING": "Não foram geradas entradas de abertura para este exercício a partir de \"{previousLabel}\".",
           "TRIAL_BALANCE_UNBALANCED": "O débito total ({debit}) não corresponde ao crédito total ({credit}) deste ano fiscal.",
-          "RESULT_DIVERGENCE": "O resultado do diário ({journal}) difere do da demonstração de resultados ({statement}) — o diário pode ainda não estar atualizado para este ano fiscal (encerrar o ano fiscal ou reiniciar a sincronização)."
+          "RESULT_DIVERGENCE": "O resultado do diário ({journal}) difere do da demonstração de resultados ({statement}) — o diário pode ainda não estar atualizado para este ano fiscal (encerrar o ano fiscal ou reiniciar a sincronização).",
+          "UNPOSTED_ENTRIES": "Entradas não registadas: {count} (categoria ausente ou sem código contabilístico associado) — {amount} não refletido neste Relatório. Reiniciar a sincronização não é suficiente aqui, a categoria deve ser corrigida."
         }
       },
       "memoNoHistory": "Sem dados históricos",

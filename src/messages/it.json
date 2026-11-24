@@ -1138,7 +1138,8 @@
           "ACTIF_PASSIF_MISMATCH": "L'asset ({actif}) non corrisponde alla passività ({passif}).",
           "OPENING_BALANCE_MISSING": "Non sono state generate voci di apertura per questo esercizio da \"{previousLabel}\".",
           "TRIAL_BALANCE_UNBALANCED": "Il debito totale ({debit}) non corrisponde al credito totale ({credit}) per questo anno fiscale.",
-          "RESULT_DIVERGENCE": "Il risultato del journal ({journal}) differisce da quello del conto economico ({statement}) — il journal potrebbe non essere ancora aggiornato per questo anno fiscale (chiudere l'anno fiscale o riavviare la sincronizzazione)."
+          "RESULT_DIVERGENCE": "Il risultato del journal ({journal}) differisce da quello del conto economico ({statement}) — il journal potrebbe non essere ancora aggiornato per questo anno fiscale (chiudere l'anno fiscale o riavviare la sincronizzazione).",
+          "UNPOSTED_ENTRIES": "Voci non registrate: {count} (categoria assente o senza codice contabile associato) — {amount} non riflesso in questo Rapporto. Riavviare la sincronizzazione non è sufficiente qui, la categoria deve essere corretta."
         }
       },
       "memoNoHistory": "Nessun dato storico",

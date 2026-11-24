@@ -1138,7 +1138,8 @@
           "ACTIF_PASSIF_MISMATCH": "Az eszköz ({actif}) nem felel meg a kötelezettségnek ({passif}).",
           "OPENING_BALANCE_MISSING": "Ehhez a gyakorlathoz nem generáltak nyitóbejegyzések a \"{previousLabel}\" által.",
           "TRIAL_BALANCE_UNBALANCED": "A teljes debet ({debit}) nem egyezik meg az adott pénzügyi év teljes hitelével ({credit}).",
-          "RESULT_DIVERGENCE": "A napló ({journal}) eredménye eltér a nyereségkimutatásétól ({statement}) — lehet, hogy a folyóirat még nem naprakész ebben a pénzügyi évben (a pénzügyi év lezárása vagy újraindítása a szinkronizáció)."
+          "RESULT_DIVERGENCE": "A napló ({journal}) eredménye eltér a nyereségkimutatásétól ({statement}) — lehet, hogy a folyóirat még nem naprakész ebben a pénzügyi évben (a pénzügyi év lezárása vagy újraindítása a szinkronizáció).",
+          "UNPOSTED_ENTRIES": "Nem rögzített bejegyzések: {count} (kategória hiányzik vagy nincs hozzá tartozó számviteli kód) — {amount} nem tükröződik ebben a jelentésben. A szinkronizáció újraindítása itt nem elegendő, a kategóriát javítani kell."
         }
       },
       "memoNoHistory": "Nincsenek történelmi adatok",

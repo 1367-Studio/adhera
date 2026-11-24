@@ -1147,7 +1147,8 @@
           "ACTIF_PASSIF_MISMATCH": "Assets ({actif}) do not match liabilities & equity ({passif}).",
           "OPENING_BALANCE_MISSING": "No opening entry was generated for this fiscal year from \"{previousLabel}\".",
           "TRIAL_BALANCE_UNBALANCED": "Total debit ({debit}) does not match total credit ({credit}) for this fiscal year.",
-          "RESULT_DIVERGENCE": "The journal's result ({journal}) differs from the income statement's ({statement}) — the journal may not be caught up for this fiscal year yet (close the fiscal year or re-run the sync)."
+          "RESULT_DIVERGENCE": "The journal's result ({journal}) differs from the income statement's ({statement}) — the journal may not be caught up for this fiscal year yet (close the fiscal year or re-run the sync).",
+          "UNPOSTED_ENTRIES": "Unrecorded entries: {count} (category absent or without associated accounting code) — {amount} not reflected in this Report. Restarting the synchronization is not enough here, the category must be corrected."
         }
       },
       "memoNoHistory": "No historical data",

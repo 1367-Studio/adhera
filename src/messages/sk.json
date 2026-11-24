@@ -1138,7 +1138,8 @@
           "ACTIF_PASSIF_MISMATCH": "Majetok ({actif}) nezodpovedá záväzku ({passif}).",
           "OPENING_BALANCE_MISSING": "Pre toto cvičenie neboli vygenerované žiadne úvodné položky z \"{previousLabel}\".",
           "TRIAL_BALANCE_UNBALANCED": "Celkový debet ({debit}) nezodpovedá celkovému kreditu ({credit}) za tento fiškálny rok.",
-          "RESULT_DIVERGENCE": "Výsledok denníka ({journal}) sa líši od výsledku výkazu ziskov a strát ({statement}) — zápisník nemusí byť ešte aktuálny pre tento fiškálny rok (zatvoriť fiškálny rok alebo reštartovať synchronizáciu)."
+          "RESULT_DIVERGENCE": "Výsledok denníka ({journal}) sa líši od výsledku výkazu ziskov a strát ({statement}) — zápisník nemusí byť ešte aktuálny pre tento fiškálny rok (zatvoriť fiškálny rok alebo reštartovať synchronizáciu).",
+          "UNPOSTED_ENTRIES": "Nezaznamenané zápisy: {count} (kategória chýba alebo nemá pridružený účtovný kód) — {amount} nie je uvedené v tejto správe. Reštartovanie synchronizácie tu nestačí, kategória musí byť opravená."
         }
       },
       "memoNoHistory": "Žiadne historické údaje",
