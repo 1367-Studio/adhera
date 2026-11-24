@@ -1177,6 +1177,11 @@
       "noAccountsInRubrique": "Selles osas pole tasakaalu",
       "exportPdf": "Ekspordi PDF",
       "exportDisabledTooltip": "Lõplikku bilanssi ei saa eksportida enne, kui ülaltoodud anomaaliad on parandatud.",
+      "refreshLedger": "Värskenda logi",
+      "refreshLedgerTooltip": "See aruanne ei ole reaalajas uuendatud iga tulu või kuluga — klõpsake, et sünkroonida viimaste liikumistega.",
+      "refreshLedgerSuccessPosted": "{count, plural, =0 {Uut liikumist ei ole} one {# sünkroniseeritud liikumine} other {# sünkroniseeritud liikumised}}",
+      "refreshLedgerSuccessReversed": "{count, plural, =0 {} one {, # tühistamine rakendatud} other {, # tühistamised}}",
+      "refreshLedgerError": "Logi värskendamine ebaõnnestus. Palun proovige uuesti.",
       "emptyExercice": {
         "title": "Eelarveaastat ei ole",
         "description": "Loo uus majandusaasta, et vaadata bilanssi."
@@ -1594,6 +1599,9 @@
         "createdWithLinked": "Loodud fiskaalaasta — {count, plural, one {# seotud kirje} other {# seotud kirjed}} automaatselt"
       }
     },
+    "exerciceGuard": {
+      "closedError": "See tegevus on suletud — selle perioodi kohta ei ole võimalik luua ega muuta kirjet."
+    },
     "accountsView": {
       "title": "Pangakontod",
       "description": "Halda ühingu pangakontosid.",
@@ -1917,6 +1925,7 @@
       "typeIncome": "Tulu",
       "typeExpense": "Kulud",
       "typeTransfer": "Sisemine ülekandmine",
+      "selectedCount": "{count, plural, one {# valitud üksus} other {# valitud üksused}}",
       "confirm": "Kinnita lepitus"
     }
   },

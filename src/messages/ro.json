@@ -1177,6 +1177,11 @@
       "noAccountsInRubrique": "Niciun echilibru în această secțiune",
       "exportPdf": "Export PDF",
       "exportDisabledTooltip": "Nu se poate exporta un Bilanț Final până când anomaliile de mai sus nu sunt corectate.",
+      "refreshLedger": "Reîmprospătează jurnalul",
+      "refreshLedgerTooltip": "Acest raport nu este actualizat în timp real cu fiecare venit sau cheltuială — faceți clic pentru a sincroniza cu cele mai recente mișcări.",
+      "refreshLedgerSuccessPosted": "{count, plural, =0 {Nicio mișcare nouă} one {# mișcare sincronizată} other {# mișcări sincronizate}}",
+      "refreshLedgerSuccessReversed": "{count, plural, =0 {} one {, # anularea aplicată} other {, # anulări aplicate}}",
+      "refreshLedgerError": "Nu se poate reîmprospăta jurnalul. Vă rugăm să încercați din nou.",
       "emptyExercice": {
         "title": "Fără exercițiu fiscal",
         "description": "Creează un nou an fiscal pentru a vizualiza Bilanțul."
@@ -1594,6 +1599,9 @@
         "createdWithLinked": "Anul fiscal creat — {count, plural, one {# înregistrare legată} other {# înregistrări conexe}} automat"
       }
     },
+    "exerciceGuard": {
+      "closedError": "Acest exercițiu este închis — este imposibil să se creeze sau să se modifice o înregistrare pentru această perioadă."
+    },
     "accountsView": {
       "title": "Conturi bancare",
       "description": "Gestionează conturile bancare ale asociației.",
@@ -1917,6 +1925,7 @@
       "typeIncome": "Venit",
       "typeExpense": "Cheltuieli",
       "typeTransfer": "Transfer intern",
+      "selectedCount": "{count, plural, one {# element selectat} other {# elemente selectate}}",
       "confirm": "Validează concilierea"
     }
   },

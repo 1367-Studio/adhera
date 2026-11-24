@@ -6,6 +6,7 @@ import { withAdminAuth } from "@/lib/api-wrapper"
 import { closedExerciceGuard } from "@/lib/finance/exercice"
 import { reverseCotisationPayments, deleteCotisationWithPayments } from "@/lib/cotisation-payments"
 import { deriveCotisationStatus, type CotisationStatus } from "@/lib/cotisation-status"
+import { reverseIncomeJournalEntry } from "@/lib/finance/journal/post-income-expense"
 
 const EPSILON = 0.01
 
@@ -137,13 +138,17 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
     )
   }
 
+  // Captured before the transaction when exempting — reverseCotisationPayments hard-deletes
+  // the linked Incomes (see releaseLinkedIncomes), so there's nothing left to look up by after.
+  let incomesToReverse: { id: string }[] = []
   if (settingExonere) {
     const closedLinkedIncome = await prisma.income.findFirst({
       where:  { cotisationPayment: { cotisationId: id }, exercice: { status: "CLOTURE" } },
       select: { id: true },
     })
-    const guard = closedExerciceGuard(closedLinkedIncome ? "CLOTURE" : null)
+    const guard = await closedExerciceGuard(closedLinkedIncome ? "CLOTURE" : null)
     if (guard) return guard
+    incomesToReverse = await prisma.income.findMany({ where: { cotisationPayment: { cotisationId: id } }, select: { id: true } })
   }
 
   const cotisation = await prisma.$transaction(async (tx) => {
@@ -188,6 +193,8 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
     return updated
   })
 
+  for (const income of incomesToReverse) await reverseIncomeJournalEntry(income.id)
+
   const changes = computeDiff(
     existing   as unknown as Record<string, unknown>,
     cotisation as unknown as Record<string, unknown>,
@@ -218,7 +225,7 @@ export const DELETE = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => 
       where:  { cotisationPayment: { cotisationId: id }, exercice: { status: "CLOTURE" } },
       select: { id: true },
     })
-    const guard = closedExerciceGuard(closedLinkedIncome ? "CLOTURE" : null)
+    const guard = await closedExerciceGuard(closedLinkedIncome ? "CLOTURE" : null)
     if (guard) return guard
   }
 
@@ -237,7 +244,16 @@ export const DELETE = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => 
     )
   }
 
+  // Captured before the transaction — deleteCotisationWithPayments hard-deletes the linked
+  // Incomes (see releaseLinkedIncomes), so there's nothing left to look up by afterward.
+  const incomesToReverse = existing.payments.length > 0
+    ? await prisma.income.findMany({ where: { cotisationPaymentId: { in: existing.payments.map(p => p.id) } }, select: { id: true } })
+    : []
+
   await prisma.$transaction((tx) => deleteCotisationWithPayments(tx, id))
+
+  for (const income of incomesToReverse) await reverseIncomeJournalEntry(income.id)
+
   await writeActivityLog({ associationId, actorId: userId, action: "COTISATION_DELETED", entity: "Cotisation", entityId: id, label: `${existing.membre.firstName} ${existing.membre.lastName} — ${existing.year}` })
   return new NextResponse(null, { status: 204 })
 }, { area: "adhesions", module: "cotisations" })

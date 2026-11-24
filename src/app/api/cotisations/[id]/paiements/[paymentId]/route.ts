@@ -5,6 +5,7 @@ import { prisma } from "@/lib/prisma/client"
 import { writeActivityLog } from "@/lib/activity-log"
 import { removeCotisationPayment } from "@/lib/cotisation-payments"
 import { closedExerciceGuard } from "@/lib/finance/exercice"
+import { reverseIncomeJournalEntry } from "@/lib/finance/journal/post-income-expense"
 
 
 export const DELETE = withAdminAuth<{ id: string; paymentId: string }>(async (_req, ctx, { id, paymentId }) => {
@@ -20,11 +21,17 @@ export const DELETE = withAdminAuth<{ id: string; paymentId: string }>(async (_r
     where:  { cotisationPaymentId: paymentId },
     select: { exercice: { select: { status: true } } },
   })
-  const closedGuard = closedExerciceGuard(linkedIncomePreview?.exercice?.status)
+  const closedGuard = await closedExerciceGuard(linkedIncomePreview?.exercice?.status)
   if (closedGuard) return closedGuard
 
   try {
+    // Captured before the transaction — removeCotisationPayment hard-deletes the linked
+    // Income (see releaseLinkedIncomes), so there's nothing left to look up by afterward.
+    const incomesToReverse = await prisma.income.findMany({ where: { cotisationPaymentId: paymentId }, select: { id: true } })
+
     const updated = await prisma.$transaction((tx) => removeCotisationPayment(tx, id, paymentId))
+
+    for (const income of incomesToReverse) await reverseIncomeJournalEntry(income.id)
 
     await writeActivityLog({
       associationId, actorId: userId, action: "COTISATION_PAYMENT_REMOVED", entity: "Cotisation", entityId: id,

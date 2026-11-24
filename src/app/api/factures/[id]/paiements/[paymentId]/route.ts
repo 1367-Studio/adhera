@@ -4,6 +4,8 @@ import { withAdminAuth } from "@/lib/api-wrapper"
 import { prisma } from "@/lib/prisma/client"
 import { writeActivityLog } from "@/lib/activity-log"
 import { closedExerciceGuard } from "@/lib/finance/exercice"
+import { reverseIncomeJournalEntry } from "@/lib/finance/journal/post-income-expense"
+import { bankTransactionIdsToRelease } from "@/lib/finance/release-bank-transaction"
 
 const EPSILON = 0.01
 
@@ -20,8 +22,13 @@ export const DELETE = withAdminAuth<{ id: string; paymentId: string }>(async (_r
     where:  { facturePaymentId: paymentId },
     select: { exercice: { select: { status: true } } },
   })
-  const closedGuard = closedExerciceGuard(linkedIncomePreview?.exercice?.status)
+  const closedGuard = await closedExerciceGuard(linkedIncomePreview?.exercice?.status)
   if (closedGuard) return closedGuard
+
+  // Captured before the transaction — the Income below is hard-deleted inside it, so there's
+  // nothing left to look up by afterward (same ordering constraint as every other hard-delete
+  // call site, see cotisations/[id]/route.ts's own comment).
+  const linkedIncomeToReverse = await prisma.income.findUnique({ where: { facturePaymentId: paymentId }, select: { id: true } })
 
   try {
     const updated = await prisma.$transaction(async (tx) => {
@@ -29,14 +36,16 @@ export const DELETE = withAdminAuth<{ id: string; paymentId: string }>(async (_r
       // reconciliation pointing at the linked Income (and reset that bank transaction to
       // UNMATCHED) before deleting the Income itself, so nothing is left reconciled
       // against a row that no longer exists.
-      const linkedIncome = await tx.income.findUnique({ where: { facturePaymentId: paymentId }, select: { id: true } })
-      if (linkedIncome) {
-        const reconciliations = await tx.bankReconciliation.findMany({ where: { incomeId: linkedIncome.id }, select: { bankTransactionId: true } })
-        await tx.bankReconciliation.deleteMany({ where: { incomeId: linkedIncome.id } })
-        if (reconciliations.length > 0) {
-          await tx.bankTransaction.updateMany({ where: { id: { in: reconciliations.map(r => r.bankTransactionId) } }, data: { status: "UNMATCHED" } })
+      if (linkedIncomeToReverse) {
+        const reconciliations = await tx.bankReconciliation.findMany({ where: { incomeId: linkedIncomeToReverse.id }, select: { bankTransactionId: true } })
+        await tx.bankReconciliation.deleteMany({ where: { incomeId: linkedIncomeToReverse.id } })
+        // Only release a transaction with NO other reconciliation row left — a grouped
+        // reconciliation (FORM-116 block 8) can still be legitimately matched via sibling rows.
+        const toRelease = await bankTransactionIdsToRelease(tx, reconciliations.map(r => r.bankTransactionId), [])
+        if (toRelease.length > 0) {
+          await tx.bankTransaction.updateMany({ where: { id: { in: toRelease } }, data: { status: "UNMATCHED" } })
         }
-        await tx.income.delete({ where: { id: linkedIncome.id } })
+        await tx.income.delete({ where: { id: linkedIncomeToReverse.id } })
       }
 
       await tx.facturePayment.delete({ where: { id: paymentId } })
@@ -61,6 +70,8 @@ export const DELETE = withAdminAuth<{ id: string; paymentId: string }>(async (_r
         include: { items: { orderBy: { order: "asc" } }, payments: { orderBy: { paidAt: "desc" } }, fournisseur: { select: { id: true, companyName: true } } },
       })
     })
+
+    if (linkedIncomeToReverse) await reverseIncomeJournalEntry(linkedIncomeToReverse.id)
 
     await writeActivityLog({
       associationId, actorId: userId, action: "FACTURE_PAYMENT_REMOVED", entity: "Facture", entityId: id, label: updated.number,

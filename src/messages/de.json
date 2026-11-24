@@ -1177,6 +1177,11 @@
       "noAccountsInRubrique": "Kein Gleichgewicht in diesem Abschnitt",
       "exportPdf": "PDF exportieren",
       "exportDisabledTooltip": "Eine Endbilanz kann nicht exportiert werden, bis die oben genannten Anomalien behoben sind.",
+      "refreshLedger": "Aktualisieren Sie das Protokoll",
+      "refreshLedgerTooltip": "Dieser Bericht wird nicht in Echtzeit mit allen Einnahmen oder Ausgaben aktualisiert – klicken Sie, um mit den neuesten Bewegungen zu synchronisieren.",
+      "refreshLedgerSuccessPosted": "{count, plural, =0 {Keine neue Bewegung} one {# synchronisierte Bewegung} other {# synchronisierte Bewegungen}}",
+      "refreshLedgerSuccessReversed": "{count, plural, =0 {} one {, # Antrag auf Stornierung} other {, # angewandte Stornierungen}}",
+      "refreshLedgerError": "Kann das Protokoll nicht aktualisieren. Bitte versuchen Sie es erneut.",
       "emptyExercice": {
         "title": "Kein Haushaltsjahr",
         "description": "Erstellen Sie ein neues Geschäftsjahr, um die Bilanz einzusehen."
@@ -1594,6 +1599,9 @@
         "createdWithLinked": "Haushaltsjahr geschaffen — {count, plural, one {# verknüpften Datensatz} other {# verwandte Rekorde}} Automatisch"
       }
     },
+    "exerciceGuard": {
+      "closedError": "Diese Übung ist abgeschlossen – es ist unmöglich, für diesen Zeitraum einen Datensatz zu erstellen oder zu ändern."
+    },
     "accountsView": {
       "title": "Bankkonten",
       "description": "Verwalten Sie die Bankkonten der Vereinigung.",
@@ -1917,6 +1925,7 @@
       "typeIncome": "Einnahme",
       "typeExpense": "Kosten",
       "typeTransfer": "Interner Transfer",
+      "selectedCount": "{count, plural, one {# ausgewähltes Element} other {# ausgewählten Elemente}}",
       "confirm": "Validieren Sie die Schlichtung"
     }
   },

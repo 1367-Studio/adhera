@@ -1177,6 +1177,11 @@
       "noAccountsInRubrique": "Šioje dalyje nėra pusiausvyros",
       "exportPdf": "Eksportuoti PDF",
       "exportDisabledTooltip": "Negaliu eksportuoti galutinės balanso ataskaitos, kol nebus ištaisytos minėtos anomalijos.",
+      "refreshLedger": "Atnaujinti žurnalą",
+      "refreshLedgerTooltip": "Ši ataskaita nėra atnaujinama realiu laiku su visomis pajamomis ar išlaidomis – spustelėkite, kad sinchronizuotumėte su naujausiais pokyčiais.",
+      "refreshLedgerSuccessPosted": "{count, plural, =0 {Nėra naujo judėjimo} one {# sinchronizuotas judėjimas} other {# sinchronizuoti judesiai}}",
+      "refreshLedgerSuccessReversed": "{count, plural, =0 {} one {, # taikytas atšaukimas} other {, # taikomi atšaukimai}}",
+      "refreshLedgerError": "Nepavyko atnaujinti žurnalo. Prašome bandyti dar kartą.",
       "emptyExercice": {
         "title": "Nėra finansinių metų",
         "description": "Sukurkite naujus finansinius metus, kad peržiūrėtumėte balansą."
@@ -1594,6 +1599,9 @@
         "createdWithLinked": "Sukurti finansiniai metai — {count, plural, one {# susietas įrašas} other {# Susiję įrašai}} automatiškai"
       }
     },
+    "exerciceGuard": {
+      "closedError": "Šis procesas baigtas – neįmanoma sukurti ar pakeisti įrašo už šį laikotarpį."
+    },
     "accountsView": {
       "title": "Banko sąskaitos",
       "description": "Valdyti asociacijos banko sąskaitas.",
@@ -1917,6 +1925,7 @@
       "typeIncome": "Pajama",
       "typeExpense": "Išlaidos",
       "typeTransfer": "Vidinis perdavimas",
+      "selectedCount": "{count, plural, one {# pasirinktas elementas} other {# pasirinkti daiktai}}",
       "confirm": "Patvirtinti taikinimą"
     }
   },

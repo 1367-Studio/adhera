@@ -110,7 +110,7 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   let exercice: { id: string; status: ExerciceStatus } | null = null
   if (status === "PAID") {
     exercice = await resolveExerciceForDate(ctx.associationId, new Date())
-    const exerciceGuard = closedExerciceGuard(exercice?.status)
+    const exerciceGuard = await closedExerciceGuard(exercice?.status)
     if (exerciceGuard) return exerciceGuard
   }
 

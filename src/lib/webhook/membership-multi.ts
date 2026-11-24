@@ -15,6 +15,7 @@ import { notifyMembershipSignup } from "@/lib/webhook/membership-notify"
 import { createMembershipFormProductPurchase } from "@/lib/webhook/membership-form-products"
 import { createMembershipAddonPurchases, parseAddons } from "@/lib/webhook/membership-addons"
 import { notifyNewAddonDonations } from "@/lib/dons/notify"
+import { bookAddonDonationIncome } from "@/lib/dons/book-income"
 import { eligibleReceiptAmount } from "@/lib/receipt-eligibility"
 import { recordCotisationPayment } from "@/lib/cotisation-payments"
 import { resolveExerciceForDate } from "@/lib/finance/exercice"
@@ -231,6 +232,15 @@ export async function consumeMembershipCheckoutDraft(draftId: string, paymentInt
             canIssueTaxReceipts: receiptsAllowed,
           })
         : []
+      if (donations.length > 0) {
+        await bookAddonDonationIncome(tx, {
+          associationId:  draft.associationId,
+          donorFirstName: registrants[0].firstName,
+          donorLastName:  registrants[0].lastName,
+          donations,
+          reference:      paymentIntentId,
+        })
+      }
 
       await tx.membershipCheckoutDraft.update({ where: { id: draftId }, data: { consumedAt: now } })
       // Non-null : registrants.length ≥ 2 (voir multiSchema), donc i === 0 s'exécute toujours.

@@ -1177,6 +1177,11 @@
       "noAccountsInRubrique": "V tem delu ni ravnotežja",
       "exportPdf": "Izvoz PDF",
       "exportDisabledTooltip": "Ni mogoče izvoziti končne bilance stanja, dokler zgornje anomalije niso odpravljene.",
+      "refreshLedger": "Osveži dnevnik",
+      "refreshLedgerTooltip": "To poročilo ni posodobljeno v realnem času z vsakim prihodkom ali odhodkom — kliknite za sinhronizacijo z najnovejšimi premiki.",
+      "refreshLedgerSuccessPosted": "{count, plural, =0 {Brez novega gibanja} one {# sinhronizirano gibanje} other {# usklajeni gibi}}",
+      "refreshLedgerSuccessReversed": "{count, plural, =0 {} one {, # preklic velja} other {, # preklici uporabljeni}}",
+      "refreshLedgerError": "Dnevnika ni mogoče osvežiti. Poskusite znova.",
       "emptyExercice": {
         "title": "Brez fiskalnega leta",
         "description": "Ustvarite novo fiskalno leto za ogled bilance stanja."
@@ -1594,6 +1599,9 @@
         "createdWithLinked": "Ustvarjeno fiskalno leto — {count, plural, one {# povezani zapis} other {# povezani zapisi}} Samodejno"
       }
     },
+    "exerciceGuard": {
+      "closedError": "Ta vaja je zaključena — za to obdobje ni mogoče ustvariti ali spremeniti zapisa."
+    },
     "accountsView": {
       "title": "Bančni računi",
       "description": "Upravljajte bančne račune združenja.",
@@ -1917,6 +1925,7 @@
       "typeIncome": "Prihodek",
       "typeExpense": "Stroški",
       "typeTransfer": "Notranji prenos",
+      "selectedCount": "{count, plural, one {# izbrani element} other {# izbranih elementov}}",
       "confirm": "Potrdite spravo"
     }
   },

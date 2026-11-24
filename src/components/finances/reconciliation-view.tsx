@@ -171,14 +171,15 @@ export function ReconciliationView() {
         <div>
           <p className="font-medium text-sm">{tx.label}</p>
           <p className="text-xs text-muted-foreground">{tx.bankAccount.accountName}</p>
-          {tx.reconciliations[0] && (
+          {tx.reconciliations.length > 0 && (
             <p className="text-xs text-green-600 dark:text-green-400 mt-0.5">
-              → {tx.reconciliations[0].transfer
+              → {tx.reconciliations.map(r => r.transfer
                 ? t("finances.reconciliationView.transferLabel", {
-                    from: tx.reconciliations[0].transfer.fromAccount.accountName,
-                    to:   tx.reconciliations[0].transfer.toAccount.accountName,
+                    from: r.transfer.fromAccount.accountName,
+                    to:   r.transfer.toAccount.accountName,
                   })
-                : tx.reconciliations[0].income?.description || tx.reconciliations[0].income?.membre?.lastName || tx.reconciliations[0].expense?.description || tx.reconciliations[0].expense?.vendor || t("finances.reconciliationView.reconciledFallback")}
+                : r.income?.description || r.income?.membre?.lastName || r.expense?.description || r.expense?.vendor || t("finances.reconciliationView.reconciledFallback"),
+              ).join(" + ")}
             </p>
           )}
         </div>
@@ -308,10 +309,14 @@ export function ReconciliationView() {
           transaction={matchModal}
           open={!!matchModal}
           onOpenChange={(o) => !o && setMatchModal(null)}
-          onMatch={async ({ incomeId, expenseId, transferId }) => {
-            await reconcileMutation.mutateAsync({ bankTransactionId: matchModal.id, action: "MATCH", incomeId, expenseId, transferId })
-            toast.success(t("finances.reconciliationView.toasts.matched"))
-            setMatchModal(null)
+          onMatch={async ({ incomeId, expenseId, transferId, incomeIds, expenseIds }) => {
+            try {
+              await reconcileMutation.mutateAsync({ bankTransactionId: matchModal.id, action: "MATCH", incomeId, expenseId, transferId, incomeIds, expenseIds })
+              toast.success(t("finances.reconciliationView.toasts.matched"))
+              setMatchModal(null)
+            } catch (err) {
+              toast.error(err instanceof Error ? err.message : t("common.error"))
+            }
           }}
         />
       )}

@@ -7,6 +7,23 @@ import { withAdminAuth } from "@/lib/api-wrapper"
 import { computeMatchScore } from "@/lib/finance/match-score"
 import { closedExerciceGuard } from "@/lib/finance/exercice"
 
+const EPSILON = 0.01
+
+// bankTransactionId stopped being @unique on BankReconciliation (FORM-116 block 8 — a grouped
+// Stripe payout needs several reconciliation rows against the same transaction), which removed
+// the DB-level guarantee that only one request can ever MATCH a given transaction. Replaces it:
+// an atomic conditional update that only succeeds for the first of any concurrent/duplicate
+// MATCH requests for the same bankTransactionId, same pattern as the webhook's idempotency
+// guard. Call inside the same $transaction that creates the BankReconciliation row(s).
+class TransactionAlreadyMatchedError extends Error {}
+async function claimBankTransaction(tx: Prisma.TransactionClient, bankTransactionId: string) {
+  const result = await tx.bankTransaction.updateMany({
+    where: { id: bankTransactionId, status: { not: "MATCHED" } },
+    data:  { status: "MATCHED" },
+  })
+  if (result.count === 0) throw new TransactionAlreadyMatchedError()
+}
+
 export const POST = withAdminAuth(async (req, ctx) => {
   const { associationId, userId } = ctx
 
@@ -16,7 +33,7 @@ export const POST = withAdminAuth(async (req, ctx) => {
     return NextResponse.json({ error: parsed.error.issues }, { status: 422 })
   }
 
-  const { bankTransactionId, action, incomeId, expenseId, transferId, reimbursementRequestId } = parsed.data
+  const { bankTransactionId, action, incomeId, expenseId, transferId, reimbursementRequestId, incomeIds, expenseIds } = parsed.data
 
   const tx = await prisma.bankTransaction.findFirst({
     where:   { id: bankTransactionId, associationId },
@@ -24,7 +41,7 @@ export const POST = withAdminAuth(async (req, ctx) => {
   })
   if (!tx) return NextResponse.json({ error: "Transaction introuvable" }, { status: 404 })
 
-  const txGuard = closedExerciceGuard(tx.exercice?.status)
+  const txGuard = await closedExerciceGuard(tx.exercice?.status)
   if (txGuard) return txGuard
 
   if (action === "IGNORE") {
@@ -40,15 +57,99 @@ export const POST = withAdminAuth(async (req, ctx) => {
   }
 
   if (action === "MATCH") {
+    const hasGroup = (incomeIds && incomeIds.length > 0) || (expenseIds && expenseIds.length > 0)
     const targetCount = [incomeId, expenseId, transferId, reimbursementRequestId].filter(Boolean).length
-    if (targetCount === 0) {
-      return NextResponse.json({ error: "incomeId, expenseId, transferId ou reimbursementRequestId requis pour MATCH" }, { status: 422 })
+
+    if (hasGroup && targetCount > 0) {
+      return NextResponse.json({ error: "incomeIds/expenseIds ne peuvent pas être combinés avec incomeId/expenseId/transferId/reimbursementRequestId" }, { status: 422 })
     }
-    if (targetCount > 1) {
+    if (!hasGroup && targetCount === 0) {
+      return NextResponse.json({ error: "incomeId, expenseId, transferId, reimbursementRequestId ou incomeIds/expenseIds requis pour MATCH" }, { status: 422 })
+    }
+    if (!hasGroup && targetCount > 1) {
       return NextResponse.json({ error: "Un seul de incomeId, expenseId, transferId ou reimbursementRequestId peut être fourni" }, { status: 422 })
     }
     if (tx.status === "MATCHED") {
       return NextResponse.json({ error: "Transaction déjà conciliée" }, { status: 409 })
+    }
+
+    if (hasGroup) {
+      // Grouped reconciliation stays same-direction only — mixing a CREDIT payout with a
+      // DEBIT-side Expense isn't the scenario this exists for (netting several charges into
+      // one payout), and would make the sum check below ambiguous about sign.
+      if (tx.type === "CREDIT" && expenseIds && expenseIds.length > 0) {
+        return NextResponse.json({ error: "Une transaction au crédit ne peut regrouper que des recettes" }, { status: 422 })
+      }
+      if (tx.type === "DEBIT" && incomeIds && incomeIds.length > 0) {
+        return NextResponse.json({ error: "Une transaction au débit ne peut regrouper que des dépenses" }, { status: 422 })
+      }
+
+      const [incomes, expenses] = await Promise.all([
+        incomeIds?.length
+          ? prisma.income.findMany({ where: { id: { in: incomeIds }, associationId }, include: { exercice: { select: { status: true } } } })
+          : Promise.resolve([]),
+        expenseIds?.length
+          ? prisma.expense.findMany({ where: { id: { in: expenseIds }, associationId }, include: { exercice: { select: { status: true } } } })
+          : Promise.resolve([]),
+      ])
+      if (incomes.length !== (incomeIds?.length ?? 0)) return NextResponse.json({ error: "Recette introuvable" }, { status: 404 })
+      if (expenses.length !== (expenseIds?.length ?? 0)) return NextResponse.json({ error: "Dépense introuvable" }, { status: 404 })
+
+      for (const income of incomes) {
+        const guard = await closedExerciceGuard(income.exercice?.status)
+        if (guard) return guard
+      }
+      for (const expense of expenses) {
+        const guard = await closedExerciceGuard(expense.exercice?.status)
+        if (guard) return guard
+      }
+
+      const sum = incomes.reduce((s, i) => s + Number(i.amount), 0) + expenses.reduce((s, e) => s + Number(e.amount), 0)
+      if (Math.abs(sum - Number(tx.amount)) > EPSILON) {
+        return NextResponse.json({ error: `La somme sélectionnée (${sum.toFixed(2)} €) ne correspond pas au montant de la transaction (${Number(tx.amount).toFixed(2)} €)` }, { status: 422 })
+      }
+
+      try {
+        await prisma.$transaction(async (txClient) => {
+          await claimBankTransaction(txClient, bankTransactionId)
+
+          for (const income of incomes) {
+            const matchScore = computeMatchScore(
+              { amount: tx.amount, transactionDate: tx.transactionDate, label: tx.label },
+              { amount: income.amount, date: income.date, reference: income.reference, membre: null },
+            )
+            await txClient.bankReconciliation.create({
+              data: { associationId, bankTransactionId, incomeId: income.id, matchScore, matchedBy: "USER", matchedByUserId: userId },
+            })
+            await txClient.income.update({ where: { id: income.id }, data: { status: "PAID" } })
+          }
+          for (const expense of expenses) {
+            const matchScore = computeMatchScore(
+              { amount: tx.amount, transactionDate: tx.transactionDate, label: tx.label },
+              { amount: expense.amount, date: expense.date, reference: null, membre: null },
+            )
+            await txClient.bankReconciliation.create({
+              data: { associationId, bankTransactionId, expenseId: expense.id, matchScore, matchedBy: "USER", matchedByUserId: userId },
+            })
+            await txClient.expense.update({ where: { id: expense.id }, data: { status: "VALIDATED" } })
+          }
+        })
+
+        await writeActivityLog({
+          associationId, actorId: userId, action: "TX_MATCHED_GROUP", entity: "BankTransaction", entityId: bankTransactionId, label: tx.label,
+          metadata: { incomeIds: incomeIds ?? [], expenseIds: expenseIds ?? [] },
+        })
+      } catch (err) {
+        if (err instanceof TransactionAlreadyMatchedError) {
+          return NextResponse.json({ error: "Transaction déjà conciliée" }, { status: 409 })
+        }
+        if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2002") {
+          return NextResponse.json({ error: "Une des recettes/dépenses sélectionnées est déjà conciliée avec une autre transaction" }, { status: 409 })
+        }
+        throw err
+      }
+
+      return NextResponse.json({ status: "MATCHED" })
     }
 
     try {
@@ -59,7 +160,7 @@ export const POST = withAdminAuth(async (req, ctx) => {
         })
         if (!income) return NextResponse.json({ error: "Recette introuvable" }, { status: 404 })
 
-        const incomeGuard = closedExerciceGuard(income.exercice?.status)
+        const incomeGuard = await closedExerciceGuard(income.exercice?.status)
         if (incomeGuard) return incomeGuard
 
         const matchScore = computeMatchScore(
@@ -67,8 +168,9 @@ export const POST = withAdminAuth(async (req, ctx) => {
           { amount: income.amount, date: income.date, reference: income.reference, membre: income.membre },
         )
 
-        await prisma.$transaction([
-          prisma.bankReconciliation.create({
+        await prisma.$transaction(async (txClient) => {
+          await claimBankTransaction(txClient, bankTransactionId)
+          await txClient.bankReconciliation.create({
             data: {
               associationId,
               bankTransactionId,
@@ -77,10 +179,9 @@ export const POST = withAdminAuth(async (req, ctx) => {
               matchedBy:       "USER",
               matchedByUserId: userId,
             },
-          }),
-          prisma.bankTransaction.update({ where: { id: bankTransactionId }, data: { status: "MATCHED" } }),
-          prisma.income.update({ where: { id: incomeId }, data: { status: "PAID" } }),
-        ])
+          })
+          await txClient.income.update({ where: { id: incomeId }, data: { status: "PAID" } })
+        })
 
         await writeActivityLog({ associationId, actorId: userId, action: "TX_MATCHED_INCOME", entity: "BankTransaction", entityId: bankTransactionId, label: tx.label, metadata: { incomeId } })
       } else if (expenseId) {
@@ -90,7 +191,7 @@ export const POST = withAdminAuth(async (req, ctx) => {
         })
         if (!expense) return NextResponse.json({ error: "Dépense introuvable" }, { status: 404 })
 
-        const expenseGuard = closedExerciceGuard(expense.exercice?.status)
+        const expenseGuard = await closedExerciceGuard(expense.exercice?.status)
         if (expenseGuard) return expenseGuard
 
         const matchScore = computeMatchScore(
@@ -98,8 +199,9 @@ export const POST = withAdminAuth(async (req, ctx) => {
           { amount: expense.amount, date: expense.date, reference: null, membre: null },
         )
 
-        await prisma.$transaction([
-          prisma.bankReconciliation.create({
+        await prisma.$transaction(async (txClient) => {
+          await claimBankTransaction(txClient, bankTransactionId)
+          await txClient.bankReconciliation.create({
             data: {
               associationId,
               bankTransactionId,
@@ -108,10 +210,9 @@ export const POST = withAdminAuth(async (req, ctx) => {
               matchedBy:       "USER",
               matchedByUserId: userId,
             },
-          }),
-          prisma.bankTransaction.update({ where: { id: bankTransactionId }, data: { status: "MATCHED" } }),
-          prisma.expense.update({ where: { id: expenseId }, data: { status: "VALIDATED" } }),
-        ])
+          })
+          await txClient.expense.update({ where: { id: expenseId }, data: { status: "VALIDATED" } })
+        })
 
         await writeActivityLog({ associationId, actorId: userId, action: "TX_MATCHED_EXPENSE", entity: "BankTransaction", entityId: bankTransactionId, label: tx.label, metadata: { expenseId } })
       } else if (transferId) {
@@ -128,7 +229,7 @@ export const POST = withAdminAuth(async (req, ctx) => {
           return NextResponse.json({ error: "Ce transfert ne concerne pas le compte de cette transaction" }, { status: 422 })
         }
 
-        const transferGuard = closedExerciceGuard(transfer.exercice?.status)
+        const transferGuard = await closedExerciceGuard(transfer.exercice?.status)
         if (transferGuard) return transferGuard
 
         const matchScore = computeMatchScore(
@@ -136,8 +237,9 @@ export const POST = withAdminAuth(async (req, ctx) => {
           { amount: transfer.amount, date: transfer.date, reference: null, membre: null },
         )
 
-        await prisma.$transaction([
-          prisma.bankReconciliation.create({
+        await prisma.$transaction(async (txClient) => {
+          await claimBankTransaction(txClient, bankTransactionId)
+          await txClient.bankReconciliation.create({
             data: {
               associationId,
               bankTransactionId,
@@ -146,9 +248,8 @@ export const POST = withAdminAuth(async (req, ctx) => {
               matchedBy:       "USER",
               matchedByUserId: userId,
             },
-          }),
-          prisma.bankTransaction.update({ where: { id: bankTransactionId }, data: { status: "MATCHED" } }),
-        ])
+          })
+        })
 
         await writeActivityLog({ associationId, actorId: userId, action: "TX_MATCHED_TRANSFER", entity: "BankTransaction", entityId: bankTransactionId, label: tx.label, metadata: { transferId } })
       } else if (reimbursementRequestId) {
@@ -167,8 +268,9 @@ export const POST = withAdminAuth(async (req, ctx) => {
           { amount: request.totalAmount, date: tx.transactionDate, reference: null, membre: null },
         )
 
-        await prisma.$transaction([
-          prisma.bankReconciliation.create({
+        await prisma.$transaction(async (txClient) => {
+          await claimBankTransaction(txClient, bankTransactionId)
+          await txClient.bankReconciliation.create({
             data: {
               associationId,
               bankTransactionId,
@@ -177,22 +279,18 @@ export const POST = withAdminAuth(async (req, ctx) => {
               matchedBy:       "USER",
               matchedByUserId: userId,
             },
-          }),
-          prisma.bankTransaction.update({ where: { id: bankTransactionId }, data: { status: "MATCHED" } }),
-        ])
+          })
+        })
 
         await writeActivityLog({ associationId, actorId: userId, action: "TX_MATCHED_REIMBURSEMENT", entity: "BankTransaction", entityId: bankTransactionId, label: tx.label, metadata: { reimbursementRequestId } })
       }
     } catch (err) {
+      if (err instanceof TransactionAlreadyMatchedError) {
+        return NextResponse.json({ error: "Transaction déjà conciliée" }, { status: 409 })
+      }
       if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === "P2002") {
-        const target = Array.isArray(err.meta?.target) ? err.meta.target as string[] : []
-        // Unique constraint on bankTransactionId — a concurrent request already matched
-        // this same transaction between our status check above and this insert.
-        if (target.includes("bankTransactionId")) {
-          return NextResponse.json({ error: "Transaction déjà conciliée" }, { status: 409 })
-        }
-        // Unique constraint on incomeId/expenseId — this record is already linked to
-        // another bank transaction.
+        // Unique constraint on incomeId/expenseId/reimbursementRequestId — this record is
+        // already linked to another bank transaction.
         return NextResponse.json({ error: "Cette recette/dépense est déjà conciliée avec une autre transaction" }, { status: 409 })
       }
       throw err
@@ -206,7 +304,9 @@ export const POST = withAdminAuth(async (req, ctx) => {
       return NextResponse.json({ error: "Transaction non conciliée" }, { status: 409 })
     }
 
-    const reconciliation = await prisma.bankReconciliation.findFirst({
+    // findMany, not findFirst — a grouped reconciliation (FORM-116 block 8) leaves several
+    // BankReconciliation rows against this one transaction; UNMATCH undoes all of them together.
+    const reconciliations = await prisma.bankReconciliation.findMany({
       where:   { bankTransactionId, associationId },
       include: {
         income:   { select: { exercice: { select: { status: true } } } },
@@ -215,19 +315,24 @@ export const POST = withAdminAuth(async (req, ctx) => {
       },
     })
 
-    const linkedGuard = closedExerciceGuard(
-      reconciliation?.income?.exercice?.status ?? reconciliation?.expense?.exercice?.status ?? reconciliation?.transfer?.exercice?.status,
-    )
-    if (linkedGuard) return linkedGuard
+    for (const reconciliation of reconciliations) {
+      const guard = await closedExerciceGuard(
+        reconciliation.income?.exercice?.status ?? reconciliation.expense?.exercice?.status ?? reconciliation.transfer?.exercice?.status,
+      )
+      if (guard) return guard
+    }
+
+    const incomeIdsToRelease  = reconciliations.map(r => r.incomeId).filter((id): id is string => id != null)
+    const expenseIdsToRelease = reconciliations.map(r => r.expenseId).filter((id): id is string => id != null)
 
     await prisma.$transaction([
-      ...(reconciliation ? [prisma.bankReconciliation.delete({ where: { id: reconciliation.id } })] : []),
+      prisma.bankReconciliation.deleteMany({ where: { bankTransactionId, associationId } }),
       prisma.bankTransaction.update({ where: { id: bankTransactionId }, data: { status: "UNMATCHED" } }),
-      ...(reconciliation?.incomeId
-        ? [prisma.income.updateMany({ where: { id: reconciliation.incomeId, status: "PAID" }, data: { status: "PENDING" } })]
+      ...(incomeIdsToRelease.length
+        ? [prisma.income.updateMany({ where: { id: { in: incomeIdsToRelease }, status: "PAID" }, data: { status: "PENDING" } })]
         : []),
-      ...(reconciliation?.expenseId
-        ? [prisma.expense.updateMany({ where: { id: reconciliation.expenseId, status: "VALIDATED" }, data: { status: "DRAFT" } })]
+      ...(expenseIdsToRelease.length
+        ? [prisma.expense.updateMany({ where: { id: { in: expenseIdsToRelease }, status: "VALIDATED" }, data: { status: "DRAFT" } })]
         : []),
     ])
 

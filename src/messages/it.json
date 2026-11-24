@@ -1177,6 +1177,11 @@
       "noAccountsInRubrique": "Nessun equilibrio in questa sezione",
       "exportPdf": "Esporta PDF",
       "exportDisabledTooltip": "Impossibile esportare un bilancio finale finché le anomalie sopra riportate non saranno risolte.",
+      "refreshLedger": "Aggiorna il registro",
+      "refreshLedgerTooltip": "Questo report non viene aggiornato in tempo reale con ogni reddito o spesa — clicca per sincronizzare i movimenti più recenti.",
+      "refreshLedgerSuccessPosted": "{count, plural, =0 {Nessun nuovo movimento} one {# movimento sincronizzato} other {# movimenti sincronizzati}}",
+      "refreshLedgerSuccessReversed": "{count, plural, =0 {} one {, # cancellazione applicata} other {, # cancellazioni applicate}}",
+      "refreshLedgerError": "Impossibile aggiornare il registro. Riprova.",
       "emptyExercice": {
         "title": "Nessun anno fiscale",
         "description": "Crea un nuovo anno fiscale per visualizzare il bilancio."
@@ -1594,6 +1599,9 @@
         "createdWithLinked": "Anno fiscale creato — {count, plural, one {# record collegato} other {# documenti correlati}} automaticamente"
       }
     },
+    "exerciceGuard": {
+      "closedError": "Questo esercizio è chiuso — è impossibile creare o modificare un record per questo periodo."
+    },
     "accountsView": {
       "title": "Conti bancari",
       "description": "Gestisci i conti bancari dell'associazione.",
@@ -1917,6 +1925,7 @@
       "typeIncome": "Entrata",
       "typeExpense": "Spese",
       "typeTransfer": "Trasferimento interno",
+      "selectedCount": "{count, plural, one {# elemento selezionato} other {# elementi selezionati}}",
       "confirm": "Convalida la conciliazione"
     }
   },

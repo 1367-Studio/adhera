@@ -1177,6 +1177,11 @@
       "noAccountsInRubrique": "Ebben a részben nincs egyensúly",
       "exportPdf": "PDF exportálás",
       "exportDisabledTooltip": "Nem lehet végleges mérleget exportálni, amíg a fenti anomáliákat nem javítják.",
+      "refreshLedger": "Napló frissítése",
+      "refreshLedgerTooltip": "Ez a jelentés nem frissül valós időben minden jövedelemmel vagy kiadással — kattintson a legfrissebb mozgások szinkronizálásához.",
+      "refreshLedgerSuccessPosted": "{count, plural, =0 {Nincs új mozgalom} one {# szinkronizált mozgás} other {# szinkronizált mozgások}}",
+      "refreshLedgerSuccessReversed": "{count, plural, =0 {} one {, # törlés alkalmazva} other {, # törlések alkalmaztak}}",
+      "refreshLedgerError": "Nem sikerült frissíteni a naplót. Kérjük, próbálja újra.",
       "emptyExercice": {
         "title": "Nincs pénzügyi év",
         "description": "Hozz létre egy új pénzügyi évet a mérleg megtekintéséhez."
@@ -1594,6 +1599,9 @@
         "createdWithLinked": "Pénzügyi év létrehozása — {count, plural, one {# kapcsolódó rekord} other {# kapcsolódó feljegyzések}} automatikusan"
       }
     },
+    "exerciceGuard": {
+      "closedError": "Ez a gyakorlat lezárult — erre az időszakra vonatkozóan lehetetlen rekordot létrehozni vagy módosítani."
+    },
     "accountsView": {
       "title": "Bankszámlák",
       "description": "Kezeld az egyesület bankszámláit.",
@@ -1917,6 +1925,7 @@
       "typeIncome": "Bevétel",
       "typeExpense": "Költségek",
       "typeTransfer": "Belső átvitel",
+      "selectedCount": "{count, plural, one {# kiválasztott elem} other {# kiválasztott elemek}}",
       "confirm": "A megbékélés érvényesítése"
     }
   },

@@ -189,6 +189,11 @@ export const reconcileActionSchema = z.object({
   // FORM-93 — reconciles at the payment level (one ReimbursementRequest ↔ one bank
   // transaction), not per materialized Expense item.
   reimbursementRequestId: z.string().optional(),
+  // FORM-116 block 8 — grouped reconciliation (e.g. one Stripe payout netting several
+  // charges into one bank line). Mutually exclusive with the singular ids above; the route
+  // validates that, plus that the selected rows' amounts sum to the transaction's.
+  incomeIds:  z.array(z.string()).optional(),
+  expenseIds: z.array(z.string()).optional(),
 })
 
 export type ReconcileActionInput = z.infer<typeof reconcileActionSchema>

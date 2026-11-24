@@ -1177,6 +1177,11 @@
       "noAccountsInRubrique": "Ingen balans i denna sektion",
       "exportPdf": "Exportera PDF",
       "exportDisabledTooltip": "Kan inte exportera en slutgiltig balansräkning förrän ovanstående avvikelser är åtgärdade.",
+      "refreshLedger": "Uppdatera loggen",
+      "refreshLedgerTooltip": "Denna rapport uppdateras inte i realtid med varje inkomst eller kostnad — klicka för att synka med de senaste rörelserna.",
+      "refreshLedgerSuccessPosted": "{count, plural, =0 {Ingen ny rörelse} one {# synkroniserad rörelse} other {# synkroniserade rörelser}}",
+      "refreshLedgerSuccessReversed": "{count, plural, =0 {} one {, # tilldelad annullering} other {, # tillämpade avbokningar}}",
+      "refreshLedgerError": "Kan inte uppdatera loggen. Försök igen.",
       "emptyExercice": {
         "title": "Inget räkenskapsår",
         "description": "Skapa ett nytt räkenskapsår för att se balansräkningen."
@@ -1594,6 +1599,9 @@
         "createdWithLinked": "Skapat räkenskapsår — {count, plural, one {# länkad post} other {# relaterade skivor}} Automatiskt"
       }
     },
+    "exerciceGuard": {
+      "closedError": "Denna övning är avslutad — det är omöjligt att skapa eller ändra en post för denna period."
+    },
     "accountsView": {
       "title": "Bankkonton",
       "description": "Hantera föreningens bankkonton.",
@@ -1917,6 +1925,7 @@
       "typeIncome": "Intäkt",
       "typeExpense": "Kostnad",
       "typeTransfer": "Intern överföring",
+      "selectedCount": "{count, plural, one {# valt objekt} other {# valda objekt}}",
       "confirm": "Validera förlikningen"
     }
   },

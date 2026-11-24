@@ -42,7 +42,7 @@ export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   if (association?.accountingRegime === "ACCRUAL") {
     for (const item of request.items) {
       const exercice = await resolveExerciceForDate(associationId, item.date)
-      const guard = closedExerciceGuard(exercice?.status)
+      const guard = await closedExerciceGuard(exercice?.status)
       if (guard) return guard
     }
   }

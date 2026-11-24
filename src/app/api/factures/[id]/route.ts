@@ -5,6 +5,8 @@ import { factureUpdateSchema } from "@/lib/schemas"
 import { writeActivityLog, computeDiff } from "@/lib/activity-log"
 import { computeDocumentTotals, itemsUnchanged, exceedsMaxTotal, MAX_DOCUMENT_TOTAL } from "@/lib/devis-calc"
 import { deriveFactureStatus, resolveManualStatus, type FactureStatus } from "@/lib/facture-status"
+import { reverseIncomeJournalEntry } from "@/lib/finance/journal/post-income-expense"
+import { bankTransactionIdsToRelease } from "@/lib/finance/release-bank-transaction"
 
 // Comptabilité area (FORM-34). The old GET/DELETE allowlists also let the Secrétaire in, although
 // the sidebar never showed her this screen and every write was finance-only; she now has no access here.
@@ -151,6 +153,14 @@ export const DELETE = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => 
     return NextResponse.json({ error: "Cette facture a des paiements enregistrés — les supprimer aussi ? Confirmez la suppression.", code: "REQUIRES_CONFIRMATION" }, { status: 409 })
   }
 
+  // Captured before the transaction — the Incomes below are hard-deleted inside it, so
+  // there's nothing left to look up by afterward (same ordering constraint as every other
+  // hard-delete call site, see cotisations/[id]/route.ts's own comment).
+  const incomesToReverse = await prisma.income.findMany({
+    where:  { facturePayment: { factureId: id } },
+    select: { id: true },
+  })
+
   await prisma.$transaction(async (tx) => {
     await tx.facture.update({ where: { id }, data: { deletedAt: new Date() } })
 
@@ -159,20 +169,21 @@ export const DELETE = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => 
     // reversed here or they'd be left orphaned and, being linked, protected from ever
     // being edited/deleted directly from Finanças. Covers PARTIELLEMENT_PAYEE too, not
     // just PAYEE — a partial payment already created an Income the same way.
-    const linkedIncomes = await tx.income.findMany({
-      where:  { facturePayment: { factureId: id } },
-      select: { id: true },
-    })
-    if (linkedIncomes.length > 0) {
-      const incomeIds = linkedIncomes.map(i => i.id)
+    if (incomesToReverse.length > 0) {
+      const incomeIds = incomesToReverse.map(i => i.id)
       const reconciliations = await tx.bankReconciliation.findMany({ where: { incomeId: { in: incomeIds } }, select: { bankTransactionId: true } })
       await tx.bankReconciliation.deleteMany({ where: { incomeId: { in: incomeIds } } })
-      if (reconciliations.length > 0) {
-        await tx.bankTransaction.updateMany({ where: { id: { in: reconciliations.map(r => r.bankTransactionId) } }, data: { status: "UNMATCHED" } })
+      // Only release a transaction with NO other reconciliation row left — a grouped
+      // reconciliation (FORM-116 block 8) can still be legitimately matched via sibling rows.
+      const toRelease = await bankTransactionIdsToRelease(tx, reconciliations.map(r => r.bankTransactionId), [])
+      if (toRelease.length > 0) {
+        await tx.bankTransaction.updateMany({ where: { id: { in: toRelease } }, data: { status: "UNMATCHED" } })
       }
       await tx.income.deleteMany({ where: { id: { in: incomeIds } } })
     }
   })
+
+  for (const income of incomesToReverse) await reverseIncomeJournalEntry(income.id)
 
   await writeActivityLog({ associationId, actorId: userId, action: "FACTURE_DELETED", entity: "Facture", entityId: id, label: existing.number })
 

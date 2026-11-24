@@ -1177,6 +1177,11 @@
       "noAccountsInRubrique": "V tejto časti nie je žiadna rovnováha",
       "exportPdf": "Exportovať PDF",
       "exportDisabledTooltip": "Nie je možné exportovať konečnú súvahu, kým nebudú opravené vyššie uvedené anomálie.",
+      "refreshLedger": "Obnoviť záznam",
+      "refreshLedgerTooltip": "Táto správa sa neaktualizuje v reálnom čase so všetkými príjmami alebo výdavkami — kliknite pre synchronizáciu s najnovšími pohybmi.",
+      "refreshLedgerSuccessPosted": "{count, plural, =0 {Žiadne nové hnutie} one {# synchronizovaný pohyb} other {# synchronizované pohyby}}",
+      "refreshLedgerSuccessReversed": "{count, plural, =0 {} one {, # uplatnené zrušenie} other {, # uplatnené zrušenia}}",
+      "refreshLedgerError": "Nepodarilo sa obnoviť záznam. Skúste to znova.",
       "emptyExercice": {
         "title": "Žiadny fiškálny rok",
         "description": "Vytvorte nový fiškálny rok na zobrazenie súvahy."
@@ -1594,6 +1599,9 @@
         "createdWithLinked": "Vytvorený fiškálny rok — {count, plural, one {# prepojený záznam} other {# súvisiace záznamy}} Automaticky"
       }
     },
+    "exerciceGuard": {
+      "closedError": "Toto cvičenie je uzavreté — nie je možné vytvoriť alebo upraviť záznam pre toto obdobie."
+    },
     "accountsView": {
       "title": "Bankové účty",
       "description": "Spravovať bankové účty združenia.",
@@ -1917,6 +1925,7 @@
       "typeIncome": "Príjem",
       "typeExpense": "Náklady",
       "typeTransfer": "Interný prevod",
+      "selectedCount": "{count, plural, one {# vybraná položka} other {# vybrané položky}}",
       "confirm": "Overiť zmierenie"
     }
   },

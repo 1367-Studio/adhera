@@ -143,7 +143,7 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id: evenem
   }
 
   const exercice = await resolveExerciceForDate(associationId, paidAt)
-  const exerciceGuard = closedExerciceGuard(exercice?.status)
+  const exerciceGuard = await closedExerciceGuard(exercice?.status)
   if (exerciceGuard) return exerciceGuard
 
   const participationToPay = participation
@@ -309,7 +309,7 @@ async function addMemberWithPayment(params: {
   let exerciceId: string | null = null
   if (payment.mode === "now") {
     const exercice = await resolveExerciceForDate(associationId, paidAt)
-    const exerciceGuard = closedExerciceGuard(exercice?.status)
+    const exerciceGuard = await closedExerciceGuard(exercice?.status)
     if (exerciceGuard) return exerciceGuard
     exerciceId = exercice?.id ?? null
   }

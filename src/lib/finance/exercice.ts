@@ -1,5 +1,6 @@
 // src/lib/finance/exercice.ts
 import { NextResponse } from "next/server"
+import { getTranslations } from "next-intl/server"
 import { prisma } from "@/lib/prisma/client"
 import type { ExerciceStatus } from "@prisma/client"
 
@@ -127,12 +128,10 @@ export function findExerciceGap(
 // Income/Expense/BankTransaction (status comes from resolveExerciceForDate on the record's
 // date) and editing/deleting an existing one (status comes from its already-fetched
 // `exercice` relation). A closed exercice is never written to again, in either direction.
-export function closedExerciceGuard(status: ExerciceStatus | null | undefined): NextResponse | null {
+export async function closedExerciceGuard(status: ExerciceStatus | null | undefined): Promise<NextResponse | null> {
   if (status !== "CLOTURE") return null
-  return NextResponse.json(
-    { error: "Cet exercice est clôturé — impossible de créer ou modifier un enregistrement sur cette période." },
-    { status: 409 },
-  )
+  const t = await getTranslations("finances.exerciceGuard")
+  return NextResponse.json({ error: t("closedError") }, { status: 409 })
 }
 
 export interface ExerciceLookup {

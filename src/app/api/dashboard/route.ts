@@ -158,7 +158,7 @@ export const GET = withAdminAuth(async (req, ctx) => {
     // and the page it links to never show two different numbers.
     canSeeDons
       ? prisma.don.aggregate({
-          where: { associationId, paidAt: { gte: new Date(`${year}-01-01`), lt: new Date(`${year + 1}-01-01`) } },
+          where: { associationId, paidAt: { gte: new Date(`${year}-01-01`), lt: new Date(`${year + 1}-01-01`) }, refundedAt: null },
           _sum:  { amount: true },
         })
       : Promise.resolve(null),

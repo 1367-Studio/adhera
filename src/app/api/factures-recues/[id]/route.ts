@@ -6,6 +6,8 @@ import { writeActivityLog, computeDiff } from "@/lib/activity-log"
 import { deleteFromR2 } from "@/lib/r2"
 import { resolveManualFactureRecueStatus } from "@/lib/facture-recue-status"
 import { reportError } from "@/lib/monitoring"
+import { reverseExpenseJournalEntry } from "@/lib/finance/journal/post-income-expense"
+import { bankTransactionIdsToRelease } from "@/lib/finance/release-bank-transaction"
 
 // Comptabilité area (FORM-34). The old GET/DELETE allowlists also let the Secrétaire in, although
 // the sidebar never showed her this screen and every write was finance-only; she now has no access here.
@@ -127,6 +129,16 @@ export const DELETE = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => 
 
   class ImmobilisationHasDepreciationsError extends Error {}
 
+  // Captured before the transaction — the Expenses below are hard-deleted inside it, so
+  // there's nothing left to look up by afterward (same ordering constraint as every other
+  // hard-delete call site, see cotisations/[id]/route.ts's own comment). Immobilisation-linked
+  // payments never created an Expense (see the deliberate exception below), so nothing to
+  // capture for those.
+  const expensesToReverse = await prisma.expense.findMany({
+    where:  { factureRecuePayment: { factureRecueId: id } },
+    select: { id: true },
+  })
+
   try {
     await prisma.$transaction(async (tx) => {
       await tx.factureRecue.update({ where: { id }, data: { deletedAt: new Date() } })
@@ -135,16 +147,15 @@ export const DELETE = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => 
       // paper trail), but each one may have an auto-created, linked Expense (the non-
       // Immobilisation path) — those must be reversed here or they'd be left orphaned and,
       // being linked, protected from ever being edited/deleted directly from Finanças.
-      const linkedExpenses = await tx.expense.findMany({
-        where:  { factureRecuePayment: { factureRecueId: id } },
-        select: { id: true },
-      })
-      if (linkedExpenses.length > 0) {
-        const expenseIds = linkedExpenses.map(e => e.id)
+      if (expensesToReverse.length > 0) {
+        const expenseIds = expensesToReverse.map(e => e.id)
         const reconciliations = await tx.bankReconciliation.findMany({ where: { expenseId: { in: expenseIds } }, select: { bankTransactionId: true } })
         await tx.bankReconciliation.deleteMany({ where: { expenseId: { in: expenseIds } } })
-        if (reconciliations.length > 0) {
-          await tx.bankTransaction.updateMany({ where: { id: { in: reconciliations.map(r => r.bankTransactionId) } }, data: { status: "UNMATCHED" } })
+        // Only release a transaction with NO other reconciliation row left — a grouped
+        // reconciliation (FORM-116 block 8) can still be legitimately matched via sibling rows.
+        const toRelease = await bankTransactionIdsToRelease(tx, reconciliations.map(r => r.bankTransactionId), [])
+        if (toRelease.length > 0) {
+          await tx.bankTransaction.updateMany({ where: { id: { in: toRelease } }, data: { status: "UNMATCHED" } })
         }
         await tx.expense.deleteMany({ where: { id: { in: expenseIds } } })
       }
@@ -170,6 +181,8 @@ export const DELETE = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => 
     }
     throw err
   }
+
+  for (const expense of expensesToReverse) await reverseExpenseJournalEntry(expense.id)
 
   // No view or endpoint ever surfaces a soft-deleted FactureRecue again, so the file it
   // points to would otherwise sit orphaned in R2 forever — clean it up the same way a

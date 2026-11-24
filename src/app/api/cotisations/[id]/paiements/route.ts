@@ -26,7 +26,7 @@ export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   const paymentDate = paidAt ? new Date(paidAt) : new Date()
 
   const exercice = await resolveExerciceForDate(associationId, paymentDate)
-  const guard = closedExerciceGuard(exercice?.status)
+  const guard = await closedExerciceGuard(exercice?.status)
   if (guard) return guard
 
   try {
