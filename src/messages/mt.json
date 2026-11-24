@@ -1244,7 +1244,8 @@
           "ACTIF_PASSIF_MISMATCH": "L-assi ({actif}) ma jikkorrispondix mal-passività ({passif}).",
           "OPENING_BALANCE_MISSING": "Ma ġewx ġġenerati entitajiet ta' apertura għal dan l-eżerċizzju minn \"{previousLabel}\".",
           "TRIAL_BALANCE_UNBALANCED": "Id-debitu totali ({debit}) ma jikkorrispondix mat-total tal-kreditu ({credit}) għal din is-sena fiskali.",
-          "RESULT_DIVERGENCE": "Ir-riżultat tal-ġurnal ({journal}) huwa differenti minn dak tal-istqarrija tad-dħul ({statement}) — il-ġurnal jista' għadu ma jkunx aġġornat għal din is-sena finanzjarja (jagħlaq is-sena finanzjarja jew jerġa' jibda sinkronizzazzjoni)."
+          "RESULT_DIVERGENCE": "Ir-riżultat tal-ġurnal ({journal}) huwa differenti minn dak tal-istqarrija tad-dħul ({statement}) — il-ġurnal jista' għadu ma jkunx aġġornat għal din is-sena finanzjarja (jagħlaq is-sena finanzjarja jew jerġa' jibda sinkronizzazzjoni).",
+          "UNPOSTED_ENTRIES": "Entrati mhux irreġistrati: {count} (kategorija nieqsa jew mingħajr kodiċi kontabbli assoċjat) — {amount} mhux rifless f''dan ir-Rapport. Ir-ristartjar tas-sinkronizzazzjoni mhuwiex biżżejjed hawnhekk, il-kategorija trid tiġi kkorreġuta."
         }
       },
       "memoNoHistory": "L-ebda data storika",

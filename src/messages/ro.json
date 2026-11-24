@@ -1244,7 +1244,8 @@
           "ACTIF_PASSIF_MISMATCH": "Activul ({actif}) nu corespunde pasivului ({passif}).",
           "OPENING_BALANCE_MISSING": "Nu au fost generate intrări de deschidere pentru acest exercițiu din \"{previousLabel}\".",
           "TRIAL_BALANCE_UNBALANCED": "Debitul total ({debit}) nu corespunde cu creditul total ({credit}) pentru acest an fiscal.",
-          "RESULT_DIVERGENCE": "Rezultatul jurnalului ({journal}) diferă de cel al contului de profit și pierdere ({statement}) — jurnalul poate să nu fie încă actualizat pentru acest exercițiu fiscal (închiderea anului fiscal sau sincronizarea reluată)."
+          "RESULT_DIVERGENCE": "Rezultatul jurnalului ({journal}) diferă de cel al contului de profit și pierdere ({statement}) — jurnalul poate să nu fie încă actualizat pentru acest exercițiu fiscal (închiderea anului fiscal sau sincronizarea reluată).",
+          "UNPOSTED_ENTRIES": "Însemnări neînregistrate: {count} (categoria absentă sau fără cod contabil asociat) — {amount} nu reflectată în acest raport. Repornirea sincronizării nu este suficientă aici, categoria trebuie corectată."
         }
       },
       "memoNoHistory": "Fără date istorice",

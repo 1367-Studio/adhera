@@ -1244,7 +1244,8 @@
           "ACTIF_PASSIF_MISMATCH": "Sredstvo ({actif}) ne ustreza obveznosti ({passif}).",
           "OPENING_BALANCE_MISSING": "Za to vajo iz \"{previousLabel} ni bilo ustvarjenih odprtih vnosov\".",
           "TRIAL_BALANCE_UNBALANCED": "Skupni bremen ({debit}) se ne ujema s skupnim dobropisom ({credit}) za to fiskalno leto.",
-          "RESULT_DIVERGENCE": "Rezultat dnevnika ({journal}) se razlikuje od rezultata izkazka poslovnega izida ({statement}) — dnevnik morda še ni posodobljen za to poslovno leto (zaprete fiskalno leto ali ponovno zaženete sinhronizacijo)."
+          "RESULT_DIVERGENCE": "Rezultat dnevnika ({journal}) se razlikuje od rezultata izkazka poslovnega izida ({statement}) — dnevnik morda še ni posodobljen za to poslovno leto (zaprete fiskalno leto ali ponovno zaženete sinhronizacijo).",
+          "UNPOSTED_ENTRIES": "Nezabeleženi vnosi: {count} (kategorija odsotna ali brez pripadajoče računovodske kode) — {amount} ni odraženo v tem poročilu. Ponovni zagon sinhronizacije tukaj ni dovolj, kategorijo je treba popraviti."
         }
       },
       "memoNoHistory": "Ni zgodovinskih podatkov",

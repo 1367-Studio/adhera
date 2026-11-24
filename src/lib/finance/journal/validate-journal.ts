@@ -16,6 +16,7 @@
 import { prisma } from "@/lib/prisma/client"
 import { computeBilanPeriod } from "@/lib/finance/bilan"
 import { computeIncomeStatementPeriod } from "@/lib/finance/income-statement"
+import { findUnpostableEntries } from "@/lib/finance/journal/post-income-expense"
 import type { BilanValidationIssue } from "@/lib/finance/bilan-shared"
 
 // Same code+params shape as BilanValidationIssue (see that type's doc comment) — a caller
@@ -107,12 +108,25 @@ export async function validateResultDivergence(associationId: string, exerciceId
   return []
 }
 
+// Distinct from RESULT_DIVERGENCE above: that one tells the treasurer to "relancez la
+// synchronisation" (see the Bilan refresh button), which fixes a row that's merely pending
+// catch-up — but a row with no resolvable category/accountingCode will never post via that
+// same sync, sync or not. Kept as its own check (not folded into validateResultDivergence) so
+// the two causes never get conflated into one message.
+export async function validateUnpostedEntries(associationId: string, exerciceId: string): Promise<JournalValidationIssue[]> {
+  const unpostable = await findUnpostableEntries(associationId, exerciceId)
+  if (unpostable.count === 0) return []
+  const fmt = (n: number) => n.toLocaleString("fr-FR", { style: "currency", currency: "EUR" })
+  return [{ code: "UNPOSTED_ENTRIES", params: { count: String(unpostable.count), amount: fmt(unpostable.amount) } }]
+}
+
 export async function validateJournalForExercice(associationId: string, exerciceId: string): Promise<JournalValidationIssue[]> {
-  const [opening, trialBalance, bilan, resultDivergence] = await Promise.all([
+  const [opening, trialBalance, bilan, resultDivergence, unpostedEntries] = await Promise.all([
     validateOpeningBalance(associationId, exerciceId),
     validateTrialBalance(associationId, exerciceId),
     validateBilan(associationId, exerciceId),
     validateResultDivergence(associationId, exerciceId),
+    validateUnpostedEntries(associationId, exerciceId),
   ])
-  return [...opening, ...trialBalance, ...bilan, ...resultDivergence]
+  return [...opening, ...trialBalance, ...bilan, ...resultDivergence, ...unpostedEntries]
 }

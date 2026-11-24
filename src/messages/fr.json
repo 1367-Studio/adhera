@@ -1244,7 +1244,8 @@
           "ACTIF_PASSIF_MISMATCH": "L'actif ({actif}) ne correspond pas au passif ({passif}).",
           "OPENING_BALANCE_MISSING": "Aucune écriture d'ouverture générée pour cet exercice à partir de « {previousLabel} ».",
           "TRIAL_BALANCE_UNBALANCED": "Le total débit ({debit}) ne correspond pas au total crédit ({credit}) pour cet exercice.",
-          "RESULT_DIVERGENCE": "Le résultat du journal ({journal}) diverge de celui du compte de résultat ({statement}) — le journal n'est peut-être pas encore à jour pour cet exercice (clôturez l'exercice ou relancez la synchronisation)."
+          "RESULT_DIVERGENCE": "Le résultat du journal ({journal}) diverge de celui du compte de résultat ({statement}) — le journal n'est peut-être pas encore à jour pour cet exercice (clôturez l'exercice ou relancez la synchronisation).",
+          "UNPOSTED_ENTRIES": "Écritures non comptabilisées : {count} (catégorie absente ou sans code comptable associé) — {amount} non reflété dans ce Bilan. Relancer la synchronisation ne suffit pas ici, il faut corriger la catégorie."
         }
       },
       "memoNoHistory": "Pas d'historique",
