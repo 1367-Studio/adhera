@@ -209,7 +209,15 @@ export const DELETE = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => 
 
   const existing = await prisma.cotisation.findFirst({
     where:   { id, associationId, membre: { deletedAt: null } },
-    include: { membre: { select: { firstName: true, lastName: true } }, payments: { select: { id: true } } },
+    include: {
+      membre: { select: { firstName: true, lastName: true } }, payments: { select: { id: true } },
+      // FORM-114 — a VALIDADA license means the club already confirmed this with the
+      // federation; deleting the cotisation cascades deleting it (MembershipLicense.
+      // cotisationId is onDelete: Cascade), destroying that confirmed history with no
+      // warning otherwise. Not loaded for any other status — those carry nothing worth
+      // protecting with an extra confirmation step.
+      license: { select: { id: true, status: true, federation: true, season: true } },
+    },
   })
   if (!existing) return NextResponse.json({ error: "Cotisation introuvable" }, { status: 404 })
 
@@ -240,6 +248,13 @@ export const DELETE = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => 
   if (existing.payments.length > 0 && !force) {
     return NextResponse.json(
       { error: "Cette cotisation a des paiements enregistrés — les supprimer aussi ? Confirmez la suppression.", code: "REQUIRES_CONFIRMATION" },
+      { status: 409 },
+    )
+  }
+
+  if (existing.license?.status === "VALIDADA" && !force) {
+    return NextResponse.json(
+      { error: `La licence fédérative (${existing.license.federation} — ${existing.license.season}) de cette cotisation a déjà été validée — la supprimer effacera cette validation. Confirmez la suppression.`, code: "REQUIRES_CONFIRMATION" },
       { status: 409 },
     )
   }

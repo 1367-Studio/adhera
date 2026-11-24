@@ -449,6 +449,26 @@ enum MembershipValidationMode {
   REQUEST
 }
 
+// FORM-114: how a tier's federative license fee is charged — INCLUDED folds it into the
+// tier's own amount (no separate charge, purely informational on the public form/summary);
+// ADDITIONAL adds MembershipTier.licenseAdditionalAmount on top, unless the member declares
+// an already-held license (see MembershipLicense.declaredByMembre), which waives it.
+enum MembershipLicenseBillingMode {
+  INCLUDED
+  ADDITIONAL
+}
+
+// A_RENOVAR only ever comes from an automatic recurring renewal (see
+// handleCotisationInvoicePaid) — the member isn't re-prompted, so the club must confirm the
+// federation renewal itself and move it to VALIDADA. Payment never sets VALIDADA automatically
+// (see MembershipLicense below).
+enum MembershipLicenseStatus {
+  A_SOLICITAR
+  EM_ANDAMENTO
+  VALIDADA
+  A_RENOVAR
+}
+
 // ─── Models ───────────────────────────────────────────────────────────────────
 
 // FORM-7: which website builder's version the public site renders (see Association.siteBuilder).
@@ -465,146 +485,152 @@ enum SitePageStatus {
 }
 
 model Association {
-  id                             String              @id @default(cuid())
-  name                           String
-  slug                           String              @unique
-  city                           String?
-  country                        String              @default("France")
-  address                        String?
-  phone                          String?
-  website                        String?
+  id                                    String              @id @default(cuid())
+  name                                  String
+  slug                                  String              @unique
+  city                                  String?
+  country                               String              @default("France")
+  address                               String?
+  phone                                 String?
+  website                               String?
   // Domaine personnalisé du site public (ex: www.monassociation.fr) en plus de
   // formwise.fr/app/{slug} — ajouté au projet Vercel via src/lib/vercel-domains.ts et
   // résolu par src/proxy.ts (voir src/lib/custom-domain-lookup.ts). PENDING tant que le
   // DNS n'a pas propagé, VERIFIED une fois le domaine actif, FAILED si la Vercel Domains
   // API renvoie une erreur bloquante — le message d'erreur réel vit dans customDomainDnsRecords.
-  customDomain                   String?             @unique
-  customDomainStatus             CustomDomainStatus?
-  customDomainVerifiedAt         DateTime?
+  customDomain                          String?             @unique
+  customDomainStatus                    CustomDomainStatus?
+  customDomainVerifiedAt                DateTime?
   // Cache de la réponse de la Vercel Domains API (instructions DNS affichées à l'admin,
   // et message d'erreur si FAILED) — évite de rappeler la Vercel API à chaque chargement
   // de l'écran Paramètres.
-  customDomainDnsRecords         Json?
+  customDomainDnsRecords                Json?
   // Reply-To par défaut des e-mails envoyés au nom de l'association (le "From" technique
   // reste une adresse Formwise) — voir src/lib/mail.ts. Les formulaires (dons/adhésion/
   // évènement) qui ont leur propre contactEmail restent prioritaires sur celui-ci.
-  contactEmail                   String?
+  contactEmail                          String?
   // Adresse d'expédition utilisée comme point de départ ("from_address") lors des cotations
   // de frais de livraison Boutique (Sendcloud) — distincte de `address` ci-dessus, qui sert
   // à l'identité légale (reçus fiscaux), pas à la logistique.
-  shippingAddress                String?
-  shippingPostalCode             String?
-  shippingCity                   String?
+  shippingAddress                       String?
+  shippingPostalCode                    String?
+  shippingCity                          String?
   // Code pays ISO 3166-1 alpha-2 (ex: "FR") — contrairement à `country` ci-dessus qui stocke
   // un nom complet pour un autre usage, celui-ci alimente directement l'API de cotation.
-  shippingCountry                String?             @default("FR")
+  shippingCountry                       String?             @default("FR")
   // Marge ajoutée par-dessus le tarif Sendcloud coté au client (ex: 10 = +10%), pour couvrir
   // l'écart possible entre le prix coté et le prix réel payé par l'association au moment de
   // l'affranchissement (aucune étiquette n'est achetée à la commande, voir shipping-rate.ts).
-  shippingMarkupPercent          Int                 @default(0)
+  shippingMarkupPercent                 Int                 @default(0)
   // Seule personne avertie par e-mail des nouvelles ventes Boutique (en ligne une fois payées,
   // manuelles sur choix de l'admin qui enregistre) — voir bookBoutiqueOrderIncome et la route
   // POST /api/boutique/commandes. Tant qu'aucun responsable n'est choisi, l'alerte en ligne
   // retombe sur l'ancien comportement (tous les ADMIN/PRESIDENT/TRESORIER/SECRETAIRE).
-  boutiqueResponsableId          String?
+  boutiqueResponsableId                 String?
   // Seule personne avertie (notification in-app + e-mail) des nouveaux dons — en ligne une
   // fois payés (webhook Stripe), hors ligne dès l'enregistrement (espèces/chèque/virement,
   // avant même l'encaissement), manuels sur choix de l'admin — voir resolveDonResponsable et
   // notifyDonResponsable. Tant qu'aucun responsable n'est choisi, aucune alerte n'est envoyée.
-  donResponsableId               String?
+  donResponsableId                      String?
   // Shown on devis/facture PDFs (below "Conditions de paiement") so the recipient knows
   // where to wire payment — distinct from BankAccount, which is for reconciliation import
   // and only ever stores a last-4, never a full IBAN.
-  iban                           String?
-  bic                            String?
-  siren                          String?
-  rna                            String?
-  canIssueTaxReceipts            Boolean             @default(false)
+  iban                                  String?
+  bic                                   String?
+  siren                                 String?
+  rna                                   String?
+  canIssueTaxReceipts                   Boolean             @default(false)
   // Null = don't auto-create a cotisation on member creation. When set, a Cotisation
   // (EN_ATTENTE, current year) is created automatically for every new Membre — see
   // src/lib/cotisation-defaults.ts — so they can pay it themselves from the portal right
   // away instead of waiting on an admin to create one.
-  cotisationDefaultAmount        Decimal?            @db.Decimal(10, 2)
+  cotisationDefaultAmount               Decimal?            @db.Decimal(10, 2)
   // Off by default so turning it on is a deliberate choice, separate from
   // cotisationDefaultAmount's original purpose above — when true, the public site's
   // membership form (SiteMembershipSection) requires immediate payment via a recurring
   // Stripe subscription instead of creating a PENDING request for manual approval. See
   // CotisationSubscription and /api/public/[slug]/inscription/checkout.
-  publicMembershipPaymentEnabled Boolean             @default(false)
-  objet                          String?
-  organismeCategory              OrganismeCategory   @default(ASSOCIATION_LOI_1901)
-  organismeCategoryDetail        String?
+  publicMembershipPaymentEnabled        Boolean             @default(false)
+  // FORM-114: when a tier charges its federative license as a separate ADDITIONAL amount, this
+  // decides whether a recurring CotisationSubscription's automatic yearly renewal bills that
+  // amount again too (as a 2nd Stripe subscription item, see checkout/route.ts) or only ever
+  // charges it once, at the first manual signup. Off by default — a deliberate opt-in per
+  // association, same reasoning as publicMembershipPaymentEnabled above.
+  includeFederativeLicenseInAutoRenewal Boolean             @default(false)
+  objet                                 String?
+  organismeCategory                     OrganismeCategory   @default(ASSOCIATION_LOI_1901)
+  organismeCategoryDetail               String?
   // FORM-93: which accounting regime drives reimbursement postings — ACCRUAL recognizes the
   // charge (and the 467 "dû au bénévole" liability) at approval time, settling 467 against
   // tresorerie only once reimbursed; CASH recognizes the charge only when the reimbursement is
   // actually paid. Defaults to CASH because that's what the whole ledger (FORM-107) has always
   // done implicitly — no existing association's behavior changes until it opts into ACCRUAL.
-  accountingRegime               AccountingRegime    @default(CASH)
+  accountingRegime                      AccountingRegime    @default(CASH)
   // "groq" | "openai" | "mistral" — see src/lib/ai/client.ts SUPPORTED_PROVIDERS. Null
   // means the association hasn't configured BYOK yet (falls back to the platform's Groq
   // key, see platformClient in the same file).
-  aiProvider                     String?
-  aiApiKey                       String?
-  aiModel                        String?
-  smsAccountSid                  String?
-  smsAuthToken                   String?
-  smsPhoneNumber                 String?
-  livekitUrl                     String?
-  livekitApiKey                  String?
-  livekitApiSecret               String?
-  stripeCustomerId               String?
-  stripeSubscriptionId           String?
+  aiProvider                            String?
+  aiApiKey                              String?
+  aiModel                               String?
+  smsAccountSid                         String?
+  smsAuthToken                          String?
+  smsPhoneNumber                        String?
+  livekitUrl                            String?
+  livekitApiKey                         String?
+  livekitApiSecret                      String?
+  stripeCustomerId                      String?
+  stripeSubscriptionId                  String?
   // Set only when the subscription was created via a PricingOffer (custom staff-negotiated
   // phased pricing) instead of the standard PLAN_PRICES catalog — informational/for
   // backoffice display only. The webhook sync (customer.subscription.*) keys off
   // stripeSubscriptionId as always, regardless of whether a Schedule manages it.
-  stripeSubscriptionScheduleId   String?
+  stripeSubscriptionScheduleId          String?
   // Set when a USED PricingOffer is converted to standard catalog pricing asking to
   // "release after the first confirmed payment" (see /api/backoffice/pricing-offers/[id]/convert).
   // The invoice.paid webhook releases the Stripe schedule and clears this + stripeSubscriptionScheduleId
   // once the new phase's first invoice is actually paid; the "Libérer maintenant" backoffice
   // action clears both manually if the association never adds a payment method.
-  stripeSchedulePendingReleaseAt DateTime?
-  stripeConnectId                String?
-  plan                           AssociationPlan     @default(ESSENTIAL)
+  stripeSchedulePendingReleaseAt        DateTime?
+  stripeConnectId                       String?
+  plan                                  AssociationPlan     @default(ESSENTIAL)
   // Staff-set override for negotiated "sur mesure" deals (see form-wise-app's pricing
   // page) — plan stays ESSENTIAL/PRO (still what Stripe actually bills), this just raises
   // the member cap enforced by assertMemberLimit() past what that tier normally allows.
   // Null means "use the tier's standard limit", not "unlimited".
-  customMemberLimit              Int?
+  customMemberLimit                     Int?
   // Brand identity applied to the dashboard, portal, devis/facture PDFs and the feuille
   // de présence PDF — separate from siteConfig's own logoUrl/primaryColor, which only
   // exist once the association has set up its public site. logoUrl/primaryColor also
   // seed the site builder's fields the first time it's opened.
-  logoUrl                        String?
+  logoUrl                               String?
   // No DB default on purpose — a bare column default made every Pro association look
   // branded in this color (dashboard/portal theme, PDFs, emails) before the admin ever
   // opened the branding settings. null means "use the platform's own default theme";
   // the site builder and branding-settings UI supply #6366f1 as their own form default
   // instead, only persisted once the admin actually saves.
-  primaryColor                   String?
-  secondaryColor                 String?
+  primaryColor                          String?
+  secondaryColor                        String?
   // "From" display name for association-owned emails (see getFrom() in src/lib/mail.ts) —
   // null falls back to `name` above, so an association never has to fill this in just to
   // send email. Kept distinct from `name` because the legal/administrative name used in the
   // email body copy isn't always what an association wants recipients to see as the sender.
-  emailSenderName                String?
+  emailSenderName                       String?
   // Optional HTML (Tiptap) sign-off appended to association-authored emails — see
   // customEmail() in src/lib/email.ts. Deliberately not applied to every email (fixed system
   // templates like password reset keep their own copy) — only to the ones an admin actually
   // wrote, whether sent ad hoc or via an AutomationRule/MessageTemplate.
-  emailSignature                 String?             @db.Text
+  emailSignature                        String?             @db.Text
   // Visual style (classic/bold/minimal), colour, custom text and social links for the email
   // footer in layout() (src/lib/email.ts) — same "Json blob + lenient parser" pattern as
   // memberCardSettings below, see parseEmailFooterSettings() in src/lib/email-footer.ts.
   // null — an association that never opened branding settings — yields the original fixed,
   // unstyled footer.
-  emailFooterSettings            Json?
+  emailFooterSettings                   Json?
   // Custom branding (logo + colors) defaults to Pro-only — see canUseCustomBranding() in
   // src/lib/plan-limits.ts. Same override pattern as customMemberLimit: null/false uses
   // the plan default, true force-enables it for an Essentiel association.
-  customBrandingEnabled          Boolean?
-  subscriptionStatus             SubscriptionStatus  @default(TRIAL)
+  customBrandingEnabled                 Boolean?
+  subscriptionStatus                    SubscriptionStatus  @default(TRIAL)
   // Current recurring price of Association.stripeSubscriptionId, in cents — synced by the
   // same customer.subscription.created/updated webhook handler that syncs subscriptionStatus
   // and plan (src/app/api/webhook/stripe/route.ts), read off sub.items.data[0].price.unit_amount.
@@ -613,7 +639,7 @@ model Association {
   // subscriptionStatus ACTIVE, but only the former should be exempt from platformFeeRate()
   // in src/lib/stripe.ts. Null before the first sync (e.g. still on TRIAL with no Stripe
   // subscription at all yet).
-  subscriptionAmountCents        Int?
+  subscriptionAmountCents               Int?
   // Staff-set deadline to regularize a negotiated PricingOffer still billing 0€ (see
   // subscriptionAmountCents above) onto real catalog pricing. Read by the
   // subscription-grace-period-sweep cron (src/app/api/cron/subscription-grace-period-sweep),
@@ -621,86 +647,87 @@ model Association {
   // independent of Stripe's own dunning, since a €0 subscription never naturally fails an
   // invoice. Cleared once the association converts to a real price (see
   // /api/billing/upgrade-from-offer) or has no pending deadline.
-  subscriptionGracePeriodEndsAt  DateTime?
-  trialEndsAt                    DateTime?
+  subscriptionGracePeriodEndsAt         DateTime?
+  trialEndsAt                           DateTime?
   // Stamped by the Stripe webhook when a card-free trial (see /api/register) reached its
   // end with still no payment method on file and Stripe cancelled the subscription — as
   // opposed to an admin resigning. Drives the "Essai terminé" wording on the standby and
   // re-subscribe screens instead of the generic "Abonnement résilié"; cleared as soon as
   // the association is back on a live subscription.
-  trialExpiredAt                 DateTime?
-  suspendedAt                    DateTime?
-  cancelAtPeriodEnd              Boolean             @default(false)
-  currentPeriodEndsAt            DateTime?
-  sitePublished                  Boolean             @default(false)
-  siteConfig                     Json?
+  trialExpiredAt                        DateTime?
+  suspendedAt                           DateTime?
+  cancelAtPeriodEnd                     Boolean             @default(false)
+  currentPeriodEndsAt                   DateTime?
+  sitePublished                         Boolean             @default(false)
+  siteConfig                            Json?
   // FORM-7 website builder (Puck): the page being edited, as Puck Data ({ root, content,
   // zones }). A draft only — saved by "Enregistrer" in /dashboard/site/puck and never read by
   // the public site, which still renders siteConfig until publishing moves to this format.
-  siteDraft                      Json?
+  siteDraft                             Json?
   // Which version visitors see: LEGACY renders siteConfig (old builder), PUCK renders
   // sitePuckPublished (new builder). Switchable both ways from /dashboard/site; siteConfig is
   // never modified by the new builder, so switching back is instant and lossless.
-  siteBuilder                    SiteBuilder         @default(LEGACY)
+  siteBuilder                           SiteBuilder         @default(LEGACY)
   // Last version published from the new builder ("Publier"), as Puck Data. Separate from
   // siteDraft so saving work in progress never reaches visitors.
-  sitePuckPublished              Json?
-  sitePuckPublishedAt            DateTime?
-  modules                        Json?
+  sitePuckPublished                     Json?
+  sitePuckPublishedAt                   DateTime?
+  modules                               Json?
   // Carte de membre numérique settings (enabled, template, color, showPhoto, showCategory) —
   // null until the admin first saves them. Always read through parseMemberCardSettings() in
   // src/lib/member-card/settings.ts, which fills safe defaults (card disabled) for null or
   // for any key a future version adds, so no backfill migration is ever needed.
-  memberCardSettings             Json?
-  internalNotes                  String?
-  createdAt                      DateTime            @default(now())
-  updatedAt                      DateTime            @updatedAt
-  deletedAt                      DateTime?
+  memberCardSettings                    Json?
+  internalNotes                         String?
+  createdAt                             DateTime            @default(now())
+  updatedAt                             DateTime            @updatedAt
+  deletedAt                             DateTime?
 
-  users                         User[]
-  membres                       Membre[]
-  membreTypes                   MembreType[]
-  evenements                    Evenement[]
-  cotisations                   Cotisation[]
-  actualites                    Actualite[]
-  messageTemplates              MessageTemplate[]
-  automationRules               AutomationRule[]
-  materials                     Material[]
-  activityLogs                  ActivityLog[]
-  dons                          Don[]
-  donationForms                 DonationForm[]
-  donationSubscriptions         DonationSubscription[]
-  cotisationSubscriptions       CotisationSubscription[]
-  cotisationInstallmentPlans    CotisationInstallmentPlan[]
-  membershipForms               MembershipForm[]
-  sitePages                     SitePage[]
-  siteNavMenus                  SiteNavMenu[]
-  membershipAddonPurchases      MembershipAddonPurchase[]
-  membershipCheckoutDrafts      MembershipCheckoutDraft[]
-  sondages                      Sondage[]
-  boutiqueProduits              BoutiqueProduit[]
-  boutiqueCommandes             BoutiqueCommande[]
-  meetings                      Meeting[]
-  exercicesComptables           ExerciceComptable[]
-  bankAccounts                  BankAccount[]
-  bankTransactions              BankTransaction[]
-  financeCategories             FinanceCategory[]
-  incomes                       Income[]
-  expenses                      Expense[]
-  budgetProjects                BudgetProject[]
-  budgetLines                   BudgetLine[]
-  bankReconciliations           BankReconciliation[]
-  accountTransfers              AccountTransfer[]
-  chartAccounts                 ChartAccount[]
-  journalEntries                JournalEntry[]
-  immobilisations               Immobilisation[]
-  fournisseurs                  Fournisseur[]
-  devis                         Devis[]
-  factures                      Facture[]
-  facturesRecues                FactureRecue[]
-  associationDocuments          AssociationDocument[]
-  paperFormTemplates            PaperFormTemplate[]
-  legalAcceptances              LegalAcceptance[]
+  users                      User[]
+  membres                    Membre[]
+  membreTypes                MembreType[]
+  evenements                 Evenement[]
+  cotisations                Cotisation[]
+  actualites                 Actualite[]
+  messageTemplates           MessageTemplate[]
+  automationRules            AutomationRule[]
+  materials                  Material[]
+  activityLogs               ActivityLog[]
+  dons                       Don[]
+  donationForms              DonationForm[]
+  donationSubscriptions      DonationSubscription[]
+  cotisationSubscriptions    CotisationSubscription[]
+  membershipLicenses         MembershipLicense[]
+  cotisationInstallmentPlans CotisationInstallmentPlan[]
+  membershipForms            MembershipForm[]
+  sitePages                  SitePage[]
+  siteNavMenus               SiteNavMenu[]
+  membershipAddonPurchases   MembershipAddonPurchase[]
+  membershipCheckoutDrafts   MembershipCheckoutDraft[]
+  sondages                   Sondage[]
+  boutiqueProduits           BoutiqueProduit[]
+  boutiqueCommandes          BoutiqueCommande[]
+  meetings                   Meeting[]
+  exercicesComptables        ExerciceComptable[]
+  bankAccounts               BankAccount[]
+  bankTransactions           BankTransaction[]
+  financeCategories          FinanceCategory[]
+  incomes                    Income[]
+  expenses                   Expense[]
+  budgetProjects             BudgetProject[]
+  budgetLines                BudgetLine[]
+  bankReconciliations        BankReconciliation[]
+  accountTransfers           AccountTransfer[]
+  chartAccounts              ChartAccount[]
+  journalEntries             JournalEntry[]
+  immobilisations            Immobilisation[]
+  fournisseurs               Fournisseur[]
+  devis                      Devis[]
+  factures                   Facture[]
+  facturesRecues             FactureRecue[]
+  associationDocuments       AssociationDocument[]
+  paperFormTemplates         PaperFormTemplate[]
+  legalAcceptances           LegalAcceptance[]
   platformLegalValidations   PlatformLegalValidation[]
   emailMessages              EmailMessage[]
   smsMessages                SmsMessage[]
@@ -761,31 +788,31 @@ model PricingOffer {
 }
 
 model User {
-  id              String    @id @default(cuid())
-  email           String
-  name            String?
-  passwordHash    String
-  role            UserRole  @default(MEMBRE)
+  id                     String    @id @default(cuid())
+  email                  String
+  name                   String?
+  passwordHash           String
+  role                   UserRole  @default(MEMBRE)
   // FORM-34 per-area access (StoredPermissions in src/lib/permissions.ts): { administrator,
   // areas: { membres: "edit", comptabilite: "read", … } }. Null = the profile of the role,
   // which reproduces the access that role had before — always read through
   // resolvePermissions(), never directly.
-  permissions     Json?
-  active          Boolean   @default(true)
-  locale          String    @default("fr")
+  permissions            Json?
+  active                 Boolean   @default(true)
+  locale                 String    @default("fr")
   // Ordered array of DashboardWidgetId strings (see src/lib/dashboard-widgets.ts) —
   // null means "never customized", resolved to the default order in app code via
   // parseDashboardLayout(), same shape as Association.modules falling back to
   // DEFAULT_MODULES via parseModules().
-  dashboardLayout Json?
+  dashboardLayout        Json?
   // Per-user "Reporter" snoozes for the dashboard's "Actions à faire" panel (FORM-119):
   // Record<actionKey, ISO-date-string>, read through parseDashboardActionSnoozes() —
   // same per-user-JSON-preference convention as dashboardLayout above, never trusted raw.
   dashboardActionSnoozes Json?
-  associationId   String?
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
-  deletedAt       DateTime?
+  associationId          String?
+  createdAt              DateTime  @default(now())
+  updatedAt              DateTime  @updatedAt
+  deletedAt              DateTime?
 
   // Set once, at signup, when the account is created via /register (see
   // src/lib/consent.ts and src/app/api/register/route.ts) — null for accounts created
@@ -1006,6 +1033,7 @@ model Membre {
   mergedFrom               Membre[]                  @relation("MembreMergedInto")
   mergedBy                 User?                     @relation("MembreMergedBy", fields: [mergedById], references: [id], onDelete: SetNull)
   cotisations              Cotisation[]
+  licenses                 MembershipLicense[]
   participations           Participation[]
   actualiteRecipients      ActualiteRecipient[]
   materialLoans            MaterialLoan[]
@@ -1566,6 +1594,7 @@ model Cotisation {
   addonPurchases    MembershipAddonPurchase[]
   installmentPlan   CotisationInstallmentPlan?
   boutiqueCommandes BoutiqueCommande[]
+  license           MembershipLicense?
 
   @@unique([membreId, year])
   @@unique([associationId, declarationNumber])
@@ -2125,6 +2154,22 @@ model MembershipTier {
   // export), qui doivent continuer à le retrouver pour les lignes déjà existantes.
   archivedAt   DateTime?
 
+  // FORM-114: federative license tracking/billing for this tier (itemType MEMBERSHIP only).
+  // licenseSeason is free text (e.g. "2026/2027") the club must keep up to date themselves —
+  // an automatic renewal (see handleCotisationInvoicePaid) copies whatever is configured here
+  // at the time it runs, Formwise never increments it on its own.
+  licenseEnabled              Boolean                       @default(false)
+  licenseName                 String?
+  licenseFederation           String?
+  licenseSeason               String?
+  licenseMandatory            Boolean                       @default(false)
+  licenseBillingMode          MembershipLicenseBillingMode?
+  // Only meaningful when licenseBillingMode is ADDITIONAL — same unit/precision as `amount`.
+  licenseAdditionalAmount     Decimal?                      @db.Decimal(10, 2)
+  // Lets the visitor declare "I already hold a license for this season" instead of paying
+  // the additional amount — see MembershipLicense.declaredByMembre.
+  licenseAllowDeclareExisting Boolean                       @default(false)
+
   form           MembershipForm            @relation(fields: [formId], references: [id], onDelete: Cascade)
   membreType     MembreType?               @relation(fields: [membreTypeId], references: [id], onDelete: SetNull)
   cotisations    Cotisation[]
@@ -2352,6 +2397,17 @@ model CotisationSubscription {
   // already-running subscription's past or future receipts are eligible for.
   receiptMode      DonationReceiptMode @default(NONE)
   deductibleAmount Decimal?            @db.Decimal(10, 2)
+  // FORM-114: snapshot of the federative-license decision made at signup (tier config +
+  // visitor's opt-in/declare-existing choice on the public form) — handleCotisationInvoicePaid
+  // reads this only for this subscription's very first period, since there's no previous
+  // Cotisation yet to copy a license from; every later renewal instead copies the PREVIOUS
+  // period's MembershipLicense (if any) and re-reads federation/season off the tier's CURRENT
+  // config, not off this snapshot (see handleCotisationInvoicePaid).
+  licenseApplies          Boolean @default(false)
+  licenseFederation       String?
+  licenseSeason           String?
+  licenseDeclaredByMembre Boolean @default(false)
+  licenseNumber           String?
 
   association    Association     @relation(fields: [associationId], references: [id], onDelete: Cascade)
   membre         Membre          @relation(fields: [membreId], references: [id])
@@ -2362,6 +2418,43 @@ model CotisationSubscription {
   @@index([associationId, status])
   @@index([membershipFormId])
   @@index([tierId])
+}
+
+// FORM-114: one federative license tracking record per season — a season is exactly one
+// Cotisation, so the 1:1 relation below already gives "one record per season" and preserves
+// history for free (a season without a license simply has no row). Created at checkout time
+// when the tier's license applies (mandatory, or optional and selected, or declared existing),
+// and again automatically on every recurring renewal that had one the period before (see
+// handleCotisationInvoicePaid) — never on a manual renewal where the optional license wasn't
+// reselected. federation/season/licenseNumber are user-editable afterward by authorized admins;
+// status is never flipped to VALIDADA by payment or by the renewal webhook, only by an admin
+// confirming it with the federation.
+model MembershipLicense {
+  id            String @id @default(cuid())
+  cotisationId  String @unique
+  membreId      String
+  associationId String
+
+  federation       String
+  season           String
+  licenseNumber    String?
+  status           MembershipLicenseStatus @default(A_SOLICITAR)
+  // Set when the member checked "I already hold a license for this season" at signup instead
+  // of paying the ADDITIONAL amount — see MembershipTier.licenseAllowDeclareExisting.
+  declaredByMembre Boolean                 @default(false)
+  // Set when this row was created by handleCotisationInvoicePaid rather than a checkout —
+  // distinguishes an automatic A_RENOVAR row from a manual one for reporting/filtering.
+  autoRenewed      Boolean                 @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  cotisation  Cotisation  @relation(fields: [cotisationId], references: [id], onDelete: Cascade)
+  membre      Membre      @relation(fields: [membreId], references: [id], onDelete: Cascade)
+  association Association @relation(fields: [associationId], references: [id], onDelete: Cascade)
+
+  @@index([associationId, federation, season, status])
+  @@index([membreId])
 }
 
 model Notification {

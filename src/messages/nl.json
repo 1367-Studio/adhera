@@ -3607,6 +3607,7 @@
           "eligibleAmountAutoHint": "Automatisch berekend: betaald bedrag − {amount}",
           "noMinimumWarning": "Er is geen minimumbedrag vastgesteld voor dit gratis tarief; een betalende bezoeker die lager is dan het niet-in aanmerking komende bedrag wordt uitgesloten van betaling. Stel een minimumbedrag vast van minimaal {amount}.",
           "installmentsAllowedField": "Autoriseer betaling in termijnen",
+          "installmentsUnavailableWithLicense": "Niet beschikbaar tegen een prijs bij het beheren van een federatielicentie.",
           "installmentsCountField": "Aantal keren",
           "membreTypeNone": "Geen enkele",
           "kindField": "Type",
@@ -3622,7 +3623,27 @@
           "membershipTierRequiredError": "Het formulier moet ten minste één lidmaatschapsbijdrage bevatten",
           "minAmountRequiredError": "Voor elke donatie is een minimumbedrag vereist",
           "saved": "Geregistreerde tarieven",
-          "saveTiers": "Tarieven opslaan"
+          "saveTiers": "Tarieven opslaan",
+          "licenseSectionTitle": "Federatielicentie",
+          "licenseEnabledField": "Beheer een federatielicentie voor dit tarief",
+          "licenseNameField": "Licentienaam",
+          "licenseNamePlaceholder": "Bijv. Concurrentielicentie",
+          "licenseFederationField": "Federatie",
+          "licenseFederationPlaceholder": "Bijv. FFF",
+          "licenseSeasonField": "Seizoen",
+          "licenseSeasonPlaceholder": "Ex. 2026/2027",
+          "licenseMandatoryField": "Verplichte licentie",
+          "licenseBillingModeField": "Facturering",
+          "licenseBillingIncluded": "Inbegrepen in de prijs",
+          "licenseBillingAdditional": "Aanvullend bedrag",
+          "licenseAdditionalAmountField": "Aanvullend bedrag (€)",
+          "licenseAllowDeclareExistingField": "Staat de verklaring toe van een reeds bezit licentie",
+          "licenseFederationRequiredError": "Federatie is vereist om de federatielicentie te activeren",
+          "licenseSeasonRequiredError": "Het seizoen is vereist om de federatielicentie te activeren",
+          "licenseBillingModeRequiredError": "De licentiefactureringsmethode is vereist",
+          "licenseAdditionalAmountRequiredError": "Het extra licentiebedrag is vereist",
+          "licenseRecurringChangeWarning": "Het wijzigen van dit bedrag verandert alleen toekomstige abonnementen — bestaande abonnees blijven het op het moment van abonnement vastgestelde bedrag betalen.",
+          "licenseAdditionalAmountTooLowError": "Het extra licentiebedrag moet minimaal €1 bedragen"
         },
         "fields": {
           "title": "Vorm",
@@ -3739,6 +3760,14 @@
       "mobilePlaceholder": "06 12 34 56 78",
       "donationBadge": "(don)",
       "totalLabel": "Totaal te betalen",
+      "licenseDefaultName": "Federatielicentie",
+      "licenseIncludedNotice": "Federatielicentie inbegrepen, zonder extra kosten.",
+      "licenseOptInLabel": "Voeg de federatielicentie toe (+{amount})",
+      "licenseMandatoryNotice": "Dit lidmaatschap omvat een verplichte federatielicentie ({amount}).",
+      "licenseDeclareExistingLabel": "Ik heb al een rijbewijs voor dit seizoen",
+      "licenseDeclaredNotice": "Bestaande licentie — in afwachting van verificatie door de vereniging.",
+      "licenseNumberLabel": "Licentienummer",
+      "licenseNumberPlaceholder": "Laat het leeg als je het nog niet hebt",
       "partialReceiptNotice": "Alleen {amount} zijn fiscaal aftrekbaar voor dit lidmaatschap.",
       "belowExtraMinimum": "Het minimale bedrag is {amount}.",
       "belowMinimumAmount": "Het minimumbedrag voor een online betaling is {amount}.",
@@ -4188,6 +4217,8 @@
       "publicPaymentToggleDesc": "Het lidmaatschapsformulier op de openbare site vereist onmiddellijke betaling (jaarlijks betaald) en activeert het lid automatisch, zonder handmatige validatie.",
       "publicPaymentRequiresAmount": "Vul een bijdragebedrag in om deze optie te activeren.",
       "connectNotReadyWarning": "Online betaling is niet actief — Stripe Connect is nog niet ingesteld of accepteert betalingen niet (tabblad Betalingen). In de tussentijd keert het openbare formulier terug naar de gratis stream en staan er nog openstaande lidmaatschapsverzoeken op.",
+      "includeFederativeLicenseInAutoRenewalToggle": "Voeg de federatielicentie op in de jaarlijkse automatische automatische incasso",
+      "includeFederativeLicenseInAutoRenewalToggleDesc": "Wanneer een tarief zijn federatielicentie een extra bedrag factureert, wordt dit bedrag opnieuw in rekening gebracht bij elke automatische verlenging (terugkerend abonnement). Als het uitgeschakeld is, wordt het slechts één keer in rekening gebracht, tijdens het eerste abonnement. Deze instelling geldt alleen voor nieuwe abonnementen die na wijziging zijn getekend — reeds actieve abonnementen gaan door zoals voorheen.",
       "toasts": {
         "updated": "Bijgewerkt standaardbedrag"
       }
@@ -4936,10 +4967,25 @@
         "reunions": "Vergaderingen",
         "materiel": "Materiaal",
         "dons": "Donaties",
+        "licenses": "Licenties",
         "historique": "Geschiedenis",
         "emails": "E-mails",
         "sms": "SMS",
         "boutique": "Winkel"
+      },
+      "licenses": {
+        "empty": "Geen rijbewijs",
+        "seasonYear": "Lidmaatschapsbijdrage {year}",
+        "autoRenewed": "Automatisch verlengd",
+        "declaredByMembreNotice": "Licentie verklaard door het lid — in afwachting van verificatie",
+        "deleteConfirmTitle": "Deze vergunning afnemen?",
+        "deleteConfirmDescription": "De licentie {federation} — {season} zal definitief worden stopgezet.",
+        "statusField": "Status",
+        "licenseNumberField": "Licentienummer",
+        "statusASolicitar": "Om te vragen",
+        "statusEmAndamento": "In uitvoering",
+        "statusValidada": "Gevalideerd",
+        "statusARenovar": "Te verlengen"
       },
       "cotisationStatus": {
         "enAttente": "In behandeling",
@@ -4987,6 +5033,7 @@
       "donStandalone": "Zelfstandige donatie",
       "donPending": "Wacht op inning",
       "showingRecentDons": "Toont de {count} meest recente donaties van in totaal {total}.",
+      "showingRecentLicenses": "Weergave van {count} meest recente licenties op {total} in totaal.",
       "addCotisationTitle": "Voeg een lidmaatschapsbijdrage toe",
       "editCotisationTitle": "Verander het lidmaatschapsgeld",
       "deleteConfirmWithDependants": "Dit lid wordt gearchiveerd en kan niet langer toegang krijgen tot de vereniging. Hij wordt ook verwijderd als wettelijke voogd van de vereniging. {count} Leden(s): {names}.",
@@ -6275,6 +6322,7 @@
       "membres": "Leden",
       "evenements": "Evenementen",
       "cotisations": "Bijdragen",
+      "licencas": "Licenties",
       "adhesions": "Lidmaatschappen",
       "finances": "Financiële monitoring",
       "devis": "Offertes",
@@ -6542,6 +6590,30 @@
     },
     "backoffice": {
       "columns": {}
+    }
+  },
+  "licencas": {
+    "title": "Licenties",
+    "description": "Gefedereerde licenties voor leden, alle tarieven en seizoenen gecombineerd.",
+    "export": "Export",
+    "empty": "Geen rijbewijs",
+    "statusASolicitar": "Om te vragen",
+    "statusEmAndamento": "In uitvoering",
+    "statusValidada": "Gevalideerd",
+    "statusARenovar": "Te verlengen",
+    "columns": {
+      "membre": "Lid",
+      "tier": "Modaliteit",
+      "federation": "Federatie",
+      "season": "Seizoen",
+      "licenseNumber": "Licentienummer",
+      "status": "Status"
+    },
+    "filters": {
+      "searchPlaceholder": "Zoek naar een lid...",
+      "allFederations": "Alle federaties",
+      "allSeasons": "Alle seizoenen",
+      "allStatuses": "Alle statussen"
     }
   }
 }

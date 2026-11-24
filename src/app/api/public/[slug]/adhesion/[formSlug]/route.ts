@@ -143,6 +143,13 @@ export async function GET(
         ? null
         : eligibleReceiptAmount(Number(t.amount), t.receiptMode, t.ineligibleAmount != null ? Number(t.ineligibleAmount) : null)?.toString() ?? null,
       ineligibleAmount: t.freeAmount && t.ineligibleAmount != null ? Number(t.ineligibleAmount) : null,
+      // FORM-114 — federative license config, read by resolveLicenseApplication client-side
+      // to render the right opt-in/declare-existing/breakdown UI for this tier.
+      licenseEnabled: t.licenseEnabled, licenseName: t.licenseName,
+      licenseFederation: t.licenseFederation, licenseSeason: t.licenseSeason,
+      licenseMandatory: t.licenseMandatory, licenseBillingMode: t.licenseBillingMode,
+      licenseAdditionalAmount: t.licenseAdditionalAmount?.toString() ?? null,
+      licenseAllowDeclareExisting: t.licenseAllowDeclareExisting,
     })),
     customFields: customFields.map(f => ({ id: f.id, type: f.type, label: f.label, required: f.required, options: f.options })),
     // Un produit archivé après avoir été lié au formulaire n'est pas retiré de

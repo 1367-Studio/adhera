@@ -3607,6 +3607,7 @@
           "eligibleAmountAutoHint": "Автоматично изчислено: платена сума − {amount}",
           "noMinimumWarning": "Няма определена минимална сума за тази свободна сума, платен посетител под недопустимата сума ще бъде блокиран от плащане. Задайте минимална сума от поне {amount}.",
           "installmentsAllowedField": "Разрешаване на плащане на вноски",
+          "installmentsUnavailableWithLicense": "Недостъпно за цена за управление на федерален лиценз.",
           "installmentsCountField": "Брой пъти",
           "membreTypeNone": "Няма",
           "kindField": "Тип",
@@ -3622,7 +3623,27 @@
           "membershipTierRequiredError": "Формулярът трябва да съдържа поне една членска такса",
           "minAmountRequiredError": "Изисква се минимална сума за всяко дарение",
           "saved": "Регистрирани тарифи",
-          "saveTiers": "Запази тарифите"
+          "saveTiers": "Запази тарифите",
+          "licenseSectionTitle": "Лиценз за федерация",
+          "licenseEnabledField": "Управление на федерален лиценз за тази тарифа",
+          "licenseNameField": "Име на лиценза",
+          "licenseNamePlaceholder": "Например. Лиценз за състезания",
+          "licenseFederationField": "Федерация",
+          "licenseFederationPlaceholder": "Напр. FFF",
+          "licenseSeasonField": "Сезон",
+          "licenseSeasonPlaceholder": "Ex. 2026/2027",
+          "licenseMandatoryField": "Задължителен лиценз",
+          "licenseBillingModeField": "Фактуриране",
+          "licenseBillingIncluded": "Включено в цената",
+          "licenseBillingAdditional": "Допълнителна сума",
+          "licenseAdditionalAmountField": "Допълнителна сума (€)",
+          "licenseAllowDeclareExistingField": "Позволете декларирането на вече притежаван лиценз",
+          "licenseFederationRequiredError": "За активиране на лиценза за федерация е необходима федерация",
+          "licenseSeasonRequiredError": "Сезонът е необходим, за да се активира лицензът на федерацията",
+          "licenseBillingModeRequiredError": "Методът за фактуриране на лиценза е необходим",
+          "licenseAdditionalAmountRequiredError": "Изисква се допълнителната сума на лиценза",
+          "licenseRecurringChangeWarning": "Промяната на тази сума променя само бъдещите абонаменти — настоящите абонати продължават да плащат сумата, определена към момента на абонамента.",
+          "licenseAdditionalAmountTooLowError": "Допълнителната сума на лиценза трябва да бъде поне 1 евро"
         },
         "fields": {
           "title": "Форма",
@@ -3739,6 +3760,14 @@
       "mobilePlaceholder": "06 12 34 56 78",
       "donationBadge": "(дон)",
       "totalLabel": "Общата сума за плащане",
+      "licenseDefaultName": "Лиценз за федерация",
+      "licenseIncludedNotice": "Включен е федерален лиценз, без допълнително заплащане.",
+      "licenseOptInLabel": "Добавете лицензи за федерация (+{amount})",
+      "licenseMandatoryNotice": "Това членство включва задължителен лиценз за федерация ({amount}).",
+      "licenseDeclareExistingLabel": "Вече имам лиценз за този сезон",
+      "licenseDeclaredNotice": "Съществуващ лиценз — очаква проверка от асоциацията.",
+      "licenseNumberLabel": "Номер на лиценза",
+      "licenseNumberPlaceholder": "Остави празен, ако още нямаш",
       "partialReceiptNotice": "Сам {amount} са данъчно приспадаеми за това членство.",
       "belowExtraMinimum": "Минималната сума е {amount}.",
       "belowMinimumAmount": "Минималната сума за онлайн плащане е {amount}.",
@@ -4188,6 +4217,8 @@
       "publicPaymentToggleDesc": "Формулярът за членство на публичния сайт изисква незабавно плащане (годишно) и активира члена автоматично, без ръчна валидация.",
       "publicPaymentRequiresAmount": "Попълнете сумата на вноската, за да активирате тази опция.",
       "connectNotReadyWarning": "Онлайн плащанията не са активни — Stripe Connect все още не е настроен и не приема плащания (раздел Плащания). Междувременно публичният формуляр се връща в безплатния поток и има чакащи заявки за членство.",
+      "includeFederativeLicenseInAutoRenewalToggle": "Включете федералния лиценз в годишния автоматичен директен дебит",
+      "includeFederativeLicenseInAutoRenewalToggleDesc": "Когато тарифа таксува своята федерална лицензия с допълнителна сума, тази сума се начислява отново при всяко автоматично подновяване (повтарящ се абонамент). Ако е деактивирана, тя се таксува само веднъж, по време на първия абонамент. Тази настройка важи само за нови абонаменти, абонирани след промяна — вече активните абонаменти продължават както преди.",
       "toasts": {
         "updated": "Актуализирана стандартна сума"
       }
@@ -4936,10 +4967,25 @@
         "reunions": "Срещи",
         "materiel": "Материал",
         "dons": "Дарения",
+        "licenses": "Лицензи",
         "historique": "История",
         "emails": "Имейли",
         "sms": "SMS",
         "boutique": "Магазин"
+      },
+      "licenses": {
+        "empty": "Без лиценз",
+        "seasonYear": "Членски внос {year}",
+        "autoRenewed": "Автоматично подновяване",
+        "declaredByMembreNotice": "Лиценз, деклариран от члена — чака проверка",
+        "deleteConfirmTitle": "Да премахна този лиценз?",
+        "deleteConfirmDescription": "Лицензът {federation} — {season} ще бъде окончателно прекратена.",
+        "statusField": "Статус",
+        "licenseNumberField": "Номер на лиценза",
+        "statusASolicitar": "Да попитам",
+        "statusEmAndamento": "В процес на изпълнение",
+        "statusValidada": "Валидирано",
+        "statusARenovar": "Да бъде подновен"
       },
       "cotisationStatus": {
         "enAttente": "В процес на изчакване",
@@ -4987,6 +5033,7 @@
       "donStandalone": "Самостоятелно дарение",
       "donPending": "Чака осребряване",
       "showingRecentDons": "Показани са {count} най-скорошни дарения от общо {total}.",
+      "showingRecentLicenses": "Показване на {count} най-нови лицензи на {total} Общо.",
       "addCotisationTitle": "Добавете членска такса",
       "editCotisationTitle": "Промяна на членската такса",
       "deleteConfirmWithDependants": "Този член ще бъде архивиран и вече няма да има достъп до асоциацията. Той също така ще бъде отстранен като законен настойник на асоциацията. {count} Членове: {names}.",
@@ -6209,6 +6256,7 @@
       "membres": "Членове",
       "evenements": "Събития",
       "cotisations": "Приноси",
+      "licencas": "Лицензи",
       "adhesions": "Членства",
       "finances": "Финансов мониторинг",
       "devis": "Оферти",
@@ -6476,6 +6524,30 @@
     },
     "backoffice": {
       "columns": {}
+    }
+  },
+  "licencas": {
+    "title": "Лицензи",
+    "description": "Федеративни лицензи за членове, всички тарифи и сезони комбинирани.",
+    "export": "Износ",
+    "empty": "Без лиценз",
+    "statusASolicitar": "Да попитам",
+    "statusEmAndamento": "В процес на изпълнение",
+    "statusValidada": "Валидирано",
+    "statusARenovar": "Да бъде подновен",
+    "columns": {
+      "membre": "Член",
+      "tier": "Модалност",
+      "federation": "Федерация",
+      "season": "Сезон",
+      "licenseNumber": "Номер на лиценза",
+      "status": "Статус"
+    },
+    "filters": {
+      "searchPlaceholder": "Търсете член...",
+      "allFederations": "Всички федерации",
+      "allSeasons": "Всички сезони",
+      "allStatuses": "Всички статуси"
     }
   }
 }

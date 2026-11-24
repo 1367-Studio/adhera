@@ -3607,6 +3607,7 @@
           "eligibleAmountAutoHint": "Calculado automáticamente: importe pagado − {amount}",
           "noMinimumWarning": "No se ha definido un importe mínimo para esta tarifa de importe libre — un visitante que pague menos que el importe no elegible será bloqueado en el pago. Defina un importe mínimo de al menos {amount}.",
           "installmentsAllowedField": "Permitir el pago en varias veces",
+          "installmentsUnavailableWithLicense": "No disponible por un precio al gestionar una licencia de federación.",
           "installmentsCountField": "Número de cuotas",
           "membreTypeNone": "Ninguno",
           "kindField": "Tipo",
@@ -3622,7 +3623,27 @@
           "membershipTierRequiredError": "El formulario debe tener al menos una tarifa de afiliación",
           "minAmountRequiredError": "Se requiere un importe mínimo para cada donación",
           "saved": "Tarifas guardadas",
-          "saveTiers": "Guardar tarifas"
+          "saveTiers": "Guardar tarifas",
+          "licenseSectionTitle": "Licencia de federación",
+          "licenseEnabledField": "Gestionar una licencia de federación para esta tasa",
+          "licenseNameField": "Nombre de la licencia",
+          "licenseNamePlaceholder": "Ej. Licencia de competencia",
+          "licenseFederationField": "Federación",
+          "licenseFederationPlaceholder": "Ej. FFF",
+          "licenseSeasonField": "Temporada",
+          "licenseSeasonPlaceholder": "Ex. 2026/2027",
+          "licenseMandatoryField": "Licencia obligatoria",
+          "licenseBillingModeField": "Facturación",
+          "licenseBillingIncluded": "Incluido en el precio",
+          "licenseBillingAdditional": "Cantidad adicional",
+          "licenseAdditionalAmountField": "Importe adicional (€)",
+          "licenseAllowDeclareExistingField": "Permitir la declaración de una licencia ya poseída",
+          "licenseFederationRequiredError": "Se requiere federación para activar la licencia de federación",
+          "licenseSeasonRequiredError": "Se requiere la temporada para activar la licencia de federación",
+          "licenseBillingModeRequiredError": "El método de facturación de la licencia es obligatorio",
+          "licenseAdditionalAmountRequiredError": "Se requiere el importe adicional de la licencia",
+          "licenseRecurringChangeWarning": "Cambiar esta cantidad solo modifica las suscripciones futuras: los suscriptores existentes continúan pagando la cantidad fijada en el momento de la suscripción.",
+          "licenseAdditionalAmountTooLowError": "El importe adicional de la licencia debe ser al menos 1 €"
         },
         "fields": {
           "title": "Formulario",
@@ -3739,6 +3760,14 @@
       "mobilePlaceholder": "612 345 678",
       "donationBadge": "(donación)",
       "totalLabel": "Total a pagar",
+      "licenseDefaultName": "Licencia de federación",
+      "licenseIncludedNotice": "Licencia de Federación incluida, sin coste adicional.",
+      "licenseOptInLabel": "Añadir la licencia de federación (+{amount})",
+      "licenseMandatoryNotice": "Esta membresía incluye una licencia de federación obligatoria ({amount}).",
+      "licenseDeclareExistingLabel": "Ya tengo licencia para esta temporada",
+      "licenseDeclaredNotice": "Licencia existente — pendiente de verificación por parte de la asociación.",
+      "licenseNumberLabel": "Número de licencia",
+      "licenseNumberPlaceholder": "Déjalo vacío si aún no lo tienes",
       "partialReceiptNotice": "Solo {amount} son deducibles de impuestos para esta cuota.",
       "belowExtraMinimum": "El importe mínimo para « {label} » es de {amount}.",
       "belowMinimumAmount": "El importe mínimo para un pago en línea es de {amount}.",
@@ -4188,6 +4217,8 @@
       "publicPaymentToggleDesc": "El formulario de adhesión del sitio público exige el pago inmediato (cobrado cada año) y activa al miembro automáticamente, sin validación manual.",
       "publicPaymentRequiresAmount": "Indique un importe de cuota para activar esta opción.",
       "connectNotReadyWarning": "El pago en línea no está activo — Stripe Connect no está configurado o aún no acepta pagos (pestaña Pagos). Mientras tanto, el formulario público vuelve silenciosamente al flujo gratuito y registra solicitudes de adhesión pendientes.",
+      "includeFederativeLicenseInAutoRenewalToggle": "Incluir la licencia de federación en la domiciliación automática anual",
+      "includeFederativeLicenseInAutoRenewalToggleDesc": "Cuando una tarifa cobra a su licencia de federación una cantidad adicional, esta cantidad se carga de nuevo en cada renovación automática (suscripción recurrente). Si está desactivada, solo se cobra una vez, durante la primera suscripción. Esta configuración se aplica solo a las nuevas suscripciones suscritas tras el cambio — las suscripciones ya activas continúan como antes.",
       "toasts": {
         "updated": "Importe predeterminado actualizado"
       }
@@ -4936,10 +4967,25 @@
         "reunions": "Reuniones",
         "materiel": "Material",
         "dons": "Donaciones",
+        "licenses": "Licencias",
         "historique": "Historial",
         "emails": "Correos",
         "sms": "SMS",
         "boutique": "Tienda"
+      },
+      "licenses": {
+        "empty": "Sin licencia",
+        "seasonYear": "Cuota de membresía {year}",
+        "autoRenewed": "Renovado automáticamente",
+        "declaredByMembreNotice": "Licencia declarada por el miembro — pendiente de verificación",
+        "deleteConfirmTitle": "¿Quitar esta licencia?",
+        "deleteConfirmDescription": "La licencia {federation} — {season} será descontinuado de forma permanente.",
+        "statusField": "Estado",
+        "licenseNumberField": "Número de licencia",
+        "statusASolicitar": "Preguntar",
+        "statusEmAndamento": "En curso",
+        "statusValidada": "Validado",
+        "statusARenovar": "Renovación"
       },
       "cotisationStatus": {
         "enAttente": "Pendiente",
@@ -4987,6 +5033,7 @@
       "donStandalone": "Donación independiente",
       "donPending": "En espera de cobro",
       "showingRecentDons": "Mostrando las {count} donaciones más recientes de un total de {total}.",
+      "showingRecentLicenses": "Exhibición de {count} licencias más recientes en {total} en total.",
       "addCotisationTitle": "Añadir una cuota",
       "editCotisationTitle": "Editar la cuota",
       "deleteConfirmWithDependants": "Este miembro será archivado y ya no podrá acceder a la asociación. También será retirado como responsable legal de {count} miembro(s): {names}.",
@@ -6275,6 +6322,7 @@
       "membres": "Miembros",
       "evenements": "Eventos",
       "cotisations": "Cuotas",
+      "licencas": "Licencias",
       "adhesions": "Afiliaciones",
       "finances": "Seguimiento financiero",
       "devis": "Presupuestos",
@@ -6542,6 +6590,30 @@
     },
     "backoffice": {
       "columns": {}
+    }
+  },
+  "licencas": {
+    "title": "Licencias",
+    "description": "Licencias federadas para miembros, todas las tarifas y temporadas combinadas.",
+    "export": "Exportación",
+    "empty": "Sin licencia",
+    "statusASolicitar": "Preguntar",
+    "statusEmAndamento": "En curso",
+    "statusValidada": "Validado",
+    "statusARenovar": "Renovación",
+    "columns": {
+      "membre": "Miembro",
+      "tier": "Modalidad",
+      "federation": "Federación",
+      "season": "Temporada",
+      "licenseNumber": "Número de licencia",
+      "status": "Estado"
+    },
+    "filters": {
+      "searchPlaceholder": "Busca un miembro...",
+      "allFederations": "Todas las federaciones",
+      "allSeasons": "Todas las temporadas",
+      "allStatuses": "Todos los estados"
     }
   }
 }

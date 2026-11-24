@@ -3607,6 +3607,7 @@
           "eligibleAmountAutoHint": "Automātiski aprēķināts: samaksātā summa − {amount}",
           "noMinimumWarning": "Šai bezmaksas likmei nav noteikta minimālā summa, maksājošs apmeklētājs, kura summa ir mazāka par neatbilstošo, tiks bloķēts no maksājuma. Noteikt minimālo summu vismaz {amount}.",
           "installmentsAllowedField": "Autorizējiet maksājumus pa daļām",
+          "installmentsUnavailableWithLicense": "Nav pieejams par federācijas licences pārvaldību.",
           "installmentsCountField": "Cik reizes",
           "membreTypeNone": "Nav",
           "kindField": "Tips",
@@ -3622,7 +3623,27 @@
           "membershipTierRequiredError": "Formai jābūt vismaz vienai dalības maksai",
           "minAmountRequiredError": "Katram ziedojumam ir nepieciešama minimāla summa",
           "saved": "Reģistrētās likmes",
-          "saveTiers": "Saglabāt tarifus"
+          "saveTiers": "Saglabāt tarifus",
+          "licenseSectionTitle": "Federācijas licence",
+          "licenseEnabledField": "Pārvaldīt federācijas licenci šim līmenim",
+          "licenseNameField": "Licences nosaukums",
+          "licenseNamePlaceholder": "Piemēram, sacensību licence",
+          "licenseFederationField": "Federācija",
+          "licenseFederationPlaceholder": "Piemēram, FFF",
+          "licenseSeasonField": "Sezona",
+          "licenseSeasonPlaceholder": "Eks. 2026./2027.",
+          "licenseMandatoryField": "Obligātā licence",
+          "licenseBillingModeField": "Billings",
+          "licenseBillingIncluded": "Iekļauts cenā",
+          "licenseBillingAdditional": "Papildu summa",
+          "licenseAdditionalAmountField": "Papildu summa (€)",
+          "licenseAllowDeclareExistingField": "Atļaut deklarēt jau esošu licenci",
+          "licenseFederationRequiredError": "Federācijai ir jāaktivizē federācijas licence",
+          "licenseSeasonRequiredError": "Sezona ir nepieciešama, lai aktivizētu federācijas licenci",
+          "licenseBillingModeRequiredError": "Nepieciešama licences norēķinu metode",
+          "licenseAdditionalAmountRequiredError": "Nepieciešama papildu licences summa",
+          "licenseRecurringChangeWarning": "Šīs summas maiņa maina tikai nākotnes abonementus — esošie abonenti turpina maksāt noteikto summu abonēšanas brīdī.",
+          "licenseAdditionalAmountTooLowError": "Papildu licences summa jābūt vismaz €1"
         },
         "fields": {
           "title": "Forma",
@@ -3739,6 +3760,14 @@
       "mobilePlaceholder": "06 12 34 56 78",
       "donationBadge": "(don)",
       "totalLabel": "Kopējais maksājamais",
+      "licenseDefaultName": "Federācijas licence",
+      "licenseIncludedNotice": "Federācijas licence iekļauta, bez papildu maksas.",
+      "licenseOptInLabel": "Pievienot federācijas licenci (+{amount})",
+      "licenseMandatoryNotice": "Šī dalība ietver obligātu federācijas licenci ({amount}).",
+      "licenseDeclareExistingLabel": "Man jau ir licence šai sezonai",
+      "licenseDeclaredNotice": "Esošā licence — līdz asociācijas pārbaudei.",
+      "licenseNumberLabel": "Licences numurs",
+      "licenseNumberPlaceholder": "Atstāj tukšu, ja tev vēl nav",
       "partialReceiptNotice": "Vienatnē {amount} ir atskaitāmi no nodokļiem par šo biedra statusu.",
       "belowExtraMinimum": "Minimālā summa ir {amount}.",
       "belowMinimumAmount": "Minimālā summa tiešsaistes maksājumam ir {amount}.",
@@ -4188,6 +4217,8 @@
       "publicPaymentToggleDesc": "Dalības forma publiskajā vietnē prasa tūlītēju maksājumu (kas tiek veikta katru gadu) un automātiski aktivizē biedru bez manuālas validācijas.",
       "publicPaymentRequiresAmount": "Aizpildiet iemaksu summu, lai aktivizētu šo opciju.",
       "connectNotReadyWarning": "Tiešsaistes maksājumi nav aktīvi — Stripe Connect vēl nav iestatīts un nepieņem maksājumus (Maksājumu cilne). Tikmēr publiskā forma atgriežas bezmaksas straumē un satur gaidošus dalības pieprasījumus.",
+      "includeFederativeLicenseInAutoRenewalToggle": "Iekļaujiet federācijas licenci ikgadējā automātiskajā tiešajā debetā",
+      "includeFederativeLicenseInAutoRenewalToggleDesc": "Kad likme uzliek federācijas licencei papildu summu, šī summa tiek iekasēta atkārtoti katrā automātiskajā abonementā (atkārtotā abonēšana). Ja tas ir atspējots, tas tiek iekasēts tikai vienu reizi, pirmajā abonementā. Šis iestatījums attiecas tikai uz jauniem abonementiem, kas reģistrēti pēc izmaiņām — jau aktīvie abonementi turpinās kā iepriekš.",
       "toasts": {
         "updated": "Atjauninātā noklusējuma summa"
       }
@@ -4936,10 +4967,25 @@
         "reunions": "Sanāksmes",
         "materiel": "Materiāls",
         "dons": "Ziedojumi",
+        "licenses": "Licences",
         "historique": "Vēsture",
         "emails": "E-pasti",
         "sms": "SMS",
         "boutique": "Veikals"
+      },
+      "licenses": {
+        "empty": "Nav vadītāja apliecības",
+        "seasonYear": "Dalības maksa {year}",
+        "autoRenewed": "Automātiski atjaunots",
+        "declaredByMembreNotice": "Licence deklarēta no biedra puses — gaida pārbaudi",
+        "deleteConfirmTitle": "Noņemt šo licenci?",
+        "deleteConfirmDescription": "Licence {federation} — {season} tiks pastāvīgi pārtraukta.",
+        "statusField": "Statuss",
+        "licenseNumberField": "Licences numurs",
+        "statusASolicitar": "Lai pajautātu",
+        "statusEmAndamento": "Procesā",
+        "statusValidada": "Validēts",
+        "statusARenovar": "Atjaunot"
       },
       "cotisationStatus": {
         "enAttente": "Gaida",
@@ -4987,6 +5033,7 @@
       "donStandalone": "Patstāvīgs ziedojums",
       "donPending": "Gaida iekasēšanu",
       "showingRecentDons": "Rāda {count} jaunākos ziedojumus no kopā {total}.",
+      "showingRecentLicenses": "Izstāde {count} jaunākās licences vietnē {total} Kopumā.",
       "addCotisationTitle": "Pievieno biedra maksu",
       "editCotisationTitle": "Mainīt biedru maksu",
       "deleteConfirmWithDependants": "Šis biedrs tiks arhivēts un vairs nevarēs piekļūt asociācijai. Viņš tiks arī atcelts no asociācijas likumīgā aizbildņa amata. {count} Locekļi: {names}.",
@@ -6209,6 +6256,7 @@
       "membres": "Dalībnieki",
       "evenements": "Notikumi",
       "cotisations": "Ieguldījums",
+      "licencas": "Licences",
       "adhesions": "Dalība biedrībā",
       "finances": "Finanšu uzraudzība",
       "devis": "Piedāvājumi",
@@ -6476,6 +6524,30 @@
     },
     "backoffice": {
       "columns": {}
+    }
+  },
+  "licencas": {
+    "title": "Licences",
+    "description": "Federētas licences biedriem, visas likmes un sezonas kopā.",
+    "export": "Eksports",
+    "empty": "Nav vadītāja apliecības",
+    "statusASolicitar": "Lai pajautātu",
+    "statusEmAndamento": "Procesā",
+    "statusValidada": "Validēts",
+    "statusARenovar": "Atjaunot",
+    "columns": {
+      "membre": "Loceklis",
+      "tier": "Modalitāte",
+      "federation": "Federācija",
+      "season": "Sezona",
+      "licenseNumber": "Licences numurs",
+      "status": "Statuss"
+    },
+    "filters": {
+      "searchPlaceholder": "Meklēt biedru...",
+      "allFederations": "Visas federācijas",
+      "allSeasons": "Visas sezonas",
+      "allStatuses": "Visi statusi"
     }
   }
 }

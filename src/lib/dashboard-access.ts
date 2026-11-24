@@ -29,6 +29,7 @@ export const DASHBOARD_ROUTE_ACCESS: Record<string, DashboardRouteRequirement> =
   // GET /api/membership-forms); a "read" user works from the cotisations list instead.
   "/dashboard/adhesions":             { area: "adhesions", level: "edit" },
   "/dashboard/cotisations":           { area: "adhesions" },
+  "/dashboard/licencas":               { area: "adhesions" },
   "/dashboard/dons":                  { area: "dons" },
   "/dashboard/evenements":            { area: "evenements" },
   "/dashboard/boutique":              { area: "boutique" },

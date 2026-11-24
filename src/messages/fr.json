@@ -3892,6 +3892,7 @@
           "eligibleAmountAutoHint": "Calculé automatiquement : montant payé − {amount}",
           "noMinimumWarning": "Aucun montant minimum n'est défini pour ce tarif à montant libre un visiteur payant moins que le montant non éligible sera bloqué au paiement. Définissez un montant minimum d'au moins {amount}.",
           "installmentsAllowedField": "Autoriser le paiement en plusieurs fois",
+          "installmentsUnavailableWithLicense": "Indisponible pour un tarif gérant une licence fédérative.",
           "installmentsCountField": "Nombre de fois",
           "membreTypeNone": "Aucun",
           "kindField": "Type",
@@ -3909,7 +3910,27 @@
           "membershipTierRequiredError": "Le formulaire doit avoir au moins un tarif d'adhésion",
           "minAmountRequiredError": "Un montant minimum est requis pour chaque donation",
           "saved": "Tarifs enregistrés",
-          "saveTiers": "Enregistrer les tarifs"
+          "saveTiers": "Enregistrer les tarifs",
+          "licenseSectionTitle": "Licence fédérative",
+          "licenseEnabledField": "Gérer une licence fédérative pour ce tarif",
+          "licenseNameField": "Nom de la licence",
+          "licenseNamePlaceholder": "Ex. Licence compétition",
+          "licenseFederationField": "Fédération",
+          "licenseFederationPlaceholder": "Ex. FFF",
+          "licenseSeasonField": "Saison",
+          "licenseSeasonPlaceholder": "Ex. 2026/2027",
+          "licenseMandatoryField": "Licence obligatoire",
+          "licenseBillingModeField": "Facturation",
+          "licenseBillingIncluded": "Incluse dans le tarif",
+          "licenseBillingAdditional": "Montant additionnel",
+          "licenseAdditionalAmountField": "Montant additionnel (€)",
+          "licenseAllowDeclareExistingField": "Autoriser la déclaration d'une licence déjà possédée",
+          "licenseFederationRequiredError": "La fédération est requise pour activer la licence fédérative",
+          "licenseSeasonRequiredError": "La saison est requise pour activer la licence fédérative",
+          "licenseBillingModeRequiredError": "Le mode de facturation de la licence est requis",
+          "licenseAdditionalAmountRequiredError": "Le montant additionnel de la licence est requis",
+          "licenseRecurringChangeWarning": "Changer ce montant ne modifie que les futurs abonnements — les adhérents déjà abonnés continuent à payer le montant fixé au moment de leur souscription.",
+          "licenseAdditionalAmountTooLowError": "Le montant additionnel de la licence doit être d'au moins 1 €"
         },
         "fields": {
           "title": "Formulaire",
@@ -4029,6 +4050,14 @@
       "mobilePlaceholder": "06 12 34 56 78",
       "donationBadge": "(don)",
       "totalLabel": "Total à régler",
+      "licenseDefaultName": "Licence fédérative",
+      "licenseIncludedNotice": "Licence fédérative incluse, sans frais supplémentaire.",
+      "licenseOptInLabel": "Ajouter la licence fédérative (+{amount})",
+      "licenseMandatoryNotice": "Cette adhésion inclut une licence fédérative obligatoire ({amount}).",
+      "licenseDeclareExistingLabel": "Je possède déjà une licence pour cette saison",
+      "licenseDeclaredNotice": "Licence déjà existante — en attente de vérification par l'association.",
+      "licenseNumberLabel": "Numéro de licence",
+      "licenseNumberPlaceholder": "Laissez vide si vous ne l'avez pas encore",
       "partialReceiptNotice": "Seuls {amount} sont déductibles des impôts pour cette adhésion.",
       "belowExtraMinimum": "Le montant minimum est de {amount}.",
       "belowMinimumAmount": "Le montant minimum pour un paiement en ligne est de {amount}.",
@@ -4510,6 +4539,8 @@
       "publicPaymentToggleDesc": "Le formulaire d'adhésion du site public exige le paiement immédiat (prélevé chaque année) et active le membre automatiquement, sans validation manuelle.",
       "publicPaymentRequiresAmount": "Renseignez un montant de cotisation pour activer cette option.",
       "connectNotReadyWarning": "Le paiement en ligne n'est pas actif — Stripe Connect n'est pas configuré ou n'accepte pas encore les paiements (onglet Paiements). En attendant, le formulaire public revient au flux gratuit et enregistre des demandes d'adhésion en attente.",
+      "includeFederativeLicenseInAutoRenewalToggle": "Inclure la licence fédérative dans le prélèvement annuel automatique",
+      "includeFederativeLicenseInAutoRenewalToggleDesc": "Quand un tarif facture sa licence fédérative en montant additionnel, ce montant est de nouveau prélevé à chaque renouvellement automatique (abonnement récurrent). Désactivé, il n'est prélevé qu'une seule fois, lors de la première adhésion. Ce réglage ne s'applique qu'aux nouveaux abonnements souscrits après l'avoir changé — les abonnements déjà actifs continuent comme avant.",
       "toasts": {
         "updated": "Montant par défaut mis à jour"
       }
@@ -5455,10 +5486,25 @@
         "materiel": "Matériel",
         "groupes": "Groupes",
         "dons": "Dons",
+        "licenses": "Licences",
         "historique": "Historique",
         "emails": "Emails",
         "sms": "SMS",
         "boutique": "Boutique"
+      },
+      "licenses": {
+        "empty": "Aucune licence",
+        "seasonYear": "Cotisation {year}",
+        "autoRenewed": "Renouvelée automatiquement",
+        "declaredByMembreNotice": "Licence déclarée par le membre — en attente de vérification",
+        "deleteConfirmTitle": "Supprimer cette licence ?",
+        "deleteConfirmDescription": "La licence {federation} — {season} sera définitivement supprimée.",
+        "statusField": "Statut",
+        "licenseNumberField": "Numéro de licence",
+        "statusASolicitar": "À demander",
+        "statusEmAndamento": "En cours",
+        "statusValidada": "Validée",
+        "statusARenovar": "À renouveler"
       },
       "cotisationStatus": {
         "enAttente": "En attente",
@@ -5507,6 +5553,7 @@
       "donStandalone": "Don autonome",
       "donPending": "En attente d'encaissement",
       "showingRecentDons": "Affichage des {count} dons les plus récents sur {total} au total.",
+      "showingRecentLicenses": "Affichage des {count} licences les plus récentes sur {total} au total.",
       "addCotisationTitle": "Ajouter une cotisation",
       "editCotisationTitle": "Modifier la cotisation",
       "deleteConfirmWithDependants": "Ce membre sera archivé et ne pourra plus accéder à l'association. Il sera aussi retiré comme responsable légal de {count} membre(s) : {names}.",
@@ -7041,6 +7088,7 @@
       "membres": "Membres",
       "evenements": "Événements",
       "cotisations": "Cotisations",
+      "licencas": "Licences",
       "adhesions": "Adhésions",
       "finances": "Suivi financier",
       "devis": "Devis",
@@ -7766,6 +7814,30 @@
       "loading": "Chargement…",
       "noResults": "Aucun résultat.",
       "scanAction": "Scanner"
+    }
+  },
+  "licencas": {
+    "title": "Licences",
+    "description": "Licences fédératives des adhérents, tous tarifs et saisons confondus.",
+    "export": "Exporter",
+    "empty": "Aucune licence",
+    "statusASolicitar": "À demander",
+    "statusEmAndamento": "En cours",
+    "statusValidada": "Validée",
+    "statusARenovar": "À renouveler",
+    "columns": {
+      "membre": "Membre",
+      "tier": "Modalité",
+      "federation": "Fédération",
+      "season": "Saison",
+      "licenseNumber": "Numéro de licence",
+      "status": "Statut"
+    },
+    "filters": {
+      "searchPlaceholder": "Rechercher un membre…",
+      "allFederations": "Toutes les fédérations",
+      "allSeasons": "Toutes les saisons",
+      "allStatuses": "Tous les statuts"
     }
   }
 }

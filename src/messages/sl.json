@@ -3607,6 +3607,7 @@
           "eligibleAmountAutoHint": "Samodejno izračunano: plačani znesek − {amount}",
           "noMinimumWarning": "Za to brezplačno stopnjo ni določen minimalni znesek, plačljiv obiskovalec z manj kot neupravičen znesek bo blokiran pri plačilu. Določite minimalni znesek vsaj {amount}.",
           "installmentsAllowedField": "Odobrite plačila v obrokih",
+          "installmentsUnavailableWithLicense": "Ni na voljo po ceni za upravljanje federacijske licence.",
           "installmentsCountField": "Število ponovitev",
           "membreTypeNone": "Nobenega",
           "kindField": "Vrsta",
@@ -3622,7 +3623,27 @@
           "membershipTierRequiredError": "Obrazec mora imeti vsaj eno članarino",
           "minAmountRequiredError": "Za vsako donacijo je potreben minimalni znesek",
           "saved": "Registrirane tarife",
-          "saveTiers": "Shrani tarife"
+          "saveTiers": "Shrani tarife",
+          "licenseSectionTitle": "Federacijska licenca",
+          "licenseEnabledField": "Upravljajte federacijsko licenco za to stopnjo",
+          "licenseNameField": "Ime licence",
+          "licenseNamePlaceholder": "Npr. tekmovalna licenca",
+          "licenseFederationField": "Federacija",
+          "licenseFederationPlaceholder": "Npr. FFF",
+          "licenseSeasonField": "Sezona",
+          "licenseSeasonPlaceholder": "Primer 2026/2027",
+          "licenseMandatoryField": "Obvezna licenca",
+          "licenseBillingModeField": "Obračun",
+          "licenseBillingIncluded": "Vključeno v ceno",
+          "licenseBillingAdditional": "Dodatni znesek",
+          "licenseAdditionalAmountField": "Dodatni znesek (€)",
+          "licenseAllowDeclareExistingField": "Dovoli razglasitev že obstoječe licence",
+          "licenseFederationRequiredError": "Za aktivacijo licence federacije je potrebna federacija",
+          "licenseSeasonRequiredError": "Za aktivacijo licence zveze je potrebna sezona",
+          "licenseBillingModeRequiredError": "Obvezen je način obračunavanja licence",
+          "licenseAdditionalAmountRequiredError": "Potrebna je dodatna količina licence",
+          "licenseRecurringChangeWarning": "Sprememba tega zneska spremeni le prihodnje naročnine — obstoječi naročniki še naprej plačujejo znesek, določen ob podpisu naročnine.",
+          "licenseAdditionalAmountTooLowError": "Dodatni znesek licence mora biti vsaj 1 €"
         },
         "fields": {
           "title": "Oblika",
@@ -3739,6 +3760,14 @@
       "mobilePlaceholder": "06 12 34 56 78",
       "donationBadge": "(Don)",
       "totalLabel": "Skupni znesek je treba izplačati",
+      "licenseDefaultName": "Federacijska licenca",
+      "licenseIncludedNotice": "Licenca federacije vključena, brez dodatnih stroškov.",
+      "licenseOptInLabel": "Dodajte licenco federacije (+{amount})",
+      "licenseMandatoryNotice": "To članstvo vključuje obvezno licenco federacije ({amount}).",
+      "licenseDeclareExistingLabel": "Za to sezono že imam licenco",
+      "licenseDeclaredNotice": "Obstoječa licenca — čaka na preverjanje s strani združenja.",
+      "licenseNumberLabel": "Številka licence",
+      "licenseNumberPlaceholder": "Pusti prazno, če ga še nimaš",
       "partialReceiptNotice": "Sam {amount} so davčno priznani za to članstvo.",
       "belowExtraMinimum": "Minimalni znesek je {amount}.",
       "belowMinimumAmount": "Minimalni znesek za spletno plačilo je {amount}.",
@@ -4188,6 +4217,8 @@
       "publicPaymentToggleDesc": "Obrazec za članstvo na javni strani zahteva takojšnje plačilo (letno) in samodejno aktivira člana, brez ročne potrditve.",
       "publicPaymentRequiresAmount": "Vnesite znesek prispevka, da aktivirate to možnost.",
       "connectNotReadyWarning": "Spletno plačilo ni aktivno — Stripe Connect še ni vzpostavljen ali sprejema plačil (zavihek Plačila). Medtem se javni obrazec vrača v brezplačni tok in ima odprte zahteve za članstvo.",
+      "includeFederativeLicenseInAutoRenewalToggle": "Vključite federacijsko licenco v letno samodejno obremenitev",
+      "includeFederativeLicenseInAutoRenewalToggleDesc": "Ko tarifa zaračuna svojo federacijsko licenco dodatni znesek, se ta znesek ponovno zaračuna ob vsaki samodejni obnovi (ponavljajoča se naročnina). Če je onemogočeno, se zaračuna samo enkrat, med prvo naročnino. Ta nastavitev velja samo za nove naročnine, naročene po spremembi — že aktivne naročnine nadaljujejo kot prej.",
       "toasts": {
         "updated": "Posodobljena privzeta vrednost"
       }
@@ -4936,10 +4967,25 @@
         "reunions": "Sestanki",
         "materiel": "Gradivo",
         "dons": "Donacije",
+        "licenses": "Licence",
         "historique": "Zgodovina",
         "emails": "E-pošta",
         "sms": "SMS",
         "boutique": "Trgovina"
+      },
+      "licenses": {
+        "empty": "Brez licence",
+        "seasonYear": "Članarina {year}",
+        "autoRenewed": "Samodejno podaljšano",
+        "declaredByMembreNotice": "Licenca razglašena s strani člana — čaka se na preverjanje",
+        "deleteConfirmTitle": "Odstraniti to licenco?",
+        "deleteConfirmDescription": "Licenca {federation} — {season} bo trajno ukinjen.",
+        "statusField": "Status",
+        "licenseNumberField": "Številka licence",
+        "statusASolicitar": "Da vprašam",
+        "statusEmAndamento": "V teku",
+        "statusValidada": "Potrjeno",
+        "statusARenovar": "Za podaljšanje"
       },
       "cotisationStatus": {
         "enAttente": "V teku",
@@ -4987,6 +5033,7 @@
       "donStandalone": "Samostojna donacija",
       "donPending": "Čaka na unovčitev",
       "showingRecentDons": "Prikazanih {count} najnovejših donacij od skupno {total}.",
+      "showingRecentLicenses": "Prikaz {count} najnovejše licence na {total} Skupaj.",
       "addCotisationTitle": "Dodajte članarino",
       "editCotisationTitle": "Spremeni članarino",
       "deleteConfirmWithDependants": "Ta član bo arhiviran in ne bo več mogel dostopati do združenja. Prav tako bo odstranjen kot zakoniti skrbnik združenja. {count} Član(i): {names}.",
@@ -6209,6 +6256,7 @@
       "membres": "Člani",
       "evenements": "Dogodki",
       "cotisations": "Prispevki",
+      "licencas": "Licence",
       "adhesions": "Članstva",
       "finances": "Finančno spremljanje",
       "devis": "Ponudbe",
@@ -6476,6 +6524,30 @@
     },
     "backoffice": {
       "columns": {}
+    }
+  },
+  "licencas": {
+    "title": "Licence",
+    "description": "Federirane licence za člane, vse stopnje in letni časi skupaj.",
+    "export": "Izvoz",
+    "empty": "Brez licence",
+    "statusASolicitar": "Da vprašam",
+    "statusEmAndamento": "V teku",
+    "statusValidada": "Potrjeno",
+    "statusARenovar": "Za podaljšanje",
+    "columns": {
+      "membre": "Član",
+      "tier": "Modaliteta",
+      "federation": "Federacija",
+      "season": "Sezona",
+      "licenseNumber": "Številka licence",
+      "status": "Status"
+    },
+    "filters": {
+      "searchPlaceholder": "Išči člana...",
+      "allFederations": "Vse zveze",
+      "allSeasons": "Vse sezone",
+      "allStatuses": "Vsi statusi"
     }
   }
 }

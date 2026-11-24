@@ -3607,6 +3607,7 @@
           "eligibleAmountAutoHint": "Automatisk beregnet: betalt beløb − {amount}",
           "noMinimumWarning": "Der er ikke fastsat noget minimumsbeløb for denne gratis sats; en betalende besøgende under det ikke-berettigede beløb vil blive blokeret fra betaling. Sæt et minimumsbeløb på mindst {amount}.",
           "installmentsAllowedField": "Bekræft betaling i rater",
+          "installmentsUnavailableWithLicense": "Ikke tilgængelig mod betaling ved administration af en federationslicens.",
           "installmentsCountField": "Antal gange",
           "membreTypeNone": "Ingen",
           "kindField": "Type",
@@ -3622,7 +3623,27 @@
           "membershipTierRequiredError": "Formularen skal indeholde mindst ét medlemsgebyr",
           "minAmountRequiredError": "Der kræves et minimumsbeløb for hver donation",
           "saved": "Registrerede satser",
-          "saveTiers": "Gem takster"
+          "saveTiers": "Gem takster",
+          "licenseSectionTitle": "Føderationslicens",
+          "licenseEnabledField": "Administrer en federationslicens for denne sats",
+          "licenseNameField": "Licensnavn",
+          "licenseNamePlaceholder": "F.eks. konkurrencelicens",
+          "licenseFederationField": "Føderation",
+          "licenseFederationPlaceholder": "F.eks. FFF",
+          "licenseSeasonField": "Sæson",
+          "licenseSeasonPlaceholder": "Ex. 2026/2027",
+          "licenseMandatoryField": "Obligatorisk licens",
+          "licenseBillingModeField": "Fakturering",
+          "licenseBillingIncluded": "Inkluderet i prisen",
+          "licenseBillingAdditional": "Yderligere beløb",
+          "licenseAdditionalAmountField": "Yderligere beløb (€)",
+          "licenseAllowDeclareExistingField": "Tillad deklaration af en allerede besat licens",
+          "licenseFederationRequiredError": "Føderation er påkrævet for at aktivere federationslicensen",
+          "licenseSeasonRequiredError": "Sæsonen er nødvendig for at aktivere forbundslicensen",
+          "licenseBillingModeRequiredError": "Licensfaktureringsmetoden er påkrævet",
+          "licenseAdditionalAmountRequiredError": "Det ekstra licensbeløb kræves",
+          "licenseRecurringChangeWarning": "Ændring af dette beløb ændrer kun fremtidige abonnementer — eksisterende abonnenter fortsætter med at betale det beløb, der blev fastsat på tidspunktet for abonnementet.",
+          "licenseAdditionalAmountTooLowError": "Det ekstra licensbeløb skal være mindst €1"
         },
         "fields": {
           "title": "Form",
@@ -3739,6 +3760,14 @@
       "mobilePlaceholder": "06 12 34 56 78",
       "donationBadge": "(don)",
       "totalLabel": "Samlet beløb skal betales",
+      "licenseDefaultName": "Føderationslicens",
+      "licenseIncludedNotice": "Føderationslicens inkluderet, uden ekstra omkostninger.",
+      "licenseOptInLabel": "Tilføj federationslicensen (+{amount})",
+      "licenseMandatoryNotice": "Dette medlemskab inkluderer en obligatorisk føderationslicens ({amount}).",
+      "licenseDeclareExistingLabel": "Jeg har allerede licens til denne sæson",
+      "licenseDeclaredNotice": "Eksisterende licens — afventer verifikation fra foreningen.",
+      "licenseNumberLabel": "Kørekort",
+      "licenseNumberPlaceholder": "Lad det stå tomt, hvis du ikke har det endnu",
       "partialReceiptNotice": "Alene {amount} er fradragsberettigede for dette medlemskab.",
       "belowExtraMinimum": "Minimumsbeløbet er {amount}.",
       "belowMinimumAmount": "Minimumsbeløbet for en online betaling er {amount}.",
@@ -4188,6 +4217,8 @@
       "publicPaymentToggleDesc": "Medlemskabsformularen på det offentlige site kræver øjeblikkelig betaling (tages årligt) og aktiverer medlemmet automatisk uden manuel validering.",
       "publicPaymentRequiresAmount": "Udfyld et bidragsbeløb for at aktivere denne mulighed.",
       "connectNotReadyWarning": "Online betaling er ikke aktiv — Stripe Connect er endnu ikke oprettet eller modtager betalinger (fanen Betalinger). I mellemtiden vender den offentlige formular tilbage til den gratis stream og har afventende medlemskabsanmodninger.",
+      "includeFederativeLicenseInAutoRenewalToggle": "Medtag føderationslicensen i den årlige automatiske autograf",
+      "includeFederativeLicenseInAutoRenewalToggleDesc": "Når en takst opkræver et ekstra beløb fra dens federationslicens, opkræves dette beløb igen ved hver automatisk fornyelse (tilbagevendende abonnement). Hvis det er deaktiveret, opkræves det kun én gang, under det første abonnement. Denne indstilling gælder kun for nye abonnementer, der abonneres efter ændring — allerede aktive abonnementer fortsætter som før.",
       "toasts": {
         "updated": "Opdateret standardbeløb"
       }
@@ -4936,10 +4967,25 @@
         "reunions": "Møder",
         "materiel": "Materiale",
         "dons": "Donationer",
+        "licenses": "Licenser",
         "historique": "Historik",
         "emails": "E-mails",
         "sms": "SMS",
         "boutique": "Butik"
+      },
+      "licenses": {
+        "empty": "Ingen licens",
+        "seasonYear": "Medlemsgebyr {year}",
+        "autoRenewed": "Automatisk fornyet",
+        "declaredByMembreNotice": "Licens erklæret af medlemmet — afventning af verifikation",
+        "deleteConfirmTitle": "Fjerne denne licens?",
+        "deleteConfirmDescription": "Licensen {federation} — {season} vil blive permanent udfaset.",
+        "statusField": "Status",
+        "licenseNumberField": "Kørekort",
+        "statusASolicitar": "At spørge",
+        "statusEmAndamento": "Under udvikling",
+        "statusValidada": "Valideret",
+        "statusARenovar": "Skal fornyes"
       },
       "cotisationStatus": {
         "enAttente": "Afventer",
@@ -4987,6 +5033,7 @@
       "donStandalone": "Selvstændig donation",
       "donPending": "Afventer indløsning",
       "showingRecentDons": "Viser de {count} seneste donationer ud af {total} i alt.",
+      "showingRecentLicenses": "Visning af {count} Seneste licenser på {total} i alt.",
       "addCotisationTitle": "Tilføj et medlemsgebyr",
       "editCotisationTitle": "Ændr medlemsgebyret",
       "deleteConfirmWithDependants": "Dette medlem vil blive arkiveret og vil ikke længere kunne få adgang til foreningen. Han vil også blive fjernet som foreningens juridiske værge. {count} Medlem(e): {names}.",
@@ -6209,6 +6256,7 @@
       "membres": "Medlemmer",
       "evenements": "Begivenheder",
       "cotisations": "Bidrag",
+      "licencas": "Licenser",
       "adhesions": "Medlemskaber",
       "finances": "Finansiel overvågning",
       "devis": "Tilbud",
@@ -6476,6 +6524,30 @@
     },
     "backoffice": {
       "columns": {}
+    }
+  },
+  "licencas": {
+    "title": "Licenser",
+    "description": "Fødererede licenser for medlemmer, alle rater og sæsoner samlet.",
+    "export": "Eksport",
+    "empty": "Ingen licens",
+    "statusASolicitar": "At spørge",
+    "statusEmAndamento": "Under udvikling",
+    "statusValidada": "Valideret",
+    "statusARenovar": "Skal fornyes",
+    "columns": {
+      "membre": "Medlem",
+      "tier": "Modalitet",
+      "federation": "Føderation",
+      "season": "Sæson",
+      "licenseNumber": "Kørekort",
+      "status": "Status"
+    },
+    "filters": {
+      "searchPlaceholder": "Søg efter et medlem...",
+      "allFederations": "Alle forbund",
+      "allSeasons": "Alle sæsoner",
+      "allStatuses": "Alle statusser"
     }
   }
 }

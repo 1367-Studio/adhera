@@ -3607,6 +3607,7 @@
           "eligibleAmountAutoHint": "Kalkolu awtomatiku: ammont imħallas − {amount}",
           "noMinimumWarning": "M'hemm l-ebda ammont minimu stabbilit għal din ir-rata b'xejn, viżitatur li jħallas inqas mill-ammont mhux eliġibbli jiġi mblukkat milli jitħallas. Issettja ammont minimu ta' mill-inqas {amount}.",
           "installmentsAllowedField": "Awtorizza l-ħlas f'pagamenti",
+          "installmentsUnavailableWithLicense": "Mhux disponibbli għal prezz ta'' ġestjoni ta'' liċenzja ta'' federazzjoni.",
           "installmentsCountField": "Numru ta' darbiet",
           "membreTypeNone": "Xejn",
           "kindField": "Tip",
@@ -3622,7 +3623,27 @@
           "membershipTierRequiredError": "Il-formola trid ikollha mill-inqas ħlas wieħed ta' sħubija",
           "minAmountRequiredError": "Huwa meħtieġ ammont minimu għal kull donazzjoni",
           "saved": "Rati Irreġistrati",
-          "saveTiers": "Issejvja t-tariffi"
+          "saveTiers": "Issejvja t-tariffi",
+          "licenseSectionTitle": "Liċenzja tal-Federazzjoni",
+          "licenseEnabledField": "Immaniġġja liċenzja ta'' federazzjoni għal din ir-rata",
+          "licenseNameField": "Isem il-liċenzja",
+          "licenseNamePlaceholder": "Eż. Liċenzja tal-kompetizzjoni",
+          "licenseFederationField": "Federazzjoni",
+          "licenseFederationPlaceholder": "Eż. FFF",
+          "licenseSeasonField": "Staġun",
+          "licenseSeasonPlaceholder": "Eż. 2026/2027",
+          "licenseMandatoryField": "Liċenzja obbligatorja",
+          "licenseBillingModeField": "Fatturazzjoni",
+          "licenseBillingIncluded": "Inkluż fil-prezz",
+          "licenseBillingAdditional": "Ammont addizzjonali",
+          "licenseAdditionalAmountField": "Ammont addizzjonali (€)",
+          "licenseAllowDeclareExistingField": "Ħalli d-dikjarazzjoni ta'' liċenzja diġà miżmuma",
+          "licenseFederationRequiredError": "Federazzjoni hija meħtieġa biex tattiva l-liċenzja tal-federazzjoni",
+          "licenseSeasonRequiredError": "L-istaġun huwa meħtieġ biex tiġi attivata l-liċenzja tal-federazzjoni",
+          "licenseBillingModeRequiredError": "Il-metodu ta'' fatturazzjoni tal-liċenzja huwa meħtieġ",
+          "licenseAdditionalAmountRequiredError": "L-ammont addizzjonali tal-liċenzja huwa meħtieġ",
+          "licenseRecurringChangeWarning": "Il-bidla ta'' dan l-ammont tbiddel biss l-abbonamenti futuri — l-abbonati eżistenti jibqgħu jħallsu l-ammont stabbilit fil-ħin tas-sottoskrizzjoni.",
+          "licenseAdditionalAmountTooLowError": "L-ammont addizzjonali tal-liċenzja għandu jkun mill-inqas €1"
         },
         "fields": {
           "title": "Forma",
@@ -3739,6 +3760,14 @@
       "mobilePlaceholder": "06 12 34 56 78",
       "donationBadge": "(Don)",
       "totalLabel": "Total li għandu jitħallas",
+      "licenseDefaultName": "Liċenzja tal-Federazzjoni",
+      "licenseIncludedNotice": "Liċenzja tal-Federazzjoni inkluża, mingħajr ħlas żejjed.",
+      "licenseOptInLabel": "Żid il-liċenzja tal-federazzjoni (+{amount})",
+      "licenseMandatoryNotice": "Din il-membriżmu tinkludi liċenzja obbligatorja tal-federazzjoni ({amount}).",
+      "licenseDeclareExistingLabel": "Diġà għandi liċenzja għal dan l-istaġun",
+      "licenseDeclaredNotice": "Liċenzja eżistenti — pendenti l-verifika mill-assoċjazzjoni.",
+      "licenseNumberLabel": "Numru tal-liċenzja",
+      "licenseNumberPlaceholder": "Ħalli vojta jekk għadek ma għandekx",
       "partialReceiptNotice": "Waħdu {amount} huma deduttivi tat-taxxa għal din il-membrità.",
       "belowExtraMinimum": "L-ammont minimu huwa {amount}.",
       "belowMinimumAmount": "L-ammont minimu għal ħlas online huwa {amount}.",
@@ -4188,6 +4217,8 @@
       "publicPaymentToggleDesc": "Il-formola tal-membri fuq is-sit pubbliku teħtieġ ħlas immedjat (li jittieħed kull sena) u tattiva lill-membru awtomatikament, mingħajr validazzjoni manwali.",
       "publicPaymentRequiresAmount": "Imla ammont ta' kontribuzzjoni biex tattiva din l-għażla.",
       "connectNotReadyWarning": "Il-ħlas online mhuwiex attiv — Stripe Connect għadu mhux imwaqqaf jew ma jaċċettax ħlasijiet (tab Payments). Sadanittant, il-formola pubblika terġa' lura għall-fluss b'xejn u għandha talbiet pendenti għall-membri.",
+      "includeFederativeLicenseInAutoRenewalToggle": "Inkludi l-liċenzja tal-federazzjoni fid-dirett debit awtomatiku annwali",
+      "includeFederativeLicenseInAutoRenewalToggleDesc": "Meta rata tħallas lill-liċenzja tal-federazzjoni tagħha ammont addizzjonali, dan l-ammont jiġi ċċarġjat mill-ġdid f''kull rinnovazzjoni awtomatika (abbonament ripetut). Jekk tkun diżattivata, tiġi ċċarġjata darba biss, matul l-ewwel abbonament. Din is-settings tapplika biss għal abbonamenti ġodda abbonati wara li jinbidlu — abbonamenti diġà attivi jibqgħu kif qabel.",
       "toasts": {
         "updated": "Ammont default aġġornat"
       }
@@ -4936,10 +4967,25 @@
         "reunions": "Laqgħat",
         "materiel": "Materjal",
         "dons": "Donazzjonijiet",
+        "licenses": "Liċenzji",
         "historique": "Storja",
         "emails": "Emails",
         "sms": "SMS",
         "boutique": "Ħanut"
+      },
+      "licenses": {
+        "empty": "L-ebda liċenzja",
+        "seasonYear": "Miżata ta'' membru {year}",
+        "autoRenewed": "Rinnovat awtomatikament",
+        "declaredByMembreNotice": "Liċenzja ddikjarata mill-membru — pendenti ta'' verifika",
+        "deleteConfirmTitle": "Tneħħi din il-liċenzja?",
+        "deleteConfirmDescription": "Il-liċenzja {federation} — {season} se jitwaqqaf b''mod permanenti.",
+        "statusField": "Status",
+        "licenseNumberField": "Numru tal-liċenzja",
+        "statusASolicitar": "Biex tistaqsi",
+        "statusEmAndamento": "Għaddej",
+        "statusValidada": "Ivvalidat",
+        "statusARenovar": "Biex jiġi rinnovat"
       },
       "cotisationStatus": {
         "enAttente": "Pendenti",
@@ -4987,6 +5033,7 @@
       "donStandalone": "Donazzjoni awtonoma",
       "donPending": "Tistenna l-inkaxxament",
       "showingRecentDons": "Qed juri l-{count} l-aktar donazzjonijiet riċenti minn total ta' {total}.",
+      "showingRecentLicenses": "Wiri ta'' {count} l-aktar liċenzji riċenti fuq {total} B''mod totali.",
       "addCotisationTitle": "Żid ħlas ta' sħubija",
       "editCotisationTitle": "Biddel il-miżata tal-membri",
       "deleteConfirmWithDependants": "Dan il-membru se jiġi arkivjat u ma jkunx jista' jibqa' jaċċessa l-assoċjazzjoni. Se jitneħħa wkoll bħala l-gwardjan legali tal-assoċjazzjoni. {count} Membru(i): {names}.",
@@ -6209,6 +6256,7 @@
       "membres": "Membri",
       "evenements": "Avvenimenti",
       "cotisations": "Kontribuzzjonijiet",
+      "licencas": "Liċenzji",
       "adhesions": "Sħubijiet",
       "finances": "Monitoraġġ finanzjarju",
       "devis": "Kwotazzjonijiet",
@@ -6476,6 +6524,30 @@
     },
     "backoffice": {
       "columns": {}
+    }
+  },
+  "licencas": {
+    "title": "Liċenzji",
+    "description": "Liċenzji federati għall-membri, kull rata u staġun flimkien.",
+    "export": "Esportazzjoni",
+    "empty": "L-ebda liċenzja",
+    "statusASolicitar": "Biex tistaqsi",
+    "statusEmAndamento": "Għaddej",
+    "statusValidada": "Ivvalidat",
+    "statusARenovar": "Biex jiġi rinnovat",
+    "columns": {
+      "membre": "Membru",
+      "tier": "Modalità",
+      "federation": "Federazzjoni",
+      "season": "Staġun",
+      "licenseNumber": "Numru tal-liċenzja",
+      "status": "Status"
+    },
+    "filters": {
+      "searchPlaceholder": "Fittex membru...",
+      "allFederations": "Il-federazzjonijiet kollha",
+      "allSeasons": "L-istaġuni kollha",
+      "allStatuses": "L-istatus kollu"
     }
   }
 }

@@ -40,6 +40,7 @@ import { RsvpBadge } from "@/components/portal/rsvp-badge"
 import { ChangeRoleModal } from "@/components/membres/membres-view"
 import { BackLink } from "@/components/ui/back-link"
 import { MembreGruposTab } from "@/components/membres/membre-grupos-tab"
+import { MembreLicensesTab } from "@/components/membres/membre-licenses-tab"
 import { DetailNotFound } from "@/components/ui/detail-not-found"
 import { DetailLoadingSkeleton } from "@/components/ui/detail-loading-skeleton"
 import { useCurrentUser, useHasAccess, useIsAdministrator, useMemberCardEnabled, useModules } from "@/lib/user-context"
@@ -415,6 +416,7 @@ export function MembreDetailView() {
   // rather than rendering an always-empty "Dons" tab to someone without finance access.
   const donsHistory        = membre.donsHistory ?? []
   const donsHistoryTotal   = membre.donsHistoryTotal ?? donsHistory.length
+  const licensesTotal      = membre._count?.licenses ?? membre.licenses.length
   // ADDON purchases and DONATION-item-type extras live in two different tables (see
   // Don.membershipAddonTierId) but are the same thing from this member's point of view —
   // merged into one chronological list rather than two separate sub-sections.
@@ -780,6 +782,7 @@ export function MembreDetailView() {
           {modules.groupes && <TabsTrigger value="groupes">{t("membres.detail.tabs.groupes")}</TabsTrigger>}
           {modules.boutique && <TabsTrigger value="boutique">{t("membres.detail.tabs.boutique")}</TabsTrigger>}
           {membre.donsHistory !== null && <TabsTrigger value="dons">{t("membres.detail.tabs.dons")}</TabsTrigger>}
+          {membre.licenses.length > 0 && <TabsTrigger value="licenses">{t("membres.detail.tabs.licenses")}</TabsTrigger>}
           <TabsTrigger value="historique">{t("membres.detail.tabs.historique")}</TabsTrigger>
           <TabsTrigger value="emails">{t("membres.detail.tabs.emails")}</TabsTrigger>
           {modules.sms && <TabsTrigger value="sms">{t("membres.detail.tabs.sms")}</TabsTrigger>}
@@ -1112,6 +1115,12 @@ export function MembreDetailView() {
               {t("membres.detail.showingRecentDons", { count: TAB_PAGE_SIZE, total: donsHistoryTotal })}
             </p>
           )}
+        </TabsContent>
+        )}
+
+        {membre.licenses.length > 0 && (
+        <TabsContent value="licenses" className="pt-3">
+          <MembreLicensesTab membreId={id} licenses={membre.licenses} licensesTotal={licensesTotal} canEdit={canEditAdhesions} />
         </TabsContent>
         )}
 
