@@ -3892,6 +3892,7 @@
           "eligibleAmountAutoHint": "Calculat automat: suma plătită − {amount}",
           "noMinimumWarning": "Nu există o sumă minimă stabilită pentru această rată gratuită, un vizitator plătitor mai mic decât suma neeligibilă va fi blocat de la plată. Stabilește o sumă minimă de cel puțin {amount}.",
           "installmentsAllowedField": "Autorizați plata în rate",
+          "installmentsUnavailableWithLicense": "Nu este disponibil pentru un preț de gestionare a unei licențe de federație.",
           "installmentsCountField": "Numărul de ori",
           "membreTypeNone": "Niciuna",
           "kindField": "Tip",
@@ -3909,7 +3910,27 @@
           "membershipTierRequiredError": "Formularul trebuie să includă cel puțin o taxă de membru",
           "minAmountRequiredError": "Este necesară o sumă minimă pentru fiecare donație",
           "saved": "Tarife înregistrate",
-          "saveTiers": "Salvează tarifele"
+          "saveTiers": "Salvează tarifele",
+          "licenseSectionTitle": "Licență federală",
+          "licenseEnabledField": "Gestionați o licență de federație pentru această rată",
+          "licenseNameField": "Numele licenței",
+          "licenseNamePlaceholder": "Ex. Licență de concurs",
+          "licenseFederationField": "Federație",
+          "licenseFederationPlaceholder": "Ex. FFF",
+          "licenseSeasonField": "Sezonul",
+          "licenseSeasonPlaceholder": "Ex. 2026/2027",
+          "licenseMandatoryField": "Licență obligatorie",
+          "licenseBillingModeField": "Facturare",
+          "licenseBillingIncluded": "Inclus în preț",
+          "licenseBillingAdditional": "Sumă suplimentară",
+          "licenseAdditionalAmountField": "Sumă suplimentară (€)",
+          "licenseAllowDeclareExistingField": "Permiteți declararea unei licențe deja deținute",
+          "licenseFederationRequiredError": "Federarea este necesară pentru a activa licența de federare",
+          "licenseSeasonRequiredError": "Este necesar sezonul pentru a activa licența federației",
+          "licenseBillingModeRequiredError": "Metoda de facturare a licenței este obligatorie",
+          "licenseAdditionalAmountRequiredError": "Este necesară suma suplimentară a licenței",
+          "licenseRecurringChangeWarning": "Modificarea acestei sume modifică doar abonamentele viitoare — abonații existenți continuă să plătească suma stabilită la momentul abonamentului.",
+          "licenseAdditionalAmountTooLowError": "Suma suplimentară a licenței trebuie să fie de cel puțin 1 €"
         },
         "fields": {
           "title": "Formă",
@@ -4029,6 +4050,14 @@
       "mobilePlaceholder": "06 12 34 56 78",
       "donationBadge": "(Don)",
       "totalLabel": "Totalul de plătit",
+      "licenseDefaultName": "Licență federală",
+      "licenseIncludedNotice": "Licență de federație inclusă, fără costuri suplimentare.",
+      "licenseOptInLabel": "Adaugă licența de federație (+{amount})",
+      "licenseMandatoryNotice": "Această calitate de membru include o licență obligatorie de federație ({amount}).",
+      "licenseDeclareExistingLabel": "Am deja o licență pentru acest sezon",
+      "licenseDeclaredNotice": "Licență existentă — în așteptarea verificării de către asociație.",
+      "licenseNumberLabel": "Număr de licență",
+      "licenseNumberPlaceholder": "Lasă-l gol dacă nu îl ai încă",
       "partialReceiptNotice": "Singur {amount} sunt deductibile fiscal pentru această calitate.",
       "belowExtraMinimum": "Suma minimă este {amount}.",
       "belowMinimumAmount": "Suma minimă pentru o plată online este {amount}.",
@@ -4510,6 +4539,8 @@
       "publicPaymentToggleDesc": "Formularul de membru de pe site-ul public necesită plată imediată (efectuată anual) și activează automat membrul, fără validare manuală.",
       "publicPaymentRequiresAmount": "Completează o sumă de contribuție pentru a activa această opțiune.",
       "connectNotReadyWarning": "Plățile online nu sunt active — Stripe Connect nu este încă configurat sau nu acceptă plăți (fila Plăți). Între timp, formularul public revine la fluxul gratuit și are cereri de abonament în așteptare.",
+      "includeFederativeLicenseInAutoRenewalToggle": "Includeți licența federației în debitul automat anual",
+      "includeFederativeLicenseInAutoRenewalToggleDesc": "Când un tarif taxează licenței de federație o sumă suplimentară, această sumă este facturată din nou la fiecare reînnoire automată (abonament recurent). Dacă este dezactivat, se percepe o singură dată, în timpul primului abonament. Această setare se aplică doar abonamentelor noi abonate după schimbare — abonamentele deja active continuă ca înainte.",
       "toasts": {
         "updated": "Suma implicită actualizată"
       }
@@ -5455,10 +5486,25 @@
         "materiel": "Material",
         "groupes": "Grupuri",
         "dons": "Donații",
+        "licenses": "Licențe",
         "historique": "Istoric",
         "emails": "Emailuri",
         "sms": "SMS",
         "boutique": "Magazin"
+      },
+      "licenses": {
+        "empty": "Fără permis",
+        "seasonYear": "Taxa de membru {year}",
+        "autoRenewed": "Reînnoit automat",
+        "declaredByMembreNotice": "Licență declarată de membru — în așteptarea verificării",
+        "deleteConfirmTitle": "Să eliminăm această licență?",
+        "deleteConfirmDescription": "Licența {federation} — {season} va fi întrerupt definitiv.",
+        "statusField": "Statut",
+        "licenseNumberField": "Număr de licență",
+        "statusASolicitar": "Să întreb",
+        "statusEmAndamento": "În curs de desfășurare",
+        "statusValidada": "Validat",
+        "statusARenovar": "De reînnoit"
       },
       "cotisationStatus": {
         "enAttente": "În așteptare",
@@ -5507,6 +5553,7 @@
       "donStandalone": "Donație independentă",
       "donPending": "În așteptarea încasării",
       "showingRecentDons": "Se afișează cele mai recente {count} donații din totalul de {total}.",
+      "showingRecentLicenses": "Afișarea {count} Cele mai recente licențe pe {total} în total.",
       "addCotisationTitle": "Adaugă o cotizație de membru",
       "editCotisationTitle": "Modifică taxa de membru",
       "deleteConfirmWithDependants": "Acest membru va fi arhivat și nu va mai putea accesa asociația. De asemenea, va fi înlăturat din funcția de tutore legal al asociației. {count} Membru(i): {names}.",
@@ -7041,6 +7088,7 @@
       "membres": "Membri",
       "evenements": "Evenimente",
       "cotisations": "Contribuții",
+      "licencas": "Licențe",
       "adhesions": "Apartenențe",
       "finances": "Monitorizarea financiară",
       "devis": "Oferte",
@@ -7766,6 +7814,30 @@
       "loading": "Se încarcă...",
       "noResults": "Niciun rezultat.",
       "scanAction": "Scaner"
+    }
+  },
+  "licencas": {
+    "title": "Licențe",
+    "description": "Licențe federate pentru membri, toate tarifele și anotimpurile combinate.",
+    "export": "Export",
+    "empty": "Fără permis",
+    "statusASolicitar": "Să întreb",
+    "statusEmAndamento": "În curs de desfășurare",
+    "statusValidada": "Validat",
+    "statusARenovar": "De reînnoit",
+    "columns": {
+      "membre": "Membru",
+      "tier": "Modalitate",
+      "federation": "Federație",
+      "season": "Sezonul",
+      "licenseNumber": "Număr de licență",
+      "status": "Statut"
+    },
+    "filters": {
+      "searchPlaceholder": "Căutați un membru...",
+      "allFederations": "Toate federațiile",
+      "allSeasons": "Toate anotimpurile",
+      "allStatuses": "Toate stările"
     }
   }
 }

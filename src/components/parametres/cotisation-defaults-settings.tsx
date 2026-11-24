@@ -18,18 +18,24 @@ interface CotisationDefaultsSettingsProps {
   canEdit: boolean
   cotisationDefaultAmount: string | number | null
   publicMembershipPaymentEnabled: boolean
+  // FORM-114 — whether a recurring CotisationSubscription's automatic yearly renewal also
+  // bills a tier's ADDITIONAL federative license fee again (as a 2nd Stripe subscription
+  // item), instead of only ever charging it once at the first manual signup. Lives here
+  // rather than its own settings block — it's a single checkbox, not a whole topic.
+  includeFederativeLicenseInAutoRenewal: boolean
 }
 
 // 0 doubles as "not configured" here — same convention as e.g. material-modal.tsx's
 // purchasePrice: CurrencyField has no empty state, so 0 is shown for null, and 0 is sent
 // back as null on save (a 0€ default wouldn't survive online payment anyway).
-export function CotisationDefaultsSettings({ canEdit, cotisationDefaultAmount, publicMembershipPaymentEnabled }: CotisationDefaultsSettingsProps) {
+export function CotisationDefaultsSettings({ canEdit, cotisationDefaultAmount, publicMembershipPaymentEnabled, includeFederativeLicenseInAutoRenewal }: CotisationDefaultsSettingsProps) {
   const t = useTranslations("parametres.cotisationDefaultsSettings")
   const tCommon = useTranslations("common")
   const qc = useQueryClient()
 
   const [amount, setAmount]   = useState(cotisationDefaultAmount != null ? Number(cotisationDefaultAmount) : 0)
   const [publicPayment, setPublicPayment] = useState(publicMembershipPaymentEnabled)
+  const [includeLicenseInRenewal, setIncludeLicenseInRenewal] = useState(includeFederativeLicenseInAutoRenewal)
   const [dirty, setDirty]     = useState(false)
 
   // Keyed off the live toggle (publicPayment), not the saved prop — otherwise the warning
@@ -50,7 +56,8 @@ export function CotisationDefaultsSettings({ canEdit, cotisationDefaultAmount, p
     if (dirty) return
     setAmount(cotisationDefaultAmount != null ? Number(cotisationDefaultAmount) : 0)
     setPublicPayment(publicMembershipPaymentEnabled)
-  }, [cotisationDefaultAmount, publicMembershipPaymentEnabled, dirty])
+    setIncludeLicenseInRenewal(includeFederativeLicenseInAutoRenewal)
+  }, [cotisationDefaultAmount, publicMembershipPaymentEnabled, includeFederativeLicenseInAutoRenewal, dirty])
 
   const mutation = useMutation({
     mutationFn: async () => {
@@ -60,14 +67,16 @@ export function CotisationDefaultsSettings({ canEdit, cotisationDefaultAmount, p
         body:    JSON.stringify({
           cotisationDefaultAmount:        amount > 0 ? amount : null,
           publicMembershipPaymentEnabled: publicPayment,
+          includeFederativeLicenseInAutoRenewal: includeLicenseInRenewal,
         }),
       })
       if (!res.ok) throw new Error(await apiErrorMessage(res, tCommon("error")))
-      return res.json() as Promise<{ cotisationDefaultAmount: string | null; publicMembershipPaymentEnabled: boolean }>
+      return res.json() as Promise<{ cotisationDefaultAmount: string | null; publicMembershipPaymentEnabled: boolean; includeFederativeLicenseInAutoRenewal: boolean }>
     },
     onSuccess: (saved) => {
       setAmount(saved.cotisationDefaultAmount != null ? Number(saved.cotisationDefaultAmount) : 0)
       setPublicPayment(saved.publicMembershipPaymentEnabled)
+      setIncludeLicenseInRenewal(saved.includeFederativeLicenseInAutoRenewal)
       qc.invalidateQueries({ queryKey: ["association"] })
       toast.success(t("toasts.updated"))
       setDirty(false)
@@ -109,6 +118,15 @@ export function CotisationDefaultsSettings({ canEdit, cotisationDefaultAmount, p
           <span>{t("connectNotReadyWarning")}</span>
         </div>
       )}
+
+      <CheckboxField
+        id="include-federative-license-in-auto-renewal"
+        label={t("includeFederativeLicenseInAutoRenewalToggle")}
+        description={t("includeFederativeLicenseInAutoRenewalToggleDesc")}
+        checked={includeLicenseInRenewal}
+        disabled={!canEdit}
+        onChange={e => { setIncludeLicenseInRenewal(e.target.checked); setDirty(true) }}
+      />
 
       {canEdit && (
         <Button size="sm" disabled={!dirty} loading={mutation.isPending} onClick={() => mutation.mutate()}>

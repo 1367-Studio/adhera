@@ -3892,6 +3892,7 @@
           "eligibleAmountAutoHint": "Automaattisesti laskettu: maksettu summa − {amount}",
           "noMinimumWarning": "Tälle ilmaiselle summalle ei ole asetettu minimisummaa, ja maksava vierailija, joka on alle kelvottoman summan, estetään maksamasta. Aseta vähimmäissumma vähintään {amount}.",
           "installmentsAllowedField": "Valtuuta maksu erissä",
+          "installmentsUnavailableWithLicense": "Ei saatavilla hintaan liittolisenssin hallinnasta.",
           "installmentsCountField": "Kertojen määrä",
           "membreTypeNone": "Ei mitään",
           "kindField": "Tyyppi",
@@ -3909,7 +3910,27 @@
           "membershipTierRequiredError": "Lomakkeessa on oltava vähintään yksi jäsenmaksu",
           "minAmountRequiredError": "Jokaiselle lahjoitukselle vaaditaan vähimmäissumma",
           "saved": "Rekisteröidyt hinnat",
-          "saveTiers": "Tallenna hinnat"
+          "saveTiers": "Tallenna hinnat",
+          "licenseSectionTitle": "Liittovaltion lisenssi",
+          "licenseEnabledField": "Hallinnoi liittovaltion lisenssiä tälle hinnalle",
+          "licenseNameField": "Lisenssin nimi",
+          "licenseNamePlaceholder": "Eks. Kilpailulupa",
+          "licenseFederationField": "Liitto",
+          "licenseFederationPlaceholder": "Esim. FFF",
+          "licenseSeasonField": "Kausi",
+          "licenseSeasonPlaceholder": "Ex. 2026/2027",
+          "licenseMandatoryField": "Pakollinen lisenssi",
+          "licenseBillingModeField": "Laskutus",
+          "licenseBillingIncluded": "Sisältyy hintaan",
+          "licenseBillingAdditional": "Lisäsumma",
+          "licenseAdditionalAmountField": "Lisäsumma (€)",
+          "licenseAllowDeclareExistingField": "Salli jo hallussa olevan lisenssin ilmoittaminen",
+          "licenseFederationRequiredError": "Federaatio vaaditaan liittolisenssin aktivoimiseen",
+          "licenseSeasonRequiredError": "Kausi vaaditaan liittolisenssin aktivoimiseen",
+          "licenseBillingModeRequiredError": "Lisenssilaskutustapa on pakollinen",
+          "licenseAdditionalAmountRequiredError": "Lisälisenssimäärä vaaditaan",
+          "licenseRecurringChangeWarning": "Tämän summan muuttaminen muuttaa vain tulevia tilauksia — nykyiset tilaajat jatkavat tilauksen yhteydessä asetettua summaa.",
+          "licenseAdditionalAmountTooLowError": "Lisälisenssin on oltava vähintään 1 €"
         },
         "fields": {
           "title": "Muoto",
@@ -4029,6 +4050,14 @@
       "mobilePlaceholder": "06 12 34 56 78",
       "donationBadge": "(don)",
       "totalLabel": "Yhteensä maksettava summa",
+      "licenseDefaultName": "Liittovaltion lisenssi",
+      "licenseIncludedNotice": "Liittovaltion lisenssi sisältyy hintaan, ilman lisäkustannuksia.",
+      "licenseOptInLabel": "Lisää federaatiolisenssi (+{amount})",
+      "licenseMandatoryNotice": "Tämä jäsenyys sisältää pakollisen liittovaltion lisenssin ({amount}).",
+      "licenseDeclareExistingLabel": "Minulla on jo lisenssi tälle kaudelle",
+      "licenseDeclaredNotice": "Voimassa oleva lisenssi — odottaa yhdistyksen vahvistusta.",
+      "licenseNumberLabel": "Lisenssinumero",
+      "licenseNumberPlaceholder": "Jätä tyhjäksi, jos sinulla ei vielä ole sitä",
       "partialReceiptNotice": "Yksin {amount} ovat verovähennyskelpoisia tästä jäsenyydestä.",
       "belowExtraMinimum": "Vähimmäismäärä on {amount}.",
       "belowMinimumAmount": "Verkkomaksun minimisumma on {amount}.",
@@ -4510,6 +4539,8 @@
       "publicPaymentToggleDesc": "Julkisella sivustolla oleva jäsenyyslomake vaatii välittömän maksun (joka otetaan vuosittain) ja aktivoi jäsenen automaattisesti ilman manuaalista vahvistusta.",
       "publicPaymentRequiresAmount": "Täytä maksusumma aktivoidaksesi tämän vaihtoehdon.",
       "connectNotReadyWarning": "Verkkomaksu ei ole aktiivinen — Stripe Connect ei ole vielä asetettu eikä hyväksy maksuja (Maksut-välilehti). Sillä välin julkinen lomake palaa ilmaiseen striimiin ja siinä on odottavia jäsenyyspyyntöjä.",
+      "includeFederativeLicenseInAutoRenewalToggle": "Sisällytä liittolisenssi vuosittaiseen automaattiseen suoraveloitukseen",
+      "includeFederativeLicenseInAutoRenewalToggleDesc": "Kun hinta veloittaa federaatiolisenssiltä lisäsumman, tämä summa veloitetaan uudelleen jokaisessa automaattisessa uusimisessa (toistuva tilaus). Jos se on poistettu käytöstä, veloitetaan vain kerran, ensimmäisen tilauksen aikana. Tämä asetus koskee vain uusia tilauksia, jotka on tilattu muutoksen jälkeen — jo aktiiviset tilaukset jatkuvat entisellään.",
       "toasts": {
         "updated": "Päivitetty oletussumma"
       }
@@ -5455,10 +5486,25 @@
         "materiel": "Materiaali",
         "groupes": "Ryhmät",
         "dons": "Lahjoitukset",
+        "licenses": "Luvat",
         "historique": "Historia",
         "emails": "Sähköpostit",
         "sms": "SMS",
         "boutique": "Kauppa"
+      },
+      "licenses": {
+        "empty": "Ei ajokorttia",
+        "seasonYear": "Jäsenmaksu {year}",
+        "autoRenewed": "Automaattisesti uusittu",
+        "declaredByMembreNotice": "Jäsenen ilmoittama lisenssi — odottaa vahvistusta",
+        "deleteConfirmTitle": "Poistatko tämän lisenssin?",
+        "deleteConfirmDescription": "Lisenssi {federation} — {season} lopetetaan pysyvästi.",
+        "statusField": "Tila",
+        "licenseNumberField": "Lisenssinumero",
+        "statusASolicitar": "Kysyä",
+        "statusEmAndamento": "Käynnissä",
+        "statusValidada": "Validoitu",
+        "statusARenovar": "Uusittava"
       },
       "cotisationStatus": {
         "enAttente": "Vireillä",
@@ -5507,6 +5553,7 @@
       "donStandalone": "Itsenäinen lahjoitus",
       "donPending": "Odottaa veloitusta",
       "showingRecentDons": "Näytetään {count} viimeisintä lahjoitusta yhteensä {total}:sta.",
+      "showingRecentLicenses": "Näyttö {count} Viimeisimmät lisenssit {total} Yhteensä.",
       "addCotisationTitle": "Lisää jäsenmaksu",
       "editCotisationTitle": "Muuta jäsenmaksua",
       "deleteConfirmWithDependants": "Tämä jäsen arkistoidaan eikä hän enää pääse käsiksi yhdistykseen. Hänet myös poistetaan yhdistyksen laillisen huoltajan asemasta. {count} Jäsen(t): {names}.",
@@ -7041,6 +7088,7 @@
       "membres": "Jäsenet",
       "evenements": "Tapahtumat",
       "cotisations": "Panokset",
+      "licencas": "Luvat",
       "adhesions": "Jäsenyydet",
       "finances": "Taloudellinen seuranta",
       "devis": "Tarjoukset",
@@ -7766,6 +7814,30 @@
       "loading": "Ladataan...",
       "noResults": "Ei tuloksia.",
       "scanAction": "Skanneri"
+    }
+  },
+  "licencas": {
+    "title": "Luvat",
+    "description": "Federated-lisenssit jäsenille, kaikki hinnat ja vuodenajat yhdistettynä.",
+    "export": "Vienti",
+    "empty": "Ei ajokorttia",
+    "statusASolicitar": "Kysyä",
+    "statusEmAndamento": "Käynnissä",
+    "statusValidada": "Validoitu",
+    "statusARenovar": "Uusittava",
+    "columns": {
+      "membre": "Jäsen",
+      "tier": "Toimintatapa",
+      "federation": "Liitto",
+      "season": "Kausi",
+      "licenseNumber": "Lisenssinumero",
+      "status": "Tila"
+    },
+    "filters": {
+      "searchPlaceholder": "Etsi jäsentä...",
+      "allFederations": "Kaikki liitot",
+      "allSeasons": "Kaikki vuodenajat",
+      "allStatuses": "Kaikki tilat"
     }
   }
 }

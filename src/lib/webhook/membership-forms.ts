@@ -21,6 +21,7 @@ import { notifyMembershipSignup } from "@/lib/webhook/membership-notify"
 import { isMemberCardAvailable } from "@/lib/member-card/availability"
 import { addressColumns } from "@/lib/address"
 import { reportError } from "@/lib/monitoring"
+import { notifyNewMembershipLicense } from "@/lib/webhook/membership-license-notify"
 
 // ─── checkout.session.completed (mode: "payment", kind: "membership-oneoff") ───────
 //
@@ -42,6 +43,14 @@ export async function handleMembershipOneOffCheckout(session: Stripe.Checkout.Se
   // total for older sessions created before this field existed.
   const membershipAmount = meta.membershipAmount ? Number(meta.membershipAmount) : totalAmount
   const isFreeTier       = meta.tierFree === "1"
+  // FORM-114 — the license amount (if any) rejoint directement Cotisation.amount, même
+  // raisonnement que checkout/route.ts's offline branch — pas de modèle de revenu dédié
+  // pour une licence, elle se paie avec l'adhésion en une seule fois. A free MEMBERSHIP tier
+  // with a chargeable mandatory/optional license is NOT a free submission overall — money
+  // still changed hands for the license — so `chargeable` (not `isFreeTier` alone) is what
+  // actually decides EXONERE vs EN_ATTENTE/recordCotisationPayment below.
+  const licenseAmount = meta.licenseAmount ? Number(meta.licenseAmount) : 0
+  const chargeable    = !isFreeTier || licenseAmount > 0
 
   // Redelivery of the same event — dedupe on the activity log we write at the very end,
   // same convention used for invoice.payment_failed's idempotency check elsewhere in this
@@ -80,7 +89,7 @@ export async function handleMembershipOneOffCheckout(session: Stripe.Checkout.Se
   const paidAt = new Date()
   // Best-effort exercice link — never blocks, same reasoning as every other Income-creating
   // webhook path (see e.g. the Stripe boutique/cotisation-renewal branches in webhook/stripe/route.ts).
-  const exercice = isFreeTier ? null : await resolveExerciceForDate(meta.associationId, paidAt)
+  const exercice = chargeable ? await resolveExerciceForDate(meta.associationId, paidAt) : null
 
   let created
   try {
@@ -133,10 +142,10 @@ export async function handleMembershipOneOffCheckout(session: Stripe.Checkout.Se
           membreId:      membre.id,
           associationId: meta.associationId,
           year:          currentCotisationYear(),
-          amount:        membershipAmount,
+          amount:        membershipAmount + licenseAmount,
           amountPaid:    0,
-          status:        isFreeTier ? "EXONERE" : "EN_ATTENTE",
-          paidAt:        isFreeTier ? paidAt : null,
+          status:        chargeable ? "EN_ATTENTE" : "EXONERE",
+          paidAt:        chargeable ? null : paidAt,
           membershipFormId: meta.membershipFormId || null,
           tierId:           meta.tierId || null,
           periodStart:      meta.periodStart ? new Date(meta.periodStart) : null,
@@ -146,16 +155,28 @@ export async function handleMembershipOneOffCheckout(session: Stripe.Checkout.Se
         },
       })
 
+      if (meta.licenseApplies === "1" && meta.licenseFederation && meta.licenseSeason) {
+        await tx.membershipLicense.create({
+          data: {
+            cotisationId: cotisation.id, membreId: membre.id, associationId: meta.associationId,
+            federation: meta.licenseFederation, season: meta.licenseSeason,
+            licenseNumber: meta.licenseNumber || null,
+            status: meta.licenseDeclaredByMembre === "1" ? "EM_ANDAMENTO" : "A_SOLICITAR",
+            declaredByMembre: meta.licenseDeclaredByMembre === "1",
+          },
+        })
+      }
+
       // Not free: the adhésion was actually paid via this Stripe session, so record a real
       // CotisationPayment — this is what posts the matching Income row the Compte de Résultat
       // report reads from. Without this, the Cotisation would land on PAYE (set directly above,
       // pre-fix) with no CotisationPayment/Income behind it, and the payment would silently
       // never show up as revenue.
-      if (!isFreeTier) {
+      if (chargeable) {
         cotisation = await recordCotisationPayment(tx, {
           associationId: meta.associationId,
           cotisationId:  cotisation.id,
-          amount:        membershipAmount,
+          amount:        membershipAmount + licenseAmount,
           method:        "En ligne",
           paidAt,
           source:        "STRIPE",
@@ -299,8 +320,18 @@ export async function handleMembershipOneOffCheckout(session: Stripe.Checkout.Se
       deductibleAmount:    meta.deductibleAmount ? Number(meta.deductibleAmount) : undefined,
       products:            purchasedProducts.length ? purchasedProducts : undefined,
       addons:              parseAddons(meta.addons).map(a => ({ label: a.label, amount: a.amount })),
+      license:             meta.licenseApplies === "1" && meta.licenseFederation && meta.licenseSeason
+        ? { federation: meta.licenseFederation, season: meta.licenseSeason, declaredByMembre: meta.licenseDeclaredByMembre === "1" }
+        : undefined,
     }), { associationId: meta.associationId, membreId: created.membre.id, source: "TRANSACTION", sourceId: created.cotisation.id })
       .catch(error => reportError(error, { area: "email", action: "webhook.membership-oneoff-confirmation-email", extra: { associationId: meta.associationId, membreId: created.membre.id, cotisationId: created.cotisation.id } }))
+
+    if (meta.licenseApplies === "1" && meta.licenseFederation && meta.licenseSeason) {
+      notifyNewMembershipLicense({
+        associationId: meta.associationId, membreId: created.membre.id, memberName: `${created.membre.firstName} ${created.membre.lastName}`,
+        federation: meta.licenseFederation, season: meta.licenseSeason, declaredByMembre: meta.licenseDeclaredByMembre === "1",
+      }).catch(error => reportError(error, { area: "webhook", action: "webhook.membership-oneoff-notify-new-license", extra: { associationId: meta.associationId, membreId: created.membre.id } }))
+    }
 
     fireEventRule({
       triggerType: "MEMBER_CREATED",

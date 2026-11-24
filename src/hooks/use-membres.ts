@@ -194,6 +194,19 @@ export type MembreDetail = {
   }[] | null
   donsHistoryTotal: number | null
 
+  // FORM-114 — federative license tracking, one per season. The "Licenças" tab only renders
+  // when this is non-empty — see membre-detail-view.tsx.
+  licenses: {
+    id: string
+    federation: string
+    season: string
+    licenseNumber: string | null
+    status: "A_SOLICITAR" | "EM_ANDAMENTO" | "VALIDADA" | "A_RENOVAR"
+    declaredByMembre: boolean
+    autoRenewed: boolean
+    cotisation: { year: number }
+  }[]
+
   user: {
     role: "ADMIN" | "PRESIDENT" | "TRESORIER" | "SECRETAIRE" | "EQUIPE" | "MEMBRE"
   } | null
@@ -218,6 +231,7 @@ export type MembreDetail = {
     materialLoans:  number
     meetingsAsParticipant: number
     boutiqueCommandes: number
+    licenses: number
   }
 }
 

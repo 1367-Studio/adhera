@@ -42,6 +42,19 @@ const tierSchema = z.object({
   installmentsCount:   z.number().int().min(2).max(12).nullable().optional(),
   label:        z.string().trim().min(1).max(100),
   membreTypeId: z.string().nullable().optional(),
+  // FORM-114 — federative license tracking/billing for this tier, MEMBERSHIP only (see
+  // resolveLicenseApplication, used both here at save time for validation and later at
+  // checkout time to decide what a given signup actually owes/records).
+  licenseEnabled:              z.boolean().optional().default(false),
+  licenseName:                 z.string().trim().max(100).nullable().optional(),
+  licenseFederation:           z.string().trim().max(100).nullable().optional(),
+  licenseSeason:               z.string().trim().max(30).nullable().optional(),
+  licenseMandatory:            z.boolean().optional().default(false),
+  licenseBillingMode:          z.enum(["INCLUDED", "ADDITIONAL"]).nullable().optional(),
+  // min(1): Stripe rejects a line item below ~0.50€, and a sub-1€ fee billed alongside a real
+  // tier price serves no one — same floor reasoning as checkout/route.ts's MIN_ITEM_AMOUNT.
+  licenseAdditionalAmount:     z.number().min(1, "Le montant additionnel de la licence doit être d'au moins 1 €").max(100000).nullable().optional(),
+  licenseAllowDeclareExisting: z.boolean().optional().default(false),
 }).refine(d => !(d.free && d.freeAmount), {
   message: "Un tarif ne peut pas être à la fois gratuit et à montant libre", path: ["free"],
 }).refine(d => d.free || d.freeAmount || d.amount != null, {
@@ -93,6 +106,16 @@ const tierSchema = z.object({
   // rather than sitting right on it. checkout/route.ts's Math.ceil rounding means the actual
   // per-cycle charge is always >= this, never below.
   message: "Chaque mensualité doit être d'au moins 1€ — augmentez le montant ou réduisez le nombre de fois", path: ["installmentsCount"],
+}).refine(d => !d.licenseEnabled || d.itemType === "MEMBERSHIP", {
+  message: "La licence fédérative n'est disponible que pour un tarif d'adhésion", path: ["licenseEnabled"],
+}).refine(d => !d.licenseEnabled || !!d.licenseFederation, {
+  message: "La fédération est requise pour activer la licence fédérative", path: ["licenseFederation"],
+}).refine(d => !d.licenseEnabled || !!d.licenseSeason, {
+  message: "La saison est requise pour activer la licence fédérative", path: ["licenseSeason"],
+}).refine(d => !d.licenseEnabled || !!d.licenseBillingMode, {
+  message: "Le mode de facturation de la licence est requis", path: ["licenseBillingMode"],
+}).refine(d => !d.licenseEnabled || d.licenseBillingMode !== "ADDITIONAL" || d.licenseAdditionalAmount != null, {
+  message: "Le montant additionnel de la licence est requis", path: ["licenseAdditionalAmount"],
 })
 
 const tiersSchema = z.array(tierSchema).max(20)
@@ -236,10 +259,25 @@ export const PUT = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
         fixedPeriodEnd: isMembership && t.fixedPeriodEnd ? new Date(t.fixedPeriodEnd) : null,
         receiptMode:      receiptEligible && !t.free ? t.receiptMode : "NONE" as const,
         ineligibleAmount: isMembership && !t.free && t.receiptMode === "PARTIAL" ? t.ineligibleAmount : null,
-        installmentsAllowed: isMembership && t.kind === "ONE_OFF" && !t.free && !t.freeAmount ? !!t.installmentsAllowed : false,
-        installmentsCount:   isMembership && t.kind === "ONE_OFF" && !t.free && !t.freeAmount && t.installmentsAllowed ? t.installmentsCount : null,
+        // FORM-114 — !t.licenseEnabled: installments has no equivalent of a MembershipLicense-
+        // creating webhook (see membership-installments.ts), so a licensed tier never offers
+        // it on the public form regardless of this flag (checkout/route.ts rejects it too) —
+        // normalized to false here rather than left stale in a state that's never actually used.
+        installmentsAllowed: isMembership && t.kind === "ONE_OFF" && !t.free && !t.freeAmount && !t.licenseEnabled ? !!t.installmentsAllowed : false,
+        installmentsCount:   isMembership && t.kind === "ONE_OFF" && !t.free && !t.freeAmount && !t.licenseEnabled && t.installmentsAllowed ? t.installmentsCount : null,
         label:        t.label,
         membreTypeId: isMembership ? (t.membreTypeId || null) : null,
+        // FORM-114 — only meaningful for a MEMBERSHIP tier; zeroed out otherwise regardless of
+        // what a stale/tampered payload sends, same reasoning as every other itemType-gated
+        // field above.
+        licenseEnabled:              isMembership ? !!t.licenseEnabled : false,
+        licenseName:                 isMembership && t.licenseEnabled ? (t.licenseName || null) : null,
+        licenseFederation:           isMembership && t.licenseEnabled ? (t.licenseFederation || null) : null,
+        licenseSeason:               isMembership && t.licenseEnabled ? (t.licenseSeason || null) : null,
+        licenseMandatory:            isMembership && t.licenseEnabled ? !!t.licenseMandatory : false,
+        licenseBillingMode:          isMembership && t.licenseEnabled ? t.licenseBillingMode : null,
+        licenseAdditionalAmount:     isMembership && t.licenseEnabled && t.licenseBillingMode === "ADDITIONAL" ? t.licenseAdditionalAmount : null,
+        licenseAllowDeclareExisting: isMembership && t.licenseEnabled ? !!t.licenseAllowDeclareExisting : false,
       }
       if (t.id && existingIds.has(t.id)) {
         await tx.membershipTier.update({ where: { id: t.id }, data })

@@ -3892,6 +3892,7 @@
           "eligibleAmountAutoHint": "Automatikusan kiszámítva: kifizetett összeg − {amount}",
           "noMinimumWarning": "Nincs minimális összeg erre az ingyenes díjra, az a fizetett látogató, aki kevesebbet fizet a jogosult összegnél, blokkolja a fizetéstől. Állíts be legalább egy minimális összeget, {amount}.",
           "installmentsAllowedField": "Engedélyezze a fizetést részletfizetésben",
+          "installmentsUnavailableWithLicense": "Nem elérhető egy federációs licenc kezelése esetén díj ellenében.",
           "installmentsCountField": "Hányszor",
           "membreTypeNone": "Nincs",
           "kindField": "Típus",
@@ -3909,7 +3910,27 @@
           "membershipTierRequiredError": "Az űrlapnak legalább egy tagsági díjat kell tartalmaznia",
           "minAmountRequiredError": "Minden adományhoz minimális összeg szükséges",
           "saved": "Regisztrált díjak",
-          "saveTiers": "Díjak mentése"
+          "saveTiers": "Díjak mentése",
+          "licenseSectionTitle": "Szövetségi engedély",
+          "licenseEnabledField": "Federációs licenc kezelése ehhez az árfolyamhoz",
+          "licenseNameField": "Licencnév",
+          "licenseNamePlaceholder": "Kivétel: Versenyengedély",
+          "licenseFederationField": "Szövetség",
+          "licenseFederationPlaceholder": "Pl. FFF",
+          "licenseSeasonField": "Szezon",
+          "licenseSeasonPlaceholder": "Ex. 2026/2027",
+          "licenseMandatoryField": "Kötelező licenc",
+          "licenseBillingModeField": "Számlázás",
+          "licenseBillingIncluded": "Benne van az árban",
+          "licenseBillingAdditional": "További összeg",
+          "licenseAdditionalAmountField": "További összeg (€)",
+          "licenseAllowDeclareExistingField": "Engedélyezze egy már birtokolt licenc bejelentését",
+          "licenseFederationRequiredError": "A federációs licenc aktiválásához federáció szükséges",
+          "licenseSeasonRequiredError": "A szezon szükséges a szövetségi licenc aktiválásához",
+          "licenseBillingModeRequiredError": "A licencszámlázási módszer kötelező",
+          "licenseAdditionalAmountRequiredError": "A további licencösszeg szükséges",
+          "licenseRecurringChangeWarning": "Ennek az összegnek a módosítása csak a jövőbeli előfizetéseket változtatja meg — a meglévő előfizetők továbbra is a regisztrációkor beállított összeget fizetik.",
+          "licenseAdditionalAmountTooLowError": "A további licencösszegnek legalább 1 €-nak kell lennie"
         },
         "fields": {
           "title": "Forma",
@@ -4029,6 +4050,14 @@
       "mobilePlaceholder": "06 12 34 56 78",
       "donationBadge": "(don)",
       "totalLabel": "Összeg fizetendő összeg",
+      "licenseDefaultName": "Szövetségi engedély",
+      "licenseIncludedNotice": "Szövetségi engedély benne van, további díj nélkül.",
+      "licenseOptInLabel": "Add hozzá a federációs licencet (+{amount})",
+      "licenseMandatoryNotice": "Ez a tagság kötelező szövetségi engedélyt tartalmaz ({amount}).",
+      "licenseDeclareExistingLabel": "Már van engedélyem erre az évadra",
+      "licenseDeclaredNotice": "Meglévő licenc — az egyesület általi ellenőrzés függvényében.",
+      "licenseNumberLabel": "Engedélyszám",
+      "licenseNumberPlaceholder": "Hagyd üresen, ha még nincs meg",
       "partialReceiptNotice": "Egyedül {amount} adólevonhatók ezen tagságnak.",
       "belowExtraMinimum": "A minimális összeg a következő {amount}.",
       "belowMinimumAmount": "Az online fizetés minimális összege a következő {amount}.",
@@ -4510,6 +4539,8 @@
       "publicPaymentToggleDesc": "A nyilvános oldalon található tagsági űrlap azonnali fizetést igényel (évente fizetik), és automatikusan aktiválja a tagot, manuális ellenőrzés nélkül.",
       "publicPaymentRequiresAmount": "Tölts ki egy hozzájárulási összeget, hogy aktiváld ezt az opciót.",
       "connectNotReadyWarning": "Az online fizetés nem aktív — a Stripe Connect még nincs beállítva, és nem fogad el fizetéseket (Fizetés fül). Addig is a nyilvános űrlap visszatér az ingyenes streambe, és függőben lévő tagsági kérelmeket tartalmaz.",
+      "includeFederativeLicenseInAutoRenewalToggle": "A szövetségi licenc beépítése az éves automatikus közvetlen terhelésbe",
+      "includeFederativeLicenseInAutoRenewalToggleDesc": "Ha egy díj további összeget számít fel a szövetségi licencéről, ezt az összeget minden automatikus megújításnál (ismétlődő előfizetés) ismét felszámítják. Ha ki van kapcsolva, csak egyszer terheljük, az első előfizetés során. Ez a beállítás csak az újonnan előfizetett előfizetésekre vonatkozik a módosítás után — a már aktív előfizetések továbbra is a korábbi állapotban maradnak.",
       "toasts": {
         "updated": "Frissített alapértelmezett összeg"
       }
@@ -5455,10 +5486,25 @@
         "materiel": "Anyagok",
         "groupes": "Csoportok",
         "dons": "Adományok",
+        "licenses": "Engedélyek",
         "historique": "Előzmények",
         "emails": "E-mailek",
         "sms": "SMS",
         "boutique": "Bolt"
+      },
+      "licenses": {
+        "empty": "Nincs engedély",
+        "seasonYear": "Tagsági díj {year}",
+        "autoRenewed": "Automatikusan megújulva",
+        "declaredByMembreNotice": "A tag által bejelentett licenc — ellenőrzés függvényében",
+        "deleteConfirmTitle": "Eltávolítani ezt a licencet?",
+        "deleteConfirmDescription": "A licenc {federation} — {season} véglegesen megszüntetik.",
+        "statusField": "Állapot",
+        "licenseNumberField": "Engedélyszám",
+        "statusASolicitar": "Hogy megkérdezzem",
+        "statusEmAndamento": "Folyamatban",
+        "statusValidada": "Validált",
+        "statusARenovar": "Megújítandó"
       },
       "cotisationStatus": {
         "enAttente": "Függőben",
@@ -5507,6 +5553,7 @@
       "donStandalone": "Önálló adomány",
       "donPending": "Beváltásra vár",
       "showingRecentDons": "A {count} legutóbbi adomány megjelenítve, összesen {total}.",
+      "showingRecentLicenses": "Kiállítás {count} legfrissebb licencek a {total} összesen.",
       "addCotisationTitle": "Tagságdíj hozzáadása",
       "editCotisationTitle": "A tagsági díj módosítása",
       "deleteConfirmWithDependants": "Ez a tag archiválva kerül, és többé nem férhet hozzá az egyesülethez. Emellett eltávolítják a szövetség törvényes gyámjai közül. {count} Tag(ok): {names}.",
@@ -7041,6 +7088,7 @@
       "membres": "Tagok",
       "evenements": "Események",
       "cotisations": "Hozzájárulások",
+      "licencas": "Engedélyek",
       "adhesions": "Tagságok",
       "finances": "Pénzügyi felügyelet",
       "devis": "Árajánlatok",
@@ -7766,6 +7814,30 @@
       "loading": "Betöltés...",
       "noResults": "Nincs eredmény.",
       "scanAction": "Szkenner"
+    }
+  },
+  "licencas": {
+    "title": "Engedélyek",
+    "description": "Szövetségi engedélyek a tagok számára, minden díjszabás és szezon együttvéve.",
+    "export": "Export",
+    "empty": "Nincs engedély",
+    "statusASolicitar": "Hogy megkérdezzem",
+    "statusEmAndamento": "Folyamatban",
+    "statusValidada": "Validált",
+    "statusARenovar": "Megújítandó",
+    "columns": {
+      "membre": "Tag",
+      "tier": "Modalitás",
+      "federation": "Szövetség",
+      "season": "Szezon",
+      "licenseNumber": "Engedélyszám",
+      "status": "Állapot"
+    },
+    "filters": {
+      "searchPlaceholder": "Keress tagot...",
+      "allFederations": "Minden szövetség",
+      "allSeasons": "Minden évszak",
+      "allStatuses": "Minden státusz"
     }
   }
 }

@@ -3892,6 +3892,7 @@
           "eligibleAmountAutoHint": "Automatiskt beräknat: betalt belopp − {amount}",
           "noMinimumWarning": "Det finns inget minimibelopp för denna gratisavgift, en betalande besökare som är mindre än det obehöriga beloppet blockeras från betalning. Sätt ett minimibelopp på minst {amount}.",
           "installmentsAllowedField": "Godkänn betalning i avbetalningar",
+          "installmentsUnavailableWithLicense": "Inte tillgängligt mot ett pris för att hantera en federationslicens.",
           "installmentsCountField": "Antal gånger",
           "membreTypeNone": "Inga",
           "kindField": "Typ",
@@ -3909,7 +3910,27 @@
           "membershipTierRequiredError": "Formuläret måste innehålla minst en medlemsavgift",
           "minAmountRequiredError": "Ett minimibelopp krävs för varje donation",
           "saved": "Registrerade priser",
-          "saveTiers": "Spara taxor"
+          "saveTiers": "Spara taxor",
+          "licenseSectionTitle": "Federationslicens",
+          "licenseEnabledField": "Hantera en federationslicens för denna hastighet",
+          "licenseNameField": "Licensnamn",
+          "licenseNamePlaceholder": "Exempelvis tävlingslicens",
+          "licenseFederationField": "Federation",
+          "licenseFederationPlaceholder": "Exempelvis FFF",
+          "licenseSeasonField": "Säsong",
+          "licenseSeasonPlaceholder": "Ex. 2026/2027",
+          "licenseMandatoryField": "Obligatorisk licens",
+          "licenseBillingModeField": "Fakturering",
+          "licenseBillingIncluded": "Inkluderat i priset",
+          "licenseBillingAdditional": "Ytterligare belopp",
+          "licenseAdditionalAmountField": "Ytterligare belopp (€)",
+          "licenseAllowDeclareExistingField": "Tillåt deklaration av en redan innehavd licens",
+          "licenseFederationRequiredError": "Federation krävs för att aktivera federationslicensen",
+          "licenseSeasonRequiredError": "Säsongen krävs för att aktivera federationslicensen",
+          "licenseBillingModeRequiredError": "Licensfaktureringsmetoden krävs",
+          "licenseAdditionalAmountRequiredError": "Det ytterligare licensbeloppet krävs",
+          "licenseRecurringChangeWarning": "Att ändra detta belopp ändrar bara framtida prenumerationer — befintliga prenumeranter fortsätter att betala det belopp som sattes vid prenumerationstillfället.",
+          "licenseAdditionalAmountTooLowError": "Det extra licensbeloppet måste vara minst 1 €"
         },
         "fields": {
           "title": "Form",
@@ -4029,6 +4050,14 @@
       "mobilePlaceholder": "06 12 34 56 78",
       "donationBadge": "(don)",
       "totalLabel": "Totalt ska betalas",
+      "licenseDefaultName": "Federationslicens",
+      "licenseIncludedNotice": "Federationslicens ingår, utan extra kostnad.",
+      "licenseOptInLabel": "Lägg till federationslicensen (+{amount})",
+      "licenseMandatoryNotice": "Detta medlemskap inkluderar en obligatorisk federationslicens ({amount}).",
+      "licenseDeclareExistingLabel": "Jag har redan licens för den här säsongen",
+      "licenseDeclaredNotice": "Befintlig licens — i väntan på verifiering av föreningen.",
+      "licenseNumberLabel": "Registreringsnummer",
+      "licenseNumberPlaceholder": "Lämna det tomt om du inte har det än",
       "partialReceiptNotice": "Alone {amount} är avdragsgilla för detta medlemskap.",
       "belowExtraMinimum": "Minimibeloppet är {amount}.",
       "belowMinimumAmount": "Minimibeloppet för en onlinebetalning är {amount}.",
@@ -4510,6 +4539,8 @@
       "publicPaymentToggleDesc": "Medlemsformuläret på den offentliga sidan kräver omedelbar betalning (tas årligen) och aktiverar medlemmen automatiskt utan manuell validering.",
       "publicPaymentRequiresAmount": "Fyll i ett bidragsbelopp för att aktivera detta alternativ.",
       "connectNotReadyWarning": "Onlinebetalning är inte aktiv — Stripe Connect har inte installerats eller accepterar betalningar än (fliken Betalningar). Under tiden återvänder det offentliga formuläret till gratisströmmen och har väntande medlemsförfrågningar.",
+      "includeFederativeLicenseInAutoRenewalToggle": "Inkludera federationslicensen i den årliga automatiska autogiroen",
+      "includeFederativeLicenseInAutoRenewalToggleDesc": "När en avgift debiterar dess federationslicens ett extra belopp debiteras detta belopp igen vid varje automatisk förnyelse (återkommande prenumeration). Om det är inaktiverat debiteras det endast en gång, under den första prenumerationen. Denna inställning gäller endast för nya prenumerationer som prenumereras efter ändring — prenumerationer som redan är aktiva fortsätter som tidigare.",
       "toasts": {
         "updated": "Uppdaterat standardbelopp"
       }
@@ -5455,10 +5486,25 @@
         "materiel": "Material",
         "groupes": "Grupper",
         "dons": "Donationer",
+        "licenses": "Licenser",
         "historique": "Historik",
         "emails": "E-post",
         "sms": "SMS",
         "boutique": "Butik"
+      },
+      "licenses": {
+        "empty": "Ingen licens",
+        "seasonYear": "Medlemsavgift {year}",
+        "autoRenewed": "Automatiskt förnyad",
+        "declaredByMembreNotice": "Licens deklarerad av medlemmen — i väntan på verifiering",
+        "deleteConfirmTitle": "Ta bort den här licensen?",
+        "deleteConfirmDescription": "Licensen {federation} — {season} kommer att tas ur produktion permanent.",
+        "statusField": "Status",
+        "licenseNumberField": "Registreringsnummer",
+        "statusASolicitar": "Att fråga",
+        "statusEmAndamento": "Under utveckling",
+        "statusValidada": "Validerat",
+        "statusARenovar": "Att förnyas"
       },
       "cotisationStatus": {
         "enAttente": "Väntar",
@@ -5507,6 +5553,7 @@
       "donStandalone": "Fristående donation",
       "donPending": "Väntar på inlösen",
       "showingRecentDons": "Visar de {count} senaste donationerna av totalt {total}.",
+      "showingRecentLicenses": "Visning av {count} Senaste licenser på {total} totalt.",
       "addCotisationTitle": "Lägg till en medlemsavgift",
       "editCotisationTitle": "Ändra medlemsavgiften",
       "deleteConfirmWithDependants": "Denna medlem kommer att arkiveras och kommer inte längre att kunna få tillgång till föreningen. Han kommer också att tas bort som föreningens juridiska förmyndare. {count} Medlemmar: {names}.",
@@ -7041,6 +7088,7 @@
       "membres": "Medlemmar",
       "evenements": "Evenemang",
       "cotisations": "Bidrag",
+      "licencas": "Licenser",
       "adhesions": "Medlemskap",
       "finances": "Finansiell övervakning",
       "devis": "Offerter",
@@ -7766,6 +7814,30 @@
       "loading": "Laddar...",
       "noResults": "Inga resultat.",
       "scanAction": "Scanner"
+    }
+  },
+  "licencas": {
+    "title": "Licenser",
+    "description": "Federerade licenser för medlemmar, alla nivåer och säsonger sammanlagda.",
+    "export": "Export",
+    "empty": "Ingen licens",
+    "statusASolicitar": "Att fråga",
+    "statusEmAndamento": "Under utveckling",
+    "statusValidada": "Validerat",
+    "statusARenovar": "Att förnyas",
+    "columns": {
+      "membre": "Medlem",
+      "tier": "Modalitet",
+      "federation": "Federation",
+      "season": "Säsong",
+      "licenseNumber": "Registreringsnummer",
+      "status": "Status"
+    },
+    "filters": {
+      "searchPlaceholder": "Sök efter en medlem...",
+      "allFederations": "Alla federationer",
+      "allSeasons": "Alla säsonger",
+      "allStatuses": "Alla statusar"
     }
   }
 }

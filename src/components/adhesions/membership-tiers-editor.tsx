@@ -42,6 +42,15 @@ type MembershipTierDraft = {
   installmentsCount: number | null
   label: string
   membreTypeId: string | null
+  // FORM-114 — federative license tracking/billing for this tier (MEMBERSHIP only).
+  licenseEnabled: boolean
+  licenseName: string | null
+  licenseFederation: string | null
+  licenseSeason: string | null
+  licenseMandatory: boolean
+  licenseBillingMode: "INCLUDED" | "ADDITIONAL" | null
+  licenseAdditionalAmount: number | null
+  licenseAllowDeclareExisting: boolean
 }
 type MembershipTier = MembershipTierDraft & { id: string; order: number }
 
@@ -54,6 +63,8 @@ function tiersSignature(rows: MembershipTierDraft[]): string {
   return JSON.stringify(rows.map(t => [
     t.itemType, t.kind, t.free, t.freeAmount, t.amount, t.durationMonths, t.fixedPeriodEnd,
     t.receiptMode, t.ineligibleAmount, t.installmentsAllowed, t.installmentsCount, t.label, t.membreTypeId,
+    t.licenseEnabled, t.licenseName, t.licenseFederation, t.licenseSeason, t.licenseMandatory,
+    t.licenseBillingMode, t.licenseAdditionalAmount, t.licenseAllowDeclareExisting,
   ]))
 }
 
@@ -174,6 +185,7 @@ export function MembershipTiersEditor({ formId, membreTypes, onDirtyChange, ref 
       amount:           t.amount != null ? Number(t.amount) : null,
       ineligibleAmount: t.ineligibleAmount != null ? Number(t.ineligibleAmount) : null,
       fixedPeriodEnd:   t.fixedPeriodEnd ? toValue(new Date(t.fixedPeriodEnd)) : null,
+      licenseAdditionalAmount: t.licenseAdditionalAmount != null ? Number(t.licenseAdditionalAmount) : null,
     }
   }
 
@@ -203,6 +215,8 @@ export function MembershipTiersEditor({ formId, membreTypes, onDirtyChange, ref 
       key: `new-${nextTempId++}`, itemType: "MEMBERSHIP", kind: "ONE_OFF", free: false, freeAmount: false, amount: null,
       durationMonths: null, fixedPeriodEnd: null, receiptMode: "NONE", ineligibleAmount: null,
       installmentsAllowed: false, installmentsCount: 3, label: "", membreTypeId: null,
+      licenseEnabled: false, licenseName: null, licenseFederation: null, licenseSeason: null,
+      licenseMandatory: false, licenseBillingMode: null, licenseAdditionalAmount: null, licenseAllowDeclareExisting: false,
     }])
   }
   function updateTier(key: string, patch: Partial<MembershipTierDraft>) {
@@ -213,11 +227,14 @@ export function MembershipTiersEditor({ formId, membreTypes, onDirtyChange, ref 
   function updateItemType(key: string, itemType: ItemType) {
     setTiers(prev => prev.map(t => {
       if (t.key !== key) return t
+      // License tracking only ever makes sense for a MEMBERSHIP tier — reset it whenever
+      // switching away, same reasoning as the other MEMBERSHIP-only fields below.
+      const noLicense = { licenseEnabled: false, licenseName: null, licenseFederation: null, licenseSeason: null, licenseMandatory: false, licenseBillingMode: null, licenseAdditionalAmount: null, licenseAllowDeclareExisting: false }
       if (itemType === "MEMBERSHIP") return { ...t, itemType }
-      if (itemType === "ADDON") return { ...t, itemType, kind: "ONE_OFF", membreTypeId: null, free: false, durationMonths: null, fixedPeriodEnd: null, receiptMode: "NONE" as const, ineligibleAmount: null, installmentsAllowed: false, installmentsCount: null }
+      if (itemType === "ADDON") return { ...t, itemType, kind: "ONE_OFF", membreTypeId: null, free: false, durationMonths: null, fixedPeriodEnd: null, receiptMode: "NONE" as const, ineligibleAmount: null, installmentsAllowed: false, installmentsCount: null, ...noLicense }
       // Une donation reste éligible au reçu fiscal par défaut, comme sur AssoConnect — voir
       // le panneau "Reçus fiscaux" de sa formule de type Dons.
-      return { ...t, itemType, kind: "ONE_OFF", membreTypeId: null, free: false, freeAmount: true, durationMonths: null, fixedPeriodEnd: null, receiptMode: "FULL" as const, ineligibleAmount: null, installmentsAllowed: false, installmentsCount: null }
+      return { ...t, itemType, kind: "ONE_OFF", membreTypeId: null, free: false, freeAmount: true, durationMonths: null, fixedPeriodEnd: null, receiptMode: "FULL" as const, ineligibleAmount: null, installmentsAllowed: false, installmentsCount: null, ...noLicense }
     }))
   }
   function removeTier(key: string) {
@@ -278,6 +295,29 @@ export function MembershipTiersEditor({ formId, membreTypes, onDirtyChange, ref 
       toast.error(t("ineligibleAmountExceedsError"))
       return false
     }
+    if (tiers.some(t => t.licenseEnabled && !t.licenseFederation?.trim())) {
+      toast.error(t("licenseFederationRequiredError"))
+      return false
+    }
+    if (tiers.some(t => t.licenseEnabled && !t.licenseSeason?.trim())) {
+      toast.error(t("licenseSeasonRequiredError"))
+      return false
+    }
+    if (tiers.some(t => t.licenseEnabled && !t.licenseBillingMode)) {
+      toast.error(t("licenseBillingModeRequiredError"))
+      return false
+    }
+    if (tiers.some(t => t.licenseEnabled && t.licenseBillingMode === "ADDITIONAL" && !t.licenseAdditionalAmount)) {
+      toast.error(t("licenseAdditionalAmountRequiredError"))
+      return false
+    }
+    // Stripe rejects a line item below ~0.50€ — same floor as checkout/route.ts's
+    // MIN_ITEM_AMOUNT, checked client-side too rather than only surfacing as the server's
+    // generic 422 after a round trip.
+    if (tiers.some(t => t.licenseEnabled && t.licenseBillingMode === "ADDITIONAL" && !!t.licenseAdditionalAmount && t.licenseAdditionalAmount < 1)) {
+      toast.error(t("licenseAdditionalAmountTooLowError"))
+      return false
+    }
     try {
       await saveMutation.mutateAsync(tiers.map((t, order) => ({
         id: t.id, order, itemType: t.itemType, kind: t.kind, free: t.free,
@@ -294,6 +334,14 @@ export function MembershipTiersEditor({ formId, membreTypes, onDirtyChange, ref 
         installmentsAllowed: t.itemType === "MEMBERSHIP" ? t.installmentsAllowed : false,
         installmentsCount:   t.itemType === "MEMBERSHIP" && t.installmentsAllowed ? t.installmentsCount : null,
         label: t.label, membreTypeId: t.membreTypeId,
+        licenseEnabled:              t.itemType === "MEMBERSHIP" ? t.licenseEnabled : false,
+        licenseName:                 t.itemType === "MEMBERSHIP" && t.licenseEnabled ? t.licenseName : null,
+        licenseFederation:           t.itemType === "MEMBERSHIP" && t.licenseEnabled ? t.licenseFederation : null,
+        licenseSeason:               t.itemType === "MEMBERSHIP" && t.licenseEnabled ? t.licenseSeason : null,
+        licenseMandatory:            t.itemType === "MEMBERSHIP" && t.licenseEnabled ? t.licenseMandatory : false,
+        licenseBillingMode:          t.itemType === "MEMBERSHIP" && t.licenseEnabled ? t.licenseBillingMode : null,
+        licenseAdditionalAmount:     t.itemType === "MEMBERSHIP" && t.licenseEnabled && t.licenseBillingMode === "ADDITIONAL" ? t.licenseAdditionalAmount : null,
+        licenseAllowDeclareExisting: t.itemType === "MEMBERSHIP" && t.licenseEnabled ? t.licenseAllowDeclareExisting : false,
       })))
       toast.success(t("saved"))
       return true
@@ -526,7 +574,12 @@ export function MembershipTiersEditor({ formId, membreTypes, onDirtyChange, ref 
                         label={t("installmentsAllowedField")}
                         checked={tier.installmentsAllowed}
                         onChange={e => updateTier(tier.key, { installmentsAllowed: e.target.checked, installmentsCount: e.target.checked ? (tier.installmentsCount ?? 3) : tier.installmentsCount })}
-                        disabled={tier.free}
+                        // FORM-114 — a licensed tier never offers installments on the public
+                        // form (the webhook that settles each installment never creates a
+                        // MembershipLicense) — disabled here too rather than leaving a toggle
+                        // that silently has no effect.
+                        disabled={tier.free || tier.licenseEnabled}
+                        description={tier.licenseEnabled ? t("installmentsUnavailableWithLicense") : undefined}
                       />
                     </div>
                   )}
@@ -543,6 +596,92 @@ export function MembershipTiersEditor({ formId, membreTypes, onDirtyChange, ref 
                     </div>
                   )}
                 </div>
+                {tier.itemType === "MEMBERSHIP" && (
+                  <div className="mt-4 border-t pt-4">
+                    <CheckboxField
+                      label={t("licenseEnabledField")}
+                      checked={tier.licenseEnabled}
+                      onChange={e => updateTier(tier.key, {
+                        licenseEnabled: e.target.checked,
+                        licenseBillingMode: e.target.checked ? (tier.licenseBillingMode ?? "INCLUDED") : null,
+                        // Installments is unavailable for a licensed tier (see its own
+                        // disabled/description above) — cleared immediately rather than left
+                        // stale and silently unused.
+                        installmentsAllowed: e.target.checked ? false : tier.installmentsAllowed,
+                      })}
+                    />
+                    {tier.licenseEnabled && (
+                      <div className="mt-3 flex items-end gap-x-4 gap-y-5 flex-wrap">
+                        <div className="w-48">
+                          <FormField
+                            label={t("licenseNameField")}
+                            placeholder={t("licenseNamePlaceholder")}
+                            value={tier.licenseName ?? ""}
+                            onChange={e => updateTier(tier.key, { licenseName: e.target.value || null })}
+                          />
+                        </div>
+                        <div className="w-40">
+                          <FormField
+                            label={t("licenseFederationField")}
+                            placeholder={t("licenseFederationPlaceholder")}
+                            value={tier.licenseFederation ?? ""}
+                            onChange={e => updateTier(tier.key, { licenseFederation: e.target.value || null })}
+                          />
+                        </div>
+                        <div className="w-36">
+                          <FormField
+                            label={t("licenseSeasonField")}
+                            placeholder={t("licenseSeasonPlaceholder")}
+                            value={tier.licenseSeason ?? ""}
+                            onChange={e => updateTier(tier.key, { licenseSeason: e.target.value || null })}
+                          />
+                        </div>
+                        <div className="w-48">
+                          <SelectField
+                            label={t("licenseBillingModeField")}
+                            options={[
+                              { value: "INCLUDED", label: t("licenseBillingIncluded") },
+                              { value: "ADDITIONAL", label: t("licenseBillingAdditional") },
+                            ]}
+                            value={tier.licenseBillingMode ?? "INCLUDED"}
+                            onValueChange={v => updateTier(tier.key, { licenseBillingMode: v as "INCLUDED" | "ADDITIONAL" })}
+                          />
+                        </div>
+                        {tier.licenseBillingMode === "ADDITIONAL" && (
+                          <div className="w-40">
+                            <CurrencyField
+                              label={t("licenseAdditionalAmountField")}
+                              value={tier.licenseAdditionalAmount ?? 0}
+                              onChange={v => updateTier(tier.key, { licenseAdditionalAmount: v })}
+                            />
+                          </div>
+                        )}
+                        <div className="flex h-9 items-center">
+                          <CheckboxField
+                            label={t("licenseMandatoryField")}
+                            checked={tier.licenseMandatory}
+                            onChange={e => updateTier(tier.key, { licenseMandatory: e.target.checked })}
+                          />
+                        </div>
+                        {tier.licenseBillingMode === "ADDITIONAL" && (
+                          <div className="flex h-9 items-center">
+                            <CheckboxField
+                              label={t("licenseAllowDeclareExistingField")}
+                              checked={tier.licenseAllowDeclareExisting}
+                              onChange={e => updateTier(tier.key, { licenseAllowDeclareExisting: e.target.checked })}
+                            />
+                          </div>
+                        )}
+                      </div>
+                    )}
+                    {tier.licenseEnabled && tier.kind === "RECURRING" && tier.licenseBillingMode === "ADDITIONAL" && (
+                      <p className="mt-3 flex items-start gap-2 text-xs text-amber-700 dark:text-amber-400">
+                        <WarningCircleIcon className="size-3.5 shrink-0 mt-0.5" />
+                        <span>{t("licenseRecurringChangeWarning")}</span>
+                      </p>
+                    )}
+                  </div>
+                )}
                 {tier.itemType === "MEMBERSHIP" && tier.kind === "RECURRING" && !tier.free && isOnlinePaymentMissing && (
                   <p className="mt-3 flex items-start gap-2 text-xs text-amber-700 dark:text-amber-400">
                     <WarningCircleIcon className="size-3.5 shrink-0 mt-0.5" />

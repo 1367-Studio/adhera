@@ -3892,6 +3892,7 @@
           "eligibleAmountAutoHint": "Automatycznie obliczano: kwota wypłacona − {amount}",
           "noMinimumWarning": "Nie ma ustalonej minimalnej kwoty dla tej darmowej kwoty, płacący gość mniejszy niż niekwalifikująca się kwota zostanie zablokowana z płatności. Ustal minimalną kwotę co najmniej {amount}.",
           "installmentsAllowedField": "Autoryzacja płatności w ratach",
+          "installmentsUnavailableWithLicense": "Niedostępne za cenę zarządzania licencją federacyjną.",
           "installmentsCountField": "Liczba razy",
           "membreTypeNone": "Brak",
           "kindField": "Typ",
@@ -3909,7 +3910,27 @@
           "membershipTierRequiredError": "Formularz musi zawierać co najmniej jedną składkę członkowską",
           "minAmountRequiredError": "Wymagana jest minimalna kwota na każdą darowiznę",
           "saved": "Stawki zarejestrowane",
-          "saveTiers": "Zapisz stawki"
+          "saveTiers": "Zapisz stawki",
+          "licenseSectionTitle": "Licencja federacji",
+          "licenseEnabledField": "Zarządzaj licencją federacyjną dla tej stawki",
+          "licenseNameField": "Nazwa licencji",
+          "licenseNamePlaceholder": "Np. licencja na zawody",
+          "licenseFederationField": "Federacja",
+          "licenseFederationPlaceholder": "Np. FFF",
+          "licenseSeasonField": "Sezon",
+          "licenseSeasonPlaceholder": "Przykład: 2026/2027",
+          "licenseMandatoryField": "Licencja przymusowa",
+          "licenseBillingModeField": "Rozliczenia",
+          "licenseBillingIncluded": "Wliczone w cenę",
+          "licenseBillingAdditional": "Dodatkowa kwota",
+          "licenseAdditionalAmountField": "Kwota dodatkowa (€)",
+          "licenseAllowDeclareExistingField": "Zezwól na deklarację już posiadanej licencji",
+          "licenseFederationRequiredError": "Do aktywacji licencji federacji wymagana jest federacja",
+          "licenseSeasonRequiredError": "Do aktywacji licencji federacyjnej wymagany jest sezon",
+          "licenseBillingModeRequiredError": "Metoda rozliczania licencji jest wymagana",
+          "licenseAdditionalAmountRequiredError": "Wymagana jest dodatkowa kwota licencji",
+          "licenseRecurringChangeWarning": "Zmiana tej kwoty zmienia jedynie przyszłe subskrypcje — obecni subskrybenci nadal płacą kwotę ustaloną w momencie subskrypcji.",
+          "licenseAdditionalAmountTooLowError": "Dodatkowa kwota licencji musi wynosić co najmniej 1 €"
         },
         "fields": {
           "title": "Forma",
@@ -4029,6 +4050,14 @@
       "mobilePlaceholder": "06 12 34 56 78",
       "donationBadge": "(Don)",
       "totalLabel": "Łączna kwota do zapłaty",
+      "licenseDefaultName": "Licencja federacji",
+      "licenseIncludedNotice": "Licencja federacji w cenie, bez dodatkowych kosztów.",
+      "licenseOptInLabel": "Dodaj licencję federacyjną (+{amount})",
+      "licenseMandatoryNotice": "Członkostwo to obejmuje obowiązkową licencję federacyjną ({amount}).",
+      "licenseDeclareExistingLabel": "Mam już licencję na ten sezon",
+      "licenseDeclaredNotice": "Istniejąca licencja — oczekuje na weryfikację przez stowarzyszenie.",
+      "licenseNumberLabel": "Numer licencji",
+      "licenseNumberPlaceholder": "Zostaw puste, jeśli jeszcze go nie masz",
       "partialReceiptNotice": "Samotnie {amount} są odliczane od podatku za to członkostwo.",
       "belowExtraMinimum": "Minimalna kwota to {amount}.",
       "belowMinimumAmount": "Minimalna kwota płatności online to {amount}.",
@@ -4510,6 +4539,8 @@
       "publicPaymentToggleDesc": "Formularz członkowski na publicznej stronie wymaga natychmiastowej płatności (pobieranej corocznie) i aktywuje członka automatycznie, bez ręcznej weryfikacji.",
       "publicPaymentRequiresAmount": "Wypełnij kwotę wpłaty, aby aktywować tę opcję.",
       "connectNotReadyWarning": "Płatności online nie są aktywne — Stripe Connect nie jest jeszcze skonfigurowane ani nie akceptuje płatności (zakładka Płatności). W międzyczasie publiczny formularz wraca do darmowego strumienia i ma oczekujące wnioski o członkostwo.",
+      "includeFederativeLicenseInAutoRenewalToggle": "Dołącz licencję federacji do corocznego automatycznego polecenia zapłaty",
+      "includeFederativeLicenseInAutoRenewalToggleDesc": "Gdy stawka pobiera dodatkową kwotę na licencję federacji, kwota ta jest pobierana ponownie przy każdym automatycznym odnowieniu (subskrypcja cykliczna). Jeśli jest wyłączona, jest obciążana tylko raz, podczas pierwszej subskrypcji. To ustawienie dotyczy tylko nowych subskrypcji subskrybowanych po zmianie — subskrypcje już aktywne pozostają bez zmian.",
       "toasts": {
         "updated": "Zaktualizowana domyślna kwota"
       }
@@ -5455,10 +5486,25 @@
         "materiel": "Materiał",
         "groupes": "Grupy",
         "dons": "Darowizny",
+        "licenses": "Licencje",
         "historique": "Historia",
         "emails": "E-maile",
         "sms": "SMS",
         "boutique": "Sklep"
+      },
+      "licenses": {
+        "empty": "Brak licencji",
+        "seasonYear": "Składka członkowska {year}",
+        "autoRenewed": "Automatycznie odnawiane",
+        "declaredByMembreNotice": "Licencja zadeklarowana przez członka — oczekuje na weryfikację",
+        "deleteConfirmTitle": "Usunąć tę licencję?",
+        "deleteConfirmDescription": "Licencja {federation} — {season} zostaną trwale wycofane.",
+        "statusField": "Status",
+        "licenseNumberField": "Numer licencji",
+        "statusASolicitar": "Pytać",
+        "statusEmAndamento": "W trakcie realizacji",
+        "statusValidada": "Zweryfikowano",
+        "statusARenovar": "Do odnowienia"
       },
       "cotisationStatus": {
         "enAttente": "Oczekuje",
@@ -5507,6 +5553,7 @@
       "donStandalone": "Samodzielna darowizna",
       "donPending": "Oczekuje na inkaso",
       "showingRecentDons": "Wyświetlono {count} najnowszych darowizn z {total} łącznie.",
+      "showingRecentLicenses": "Wyświetlanie {count} najnowsze licencje na {total} w sumie.",
       "addCotisationTitle": "Dodaj składkę członkowską",
       "editCotisationTitle": "Zmień składkę członkowską",
       "deleteConfirmWithDependants": "Ten członek zostanie zarchiwizowany i nie będzie mógł już korzystać ze stowarzyszenia. Zostanie również usunięty z funkcji prawnego opiekuna stowarzyszenia. {count} Członek(owie): {names}.",
@@ -7041,6 +7088,7 @@
       "membres": "Członkowie",
       "evenements": "Wydarzenia",
       "cotisations": "Wkład",
+      "licencas": "Licencje",
       "adhesions": "Członkostwa",
       "finances": "Monitorowanie finansowe",
       "devis": "Oferty",
@@ -7766,6 +7814,30 @@
       "loading": "Ładowanie...",
       "noResults": "Brak rezultatów.",
       "scanAction": "Skaner"
+    }
+  },
+  "licencas": {
+    "title": "Licencje",
+    "description": "Federacyjne licencje dla członków, wszystkie stawki i pory roku łącznie.",
+    "export": "Eksport",
+    "empty": "Brak licencji",
+    "statusASolicitar": "Pytać",
+    "statusEmAndamento": "W trakcie realizacji",
+    "statusValidada": "Zweryfikowano",
+    "statusARenovar": "Do odnowienia",
+    "columns": {
+      "membre": "Członek",
+      "tier": "Modalność",
+      "federation": "Federacja",
+      "season": "Sezon",
+      "licenseNumber": "Numer licencji",
+      "status": "Status"
+    },
+    "filters": {
+      "searchPlaceholder": "Wyszukaj członka...",
+      "allFederations": "Wszystkie federacje",
+      "allSeasons": "Wszystkie sezony",
+      "allStatuses": "Wszystkie statusy"
     }
   }
 }

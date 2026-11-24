@@ -53,6 +53,7 @@ type Association = {
   emailFooterSettings: unknown
   cotisationDefaultAmount: string | number | null
   publicMembershipPaymentEnabled: boolean
+  includeFederativeLicenseInAutoRenewal: boolean
 }
 
 type Tab = "general" | "paiements" | "abonnement" | "integrations" | "equipe" | "rgpd"
@@ -256,6 +257,7 @@ function ParametresViewInner() {
                 canEdit={canEditFinance}
                 cotisationDefaultAmount={assoc.cotisationDefaultAmount}
                 publicMembershipPaymentEnabled={assoc.publicMembershipPaymentEnabled}
+                includeFederativeLicenseInAutoRenewal={assoc.includeFederativeLicenseInAutoRenewal}
               />
             </div>
           )}
