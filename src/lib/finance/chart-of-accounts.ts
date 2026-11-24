@@ -134,6 +134,9 @@ export const LEDGER_INFRASTRUCTURE_ACCOUNTS: LedgerInfrastructureAccount[] = [
   // Fournisseurs d'immobilisations — reserved for FORM-107 Fase 3 (partial payment of an
   // invoiced asset purchase). Seeded now so the chart doesn't need a second migration later.
   { code: "404000", label: "Fournisseurs d'immobilisations", nature: "PASSIF", normalSide: "CREDIT" },
+  // Fournisseurs — ordinary (non-Immobilisation) trade payables, FORM-117. Same role as 404000
+  // one section up, for a plain FactureRecue's accrual charge instead of an asset acquisition.
+  { code: "401000", label: "Fournisseurs", nature: "PASSIF", normalSide: "CREDIT" },
 
   // Contra-asset pour 205000, même rôle que 281830 pour 218300.
   { code: "280500", label: "Amortissements des concessions et droits similaires", nature: "ACTIF", normalSide: "CREDIT" },

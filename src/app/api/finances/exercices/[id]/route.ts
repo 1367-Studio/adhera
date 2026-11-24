@@ -8,6 +8,7 @@ import { exclusiveEndOfDay } from "@/lib/finance/exercice"
 import { ensureChartAccounts } from "@/lib/finance/journal/chart-accounts-seed"
 import { generateOpeningBalanceForExercice, deleteOpeningBalanceForExercice } from "@/lib/finance/journal/opening-balance"
 import { ensurePostedJournalEntries } from "@/lib/finance/journal/post-income-expense"
+import { ensurePostedFactureRecueJournalEntries } from "@/lib/finance/journal/post-facture-recue-payment"
 import { generateDepreciationForExercice, deleteDepreciationForExercice } from "@/lib/finance/immobilisations/post-closing-depreciation"
 
 export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
@@ -121,6 +122,10 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
     // own doc comment) — without this, both the dotation below and the opening balance that
     // follows it would silently miss them.
     await ensurePostedJournalEntries(associationId, id)
+    // Same catch-up, for any plain categorized FactureRecue whose issueDate had no covering
+    // exercice at registration time (FORM-117) — association-wide, not scoped to id, same
+    // posture as ensurePostedReimbursementJournalEntries would be if it were wired in anywhere.
+    await ensurePostedFactureRecueJournalEntries(associationId)
     // Dotations post INTO the closing exercice itself (id), BEFORE the opening balance of the
     // next one is computed — see post-closing-depreciation.ts's own doc comment for why that
     // order is required for the dotation to correctly reduce this exercice's own result.

@@ -2383,30 +2383,30 @@ model CotisationSubscription {
   // Copied onto every yearly Cotisation this subscription produces (see
   // handleCotisationInvoicePaid) since a Cotisation row, not this row, is what the
   // MembershipForm list page's "total collected" figure actually sums.
-  membershipFormId String?
-  tierId           String?
+  membershipFormId        String?
+  tierId                  String?
   // Snapshotted from MembershipTier.durationMonths at signup — same reasoning as
   // membershipFormId/tierId already being snapshots: the tier can change later without
   // affecting an already-running subscription. Null = ordinary yearly billing (Stripe
   // `interval: "year"`); a number = `interval_count` months instead (see checkout/route.ts
   // and handleCotisationInvoicePaid, src/lib/webhook/cotisation-subscriptions.ts).
-  durationMonths   Int?
+  durationMonths          Int?
   // Snapshotted from MembershipTier.receiptMode/ineligibleAmount at signup, same reasoning as
   // durationMonths above — copied onto every yearly Cotisation this subscription produces
   // (see handleCotisationInvoicePaid) so a tier edited after signup can't change what an
   // already-running subscription's past or future receipts are eligible for.
-  receiptMode      DonationReceiptMode @default(NONE)
-  deductibleAmount Decimal?            @db.Decimal(10, 2)
+  receiptMode             DonationReceiptMode @default(NONE)
+  deductibleAmount        Decimal?            @db.Decimal(10, 2)
   // FORM-114: snapshot of the federative-license decision made at signup (tier config +
   // visitor's opt-in/declare-existing choice on the public form) — handleCotisationInvoicePaid
   // reads this only for this subscription's very first period, since there's no previous
   // Cotisation yet to copy a license from; every later renewal instead copies the PREVIOUS
   // period's MembershipLicense (if any) and re-reads federation/season off the tier's CURRENT
   // config, not off this snapshot (see handleCotisationInvoicePaid).
-  licenseApplies          Boolean @default(false)
+  licenseApplies          Boolean             @default(false)
   licenseFederation       String?
   licenseSeason           String?
-  licenseDeclaredByMembre Boolean @default(false)
+  licenseDeclaredByMembre Boolean             @default(false)
   licenseNumber           String?
 
   association    Association     @relation(fields: [associationId], references: [id], onDelete: Cascade)
@@ -3243,13 +3243,13 @@ model ExerciceComptable {
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
 
-  association      Association       @relation(fields: [associationId], references: [id], onDelete: Cascade)
-  incomes          Income[]
-  expenses         Expense[]
-  bankTransactions BankTransaction[]
-  accountTransfers AccountTransfer[]
-  budgetLines      BudgetLine[]
-  journalEntries   JournalEntry[]
+  association                 Association                  @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  incomes                     Income[]
+  expenses                    Expense[]
+  bankTransactions            BankTransaction[]
+  accountTransfers            AccountTransfer[]
+  budgetLines                 BudgetLine[]
+  journalEntries              JournalEntry[]
   immobilisationDepreciations ImmobilisationDepreciation[]
 
   @@index([associationId, status])
@@ -3382,6 +3382,7 @@ model FinanceCategory {
   materials             Material[]
   budgetLines           BudgetLine[]
   reimbursementItems    ReimbursementItem[]
+  facturesRecues        FactureRecue[]
 
   @@index([associationId, type])
   // Real constraint against the default-category reseed, or a race, ever creating two ACTIVE
@@ -3514,23 +3515,27 @@ model Expense {
   id                    String        @id @default(cuid())
   associationId         String
   exerciceId            String?
-  factureRecueId        String?       @unique // set when this row was auto-created from a FactureRecue marked PAYEE — see FactureRecue.expense
   // FORM-107 Fase 3 — one Expense per FactureRecuePayment (mirrors FacturePayment.income on
   // the emitted side), not per FactureRecue directly: a document now accrues many payments.
   // Null for a FactureRecue linked to an Immobilisation — that path posts straight to 404000
   // via post-facture-recue-payment.ts instead of a generic categoryless Expense.
   factureRecuePaymentId String?       @unique
+  // Set when this row is the single accrual charge recognized at a plain (non-Immobilisation)
+  // FactureRecue's registration, under ACCRUAL regime — see postFactureRecueCharge
+  // (post-facture-recue-payment.ts). Distinct from factureRecuePaymentId above, which is the
+  // legacy "one Expense per payment" shape created at payment time instead.
+  factureRecueId        String?       @unique
   amount                Decimal       @db.Decimal(10, 2)
   categoryId            String?
   // See Income.projectId — same "Orçamento previsto" project link, same SetNull reasoning.
-  projectId        String?
-  date             DateTime
-  vendor           String?
-  description      String?
-  receiptUrl       String?
-  internalNote     String?
-  paymentMethod    String?
-  status           ExpenseStatus @default(DRAFT)
+  projectId             String?
+  date                  DateTime
+  vendor                String?
+  description           String?
+  receiptUrl            String?
+  internalNote          String?
+  paymentMethod         String?
+  status                ExpenseStatus @default(DRAFT)
   // Idempotency/traceability key, same role as Income.reference — set to the Stripe
   // paymentIntent/invoice id for auto-created "Frais Stripe"/"Commission Formwise" rows (see
   // connect-stripe-fee.ts) so a redelivered webhook or a refund can find these rows again.
@@ -3545,8 +3550,8 @@ model Expense {
 
   association         Association          @relation(fields: [associationId], references: [id], onDelete: Cascade)
   exercice            ExerciceComptable?   @relation(fields: [exerciceId], references: [id], onDelete: SetNull)
-  factureRecue        FactureRecue?        @relation(fields: [factureRecueId], references: [id], onDelete: SetNull)
   factureRecuePayment FactureRecuePayment? @relation(fields: [factureRecuePaymentId], references: [id], onDelete: SetNull)
+  factureRecueCharge  FactureRecue?        @relation(fields: [factureRecueId], references: [id], onDelete: SetNull)
   category            FinanceCategory?     @relation(fields: [categoryId], references: [id], onDelete: SetNull)
   project             BudgetProject?       @relation(fields: [projectId], references: [id], onDelete: SetNull)
   reconciliations     BankReconciliation[]
@@ -3885,34 +3890,34 @@ enum DepreciationMethod {
 // 404000 Fournisseurs d'immobilisations for the full invoice amount) — see
 // post-facture-recue-payment.ts's postImmobilisationAcquisition.
 model Immobilisation {
-  id            String             @id @default(cuid())
-  associationId String
-  label         String
+  id                      String             @id @default(cuid())
+  associationId           String
+  label                   String
   // PCG codes (e.g. "218300"/"281830"/"681120") — stored per row, not hardcoded, so a future
   // asset class (incorporelles, financières, …) just needs its own ChartAccount codes, no
   // schema change. Resolved via resolveChartAccountByCode at posting time.
-  assetAccountCode       String
+  assetAccountCode        String
   depreciationAccountCode String
-  expenseAccountCode     String
-  entryValue      Decimal            @db.Decimal(10, 2)
-  residualValue   Decimal            @default(0) @db.Decimal(10, 2)
-  acquisitionDate DateTime
-  usageStartDate  DateTime
-  usefulLifeMonths Int
-  method          DepreciationMethod @default(LINEAIRE)
+  expenseAccountCode      String
+  entryValue              Decimal            @db.Decimal(10, 2)
+  residualValue           Decimal            @default(0) @db.Decimal(10, 2)
+  acquisitionDate         DateTime
+  usageStartDate          DateTime
+  usefulLifeMonths        Int
+  method                  DepreciationMethod @default(LINEAIRE)
   // Set, not yet acted upon — Fase 2 computes a schedule that stops accruing past this date
   // (see compute-depreciation.ts) but doesn't post a disposal/write-off entry. That's a
   // deliberate, documented scope limit, not a bug.
-  disposalDate    DateTime?
-  expenseId       String?            @unique
-  factureRecueId  String?            @unique
-  createdAt       DateTime           @default(now())
-  updatedAt       DateTime           @updatedAt
+  disposalDate            DateTime?
+  expenseId               String?            @unique
+  factureRecueId          String?            @unique
+  createdAt               DateTime           @default(now())
+  updatedAt               DateTime           @updatedAt
 
-  association   Association                  @relation(fields: [associationId], references: [id], onDelete: Cascade)
-  expense       Expense?                     @relation(fields: [expenseId], references: [id], onDelete: SetNull)
-  factureRecue  FactureRecue?                @relation(fields: [factureRecueId], references: [id], onDelete: SetNull)
-  depreciations ImmobilisationDepreciation[]
+  association    Association                  @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  expense        Expense?                     @relation(fields: [expenseId], references: [id], onDelete: SetNull)
+  factureRecue   FactureRecue?                @relation(fields: [factureRecueId], references: [id], onDelete: SetNull)
+  depreciations  ImmobilisationDepreciation[]
   journalEntries JournalEntry[]
 
   @@index([associationId])
@@ -4132,21 +4137,27 @@ model FactureRecue {
   amountPaid    Decimal            @default(0) @db.Decimal(10, 2)
   fileUrl       String
   notes         String?
+  // Lets a plain (non-Immobilisation) invoice post an accrual charge at registration instead of
+  // the legacy per-payment categoryless Expense — see postFactureRecueCharge
+  // (post-facture-recue-payment.ts). Null keeps today's behavior unchanged. Only settable via
+  // PATCH while status is A_PAYER and amountPaid is 0 — see factures-recues/[id]/route.ts — so a
+  // document never ends up half-migrated between the legacy and accrual shapes.
+  categoryId    String?
   createdAt     DateTime           @default(now())
   updatedAt     DateTime           @updatedAt
   deletedAt     DateTime?
 
   association    Association           @relation(fields: [associationId], references: [id], onDelete: Cascade)
   fournisseur    Fournisseur?          @relation(fields: [fournisseurId], references: [id])
+  category       FinanceCategory?      @relation(fields: [categoryId], references: [id], onDelete: SetNull)
   payments       FactureRecuePayment[]
-  // Legacy back-relation for Expense.factureRecueId (the old binary A_PAYER/PAYEE flow's single
-  // auto-created Expense) — kept alongside `payments` above during the FORM-107 Fase 3
-  // transition to per-payment Expenses.
-  expense        Expense?
   // Set when this document is the acquisition invoice of a capitalized asset — see
   // Immobilisation.factureRecueId's own doc comment. Its payments post to 404000 instead of
   // creating a generic Expense each.
   immobilisation Immobilisation?
+  // The one accrual-charge Expense materialized by postFactureRecueCharge when categoryId is
+  // set and the association is on ACCRUAL regime — see Expense.factureRecueId.
+  expense        Expense?
 
   @@index([associationId, status])
   @@index([associationId, deletedAt])

@@ -13,6 +13,7 @@ import { TextareaField } from "@/components/ui/textarea-field"
 import { CurrencyField } from "@/components/ui/currency-field"
 import { DocumentUpload } from "@/components/ui/document-upload"
 import { Button } from "@/components/ui/button"
+import { useFinanceCategories } from "@/hooks/use-finance-categories"
 
 interface FactureRecueFormProps {
   defaultValues?: Partial<FactureRecueInput>
@@ -43,13 +44,24 @@ export function FactureRecueForm({ defaultValues, onSubmit, onCancel, loading }:
     { value: "ANNULEE",   label: t("fournisseurs.document.statusOptions.annulee")  },
   ]
 
+  // FORM-117 — optional: leaving it blank keeps today's pre-existing behavior (the document
+  // never reaches the journal). Choosing one lets a plain invoice post an accrual charge at
+  // registration (ACCRUAL regime) or at least carry the category into its payment Expense
+  // (CASH regime) — see postFactureRecueCharge.
+  const { data: categories = [] } = useFinanceCategories("EXPENSE")
+  const categoryOptions = [
+    { value: "", label: t("finances.incomeForm.noCategory") },
+    ...categories.map((c: { id: string; name: string }) => ({ value: c.id, label: c.name })),
+  ]
+
   const { register, control, handleSubmit, reset, watch, setValue, formState: { errors } } = useForm<FactureRecueInput>({
     resolver: zodResolver(factureRecueSchema),
     defaultValues: {
-      type:      "facture",
-      status:    "A_PAYER",
-      issueDate: new Date().toISOString().split("T")[0],
-      fileUrl:   "",
+      type:       "facture",
+      status:     "A_PAYER",
+      issueDate:  new Date().toISOString().split("T")[0],
+      fileUrl:    "",
+      categoryId: "",
       ...defaultValues,
     },
     mode: "onSubmit",
@@ -57,10 +69,11 @@ export function FactureRecueForm({ defaultValues, onSubmit, onCancel, loading }:
 
   useEffect(() => {
     reset({
-      type:      "facture",
-      status:    "A_PAYER",
-      issueDate: new Date().toISOString().split("T")[0],
-      fileUrl:   "",
+      type:       "facture",
+      status:     "A_PAYER",
+      issueDate:  new Date().toISOString().split("T")[0],
+      fileUrl:    "",
+      categoryId: "",
       ...defaultValues,
     })
   }, [defaultValues, reset])
@@ -129,13 +142,22 @@ export function FactureRecueForm({ defaultValues, onSubmit, onCancel, loading }:
         />
       </div>
 
-      <Controller
-        name="status"
-        control={control}
-        render={({ field }) => (
-          <SelectField label={t("membres.form.fields.status")} required options={statusOptions} value={field.value} onValueChange={field.onChange} error={errors.status?.message} />
-        )}
-      />
+      <div className="grid grid-cols-2 gap-4">
+        <Controller
+          name="status"
+          control={control}
+          render={({ field }) => (
+            <SelectField label={t("membres.form.fields.status")} required options={statusOptions} value={field.value} onValueChange={field.onChange} error={errors.status?.message} />
+          )}
+        />
+        <Controller
+          name="categoryId"
+          control={control}
+          render={({ field }) => (
+            <SelectField label={t("finances.incomeForm.category")} options={categoryOptions} value={field.value ?? ""} onValueChange={field.onChange} error={errors.categoryId?.message} />
+          )}
+        />
+      </div>
       <div>
         <label className="text-sm font-medium">{t("fournisseurs.document.file")}</label>
         <div className="mt-1.5">
