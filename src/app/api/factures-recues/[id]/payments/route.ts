@@ -30,6 +30,11 @@ export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
     return NextResponse.json({ error: "Ce document est annulé" }, { status: 409 })
   }
 
+  const association = await prisma.association.findUnique({
+    where:  { id: associationId },
+    select: { accountingRegime: true },
+  })
+
   const body   = await req.json()
   const parsed = factureRecuePaymentSchema.safeParse(body)
   if (!parsed.success) {
@@ -42,6 +47,11 @@ export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   const exercice = await resolveExerciceForDate(associationId, paymentDate)
   const guard = await closedExerciceGuard(exercice?.status)
   if (guard) return guard
+
+  // FORM-117 — a plain invoice with a chosen category under ACCRUAL regime already recognized
+  // its charge at registration (postFactureRecueCharge); this payment only settles 401000, same
+  // shape as the Immobilisation case, never a new Expense.
+  const isAccrualCategorized = !existing.immobilisation && !!existing.categoryId && association?.accountingRegime === "ACCRUAL"
 
   let createdPaymentId = ""
 
@@ -70,16 +80,21 @@ export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
         amountPaid, total,
       )
 
-      // Immobilisation-linked: no generic Expense — the payment settles 404000 directly (see
-      // post-facture-recue-payment.ts, called outside this transaction below). Otherwise,
-      // mirrors the old binary-status flow's single Expense, just one per payment now.
-      if (!existing.immobilisation) {
+      // Immobilisation-linked, or a plain categorized invoice under ACCRUAL regime (FORM-117):
+      // no generic Expense — the payment just settles the payable (404000 or 401000) directly
+      // (see post-facture-recue-payment.ts, called outside this transaction below), since the
+      // charge was already recognized at acquisition/registration. Otherwise, mirrors the old
+      // binary-status flow's single Expense, just one per payment now — now carrying the
+      // chosen category (if any) so the existing postExpenseToJournal/ensurePostedJournalEntries
+      // catch-up can post it under CASH regime without any new posting code.
+      if (!existing.immobilisation && !isAccrualCategorized) {
         await tx.expense.create({
           data: {
             associationId,
             exerciceId:            exercice?.id ?? null,
             factureRecuePaymentId: payment.id,
             amount,
+            categoryId:  existing.categoryId ?? null,
             status:      "VALIDATED",
             date:        paymentDate,
             vendor:      existing.fournisseur?.companyName ?? null,
@@ -98,7 +113,7 @@ export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
     // Outside the transaction, same posture as every other journal posting call site
     // (post-journal-entry.ts's own idempotencyKey guard makes a retry after a partial
     // failure here safe).
-    if (existing.immobilisation) {
+    if (existing.immobilisation || isAccrualCategorized) {
       await postFactureRecuePaymentToJournal(createdPaymentId)
     }
 

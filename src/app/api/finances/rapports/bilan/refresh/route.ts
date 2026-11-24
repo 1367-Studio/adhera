@@ -9,6 +9,7 @@ import { prisma } from "@/lib/prisma/client"
 import { withAdminAuth } from "@/lib/api-wrapper"
 import { ensureChartAccounts } from "@/lib/finance/journal/chart-accounts-seed"
 import { ensurePostedJournalEntries } from "@/lib/finance/journal/post-income-expense"
+import { ensurePostedFactureRecueJournalEntries } from "@/lib/finance/journal/post-facture-recue-payment"
 
 export const POST = withAdminAuth(async (req, ctx) => {
   const { associationId } = ctx
@@ -22,6 +23,7 @@ export const POST = withAdminAuth(async (req, ctx) => {
 
   await ensureChartAccounts(associationId)
   const { posted, reversed } = await ensurePostedJournalEntries(associationId, exerciceId)
+  const { posted: facturesRecuesPosted } = await ensurePostedFactureRecueJournalEntries(associationId)
 
-  return NextResponse.json({ posted, reversed })
+  return NextResponse.json({ posted: posted + facturesRecuesPosted, reversed })
 }, { area: "comptabilite", module: "finances" })
