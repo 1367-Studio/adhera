@@ -105,7 +105,7 @@ export const POST = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
       return tx.factureRecue.update({
         where: { id },
         data:  { status: newStatus },
-        include: { fournisseur: { select: { id: true, companyName: true } }, payments: { orderBy: { paidAt: "desc" } } },
+        include: { fournisseur: { select: { id: true, companyName: true } }, category: { select: { id: true, name: true } }, payments: { orderBy: { paidAt: "desc" } } },
       })
     })
 
