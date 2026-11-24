@@ -695,6 +695,7 @@
         "annulee": "Cancelada"
       },
       "file": "Documento",
+      "categoryHint": "Se escolher uma categoria, a despesa será registada assim que a fatura for registada e não no momento do pagamento.",
       "payment": {
         "add": "Registar um pagamento",
         "title": "Registar um pagamento",

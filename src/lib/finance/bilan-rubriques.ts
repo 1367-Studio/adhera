@@ -54,6 +54,7 @@ export interface AccountRubriqueMatch {
 // 120000 — Fonds propres (report à nouveau cumulé, voir computeBilanPeriod pour le libellé).
 // 151000 — Provisions pour risques et charges.
 // 404000 — Dettes (fournisseurs d'immobilisations, FORM-107 Fase 3).
+// 401000 — Dettes (fournisseurs ordinaires, FORM-117).
 // 487000 — Produits constatés d'avance.
 // 194000 — Fonds dédiés.
 // creances/stocksEtEnCours are deliberately absent here — they're memo rubriques, never
@@ -69,7 +70,7 @@ export function rubriqueForAccountCode(code: string): AccountRubriqueMatch | nul
   if (code === "486000") return { rubrique: "chargesConstateesDavance", contra: false }
   if (code === "120000") return { rubrique: "fondsPropres", contra: false }
   if (code === "151000") return { rubrique: "provisions", contra: false }
-  if (code === "404000") return { rubrique: "dettes", contra: false }
+  if (code === "404000" || code === "401000") return { rubrique: "dettes", contra: false }
   if (code === "487000") return { rubrique: "produitsConstatesDavance", contra: false }
   if (code === "194000") return { rubrique: "fondsDedies", contra: false }
   return null

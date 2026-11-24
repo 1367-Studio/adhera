@@ -695,6 +695,7 @@
         "annulee": "Törölve"
       },
       "file": "Dokumentum",
+      "categoryHint": "Ha kategóriát választ, a költség a számla rögzítésekor kerül rögzítésre, nem pedig a fizetés időkor.",
       "payment": {
         "add": "Fizetés rögzítése",
         "title": "Fizetés rögzítése",

@@ -12,6 +12,10 @@ export const factureRecueSchema = z.object({
   status:        z.enum(["A_PAYER", "PARTIELLEMENT_PAYEE", "PAYEE", "EN_LITIGE", "ANNULEE"]),
   fileUrl:       z.string().trim().min(1, "Document requis"),
   notes:         z.string().trim().optional().or(z.literal("")),
+  // FORM-117 — lets a plain invoice post an accrual charge at registration (ACCRUAL regime) or
+  // at least carry a category into its eventual payment Expense (CASH regime). Optional: blank
+  // keeps today's pre-existing behavior (never reaches the journal).
+  categoryId:    z.string().optional().or(z.literal("")),
 })
 
 export const factureRecueCreateSchema = factureRecueSchema

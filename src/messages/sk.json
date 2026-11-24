@@ -695,6 +695,7 @@
         "annulee": "Zrušené"
       },
       "file": "Dokument",
+      "categoryHint": "Ak si vyberiete kategóriu, výdavok sa zaúčtuje hneď po zaúčtovaní faktúry, nie pri platbe.",
       "payment": {
         "add": "Zaznamenajte platbu",
         "title": "Zaznamenajte platbu",

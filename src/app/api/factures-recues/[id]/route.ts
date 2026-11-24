@@ -8,10 +8,11 @@ import { resolveManualFactureRecueStatus } from "@/lib/facture-recue-status"
 import { reportError } from "@/lib/monitoring"
 import { reverseExpenseJournalEntry } from "@/lib/finance/journal/post-income-expense"
 import { bankTransactionIdsToRelease } from "@/lib/finance/release-bank-transaction"
+import { postFactureRecueCharge } from "@/lib/finance/journal/post-facture-recue-payment"
 
 // Comptabilité area (FORM-34). The old GET/DELETE allowlists also let the Secrétaire in, although
 // the sidebar never showed her this screen and every write was finance-only; she now has no access here.
-const FACTURE_RECUE_FIELDS = ["number", "type", "issueDate", "amount", "status", "notes", "fournisseurId"] as const
+const FACTURE_RECUE_FIELDS = ["number", "type", "issueDate", "amount", "status", "notes", "fournisseurId", "categoryId"] as const
 const EPSILON = 0.01
 
 export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
@@ -21,6 +22,7 @@ export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
     where:   { id, associationId, deletedAt: null },
     include: {
       fournisseur: { select: { id: true, companyName: true } },
+      category:    { select: { id: true, name: true } },
       payments:    { orderBy: { paidAt: "desc" } },
       immobilisation: { select: { id: true } },
     },
@@ -33,7 +35,10 @@ export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
 export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   const { associationId, userId } = ctx
 
-  const existing = await prisma.factureRecue.findFirst({ where: { id, associationId, deletedAt: null } })
+  const existing = await prisma.factureRecue.findFirst({
+    where:   { id, associationId, deletedAt: null },
+    include: { expense: { select: { id: true } } },
+  })
   if (!existing) return NextResponse.json({ error: "Document introuvable" }, { status: 404 })
 
   const body   = await req.json()
@@ -43,12 +48,15 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   }
 
   // Mirrors Facture's own PATCH — a document with payments recorded needs an explicit
-  // confirmation before any field (not just status) is touched (FORM-107 Fase 3).
-  if ((existing.status === "PAYEE" || existing.status === "PARTIELLEMENT_PAYEE") && body?.force !== true) {
+  // confirmation before any field (not just status) is touched (FORM-107 Fase 3). Also
+  // triggered once the accrual charge has posted (FORM-117, existing.expense) even with zero
+  // payments yet (A_PAYER) — editing amount/issueDate/etc. at that point would silently desync
+  // the already-posted journal entry from the document, same risk as editing a paid one.
+  if ((existing.status === "PAYEE" || existing.status === "PARTIELLEMENT_PAYEE" || existing.expense) && body?.force !== true) {
     return NextResponse.json({ error: "Ce document a des paiements enregistrés — confirmez la modification.", code: "REQUIRES_CONFIRMATION" }, { status: 409 })
   }
 
-  const { fournisseurId, number, type, issueDate, amount, status, fileUrl, notes } = parsed.data
+  const { fournisseurId, number, type, issueDate, amount, status, fileUrl, notes, categoryId } = parsed.data
 
   // Only re-validate the fournisseur if it's actually changing — the edit form always
   // resubmits the current fournisseurId, and an archived (soft-deleted) fournisseur would
@@ -56,6 +64,19 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   if (fournisseurId && fournisseurId !== existing.fournisseurId) {
     const fournisseur = await prisma.fournisseur.findFirst({ where: { id: fournisseurId, associationId, deletedAt: null } })
     if (!fournisseur) return NextResponse.json({ error: "Fournisseur introuvable" }, { status: 404 })
+  }
+
+  // FORM-117 — categoryId can only be set/changed before the invoice has committed to one
+  // posting shape: once a payment exists (amountPaid > 0) OR the accrual charge has already
+  // posted (existing.expense — possible with zero payments, if the exercice existed at
+  // registration time), silently changing or clearing it would leave the books half-migrated
+  // between the accrual and legacy per-payment shapes, or orphan an already-posted charge. The
+  // force-confirmation guard above already covers PAYEE/PARTIELLEMENT_PAYEE; this also blocks
+  // the A_PAYER-but-already-posted sliver.
+  if (categoryId !== undefined && categoryId !== (existing.categoryId ?? "") && (Number(existing.amountPaid) > EPSILON || existing.expense)) {
+    return NextResponse.json({
+      error: "Impossible de modifier la catégorie : des paiements ont déjà été enregistrés pour ce document.",
+    }, { status: 409 })
   }
 
   // Lowering amount below what's already been paid would break the invariant the payment
@@ -83,9 +104,14 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
       ...(fileUrl       !== undefined ? { fileUrl } : {}),
       ...(notes         !== undefined ? { notes: notes || null } : {}),
       ...(fournisseurId !== undefined ? { fournisseurId: fournisseurId || null } : {}),
+      ...(categoryId    !== undefined ? { categoryId: categoryId || null } : {}),
     },
-    include: { fournisseur: { select: { id: true, companyName: true } }, payments: { orderBy: { paidAt: "desc" } } },
+    include: { fournisseur: { select: { id: true, companyName: true } }, category: { select: { id: true, name: true } }, payments: { orderBy: { paidAt: "desc" } } },
   })
+
+  // Outside the write above, same posture as every other journal call site — postJournalEntry's
+  // own idempotencyKey guard makes a retry after a partial failure here safe.
+  if (factureRecue.categoryId) await postFactureRecueCharge(factureRecue.id)
 
   // A replaced document's old file is orphaned in R2 once the row points elsewhere —
   // clean it up the same way expense/boutique image replacement does.
@@ -131,11 +157,12 @@ export const DELETE = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => 
 
   // Captured before the transaction — the Expenses below are hard-deleted inside it, so
   // there's nothing left to look up by afterward (same ordering constraint as every other
-  // hard-delete call site, see cotisations/[id]/route.ts's own comment). Immobilisation-linked
-  // payments never created an Expense (see the deliberate exception below), so nothing to
-  // capture for those.
+  // hard-delete call site, see cotisations/[id]/route.ts's own comment). Covers both the legacy
+  // per-payment Expense (factureRecuePayment relation) and the FORM-117 accrual-charge Expense
+  // (factureRecueId directly) — Immobilisation-linked and 401000-settled payments never create
+  // an Expense at all (see the deliberate exception below), so nothing to capture for those.
   const expensesToReverse = await prisma.expense.findMany({
-    where:  { factureRecuePayment: { factureRecueId: id } },
+    where:  { OR: [{ factureRecuePayment: { factureRecueId: id } }, { factureRecueId: id }] },
     select: { id: true },
   })
 
@@ -160,16 +187,20 @@ export const DELETE = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => 
         await tx.expense.deleteMany({ where: { id: { in: expenseIds } } })
       }
 
-      // Immobilisation-linked path: payments post straight to the journal (no Expense) — see
-      // post-facture-recue-payment.ts. Those JournalEntry rows are the one deliberate exception
-      // to "never deleted" (mirrors opening-balance.ts's own reasoning): deleting the document
-      // itself compensates the whole acquisition being undone, not a correction to history.
+      // Both the Immobilisation-linked (404000) and the FORM-117 plain-categorized (401000)
+      // payment paths post straight to the journal with no Expense — see
+      // post-facture-recue-payment.ts. Those settlement JournalEntry rows are the one
+      // deliberate exception to "never deleted" (mirrors opening-balance.ts's own reasoning):
+      // deleting the document itself compensates the whole charge/debt being undone, not a
+      // correction to history. Runs unconditionally — not just for the Immobilisation case —
+      // so a 401000 settlement left behind by a plain categorized invoice is purged too.
+      await tx.journalEntry.deleteMany({ where: { factureRecuePayment: { factureRecueId: id } } })
+
       const immobilisation = await tx.immobilisation.findUnique({ where: { factureRecueId: id }, select: { id: true } })
       if (immobilisation) {
         const depreciationCount = await tx.immobilisationDepreciation.count({ where: { immobilisationId: immobilisation.id } })
         if (depreciationCount > 0) throw new ImmobilisationHasDepreciationsError()
         await tx.journalEntry.deleteMany({ where: { immobilisationId: immobilisation.id } })
-        await tx.journalEntry.deleteMany({ where: { factureRecuePayment: { factureRecueId: id } } })
         await tx.immobilisation.delete({ where: { id: immobilisation.id } })
       }
     })

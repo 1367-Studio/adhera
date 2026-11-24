@@ -695,6 +695,7 @@
         "annulee": "Nedlagd"
       },
       "file": "Dokument",
+      "categoryHint": "Om du väljer en kategori kommer kostnaden att bokföras så snart fakturan registreras istället för vid betalningstillfället.",
       "payment": {
         "add": "Registrera en betalning",
         "title": "Registrera en betalning",

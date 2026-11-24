@@ -433,6 +433,7 @@ export function FournisseurDetailView() {
                     <p className="text-xs text-muted-foreground">
                       {format(new Date(doc.issueDate), "dd/MM/yyyy", { locale: fr })} · {fmt(doc.amount)}
                       {doc.status === "PARTIELLEMENT_PAYEE" && ` · ${fmt(doc.amountPaid)} ${t("fournisseurs.document.payment.paidOf")}`}
+                      {doc.category && ` · ${doc.category.name}`}
                     </p>
                   </div>
                   <div className="flex items-center gap-1">

@@ -3382,6 +3382,7 @@ model FinanceCategory {
   materials             Material[]
   budgetLines           BudgetLine[]
   reimbursementItems    ReimbursementItem[]
+  facturesRecues        FactureRecue[]
 
   @@index([associationId, type])
   // Real constraint against the default-category reseed, or a race, ever creating two ACTIVE
@@ -3519,6 +3520,11 @@ model Expense {
   // Null for a FactureRecue linked to an Immobilisation — that path posts straight to 404000
   // via post-facture-recue-payment.ts instead of a generic categoryless Expense.
   factureRecuePaymentId String?       @unique
+  // Set when this row is the single accrual charge recognized at a plain (non-Immobilisation)
+  // FactureRecue's registration, under ACCRUAL regime — see postFactureRecueCharge
+  // (post-facture-recue-payment.ts). Distinct from factureRecuePaymentId above, which is the
+  // legacy "one Expense per payment" shape created at payment time instead.
+  factureRecueId        String?       @unique
   amount                Decimal       @db.Decimal(10, 2)
   categoryId            String?
   // See Income.projectId — same "Orçamento previsto" project link, same SetNull reasoning.
@@ -3545,6 +3551,7 @@ model Expense {
   association         Association          @relation(fields: [associationId], references: [id], onDelete: Cascade)
   exercice            ExerciceComptable?   @relation(fields: [exerciceId], references: [id], onDelete: SetNull)
   factureRecuePayment FactureRecuePayment? @relation(fields: [factureRecuePaymentId], references: [id], onDelete: SetNull)
+  factureRecueCharge  FactureRecue?        @relation(fields: [factureRecueId], references: [id], onDelete: SetNull)
   category            FinanceCategory?     @relation(fields: [categoryId], references: [id], onDelete: SetNull)
   project             BudgetProject?       @relation(fields: [projectId], references: [id], onDelete: SetNull)
   reconciliations     BankReconciliation[]
@@ -4130,17 +4137,27 @@ model FactureRecue {
   amountPaid    Decimal            @default(0) @db.Decimal(10, 2)
   fileUrl       String
   notes         String?
+  // Lets a plain (non-Immobilisation) invoice post an accrual charge at registration instead of
+  // the legacy per-payment categoryless Expense — see postFactureRecueCharge
+  // (post-facture-recue-payment.ts). Null keeps today's behavior unchanged. Only settable via
+  // PATCH while status is A_PAYER and amountPaid is 0 — see factures-recues/[id]/route.ts — so a
+  // document never ends up half-migrated between the legacy and accrual shapes.
+  categoryId    String?
   createdAt     DateTime           @default(now())
   updatedAt     DateTime           @updatedAt
   deletedAt     DateTime?
 
   association    Association           @relation(fields: [associationId], references: [id], onDelete: Cascade)
   fournisseur    Fournisseur?          @relation(fields: [fournisseurId], references: [id])
+  category       FinanceCategory?      @relation(fields: [categoryId], references: [id], onDelete: SetNull)
   payments       FactureRecuePayment[]
   // Set when this document is the acquisition invoice of a capitalized asset — see
   // Immobilisation.factureRecueId's own doc comment. Its payments post to 404000 instead of
   // creating a generic Expense each.
   immobilisation Immobilisation?
+  // The one accrual-charge Expense materialized by postFactureRecueCharge when categoryId is
+  // set and the association is on ACCRUAL regime — see Expense.factureRecueId.
+  expense        Expense?
 
   @@index([associationId, status])
   @@index([associationId, deletedAt])

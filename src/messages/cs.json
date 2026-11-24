@@ -695,6 +695,7 @@
         "annulee": "Zrušeno"
       },
       "file": "Dokument",
+      "categoryHint": "Pokud zvolíte kategorii, výdaj bude zaznamenán ihned po zaúčtování faktury, nikoli při platbě.",
       "payment": {
         "add": "Zaznamenat platbu",
         "title": "Zaznamenat platbu",

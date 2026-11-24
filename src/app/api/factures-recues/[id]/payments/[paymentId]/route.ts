@@ -16,49 +16,46 @@ const EPSILON = 0.01
 export const DELETE = withAdminAuth<{ id: string; paymentId: string }>(async (_req, ctx, { id, paymentId }) => {
   const { associationId, userId } = ctx
 
-  const factureRecue = await prisma.factureRecue.findFirst({
-    where:   { id, associationId, deletedAt: null },
-    include: { immobilisation: { select: { id: true } } },
-  })
+  const factureRecue = await prisma.factureRecue.findFirst({ where: { id, associationId, deletedAt: null } })
   if (!factureRecue) return NextResponse.json({ error: "Document introuvable" }, { status: 404 })
 
   const payment = await prisma.factureRecuePayment.findFirst({ where: { id: paymentId, factureRecueId: id } })
   if (!payment) return NextResponse.json({ error: "Paiement introuvable" }, { status: 404 })
 
-  if (factureRecue.immobilisation) {
-    // The settlement entry's own exercice, not the document's — mirrors the Expense-based
-    // path's guard (that one reads the linked Expense's exercice).
+  // Captured before the transaction — the Expense below is hard-deleted inside it, so there's
+  // nothing left to look up by afterward (same ordering constraint as every other hard-delete
+  // call site, see cotisations/[id]/route.ts's own comment). A payment that settles a payable
+  // directly (Immobilisation's 404000, or a plain categorized invoice's 401000 under ACCRUAL
+  // regime — FORM-117) never created an Expense at all — its JournalEntry is deleted directly
+  // instead below, a deliberate exception, not something to reverse. Branching on "does a
+  // linked Expense exist" rather than on factureRecue.immobilisation covers both payable shapes
+  // uniformly, instead of only the Immobilisation one.
+  const linkedExpensePreview = await prisma.expense.findUnique({
+    where:  { factureRecuePaymentId: paymentId },
+    select: { id: true, exercice: { select: { status: true } } },
+  })
+  const linkedExpenseToReverse = linkedExpensePreview ? { id: linkedExpensePreview.id } : null
+
+  if (linkedExpensePreview) {
+    const guard = await closedExerciceGuard(linkedExpensePreview.exercice?.status)
+    if (guard) return guard
+  } else {
+    // The settlement entry's own exercice, not the document's.
     const entry = await prisma.journalEntry.findUnique({
       where:  { idempotencyKey: `facture-recue-payment:${paymentId}` },
       select: { exercice: { select: { status: true } } },
     })
     const guard = await closedExerciceGuard(entry?.exercice?.status)
     if (guard) return guard
-  } else {
-    const linkedExpensePreview = await prisma.expense.findUnique({
-      where:  { factureRecuePaymentId: paymentId },
-      select: { exercice: { select: { status: true } } },
-    })
-    const guard = await closedExerciceGuard(linkedExpensePreview?.exercice?.status)
-    if (guard) return guard
   }
-
-  // Captured before the transaction — the Expense below is hard-deleted inside it (non-
-  // Immobilisation path only), so there's nothing left to look up by afterward (same ordering
-  // constraint as every other hard-delete call site, see cotisations/[id]/route.ts's own
-  // comment). The Immobilisation path never created an Expense — its JournalEntry is deleted
-  // directly instead, a deliberate exception, not something to reverse.
-  const linkedExpenseToReverse = factureRecue.immobilisation
-    ? null
-    : await prisma.expense.findUnique({ where: { factureRecuePaymentId: paymentId }, select: { id: true } })
 
   try {
     const updated = await prisma.$transaction(async (tx) => {
-      if (factureRecue.immobilisation) {
+      if (!linkedExpenseToReverse) {
         // Same deliberate exception as opening-balance.ts's own doc comment — deleting a
         // specific payment compensates recording it being undone, not a correction of history.
         await tx.journalEntry.deleteMany({ where: { idempotencyKey: `facture-recue-payment:${paymentId}` } })
-      } else if (linkedExpenseToReverse) {
+      } else {
         // Mirrors the Facture-payment reversal: drop any bank reconciliation for the linked
         // Expense (resetting that transaction to UNMATCHED) before deleting the Expense itself.
         const reconciliations = await tx.bankReconciliation.findMany({ where: { expenseId: linkedExpenseToReverse.id }, select: { bankTransactionId: true } })
