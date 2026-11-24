@@ -80,7 +80,7 @@ export const POST = withAdminAuth(async (req, ctx) => {
   } else {
     const factureRecue = await prisma.factureRecue.findFirst({
       where:   { id: factureRecueId, associationId, deletedAt: null },
-      include: { immobilisation: true },
+      include: { immobilisation: true, expense: { select: { id: true } }, payments: { select: { id: true }, take: 1 } },
     })
     if (!factureRecue) return NextResponse.json({ error: "Facture reçue introuvable" }, { status: 404 })
     if (factureRecue.immobilisation) {
@@ -88,6 +88,16 @@ export const POST = withAdminAuth(async (req, ctx) => {
     }
     if (factureRecue.status === "ANNULEE") {
       return NextResponse.json({ error: "Cette facture reçue est annulée." }, { status: 422 })
+    }
+    // FORM-117 — a categorized invoice may already have recognized its charge the ordinary
+    // way (an accrual Expense, or a legacy per-payment one once any payment landed). Turning
+    // it into an Immobilisation now would post a second, conflicting acquisition entry for the
+    // same amount — double-recognizing the charge and leaving two payable accounts (401000 and
+    // 404000) open for one invoice.
+    if (factureRecue.expense || factureRecue.payments.length > 0) {
+      return NextResponse.json({
+        error: "Cette facture reçue a déjà une dépense ou un paiement enregistré — elle ne peut plus devenir une immobilisation.",
+      }, { status: 409 })
     }
     entryValue = Number(factureRecue.amount)
     createData = { factureRecueId: factureRecue.id }
