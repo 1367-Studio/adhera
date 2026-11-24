@@ -239,6 +239,23 @@ export function useMembershipTierDuplicates(enabled: boolean) {
   })
 }
 
+async function fetchMergeableMembershipTiers() {
+  const res = await fetch("/api/membership-tiers/mergeable")
+  if (!res.ok) throw new Error("Erreur lors du chargement des catégories")
+  const data = await res.json()
+  return data.tiers as DuplicateTierCandidate[]
+}
+
+// Only fetched when the modal's manual "pick any two categories" fallback is opened — see
+// MergeDuplicateTiersModal.
+export function useMergeableMembershipTiers(enabled: boolean) {
+  return useQuery({
+    queryKey: [...QK, "tier-mergeable"],
+    queryFn:  fetchMergeableMembershipTiers,
+    enabled,
+  })
+}
+
 async function mergeMembershipTiers(primaryTierId: string, secondaryTierId: string) {
   const res = await fetch("/api/membership-tiers/duplicates/merge", {
     method:  "POST",

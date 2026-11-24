@@ -4,7 +4,8 @@ import { useEffect, useMemo, useState } from "react"
 import { useTranslations } from "next-intl"
 import { toast } from "sonner"
 import {
-  useMembershipTierDuplicates, useMergeMembershipTiers, type DuplicateTierGroup, type DuplicateTierCandidate,
+  useMembershipTierDuplicates, useMergeableMembershipTiers, useMergeMembershipTiers,
+  type DuplicateTierGroup, type DuplicateTierCandidate,
 } from "@/hooks/use-cotisations"
 import { Modal } from "@/components/ui/modal"
 import { ConfirmDialog } from "@/components/ui/confirm-dialog"
@@ -35,7 +36,9 @@ export function MergeDuplicateTiersModal({ open, onOpenChange, onMerged }: {
   onMerged?:    (mergedAwayTierIds: string[], primaryTierId: string) => void
 }) {
   const t = useTranslations("cotisations.view.mergeTiers")
-  const { data: groups, isLoading, isError } = useMembershipTierDuplicates(open)
+  const [manualMode, setManualMode] = useState(false)
+  const { data: groups, isLoading, isError } = useMembershipTierDuplicates(open && !manualMode)
+  const { data: allTiers, isLoading: isLoadingAll, isError: isErrorAll } = useMergeableMembershipTiers(open && manualMode)
   const merge = useMergeMembershipTiers()
 
   const [selectedGroupKey, setSelectedGroupKey] = useState<string | null>(null)
@@ -49,10 +52,15 @@ export function MergeDuplicateTiersModal({ open, onOpenChange, onMerged }: {
       setPrimaryTierId(null)
       setSecondaryIds(new Set())
       setConfirmOpen(false)
+      setManualMode(false)
     }
   }, [open])
 
   const selectedGroup: DuplicateTierGroup | undefined = groups?.find(g => g.normalizedLabel === selectedGroupKey)
+  // The picker below works off a flat tier list either way — an auto-detected group, or every
+  // active tier when the admin falls back to picking manually (see openManual).
+  const pickerTiers: DuplicateTierCandidate[] = manualMode ? (allTiers ?? []) : (selectedGroup?.tiers ?? [])
+  const showingPicker = manualMode || !!selectedGroup
 
   function openGroup(group: DuplicateTierGroup) {
     // Default primary: the tier with the most cotisations — least disruptive choice, since
@@ -63,10 +71,20 @@ export function MergeDuplicateTiersModal({ open, onOpenChange, onMerged }: {
     setSecondaryIds(new Set(byUsage.slice(1).map(tier => tier.id)))
   }
 
+  // Nothing is pre-selected here, unlike openGroup: these tiers were never flagged as
+  // duplicates, so defaulting to "merge everything else into the busiest one" would be an
+  // actual data-loss risk instead of a convenience.
+  function openManual() {
+    setManualMode(true)
+    setPrimaryTierId(null)
+    setSecondaryIds(new Set())
+  }
+
   function backToList() {
     setSelectedGroupKey(null)
     setPrimaryTierId(null)
     setSecondaryIds(new Set())
+    setManualMode(false)
   }
 
   function toggleSecondary(tierId: string, checked: boolean) {
@@ -91,22 +109,35 @@ export function MergeDuplicateTiersModal({ open, onOpenChange, onMerged }: {
     setPrimaryTierId(tierId)
   }
 
-  const primaryTier = selectedGroup?.tiers.find(tier => tier.id === primaryTierId)
-  const secondaryTiers = selectedGroup?.tiers.filter(tier => secondaryIds.has(tier.id)) ?? []
+  const primaryTier = pickerTiers.find(tier => tier.id === primaryTierId)
+  const secondaryTiers = pickerTiers.filter(tier => secondaryIds.has(tier.id))
   const totals = useMemo(() => secondaryTiers.reduce((acc, tier) => ({
     cotisationCount:         acc.cotisationCount + tier.cotisationCount,
     membreCount:             acc.membreCount + tier.membreCount,
     activeSubscriptionCount: acc.activeSubscriptionCount + tier.activeSubscriptionCount,
   }), { cotisationCount: 0, membreCount: 0, activeSubscriptionCount: 0 }), [secondaryTiers])
 
+  // The auto-detected groups only ever bucket tiers sharing the exact same label, which is
+  // itself a weak signal they're the same real-world category. The manual fallback has no such
+  // signal at all — any two active tiers can be picked — so a kind/price mismatch is worth
+  // surfacing before an irreversible merge, even though it never blocks one (see
+  // src/lib/membership-tier-merge.ts for why nothing here is automatic or forced).
+  const hasConfigMismatch = !!primaryTier && secondaryTiers.some(tier =>
+    tier.kind !== primaryTier.kind ||
+    tier.free !== primaryTier.free ||
+    (!tier.free && !primaryTier.free && tier.amount !== primaryTier.amount))
+
   async function handleConfirmMerge() {
     if (!primaryTier) return
     const mergedAwayIds: string[] = []
+    let failure: unknown = null
     try {
       for (const secondary of secondaryTiers) {
         await merge.mutateAsync({ primaryTierId: primaryTier.id, secondaryTierId: secondary.id })
         mergedAwayIds.push(secondary.id)
       }
+    } catch (err) {
+      failure = err
     } finally {
       // Report whatever actually completed even if a later secondary in the batch failed —
       // otherwise an admin who merged 2 of 3 duplicates would see only an error toast and have
@@ -116,6 +147,7 @@ export function MergeDuplicateTiersModal({ open, onOpenChange, onMerged }: {
         onMerged?.(mergedAwayIds, primaryTier.id)
       }
     }
+    if (failure) toast.error(failure instanceof Error ? failure.message : t("mergeErrorGeneric"))
     setConfirmOpen(false)
     backToList()
   }
@@ -125,19 +157,19 @@ export function MergeDuplicateTiersModal({ open, onOpenChange, onMerged }: {
       <Modal
         open={open && !confirmOpen}
         onOpenChange={onOpenChange}
-        title={selectedGroup ? t("groupTitle", { label: primaryTier?.label ?? "" }) : t("title")}
-        description={selectedGroup ? undefined : t("description")}
+        title={showingPicker ? (manualMode ? t("manualTitle") : t("groupTitle", { label: primaryTier?.label ?? "" })) : t("title")}
+        description={showingPicker ? undefined : t("description")}
         size="lg"
       >
-        {isLoading ? (
+        {(manualMode ? isLoadingAll : isLoading) ? (
           <div className="space-y-2 py-2">
             <Skeleton className="h-10 w-full" />
             <Skeleton className="h-10 w-full" />
           </div>
-        ) : isError ? (
+        ) : (manualMode ? isErrorAll : isError) ? (
           <p className="py-6 text-sm text-destructive">{t("loadError")}</p>
-        ) : !selectedGroup ? (
-          <GroupList groups={groups ?? []} onSelect={openGroup} emptyLabel={t("empty")} t={t} />
+        ) : !showingPicker ? (
+          <GroupList groups={groups ?? []} onSelect={openGroup} onManual={openManual} emptyLabel={t("empty")} t={t} />
         ) : (
           <div className="space-y-4 py-2">
             <Button variant="ghost" size="sm" onClick={backToList} className="-ml-2 text-muted-foreground">
@@ -148,7 +180,7 @@ export function MergeDuplicateTiersModal({ open, onOpenChange, onMerged }: {
             <div className="space-y-2">
               <p className="text-sm font-medium">{t("keepAsPrimary")}</p>
               <div className="divide-y divide-border rounded-lg border">
-                {selectedGroup.tiers.map(tier => (
+                {pickerTiers.map(tier => (
                   <label key={tier.id} className="flex items-start gap-3 px-3 py-2.5">
                     <input
                       type="radio"
@@ -166,7 +198,7 @@ export function MergeDuplicateTiersModal({ open, onOpenChange, onMerged }: {
             <div className="space-y-2">
               <p className="text-sm font-medium">{t("mergeIntoPrimary")}</p>
               <div className="divide-y divide-border rounded-lg border">
-                {selectedGroup.tiers.filter(tier => tier.id !== primaryTierId).map(tier => (
+                {pickerTiers.filter(tier => tier.id !== primaryTierId).map(tier => (
                   <div key={tier.id} className="px-3 py-2.5">
                     <CheckboxField
                       label={<TierSummary tier={tier} t={t} />}
@@ -180,7 +212,7 @@ export function MergeDuplicateTiersModal({ open, onOpenChange, onMerged }: {
 
             <div className="flex items-center justify-end gap-2 border-t pt-4">
               <Button variant="outline" onClick={backToList}>{t("cancelAction")}</Button>
-              <Button onClick={() => setConfirmOpen(true)} disabled={secondaryTiers.length === 0}>
+              <Button onClick={() => setConfirmOpen(true)} disabled={secondaryTiers.length === 0 || !primaryTierId}>
                 {t("mergeAction")}
               </Button>
             </div>
@@ -200,6 +232,7 @@ export function MergeDuplicateTiersModal({ open, onOpenChange, onMerged }: {
               cotisationCount: totals.cotisationCount,
               membreCount:     totals.membreCount,
             }) +
+            (hasConfigMismatch ? " " + t("mismatchWarning") : "") +
             (totals.activeSubscriptionCount > 0
               ? " " + t("activeSubscriptionWarning", { count: totals.activeSubscriptionCount })
               : "")
@@ -231,37 +264,48 @@ function TierSummary({ tier, t }: { tier: DuplicateTierCandidate; t: ReturnType<
   )
 }
 
-function GroupList({ groups, onSelect, emptyLabel, t }: {
+function GroupList({ groups, onSelect, onManual, emptyLabel, t }: {
   groups:     DuplicateTierGroup[]
   onSelect:   (group: DuplicateTierGroup) => void
+  onManual:   () => void
   emptyLabel: string
   t:          ReturnType<typeof useTranslations>
 }) {
-  if (groups.length === 0) return <p className="py-6 text-sm text-muted-foreground">{emptyLabel}</p>
-
   return (
-    <div className="divide-y divide-border rounded-lg border">
-      {groups.map(group => {
-        // Representative label for the heading: the most-used tier, not just array/insertion
-        // order — otherwise a stray "adhésion   standard" could outrank the clean "Adhésion
-        // Standard" just because it happens to come first in the query result.
-        const representative = [...group.tiers].sort((a, b) => b.cotisationCount - a.cotisationCount)[0]
-        return (
-          <button
-            key={group.normalizedLabel}
-            type="button"
-            onClick={() => onSelect(group)}
-            className="flex w-full flex-col gap-1 px-3 py-3 text-left hover:bg-muted/50"
-          >
-            <span className="text-sm font-medium">
-              {t("groupSummary", { count: group.tiers.length, label: representative.label })}
-            </span>
-            <span className="text-xs text-muted-foreground">
-              {group.tiers.map(tier => tier.label).join(" · ")}
-            </span>
-          </button>
-        )
-      })}
+    <div className="space-y-3">
+      {groups.length === 0 ? (
+        <p className="py-2 text-sm text-muted-foreground">{emptyLabel}</p>
+      ) : (
+        <div className="divide-y divide-border rounded-lg border">
+          {groups.map(group => {
+            // Representative label for the heading: the most-used tier, not just array/insertion
+            // order — otherwise a stray "adhésion   standard" could outrank the clean "Adhésion
+            // Standard" just because it happens to come first in the query result.
+            const representative = [...group.tiers].sort((a, b) => b.cotisationCount - a.cotisationCount)[0]
+            return (
+              <button
+                key={group.normalizedLabel}
+                type="button"
+                onClick={() => onSelect(group)}
+                className="flex w-full flex-col gap-1 px-3 py-3 text-left hover:bg-muted/50"
+              >
+                <span className="text-sm font-medium">
+                  {t("groupSummary", { count: group.tiers.length, label: representative.label })}
+                </span>
+                <span className="text-xs text-muted-foreground">
+                  {group.tiers.map(tier => tier.label).join(" · ")}
+                </span>
+              </button>
+            )
+          })}
+        </div>
+      )}
+
+      {/* Fallback for duplicates the exact-label matching above can't catch — e.g. "Tarif
+          adulte" vs "Tarif adulte 2026" (see listAllMergeableMembershipTiers). */}
+      <Button variant="ghost" size="sm" onClick={onManual} className="-ml-2 text-muted-foreground">
+        {t("manualAction")}
+      </Button>
     </div>
   )
 }
