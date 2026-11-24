@@ -653,6 +653,7 @@
         "annulee": "Anulat"
       },
       "file": "Document",
+      "categoryHint": "Dacă alegeți o categorie, cheltuiala va fi înregistrată imediat ce factura este înregistrată, nu la momentul plății.",
       "payment": {
         "toasts": {}
       },

@@ -653,6 +653,7 @@
         "annulee": "Ikkanċellat"
       },
       "file": "Dokument",
+      "categoryHint": "Jekk tagħżel kategorija, l-ispejjeż jiġu rreġistrati kemm jista'' jkun malajr wara li l-fattura tiġi rreġistrata minflok fil-ħin tal-ħlas.",
       "payment": {
         "toasts": {}
       },

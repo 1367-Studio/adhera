@@ -653,6 +653,7 @@
         "annulee": "Cancelada"
       },
       "file": "Documento",
+      "categoryHint": "Si eliges una categoría, el gasto se registrará tan pronto como se registre la factura y no en el momento del pago.",
       "payment": {
         "toasts": {}
       },

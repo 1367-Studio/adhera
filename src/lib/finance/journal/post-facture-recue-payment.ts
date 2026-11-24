@@ -80,9 +80,16 @@ export async function postFactureRecueCharge(factureRecueId: string): Promise<Po
       expense:        { select: { id: true } },
       fournisseur:    { select: { companyName: true } },
       association:    { select: { accountingRegime: true } },
+      // If a payment already landed (because no exercice covered issueDate yet when this was
+      // first attempted, and the catch-up is only now getting to it), the payments route
+      // already recognized the charge the legacy way — see its own hasAccrualCharge comment.
+      // Posting the accrual charge here too would double-recognize it. Once any payment has
+      // landed, this invoice stays on the legacy per-payment path for its whole lifetime.
+      payments:       { select: { id: true }, take: 1 },
     },
   })
   if (!factureRecue || factureRecue.immobilisation || !factureRecue.categoryId || factureRecue.expense) return null
+  if (factureRecue.payments.length > 0) return null
   if (factureRecue.association.accountingRegime !== "ACCRUAL") return null
 
   const exercice = await resolveExerciceForDate(factureRecue.associationId, factureRecue.issueDate)

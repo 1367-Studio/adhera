@@ -653,6 +653,7 @@
         "annulee": "Otkazano"
       },
       "file": "Dokument",
+      "categoryHint": "Ako odaberete kategoriju, trošak će biti evidentiran čim se račun evidentira, a ne u trenutku plaćanja.",
       "payment": {
         "toasts": {}
       },

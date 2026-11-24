@@ -653,6 +653,7 @@
         "annulee": "Peruttu"
       },
       "file": "Asiakirja",
+      "categoryHint": "Jos valitset kategorian, kulu kirjataan heti, kun lasku on kirjattu, eikä maksuhetkellä.",
       "payment": {
         "toasts": {}
       },

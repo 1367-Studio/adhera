@@ -653,6 +653,7 @@
         "annulee": "Atšaukta"
       },
       "file": "Dokumentas",
+      "categoryHint": "Jei pasirinksite kategoriją, išlaidos bus įrašomos iškart po sąskaitos faktūros, o ne mokėjimo metu.",
       "payment": {
         "toasts": {}
       },

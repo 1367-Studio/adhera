@@ -34,7 +34,10 @@ export const GET = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) => {
 export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   const { associationId, userId } = ctx
 
-  const existing = await prisma.factureRecue.findFirst({ where: { id, associationId, deletedAt: null } })
+  const existing = await prisma.factureRecue.findFirst({
+    where:   { id, associationId, deletedAt: null },
+    include: { expense: { select: { id: true } } },
+  })
   if (!existing) return NextResponse.json({ error: "Document introuvable" }, { status: 404 })
 
   const body   = await req.json()
@@ -44,8 +47,11 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   }
 
   // Mirrors Facture's own PATCH — a document with payments recorded needs an explicit
-  // confirmation before any field (not just status) is touched (FORM-107 Fase 3).
-  if ((existing.status === "PAYEE" || existing.status === "PARTIELLEMENT_PAYEE") && body?.force !== true) {
+  // confirmation before any field (not just status) is touched (FORM-107 Fase 3). Also
+  // triggered once the accrual charge has posted (FORM-117, existing.expense) even with zero
+  // payments yet (A_PAYER) — editing amount/issueDate/etc. at that point would silently desync
+  // the already-posted journal entry from the document, same risk as editing a paid one.
+  if ((existing.status === "PAYEE" || existing.status === "PARTIELLEMENT_PAYEE" || existing.expense) && body?.force !== true) {
     return NextResponse.json({ error: "Ce document a des paiements enregistrés — confirmez la modification.", code: "REQUIRES_CONFIRMATION" }, { status: 409 })
   }
 
@@ -59,12 +65,14 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
     if (!fournisseur) return NextResponse.json({ error: "Fournisseur introuvable" }, { status: 404 })
   }
 
-  // FORM-117 — categoryId can only be set/changed before the first payment: once a payment
-  // exists, the document has already committed to one posting shape (accrual charge already
-  // posted, or the legacy per-payment Expense already created) and silently switching shapes
-  // would leave it half-migrated between the two. The force-confirmation guard above already
-  // covers PAYEE/PARTIELLEMENT_PAYEE; this also blocks the A_PAYER-but-amountPaid>0 sliver.
-  if (categoryId !== undefined && categoryId !== (existing.categoryId ?? "") && Number(existing.amountPaid) > EPSILON) {
+  // FORM-117 — categoryId can only be set/changed before the invoice has committed to one
+  // posting shape: once a payment exists (amountPaid > 0) OR the accrual charge has already
+  // posted (existing.expense — possible with zero payments, if the exercice existed at
+  // registration time), silently changing or clearing it would leave the books half-migrated
+  // between the accrual and legacy per-payment shapes, or orphan an already-posted charge. The
+  // force-confirmation guard above already covers PAYEE/PARTIELLEMENT_PAYEE; this also blocks
+  // the A_PAYER-but-already-posted sliver.
+  if (categoryId !== undefined && categoryId !== (existing.categoryId ?? "") && (Number(existing.amountPaid) > EPSILON || existing.expense)) {
     return NextResponse.json({
       error: "Impossible de modifier la catégorie : des paiements ont déjà été enregistrés pour ce document.",
     }, { status: 409 })

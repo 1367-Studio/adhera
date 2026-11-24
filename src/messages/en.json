@@ -51,7 +51,8 @@
     "dismissTip": "Dismiss tip",
     "addressPlaceholder": "Community hall, 12 Main Street…",
     "viewOnGoogleMaps": "View on Google Maps",
-    "backToSite": "Back to site"
+    "backToSite": "Back to site",
+    "period": {}
   },
   "address": {
     "street": "Address",
@@ -62,6 +63,7 @@
     "country": "Country of residence",
     "legacyMigratedHint": "Copied from the old address field — check it doesn't already include the postal code and city below."
   },
+  "avis": {},
   "auth": {
     "layout": {
       "imageAlt": "Login",
@@ -666,13 +668,17 @@
         "enLitige": "In dispute",
         "annulee": "Cancelled"
       },
-      "unmarkPaidWarning": "This document is currently marked paid — removing this status will delete the expense it generated in Finances, along with any bank reconciliation.",
-      "markPaidNotice": "Marking this document as paid will automatically create a matching expense in Finances.",
       "file": "Document",
+      "payment": {
+        "toasts": {}
+      },
       "toasts": {
         "uploadError": "Error uploading the document",
         "networkError": "Network error during upload — please try again"
-      }
+      },
+      "unmarkPaidWarning": "This document is currently marked paid — removing this status will delete the expense it generated in Finances, along with any bank reconciliation.",
+      "markPaidNotice": "Marking this document as paid will automatically create a matching expense in Finances.",
+      "categoryHint": "If you choose a category, the expense will be recorded as soon as the invoice is recorded rather than at the time of payment."
     }
   },
   "reimbursements": {
@@ -1067,6 +1073,13 @@
       "title": "Coming soon",
       "description": "This feature is currently in development."
     },
+    "immobilisationsView": {
+      "columns": {},
+      "toasts": {},
+      "drillDown": {}
+    },
+    "immobilisationForm": {},
+    "journalManual": {},
     "bilan": {
       "title": "Balance sheet",
       "description": "Assets and liabilities of the organization at the close of the fiscal year.",
@@ -1160,7 +1173,9 @@
       "title": "Income statement",
       "description": "Financial result for the fiscal year, compared to the previous year.",
       "exerciceLabel": "Fiscal year",
+      "categoryColumnLabel": "Category",
       "noPreviousExercice": "-",
+      "noPreviousExerciceMessage": "No previous exercice available",
       "export": "Export",
       "exportExcel": "Export Excel",
       "exportPdf": "Export PDF",
@@ -1169,14 +1184,9 @@
       "expenses": "Expenses",
       "totalExpenses": "Total expenses",
       "result": "Result for the year",
+      "resultZero": "Result for the period: €0",
       "surplus": "Surplus for the year",
       "deficit": "Deficit for the year",
-      "emptyExercice": {
-        "title": "No fiscal year",
-        "description": "Create a fiscal year to generate the income statement."
-      },
-      "noPreviousExerciceMessage": "No previous exercice available",
-      "resultZero": "Result for the period: €0",
       "operationalResult": "Operating result",
       "uncategorized": "Uncategorized",
       "uncategorizedAlertIncome": "{count, plural, one {# income entry needs to be categorized} other {# income entries need to be categorized}}",
@@ -1188,6 +1198,15 @@
         "FINANCIAL": "Financial",
         "EXCEPTIONAL": "Exceptional",
         "OTHER": "Other"
+      },
+      "inKind": {
+        "title": "Voluntary contributions in kind",
+        "employmentHeader": "Use of contributions",
+        "amountHeader": "Amount",
+        "receivedHeader": "Contributions received",
+        "totalEmployments": "Total Jobs",
+        "totalReceived": "Total Contributions",
+        "note": "These free contributions are valued in euros. They do not lead to any movement of money and do not change the result of the financial year."
       },
       "drillDown": {
         "date": "Date",
@@ -1243,15 +1262,24 @@
         "reference": "Reference",
         "exercice": "Fiscal year"
       },
-      "categoryColumnLabel": "Category",
-      "inKind": {
-        "title": "Voluntary contributions in kind",
-        "employmentHeader": "Use of contributions",
-        "amountHeader": "Amount",
-        "receivedHeader": "Contributions received",
-        "totalEmployments": "Total Jobs",
-        "totalReceived": "Total Contributions",
-        "note": "These free contributions are valued in euros. They do not lead to any movement of money and do not change the result of the financial year."
+      "emptyExercice": {
+        "title": "No fiscal year",
+        "description": "Create a fiscal year to generate the income statement."
+      }
+    },
+    "previsionnel": {
+      "emptyExercice": {},
+      "tabs": {},
+      "card": {},
+      "columns": {},
+      "export": {},
+      "toasts": {},
+      "copyBudget": {
+        "toasts": {}
+      },
+      "projectsTab": {
+        "noProjects": {},
+        "toasts": {}
       }
     },
     "categoryForm": {
@@ -1936,6 +1964,7 @@
         "dateLabel": "Start date",
         "createButton": "Create"
       },
+      "summary": {},
       "bilan": {
         "show": "Show summary",
         "hide": "Hide summary",
@@ -2229,6 +2258,7 @@
           "standardFieldsHint": "Fields requested at registration",
           "phoneLabel": "Phone",
           "addressLabel": "Address",
+          "countryLabel": "Country of residence",
           "requirement": {
             "hidden": "Hidden",
             "optional": "Optional",
@@ -2236,8 +2266,7 @@
           },
           "mobileLabel": "Mobile",
           "birthDateLabel": "Date of birth",
-          "genderLabel": "Gender",
-          "countryLabel": "Country of residence"
+          "genderLabel": "Gender"
         },
         "products": {
           "title": "Products",
@@ -3404,6 +3433,7 @@
           "title": "Form",
           "standardFieldsHint": "Fields requested from the donor",
           "addressLabel": "Address",
+          "countryLabel": "Country of residence",
           "birthDateLabel": "Date of birth",
           "phoneLabel": "Phone",
           "mobileLabel": "Mobile",
@@ -3434,8 +3464,7 @@
           "addOption": "Add an option",
           "removeOption": "Remove this option",
           "optionsRequiredError": "Every dropdown/choice field needs at least 2 options.",
-          "duplicateOptionsError": "Options in a dropdown/choice field must be unique.",
-          "countryLabel": "Country of residence"
+          "duplicateOptionsError": "Options in a dropdown/choice field must be unique."
         },
         "payment": {
           "title": "Payment",
@@ -3718,6 +3747,7 @@
           "title": "Form",
           "standardFieldsHint": "Fields requested at signup",
           "addressLabel": "Address",
+          "countryLabel": "Country of residence",
           "birthDateLabel": "Date of birth",
           "phoneLabel": "Phone",
           "mobileLabel": "Mobile",
@@ -3752,8 +3782,7 @@
           "addOption": "Add an option",
           "removeOption": "Remove this option",
           "optionsRequiredError": "Every dropdown/choice field needs at least 2 options.",
-          "duplicateOptionsError": "Options in a dropdown/choice field must be unique.",
-          "countryLabel": "Country of residence"
+          "duplicateOptionsError": "Options in a dropdown/choice field must be unique."
         },
         "payment": {
           "title": "Payment",
@@ -4448,10 +4477,10 @@
       "status": {
         "trial": "Free trial",
         "active": "Active",
+        "paymentPending": "Payment in progress",
         "pastDue": "Payment overdue",
         "suspended": "Suspended",
-        "cancelled": "Cancelled",
-        "paymentPending": "Payment in progress"
+        "cancelled": "Cancelled"
       },
       "planLabel": "{tier} plan",
       "membersCount": "{count} / {limit} members",
@@ -4767,8 +4796,6 @@
         "empty": "No duplicates detected.",
         "groupSummary": "{count} categories named \"{label}\"",
         "groupTitle": "Merge into \"{label}\"",
-        "manualAction": "Manually merge two categories",
-        "manualTitle": "Merge two categories",
         "backAction": "Back",
         "cancelAction": "Cancel",
         "keepAsPrimary": "Category to keep",
@@ -4778,14 +4805,16 @@
         "confirmTitle": "Confirm merge",
         "confirmDescription": "{count} category(ies) will be merged into \"{primaryLabel}\". {cotisationCount} due(s) and {membreCount} member(s) will be transferred. This action is irreversible but preserves all history and renewal settings.",
         "mergeSuccess": "{count} category(ies) merged.",
-        "mergeErrorGeneric": "An error occurred during the merge.",
-        "mismatchWarning": "Note: these categories do not have the same billing type, amount, or method.",
         "loadError": "Couldn't load duplicates. Try again in a moment.",
         "activeSubscriptionWarning": "{count} active subscription(s) will be transferred — their existing Stripe billing doesn't change automatically.",
         "priceFree": "Free",
         "priceFreeAmount": "Open amount",
         "priceFreeAmountFrom": "Open amount from {amount}",
-        "priceRecurring": "{amount}/year"
+        "priceRecurring": "{amount}/year",
+        "manualAction": "Manually merge two categories",
+        "manualTitle": "Merge two categories",
+        "mergeErrorGeneric": "An error occurred during the merge.",
+        "mismatchWarning": "Note: these categories do not have the same billing type, amount, or method."
       },
       "renewal": {
         "automatic": "Automatic",
@@ -4878,6 +4907,24 @@
       "enRetard": "The payment deadline has passed.",
       "exonere": "No payment is required.",
       "annulee": "This cotisation has been cancelled."
+    }
+  },
+  "groupes": {
+    "view": {
+      "statusFilter": {},
+      "columns": {},
+      "statusBadge": {},
+      "actions": {},
+      "toasts": {}
+    },
+    "form": {},
+    "detail": {
+      "appelColumns": {}
+    },
+    "appel": {
+      "counts": {},
+      "status": {},
+      "toasts": {}
     }
   },
   "membres": {
@@ -5330,6 +5377,12 @@
       "inMessagesSection": " in the Messages section.",
       "messageSectionLabel": "Message",
       "saveAsTemplate": "Save as template",
+      "subjectLabel": "Subject",
+      "subjectPlaceholder": "Email subject…",
+      "subjectTooLong": "Subject too long: {length}/{max} characters — it will be rejected when sending.",
+      "bodyLabel": "Message body",
+      "bodyPlaceholder": "Write your message…",
+      "designTemplateReadonlyHint": "This template uses Visual design mode (images, buttons) — its content can't be edited here. To change it, edit the template in Messages.",
       "language": {
         "title": "Sending language",
         "modeOriginal": "Original language",
@@ -5354,12 +5407,6 @@
         "autoNoEffect": "No current recipient has a preferred language other than French — everyone will receive the original version.",
         "autoExternalNote": "{count, plural, one {# external email (original language)} other {# external emails (original language)}}"
       },
-      "subjectLabel": "Subject",
-      "subjectPlaceholder": "Email subject…",
-      "subjectTooLong": "Subject too long: {length}/{max} characters — it will be rejected when sending.",
-      "bodyLabel": "Message body",
-      "bodyPlaceholder": "Write your message…",
-      "designTemplateReadonlyHint": "This template uses Visual design mode (images, buttons) — its content can't be edited here. To change it, edit the template in Messages.",
       "continue": "Continue",
       "confirmSendTitle": "Send confirmation",
       "confirmSendDescription": "This email will be sent to {recipients}. This action cannot be undone.",
@@ -5922,8 +5969,8 @@
       "actualites": "News",
       "membership": "Join the association",
       "dons": "Make a donation",
-      "contact": "Contact",
-      "boutique": "Store"
+      "boutique": "Store",
+      "contact": "Contact"
     },
     "defaultTitles": {
       "hero": "Welcome",
@@ -5931,9 +5978,9 @@
       "events": "Upcoming events",
       "membership": "Join the association",
       "dons": "Make a donation",
+      "boutique": "Store",
       "actualites": "News",
-      "contact": "Contact",
-      "boutique": "Store"
+      "contact": "Contact"
     },
     "view": {
       "uploadFailedWarning": "{count, plural, one {# image could not be uploaded.} other {# images could not be uploaded.}}",
@@ -5980,9 +6027,9 @@
       "createWithAi": "Create with AI",
       "addSection": "Add a section",
       "donsModuleDisabled": "Donations module disabled — hidden on the public site",
+      "boutiqueModuleDisabled": "Store module disabled — hidden from the public site",
       "deleteSectionTitle": "Delete the section",
-      "deleteSectionDescription": "This action is irreversible.",
-      "boutiqueModuleDisabled": "Store module disabled — hidden from the public site"
+      "deleteSectionDescription": "This action is irreversible."
     },
     "sectionSheet": {
       "editTitle": "Edit — {label}",
@@ -6003,6 +6050,8 @@
       "eventsLimitHint": "Events are automatically pulled from your calendar.",
       "actualitesLimit": "Number of news posts to display",
       "actualitesLimitHint": "Only the first N published news posts will be shown on the site.",
+      "boutiqueLimit": "Number of products to display",
+      "boutiqueLimitHint": "Only the first N active products will be shown on the site.",
       "membershipIntro": "Introductory text",
       "membershipIntroPlaceholder": "Fill out this form to request to join the association…",
       "membershipHint": "Requests appear in the member list with \"Pending\" status.",
@@ -6023,9 +6072,7 @@
       "apply": "Apply",
       "discardTitle": "Discard changes?",
       "discardDescription": "Unapplied changes will be lost.",
-      "discardConfirm": "Discard",
-      "boutiqueLimit": "Number of products to display",
-      "boutiqueLimitHint": "Only the first N active products will be shown on the site."
+      "discardConfirm": "Discard"
     },
     "preview": {
       "donsNoForm": "No donation form selected — hidden on the public site"
@@ -6354,6 +6401,15 @@
       "viewShop": "View shop",
       "orderPlacedTitle": "Order placed!",
       "orderPlacedDescription": "Your order is awaiting payment. The administration will contact you to finalize it.",
+      "paymentSuccessTitle": "Payment confirmed!",
+      "paymentSuccessDescription": "Thank you for your purchase. A confirmation email with your receipt has been sent to you.",
+      "stockAdjustedNotice": "Stock for some items has changed — your cart was adjusted, please review before continuing.",
+      "trackOrderButton": "Track my order",
+      "trackingPageTitle": "Order tracking",
+      "trackingStatusPending": "Awaiting payment",
+      "trackingStatusPaid": "Order paid",
+      "trackingStatusCancelled": "Order cancelled",
+      "trackingNotFound": "Order not found",
       "myOrdersButton": "My orders",
       "continueShopping": "Continue shopping",
       "maxStockReached": "Max stock reached",
@@ -6391,16 +6447,7 @@
         "orderError": "Error placing the order",
         "orderUpdated": "Order updated",
         "orderCancelled": "Order cancelled"
-      },
-      "paymentSuccessTitle": "Payment confirmed!",
-      "paymentSuccessDescription": "Thank you for your purchase. A confirmation email with your receipt has been sent to you.",
-      "stockAdjustedNotice": "Stock for some items has changed — your cart was adjusted, please review before continuing.",
-      "trackOrderButton": "Track my order",
-      "trackingPageTitle": "Order tracking",
-      "trackingStatusPending": "Awaiting payment",
-      "trackingStatusPaid": "Order paid",
-      "trackingStatusCancelled": "Order cancelled",
-      "trackingNotFound": "Order not found"
+      }
     },
     "dons": {
       "title": "My donations",

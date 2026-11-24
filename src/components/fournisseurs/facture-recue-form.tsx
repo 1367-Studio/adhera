@@ -158,6 +158,9 @@ export function FactureRecueForm({ defaultValues, onSubmit, onCancel, loading }:
           )}
         />
       </div>
+      <p className="text-xs text-muted-foreground rounded-md border bg-muted/40 px-3 py-2">
+        {t("fournisseurs.document.categoryHint")}
+      </p>
       <div>
         <label className="text-sm font-medium">{t("fournisseurs.document.file")}</label>
         <div className="mt-1.5">

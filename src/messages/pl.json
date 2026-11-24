@@ -653,6 +653,7 @@
         "annulee": "Anulowane"
       },
       "file": "Dokument",
+      "categoryHint": "Jeśli wybierzesz kategorię, wydatki zostaną zaksięgowane zaraz po fakturze, a nie w momencie płatności.",
       "payment": {
         "toasts": {}
       },

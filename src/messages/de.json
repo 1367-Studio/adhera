@@ -653,6 +653,7 @@
         "annulee": "Eingestellt"
       },
       "file": "Dokument",
+      "categoryHint": "Wenn Sie eine Kategorie wählen, werden die Kosten sofort nach der Rechnungsbuchung verbucht und nicht zum Zeitpunkt der Zahlung.",
       "payment": {
         "toasts": {}
       },

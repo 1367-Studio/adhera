@@ -653,6 +653,7 @@
         "annulee": "Aflyst"
       },
       "file": "Dokument",
+      "categoryHint": "Hvis du vælger en kategori, vil udgiften blive bogført så snart fakturaen er registreret, i stedet for på betalingstidspunktet.",
       "payment": {
         "toasts": {}
       },
