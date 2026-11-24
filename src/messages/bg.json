@@ -789,8 +789,33 @@
       "dragHint": "Дръпнете за пренареждане",
       "resizeHint": "Плъзни ъгъла, за да промениш размера"
     },
-    "aTraiter": {
-      "items": {}
+    "actionsTodo": {
+      "trigger": "Действия, които трябва да се предприемат",
+      "badgeHint": "{count, plural, one {# категория висящо действие} other {# категории висящи действия}}",
+      "empty": "Всичко е актуално, няма никакви действия.",
+      "snooze": "Отложете това действие",
+      "snoozeDialogTitle": "Отложете това действие",
+      "snoozeDialogDescription": "Действието остава скрито за вас до тази дата, след което се появява отново, ако все още има дела за обработка.",
+      "snoozeUntilLabel": "Отложено до",
+      "confirm": "Потвърдете",
+      "loadError": "Не може да се заредят действията, които трябва да се изпълнят.",
+      "snoozedSectionTitle": "{count, plural, one {# действие е отложено} other {# действия са поставени на пауза}}",
+      "snoozedUntil": "Докато {date}",
+      "cancelSnooze": "Отмени задържането",
+      "actionLabels": {
+        "voirEtRelancer": "Вижте и рестартирайте",
+        "examiner": "Examiner",
+        "consulter": "Консултирайте се"
+      },
+      "rows": {
+        "cotisations-en-attente": "{count, plural, one {# висяща членска такса} other {# чакащи вноски}}",
+        "materiel-en-retard": "{count, plural, one {# закъснели материали} other {# закъснели материали}}",
+        "membres-a-valider": "{count, plural, one {# член за валидиране} other {# членове, които ще бъдат валидирани}}",
+        "dons-a-encaisser": "{count, plural, one {# подарък, който да бъде осребрен} other {# дарения за събиране}}",
+        "rapprochement-bancaire": "{count, plural, one {# операция за сравнение} other {# операции за сравнение}}",
+        "notes-de-frais-a-valider": "{count, plural, one {# отчет за разходите, който трябва да бъде валидиран} other {# отчети за разходи, които трябва да бъдат валидирани}}",
+        "commandes-a-preparer": "{count, plural, one {# поръчка за подготовка} other {# заповеди за подготовка}}"
+      }
     },
     "stats": {
       "financialBalance": "Финансов баланс",
@@ -863,33 +888,8 @@
       "almostReached": "Лимитът е почти достигнат",
       "limitReached": "Лимитът е достигнат"
     },
-    "actionsTodo": {
-      "trigger": "Действия, които трябва да се предприемат",
-      "badgeHint": "{count, plural, one {# категория висящо действие} other {# категории висящи действия}}",
-      "empty": "Всичко е актуално, няма никакви действия.",
-      "snooze": "Отложете това действие",
-      "snoozeDialogTitle": "Отложете това действие",
-      "snoozeDialogDescription": "Действието остава скрито за вас до тази дата, след което се появява отново, ако все още има дела за обработка.",
-      "snoozeUntilLabel": "Отложено до",
-      "confirm": "Потвърдете",
-      "loadError": "Не може да се заредят действията, които трябва да се изпълнят.",
-      "snoozedSectionTitle": "{count, plural, one {# действие е отложено} other {# действия са поставени на пауза}}",
-      "snoozedUntil": "Докато {date}",
-      "cancelSnooze": "Отмени задържането",
-      "actionLabels": {
-        "voirEtRelancer": "Вижте и рестартирайте",
-        "examiner": "Examiner",
-        "consulter": "Консултирайте се"
-      },
-      "rows": {
-        "cotisations-en-attente": "{count, plural, one {# висяща членска такса} other {# чакащи вноски}}",
-        "materiel-en-retard": "{count, plural, one {# закъснели материали} other {# закъснели материали}}",
-        "membres-a-valider": "{count, plural, one {# член за валидиране} other {# членове, които ще бъдат валидирани}}",
-        "dons-a-encaisser": "{count, plural, one {# подарък, който да бъде осребрен} other {# дарения за събиране}}",
-        "rapprochement-bancaire": "{count, plural, one {# операция за сравнение} other {# операции за сравнение}}",
-        "notes-de-frais-a-valider": "{count, plural, one {# отчет за разходите, който трябва да бъде валидиран} other {# отчети за разходи, които трябва да бъдат валидирани}}",
-        "commandes-a-preparer": "{count, plural, one {# поръчка за подготовка} other {# заповеди за подготовка}}"
-      }
+    "aTraiter": {
+      "items": {}
     }
   },
   "notifications": {
@@ -1144,7 +1144,12 @@
       "memoNoHistory": "Няма исторически данни",
       "caveats": {
         "stocksMissingCostPrice": "{count} варианти без записана покупна стойност, изключени от оценката"
-      }
+      },
+      "refreshLedger": "Обновете дневника",
+      "refreshLedgerTooltip": "Този отчет не се актуализира в реално време с всеки доход или разход — кликнете, за да синхронизирате с най-новите движения.",
+      "refreshLedgerSuccessPosted": "{count, plural, =0 {Няма ново движение} one {# синхронизирано движение} other {# синхронизирани движения}}",
+      "refreshLedgerSuccessReversed": "{count, plural, =0 {} one {, # се прилага анулиране} other {, # се прилагат анулирания}}",
+      "refreshLedgerError": "Не може да се обнови логът. Моля, опитайте отново."
     },
     "compteResultat": {
       "title": "Отчет за приходите и разходите",
@@ -1687,7 +1692,11 @@
       "suggestedMatches": "Предложени съвпадения",
       "typeIncome": "Приход",
       "typeExpense": "Разходи",
-      "confirm": "Валидирайте помирението"
+      "confirm": "Валидирайте помирението",
+      "selectedCount": "{count, plural, one {# избран елемент} other {# избрани елементи}}"
+    },
+    "exerciceGuard": {
+      "closedError": "Това упражнение е закрито — невъзможно е да се създаде или модифицира запис за този период."
     }
   },
   "evenements": {
@@ -2961,11 +2970,14 @@
       },
       "othersCount": "{count, plural, one {+# други} other {+# други}}",
       "statusFilterAll": "Всички",
+      "statusFilterToPrepare": "За подготовка",
       "salesCountLabel": "Брой продажби",
       "revenueTotalLabel": "Общи приходи",
       "unitsSold": "{count, plural, one {# продаден} other {# продадени}}",
       "pendingCountLabel": "Чакащи поръчки",
       "pendingAmountLabel": "Чакаща сума",
+      "toPrepareCountLabel": "Заповеди за подготовка",
+      "toPrepareAmountLabel": "Количество за подготовка",
       "cancelledCountLabel": "Анулирани поръчки",
       "cancelledAmountLabel": "Анулирана сума",
       "deleteProduitTitle": "Премахване на продукта",
@@ -2978,10 +2990,7 @@
         "productDeleted": "Прекратен продукт",
         "deleteError": "Изтриване на грешки",
         "orderUpdated": "Актуализиран ред"
-      },
-      "statusFilterToPrepare": "За подготовка",
-      "toPrepareCountLabel": "Заповеди за подготовка",
-      "toPrepareAmountLabel": "Количество за подготовка"
+      }
     },
     "payModal": {
       "title": "Парична поръчка",

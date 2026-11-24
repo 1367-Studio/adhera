@@ -3472,7 +3472,14 @@ model Expense {
 model BankReconciliation {
   id                     String    @id @default(cuid())
   associationId          String
-  bankTransactionId      String    @unique
+  // NOT @unique, as of FORM-116 block 8 — a Stripe payout can net several Income/Expense rows
+  // into one BankTransaction line, so this one transaction legitimately needs several
+  // BankReconciliation rows. incomeId/expenseId/reimbursementRequestId stay @unique below: each
+  // Income/Expense can still only ever belong to one reconciliation. See /api/finances/
+  // reconcile/route.ts's claimBankTransaction for the conditional-update guard that replaces
+  // the race protection this unique index used to provide (closed by migration
+  // 20260706120000_bank_reconciliation_unique_transaction, reopened here deliberately).
+  bankTransactionId      String
   incomeId               String?   @unique
   expenseId              String?   @unique
   // NOT @unique, unlike incomeId/expenseId — a single AccountTransfer has two legs (the debit
@@ -3500,6 +3507,7 @@ model BankReconciliation {
   reimbursementRequest ReimbursementRequest? @relation(fields: [reimbursementRequestId], references: [id], onDelete: SetNull)
 
   @@index([associationId])
+  @@index([bankTransactionId])
   @@index([transferId])
 }
 

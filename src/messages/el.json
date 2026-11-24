@@ -789,8 +789,33 @@
       "dragHint": "Σύρετε για αναδιάταξη",
       "resizeHint": "Σύρετε τη γωνία για αλλαγή μεγέθους"
     },
-    "aTraiter": {
-      "items": {}
+    "actionsTodo": {
+      "trigger": "Ενέργειες που πρέπει να γίνουν",
+      "badgeHint": "{count, plural, one {# κατηγορία εκκρεμούς ενέργειας} other {# κατηγορίες εκκρεμών ενεργειών}}",
+      "empty": "Όλα είναι ενημερωμένα, δεν υπάρχει κάποια ενέργεια να διαχειριστώ.",
+      "snooze": "Αναβάλετε αυτή την ενέργεια",
+      "snoozeDialogTitle": "Αναβάλετε αυτή την ενέργεια",
+      "snoozeDialogDescription": "Η ενέργεια παραμένει κρυφή για εσάς μέχρι εκείνη την ημερομηνία και μετά επανεμφανίζεται αν υπάρχουν ακόμα υποθέσεις προς επεξεργασία.",
+      "snoozeUntilLabel": "Αναβλήθηκε μέχρι",
+      "confirm": "Επιβεβαίωση",
+      "loadError": "Αδυναμία φόρτωσης των ενεργειών που πρέπει να γίνουν.",
+      "snoozedSectionTitle": "{count, plural, one {# ενέργεια αναβάλλεται} other {# ενέργειες που τίθενται σε αναμονή}}",
+      "snoozedUntil": "Μέχρι {date}",
+      "cancelSnooze": "Ακύρωση της κράτησης",
+      "actionLabels": {
+        "voirEtRelancer": "Δείτε και επανεκκινήστε",
+        "examiner": "Εξεταστής",
+        "consulter": "Συμβουλευτείτε"
+      },
+      "rows": {
+        "cotisations-en-attente": "{count, plural, one {# εκκρεμεί συνδρομή} other {# εκκρεμείς συνεισφορές}}",
+        "materiel-en-retard": "{count, plural, one {# καθυστερημένες επιστροφές υλικών} other {# καθυστερημένες επιστροφές υλικών}}",
+        "membres-a-valider": "{count, plural, one {# μέλος για επικύρωση} other {# μέλη προς επικύρωση}}",
+        "dons-a-encaisser": "{count, plural, one {# δώρο που θα εξαργυρωθεί} other {# δωρεές προς συλλογή}}",
+        "rapprochement-bancaire": "{count, plural, one {# λειτουργία προς σύγκριση} other {# λειτουργίες προς σύγκριση}}",
+        "notes-de-frais-a-valider": "{count, plural, one {# αναφορά εξόδων προς επικύρωση} other {# εκθέσεις εξόδων προς επικύρωση}}",
+        "commandes-a-preparer": "{count, plural, one {# παραγγελία για προετοιμασία} other {# παραγγελίες για προετοιμασία}}"
+      }
     },
     "stats": {
       "financialBalance": "Χρηματοοικονομική ισορροπία",
@@ -863,33 +888,8 @@
       "almostReached": "Το όριο σχεδόν συμπληρώθηκε",
       "limitReached": "Το όριο συμπληρώθηκε"
     },
-    "actionsTodo": {
-      "trigger": "Ενέργειες που πρέπει να γίνουν",
-      "badgeHint": "{count, plural, one {# κατηγορία εκκρεμούς ενέργειας} other {# κατηγορίες εκκρεμών ενεργειών}}",
-      "empty": "Όλα είναι ενημερωμένα, δεν υπάρχει κάποια ενέργεια να διαχειριστώ.",
-      "snooze": "Αναβάλετε αυτή την ενέργεια",
-      "snoozeDialogTitle": "Αναβάλετε αυτή την ενέργεια",
-      "snoozeDialogDescription": "Η ενέργεια παραμένει κρυφή για εσάς μέχρι εκείνη την ημερομηνία και μετά επανεμφανίζεται αν υπάρχουν ακόμα υποθέσεις προς επεξεργασία.",
-      "snoozeUntilLabel": "Αναβλήθηκε μέχρι",
-      "confirm": "Επιβεβαίωση",
-      "loadError": "Αδυναμία φόρτωσης των ενεργειών που πρέπει να γίνουν.",
-      "snoozedSectionTitle": "{count, plural, one {# ενέργεια αναβάλλεται} other {# ενέργειες που τίθενται σε αναμονή}}",
-      "snoozedUntil": "Μέχρι {date}",
-      "cancelSnooze": "Ακύρωση της κράτησης",
-      "actionLabels": {
-        "voirEtRelancer": "Δείτε και επανεκκινήστε",
-        "examiner": "Εξεταστής",
-        "consulter": "Συμβουλευτείτε"
-      },
-      "rows": {
-        "cotisations-en-attente": "{count, plural, one {# εκκρεμεί συνδρομή} other {# εκκρεμείς συνεισφορές}}",
-        "materiel-en-retard": "{count, plural, one {# καθυστερημένες επιστροφές υλικών} other {# καθυστερημένες επιστροφές υλικών}}",
-        "membres-a-valider": "{count, plural, one {# μέλος για επικύρωση} other {# μέλη προς επικύρωση}}",
-        "dons-a-encaisser": "{count, plural, one {# δώρο που θα εξαργυρωθεί} other {# δωρεές προς συλλογή}}",
-        "rapprochement-bancaire": "{count, plural, one {# λειτουργία προς σύγκριση} other {# λειτουργίες προς σύγκριση}}",
-        "notes-de-frais-a-valider": "{count, plural, one {# αναφορά εξόδων προς επικύρωση} other {# εκθέσεις εξόδων προς επικύρωση}}",
-        "commandes-a-preparer": "{count, plural, one {# παραγγελία για προετοιμασία} other {# παραγγελίες για προετοιμασία}}"
-      }
+    "aTraiter": {
+      "items": {}
     }
   },
   "notifications": {
@@ -1144,7 +1144,12 @@
       "memoNoHistory": "Δεν υπάρχουν ιστορικά δεδομένα",
       "caveats": {
         "stocksMissingCostPrice": "{count} παραλλαγές χωρίς καταγεγραμμένο κόστος αγοράς, οι οποίες εξαιρούνται από την εκτίμηση"
-      }
+      },
+      "refreshLedger": "Ανανέωση του αρχείου καταγραφής",
+      "refreshLedgerTooltip": "Αυτή η αναφορά δεν ενημερώνεται σε πραγματικό χρόνο με κάθε εισόδημα ή έξοδο — κάντε κλικ για συγχρονισμό με τις πιο πρόσφατες κινήσεις.",
+      "refreshLedgerSuccessPosted": "{count, plural, =0 {Καμία νέα κίνηση} one {# συγχρονισμένη κίνηση} other {# συγχρονισμένες κινήσεις}}",
+      "refreshLedgerSuccessReversed": "{count, plural, =0 {} one {, # ακύρωση εφαρμόστηκε} other {, # ακυρώσεις που εφαρμόστηκαν}}",
+      "refreshLedgerError": "Αδυναμία ανανέωσης του αρχείου καταγραφής. Παρακαλώ δοκιμάστε ξανά."
     },
     "compteResultat": {
       "title": "Κατάσταση αποτελεσμάτων",
@@ -1687,7 +1692,11 @@
       "suggestedMatches": "Προτεινόμενες αντιστοιχίσεις",
       "typeIncome": "Έσοδο",
       "typeExpense": "Έξοδα",
-      "confirm": "Επικύρωση της συνδιαλλαγής"
+      "confirm": "Επικύρωση της συνδιαλλαγής",
+      "selectedCount": "{count, plural, one {# επιλεγμένο στοιχείο} other {# επιλεγμένα αντικείμενα}}"
+    },
+    "exerciceGuard": {
+      "closedError": "Αυτή η διαδικασία ολοκληρώνεται — είναι αδύνατο να δημιουργηθεί ή να τροποποιηθεί εγγραφή για αυτή την περίοδο."
     }
   },
   "evenements": {
@@ -2961,11 +2970,14 @@
       },
       "othersCount": "{count, plural, one {+# άλλο} other {+# άλλα}}",
       "statusFilterAll": "Όλα",
+      "statusFilterToPrepare": "Για την προετοιμασία",
       "salesCountLabel": "Αριθμός πωλήσεων",
       "revenueTotalLabel": "Συνολικά έσοδα",
       "unitsSold": "{count, plural, one {# πωλήθηκε} other {# πωλήθηκαν}}",
       "pendingCountLabel": "Εκκρεμείς παραγγελίες",
       "pendingAmountLabel": "Εκκρεμές ποσό",
+      "toPrepareCountLabel": "Εντολές για προετοιμασία",
+      "toPrepareAmountLabel": "Ποσότητα προς προετοιμασία",
       "cancelledCountLabel": "Ακυρωμένες παραγγελίες",
       "cancelledAmountLabel": "Ακυρωμένο ποσό",
       "deleteProduitTitle": "Αφαίρεση προϊόντος",
@@ -2978,10 +2990,7 @@
         "productDeleted": "Προϊόν που έχει διακοπεί",
         "deleteError": "Σφάλμα κατά τη διαγραφή",
         "orderUpdated": "Ενημερωμένη παραγγελία"
-      },
-      "statusFilterToPrepare": "Για την προετοιμασία",
-      "toPrepareCountLabel": "Εντολές για προετοιμασία",
-      "toPrepareAmountLabel": "Ποσότητα προς προετοιμασία"
+      }
     },
     "payModal": {
       "title": "Εντολή μετρητών",

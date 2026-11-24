@@ -789,8 +789,33 @@
       "dragHint": "Ziehen zum Umarrangieren",
       "resizeHint": "Ziehe die Ecke, um die Größe anzupassen"
     },
-    "aTraiter": {
-      "items": {}
+    "actionsTodo": {
+      "trigger": "Zu ergreifende Maßnahmen",
+      "badgeHint": "{count, plural, one {# ausstehende Aktionskategorie} other {# Kategorien ausstehender Aktionen}}",
+      "empty": "Alles ist auf dem neuesten Stand, keine Aktion zu bewältigen.",
+      "snooze": "Diese Aktion verschieben",
+      "snoozeDialogTitle": "Diese Aktion verschieben",
+      "snoozeDialogDescription": "Die Aktion bleibt bis zu diesem Datum für Sie verborgen und erscheint dann wieder, wenn noch Fälle zu bearbeiten sind.",
+      "snoozeUntilLabel": "Verschoben bis",
+      "confirm": "Bestätigen",
+      "loadError": "Die auszuführenden Aktionen können nicht geladen werden.",
+      "snoozedSectionTitle": "{count, plural, one {# Aktion auf Eis gelegt} other {# Aktionen, die auf Eis gelegt wurden}}",
+      "snoozedUntil": "Bis {date}",
+      "cancelSnooze": "Sperre aufheben",
+      "actionLabels": {
+        "voirEtRelancer": "Siehe und Neustart",
+        "examiner": "Prüfer",
+        "consulter": "Konsultieren"
+      },
+      "rows": {
+        "cotisations-en-attente": "{count, plural, one {# ausstehende Mitgliedsgebühr} other {# ausstehende Beiträge}}",
+        "materiel-en-retard": "{count, plural, one {# späte Materialrenditen} other {# späte Materialrenditen}}",
+        "membres-a-valider": "{count, plural, one {# Mitglied zum Validieren} other {# Mitglieder zu validieren}}",
+        "dons-a-encaisser": "{count, plural, one {# Geschenk, das eingelöst werden soll} other {# Spenden einzusammeln}}",
+        "rapprochement-bancaire": "{count, plural, one {# zu vergleichende Operation} other {# Operationen zum Vergleichen}}",
+        "notes-de-frais-a-valider": "{count, plural, one {# Ausgabenbericht zu validieren} other {# Ausgabenberichte zu validieren}}",
+        "commandes-a-preparer": "{count, plural, one {# Vorbereitungsauftrag} other {# Befehle zur Vorbereitung}}"
+      }
     },
     "stats": {
       "financialBalance": "Finanzbilanz",
@@ -863,33 +888,8 @@
       "almostReached": "Limit fast erreicht",
       "limitReached": "Limit erreicht"
     },
-    "actionsTodo": {
-      "trigger": "Zu ergreifende Maßnahmen",
-      "badgeHint": "{count, plural, one {# ausstehende Aktionskategorie} other {# Kategorien ausstehender Aktionen}}",
-      "empty": "Alles ist auf dem neuesten Stand, keine Aktion zu bewältigen.",
-      "snooze": "Diese Aktion verschieben",
-      "snoozeDialogTitle": "Diese Aktion verschieben",
-      "snoozeDialogDescription": "Die Aktion bleibt bis zu diesem Datum für Sie verborgen und erscheint dann wieder, wenn noch Fälle zu bearbeiten sind.",
-      "snoozeUntilLabel": "Verschoben bis",
-      "confirm": "Bestätigen",
-      "loadError": "Die auszuführenden Aktionen können nicht geladen werden.",
-      "snoozedSectionTitle": "{count, plural, one {# Aktion auf Eis gelegt} other {# Aktionen, die auf Eis gelegt wurden}}",
-      "snoozedUntil": "Bis {date}",
-      "cancelSnooze": "Sperre aufheben",
-      "actionLabels": {
-        "voirEtRelancer": "Siehe und Neustart",
-        "examiner": "Prüfer",
-        "consulter": "Konsultieren"
-      },
-      "rows": {
-        "cotisations-en-attente": "{count, plural, one {# ausstehende Mitgliedsgebühr} other {# ausstehende Beiträge}}",
-        "materiel-en-retard": "{count, plural, one {# späte Materialrenditen} other {# späte Materialrenditen}}",
-        "membres-a-valider": "{count, plural, one {# Mitglied zum Validieren} other {# Mitglieder zu validieren}}",
-        "dons-a-encaisser": "{count, plural, one {# Geschenk, das eingelöst werden soll} other {# Spenden einzusammeln}}",
-        "rapprochement-bancaire": "{count, plural, one {# zu vergleichende Operation} other {# Operationen zum Vergleichen}}",
-        "notes-de-frais-a-valider": "{count, plural, one {# Ausgabenbericht zu validieren} other {# Ausgabenberichte zu validieren}}",
-        "commandes-a-preparer": "{count, plural, one {# Vorbereitungsauftrag} other {# Befehle zur Vorbereitung}}"
-      }
+    "aTraiter": {
+      "items": {}
     }
   },
   "notifications": {
@@ -1144,7 +1144,12 @@
       "memoNoHistory": "Keine historischen Daten",
       "caveats": {
         "stocksMissingCostPrice": "{count} Varianten ohne Kaufkosten erfasst, ausgeschlossen aus der Schätzung"
-      }
+      },
+      "refreshLedger": "Aktualisieren Sie das Protokoll",
+      "refreshLedgerTooltip": "Dieser Bericht wird nicht in Echtzeit mit allen Einnahmen oder Ausgaben aktualisiert – klicken Sie, um mit den neuesten Bewegungen zu synchronisieren.",
+      "refreshLedgerSuccessPosted": "{count, plural, =0 {Keine neue Bewegung} one {# synchronisierte Bewegung} other {# synchronisierte Bewegungen}}",
+      "refreshLedgerSuccessReversed": "{count, plural, =0 {} one {, # Antrag auf Stornierung} other {, # angewandte Stornierungen}}",
+      "refreshLedgerError": "Kann das Protokoll nicht aktualisieren. Bitte versuchen Sie es erneut."
     },
     "compteResultat": {
       "title": "Gewinn- und Verlustrechnung",
@@ -1687,7 +1692,11 @@
       "suggestedMatches": "Vorgeschlagene Spiele",
       "typeIncome": "Einnahme",
       "typeExpense": "Kosten",
-      "confirm": "Validieren Sie die Schlichtung"
+      "confirm": "Validieren Sie die Schlichtung",
+      "selectedCount": "{count, plural, one {# ausgewähltes Element} other {# ausgewählten Elemente}}"
+    },
+    "exerciceGuard": {
+      "closedError": "Diese Übung ist abgeschlossen – es ist unmöglich, für diesen Zeitraum einen Datensatz zu erstellen oder zu ändern."
     }
   },
   "evenements": {
@@ -2961,11 +2970,14 @@
       },
       "othersCount": "{count, plural, one {+# andere} other {+# anderen}}",
       "statusFilterAll": "Alle",
+      "statusFilterToPrepare": "Zur Vorbereitung",
       "salesCountLabel": "Anzahl der Verkäufe",
       "revenueTotalLabel": "Gesamtumsatz",
       "unitsSold": "{count, plural, one {# verkauft} other {# verkauft}}",
       "pendingCountLabel": "Ausstehende Bestellungen",
       "pendingAmountLabel": "Ausstehender Betrag",
+      "toPrepareCountLabel": "Befehle zur Vorbereitung",
+      "toPrepareAmountLabel": "Zu erstellender Betrag",
       "cancelledCountLabel": "Stornierte Bestellungen",
       "cancelledAmountLabel": "Stornierter Betrag",
       "deleteProduitTitle": "Produkt entfernen",
@@ -2978,10 +2990,7 @@
         "productDeleted": "Eingestelltes Produkt",
         "deleteError": "Fehler beim Löschen",
         "orderUpdated": "Aktualisierte Reihenfolge"
-      },
-      "statusFilterToPrepare": "Zur Vorbereitung",
-      "toPrepareCountLabel": "Befehle zur Vorbereitung",
-      "toPrepareAmountLabel": "Zu erstellender Betrag"
+      }
     },
     "payModal": {
       "title": "Baranweisung",

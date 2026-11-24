@@ -789,8 +789,33 @@
       "dragHint": "Trascina per riorganizzare",
       "resizeHint": "Trascina l'angolo per ridimensionarlo"
     },
-    "aTraiter": {
-      "items": {}
+    "actionsTodo": {
+      "trigger": "Azioni da intraprendere",
+      "badgeHint": "{count, plural, one {# categoria di azione pendente} other {# categorie di azioni in attesa}}",
+      "empty": "Tutto è aggiornato, nessuna azione da gestire.",
+      "snooze": "Rinviate questa azione",
+      "snoozeDialogTitle": "Rinviate questa azione",
+      "snoozeDialogDescription": "L''azione rimane nascosta per te fino a quella data, poi riappare se ci sono ancora casi da trattare.",
+      "snoozeUntilLabel": "Posticipato fino a",
+      "confirm": "Conferma",
+      "loadError": "Impossibile caricare le azioni da eseguire.",
+      "snoozedSectionTitle": "{count, plural, one {# azione sospesa} other {# azioni sospese}}",
+      "snoozedUntil": "Fino a quando {date}",
+      "cancelSnooze": "Annulla la blocca",
+      "actionLabels": {
+        "voirEtRelancer": "Vedi e rilancia",
+        "examiner": "Esaminatore",
+        "consulter": "Consulta"
+      },
+      "rows": {
+        "cotisations-en-attente": "{count, plural, one {# tariffa associativa pendente} other {# contributi pendenti}}",
+        "materiel-en-retard": "{count, plural, one {# riporti tardi di materiale} other {# riporti tardi di materiale}}",
+        "membres-a-valider": "{count, plural, one {# membro da validare} other {# membri da convalidare}}",
+        "dons-a-encaisser": "{count, plural, one {# regalo da incassare} other {# donazioni da raccogliere}}",
+        "rapprochement-bancaire": "{count, plural, one {# operazione da confrontare} other {# operazioni da confrontare}}",
+        "notes-de-frais-a-valider": "{count, plural, one {# rapporto spese da validare} other {# i report di spesa da convalidare}}",
+        "commandes-a-preparer": "{count, plural, one {# per preparare} other {# ordini di preparazione}}"
+      }
     },
     "stats": {
       "financialBalance": "Saldo finanziario",
@@ -863,33 +888,8 @@
       "almostReached": "Limite quasi esaurito",
       "limitReached": "Limite raggiunto"
     },
-    "actionsTodo": {
-      "trigger": "Azioni da intraprendere",
-      "badgeHint": "{count, plural, one {# categoria di azione pendente} other {# categorie di azioni in attesa}}",
-      "empty": "Tutto è aggiornato, nessuna azione da gestire.",
-      "snooze": "Rinviate questa azione",
-      "snoozeDialogTitle": "Rinviate questa azione",
-      "snoozeDialogDescription": "L''azione rimane nascosta per te fino a quella data, poi riappare se ci sono ancora casi da trattare.",
-      "snoozeUntilLabel": "Posticipato fino a",
-      "confirm": "Conferma",
-      "loadError": "Impossibile caricare le azioni da eseguire.",
-      "snoozedSectionTitle": "{count, plural, one {# azione sospesa} other {# azioni sospese}}",
-      "snoozedUntil": "Fino a quando {date}",
-      "cancelSnooze": "Annulla la blocca",
-      "actionLabels": {
-        "voirEtRelancer": "Vedi e rilancia",
-        "examiner": "Esaminatore",
-        "consulter": "Consulta"
-      },
-      "rows": {
-        "cotisations-en-attente": "{count, plural, one {# tariffa associativa pendente} other {# contributi pendenti}}",
-        "materiel-en-retard": "{count, plural, one {# riporti tardi di materiale} other {# riporti tardi di materiale}}",
-        "membres-a-valider": "{count, plural, one {# membro da validare} other {# membri da convalidare}}",
-        "dons-a-encaisser": "{count, plural, one {# regalo da incassare} other {# donazioni da raccogliere}}",
-        "rapprochement-bancaire": "{count, plural, one {# operazione da confrontare} other {# operazioni da confrontare}}",
-        "notes-de-frais-a-valider": "{count, plural, one {# rapporto spese da validare} other {# i report di spesa da convalidare}}",
-        "commandes-a-preparer": "{count, plural, one {# per preparare} other {# ordini di preparazione}}"
-      }
+    "aTraiter": {
+      "items": {}
     }
   },
   "notifications": {
@@ -1144,7 +1144,12 @@
       "memoNoHistory": "Nessun dato storico",
       "caveats": {
         "stocksMissingCostPrice": "{count} varianti senza costo di acquisto registrato, escluse dalla stima"
-      }
+      },
+      "refreshLedger": "Aggiorna il registro",
+      "refreshLedgerTooltip": "Questo report non viene aggiornato in tempo reale con ogni reddito o spesa — clicca per sincronizzare i movimenti più recenti.",
+      "refreshLedgerSuccessPosted": "{count, plural, =0 {Nessun nuovo movimento} one {# movimento sincronizzato} other {# movimenti sincronizzati}}",
+      "refreshLedgerSuccessReversed": "{count, plural, =0 {} one {, # cancellazione applicata} other {, # cancellazioni applicate}}",
+      "refreshLedgerError": "Impossibile aggiornare il registro. Riprova."
     },
     "compteResultat": {
       "title": "Conto economico",
@@ -1687,7 +1692,11 @@
       "suggestedMatches": "Incontri suggeriti",
       "typeIncome": "Entrata",
       "typeExpense": "Spese",
-      "confirm": "Convalida la conciliazione"
+      "confirm": "Convalida la conciliazione",
+      "selectedCount": "{count, plural, one {# elemento selezionato} other {# elementi selezionati}}"
+    },
+    "exerciceGuard": {
+      "closedError": "Questo esercizio è chiuso — è impossibile creare o modificare un record per questo periodo."
     }
   },
   "evenements": {
@@ -2961,11 +2970,14 @@
       },
       "othersCount": "{count, plural, one {+# altro} other {+# altri}}",
       "statusFilterAll": "Tutti",
+      "statusFilterToPrepare": "Per prepararsi",
       "salesCountLabel": "Numero di vendite",
       "revenueTotalLabel": "Ricavi totali",
       "unitsSold": "{count, plural, one {# venduto} other {# venduti}}",
       "pendingCountLabel": "Ordini in attesa",
       "pendingAmountLabel": "Importo in attesa",
+      "toPrepareCountLabel": "Ordini da preparare",
+      "toPrepareAmountLabel": "Quantità da preparare",
       "cancelledCountLabel": "Ordini annullati",
       "cancelledAmountLabel": "Importo annullato",
       "deleteProduitTitle": "Rimuovi il prodotto",
@@ -2978,10 +2990,7 @@
         "productDeleted": "Prodotto dismesso",
         "deleteError": "Eliminazione degli errori",
         "orderUpdated": "Ordine aggiornato"
-      },
-      "statusFilterToPrepare": "Per prepararsi",
-      "toPrepareCountLabel": "Ordini da preparare",
-      "toPrepareAmountLabel": "Quantità da preparare"
+      }
     },
     "payModal": {
       "title": "Vaglia di cassa",

@@ -164,7 +164,7 @@ export const POST = withAdminAuth(async (req, ctx) => {
   let exercice: Awaited<ReturnType<typeof resolveExerciceForDate>> = null
   if (paymentStatus === "PAID") {
     exercice = await resolveExerciceForDate(ctx.associationId, purchaseDateParsed)
-    const exerciceGuard = closedExerciceGuard(exercice?.status)
+    const exerciceGuard = await closedExerciceGuard(exercice?.status)
     if (exerciceGuard) return exerciceGuard
   }
 

@@ -789,8 +789,33 @@
       "dragHint": "Sleep om te herschikken",
       "resizeHint": "Sleep de hoek om de grootte te wijzigen"
     },
-    "aTraiter": {
-      "items": {}
+    "actionsTodo": {
+      "trigger": "Acties die moeten worden genomen",
+      "badgeHint": "{count, plural, one {# openstaande actiecategorie} other {# categorieën van lopende acties}}",
+      "empty": "Alles is up-to-date, er is geen actie om mee te doen.",
+      "snooze": "Deze actie uitstellen",
+      "snoozeDialogTitle": "Deze actie uitstellen",
+      "snoozeDialogDescription": "De actie blijft voor u verborgen tot die datum en verschijnt dan weer als er nog zaken te verwerken zijn.",
+      "snoozeUntilLabel": "Uitgesteld tot",
+      "confirm": "Bevestig",
+      "loadError": "Kan de te doen acties niet laden.",
+      "snoozedSectionTitle": "{count, plural, one {# actie opgeschort} other {# acties die op pauze zijn gezet}}",
+      "snoozedUntil": "Tot {date}",
+      "cancelSnooze": "Annuleer de wacht",
+      "actionLabels": {
+        "voirEtRelancer": "Zie en herlanceren",
+        "examiner": "Examinator",
+        "consulter": "Overleg"
+      },
+      "rows": {
+        "cotisations-en-attente": "{count, plural, one {# lopende lidmaatschapsbijdrage} other {# openstaande bijdragen}}",
+        "materiel-en-retard": "{count, plural, one {# late materiaalopbrengsten} other {# late materiaalopbrengsten}}",
+        "membres-a-valider": "{count, plural, one {# lid te valideren} other {# leden te valideren}}",
+        "dons-a-encaisser": "{count, plural, one {# cadeau om te verzilveren} other {# donaties om in te zamelen}}",
+        "rapprochement-bancaire": "{count, plural, one {# te vergelijken operatie} other {# operaties om te vergelijken}}",
+        "notes-de-frais-a-valider": "{count, plural, one {# onkostenrapport te valideren} other {# onkostenrapporten te valideren}}",
+        "commandes-a-preparer": "{count, plural, one {# om voor te bereiden} other {# orders om voor te bereiden}}"
+      }
     },
     "stats": {
       "financialBalance": "Financiële balans",
@@ -863,33 +888,8 @@
       "almostReached": "Limiet vrijwel bereikt",
       "limitReached": "Limiet bereikt"
     },
-    "actionsTodo": {
-      "trigger": "Acties die moeten worden genomen",
-      "badgeHint": "{count, plural, one {# openstaande actiecategorie} other {# categorieën van lopende acties}}",
-      "empty": "Alles is up-to-date, er is geen actie om mee te doen.",
-      "snooze": "Deze actie uitstellen",
-      "snoozeDialogTitle": "Deze actie uitstellen",
-      "snoozeDialogDescription": "De actie blijft voor u verborgen tot die datum en verschijnt dan weer als er nog zaken te verwerken zijn.",
-      "snoozeUntilLabel": "Uitgesteld tot",
-      "confirm": "Bevestig",
-      "loadError": "Kan de te doen acties niet laden.",
-      "snoozedSectionTitle": "{count, plural, one {# actie opgeschort} other {# acties die op pauze zijn gezet}}",
-      "snoozedUntil": "Tot {date}",
-      "cancelSnooze": "Annuleer de wacht",
-      "actionLabels": {
-        "voirEtRelancer": "Zie en herlanceren",
-        "examiner": "Examinator",
-        "consulter": "Overleg"
-      },
-      "rows": {
-        "cotisations-en-attente": "{count, plural, one {# lopende lidmaatschapsbijdrage} other {# openstaande bijdragen}}",
-        "materiel-en-retard": "{count, plural, one {# late materiaalopbrengsten} other {# late materiaalopbrengsten}}",
-        "membres-a-valider": "{count, plural, one {# lid te valideren} other {# leden te valideren}}",
-        "dons-a-encaisser": "{count, plural, one {# cadeau om te verzilveren} other {# donaties om in te zamelen}}",
-        "rapprochement-bancaire": "{count, plural, one {# te vergelijken operatie} other {# operaties om te vergelijken}}",
-        "notes-de-frais-a-valider": "{count, plural, one {# onkostenrapport te valideren} other {# onkostenrapporten te valideren}}",
-        "commandes-a-preparer": "{count, plural, one {# om voor te bereiden} other {# orders om voor te bereiden}}"
-      }
+    "aTraiter": {
+      "items": {}
     }
   },
   "notifications": {
@@ -1144,7 +1144,12 @@
       "memoNoHistory": "Geen historische gegevens",
       "caveats": {
         "stocksMissingCostPrice": "{count} varianten zonder aankoopprijs geregistreerd, uitgesloten van de schatting"
-      }
+      },
+      "refreshLedger": "Vernieuw het logboek",
+      "refreshLedgerTooltip": "Dit rapport wordt niet in realtime bijgewerkt bij elke inkomsten of uitgave — klik om te synchroniseren met de meest recente bewegingen.",
+      "refreshLedgerSuccessPosted": "{count, plural, =0 {Geen nieuwe beweging} one {# gesynchroniseerde beweging} other {# gesynchroniseerde bewegingen}}",
+      "refreshLedgerSuccessReversed": "{count, plural, =0 {} one {, # annulering toegepast} other {, # gehanteerde annuleringen}}",
+      "refreshLedgerError": "Kan het logboek niet verversen. Probeer het opnieuw."
     },
     "compteResultat": {
       "title": "Resultatenrekening",
@@ -1687,7 +1692,11 @@
       "suggestedMatches": "Voorgestelde wedstrijden",
       "typeIncome": "Inkomst",
       "typeExpense": "Kosten",
-      "confirm": "Valideer de bemiddeling"
+      "confirm": "Valideer de bemiddeling",
+      "selectedCount": "{count, plural, one {# geselecteerd item} other {# geselecteerde items}}"
+    },
+    "exerciceGuard": {
+      "closedError": "Deze exercitie is gesloten — het is onmogelijk om een record voor deze periode aan te maken of te wijzigen."
     }
   },
   "evenements": {
@@ -2961,11 +2970,14 @@
       },
       "othersCount": "{count, plural, one {+# andere} other {+# anderen}}",
       "statusFilterAll": "Allemaal",
+      "statusFilterToPrepare": "Om zich voor te bereiden",
       "salesCountLabel": "Aantal verkopen",
       "revenueTotalLabel": "Totale omzet",
       "unitsSold": "{count, plural, one {# verkocht} other {# verkocht}}",
       "pendingCountLabel": "Openstaande bestellingen",
       "pendingAmountLabel": "Openstaand bedrag",
+      "toPrepareCountLabel": "Orders tot voorbereiding",
+      "toPrepareAmountLabel": "Te bereiden bedrag",
       "cancelledCountLabel": "Geannuleerde bestellingen",
       "cancelledAmountLabel": "Geannuleerd bedrag",
       "deleteProduitTitle": "Verwijder het product",
@@ -2978,10 +2990,7 @@
         "productDeleted": "Stopgezet product",
         "deleteError": "Fout verwijderen",
         "orderUpdated": "Bijgewerkte volgorde"
-      },
-      "statusFilterToPrepare": "Om zich voor te bereiden",
-      "toPrepareCountLabel": "Orders tot voorbereiding",
-      "toPrepareAmountLabel": "Te bereiden bedrag"
+      }
     },
     "payModal": {
       "title": "Cashwissel",

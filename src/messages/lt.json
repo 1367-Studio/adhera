@@ -789,8 +789,33 @@
       "dragHint": "Tempkite, kad pertvarkytumėte",
       "resizeHint": "Tempkite kampą, kad sumažintumėte dydį"
     },
-    "aTraiter": {
-      "items": {}
+    "actionsTodo": {
+      "trigger": "Veiksmai, kuriuos reikia atlikti",
+      "badgeHint": "{count, plural, one {# laukiančių veiksmų kategorija} other {# laukiančių veiksmų kategorijos}}",
+      "empty": "Viskas atnaujinta, jokių veiksmų.",
+      "snooze": "Atidėkite šį veiksmą",
+      "snoozeDialogTitle": "Atidėkite šį veiksmą",
+      "snoozeDialogDescription": "Veiksmas lieka paslėptas iki tos datos, o jei dar yra bylų, vėl pasirodo.",
+      "snoozeUntilLabel": "Atidėta iki",
+      "confirm": "Patvirtinkite",
+      "loadError": "Negaliu įkelti veiksmų, kuriuos reikia atlikti.",
+      "snoozedSectionTitle": "{count, plural, one {# veiksmas sustabdytas} other {# veiksmai sustabdyti}}",
+      "snoozedUntil": "Kol {date}",
+      "cancelSnooze": "Atšaukti rezervaciją",
+      "actionLabels": {
+        "voirEtRelancer": "Žiūrėti ir perleisti",
+        "examiner": "Egzaminuotojas",
+        "consulter": "Konsultuotis"
+      },
+      "rows": {
+        "cotisations-en-attente": "{count, plural, one {# laukiamas narystės mokestis} other {# laukiančios įmokos}}",
+        "materiel-en-retard": "{count, plural, one {# Vėlyvoji medžiaga sugrįžta} other {# Vėlyvoji medžiaga sugrįžta}}",
+        "membres-a-valider": "{count, plural, one {# narys patvirtinti} other {# nariai turi būti patvirtinti}}",
+        "dons-a-encaisser": "{count, plural, one {# dovana bus išgryninta} other {# aukų rinkimui}}",
+        "rapprochement-bancaire": "{count, plural, one {# operacija bus lyginama} other {# operacijų palyginimui}}",
+        "notes-de-frais-a-valider": "{count, plural, one {# išlaidų ataskaita turi būti patvirtinta} other {# išlaidų ataskaitas, kurios turi būti patvirtintos}}",
+        "commandes-a-preparer": "{count, plural, one {# pasiruošimo tvarka} other {# įsakymų pasiruošti}}"
+      }
     },
     "stats": {
       "financialBalance": "Finansinė pusiausvyra",
@@ -863,33 +888,8 @@
       "almostReached": "Limitas beveik pasiektas",
       "limitReached": "Limitas pasiektas"
     },
-    "actionsTodo": {
-      "trigger": "Veiksmai, kuriuos reikia atlikti",
-      "badgeHint": "{count, plural, one {# laukiančių veiksmų kategorija} other {# laukiančių veiksmų kategorijos}}",
-      "empty": "Viskas atnaujinta, jokių veiksmų.",
-      "snooze": "Atidėkite šį veiksmą",
-      "snoozeDialogTitle": "Atidėkite šį veiksmą",
-      "snoozeDialogDescription": "Veiksmas lieka paslėptas iki tos datos, o jei dar yra bylų, vėl pasirodo.",
-      "snoozeUntilLabel": "Atidėta iki",
-      "confirm": "Patvirtinkite",
-      "loadError": "Negaliu įkelti veiksmų, kuriuos reikia atlikti.",
-      "snoozedSectionTitle": "{count, plural, one {# veiksmas sustabdytas} other {# veiksmai sustabdyti}}",
-      "snoozedUntil": "Kol {date}",
-      "cancelSnooze": "Atšaukti rezervaciją",
-      "actionLabels": {
-        "voirEtRelancer": "Žiūrėti ir perleisti",
-        "examiner": "Egzaminuotojas",
-        "consulter": "Konsultuotis"
-      },
-      "rows": {
-        "cotisations-en-attente": "{count, plural, one {# laukiamas narystės mokestis} other {# laukiančios įmokos}}",
-        "materiel-en-retard": "{count, plural, one {# Vėlyvoji medžiaga sugrįžta} other {# Vėlyvoji medžiaga sugrįžta}}",
-        "membres-a-valider": "{count, plural, one {# narys patvirtinti} other {# nariai turi būti patvirtinti}}",
-        "dons-a-encaisser": "{count, plural, one {# dovana bus išgryninta} other {# aukų rinkimui}}",
-        "rapprochement-bancaire": "{count, plural, one {# operacija bus lyginama} other {# operacijų palyginimui}}",
-        "notes-de-frais-a-valider": "{count, plural, one {# išlaidų ataskaita turi būti patvirtinta} other {# išlaidų ataskaitas, kurios turi būti patvirtintos}}",
-        "commandes-a-preparer": "{count, plural, one {# pasiruošimo tvarka} other {# įsakymų pasiruošti}}"
-      }
+    "aTraiter": {
+      "items": {}
     }
   },
   "notifications": {
@@ -1144,7 +1144,12 @@
       "memoNoHistory": "Nėra istorinių duomenų",
       "caveats": {
         "stocksMissingCostPrice": "{count} variantai be pirkimo kainos, neįtraukti į sąmatą"
-      }
+      },
+      "refreshLedger": "Atnaujinti žurnalą",
+      "refreshLedgerTooltip": "Ši ataskaita nėra atnaujinama realiu laiku su visomis pajamomis ar išlaidomis – spustelėkite, kad sinchronizuotumėte su naujausiais pokyčiais.",
+      "refreshLedgerSuccessPosted": "{count, plural, =0 {Nėra naujo judėjimo} one {# sinchronizuotas judėjimas} other {# sinchronizuoti judesiai}}",
+      "refreshLedgerSuccessReversed": "{count, plural, =0 {} one {, # taikytas atšaukimas} other {, # taikomi atšaukimai}}",
+      "refreshLedgerError": "Nepavyko atnaujinti žurnalo. Prašome bandyti dar kartą."
     },
     "compteResultat": {
       "title": "Pelno (nuostolių) ataskaita",
@@ -1687,7 +1692,11 @@
       "suggestedMatches": "Siūlomos rungtynės",
       "typeIncome": "Pajama",
       "typeExpense": "Išlaidos",
-      "confirm": "Patvirtinti taikinimą"
+      "confirm": "Patvirtinti taikinimą",
+      "selectedCount": "{count, plural, one {# pasirinktas elementas} other {# pasirinkti daiktai}}"
+    },
+    "exerciceGuard": {
+      "closedError": "Šis procesas baigtas – neįmanoma sukurti ar pakeisti įrašo už šį laikotarpį."
     }
   },
   "evenements": {
@@ -2961,11 +2970,14 @@
       },
       "othersCount": "{count, plural, one {+# kitas} other {+# kiti}}",
       "statusFilterAll": "Visi",
+      "statusFilterToPrepare": "Pasiruošti",
       "salesCountLabel": "Pardavimų skaičius",
       "revenueTotalLabel": "Bendros pajamos",
       "unitsSold": "{count, plural, one {# parduotas} few {# parduoti} many {# parduoto} other {# parduotų}}",
       "pendingCountLabel": "Laukiantys užsakymai",
       "pendingAmountLabel": "Laukiama suma",
+      "toPrepareCountLabel": "Įsakymai pasiruošti",
+      "toPrepareAmountLabel": "Paruošimo suma",
       "cancelledCountLabel": "Atšaukti užsakymai",
       "cancelledAmountLabel": "Atšaukta suma",
       "deleteProduitTitle": "Pašalinti produktą",
@@ -2978,10 +2990,7 @@
         "productDeleted": "Nutrauktas produktas",
         "deleteError": "Klaidų šalinimas",
         "orderUpdated": "Atnaujinta tvarka"
-      },
-      "statusFilterToPrepare": "Pasiruošti",
-      "toPrepareCountLabel": "Įsakymai pasiruošti",
-      "toPrepareAmountLabel": "Paruošimo suma"
+      }
     },
     "payModal": {
       "title": "Pinigų pavedimas",

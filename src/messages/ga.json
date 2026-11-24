@@ -789,8 +789,33 @@
       "dragHint": "Tarraing le hatheagrú",
       "resizeHint": "Tarraing an choirnéal chun méid a athrú"
     },
-    "aTraiter": {
-      "items": {}
+    "actionsTodo": {
+      "trigger": "Gníomhartha le déanamh",
+      "badgeHint": "{count, plural, one {# catagóir gnímh atá ar feitheamh} other {# catagóirí gnímh atá ar feitheamh}}",
+      "empty": "Tá gach rud cothrom le dáta, níl aon ghníomh le láimhseáil.",
+      "snooze": "Cuir an gníomh seo ar athló",
+      "snoozeDialogTitle": "Cuir an gníomh seo ar athló",
+      "snoozeDialogDescription": "Fanann an gníomh i bhfolach duit go dtí an dáta sin, agus ansin tagann sé ar ais má tá cásanna fós le próiseáil.",
+      "snoozeUntilLabel": "Curtha ar athló go dtí",
+      "confirm": "Deimhnigh",
+      "loadError": "Ní féidir na gníomhartha atá le déanamh a luchtú.",
+      "snoozedSectionTitle": "{count, plural, one {# gníomh curtha ar fionraí} other {# gníomhartha curtha ar fionraí}}",
+      "snoozedUntil": "Go dtí {date}",
+      "cancelSnooze": "Cealaigh an coinneáil",
+      "actionLabels": {
+        "voirEtRelancer": "Féach agus athsheoladh",
+        "examiner": "Scrúdaitheoir",
+        "consulter": "Téigh i gcomhairle"
+      },
+      "rows": {
+        "cotisations-en-attente": "{count, plural, one {# táille ballraíochta ar feitheamh} other {# ranníocaíochtaí ar feitheamh}}",
+        "materiel-en-retard": "{count, plural, one {# torthaí déanacha ábhair} other {# torthaí déanacha ábhair}}",
+        "membres-a-valider": "{count, plural, one {# ball le bailíochtú} other {# baill le bailíochtú}}",
+        "dons-a-encaisser": "{count, plural, one {# bronntanas le hairgeadú} other {# síntiúis le bailiú}}",
+        "rapprochement-bancaire": "{count, plural, one {# oibríocht atá le comparáid} other {# oibríochtaí le comparáid}}",
+        "notes-de-frais-a-valider": "{count, plural, one {# tuarascáil caiteachais le bailíochtú} other {# tuarascálacha caiteachais le bailíochtú}}",
+        "commandes-a-preparer": "{count, plural, one {# le hullmhú} other {# orduithe le hullmhú}}"
+      }
     },
     "stats": {
       "financialBalance": "Iarmhéid airgeadais",
@@ -863,33 +888,8 @@
       "almostReached": "Teorainn beagnach bainte amach",
       "limitReached": "Teorainn bainte amach"
     },
-    "actionsTodo": {
-      "trigger": "Gníomhartha le déanamh",
-      "badgeHint": "{count, plural, one {# catagóir gnímh atá ar feitheamh} other {# catagóirí gnímh atá ar feitheamh}}",
-      "empty": "Tá gach rud cothrom le dáta, níl aon ghníomh le láimhseáil.",
-      "snooze": "Cuir an gníomh seo ar athló",
-      "snoozeDialogTitle": "Cuir an gníomh seo ar athló",
-      "snoozeDialogDescription": "Fanann an gníomh i bhfolach duit go dtí an dáta sin, agus ansin tagann sé ar ais má tá cásanna fós le próiseáil.",
-      "snoozeUntilLabel": "Curtha ar athló go dtí",
-      "confirm": "Deimhnigh",
-      "loadError": "Ní féidir na gníomhartha atá le déanamh a luchtú.",
-      "snoozedSectionTitle": "{count, plural, one {# gníomh curtha ar fionraí} other {# gníomhartha curtha ar fionraí}}",
-      "snoozedUntil": "Go dtí {date}",
-      "cancelSnooze": "Cealaigh an coinneáil",
-      "actionLabels": {
-        "voirEtRelancer": "Féach agus athsheoladh",
-        "examiner": "Scrúdaitheoir",
-        "consulter": "Téigh i gcomhairle"
-      },
-      "rows": {
-        "cotisations-en-attente": "{count, plural, one {# táille ballraíochta ar feitheamh} other {# ranníocaíochtaí ar feitheamh}}",
-        "materiel-en-retard": "{count, plural, one {# torthaí déanacha ábhair} other {# torthaí déanacha ábhair}}",
-        "membres-a-valider": "{count, plural, one {# ball le bailíochtú} other {# baill le bailíochtú}}",
-        "dons-a-encaisser": "{count, plural, one {# bronntanas le hairgeadú} other {# síntiúis le bailiú}}",
-        "rapprochement-bancaire": "{count, plural, one {# oibríocht atá le comparáid} other {# oibríochtaí le comparáid}}",
-        "notes-de-frais-a-valider": "{count, plural, one {# tuarascáil caiteachais le bailíochtú} other {# tuarascálacha caiteachais le bailíochtú}}",
-        "commandes-a-preparer": "{count, plural, one {# le hullmhú} other {# orduithe le hullmhú}}"
-      }
+    "aTraiter": {
+      "items": {}
     }
   },
   "notifications": {
@@ -1144,7 +1144,12 @@
       "memoNoHistory": "Gan aon sonraí stairiúla",
       "caveats": {
         "stocksMissingCostPrice": "{count} leaganacha gan aon chostas ceannaigh taifeadta, eisiata ón meastachán"
-      }
+      },
+      "refreshLedger": "Athnuachan an loga",
+      "refreshLedgerTooltip": "Ní dhéantar an tuarascáil seo a nuashonrú i bhfíor-am le gach ioncam nó caiteachas — cliceáil chun sioncronú leis na gluaiseachtaí is déanaí.",
+      "refreshLedgerSuccessPosted": "{count, plural, =0 {Gan aon ghluaiseacht nua} one {# gluaiseacht shioncronaithe} other {# gluaiseachtaí sioncrónaithe}}",
+      "refreshLedgerSuccessReversed": "{count, plural, =0 {} one {, # cealú curtha i bhfeidhm} other {, # cealuithe i bhfeidhm}}",
+      "refreshLedgerError": "Ní féidir an log a athnuachan. Bain triail eile as, le do thoil."
     },
     "compteResultat": {
       "title": "Ráiteas Ioncaim",
@@ -1687,7 +1692,11 @@
       "suggestedMatches": "Meaitseálacha molta",
       "typeIncome": "Ioncam",
       "typeExpense": "Costas",
-      "confirm": "Bailíochtú an comhréitigh"
+      "confirm": "Bailíochtú an comhréitigh",
+      "selectedCount": "{count, plural, one {# mhír roghnaithe} other {# míreanna roghnaithe}}"
+    },
+    "exerciceGuard": {
+      "closedError": "Tá an cleachtadh seo dúnta — ní féidir taifead a chruthú ná a mhodhnú don tréimhse seo."
     }
   },
   "evenements": {
@@ -2961,11 +2970,14 @@
       },
       "othersCount": "{count, plural, one {+# eile} other {+# daoine eile}}",
       "statusFilterAll": "Gach rud",
+      "statusFilterToPrepare": "Chun ullmhú",
       "salesCountLabel": "Líon díolachán",
       "revenueTotalLabel": "Ioncam iomlán",
       "unitsSold": "{count, plural, one {# díolta} other {# díolta}}",
       "pendingCountLabel": "Orduithe ar feitheamh",
       "pendingAmountLabel": "Méid ar feitheamh",
+      "toPrepareCountLabel": "Orduithe le hullmhú",
+      "toPrepareAmountLabel": "Méid le hullmhú",
       "cancelledCountLabel": "Orduithe cealaithe",
       "cancelledAmountLabel": "Méid cealaithe",
       "deleteProduitTitle": "Bain Táirge",
@@ -2978,10 +2990,7 @@
         "productDeleted": "Táirge scortha",
         "deleteError": "Earráid agus é á scriosadh",
         "orderUpdated": "Ord nuashonraithe"
-      },
-      "statusFilterToPrepare": "Chun ullmhú",
-      "toPrepareCountLabel": "Orduithe le hullmhú",
-      "toPrepareAmountLabel": "Méid le hullmhú"
+      }
     },
     "payModal": {
       "title": "Ordú airgid",

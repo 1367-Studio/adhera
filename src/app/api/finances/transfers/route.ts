@@ -45,7 +45,7 @@ export const POST = withAdminAuth(async (req, ctx) => {
   }
 
   const exercice = await resolveExerciceForDate(associationId, date)
-  const exerciceGuard = closedExerciceGuard(exercice?.status)
+  const exerciceGuard = await closedExerciceGuard(exercice?.status)
   if (exerciceGuard) return exerciceGuard
 
   const transfer = await prisma.accountTransfer.create({

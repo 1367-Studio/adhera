@@ -789,8 +789,33 @@
       "dragHint": "Drag järjestääksesi uudelleen",
       "resizeHint": "Vedä kulmaa koon muuttamiseksi"
     },
-    "aTraiter": {
-      "items": {}
+    "actionsTodo": {
+      "trigger": "Toimenpiteet",
+      "badgeHint": "{count, plural, one {# odottava toimenpidekategoria} other {# odottavien toimenpiteiden kategoriat}}",
+      "empty": "Kaikki on ajan tasalla, ei toimenpiteitä hoidettavana.",
+      "snooze": "Lykkää tätä toimenpidettä",
+      "snoozeDialogTitle": "Lykkää tätä toimenpidettä",
+      "snoozeDialogDescription": "Toiminto pysyy piilossa sinulta siihen päivään asti, mutta ilmestyy uudelleen, jos käsittelyä on vielä käsiteltävänä.",
+      "snoozeUntilLabel": "Siirretty siihen asti",
+      "confirm": "Vahvista",
+      "loadError": "Suoritettavia toimintoja ei voitu ladata.",
+      "snoozedSectionTitle": "{count, plural, one {# toiminta keskeytetty} other {# toimenpiteet tauolle}}",
+      "snoozedUntil": "Kunnes {date}",
+      "cancelSnooze": "Peruuta pidätys",
+      "actionLabels": {
+        "voirEtRelancer": "Katso ja käynnistä se uudelleen",
+        "examiner": "Tarkastaja",
+        "consulter": "Konsultoi"
+      },
+      "rows": {
+        "cotisations-en-attente": "{count, plural, one {# vireillä oleva jäsenmaksu} other {# vireillä olevat maksut}}",
+        "materiel-en-retard": "{count, plural, one {# myöhäisen materiaalin palautukset} other {# myöhäisen materiaalin palautukset}}",
+        "membres-a-valider": "{count, plural, one {# jäsen validoitava} other {# validoitavia jäseniä}}",
+        "dons-a-encaisser": "{count, plural, one {# lahja lunastettavaksi} other {# lahjoituksia kerättäväksi}}",
+        "rapprochement-bancaire": "{count, plural, one {# vertailtava operaatio} other {# operaatioita vertailtavaksi}}",
+        "notes-de-frais-a-valider": "{count, plural, one {# tarkistettava kuluraportti} other {# tarkistettavat kuluraportit}}",
+        "commandes-a-preparer": "{count, plural, one {# valmistelukäsky} other {# määräyksiä valmistella}}"
+      }
     },
     "stats": {
       "financialBalance": "Taloudellinen tasapaino",
@@ -863,33 +888,8 @@
       "almostReached": "Raja lähes täynnä",
       "limitReached": "Raja täynnä"
     },
-    "actionsTodo": {
-      "trigger": "Toimenpiteet",
-      "badgeHint": "{count, plural, one {# odottava toimenpidekategoria} other {# odottavien toimenpiteiden kategoriat}}",
-      "empty": "Kaikki on ajan tasalla, ei toimenpiteitä hoidettavana.",
-      "snooze": "Lykkää tätä toimenpidettä",
-      "snoozeDialogTitle": "Lykkää tätä toimenpidettä",
-      "snoozeDialogDescription": "Toiminto pysyy piilossa sinulta siihen päivään asti, mutta ilmestyy uudelleen, jos käsittelyä on vielä käsiteltävänä.",
-      "snoozeUntilLabel": "Siirretty siihen asti",
-      "confirm": "Vahvista",
-      "loadError": "Suoritettavia toimintoja ei voitu ladata.",
-      "snoozedSectionTitle": "{count, plural, one {# toiminta keskeytetty} other {# toimenpiteet tauolle}}",
-      "snoozedUntil": "Kunnes {date}",
-      "cancelSnooze": "Peruuta pidätys",
-      "actionLabels": {
-        "voirEtRelancer": "Katso ja käynnistä se uudelleen",
-        "examiner": "Tarkastaja",
-        "consulter": "Konsultoi"
-      },
-      "rows": {
-        "cotisations-en-attente": "{count, plural, one {# vireillä oleva jäsenmaksu} other {# vireillä olevat maksut}}",
-        "materiel-en-retard": "{count, plural, one {# myöhäisen materiaalin palautukset} other {# myöhäisen materiaalin palautukset}}",
-        "membres-a-valider": "{count, plural, one {# jäsen validoitava} other {# validoitavia jäseniä}}",
-        "dons-a-encaisser": "{count, plural, one {# lahja lunastettavaksi} other {# lahjoituksia kerättäväksi}}",
-        "rapprochement-bancaire": "{count, plural, one {# vertailtava operaatio} other {# operaatioita vertailtavaksi}}",
-        "notes-de-frais-a-valider": "{count, plural, one {# tarkistettava kuluraportti} other {# tarkistettavat kuluraportit}}",
-        "commandes-a-preparer": "{count, plural, one {# valmistelukäsky} other {# määräyksiä valmistella}}"
-      }
+    "aTraiter": {
+      "items": {}
     }
   },
   "notifications": {
@@ -1144,7 +1144,12 @@
       "memoNoHistory": "Ei historiallista tietoa",
       "caveats": {
         "stocksMissingCostPrice": "{count} variantit, joilla ei ole ostokustannuksia kirjattu, poistettu arviosta"
-      }
+      },
+      "refreshLedger": "Päivitä loki",
+      "refreshLedgerTooltip": "Tätä raporttia ei päivitetä reaaliajassa jokaisesta tulosta tai kulusta — klikkaa synkronoidaksesi viimeisimmät liikkeet.",
+      "refreshLedgerSuccessPosted": "{count, plural, =0 {Ei uutta liikettä} one {# synkronoitu liike} other {# synkronoidut liikkeet}}",
+      "refreshLedgerSuccessReversed": "{count, plural, =0 {} one {, # peruutus on sovellettu} other {, # peruutuksia on sovellettu}}",
+      "refreshLedgerError": "Lokia ei voi päivittää. Yritä uudelleen."
     },
     "compteResultat": {
       "title": "Tuloslaskelma",
@@ -1687,7 +1692,11 @@
       "suggestedMatches": "Ehdotetut ottelut",
       "typeIncome": "Tulo",
       "typeExpense": "Kustannukset",
-      "confirm": "Vahvista sovinto"
+      "confirm": "Vahvista sovinto",
+      "selectedCount": "{count, plural, one {# valittu kohde} other {# valittuja kohteita}}"
+    },
+    "exerciceGuard": {
+      "closedError": "Tämä harjoitus on suljettu — tietueen luominen tai muokkaaminen tälle ajanjaksolle on mahdotonta."
     }
   },
   "evenements": {
@@ -2961,11 +2970,14 @@
       },
       "othersCount": "{count, plural, one {+# muuta} other {+# muita}}",
       "statusFilterAll": "Kaikki",
+      "statusFilterToPrepare": "Valmistautua",
       "salesCountLabel": "Myyntien määrä",
       "revenueTotalLabel": "Kokonaistulot",
       "unitsSold": "{count, plural, one {# myyty} other {# myyty}}",
       "pendingCountLabel": "Odottavat tilaukset",
       "pendingAmountLabel": "Odottava summa",
+      "toPrepareCountLabel": "Valmistelukäskyt",
+      "toPrepareAmountLabel": "Valmisteltava määrä",
       "cancelledCountLabel": "Peruutetut tilaukset",
       "cancelledAmountLabel": "Peruutettu summa",
       "deleteProduitTitle": "Poista tuote",
@@ -2978,10 +2990,7 @@
         "productDeleted": "Lopetettu tuote",
         "deleteError": "Virheen poisto",
         "orderUpdated": "Päivitetty järjestys"
-      },
-      "statusFilterToPrepare": "Valmistautua",
-      "toPrepareCountLabel": "Valmistelukäskyt",
-      "toPrepareAmountLabel": "Valmisteltava määrä"
+      }
     },
     "payModal": {
       "title": "Kassatilaus",

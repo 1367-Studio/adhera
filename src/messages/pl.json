@@ -789,8 +789,33 @@
       "dragHint": "Przeciągnij, aby przearanżować",
       "resizeHint": "Przeciągnij róg, aby zmienić rozmiar"
     },
-    "aTraiter": {
-      "items": {}
+    "actionsTodo": {
+      "trigger": "Działania do podjęcia",
+      "badgeHint": "{count, plural, one {# kategoria oczekujących działań} other {# kategorie oczekujących działań}}",
+      "empty": "Wszystko jest aktualne, nie trzeba się tym zajmować.",
+      "snooze": "Odroczenie tej akcji",
+      "snoozeDialogTitle": "Odroczenie tej akcji",
+      "snoozeDialogDescription": "Akcja pozostaje dla Ciebie ukryta do tego dnia, a potem pojawia się ponownie, jeśli są jeszcze sprawy do przetworzenia.",
+      "snoozeUntilLabel": "Przełożone do czasu",
+      "confirm": "Potwierdź",
+      "loadError": "Nie można załadować działań do wykonania.",
+      "snoozedSectionTitle": "{count, plural, one {# wstrzymanie działań} other {# wstrzymane działania}}",
+      "snoozedUntil": "Aż do {date}",
+      "cancelSnooze": "Anuluj blokadę",
+      "actionLabels": {
+        "voirEtRelancer": "Zobacz i wznowić",
+        "examiner": "Egzaminator",
+        "consulter": "Konsultacja"
+      },
+      "rows": {
+        "cotisations-en-attente": "{count, plural, one {# oczekującej opłaty członkowskiej} other {# oczekujących wpłat}}",
+        "materiel-en-retard": "{count, plural, one {# opóźnione zwroty materiałów} other {# opóźnione zwroty materiałów}}",
+        "membres-a-valider": "{count, plural, one {# członka do weryfikacji} other {# członków do weryfikacji}}",
+        "dons-a-encaisser": "{count, plural, one {# prezent do zrealizowania} other {# darowizny do zebrania}}",
+        "rapprochement-bancaire": "{count, plural, one {# operacja do porównania} other {# operacje do porównania}}",
+        "notes-de-frais-a-valider": "{count, plural, one {# raport wydatków do weryfikacji} other {# raporty wydatków do weryfikacji}}",
+        "commandes-a-preparer": "{count, plural, one {# porządek przygotowania} other {# rozkazy przygotowania}}"
+      }
     },
     "stats": {
       "financialBalance": "Bilans finansowy",
@@ -863,33 +888,8 @@
       "almostReached": "Limit prawie osiągnięty",
       "limitReached": "Limit osiągnięty"
     },
-    "actionsTodo": {
-      "trigger": "Działania do podjęcia",
-      "badgeHint": "{count, plural, one {# kategoria oczekujących działań} other {# kategorie oczekujących działań}}",
-      "empty": "Wszystko jest aktualne, nie trzeba się tym zajmować.",
-      "snooze": "Odroczenie tej akcji",
-      "snoozeDialogTitle": "Odroczenie tej akcji",
-      "snoozeDialogDescription": "Akcja pozostaje dla Ciebie ukryta do tego dnia, a potem pojawia się ponownie, jeśli są jeszcze sprawy do przetworzenia.",
-      "snoozeUntilLabel": "Przełożone do czasu",
-      "confirm": "Potwierdź",
-      "loadError": "Nie można załadować działań do wykonania.",
-      "snoozedSectionTitle": "{count, plural, one {# wstrzymanie działań} other {# wstrzymane działania}}",
-      "snoozedUntil": "Aż do {date}",
-      "cancelSnooze": "Anuluj blokadę",
-      "actionLabels": {
-        "voirEtRelancer": "Zobacz i wznowić",
-        "examiner": "Egzaminator",
-        "consulter": "Konsultacja"
-      },
-      "rows": {
-        "cotisations-en-attente": "{count, plural, one {# oczekującej opłaty członkowskiej} other {# oczekujących wpłat}}",
-        "materiel-en-retard": "{count, plural, one {# opóźnione zwroty materiałów} other {# opóźnione zwroty materiałów}}",
-        "membres-a-valider": "{count, plural, one {# członka do weryfikacji} other {# członków do weryfikacji}}",
-        "dons-a-encaisser": "{count, plural, one {# prezent do zrealizowania} other {# darowizny do zebrania}}",
-        "rapprochement-bancaire": "{count, plural, one {# operacja do porównania} other {# operacje do porównania}}",
-        "notes-de-frais-a-valider": "{count, plural, one {# raport wydatków do weryfikacji} other {# raporty wydatków do weryfikacji}}",
-        "commandes-a-preparer": "{count, plural, one {# porządek przygotowania} other {# rozkazy przygotowania}}"
-      }
+    "aTraiter": {
+      "items": {}
     }
   },
   "notifications": {
@@ -1144,7 +1144,12 @@
       "memoNoHistory": "Brak danych historycznych",
       "caveats": {
         "stocksMissingCostPrice": "{count} wariantów bez zarejestrowanego kosztu zakupu, wyłączonych z szacunku"
-      }
+      },
+      "refreshLedger": "Odśwież dziennik",
+      "refreshLedgerTooltip": "Ten raport nie jest aktualizowany w czasie rzeczywistym o każdy przychód lub wydatki — kliknij, aby zsynchronizować najnowsze ruchy.",
+      "refreshLedgerSuccessPosted": "{count, plural, =0 {Brak nowego ruchu} one {# zsynchronizowany ruch} other {# zsynchronizowane ruchy}}",
+      "refreshLedgerSuccessReversed": "{count, plural, =0 {} one {, # anulowanie zastosowane} other {, # anulowania zastosowano}}",
+      "refreshLedgerError": "Nie można odświeżyć dziennika. Proszę spróbować ponownie."
     },
     "compteResultat": {
       "title": "Rachunek wyników",
@@ -1687,7 +1692,11 @@
       "suggestedMatches": "Proponowane mecze",
       "typeIncome": "Przychód",
       "typeExpense": "Wydatki",
-      "confirm": "Zweryfikować pojednanie"
+      "confirm": "Zweryfikować pojednanie",
+      "selectedCount": "{count, plural, one {# wybrany element} other {# wybranych przedmiotów}}"
+    },
+    "exerciceGuard": {
+      "closedError": "To ćwiczenie jest zamknięte — nie jest możliwe utworzenie ani modyfikacja rekordu na ten okres."
     }
   },
   "evenements": {
@@ -2961,11 +2970,14 @@
       },
       "othersCount": "{count, plural, one {+# inne} other {+# innych}}",
       "statusFilterAll": "Wszyscy",
+      "statusFilterToPrepare": "Przygotować się",
       "salesCountLabel": "Liczba sprzedaży",
       "revenueTotalLabel": "Przychód całkowity",
       "unitsSold": "{count, plural, one {# sprzedana sztuka} few {# sprzedane sztuki} many {# sprzedanych sztuk} other {# sprzedanej sztuki}}",
       "pendingCountLabel": "Zamówienia oczekujące",
       "pendingAmountLabel": "Kwota oczekująca",
+      "toPrepareCountLabel": "Rozkazy przygotowania",
+      "toPrepareAmountLabel": "Ilość do przygotowania",
       "cancelledCountLabel": "Zamówienia anulowane",
       "cancelledAmountLabel": "Kwota anulowana",
       "deleteProduitTitle": "Usuń produkt",
@@ -2978,10 +2990,7 @@
         "productDeleted": "Produkt zakończony",
         "deleteError": "Usuwanie błędów",
         "orderUpdated": "Zaktualizowana kolejność"
-      },
-      "statusFilterToPrepare": "Przygotować się",
-      "toPrepareCountLabel": "Rozkazy przygotowania",
-      "toPrepareAmountLabel": "Ilość do przygotowania"
+      }
     },
     "payModal": {
       "title": "Zlecenie gotówkowe",

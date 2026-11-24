@@ -789,8 +789,33 @@
       "dragHint": "Drag, et ümber korraldada",
       "resizeHint": "Lohista nurka, et suurust muuta"
     },
-    "aTraiter": {
-      "items": {}
+    "actionsTodo": {
+      "trigger": "Tegevused, mida teha",
+      "badgeHint": "{count, plural, one {# ootel oleva tegevuse kategooria} other {# ootel toimingute kategooriad}}",
+      "empty": "Kõik on ajakohane, pole mingit tegevust.",
+      "snooze": "Lükata see samm edasi",
+      "snoozeDialogTitle": "Lükata see samm edasi",
+      "snoozeDialogDescription": "Toiming jääb sinu jaoks varjatuks kuni selle kuupäevani ja ilmub uuesti, kui on veel lahendamist vajavaid juhtumeid.",
+      "snoozeUntilLabel": "Edasi lükatud kuni",
+      "confirm": "Kinnita",
+      "loadError": "Ei õnnestu laadida vajalikke toiminguid.",
+      "snoozedSectionTitle": "{count, plural, one {# tegevus peatati} other {# tegevused on ootele pandud}}",
+      "snoozedUntil": "Kuni {date}",
+      "cancelSnooze": "Tühista peatamine",
+      "actionLabels": {
+        "voirEtRelancer": "Vaata ja taaskäivita",
+        "examiner": "Eksamineerija",
+        "consulter": "Konsulteeri"
+      },
+      "rows": {
+        "cotisations-en-attente": "{count, plural, one {# ootel liikmemaksu} other {# ootel sissemaksed}}",
+        "materiel-en-retard": "{count, plural, one {# hilise materjali tagastus} other {# hilise materjali tagastus}}",
+        "membres-a-valider": "{count, plural, one {# liige valideerimiseks} other {# valideeritavad liikmed}}",
+        "dons-a-encaisser": "{count, plural, one {# kingitus, mida tuleb lunastada} other {# annetusi kogumiseks}}",
+        "rapprochement-bancaire": "{count, plural, one {# operatsiooni, mida võrrelda} other {# operatsioonid võrrelda}}",
+        "notes-de-frais-a-valider": "{count, plural, one {# kuluaruanne valideerimiseks} other {# kuluaruanded, mida valideerida}}",
+        "commandes-a-preparer": "{count, plural, one {# ettevalmistuskäsk} other {# ettevalmistuskäsk}}"
+      }
     },
     "stats": {
       "financialBalance": "Finantssaldo",
@@ -863,33 +888,8 @@
       "almostReached": "Limiit peaaegu täis",
       "limitReached": "Limiit täis"
     },
-    "actionsTodo": {
-      "trigger": "Tegevused, mida teha",
-      "badgeHint": "{count, plural, one {# ootel oleva tegevuse kategooria} other {# ootel toimingute kategooriad}}",
-      "empty": "Kõik on ajakohane, pole mingit tegevust.",
-      "snooze": "Lükata see samm edasi",
-      "snoozeDialogTitle": "Lükata see samm edasi",
-      "snoozeDialogDescription": "Toiming jääb sinu jaoks varjatuks kuni selle kuupäevani ja ilmub uuesti, kui on veel lahendamist vajavaid juhtumeid.",
-      "snoozeUntilLabel": "Edasi lükatud kuni",
-      "confirm": "Kinnita",
-      "loadError": "Ei õnnestu laadida vajalikke toiminguid.",
-      "snoozedSectionTitle": "{count, plural, one {# tegevus peatati} other {# tegevused on ootele pandud}}",
-      "snoozedUntil": "Kuni {date}",
-      "cancelSnooze": "Tühista peatamine",
-      "actionLabels": {
-        "voirEtRelancer": "Vaata ja taaskäivita",
-        "examiner": "Eksamineerija",
-        "consulter": "Konsulteeri"
-      },
-      "rows": {
-        "cotisations-en-attente": "{count, plural, one {# ootel liikmemaksu} other {# ootel sissemaksed}}",
-        "materiel-en-retard": "{count, plural, one {# hilise materjali tagastus} other {# hilise materjali tagastus}}",
-        "membres-a-valider": "{count, plural, one {# liige valideerimiseks} other {# valideeritavad liikmed}}",
-        "dons-a-encaisser": "{count, plural, one {# kingitus, mida tuleb lunastada} other {# annetusi kogumiseks}}",
-        "rapprochement-bancaire": "{count, plural, one {# operatsiooni, mida võrrelda} other {# operatsioonid võrrelda}}",
-        "notes-de-frais-a-valider": "{count, plural, one {# kuluaruanne valideerimiseks} other {# kuluaruanded, mida valideerida}}",
-        "commandes-a-preparer": "{count, plural, one {# ettevalmistuskäsk} other {# ettevalmistuskäsk}}"
-      }
+    "aTraiter": {
+      "items": {}
     }
   },
   "notifications": {
@@ -1144,7 +1144,12 @@
       "memoNoHistory": "Ajaloolisi andmeid pole",
       "caveats": {
         "stocksMissingCostPrice": "{count} variandid, millel ostukulu ei ole registreeritud, hinnangust välja jäetud"
-      }
+      },
+      "refreshLedger": "Värskenda logi",
+      "refreshLedgerTooltip": "See aruanne ei ole reaalajas uuendatud iga tulu või kuluga — klõpsake, et sünkroonida viimaste liikumistega.",
+      "refreshLedgerSuccessPosted": "{count, plural, =0 {Uut liikumist ei ole} one {# sünkroniseeritud liikumine} other {# sünkroniseeritud liikumised}}",
+      "refreshLedgerSuccessReversed": "{count, plural, =0 {} one {, # tühistamine rakendatud} other {, # tühistamised}}",
+      "refreshLedgerError": "Logi värskendamine ebaõnnestus. Palun proovige uuesti."
     },
     "compteResultat": {
       "title": "Kasumiaruanne",
@@ -1687,7 +1692,11 @@
       "suggestedMatches": "Soovitatud matšid",
       "typeIncome": "Tulu",
       "typeExpense": "Kulud",
-      "confirm": "Kinnita lepitus"
+      "confirm": "Kinnita lepitus",
+      "selectedCount": "{count, plural, one {# valitud üksus} other {# valitud üksused}}"
+    },
+    "exerciceGuard": {
+      "closedError": "See tegevus on suletud — selle perioodi kohta ei ole võimalik luua ega muuta kirjet."
     }
   },
   "evenements": {
@@ -2961,11 +2970,14 @@
       },
       "othersCount": "{count, plural, one {+# muud} other {+# teised}}",
       "statusFilterAll": "Kõik",
+      "statusFilterToPrepare": "Valmistumiseks",
       "salesCountLabel": "Müükide arv",
       "revenueTotalLabel": "Kogutulu",
       "unitsSold": "{count, plural, one {# müüdud} other {# müüdud}}",
       "pendingCountLabel": "Ootel tellimused",
       "pendingAmountLabel": "Ootel summa",
+      "toPrepareCountLabel": "Ettevalmistuskäsk",
+      "toPrepareAmountLabel": "Valmistamiseks mõeldud summa",
       "cancelledCountLabel": "Tühistatud tellimused",
       "cancelledAmountLabel": "Tühistatud summa",
       "deleteProduitTitle": "Eemalda toode",
@@ -2978,10 +2990,7 @@
         "productDeleted": "Lõpetatud toode",
         "deleteError": "Vea kustutamine",
         "orderUpdated": "Uuendatud järjekord"
-      },
-      "statusFilterToPrepare": "Valmistumiseks",
-      "toPrepareCountLabel": "Ettevalmistuskäsk",
-      "toPrepareAmountLabel": "Valmistamiseks mõeldud summa"
+      }
     },
     "payModal": {
       "title": "Sularaha makse",

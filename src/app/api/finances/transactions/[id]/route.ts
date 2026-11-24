@@ -14,7 +14,7 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   })
   if (!existing) return NextResponse.json({ error: "Transaction introuvable" }, { status: 404 })
 
-  const closedGuard = closedExerciceGuard(existing.exercice?.status)
+  const closedGuard = await closedExerciceGuard(existing.exercice?.status)
   if (closedGuard) return closedGuard
 
   const body   = await req.json()

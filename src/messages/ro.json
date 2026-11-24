@@ -789,8 +789,33 @@
       "dragHint": "Tragere la rearanjare",
       "resizeHint": "Trage colțul pentru a redimensiona"
     },
-    "aTraiter": {
-      "items": {}
+    "actionsTodo": {
+      "trigger": "Acțiuni de întreprins",
+      "badgeHint": "{count, plural, one {# categorie de acțiune în așteptare} other {# categorii de acțiuni în așteptare}}",
+      "empty": "Totul este la zi, nicio acțiune de gestionat.",
+      "snooze": "Amânați această acțiune",
+      "snoozeDialogTitle": "Amânați această acțiune",
+      "snoozeDialogDescription": "Acțiunea rămâne ascunsă pentru tine până la acea dată, apoi reapare dacă mai sunt cazuri de procesat.",
+      "snoozeUntilLabel": "Amânat până",
+      "confirm": "Confirmă",
+      "loadError": "Nu se pot încărca acțiunile ce urmează să fie efectuate.",
+      "snoozedSectionTitle": "{count, plural, one {# acțiune suspendată} other {# acțiuni suspendate}}",
+      "snoozedUntil": "Până când {date}",
+      "cancelSnooze": "Anulează blocarea",
+      "actionLabels": {
+        "voirEtRelancer": "Vezi și relansează",
+        "examiner": "Examinator",
+        "consulter": "Consultă"
+      },
+      "rows": {
+        "cotisations-en-attente": "{count, plural, one {# cotizație de membru restantă} other {# contribuții în așteptare}}",
+        "materiel-en-retard": "{count, plural, one {# reveniri târzii ale materialelor} other {# reveniri târzii ale materialelor}}",
+        "membres-a-valider": "{count, plural, one {# membru de validat} other {# membri care urmează să fie validați}}",
+        "dons-a-encaisser": "{count, plural, one {# cadoul de încasat} other {# donații de colectat}}",
+        "rapprochement-bancaire": "{count, plural, one {# operațiune ce urmează a fi comparată} other {# operațiuni de comparat}}",
+        "notes-de-frais-a-valider": "{count, plural, one {# raport de cheltuieli care trebuie validat} other {# de validat rapoartele de cheltuieli}}",
+        "commandes-a-preparer": "{count, plural, one {# pentru pregătire} other {# ordine de pregătire}}"
+      }
     },
     "stats": {
       "financialBalance": "Echilibrul financiar",
@@ -863,33 +888,8 @@
       "almostReached": "Limită aproape epuizată",
       "limitReached": "Limită atinsă"
     },
-    "actionsTodo": {
-      "trigger": "Acțiuni de întreprins",
-      "badgeHint": "{count, plural, one {# categorie de acțiune în așteptare} other {# categorii de acțiuni în așteptare}}",
-      "empty": "Totul este la zi, nicio acțiune de gestionat.",
-      "snooze": "Amânați această acțiune",
-      "snoozeDialogTitle": "Amânați această acțiune",
-      "snoozeDialogDescription": "Acțiunea rămâne ascunsă pentru tine până la acea dată, apoi reapare dacă mai sunt cazuri de procesat.",
-      "snoozeUntilLabel": "Amânat până",
-      "confirm": "Confirmă",
-      "loadError": "Nu se pot încărca acțiunile ce urmează să fie efectuate.",
-      "snoozedSectionTitle": "{count, plural, one {# acțiune suspendată} other {# acțiuni suspendate}}",
-      "snoozedUntil": "Până când {date}",
-      "cancelSnooze": "Anulează blocarea",
-      "actionLabels": {
-        "voirEtRelancer": "Vezi și relansează",
-        "examiner": "Examinator",
-        "consulter": "Consultă"
-      },
-      "rows": {
-        "cotisations-en-attente": "{count, plural, one {# cotizație de membru restantă} other {# contribuții în așteptare}}",
-        "materiel-en-retard": "{count, plural, one {# reveniri târzii ale materialelor} other {# reveniri târzii ale materialelor}}",
-        "membres-a-valider": "{count, plural, one {# membru de validat} other {# membri care urmează să fie validați}}",
-        "dons-a-encaisser": "{count, plural, one {# cadoul de încasat} other {# donații de colectat}}",
-        "rapprochement-bancaire": "{count, plural, one {# operațiune ce urmează a fi comparată} other {# operațiuni de comparat}}",
-        "notes-de-frais-a-valider": "{count, plural, one {# raport de cheltuieli care trebuie validat} other {# de validat rapoartele de cheltuieli}}",
-        "commandes-a-preparer": "{count, plural, one {# pentru pregătire} other {# ordine de pregătire}}"
-      }
+    "aTraiter": {
+      "items": {}
     }
   },
   "notifications": {
@@ -1144,7 +1144,12 @@
       "memoNoHistory": "Fără date istorice",
       "caveats": {
         "stocksMissingCostPrice": "{count} variante fără cost de achiziție înregistrat, excluse din estimare"
-      }
+      },
+      "refreshLedger": "Reîmprospătează jurnalul",
+      "refreshLedgerTooltip": "Acest raport nu este actualizat în timp real cu fiecare venit sau cheltuială — faceți clic pentru a sincroniza cu cele mai recente mișcări.",
+      "refreshLedgerSuccessPosted": "{count, plural, =0 {Nicio mișcare nouă} one {# mișcare sincronizată} other {# mișcări sincronizate}}",
+      "refreshLedgerSuccessReversed": "{count, plural, =0 {} one {, # anularea aplicată} other {, # anulări aplicate}}",
+      "refreshLedgerError": "Nu se poate reîmprospăta jurnalul. Vă rugăm să încercați din nou."
     },
     "compteResultat": {
       "title": "Contul de rezultat",
@@ -1687,7 +1692,11 @@
       "suggestedMatches": "Meciuri sugerate",
       "typeIncome": "Venit",
       "typeExpense": "Cheltuieli",
-      "confirm": "Validează concilierea"
+      "confirm": "Validează concilierea",
+      "selectedCount": "{count, plural, one {# element selectat} other {# elemente selectate}}"
+    },
+    "exerciceGuard": {
+      "closedError": "Acest exercițiu este închis — este imposibil să se creeze sau să se modifice o înregistrare pentru această perioadă."
     }
   },
   "evenements": {
@@ -2961,11 +2970,14 @@
       },
       "othersCount": "{count, plural, one {+# altele} other {+# altele}}",
       "statusFilterAll": "Toate",
+      "statusFilterToPrepare": "Pentru a pregăti",
       "salesCountLabel": "Număr de vânzări",
       "revenueTotalLabel": "Venit total",
       "unitsSold": "{count, plural, one {# bucată vândută} few {# bucăți vândute} other {# de bucăți vândute}}",
       "pendingCountLabel": "Comenzi în așteptare",
       "pendingAmountLabel": "Sumă în așteptare",
+      "toPrepareCountLabel": "Ordine de pregătire",
+      "toPrepareAmountLabel": "Sumă de pregătit",
       "cancelledCountLabel": "Comenzi anulate",
       "cancelledAmountLabel": "Sumă anulată",
       "deleteProduitTitle": "Îndepărtează produsul",
@@ -2978,10 +2990,7 @@
         "productDeleted": "Produs întrerupt",
         "deleteError": "Ștergerea erorilor",
         "orderUpdated": "Ordine actualizată"
-      },
-      "statusFilterToPrepare": "Pentru a pregăti",
-      "toPrepareCountLabel": "Ordine de pregătire",
-      "toPrepareAmountLabel": "Sumă de pregătit"
+      }
     },
     "payModal": {
       "title": "Mandat de numerar",

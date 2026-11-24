@@ -789,8 +789,33 @@
       "dragHint": "Drag átrendezéshez",
       "resizeHint": "Húzd a sarkot a méret módosításához"
     },
-    "aTraiter": {
-      "items": {}
+    "actionsTodo": {
+      "trigger": "Teendők",
+      "badgeHint": "{count, plural, one {# függő műveleti kategória} other {# függőben lévő intézkedés kategóriái}}",
+      "empty": "Minden naprakész, nincs mit intézni.",
+      "snooze": "A lépés elhalasztása",
+      "snoozeDialogTitle": "A lépés elhalasztása",
+      "snoozeDialogDescription": "A művelet addig rejtve marad előtted, majd újra megjelenik, ha még vannak ügy, amelyeket feldolgozni kell.",
+      "snoozeUntilLabel": "Elhalasztva addig",
+      "confirm": "Megerősítés",
+      "loadError": "Nem sikerült betölteni a végrehajtandó műveleteket.",
+      "snoozedSectionTitle": "{count, plural, one {# intézkedés felfüggesztés} other {# felfüggesztett intézkedések}}",
+      "snoozedUntil": "Egészen addig. {date}",
+      "cancelSnooze": "Zárolás megszakítása",
+      "actionLabels": {
+        "voirEtRelancer": "Nézze meg és indítsa újra",
+        "examiner": "Vizsgáló",
+        "consulter": "Konzultáció"
+      },
+      "rows": {
+        "cotisations-en-attente": "{count, plural, one {# függőben lévő tagsági díj} other {# függőben lévő hozzájárulások}}",
+        "materiel-en-retard": "{count, plural, one {# késői anyag visszatérítése} other {# késői anyag visszatérítése}}",
+        "membres-a-valider": "{count, plural, one {# tagot kell érvényesíteni} other {# érvényesítendő tagok}}",
+        "dons-a-encaisser": "{count, plural, one {# beváltandó ajándék} other {# adományokat gyűjteni}}",
+        "rapprochement-bancaire": "{count, plural, one {# összehasonlítandó művelet} other {# összehasonlítható műveletek}}",
+        "notes-de-frais-a-valider": "{count, plural, one {# érvényesítendő költségjelentés} other {# érvényesítendő költségjelentések}}",
+        "commandes-a-preparer": "{count, plural, one {# előkészítési parancs} other {# előkészítési parancsok}}"
+      }
     },
     "stats": {
       "financialBalance": "Pénzügyi mérleg",
@@ -863,33 +888,8 @@
       "almostReached": "A limit majdnem elérve",
       "limitReached": "Limit elérve"
     },
-    "actionsTodo": {
-      "trigger": "Teendők",
-      "badgeHint": "{count, plural, one {# függő műveleti kategória} other {# függőben lévő intézkedés kategóriái}}",
-      "empty": "Minden naprakész, nincs mit intézni.",
-      "snooze": "A lépés elhalasztása",
-      "snoozeDialogTitle": "A lépés elhalasztása",
-      "snoozeDialogDescription": "A művelet addig rejtve marad előtted, majd újra megjelenik, ha még vannak ügy, amelyeket feldolgozni kell.",
-      "snoozeUntilLabel": "Elhalasztva addig",
-      "confirm": "Megerősítés",
-      "loadError": "Nem sikerült betölteni a végrehajtandó műveleteket.",
-      "snoozedSectionTitle": "{count, plural, one {# intézkedés felfüggesztés} other {# felfüggesztett intézkedések}}",
-      "snoozedUntil": "Egészen addig. {date}",
-      "cancelSnooze": "Zárolás megszakítása",
-      "actionLabels": {
-        "voirEtRelancer": "Nézze meg és indítsa újra",
-        "examiner": "Vizsgáló",
-        "consulter": "Konzultáció"
-      },
-      "rows": {
-        "cotisations-en-attente": "{count, plural, one {# függőben lévő tagsági díj} other {# függőben lévő hozzájárulások}}",
-        "materiel-en-retard": "{count, plural, one {# késői anyag visszatérítése} other {# késői anyag visszatérítése}}",
-        "membres-a-valider": "{count, plural, one {# tagot kell érvényesíteni} other {# érvényesítendő tagok}}",
-        "dons-a-encaisser": "{count, plural, one {# beváltandó ajándék} other {# adományokat gyűjteni}}",
-        "rapprochement-bancaire": "{count, plural, one {# összehasonlítandó művelet} other {# összehasonlítható műveletek}}",
-        "notes-de-frais-a-valider": "{count, plural, one {# érvényesítendő költségjelentés} other {# érvényesítendő költségjelentések}}",
-        "commandes-a-preparer": "{count, plural, one {# előkészítési parancs} other {# előkészítési parancsok}}"
-      }
+    "aTraiter": {
+      "items": {}
     }
   },
   "notifications": {
@@ -1144,7 +1144,12 @@
       "memoNoHistory": "Nincsenek történelmi adatok",
       "caveats": {
         "stocksMissingCostPrice": "{count} variáns, amelyeknek nincs rögzített beszerzési költsége, kizárva a becslésből"
-      }
+      },
+      "refreshLedger": "Napló frissítése",
+      "refreshLedgerTooltip": "Ez a jelentés nem frissül valós időben minden jövedelemmel vagy kiadással — kattintson a legfrissebb mozgások szinkronizálásához.",
+      "refreshLedgerSuccessPosted": "{count, plural, =0 {Nincs új mozgalom} one {# szinkronizált mozgás} other {# szinkronizált mozgások}}",
+      "refreshLedgerSuccessReversed": "{count, plural, =0 {} one {, # törlés alkalmazva} other {, # törlések alkalmaztak}}",
+      "refreshLedgerError": "Nem sikerült frissíteni a naplót. Kérjük, próbálja újra."
     },
     "compteResultat": {
       "title": "Eredménykimutatás",
@@ -1687,7 +1692,11 @@
       "suggestedMatches": "Javasolt mérkőzések",
       "typeIncome": "Bevétel",
       "typeExpense": "Költségek",
-      "confirm": "A megbékélés érvényesítése"
+      "confirm": "A megbékélés érvényesítése",
+      "selectedCount": "{count, plural, one {# kiválasztott elem} other {# kiválasztott elemek}}"
+    },
+    "exerciceGuard": {
+      "closedError": "Ez a gyakorlat lezárult — erre az időszakra vonatkozóan lehetetlen rekordot létrehozni vagy módosítani."
     }
   },
   "evenements": {
@@ -2961,11 +2970,14 @@
       },
       "othersCount": "{count, plural, one {+# egyéb} other {+# más}}",
       "statusFilterAll": "Mind",
+      "statusFilterToPrepare": "Előkészülni",
       "salesCountLabel": "Eladások száma",
       "revenueTotalLabel": "Teljes bevétel",
       "unitsSold": "{count, plural, one {# eladva} other {# eladva}}",
       "pendingCountLabel": "Függőben lévő rendelések",
       "pendingAmountLabel": "Függőben lévő összeg",
+      "toPrepareCountLabel": "Előkészületi utasítások",
+      "toPrepareAmountLabel": "Előkészítendő összeg",
       "cancelledCountLabel": "Törölt rendelések",
       "cancelledAmountLabel": "Törölt összeg",
       "deleteProduitTitle": "Termék eltávolítása",
@@ -2978,10 +2990,7 @@
         "productDeleted": "Megszüntetett termék",
         "deleteError": "Hiba törlés",
         "orderUpdated": "Frissített sorrend"
-      },
-      "statusFilterToPrepare": "Előkészülni",
-      "toPrepareCountLabel": "Előkészületi utasítások",
-      "toPrepareAmountLabel": "Előkészítendő összeg"
+      }
     },
     "payModal": {
       "title": "Pénzutalás",

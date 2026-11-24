@@ -789,8 +789,33 @@
       "dragHint": "Træk for at omarrangere",
       "resizeHint": "Træk hjørnet for at ændre størrelsen"
     },
-    "aTraiter": {
-      "items": {}
+    "actionsTodo": {
+      "trigger": "Handlinger, der skal tages",
+      "badgeHint": "{count, plural, one {# kategori for ventende handling} other {# kategorier af ventende handlinger}}",
+      "empty": "Alt er opdateret, ingen handling at håndtere.",
+      "snooze": "Udsæt denne handling",
+      "snoozeDialogTitle": "Udsæt denne handling",
+      "snoozeDialogDescription": "Handlingen forbliver skjult for dig indtil den dato, og dukker så op igen, hvis der stadig er sager, der skal behandles.",
+      "snoozeUntilLabel": "Udsat til",
+      "confirm": "Bekræft",
+      "loadError": "Kan ikke indlæse de handlinger, der skal udføres.",
+      "snoozedSectionTitle": "{count, plural, one {# handling sat på pause} other {# handlinger sat på pause}}",
+      "snoozedUntil": "Indtil {date}",
+      "cancelSnooze": "Opskær holdet",
+      "actionLabels": {
+        "voirEtRelancer": "Se og genlancering",
+        "examiner": "Examinator",
+        "consulter": "Konsultér"
+      },
+      "rows": {
+        "cotisations-en-attente": "{count, plural, one {# udestående medlemsgebyr} other {# ventende bidrag}}",
+        "materiel-en-retard": "{count, plural, one {# sene materialeafkast} other {# sene materialeafkast}}",
+        "membres-a-valider": "{count, plural, one {# medlem til at validere} other {# medlemmer, der skal valideres}}",
+        "dons-a-encaisser": "{count, plural, one {# gave, der skal indløses} other {# donationer til indsamling}}",
+        "rapprochement-bancaire": "{count, plural, one {# operation, der skal sammenlignes} other {# operationer at sammenligne}}",
+        "notes-de-frais-a-valider": "{count, plural, one {# udgiftsrapport, der skal valideres} other {# udgiftsrapporter, der skal valideres}}",
+        "commandes-a-preparer": "{count, plural, one {# for at forberede} other {# ordrer til forberedelse}}"
+      }
     },
     "stats": {
       "financialBalance": "Finansiel balance",
@@ -863,33 +888,8 @@
       "almostReached": "Grænsen er næsten nået",
       "limitReached": "Grænsen er nået"
     },
-    "actionsTodo": {
-      "trigger": "Handlinger, der skal tages",
-      "badgeHint": "{count, plural, one {# kategori for ventende handling} other {# kategorier af ventende handlinger}}",
-      "empty": "Alt er opdateret, ingen handling at håndtere.",
-      "snooze": "Udsæt denne handling",
-      "snoozeDialogTitle": "Udsæt denne handling",
-      "snoozeDialogDescription": "Handlingen forbliver skjult for dig indtil den dato, og dukker så op igen, hvis der stadig er sager, der skal behandles.",
-      "snoozeUntilLabel": "Udsat til",
-      "confirm": "Bekræft",
-      "loadError": "Kan ikke indlæse de handlinger, der skal udføres.",
-      "snoozedSectionTitle": "{count, plural, one {# handling sat på pause} other {# handlinger sat på pause}}",
-      "snoozedUntil": "Indtil {date}",
-      "cancelSnooze": "Opskær holdet",
-      "actionLabels": {
-        "voirEtRelancer": "Se og genlancering",
-        "examiner": "Examinator",
-        "consulter": "Konsultér"
-      },
-      "rows": {
-        "cotisations-en-attente": "{count, plural, one {# udestående medlemsgebyr} other {# ventende bidrag}}",
-        "materiel-en-retard": "{count, plural, one {# sene materialeafkast} other {# sene materialeafkast}}",
-        "membres-a-valider": "{count, plural, one {# medlem til at validere} other {# medlemmer, der skal valideres}}",
-        "dons-a-encaisser": "{count, plural, one {# gave, der skal indløses} other {# donationer til indsamling}}",
-        "rapprochement-bancaire": "{count, plural, one {# operation, der skal sammenlignes} other {# operationer at sammenligne}}",
-        "notes-de-frais-a-valider": "{count, plural, one {# udgiftsrapport, der skal valideres} other {# udgiftsrapporter, der skal valideres}}",
-        "commandes-a-preparer": "{count, plural, one {# for at forberede} other {# ordrer til forberedelse}}"
-      }
+    "aTraiter": {
+      "items": {}
     }
   },
   "notifications": {
@@ -1144,7 +1144,12 @@
       "memoNoHistory": "Ingen historiske data",
       "caveats": {
         "stocksMissingCostPrice": "{count} varianter uden registreringsomkostninger, udelukket fra estimatet"
-      }
+      },
+      "refreshLedger": "Opdater loggen",
+      "refreshLedgerTooltip": "Denne rapport opdateres ikke i realtid med hver eneste indtægt eller udgift — klik for at synkronisere med de seneste bevægelser.",
+      "refreshLedgerSuccessPosted": "{count, plural, =0 {Ingen ny bevægelse} one {# synkroniseret bevægelse} other {# synkroniserede bevægelser}}",
+      "refreshLedgerSuccessReversed": "{count, plural, =0 {} one {, # annullering anvendt} other {, # afbestillinger anvendt}}",
+      "refreshLedgerError": "Kan ikke opdatere loggen. Prøv venligst igen."
     },
     "compteResultat": {
       "title": "Resultatopgørelse",
@@ -1687,7 +1692,11 @@
       "suggestedMatches": "Foreslåede kampe",
       "typeIncome": "Indtægt",
       "typeExpense": "Udgifter",
-      "confirm": "Valider forliget"
+      "confirm": "Valider forliget",
+      "selectedCount": "{count, plural, one {# valgt element} other {# valgte elementer}}"
+    },
+    "exerciceGuard": {
+      "closedError": "Denne øvelse er lukket — det er umuligt at oprette eller ændre en post for denne periode."
     }
   },
   "evenements": {
@@ -2961,11 +2970,14 @@
       },
       "othersCount": "{count, plural, one {+# andet} other {+# andre}}",
       "statusFilterAll": "Alle",
+      "statusFilterToPrepare": "At forberede",
       "salesCountLabel": "Antal salg",
       "revenueTotalLabel": "Samlet omsætning",
       "unitsSold": "{count, plural, one {# solgt} other {# solgt}}",
       "pendingCountLabel": "Afventende ordrer",
       "pendingAmountLabel": "Afventende beløb",
+      "toPrepareCountLabel": "Ordrer til forberedelse",
+      "toPrepareAmountLabel": "Beløb, der skal forberedes",
       "cancelledCountLabel": "Annullerede ordrer",
       "cancelledAmountLabel": "Annulleret beløb",
       "deleteProduitTitle": "Fjern produktet",
@@ -2978,10 +2990,7 @@
         "productDeleted": "Udgået produkt",
         "deleteError": "Fejlsletning",
         "orderUpdated": "Opdateret ordre"
-      },
-      "statusFilterToPrepare": "At forberede",
-      "toPrepareCountLabel": "Ordrer til forberedelse",
-      "toPrepareAmountLabel": "Beløb, der skal forberedes"
+      }
     },
     "payModal": {
       "title": "Kontantordre",

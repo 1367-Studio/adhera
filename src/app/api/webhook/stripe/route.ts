@@ -11,6 +11,7 @@ import { nextBoutiqueReceiptNumber } from "@/lib/document-numbering"
 import { bookBoutiqueOrderIncome } from "@/lib/boutique/book-income"
 import { resolveBoutiqueResponsable } from "@/lib/boutique/responsable"
 import { notifyDonResponsable, notifyNewAddonDonations } from "@/lib/dons/notify"
+import { bookAddonDonationIncome } from "@/lib/dons/book-income"
 import { pusherServer } from "@/lib/pusher-server"
 import { writeActivityLog } from "@/lib/activity-log"
 import { resolveEmailBranding, memberLimitForPlan } from "@/lib/plan-limits"
@@ -545,12 +546,20 @@ export async function POST(req: Request) {
           const donations = parseEvenementDonations(sess.metadata?.donations)
           if (donations.length > 0) {
             const createdDonations = await prisma.$transaction(async (tx) => {
-              return createEvenementDonation(tx, {
+              const created = await createEvenementDonation(tx, {
                 associationId: evenement.associationId,
                 firstName: buyerTicket.firstName, lastName: buyerTicket.lastName, email: buyerTicket.email!,
                 donations,
                 canIssueTaxReceipts: evenement.association?.canIssueTaxReceipts ?? false,
               })
+              await bookAddonDonationIncome(tx, {
+                associationId:  evenement.associationId,
+                donorFirstName: buyerTicket.firstName,
+                donorLastName:  buyerTicket.lastName,
+                donations:      created,
+                reference:      paymentIntentId,
+              })
+              return created
             })
             notifyNewAddonDonations(evenement.associationId, `${buyerTicket.firstName} ${buyerTicket.lastName}`, createdDonations)
           }

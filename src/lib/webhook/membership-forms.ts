@@ -15,6 +15,7 @@ import { fireEventRule } from "@/lib/fire-event-rule"
 import { APP_URL } from "@/lib/env"
 import { createMembershipAddonPurchases, parseAddons } from "@/lib/webhook/membership-addons"
 import { notifyNewAddonDonations } from "@/lib/dons/notify"
+import { bookAddonDonationIncome } from "@/lib/dons/book-income"
 import { createMembershipFormProductPurchase } from "@/lib/webhook/membership-form-products"
 import { notifyMembershipSignup } from "@/lib/webhook/membership-notify"
 import { isMemberCardAvailable } from "@/lib/member-card/availability"
@@ -172,6 +173,13 @@ export async function handleMembershipOneOffCheckout(session: Stripe.Checkout.Se
         email:         meta.email,
         addonsJson:    meta.addons,
         canIssueTaxReceipts: assoc?.canIssueTaxReceipts ?? false,
+      })
+      await bookAddonDonationIncome(tx, {
+        associationId:  meta.associationId,
+        donorFirstName: meta.firstName ?? "",
+        donorLastName:  meta.lastName ?? "",
+        donations,
+        reference:      paymentIntentId,
       })
 
       return { user, membre, cotisation, donations }

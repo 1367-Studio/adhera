@@ -789,8 +789,33 @@
       "dragHint": "Dra för att omarrangera",
       "resizeHint": "Dra hörnet för att ändra storlek"
     },
-    "aTraiter": {
-      "items": {}
+    "actionsTodo": {
+      "trigger": "Åtgärder att vidta",
+      "badgeHint": "{count, plural, one {# kategori för pågående åtgärder} other {# kategorier av pågående åtgärder}}",
+      "empty": "Allt är uppdaterat, ingen åtgärd att hantera.",
+      "snooze": "Skjut upp denna åtgärd",
+      "snoozeDialogTitle": "Skjut upp denna åtgärd",
+      "snoozeDialogDescription": "Åtgärden förblir dold för dig fram till det datumet, och dyker sedan upp igen om det fortfarande finns ärenden att bearbeta.",
+      "snoozeUntilLabel": "Uppskjuten till",
+      "confirm": "Bekräfta",
+      "loadError": "Kan inte ladda de åtgärder som ska göras.",
+      "snoozedSectionTitle": "{count, plural, one {# åtgärd satt på is} other {# åtgärder som satts på is}}",
+      "snoozedUntil": "Tills {date}",
+      "cancelSnooze": "Avbryt spärren",
+      "actionLabels": {
+        "voirEtRelancer": "Se och återlansera",
+        "examiner": "Examinator",
+        "consulter": "Konsultera"
+      },
+      "rows": {
+        "cotisations-en-attente": "{count, plural, one {# utestående medlemsavgift} other {# utestående bidrag}}",
+        "materiel-en-retard": "{count, plural, one {# sena materialavkastningar} other {# sena materialavkastningar}}",
+        "membres-a-valider": "{count, plural, one {# medlem validera} other {# medlemmar som ska valideras}}",
+        "dons-a-encaisser": "{count, plural, one {# gåva att lösa in} other {# donationer att samla in}}",
+        "rapprochement-bancaire": "{count, plural, one {# operation som ska jämföras} other {# operationer att jämföra}}",
+        "notes-de-frais-a-valider": "{count, plural, one {# utgiftsrapport som ska valideras} other {# utgiftsrapporter som ska valideras}}",
+        "commandes-a-preparer": "{count, plural, one {# beställning att förbereda} other {# order att förbereda}}"
+      }
     },
     "stats": {
       "financialBalance": "Finansiell balans",
@@ -863,33 +888,8 @@
       "almostReached": "Gränsen nästan nådd",
       "limitReached": "Gränsen nådd"
     },
-    "actionsTodo": {
-      "trigger": "Åtgärder att vidta",
-      "badgeHint": "{count, plural, one {# kategori för pågående åtgärder} other {# kategorier av pågående åtgärder}}",
-      "empty": "Allt är uppdaterat, ingen åtgärd att hantera.",
-      "snooze": "Skjut upp denna åtgärd",
-      "snoozeDialogTitle": "Skjut upp denna åtgärd",
-      "snoozeDialogDescription": "Åtgärden förblir dold för dig fram till det datumet, och dyker sedan upp igen om det fortfarande finns ärenden att bearbeta.",
-      "snoozeUntilLabel": "Uppskjuten till",
-      "confirm": "Bekräfta",
-      "loadError": "Kan inte ladda de åtgärder som ska göras.",
-      "snoozedSectionTitle": "{count, plural, one {# åtgärd satt på is} other {# åtgärder som satts på is}}",
-      "snoozedUntil": "Tills {date}",
-      "cancelSnooze": "Avbryt spärren",
-      "actionLabels": {
-        "voirEtRelancer": "Se och återlansera",
-        "examiner": "Examinator",
-        "consulter": "Konsultera"
-      },
-      "rows": {
-        "cotisations-en-attente": "{count, plural, one {# utestående medlemsavgift} other {# utestående bidrag}}",
-        "materiel-en-retard": "{count, plural, one {# sena materialavkastningar} other {# sena materialavkastningar}}",
-        "membres-a-valider": "{count, plural, one {# medlem validera} other {# medlemmar som ska valideras}}",
-        "dons-a-encaisser": "{count, plural, one {# gåva att lösa in} other {# donationer att samla in}}",
-        "rapprochement-bancaire": "{count, plural, one {# operation som ska jämföras} other {# operationer att jämföra}}",
-        "notes-de-frais-a-valider": "{count, plural, one {# utgiftsrapport som ska valideras} other {# utgiftsrapporter som ska valideras}}",
-        "commandes-a-preparer": "{count, plural, one {# beställning att förbereda} other {# order att förbereda}}"
-      }
+    "aTraiter": {
+      "items": {}
     }
   },
   "notifications": {
@@ -1144,7 +1144,12 @@
       "memoNoHistory": "Inga historiska data",
       "caveats": {
         "stocksMissingCostPrice": "{count} varianter utan inköpskostnad registrerad, undantagna från uppskattningen"
-      }
+      },
+      "refreshLedger": "Uppdatera loggen",
+      "refreshLedgerTooltip": "Denna rapport uppdateras inte i realtid med varje inkomst eller kostnad — klicka för att synka med de senaste rörelserna.",
+      "refreshLedgerSuccessPosted": "{count, plural, =0 {Ingen ny rörelse} one {# synkroniserad rörelse} other {# synkroniserade rörelser}}",
+      "refreshLedgerSuccessReversed": "{count, plural, =0 {} one {, # tilldelad annullering} other {, # tillämpade avbokningar}}",
+      "refreshLedgerError": "Kan inte uppdatera loggen. Försök igen."
     },
     "compteResultat": {
       "title": "Resultaträkning",
@@ -1687,7 +1692,11 @@
       "suggestedMatches": "Föreslagna matcher",
       "typeIncome": "Intäkt",
       "typeExpense": "Kostnad",
-      "confirm": "Validera förlikningen"
+      "confirm": "Validera förlikningen",
+      "selectedCount": "{count, plural, one {# valt objekt} other {# valda objekt}}"
+    },
+    "exerciceGuard": {
+      "closedError": "Denna övning är avslutad — det är omöjligt att skapa eller ändra en post för denna period."
     }
   },
   "evenements": {
@@ -2961,11 +2970,14 @@
       },
       "othersCount": "{count, plural, one {+# andra} other {+# andra}}",
       "statusFilterAll": "Alla",
+      "statusFilterToPrepare": "För att förbereda",
       "salesCountLabel": "Antal försäljningar",
       "revenueTotalLabel": "Total intäkt",
       "unitsSold": "{count, plural, one {# såld} other {# sålda}}",
       "pendingCountLabel": "Väntande beställningar",
       "pendingAmountLabel": "Väntande belopp",
+      "toPrepareCountLabel": "Order att förbereda",
+      "toPrepareAmountLabel": "Beloppet att förbereda",
       "cancelledCountLabel": "Avbrutna beställningar",
       "cancelledAmountLabel": "Avbrutet belopp",
       "deleteProduitTitle": "Ta bort produkten",
@@ -2978,10 +2990,7 @@
         "productDeleted": "Utgången produkt",
         "deleteError": "Felborttagning",
         "orderUpdated": "Uppdaterad ordning"
-      },
-      "statusFilterToPrepare": "För att förbereda",
-      "toPrepareCountLabel": "Order att förbereda",
-      "toPrepareAmountLabel": "Beloppet att förbereda"
+      }
     },
     "payModal": {
       "title": "Kontantanvisning",

@@ -789,8 +789,33 @@
       "dragHint": "Povuci za preuređivanje",
       "resizeHint": "Povuci kut za promjenu veličine"
     },
-    "aTraiter": {
-      "items": {}
+    "actionsTodo": {
+      "trigger": "Akcije koje treba poduzeti",
+      "badgeHint": "{count, plural, one {# kategorija čekajućih radnji} other {# kategorija neriješenih radnji}}",
+      "empty": "Sve je ažurirano, nema nikakvih radnji.",
+      "snooze": "Odgoditi ovu radnju",
+      "snoozeDialogTitle": "Odgoditi ovu radnju",
+      "snoozeDialogDescription": "Radnja ostaje skrivena za vas do tog datuma, a zatim se ponovno pojavljuje ako još ima slučajeva za obradu.",
+      "snoozeUntilLabel": "Odgođeno do",
+      "confirm": "Potvrdi",
+      "loadError": "Nije moguće učitati radnje koje treba izvršiti.",
+      "snoozedSectionTitle": "{count, plural, one {# akcija stavljena na čekanje} other {# radnje stavljene na čekanje}}",
+      "snoozedUntil": "Do {date}",
+      "cancelSnooze": "Otkaži blokadu",
+      "actionLabels": {
+        "voirEtRelancer": "Pogledajte i ponovno pokrenite",
+        "examiner": "Ispitivač",
+        "consulter": "Konzultirajte se"
+      },
+      "rows": {
+        "cotisations-en-attente": "{count, plural, one {# članarina na čekanju} other {# neriješene doprinose}}",
+        "materiel-en-retard": "{count, plural, one {# kasni povrati materijala} other {# kasni povrati materijala}}",
+        "membres-a-valider": "{count, plural, one {# član za provjeru} other {# članova koje treba potvrditi}}",
+        "dons-a-encaisser": "{count, plural, one {# poklon koji treba unovčiti} other {# donacije za prikupljanje}}",
+        "rapprochement-bancaire": "{count, plural, one {# operacija za usporedbu} other {# operacija za usporedbu}}",
+        "notes-de-frais-a-valider": "{count, plural, one {# izvještaj o troškovima koji treba potvrditi} other {# izvještaje o troškovima treba validirati}}",
+        "commandes-a-preparer": "{count, plural, one {# redoslijed pripreme} other {# naredbe za pripremu}}"
+      }
     },
     "stats": {
       "financialBalance": "Financijska ravnoteža",
@@ -863,33 +888,8 @@
       "almostReached": "Ograničenje gotovo dosegnuto",
       "limitReached": "Ograničenje dosegnuto"
     },
-    "actionsTodo": {
-      "trigger": "Akcije koje treba poduzeti",
-      "badgeHint": "{count, plural, one {# kategorija čekajućih radnji} other {# kategorija neriješenih radnji}}",
-      "empty": "Sve je ažurirano, nema nikakvih radnji.",
-      "snooze": "Odgoditi ovu radnju",
-      "snoozeDialogTitle": "Odgoditi ovu radnju",
-      "snoozeDialogDescription": "Radnja ostaje skrivena za vas do tog datuma, a zatim se ponovno pojavljuje ako još ima slučajeva za obradu.",
-      "snoozeUntilLabel": "Odgođeno do",
-      "confirm": "Potvrdi",
-      "loadError": "Nije moguće učitati radnje koje treba izvršiti.",
-      "snoozedSectionTitle": "{count, plural, one {# akcija stavljena na čekanje} other {# radnje stavljene na čekanje}}",
-      "snoozedUntil": "Do {date}",
-      "cancelSnooze": "Otkaži blokadu",
-      "actionLabels": {
-        "voirEtRelancer": "Pogledajte i ponovno pokrenite",
-        "examiner": "Ispitivač",
-        "consulter": "Konzultirajte se"
-      },
-      "rows": {
-        "cotisations-en-attente": "{count, plural, one {# članarina na čekanju} other {# neriješene doprinose}}",
-        "materiel-en-retard": "{count, plural, one {# kasni povrati materijala} other {# kasni povrati materijala}}",
-        "membres-a-valider": "{count, plural, one {# član za provjeru} other {# članova koje treba potvrditi}}",
-        "dons-a-encaisser": "{count, plural, one {# poklon koji treba unovčiti} other {# donacije za prikupljanje}}",
-        "rapprochement-bancaire": "{count, plural, one {# operacija za usporedbu} other {# operacija za usporedbu}}",
-        "notes-de-frais-a-valider": "{count, plural, one {# izvještaj o troškovima koji treba potvrditi} other {# izvještaje o troškovima treba validirati}}",
-        "commandes-a-preparer": "{count, plural, one {# redoslijed pripreme} other {# naredbe za pripremu}}"
-      }
+    "aTraiter": {
+      "items": {}
     }
   },
   "notifications": {
@@ -1144,7 +1144,12 @@
       "memoNoHistory": "Nema povijesnih podataka",
       "caveats": {
         "stocksMissingCostPrice": "{count} varijanti bez evidentirane nabavne cijene, isključene iz procjene"
-      }
+      },
+      "refreshLedger": "Osvježite zapisnik",
+      "refreshLedgerTooltip": "Ovo izvješće se ne ažurira u stvarnom vremenu sa svakim prihodom ili rashodom — kliknite za sinkronizaciju s najnovijim kretanjima.",
+      "refreshLedgerSuccessPosted": "{count, plural, =0 {Nema novog pokreta} one {# sinkronizirano kretanje} other {# sinkronizirani pokreti}}",
+      "refreshLedgerSuccessReversed": "{count, plural, =0 {} one {, # se primjenjuje poništenje} other {, # primijenjenih otkazivanja}}",
+      "refreshLedgerError": "Nije moguće osvježiti zapisnik. Molimo pokušajte ponovno."
     },
     "compteResultat": {
       "title": "Račun dobiti i gubitka",
@@ -1687,7 +1692,11 @@
       "suggestedMatches": "Predložene utakmice",
       "typeIncome": "Prihod",
       "typeExpense": "Troškovi",
-      "confirm": "Potvrdite pomirenje"
+      "confirm": "Potvrdite pomirenje",
+      "selectedCount": "{count, plural, one {# odabrani predmet} other {# odabranih stavki}}"
+    },
+    "exerciceGuard": {
+      "closedError": "Ova vježba je zatvorena — nemoguće je stvoriti ili izmijeniti zapis za ovo razdoblje."
     }
   },
   "evenements": {
@@ -2961,11 +2970,14 @@
       },
       "othersCount": "{count, plural, one {+# ostalo} other {+# drugih}}",
       "statusFilterAll": "Svi",
+      "statusFilterToPrepare": "Pripremiti se",
       "salesCountLabel": "Broj prodaja",
       "revenueTotalLabel": "Ukupni prihod",
       "unitsSold": "{count, plural, one {# prodan} few {# prodana} other {# prodanih}}",
       "pendingCountLabel": "Narudžbe na čekanju",
       "pendingAmountLabel": "Iznos na čekanju",
+      "toPrepareCountLabel": "Naredbe za pripremu",
+      "toPrepareAmountLabel": "Iznos za pripremu",
       "cancelledCountLabel": "Otkazane narudžbe",
       "cancelledAmountLabel": "Otkazani iznos",
       "deleteProduitTitle": "Uklonite proizvod",
@@ -2978,10 +2990,7 @@
         "productDeleted": "Ukinuti proizvod",
         "deleteError": "Brisanje greške",
         "orderUpdated": "Ažurirani redoslijed"
-      },
-      "statusFilterToPrepare": "Pripremiti se",
-      "toPrepareCountLabel": "Naredbe za pripremu",
-      "toPrepareAmountLabel": "Iznos za pripremu"
+      }
     },
     "payModal": {
       "title": "Novčana narudžba",

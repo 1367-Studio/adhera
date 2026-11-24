@@ -1177,6 +1177,11 @@
       "noAccountsInRubrique": "Aucun solde dans cette rubrique",
       "exportPdf": "Exporter PDF",
       "exportDisabledTooltip": "Impossible d'exporter un Bilan définitif tant que les anomalies ci-dessus ne sont pas corrigées.",
+      "refreshLedger": "Actualiser le journal",
+      "refreshLedgerTooltip": "Ce rapport n'est pas mis à jour en temps réel à chaque recette ou dépense — cliquez pour synchroniser avec les mouvements les plus récents.",
+      "refreshLedgerSuccessPosted": "{count, plural, =0 {Aucun nouveau mouvement} one {# mouvement synchronisé} other {# mouvements synchronisés}}",
+      "refreshLedgerSuccessReversed": "{count, plural, =0 {} one {, # annulation appliquée} other {, # annulations appliquées}}",
+      "refreshLedgerError": "Impossible d'actualiser le journal. Réessayez.",
       "emptyExercice": {
         "title": "Aucun exercice comptable",
         "description": "Créez un exercice comptable pour afficher le Bilan."
@@ -1594,6 +1599,9 @@
         "createdWithLinked": "Exercice créé — {count, plural, one {# enregistrement lié} other {# enregistrements liés}} automatiquement"
       }
     },
+    "exerciceGuard": {
+      "closedError": "Cet exercice est clôturé — impossible de créer ou modifier un enregistrement sur cette période."
+    },
     "accountsView": {
       "title": "Comptes bancaires",
       "description": "Gérez les comptes bancaires de l'association.",
@@ -1917,6 +1925,7 @@
       "typeIncome": "Recette",
       "typeExpense": "Dépense",
       "typeTransfer": "Transfert interne",
+      "selectedCount": "{count, plural, one {# élément sélectionné} other {# éléments sélectionnés}}",
       "confirm": "Valider la conciliation"
     }
   },

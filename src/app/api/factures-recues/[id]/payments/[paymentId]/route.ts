@@ -8,6 +8,8 @@ import { prisma } from "@/lib/prisma/client"
 import { writeActivityLog } from "@/lib/activity-log"
 import { closedExerciceGuard } from "@/lib/finance/exercice"
 import { resolveManualFactureRecueStatus } from "@/lib/facture-recue-status"
+import { reverseExpenseJournalEntry } from "@/lib/finance/journal/post-income-expense"
+import { bankTransactionIdsToRelease } from "@/lib/finance/release-bank-transaction"
 
 const EPSILON = 0.01
 
@@ -30,16 +32,25 @@ export const DELETE = withAdminAuth<{ id: string; paymentId: string }>(async (_r
       where:  { idempotencyKey: `facture-recue-payment:${paymentId}` },
       select: { exercice: { select: { status: true } } },
     })
-    const guard = closedExerciceGuard(entry?.exercice?.status)
+    const guard = await closedExerciceGuard(entry?.exercice?.status)
     if (guard) return guard
   } else {
     const linkedExpensePreview = await prisma.expense.findUnique({
       where:  { factureRecuePaymentId: paymentId },
       select: { exercice: { select: { status: true } } },
     })
-    const guard = closedExerciceGuard(linkedExpensePreview?.exercice?.status)
+    const guard = await closedExerciceGuard(linkedExpensePreview?.exercice?.status)
     if (guard) return guard
   }
+
+  // Captured before the transaction — the Expense below is hard-deleted inside it (non-
+  // Immobilisation path only), so there's nothing left to look up by afterward (same ordering
+  // constraint as every other hard-delete call site, see cotisations/[id]/route.ts's own
+  // comment). The Immobilisation path never created an Expense — its JournalEntry is deleted
+  // directly instead, a deliberate exception, not something to reverse.
+  const linkedExpenseToReverse = factureRecue.immobilisation
+    ? null
+    : await prisma.expense.findUnique({ where: { factureRecuePaymentId: paymentId }, select: { id: true } })
 
   try {
     const updated = await prisma.$transaction(async (tx) => {
@@ -47,18 +58,18 @@ export const DELETE = withAdminAuth<{ id: string; paymentId: string }>(async (_r
         // Same deliberate exception as opening-balance.ts's own doc comment — deleting a
         // specific payment compensates recording it being undone, not a correction of history.
         await tx.journalEntry.deleteMany({ where: { idempotencyKey: `facture-recue-payment:${paymentId}` } })
-      } else {
+      } else if (linkedExpenseToReverse) {
         // Mirrors the Facture-payment reversal: drop any bank reconciliation for the linked
         // Expense (resetting that transaction to UNMATCHED) before deleting the Expense itself.
-        const linkedExpense = await tx.expense.findUnique({ where: { factureRecuePaymentId: paymentId }, select: { id: true } })
-        if (linkedExpense) {
-          const reconciliations = await tx.bankReconciliation.findMany({ where: { expenseId: linkedExpense.id }, select: { bankTransactionId: true } })
-          await tx.bankReconciliation.deleteMany({ where: { expenseId: linkedExpense.id } })
-          if (reconciliations.length > 0) {
-            await tx.bankTransaction.updateMany({ where: { id: { in: reconciliations.map(r => r.bankTransactionId) } }, data: { status: "UNMATCHED" } })
-          }
-          await tx.expense.delete({ where: { id: linkedExpense.id } })
+        const reconciliations = await tx.bankReconciliation.findMany({ where: { expenseId: linkedExpenseToReverse.id }, select: { bankTransactionId: true } })
+        await tx.bankReconciliation.deleteMany({ where: { expenseId: linkedExpenseToReverse.id } })
+        // Only release a transaction with NO other reconciliation row left — a grouped
+        // reconciliation (FORM-116 block 8) can still be legitimately matched via sibling rows.
+        const toRelease = await bankTransactionIdsToRelease(tx, reconciliations.map(r => r.bankTransactionId), [])
+        if (toRelease.length > 0) {
+          await tx.bankTransaction.updateMany({ where: { id: { in: toRelease } }, data: { status: "UNMATCHED" } })
         }
+        await tx.expense.delete({ where: { id: linkedExpenseToReverse.id } })
       }
 
       await tx.factureRecuePayment.delete({ where: { id: paymentId } })
@@ -83,6 +94,8 @@ export const DELETE = withAdminAuth<{ id: string; paymentId: string }>(async (_r
         include: { fournisseur: { select: { id: true, companyName: true } }, payments: { orderBy: { paidAt: "desc" } } },
       })
     })
+
+    if (linkedExpenseToReverse) await reverseExpenseJournalEntry(linkedExpenseToReverse.id)
 
     await writeActivityLog({
       associationId, actorId: userId, action: "FACTURE_RECUE_PAYMENT_REMOVED", entity: "FactureRecue", entityId: id, label: updated.number ?? updated.type,

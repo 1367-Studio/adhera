@@ -789,8 +789,33 @@
       "dragHint": "Velciet, lai pārkārtotu",
       "resizeHint": "Pavelc stūri, lai mainītu izmēru"
     },
-    "aTraiter": {
-      "items": {}
+    "actionsTodo": {
+      "trigger": "Veicamie soļi",
+      "badgeHint": "{count, plural, one {# gaidošo darbību kategorija} other {# kategorijas gaidāmajām darbībām}}",
+      "empty": "Viss ir atjaunināts, nav nekādu darbību, ko risināt.",
+      "snooze": "Atlikt šo rīcību",
+      "snoozeDialogTitle": "Atlikt šo rīcību",
+      "snoozeDialogDescription": "Darbība jums paliek slēpta līdz tam datumam, tad atkal parādās, ja vēl ir lietas, kas jāapstrādā.",
+      "snoozeUntilLabel": "Atlikts līdz",
+      "confirm": "Apstiprini",
+      "loadError": "Nevar ielādēt vajadzīgās darbības.",
+      "snoozedSectionTitle": "{count, plural, one {# darbība atlikta} other {# darbības atliktas}}",
+      "snoozedUntil": "Līdz {date}",
+      "cancelSnooze": "Atcelt rezervāciju",
+      "actionLabels": {
+        "voirEtRelancer": "Skatīt un atjaunot",
+        "examiner": "Eksaminētājs",
+        "consulter": "Konsultācija"
+      },
+      "rows": {
+        "cotisations-en-attente": "{count, plural, one {# gaidošā biedra maksa} other {# gaidāmie ieguldījumi}}",
+        "materiel-en-retard": "{count, plural, one {# Vēlā materiāla atgriešanās} other {# Vēlā materiāla atgriešanās}}",
+        "membres-a-valider": "{count, plural, one {# biedrs, kuru apstiprināt} other {# biedri, kas tiks apstiprināti}}",
+        "dons-a-encaisser": "{count, plural, one {# dāvana tiks izņemta} other {# ziedojumus vākšanai}}",
+        "rapprochement-bancaire": "{count, plural, one {# operācija, kas jāsalīdzina} other {# operācijas, ko salīdzināt}}",
+        "notes-de-frais-a-valider": "{count, plural, one {# izdevumu atskaite jāapstiprina} other {# izdevumu atskaites jāapstiprina}}",
+        "commandes-a-preparer": "{count, plural, one {# sagatavošanās kārtība} other {# pavēles sagatavoties}}"
+      }
     },
     "stats": {
       "financialBalance": "Finanšu bilance",
@@ -863,33 +888,8 @@
       "almostReached": "Limits gandrīz sasniegts",
       "limitReached": "Limits sasniegts"
     },
-    "actionsTodo": {
-      "trigger": "Veicamie soļi",
-      "badgeHint": "{count, plural, one {# gaidošo darbību kategorija} other {# kategorijas gaidāmajām darbībām}}",
-      "empty": "Viss ir atjaunināts, nav nekādu darbību, ko risināt.",
-      "snooze": "Atlikt šo rīcību",
-      "snoozeDialogTitle": "Atlikt šo rīcību",
-      "snoozeDialogDescription": "Darbība jums paliek slēpta līdz tam datumam, tad atkal parādās, ja vēl ir lietas, kas jāapstrādā.",
-      "snoozeUntilLabel": "Atlikts līdz",
-      "confirm": "Apstiprini",
-      "loadError": "Nevar ielādēt vajadzīgās darbības.",
-      "snoozedSectionTitle": "{count, plural, one {# darbība atlikta} other {# darbības atliktas}}",
-      "snoozedUntil": "Līdz {date}",
-      "cancelSnooze": "Atcelt rezervāciju",
-      "actionLabels": {
-        "voirEtRelancer": "Skatīt un atjaunot",
-        "examiner": "Eksaminētājs",
-        "consulter": "Konsultācija"
-      },
-      "rows": {
-        "cotisations-en-attente": "{count, plural, one {# gaidošā biedra maksa} other {# gaidāmie ieguldījumi}}",
-        "materiel-en-retard": "{count, plural, one {# Vēlā materiāla atgriešanās} other {# Vēlā materiāla atgriešanās}}",
-        "membres-a-valider": "{count, plural, one {# biedrs, kuru apstiprināt} other {# biedri, kas tiks apstiprināti}}",
-        "dons-a-encaisser": "{count, plural, one {# dāvana tiks izņemta} other {# ziedojumus vākšanai}}",
-        "rapprochement-bancaire": "{count, plural, one {# operācija, kas jāsalīdzina} other {# operācijas, ko salīdzināt}}",
-        "notes-de-frais-a-valider": "{count, plural, one {# izdevumu atskaite jāapstiprina} other {# izdevumu atskaites jāapstiprina}}",
-        "commandes-a-preparer": "{count, plural, one {# sagatavošanās kārtība} other {# pavēles sagatavoties}}"
-      }
+    "aTraiter": {
+      "items": {}
     }
   },
   "notifications": {
@@ -1144,7 +1144,12 @@
       "memoNoHistory": "Nav vēsturisku datu",
       "caveats": {
         "stocksMissingCostPrice": "{count} varianti bez norādītām pirkuma izmaksām, izslēgti no tāmes"
-      }
+      },
+      "refreshLedger": "Atsvaidzināt žurnālu",
+      "refreshLedgerTooltip": "Šis pārskats netiek atjaunināts reāllaikā ar katru ienākumu vai izdevumu — klikšķiniet, lai sinhronizētu ar jaunākajām kustībām.",
+      "refreshLedgerSuccessPosted": "{count, plural, =0 {Nav jaunas kustības} one {# sinhronizētā kustība} other {# sinhronizētās kustības}}",
+      "refreshLedgerSuccessReversed": "{count, plural, =0 {} one {, # atcelšana} other {, # atcelšanas tika piemērotas}}",
+      "refreshLedgerError": "Neizdevās atsvaidzināt žurnālu. Lūdzu, mēģiniet vēlreiz."
     },
     "compteResultat": {
       "title": "Peļņas un zaudējumu aprēķins",
@@ -1687,7 +1692,11 @@
       "suggestedMatches": "Ieteiktās spēles",
       "typeIncome": "Ieņēmums",
       "typeExpense": "Izdevumi",
-      "confirm": "Apstiprināt izlīgumu"
+      "confirm": "Apstiprināt izlīgumu",
+      "selectedCount": "{count, plural, one {# izvēlētais priekšmets} other {# izvēlētie priekšmeti}}"
+    },
+    "exerciceGuard": {
+      "closedError": "Šis process ir slēgts — nav iespējams izveidot vai mainīt ierakstu par šo periodu."
     }
   },
   "evenements": {
@@ -2961,11 +2970,14 @@
       },
       "othersCount": "{count, plural, one {+# cits} other {+# citi}}",
       "statusFilterAll": "Visi",
+      "statusFilterToPrepare": "Lai sagatavotos",
       "salesCountLabel": "Pārdošanu skaits",
       "revenueTotalLabel": "Kopējie ieņēmumi",
       "unitsSold": "{count, plural, zero {# pārdoti} one {# pārdots} other {# pārdoti}}",
       "pendingCountLabel": "Gaidošie pasūtījumi",
       "pendingAmountLabel": "Gaidošā summa",
+      "toPrepareCountLabel": "Rīkojumi sagatavoties",
+      "toPrepareAmountLabel": "Jāsagatavo",
       "cancelledCountLabel": "Atceltie pasūtījumi",
       "cancelledAmountLabel": "Atceltā summa",
       "deleteProduitTitle": "Noņemt produktu",
@@ -2978,10 +2990,7 @@
         "productDeleted": "Pārtraukts produkts",
         "deleteError": "Kļūdu dzēšana",
         "orderUpdated": "Atjauninātā secība"
-      },
-      "statusFilterToPrepare": "Lai sagatavotos",
-      "toPrepareCountLabel": "Rīkojumi sagatavoties",
-      "toPrepareAmountLabel": "Jāsagatavo"
+      }
     },
     "payModal": {
       "title": "Naudas pārvedums",

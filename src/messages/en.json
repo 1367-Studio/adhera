@@ -1080,6 +1080,11 @@
       "noAccountsInRubrique": "No balance in this heading",
       "exportPdf": "Export PDF",
       "exportDisabledTooltip": "You can't export a definitive Balance sheet while the issues above remain unresolved.",
+      "refreshLedger": "Refresh the log",
+      "refreshLedgerTooltip": "This report is not updated in real time with every income or expense — click to sync with the most recent movements.",
+      "refreshLedgerSuccessPosted": "{count, plural, =0 {No new movement} one {# synchronized movement} other {# synchronized movements}}",
+      "refreshLedgerSuccessReversed": "{count, plural, =0 {} one {, # cancellation applied} other {, # cancellations applied}}",
+      "refreshLedgerError": "Unable to refresh the log. Please try again.",
       "emptyExercice": {
         "title": "No fiscal year",
         "description": "Create a fiscal year to display the Balance sheet."
@@ -1386,6 +1391,9 @@
         "closedWithLinked": "Fiscal year closed — {count, plural, one {# record linked} other {# records linked}} automatically",
         "createdWithLinked": "Fiscal year created — {count, plural, one {# record linked} other {# records linked}} automatically"
       }
+    },
+    "exerciceGuard": {
+      "closedError": "This exercise is closed — it is impossible to create or modify a record for this period."
     },
     "accountsView": {
       "title": "Bank accounts",
@@ -1710,6 +1718,7 @@
       "typeIncome": "Income",
       "typeExpense": "Expense",
       "typeTransfer": "Internal transfer",
+      "selectedCount": "{count, plural, one {# selected item} other {# selected items}}",
       "confirm": "Confirm match"
     }
   },

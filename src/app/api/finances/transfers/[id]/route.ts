@@ -31,7 +31,7 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   const existing = await prisma.accountTransfer.findFirst({ where: { id, associationId } })
   if (!existing) return NextResponse.json({ error: "Transfert introuvable" }, { status: 404 })
 
-  const existingGuard = closedExerciceGuard((await resolveExerciceForDate(associationId, existing.date))?.status)
+  const existingGuard = await closedExerciceGuard((await resolveExerciceForDate(associationId, existing.date))?.status)
   if (existingGuard) return existingGuard
 
   const body   = await req.json()
@@ -53,7 +53,7 @@ export const PATCH = withAdminAuth<{ id: string }>(async (req, ctx, { id }) => {
   }
 
   const exercice = await resolveExerciceForDate(associationId, date)
-  const exerciceGuard = closedExerciceGuard(exercice?.status)
+  const exerciceGuard = await closedExerciceGuard(exercice?.status)
   if (exerciceGuard) return exerciceGuard
 
   const transfer = await prisma.$transaction(async (tx) => {
@@ -82,7 +82,7 @@ export const DELETE = withAdminAuth<{ id: string }>(async (_req, ctx, { id }) =>
   })
   if (!existing) return NextResponse.json({ error: "Transfert introuvable" }, { status: 404 })
 
-  const exerciceGuard = closedExerciceGuard((await resolveExerciceForDate(associationId, existing.date))?.status)
+  const exerciceGuard = await closedExerciceGuard((await resolveExerciceForDate(associationId, existing.date))?.status)
   if (exerciceGuard) return exerciceGuard
 
   await prisma.$transaction(async (tx) => {

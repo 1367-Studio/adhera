@@ -789,8 +789,33 @@
       "dragHint": "Drag biex jerġa' jarranġa",
       "resizeHint": "Iċċaqlaq il-kantuniera biex tirranġa d-daqs"
     },
-    "aTraiter": {
-      "items": {}
+    "actionsTodo": {
+      "trigger": "Azzjonijiet li għandhom jittieħdu",
+      "badgeHint": "{count, plural, one {# kategorija ta'' azzjoni pendenti} other {# kategoriji ta'' azzjoni pendenti}}",
+      "empty": "Kollox huwa aġġornat, m''hemm l-ebda azzjoni biex tittratta.",
+      "snooze": "Ipposponi din l-azzjoni",
+      "snoozeDialogTitle": "Ipposponi din l-azzjoni",
+      "snoozeDialogDescription": "L-azzjoni tibqa'' moħbija għalik sa dik id-data, imbagħad terġa'' tidher jekk għad hemm każijiet x''jiġu pproċessati.",
+      "snoozeUntilLabel": "Posposta sa",
+      "confirm": "Ikkonferma",
+      "loadError": "Ma jistax jitħaddem l-azzjonijiet li għandhom isiru.",
+      "snoozedSectionTitle": "{count, plural, one {# azzjoni ġiet sospiża} other {# azzjonijiet imwaqqfa}}",
+      "snoozedUntil": "Sakemm {date}",
+      "cancelSnooze": "Ikkanċella l-hold",
+      "actionLabels": {
+        "voirEtRelancer": "Ara u erġa'' tniedi",
+        "examiner": "Eżaminatur",
+        "consulter": "Konsulta"
+      },
+      "rows": {
+        "cotisations-en-attente": "{count, plural, one {# ħlas ta'' membru pendenti} other {# kontribuzzjonijiet pendenti}}",
+        "materiel-en-retard": "{count, plural, one {# Ritorn tard tal-materjal} other {# Ritorn tard tal-materjal}}",
+        "membres-a-valider": "{count, plural, one {# membru biex tivvalida} other {# membri li għandhom jiġu vvalidati}}",
+        "dons-a-encaisser": "{count, plural, one {# rigal li għandu jiġi mħallas} other {# donazzjonijiet biex jinġabru}}",
+        "rapprochement-bancaire": "{count, plural, one {# -operazzjoni li għandha tiġi mqabbla} other {# operazzjonijiet biex tqabbel}}",
+        "notes-de-frais-a-valider": "{count, plural, one {# rapport ta'' spejjeż li għandu jiġi vvalidat} other {# -rapporti tal-ispejjeż għandhom jiġu vvalidati}}",
+        "commandes-a-preparer": "{count, plural, one {# -ordni biex tipprepara} other {# ordnijiet biex tipprepara}}"
+      }
     },
     "stats": {
       "financialBalance": "Bilanċ finanzjarju",
@@ -863,33 +888,8 @@
       "almostReached": "Il-limitu kważi milħuq",
       "limitReached": "Il-limitu milħuq"
     },
-    "actionsTodo": {
-      "trigger": "Azzjonijiet li għandhom jittieħdu",
-      "badgeHint": "{count, plural, one {# kategorija ta'' azzjoni pendenti} other {# kategoriji ta'' azzjoni pendenti}}",
-      "empty": "Kollox huwa aġġornat, m''hemm l-ebda azzjoni biex tittratta.",
-      "snooze": "Ipposponi din l-azzjoni",
-      "snoozeDialogTitle": "Ipposponi din l-azzjoni",
-      "snoozeDialogDescription": "L-azzjoni tibqa'' moħbija għalik sa dik id-data, imbagħad terġa'' tidher jekk għad hemm każijiet x''jiġu pproċessati.",
-      "snoozeUntilLabel": "Posposta sa",
-      "confirm": "Ikkonferma",
-      "loadError": "Ma jistax jitħaddem l-azzjonijiet li għandhom isiru.",
-      "snoozedSectionTitle": "{count, plural, one {# azzjoni ġiet sospiża} other {# azzjonijiet imwaqqfa}}",
-      "snoozedUntil": "Sakemm {date}",
-      "cancelSnooze": "Ikkanċella l-hold",
-      "actionLabels": {
-        "voirEtRelancer": "Ara u erġa'' tniedi",
-        "examiner": "Eżaminatur",
-        "consulter": "Konsulta"
-      },
-      "rows": {
-        "cotisations-en-attente": "{count, plural, one {# ħlas ta'' membru pendenti} other {# kontribuzzjonijiet pendenti}}",
-        "materiel-en-retard": "{count, plural, one {# Ritorn tard tal-materjal} other {# Ritorn tard tal-materjal}}",
-        "membres-a-valider": "{count, plural, one {# membru biex tivvalida} other {# membri li għandhom jiġu vvalidati}}",
-        "dons-a-encaisser": "{count, plural, one {# rigal li għandu jiġi mħallas} other {# donazzjonijiet biex jinġabru}}",
-        "rapprochement-bancaire": "{count, plural, one {# -operazzjoni li għandha tiġi mqabbla} other {# operazzjonijiet biex tqabbel}}",
-        "notes-de-frais-a-valider": "{count, plural, one {# rapport ta'' spejjeż li għandu jiġi vvalidat} other {# -rapporti tal-ispejjeż għandhom jiġu vvalidati}}",
-        "commandes-a-preparer": "{count, plural, one {# -ordni biex tipprepara} other {# ordnijiet biex tipprepara}}"
-      }
+    "aTraiter": {
+      "items": {}
     }
   },
   "notifications": {
@@ -1144,7 +1144,12 @@
       "memoNoHistory": "L-ebda data storika",
       "caveats": {
         "stocksMissingCostPrice": "{count} varjanti mingħajr spiża tax-xiri rreġistrata, esklużi mill-istima"
-      }
+      },
+      "refreshLedger": "Irrifreska l-log",
+      "refreshLedgerTooltip": "Dan ir-rapport mhux aġġornat f''ħin reali ma'' kull dħul jew spejjeż — ikklikkja biex tissinkronizza mal-movimenti l-aktar riċenti.",
+      "refreshLedgerSuccessPosted": "{count, plural, =0 {L-ebda moviment ġdid} one {# moviment sinkronizzat} other {# movimenti sinkronizzati}}",
+      "refreshLedgerSuccessReversed": "{count, plural, =0 {} one {, # kanċellazzjoni applikata} other {, # kanċellazzjonijiet applikati}}",
+      "refreshLedgerError": "Ma setax jiġi aġġornat il-log. Jekk jogħġbok erġa'' pprova."
     },
     "compteResultat": {
       "title": "Rendikont tad-Dħul",
@@ -1687,7 +1692,11 @@
       "suggestedMatches": "Logħbiet suġġeriti",
       "typeIncome": "Dħul",
       "typeExpense": "Spejjeż",
-      "confirm": "Ivvalida l-konċiljazzjoni"
+      "confirm": "Ivvalida l-konċiljazzjoni",
+      "selectedCount": "{count, plural, one {# oġġett magħżul} other {# magħżula}}"
+    },
+    "exerciceGuard": {
+      "closedError": "Dan l-eżerċizzju huwa magħluq — huwa impossibbli li toħloq jew timmodifika rekord għal dan il-perjodu."
     }
   },
   "evenements": {
@@ -2961,11 +2970,14 @@
       },
       "othersCount": "{count, plural, one {+# oħrajn} other {+# oħrajn}}",
       "statusFilterAll": "Kollha",
+      "statusFilterToPrepare": "Biex tipprepara",
       "salesCountLabel": "Numru ta' bejgħ",
       "revenueTotalLabel": "Dħul totali",
       "unitsSold": "{count, plural, one {# mibjugħ} other {# mibjugħa}}",
       "pendingCountLabel": "Ordnijiet pendenti",
       "pendingAmountLabel": "Ammont pendenti",
+      "toPrepareCountLabel": "Ordnijiet biex tipprepara",
+      "toPrepareAmountLabel": "Ammont li għandu jiġi ppreparat",
       "cancelledCountLabel": "Ordnijiet ikkanċellati",
       "cancelledAmountLabel": "Ammont ikkanċellat",
       "deleteProduitTitle": "Neħħi l-Prodott",
@@ -2978,10 +2990,7 @@
         "productDeleted": "Prodott Mhux Prodott Prodott Imwaqqaf",
         "deleteError": "Tneħħija ta' żball",
         "orderUpdated": "Ordni aġġornata"
-      },
-      "statusFilterToPrepare": "Biex tipprepara",
-      "toPrepareCountLabel": "Ordnijiet biex tipprepara",
-      "toPrepareAmountLabel": "Ammont li għandu jiġi ppreparat"
+      }
     },
     "payModal": {
       "title": "Ordni ta' flus kontanti",
