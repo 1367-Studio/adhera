@@ -37,6 +37,10 @@ export const GET = withAdminAuth(async (req, ctx) => {
   const canSeeDons = hasAccess(ctx.permissions, "dons", "read")
   // Same idea for the balance: it is the Comptabilité area's figure (stat-solde widget).
   const canSeeBalance = hasAccess(ctx.permissions, "comptabilite", "read")
+  // "Mes tâches" (FORM-118) only means something for a staff User who is also a Membre — a
+  // pure staff account with no Membre row can never be assigned a Tache, so there is nothing
+  // to count. null (not 0) distinguishes "hidden, no Membre" from "0 tâches ouvertes".
+  const canSeeTaches = hasAccess(ctx.permissions, "taches", "read")
 
   const [
     membresActifs,
@@ -55,6 +59,7 @@ export const GET = withAdminAuth(async (req, ctx) => {
     donsAnnee,
     donsEnAttente,
     donsEnAttenteCount,
+    mesTachesOuvertesRaw,
   ] = await Promise.all([
     prisma.membre.count({ where: { associationId, status: "ACTIF", deletedAt: null } }),
     // Every status counts as a member (PENDING/INACTIF/SUSPENDU included) — the header
@@ -180,6 +185,12 @@ export const GET = withAdminAuth(async (req, ctx) => {
           where: { associationId, paidAt: null, paymentMethod: { in: ["ESPECES", "CHEQUE", "VIREMENT"] } },
         })
       : 0,
+    canSeeTaches
+      ? prisma.membre.findFirst({ where: { userId: ctx.userId, associationId, deletedAt: null }, select: { id: true } })
+          .then(membre => membre
+            ? prisma.tache.count({ where: { associationId, status: { not: "TERMINEE" }, assignees: { some: { membreId: membre.id } } } })
+            : null)
+      : Promise.resolve(null),
   ])
 
   // Both "fill the remaining slots" queries depend on a count from the batch above, so they
@@ -272,5 +283,8 @@ export const GET = withAdminAuth(async (req, ctx) => {
       expectedReturnAt: l.expectedReturnAt,
       isOverdue:        !!l.expectedReturnAt && l.expectedReturnAt < now,
     })),
+    // null = widget hidden, either no "taches" read access or no linked Membre (pure staff
+    // account — nothing can ever be assigned to them). See comment on canSeeTaches above.
+    mesTachesOuvertes: mesTachesOuvertesRaw,
   })
 }, { area: "dashboard" })

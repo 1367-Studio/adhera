@@ -285,6 +285,7 @@
       "actualites": "Hírek",
       "evenements": "Események",
       "materiel": "Anyagok",
+      "taches": "Feladataim",
       "cotisation": "A tagsági díjam",
       "dons": "Az adományaim",
       "sondages": "Felmérések",
@@ -803,6 +804,8 @@
       "snoozedSectionTitle": "{count, plural, one {# intézkedés felfüggesztés} other {# felfüggesztett intézkedések}}",
       "snoozedUntil": "Egészen addig. {date}",
       "cancelSnooze": "Zárolás megszakítása",
+      "createTask": "Feladat létrehozása",
+      "createTaskToast": "Feladat létrehozva",
       "actionLabels": {
         "voirEtRelancer": "Nézze meg és indítsa újra",
         "examiner": "Vizsgáló",
@@ -816,6 +819,15 @@
         "rapprochement-bancaire": "{count, plural, one {# összehasonlítandó művelet} other {# összehasonlítható műveletek}}",
         "notes-de-frais-a-valider": "{count, plural, one {# érvényesítendő költségjelentés} other {# érvényesítendő költségjelentések}}",
         "commandes-a-preparer": "{count, plural, one {# előkészítési parancs} other {# előkészítési parancsok}}"
+      },
+      "linkBackLabels": {
+        "cotisations-en-attente": "Függőben lévő hozzájárulások megtekintése",
+        "materiel-en-retard": "Lásd a késleltetett anyagok visszaküldését",
+        "membres-a-valider": "Nézze meg a tagokat az érvényesítéshez",
+        "dons-a-encaisser": "Tekintse meg az összegyűjtendő adományokat",
+        "rapprochement-bancaire": "Lásd a banki egyeztetést",
+        "notes-de-frais-a-valider": "Tekintse meg az érvényesítendő költségjelentéseket",
+        "commandes-a-preparer": "Tekintse meg a rendeléseket az előkészítéshez"
       }
     },
     "stats": {
@@ -866,6 +878,12 @@
       "noDueDate": "Nincs határidő",
       "viewAll": "Minden felszerelés megtekintése",
       "empty": "Jelenleg nincs kölcsönözött felszerelés."
+    },
+    "mesTaches": {
+      "title": "Feladataim",
+      "empty": "Nincsenek nyitott feladatok",
+      "openCount": "{count, plural, one {megnyitott feladat} other {Megnyitott feladatok}}",
+      "viewAll": "Tekintse meg a feladataimat"
     },
     "charts": {
       "income": "Bevételek",
@@ -4492,6 +4510,108 @@
       "inactiveSince": "kilépett: {date}"
     }
   },
+  "taches": {
+    "view": {
+      "title": "Feladatok",
+      "count": "{count, plural, =0 {Nincsenek feladatok} one {# feladat} other {# feladatok}}",
+      "listeLabel": "Lista",
+      "planningLabel": "Tervezés",
+      "nouvelleTache": "Új feladat",
+      "searchPlaceholder": "Feladat keresése...",
+      "filterMembre": "Tag",
+      "filterCategorie": "Kategória",
+      "filterStatut": "Állapot",
+      "filterEcheance": "Határidő",
+      "filterEcheanceUpcoming": "Hamarosan",
+      "filterEcheanceOverdue": "Késő",
+      "empty": "Jelenleg nincs feladat.",
+      "columns": {
+        "tache": "Feladat",
+        "attribueeA": "Odaítélve",
+        "echeance": "Határidő",
+        "statut": "Állapot"
+      },
+      "toasts": {
+        "created": "Feladat létrehozva",
+        "updated": "Feladat frissítve"
+      }
+    },
+    "status": {
+      "aFaire": "Teendők",
+      "enCours": "Folyamatban",
+      "terminee": "Befejezve",
+      "enRetard": "Késő"
+    },
+    "detailSheet": {
+      "categorie": "Kategória",
+      "noCategorie": "Nincs kategória",
+      "attribueeA": "Odaítélve",
+      "nonAttribuee": "Díj nélküli",
+      "echeance": "Határidő",
+      "rappels": "Emlékeztetők",
+      "reminderBefore": "{count, plural, one {# előző nap} other {# nappal előtte}}",
+      "reminderAfter": "{count, plural, one {# másnapos} other {# nappal később}}",
+      "voirOrigine": "Lásd az eredetet",
+      "completedByOn": "Befejező: {name} a {date}",
+      "completedOn": "Befejezve: {date}",
+      "markComplete": "Befejezettként jelölje meg",
+      "deleteConfirmTitle": "Törölni ezt a feladatot?",
+      "deleteConfirmDescription": "Ez a cselekedet visszafordíthatatlan.",
+      "toasts": {
+        "completed": "Feladat befejezettként megjelölve",
+        "deleted": "Feladat törölve"
+      }
+    },
+    "form": {
+      "titre": "Cím",
+      "description": "Leírás",
+      "categorie": "Kategória",
+      "noCategorie": "Nincs kategória",
+      "newCategoriePlaceholder": "Kategória neve",
+      "newCategorie": "+ Új kategória",
+      "attribueeA": "Odaítélve",
+      "searchMemberPlaceholder": "Keress tagot...",
+      "loading": "Betöltés...",
+      "noResult": "Nincs eredmény",
+      "nonAttribuee": "Díj nélküli",
+      "selectedCount": "{count, plural, one {# kiválasztott tag} other {# kiválasztott tagok}}",
+      "echeance": "Határidő",
+      "rappels": "Emlékeztetők",
+      "noRappels": "Nincs beállított emlékeztető.",
+      "rappelOffset": "Napok",
+      "rappelDirection": "Amikor",
+      "rappelAvant": "A határidő előtt",
+      "rappelApres": "A határidő után",
+      "ajouterRappel": "Emlékeztető hozzáadása",
+      "createTitle": "Új feladat",
+      "editTitle": "Szerkesztés a feladatot",
+      "createTache": "Feladat létrehozása"
+    },
+    "calendar": {
+      "othersCount": "+{count} Egyéb",
+      "createHere": "Hozz létre itt",
+      "noTacheThisDay": "Aznap nem volt folt"
+    },
+    "portalPage": {
+      "title": "Feladataim",
+      "subtitle": "A rád bízott feladatok.",
+      "empty": "Jelenleg nem kaptál feladatot.",
+      "echeance": "Határidő: {date}",
+      "startWork": "Kezdj el",
+      "markComplete": "Befejezettként jelölje meg",
+      "history": "Befejezve",
+      "completedOn": "Befejezve: {date}",
+      "status": {
+        "aFaire": "Teendők",
+        "enCours": "Folyamatban",
+        "terminee": "Befejezve",
+        "enRetard": "Késő"
+      },
+      "toasts": {
+        "completed": "Feladat befejezettként megjelölve"
+      }
+    }
+  },
   "cotisations": {
     "form": {
       "member": "Tag",
@@ -6259,6 +6379,7 @@
       "parametres": "Beállítások",
       "dashboard": "Dashboard",
       "membres": "Tagok",
+      "taches": "Feladatok",
       "evenements": "Események",
       "cotisations": "Hozzájárulások",
       "licencas": "Engedélyek",
@@ -6280,6 +6401,7 @@
       "suporte": "Támogatás",
       "associationDocuments": "Egyesületi dokumentumok",
       "categories": {
+        "gestion": "Menedzsment",
         "adherents": "Tagok",
         "communication": "Kommunikáció",
         "finances": "Pénzügyek",

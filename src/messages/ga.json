@@ -285,6 +285,7 @@
       "actualites": "Nuacht",
       "evenements": "Imeachtaí",
       "materiel": "Ábhar",
+      "taches": "Mo thascanna",
       "cotisation": "Mo tháille ballraíochta",
       "dons": "Mo Síntiúis",
       "sondages": "Suirbhéanna",
@@ -803,6 +804,8 @@
       "snoozedSectionTitle": "{count, plural, one {# gníomh curtha ar fionraí} other {# gníomhartha curtha ar fionraí}}",
       "snoozedUntil": "Go dtí {date}",
       "cancelSnooze": "Cealaigh an coinneáil",
+      "createTask": "Cruthaigh tasc",
+      "createTaskToast": "Tasc cruthaithe",
       "actionLabels": {
         "voirEtRelancer": "Féach agus athsheoladh",
         "examiner": "Scrúdaitheoir",
@@ -816,6 +819,15 @@
         "rapprochement-bancaire": "{count, plural, one {# oibríocht atá le comparáid} other {# oibríochtaí le comparáid}}",
         "notes-de-frais-a-valider": "{count, plural, one {# tuarascáil caiteachais le bailíochtú} other {# tuarascálacha caiteachais le bailíochtú}}",
         "commandes-a-preparer": "{count, plural, one {# le hullmhú} other {# orduithe le hullmhú}}"
+      },
+      "linkBackLabels": {
+        "cotisations-en-attente": "Féach ar ranníocaíochtaí atá ar feitheamh",
+        "materiel-en-retard": "Féach tuairisceáin ábhar moillithe",
+        "membres-a-valider": "Féach ar na baill chun iad a bhailíochtú",
+        "dons-a-encaisser": "Féach ar na síntiúis le bailiú",
+        "rapprochement-bancaire": "Féach an t-athmhuintearas bainc",
+        "notes-de-frais-a-valider": "Féach tuarascálacha caiteachais atá le bailíochtú",
+        "commandes-a-preparer": "Féach ar na horduithe ullmhúcháin"
       }
     },
     "stats": {
@@ -866,6 +878,12 @@
       "noDueDate": "Gan spriocdháta",
       "viewAll": "Féach an trealamh go léir",
       "empty": "Níl aon trealamh ar iasacht faoi láthair."
+    },
+    "mesTaches": {
+      "title": "Mo thascanna",
+      "empty": "Gan tascanna oscailte",
+      "openCount": "{count, plural, one {Tasc oscailte} other {Tascanna oscailte}}",
+      "viewAll": "Féach ar mo thascanna"
     },
     "charts": {
       "income": "Ioncam",
@@ -4492,6 +4510,108 @@
       "inactiveSince": "d'fhág ar {date}"
     }
   },
+  "taches": {
+    "view": {
+      "title": "Tascanna",
+      "count": "{count, plural, =0 {Gan tascanna} one {# tasc} other {# tascanna}}",
+      "listeLabel": "Liosta",
+      "planningLabel": "Pleanáil",
+      "nouvelleTache": "Tasc nua",
+      "searchPlaceholder": "Cuardaigh tasc...",
+      "filterMembre": "Ball",
+      "filterCategorie": "Catagóir",
+      "filterStatut": "Stádas",
+      "filterEcheance": "Spriocdháta",
+      "filterEcheanceUpcoming": "Ag teacht go luath",
+      "filterEcheanceOverdue": "Déanach",
+      "empty": "Níl aon tascanna ann faoi láthair.",
+      "columns": {
+        "tache": "Tasc",
+        "attribueeA": "Bronnta ar",
+        "echeance": "Spriocdháta",
+        "statut": "Stádas"
+      },
+      "toasts": {
+        "created": "Tasc cruthaithe",
+        "updated": "Tasc nuashonraithe"
+      }
+    },
+    "status": {
+      "aFaire": "Le déanamh",
+      "enCours": "Ar siúl",
+      "terminee": "Críochnaithe",
+      "enRetard": "Déanach"
+    },
+    "detailSheet": {
+      "categorie": "Catagóir",
+      "noCategorie": "Gan catagóir",
+      "attribueeA": "Bronnta ar",
+      "nonAttribuee": "Gan bronnadh",
+      "echeance": "Spriocdháta",
+      "rappels": "Meabhrúcháin",
+      "reminderBefore": "{count, plural, one {# lá roimhe sin} other {# lá roimhe sin}}",
+      "reminderAfter": "{count, plural, one {# lá ina dhiaidh sin} other {# lá ina dhiaidh sin}}",
+      "voirOrigine": "Féach an bunús",
+      "completedByOn": "Críochnaithe le {name} an {date}",
+      "completedOn": "Críochnaithe ar {date}",
+      "markComplete": "Marcáil mar chríochnaithe",
+      "deleteConfirmTitle": "An tasc seo a scriosadh?",
+      "deleteConfirmDescription": "Tá an gníomh seo do-aisiompaithe.",
+      "toasts": {
+        "completed": "Tasc marcáilte mar chríochnaithe",
+        "deleted": "Tasc scriosta"
+      }
+    },
+    "form": {
+      "titre": "Teideal",
+      "description": "Cur síos",
+      "categorie": "Catagóir",
+      "noCategorie": "Gan catagóir",
+      "newCategoriePlaceholder": "Ainm na catagóire",
+      "newCategorie": "+ Catagóir nua",
+      "attribueeA": "Bronnta ar",
+      "searchMemberPlaceholder": "Cuardaigh ball...",
+      "loading": "Ag luchtú...",
+      "noResult": "Gan torthaí",
+      "nonAttribuee": "Gan bronnadh",
+      "selectedCount": "{count, plural, one {# ball roghnaithe} other {# baill roghnaithe}}",
+      "echeance": "Spriocdháta",
+      "rappels": "Meabhrúcháin",
+      "noRappels": "Níl aon mheabhrúchán cumraithe.",
+      "rappelOffset": "Laethanta",
+      "rappelDirection": "Cathain",
+      "rappelAvant": "Roimh an spriocdháta",
+      "rappelApres": "Tar éis an spriocdháta",
+      "ajouterRappel": "Cuir meabhrúchán leis",
+      "createTitle": "Tasc nua",
+      "editTitle": "Cuir an tasc in eagar",
+      "createTache": "Cruthaigh an tasc"
+    },
+    "calendar": {
+      "othersCount": "+{count} Daoine eile",
+      "createHere": "Cruthaigh anseo",
+      "noTacheThisDay": "Gan aon smál an lá sin"
+    },
+    "portalPage": {
+      "title": "Mo thascanna",
+      "subtitle": "Na tascanna a shanntar duit.",
+      "empty": "Níl aon tascanna sannta duit faoi láthair.",
+      "echeance": "Spriocdháta: {date}",
+      "startWork": "Tosaigh",
+      "markComplete": "Marcáil mar chríochnaithe",
+      "history": "Críochnaithe",
+      "completedOn": "Críochnaithe ar {date}",
+      "status": {
+        "aFaire": "Le déanamh",
+        "enCours": "Ar siúl",
+        "terminee": "Críochnaithe",
+        "enRetard": "Déanach"
+      },
+      "toasts": {
+        "completed": "Tasc marcáilte mar chríochnaithe"
+      }
+    }
+  },
   "cotisations": {
     "form": {
       "member": "Comhalta",
@@ -6259,6 +6379,7 @@
       "parametres": "Socruithe",
       "dashboard": "Dashboard",
       "membres": "Baill",
+      "taches": "Tascanna",
       "evenements": "Imeachtaí",
       "cotisations": "Ranníocaíochtaí",
       "licencas": "Ceadúnais",
@@ -6280,6 +6401,7 @@
       "suporte": "Tacaíocht",
       "associationDocuments": "Doiciméid an chumainn",
       "categories": {
+        "gestion": "Bainistíocht",
         "adherents": "Baill",
         "communication": "Cumarsáid",
         "finances": "Airgeadas",

@@ -285,6 +285,7 @@
       "actualites": "Uutiset",
       "evenements": "Tapahtumat",
       "materiel": "Materiaali",
+      "taches": "Omat tehtäväni",
       "cotisation": "Jäsenmaksuni",
       "dons": "Lahjoitukseni",
       "sondages": "Kyselyt",
@@ -803,6 +804,8 @@
       "snoozedSectionTitle": "{count, plural, one {# toiminta keskeytetty} other {# toimenpiteet tauolle}}",
       "snoozedUntil": "Kunnes {date}",
       "cancelSnooze": "Peruuta pidätys",
+      "createTask": "Luo tehtävä",
+      "createTaskToast": "Tehtävä luotu",
       "actionLabels": {
         "voirEtRelancer": "Katso ja käynnistä se uudelleen",
         "examiner": "Tarkastaja",
@@ -816,6 +819,15 @@
         "rapprochement-bancaire": "{count, plural, one {# vertailtava operaatio} other {# operaatioita vertailtavaksi}}",
         "notes-de-frais-a-valider": "{count, plural, one {# tarkistettava kuluraportti} other {# tarkistettavat kuluraportit}}",
         "commandes-a-preparer": "{count, plural, one {# valmistelukäsky} other {# määräyksiä valmistella}}"
+      },
+      "linkBackLabels": {
+        "cotisations-en-attente": "Näytä odottavat panokset",
+        "materiel-en-retard": "Katso viivästyneiden materiaalien palautukset",
+        "membres-a-valider": "Katso jäseniä validointia varten",
+        "dons-a-encaisser": "Katso kerättävät lahjoitukset",
+        "rapprochement-bancaire": "Katso pankkien täsmäytysraportti",
+        "notes-de-frais-a-valider": "Katso validoitavat kuluraportit",
+        "commandes-a-preparer": "Katso valmisteltavat tilaukset"
       }
     },
     "stats": {
@@ -866,6 +878,12 @@
       "noDueDate": "Ei määräaikaa",
       "viewAll": "Katso kaikki varusteet",
       "empty": "Tällä hetkellä ei lainata laitteita."
+    },
+    "mesTaches": {
+      "title": "Omat tehtäväni",
+      "empty": "Ei avoimia tehtäviä",
+      "openCount": "{count, plural, one {avoin tehtävä} other {Avaavat tehtävät}}",
+      "viewAll": "Katso tehtäväni"
     },
     "charts": {
       "income": "Tulot",
@@ -4492,6 +4510,108 @@
       "inactiveSince": "poistui {date}"
     }
   },
+  "taches": {
+    "view": {
+      "title": "Tehtävät",
+      "count": "{count, plural, =0 {Ei tehtäviä} one {# tehtävä} other {# tehtävät}}",
+      "listeLabel": "Lista",
+      "planningLabel": "Suunnittelu",
+      "nouvelleTache": "Uusi tehtävä",
+      "searchPlaceholder": "Etsi tehtävää...",
+      "filterMembre": "Jäsen",
+      "filterCategorie": "Kategoria",
+      "filterStatut": "Tila",
+      "filterEcheance": "Määräaika",
+      "filterEcheanceUpcoming": "Tulossa pian",
+      "filterEcheanceOverdue": "Myöhäinen",
+      "empty": "Ei tehtäviä tällä hetkellä.",
+      "columns": {
+        "tache": "Tehtävä",
+        "attribueeA": "Myönnetty",
+        "echeance": "Määräaika",
+        "statut": "Tila"
+      },
+      "toasts": {
+        "created": "Tehtävä luotu",
+        "updated": "Tehtävä päivitetty"
+      }
+    },
+    "status": {
+      "aFaire": "Tehtävä",
+      "enCours": "Käynnissä",
+      "terminee": "Valmis",
+      "enRetard": "Myöhäinen"
+    },
+    "detailSheet": {
+      "categorie": "Kategoria",
+      "noCategorie": "Ei kategoriaa",
+      "attribueeA": "Myönnetty",
+      "nonAttribuee": "Myöntämätön",
+      "echeance": "Määräaika",
+      "rappels": "Muistutukset",
+      "reminderBefore": "{count, plural, one {# päivää ennen} other {# päivää ennen}}",
+      "reminderAfter": "{count, plural, one {# seuraavana päivänä} other {# päivää myöhemmin}}",
+      "voirOrigine": "Katso alkuperä",
+      "completedByOn": "Päättynyt {name} The {date}",
+      "completedOn": "Valmistunut {date}",
+      "markComplete": "Merkitse valmiiksi",
+      "deleteConfirmTitle": "Poistatko tämän tehtävän?",
+      "deleteConfirmDescription": "Tämä toimenpide on peruuttamaton.",
+      "toasts": {
+        "completed": "Tehtävä merkitty suoritetuksi",
+        "deleted": "Tehtävä poistettu"
+      }
+    },
+    "form": {
+      "titre": "Otsikko",
+      "description": "Kuvaus",
+      "categorie": "Kategoria",
+      "noCategorie": "Ei kategoriaa",
+      "newCategoriePlaceholder": "Kategorian nimi",
+      "newCategorie": "+ Uusi kategoria",
+      "attribueeA": "Myönnetty",
+      "searchMemberPlaceholder": "Etsi jäsentä...",
+      "loading": "Ladataan...",
+      "noResult": "Ei tuloksia",
+      "nonAttribuee": "Myöntämätön",
+      "selectedCount": "{count, plural, one {# valittu jäsen} other {# valitut jäsenet}}",
+      "echeance": "Määräaika",
+      "rappels": "Muistutukset",
+      "noRappels": "Muistutusta ei ole määritetty.",
+      "rappelOffset": "Päivää",
+      "rappelDirection": "Milloin",
+      "rappelAvant": "Ennen määräaikaa",
+      "rappelApres": "Määräajan jälkeen",
+      "ajouterRappel": "Lisää muistutus",
+      "createTitle": "Uusi tehtävä",
+      "editTitle": "Muokkaa tehtävää",
+      "createTache": "Luo tehtävä"
+    },
+    "calendar": {
+      "othersCount": "+{count} muut",
+      "createHere": "Luo tästä",
+      "noTacheThisDay": "Ei tahroja sinä päivänä"
+    },
+    "portalPage": {
+      "title": "Omat tehtäväni",
+      "subtitle": "Sinulle annetut tehtävät.",
+      "empty": "Sinulle ei ole tällä hetkellä annettu tehtäviä.",
+      "echeance": "Määräaika: {date}",
+      "startWork": "Aloita",
+      "markComplete": "Merkitse valmiiksi",
+      "history": "Valmis",
+      "completedOn": "Valmistunut {date}",
+      "status": {
+        "aFaire": "Tehtävä",
+        "enCours": "Käynnissä",
+        "terminee": "Valmis",
+        "enRetard": "Myöhäinen"
+      },
+      "toasts": {
+        "completed": "Tehtävä merkitty suoritetuksi"
+      }
+    }
+  },
   "cotisations": {
     "form": {
       "member": "Jäsen",
@@ -6259,6 +6379,7 @@
       "parametres": "Asetukset",
       "dashboard": "Hallintapaneeli",
       "membres": "Jäsenet",
+      "taches": "Tehtävät",
       "evenements": "Tapahtumat",
       "cotisations": "Panokset",
       "licencas": "Luvat",
@@ -6280,6 +6401,7 @@
       "suporte": "Tuki",
       "associationDocuments": "Yhdistyksen asiakirjat",
       "categories": {
+        "gestion": "Johto",
         "adherents": "Jäsenet",
         "communication": "Viestintä",
         "finances": "Rahoitus",

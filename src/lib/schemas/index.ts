@@ -56,4 +56,5 @@ export * from "./membre-import"
 export * from "./membre-type"
 export * from "./paper-form"
 export * from "./reimbursement"
+export * from "./tache"
 

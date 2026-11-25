@@ -297,6 +297,7 @@
       "actualites": "Notícias",
       "evenements": "Eventos",
       "materiel": "Material",
+      "taches": "Minhas tarefas",
       "cotisation": "Minha mensalidade",
       "dons": "Minhas doações",
       "sondages": "Enquetes",
@@ -815,6 +816,8 @@
       "snoozedSectionTitle": "{count, plural, one {# ação suspensa} other {# ações suspensas}}",
       "snoozedUntil": "Até {date}",
       "cancelSnooze": "Cancelar a retenção",
+      "createTask": "Criar uma tarefa",
+      "createTaskToast": "Tarefa criada",
       "actionLabels": {
         "voirEtRelancer": "Veja e reinicie",
         "examiner": "Examinador",
@@ -828,6 +831,15 @@
         "rapprochement-bancaire": "{count, plural, one {# operação a ser comparada} other {# operações a comparar}}",
         "notes-de-frais-a-valider": "{count, plural, one {# relatório de despesas a ser validado} other {# relatórios de despesas a serem validados}}",
         "commandes-a-preparer": "{count, plural, one {# para preparar} other {# ordens para preparar}}"
+      },
+      "linkBackLabels": {
+        "cotisations-en-attente": "Ver contribuições pendentes",
+        "materiel-en-retard": "Veja devoluções de materiais atrasados",
+        "membres-a-valider": "Veja membros para validar",
+        "dons-a-encaisser": "Veja as doações para receber",
+        "rapprochement-bancaire": "Veja a conciliação bancária",
+        "notes-de-frais-a-valider": "Consulte os relatórios de despesas a serem validados",
+        "commandes-a-preparer": "Veja as ordens para se preparar"
       }
     },
     "stats": {
@@ -878,6 +890,12 @@
       "noDueDate": "Sem prazo",
       "viewAll": "Ver todo o material",
       "empty": "Nenhum material emprestado no momento."
+    },
+    "mesTaches": {
+      "title": "Minhas tarefas",
+      "empty": "Nenhuma tarefa aberta",
+      "openCount": "{count, plural, one {Tarefa aberta} other {Tarefas abertas}}",
+      "viewAll": "Veja minhas tarefas"
     },
     "charts": {
       "income": "Receitas",
@@ -4534,6 +4552,108 @@
       "inactiveSince": "saiu em {date}"
     }
   },
+  "taches": {
+    "view": {
+      "title": "Tarefas",
+      "count": "{count, plural, =0 {Sem tarefas} one {# tarefa} other {# tarefas}}",
+      "listeLabel": "Lista",
+      "planningLabel": "Planejamento",
+      "nouvelleTache": "Nova tarefa",
+      "searchPlaceholder": "Procure uma tarefa...",
+      "filterMembre": "Membro",
+      "filterCategorie": "Categoria",
+      "filterStatut": "Status",
+      "filterEcheance": "Prazo",
+      "filterEcheanceUpcoming": "Em breve",
+      "filterEcheanceOverdue": "Tarde",
+      "empty": "Nenhuma tarefa no momento.",
+      "columns": {
+        "tache": "Tarefa",
+        "attribueeA": "Concedido a",
+        "echeance": "Prazo",
+        "statut": "Status"
+      },
+      "toasts": {
+        "created": "Tarefa criada",
+        "updated": "Tarefa atualizada"
+      }
+    },
+    "status": {
+      "aFaire": "Para fazer",
+      "enCours": "Em andamento",
+      "terminee": "Concluído",
+      "enRetard": "Tarde"
+    },
+    "detailSheet": {
+      "categorie": "Categoria",
+      "noCategorie": "Sem categoria",
+      "attribueeA": "Concedido a",
+      "nonAttribuee": "Não premiado",
+      "echeance": "Prazo",
+      "rappels": "Lembretes",
+      "reminderBefore": "{count, plural, one {# dia antes} other {# dias antes}}",
+      "reminderAfter": "{count, plural, one {# dia depois} other {# dias depois}}",
+      "voirOrigine": "Veja a origem",
+      "completedByOn": "Encerrado por {name} o {date}",
+      "completedOn": "Concluído em {date}",
+      "markComplete": "Marque como concluído",
+      "deleteConfirmTitle": "Excluir essa tarefa?",
+      "deleteConfirmDescription": "Essa ação é irreversível.",
+      "toasts": {
+        "completed": "Tarefa marcada como concluída",
+        "deleted": "Tarefa deletada"
+      }
+    },
+    "form": {
+      "titre": "Título",
+      "description": "Descrição",
+      "categorie": "Categoria",
+      "noCategorie": "Sem categoria",
+      "newCategoriePlaceholder": "Nome da categoria",
+      "newCategorie": "+ Nova categoria",
+      "attribueeA": "Concedido a",
+      "searchMemberPlaceholder": "Procure por um membro...",
+      "loading": "Carregando...",
+      "noResult": "Sem resultados",
+      "nonAttribuee": "Não premiado",
+      "selectedCount": "{count, plural, one {# membro selecionado} other {# membros selecionados}}",
+      "echeance": "Prazo",
+      "rappels": "Lembretes",
+      "noRappels": "Nenhum lembrete configurado.",
+      "rappelOffset": "Dias",
+      "rappelDirection": "Quando",
+      "rappelAvant": "Antes do prazo",
+      "rappelApres": "Após o prazo",
+      "ajouterRappel": "Adicione um lembrete",
+      "createTitle": "Nova tarefa",
+      "editTitle": "Editar a tarefa",
+      "createTache": "Criar a tarefa"
+    },
+    "calendar": {
+      "othersCount": "+{count} Outros",
+      "createHere": "Crie aqui",
+      "noTacheThisDay": "Nenhuma mancha naquele dia"
+    },
+    "portalPage": {
+      "title": "Minhas tarefas",
+      "subtitle": "As tarefas que lhe foram atribuídas.",
+      "empty": "Nenhuma tarefa foi atribuída a você no momento.",
+      "echeance": "Prazo: {date}",
+      "startWork": "Comece",
+      "markComplete": "Marque como concluído",
+      "history": "Concluído",
+      "completedOn": "Concluído em {date}",
+      "status": {
+        "aFaire": "Para fazer",
+        "enCours": "Em andamento",
+        "terminee": "Concluído",
+        "enRetard": "Tarde"
+      },
+      "toasts": {
+        "completed": "Tarefa marcada como concluída"
+      }
+    }
+  },
   "cotisations": {
     "form": {
       "member": "Membro",
@@ -6373,6 +6493,7 @@
       "parametres": "Configurações",
       "dashboard": "Painel",
       "membres": "Membros",
+      "taches": "Tarefas",
       "evenements": "Eventos",
       "cotisations": "Mensalidades",
       "licencas": "Licenças",
@@ -6394,6 +6515,7 @@
       "suporte": "Suporte",
       "associationDocuments": "Documentos da associação",
       "categories": {
+        "gestion": "Gestão",
         "adherents": "Associados",
         "communication": "Comunicação",
         "finances": "Finanças",

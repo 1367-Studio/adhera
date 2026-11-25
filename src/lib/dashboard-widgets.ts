@@ -23,6 +23,7 @@ export const DASHBOARD_WIDGET_IDS = [
   "finances-overview",
   "activite-recente",
   "loaned-material",
+  "mes-taches",
 ] as const
 
 export type DashboardWidgetId = (typeof DASHBOARD_WIDGET_IDS)[number]
@@ -79,6 +80,10 @@ export const DASHBOARD_WIDGET_META: Record<DashboardWidgetId, {
   // anyone missing the other one.
   "activite-recente":  { moduleKey: ["boutique", "dons"], area: ["boutique", "dons"], w: 2, h: 3 },
   "loaned-material":   { moduleKey: "materiel",    area: "materiel",     w: 2, h: 2 },
+  // FORM-118 — hides for any user with no "taches" read access (synchronous gate, same as
+  // every other widget) AND, on top of that, for any user whose data fetch comes back with
+  // mesTachesOuvertes: null (no linked Membre — see the extra check in tableau-de-bord.tsx).
+  "mes-taches":        { moduleKey: "taches",      area: "taches",       w: 2, h: 2 },
 }
 
 export function isDashboardWidgetVisible(id: DashboardWidgetId, modules: AssocModules, permissions: ResolvedPermissions): boolean {

@@ -21,7 +21,7 @@
 export const ACCESS_AREAS = [
   "dashboard", "membres", "sensible", "adhesions", "dons", "evenements", "boutique",
   "communication", "actualites", "comptabilite", "reunions", "materiel", "site", "documents",
-  "groupes", "reimbursements",
+  "groupes", "reimbursements", "taches",
 ] as const
 
 export type AccessArea  = (typeof ACCESS_AREAS)[number]
@@ -55,6 +55,7 @@ export const ACCESS_AREA_LABELS: Record<AccessArea, string> = {
   // other requester's request, approving, registering a reimbursement) — see
   // src/lib/finance/reimbursement-access.ts.
   reimbursements: "Notes de frais (voir et gérer toutes les demandes)",
+  taches:         "Tâches",
 }
 
 export type AreaLevels = Record<AccessArea, AccessLevel>
@@ -106,6 +107,7 @@ export const ROLE_PROFILES: Record<StaffRole, ResolvedPermissions> = {
       // FORM-93: the treasurer needs to see/approve everyone's requests and register
       // reimbursements by default — "the financial responsible" the ticket describes.
       reimbursements: "edit",
+      taches: "edit",
     },
   },
   SECRETAIRE: {
@@ -114,7 +116,7 @@ export const ROLE_PROFILES: Record<StaffRole, ResolvedPermissions> = {
       dashboard: "read", membres: "edit", sensible: "read", adhesions: "read", dons: "none", evenements: "edit",
       boutique: "edit", communication: "edit", actualites: "edit", comptabilite: "none",
       reunions: "edit", materiel: "edit", site: "none", documents: "edit", groupes: "edit",
-      reimbursements: "none",
+      reimbursements: "none", taches: "edit",
     },
   },
   // A volunteer with no bureau position: nothing until an administrator grants areas. Can

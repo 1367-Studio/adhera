@@ -285,6 +285,7 @@
       "actualites": "Vijesti",
       "evenements": "Događaji",
       "materiel": "Materijal",
+      "taches": "Moji zadaci",
       "cotisation": "Moja članarina",
       "dons": "Moje donacije",
       "sondages": "Istraživanja",
@@ -803,6 +804,8 @@
       "snoozedSectionTitle": "{count, plural, one {# akcija stavljena na čekanje} other {# radnje stavljene na čekanje}}",
       "snoozedUntil": "Do {date}",
       "cancelSnooze": "Otkaži blokadu",
+      "createTask": "Kreirajte zadatak",
+      "createTaskToast": "Zadatak je kreiran",
       "actionLabels": {
         "voirEtRelancer": "Pogledajte i ponovno pokrenite",
         "examiner": "Ispitivač",
@@ -816,6 +819,15 @@
         "rapprochement-bancaire": "{count, plural, one {# operacija za usporedbu} other {# operacija za usporedbu}}",
         "notes-de-frais-a-valider": "{count, plural, one {# izvještaj o troškovima koji treba potvrditi} other {# izvještaje o troškovima treba validirati}}",
         "commandes-a-preparer": "{count, plural, one {# redoslijed pripreme} other {# naredbe za pripremu}}"
+      },
+      "linkBackLabels": {
+        "cotisations-en-attente": "Prikaži neriješene doprinose",
+        "materiel-en-retard": "Pogledajte povrate odgođenih materijala",
+        "membres-a-valider": "Pogledajte članove za potvrdu",
+        "dons-a-encaisser": "Pogledajte donacije koje treba prikupiti",
+        "rapprochement-bancaire": "Pogledajte usklađivanje banaka",
+        "notes-de-frais-a-valider": "Pogledajte izvještaje o troškovima za provjeru",
+        "commandes-a-preparer": "Pogledajte naredbe za pripremu"
       }
     },
     "stats": {
@@ -866,6 +878,12 @@
       "noDueDate": "Nema roka",
       "viewAll": "Pogledajte svu opremu",
       "empty": "Trenutno nema posuđene opreme."
+    },
+    "mesTaches": {
+      "title": "Moji zadaci",
+      "empty": "Nema otvorenih zadataka",
+      "openCount": "{count, plural, one {otvoreni zadatak} other {Otvoreni zadaci}}",
+      "viewAll": "Pogledajte moje zadatke"
     },
     "charts": {
       "income": "Prihodi",
@@ -4492,6 +4510,108 @@
       "inactiveSince": "napustio/la {date}"
     }
   },
+  "taches": {
+    "view": {
+      "title": "Zadaci",
+      "count": "{count, plural, =0 {Nema zadataka} one {# zadatak} other {# zadataka}}",
+      "listeLabel": "Popis",
+      "planningLabel": "Planiranje",
+      "nouvelleTache": "Novi zadatak",
+      "searchPlaceholder": "Potražite zadatak...",
+      "filterMembre": "Član",
+      "filterCategorie": "Kategorija",
+      "filterStatut": "Status",
+      "filterEcheance": "Rok",
+      "filterEcheanceUpcoming": "Uskoro",
+      "filterEcheanceOverdue": "Kasni",
+      "empty": "Trenutno nemam zadataka.",
+      "columns": {
+        "tache": "Zadatak",
+        "attribueeA": "Dodijeljeno",
+        "echeance": "Rok",
+        "statut": "Status"
+      },
+      "toasts": {
+        "created": "Zadatak je kreiran",
+        "updated": "Zadatak ažuriran"
+      }
+    },
+    "status": {
+      "aFaire": "Što učiniti",
+      "enCours": "U tijeku",
+      "terminee": "Završeno",
+      "enRetard": "Kasni"
+    },
+    "detailSheet": {
+      "categorie": "Kategorija",
+      "noCategorie": "Nema kategorije",
+      "attribueeA": "Dodijeljeno",
+      "nonAttribuee": "Nedodijeljeno",
+      "echeance": "Rok",
+      "rappels": "Podsjetnici",
+      "reminderBefore": "{count, plural, one {# dan prije} other {# dana prije}}",
+      "reminderAfter": "{count, plural, one {# dan poslije} other {# dana kasnije}}",
+      "voirOrigine": "Pogledajte podrijetlo",
+      "completedByOn": "Završeno od {name} the {date}",
+      "completedOn": "Završeno dana {date}",
+      "markComplete": "Označi kao dovršeno",
+      "deleteConfirmTitle": "Izbrisati ovaj zadatak?",
+      "deleteConfirmDescription": "Ova radnja je nepovratna.",
+      "toasts": {
+        "completed": "Zadatak označen kao dovršen",
+        "deleted": "Zadatak izbrisan"
+      }
+    },
+    "form": {
+      "titre": "Naslov",
+      "description": "Opis",
+      "categorie": "Kategorija",
+      "noCategorie": "Nema kategorije",
+      "newCategoriePlaceholder": "Naziv kategorije",
+      "newCategorie": "+ Nova kategorija",
+      "attribueeA": "Dodijeljeno",
+      "searchMemberPlaceholder": "Pretraži člana...",
+      "loading": "Učitavam...",
+      "noResult": "Nema rezultata",
+      "nonAttribuee": "Nedodijeljeno",
+      "selectedCount": "{count, plural, one {# odabrani član} other {# odabranih članova}}",
+      "echeance": "Rok",
+      "rappels": "Podsjetnici",
+      "noRappels": "Nije konfiguriran podsjetnik.",
+      "rappelOffset": "Dani",
+      "rappelDirection": "Kada",
+      "rappelAvant": "Prije roka",
+      "rappelApres": "Nakon isteka roka",
+      "ajouterRappel": "Dodajte podsjetnik",
+      "createTitle": "Novi zadatak",
+      "editTitle": "Uredite zadatak",
+      "createTache": "Kreirajte zadatak"
+    },
+    "calendar": {
+      "othersCount": "+{count} Ostali",
+      "createHere": "Kreirajte ovdje",
+      "noTacheThisDay": "Tog dana nije bilo mrlja"
+    },
+    "portalPage": {
+      "title": "Moji zadaci",
+      "subtitle": "Zadaci koji su vam dodijeljeni.",
+      "empty": "Trenutno vam nisu dodijeljeni nikakvi zadaci.",
+      "echeance": "Rok: {date}",
+      "startWork": "Započnite",
+      "markComplete": "Označi kao dovršeno",
+      "history": "Završeno",
+      "completedOn": "Završeno dana {date}",
+      "status": {
+        "aFaire": "Što učiniti",
+        "enCours": "U tijeku",
+        "terminee": "Završeno",
+        "enRetard": "Kasni"
+      },
+      "toasts": {
+        "completed": "Zadatak označen kao dovršen"
+      }
+    }
+  },
   "cotisations": {
     "form": {
       "member": "Član",
@@ -6259,6 +6379,7 @@
       "parametres": "Postavke",
       "dashboard": "Nadzorna ploča",
       "membres": "Članovi",
+      "taches": "Zadaci",
       "evenements": "Događaji",
       "cotisations": "Doprinosi",
       "licencas": "Licence",
@@ -6280,6 +6401,7 @@
       "suporte": "Podrška",
       "associationDocuments": "Dokumenti udruge",
       "categories": {
+        "gestion": "Uprava",
         "adherents": "Članovi",
         "communication": "Komunikacija",
         "finances": "Financije",
