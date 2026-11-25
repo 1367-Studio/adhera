@@ -712,7 +712,7 @@
   },
   "reimbursements": {
     "view": {
-      "title": "Remboursements de frais",
+      "title": "Notes de frais",
       "newRequest": "Nouvelle demande",
       "export": "Exporter",
       "myRequests": "Mes demandes",
@@ -7098,7 +7098,7 @@
       "finances": "Suivi financier",
       "devis": "Devis",
       "factures": "Factures",
-      "reimbursements": "Remboursements de frais",
+      "reimbursements": "Notes de frais",
       "fournisseurs": "Fournisseurs",
       "dons": "Dons",
       "reunions": "Réunions",

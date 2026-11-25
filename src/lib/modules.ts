@@ -60,7 +60,7 @@ export const MODULE_LABELS: Record<keyof AssocModules, string> = {
   devis:        "Devis",
   factures:     "Factures",
   groupes:      "Groupes et appels",
-  reimbursements: "Remboursements de frais",
+  reimbursements: "Notes de frais",
 }
 
 export function parseModules(raw: unknown): AssocModules {
