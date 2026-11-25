@@ -123,6 +123,17 @@ enum RuleStatus {
   DONE
 }
 
+enum TacheStatus {
+  A_FAIRE
+  EN_COURS
+  TERMINEE
+}
+
+enum TacheReminderDirection {
+  AVANT
+  APRES
+}
+
 enum SondageStatus {
   BROUILLON
   ACTIF
@@ -739,6 +750,8 @@ model Association {
   membreMergeLogs            MembreMergeLog[]
   membershipTierMergeLogs    MembershipTierMergeLog[]
   grupos                     Grupo[]
+  taches                     Tache[]
+  tacheCategorias            TacheCategorie[]
   boutiqueResponsable        User?                       @relation("BoutiqueResponsable", fields: [boutiqueResponsableId], references: [id], onDelete: SetNull)
   donResponsable             User?                       @relation("DonResponsable", fields: [donResponsableId], references: [id], onDelete: SetNull)
   reimbursementRequests      ReimbursementRequest[]
@@ -870,6 +883,7 @@ model User {
   reimbursementCancellations    ReimbursementRequest[]    @relation("ReimbursementCanceller")
   reimbursementsRegistered      Reimbursement[]
   reimbursementLiabilityAccount ChartAccount?
+  tachesCreated                 Tache[]
 
   @@unique([email, associationId])
   @@index([associationId, role])
@@ -1054,6 +1068,9 @@ model Membre {
   duplicateMatchesAsB      MembreDuplicateMatch[]    @relation("MembreDuplicateMatchB")
   grupos                   GrupoMembre[]
   chamadaPresencas         ChamadaPresenca[]
+  tacheAssignments         TacheAssignee[]
+  tachesCompleted          Tache[]                   @relation("TacheCompletedBy")
+  tacheReminderLogs        TacheReminderLog[]
 
   @@index([associationId, deletedAt])
   @@index([associationId, status])
@@ -1091,6 +1108,105 @@ model GrupoMembre {
   membre Membre @relation(fields: [membreId], references: [id], onDelete: Cascade)
 
   @@unique([grupoId, membreId])
+}
+
+// FORM-118 — Module de tâches : catégories renommables/archivables créées par les
+// responsables, même convention archive-don't-delete que FinanceCategory (une catégorie
+// déjà utilisée par une tâche doit continuer à se résoudre dans l'historique).
+model TacheCategorie {
+  id            String    @id @default(cuid())
+  associationId String
+  nom           String
+  archivedAt    DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  association Association @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  taches      Tache[]
+
+  @@unique([associationId, nom])
+  @@index([associationId, archivedAt])
+}
+
+// Statut partagé sur un seul champ (pas de statut par assigné comme ChamadaPresenca) :
+// n'importe quel membre assigné peut terminer la tâche pour tous. completedByMembreId/
+// completedAt enregistrent qui et quand. linkBackHref/linkBackLabel sont capturés en
+// snapshot au moment de la création quand la tâche vient du panneau "Actions à faire"
+// (FORM-119) — jamais re-résolus depuis la ligne d'origine, qui peut changer de sens
+// (compteur, href) après coup.
+model Tache {
+  id                  String      @id @default(cuid())
+  associationId       String
+  titre               String
+  description         String?
+  categorieId         String?
+  dueDate             DateTime?
+  status              TacheStatus @default(A_FAIRE)
+  completedAt         DateTime?
+  completedByMembreId String?
+  createdByUserId     String
+  linkBackHref        String?
+  linkBackLabel       String?
+  createdAt           DateTime    @default(now())
+  updatedAt           DateTime    @updatedAt
+
+  association  Association        @relation(fields: [associationId], references: [id], onDelete: Cascade)
+  categorie    TacheCategorie?    @relation(fields: [categorieId], references: [id], onDelete: SetNull)
+  createdBy    User               @relation(fields: [createdByUserId], references: [id])
+  completedBy  Membre?            @relation("TacheCompletedBy", fields: [completedByMembreId], references: [id], onDelete: SetNull)
+  assignees    TacheAssignee[]
+  reminders    TacheReminder[]
+  reminderLogs TacheReminderLog[]
+
+  @@index([associationId, status])
+  @@index([associationId, dueDate])
+  @@index([associationId, categorieId])
+}
+
+// Pur lien d'appartenance (copie exacte de GrupoMembre) — pas de statut par assigné,
+// contrairement à ChamadaPresenca, puisque la complétion est partagée sur Tache.status.
+model TacheAssignee {
+  id        String   @id @default(cuid())
+  tacheId   String
+  membreId  String
+  createdAt DateTime @default(now())
+
+  tache  Tache  @relation(fields: [tacheId], references: [id], onDelete: Cascade)
+  membre Membre @relation(fields: [membreId], references: [id], onDelete: Cascade)
+
+  @@unique([tacheId, membreId])
+}
+
+// Configuration d'un rappel par tâche (ex. "2 jours avant", "1 jour après" l'échéance) —
+// ad-hoc par tâche, pas une AutomationRule globale d'association gérée par un admin.
+model TacheReminder {
+  id         String                 @id @default(cuid())
+  tacheId    String
+  offsetDays Int
+  direction  TacheReminderDirection
+  createdAt  DateTime               @default(now())
+
+  tache Tache @relation(fields: [tacheId], references: [id], onDelete: Cascade)
+
+  @@unique([tacheId, offsetDays, direction])
+}
+
+// Journal de déduplication (même rôle qu'AutomationLog) — clé par membre car un assigné
+// ajouté après coup doit encore recevoir le rappel au prochain sweep même si l'offset a
+// déjà été envoyé aux autres ; rend aussi un deuxième passage du sweep le même jour idempotent.
+model TacheReminderLog {
+  id         String                 @id @default(cuid())
+  tacheId    String
+  offsetDays Int
+  direction  TacheReminderDirection
+  membreId   String
+  sentAt     DateTime               @default(now())
+
+  tache  Tache  @relation(fields: [tacheId], references: [id], onDelete: Cascade)
+  membre Membre @relation(fields: [membreId], references: [id], onDelete: Cascade)
+
+  @@unique([tacheId, offsetDays, direction, membreId])
+  @@index([tacheId, sentAt])
 }
 
 model GrupoResponsavel {
@@ -2383,30 +2499,30 @@ model CotisationSubscription {
   // Copied onto every yearly Cotisation this subscription produces (see
   // handleCotisationInvoicePaid) since a Cotisation row, not this row, is what the
   // MembershipForm list page's "total collected" figure actually sums.
-  membershipFormId String?
-  tierId           String?
+  membershipFormId        String?
+  tierId                  String?
   // Snapshotted from MembershipTier.durationMonths at signup — same reasoning as
   // membershipFormId/tierId already being snapshots: the tier can change later without
   // affecting an already-running subscription. Null = ordinary yearly billing (Stripe
   // `interval: "year"`); a number = `interval_count` months instead (see checkout/route.ts
   // and handleCotisationInvoicePaid, src/lib/webhook/cotisation-subscriptions.ts).
-  durationMonths   Int?
+  durationMonths          Int?
   // Snapshotted from MembershipTier.receiptMode/ineligibleAmount at signup, same reasoning as
   // durationMonths above — copied onto every yearly Cotisation this subscription produces
   // (see handleCotisationInvoicePaid) so a tier edited after signup can't change what an
   // already-running subscription's past or future receipts are eligible for.
-  receiptMode      DonationReceiptMode @default(NONE)
-  deductibleAmount Decimal?            @db.Decimal(10, 2)
+  receiptMode             DonationReceiptMode @default(NONE)
+  deductibleAmount        Decimal?            @db.Decimal(10, 2)
   // FORM-114: snapshot of the federative-license decision made at signup (tier config +
   // visitor's opt-in/declare-existing choice on the public form) — handleCotisationInvoicePaid
   // reads this only for this subscription's very first period, since there's no previous
   // Cotisation yet to copy a license from; every later renewal instead copies the PREVIOUS
   // period's MembershipLicense (if any) and re-reads federation/season off the tier's CURRENT
   // config, not off this snapshot (see handleCotisationInvoicePaid).
-  licenseApplies          Boolean @default(false)
+  licenseApplies          Boolean             @default(false)
   licenseFederation       String?
   licenseSeason           String?
-  licenseDeclaredByMembre Boolean @default(false)
+  licenseDeclaredByMembre Boolean             @default(false)
   licenseNumber           String?
 
   association    Association     @relation(fields: [associationId], references: [id], onDelete: Cascade)

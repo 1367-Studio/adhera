@@ -19,6 +19,7 @@ export type AssocModules = {
   factures:     boolean
   groupes:      boolean
   reimbursements: boolean
+  taches:       boolean
 }
 
 export const DEFAULT_MODULES: AssocModules = {
@@ -40,6 +41,7 @@ export const DEFAULT_MODULES: AssocModules = {
   factures:     false,
   groupes:      false,
   reimbursements: false,
+  taches:       false,
 }
 
 export const MODULE_LABELS: Record<keyof AssocModules, string> = {
@@ -61,6 +63,7 @@ export const MODULE_LABELS: Record<keyof AssocModules, string> = {
   factures:     "Factures",
   groupes:      "Groupes et appels",
   reimbursements: "Remboursements de frais",
+  taches:       "Tâches",
 }
 
 export function parseModules(raw: unknown): AssocModules {
@@ -87,6 +90,7 @@ export const PORTAL_NAV_ORDER: Array<{ path: string; moduleKey?: keyof AssocModu
   { path: "dons",           moduleKey: "dons"        },
   { path: "boutique",       moduleKey: "boutique"    },
   { path: "materiel",       moduleKey: "materiel"    },
+  { path: "taches",         moduleKey: "taches"      },
   { path: "profil"         },
 ]
 

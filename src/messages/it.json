@@ -323,6 +323,7 @@
       "actualites": "Notizie",
       "evenements": "Eventi",
       "materiel": "Materiale",
+      "taches": "I miei compiti",
       "cotisation": "La mia quota di iscrizione",
       "dons": "Le mie donazioni",
       "sondages": "Indagini",
@@ -848,6 +849,8 @@
       "snoozedSectionTitle": "{count, plural, one {# azione sospesa} other {# azioni sospese}}",
       "snoozedUntil": "Fino a quando {date}",
       "cancelSnooze": "Annulla la blocca",
+      "createTask": "Crea un''attività",
+      "createTaskToast": "Attività creata",
       "actionLabels": {
         "voirEtRelancer": "Vedi e rilancia",
         "examiner": "Esaminatore",
@@ -861,6 +864,15 @@
         "rapprochement-bancaire": "{count, plural, one {# operazione da confrontare} other {# operazioni da confrontare}}",
         "notes-de-frais-a-valider": "{count, plural, one {# rapporto spese da validare} other {# i report di spesa da convalidare}}",
         "commandes-a-preparer": "{count, plural, one {# per preparare} other {# ordini di preparazione}}"
+      },
+      "linkBackLabels": {
+        "cotisations-en-attente": "Visualizza i contributi in attesa",
+        "materiel-en-retard": "Vedi resi dei materiali ritardati",
+        "membres-a-valider": "Vedi membri da convalidare",
+        "dons-a-encaisser": "Vedi le donazioni da raccogliere",
+        "rapprochement-bancaire": "Vedi la riconciliazione bancaria",
+        "notes-de-frais-a-valider": "Vedi i report sulle spese da convalidare",
+        "commandes-a-preparer": "Consulta gli ordini da preparare"
       }
     },
     "stats": {
@@ -911,6 +923,12 @@
       "noDueDate": "Nessuna scadenza",
       "viewAll": "Vedi tutta l'attrezzatura",
       "empty": "Al momento nessuna attrezzatura presa in prestito."
+    },
+    "mesTaches": {
+      "title": "I miei compiti",
+      "empty": "Nessuna attività aperta",
+      "openCount": "{count, plural, one {Attività aperta} other {Attività aperte}}",
+      "viewAll": "Vedi i miei compiti"
     },
     "charts": {
       "income": "Entrate",
@@ -4891,6 +4909,108 @@
       "inactiveSince": "uscito il {date}"
     }
   },
+  "taches": {
+    "view": {
+      "title": "Compiti",
+      "count": "{count, plural, =0 {Nessun compito} one {# compito} other {# compiti}}",
+      "listeLabel": "Elenco",
+      "planningLabel": "Pianificazione",
+      "nouvelleTache": "Nuovo compito",
+      "searchPlaceholder": "Cerca un''attività...",
+      "filterMembre": "Membro",
+      "filterCategorie": "Categoria",
+      "filterStatut": "Stato",
+      "filterEcheance": "Scadenza",
+      "filterEcheanceUpcoming": "A breve",
+      "filterEcheanceOverdue": "Tardi",
+      "empty": "Nessun compito al momento.",
+      "columns": {
+        "tache": "Compito",
+        "attribueeA": "Assegnato a",
+        "echeance": "Scadenza",
+        "statut": "Stato"
+      },
+      "toasts": {
+        "created": "Attività creata",
+        "updated": "Attività aggiornata"
+      }
+    },
+    "status": {
+      "aFaire": "Da fare",
+      "enCours": "In corso",
+      "terminee": "Completato",
+      "enRetard": "Tardi"
+    },
+    "detailSheet": {
+      "categorie": "Categoria",
+      "noCategorie": "Nessuna categoria",
+      "attribueeA": "Assegnato a",
+      "nonAttribuee": "Non premiato",
+      "echeance": "Scadenza",
+      "rappels": "Promemoria",
+      "reminderBefore": "{count, plural, one {# giorno prima} other {# giorni prima}}",
+      "reminderAfter": "{count, plural, one {# giorno dopo} other {# giorni dopo}}",
+      "voirOrigine": "Vedi l''origine",
+      "completedByOn": "Terminato da {name} il {date}",
+      "completedOn": "Completato il {date}",
+      "markComplete": "Segna come completato",
+      "deleteConfirmTitle": "Eliminare questa attività?",
+      "deleteConfirmDescription": "Questa azione è irreversibile.",
+      "toasts": {
+        "completed": "Compito contrassegnato come completato",
+        "deleted": "Compito eliminato"
+      }
+    },
+    "form": {
+      "titre": "Titolo",
+      "description": "Descrizione",
+      "categorie": "Categoria",
+      "noCategorie": "Nessuna categoria",
+      "newCategoriePlaceholder": "Nome della categoria",
+      "newCategorie": "+ Nuova categoria",
+      "attribueeA": "Assegnato a",
+      "searchMemberPlaceholder": "Cerca un membro...",
+      "loading": "Caricamento...",
+      "noResult": "Nessun risultato",
+      "nonAttribuee": "Non premiato",
+      "selectedCount": "{count, plural, one {# membro selezionato} other {# membri selezionati}}",
+      "echeance": "Scadenza",
+      "rappels": "Promemoria",
+      "noRappels": "Nessun promemoria configurato.",
+      "rappelOffset": "Giorni",
+      "rappelDirection": "Quando",
+      "rappelAvant": "Prima della scadenza",
+      "rappelApres": "Dopo la scadenza",
+      "ajouterRappel": "Aggiungi un promemoria",
+      "createTitle": "Nuovo compito",
+      "editTitle": "Modifica l''attività",
+      "createTache": "Crea l''attività"
+    },
+    "calendar": {
+      "othersCount": "+{count} Altri",
+      "createHere": "Crea qui",
+      "noTacheThisDay": "Nessuna macchia quel giorno"
+    },
+    "portalPage": {
+      "title": "I miei compiti",
+      "subtitle": "I compiti assegnati.",
+      "empty": "Al momento non ti sono stati assegnati compiti.",
+      "echeance": "Scadenza: {date}",
+      "startWork": "Inizia",
+      "markComplete": "Segna come completato",
+      "history": "Completato",
+      "completedOn": "Completato il {date}",
+      "status": {
+        "aFaire": "Da fare",
+        "enCours": "In corso",
+        "terminee": "Completato",
+        "enRetard": "Tardi"
+      },
+      "toasts": {
+        "completed": "Compito contrassegnato come completato"
+      }
+    }
+  },
   "cotisations": {
     "form": {
       "member": "Membro",
@@ -7091,6 +7211,7 @@
       "parametres": "Impostazioni",
       "dashboard": "Cruscotto",
       "membres": "Membri",
+      "taches": "Compiti",
       "evenements": "Eventi",
       "cotisations": "Contributi",
       "licencas": "Licenze",
@@ -7113,6 +7234,7 @@
       "suporte": "Supporto",
       "associationDocuments": "Documenti dell'associazione",
       "categories": {
+        "gestion": "Gestione",
         "adherents": "Membri",
         "communication": "Comunicazione",
         "finances": "Finanza",

@@ -323,6 +323,7 @@
       "actualites": "Nachrichten",
       "evenements": "Veranstaltungen",
       "materiel": "Material",
+      "taches": "Meine Aufgaben",
       "cotisation": "Meine Mitgliedsgebühr",
       "dons": "Meine Spenden",
       "sondages": "Umfragen",
@@ -848,6 +849,8 @@
       "snoozedSectionTitle": "{count, plural, one {# Aktion auf Eis gelegt} other {# Aktionen, die auf Eis gelegt wurden}}",
       "snoozedUntil": "Bis {date}",
       "cancelSnooze": "Sperre aufheben",
+      "createTask": "Eine Aufgabe erstellen",
+      "createTaskToast": "Erstellt Aufgabe",
       "actionLabels": {
         "voirEtRelancer": "Siehe und Neustart",
         "examiner": "Prüfer",
@@ -861,6 +864,15 @@
         "rapprochement-bancaire": "{count, plural, one {# zu vergleichende Operation} other {# Operationen zum Vergleichen}}",
         "notes-de-frais-a-valider": "{count, plural, one {# Ausgabenbericht zu validieren} other {# Ausgabenberichte zu validieren}}",
         "commandes-a-preparer": "{count, plural, one {# Vorbereitungsauftrag} other {# Befehle zur Vorbereitung}}"
+      },
+      "linkBackLabels": {
+        "cotisations-en-attente": "Ausstehende Beiträge anzeigen",
+        "materiel-en-retard": "Siehe Rückmeldungen verzögerter Materialien",
+        "membres-a-valider": "Siehe Mitglieder zur Validierung",
+        "dons-a-encaisser": "Sehen Sie sich die Spenden an, die gesammelt werden sollen",
+        "rapprochement-bancaire": "Siehe die Bankabstimmung",
+        "notes-de-frais-a-valider": "Siehe Ausgabenberichte zur Validierung",
+        "commandes-a-preparer": "Siehe die Befehle zur Vorbereitung"
       }
     },
     "stats": {
@@ -911,6 +923,12 @@
       "noDueDate": "Keine Frist",
       "viewAll": "Sehen Sie alle Ausrüstungen",
       "empty": "Derzeit keine Ausrüstung ausgeliehen."
+    },
+    "mesTaches": {
+      "title": "Meine Aufgaben",
+      "empty": "Keine offenen Aufgaben",
+      "openCount": "{count, plural, one {Aufgabe öffnen} other {Aufgaben öffnen}}",
+      "viewAll": "Siehe meine Aufgaben"
     },
     "charts": {
       "income": "Einnahmen",
@@ -4891,6 +4909,108 @@
       "inactiveSince": "ausgetreten am {date}"
     }
   },
+  "taches": {
+    "view": {
+      "title": "Aufgaben",
+      "count": "{count, plural, =0 {Keine Aufgaben} one {# Aufgabe} other {# Aufgaben}}",
+      "listeLabel": "Liste",
+      "planningLabel": "Planung",
+      "nouvelleTache": "Neue Aufgabe",
+      "searchPlaceholder": "Suche nach einer Aufgabe...",
+      "filterMembre": "Mitglied",
+      "filterCategorie": "Kategorie",
+      "filterStatut": "Status",
+      "filterEcheance": "Frist",
+      "filterEcheanceUpcoming": "Kommt bald",
+      "filterEcheanceOverdue": "Spät",
+      "empty": "Im Moment keine Aufgaben.",
+      "columns": {
+        "tache": "Aufgabe",
+        "attribueeA": "Verliehen an",
+        "echeance": "Frist",
+        "statut": "Status"
+      },
+      "toasts": {
+        "created": "Erstellt Aufgabe",
+        "updated": "Aufgabe aktualisiert"
+      }
+    },
+    "status": {
+      "aFaire": "Zu tun",
+      "enCours": "In Bearbeitung",
+      "terminee": "Abgeschlossen",
+      "enRetard": "Spät"
+    },
+    "detailSheet": {
+      "categorie": "Kategorie",
+      "noCategorie": "Keine Kategorie",
+      "attribueeA": "Verliehen an",
+      "nonAttribuee": "Nicht vergeben",
+      "echeance": "Frist",
+      "rappels": "Erinnerungen",
+      "reminderBefore": "{count, plural, one {# Tag zuvor} other {# Tage zuvor}}",
+      "reminderAfter": "{count, plural, one {# Tag danach} other {# Tage später}}",
+      "voirOrigine": "Siehe den Ursprung",
+      "completedByOn": "Endete mit {name} Die {date}",
+      "completedOn": "Abgeschlossen am {date}",
+      "markComplete": "Als abgeschlossen markieren",
+      "deleteConfirmTitle": "Diese Aufgabe löschen?",
+      "deleteConfirmDescription": "Diese Maßnahme ist irreversibel.",
+      "toasts": {
+        "completed": "Aufgabe als abgeschlossen markiert",
+        "deleted": "Aufgabe gelöscht"
+      }
+    },
+    "form": {
+      "titre": "Titel",
+      "description": "Beschreibung",
+      "categorie": "Kategorie",
+      "noCategorie": "Keine Kategorie",
+      "newCategoriePlaceholder": "Kategoriename",
+      "newCategorie": "+ Neue Kategorie",
+      "attribueeA": "Verliehen an",
+      "searchMemberPlaceholder": "Suche nach einem Mitglied...",
+      "loading": "Laden...",
+      "noResult": "Keine Ergebnisse",
+      "nonAttribuee": "Nicht vergeben",
+      "selectedCount": "{count, plural, one {# ausgewähltes Mitglied} other {# ausgewählte Mitglieder}}",
+      "echeance": "Frist",
+      "rappels": "Erinnerungen",
+      "noRappels": "Keine Erinnerung konfiguriert.",
+      "rappelOffset": "Tage",
+      "rappelDirection": "Wann",
+      "rappelAvant": "Vor Ablauf der Frist",
+      "rappelApres": "Nach der Frist",
+      "ajouterRappel": "Eine Erinnerung hinzufügen",
+      "createTitle": "Neue Aufgabe",
+      "editTitle": "Aufgabe bearbeiten",
+      "createTache": "Die Aufgabe erstellen"
+    },
+    "calendar": {
+      "othersCount": "+{count} Andere",
+      "createHere": "Hier erstellen",
+      "noTacheThisDay": "Keine Flecken an diesem Tag"
+    },
+    "portalPage": {
+      "title": "Meine Aufgaben",
+      "subtitle": "Die Ihnen zugewiesenen Aufgaben.",
+      "empty": "Derzeit wurden Ihnen keine Aufgaben zugewiesen.",
+      "echeance": "Frist: {date}",
+      "startWork": "Fang an",
+      "markComplete": "Als abgeschlossen markieren",
+      "history": "Abgeschlossen",
+      "completedOn": "Abgeschlossen am {date}",
+      "status": {
+        "aFaire": "Zu tun",
+        "enCours": "In Bearbeitung",
+        "terminee": "Abgeschlossen",
+        "enRetard": "Spät"
+      },
+      "toasts": {
+        "completed": "Aufgabe als abgeschlossen markiert"
+      }
+    }
+  },
   "cotisations": {
     "form": {
       "member": "Mitglied",
@@ -7091,6 +7211,7 @@
       "parametres": "Einstellungen",
       "dashboard": "Dashboard",
       "membres": "Mitglieder",
+      "taches": "Aufgaben",
       "evenements": "Veranstaltungen",
       "cotisations": "Beiträge",
       "licencas": "Lizenzen",
@@ -7113,6 +7234,7 @@
       "suporte": "Unterstützung",
       "associationDocuments": "Vereinsdokumente",
       "categories": {
+        "gestion": "Management",
         "adherents": "Mitglieder",
         "communication": "Kommunikation",
         "finances": "Finanzen",

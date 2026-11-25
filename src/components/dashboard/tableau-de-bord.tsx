@@ -26,6 +26,7 @@ import { CotisationsCard } from "@/components/dashboard/widgets/cotisations-card
 import { FinancesOverviewCard } from "@/components/dashboard/widgets/finances-overview-card"
 import { ActiviteRecenteCard } from "@/components/dashboard/widgets/activite-recente-card"
 import { LoanedMaterialCard } from "@/components/dashboard/widgets/loaned-material-card"
+import { MesTachesCard } from "@/components/dashboard/widgets/mes-taches-card"
 import { setDashboardLayout, resetDashboardLayout } from "@/lib/dashboard/actions"
 import {
   defaultDashboardLayout, isDashboardWidgetVisible,
@@ -73,6 +74,9 @@ type DashboardData = {
     membre:      { firstName: string; lastName: string } | null
     status:      "PENDING" | "PAID"
   }[]
+  // null = no linked Membre for the current staff User (nothing can ever be assigned to
+  // them) — the mes-taches widget hides entirely rather than show an always-zero tile.
+  mesTachesOuvertes: number | null
 }
 
 // The drag preview floats outside the grid, so it needs a pixel width rather than a column
@@ -140,8 +144,15 @@ export function TableauDeBord({ initialLayout }: Props) {
   )
 
   const visibleLayout = useMemo(
-    () => layout.filter(widget => isDashboardWidgetVisible(widget.id, modules, permissions)),
-    [layout, modules, permissions],
+    () => layout.filter(widget => {
+      if (!isDashboardWidgetVisible(widget.id, modules, permissions)) return false
+      // Permission/module alone can't know whether THIS user has a linked Membre — that
+      // only comes back with the data fetch, so this one widget gets an extra data-driven
+      // check on top of the synchronous gate every other widget relies on.
+      if (widget.id === "mes-taches" && data && data.mesTachesOuvertes === null) return false
+      return true
+    }),
+    [layout, modules, permissions, data],
   )
   // dnd-kit addresses sortable items by id, so it gets the ids alone — sizes never enter
   // into drag ordering.
@@ -188,6 +199,12 @@ export function TableauDeBord({ initialLayout }: Props) {
       <LoanedMaterialCard
         materielEmpruntsListe={data?.materielEmpruntsListe ?? []}
         materielEnRetardCount={data?.materielEnRetardCount ?? 0}
+        isLoading={isLoading}
+      />
+    ),
+    "mes-taches": (
+      <MesTachesCard
+        count={data?.mesTachesOuvertes ?? 0}
         isLoading={isLoading}
       />
     ),

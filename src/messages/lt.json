@@ -323,6 +323,7 @@
       "actualites": "Naujienos",
       "evenements": "Renginiai",
       "materiel": "Medžiaga",
+      "taches": "Mano užduotys",
       "cotisation": "Mano narystės mokestis",
       "dons": "Mano aukos",
       "sondages": "Tyrimai",
@@ -848,6 +849,8 @@
       "snoozedSectionTitle": "{count, plural, one {# veiksmas sustabdytas} other {# veiksmai sustabdyti}}",
       "snoozedUntil": "Kol {date}",
       "cancelSnooze": "Atšaukti rezervaciją",
+      "createTask": "Sukurkite užduotį",
+      "createTaskToast": "Sukurta užduotis",
       "actionLabels": {
         "voirEtRelancer": "Žiūrėti ir perleisti",
         "examiner": "Egzaminuotojas",
@@ -861,6 +864,15 @@
         "rapprochement-bancaire": "{count, plural, one {# operacija bus lyginama} other {# operacijų palyginimui}}",
         "notes-de-frais-a-valider": "{count, plural, one {# išlaidų ataskaita turi būti patvirtinta} other {# išlaidų ataskaitas, kurios turi būti patvirtintos}}",
         "commandes-a-preparer": "{count, plural, one {# pasiruošimo tvarka} other {# įsakymų pasiruošti}}"
+      },
+      "linkBackLabels": {
+        "cotisations-en-attente": "Peržiūrėti laukiamus indėlius",
+        "materiel-en-retard": "Žr. vėluojančių medžiagų grąžinimus",
+        "membres-a-valider": "Žr. narius, kad patvirtintumėte",
+        "dons-a-encaisser": "Peržiūrėkite aukas, kad surinktumėte",
+        "rapprochement-bancaire": "Žr. banko suderinimą",
+        "notes-de-frais-a-valider": "Patikrinkite išlaidų ataskaitas",
+        "commandes-a-preparer": "Žr. nurodymus pasiruošimui"
       }
     },
     "stats": {
@@ -911,6 +923,12 @@
       "noDueDate": "Nėra termino",
       "viewAll": "Peržiūrėti visą įrangą",
       "empty": "Šiuo metu jokios įrangos nepasiskolinta."
+    },
+    "mesTaches": {
+      "title": "Mano užduotys",
+      "empty": "Jokių atvirų užduočių",
+      "openCount": "{count, plural, one {Atvira užduotis} other {Atviros užduotys}}",
+      "viewAll": "Žiūrėkite mano užduotis"
     },
     "charts": {
       "income": "Pajamos",
@@ -4891,6 +4909,108 @@
       "inactiveSince": "išvyko {date}"
     }
   },
+  "taches": {
+    "view": {
+      "title": "Užduotys",
+      "count": "{count, plural, =0 {Jokių užduočių} one {# užduotis} other {# užduotys}}",
+      "listeLabel": "Sąrašas",
+      "planningLabel": "Planavimas",
+      "nouvelleTache": "Nauja užduotis",
+      "searchPlaceholder": "Ieškoti užduoties...",
+      "filterMembre": "Narys",
+      "filterCategorie": "Kategorija",
+      "filterStatut": "Statusas",
+      "filterEcheance": "Terminas",
+      "filterEcheanceUpcoming": "Greitai grįšiu",
+      "filterEcheanceOverdue": "Vėluoju",
+      "empty": "Šiuo metu jokių užduočių.",
+      "columns": {
+        "tache": "Užduotis",
+        "attribueeA": "Suteikta",
+        "echeance": "Terminas",
+        "statut": "Statusas"
+      },
+      "toasts": {
+        "created": "Sukurta užduotis",
+        "updated": "Užduotis atnaujinta"
+      }
+    },
+    "status": {
+      "aFaire": "Daryti",
+      "enCours": "Vykdoma",
+      "terminee": "Baigta",
+      "enRetard": "Vėluoju"
+    },
+    "detailSheet": {
+      "categorie": "Kategorija",
+      "noCategorie": "Nėra kategorijos",
+      "attribueeA": "Suteikta",
+      "nonAttribuee": "Neįteikta",
+      "echeance": "Terminas",
+      "rappels": "Priminimai",
+      "reminderBefore": "{count, plural, one {# diena prieš} other {# dienos prieš}}",
+      "reminderAfter": "{count, plural, one {# dieną po to} other {# dienų vėliau}}",
+      "voirOrigine": "Žr. kilmę",
+      "completedByOn": "Baigėsi {name} The {date}",
+      "completedOn": "Baigta {date}",
+      "markComplete": "Pažymėti kaip užbaigtą",
+      "deleteConfirmTitle": "Ištrinti šią užduotį?",
+      "deleteConfirmDescription": "Šis veiksmas yra negrįžtamas.",
+      "toasts": {
+        "completed": "Užduotis pažymėta kaip įvykdyta",
+        "deleted": "Užduotis ištrinta"
+      }
+    },
+    "form": {
+      "titre": "Pavadinimas",
+      "description": "Aprašymas",
+      "categorie": "Kategorija",
+      "noCategorie": "Nėra kategorijos",
+      "newCategoriePlaceholder": "Kategorijos pavadinimas",
+      "newCategorie": "+ Nauja kategorija",
+      "attribueeA": "Suteikta",
+      "searchMemberPlaceholder": "Ieškok nario...",
+      "loading": "Kraunama...",
+      "noResult": "Rezultatų nėra",
+      "nonAttribuee": "Neįteikta",
+      "selectedCount": "{count, plural, one {# išrinktas narys} other {# atrinkti nariai}}",
+      "echeance": "Terminas",
+      "rappels": "Priminimai",
+      "noRappels": "Jokio priminimo nebuvo.",
+      "rappelOffset": "Dienos",
+      "rappelDirection": "Kada",
+      "rappelAvant": "Prieš terminą",
+      "rappelApres": "Po termino",
+      "ajouterRappel": "Pridėti priminimą",
+      "createTitle": "Nauja užduotis",
+      "editTitle": "Redaguok užduotį",
+      "createTache": "Sukurkite užduotį"
+    },
+    "calendar": {
+      "othersCount": "+{count} Kiti",
+      "createHere": "Kurti čia",
+      "noTacheThisDay": "Tą dieną dėmių nebuvo"
+    },
+    "portalPage": {
+      "title": "Mano užduotys",
+      "subtitle": "Tau paskirtos užduotys.",
+      "empty": "Šiuo metu jums nėra paskirta jokių užduočių.",
+      "echeance": "Terminas: {date}",
+      "startWork": "Pradėk",
+      "markComplete": "Pažymėti kaip užbaigtą",
+      "history": "Baigta",
+      "completedOn": "Baigta {date}",
+      "status": {
+        "aFaire": "Daryti",
+        "enCours": "Vykdoma",
+        "terminee": "Baigta",
+        "enRetard": "Vėluoju"
+      },
+      "toasts": {
+        "completed": "Užduotis pažymėta kaip įvykdyta"
+      }
+    }
+  },
   "cotisations": {
     "form": {
       "member": "Narys",
@@ -7091,6 +7211,7 @@
       "parametres": "Nustatymai",
       "dashboard": "Dashboard",
       "membres": "Nariai",
+      "taches": "Užduotys",
       "evenements": "Renginiai",
       "cotisations": "Indėlis",
       "licencas": "Licencijos",
@@ -7113,6 +7234,7 @@
       "suporte": "Parama",
       "associationDocuments": "Asociacijos dokumentai",
       "categories": {
+        "gestion": "Valdymas",
         "adherents": "Nariai",
         "communication": "Ryšiai",
         "finances": "Finansai",
