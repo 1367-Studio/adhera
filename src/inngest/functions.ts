@@ -5,6 +5,7 @@ import { sendEventRuleEmail, sendEventRuleSms } from "@/inngest/event-rule-dispa
 import { bulkSendMembresEmail, bulkSendMembresSms, bulkSendCotisationReminders, bulkSendSondageInvitations } from "@/inngest/bulk-send"
 import { importMembres } from "@/inngest/membres-import"
 import { eventReviewRequest } from "@/inngest/event-review-request"
+import { tachesReminderSweep } from "@/inngest/taches-reminder-sweep"
 
 export const functions = [
   automationSweep,
@@ -18,4 +19,5 @@ export const functions = [
   bulkSendSondageInvitations,
   importMembres,
   eventReviewRequest,
+  tachesReminderSweep,
 ]

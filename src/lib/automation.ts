@@ -65,7 +65,7 @@ function nextRecurring(config: Record<string, unknown>, from: Date): Date {
 export const KNOWN_TEMPLATE_VARS = [
   "prenom", "nom", "nom_complet", "email", "association", "lien_portal",
   "annee_cotisation", "montant_cotisation", "titre_evenement", "date_evenement", "lieu_evenement",
-  "date_expiration", "lien_renouvellement",
+  "date_expiration", "lien_renouvellement", "titre_tache", "date_echeance",
 ] as const
 
 export function findUnknownVars(text: string): string[] {

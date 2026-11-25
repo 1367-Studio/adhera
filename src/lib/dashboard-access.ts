@@ -48,6 +48,7 @@ export const DASHBOARD_ROUTE_ACCESS: Record<string, DashboardRouteRequirement> =
   "/dashboard/fournisseurs":          { area: "comptabilite" },
   "/dashboard/reunions":              { area: "reunions" },
   "/dashboard/materiel":              { area: "materiel" },
+  "/dashboard/taches":                { area: "taches" },
   // Pas { area: "groupes" } : un responsable désigné pour un groupe précis doit pouvoir
   // ouvrir cette page même sans l'accès général à l'aire — voir src/lib/grupos/access.ts.
   // La liste de groupes elle-même est filtrée côté API (hasAccess OR responsable).

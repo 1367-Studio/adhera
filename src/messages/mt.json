@@ -323,6 +323,7 @@
       "actualites": "Aħbarijiet",
       "evenements": "Avvenimenti",
       "materiel": "Materjal",
+      "taches": "It-tasks tiegħi",
       "cotisation": "Il-miżata tal-membri tiegħi",
       "dons": "Id-Donazzjonijiet tiegħi",
       "sondages": "Stħarriġ",
@@ -848,6 +849,8 @@
       "snoozedSectionTitle": "{count, plural, one {# azzjoni ġiet sospiża} other {# azzjonijiet imwaqqfa}}",
       "snoozedUntil": "Sakemm {date}",
       "cancelSnooze": "Ikkanċella l-hold",
+      "createTask": "Oħloq kompitu",
+      "createTaskToast": "Kompitu maħluq",
       "actionLabels": {
         "voirEtRelancer": "Ara u erġa'' tniedi",
         "examiner": "Eżaminatur",
@@ -861,6 +864,15 @@
         "rapprochement-bancaire": "{count, plural, one {# -operazzjoni li għandha tiġi mqabbla} other {# operazzjonijiet biex tqabbel}}",
         "notes-de-frais-a-valider": "{count, plural, one {# rapport ta'' spejjeż li għandu jiġi vvalidat} other {# -rapporti tal-ispejjeż għandhom jiġu vvalidati}}",
         "commandes-a-preparer": "{count, plural, one {# -ordni biex tipprepara} other {# ordnijiet biex tipprepara}}"
+      },
+      "linkBackLabels": {
+        "cotisations-en-attente": "Ara kontribuzzjonijiet pendenti",
+        "materiel-en-retard": "Ara r-ritorni ta'' materjali dewmien",
+        "membres-a-valider": "Ara l-membri biex tivvalida",
+        "dons-a-encaisser": "Ara d-donazzjonijiet biex tiġbor",
+        "rapprochement-bancaire": "Ara r-rikonċiljazzjoni bankarja",
+        "notes-de-frais-a-valider": "Ara r-rapporti tal-ispejjeż li għandhom jiġu vvalidati",
+        "commandes-a-preparer": "Ara l-ordnijiet biex tipprepara"
       }
     },
     "stats": {
@@ -911,6 +923,12 @@
       "noDueDate": "L-ebda skadenza",
       "viewAll": "Ara l-apparat kollu",
       "empty": "Bħalissa m'hemm l-ebda tagħmir mikri."
+    },
+    "mesTaches": {
+      "title": "It-tasks tiegħi",
+      "empty": "L-ebda kompiti miftuħa",
+      "openCount": "{count, plural, one {kompitu miftuħ} other {Kompiti miftuħa}}",
+      "viewAll": "Ara t-tasks tiegħi"
     },
     "charts": {
       "income": "Dħul",
@@ -4891,6 +4909,108 @@
       "inactiveSince": "telaq fi {date}"
     }
   },
+  "taches": {
+    "view": {
+      "title": "Kompiti",
+      "count": "{count, plural, =0 {L-ebda kompiti} one {# -kompitu} other {# -kompiti}}",
+      "listeLabel": "Lista",
+      "planningLabel": "Pjanar",
+      "nouvelleTache": "Kompitu ġdid",
+      "searchPlaceholder": "Fittex kompitu...",
+      "filterMembre": "Membru",
+      "filterCategorie": "Kategorija",
+      "filterStatut": "Status",
+      "filterEcheance": "Skadenza",
+      "filterEcheanceUpcoming": "Dalwaqt",
+      "filterEcheanceOverdue": "Tard",
+      "empty": "L-ebda kompitu bħalissa.",
+      "columns": {
+        "tache": "Kompitu",
+        "attribueeA": "Mogħtija lil",
+        "echeance": "Skadenza",
+        "statut": "Status"
+      },
+      "toasts": {
+        "created": "Kompitu maħluq",
+        "updated": "Kompitu aġġornat"
+      }
+    },
+    "status": {
+      "aFaire": "X''għandek tagħmel",
+      "enCours": "Għaddej",
+      "terminee": "Komplut",
+      "enRetard": "Tard"
+    },
+    "detailSheet": {
+      "categorie": "Kategorija",
+      "noCategorie": "L-ebda kategorija",
+      "attribueeA": "Mogħtija lil",
+      "nonAttribuee": "Mhux mogħtija",
+      "echeance": "Skadenza",
+      "rappels": "Tfakkiriet",
+      "reminderBefore": "{count, plural, one {# -ġurnata ta'' qabel} other {# jiem qabel}}",
+      "reminderAfter": "{count, plural, one {# -ġurnata ta'' wara} other {# jiem wara}}",
+      "voirOrigine": "Ara l-oriġini",
+      "completedByOn": "Intemmet minn {name} il- {date}",
+      "completedOn": "Komplut fl- {date}",
+      "markComplete": "Immarka bħala kompluta",
+      "deleteConfirmTitle": "Tħassar dan il-kompitu?",
+      "deleteConfirmDescription": "Din l-azzjoni hija irreversibbli.",
+      "toasts": {
+        "completed": "Kompitu mmarkat bħala komplut",
+        "deleted": "Kompitu mħassar"
+      }
+    },
+    "form": {
+      "titre": "Titlu",
+      "description": "Deskrizzjoni",
+      "categorie": "Kategorija",
+      "noCategorie": "L-ebda kategorija",
+      "newCategoriePlaceholder": "Isem tal-kategorija",
+      "newCategorie": "+ Kategorija ġdida",
+      "attribueeA": "Mogħtija lil",
+      "searchMemberPlaceholder": "Fittex membru...",
+      "loading": "Qiegħed jitgħabba...",
+      "noResult": "L-ebda riżultat",
+      "nonAttribuee": "Mhux mogħtija",
+      "selectedCount": "{count, plural, one {# membru magħżul} other {# membri magħżula}}",
+      "echeance": "Skadenza",
+      "rappels": "Tfakkiriet",
+      "noRappels": "L-ebda twissija kkonfigurata.",
+      "rappelOffset": "Jiem",
+      "rappelDirection": "Meta",
+      "rappelAvant": "Qabel l-iskadenza",
+      "rappelApres": "Wara l-iskadenza",
+      "ajouterRappel": "Żid twissija",
+      "createTitle": "Kompitu ġdid",
+      "editTitle": "Editja l-kompitu",
+      "createTache": "Oħloq il-kompitu"
+    },
+    "calendar": {
+      "othersCount": "+{count} Oħrajn",
+      "createHere": "Oħloq hawn",
+      "noTacheThisDay": "L-ebda tniġġis dik il-ġurnata"
+    },
+    "portalPage": {
+      "title": "It-tasks tiegħi",
+      "subtitle": "It-tasks assenjati lilek.",
+      "empty": "Bħalissa ma ġewx assenjati kompiti lilek.",
+      "echeance": "Data Finali: {date}",
+      "startWork": "Ibda",
+      "markComplete": "Immarka bħala kompluta",
+      "history": "Komplut",
+      "completedOn": "Komplut fl- {date}",
+      "status": {
+        "aFaire": "X''għandek tagħmel",
+        "enCours": "Għaddej",
+        "terminee": "Komplut",
+        "enRetard": "Tard"
+      },
+      "toasts": {
+        "completed": "Kompitu mmarkat bħala komplut"
+      }
+    }
+  },
   "cotisations": {
     "form": {
       "member": "Membru",
@@ -7091,6 +7211,7 @@
       "parametres": "Settings",
       "dashboard": "Dashboard",
       "membres": "Membri",
+      "taches": "Kompiti",
       "evenements": "Avvenimenti",
       "cotisations": "Kontribuzzjonijiet",
       "licencas": "Liċenzji",
@@ -7113,6 +7234,7 @@
       "suporte": "Appoġġ",
       "associationDocuments": "Dokumenti tal-assoċjazzjoni",
       "categories": {
+        "gestion": "Ġestjoni",
         "adherents": "Membri",
         "communication": "Komunikazzjoni",
         "finances": "Finanzi",

@@ -323,6 +323,7 @@
       "actualites": "Новини",
       "evenements": "Събития",
       "materiel": "Материал",
+      "taches": "Моите задачи",
       "cotisation": "Членската ми такса",
       "dons": "Моите дарения",
       "sondages": "Проучвания",
@@ -848,6 +849,8 @@
       "snoozedSectionTitle": "{count, plural, one {# действие е отложено} other {# действия са поставени на пауза}}",
       "snoozedUntil": "Докато {date}",
       "cancelSnooze": "Отмени задържането",
+      "createTask": "Създаване на задача",
+      "createTaskToast": "Създадена задача",
       "actionLabels": {
         "voirEtRelancer": "Вижте и рестартирайте",
         "examiner": "Examiner",
@@ -861,6 +864,15 @@
         "rapprochement-bancaire": "{count, plural, one {# операция за сравнение} other {# операции за сравнение}}",
         "notes-de-frais-a-valider": "{count, plural, one {# отчет за разходите, който трябва да бъде валидиран} other {# отчети за разходи, които трябва да бъдат валидирани}}",
         "commandes-a-preparer": "{count, plural, one {# поръчка за подготовка} other {# заповеди за подготовка}}"
+      },
+      "linkBackLabels": {
+        "cotisations-en-attente": "Преглед на чакащи приноси",
+        "materiel-en-retard": "Вижте връщанията на забавени материали",
+        "membres-a-valider": "Вижте членовете за валидиране",
+        "dons-a-encaisser": "Вижте даренията за събиране",
+        "rapprochement-bancaire": "Вижте банковото съгласуване",
+        "notes-de-frais-a-valider": "Вижте отчетите за разходите за валидиране",
+        "commandes-a-preparer": "Вижте заповедите за подготовка"
       }
     },
     "stats": {
@@ -911,6 +923,12 @@
       "noDueDate": "Няма краен срок",
       "viewAll": "Вижте цялото оборудване",
       "empty": "В момента няма назаем оборудване."
+    },
+    "mesTaches": {
+      "title": "Моите задачи",
+      "empty": "Няма отворени задачи",
+      "openCount": "{count, plural, one {Отворена задача} other {Отворени задачи}}",
+      "viewAll": "Вижте моите задачи"
     },
     "charts": {
       "income": "Приходи",
@@ -4891,6 +4909,108 @@
       "inactiveSince": "напуснал на {date}"
     }
   },
+  "taches": {
+    "view": {
+      "title": "Задачи",
+      "count": "{count, plural, =0 {Няма задачи} one {# задача} other {# задачи}}",
+      "listeLabel": "Списък",
+      "planningLabel": "Планиране",
+      "nouvelleTache": "Нова задача",
+      "searchPlaceholder": "Търсене на задача...",
+      "filterMembre": "Член",
+      "filterCategorie": "Категория",
+      "filterStatut": "Статус",
+      "filterEcheance": "Краен срок",
+      "filterEcheanceUpcoming": "Скоро",
+      "filterEcheanceOverdue": "Късно",
+      "empty": "В момента няма задачи.",
+      "columns": {
+        "tache": "Задача",
+        "attribueeA": "Присъждана на",
+        "echeance": "Краен срок",
+        "statut": "Статус"
+      },
+      "toasts": {
+        "created": "Създадена задача",
+        "updated": "Задачата е актуализирана"
+      }
+    },
+    "status": {
+      "aFaire": "Какво да правя",
+      "enCours": "В процес на изпълнение",
+      "terminee": "Завършено",
+      "enRetard": "Късно"
+    },
+    "detailSheet": {
+      "categorie": "Категория",
+      "noCategorie": "Няма категория",
+      "attribueeA": "Присъждана на",
+      "nonAttribuee": "Ненаградени",
+      "echeance": "Краен срок",
+      "rappels": "Напомняния",
+      "reminderBefore": "{count, plural, one {# ден по-рано} other {# дни преди}}",
+      "reminderAfter": "{count, plural, one {# ден след} other {# дни по-късно}}",
+      "voirOrigine": "Вижте произхода",
+      "completedByOn": "Завършено от {name} the {date}",
+      "completedOn": "Завършено на {date}",
+      "markComplete": "Маркиране като завършено",
+      "deleteConfirmTitle": "Да изтрия тази задача?",
+      "deleteConfirmDescription": "Това действие е необратимо.",
+      "toasts": {
+        "completed": "Задачата е отбелязана като завършена",
+        "deleted": "Задачата е изтрита"
+      }
+    },
+    "form": {
+      "titre": "Заглавие",
+      "description": "Описание",
+      "categorie": "Категория",
+      "noCategorie": "Няма категория",
+      "newCategoriePlaceholder": "Име на категорията",
+      "newCategorie": "+ Нова категория",
+      "attribueeA": "Присъждана на",
+      "searchMemberPlaceholder": "Търсете член...",
+      "loading": "Зареждане...",
+      "noResult": "Няма резултати",
+      "nonAttribuee": "Ненаградени",
+      "selectedCount": "{count, plural, one {# избран член} other {# избрани членове}}",
+      "echeance": "Краен срок",
+      "rappels": "Напомняния",
+      "noRappels": "Няма конфигурирано напомняне.",
+      "rappelOffset": "Дни",
+      "rappelDirection": "Когато",
+      "rappelAvant": "Преди крайния срок",
+      "rappelApres": "След крайния срок",
+      "ajouterRappel": "Добавете напомняне",
+      "createTitle": "Нова задача",
+      "editTitle": "Редактиране на задачата",
+      "createTache": "Създайте задачата"
+    },
+    "calendar": {
+      "othersCount": "+{count} Други",
+      "createHere": "Създайте тук",
+      "noTacheThisDay": "Този ден нямаше петна"
+    },
+    "portalPage": {
+      "title": "Моите задачи",
+      "subtitle": "Задачите, възложени на вас.",
+      "empty": "В момента не са ти възложени задачи.",
+      "echeance": "Краен срок: {date}",
+      "startWork": "Започнете",
+      "markComplete": "Маркиране като завършено",
+      "history": "Завършено",
+      "completedOn": "Завършено на {date}",
+      "status": {
+        "aFaire": "Какво да правя",
+        "enCours": "В процес на изпълнение",
+        "terminee": "Завършено",
+        "enRetard": "Късно"
+      },
+      "toasts": {
+        "completed": "Задачата е отбелязана като завършена"
+      }
+    }
+  },
   "cotisations": {
     "form": {
       "member": "Член",
@@ -7091,6 +7211,7 @@
       "parametres": "Настройки",
       "dashboard": "Табло",
       "membres": "Членове",
+      "taches": "Задачи",
       "evenements": "Събития",
       "cotisations": "Приноси",
       "licencas": "Лицензи",
@@ -7113,6 +7234,7 @@
       "suporte": "Поддръжка",
       "associationDocuments": "Документи на асоциацията",
       "categories": {
+        "gestion": "Ръководство",
         "adherents": "Членове",
         "communication": "Комуникация",
         "finances": "Финанси",

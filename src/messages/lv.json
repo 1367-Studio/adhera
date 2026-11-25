@@ -323,6 +323,7 @@
       "actualites": "Ziņas",
       "evenements": "Notikumi",
       "materiel": "Materiāls",
+      "taches": "Mani uzdevumi",
       "cotisation": "Mana biedra maksa",
       "dons": "Mani ziedojumi",
       "sondages": "Apsekojumi",
@@ -848,6 +849,8 @@
       "snoozedSectionTitle": "{count, plural, one {# darbība atlikta} other {# darbības atliktas}}",
       "snoozedUntil": "Līdz {date}",
       "cancelSnooze": "Atcelt rezervāciju",
+      "createTask": "Izveido uzdevumu",
+      "createTaskToast": "Izveidots uzdevums",
       "actionLabels": {
         "voirEtRelancer": "Skatīt un atjaunot",
         "examiner": "Eksaminētājs",
@@ -861,6 +864,15 @@
         "rapprochement-bancaire": "{count, plural, one {# operācija, kas jāsalīdzina} other {# operācijas, ko salīdzināt}}",
         "notes-de-frais-a-valider": "{count, plural, one {# izdevumu atskaite jāapstiprina} other {# izdevumu atskaites jāapstiprina}}",
         "commandes-a-preparer": "{count, plural, one {# sagatavošanās kārtība} other {# pavēles sagatavoties}}"
+      },
+      "linkBackLabels": {
+        "cotisations-en-attente": "Skatīt gaidāmos ieguldījumus",
+        "materiel-en-retard": "Skatīt aizkavēto materiālu atgriešanos",
+        "membres-a-valider": "Skatīt biedrus, lai apstiprinātu",
+        "dons-a-encaisser": "Skatiet ziedojumus, lai tos savāktu",
+        "rapprochement-bancaire": "Skatīt bankas saskaņošanu",
+        "notes-de-frais-a-valider": "Skatīt izdevumu pārskatus, lai tos validētu",
+        "commandes-a-preparer": "Skatiet pavēles sagatavošanai"
       }
     },
     "stats": {
@@ -911,6 +923,12 @@
       "noDueDate": "Nav termiņa",
       "viewAll": "Skatīt visu aprīkojumu",
       "empty": "Pašlaik nav aizņemta aprīkojuma."
+    },
+    "mesTaches": {
+      "title": "Mani uzdevumi",
+      "empty": "Nav atvērtu uzdevumu",
+      "openCount": "{count, plural, one {Atvērts uzdevums} other {Atvērtie uzdevumi}}",
+      "viewAll": "Skatīt manus uzdevumus"
     },
     "charts": {
       "income": "Ieņēmumi",
@@ -4891,6 +4909,108 @@
       "inactiveSince": "pameta {date}"
     }
   },
+  "taches": {
+    "view": {
+      "title": "Uzdevumi",
+      "count": "{count, plural, =0 {Nav uzdevumu} one {# uzdevums} other {# uzdevumi}}",
+      "listeLabel": "Saraksts",
+      "planningLabel": "Plānošana",
+      "nouvelleTache": "Jauns uzdevums",
+      "searchPlaceholder": "Meklē uzdevumu...",
+      "filterMembre": "Loceklis",
+      "filterCategorie": "Kategorija",
+      "filterStatut": "Statuss",
+      "filterEcheance": "Deadline",
+      "filterEcheanceUpcoming": "Drīzumā",
+      "filterEcheanceOverdue": "Vēlu",
+      "empty": "Pašlaik nav uzdevumu.",
+      "columns": {
+        "tache": "Uzdevums",
+        "attribueeA": "Piešķirts",
+        "echeance": "Deadline",
+        "statut": "Statuss"
+      },
+      "toasts": {
+        "created": "Izveidots uzdevums",
+        "updated": "Uzdevums atjaunināts"
+      }
+    },
+    "status": {
+      "aFaire": "Darāmie darbi",
+      "enCours": "Procesā",
+      "terminee": "Pabeigts",
+      "enRetard": "Vēlu"
+    },
+    "detailSheet": {
+      "categorie": "Kategorija",
+      "noCategorie": "Nav kategorijas",
+      "attribueeA": "Piešķirts",
+      "nonAttribuee": "Nepiešķirts",
+      "echeance": "Deadline",
+      "rappels": "Atgādinājumi",
+      "reminderBefore": "{count, plural, one {# dienu pirms tam} other {# dienas pirms}}",
+      "reminderAfter": "{count, plural, one {# dienu pēc tam} other {# dienas vēlāk}}",
+      "voirOrigine": "Skatīt izcelsmi",
+      "completedByOn": "Beidza ar {name} the {date}",
+      "completedOn": "Pabeigts {date}",
+      "markComplete": "Atzīmēt kā pabeigtu",
+      "deleteConfirmTitle": "Dzēst šo uzdevumu?",
+      "deleteConfirmDescription": "Šī rīcība ir neatgriezeniska.",
+      "toasts": {
+        "completed": "Uzdevums atzīmēts kā izpildīts",
+        "deleted": "Uzdevums dzēsts"
+      }
+    },
+    "form": {
+      "titre": "Nosaukums",
+      "description": "Apraksts",
+      "categorie": "Kategorija",
+      "noCategorie": "Nav kategorijas",
+      "newCategoriePlaceholder": "Kategorijas nosaukums",
+      "newCategorie": "+ Jauna kategorija",
+      "attribueeA": "Piešķirts",
+      "searchMemberPlaceholder": "Meklēt biedru...",
+      "loading": "Ielādē...",
+      "noResult": "Nav rezultātu",
+      "nonAttribuee": "Nepiešķirts",
+      "selectedCount": "{count, plural, one {# izvēlētais loceklis} other {# izvēlētie biedri}}",
+      "echeance": "Deadline",
+      "rappels": "Atgādinājumi",
+      "noRappels": "Neviens atgādinājums nav konfigurēts.",
+      "rappelOffset": "Dienas",
+      "rappelDirection": "Kad",
+      "rappelAvant": "Pirms termiņa beigām",
+      "rappelApres": "Pēc termiņa beigām",
+      "ajouterRappel": "Pievienot atgādinājumu",
+      "createTitle": "Jauns uzdevums",
+      "editTitle": "Rediģē uzdevumu",
+      "createTache": "Izveido uzdevumu"
+    },
+    "calendar": {
+      "othersCount": "+{count} Citi",
+      "createHere": "Radīt šeit",
+      "noTacheThisDay": "Tajā dienā traipu nebija."
+    },
+    "portalPage": {
+      "title": "Mani uzdevumi",
+      "subtitle": "Uzdevumi, kas tev piešķirti.",
+      "empty": "Pašlaik tev nav piešķirti uzdevumi.",
+      "echeance": "Termiņš: {date}",
+      "startWork": "Sāc",
+      "markComplete": "Atzīmēt kā pabeigtu",
+      "history": "Pabeigts",
+      "completedOn": "Pabeigts {date}",
+      "status": {
+        "aFaire": "Darāmie darbi",
+        "enCours": "Procesā",
+        "terminee": "Pabeigts",
+        "enRetard": "Vēlu"
+      },
+      "toasts": {
+        "completed": "Uzdevums atzīmēts kā izpildīts"
+      }
+    }
+  },
   "cotisations": {
     "form": {
       "member": "Loceklis",
@@ -7091,6 +7211,7 @@
       "parametres": "Iestatījumi",
       "dashboard": "Informācijas panelis",
       "membres": "Dalībnieki",
+      "taches": "Uzdevumi",
       "evenements": "Notikumi",
       "cotisations": "Ieguldījums",
       "licencas": "Licences",
@@ -7113,6 +7234,7 @@
       "suporte": "Atbalsts",
       "associationDocuments": "Asociācijas dokumenti",
       "categories": {
+        "gestion": "Vadība",
         "adherents": "Dalībnieki",
         "communication": "Sakari",
         "finances": "Finanses",
