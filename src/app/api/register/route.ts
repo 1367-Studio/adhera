@@ -8,7 +8,7 @@ import { stripe, priceIdFor, TRIAL_DAYS } from "@/lib/stripe"
 import { createSubscriptionScheduleFromOffer, offerRequiresPaymentMethod, type OfferPhase } from "@/lib/pricing-offers"
 import { generateUniqueSlug } from "@/lib/slug"
 import { sendEmail } from "@/lib/mail"
-import { adminWelcomeEmail } from "@/lib/email"
+import { adminWelcomeEmail, newTrialSignupStaffEmail } from "@/lib/email"
 import { APP_URL } from "@/lib/env"
 import { consentIp } from "@/lib/consent"
 import { getCurrentLegalDocumentsVersion } from "@/lib/legal/platform-documents"
@@ -263,6 +263,22 @@ export async function POST(req: Request) {
     await sendEmail(adminWelcomeEmail({ firstName, email: email.toLowerCase(), associationName, loginUrl, trialDays: offer ? 0 : TRIAL_DAYS, hasPaymentMethod })).catch((error: unknown) => {
       reportError(error, { area: "email", action: "register.welcome-email", extra: { associationId: association.id } })
     })
+
+    // FORM-124 — internal heads-up to the Formwise team for every free-trial signup. Not
+    // sent for a custom-pricing offer, which activates a paid plan rather than a trial.
+    if (!offer) {
+      const staffEmail = process.env.SUPPORT_TEAM_EMAIL
+      if (staffEmail) {
+        await sendEmail(
+          newTrialSignupStaffEmail({ to: staffEmail, associationName, signupName: `${firstName} ${lastName}`, signupEmail: email.toLowerCase(), signupAt: new Date() }),
+          { associationId: association.id, source: "TRIAL_SIGNUP_STAFF", sourceId: association.id },
+        ).catch((error: unknown) => {
+          reportError(error, { area: "email", action: "register.trial-signup-staff-email", extra: { associationId: association.id } })
+        })
+      } else {
+        console.error("[register] SUPPORT_TEAM_EMAIL is not configured — trial signup staff notification skipped")
+      }
+    }
 
     return NextResponse.json({ ok: true })
   } catch (error) {
