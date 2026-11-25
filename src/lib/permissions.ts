@@ -54,7 +54,7 @@ export const ACCESS_AREA_LABELS: Record<AccessArea, string> = {
   // every staff role can always do that. It only gates "voir/gérer toutes les demandes" (any
   // other requester's request, approving, registering a reimbursement) — see
   // src/lib/finance/reimbursement-access.ts.
-  reimbursements: "Remboursements de frais (voir et gérer toutes les demandes)",
+  reimbursements: "Notes de frais (voir et gérer toutes les demandes)",
   taches:         "Tâches",
 }
 
