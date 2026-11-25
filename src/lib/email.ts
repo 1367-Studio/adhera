@@ -2064,6 +2064,37 @@ export function supportTicketReplyEmail(p: {
   }
 }
 
+// Sent to SUPPORT_TEAM_EMAIL whenever a new association self-registers and its free trial
+// starts (POST /api/register) — not sent for a custom-pricing offer signup, which activates
+// a paid plan instead of a trial. Platform-branded, not association-branded — this is an
+// internal ops notification. Subject/body wording follows FORM-124 (requested in Portuguese).
+export function newTrialSignupStaffEmail(p: {
+  to:              string
+  associationName: string
+  signupName:      string
+  signupEmail:     string
+  signupAt:        Date
+}) {
+  const dateStr = p.signupAt.toLocaleDateString("pt-BR", { timeZone: APP_TIME_ZONE, day: "numeric", month: "long", year: "numeric" })
+  const timeStr = p.signupAt.toLocaleTimeString("pt-BR", { timeZone: APP_TIME_ZONE, hour: "2-digit", minute: "2-digit" })
+  const content = `
+    <h2 style="margin:0 0 20px;font-size:20px;font-weight:700;">Novo teste do Formwise</h2>
+    <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
+      Uma nova associação acaba de se cadastrar e iniciar o período de teste gratuito.
+    </p>
+    <table cellpadding="0" cellspacing="0" width="100%" style="margin:0 0 8px;font-size:14px;line-height:1.8;color:#18181b;">
+      <tr><td style="color:#71717a;padding-right:12px;white-space:nowrap;vertical-align:top;">Associação</td><td><strong>${escapeHtml(p.associationName)}</strong></td></tr>
+      <tr><td style="color:#71717a;padding-right:12px;white-space:nowrap;vertical-align:top;">Responsável</td><td>${escapeHtml(p.signupName)}</td></tr>
+      <tr><td style="color:#71717a;padding-right:12px;white-space:nowrap;vertical-align:top;">E-mail</td><td>${escapeHtml(p.signupEmail)}</td></tr>
+      <tr><td style="color:#71717a;padding-right:12px;white-space:nowrap;vertical-align:top;">Data</td><td>${dateStr} às ${timeStr}</td></tr>
+    </table>`
+  return {
+    to:      p.to,
+    subject: `Novo teste do Formwise – ${p.associationName}`,
+    html:    layout(APP_NAME, content),
+  }
+}
+
 // Sent to SUPPORT_TEAM_EMAIL by the membre-control-alert-sweep cron (src/lib/membre-
 // control-alerts.ts) whenever the sweep raises at least one new alert — one digest per
 // run, never one email per member, since a single outage can raise dozens at once.
