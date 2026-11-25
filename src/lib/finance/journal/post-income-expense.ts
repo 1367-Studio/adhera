@@ -59,6 +59,11 @@ export async function postIncomeToJournal(incomeId: string): Promise<PostJournal
   })
   if (!income || income.status !== "PAID") return null
   if (!income.exerciceId) return null
+  // A €0 Income (free event ticket, 100%-discount cotisation, etc.) moves no money — nothing
+  // to post. postJournalEntry refuses a zero-total entry on purpose; treat that the same as
+  // the other "nothing to post" cases above instead of letting the error reach the caller
+  // (syncIncomeJournal has no try/catch, so this used to crash the Stripe webhook).
+  if (Number(income.amount) === 0) return null
 
   await ensureChartAccounts(income.associationId)
 
@@ -102,6 +107,8 @@ export async function postExpenseToJournal(expenseId: string): Promise<PostJourn
   })
   if (!expense || expense.status !== "VALIDATED") return null
   if (!expense.exerciceId) return null
+  // See postIncomeToJournal's matching check above — a €0 Expense moves no money.
+  if (Number(expense.amount) === 0) return null
 
   await ensureChartAccounts(expense.associationId)
 
