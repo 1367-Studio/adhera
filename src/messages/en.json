@@ -898,7 +898,10 @@
     "mesTaches": {
       "title": "My tasks",
       "empty": "No open tasks",
-      "openCount": "{count, plural, one {open task} other {Open tasks}}",
+      "openCount": "{count, plural, one {# open task} other {# Open tasks}}",
+      "today": "Today",
+      "emptyToday": "No tasks planned today",
+      "seeMoreToday": "See the {count} daily tasks",
       "viewAll": "See my tasks"
     },
     "charts": {
@@ -4732,8 +4735,12 @@
       "filterStatut": "Status",
       "filterEcheance": "Deadline",
       "filterEcheanceUpcoming": "Coming soon",
-      "filterEcheanceOverdue": "Late",
+      "resetFilters": "Reset",
       "empty": "No tasks at the moment.",
+      "emptyFiltered": "No task matches these filters.",
+      "stats": {
+        "echeanceSous7Jours": "Maturity within 7 days"
+      },
       "columns": {
         "tache": "Task",
         "attribueeA": "Awarded to",
@@ -4742,7 +4749,8 @@
       },
       "toasts": {
         "created": "Task created",
-        "updated": "Task updated"
+        "updated": "Task updated",
+        "tacheIntrouvable": "Task not found"
       }
     },
     "status": {
@@ -4757,6 +4765,7 @@
       "attribueeA": "Awarded to",
       "nonAttribuee": "Unawarded",
       "echeance": "Deadline",
+      "sansEcheance": "No expiration date",
       "rappels": "Reminders",
       "reminderBefore": "{count, plural, one {# day before} other {# days before}}",
       "reminderAfter": "{count, plural, one {# day after} other {# days later}}",
@@ -4764,10 +4773,15 @@
       "completedByOn": "Ended by {name} the {date}",
       "completedOn": "Completed on {date}",
       "markComplete": "Mark as completed",
+      "statutLabel": "Task status",
+      "completeConfirmTitle": "Mark this task as completed?",
+      "completeConfirmDescription": "You can reopen it later if needed.",
+      "completeConfirmDescriptionShared": "It will be marked as completed for all assigned members. You can reopen it later if needed.",
       "deleteConfirmTitle": "Delete this task?",
       "deleteConfirmDescription": "This action is irreversible.",
       "toasts": {
         "completed": "Task marked as completed",
+        "statusUpdated": "Status updated",
         "deleted": "Task deleted"
       }
     },
@@ -4778,6 +4792,17 @@
       "noCategorie": "No category",
       "newCategoriePlaceholder": "Category name",
       "newCategorie": "+ New category",
+      "manageCategories": {
+        "trigger": "Manage categories",
+        "title": "Categories",
+        "empty": "No category at the moment.",
+        "archiveConfirmTitle": "Remove this category?",
+        "archiveConfirmDescription": "Tasks already classified in this category will keep it in their history, but it will disappear from the list for new tasks.",
+        "toasts": {
+          "renamed": "Renowned category",
+          "archived": "Deleted category"
+        }
+      },
       "attribueeA": "Awarded to",
       "searchMemberPlaceholder": "Search for a member...",
       "loading": "Loading...",
@@ -4785,7 +4810,9 @@
       "nonAttribuee": "Unawarded",
       "selectedCount": "{count, plural, one {# selected member} other {# selected members}}",
       "echeance": "Deadline",
+      "echeanceHint": "Optional — the task remains visible in the list without a due date.",
       "rappels": "Reminders",
+      "rappelsNeedEcheance": "Set a deadline to be able to set up a reminder.",
       "noRappels": "No reminder configured.",
       "rappelOffset": "Days",
       "rappelDirection": "When",
@@ -4806,6 +4833,7 @@
       "subtitle": "The tasks assigned to you.",
       "empty": "No tasks have been assigned to you at the moment.",
       "echeance": "Deadline: {date}",
+      "sansEcheance": "No expiration date",
       "startWork": "Get started",
       "markComplete": "Mark as completed",
       "history": "Completed",

@@ -882,7 +882,10 @@
     "mesTaches": {
       "title": "Οι εργασίες μου",
       "empty": "Δεν υπάρχουν ανοιχτές εργασίες",
-      "openCount": "{count, plural, one {Ανοικτή εργασία} other {Άνοιγμα εργασιών}}",
+      "openCount": "{count, plural, one {# Ανοικτή εργασία} other {# Άνοιγμα εργασιών}}",
+      "today": "Σήμερα",
+      "emptyToday": "Δεν έχουν προγραμματιστεί εργασίες σήμερα",
+      "seeMoreToday": "Δείτε το {count} καθημερινές εργασίες",
       "viewAll": "Δείτε τις εργασίες μου"
     },
     "charts": {
@@ -4523,8 +4526,12 @@
       "filterStatut": "Κατάσταση",
       "filterEcheance": "Προθεσμία",
       "filterEcheanceUpcoming": "Έρχεται σύντομα",
-      "filterEcheanceOverdue": "Αργά",
+      "resetFilters": "Επαναφορά",
       "empty": "Δεν υπάρχουν εργασίες αυτή τη στιγμή.",
+      "emptyFiltered": "Καμία εργασία δεν ταιριάζει με αυτά τα φίλτρα.",
+      "stats": {
+        "echeanceSous7Jours": "Λήξη εντός 7 ημερών"
+      },
       "columns": {
         "tache": "Αποστολή",
         "attribueeA": "Απονέμεται σε",
@@ -4533,7 +4540,8 @@
       },
       "toasts": {
         "created": "Δημιουργημένη εργασία",
-        "updated": "Ενημερώθηκε η εργασία"
+        "updated": "Ενημερώθηκε η εργασία",
+        "tacheIntrouvable": "Η εργασία δεν βρέθηκε"
       }
     },
     "status": {
@@ -4548,6 +4556,7 @@
       "attribueeA": "Απονέμεται σε",
       "nonAttribuee": "Μη βραβευμένο",
       "echeance": "Προθεσμία",
+      "sansEcheance": "Χωρίς ημερομηνία λήξης",
       "rappels": "Υπενθυμίσεις",
       "reminderBefore": "{count, plural, one {# μέρα πριν} other {# μέρες πριν}}",
       "reminderAfter": "{count, plural, one {# μέρα μετά} other {# μέρες αργότερα}}",
@@ -4555,10 +4564,15 @@
       "completedByOn": "Ολοκληρώθηκε από {name} το {date}",
       "completedOn": "Ολοκληρώθηκε στις {date}",
       "markComplete": "Σήμανση ως ολοκληρωμένο",
+      "statutLabel": "Κατάσταση εργασίας",
+      "completeConfirmTitle": "Να σημειωθεί αυτή η εργασία ως ολοκληρωμένη;",
+      "completeConfirmDescription": "Μπορείτε να το ξανανοίξετε αργότερα αν χρειαστεί.",
+      "completeConfirmDescriptionShared": "Θα σημειωθεί ως ολοκληρωμένο για όλα τα ανατεθειμένα μέλη. Μπορείτε να το ανοίξετε ξανά αργότερα αν χρειαστεί.",
       "deleteConfirmTitle": "Να διαγράψω αυτή την εργασία;",
       "deleteConfirmDescription": "Αυτή η ενέργεια είναι μη αναστρέψιμη.",
       "toasts": {
         "completed": "Η εργασία σημειώθηκε ως ολοκληρωμένη",
+        "statusUpdated": "Κατάσταση ενημερωμένη",
         "deleted": "Η εργασία διαγράφηκε"
       }
     },
@@ -4569,6 +4583,17 @@
       "noCategorie": "Καμία κατηγορία",
       "newCategoriePlaceholder": "Όνομα κατηγορίας",
       "newCategorie": "+ Νέα κατηγορία",
+      "manageCategories": {
+        "trigger": "Διαχείριση κατηγοριών",
+        "title": "Κατηγορίες",
+        "empty": "Δεν υπάρχει κατηγορία αυτή τη στιγμή.",
+        "archiveConfirmTitle": "Να αφαιρεθεί αυτή η κατηγορία;",
+        "archiveConfirmDescription": "Οι εργασίες που έχουν ήδη ταξινομηθεί σε αυτή την κατηγορία θα την κρατήσουν στο ιστορικό τους, αλλά θα εξαφανιστεί από τη λίστα για νέες εργασίες.",
+        "toasts": {
+          "renamed": "Κατηγορία Renowned",
+          "archived": "Διαγραμμένη κατηγορία"
+        }
+      },
       "attribueeA": "Απονέμεται σε",
       "searchMemberPlaceholder": "Αναζήτηση μέλους...",
       "loading": "Φόρτωση...",
@@ -4576,7 +4601,9 @@
       "nonAttribuee": "Μη βραβευμένο",
       "selectedCount": "{count, plural, one {# επιλεγμένο μέλος} other {# επιλεγμένα μέλη}}",
       "echeance": "Προθεσμία",
+      "echeanceHint": "Προαιρετικό — η εργασία παραμένει ορατή στη λίστα χωρίς ημερομηνία λήξης.",
       "rappels": "Υπενθυμίσεις",
+      "rappelsNeedEcheance": "Ορίστε μια προθεσμία για να μπορέσετε να ρυθμίσετε μια υπενθύμιση.",
       "noRappels": "Δεν έχει ρυθμιστεί υπενθύμιση.",
       "rappelOffset": "Ημέρες",
       "rappelDirection": "Όταν",
@@ -4597,6 +4624,7 @@
       "subtitle": "Οι εργασίες που σου ανατίθενται.",
       "empty": "Δεν σας έχουν ανατεθεί εργασίες αυτή τη στιγμή.",
       "echeance": "Προθεσμία: {date}",
+      "sansEcheance": "Χωρίς ημερομηνία λήξης",
       "startWork": "Ξεκινήστε",
       "markComplete": "Σήμανση ως ολοκληρωμένο",
       "history": "Ολοκληρώθηκε",

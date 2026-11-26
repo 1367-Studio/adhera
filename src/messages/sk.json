@@ -882,7 +882,10 @@
     "mesTaches": {
       "title": "Moje úlohy",
       "empty": "Žiadne otvorené úlohy",
-      "openCount": "{count, plural, one {otvoriť úlohu} other {Otvorené úlohy}}",
+      "openCount": "{count, plural, one {# otvoriť úlohu} other {# Otvorené úlohy}}",
+      "today": "Dnes",
+      "emptyToday": "Dnes nie sú naplánované žiadne úlohy",
+      "seeMoreToday": "Pozrite si {count} Denné úlohy",
       "viewAll": "Zobraziť moje úlohy"
     },
     "charts": {
@@ -4523,8 +4526,12 @@
       "filterStatut": "Stav",
       "filterEcheance": "Termín",
       "filterEcheanceUpcoming": "Čoskoro k dispozícii",
-      "filterEcheanceOverdue": "Neskorý",
+      "resetFilters": "Resetovať",
       "empty": "Momentálne žiadne úlohy.",
+      "emptyFiltered": "Žiadna úloha nezodpovedá týmto filtrom.",
+      "stats": {
+        "echeanceSous7Jours": "Splatnosť do 7 dní"
+      },
       "columns": {
         "tache": "Úloha",
         "attribueeA": "Udelené",
@@ -4533,7 +4540,8 @@
       },
       "toasts": {
         "created": "Úloha vytvorená",
-        "updated": "Úloha aktualizovaná"
+        "updated": "Úloha aktualizovaná",
+        "tacheIntrouvable": "Úloha nebola nájdená"
       }
     },
     "status": {
@@ -4548,6 +4556,7 @@
       "attribueeA": "Udelené",
       "nonAttribuee": "Neocenené",
       "echeance": "Termín",
+      "sansEcheance": "Bez dátumu vypršania platnosti",
       "rappels": "Pripomienky",
       "reminderBefore": "{count, plural, one {# deň predtým} other {# dni predtým}}",
       "reminderAfter": "{count, plural, one {# deň potom} other {# dní neskôr}}",
@@ -4555,10 +4564,15 @@
       "completedByOn": "Ukončené {name} The {date}",
       "completedOn": "Dokončené dňa {date}",
       "markComplete": "Označiť ako dokončené",
+      "statutLabel": "Stav úlohy",
+      "completeConfirmTitle": "Označiť túto úlohu ako dokončenú?",
+      "completeConfirmDescription": "Ak bude treba, môžeš ju neskôr znovu otvoriť.",
+      "completeConfirmDescriptionShared": "Bude označená ako dokončená pre všetkých priradených členov. Ak to bude potrebné, môžete ju neskôr znovu otvoriť.",
       "deleteConfirmTitle": "Vymazať túto úlohu?",
       "deleteConfirmDescription": "Tento čin je nezvratný.",
       "toasts": {
         "completed": "Úloha označená ako dokončená",
+        "statusUpdated": "Stav aktualizovaný",
         "deleted": "Úloha odstránená"
       }
     },
@@ -4569,6 +4583,17 @@
       "noCategorie": "Žiadna kategória",
       "newCategoriePlaceholder": "Názov kategórie",
       "newCategorie": "+ Nová kategória",
+      "manageCategories": {
+        "trigger": "Spravovať kategórie",
+        "title": "Kategórie",
+        "empty": "Momentálne žiadna kategória.",
+        "archiveConfirmTitle": "Odstrániť túto kategóriu?",
+        "archiveConfirmDescription": "Úlohy už zaradené do tejto kategórie si ju ponechajú vo svojej histórii, ale pri nových úlohách zmiznú zo zoznamu.",
+        "toasts": {
+          "renamed": "Renomovaná kategória",
+          "archived": "Vymazaná kategória"
+        }
+      },
       "attribueeA": "Udelené",
       "searchMemberPlaceholder": "Vyhľadajte člena...",
       "loading": "Načítavam...",
@@ -4576,7 +4601,9 @@
       "nonAttribuee": "Neocenené",
       "selectedCount": "{count, plural, one {# vybraný člen} other {# vybraní členovia}}",
       "echeance": "Termín",
+      "echeanceHint": "Voliteľné — úloha zostáva viditeľná v zozname bez dátumu splatnosti.",
       "rappels": "Pripomienky",
+      "rappelsNeedEcheance": "Stanovte si termín, aby ste mohli nastaviť pripomienku.",
       "noRappels": "Nebolo nastavené žiadne pripomenutie.",
       "rappelOffset": "Dni",
       "rappelDirection": "Keď",
@@ -4597,6 +4624,7 @@
       "subtitle": "Úlohy, ktoré vám boli pridelené.",
       "empty": "Momentálne vám neboli pridelené žiadne úlohy.",
       "echeance": "Termín: {date}",
+      "sansEcheance": "Bez dátumu vypršania platnosti",
       "startWork": "Začnite",
       "markComplete": "Označiť ako dokončené",
       "history": "Dokončené",

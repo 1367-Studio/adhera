@@ -882,7 +882,10 @@
     "mesTaches": {
       "title": "Моите задачи",
       "empty": "Няма отворени задачи",
-      "openCount": "{count, plural, one {Отворена задача} other {Отворени задачи}}",
+      "openCount": "{count, plural, one {# Отворена задача} other {# Отворени задачи}}",
+      "today": "Днес",
+      "emptyToday": "Днес няма планирани задачи",
+      "seeMoreToday": "Вижте {count} Ежедневни задачи",
       "viewAll": "Вижте моите задачи"
     },
     "charts": {
@@ -4523,8 +4526,12 @@
       "filterStatut": "Статус",
       "filterEcheance": "Краен срок",
       "filterEcheanceUpcoming": "Скоро",
-      "filterEcheanceOverdue": "Късно",
+      "resetFilters": "Нулиране",
       "empty": "В момента няма задачи.",
+      "emptyFiltered": "Нито една задача не отговаря на тези филтри.",
+      "stats": {
+        "echeanceSous7Jours": "Падеж в рамките на 7 дни"
+      },
       "columns": {
         "tache": "Задача",
         "attribueeA": "Присъждана на",
@@ -4533,7 +4540,8 @@
       },
       "toasts": {
         "created": "Създадена задача",
-        "updated": "Задачата е актуализирана"
+        "updated": "Задачата е актуализирана",
+        "tacheIntrouvable": "Задачата не е намерена"
       }
     },
     "status": {
@@ -4548,6 +4556,7 @@
       "attribueeA": "Присъждана на",
       "nonAttribuee": "Ненаградени",
       "echeance": "Краен срок",
+      "sansEcheance": "Без срок на годност",
       "rappels": "Напомняния",
       "reminderBefore": "{count, plural, one {# ден по-рано} other {# дни преди}}",
       "reminderAfter": "{count, plural, one {# ден след} other {# дни по-късно}}",
@@ -4555,10 +4564,15 @@
       "completedByOn": "Завършено от {name} the {date}",
       "completedOn": "Завършено на {date}",
       "markComplete": "Маркиране като завършено",
+      "statutLabel": "Статус на задачата",
+      "completeConfirmTitle": "Да маркирате тази задача като изпълнена?",
+      "completeConfirmDescription": "Можете да го отворите по-късно, ако е необходимо.",
+      "completeConfirmDescriptionShared": "Ще бъде маркиран като завършен за всички назначени членове. Можете да го отворите отново по-късно, ако е необходимо.",
       "deleteConfirmTitle": "Да изтрия тази задача?",
       "deleteConfirmDescription": "Това действие е необратимо.",
       "toasts": {
         "completed": "Задачата е отбелязана като завършена",
+        "statusUpdated": "Статусът е актуализиран",
         "deleted": "Задачата е изтрита"
       }
     },
@@ -4569,6 +4583,17 @@
       "noCategorie": "Няма категория",
       "newCategoriePlaceholder": "Име на категорията",
       "newCategorie": "+ Нова категория",
+      "manageCategories": {
+        "trigger": "Управление на категории",
+        "title": "Категории",
+        "empty": "В момента няма категория.",
+        "archiveConfirmTitle": "Да премахнем тази категория?",
+        "archiveConfirmDescription": "Задачите, които вече са класифицирани в тази категория, ще го запазят в историята си, но ще изчезнат от списъка за нови задачи.",
+        "toasts": {
+          "renamed": "Известна категория",
+          "archived": "Изтрита категория"
+        }
+      },
       "attribueeA": "Присъждана на",
       "searchMemberPlaceholder": "Търсете член...",
       "loading": "Зареждане...",
@@ -4576,7 +4601,9 @@
       "nonAttribuee": "Ненаградени",
       "selectedCount": "{count, plural, one {# избран член} other {# избрани членове}}",
       "echeance": "Краен срок",
+      "echeanceHint": "По избор — задачата остава видима в списъка без крайна дата.",
       "rappels": "Напомняния",
+      "rappelsNeedEcheance": "Задайте краен срок, за да можете да настроите напомняне.",
       "noRappels": "Няма конфигурирано напомняне.",
       "rappelOffset": "Дни",
       "rappelDirection": "Когато",
@@ -4597,6 +4624,7 @@
       "subtitle": "Задачите, възложени на вас.",
       "empty": "В момента не са ти възложени задачи.",
       "echeance": "Краен срок: {date}",
+      "sansEcheance": "Без срок на годност",
       "startWork": "Започнете",
       "markComplete": "Маркиране като завършено",
       "history": "Завършено",

@@ -882,7 +882,10 @@
     "mesTaches": {
       "title": "Meine Aufgaben",
       "empty": "Keine offenen Aufgaben",
-      "openCount": "{count, plural, one {Aufgabe öffnen} other {Aufgaben öffnen}}",
+      "openCount": "{count, plural, one {# Aufgabe öffnen} other {# Aufgaben öffnen}}",
+      "today": "Heute",
+      "emptyToday": "Heute sind keine Aufgaben geplant",
+      "seeMoreToday": "Siehe die {count} Tägliche Aufgaben",
       "viewAll": "Siehe meine Aufgaben"
     },
     "charts": {
@@ -4523,8 +4526,12 @@
       "filterStatut": "Status",
       "filterEcheance": "Frist",
       "filterEcheanceUpcoming": "Kommt bald",
-      "filterEcheanceOverdue": "Spät",
+      "resetFilters": "Zurücksetzen",
       "empty": "Im Moment keine Aufgaben.",
+      "emptyFiltered": "Keine Aufgabe entspricht diesen Filtern.",
+      "stats": {
+        "echeanceSous7Jours": "Fälligkeit innerhalb von 7 Tagen"
+      },
       "columns": {
         "tache": "Aufgabe",
         "attribueeA": "Verliehen an",
@@ -4533,7 +4540,8 @@
       },
       "toasts": {
         "created": "Erstellt Aufgabe",
-        "updated": "Aufgabe aktualisiert"
+        "updated": "Aufgabe aktualisiert",
+        "tacheIntrouvable": "Aufgabe nicht gefunden"
       }
     },
     "status": {
@@ -4548,6 +4556,7 @@
       "attribueeA": "Verliehen an",
       "nonAttribuee": "Nicht vergeben",
       "echeance": "Frist",
+      "sansEcheance": "Kein Ablaufdatum",
       "rappels": "Erinnerungen",
       "reminderBefore": "{count, plural, one {# Tag zuvor} other {# Tage zuvor}}",
       "reminderAfter": "{count, plural, one {# Tag danach} other {# Tage später}}",
@@ -4555,10 +4564,15 @@
       "completedByOn": "Endete mit {name} Die {date}",
       "completedOn": "Abgeschlossen am {date}",
       "markComplete": "Als abgeschlossen markieren",
+      "statutLabel": "Aufgabestatus",
+      "completeConfirmTitle": "Diese Aufgabe als erledigt markieren?",
+      "completeConfirmDescription": "Du kannst es später wieder öffnen, falls nötig.",
+      "completeConfirmDescriptionShared": "Sie wird für alle zugewiesenen Mitglieder als erledigt markiert. Sie können sie später bei Bedarf erneut öffnen.",
       "deleteConfirmTitle": "Diese Aufgabe löschen?",
       "deleteConfirmDescription": "Diese Maßnahme ist irreversibel.",
       "toasts": {
         "completed": "Aufgabe als abgeschlossen markiert",
+        "statusUpdated": "Status aktualisiert",
         "deleted": "Aufgabe gelöscht"
       }
     },
@@ -4569,6 +4583,17 @@
       "noCategorie": "Keine Kategorie",
       "newCategoriePlaceholder": "Kategoriename",
       "newCategorie": "+ Neue Kategorie",
+      "manageCategories": {
+        "trigger": "Kategorien verwalten",
+        "title": "Kategorien",
+        "empty": "Im Moment keine Kategorie.",
+        "archiveConfirmTitle": "Diese Kategorie entfernen?",
+        "archiveConfirmDescription": "Aufgaben, die bereits in diese Kategorie eingestuft sind, behalten sie in ihrer Historie, verschwinden jedoch für neue Aufgaben aus der Liste.",
+        "toasts": {
+          "renamed": "Bekannte Kategorie",
+          "archived": "Gelöschte Kategorie"
+        }
+      },
       "attribueeA": "Verliehen an",
       "searchMemberPlaceholder": "Suche nach einem Mitglied...",
       "loading": "Laden...",
@@ -4576,7 +4601,9 @@
       "nonAttribuee": "Nicht vergeben",
       "selectedCount": "{count, plural, one {# ausgewähltes Mitglied} other {# ausgewählte Mitglieder}}",
       "echeance": "Frist",
+      "echeanceHint": "Optional — die Aufgabe bleibt ohne Fälligkeitsdatum in der Liste sichtbar.",
       "rappels": "Erinnerungen",
+      "rappelsNeedEcheance": "Setzen Sie eine Frist, um eine Erinnerung einrichten zu können.",
       "noRappels": "Keine Erinnerung konfiguriert.",
       "rappelOffset": "Tage",
       "rappelDirection": "Wann",
@@ -4597,6 +4624,7 @@
       "subtitle": "Die Ihnen zugewiesenen Aufgaben.",
       "empty": "Derzeit wurden Ihnen keine Aufgaben zugewiesen.",
       "echeance": "Frist: {date}",
+      "sansEcheance": "Kein Ablaufdatum",
       "startWork": "Fang an",
       "markComplete": "Als abgeschlossen markieren",
       "history": "Abgeschlossen",

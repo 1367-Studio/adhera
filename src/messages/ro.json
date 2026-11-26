@@ -882,7 +882,10 @@
     "mesTaches": {
       "title": "Sarcinile mele",
       "empty": "Fără sarcini deschise",
-      "openCount": "{count, plural, one {Deschide sarcina} other {Sarcini deschise}}",
+      "openCount": "{count, plural, one {# Deschide sarcina} other {# Sarcini deschise}}",
+      "today": "Astăzi",
+      "emptyToday": "Nicio activitate planificată astăzi",
+      "seeMoreToday": "Vezi {count} sarcini zilnice",
       "viewAll": "Vezi sarcinile mele"
     },
     "charts": {
@@ -4523,8 +4526,12 @@
       "filterStatut": "Statut",
       "filterEcheance": "Termen limită",
       "filterEcheanceUpcoming": "În curând",
-      "filterEcheanceOverdue": "Târziu",
+      "resetFilters": "Resetează",
       "empty": "Nicio sarcină deocamdată.",
+      "emptyFiltered": "Nicio sarcină nu corespunde acestor filtre.",
+      "stats": {
+        "echeanceSous7Jours": "Scadență în termen de 7 zile"
+      },
       "columns": {
         "tache": "Sarcina",
         "attribueeA": "Acordat către",
@@ -4533,7 +4540,8 @@
       },
       "toasts": {
         "created": "Sarcină creată",
-        "updated": "Sarcina actualizată"
+        "updated": "Sarcina actualizată",
+        "tacheIntrouvable": "Sarcina nu a fost găsită"
       }
     },
     "status": {
@@ -4548,6 +4556,7 @@
       "attribueeA": "Acordat către",
       "nonAttribuee": "Neacordat",
       "echeance": "Termen limită",
+      "sansEcheance": "Fără dată de expirare",
       "rappels": "Reamintiri",
       "reminderBefore": "{count, plural, one {# zi înainte} other {# zile înainte}}",
       "reminderAfter": "{count, plural, one {# zi după} other {# zile mai târziu}}",
@@ -4555,10 +4564,15 @@
       "completedByOn": "Încheiat de {name}{date}",
       "completedOn": "Finalizat la {date}",
       "markComplete": "Marcați ca finalizat",
+      "statutLabel": "Starea sarcinii",
+      "completeConfirmTitle": "Marcați această sarcină ca fiind finalizată?",
+      "completeConfirmDescription": "Îl poți redeschide mai târziu dacă este nevoie.",
+      "completeConfirmDescriptionShared": "Va fi marcat ca finalizat pentru toți membrii atribuiți. Îl puteți redeschide mai târziu, dacă este nevoie.",
       "deleteConfirmTitle": "Să șterg această sarcină?",
       "deleteConfirmDescription": "Această acțiune este ireversibilă.",
       "toasts": {
         "completed": "Sarcina marcată ca finalizată",
+        "statusUpdated": "Starea actualizată",
         "deleted": "Sarcina a fost ștearsă"
       }
     },
@@ -4569,6 +4583,17 @@
       "noCategorie": "Fără categorie",
       "newCategoriePlaceholder": "Numele categoriei",
       "newCategorie": "+ Categorie nouă",
+      "manageCategories": {
+        "trigger": "Gestionează categoriile",
+        "title": "Categorii",
+        "empty": "Nu există categorie deocamdată.",
+        "archiveConfirmTitle": "Să eliminăm această categorie?",
+        "archiveConfirmDescription": "Sarcinile deja clasificate în această categorie o vor păstra în istoricul lor, dar va dispărea din listă pentru sarcini noi.",
+        "toasts": {
+          "renamed": "Categorie renumită",
+          "archived": "Categorie ștearsă"
+        }
+      },
       "attribueeA": "Acordat către",
       "searchMemberPlaceholder": "Căutați un membru...",
       "loading": "Se încarcă...",
@@ -4576,7 +4601,9 @@
       "nonAttribuee": "Neacordat",
       "selectedCount": "{count, plural, one {# membru selectat} other {# membri selectați}}",
       "echeance": "Termen limită",
+      "echeanceHint": "Opțional — sarcina rămâne vizibilă în listă fără o dată limită.",
       "rappels": "Reamintiri",
+      "rappelsNeedEcheance": "Stabilește un termen limită pentru a putea configura un memento.",
       "noRappels": "Nicio reamintire configurată.",
       "rappelOffset": "Zile",
       "rappelDirection": "Când",
@@ -4597,6 +4624,7 @@
       "subtitle": "Sarcinile care ți-au fost atribuite.",
       "empty": "În acest moment nu ți-au fost atribuite sarcini.",
       "echeance": "Termen limită: {date}",
+      "sansEcheance": "Fără dată de expirare",
       "startWork": "Începeți",
       "markComplete": "Marcați ca finalizat",
       "history": "Finalizat",

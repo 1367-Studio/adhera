@@ -882,7 +882,10 @@
     "mesTaches": {
       "title": "Feladataim",
       "empty": "Nincsenek nyitott feladatok",
-      "openCount": "{count, plural, one {megnyitott feladat} other {Megnyitott feladatok}}",
+      "openCount": "{count, plural, one {# megnyitott feladat} other {# Megnyitott feladatok}}",
+      "today": "Napjainkban",
+      "emptyToday": "Ma nincs tervezett feladat",
+      "seeMoreToday": "Lásd a {count} napi feladatok",
       "viewAll": "Tekintse meg a feladataimat"
     },
     "charts": {
@@ -4523,8 +4526,12 @@
       "filterStatut": "Állapot",
       "filterEcheance": "Határidő",
       "filterEcheanceUpcoming": "Hamarosan",
-      "filterEcheanceOverdue": "Késő",
+      "resetFilters": "Visszaállítás",
       "empty": "Jelenleg nincs feladat.",
+      "emptyFiltered": "Nincs feladat, amely ezekhez a szűrőkhöz egyezik.",
+      "stats": {
+        "echeanceSous7Jours": "Lejárat 7 napon belül"
+      },
       "columns": {
         "tache": "Feladat",
         "attribueeA": "Odaítélve",
@@ -4533,7 +4540,8 @@
       },
       "toasts": {
         "created": "Feladat létrehozva",
-        "updated": "Feladat frissítve"
+        "updated": "Feladat frissítve",
+        "tacheIntrouvable": "Feladat nem található"
       }
     },
     "status": {
@@ -4548,6 +4556,7 @@
       "attribueeA": "Odaítélve",
       "nonAttribuee": "Díj nélküli",
       "echeance": "Határidő",
+      "sansEcheance": "Nincs lejárati dátum",
       "rappels": "Emlékeztetők",
       "reminderBefore": "{count, plural, one {# előző nap} other {# nappal előtte}}",
       "reminderAfter": "{count, plural, one {# másnapos} other {# nappal később}}",
@@ -4555,10 +4564,15 @@
       "completedByOn": "Befejező: {name} a {date}",
       "completedOn": "Befejezve: {date}",
       "markComplete": "Befejezettként jelölje meg",
+      "statutLabel": "Feladat állapota",
+      "completeConfirmTitle": "Megjelöli ezt a feladatot befejezettnek?",
+      "completeConfirmDescription": "Később újra megnyithatod, ha szükséges.",
+      "completeConfirmDescriptionShared": "Minden kijelölt tag számára befejezettként lesz megjelölve. Szükség esetén később újra megnyithatja.",
       "deleteConfirmTitle": "Törölni ezt a feladatot?",
       "deleteConfirmDescription": "Ez a cselekedet visszafordíthatatlan.",
       "toasts": {
         "completed": "Feladat befejezettként megjelölve",
+        "statusUpdated": "Állapot frissítve",
         "deleted": "Feladat törölve"
       }
     },
@@ -4569,6 +4583,17 @@
       "noCategorie": "Nincs kategória",
       "newCategoriePlaceholder": "Kategória neve",
       "newCategorie": "+ Új kategória",
+      "manageCategories": {
+        "trigger": "Kategóriák kezelése",
+        "title": "Kategóriák",
+        "empty": "Jelenleg nincs kategória.",
+        "archiveConfirmTitle": "Eltávolítani ezt a kategóriát?",
+        "archiveConfirmDescription": "A már ebben a kategóriában besorolt feladatok megőrzik a történetükben, de az új feladatok listájából eltűnik.",
+        "toasts": {
+          "renamed": "Híres kategória",
+          "archived": "Törölt kategória"
+        }
+      },
       "attribueeA": "Odaítélve",
       "searchMemberPlaceholder": "Keress tagot...",
       "loading": "Betöltés...",
@@ -4576,7 +4601,9 @@
       "nonAttribuee": "Díj nélküli",
       "selectedCount": "{count, plural, one {# kiválasztott tag} other {# kiválasztott tagok}}",
       "echeance": "Határidő",
+      "echeanceHint": "Opcionális — a feladat a listában marad határidő nélkül.",
       "rappels": "Emlékeztetők",
+      "rappelsNeedEcheance": "Állíts be határidőt, hogy be tudj állítani egy emlékeztetőt.",
       "noRappels": "Nincs beállított emlékeztető.",
       "rappelOffset": "Napok",
       "rappelDirection": "Amikor",
@@ -4597,6 +4624,7 @@
       "subtitle": "A rád bízott feladatok.",
       "empty": "Jelenleg nem kaptál feladatot.",
       "echeance": "Határidő: {date}",
+      "sansEcheance": "Nincs lejárati dátum",
       "startWork": "Kezdj el",
       "markComplete": "Befejezettként jelölje meg",
       "history": "Befejezve",

@@ -882,7 +882,10 @@
     "mesTaches": {
       "title": "Mina uppgifter",
       "empty": "Inga öppna uppgifter",
-      "openCount": "{count, plural, one {Öppen uppgift} other {Öppna uppgifter}}",
+      "openCount": "{count, plural, one {# Öppen uppgift} other {# Öppna uppgifter}}",
+      "today": "Idag",
+      "emptyToday": "Inga uppgifter planerade idag",
+      "seeMoreToday": "Se {count} Dagliga uppgifter",
       "viewAll": "Se mina uppgifter"
     },
     "charts": {
@@ -4523,8 +4526,12 @@
       "filterStatut": "Status",
       "filterEcheance": "Deadline",
       "filterEcheanceUpcoming": "Kommer snart",
-      "filterEcheanceOverdue": "Sent",
+      "resetFilters": "Återställ",
       "empty": "Inga uppgifter just nu.",
+      "emptyFiltered": "Ingen uppgift matchar dessa filter.",
+      "stats": {
+        "echeanceSous7Jours": "Löptid inom 7 dagar"
+      },
       "columns": {
         "tache": "Uppgift",
         "attribueeA": "Tilldelad till",
@@ -4533,7 +4540,8 @@
       },
       "toasts": {
         "created": "Uppgift skapad",
-        "updated": "Uppgift uppdaterad"
+        "updated": "Uppgift uppdaterad",
+        "tacheIntrouvable": "Uppgift hittades inte"
       }
     },
     "status": {
@@ -4548,6 +4556,7 @@
       "attribueeA": "Tilldelad till",
       "nonAttribuee": "Otilldelad",
       "echeance": "Deadline",
+      "sansEcheance": "Inget utgångsdatum",
       "rappels": "Påminnelser",
       "reminderBefore": "{count, plural, one {# dagen innan} other {# dagar innan}}",
       "reminderAfter": "{count, plural, one {# dagen efter} other {# dagar senare}}",
@@ -4555,10 +4564,15 @@
       "completedByOn": "Avslutad med {name} den {date}",
       "completedOn": "Färdigställd den {date}",
       "markComplete": "Markera som slutförd",
+      "statutLabel": "Uppgiftsstatus",
+      "completeConfirmTitle": "Markera denna uppgift som slutförd?",
+      "completeConfirmDescription": "Du kan öppna den igen senare om det behövs.",
+      "completeConfirmDescriptionShared": "Den kommer att markeras som slutförd för alla tilldelade medlemmar. Du kan öppna den igen senare om det behövs.",
       "deleteConfirmTitle": "Ta bort den här uppgiften?",
       "deleteConfirmDescription": "Denna handling är oåterkallelig.",
       "toasts": {
         "completed": "Uppgift markerad som slutförd",
+        "statusUpdated": "Status uppdaterad",
         "deleted": "Uppgift borttagen"
       }
     },
@@ -4569,6 +4583,17 @@
       "noCategorie": "Ingen kategori",
       "newCategoriePlaceholder": "Kategorinamn",
       "newCategorie": "+ Ny kategori",
+      "manageCategories": {
+        "trigger": "Hantera kategorier",
+        "title": "Kategorier",
+        "empty": "Ingen kategori just nu.",
+        "archiveConfirmTitle": "Ta bort denna kategori?",
+        "archiveConfirmDescription": "Uppgifter som redan är klassificerade i denna kategori behåller den i sin historik, men den försvinner från listan för nya uppgifter.",
+        "toasts": {
+          "renamed": "Välkänd kategori",
+          "archived": "Borttagen kategori"
+        }
+      },
       "attribueeA": "Tilldelad till",
       "searchMemberPlaceholder": "Sök efter en medlem...",
       "loading": "Laddar...",
@@ -4576,7 +4601,9 @@
       "nonAttribuee": "Otilldelad",
       "selectedCount": "{count, plural, one {# utvald medlem} other {# utvalda medlemmar}}",
       "echeance": "Deadline",
+      "echeanceHint": "Valfritt — uppgiften förblir synlig i listan utan något förfallodatum.",
       "rappels": "Påminnelser",
+      "rappelsNeedEcheance": "Sätt en deadline för att kunna sätta in en påminnelse.",
       "noRappels": "Ingen påminnelse konfigurerad.",
       "rappelOffset": "Dagar",
       "rappelDirection": "När",
@@ -4597,6 +4624,7 @@
       "subtitle": "De uppgifter som tilldelats dig.",
       "empty": "Inga uppgifter har tilldelats dig för tillfället.",
       "echeance": "Deadline: {date}",
+      "sansEcheance": "Inget utgångsdatum",
       "startWork": "Kom igång",
       "markComplete": "Markera som slutförd",
       "history": "Färdigställt",

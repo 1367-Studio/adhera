@@ -882,7 +882,10 @@
     "mesTaches": {
       "title": "Moje naloge",
       "empty": "Brez odprtih nalog",
-      "openCount": "{count, plural, one {odprta naloga} other {Odprte naloge}}",
+      "openCount": "{count, plural, one {# odprta naloga} other {# Odprte naloge}}",
+      "today": "Danes",
+      "emptyToday": "Danes ni načrtovanih nobenih nalog",
+      "seeMoreToday": "Oglejte si {count} dnevna opravila",
       "viewAll": "Oglejte si moje naloge"
     },
     "charts": {
@@ -4523,8 +4526,12 @@
       "filterStatut": "Status",
       "filterEcheance": "Rok",
       "filterEcheanceUpcoming": "Kmalu na voljo",
-      "filterEcheanceOverdue": "Pozni",
+      "resetFilters": "Ponastavi",
       "empty": "Trenutno ni nobenih nalog.",
+      "emptyFiltered": "Nobena naloga ne ustreza tem filtrom.",
+      "stats": {
+        "echeanceSous7Jours": "Zapadlost v 7 dneh"
+      },
       "columns": {
         "tache": "Naloga",
         "attribueeA": "Podeljeno",
@@ -4533,7 +4540,8 @@
       },
       "toasts": {
         "created": "Naloga ustvarjena",
-        "updated": "Naloga posodobljena"
+        "updated": "Naloga posodobljena",
+        "tacheIntrouvable": "Naloga ni najdena"
       }
     },
     "status": {
@@ -4548,6 +4556,7 @@
       "attribueeA": "Podeljeno",
       "nonAttribuee": "Nenagrajeno",
       "echeance": "Rok",
+      "sansEcheance": "Brez datuma poteka",
       "rappels": "Opomniki",
       "reminderBefore": "{count, plural, one {# dan prej} other {# dni prej}}",
       "reminderAfter": "{count, plural, one {# dan kasneje} other {# dni kasneje}}",
@@ -4555,10 +4564,15 @@
       "completedByOn": "Zaključeno z {name}{date}",
       "completedOn": "Dokončano dne {date}",
       "markComplete": "Označi kot dokončano",
+      "statutLabel": "Status naloge",
+      "completeConfirmTitle": "Označiti to nalogo kot opravljeno?",
+      "completeConfirmDescription": "Če bo potrebno, jo lahko kasneje ponovno odprete.",
+      "completeConfirmDescriptionShared": "Za vse dodeljene člane bo označen kot zaključen. Po potrebi ga lahko kasneje ponovno odprete.",
       "deleteConfirmTitle": "Izbrisati to nalogo?",
       "deleteConfirmDescription": "To dejanje je nepovratno.",
       "toasts": {
         "completed": "Naloga označena kot zaključena",
+        "statusUpdated": "Status posodobljen",
         "deleted": "Naloga izbrisana"
       }
     },
@@ -4569,6 +4583,17 @@
       "noCategorie": "Brez kategorije",
       "newCategoriePlaceholder": "Ime kategorije",
       "newCategorie": "+ Nova kategorija",
+      "manageCategories": {
+        "trigger": "Upravljanje kategorij",
+        "title": "Kategorije",
+        "empty": "Trenutno ni kategorije.",
+        "archiveConfirmTitle": "Odstranite to kategorijo?",
+        "archiveConfirmDescription": "Naloge, ki so že uvrščene v to kategorijo, jo bodo obdržale v svoji zgodovini, vendar bo za nove naloge izginila s seznama.",
+        "toasts": {
+          "renamed": "Priznana kategorija",
+          "archived": "Izbrisana kategorija"
+        }
+      },
       "attribueeA": "Podeljeno",
       "searchMemberPlaceholder": "Išči člana...",
       "loading": "Nalaganje...",
@@ -4576,7 +4601,9 @@
       "nonAttribuee": "Nenagrajeno",
       "selectedCount": "{count, plural, one {# izbrani član} other {# izbranih članov}}",
       "echeance": "Rok",
+      "echeanceHint": "Neobvezno — naloga ostane vidna na seznamu brez roka.",
       "rappels": "Opomniki",
+      "rappelsNeedEcheance": "Določite rok, da lahko nastavite opomnik.",
       "noRappels": "Opomnik ni nastavljen.",
       "rappelOffset": "Dnevi",
       "rappelDirection": "Ko",
@@ -4597,6 +4624,7 @@
       "subtitle": "Naloge, ki so vam dodeljene.",
       "empty": "Trenutno vam niso dodeljene nobene naloge.",
       "echeance": "Rok: {date}",
+      "sansEcheance": "Brez datuma poteka",
       "startWork": "Začnite",
       "markComplete": "Označi kot dokončano",
       "history": "Zaključeno",

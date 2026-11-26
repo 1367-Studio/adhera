@@ -882,7 +882,10 @@
     "mesTaches": {
       "title": "Mani uzdevumi",
       "empty": "Nav atvērtu uzdevumu",
-      "openCount": "{count, plural, one {Atvērts uzdevums} other {Atvērtie uzdevumi}}",
+      "openCount": "{count, plural, one {# Atvērts uzdevums} other {# Atvērtie uzdevumi}}",
+      "today": "Mūsdienās",
+      "emptyToday": "Šodien nav plānoti uzdevumi",
+      "seeMoreToday": "Skatīt {count} Ikdienas uzdevumi",
       "viewAll": "Skatīt manus uzdevumus"
     },
     "charts": {
@@ -4523,8 +4526,12 @@
       "filterStatut": "Statuss",
       "filterEcheance": "Deadline",
       "filterEcheanceUpcoming": "Drīzumā",
-      "filterEcheanceOverdue": "Vēlu",
+      "resetFilters": "Atiestatīt",
       "empty": "Pašlaik nav uzdevumu.",
+      "emptyFiltered": "Neviens uzdevums neatbilst šiem filtriem.",
+      "stats": {
+        "echeanceSous7Jours": "Briedums 7 dienu laikā"
+      },
       "columns": {
         "tache": "Uzdevums",
         "attribueeA": "Piešķirts",
@@ -4533,7 +4540,8 @@
       },
       "toasts": {
         "created": "Izveidots uzdevums",
-        "updated": "Uzdevums atjaunināts"
+        "updated": "Uzdevums atjaunināts",
+        "tacheIntrouvable": "Uzdevums nav atrasts"
       }
     },
     "status": {
@@ -4548,6 +4556,7 @@
       "attribueeA": "Piešķirts",
       "nonAttribuee": "Nepiešķirts",
       "echeance": "Deadline",
+      "sansEcheance": "Nav derīguma termiņa",
       "rappels": "Atgādinājumi",
       "reminderBefore": "{count, plural, one {# dienu pirms tam} other {# dienas pirms}}",
       "reminderAfter": "{count, plural, one {# dienu pēc tam} other {# dienas vēlāk}}",
@@ -4555,10 +4564,15 @@
       "completedByOn": "Beidza ar {name} the {date}",
       "completedOn": "Pabeigts {date}",
       "markComplete": "Atzīmēt kā pabeigtu",
+      "statutLabel": "Uzdevuma statuss",
+      "completeConfirmTitle": "Atzīmēt šo uzdevumu kā izpildītu?",
+      "completeConfirmDescription": "Ja vajadzēs, varēsiet to atvērt vēlāk.",
+      "completeConfirmDescriptionShared": "Tas tiks atzīmēts kā pabeigts visiem piešķirtajiem biedriem. Ja vajadzēs, to varēsiet atvērt vēlāk.",
       "deleteConfirmTitle": "Dzēst šo uzdevumu?",
       "deleteConfirmDescription": "Šī rīcība ir neatgriezeniska.",
       "toasts": {
         "completed": "Uzdevums atzīmēts kā izpildīts",
+        "statusUpdated": "Statuss atjaunināts",
         "deleted": "Uzdevums dzēsts"
       }
     },
@@ -4569,6 +4583,17 @@
       "noCategorie": "Nav kategorijas",
       "newCategoriePlaceholder": "Kategorijas nosaukums",
       "newCategorie": "+ Jauna kategorija",
+      "manageCategories": {
+        "trigger": "Pārvaldīt kategorijas",
+        "title": "Kategorijas",
+        "empty": "Pašlaik nav kategorijas.",
+        "archiveConfirmTitle": "Noņemt šo kategoriju?",
+        "archiveConfirmDescription": "Uzdevumi, kas jau klasificēti šajā kategorijā, saglabās to savā vēsturē, bet tas pazudīs no jauno uzdevumu saraksta.",
+        "toasts": {
+          "renamed": "Slavena kategorija",
+          "archived": "Dzēstā kategorija"
+        }
+      },
       "attribueeA": "Piešķirts",
       "searchMemberPlaceholder": "Meklēt biedru...",
       "loading": "Ielādē...",
@@ -4576,7 +4601,9 @@
       "nonAttribuee": "Nepiešķirts",
       "selectedCount": "{count, plural, one {# izvēlētais loceklis} other {# izvēlētie biedri}}",
       "echeance": "Deadline",
+      "echeanceHint": "Pēc izvēles — uzdevums paliek redzams sarakstā bez termiņa.",
       "rappels": "Atgādinājumi",
+      "rappelsNeedEcheance": "Nosakiet termiņu, lai varētu iestatīt atgādinājumu.",
       "noRappels": "Neviens atgādinājums nav konfigurēts.",
       "rappelOffset": "Dienas",
       "rappelDirection": "Kad",
@@ -4597,6 +4624,7 @@
       "subtitle": "Uzdevumi, kas tev piešķirti.",
       "empty": "Pašlaik tev nav piešķirti uzdevumi.",
       "echeance": "Termiņš: {date}",
+      "sansEcheance": "Nav derīguma termiņa",
       "startWork": "Sāc",
       "markComplete": "Atzīmēt kā pabeigtu",
       "history": "Pabeigts",

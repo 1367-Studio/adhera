@@ -882,7 +882,10 @@
     "mesTaches": {
       "title": "Mine opgaver",
       "empty": "Ingen åbne opgaver",
-      "openCount": "{count, plural, one {åben opgave} other {Åbne opgaver}}",
+      "openCount": "{count, plural, one {# åben opgave} other {# Åbne opgaver}}",
+      "today": "I dag",
+      "emptyToday": "Ingen planlagte opgaver i dag",
+      "seeMoreToday": "Se {count} Daglige opgaver",
       "viewAll": "Se mine opgaver"
     },
     "charts": {
@@ -4523,8 +4526,12 @@
       "filterStatut": "Status",
       "filterEcheance": "Deadline",
       "filterEcheanceUpcoming": "Kommer snart",
-      "filterEcheanceOverdue": "Sen",
+      "resetFilters": "Nulstil",
       "empty": "Ingen opgaver lige nu.",
+      "emptyFiltered": "Ingen opgave matcher disse filtre.",
+      "stats": {
+        "echeanceSous7Jours": "Udløb inden for 7 dage"
+      },
       "columns": {
         "tache": "Opgave",
         "attribueeA": "Tildelt til",
@@ -4533,7 +4540,8 @@
       },
       "toasts": {
         "created": "Opgave oprettet",
-        "updated": "Opgave opdateret"
+        "updated": "Opgave opdateret",
+        "tacheIntrouvable": "Opgave ikke fundet"
       }
     },
     "status": {
@@ -4548,6 +4556,7 @@
       "attribueeA": "Tildelt til",
       "nonAttribuee": "Ikke tildelt",
       "echeance": "Deadline",
+      "sansEcheance": "Ingen udløbsdato",
       "rappels": "Påmindelser",
       "reminderBefore": "{count, plural, one {# dagen før} other {# dage før}}",
       "reminderAfter": "{count, plural, one {# dagen efter} other {# dage senere}}",
@@ -4555,10 +4564,15 @@
       "completedByOn": "Afsluttet med {name} Den {date}",
       "completedOn": "Færdiggjort den {date}",
       "markComplete": "Markér som færdig",
+      "statutLabel": "Opgavestatus",
+      "completeConfirmTitle": "Markere denne opgave som fuldført?",
+      "completeConfirmDescription": "Du kan åbne den igen senere, hvis det er nødvendigt.",
+      "completeConfirmDescriptionShared": "Den vil blive markeret som fuldført for alle tildelte medlemmer. Du kan genåbne den senere, hvis det er nødvendigt.",
       "deleteConfirmTitle": "Slette denne opgave?",
       "deleteConfirmDescription": "Denne handling er irreversibel.",
       "toasts": {
         "completed": "Opgave markeret som fuldført",
+        "statusUpdated": "Status opdateret",
         "deleted": "Opgave slettet"
       }
     },
@@ -4569,6 +4583,17 @@
       "noCategorie": "Ingen kategori",
       "newCategoriePlaceholder": "Kategorinavn",
       "newCategorie": "+ Ny kategori",
+      "manageCategories": {
+        "trigger": "Administrer kategorier",
+        "title": "Kategorier",
+        "empty": "Ingen kategori lige nu.",
+        "archiveConfirmTitle": "Fjern denne kategori?",
+        "archiveConfirmDescription": "Opgaver, der allerede er klassificeret i denne kategori, beholder den i deres historik, men den forsvinder fra listen for nye opgaver.",
+        "toasts": {
+          "renamed": "Anerkendt kategori",
+          "archived": "Slettet kategori"
+        }
+      },
       "attribueeA": "Tildelt til",
       "searchMemberPlaceholder": "Søg efter et medlem...",
       "loading": "Indlæser...",
@@ -4576,7 +4601,9 @@
       "nonAttribuee": "Ikke tildelt",
       "selectedCount": "{count, plural, one {# udvalgt medlem} other {# udvalgte medlemmer}}",
       "echeance": "Deadline",
+      "echeanceHint": "Valgfrit — opgaven forbliver synlig i listen uden en deadline.",
       "rappels": "Påmindelser",
+      "rappelsNeedEcheance": "Sæt en deadline for at kunne sætte en påmindelse op.",
       "noRappels": "Ingen påmindelse konfigureret.",
       "rappelOffset": "Dage",
       "rappelDirection": "Hvornår",
@@ -4597,6 +4624,7 @@
       "subtitle": "De opgaver, der er tildelt dig.",
       "empty": "Der er ikke tildelt dig nogen opgaver i øjeblikket.",
       "echeance": "Deadline: {date}",
+      "sansEcheance": "Ingen udløbsdato",
       "startWork": "Kom i gang",
       "markComplete": "Markér som færdig",
       "history": "Færdiggjort",

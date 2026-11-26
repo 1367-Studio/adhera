@@ -882,7 +882,10 @@
     "mesTaches": {
       "title": "Mano užduotys",
       "empty": "Jokių atvirų užduočių",
-      "openCount": "{count, plural, one {Atvira užduotis} other {Atviros užduotys}}",
+      "openCount": "{count, plural, one {# Atvira užduotis} other {# Atviros užduotys}}",
+      "today": "Šiandien",
+      "emptyToday": "Šiandien jokių užduočių neplanuojama",
+      "seeMoreToday": "Žr. {count} Kasdienės užduotys",
       "viewAll": "Žiūrėkite mano užduotis"
     },
     "charts": {
@@ -4523,8 +4526,12 @@
       "filterStatut": "Statusas",
       "filterEcheance": "Terminas",
       "filterEcheanceUpcoming": "Greitai grįšiu",
-      "filterEcheanceOverdue": "Vėluoju",
+      "resetFilters": "Atstatymas",
       "empty": "Šiuo metu jokių užduočių.",
+      "emptyFiltered": "Nė viena užduotis neatitinka šių filtrų.",
+      "stats": {
+        "echeanceSous7Jours": "Branda per 7 dienas"
+      },
       "columns": {
         "tache": "Užduotis",
         "attribueeA": "Suteikta",
@@ -4533,7 +4540,8 @@
       },
       "toasts": {
         "created": "Sukurta užduotis",
-        "updated": "Užduotis atnaujinta"
+        "updated": "Užduotis atnaujinta",
+        "tacheIntrouvable": "Užduotis nerasta"
       }
     },
     "status": {
@@ -4548,6 +4556,7 @@
       "attribueeA": "Suteikta",
       "nonAttribuee": "Neįteikta",
       "echeance": "Terminas",
+      "sansEcheance": "Nėra galiojimo pabaigos datos",
       "rappels": "Priminimai",
       "reminderBefore": "{count, plural, one {# diena prieš} other {# dienos prieš}}",
       "reminderAfter": "{count, plural, one {# dieną po to} other {# dienų vėliau}}",
@@ -4555,10 +4564,15 @@
       "completedByOn": "Baigėsi {name} The {date}",
       "completedOn": "Baigta {date}",
       "markComplete": "Pažymėti kaip užbaigtą",
+      "statutLabel": "Užduoties statusas",
+      "completeConfirmTitle": "Pažymėti šią užduotį kaip atliktą?",
+      "completeConfirmDescription": "Jei reikės, vėliau galėsite jį vėl atidaryti.",
+      "completeConfirmDescriptionShared": "Jis bus pažymėtas kaip užbaigtas visiems paskirtiems nariams. Jei reikės, galėsite jį atidaryti vėliau.",
       "deleteConfirmTitle": "Ištrinti šią užduotį?",
       "deleteConfirmDescription": "Šis veiksmas yra negrįžtamas.",
       "toasts": {
         "completed": "Užduotis pažymėta kaip įvykdyta",
+        "statusUpdated": "Statusas atnaujintas",
         "deleted": "Užduotis ištrinta"
       }
     },
@@ -4569,6 +4583,17 @@
       "noCategorie": "Nėra kategorijos",
       "newCategoriePlaceholder": "Kategorijos pavadinimas",
       "newCategorie": "+ Nauja kategorija",
+      "manageCategories": {
+        "trigger": "Valdyti kategorijas",
+        "title": "Kategorijos",
+        "empty": "Šiuo metu nėra kategorijos.",
+        "archiveConfirmTitle": "Pašalinti šią kategoriją?",
+        "archiveConfirmDescription": "Užduotys, jau priskirtos šiai kategorijai, ją išsaugos savo istorijoje, tačiau naujų užduočių sąraše ji išnyks.",
+        "toasts": {
+          "renamed": "Garsi kategorija",
+          "archived": "Ištrinta kategorija"
+        }
+      },
       "attribueeA": "Suteikta",
       "searchMemberPlaceholder": "Ieškok nario...",
       "loading": "Kraunama...",
@@ -4576,7 +4601,9 @@
       "nonAttribuee": "Neįteikta",
       "selectedCount": "{count, plural, one {# išrinktas narys} other {# atrinkti nariai}}",
       "echeance": "Terminas",
+      "echeanceHint": "Pasirenkama — užduotis lieka matoma sąraše be termino.",
       "rappels": "Priminimai",
+      "rappelsNeedEcheance": "Nustatykite terminą, kad galėtumėte nustatyti priminimą.",
       "noRappels": "Jokio priminimo nebuvo.",
       "rappelOffset": "Dienos",
       "rappelDirection": "Kada",
@@ -4597,6 +4624,7 @@
       "subtitle": "Tau paskirtos užduotys.",
       "empty": "Šiuo metu jums nėra paskirta jokių užduočių.",
       "echeance": "Terminas: {date}",
+      "sansEcheance": "Nėra galiojimo pabaigos datos",
       "startWork": "Pradėk",
       "markComplete": "Pažymėti kaip užbaigtą",
       "history": "Baigta",

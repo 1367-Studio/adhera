@@ -882,7 +882,10 @@
     "mesTaches": {
       "title": "Mo thascanna",
       "empty": "Gan tascanna oscailte",
-      "openCount": "{count, plural, one {Tasc oscailte} other {Tascanna oscailte}}",
+      "openCount": "{count, plural, one {# Tasc oscailte} other {# Tascanna oscailte}}",
+      "today": "Inniu",
+      "emptyToday": "Níl aon tascanna pleanáilte inniu",
+      "seeMoreToday": "Féach ar an {count} tascanna laethúla",
       "viewAll": "Féach ar mo thascanna"
     },
     "charts": {
@@ -4523,8 +4526,12 @@
       "filterStatut": "Stádas",
       "filterEcheance": "Spriocdháta",
       "filterEcheanceUpcoming": "Ag teacht go luath",
-      "filterEcheanceOverdue": "Déanach",
+      "resetFilters": "Athshocraigh",
       "empty": "Níl aon tascanna ann faoi láthair.",
+      "emptyFiltered": "Ní mheaitseálann aon tasc na scagairí seo.",
+      "stats": {
+        "echeanceSous7Jours": "Aibíocht laistigh de 7 lá"
+      },
       "columns": {
         "tache": "Tasc",
         "attribueeA": "Bronnta ar",
@@ -4533,7 +4540,8 @@
       },
       "toasts": {
         "created": "Tasc cruthaithe",
-        "updated": "Tasc nuashonraithe"
+        "updated": "Tasc nuashonraithe",
+        "tacheIntrouvable": "Níor aimsíodh an tasc"
       }
     },
     "status": {
@@ -4548,6 +4556,7 @@
       "attribueeA": "Bronnta ar",
       "nonAttribuee": "Gan bronnadh",
       "echeance": "Spriocdháta",
+      "sansEcheance": "Gan dáta éaga",
       "rappels": "Meabhrúcháin",
       "reminderBefore": "{count, plural, one {# lá roimhe sin} other {# lá roimhe sin}}",
       "reminderAfter": "{count, plural, one {# lá ina dhiaidh sin} other {# lá ina dhiaidh sin}}",
@@ -4555,10 +4564,15 @@
       "completedByOn": "Críochnaithe le {name} an {date}",
       "completedOn": "Críochnaithe ar {date}",
       "markComplete": "Marcáil mar chríochnaithe",
+      "statutLabel": "Stádas an tasc",
+      "completeConfirmTitle": "An marcáil an tasc seo mar chríochnaithe?",
+      "completeConfirmDescription": "Is féidir leat é a oscailt arís níos déanaí más gá.",
+      "completeConfirmDescriptionShared": "Marcálfar é mar chríochnaithe do gach ball sannta. Is féidir leat é a oscailt arís níos déanaí más gá.",
       "deleteConfirmTitle": "An tasc seo a scriosadh?",
       "deleteConfirmDescription": "Tá an gníomh seo do-aisiompaithe.",
       "toasts": {
         "completed": "Tasc marcáilte mar chríochnaithe",
+        "statusUpdated": "Stádas nuashonraithe",
         "deleted": "Tasc scriosta"
       }
     },
@@ -4569,6 +4583,17 @@
       "noCategorie": "Gan catagóir",
       "newCategoriePlaceholder": "Ainm na catagóire",
       "newCategorie": "+ Catagóir nua",
+      "manageCategories": {
+        "trigger": "Bainistigh catagóirí",
+        "title": "Catagóirí",
+        "empty": "Níl catagóir ann faoi láthair.",
+        "archiveConfirmTitle": "An chatagóir seo a bhaint?",
+        "archiveConfirmDescription": "Coinneoidh tascanna atá aicmithe cheana féin sa chatagóir seo ina stair é, ach imeoidh sé den liosta do thascanna nua.",
+        "toasts": {
+          "renamed": "Catagóir cháiliúil",
+          "archived": "Catagóir scriosta"
+        }
+      },
       "attribueeA": "Bronnta ar",
       "searchMemberPlaceholder": "Cuardaigh ball...",
       "loading": "Ag luchtú...",
@@ -4576,7 +4601,9 @@
       "nonAttribuee": "Gan bronnadh",
       "selectedCount": "{count, plural, one {# ball roghnaithe} other {# baill roghnaithe}}",
       "echeance": "Spriocdháta",
+      "echeanceHint": "Roghnach — fanann an tasc le feiceáil sa liosta gan dáta dlite.",
       "rappels": "Meabhrúcháin",
+      "rappelsNeedEcheance": "Socraigh spriocdháta chun meabhrúchán a chur ar bun.",
       "noRappels": "Níl aon mheabhrúchán cumraithe.",
       "rappelOffset": "Laethanta",
       "rappelDirection": "Cathain",
@@ -4597,6 +4624,7 @@
       "subtitle": "Na tascanna a shanntar duit.",
       "empty": "Níl aon tascanna sannta duit faoi láthair.",
       "echeance": "Spriocdháta: {date}",
+      "sansEcheance": "Gan dáta éaga",
       "startWork": "Tosaigh",
       "markComplete": "Marcáil mar chríochnaithe",
       "history": "Críochnaithe",

@@ -882,7 +882,10 @@
     "mesTaches": {
       "title": "As minhas tarefas",
       "empty": "Sem tarefas abertas",
-      "openCount": "{count, plural, one {tarefa aberta} other {Tarefas abertas}}",
+      "openCount": "{count, plural, one {# tarefa aberta} other {# Tarefas abertas}}",
+      "today": "Hoje",
+      "emptyToday": "Nenhuma tarefa planeada para hoje",
+      "seeMoreToday": "Veja o {count} Tarefas diárias",
       "viewAll": "Veja as minhas tarefas"
     },
     "charts": {
@@ -4573,8 +4576,12 @@
       "filterStatut": "Situação",
       "filterEcheance": "Prazo",
       "filterEcheanceUpcoming": "Em breve",
-      "filterEcheanceOverdue": "Tarde",
+      "resetFilters": "Reiniciar",
       "empty": "Sem tarefas neste momento.",
+      "emptyFiltered": "Nenhuma tarefa corresponde a estes filtros.",
+      "stats": {
+        "echeanceSous7Jours": "Maturidade dentro de 7 dias"
+      },
       "columns": {
         "tache": "Tarefa",
         "attribueeA": "Atribuído a",
@@ -4583,7 +4590,8 @@
       },
       "toasts": {
         "created": "Tarefa criada",
-        "updated": "Tarefa atualizada"
+        "updated": "Tarefa atualizada",
+        "tacheIntrouvable": "Tarefa não encontrada"
       }
     },
     "status": {
@@ -4598,6 +4606,7 @@
       "attribueeA": "Atribuído a",
       "nonAttribuee": "Não premiado",
       "echeance": "Prazo",
+      "sansEcheance": "Sem data de expiração",
       "rappels": "Lembretes",
       "reminderBefore": "{count, plural, one {# dia antes} other {# dias antes}}",
       "reminderAfter": "{count, plural, one {# dia depois} other {# dias depois}}",
@@ -4605,10 +4614,15 @@
       "completedByOn": "Terminado por {name} o {date}",
       "completedOn": "Concluído em {date}",
       "markComplete": "Assinala como concluído",
+      "statutLabel": "Estado da tarefa",
+      "completeConfirmTitle": "Marcar esta tarefa como concluída?",
+      "completeConfirmDescription": "Podes reabri-lo mais tarde, se for preciso.",
+      "completeConfirmDescriptionShared": "Será marcado como concluído para todos os membros atribuídos. Pode reabri-lo mais tarde, se necessário.",
       "deleteConfirmTitle": "Eliminar esta tarefa?",
       "deleteConfirmDescription": "Esta ação é irreversível.",
       "toasts": {
         "completed": "Tarefa marcada como concluída",
+        "statusUpdated": "Estado atualizado",
         "deleted": "Tarefa eliminada"
       }
     },
@@ -4619,6 +4633,17 @@
       "noCategorie": "Sem categoria",
       "newCategoriePlaceholder": "Nome da categoria",
       "newCategorie": "+ Nova categoria",
+      "manageCategories": {
+        "trigger": "Gerir categorias",
+        "title": "Categorias",
+        "empty": "Não há categoria neste momento.",
+        "archiveConfirmTitle": "Remover esta categoria?",
+        "archiveConfirmDescription": "As tarefas já classificadas nesta categoria mantêm-na no seu histórico, mas desaparecerá da lista para novas tarefas.",
+        "toasts": {
+          "renamed": "Categoria renomada",
+          "archived": "Categoria eliminada"
+        }
+      },
       "attribueeA": "Atribuído a",
       "searchMemberPlaceholder": "Procure um membro...",
       "loading": "A carregar...",
@@ -4626,7 +4651,9 @@
       "nonAttribuee": "Não premiado",
       "selectedCount": "{count, plural, one {# membro selecionado} other {# membros selecionados}}",
       "echeance": "Prazo",
+      "echeanceHint": "Opcional — a tarefa permanece visível na lista sem data de vencimento.",
       "rappels": "Lembretes",
+      "rappelsNeedEcheance": "Defina um prazo para poder configurar um lembrete.",
       "noRappels": "Nenhum lembrete configurado.",
       "rappelOffset": "Dias",
       "rappelDirection": "Quando",
@@ -4647,6 +4674,7 @@
       "subtitle": "As tarefas que lhe foram atribuídas.",
       "empty": "Nenhuma tarefa lhe foi atribuída neste momento.",
       "echeance": "Prazo: {date}",
+      "sansEcheance": "Sem data de expiração",
       "startWork": "Comece",
       "markComplete": "Assinala como concluído",
       "history": "Concluído",

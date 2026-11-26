@@ -882,7 +882,10 @@
     "mesTaches": {
       "title": "Moje zadania",
       "empty": "Brak otwartych zadań",
-      "openCount": "{count, plural, one {otwarte zadanie} other {Otwarte zadania}}",
+      "openCount": "{count, plural, one {# otwarte zadanie} other {# Otwarte zadania}}",
+      "today": "Dziś",
+      "emptyToday": "Dziś nie zaplanowano żadnych zadań",
+      "seeMoreToday": "Zobacz {count} codzienne zadania",
       "viewAll": "Zobacz moje zadania"
     },
     "charts": {
@@ -4523,8 +4526,12 @@
       "filterStatut": "Status",
       "filterEcheance": "Termin",
       "filterEcheanceUpcoming": "Wkrótce dostępne",
-      "filterEcheanceOverdue": "Późny",
+      "resetFilters": "Reset",
       "empty": "Na razie nie mam żadnych zadań.",
+      "emptyFiltered": "Żadne zadanie nie pasuje do tych filtrów.",
+      "stats": {
+        "echeanceSous7Jours": "Termin zapadalności w ciągu 7 dni"
+      },
       "columns": {
         "tache": "Zadanie",
         "attribueeA": "Przyznawane",
@@ -4533,7 +4540,8 @@
       },
       "toasts": {
         "created": "Zadanie utworzone",
-        "updated": "Zadanie zaktualizowane"
+        "updated": "Zadanie zaktualizowane",
+        "tacheIntrouvable": "Zadanie nie znaleziono"
       }
     },
     "status": {
@@ -4548,6 +4556,7 @@
       "attribueeA": "Przyznawane",
       "nonAttribuee": "Nieprzyznane",
       "echeance": "Termin",
+      "sansEcheance": "Brak daty ważności",
       "rappels": "Przypomnienia",
       "reminderBefore": "{count, plural, one {# dzień wcześniej} other {# dni wcześniej}}",
       "reminderAfter": "{count, plural, one {# dzień później} other {# dni później}}",
@@ -4555,10 +4564,15 @@
       "completedByOn": "Zakończone przez {name}{date}",
       "completedOn": "Zakończono dnia {date}",
       "markComplete": "Oznacz jako zakończone",
+      "statutLabel": "Status zadania",
+      "completeConfirmTitle": "Oznaczyć to zadanie jako zakończone?",
+      "completeConfirmDescription": "Możesz go później otworzyć, jeśli zajdzie taka potrzeba.",
+      "completeConfirmDescriptionShared": "Zostanie oznaczona jako zakończona dla wszystkich przypisanych członków. Możesz ją ponownie otworzyć później, jeśli zajdzie taka potrzeba.",
       "deleteConfirmTitle": "Usunąć to zadanie?",
       "deleteConfirmDescription": "To działanie jest nieodwracalne.",
       "toasts": {
         "completed": "Zadanie oznaczone jako zakończone",
+        "statusUpdated": "Status zaktualizowany",
         "deleted": "Zadanie usunięte"
       }
     },
@@ -4569,6 +4583,17 @@
       "noCategorie": "Brak kategorii",
       "newCategoriePlaceholder": "Nazwa kategorii",
       "newCategorie": "+ Nowa kategoria",
+      "manageCategories": {
+        "trigger": "Zarządzaj kategoriami",
+        "title": "Kategorie",
+        "empty": "Na razie nie ma kategorii.",
+        "archiveConfirmTitle": "Usunąć tę kategorię?",
+        "archiveConfirmDescription": "Zadania już sklasyfikowane w tej kategorii zachowają ją w historii, ale zniknie z listy dla nowych zadań.",
+        "toasts": {
+          "renamed": "Kategoria renomowana",
+          "archived": "Kategoria usunięta"
+        }
+      },
       "attribueeA": "Przyznawane",
       "searchMemberPlaceholder": "Wyszukaj członka...",
       "loading": "Ładowanie...",
@@ -4576,7 +4601,9 @@
       "nonAttribuee": "Nieprzyznane",
       "selectedCount": "{count, plural, one {# wybrany członek} other {# wybranych członków}}",
       "echeance": "Termin",
+      "echeanceHint": "Opcjonalne — zadanie pozostaje widoczne na liście bez daty realizacji.",
       "rappels": "Przypomnienia",
+      "rappelsNeedEcheance": "Ustal termin, aby móc ustawić przypomnienie.",
       "noRappels": "Nie skonfigurowano przypomnienia.",
       "rappelOffset": "Dni",
       "rappelDirection": "Kiedy",
@@ -4597,6 +4624,7 @@
       "subtitle": "Zadania ci przydzielone.",
       "empty": "Na razie nie przydzielono ci żadnych zadań.",
       "echeance": "Termin: {date}",
+      "sansEcheance": "Brak daty ważności",
       "startWork": "Rozpocznij",
       "markComplete": "Oznacz jako zakończone",
       "history": "Ukończone",

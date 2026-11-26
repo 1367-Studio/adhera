@@ -882,7 +882,10 @@
     "mesTaches": {
       "title": "Mijn taken",
       "empty": "Geen open taken",
-      "openCount": "{count, plural, one {Open taak} other {Open taken}}",
+      "openCount": "{count, plural, one {# Open taak} other {# Open taken}}",
+      "today": "Vandaag",
+      "emptyToday": "Geen taken gepland vandaag",
+      "seeMoreToday": "Zie de {count} dagelijkse taken",
       "viewAll": "Bekijk mijn taken"
     },
     "charts": {
@@ -4523,8 +4526,12 @@
       "filterStatut": "Status",
       "filterEcheance": "Deadline",
       "filterEcheanceUpcoming": "Binnenkort",
-      "filterEcheanceOverdue": "Late",
+      "resetFilters": "Reset",
       "empty": "Op dit moment geen taken.",
+      "emptyFiltered": "Geen enkele taak komt overeen met deze filters.",
+      "stats": {
+        "echeanceSous7Jours": "Rijpheid binnen 7 dagen"
+      },
       "columns": {
         "tache": "Taak",
         "attribueeA": "Toegekend aan",
@@ -4533,7 +4540,8 @@
       },
       "toasts": {
         "created": "Taak aangemaakt",
-        "updated": "Taak bijgewerkt"
+        "updated": "Taak bijgewerkt",
+        "tacheIntrouvable": "Taak niet gevonden"
       }
     },
     "status": {
@@ -4548,6 +4556,7 @@
       "attribueeA": "Toegekend aan",
       "nonAttribuee": "Niet toegekend",
       "echeance": "Deadline",
+      "sansEcheance": "Geen vervaldatum",
       "rappels": "Herinneringen",
       "reminderBefore": "{count, plural, one {# dag ervoor} other {# dagen ervoor}}",
       "reminderAfter": "{count, plural, one {# dag erna} other {# dagen later}}",
@@ -4555,10 +4564,15 @@
       "completedByOn": "Beëindigd door {name} de {date}",
       "completedOn": "Voltooid op {date}",
       "markComplete": "Markeer als voltooid",
+      "statutLabel": "Taakstatus",
+      "completeConfirmTitle": "Markeer deze taak als voltooid?",
+      "completeConfirmDescription": "Je kunt het later opnieuw openen indien nodig.",
+      "completeConfirmDescriptionShared": "Het wordt als voltooid gemarkeerd voor alle toegewezen leden. Je kunt het later opnieuw openen indien nodig.",
       "deleteConfirmTitle": "Deze taak verwijderen?",
       "deleteConfirmDescription": "Deze actie is onomkeerbaar.",
       "toasts": {
         "completed": "Taak als voltooid gemarkeerd",
+        "statusUpdated": "Status bijgewerkt",
         "deleted": "Taak verwijderd"
       }
     },
@@ -4569,6 +4583,17 @@
       "noCategorie": "Geen categorie",
       "newCategoriePlaceholder": "Categorienaam",
       "newCategorie": "+ Nieuwe categorie",
+      "manageCategories": {
+        "trigger": "Categorieën beheren",
+        "title": "Categorieën",
+        "empty": "Op dit moment geen categorie.",
+        "archiveConfirmTitle": "Deze categorie verwijderen?",
+        "archiveConfirmDescription": "Taken die al in deze categorie zijn geclassificeerd, bewaren deze in hun geschiedenis, maar deze verdwijnt uit de lijst voor nieuwe taken.",
+        "toasts": {
+          "renamed": "Beroemde categorie",
+          "archived": "Verwijderde categorie"
+        }
+      },
       "attribueeA": "Toegekend aan",
       "searchMemberPlaceholder": "Zoek naar een lid...",
       "loading": "Laden...",
@@ -4576,7 +4601,9 @@
       "nonAttribuee": "Niet toegekend",
       "selectedCount": "{count, plural, one {# geselecteerd lid} other {# geselecteerde leden}}",
       "echeance": "Deadline",
+      "echeanceHint": "Optioneel — de taak blijft zichtbaar in de lijst zonder een vervaldatum.",
       "rappels": "Herinneringen",
+      "rappelsNeedEcheance": "Stel een deadline om een herinnering in te stellen.",
       "noRappels": "Geen herinnering ingesteld.",
       "rappelOffset": "Dagen",
       "rappelDirection": "Wanneer",
@@ -4597,6 +4624,7 @@
       "subtitle": "De taken die aan jou zijn toegewezen.",
       "empty": "Er zijn op dit moment geen taken aan je toegewezen.",
       "echeance": "Deadline: {date}",
+      "sansEcheance": "Geen vervaldatum",
       "startWork": "Begin",
       "markComplete": "Markeer als voltooid",
       "history": "Voltooid",
