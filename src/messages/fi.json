@@ -927,7 +927,10 @@
     "mesTaches": {
       "title": "Omat tehtäväni",
       "empty": "Ei avoimia tehtäviä",
-      "openCount": "{count, plural, one {avoin tehtävä} other {Avaavat tehtävät}}",
+      "openCount": "{count, plural, one {# avoin tehtävä} other {# Avaavat tehtävät}}",
+      "today": "Tänään",
+      "emptyToday": "Tänään ei ole suunniteltu tehtäviä",
+      "seeMoreToday": "Katso {count} päivittäiset tehtävät",
       "viewAll": "Katso tehtäväni"
     },
     "charts": {
@@ -4922,8 +4925,12 @@
       "filterStatut": "Tila",
       "filterEcheance": "Määräaika",
       "filterEcheanceUpcoming": "Tulossa pian",
-      "filterEcheanceOverdue": "Myöhäinen",
+      "resetFilters": "Nollaa",
       "empty": "Ei tehtäviä tällä hetkellä.",
+      "emptyFiltered": "Mikään tehtävä ei vastaa näitä suodattimia.",
+      "stats": {
+        "echeanceSous7Jours": "Maturiteetti 7 päivän sisällä"
+      },
       "columns": {
         "tache": "Tehtävä",
         "attribueeA": "Myönnetty",
@@ -4932,7 +4939,8 @@
       },
       "toasts": {
         "created": "Tehtävä luotu",
-        "updated": "Tehtävä päivitetty"
+        "updated": "Tehtävä päivitetty",
+        "tacheIntrouvable": "Tehtävää ei löytynyt"
       }
     },
     "status": {
@@ -4947,6 +4955,7 @@
       "attribueeA": "Myönnetty",
       "nonAttribuee": "Myöntämätön",
       "echeance": "Määräaika",
+      "sansEcheance": "Ei viimeistä käyttöpäivää",
       "rappels": "Muistutukset",
       "reminderBefore": "{count, plural, one {# päivää ennen} other {# päivää ennen}}",
       "reminderAfter": "{count, plural, one {# seuraavana päivänä} other {# päivää myöhemmin}}",
@@ -4954,10 +4963,15 @@
       "completedByOn": "Päättynyt {name} The {date}",
       "completedOn": "Valmistunut {date}",
       "markComplete": "Merkitse valmiiksi",
+      "statutLabel": "Tehtävän tila",
+      "completeConfirmTitle": "Merkitäänkö tämä tehtävä suoritetuksi?",
+      "completeConfirmDescription": "Voit avata sen uudelleen myöhemmin tarvittaessa.",
+      "completeConfirmDescriptionShared": "Se merkitään valmiiksi kaikille määrätyille jäsenille. Voit avata sen uudelleen myöhemmin tarvittaessa.",
       "deleteConfirmTitle": "Poistatko tämän tehtävän?",
       "deleteConfirmDescription": "Tämä toimenpide on peruuttamaton.",
       "toasts": {
         "completed": "Tehtävä merkitty suoritetuksi",
+        "statusUpdated": "Tila päivitetty",
         "deleted": "Tehtävä poistettu"
       }
     },
@@ -4968,6 +4982,17 @@
       "noCategorie": "Ei kategoriaa",
       "newCategoriePlaceholder": "Kategorian nimi",
       "newCategorie": "+ Uusi kategoria",
+      "manageCategories": {
+        "trigger": "Hallitse kategorioita",
+        "title": "Kategoriat",
+        "empty": "Ei kategoriaa tällä hetkellä.",
+        "archiveConfirmTitle": "Poistatko tämän kategorian?",
+        "archiveConfirmDescription": "Tähän kategoriaan jo luokitellut tehtävät säilyttävät sen historiassaan, mutta se katoaa uusien tehtävien listalta.",
+        "toasts": {
+          "renamed": "Tunnettu kategoria",
+          "archived": "Poistettu kategoria"
+        }
+      },
       "attribueeA": "Myönnetty",
       "searchMemberPlaceholder": "Etsi jäsentä...",
       "loading": "Ladataan...",
@@ -4975,7 +5000,9 @@
       "nonAttribuee": "Myöntämätön",
       "selectedCount": "{count, plural, one {# valittu jäsen} other {# valitut jäsenet}}",
       "echeance": "Määräaika",
+      "echeanceHint": "Valinnainen — tehtävä pysyy näkyvissä luettelossa ilman määräaikaa.",
       "rappels": "Muistutukset",
+      "rappelsNeedEcheance": "Aseta määräaika, jotta voit asettaa muistutuksen.",
       "noRappels": "Muistutusta ei ole määritetty.",
       "rappelOffset": "Päivää",
       "rappelDirection": "Milloin",
@@ -4996,6 +5023,7 @@
       "subtitle": "Sinulle annetut tehtävät.",
       "empty": "Sinulle ei ole tällä hetkellä annettu tehtäviä.",
       "echeance": "Määräaika: {date}",
+      "sansEcheance": "Ei viimeistä käyttöpäivää",
       "startWork": "Aloita",
       "markComplete": "Merkitse valmiiksi",
       "history": "Valmis",

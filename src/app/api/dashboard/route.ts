@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma/client"
 import { evenementNotOverWhere } from "@/lib/evenement-timing"
 import { withAdminAuth } from "@/lib/api-wrapper"
 import { hasAccess } from "@/lib/permissions"
+import { buildTacheWhere } from "@/lib/tache-query"
 
 // Shared by the pending and paid halves of the dons card so both sides carry identical
 // fields — the card renders one list out of the two and can't branch on their shape.
@@ -59,7 +60,7 @@ export const GET = withAdminAuth(async (req, ctx) => {
     donsAnnee,
     donsEnAttente,
     donsEnAttenteCount,
-    mesTachesOuvertesRaw,
+    mesTachesRaw,
   ] = await Promise.all([
     prisma.membre.count({ where: { associationId, status: "ACTIF", deletedAt: null } }),
     // Every status counts as a member (PENDING/INACTIF/SUSPENDU included) — the header
@@ -185,11 +186,23 @@ export const GET = withAdminAuth(async (req, ctx) => {
           where: { associationId, paidAt: null, paymentMethod: { in: ["ESPECES", "CHEQUE", "VIREMENT"] } },
         })
       : 0,
+    // Carte "Mes tâches" (FORM-118, commentaire Emmanuelle) — en plus du total ouvert
+    // (openCount, logique inchangée), la section "Aujourd'hui" a besoin du compte exact des
+    // tâches du jour (todayCount, pour le libellé "Voir les X tâches du jour") et des 3
+    // premières lignes à afficher (todayTasks). buildTacheWhere({ dueFilter: "today" }) est la
+    // même fonction que la liste/les cards de résumé — aucune nouvelle logique de date ici.
     canSeeTaches
       ? prisma.membre.findFirst({ where: { userId: ctx.userId, associationId, deletedAt: null }, select: { id: true } })
-          .then(membre => membre
-            ? prisma.tache.count({ where: { associationId, status: { not: "TERMINEE" }, assignees: { some: { membreId: membre.id } } } })
-            : null)
+          .then(async membre => {
+            if (!membre) return null
+            const todayWhere = buildTacheWhere(associationId, { membreId: membre.id, dueFilter: "today" })
+            const [openCount, todayCount, todayTasks] = await Promise.all([
+              prisma.tache.count({ where: { associationId, status: { not: "TERMINEE" }, assignees: { some: { membreId: membre.id } } } }),
+              prisma.tache.count({ where: todayWhere }),
+              prisma.tache.findMany({ where: todayWhere, orderBy: { createdAt: "asc" }, take: 3, select: { id: true, titre: true, status: true } }),
+            ])
+            return { openCount, todayCount, todayTasks, membreId: membre.id }
+          })
       : Promise.resolve(null),
   ])
 
@@ -285,6 +298,6 @@ export const GET = withAdminAuth(async (req, ctx) => {
     })),
     // null = widget hidden, either no "taches" read access or no linked Membre (pure staff
     // account — nothing can ever be assigned to them). See comment on canSeeTaches above.
-    mesTachesOuvertes: mesTachesOuvertesRaw,
+    mesTaches: mesTachesRaw,
   })
 }, { area: "dashboard" })

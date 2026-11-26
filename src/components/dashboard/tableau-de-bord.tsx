@@ -76,7 +76,12 @@ type DashboardData = {
   }[]
   // null = no linked Membre for the current staff User (nothing can ever be assigned to
   // them) — the mes-taches widget hides entirely rather than show an always-zero tile.
-  mesTachesOuvertes: number | null
+  mesTaches: {
+    openCount:  number
+    todayCount: number
+    todayTasks: { id: string; titre: string; status: "A_FAIRE" | "EN_COURS" | "TERMINEE" }[]
+    membreId:   string
+  } | null
 }
 
 // The drag preview floats outside the grid, so it needs a pixel width rather than a column
@@ -149,7 +154,7 @@ export function TableauDeBord({ initialLayout }: Props) {
       // Permission/module alone can't know whether THIS user has a linked Membre — that
       // only comes back with the data fetch, so this one widget gets an extra data-driven
       // check on top of the synchronous gate every other widget relies on.
-      if (widget.id === "mes-taches" && data && data.mesTachesOuvertes === null) return false
+      if (widget.id === "mes-taches" && data && data.mesTaches === null) return false
       return true
     }),
     [layout, modules, permissions, data],
@@ -204,7 +209,10 @@ export function TableauDeBord({ initialLayout }: Props) {
     ),
     "mes-taches": (
       <MesTachesCard
-        count={data?.mesTachesOuvertes ?? 0}
+        openCount={data?.mesTaches?.openCount ?? 0}
+        todayCount={data?.mesTaches?.todayCount ?? 0}
+        todayTasks={data?.mesTaches?.todayTasks ?? []}
+        membreId={data?.mesTaches?.membreId ?? ""}
         isLoading={isLoading}
       />
     ),

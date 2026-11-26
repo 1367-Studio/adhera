@@ -1,6 +1,9 @@
-// Partagé entre GET /api/taches (liste), le calendrier et tout futur export — chaque
-// consommateur doit parser et appliquer les filtres de façon identique, même convention que
+// Partagé entre GET /api/taches (liste), le calendrier, GET /api/taches/summary (cards de
+// résumé, FORM-118) et GET /api/dashboard (carte "Mes tâches") — chaque consommateur doit
+// parser et appliquer les filtres de façon identique, même convention que
 // src/lib/cotisation-query.ts.
+
+import { parisDayBounds } from "@/lib/membre-adherent"
 
 export type TacheStatusFilter = "A_FAIRE" | "EN_COURS" | "TERMINEE" | "EN_RETARD"
 
@@ -13,7 +16,10 @@ export type TacheFilters = {
   // l'un exclure TERMINEE et l'autre non, et les deux combinés pouvaient produire un résultat
   // vide sans explication. Résolu côté serveur (pas de timestamp envoyé par le client) pour
   // que la queryKey reste stable d'un rendu à l'autre — voir use-taches.ts.
-  dueFilter?:   "upcoming"
+  // "soon7" (card « Échéance sous 7 jours ») et "today" (card du dashboard "Mes tâches" —
+  // FORM-118 commentaire Emmanuelle) suivent la même convention : résolus ici, pas envoyés en
+  // timestamp par le client.
+  dueFilter?:   "upcoming" | "soon7" | "today"
   // Plage explicite réservée au calendrier (useTachesByMonth) — un usage distinct du filtre
   // "À venir" ci-dessus, non sujet au même problème puisque year/month ne changent qu'à la
   // navigation, pas à chaque rendu.
@@ -33,7 +39,7 @@ export function parseTacheFilters(searchParams: URLSearchParams): TacheFilters {
     membreId:    searchParams.get("membreId")?.trim() || undefined,
     categorieId: searchParams.get("categorieId")?.trim() || undefined,
     status:      isStatusFilter(status) ? status : undefined,
-    dueFilter:   due === "upcoming" ? "upcoming" : undefined,
+    dueFilter:   due === "upcoming" || due === "soon7" || due === "today" ? due : undefined,
     dueBefore:   searchParams.get("dueBefore")?.trim() || undefined,
     dueAfter:    searchParams.get("dueAfter")?.trim() || undefined,
     search:      searchParams.get("search")?.trim() || undefined,
@@ -64,6 +70,29 @@ export function buildTacheWhere(associationId: string, filters: TacheFilters): R
     const todayStart = new Date(); todayStart.setHours(0, 0, 0, 0)
     const dueDateRange = where.dueDate && typeof where.dueDate === "object" ? { ...where.dueDate as object } : {}
     where.dueDate = { ...dueDateRange, gte: todayStart }
+    if (where.status === undefined) where.status = { not: "TERMINEE" }
+  }
+
+  // Card « Échéance sous 7 jours » (FORM-118, commentaire Emmanuelle) : du début du jour
+  // courant jusqu'à la fin du 7e jour suivant, inclusif des deux bords. Fuseau Europe/Paris
+  // (pas l'heure serveur) — même raison que le ramo "today" juste en dessous : une tâche
+  // calée à minuit UTC (convention de création, voir POST /api/taches) ne doit pas sortir du
+  // card simplement parce que le serveur tourne dans un autre fuseau.
+  if (filters.dueFilter === "soon7") {
+    const { dayStart: todayStart } = parisDayBounds(new Date())
+    const { dayEnd: in7DaysEnd }   = parisDayBounds(new Date(todayStart.getTime() + 7 * 86_400_000))
+    const dueDateRange = where.dueDate && typeof where.dueDate === "object" ? { ...where.dueDate as object } : {}
+    where.dueDate = { ...dueDateRange, gte: todayStart, lte: in7DaysEnd }
+    if (where.status === undefined) where.status = { not: "TERMINEE" }
+  }
+
+  // Section "Aujourd'hui" de la carte dashboard "Mes tâches" (FORM-118, commentaire
+  // Emmanuelle) : borne au fuseau Europe/Paris (pas l'heure serveur) — même raison que
+  // shouldFireReminderToday dans tache-status.ts.
+  if (filters.dueFilter === "today") {
+    const { dayStart, dayEnd } = parisDayBounds(new Date())
+    const dueDateRange = where.dueDate && typeof where.dueDate === "object" ? { ...where.dueDate as object } : {}
+    where.dueDate = { ...dueDateRange, gte: dayStart, lte: dayEnd }
     if (where.status === undefined) where.status = { not: "TERMINEE" }
   }
 

@@ -927,7 +927,10 @@
     "mesTaches": {
       "title": "Minhas tarefas",
       "empty": "Nenhuma tarefa aberta",
-      "openCount": "{count, plural, one {Tarefa aberta} other {Tarefas abertas}}",
+      "openCount": "{count, plural, one {# Tarefa aberta} other {# Tarefas abertas}}",
+      "today": "Hoje",
+      "emptyToday": "Nenhuma tarefa planejada hoje",
+      "seeMoreToday": "Veja o {count} Tarefas diárias",
       "viewAll": "Veja minhas tarefas"
     },
     "charts": {
@@ -4922,8 +4925,12 @@
       "filterStatut": "Status",
       "filterEcheance": "Prazo",
       "filterEcheanceUpcoming": "Em breve",
-      "filterEcheanceOverdue": "Tarde",
+      "resetFilters": "Redefinir",
       "empty": "Nenhuma tarefa no momento.",
+      "emptyFiltered": "Nenhuma tarefa corresponde a esses filtros.",
+      "stats": {
+        "echeanceSous7Jours": "Vencimento em até 7 dias"
+      },
       "columns": {
         "tache": "Tarefa",
         "attribueeA": "Concedido a",
@@ -4932,7 +4939,8 @@
       },
       "toasts": {
         "created": "Tarefa criada",
-        "updated": "Tarefa atualizada"
+        "updated": "Tarefa atualizada",
+        "tacheIntrouvable": "Tarefa não encontrada"
       }
     },
     "status": {
@@ -4947,6 +4955,7 @@
       "attribueeA": "Concedido a",
       "nonAttribuee": "Não premiado",
       "echeance": "Prazo",
+      "sansEcheance": "Sem data de validade",
       "rappels": "Lembretes",
       "reminderBefore": "{count, plural, one {# dia antes} other {# dias antes}}",
       "reminderAfter": "{count, plural, one {# dia depois} other {# dias depois}}",
@@ -4954,10 +4963,15 @@
       "completedByOn": "Encerrado por {name} o {date}",
       "completedOn": "Concluído em {date}",
       "markComplete": "Marque como concluído",
+      "statutLabel": "Status da tarefa",
+      "completeConfirmTitle": "Marcar essa tarefa como concluída?",
+      "completeConfirmDescription": "Você pode reabri-lo depois, se precisar.",
+      "completeConfirmDescriptionShared": "Será marcado como concluído para todos os membros designados. Você pode reabri-lo depois, se necessário.",
       "deleteConfirmTitle": "Excluir essa tarefa?",
       "deleteConfirmDescription": "Essa ação é irreversível.",
       "toasts": {
         "completed": "Tarefa marcada como concluída",
+        "statusUpdated": "Status atualizado",
         "deleted": "Tarefa deletada"
       }
     },
@@ -4968,6 +4982,17 @@
       "noCategorie": "Sem categoria",
       "newCategoriePlaceholder": "Nome da categoria",
       "newCategorie": "+ Nova categoria",
+      "manageCategories": {
+        "trigger": "Gerenciar categorias",
+        "title": "Categorias",
+        "empty": "Sem categoria no momento.",
+        "archiveConfirmTitle": "Remover essa categoria?",
+        "archiveConfirmDescription": "Tarefas já classificadas nessa categoria manterão esse histórico em seu histórico, mas ele desaparecerá da lista para novas tarefas.",
+        "toasts": {
+          "renamed": "Categoria renomada",
+          "archived": "Categoria excluída"
+        }
+      },
       "attribueeA": "Concedido a",
       "searchMemberPlaceholder": "Procure por um membro...",
       "loading": "Carregando...",
@@ -4975,7 +5000,9 @@
       "nonAttribuee": "Não premiado",
       "selectedCount": "{count, plural, one {# membro selecionado} other {# membros selecionados}}",
       "echeance": "Prazo",
+      "echeanceHint": "Opcional — a tarefa permanece visível na lista sem data de vencimento.",
       "rappels": "Lembretes",
+      "rappelsNeedEcheance": "Estabeleça um prazo para poder configurar um lembrete.",
       "noRappels": "Nenhum lembrete configurado.",
       "rappelOffset": "Dias",
       "rappelDirection": "Quando",
@@ -4996,6 +5023,7 @@
       "subtitle": "As tarefas que lhe foram atribuídas.",
       "empty": "Nenhuma tarefa foi atribuída a você no momento.",
       "echeance": "Prazo: {date}",
+      "sansEcheance": "Sem data de validade",
       "startWork": "Comece",
       "markComplete": "Marque como concluído",
       "history": "Concluído",

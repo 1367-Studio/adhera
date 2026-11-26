@@ -927,7 +927,10 @@
     "mesTaches": {
       "title": "Moji zadaci",
       "empty": "Nema otvorenih zadataka",
-      "openCount": "{count, plural, one {otvoreni zadatak} other {Otvoreni zadaci}}",
+      "openCount": "{count, plural, one {# otvoreni zadatak} other {# Otvoreni zadaci}}",
+      "today": "Danas",
+      "emptyToday": "Danas nema planiranih zadataka",
+      "seeMoreToday": "Pogledajte {count} dnevni zadaci",
       "viewAll": "Pogledajte moje zadatke"
     },
     "charts": {
@@ -4922,8 +4925,12 @@
       "filterStatut": "Status",
       "filterEcheance": "Rok",
       "filterEcheanceUpcoming": "Uskoro",
-      "filterEcheanceOverdue": "Kasni",
+      "resetFilters": "Resetiraj",
       "empty": "Trenutno nemam zadataka.",
+      "emptyFiltered": "Nijedan zadatak ne odgovara tim filtrima.",
+      "stats": {
+        "echeanceSous7Jours": "Dospijeće unutar 7 dana"
+      },
       "columns": {
         "tache": "Zadatak",
         "attribueeA": "Dodijeljeno",
@@ -4932,7 +4939,8 @@
       },
       "toasts": {
         "created": "Zadatak je kreiran",
-        "updated": "Zadatak ažuriran"
+        "updated": "Zadatak ažuriran",
+        "tacheIntrouvable": "Zadatak nije pronađen"
       }
     },
     "status": {
@@ -4947,6 +4955,7 @@
       "attribueeA": "Dodijeljeno",
       "nonAttribuee": "Nedodijeljeno",
       "echeance": "Rok",
+      "sansEcheance": "Nema datuma isteka",
       "rappels": "Podsjetnici",
       "reminderBefore": "{count, plural, one {# dan prije} other {# dana prije}}",
       "reminderAfter": "{count, plural, one {# dan poslije} other {# dana kasnije}}",
@@ -4954,10 +4963,15 @@
       "completedByOn": "Završeno od {name} the {date}",
       "completedOn": "Završeno dana {date}",
       "markComplete": "Označi kao dovršeno",
+      "statutLabel": "Status zadatka",
+      "completeConfirmTitle": "Označiti ovaj zadatak kao dovršen?",
+      "completeConfirmDescription": "Možeš ga ponovno otvoriti kasnije ako bude potrebno.",
+      "completeConfirmDescriptionShared": "Bit će označen kao dovršen za sve dodijeljene članove. Možete ga kasnije ponovno otvoriti ako bude potrebno.",
       "deleteConfirmTitle": "Izbrisati ovaj zadatak?",
       "deleteConfirmDescription": "Ova radnja je nepovratna.",
       "toasts": {
         "completed": "Zadatak označen kao dovršen",
+        "statusUpdated": "Status ažuriran",
         "deleted": "Zadatak izbrisan"
       }
     },
@@ -4968,6 +4982,17 @@
       "noCategorie": "Nema kategorije",
       "newCategoriePlaceholder": "Naziv kategorije",
       "newCategorie": "+ Nova kategorija",
+      "manageCategories": {
+        "trigger": "Upravljanje kategorijama",
+        "title": "Kategorije",
+        "empty": "Trenutno nema kategorije.",
+        "archiveConfirmTitle": "Ukloniti ovu kategoriju?",
+        "archiveConfirmDescription": "Zadaci koji su već klasificirani u ovu kategoriju zadržat će je u svojoj povijesti, ali će nestati s popisa za nove zadatke.",
+        "toasts": {
+          "renamed": "Poznata kategorija",
+          "archived": "Izbrisana kategorija"
+        }
+      },
       "attribueeA": "Dodijeljeno",
       "searchMemberPlaceholder": "Pretraži člana...",
       "loading": "Učitavam...",
@@ -4975,7 +5000,9 @@
       "nonAttribuee": "Nedodijeljeno",
       "selectedCount": "{count, plural, one {# odabrani član} other {# odabranih članova}}",
       "echeance": "Rok",
+      "echeanceHint": "Opcionalno — zadatak ostaje vidljiv na popisu bez određenog roka.",
       "rappels": "Podsjetnici",
+      "rappelsNeedEcheance": "Postavite rok kako biste mogli postaviti podsjetnik.",
       "noRappels": "Nije konfiguriran podsjetnik.",
       "rappelOffset": "Dani",
       "rappelDirection": "Kada",
@@ -4996,6 +5023,7 @@
       "subtitle": "Zadaci koji su vam dodijeljeni.",
       "empty": "Trenutno vam nisu dodijeljeni nikakvi zadaci.",
       "echeance": "Rok: {date}",
+      "sansEcheance": "Nema datuma isteka",
       "startWork": "Započnite",
       "markComplete": "Označi kao dovršeno",
       "history": "Završeno",

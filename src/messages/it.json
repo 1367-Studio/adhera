@@ -927,7 +927,10 @@
     "mesTaches": {
       "title": "I miei compiti",
       "empty": "Nessuna attività aperta",
-      "openCount": "{count, plural, one {Attività aperta} other {Attività aperte}}",
+      "openCount": "{count, plural, one {# Attività aperta} other {# Attività aperte}}",
+      "today": "Oggi",
+      "emptyToday": "Nessun compito previsto per oggi",
+      "seeMoreToday": "Vedi il {count} Attività quotidiane",
       "viewAll": "Vedi i miei compiti"
     },
     "charts": {
@@ -4922,8 +4925,12 @@
       "filterStatut": "Stato",
       "filterEcheance": "Scadenza",
       "filterEcheanceUpcoming": "A breve",
-      "filterEcheanceOverdue": "Tardi",
+      "resetFilters": "Resetta",
       "empty": "Nessun compito al momento.",
+      "emptyFiltered": "Nessuna attività corrisponde a questi filtri.",
+      "stats": {
+        "echeanceSous7Jours": "Scadenza entro 7 giorni"
+      },
       "columns": {
         "tache": "Compito",
         "attribueeA": "Assegnato a",
@@ -4932,7 +4939,8 @@
       },
       "toasts": {
         "created": "Attività creata",
-        "updated": "Attività aggiornata"
+        "updated": "Attività aggiornata",
+        "tacheIntrouvable": "Attività non trovata"
       }
     },
     "status": {
@@ -4947,6 +4955,7 @@
       "attribueeA": "Assegnato a",
       "nonAttribuee": "Non premiato",
       "echeance": "Scadenza",
+      "sansEcheance": "Nessuna data di scadenza",
       "rappels": "Promemoria",
       "reminderBefore": "{count, plural, one {# giorno prima} other {# giorni prima}}",
       "reminderAfter": "{count, plural, one {# giorno dopo} other {# giorni dopo}}",
@@ -4954,10 +4963,15 @@
       "completedByOn": "Terminato da {name} il {date}",
       "completedOn": "Completato il {date}",
       "markComplete": "Segna come completato",
+      "statutLabel": "Stato dell''attività",
+      "completeConfirmTitle": "Segna questo compito come completato?",
+      "completeConfirmDescription": "Puoi riaprirlo più tardi se necessario.",
+      "completeConfirmDescriptionShared": "Verrà contrassegnato come completato per tutti i membri assegnati. Puoi riaprirlo successivamente se necessario.",
       "deleteConfirmTitle": "Eliminare questa attività?",
       "deleteConfirmDescription": "Questa azione è irreversibile.",
       "toasts": {
         "completed": "Compito contrassegnato come completato",
+        "statusUpdated": "Stato aggiornato",
         "deleted": "Compito eliminato"
       }
     },
@@ -4968,6 +4982,17 @@
       "noCategorie": "Nessuna categoria",
       "newCategoriePlaceholder": "Nome della categoria",
       "newCategorie": "+ Nuova categoria",
+      "manageCategories": {
+        "trigger": "Gestisci le categorie",
+        "title": "Categorie",
+        "empty": "Al momento nessuna categoria.",
+        "archiveConfirmTitle": "Rimuovere questa categoria?",
+        "archiveConfirmDescription": "Le attività già classificate in questa categoria la manterranno nella loro storia, ma scomparirà dall''elenco per le nuove attività.",
+        "toasts": {
+          "renamed": "Categoria rinomata",
+          "archived": "Categoria eliminata"
+        }
+      },
       "attribueeA": "Assegnato a",
       "searchMemberPlaceholder": "Cerca un membro...",
       "loading": "Caricamento...",
@@ -4975,7 +5000,9 @@
       "nonAttribuee": "Non premiato",
       "selectedCount": "{count, plural, one {# membro selezionato} other {# membri selezionati}}",
       "echeance": "Scadenza",
+      "echeanceHint": "Opzionale — l''attività rimane visibile nell''elenco senza una data di scadenza.",
       "rappels": "Promemoria",
+      "rappelsNeedEcheance": "Imposta una scadenza per poter impostare un promemoria.",
       "noRappels": "Nessun promemoria configurato.",
       "rappelOffset": "Giorni",
       "rappelDirection": "Quando",
@@ -4996,6 +5023,7 @@
       "subtitle": "I compiti assegnati.",
       "empty": "Al momento non ti sono stati assegnati compiti.",
       "echeance": "Scadenza: {date}",
+      "sansEcheance": "Nessuna data di scadenza",
       "startWork": "Inizia",
       "markComplete": "Segna come completato",
       "history": "Completato",

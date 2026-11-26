@@ -927,7 +927,10 @@
     "mesTaches": {
       "title": "Minu ülesanded",
       "empty": "Avatud ülesandeid ei ole",
-      "openCount": "{count, plural, one {avatud ülesanne} other {Avatud ülesanded}}",
+      "openCount": "{count, plural, one {# avatud ülesanne} other {# Avatud ülesanded}}",
+      "today": "Tänapäeval",
+      "emptyToday": "Täna pole planeeritud ülesandeid",
+      "seeMoreToday": "Vaata {count} igapäevased ülesanded",
       "viewAll": "Vaata minu ülesandeid"
     },
     "charts": {
@@ -4922,8 +4925,12 @@
       "filterStatut": "Staatus",
       "filterEcheance": "Tähtaeg",
       "filterEcheanceUpcoming": "Tulen varsti",
-      "filterEcheanceOverdue": "Hiline",
+      "resetFilters": "Lähtesta",
       "empty": "Hetkel pole ühtegi ülesannet.",
+      "emptyFiltered": "Ükski ülesanne ei vasta nendele filtritele.",
+      "stats": {
+        "echeanceSous7Jours": "Tähtaeg 7 päeva jooksul"
+      },
       "columns": {
         "tache": "Ülesanne",
         "attribueeA": "Antud",
@@ -4932,7 +4939,8 @@
       },
       "toasts": {
         "created": "Loodud ülesanne",
-        "updated": "Ülesanne uuendatud"
+        "updated": "Ülesanne uuendatud",
+        "tacheIntrouvable": "Ülesannet ei leitud"
       }
     },
     "status": {
@@ -4947,6 +4955,7 @@
       "attribueeA": "Antud",
       "nonAttribuee": "Tunnustamata",
       "echeance": "Tähtaeg",
+      "sansEcheance": "Aegumiskuupäeva puudub",
       "rappels": "Meeldetuletused",
       "reminderBefore": "{count, plural, one {# päev enne} other {# päeva enne}}",
       "reminderAfter": "{count, plural, one {# päev pärast} other {# päeva hiljem}}",
@@ -4954,10 +4963,15 @@
       "completedByOn": "Lõppenud {name} The {date}",
       "completedOn": "Lõpetatud {date}",
       "markComplete": "Märgi lõpetatuks",
+      "statutLabel": "Ülesande olek",
+      "completeConfirmTitle": "Kas märgid selle ülesande lõpetatuks?",
+      "completeConfirmDescription": "Vajadusel saad selle hiljem uuesti avada.",
+      "completeConfirmDescriptionShared": "Kõik määratud liikmed märgitakse lõpetatuks. Vajadusel saate selle hiljem uuesti avada.",
       "deleteConfirmTitle": "Kustutada see ülesanne?",
       "deleteConfirmDescription": "See tegevus on pöördumatu.",
       "toasts": {
         "completed": "Ülesanne märgitud lõpetatuks",
+        "statusUpdated": "Staatus uuendatud",
         "deleted": "Ülesanne kustutatud"
       }
     },
@@ -4968,6 +4982,17 @@
       "noCategorie": "Kategooriat ei ole",
       "newCategoriePlaceholder": "Kategooria nimi",
       "newCategorie": "+ Uus kategooria",
+      "manageCategories": {
+        "trigger": "Halda kategooriaid",
+        "title": "Kategooriad",
+        "empty": "Hetkel pole ühtegi kategooriat.",
+        "archiveConfirmTitle": "Kas see kategooria eemaldada?",
+        "archiveConfirmDescription": "Selles kategoorias juba klassifitseeritud ülesanded säilitavad selle oma ajaloos, kuid uute ülesannete puhul kaob see nimekirjast.",
+        "toasts": {
+          "renamed": "Tuntud kategooria",
+          "archived": "Kustutatud kategooria"
+        }
+      },
       "attribueeA": "Antud",
       "searchMemberPlaceholder": "Otsi liiget...",
       "loading": "Laadin...",
@@ -4975,7 +5000,9 @@
       "nonAttribuee": "Tunnustamata",
       "selectedCount": "{count, plural, one {# valitud liige} other {# valitud liikmeid}}",
       "echeance": "Tähtaeg",
+      "echeanceHint": "Valikuline — ülesanne jääb nimekirjas nähtavaks ilma tähtaega.",
       "rappels": "Meeldetuletused",
+      "rappelsNeedEcheance": "Sea tähtaeg, et saaksite meenutust seadistada.",
       "noRappels": "Meeldetuletust pole seadistatud.",
       "rappelOffset": "Päevad",
       "rappelDirection": "Kui",
@@ -4996,6 +5023,7 @@
       "subtitle": "Sulle määratud ülesanded.",
       "empty": "Teile pole hetkel ühtegi ülesannet määratud.",
       "echeance": "Tähtaeg: {date}",
+      "sansEcheance": "Aegumiskuupäeva puudub",
       "startWork": "Alusta",
       "markComplete": "Märgi lõpetatuks",
       "history": "Valmis",

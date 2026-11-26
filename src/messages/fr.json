@@ -927,7 +927,10 @@
     "mesTaches": {
       "title": "Mes tâches",
       "empty": "Aucune tâche ouverte",
-      "openCount": "{count, plural, one {tâche ouverte} other {tâches ouvertes}}",
+      "openCount": "{count, plural, one {# tâche ouverte} other {# tâches ouvertes}}",
+      "today": "Aujourd'hui",
+      "emptyToday": "Aucune tâche prévue aujourd'hui",
+      "seeMoreToday": "Voir les {count} tâches du jour",
       "viewAll": "Voir mes tâches"
     },
     "charts": {
@@ -4925,6 +4928,9 @@
       "resetFilters": "Réinitialiser",
       "empty": "Aucune tâche pour le moment.",
       "emptyFiltered": "Aucune tâche ne correspond à ces filtres.",
+      "stats": {
+        "echeanceSous7Jours": "Échéance sous 7 jours"
+      },
       "columns": {
         "tache": "Tâche",
         "attribueeA": "Attribuée à",
@@ -4933,7 +4939,8 @@
       },
       "toasts": {
         "created": "Tâche créée",
-        "updated": "Tâche mise à jour"
+        "updated": "Tâche mise à jour",
+        "tacheIntrouvable": "Tâche introuvable"
       }
     },
     "status": {
