@@ -927,7 +927,10 @@
     "mesTaches": {
       "title": "It-tasks tiegħi",
       "empty": "L-ebda kompiti miftuħa",
-      "openCount": "{count, plural, one {kompitu miftuħ} other {Kompiti miftuħa}}",
+      "openCount": "{count, plural, one {# kompitu miftuħ} other {# Kompiti miftuħa}}",
+      "today": "Illum",
+      "emptyToday": "L-ebda xogħol ippjanat illum",
+      "seeMoreToday": "Ara l- {count} Kompiti ta'' kuljum",
       "viewAll": "Ara t-tasks tiegħi"
     },
     "charts": {
@@ -4922,8 +4925,12 @@
       "filterStatut": "Status",
       "filterEcheance": "Skadenza",
       "filterEcheanceUpcoming": "Dalwaqt",
-      "filterEcheanceOverdue": "Tard",
+      "resetFilters": "Irrisettja",
       "empty": "L-ebda kompitu bħalissa.",
+      "emptyFiltered": "L-ebda kompitu ma jaqbel ma'' dawn il-filtri.",
+      "stats": {
+        "echeanceSous7Jours": "Maturità fi żmien 7 ijiem"
+      },
       "columns": {
         "tache": "Kompitu",
         "attribueeA": "Mogħtija lil",
@@ -4932,7 +4939,8 @@
       },
       "toasts": {
         "created": "Kompitu maħluq",
-        "updated": "Kompitu aġġornat"
+        "updated": "Kompitu aġġornat",
+        "tacheIntrouvable": "Kompitu mhux misjub"
       }
     },
     "status": {
@@ -4947,6 +4955,7 @@
       "attribueeA": "Mogħtija lil",
       "nonAttribuee": "Mhux mogħtija",
       "echeance": "Skadenza",
+      "sansEcheance": "L-ebda data ta'' skadenza",
       "rappels": "Tfakkiriet",
       "reminderBefore": "{count, plural, one {# -ġurnata ta'' qabel} other {# jiem qabel}}",
       "reminderAfter": "{count, plural, one {# -ġurnata ta'' wara} other {# jiem wara}}",
@@ -4954,10 +4963,15 @@
       "completedByOn": "Intemmet minn {name} il- {date}",
       "completedOn": "Komplut fl- {date}",
       "markComplete": "Immarka bħala kompluta",
+      "statutLabel": "Status tal-kompitu",
+      "completeConfirmTitle": "Immarka dan il-kompitu bħala lest?",
+      "completeConfirmDescription": "Tista'' terġa'' tiftaħha aktar tard jekk meħtieġ.",
+      "completeConfirmDescriptionShared": "Se tiġi mmarkata bħala kompluta għal kull membru assenjat. Tista'' terġa'' tiftaħha aktar tard jekk ikun meħtieġ.",
       "deleteConfirmTitle": "Tħassar dan il-kompitu?",
       "deleteConfirmDescription": "Din l-azzjoni hija irreversibbli.",
       "toasts": {
         "completed": "Kompitu mmarkat bħala komplut",
+        "statusUpdated": "Status aġġornat",
         "deleted": "Kompitu mħassar"
       }
     },
@@ -4968,6 +4982,17 @@
       "noCategorie": "L-ebda kategorija",
       "newCategoriePlaceholder": "Isem tal-kategorija",
       "newCategorie": "+ Kategorija ġdida",
+      "manageCategories": {
+        "trigger": "Immaniġġja kategoriji",
+        "title": "Kategoriji",
+        "empty": "M''hemm l-ebda kategorija bħalissa.",
+        "archiveConfirmTitle": "Tneħħi din il-kategorija?",
+        "archiveConfirmDescription": "Kompiti diġà klassifikati f''din il-kategorija jżommuha fl-istorja tagħhom, iżda se jisparixxu mil-lista għal kompiti ġodda.",
+        "toasts": {
+          "renamed": "Kategorija magħrufa",
+          "archived": "Kategorija mħassra"
+        }
+      },
       "attribueeA": "Mogħtija lil",
       "searchMemberPlaceholder": "Fittex membru...",
       "loading": "Qiegħed jitgħabba...",
@@ -4975,7 +5000,9 @@
       "nonAttribuee": "Mhux mogħtija",
       "selectedCount": "{count, plural, one {# membru magħżul} other {# membri magħżula}}",
       "echeance": "Skadenza",
+      "echeanceHint": "Fakultattiv — il-kompitu jibqa'' viżibbli fil-lista mingħajr data ta'' skadenza.",
       "rappels": "Tfakkiriet",
+      "rappelsNeedEcheance": "Stabbilixxi skadenza biex tkun tista'' tistabbilixxi twissija.",
       "noRappels": "L-ebda twissija kkonfigurata.",
       "rappelOffset": "Jiem",
       "rappelDirection": "Meta",
@@ -4996,6 +5023,7 @@
       "subtitle": "It-tasks assenjati lilek.",
       "empty": "Bħalissa ma ġewx assenjati kompiti lilek.",
       "echeance": "Data Finali: {date}",
+      "sansEcheance": "L-ebda data ta'' skadenza",
       "startWork": "Ibda",
       "markComplete": "Immarka bħala kompluta",
       "history": "Komplut",

@@ -927,7 +927,10 @@
     "mesTaches": {
       "title": "Mis tareas",
       "empty": "No hay tareas abiertas",
-      "openCount": "{count, plural, one {tarea abierta} other {Tareas abiertas}}",
+      "openCount": "{count, plural, one {# tarea abierta} other {# Tareas abiertas}}",
+      "today": "Hoy",
+      "emptyToday": "No hay tareas planeadas hoy",
+      "seeMoreToday": "Véase el {count} Tareas diarias",
       "viewAll": "Ver mis tareas"
     },
     "charts": {
@@ -4922,8 +4925,12 @@
       "filterStatut": "Estado",
       "filterEcheance": "Fecha límite",
       "filterEcheanceUpcoming": "Próximamente",
-      "filterEcheanceOverdue": "Tarde",
+      "resetFilters": "Reiniciar",
       "empty": "No hay tareas por el momento.",
+      "emptyFiltered": "Ninguna tarea coincide con estos filtros.",
+      "stats": {
+        "echeanceSous7Jours": "Vencimiento en un plazo de 7 días"
+      },
       "columns": {
         "tache": "Tarea",
         "attribueeA": "Otorgado a",
@@ -4932,7 +4939,8 @@
       },
       "toasts": {
         "created": "Tarea creada",
-        "updated": "Tarea actualizada"
+        "updated": "Tarea actualizada",
+        "tacheIntrouvable": "Tarea no encontrada"
       }
     },
     "status": {
@@ -4947,6 +4955,7 @@
       "attribueeA": "Otorgado a",
       "nonAttribuee": "No galardonado",
       "echeance": "Fecha límite",
+      "sansEcheance": "Sin fecha de caducidad",
       "rappels": "Recordatorios",
       "reminderBefore": "{count, plural, one {# día antes} other {# días antes}}",
       "reminderAfter": "{count, plural, one {# día después} other {# días después}}",
@@ -4954,10 +4963,15 @@
       "completedByOn": "Terminado por {name} el {date}",
       "completedOn": "Completado el {date}",
       "markComplete": "Marcar como completado",
+      "statutLabel": "Estado de la tarea",
+      "completeConfirmTitle": "¿Marcar esta tarea como completada?",
+      "completeConfirmDescription": "Puedes reabrirlo más tarde si hace falta.",
+      "completeConfirmDescriptionShared": "Se marcará como completado para todos los miembros asignados. Puedes reabrirlo más tarde si es necesario.",
       "deleteConfirmTitle": "¿Eliminar esta tarea?",
       "deleteConfirmDescription": "Esta acción es irreversible.",
       "toasts": {
         "completed": "Tarea marcada como completada",
+        "statusUpdated": "Estado actualizado",
         "deleted": "Tarea eliminada"
       }
     },
@@ -4968,6 +4982,17 @@
       "noCategorie": "Sin categoría",
       "newCategoriePlaceholder": "Nombre de la categoría",
       "newCategorie": "+ Nueva categoría",
+      "manageCategories": {
+        "trigger": "Gestionar categorías",
+        "title": "Categorías",
+        "empty": "No hay categoría por ahora.",
+        "archiveConfirmTitle": "¿Eliminar esta categoría?",
+        "archiveConfirmDescription": "Las tareas ya clasificadas en esta categoría la mantendrán en su historial, pero desaparecerá de la lista para nuevas tareas.",
+        "toasts": {
+          "renamed": "Categoría de renombre",
+          "archived": "Categoría eliminada"
+        }
+      },
       "attribueeA": "Otorgado a",
       "searchMemberPlaceholder": "Busca un miembro...",
       "loading": "Cargando...",
@@ -4975,7 +5000,9 @@
       "nonAttribuee": "No galardonado",
       "selectedCount": "{count, plural, one {# miembro seleccionado} other {# miembros seleccionados}}",
       "echeance": "Fecha límite",
+      "echeanceHint": "Opcional — la tarea permanece visible en la lista sin fecha límite.",
       "rappels": "Recordatorios",
+      "rappelsNeedEcheance": "Establece una fecha límite para poder configurar un recordatorio.",
       "noRappels": "No se ha configurado ningún recordatorio.",
       "rappelOffset": "Días",
       "rappelDirection": "Cuando",
@@ -4996,6 +5023,7 @@
       "subtitle": "Las tareas que se te asignan.",
       "empty": "Por el momento no se te han asignado tareas.",
       "echeance": "Fecha límite: {date}",
+      "sansEcheance": "Sin fecha de caducidad",
       "startWork": "Empieza",
       "markComplete": "Marcar como completado",
       "history": "Completado",

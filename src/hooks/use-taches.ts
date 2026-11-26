@@ -30,6 +30,8 @@ export type Tache = {
 
 export type TachesPaginatedResult = { data: Tache[]; total: number; page: number; limit: number; totalPages: number }
 
+export type TacheSummary = { aFaire: number; enCours: number; echeanceSous7Jours: number; enRetard: number }
+
 const KEY = ["taches"]
 const detailKey = (id: string) => ["taches", id]
 const categoriesKey = ["taches", "categories"]
@@ -78,6 +80,16 @@ export function useTachesPaginated(page: number, limit: number, filters?: TacheF
   return useQuery<TachesPaginatedResult>({
     queryKey: [...KEY, "paginated", page, limit, filters ?? {}],
     queryFn:  () => fetchJson(`/api/taches?page=${page}&limit=${limit}${qs ? `&${qs}` : ""}`),
+  })
+}
+
+// Cards de résumé au-dessus de la liste (FORM-118, commentaire Emmanuelle) — refetch à chaque
+// changement de membreId, pour que les quatre compteurs retombent sur les totaux association
+// quand le filtre "Membre" est vidé.
+export function useTacheSummary(membreId?: string) {
+  return useQuery<TacheSummary>({
+    queryKey: [...KEY, "summary", membreId ?? null],
+    queryFn:  () => fetchJson(membreId ? `/api/taches/summary?membreId=${encodeURIComponent(membreId)}` : "/api/taches/summary"),
   })
 }
 

@@ -19,6 +19,10 @@ interface Props {
   alert?:    boolean
   isLoading: boolean
   dark?:     boolean
+  // Marks this tile as the currently-applied filter (e.g. the Tâches summary cards, FORM-118)
+  // — a thin ring, since the tile already carries a hover background and a heavier treatment
+  // (border, inverted colors) would compete with that. Meaningless without onClick/href.
+  active?:   boolean
   // Optional secondary line under the value (e.g. « 12 vendus » on the Boutique top
   // products) — muted, so the value stays the tile's one figure.
   detail?:   React.ReactNode
@@ -33,7 +37,7 @@ interface Props {
 // still reads as part of the same row instead of standing out as a different component.
 const ICON_TINT = "#023D9D"
 
-export function StatTile({ label, value, icon: Icon, href, onClick, alert, isLoading, detail, isNegative }: Props) {
+export function StatTile({ label, value, icon: Icon, href, onClick, alert, isLoading, detail, isNegative, active }: Props) {
   const valueContent = (
     <span className={cn(
       "text-[1.75rem] leading-none font-medium tabular-nums",
@@ -74,7 +78,7 @@ export function StatTile({ label, value, icon: Icon, href, onClick, alert, isLoa
     </>
   )
   const tileClassName = "flex flex-col justify-between gap-3 rounded-lg bg-muted/60 p-6"
-  const interactiveClassName = cn("group transition-colors hover:bg-muted", tileClassName)
+  const interactiveClassName = cn("group transition-colors hover:bg-muted", tileClassName, active && "bg-muted ring-1 ring-primary")
 
   if (onClick) {
     return (
