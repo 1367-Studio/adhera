@@ -99,7 +99,7 @@ function MemberUsageBar({ activeCount, limit }: MemberUsage) {
         aria-valuemin={0}
         aria-valuemax={limit}
         aria-valuenow={Math.min(activeCount, limit)}
-        className="h-1.5 w-full overflow-hidden rounded-full bg-muted"
+        className="h-1.5 w-48 overflow-hidden rounded-full bg-muted-foreground/20"
       >
         <div className={cn("h-full rounded-full", BAR_FILL_CLASS[level])} style={{ width: `${percent}%` }} />
       </div>
