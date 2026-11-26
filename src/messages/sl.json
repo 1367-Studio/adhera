@@ -285,6 +285,7 @@
       "actualites": "Novice",
       "evenements": "Dogodki",
       "materiel": "Gradivo",
+      "taches": "Moje naloge",
       "cotisation": "Moja članarina",
       "dons": "Moje donacije",
       "sondages": "Raziskave",
@@ -803,6 +804,8 @@
       "snoozedSectionTitle": "{count, plural, one {# akcija začasno ustavljena} other {# dejanja začasno ustavljena}}",
       "snoozedUntil": "Dokler {date}",
       "cancelSnooze": "Prekliči zadržanje",
+      "createTask": "Ustvarite nalogo",
+      "createTaskToast": "Naloga ustvarjena",
       "actionLabels": {
         "voirEtRelancer": "Oglejte si in ponovno zaženite",
         "examiner": "Izpraševalec",
@@ -816,6 +819,15 @@
         "rapprochement-bancaire": "{count, plural, one {# operacija za primerjavo} other {# operacij za primerjavo}}",
         "notes-de-frais-a-valider": "{count, plural, one {# poročila o stroških za potrditev} other {# poročila o stroških za preverjanje}}",
         "commandes-a-preparer": "{count, plural, one {# navodila za pripravo} other {# ukazi za pripravo}}"
+      },
+      "linkBackLabels": {
+        "cotisations-en-attente": "Ogled čakajočih prispevkov",
+        "materiel-en-retard": "Oglejte si vračila zamujenih materialov",
+        "membres-a-valider": "Oglejte si člane za preverjanje",
+        "dons-a-encaisser": "Oglejte si donacije za zbiranje",
+        "rapprochement-bancaire": "Oglejte si usklajevanje bank",
+        "notes-de-frais-a-valider": "Oglejte si poročila o stroških za preverjanje",
+        "commandes-a-preparer": "Oglejte si ukaze za pripravo"
       }
     },
     "stats": {
@@ -866,6 +878,15 @@
       "noDueDate": "Brez roka",
       "viewAll": "Oglejte si vso opremo",
       "empty": "Trenutno nimam nobene izposojene opreme."
+    },
+    "mesTaches": {
+      "title": "Moje naloge",
+      "empty": "Brez odprtih nalog",
+      "openCount": "{count, plural, one {# odprta naloga} other {# Odprte naloge}}",
+      "today": "Danes",
+      "emptyToday": "Danes ni načrtovanih nobenih nalog",
+      "seeMoreToday": "Oglejte si {count} dnevna opravila",
+      "viewAll": "Oglejte si moje naloge"
     },
     "charts": {
       "income": "Prihodki",
@@ -4492,6 +4513,133 @@
       "inactiveSince": "odšel/odšla {date}"
     }
   },
+  "taches": {
+    "view": {
+      "title": "Naloge",
+      "count": "{count, plural, =0 {Brez nalog} one {# naloga} other {# naloge}}",
+      "listeLabel": "Seznam",
+      "planningLabel": "Načrtovanje",
+      "nouvelleTache": "Nova naloga",
+      "searchPlaceholder": "Išči nalogo...",
+      "filterMembre": "Član",
+      "filterCategorie": "Kategorija",
+      "filterStatut": "Status",
+      "filterEcheance": "Rok",
+      "filterEcheanceUpcoming": "Kmalu na voljo",
+      "resetFilters": "Ponastavi",
+      "empty": "Trenutno ni nobenih nalog.",
+      "emptyFiltered": "Nobena naloga ne ustreza tem filtrom.",
+      "stats": {
+        "echeanceSous7Jours": "Zapadlost v 7 dneh"
+      },
+      "columns": {
+        "tache": "Naloga",
+        "attribueeA": "Podeljeno",
+        "echeance": "Rok",
+        "statut": "Status"
+      },
+      "toasts": {
+        "created": "Naloga ustvarjena",
+        "updated": "Naloga posodobljena",
+        "tacheIntrouvable": "Naloga ni najdena"
+      }
+    },
+    "status": {
+      "aFaire": "Za narediti",
+      "enCours": "V teku",
+      "terminee": "Zaključeno",
+      "enRetard": "Pozni"
+    },
+    "detailSheet": {
+      "categorie": "Kategorija",
+      "noCategorie": "Brez kategorije",
+      "attribueeA": "Podeljeno",
+      "nonAttribuee": "Nenagrajeno",
+      "echeance": "Rok",
+      "sansEcheance": "Brez datuma poteka",
+      "rappels": "Opomniki",
+      "reminderBefore": "{count, plural, one {# dan prej} other {# dni prej}}",
+      "reminderAfter": "{count, plural, one {# dan kasneje} other {# dni kasneje}}",
+      "voirOrigine": "Oglejte si izvor",
+      "completedByOn": "Zaključeno z {name}{date}",
+      "completedOn": "Dokončano dne {date}",
+      "markComplete": "Označi kot dokončano",
+      "statutLabel": "Status naloge",
+      "completeConfirmTitle": "Označiti to nalogo kot opravljeno?",
+      "completeConfirmDescription": "Če bo potrebno, jo lahko kasneje ponovno odprete.",
+      "completeConfirmDescriptionShared": "Za vse dodeljene člane bo označen kot zaključen. Po potrebi ga lahko kasneje ponovno odprete.",
+      "deleteConfirmTitle": "Izbrisati to nalogo?",
+      "deleteConfirmDescription": "To dejanje je nepovratno.",
+      "toasts": {
+        "completed": "Naloga označena kot zaključena",
+        "statusUpdated": "Status posodobljen",
+        "deleted": "Naloga izbrisana"
+      }
+    },
+    "form": {
+      "titre": "Naslov",
+      "description": "Opis",
+      "categorie": "Kategorija",
+      "noCategorie": "Brez kategorije",
+      "newCategoriePlaceholder": "Ime kategorije",
+      "newCategorie": "+ Nova kategorija",
+      "manageCategories": {
+        "trigger": "Upravljanje kategorij",
+        "title": "Kategorije",
+        "empty": "Trenutno ni kategorije.",
+        "archiveConfirmTitle": "Odstranite to kategorijo?",
+        "archiveConfirmDescription": "Naloge, ki so že uvrščene v to kategorijo, jo bodo obdržale v svoji zgodovini, vendar bo za nove naloge izginila s seznama.",
+        "toasts": {
+          "renamed": "Priznana kategorija",
+          "archived": "Izbrisana kategorija"
+        }
+      },
+      "attribueeA": "Podeljeno",
+      "searchMemberPlaceholder": "Išči člana...",
+      "loading": "Nalaganje...",
+      "noResult": "Brez rezultatov",
+      "nonAttribuee": "Nenagrajeno",
+      "selectedCount": "{count, plural, one {# izbrani član} other {# izbranih članov}}",
+      "echeance": "Rok",
+      "echeanceHint": "Neobvezno — naloga ostane vidna na seznamu brez roka.",
+      "rappels": "Opomniki",
+      "rappelsNeedEcheance": "Določite rok, da lahko nastavite opomnik.",
+      "noRappels": "Opomnik ni nastavljen.",
+      "rappelOffset": "Dnevi",
+      "rappelDirection": "Ko",
+      "rappelAvant": "Pred rokom",
+      "rappelApres": "Po izteku roka",
+      "ajouterRappel": "Dodajte opomnik",
+      "createTitle": "Nova naloga",
+      "editTitle": "Uredite nalogo",
+      "createTache": "Ustvarite nalogo"
+    },
+    "calendar": {
+      "othersCount": "+{count} Drugo",
+      "createHere": "Ustvarite tukaj",
+      "noTacheThisDay": "Tisti dan ni bilo madežev"
+    },
+    "portalPage": {
+      "title": "Moje naloge",
+      "subtitle": "Naloge, ki so vam dodeljene.",
+      "empty": "Trenutno vam niso dodeljene nobene naloge.",
+      "echeance": "Rok: {date}",
+      "sansEcheance": "Brez datuma poteka",
+      "startWork": "Začnite",
+      "markComplete": "Označi kot dokončano",
+      "history": "Zaključeno",
+      "completedOn": "Dokončano dne {date}",
+      "status": {
+        "aFaire": "Za narediti",
+        "enCours": "V teku",
+        "terminee": "Zaključeno",
+        "enRetard": "Pozni"
+      },
+      "toasts": {
+        "completed": "Naloga označena kot zaključena"
+      }
+    }
+  },
   "cotisations": {
     "form": {
       "member": "Član",
@@ -6259,6 +6407,7 @@
       "parametres": "Nastavitve",
       "dashboard": "Nadzorna plošča",
       "membres": "Člani",
+      "taches": "Naloge",
       "evenements": "Dogodki",
       "cotisations": "Prispevki",
       "licencas": "Licence",
@@ -6280,6 +6429,7 @@
       "suporte": "Podpora",
       "associationDocuments": "Dokumenti združenja",
       "categories": {
+        "gestion": "Upravljanje",
         "adherents": "Člani",
         "communication": "Komunikacija",
         "finances": "Finance",

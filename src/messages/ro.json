@@ -285,6 +285,7 @@
       "actualites": "Știri",
       "evenements": "Evenimente",
       "materiel": "Material",
+      "taches": "Sarcinile mele",
       "cotisation": "Taxa mea de membru",
       "dons": "Donațiile mele",
       "sondages": "Sondaje",
@@ -803,6 +804,8 @@
       "snoozedSectionTitle": "{count, plural, one {# acțiune suspendată} other {# acțiuni suspendate}}",
       "snoozedUntil": "Până când {date}",
       "cancelSnooze": "Anulează blocarea",
+      "createTask": "Creați o sarcină",
+      "createTaskToast": "Sarcină creată",
       "actionLabels": {
         "voirEtRelancer": "Vezi și relansează",
         "examiner": "Examinator",
@@ -816,6 +819,15 @@
         "rapprochement-bancaire": "{count, plural, one {# operațiune ce urmează a fi comparată} other {# operațiuni de comparat}}",
         "notes-de-frais-a-valider": "{count, plural, one {# raport de cheltuieli care trebuie validat} other {# de validat rapoartele de cheltuieli}}",
         "commandes-a-preparer": "{count, plural, one {# pentru pregătire} other {# ordine de pregătire}}"
+      },
+      "linkBackLabels": {
+        "cotisations-en-attente": "Vizualizează contribuțiile în așteptare",
+        "materiel-en-retard": "Vezi returnările materialelor întârziate",
+        "membres-a-valider": "Vezi membri pentru validare",
+        "dons-a-encaisser": "Vezi donațiile de colectat",
+        "rapprochement-bancaire": "Vezi reconcilierea bancară",
+        "notes-de-frais-a-valider": "Vezi rapoartele de cheltuieli ce urmează a fi validate",
+        "commandes-a-preparer": "Vezi ordinele pentru pregătire"
       }
     },
     "stats": {
@@ -866,6 +878,15 @@
       "noDueDate": "Fără termen limită",
       "viewAll": "Vezi tot echipamentul",
       "empty": "Momentan nu am împrumutat echipament."
+    },
+    "mesTaches": {
+      "title": "Sarcinile mele",
+      "empty": "Fără sarcini deschise",
+      "openCount": "{count, plural, one {# Deschide sarcina} other {# Sarcini deschise}}",
+      "today": "Astăzi",
+      "emptyToday": "Nicio activitate planificată astăzi",
+      "seeMoreToday": "Vezi {count} sarcini zilnice",
+      "viewAll": "Vezi sarcinile mele"
     },
     "charts": {
       "income": "Venituri",
@@ -4492,6 +4513,133 @@
       "inactiveSince": "a părăsit la {date}"
     }
   },
+  "taches": {
+    "view": {
+      "title": "Sarcini",
+      "count": "{count, plural, =0 {Fără sarcini} one {# sarcină} other {# sarcini}}",
+      "listeLabel": "Listă",
+      "planningLabel": "Planificare",
+      "nouvelleTache": "Sarcină nouă",
+      "searchPlaceholder": "Caută o sarcină...",
+      "filterMembre": "Membru",
+      "filterCategorie": "Categorie",
+      "filterStatut": "Statut",
+      "filterEcheance": "Termen limită",
+      "filterEcheanceUpcoming": "În curând",
+      "resetFilters": "Resetează",
+      "empty": "Nicio sarcină deocamdată.",
+      "emptyFiltered": "Nicio sarcină nu corespunde acestor filtre.",
+      "stats": {
+        "echeanceSous7Jours": "Scadență în termen de 7 zile"
+      },
+      "columns": {
+        "tache": "Sarcina",
+        "attribueeA": "Acordat către",
+        "echeance": "Termen limită",
+        "statut": "Statut"
+      },
+      "toasts": {
+        "created": "Sarcină creată",
+        "updated": "Sarcina actualizată",
+        "tacheIntrouvable": "Sarcina nu a fost găsită"
+      }
+    },
+    "status": {
+      "aFaire": "De făcut",
+      "enCours": "În curs de desfășurare",
+      "terminee": "Finalizat",
+      "enRetard": "Târziu"
+    },
+    "detailSheet": {
+      "categorie": "Categorie",
+      "noCategorie": "Fără categorie",
+      "attribueeA": "Acordat către",
+      "nonAttribuee": "Neacordat",
+      "echeance": "Termen limită",
+      "sansEcheance": "Fără dată de expirare",
+      "rappels": "Reamintiri",
+      "reminderBefore": "{count, plural, one {# zi înainte} other {# zile înainte}}",
+      "reminderAfter": "{count, plural, one {# zi după} other {# zile mai târziu}}",
+      "voirOrigine": "Vezi originea",
+      "completedByOn": "Încheiat de {name}{date}",
+      "completedOn": "Finalizat la {date}",
+      "markComplete": "Marcați ca finalizat",
+      "statutLabel": "Starea sarcinii",
+      "completeConfirmTitle": "Marcați această sarcină ca fiind finalizată?",
+      "completeConfirmDescription": "Îl poți redeschide mai târziu dacă este nevoie.",
+      "completeConfirmDescriptionShared": "Va fi marcat ca finalizat pentru toți membrii atribuiți. Îl puteți redeschide mai târziu, dacă este nevoie.",
+      "deleteConfirmTitle": "Să șterg această sarcină?",
+      "deleteConfirmDescription": "Această acțiune este ireversibilă.",
+      "toasts": {
+        "completed": "Sarcina marcată ca finalizată",
+        "statusUpdated": "Starea actualizată",
+        "deleted": "Sarcina a fost ștearsă"
+      }
+    },
+    "form": {
+      "titre": "Titlu",
+      "description": "Descriere",
+      "categorie": "Categorie",
+      "noCategorie": "Fără categorie",
+      "newCategoriePlaceholder": "Numele categoriei",
+      "newCategorie": "+ Categorie nouă",
+      "manageCategories": {
+        "trigger": "Gestionează categoriile",
+        "title": "Categorii",
+        "empty": "Nu există categorie deocamdată.",
+        "archiveConfirmTitle": "Să eliminăm această categorie?",
+        "archiveConfirmDescription": "Sarcinile deja clasificate în această categorie o vor păstra în istoricul lor, dar va dispărea din listă pentru sarcini noi.",
+        "toasts": {
+          "renamed": "Categorie renumită",
+          "archived": "Categorie ștearsă"
+        }
+      },
+      "attribueeA": "Acordat către",
+      "searchMemberPlaceholder": "Căutați un membru...",
+      "loading": "Se încarcă...",
+      "noResult": "Fără rezultate",
+      "nonAttribuee": "Neacordat",
+      "selectedCount": "{count, plural, one {# membru selectat} other {# membri selectați}}",
+      "echeance": "Termen limită",
+      "echeanceHint": "Opțional — sarcina rămâne vizibilă în listă fără o dată limită.",
+      "rappels": "Reamintiri",
+      "rappelsNeedEcheance": "Stabilește un termen limită pentru a putea configura un memento.",
+      "noRappels": "Nicio reamintire configurată.",
+      "rappelOffset": "Zile",
+      "rappelDirection": "Când",
+      "rappelAvant": "Înainte de termenul limită",
+      "rappelApres": "După termenul limită",
+      "ajouterRappel": "Adaugă un memento",
+      "createTitle": "Sarcină nouă",
+      "editTitle": "Editați sarcina",
+      "createTache": "Creați sarcina"
+    },
+    "calendar": {
+      "othersCount": "+{count} Alții",
+      "createHere": "Creează aici",
+      "noTacheThisDay": "Fără pete în ziua aceea"
+    },
+    "portalPage": {
+      "title": "Sarcinile mele",
+      "subtitle": "Sarcinile care ți-au fost atribuite.",
+      "empty": "În acest moment nu ți-au fost atribuite sarcini.",
+      "echeance": "Termen limită: {date}",
+      "sansEcheance": "Fără dată de expirare",
+      "startWork": "Începeți",
+      "markComplete": "Marcați ca finalizat",
+      "history": "Finalizat",
+      "completedOn": "Finalizat la {date}",
+      "status": {
+        "aFaire": "De făcut",
+        "enCours": "În curs de desfășurare",
+        "terminee": "Finalizat",
+        "enRetard": "Târziu"
+      },
+      "toasts": {
+        "completed": "Sarcina marcată ca finalizată"
+      }
+    }
+  },
   "cotisations": {
     "form": {
       "member": "Membru",
@@ -6259,6 +6407,7 @@
       "parametres": "Setări",
       "dashboard": "Dashboard",
       "membres": "Membri",
+      "taches": "Sarcini",
       "evenements": "Evenimente",
       "cotisations": "Contribuții",
       "licencas": "Licențe",
@@ -6280,6 +6429,7 @@
       "suporte": "Sprijin",
       "associationDocuments": "Documentele asociației",
       "categories": {
+        "gestion": "Management",
         "adherents": "Membri",
         "communication": "Comunicare",
         "finances": "Finanțe",

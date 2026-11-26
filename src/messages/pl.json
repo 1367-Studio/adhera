@@ -285,6 +285,7 @@
       "actualites": "Wiadomości",
       "evenements": "Wydarzenia",
       "materiel": "Materiał",
+      "taches": "Moje zadania",
       "cotisation": "Moja składka członkowska",
       "dons": "Moje darowizny",
       "sondages": "Badania",
@@ -803,6 +804,8 @@
       "snoozedSectionTitle": "{count, plural, one {# wstrzymanie działań} other {# wstrzymane działania}}",
       "snoozedUntil": "Aż do {date}",
       "cancelSnooze": "Anuluj blokadę",
+      "createTask": "Utwórz zadanie",
+      "createTaskToast": "Zadanie utworzone",
       "actionLabels": {
         "voirEtRelancer": "Zobacz i wznowić",
         "examiner": "Egzaminator",
@@ -816,6 +819,15 @@
         "rapprochement-bancaire": "{count, plural, one {# operacja do porównania} other {# operacje do porównania}}",
         "notes-de-frais-a-valider": "{count, plural, one {# raport wydatków do weryfikacji} other {# raporty wydatków do weryfikacji}}",
         "commandes-a-preparer": "{count, plural, one {# porządek przygotowania} other {# rozkazy przygotowania}}"
+      },
+      "linkBackLabels": {
+        "cotisations-en-attente": "Zobacz oczekujące wpłaty",
+        "materiel-en-retard": "Zobacz zwroty materiałów opóźnionych",
+        "membres-a-valider": "Zobacz członków, aby zweryfikować",
+        "dons-a-encaisser": "Zobacz darowizny do zebrania",
+        "rapprochement-bancaire": "Zobacz uzgadnianie banków",
+        "notes-de-frais-a-valider": "Zobacz raporty wydatków do weryfikacji",
+        "commandes-a-preparer": "Zobacz rozkazy przygotowania"
       }
     },
     "stats": {
@@ -866,6 +878,15 @@
       "noDueDate": "Brak terminu",
       "viewAll": "Zobacz cały sprzęt",
       "empty": "Obecnie nie pożyczono żadnego sprzętu."
+    },
+    "mesTaches": {
+      "title": "Moje zadania",
+      "empty": "Brak otwartych zadań",
+      "openCount": "{count, plural, one {# otwarte zadanie} other {# Otwarte zadania}}",
+      "today": "Dziś",
+      "emptyToday": "Dziś nie zaplanowano żadnych zadań",
+      "seeMoreToday": "Zobacz {count} codzienne zadania",
+      "viewAll": "Zobacz moje zadania"
     },
     "charts": {
       "income": "Przychody",
@@ -4492,6 +4513,133 @@
       "inactiveSince": "opuścił/a {date}"
     }
   },
+  "taches": {
+    "view": {
+      "title": "Zadania",
+      "count": "{count, plural, =0 {Brak zadań} one {# zadanie} other {# zadania}}",
+      "listeLabel": "Lista",
+      "planningLabel": "Planowanie",
+      "nouvelleTache": "Nowe zadanie",
+      "searchPlaceholder": "Wyszukaj zadanie...",
+      "filterMembre": "Członek",
+      "filterCategorie": "Kategoria",
+      "filterStatut": "Status",
+      "filterEcheance": "Termin",
+      "filterEcheanceUpcoming": "Wkrótce dostępne",
+      "resetFilters": "Reset",
+      "empty": "Na razie nie mam żadnych zadań.",
+      "emptyFiltered": "Żadne zadanie nie pasuje do tych filtrów.",
+      "stats": {
+        "echeanceSous7Jours": "Termin zapadalności w ciągu 7 dni"
+      },
+      "columns": {
+        "tache": "Zadanie",
+        "attribueeA": "Przyznawane",
+        "echeance": "Termin",
+        "statut": "Status"
+      },
+      "toasts": {
+        "created": "Zadanie utworzone",
+        "updated": "Zadanie zaktualizowane",
+        "tacheIntrouvable": "Zadanie nie znaleziono"
+      }
+    },
+    "status": {
+      "aFaire": "Co zrobić",
+      "enCours": "W trakcie realizacji",
+      "terminee": "Ukończone",
+      "enRetard": "Późny"
+    },
+    "detailSheet": {
+      "categorie": "Kategoria",
+      "noCategorie": "Brak kategorii",
+      "attribueeA": "Przyznawane",
+      "nonAttribuee": "Nieprzyznane",
+      "echeance": "Termin",
+      "sansEcheance": "Brak daty ważności",
+      "rappels": "Przypomnienia",
+      "reminderBefore": "{count, plural, one {# dzień wcześniej} other {# dni wcześniej}}",
+      "reminderAfter": "{count, plural, one {# dzień później} other {# dni później}}",
+      "voirOrigine": "Zobacz pochodzenie",
+      "completedByOn": "Zakończone przez {name}{date}",
+      "completedOn": "Zakończono dnia {date}",
+      "markComplete": "Oznacz jako zakończone",
+      "statutLabel": "Status zadania",
+      "completeConfirmTitle": "Oznaczyć to zadanie jako zakończone?",
+      "completeConfirmDescription": "Możesz go później otworzyć, jeśli zajdzie taka potrzeba.",
+      "completeConfirmDescriptionShared": "Zostanie oznaczona jako zakończona dla wszystkich przypisanych członków. Możesz ją ponownie otworzyć później, jeśli zajdzie taka potrzeba.",
+      "deleteConfirmTitle": "Usunąć to zadanie?",
+      "deleteConfirmDescription": "To działanie jest nieodwracalne.",
+      "toasts": {
+        "completed": "Zadanie oznaczone jako zakończone",
+        "statusUpdated": "Status zaktualizowany",
+        "deleted": "Zadanie usunięte"
+      }
+    },
+    "form": {
+      "titre": "Tytuł",
+      "description": "Opis",
+      "categorie": "Kategoria",
+      "noCategorie": "Brak kategorii",
+      "newCategoriePlaceholder": "Nazwa kategorii",
+      "newCategorie": "+ Nowa kategoria",
+      "manageCategories": {
+        "trigger": "Zarządzaj kategoriami",
+        "title": "Kategorie",
+        "empty": "Na razie nie ma kategorii.",
+        "archiveConfirmTitle": "Usunąć tę kategorię?",
+        "archiveConfirmDescription": "Zadania już sklasyfikowane w tej kategorii zachowają ją w historii, ale zniknie z listy dla nowych zadań.",
+        "toasts": {
+          "renamed": "Kategoria renomowana",
+          "archived": "Kategoria usunięta"
+        }
+      },
+      "attribueeA": "Przyznawane",
+      "searchMemberPlaceholder": "Wyszukaj członka...",
+      "loading": "Ładowanie...",
+      "noResult": "Brak wyników",
+      "nonAttribuee": "Nieprzyznane",
+      "selectedCount": "{count, plural, one {# wybrany członek} other {# wybranych członków}}",
+      "echeance": "Termin",
+      "echeanceHint": "Opcjonalne — zadanie pozostaje widoczne na liście bez daty realizacji.",
+      "rappels": "Przypomnienia",
+      "rappelsNeedEcheance": "Ustal termin, aby móc ustawić przypomnienie.",
+      "noRappels": "Nie skonfigurowano przypomnienia.",
+      "rappelOffset": "Dni",
+      "rappelDirection": "Kiedy",
+      "rappelAvant": "Przed upływem terminu",
+      "rappelApres": "Po upływie terminu",
+      "ajouterRappel": "Dodaj przypomnienie",
+      "createTitle": "Nowe zadanie",
+      "editTitle": "Edytuj zadanie",
+      "createTache": "Utwórz zadanie"
+    },
+    "calendar": {
+      "othersCount": "+{count} Inne",
+      "createHere": "Twórz tutaj",
+      "noTacheThisDay": "Tego dnia nie było żadnych plam"
+    },
+    "portalPage": {
+      "title": "Moje zadania",
+      "subtitle": "Zadania ci przydzielone.",
+      "empty": "Na razie nie przydzielono ci żadnych zadań.",
+      "echeance": "Termin: {date}",
+      "sansEcheance": "Brak daty ważności",
+      "startWork": "Rozpocznij",
+      "markComplete": "Oznacz jako zakończone",
+      "history": "Ukończone",
+      "completedOn": "Zakończono dnia {date}",
+      "status": {
+        "aFaire": "Co zrobić",
+        "enCours": "W trakcie realizacji",
+        "terminee": "Ukończone",
+        "enRetard": "Późny"
+      },
+      "toasts": {
+        "completed": "Zadanie oznaczone jako zakończone"
+      }
+    }
+  },
   "cotisations": {
     "form": {
       "member": "Członek",
@@ -6259,6 +6407,7 @@
       "parametres": "Ustawienia",
       "dashboard": "Dashboard",
       "membres": "Członkowie",
+      "taches": "Zadania",
       "evenements": "Wydarzenia",
       "cotisations": "Wkład",
       "licencas": "Licencje",
@@ -6280,6 +6429,7 @@
       "suporte": "Wsparcie",
       "associationDocuments": "Dokumenty stowarzyszenia",
       "categories": {
+        "gestion": "Zarządzanie",
         "adherents": "Członkowie",
         "communication": "Komunikacja",
         "finances": "Finanse",

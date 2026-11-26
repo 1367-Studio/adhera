@@ -285,6 +285,7 @@
       "actualites": "Nyheder",
       "evenements": "Begivenheder",
       "materiel": "Materiale",
+      "taches": "Mine opgaver",
       "cotisation": "Mit medlemsgebyr",
       "dons": "Mine donationer",
       "sondages": "Undersøgelser",
@@ -803,6 +804,8 @@
       "snoozedSectionTitle": "{count, plural, one {# handling sat på pause} other {# handlinger sat på pause}}",
       "snoozedUntil": "Indtil {date}",
       "cancelSnooze": "Opskær holdet",
+      "createTask": "Opret en opgave",
+      "createTaskToast": "Opgave oprettet",
       "actionLabels": {
         "voirEtRelancer": "Se og genlancering",
         "examiner": "Examinator",
@@ -816,6 +819,15 @@
         "rapprochement-bancaire": "{count, plural, one {# operation, der skal sammenlignes} other {# operationer at sammenligne}}",
         "notes-de-frais-a-valider": "{count, plural, one {# udgiftsrapport, der skal valideres} other {# udgiftsrapporter, der skal valideres}}",
         "commandes-a-preparer": "{count, plural, one {# for at forberede} other {# ordrer til forberedelse}}"
+      },
+      "linkBackLabels": {
+        "cotisations-en-attente": "Se ventende bidrag",
+        "materiel-en-retard": "Se returneringer af forsinkede materialer",
+        "membres-a-valider": "Se medlemmer for at validere",
+        "dons-a-encaisser": "Se donationerne, der skal indsamles",
+        "rapprochement-bancaire": "Se bankafstemningen",
+        "notes-de-frais-a-valider": "Se udgiftsrapporter, der skal valideres",
+        "commandes-a-preparer": "Se ordrerne til forberedelse"
       }
     },
     "stats": {
@@ -866,6 +878,15 @@
       "noDueDate": "Ingen deadline",
       "viewAll": "Se alt udstyr",
       "empty": "Intet udstyr er lånt i øjeblikket."
+    },
+    "mesTaches": {
+      "title": "Mine opgaver",
+      "empty": "Ingen åbne opgaver",
+      "openCount": "{count, plural, one {# åben opgave} other {# Åbne opgaver}}",
+      "today": "I dag",
+      "emptyToday": "Ingen planlagte opgaver i dag",
+      "seeMoreToday": "Se {count} Daglige opgaver",
+      "viewAll": "Se mine opgaver"
     },
     "charts": {
       "income": "Indtægter",
@@ -4492,6 +4513,133 @@
       "inactiveSince": "forlod den {date}"
     }
   },
+  "taches": {
+    "view": {
+      "title": "Opgaver",
+      "count": "{count, plural, =0 {Ingen opgaver} one {# opgave} other {# opgaver}}",
+      "listeLabel": "Liste",
+      "planningLabel": "Planlægning",
+      "nouvelleTache": "Ny opgave",
+      "searchPlaceholder": "Søg efter en opgave...",
+      "filterMembre": "Medlem",
+      "filterCategorie": "Kategori",
+      "filterStatut": "Status",
+      "filterEcheance": "Deadline",
+      "filterEcheanceUpcoming": "Kommer snart",
+      "resetFilters": "Nulstil",
+      "empty": "Ingen opgaver lige nu.",
+      "emptyFiltered": "Ingen opgave matcher disse filtre.",
+      "stats": {
+        "echeanceSous7Jours": "Udløb inden for 7 dage"
+      },
+      "columns": {
+        "tache": "Opgave",
+        "attribueeA": "Tildelt til",
+        "echeance": "Deadline",
+        "statut": "Status"
+      },
+      "toasts": {
+        "created": "Opgave oprettet",
+        "updated": "Opgave opdateret",
+        "tacheIntrouvable": "Opgave ikke fundet"
+      }
+    },
+    "status": {
+      "aFaire": "At gøre",
+      "enCours": "Under udvikling",
+      "terminee": "Færdiggjort",
+      "enRetard": "Sen"
+    },
+    "detailSheet": {
+      "categorie": "Kategori",
+      "noCategorie": "Ingen kategori",
+      "attribueeA": "Tildelt til",
+      "nonAttribuee": "Ikke tildelt",
+      "echeance": "Deadline",
+      "sansEcheance": "Ingen udløbsdato",
+      "rappels": "Påmindelser",
+      "reminderBefore": "{count, plural, one {# dagen før} other {# dage før}}",
+      "reminderAfter": "{count, plural, one {# dagen efter} other {# dage senere}}",
+      "voirOrigine": "Se oprindelsen",
+      "completedByOn": "Afsluttet med {name} Den {date}",
+      "completedOn": "Færdiggjort den {date}",
+      "markComplete": "Markér som færdig",
+      "statutLabel": "Opgavestatus",
+      "completeConfirmTitle": "Markere denne opgave som fuldført?",
+      "completeConfirmDescription": "Du kan åbne den igen senere, hvis det er nødvendigt.",
+      "completeConfirmDescriptionShared": "Den vil blive markeret som fuldført for alle tildelte medlemmer. Du kan genåbne den senere, hvis det er nødvendigt.",
+      "deleteConfirmTitle": "Slette denne opgave?",
+      "deleteConfirmDescription": "Denne handling er irreversibel.",
+      "toasts": {
+        "completed": "Opgave markeret som fuldført",
+        "statusUpdated": "Status opdateret",
+        "deleted": "Opgave slettet"
+      }
+    },
+    "form": {
+      "titre": "Titel",
+      "description": "Beskrivelse",
+      "categorie": "Kategori",
+      "noCategorie": "Ingen kategori",
+      "newCategoriePlaceholder": "Kategorinavn",
+      "newCategorie": "+ Ny kategori",
+      "manageCategories": {
+        "trigger": "Administrer kategorier",
+        "title": "Kategorier",
+        "empty": "Ingen kategori lige nu.",
+        "archiveConfirmTitle": "Fjern denne kategori?",
+        "archiveConfirmDescription": "Opgaver, der allerede er klassificeret i denne kategori, beholder den i deres historik, men den forsvinder fra listen for nye opgaver.",
+        "toasts": {
+          "renamed": "Anerkendt kategori",
+          "archived": "Slettet kategori"
+        }
+      },
+      "attribueeA": "Tildelt til",
+      "searchMemberPlaceholder": "Søg efter et medlem...",
+      "loading": "Indlæser...",
+      "noResult": "Ingen resultater",
+      "nonAttribuee": "Ikke tildelt",
+      "selectedCount": "{count, plural, one {# udvalgt medlem} other {# udvalgte medlemmer}}",
+      "echeance": "Deadline",
+      "echeanceHint": "Valgfrit — opgaven forbliver synlig i listen uden en deadline.",
+      "rappels": "Påmindelser",
+      "rappelsNeedEcheance": "Sæt en deadline for at kunne sætte en påmindelse op.",
+      "noRappels": "Ingen påmindelse konfigureret.",
+      "rappelOffset": "Dage",
+      "rappelDirection": "Hvornår",
+      "rappelAvant": "Før fristen",
+      "rappelApres": "Efter fristen",
+      "ajouterRappel": "Tilføj en påmindelse",
+      "createTitle": "Ny opgave",
+      "editTitle": "Rediger opgaven",
+      "createTache": "Opret opgaven"
+    },
+    "calendar": {
+      "othersCount": "+{count} Andre",
+      "createHere": "Opret her",
+      "noTacheThisDay": "Ingen pletter den dag"
+    },
+    "portalPage": {
+      "title": "Mine opgaver",
+      "subtitle": "De opgaver, der er tildelt dig.",
+      "empty": "Der er ikke tildelt dig nogen opgaver i øjeblikket.",
+      "echeance": "Deadline: {date}",
+      "sansEcheance": "Ingen udløbsdato",
+      "startWork": "Kom i gang",
+      "markComplete": "Markér som færdig",
+      "history": "Færdiggjort",
+      "completedOn": "Færdiggjort den {date}",
+      "status": {
+        "aFaire": "At gøre",
+        "enCours": "Under udvikling",
+        "terminee": "Færdiggjort",
+        "enRetard": "Sen"
+      },
+      "toasts": {
+        "completed": "Opgave markeret som fuldført"
+      }
+    }
+  },
   "cotisations": {
     "form": {
       "member": "Medlem",
@@ -6259,6 +6407,7 @@
       "parametres": "Indstillinger",
       "dashboard": "Dashboard",
       "membres": "Medlemmer",
+      "taches": "Opgaver",
       "evenements": "Begivenheder",
       "cotisations": "Bidrag",
       "licencas": "Licenser",
@@ -6280,6 +6429,7 @@
       "suporte": "Støtte",
       "associationDocuments": "Foreningsdokumenter",
       "categories": {
+        "gestion": "Ledelse",
         "adherents": "Medlemmer",
         "communication": "Kommunikation",
         "finances": "Finansiering",

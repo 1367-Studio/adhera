@@ -285,6 +285,7 @@
       "actualites": "Uudised",
       "evenements": "Sündmused",
       "materiel": "Materjal",
+      "taches": "Minu ülesanded",
       "cotisation": "Minu liikmemaksu",
       "dons": "Minu annetused",
       "sondages": "Küsitlused",
@@ -803,6 +804,8 @@
       "snoozedSectionTitle": "{count, plural, one {# tegevus peatati} other {# tegevused on ootele pandud}}",
       "snoozedUntil": "Kuni {date}",
       "cancelSnooze": "Tühista peatamine",
+      "createTask": "Loo ülesanne",
+      "createTaskToast": "Loodud ülesanne",
       "actionLabels": {
         "voirEtRelancer": "Vaata ja taaskäivita",
         "examiner": "Eksamineerija",
@@ -816,6 +819,15 @@
         "rapprochement-bancaire": "{count, plural, one {# operatsiooni, mida võrrelda} other {# operatsioonid võrrelda}}",
         "notes-de-frais-a-valider": "{count, plural, one {# kuluaruanne valideerimiseks} other {# kuluaruanded, mida valideerida}}",
         "commandes-a-preparer": "{count, plural, one {# ettevalmistuskäsk} other {# ettevalmistuskäsk}}"
+      },
+      "linkBackLabels": {
+        "cotisations-en-attente": "Vaata ootel panuseid",
+        "materiel-en-retard": "Vaata hilinenud materjalide tagastusi",
+        "membres-a-valider": "Vaata liikmeid valideerimiseks",
+        "dons-a-encaisser": "Vaata annetusi, mida koguda",
+        "rapprochement-bancaire": "Vaata panga kooskõlastust",
+        "notes-de-frais-a-valider": "Vaata valideeritavaid kuluaruandeid",
+        "commandes-a-preparer": "Vaata ettevalmistamiseks korraldusi"
       }
     },
     "stats": {
@@ -866,6 +878,15 @@
       "noDueDate": "Tähtaega pole",
       "viewAll": "Vaata kogu varustust",
       "empty": "Praegu pole laenatud seadmeid."
+    },
+    "mesTaches": {
+      "title": "Minu ülesanded",
+      "empty": "Avatud ülesandeid ei ole",
+      "openCount": "{count, plural, one {# avatud ülesanne} other {# Avatud ülesanded}}",
+      "today": "Tänapäeval",
+      "emptyToday": "Täna pole planeeritud ülesandeid",
+      "seeMoreToday": "Vaata {count} igapäevased ülesanded",
+      "viewAll": "Vaata minu ülesandeid"
     },
     "charts": {
       "income": "Tulud",
@@ -4492,6 +4513,133 @@
       "inactiveSince": "lahkus {date}"
     }
   },
+  "taches": {
+    "view": {
+      "title": "Ülesanded",
+      "count": "{count, plural, =0 {Ülesandeid ei ole} one {# ülesanne} other {# ülesanded}}",
+      "listeLabel": "Nimekiri",
+      "planningLabel": "Planeerimine",
+      "nouvelleTache": "Uus ülesanne",
+      "searchPlaceholder": "Otsi ülesannet...",
+      "filterMembre": "Liige",
+      "filterCategorie": "Kategooria",
+      "filterStatut": "Staatus",
+      "filterEcheance": "Tähtaeg",
+      "filterEcheanceUpcoming": "Tulen varsti",
+      "resetFilters": "Lähtesta",
+      "empty": "Hetkel pole ühtegi ülesannet.",
+      "emptyFiltered": "Ükski ülesanne ei vasta nendele filtritele.",
+      "stats": {
+        "echeanceSous7Jours": "Tähtaeg 7 päeva jooksul"
+      },
+      "columns": {
+        "tache": "Ülesanne",
+        "attribueeA": "Antud",
+        "echeance": "Tähtaeg",
+        "statut": "Staatus"
+      },
+      "toasts": {
+        "created": "Loodud ülesanne",
+        "updated": "Ülesanne uuendatud",
+        "tacheIntrouvable": "Ülesannet ei leitud"
+      }
+    },
+    "status": {
+      "aFaire": "Tegema",
+      "enCours": "Töös",
+      "terminee": "Valmis",
+      "enRetard": "Hiline"
+    },
+    "detailSheet": {
+      "categorie": "Kategooria",
+      "noCategorie": "Kategooriat ei ole",
+      "attribueeA": "Antud",
+      "nonAttribuee": "Tunnustamata",
+      "echeance": "Tähtaeg",
+      "sansEcheance": "Aegumiskuupäeva puudub",
+      "rappels": "Meeldetuletused",
+      "reminderBefore": "{count, plural, one {# päev enne} other {# päeva enne}}",
+      "reminderAfter": "{count, plural, one {# päev pärast} other {# päeva hiljem}}",
+      "voirOrigine": "Vaata päritolu",
+      "completedByOn": "Lõppenud {name} The {date}",
+      "completedOn": "Lõpetatud {date}",
+      "markComplete": "Märgi lõpetatuks",
+      "statutLabel": "Ülesande olek",
+      "completeConfirmTitle": "Kas märgid selle ülesande lõpetatuks?",
+      "completeConfirmDescription": "Vajadusel saad selle hiljem uuesti avada.",
+      "completeConfirmDescriptionShared": "Kõik määratud liikmed märgitakse lõpetatuks. Vajadusel saate selle hiljem uuesti avada.",
+      "deleteConfirmTitle": "Kustutada see ülesanne?",
+      "deleteConfirmDescription": "See tegevus on pöördumatu.",
+      "toasts": {
+        "completed": "Ülesanne märgitud lõpetatuks",
+        "statusUpdated": "Staatus uuendatud",
+        "deleted": "Ülesanne kustutatud"
+      }
+    },
+    "form": {
+      "titre": "Pealkiri",
+      "description": "Kirjeldus",
+      "categorie": "Kategooria",
+      "noCategorie": "Kategooriat ei ole",
+      "newCategoriePlaceholder": "Kategooria nimi",
+      "newCategorie": "+ Uus kategooria",
+      "manageCategories": {
+        "trigger": "Halda kategooriaid",
+        "title": "Kategooriad",
+        "empty": "Hetkel pole ühtegi kategooriat.",
+        "archiveConfirmTitle": "Kas see kategooria eemaldada?",
+        "archiveConfirmDescription": "Selles kategoorias juba klassifitseeritud ülesanded säilitavad selle oma ajaloos, kuid uute ülesannete puhul kaob see nimekirjast.",
+        "toasts": {
+          "renamed": "Tuntud kategooria",
+          "archived": "Kustutatud kategooria"
+        }
+      },
+      "attribueeA": "Antud",
+      "searchMemberPlaceholder": "Otsi liiget...",
+      "loading": "Laadin...",
+      "noResult": "Tulemusi pole",
+      "nonAttribuee": "Tunnustamata",
+      "selectedCount": "{count, plural, one {# valitud liige} other {# valitud liikmeid}}",
+      "echeance": "Tähtaeg",
+      "echeanceHint": "Valikuline — ülesanne jääb nimekirjas nähtavaks ilma tähtaega.",
+      "rappels": "Meeldetuletused",
+      "rappelsNeedEcheance": "Sea tähtaeg, et saaksite meenutust seadistada.",
+      "noRappels": "Meeldetuletust pole seadistatud.",
+      "rappelOffset": "Päevad",
+      "rappelDirection": "Kui",
+      "rappelAvant": "Enne tähtaega",
+      "rappelApres": "Pärast tähtaega",
+      "ajouterRappel": "Lisa meeldetuletus",
+      "createTitle": "Uus ülesanne",
+      "editTitle": "Muuda ülesannet",
+      "createTache": "Loo ülesanne"
+    },
+    "calendar": {
+      "othersCount": "+{count} Muud",
+      "createHere": "Loo siin",
+      "noTacheThisDay": "Sel päeval plekke polnud"
+    },
+    "portalPage": {
+      "title": "Minu ülesanded",
+      "subtitle": "Sulle määratud ülesanded.",
+      "empty": "Teile pole hetkel ühtegi ülesannet määratud.",
+      "echeance": "Tähtaeg: {date}",
+      "sansEcheance": "Aegumiskuupäeva puudub",
+      "startWork": "Alusta",
+      "markComplete": "Märgi lõpetatuks",
+      "history": "Valmis",
+      "completedOn": "Lõpetatud {date}",
+      "status": {
+        "aFaire": "Tegema",
+        "enCours": "Töös",
+        "terminee": "Valmis",
+        "enRetard": "Hiline"
+      },
+      "toasts": {
+        "completed": "Ülesanne märgitud lõpetatuks"
+      }
+    }
+  },
   "cotisations": {
     "form": {
       "member": "Liige",
@@ -6259,6 +6407,7 @@
       "parametres": "Seaded",
       "dashboard": "Dashboard",
       "membres": "Liikmed",
+      "taches": "Ülesanded",
       "evenements": "Sündmused",
       "cotisations": "Panused",
       "licencas": "Litsentsid",
@@ -6280,6 +6429,7 @@
       "suporte": "Toetus",
       "associationDocuments": "Ühingu dokumendid",
       "categories": {
+        "gestion": "Juhtimine",
         "adherents": "Liikmed",
         "communication": "Kommunikatsioon",
         "finances": "Rahandus",

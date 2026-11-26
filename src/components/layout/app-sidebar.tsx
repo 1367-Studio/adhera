@@ -29,6 +29,7 @@ import {
   CalendarBlankIcon,
   CaretRightIcon,
   ChatsCircleIcon,
+  CheckSquareIcon,
   ClipboardTextIcon,
   CoinsIcon,
   EnvelopeSimpleIcon,
@@ -58,7 +59,7 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { Fragment, useEffect, useRef, useState } from "react"
 
-type CategoryKey = "adherents" | "communication" | "finances" | "outils"
+type CategoryKey = "gestion" | "adherents" | "communication" | "finances" | "outils"
 
 interface NavItem {
   key:          string
@@ -73,6 +74,7 @@ interface NavItem {
 }
 
 const CATEGORIES: { key: CategoryKey; icon: Icon }[] = [
+  { key: "gestion",        icon: CheckSquareIcon },
   { key: "adherents",      icon: UsersThreeIcon },
   { key: "communication",  icon: ChatsCircleIcon },
   { key: "finances",       icon: MoneyIcon },
@@ -85,6 +87,8 @@ const CATEGORIES: { key: CategoryKey; icon: Icon }[] = [
 // stays ungrouped instead, alongside "Tableau de bord".
 const navigationItems: NavItem[] = [
   { key: "dashboard",     href: "/dashboard",              icon: SquaresFourIcon },
+
+  { key: "taches",        href: "/dashboard/taches",       icon: CheckSquareIcon, moduleKey: "taches", categoryKey: "gestion" },
 
   { key: "membres",       href: "/dashboard/membres",      icon: UsersIcon, categoryKey: "adherents" },
   { key: "groupes",       href: "/dashboard/groupes",      icon: ListChecksIcon, moduleKey: "groupes", categoryKey: "adherents" },

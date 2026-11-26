@@ -285,6 +285,7 @@
       "actualites": "Nieuws",
       "evenements": "Evenementen",
       "materiel": "Materiaal",
+      "taches": "Mijn taken",
       "cotisation": "Mijn lidmaatschapsbijdrage",
       "dons": "Mijn Donaties",
       "sondages": "Onderzoeken",
@@ -803,6 +804,8 @@
       "snoozedSectionTitle": "{count, plural, one {# actie opgeschort} other {# acties die op pauze zijn gezet}}",
       "snoozedUntil": "Tot {date}",
       "cancelSnooze": "Annuleer de wacht",
+      "createTask": "Een taak aanmaken",
+      "createTaskToast": "Taak aangemaakt",
       "actionLabels": {
         "voirEtRelancer": "Zie en herlanceren",
         "examiner": "Examinator",
@@ -816,6 +819,15 @@
         "rapprochement-bancaire": "{count, plural, one {# te vergelijken operatie} other {# operaties om te vergelijken}}",
         "notes-de-frais-a-valider": "{count, plural, one {# onkostenrapport te valideren} other {# onkostenrapporten te valideren}}",
         "commandes-a-preparer": "{count, plural, one {# om voor te bereiden} other {# orders om voor te bereiden}}"
+      },
+      "linkBackLabels": {
+        "cotisations-en-attente": "Bekijk lopende bijdragen",
+        "materiel-en-retard": "Zie terugzendingen van vertraagde materialen",
+        "membres-a-valider": "Zie leden om te valideren",
+        "dons-a-encaisser": "Bekijk de donaties om te verzamelen",
+        "rapprochement-bancaire": "Zie de bankafstemming",
+        "notes-de-frais-a-valider": "Zie onkostenrapporten die gevalideerd moeten worden",
+        "commandes-a-preparer": "Bekijk de orders voor de voorbereiding"
       }
     },
     "stats": {
@@ -866,6 +878,15 @@
       "noDueDate": "Geen deadline",
       "viewAll": "Bekijk alle apparatuur",
       "empty": "Er is momenteel geen apparatuur geleend."
+    },
+    "mesTaches": {
+      "title": "Mijn taken",
+      "empty": "Geen open taken",
+      "openCount": "{count, plural, one {# Open taak} other {# Open taken}}",
+      "today": "Vandaag",
+      "emptyToday": "Geen taken gepland vandaag",
+      "seeMoreToday": "Zie de {count} dagelijkse taken",
+      "viewAll": "Bekijk mijn taken"
     },
     "charts": {
       "income": "Inkomsten",
@@ -4492,6 +4513,133 @@
       "inactiveSince": "vertrokken op {date}"
     }
   },
+  "taches": {
+    "view": {
+      "title": "Taken",
+      "count": "{count, plural, =0 {Geen taken} one {# taak} other {# taken}}",
+      "listeLabel": "Lijst",
+      "planningLabel": "Planning",
+      "nouvelleTache": "Nieuwe taak",
+      "searchPlaceholder": "Zoek naar een taak...",
+      "filterMembre": "Lid",
+      "filterCategorie": "Categorie",
+      "filterStatut": "Status",
+      "filterEcheance": "Deadline",
+      "filterEcheanceUpcoming": "Binnenkort",
+      "resetFilters": "Reset",
+      "empty": "Op dit moment geen taken.",
+      "emptyFiltered": "Geen enkele taak komt overeen met deze filters.",
+      "stats": {
+        "echeanceSous7Jours": "Rijpheid binnen 7 dagen"
+      },
+      "columns": {
+        "tache": "Taak",
+        "attribueeA": "Toegekend aan",
+        "echeance": "Deadline",
+        "statut": "Status"
+      },
+      "toasts": {
+        "created": "Taak aangemaakt",
+        "updated": "Taak bijgewerkt",
+        "tacheIntrouvable": "Taak niet gevonden"
+      }
+    },
+    "status": {
+      "aFaire": "Doen",
+      "enCours": "In uitvoering",
+      "terminee": "Voltooid",
+      "enRetard": "Late"
+    },
+    "detailSheet": {
+      "categorie": "Categorie",
+      "noCategorie": "Geen categorie",
+      "attribueeA": "Toegekend aan",
+      "nonAttribuee": "Niet toegekend",
+      "echeance": "Deadline",
+      "sansEcheance": "Geen vervaldatum",
+      "rappels": "Herinneringen",
+      "reminderBefore": "{count, plural, one {# dag ervoor} other {# dagen ervoor}}",
+      "reminderAfter": "{count, plural, one {# dag erna} other {# dagen later}}",
+      "voirOrigine": "Zie de oorsprong",
+      "completedByOn": "Beëindigd door {name} de {date}",
+      "completedOn": "Voltooid op {date}",
+      "markComplete": "Markeer als voltooid",
+      "statutLabel": "Taakstatus",
+      "completeConfirmTitle": "Markeer deze taak als voltooid?",
+      "completeConfirmDescription": "Je kunt het later opnieuw openen indien nodig.",
+      "completeConfirmDescriptionShared": "Het wordt als voltooid gemarkeerd voor alle toegewezen leden. Je kunt het later opnieuw openen indien nodig.",
+      "deleteConfirmTitle": "Deze taak verwijderen?",
+      "deleteConfirmDescription": "Deze actie is onomkeerbaar.",
+      "toasts": {
+        "completed": "Taak als voltooid gemarkeerd",
+        "statusUpdated": "Status bijgewerkt",
+        "deleted": "Taak verwijderd"
+      }
+    },
+    "form": {
+      "titre": "Titel",
+      "description": "Beschrijving",
+      "categorie": "Categorie",
+      "noCategorie": "Geen categorie",
+      "newCategoriePlaceholder": "Categorienaam",
+      "newCategorie": "+ Nieuwe categorie",
+      "manageCategories": {
+        "trigger": "Categorieën beheren",
+        "title": "Categorieën",
+        "empty": "Op dit moment geen categorie.",
+        "archiveConfirmTitle": "Deze categorie verwijderen?",
+        "archiveConfirmDescription": "Taken die al in deze categorie zijn geclassificeerd, bewaren deze in hun geschiedenis, maar deze verdwijnt uit de lijst voor nieuwe taken.",
+        "toasts": {
+          "renamed": "Beroemde categorie",
+          "archived": "Verwijderde categorie"
+        }
+      },
+      "attribueeA": "Toegekend aan",
+      "searchMemberPlaceholder": "Zoek naar een lid...",
+      "loading": "Laden...",
+      "noResult": "Geen resultaten",
+      "nonAttribuee": "Niet toegekend",
+      "selectedCount": "{count, plural, one {# geselecteerd lid} other {# geselecteerde leden}}",
+      "echeance": "Deadline",
+      "echeanceHint": "Optioneel — de taak blijft zichtbaar in de lijst zonder een vervaldatum.",
+      "rappels": "Herinneringen",
+      "rappelsNeedEcheance": "Stel een deadline om een herinnering in te stellen.",
+      "noRappels": "Geen herinnering ingesteld.",
+      "rappelOffset": "Dagen",
+      "rappelDirection": "Wanneer",
+      "rappelAvant": "Voor de deadline",
+      "rappelApres": "Na de deadline",
+      "ajouterRappel": "Een herinnering toevoegen",
+      "createTitle": "Nieuwe taak",
+      "editTitle": "De taak bewerken",
+      "createTache": "Maak de taak aan"
+    },
+    "calendar": {
+      "othersCount": "+{count} Overigen",
+      "createHere": "Maak hier",
+      "noTacheThisDay": "Geen vlekken die dag"
+    },
+    "portalPage": {
+      "title": "Mijn taken",
+      "subtitle": "De taken die aan jou zijn toegewezen.",
+      "empty": "Er zijn op dit moment geen taken aan je toegewezen.",
+      "echeance": "Deadline: {date}",
+      "sansEcheance": "Geen vervaldatum",
+      "startWork": "Begin",
+      "markComplete": "Markeer als voltooid",
+      "history": "Voltooid",
+      "completedOn": "Voltooid op {date}",
+      "status": {
+        "aFaire": "Doen",
+        "enCours": "In uitvoering",
+        "terminee": "Voltooid",
+        "enRetard": "Late"
+      },
+      "toasts": {
+        "completed": "Taak als voltooid gemarkeerd"
+      }
+    }
+  },
   "cotisations": {
     "form": {
       "member": "Lid",
@@ -6325,6 +6473,7 @@
       "parametres": "Instellingen",
       "dashboard": "Dashboard",
       "membres": "Leden",
+      "taches": "Taken",
       "evenements": "Evenementen",
       "cotisations": "Bijdragen",
       "licencas": "Licenties",
@@ -6346,6 +6495,7 @@
       "suporte": "Ondersteuning",
       "associationDocuments": "Verenigingsdocumenten",
       "categories": {
+        "gestion": "Beheer",
         "adherents": "Leden",
         "communication": "Communicatie",
         "finances": "Financiën",

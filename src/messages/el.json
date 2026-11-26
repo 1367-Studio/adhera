@@ -285,6 +285,7 @@
       "actualites": "Νέα",
       "evenements": "Εκδηλώσεις",
       "materiel": "Υλικό",
+      "taches": "Οι εργασίες μου",
       "cotisation": "Η συνδρομή μου",
       "dons": "Οι δωρεές μου",
       "sondages": "Έρευνες",
@@ -803,6 +804,8 @@
       "snoozedSectionTitle": "{count, plural, one {# ενέργεια αναβάλλεται} other {# ενέργειες που τίθενται σε αναμονή}}",
       "snoozedUntil": "Μέχρι {date}",
       "cancelSnooze": "Ακύρωση της κράτησης",
+      "createTask": "Δημιουργία εργασίας",
+      "createTaskToast": "Δημιουργημένη εργασία",
       "actionLabels": {
         "voirEtRelancer": "Δείτε και επανεκκινήστε",
         "examiner": "Εξεταστής",
@@ -816,6 +819,15 @@
         "rapprochement-bancaire": "{count, plural, one {# λειτουργία προς σύγκριση} other {# λειτουργίες προς σύγκριση}}",
         "notes-de-frais-a-valider": "{count, plural, one {# αναφορά εξόδων προς επικύρωση} other {# εκθέσεις εξόδων προς επικύρωση}}",
         "commandes-a-preparer": "{count, plural, one {# παραγγελία για προετοιμασία} other {# παραγγελίες για προετοιμασία}}"
+      },
+      "linkBackLabels": {
+        "cotisations-en-attente": "Προβολή εκκρεμών συνεισφορών",
+        "materiel-en-retard": "Δείτε επιστροφές καθυστερημένων υλικών",
+        "membres-a-valider": "Δείτε τα μέλη για επικύρωση",
+        "dons-a-encaisser": "Δείτε τις δωρεές προς συλλογή",
+        "rapprochement-bancaire": "Δείτε τη συμφωνία τραπεζικών λογαριασμών",
+        "notes-de-frais-a-valider": "Δείτε τις αναφορές εξόδων προς επικύρωση",
+        "commandes-a-preparer": "Δείτε τις εντολές για προετοιμασία"
       }
     },
     "stats": {
@@ -866,6 +878,15 @@
       "noDueDate": "Χωρίς προθεσμία",
       "viewAll": "Δείτε όλο τον εξοπλισμό",
       "empty": "Προς το παρόν δεν δανείζεται εξοπλισμός."
+    },
+    "mesTaches": {
+      "title": "Οι εργασίες μου",
+      "empty": "Δεν υπάρχουν ανοιχτές εργασίες",
+      "openCount": "{count, plural, one {# Ανοικτή εργασία} other {# Άνοιγμα εργασιών}}",
+      "today": "Σήμερα",
+      "emptyToday": "Δεν έχουν προγραμματιστεί εργασίες σήμερα",
+      "seeMoreToday": "Δείτε το {count} καθημερινές εργασίες",
+      "viewAll": "Δείτε τις εργασίες μου"
     },
     "charts": {
       "income": "Έσοδα",
@@ -4492,6 +4513,133 @@
       "inactiveSince": "αποχώρησε στις {date}"
     }
   },
+  "taches": {
+    "view": {
+      "title": "Καθήκοντα",
+      "count": "{count, plural, =0 {Καμία εργασία} one {# εργασία} other {# εργασίες}}",
+      "listeLabel": "Κατάλογος",
+      "planningLabel": "Σχεδιασμός",
+      "nouvelleTache": "Νέα εργασία",
+      "searchPlaceholder": "Αναζήτηση εργασίας...",
+      "filterMembre": "Μέλος",
+      "filterCategorie": "Κατηγορία",
+      "filterStatut": "Κατάσταση",
+      "filterEcheance": "Προθεσμία",
+      "filterEcheanceUpcoming": "Έρχεται σύντομα",
+      "resetFilters": "Επαναφορά",
+      "empty": "Δεν υπάρχουν εργασίες αυτή τη στιγμή.",
+      "emptyFiltered": "Καμία εργασία δεν ταιριάζει με αυτά τα φίλτρα.",
+      "stats": {
+        "echeanceSous7Jours": "Λήξη εντός 7 ημερών"
+      },
+      "columns": {
+        "tache": "Αποστολή",
+        "attribueeA": "Απονέμεται σε",
+        "echeance": "Προθεσμία",
+        "statut": "Κατάσταση"
+      },
+      "toasts": {
+        "created": "Δημιουργημένη εργασία",
+        "updated": "Ενημερώθηκε η εργασία",
+        "tacheIntrouvable": "Η εργασία δεν βρέθηκε"
+      }
+    },
+    "status": {
+      "aFaire": "Για να κάνετε",
+      "enCours": "Σε εξέλιξη",
+      "terminee": "Ολοκληρώθηκε",
+      "enRetard": "Αργά"
+    },
+    "detailSheet": {
+      "categorie": "Κατηγορία",
+      "noCategorie": "Καμία κατηγορία",
+      "attribueeA": "Απονέμεται σε",
+      "nonAttribuee": "Μη βραβευμένο",
+      "echeance": "Προθεσμία",
+      "sansEcheance": "Χωρίς ημερομηνία λήξης",
+      "rappels": "Υπενθυμίσεις",
+      "reminderBefore": "{count, plural, one {# μέρα πριν} other {# μέρες πριν}}",
+      "reminderAfter": "{count, plural, one {# μέρα μετά} other {# μέρες αργότερα}}",
+      "voirOrigine": "Δείτε την προέλευση",
+      "completedByOn": "Ολοκληρώθηκε από {name} το {date}",
+      "completedOn": "Ολοκληρώθηκε στις {date}",
+      "markComplete": "Σήμανση ως ολοκληρωμένο",
+      "statutLabel": "Κατάσταση εργασίας",
+      "completeConfirmTitle": "Να σημειωθεί αυτή η εργασία ως ολοκληρωμένη;",
+      "completeConfirmDescription": "Μπορείτε να το ξανανοίξετε αργότερα αν χρειαστεί.",
+      "completeConfirmDescriptionShared": "Θα σημειωθεί ως ολοκληρωμένο για όλα τα ανατεθειμένα μέλη. Μπορείτε να το ανοίξετε ξανά αργότερα αν χρειαστεί.",
+      "deleteConfirmTitle": "Να διαγράψω αυτή την εργασία;",
+      "deleteConfirmDescription": "Αυτή η ενέργεια είναι μη αναστρέψιμη.",
+      "toasts": {
+        "completed": "Η εργασία σημειώθηκε ως ολοκληρωμένη",
+        "statusUpdated": "Κατάσταση ενημερωμένη",
+        "deleted": "Η εργασία διαγράφηκε"
+      }
+    },
+    "form": {
+      "titre": "Τίτλος",
+      "description": "Περιγραφή",
+      "categorie": "Κατηγορία",
+      "noCategorie": "Καμία κατηγορία",
+      "newCategoriePlaceholder": "Όνομα κατηγορίας",
+      "newCategorie": "+ Νέα κατηγορία",
+      "manageCategories": {
+        "trigger": "Διαχείριση κατηγοριών",
+        "title": "Κατηγορίες",
+        "empty": "Δεν υπάρχει κατηγορία αυτή τη στιγμή.",
+        "archiveConfirmTitle": "Να αφαιρεθεί αυτή η κατηγορία;",
+        "archiveConfirmDescription": "Οι εργασίες που έχουν ήδη ταξινομηθεί σε αυτή την κατηγορία θα την κρατήσουν στο ιστορικό τους, αλλά θα εξαφανιστεί από τη λίστα για νέες εργασίες.",
+        "toasts": {
+          "renamed": "Κατηγορία Renowned",
+          "archived": "Διαγραμμένη κατηγορία"
+        }
+      },
+      "attribueeA": "Απονέμεται σε",
+      "searchMemberPlaceholder": "Αναζήτηση μέλους...",
+      "loading": "Φόρτωση...",
+      "noResult": "Χωρίς αποτελέσματα",
+      "nonAttribuee": "Μη βραβευμένο",
+      "selectedCount": "{count, plural, one {# επιλεγμένο μέλος} other {# επιλεγμένα μέλη}}",
+      "echeance": "Προθεσμία",
+      "echeanceHint": "Προαιρετικό — η εργασία παραμένει ορατή στη λίστα χωρίς ημερομηνία λήξης.",
+      "rappels": "Υπενθυμίσεις",
+      "rappelsNeedEcheance": "Ορίστε μια προθεσμία για να μπορέσετε να ρυθμίσετε μια υπενθύμιση.",
+      "noRappels": "Δεν έχει ρυθμιστεί υπενθύμιση.",
+      "rappelOffset": "Ημέρες",
+      "rappelDirection": "Όταν",
+      "rappelAvant": "Πριν την προθεσμία",
+      "rappelApres": "Μετά την προθεσμία",
+      "ajouterRappel": "Προσθήκη υπενθύμισης",
+      "createTitle": "Νέα εργασία",
+      "editTitle": "Επεξεργασία της εργασίας",
+      "createTache": "Δημιουργήστε την εργασία"
+    },
+    "calendar": {
+      "othersCount": "+{count} Άλλοι",
+      "createHere": "Δημιουργήστε εδώ",
+      "noTacheThisDay": "Καμία κηλίδα εκείνη την ημέρα"
+    },
+    "portalPage": {
+      "title": "Οι εργασίες μου",
+      "subtitle": "Οι εργασίες που σου ανατίθενται.",
+      "empty": "Δεν σας έχουν ανατεθεί εργασίες αυτή τη στιγμή.",
+      "echeance": "Προθεσμία: {date}",
+      "sansEcheance": "Χωρίς ημερομηνία λήξης",
+      "startWork": "Ξεκινήστε",
+      "markComplete": "Σήμανση ως ολοκληρωμένο",
+      "history": "Ολοκληρώθηκε",
+      "completedOn": "Ολοκληρώθηκε στις {date}",
+      "status": {
+        "aFaire": "Για να κάνετε",
+        "enCours": "Σε εξέλιξη",
+        "terminee": "Ολοκληρώθηκε",
+        "enRetard": "Αργά"
+      },
+      "toasts": {
+        "completed": "Η εργασία σημειώθηκε ως ολοκληρωμένη"
+      }
+    }
+  },
   "cotisations": {
     "form": {
       "member": "Μέλος",
@@ -6259,6 +6407,7 @@
       "parametres": "Ρυθμίσεις",
       "dashboard": "Ταμπλό",
       "membres": "Μέλη",
+      "taches": "Καθήκοντα",
       "evenements": "Εκδηλώσεις",
       "cotisations": "Συνεισφορές",
       "licencas": "Άδειες",
@@ -6280,6 +6429,7 @@
       "suporte": "Υποστήριξη",
       "associationDocuments": "Έγγραφα συλλόγου",
       "categories": {
+        "gestion": "Διοίκηση",
         "adherents": "Μέλη",
         "communication": "Επικοινωνία",
         "finances": "Οικονομικά",

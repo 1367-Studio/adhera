@@ -16,6 +16,9 @@ import { DateField, toValue } from "@/components/ui/date-field"
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter,
 } from "@/components/ui/dialog"
+import { NouvelleTacheSheet } from "@/components/taches/nouvelle-tache-sheet"
+import { useCreateTache } from "@/hooks/use-taches"
+import type { TacheInput } from "@/lib/schemas"
 import type { DashboardActionRow, DashboardActionIconKey } from "@/lib/dashboard-actions"
 
 type SnoozedRow = DashboardActionRow & { snoozedUntil: string }
@@ -74,10 +77,33 @@ export function ActionsTodoPanel({ rows, snoozedRows, isLoading, isError }: Prop
   // Tracks which already-snoozed row's "Annuler" is in flight, so only that row's button
   // shows a spinner instead of the whole panel.
   const [cancelingKey, setCancelingKey] = useState<string | null>(null)
+  // FORM-118 — "Créer une tâche" depuis une ligne du panneau. titre/linkBackHref/linkBackLabel
+  // sont capturés ici en snapshot texte (résolus via les mêmes clés i18n que celles déjà
+  // affichées) et jamais re-résolus après coup — voir src/lib/schemas/tache.ts.
+  const [createTaskTarget, setCreateTaskTarget] = useState<DashboardActionRow | null>(null)
+  const createTache = useCreateTache()
 
   function openSnooze(row: DashboardActionRow) {
     setSnoozeTarget(row)
     setSnoozeUntil("")
+  }
+
+  async function handleCreateTask(data: TacheInput) {
+    try {
+      await createTache.mutateAsync(data)
+      toast.success(t("createTaskToast"))
+      setCreateTaskTarget(null)
+    } catch {
+      toast.error(tCommon("networkError"))
+    }
+  }
+
+  function taskPrefillFor(row: DashboardActionRow): Partial<TacheInput> {
+    return {
+      titre:         t(`rows.${row.key}`, { count: row.count }),
+      linkBackHref:  row.href,
+      linkBackLabel: t.has(`linkBackLabels.${row.key}`) ? t(`linkBackLabels.${row.key}`) : t(`actionLabels.${row.actionLabel}`),
+    }
   }
 
   async function postSnooze(actionKey: string, until: string | null) {
@@ -150,7 +176,10 @@ export function ActionsTodoPanel({ rows, snoozedRows, isLoading, isError }: Prop
                   <Button variant="outline" size="sm" nativeButton={false} render={<Link href={row.href} />}>
                     {t(`actionLabels.${row.actionLabel}`)}
                   </Button>
-                  <RowActions actions={[{ label: t("snooze"), onClick: () => openSnooze(row) }]} />
+                  <RowActions actions={[
+                    { label: t("createTask"), onClick: () => setCreateTaskTarget(row) },
+                    { label: t("snooze"), onClick: () => openSnooze(row) },
+                  ]} />
                 </div>
               </div>
             )
@@ -170,15 +199,17 @@ export function ActionsTodoPanel({ rows, snoozedRows, isLoading, isError }: Prop
                         <span> · {t("snoozedUntil", { date: formatSnoozedDate(row.snoozedUntil) })}</span>
                       </p>
                     </div>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="shrink-0"
-                      loading={cancelingKey === row.key}
-                      onClick={() => cancelSnooze(row.key)}
-                    >
-                      {t("cancelSnooze")}
-                    </Button>
+                    <div className="flex shrink-0 items-center gap-1">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        loading={cancelingKey === row.key}
+                        onClick={() => cancelSnooze(row.key)}
+                      >
+                        {t("cancelSnooze")}
+                      </Button>
+                      <RowActions actions={[{ label: t("createTask"), onClick: () => setCreateTaskTarget(row) }]} />
+                    </div>
                   </div>
                 )
               })}
@@ -211,6 +242,16 @@ export function ActionsTodoPanel({ rows, snoozedRows, isLoading, isError }: Prop
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {createTaskTarget && (
+        <NouvelleTacheSheet
+          open
+          onOpenChange={open => { if (!open) setCreateTaskTarget(null) }}
+          prefill={taskPrefillFor(createTaskTarget)}
+          onSubmit={handleCreateTask}
+          loading={createTache.isPending}
+        />
+      )}
     </div>
   )
 }

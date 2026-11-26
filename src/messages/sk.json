@@ -285,6 +285,7 @@
       "actualites": "Správy",
       "evenements": "Podujatia",
       "materiel": "Materiál",
+      "taches": "Moje úlohy",
       "cotisation": "Môj členský poplatok",
       "dons": "Moje dary",
       "sondages": "Prieskumy",
@@ -803,6 +804,8 @@
       "snoozedSectionTitle": "{count, plural, one {# akcia pozastavená} other {# kroky pozastavené}}",
       "snoozedUntil": "Až kým {date}",
       "cancelSnooze": "Zrušiť blokáciu",
+      "createTask": "Vytvorte úlohu",
+      "createTaskToast": "Úloha vytvorená",
       "actionLabels": {
         "voirEtRelancer": "Vidieť a znovu spustiť",
         "examiner": "Skúšajúci",
@@ -816,6 +819,15 @@
         "rapprochement-bancaire": "{count, plural, one {# operácia na porovnanie} other {# operácie na porovnanie}}",
         "notes-de-frais-a-valider": "{count, plural, one {# výkaz výdavkov na overenie} other {# výdavkové správy na overenie}}",
         "commandes-a-preparer": "{count, plural, one {# poradie na prípravu} other {# rozkazy na prípravu}}"
+      },
+      "linkBackLabels": {
+        "cotisations-en-attente": "Zobraziť čakajúce príspevky",
+        "materiel-en-retard": "Pozrite si vrátenie oneskorených materiálov",
+        "membres-a-valider": "Pozrite si členov na overenie",
+        "dons-a-encaisser": "Pozrite si dary na vyzbieranie",
+        "rapprochement-bancaire": "Pozrite si zosúladenie bánk",
+        "notes-de-frais-a-valider": "Pozrite si výdavkové správy na overenie",
+        "commandes-a-preparer": "Pozrite si rozkazy na prípravu"
       }
     },
     "stats": {
@@ -866,6 +878,15 @@
       "noDueDate": "Žiadny termín",
       "viewAll": "Zobraziť všetko vybavenie",
       "empty": "Momentálne nie je požičané žiadne vybavenie."
+    },
+    "mesTaches": {
+      "title": "Moje úlohy",
+      "empty": "Žiadne otvorené úlohy",
+      "openCount": "{count, plural, one {# otvoriť úlohu} other {# Otvorené úlohy}}",
+      "today": "Dnes",
+      "emptyToday": "Dnes nie sú naplánované žiadne úlohy",
+      "seeMoreToday": "Pozrite si {count} Denné úlohy",
+      "viewAll": "Zobraziť moje úlohy"
     },
     "charts": {
       "income": "Príjmy",
@@ -4492,6 +4513,133 @@
       "inactiveSince": "odišiel/odišla {date}"
     }
   },
+  "taches": {
+    "view": {
+      "title": "Úlohy",
+      "count": "{count, plural, =0 {Žiadne úlohy} one {# úloha} other {# úlohy}}",
+      "listeLabel": "Zoznam",
+      "planningLabel": "Plánovanie",
+      "nouvelleTache": "Nová úloha",
+      "searchPlaceholder": "Vyhľadajte úlohu...",
+      "filterMembre": "Člen",
+      "filterCategorie": "Kategória",
+      "filterStatut": "Stav",
+      "filterEcheance": "Termín",
+      "filterEcheanceUpcoming": "Čoskoro k dispozícii",
+      "resetFilters": "Resetovať",
+      "empty": "Momentálne žiadne úlohy.",
+      "emptyFiltered": "Žiadna úloha nezodpovedá týmto filtrom.",
+      "stats": {
+        "echeanceSous7Jours": "Splatnosť do 7 dní"
+      },
+      "columns": {
+        "tache": "Úloha",
+        "attribueeA": "Udelené",
+        "echeance": "Termín",
+        "statut": "Stav"
+      },
+      "toasts": {
+        "created": "Úloha vytvorená",
+        "updated": "Úloha aktualizovaná",
+        "tacheIntrouvable": "Úloha nebola nájdená"
+      }
+    },
+    "status": {
+      "aFaire": "Čo robiť",
+      "enCours": "Prebieha",
+      "terminee": "Dokončené",
+      "enRetard": "Neskorý"
+    },
+    "detailSheet": {
+      "categorie": "Kategória",
+      "noCategorie": "Žiadna kategória",
+      "attribueeA": "Udelené",
+      "nonAttribuee": "Neocenené",
+      "echeance": "Termín",
+      "sansEcheance": "Bez dátumu vypršania platnosti",
+      "rappels": "Pripomienky",
+      "reminderBefore": "{count, plural, one {# deň predtým} other {# dni predtým}}",
+      "reminderAfter": "{count, plural, one {# deň potom} other {# dní neskôr}}",
+      "voirOrigine": "Pozrite si pôvod",
+      "completedByOn": "Ukončené {name} The {date}",
+      "completedOn": "Dokončené dňa {date}",
+      "markComplete": "Označiť ako dokončené",
+      "statutLabel": "Stav úlohy",
+      "completeConfirmTitle": "Označiť túto úlohu ako dokončenú?",
+      "completeConfirmDescription": "Ak bude treba, môžeš ju neskôr znovu otvoriť.",
+      "completeConfirmDescriptionShared": "Bude označená ako dokončená pre všetkých priradených členov. Ak to bude potrebné, môžete ju neskôr znovu otvoriť.",
+      "deleteConfirmTitle": "Vymazať túto úlohu?",
+      "deleteConfirmDescription": "Tento čin je nezvratný.",
+      "toasts": {
+        "completed": "Úloha označená ako dokončená",
+        "statusUpdated": "Stav aktualizovaný",
+        "deleted": "Úloha odstránená"
+      }
+    },
+    "form": {
+      "titre": "Názov",
+      "description": "Popis",
+      "categorie": "Kategória",
+      "noCategorie": "Žiadna kategória",
+      "newCategoriePlaceholder": "Názov kategórie",
+      "newCategorie": "+ Nová kategória",
+      "manageCategories": {
+        "trigger": "Spravovať kategórie",
+        "title": "Kategórie",
+        "empty": "Momentálne žiadna kategória.",
+        "archiveConfirmTitle": "Odstrániť túto kategóriu?",
+        "archiveConfirmDescription": "Úlohy už zaradené do tejto kategórie si ju ponechajú vo svojej histórii, ale pri nových úlohách zmiznú zo zoznamu.",
+        "toasts": {
+          "renamed": "Renomovaná kategória",
+          "archived": "Vymazaná kategória"
+        }
+      },
+      "attribueeA": "Udelené",
+      "searchMemberPlaceholder": "Vyhľadajte člena...",
+      "loading": "Načítavam...",
+      "noResult": "Žiadne výsledky",
+      "nonAttribuee": "Neocenené",
+      "selectedCount": "{count, plural, one {# vybraný člen} other {# vybraní členovia}}",
+      "echeance": "Termín",
+      "echeanceHint": "Voliteľné — úloha zostáva viditeľná v zozname bez dátumu splatnosti.",
+      "rappels": "Pripomienky",
+      "rappelsNeedEcheance": "Stanovte si termín, aby ste mohli nastaviť pripomienku.",
+      "noRappels": "Nebolo nastavené žiadne pripomenutie.",
+      "rappelOffset": "Dni",
+      "rappelDirection": "Keď",
+      "rappelAvant": "Pred termínom",
+      "rappelApres": "Po uplynutí termínu",
+      "ajouterRappel": "Pridať pripomienku",
+      "createTitle": "Nová úloha",
+      "editTitle": "Upraviť úlohu",
+      "createTache": "Vytvorte úlohu"
+    },
+    "calendar": {
+      "othersCount": "+{count} Iné",
+      "createHere": "Vytvorte tu",
+      "noTacheThisDay": "Ten deň žiadne škvrny"
+    },
+    "portalPage": {
+      "title": "Moje úlohy",
+      "subtitle": "Úlohy, ktoré vám boli pridelené.",
+      "empty": "Momentálne vám neboli pridelené žiadne úlohy.",
+      "echeance": "Termín: {date}",
+      "sansEcheance": "Bez dátumu vypršania platnosti",
+      "startWork": "Začnite",
+      "markComplete": "Označiť ako dokončené",
+      "history": "Dokončené",
+      "completedOn": "Dokončené dňa {date}",
+      "status": {
+        "aFaire": "Čo robiť",
+        "enCours": "Prebieha",
+        "terminee": "Dokončené",
+        "enRetard": "Neskorý"
+      },
+      "toasts": {
+        "completed": "Úloha označená ako dokončená"
+      }
+    }
+  },
   "cotisations": {
     "form": {
       "member": "Člen",
@@ -6259,6 +6407,7 @@
       "parametres": "Nastavenia",
       "dashboard": "Dashboard",
       "membres": "Členovia",
+      "taches": "Úlohy",
       "evenements": "Podujatia",
       "cotisations": "Príspevky",
       "licencas": "Licencie",
@@ -6280,6 +6429,7 @@
       "suporte": "Podpora",
       "associationDocuments": "Dokumenty združenia",
       "categories": {
+        "gestion": "Manažment",
         "adherents": "Členovia",
         "communication": "Komunikácia",
         "finances": "Financie",

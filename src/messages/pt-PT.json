@@ -285,6 +285,7 @@
       "actualites": "Notícias",
       "evenements": "Eventos",
       "materiel": "Material",
+      "taches": "As minhas tarefas",
       "cotisation": "A minha quota",
       "dons": "As minhas doações",
       "sondages": "Inquéritos",
@@ -790,8 +791,44 @@
       "dragHint": "Arraste para reordenar",
       "resizeHint": "Arraste o canto para redimensionar"
     },
-    "aTraiter": {
-      "items": {}
+    "actionsTodo": {
+      "trigger": "Ações a tomar",
+      "badgeHint": "{count, plural, one {# categoria de ação pendente} other {# categorias de ação pendente}}",
+      "empty": "Está tudo atualizado, nenhuma ação a resolver.",
+      "snooze": "Adiar esta ação",
+      "snoozeDialogTitle": "Adiar esta ação",
+      "snoozeDialogDescription": "A ação permanece oculta para si até essa data, depois reaparece se ainda houver processos por processar.",
+      "snoozeUntilLabel": "Adiado até",
+      "confirm": "Confirmar",
+      "loadError": "Não foi possível carregar as ações a realizar.",
+      "snoozedSectionTitle": "{count, plural, one {# ação suspensa} other {# ações suspensas}}",
+      "snoozedUntil": "Até {date}",
+      "cancelSnooze": "Cancelar a retenção",
+      "createTask": "Criar uma tarefa",
+      "createTaskToast": "Tarefa criada",
+      "actionLabels": {
+        "voirEtRelancer": "Ver e relançar",
+        "examiner": "Examinador",
+        "consulter": "Consulte"
+      },
+      "rows": {
+        "cotisations-en-attente": "{count, plural, one {# taxa de adesão pendente} other {# contribuições pendentes}}",
+        "materiel-en-retard": "{count, plural, one {# regressos tardios de material} other {# regressos tardios de material}}",
+        "membres-a-valider": "{count, plural, one {# membro a validar} other {# membros a validar}}",
+        "dons-a-encaisser": "{count, plural, one {# presente a ser descontado} other {# donativos para recolher}}",
+        "rapprochement-bancaire": "{count, plural, one {# operação a comparar} other {# operações a comparar}}",
+        "notes-de-frais-a-valider": "{count, plural, one {# relatório de despesas a validar} other {# relatórios de despesas a validar}}",
+        "commandes-a-preparer": "{count, plural, one {# para preparar} other {# ordens para preparar}}"
+      },
+      "linkBackLabels": {
+        "cotisations-en-attente": "Ver contribuições pendentes",
+        "materiel-en-retard": "Ver devoluções de materiais atrasados",
+        "membres-a-valider": "Consulte membros para validar",
+        "dons-a-encaisser": "Veja as doações a recolher",
+        "rapprochement-bancaire": "Veja a reconciliação bancária",
+        "notes-de-frais-a-valider": "Consulte os relatórios de despesas a validar",
+        "commandes-a-preparer": "Consulte as ordens para preparar"
+      }
     },
     "stats": {
       "financialBalance": "Saldo financeiro",
@@ -841,6 +878,15 @@
       "noDueDate": "Sem prazo",
       "viewAll": "Ver todo o material",
       "empty": "Nenhum material emprestado de momento."
+    },
+    "mesTaches": {
+      "title": "As minhas tarefas",
+      "empty": "Sem tarefas abertas",
+      "openCount": "{count, plural, one {# tarefa aberta} other {# Tarefas abertas}}",
+      "today": "Hoje",
+      "emptyToday": "Nenhuma tarefa planeada para hoje",
+      "seeMoreToday": "Veja o {count} Tarefas diárias",
+      "viewAll": "Veja as minhas tarefas"
     },
     "charts": {
       "income": "Receitas",
@@ -4517,6 +4563,133 @@
       "inactiveSince": "saiu em {date}"
     }
   },
+  "taches": {
+    "view": {
+      "title": "Tarefas",
+      "count": "{count, plural, =0 {Sem tarefas} one {# tarefa} other {# tarefas}}",
+      "listeLabel": "Lista",
+      "planningLabel": "Planeamento",
+      "nouvelleTache": "Nova tarefa",
+      "searchPlaceholder": "Procurar uma tarefa...",
+      "filterMembre": "Membro",
+      "filterCategorie": "Categoria",
+      "filterStatut": "Situação",
+      "filterEcheance": "Prazo",
+      "filterEcheanceUpcoming": "Em breve",
+      "resetFilters": "Reiniciar",
+      "empty": "Sem tarefas neste momento.",
+      "emptyFiltered": "Nenhuma tarefa corresponde a estes filtros.",
+      "stats": {
+        "echeanceSous7Jours": "Maturidade dentro de 7 dias"
+      },
+      "columns": {
+        "tache": "Tarefa",
+        "attribueeA": "Atribuído a",
+        "echeance": "Prazo",
+        "statut": "Situação"
+      },
+      "toasts": {
+        "created": "Tarefa criada",
+        "updated": "Tarefa atualizada",
+        "tacheIntrouvable": "Tarefa não encontrada"
+      }
+    },
+    "status": {
+      "aFaire": "Para fazer",
+      "enCours": "Em curso",
+      "terminee": "Concluído",
+      "enRetard": "Tarde"
+    },
+    "detailSheet": {
+      "categorie": "Categoria",
+      "noCategorie": "Sem categoria",
+      "attribueeA": "Atribuído a",
+      "nonAttribuee": "Não premiado",
+      "echeance": "Prazo",
+      "sansEcheance": "Sem data de expiração",
+      "rappels": "Lembretes",
+      "reminderBefore": "{count, plural, one {# dia antes} other {# dias antes}}",
+      "reminderAfter": "{count, plural, one {# dia depois} other {# dias depois}}",
+      "voirOrigine": "Veja a origem",
+      "completedByOn": "Terminado por {name} o {date}",
+      "completedOn": "Concluído em {date}",
+      "markComplete": "Assinala como concluído",
+      "statutLabel": "Estado da tarefa",
+      "completeConfirmTitle": "Marcar esta tarefa como concluída?",
+      "completeConfirmDescription": "Podes reabri-lo mais tarde, se for preciso.",
+      "completeConfirmDescriptionShared": "Será marcado como concluído para todos os membros atribuídos. Pode reabri-lo mais tarde, se necessário.",
+      "deleteConfirmTitle": "Eliminar esta tarefa?",
+      "deleteConfirmDescription": "Esta ação é irreversível.",
+      "toasts": {
+        "completed": "Tarefa marcada como concluída",
+        "statusUpdated": "Estado atualizado",
+        "deleted": "Tarefa eliminada"
+      }
+    },
+    "form": {
+      "titre": "Título",
+      "description": "Descrição",
+      "categorie": "Categoria",
+      "noCategorie": "Sem categoria",
+      "newCategoriePlaceholder": "Nome da categoria",
+      "newCategorie": "+ Nova categoria",
+      "manageCategories": {
+        "trigger": "Gerir categorias",
+        "title": "Categorias",
+        "empty": "Não há categoria neste momento.",
+        "archiveConfirmTitle": "Remover esta categoria?",
+        "archiveConfirmDescription": "As tarefas já classificadas nesta categoria mantêm-na no seu histórico, mas desaparecerá da lista para novas tarefas.",
+        "toasts": {
+          "renamed": "Categoria renomada",
+          "archived": "Categoria eliminada"
+        }
+      },
+      "attribueeA": "Atribuído a",
+      "searchMemberPlaceholder": "Procure um membro...",
+      "loading": "A carregar...",
+      "noResult": "Sem resultados",
+      "nonAttribuee": "Não premiado",
+      "selectedCount": "{count, plural, one {# membro selecionado} other {# membros selecionados}}",
+      "echeance": "Prazo",
+      "echeanceHint": "Opcional — a tarefa permanece visível na lista sem data de vencimento.",
+      "rappels": "Lembretes",
+      "rappelsNeedEcheance": "Defina um prazo para poder configurar um lembrete.",
+      "noRappels": "Nenhum lembrete configurado.",
+      "rappelOffset": "Dias",
+      "rappelDirection": "Quando",
+      "rappelAvant": "Antes do prazo",
+      "rappelApres": "Após o prazo",
+      "ajouterRappel": "Adicione um lembrete",
+      "createTitle": "Nova tarefa",
+      "editTitle": "Editar a tarefa",
+      "createTache": "Criar a tarefa"
+    },
+    "calendar": {
+      "othersCount": "+{count} Outros",
+      "createHere": "Crie aqui",
+      "noTacheThisDay": "Sem manchas nesse dia"
+    },
+    "portalPage": {
+      "title": "As minhas tarefas",
+      "subtitle": "As tarefas que lhe foram atribuídas.",
+      "empty": "Nenhuma tarefa lhe foi atribuída neste momento.",
+      "echeance": "Prazo: {date}",
+      "sansEcheance": "Sem data de expiração",
+      "startWork": "Comece",
+      "markComplete": "Assinala como concluído",
+      "history": "Concluído",
+      "completedOn": "Concluído em {date}",
+      "status": {
+        "aFaire": "Para fazer",
+        "enCours": "Em curso",
+        "terminee": "Concluído",
+        "enRetard": "Tarde"
+      },
+      "toasts": {
+        "completed": "Tarefa marcada como concluída"
+      }
+    }
+  },
   "cotisations": {
     "form": {
       "member": "Membro",
@@ -6350,6 +6523,7 @@
       "parametres": "Configurações",
       "dashboard": "Painel",
       "membres": "Membros",
+      "taches": "Tarefas",
       "evenements": "Eventos",
       "cotisations": "Quotas",
       "licencas": "Licenças",
@@ -6371,6 +6545,7 @@
       "suporte": "Suporte",
       "associationDocuments": "Documentos da associação",
       "categories": {
+        "gestion": "Gestão",
         "adherents": "Associados",
         "communication": "Comunicação",
         "finances": "Finanças",

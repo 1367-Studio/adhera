@@ -3,7 +3,7 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { useTranslations } from "next-intl"
-import { UserIcon, CalendarBlankIcon, CoinsIcon, NewspaperIcon, PackageIcon, HandshakeIcon, ClipboardTextIcon, ShoppingBagIcon, VideoCameraIcon, EnvelopeSimpleIcon, BookOpenTextIcon, IdentificationCardIcon } from "@phosphor-icons/react/dist/ssr";
+import { UserIcon, CalendarBlankIcon, CoinsIcon, NewspaperIcon, PackageIcon, HandshakeIcon, ClipboardTextIcon, ShoppingBagIcon, VideoCameraIcon, EnvelopeSimpleIcon, BookOpenTextIcon, IdentificationCardIcon, CheckSquareIcon } from "@phosphor-icons/react/dist/ssr";
 import {
   Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupContent,
   SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem,
@@ -39,6 +39,7 @@ export function PortalSidebar({ slug, memberCardEnabled }: { slug: string; membe
     actualites:     { label: t("actualites"),        icon: NewspaperIcon },
     evenements:     { label: t("evenements"),        icon: CalendarBlankIcon },
     materiel:       { label: t("materiel"),          icon: PackageIcon },
+    taches:         { label: t("taches"),            icon: CheckSquareIcon },
     cotisation:     { label: t("cotisation"),        icon: CoinsIcon },
     carte:          { label: tMemberCard("sidebar"), icon: IdentificationCardIcon },
     dons:           { label: t("dons"),              icon: HandshakeIcon },

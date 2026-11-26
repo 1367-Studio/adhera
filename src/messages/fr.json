@@ -323,6 +323,7 @@
       "actualites": "Actualités",
       "evenements": "Événements",
       "materiel": "Matériel",
+      "taches": "Mes tâches",
       "cotisation": "Ma cotisation",
       "dons": "Mes dons",
       "sondages": "Sondages",
@@ -848,6 +849,8 @@
       "snoozedSectionTitle": "{count, plural, one {# action mise en attente} other {# actions mises en attente}}",
       "snoozedUntil": "Jusqu'au {date}",
       "cancelSnooze": "Annuler la mise en attente",
+      "createTask": "Créer une tâche",
+      "createTaskToast": "Tâche créée",
       "actionLabels": {
         "voirEtRelancer": "Voir et relancer",
         "examiner": "Examiner",
@@ -861,6 +864,15 @@
         "rapprochement-bancaire": "{count, plural, one {# opération à rapprocher} other {# opérations à rapprocher}}",
         "notes-de-frais-a-valider": "{count, plural, one {# note de frais à valider} other {# notes de frais à valider}}",
         "commandes-a-preparer": "{count, plural, one {# commande à préparer} other {# commandes à préparer}}"
+      },
+      "linkBackLabels": {
+        "cotisations-en-attente": "Voir les cotisations en attente",
+        "materiel-en-retard": "Voir les retours de matériel en retard",
+        "membres-a-valider": "Voir les membres à valider",
+        "dons-a-encaisser": "Voir les dons à encaisser",
+        "rapprochement-bancaire": "Voir le rapprochement bancaire",
+        "notes-de-frais-a-valider": "Voir les notes de frais à valider",
+        "commandes-a-preparer": "Voir les commandes à préparer"
       }
     },
     "stats": {
@@ -911,6 +923,15 @@
       "noDueDate": "Sans échéance",
       "viewAll": "Voir tout le matériel",
       "empty": "Aucun matériel actuellement emprunté."
+    },
+    "mesTaches": {
+      "title": "Mes tâches",
+      "empty": "Aucune tâche ouverte",
+      "openCount": "{count, plural, one {# tâche ouverte} other {# tâches ouvertes}}",
+      "today": "Aujourd'hui",
+      "emptyToday": "Aucune tâche prévue aujourd'hui",
+      "seeMoreToday": "Voir les {count} tâches du jour",
+      "viewAll": "Voir mes tâches"
     },
     "charts": {
       "income": "Recettes",
@@ -4891,6 +4912,133 @@
       "inactiveSince": "quitté le {date}"
     }
   },
+  "taches": {
+    "view": {
+      "title": "Tâches",
+      "count": "{count, plural, =0 {Aucune tâche} one {# tâche} other {# tâches}}",
+      "listeLabel": "Liste",
+      "planningLabel": "Planning",
+      "nouvelleTache": "Nouvelle tâche",
+      "searchPlaceholder": "Rechercher une tâche…",
+      "filterMembre": "Membre",
+      "filterCategorie": "Catégorie",
+      "filterStatut": "Statut",
+      "filterEcheance": "Échéance",
+      "filterEcheanceUpcoming": "À venir",
+      "resetFilters": "Réinitialiser",
+      "empty": "Aucune tâche pour le moment.",
+      "emptyFiltered": "Aucune tâche ne correspond à ces filtres.",
+      "stats": {
+        "echeanceSous7Jours": "Échéance sous 7 jours"
+      },
+      "columns": {
+        "tache": "Tâche",
+        "attribueeA": "Attribuée à",
+        "echeance": "Échéance",
+        "statut": "Statut"
+      },
+      "toasts": {
+        "created": "Tâche créée",
+        "updated": "Tâche mise à jour",
+        "tacheIntrouvable": "Tâche introuvable"
+      }
+    },
+    "status": {
+      "aFaire": "À faire",
+      "enCours": "En cours",
+      "terminee": "Terminée",
+      "enRetard": "En retard"
+    },
+    "detailSheet": {
+      "categorie": "Catégorie",
+      "noCategorie": "Aucune catégorie",
+      "attribueeA": "Attribuée à",
+      "nonAttribuee": "Non attribuée",
+      "echeance": "Échéance",
+      "sansEcheance": "Sans échéance",
+      "rappels": "Rappels",
+      "reminderBefore": "{count, plural, one {# jour avant} other {# jours avant}}",
+      "reminderAfter": "{count, plural, one {# jour après} other {# jours après}}",
+      "voirOrigine": "Voir l'origine",
+      "completedByOn": "Terminée par {name} le {date}",
+      "completedOn": "Terminée le {date}",
+      "markComplete": "Marquer comme terminée",
+      "statutLabel": "Statut de la tâche",
+      "completeConfirmTitle": "Marquer cette tâche comme terminée ?",
+      "completeConfirmDescription": "Vous pourrez la rouvrir ensuite si besoin.",
+      "completeConfirmDescriptionShared": "Elle sera marquée terminée pour tous les membres assignés. Vous pourrez la rouvrir ensuite si besoin.",
+      "deleteConfirmTitle": "Supprimer cette tâche ?",
+      "deleteConfirmDescription": "Cette action est irréversible.",
+      "toasts": {
+        "completed": "Tâche marquée comme terminée",
+        "statusUpdated": "Statut mis à jour",
+        "deleted": "Tâche supprimée"
+      }
+    },
+    "form": {
+      "titre": "Titre",
+      "description": "Description",
+      "categorie": "Catégorie",
+      "noCategorie": "Aucune catégorie",
+      "newCategoriePlaceholder": "Nom de la catégorie",
+      "newCategorie": "+ Nouvelle catégorie",
+      "manageCategories": {
+        "trigger": "Gérer les catégories",
+        "title": "Catégories",
+        "empty": "Aucune catégorie pour le moment.",
+        "archiveConfirmTitle": "Supprimer cette catégorie ?",
+        "archiveConfirmDescription": "Les tâches déjà classées dans cette catégorie la conserveront dans leur historique, mais elle disparaîtra de la liste pour les nouvelles tâches.",
+        "toasts": {
+          "renamed": "Catégorie renommée",
+          "archived": "Catégorie supprimée"
+        }
+      },
+      "attribueeA": "Attribuée à",
+      "searchMemberPlaceholder": "Rechercher un membre…",
+      "loading": "Chargement…",
+      "noResult": "Aucun résultat",
+      "nonAttribuee": "Non attribuée",
+      "selectedCount": "{count, plural, one {# membre sélectionné} other {# membres sélectionnés}}",
+      "echeance": "Échéance",
+      "echeanceHint": "Optionnelle — la tâche reste visible dans la liste sans échéance.",
+      "rappels": "Rappels",
+      "rappelsNeedEcheance": "Définissez une échéance pour pouvoir configurer un rappel.",
+      "noRappels": "Aucun rappel configuré.",
+      "rappelOffset": "Jours",
+      "rappelDirection": "Quand",
+      "rappelAvant": "Avant l'échéance",
+      "rappelApres": "Après l'échéance",
+      "ajouterRappel": "Ajouter un rappel",
+      "createTitle": "Nouvelle tâche",
+      "editTitle": "Modifier la tâche",
+      "createTache": "Créer la tâche"
+    },
+    "calendar": {
+      "othersCount": "+{count} autres",
+      "createHere": "Créer ici",
+      "noTacheThisDay": "Aucune tâche ce jour-là"
+    },
+    "portalPage": {
+      "title": "Mes tâches",
+      "subtitle": "Les tâches qui vous ont été attribuées.",
+      "empty": "Aucune tâche ne vous a été attribuée pour le moment.",
+      "echeance": "Échéance : {date}",
+      "sansEcheance": "Sans échéance",
+      "startWork": "Commencer",
+      "markComplete": "Marquer comme terminée",
+      "history": "Terminées",
+      "completedOn": "Terminée le {date}",
+      "status": {
+        "aFaire": "À faire",
+        "enCours": "En cours",
+        "terminee": "Terminée",
+        "enRetard": "En retard"
+      },
+      "toasts": {
+        "completed": "Tâche marquée comme terminée"
+      }
+    }
+  },
   "cotisations": {
     "form": {
       "member": "Membre",
@@ -7091,6 +7239,7 @@
       "parametres": "Paramètres",
       "dashboard": "Tableau de bord",
       "membres": "Membres",
+      "taches": "Tâches",
       "evenements": "Événements",
       "cotisations": "Cotisations",
       "licencas": "Licences",
@@ -7113,6 +7262,7 @@
       "suporte": "Support",
       "associationDocuments": "Documents légaux",
       "categories": {
+        "gestion": "Gestion",
         "adherents": "Adhérents",
         "communication": "Communication",
         "finances": "Finances",
