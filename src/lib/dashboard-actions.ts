@@ -129,15 +129,22 @@ async function buildMembresAValiderRow(ctx: DashboardActionCtx): Promise<Dashboa
 async function buildDonsAEncaisserRow(ctx: DashboardActionCtx): Promise<DashboardActionRow | null> {
   if (!ctx.modules.dons || !hasAccess(ctx.permissions, "dons", "read")) return null
 
-  const count = await prisma.don.count({
-    where: { associationId: ctx.associationId, paidAt: null, paymentMethod: { in: ["ESPECES", "CHEQUE", "VIREMENT"] } },
-  })
+  const where: Prisma.DonWhereInput = {
+    associationId: ctx.associationId,
+    paidAt:        null,
+    paymentMethod: { in: ["ESPECES", "CHEQUE", "VIREMENT"] },
+  }
+  const result = await prisma.don.aggregate({ where, _count: { _all: true }, _sum: { amount: true } })
+  const count = result._count._all
   if (count === 0) return null
 
   return {
     key:         "dons-a-encaisser",
     bucket:      "A_TRAITER",
     count,
+    // Dons have no partial-payment concept (unlike Cotisation.amountPaid) — not yet
+    // encaissé means the full amount is still outstanding (FORM-126).
+    amount:      Number(result._sum.amount ?? 0),
     href:        "/dashboard/dons?tab=dons&from=actions-todo",
     actionLabel: "consulter",
     icon:        "receipt",
