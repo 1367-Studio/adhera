@@ -928,6 +928,8 @@
       "title": "Omat tehtäväni",
       "empty": "Ei avoimia tehtäviä",
       "openCount": "{count, plural, one {# avoin tehtävä} other {# Avaavat tehtävät}}",
+      "overdue": "Myöhäinen",
+      "seeMoreOverdue": "Katso {count} myöhästyneet tehtävät",
       "today": "Tänään",
       "emptyToday": "Tänään ei ole suunniteltu tehtäviä",
       "seeMoreToday": "Katso {count} päivittäiset tehtävät",

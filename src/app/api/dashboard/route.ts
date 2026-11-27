@@ -194,19 +194,33 @@ export const GET = withAdminAuth(async (req, ctx) => {
     // La section "Prochaines échéances" (FORM-128, commentaire Emmanuelle) réutilise le même
     // membre : jusqu'à 3 tâches à partir de demain, triées par échéance croissante, sans
     // plafond de 7 jours (dueFilter "fromTomorrow" — distinct de "soon7").
+    // "En retard" et le complément sans échéance (FORM-128, print du 2026-11-27, deuxième
+    // commentaire Emmanuelle) : une tâche en retard ou sans date n'apparaissait dans aucune
+    // des deux sections ci-dessus — visible seulement dans openCount, jamais dans une liste.
+    // overdueTasks réutilise le même filtre "EN_RETARD" que le badge/la liste ailleurs dans
+    // l'app (status.buildTacheWhere) ; noDueDateTasks ne comble que les places restantes de
+    // "Prochaines échéances" quand les tâches datées n'en remplissent pas les 3.
     canSeeTaches
       ? prisma.membre.findFirst({ where: { userId: ctx.userId, associationId, deletedAt: null }, select: { id: true } })
           .then(async membre => {
             if (!membre) return null
             const todayWhere    = buildTacheWhere(associationId, { membreId: membre.id, dueFilter: "today" })
             const upcomingWhere = buildTacheWhere(associationId, { membreId: membre.id, dueFilter: "fromTomorrow" })
-            const [openCount, todayCount, todayTasks, upcomingTasks] = await Promise.all([
+            const overdueWhere  = buildTacheWhere(associationId, { membreId: membre.id, status: "EN_RETARD" })
+            const noDueDateWhere = buildTacheWhere(associationId, { membreId: membre.id, dueFilter: "noDueDate" })
+            const [openCount, todayCount, todayTasks, upcomingDatedTasks, overdueCount, overdueTasks, noDueDateTasks] = await Promise.all([
               prisma.tache.count({ where: { associationId, status: { not: "TERMINEE" }, assignees: { some: { membreId: membre.id } } } }),
               prisma.tache.count({ where: todayWhere }),
               prisma.tache.findMany({ where: todayWhere, orderBy: { createdAt: "asc" }, take: 3, select: { id: true, titre: true, status: true } }),
               prisma.tache.findMany({ where: upcomingWhere, orderBy: { dueDate: "asc" }, take: 3, select: { id: true, titre: true, status: true, dueDate: true } }),
+              prisma.tache.count({ where: overdueWhere }),
+              prisma.tache.findMany({ where: overdueWhere, orderBy: { dueDate: "asc" }, take: 3, select: { id: true, titre: true, status: true, dueDate: true } }),
+              prisma.tache.findMany({ where: noDueDateWhere, orderBy: { createdAt: "asc" }, take: 3, select: { id: true, titre: true, status: true, dueDate: true } }),
             ])
-            return { openCount, todayCount, todayTasks, upcomingTasks, membreId: membre.id }
+            // Les tâches datées remplissent la section en premier (triées par échéance) ; le
+            // reste sans date ne vient que boucher les places restantes, jusqu'à 3 au total.
+            const upcomingTasks = [...upcomingDatedTasks, ...noDueDateTasks].slice(0, 3)
+            return { openCount, todayCount, todayTasks, upcomingTasks, overdueCount, overdueTasks, membreId: membre.id }
           })
       : Promise.resolve(null),
   ])

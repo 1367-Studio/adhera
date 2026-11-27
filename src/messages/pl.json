@@ -928,6 +928,8 @@
       "title": "Moje zadania",
       "empty": "Brak otwartych zadań",
       "openCount": "{count, plural, one {# otwarte zadanie} other {# Otwarte zadania}}",
+      "overdue": "Późny",
+      "seeMoreOverdue": "Zobacz {count} zadania zaległe",
       "today": "Dziś",
       "emptyToday": "Dziś nie zaplanowano żadnych zadań",
       "seeMoreToday": "Zobacz {count} codzienne zadania",

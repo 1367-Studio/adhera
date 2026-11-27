@@ -928,6 +928,8 @@
       "title": "Moje naloge",
       "empty": "Brez odprtih nalog",
       "openCount": "{count, plural, one {# odprta naloga} other {# Odprte naloge}}",
+      "overdue": "Pozni",
+      "seeMoreOverdue": "Oglejte si {count} zamujene naloge",
       "today": "Danes",
       "emptyToday": "Danes ni načrtovanih nobenih nalog",
       "seeMoreToday": "Oglejte si {count} dnevna opravila",

@@ -928,6 +928,8 @@
       "title": "Mijn taken",
       "empty": "Geen open taken",
       "openCount": "{count, plural, one {# Open taak} other {# Open taken}}",
+      "overdue": "Late",
+      "seeMoreOverdue": "Zie de {count} Achterstallige taken",
       "today": "Vandaag",
       "emptyToday": "Geen taken gepland vandaag",
       "seeMoreToday": "Zie de {count} dagelijkse taken",

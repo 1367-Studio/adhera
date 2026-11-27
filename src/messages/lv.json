@@ -928,6 +928,8 @@
       "title": "Mani uzdevumi",
       "empty": "Nav atvērtu uzdevumu",
       "openCount": "{count, plural, one {# Atvērts uzdevums} other {# Atvērtie uzdevumi}}",
+      "overdue": "Vēlu",
+      "seeMoreOverdue": "Skatīt {count} Nokavētie uzdevumi",
       "today": "Mūsdienās",
       "emptyToday": "Šodien nav plānoti uzdevumi",
       "seeMoreToday": "Skatīt {count} Ikdienas uzdevumi",

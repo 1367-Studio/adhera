@@ -928,6 +928,8 @@
       "title": "I miei compiti",
       "empty": "Nessuna attività aperta",
       "openCount": "{count, plural, one {# Attività aperta} other {# Attività aperte}}",
+      "overdue": "Tardi",
+      "seeMoreOverdue": "Vedi il {count} Compiti in ritardo",
       "today": "Oggi",
       "emptyToday": "Nessun compito previsto per oggi",
       "seeMoreToday": "Vedi il {count} Attività quotidiane",

@@ -928,6 +928,8 @@
       "title": "Sarcinile mele",
       "empty": "Fără sarcini deschise",
       "openCount": "{count, plural, one {# Deschide sarcina} other {# Sarcini deschise}}",
+      "overdue": "Târziu",
+      "seeMoreOverdue": "Vezi {count} sarcini în întârziere",
       "today": "Astăzi",
       "emptyToday": "Nicio activitate planificată astăzi",
       "seeMoreToday": "Vezi {count} sarcini zilnice",

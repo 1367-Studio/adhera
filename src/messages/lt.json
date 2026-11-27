@@ -928,6 +928,8 @@
       "title": "Mano užduotys",
       "empty": "Jokių atvirų užduočių",
       "openCount": "{count, plural, one {# Atvira užduotis} other {# Atviros užduotys}}",
+      "overdue": "Vėluoju",
+      "seeMoreOverdue": "Žr. {count} Vėluojantys darbai",
       "today": "Šiandien",
       "emptyToday": "Šiandien jokių užduočių neplanuojama",
       "seeMoreToday": "Žr. {count} Kasdienės užduotys",

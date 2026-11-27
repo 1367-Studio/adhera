@@ -928,6 +928,8 @@
       "title": "Mine opgaver",
       "empty": "Ingen åbne opgaver",
       "openCount": "{count, plural, one {# åben opgave} other {# Åbne opgaver}}",
+      "overdue": "Sen",
+      "seeMoreOverdue": "Se {count} Uventede opgaver",
       "today": "I dag",
       "emptyToday": "Ingen planlagte opgaver i dag",
       "seeMoreToday": "Se {count} Daglige opgaver",

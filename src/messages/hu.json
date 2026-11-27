@@ -928,6 +928,8 @@
       "title": "Feladataim",
       "empty": "Nincsenek nyitott feladatok",
       "openCount": "{count, plural, one {# megnyitott feladat} other {# Megnyitott feladatok}}",
+      "overdue": "Késő",
+      "seeMoreOverdue": "Lásd a {count} Késedelmes feladatok",
       "today": "Napjainkban",
       "emptyToday": "Ma nincs tervezett feladat",
       "seeMoreToday": "Lásd a {count} napi feladatok",
