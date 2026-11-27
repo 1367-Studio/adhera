@@ -931,6 +931,7 @@
       "today": "Heute",
       "emptyToday": "Heute sind keine Aufgaben geplant",
       "seeMoreToday": "Siehe die {count} Tägliche Aufgaben",
+      "upcoming": "Bevorstehende Fristen",
       "viewAll": "Siehe meine Aufgaben"
     },
     "charts": {

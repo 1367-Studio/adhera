@@ -77,10 +77,11 @@ type DashboardData = {
   // null = no linked Membre for the current staff User (nothing can ever be assigned to
   // them) — the mes-taches widget hides entirely rather than show an always-zero tile.
   mesTaches: {
-    openCount:  number
-    todayCount: number
-    todayTasks: { id: string; titre: string; status: "A_FAIRE" | "EN_COURS" | "TERMINEE" }[]
-    membreId:   string
+    openCount:     number
+    todayCount:    number
+    todayTasks:    { id: string; titre: string; status: "A_FAIRE" | "EN_COURS" | "TERMINEE" }[]
+    upcomingTasks: { id: string; titre: string; status: "A_FAIRE" | "EN_COURS" | "TERMINEE"; dueDate: string }[]
+    membreId:      string
   } | null
 }
 
@@ -212,6 +213,7 @@ export function TableauDeBord({ initialLayout }: Props) {
         openCount={data?.mesTaches?.openCount ?? 0}
         todayCount={data?.mesTaches?.todayCount ?? 0}
         todayTasks={data?.mesTaches?.todayTasks ?? []}
+        upcomingTasks={data?.mesTaches?.upcomingTasks ?? []}
         membreId={data?.mesTaches?.membreId ?? ""}
         isLoading={isLoading}
       />

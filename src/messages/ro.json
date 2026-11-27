@@ -931,6 +931,7 @@
       "today": "Astăzi",
       "emptyToday": "Nicio activitate planificată astăzi",
       "seeMoreToday": "Vezi {count} sarcini zilnice",
+      "upcoming": "Termene limită ce urmează",
       "viewAll": "Vezi sarcinile mele"
     },
     "charts": {

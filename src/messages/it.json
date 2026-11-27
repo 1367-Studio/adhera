@@ -931,6 +931,7 @@
       "today": "Oggi",
       "emptyToday": "Nessun compito previsto per oggi",
       "seeMoreToday": "Vedi il {count} Attività quotidiane",
+      "upcoming": "Scadenze imminenti",
       "viewAll": "Vedi i miei compiti"
     },
     "charts": {

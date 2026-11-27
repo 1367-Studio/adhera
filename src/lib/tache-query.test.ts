@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest"
 import { parseTacheFilters, buildTacheWhere } from "@/lib/tache-query"
+import { parisDayBounds } from "@/lib/membre-adherent"
 
 describe("parseTacheFilters", () => {
   it("parses every known field, trimming search", () => {
@@ -54,5 +55,13 @@ describe("buildTacheWhere", () => {
 
   it("search filters the title case-insensitively", () => {
     expect(buildTacheWhere("assoc1", { search: "badges" }).titre).toEqual({ contains: "badges", mode: "insensitive" })
+  })
+
+  it("fromTomorrow (FORM-128 'Prochaines échéances') starts the day after today in Europe/Paris, unbounded above, excluding TERMINEE", () => {
+    const { dayStart: todayStart } = parisDayBounds(new Date())
+    const tomorrowStart = new Date(todayStart.getTime() + 86_400_000)
+    const where = buildTacheWhere("assoc1", { membreId: "m1", dueFilter: "fromTomorrow" })
+    expect(where.dueDate).toEqual({ gte: tomorrowStart })
+    expect(where.status).toEqual({ not: "TERMINEE" })
   })
 })

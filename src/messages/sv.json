@@ -931,6 +931,7 @@
       "today": "Idag",
       "emptyToday": "Inga uppgifter planerade idag",
       "seeMoreToday": "Se {count} Dagliga uppgifter",
+      "upcoming": "Kommande deadlines",
       "viewAll": "Se mina uppgifter"
     },
     "charts": {

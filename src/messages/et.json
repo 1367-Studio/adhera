@@ -931,6 +931,7 @@
       "today": "Tänapäeval",
       "emptyToday": "Täna pole planeeritud ülesandeid",
       "seeMoreToday": "Vaata {count} igapäevased ülesanded",
+      "upcoming": "Eelseisvad tähtajad",
       "viewAll": "Vaata minu ülesandeid"
     },
     "charts": {
