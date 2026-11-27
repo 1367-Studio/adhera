@@ -4,7 +4,6 @@ import { useState } from "react"
 import { useTranslations } from "next-intl"
 import { ClockCounterClockwiseIcon } from "@phosphor-icons/react/dist/ssr"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
-import { useModules } from "@/lib/user-context"
 import { RecentOrdersCard } from "@/components/dashboard/widgets/recent-orders-card"
 import { RecentDonationsCard } from "@/components/dashboard/widgets/recent-donations-card"
 
@@ -39,12 +38,9 @@ interface Props {
 // "Dons" — instead of two cards sitting side by side. Both tabs reuse the existing row
 // rendering from RecentOrdersCard/RecentDonationsCard (now content-only, no own wrapper).
 export function ActiviteRecenteCard({ ventesRecentes, donsRecents, isLoading }: Props) {
-  const t       = useTranslations("dashboard.activiteRecente")
-  const modules = useModules()
-  // Lands on whichever tab the association actually uses — this widget is visible with
-  // boutique OR dons alone (see dashboard-widgets.ts), and a dons-only association landing
-  // on an always-empty "Commandes" tab by default buried its real content one click away.
-  const [tab, setTab] = useState<"commandes" | "dons">(modules.boutique ? "commandes" : "dons")
+  const t = useTranslations("dashboard.activiteRecente")
+  // Defaults to "Dons" (FORM-129), even for associations with boutique enabled.
+  const [tab, setTab] = useState<"commandes" | "dons">("dons")
 
   return (
     <div className="rounded-lg bg-muted/60 p-6 space-y-3 flex flex-col min-h-0 overflow-hidden">
