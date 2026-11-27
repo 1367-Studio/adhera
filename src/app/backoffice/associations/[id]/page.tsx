@@ -20,6 +20,7 @@ import { UsersIcon } from "@phosphor-icons/react/dist/ssr";
 import { buttonVariants } from "@/components/ui/button"
 import { BackLink } from "@/components/ui/back-link"
 import { APP_NAME } from "@/config/brand"
+import { CHURN_REASON_LABEL_BY_CODE } from "@/lib/churn-feedback-reasons"
 
 const subLabel: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline" | "warning" }> = {
   TRIAL:     { label: "Essai",      variant: "secondary"   },
@@ -30,6 +31,14 @@ const subLabel: Record<string, { label: string; variant: "default" | "secondary"
   PAST_DUE:  { label: "En retard",  variant: "destructive" },
   SUSPENDED: { label: "Suspendu",   variant: "destructive" },
   CANCELLED: { label: "Annulé",     variant: "outline"     },
+}
+
+// CHURN_REASON_LABEL_BY_CODE (src/lib/churn-feedback-reasons.ts) only covers the 5 preset
+// links the email offers — "outro" is the separate write-in path
+// (src/app/churn-feedback/[token]/page.tsx), which has no fixed label of its own there.
+const CHURN_REASON_LABELS: Record<string, string> = {
+  ...CHURN_REASON_LABEL_BY_CODE,
+  outro: "Écrit en ses propres mots",
 }
 
 async function getAssociation(id: string) {
@@ -47,6 +56,11 @@ async function getAssociation(id: string) {
       customBrandingEnabled: true,
       trialEndsAt:          true,
       suspendedAt:          true,
+      // FORM-132 — present once the churn-feedback-sweep cron has emailed this association
+      // and (eventually) the admin clicked a reason link or wrote one in.
+      churnFeedback: {
+        select: { reason: true, detail: true, sentAt: true, respondedAt: true },
+      },
       stripeCustomerId:     true,
       stripeSubscriptionId: true,
       sitePublished:        true,
@@ -225,6 +239,29 @@ export default async function AssociationDetailPage({ params }: { params: Promis
           </Card>
         </div>
       </div>
+
+      {/* FORM-132 — only present once the churn-feedback-sweep cron has actually emailed
+          this association (5 days after subscriptionCancelledAt); respondedAt stays null
+          until the admin clicks a reason or writes one in. */}
+      {assoc.churnFeedback && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-sm">Retour d&apos;annulation</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-2 text-sm">
+            <Row label="Envoyé le" value={new Date(assoc.churnFeedback.sentAt).toLocaleDateString("fr-FR")} />
+            {assoc.churnFeedback.respondedAt ? (
+              <>
+                <Row label="Motif"     value={CHURN_REASON_LABELS[assoc.churnFeedback.reason ?? ""] ?? assoc.churnFeedback.reason} />
+                <Row label="Répondu le" value={new Date(assoc.churnFeedback.respondedAt).toLocaleDateString("fr-FR")} />
+                {assoc.churnFeedback.detail && <Row label="Message" value={assoc.churnFeedback.detail} />}
+              </>
+            ) : (
+              <Row label="Statut" value="Pas encore répondu" />
+            )}
+          </CardContent>
+        </Card>
+      )}
 
       {/* Limite de membres */}
       <Card>

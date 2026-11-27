@@ -768,6 +768,40 @@ export function stalledSignupGenericEmail(p: {
   }
 }
 
+// FORM-132 — sent once, 5 days after Association.subscriptionCancelledAt, by the
+// churn-feedback-sweep cron. Each reason is its own plain-text link (not btn(), which is
+// meant for a single primary CTA — five identical heavy buttons would fight each other for
+// attention) carrying the token + reason as a query string; clicking one is the entire
+// submission; a lighter link underneath goes straight to the free-text page for whoever
+// would rather explain in their own words.
+export function churnFeedbackRequestEmail(p: {
+  email:           string
+  associationName: string
+  reasons:         { label: string; url: string }[]
+  writeInUrl:      string
+}) {
+  const reasonItems = p.reasons
+    .map(r => `<li style="margin:0 0 10px;"><a href="${r.url}" style="color:${ACCENT};font-weight:600;font-size:14px;text-decoration:none;">${escapeHtml(r.label)}</a></li>`)
+    .join("")
+  const content = `
+    <h2 style="margin:0 0 20px;font-size:20px;font-weight:700;">Pourquoi n'avez-vous pas continué ?</h2>
+    <p style="margin:0 0 16px;font-size:15px;line-height:1.6;color:#3f3f46;">
+      Votre abonnement <strong>${p.associationName}</strong> sur ${APP_NAME} a été résilié. Un retour rapide nous aiderait
+      beaucoup à améliorer le produit — un simple clic sur la raison qui correspond le mieux suffit :
+    </p>
+    <ul style="margin:0 0 20px;padding:0;list-style:none;">
+      ${reasonItems}
+    </ul>
+    <p style="margin:0;font-size:13px;color:#71717a;">
+      <a href="${p.writeInUrl}" style="color:#71717a;text-decoration:underline;">Je préfère l'expliquer avec mes propres mots</a>
+    </p>`
+  return {
+    to:      p.email,
+    subject: `Un petit retour sur votre expérience — ${p.associationName}`,
+    html:    layout(APP_NAME, content),
+  }
+}
+
 export function passwordResetEmail(p: {
   email:        string
   resetUrl:     string
