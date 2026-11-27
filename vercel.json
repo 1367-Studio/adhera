@@ -61,6 +61,10 @@
     {
       "path": "/api/cron/erasure-retention-sweep",
       "schedule": "0 1 * * *"
+    },
+    {
+      "path": "/api/cron/stalled-signup-nudge-sweep",
+      "schedule": "0 8 * * *"
     }
   ]
 }

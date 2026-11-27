@@ -699,6 +699,75 @@ export function trialExpiredEmail(p: {
   }
 }
 
+// FORM-130 — three fixed templates for the stalled-signup nudge sweep (src/app/api/cron/
+// stalled-signup-nudge-sweep/route.ts). Traced from two real organic trials (ACFOM, Dac
+// Academy) that both did genuine setup work then stalled right before importing their real
+// member base — each template points straight at the unfinished step instead of the generic
+// adminWelcomeEmail. No association branding (same reasoning as trialEndingNoPaymentMethodEmail
+// above): this is a platform nudge to the admin, not the association messaging its own members.
+
+export function stalledSignupPaperFormEmail(p: {
+  email:           string
+  associationName: string
+  templateName:    string
+  importUrl:       string
+}) {
+  const content = `
+    <h2 style="margin:0 0 20px;font-size:20px;font-weight:700;">Il ne manque plus que votre liste de membres</h2>
+    <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
+      Vous avez créé le modèle de fiche papier <strong>${escapeHtml(p.templateName)}</strong> pour <strong>${p.associationName}</strong>,
+      mais aucun membre n'a encore été importé à partir de fiches scannées.<br>
+      Reprenez où vous en étiez pour faire entrer vos membres réels dans ${APP_NAME}.
+    </p>
+    ${btn("Importer mes fiches papier", p.importUrl)}`
+  return {
+    to:      p.email,
+    subject: `Il ne manque plus que l'import de vos membres — ${p.associationName}`,
+    html:    layout(APP_NAME, content),
+  }
+}
+
+export function stalledSignupMembershipFormEmail(p: {
+  email:           string
+  associationName: string
+  formTitle:       string
+  formUrl:         string
+}) {
+  const content = `
+    <h2 style="margin:0 0 20px;font-size:20px;font-weight:700;">Votre formulaire d'adhésion est prêt, mais encore sans inscrits</h2>
+    <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
+      Le formulaire <strong>${escapeHtml(p.formTitle)}</strong> est publié pour <strong>${p.associationName}</strong>,
+      mais personne ne s'est encore inscrit.<br>
+      Partagez-le à vos membres ou ajoutez-les vous-même pour que votre compte prenne vie.
+    </p>
+    ${btn("Voir mon formulaire d'adhésion", p.formUrl)}`
+  return {
+    to:      p.email,
+    subject: `Votre formulaire d'adhésion attend ses premiers inscrits — ${p.associationName}`,
+    html:    layout(APP_NAME, content),
+  }
+}
+
+export function stalledSignupGenericEmail(p: {
+  email:           string
+  associationName: string
+  dashboardUrl:    string
+}) {
+  const content = `
+    <h2 style="margin:0 0 20px;font-size:20px;font-weight:700;">Reprenez où vous en étiez</h2>
+    <p style="margin:0 0 20px;font-size:15px;line-height:1.6;color:#3f3f46;">
+      Vous avez commencé à configurer <strong>${p.associationName}</strong> sur ${APP_NAME}, mais votre compte n'a encore
+      aucun membre réel.<br>
+      Ajoutez vos premiers membres pour profiter du suivi des cotisations, des dons et des communications.
+    </p>
+    ${btn("Retourner à mon tableau de bord", p.dashboardUrl)}`
+  return {
+    to:      p.email,
+    subject: `Reprenez où vous en étiez — ${p.associationName}`,
+    html:    layout(APP_NAME, content),
+  }
+}
+
 export function passwordResetEmail(p: {
   email:        string
   resetUrl:     string
