@@ -931,6 +931,7 @@
       "today": "Illum",
       "emptyToday": "L-ebda xogħol ippjanat illum",
       "seeMoreToday": "Ara l- {count} Kompiti ta'' kuljum",
+      "upcoming": "Skadenzi li ġejjin",
       "viewAll": "Ara t-tasks tiegħi"
     },
     "charts": {

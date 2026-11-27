@@ -931,6 +931,7 @@
       "today": "Tänään",
       "emptyToday": "Tänään ei ole suunniteltu tehtäviä",
       "seeMoreToday": "Katso {count} päivittäiset tehtävät",
+      "upcoming": "Lähestyvät määräajat",
       "viewAll": "Katso tehtäväni"
     },
     "charts": {

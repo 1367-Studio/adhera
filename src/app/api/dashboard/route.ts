@@ -191,17 +191,22 @@ export const GET = withAdminAuth(async (req, ctx) => {
     // tâches du jour (todayCount, pour le libellé "Voir les X tâches du jour") et des 3
     // premières lignes à afficher (todayTasks). buildTacheWhere({ dueFilter: "today" }) est la
     // même fonction que la liste/les cards de résumé — aucune nouvelle logique de date ici.
+    // La section "Prochaines échéances" (FORM-128, commentaire Emmanuelle) réutilise le même
+    // membre : jusqu'à 3 tâches à partir de demain, triées par échéance croissante, sans
+    // plafond de 7 jours (dueFilter "fromTomorrow" — distinct de "soon7").
     canSeeTaches
       ? prisma.membre.findFirst({ where: { userId: ctx.userId, associationId, deletedAt: null }, select: { id: true } })
           .then(async membre => {
             if (!membre) return null
-            const todayWhere = buildTacheWhere(associationId, { membreId: membre.id, dueFilter: "today" })
-            const [openCount, todayCount, todayTasks] = await Promise.all([
+            const todayWhere    = buildTacheWhere(associationId, { membreId: membre.id, dueFilter: "today" })
+            const upcomingWhere = buildTacheWhere(associationId, { membreId: membre.id, dueFilter: "fromTomorrow" })
+            const [openCount, todayCount, todayTasks, upcomingTasks] = await Promise.all([
               prisma.tache.count({ where: { associationId, status: { not: "TERMINEE" }, assignees: { some: { membreId: membre.id } } } }),
               prisma.tache.count({ where: todayWhere }),
               prisma.tache.findMany({ where: todayWhere, orderBy: { createdAt: "asc" }, take: 3, select: { id: true, titre: true, status: true } }),
+              prisma.tache.findMany({ where: upcomingWhere, orderBy: { dueDate: "asc" }, take: 3, select: { id: true, titre: true, status: true, dueDate: true } }),
             ])
-            return { openCount, todayCount, todayTasks, membreId: membre.id }
+            return { openCount, todayCount, todayTasks, upcomingTasks, membreId: membre.id }
           })
       : Promise.resolve(null),
   ])

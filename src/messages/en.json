@@ -931,6 +931,7 @@
       "today": "Today",
       "emptyToday": "No tasks planned today",
       "seeMoreToday": "See the {count} daily tasks",
+      "upcoming": "Upcoming deadlines",
       "viewAll": "See my tasks"
     },
     "charts": {

@@ -931,6 +931,7 @@
       "today": "Danes",
       "emptyToday": "Danes ni načrtovanih nobenih nalog",
       "seeMoreToday": "Oglejte si {count} dnevna opravila",
+      "upcoming": "Prihajajoči roki",
       "viewAll": "Oglejte si moje naloge"
     },
     "charts": {

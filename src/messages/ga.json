@@ -931,6 +931,7 @@
       "today": "Inniu",
       "emptyToday": "Níl aon tascanna pleanáilte inniu",
       "seeMoreToday": "Féach ar an {count} tascanna laethúla",
+      "upcoming": "Spriocdhátaí atá le teacht",
       "viewAll": "Féach ar mo thascanna"
     },
     "charts": {

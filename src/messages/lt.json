@@ -931,6 +931,7 @@
       "today": "Šiandien",
       "emptyToday": "Šiandien jokių užduočių neplanuojama",
       "seeMoreToday": "Žr. {count} Kasdienės užduotys",
+      "upcoming": "Artėjantys terminai",
       "viewAll": "Žiūrėkite mano užduotis"
     },
     "charts": {

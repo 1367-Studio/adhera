@@ -931,6 +931,7 @@
       "today": "I dag",
       "emptyToday": "Ingen planlagte opgaver i dag",
       "seeMoreToday": "Se {count} Daglige opgaver",
+      "upcoming": "Kommende deadlines",
       "viewAll": "Se mine opgaver"
     },
     "charts": {

@@ -931,6 +931,7 @@
       "today": "Dnes",
       "emptyToday": "Dnes nie sú naplánované žiadne úlohy",
       "seeMoreToday": "Pozrite si {count} Denné úlohy",
+      "upcoming": "Nadchádzajúce termíny",
       "viewAll": "Zobraziť moje úlohy"
     },
     "charts": {

@@ -931,6 +931,7 @@
       "today": "Mūsdienās",
       "emptyToday": "Šodien nav plānoti uzdevumi",
       "seeMoreToday": "Skatīt {count} Ikdienas uzdevumi",
+      "upcoming": "Tuvākie termiņi",
       "viewAll": "Skatīt manus uzdevumus"
     },
     "charts": {

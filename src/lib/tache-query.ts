@@ -16,10 +16,10 @@ export type TacheFilters = {
   // l'un exclure TERMINEE et l'autre non, et les deux combinés pouvaient produire un résultat
   // vide sans explication. Résolu côté serveur (pas de timestamp envoyé par le client) pour
   // que la queryKey reste stable d'un rendu à l'autre — voir use-taches.ts.
-  // "soon7" (card « Échéance sous 7 jours ») et "today" (card du dashboard "Mes tâches" —
-  // FORM-118 commentaire Emmanuelle) suivent la même convention : résolus ici, pas envoyés en
-  // timestamp par le client.
-  dueFilter?:   "upcoming" | "soon7" | "today"
+  // "soon7" (card « Échéance sous 7 jours »), "today" et "fromTomorrow" (card du dashboard
+  // "Mes tâches" — FORM-118 et FORM-128 commentaires Emmanuelle) suivent la même convention :
+  // résolus ici, pas envoyés en timestamp par le client.
+  dueFilter?:   "upcoming" | "soon7" | "today" | "fromTomorrow"
   // Plage explicite réservée au calendrier (useTachesByMonth) — un usage distinct du filtre
   // "À venir" ci-dessus, non sujet au même problème puisque year/month ne changent qu'à la
   // navigation, pas à chaque rendu.
@@ -39,7 +39,7 @@ export function parseTacheFilters(searchParams: URLSearchParams): TacheFilters {
     membreId:    searchParams.get("membreId")?.trim() || undefined,
     categorieId: searchParams.get("categorieId")?.trim() || undefined,
     status:      isStatusFilter(status) ? status : undefined,
-    dueFilter:   due === "upcoming" || due === "soon7" || due === "today" ? due : undefined,
+    dueFilter:   due === "upcoming" || due === "soon7" || due === "today" || due === "fromTomorrow" ? due : undefined,
     dueBefore:   searchParams.get("dueBefore")?.trim() || undefined,
     dueAfter:    searchParams.get("dueAfter")?.trim() || undefined,
     search:      searchParams.get("search")?.trim() || undefined,
@@ -93,6 +93,18 @@ export function buildTacheWhere(associationId: string, filters: TacheFilters): R
     const { dayStart, dayEnd } = parisDayBounds(new Date())
     const dueDateRange = where.dueDate && typeof where.dueDate === "object" ? { ...where.dueDate as object } : {}
     where.dueDate = { ...dueDateRange, gte: dayStart, lte: dayEnd }
+    if (where.status === undefined) where.status = { not: "TERMINEE" }
+  }
+
+  // Section "Prochaines échéances" de la carte dashboard "Mes tâches" (FORM-128, commentaire
+  // Emmanuelle) : à partir de demain (fuseau Europe/Paris, pas l'heure serveur), sans plafond —
+  // contrairement à "soon7" qui s'arrête au 7e jour, une tâche qui échoit dans dix jours doit
+  // quand même pouvoir remonter ici.
+  if (filters.dueFilter === "fromTomorrow") {
+    const { dayStart: todayStart } = parisDayBounds(new Date())
+    const tomorrowStart = new Date(todayStart.getTime() + 86_400_000)
+    const dueDateRange = where.dueDate && typeof where.dueDate === "object" ? { ...where.dueDate as object } : {}
+    where.dueDate = { ...dueDateRange, gte: tomorrowStart }
     if (where.status === undefined) where.status = { not: "TERMINEE" }
   }
 

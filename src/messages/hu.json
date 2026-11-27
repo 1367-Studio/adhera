@@ -931,6 +931,7 @@
       "today": "Napjainkban",
       "emptyToday": "Ma nincs tervezett feladat",
       "seeMoreToday": "Lásd a {count} napi feladatok",
+      "upcoming": "Közelgő határidők",
       "viewAll": "Tekintse meg a feladataimat"
     },
     "charts": {

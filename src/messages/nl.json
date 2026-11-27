@@ -931,6 +931,7 @@
       "today": "Vandaag",
       "emptyToday": "Geen taken gepland vandaag",
       "seeMoreToday": "Zie de {count} dagelijkse taken",
+      "upcoming": "Aankomende deadlines",
       "viewAll": "Bekijk mijn taken"
     },
     "charts": {
