@@ -928,6 +928,8 @@
       "title": "Moje úkoly",
       "empty": "Žádné otevřené úkoly",
       "openCount": "{count, plural, one {# otevřít úkol} other {# Otevřené úkoly}}",
+      "overdue": "Pozdní",
+      "seeMoreOverdue": "Viz {count} Opožděné úkoly",
       "today": "Dnes",
       "emptyToday": "Dnes nejsou plánovány žádné úkoly",
       "seeMoreToday": "Viz {count} denní úkoly",

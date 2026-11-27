@@ -928,6 +928,8 @@
       "title": "Minu ülesanded",
       "empty": "Avatud ülesandeid ei ole",
       "openCount": "{count, plural, one {# avatud ülesanne} other {# Avatud ülesanded}}",
+      "overdue": "Hiline",
+      "seeMoreOverdue": "Vaata {count} hilinenud ülesanded",
       "today": "Tänapäeval",
       "emptyToday": "Täna pole planeeritud ülesandeid",
       "seeMoreToday": "Vaata {count} igapäevased ülesanded",

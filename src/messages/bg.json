@@ -928,6 +928,8 @@
       "title": "Моите задачи",
       "empty": "Няма отворени задачи",
       "openCount": "{count, plural, one {# Отворена задача} other {# Отворени задачи}}",
+      "overdue": "Късно",
+      "seeMoreOverdue": "Вижте {count} Просрочени задачи",
       "today": "Днес",
       "emptyToday": "Днес няма планирани задачи",
       "seeMoreToday": "Вижте {count} Ежедневни задачи",

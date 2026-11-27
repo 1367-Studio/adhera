@@ -10,7 +10,11 @@ import { tacheDueDateLocal } from "@/lib/tache-status"
 import type { Locale } from "@/i18n/locales"
 
 type TodayTache = { id: string; titre: string; status: "A_FAIRE" | "EN_COURS" | "TERMINEE" }
-type UpcomingTache = TodayTache & { dueDate: string }
+// "Prochaines échéances" peut inclure des tâches sans échéance pour compléter ses 3 lignes
+// (voir /api/dashboard) — dueDate y est donc nullable, contrairement aux tâches "En retard"
+// (toujours datées par construction : isTacheOverdue exclut dueDate null).
+type UpcomingTache = TodayTache & { dueDate: string | null }
+type OverdueTache  = TodayTache & { dueDate: string }
 
 interface Props {
   openCount:  number
@@ -22,6 +26,12 @@ interface Props {
   // server-side (buildTacheWhere dueFilter "fromTomorrow"), no overflow link per the ticket:
   // "Voir mes tâches" below is the only way to reach the rest.
   upcomingTasks: UpcomingTache[]
+  // "En retard" (FORM-128, print du 2026-11-27, deuxième commentaire Emmanuelle) — une tâche
+  // en retard n'entrait ni dans "Aujourd'hui" ni dans "Prochaines échéances", donc restait
+  // invisible malgré openCount qui la comptait. Placée avant "Aujourd'hui" (priorité la plus
+  // haute) ; overdueCount porte le "Voir les X tâches en retard" comme todayCount pour today.
+  overdueCount: number
+  overdueTasks: OverdueTache[]
   membreId:      string
   isLoading:     boolean
 }
@@ -33,7 +43,7 @@ const STATUS_VARIANT = { A_FAIRE: "secondary", EN_COURS: "warning", TERMINEE: "s
 
 const STATUS_LABEL_KEY = { A_FAIRE: "aFaire", EN_COURS: "enCours", TERMINEE: "terminee" } as const
 
-export function MesTachesCard({ openCount, todayCount, todayTasks, upcomingTasks, membreId, isLoading }: Props) {
+export function MesTachesCard({ openCount, todayCount, todayTasks, upcomingTasks, overdueCount, overdueTasks, membreId, isLoading }: Props) {
   const t = useTranslations("dashboard.mesTaches")
   const tTaches = useTranslations("taches")
   const dateFnsLocale = getDateFnsLocale(useLocale() as Locale)
@@ -53,6 +63,38 @@ export function MesTachesCard({ openCount, todayCount, todayTasks, upcomingTasks
         <div className="h-12 rounded-lg bg-muted animate-pulse" />
       ) : (
         <div className="flex-1 min-h-0 flex flex-col gap-2">
+          {overdueTasks.length > 0 && (
+            <div className="space-y-1">
+              <p className="text-xs font-medium uppercase tracking-wide text-destructive">{t("overdue")}</p>
+              {overdueTasks.map(tache => {
+                const dueDate = tacheDueDateLocal(tache.dueDate)
+                const dateFormat = dueDate.getFullYear() !== currentYear ? "d MMM yyyy" : "d MMM"
+                return (
+                  <Link
+                    key={tache.id}
+                    href={`/dashboard/taches?tache=${tache.id}`}
+                    className="flex items-center justify-between group -mx-1 px-1.5 py-0.5 rounded hover:bg-accent transition-colors"
+                  >
+                    <span className="text-sm font-medium truncate group-hover:text-primary transition-colors">{tache.titre}</span>
+                    <span className="flex items-center gap-2 shrink-0 ml-2">
+                      <span className="text-xs text-destructive font-medium">{format(dueDate, dateFormat, { locale: dateFnsLocale })}</span>
+                      <Badge variant={STATUS_VARIANT[tache.status]}>
+                        {tTaches(`status.${STATUS_LABEL_KEY[tache.status]}`)}
+                      </Badge>
+                    </span>
+                  </Link>
+                )
+              })}
+              {overdueCount > overdueTasks.length && (
+                <Link
+                  href={`/dashboard/taches?membre=${membreId}&status=EN_RETARD`}
+                  className="block text-xs text-muted-foreground hover:underline pt-1"
+                >
+                  {t("seeMoreOverdue", { count: overdueCount })}
+                </Link>
+              )}
+            </div>
+          )}
           <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{t("today")}</p>
           {todayTasks.length === 0 ? (
             <p className="text-sm text-muted-foreground">{t("emptyToday")}</p>
@@ -84,8 +126,8 @@ export function MesTachesCard({ openCount, todayCount, todayTasks, upcomingTasks
             <div className="space-y-1">
               <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{t("upcoming")}</p>
               {upcomingTasks.map(tache => {
-                const dueDate = tacheDueDateLocal(tache.dueDate)
-                const dateFormat = dueDate.getFullYear() !== currentYear ? "d MMM yyyy" : "d MMM"
+                const dueDate = tache.dueDate ? tacheDueDateLocal(tache.dueDate) : null
+                const dateFormat = dueDate && dueDate.getFullYear() !== currentYear ? "d MMM yyyy" : "d MMM"
                 return (
                   <Link
                     key={tache.id}
@@ -94,7 +136,9 @@ export function MesTachesCard({ openCount, todayCount, todayTasks, upcomingTasks
                   >
                     <span className="text-sm font-medium truncate group-hover:text-primary transition-colors">{tache.titre}</span>
                     <span className="flex items-center gap-2 shrink-0 ml-2">
-                      <span className="text-xs text-muted-foreground">{format(dueDate, dateFormat, { locale: dateFnsLocale })}</span>
+                      <span className="text-xs text-muted-foreground">
+                        {dueDate ? format(dueDate, dateFormat, { locale: dateFnsLocale }) : tTaches("detailSheet.sansEcheance")}
+                      </span>
                       <Badge variant={STATUS_VARIANT[tache.status]}>
                         {tTaches(`status.${STATUS_LABEL_KEY[tache.status]}`)}
                       </Badge>

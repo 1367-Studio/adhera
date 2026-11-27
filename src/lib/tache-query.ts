@@ -16,10 +16,10 @@ export type TacheFilters = {
   // l'un exclure TERMINEE et l'autre non, et les deux combinés pouvaient produire un résultat
   // vide sans explication. Résolu côté serveur (pas de timestamp envoyé par le client) pour
   // que la queryKey reste stable d'un rendu à l'autre — voir use-taches.ts.
-  // "soon7" (card « Échéance sous 7 jours »), "today" et "fromTomorrow" (card du dashboard
-  // "Mes tâches" — FORM-118 et FORM-128 commentaires Emmanuelle) suivent la même convention :
-  // résolus ici, pas envoyés en timestamp par le client.
-  dueFilter?:   "upcoming" | "soon7" | "today" | "fromTomorrow"
+  // "soon7" (card « Échéance sous 7 jours »), "today", "fromTomorrow" et "noDueDate" (card du
+  // dashboard "Mes tâches" — FORM-118 et FORM-128 commentaires Emmanuelle) suivent la même
+  // convention : résolus ici, pas envoyés en timestamp par le client.
+  dueFilter?:   "upcoming" | "soon7" | "today" | "fromTomorrow" | "noDueDate"
   // Plage explicite réservée au calendrier (useTachesByMonth) — un usage distinct du filtre
   // "À venir" ci-dessus, non sujet au même problème puisque year/month ne changent qu'à la
   // navigation, pas à chaque rendu.
@@ -39,7 +39,7 @@ export function parseTacheFilters(searchParams: URLSearchParams): TacheFilters {
     membreId:    searchParams.get("membreId")?.trim() || undefined,
     categorieId: searchParams.get("categorieId")?.trim() || undefined,
     status:      isStatusFilter(status) ? status : undefined,
-    dueFilter:   due === "upcoming" || due === "soon7" || due === "today" || due === "fromTomorrow" ? due : undefined,
+    dueFilter:   due === "upcoming" || due === "soon7" || due === "today" || due === "fromTomorrow" || due === "noDueDate" ? due : undefined,
     dueBefore:   searchParams.get("dueBefore")?.trim() || undefined,
     dueAfter:    searchParams.get("dueAfter")?.trim() || undefined,
     search:      searchParams.get("search")?.trim() || undefined,
@@ -105,6 +105,16 @@ export function buildTacheWhere(associationId: string, filters: TacheFilters): R
     const tomorrowStart = new Date(todayStart.getTime() + 86_400_000)
     const dueDateRange = where.dueDate && typeof where.dueDate === "object" ? { ...where.dueDate as object } : {}
     where.dueDate = { ...dueDateRange, gte: tomorrowStart }
+    if (where.status === undefined) where.status = { not: "TERMINEE" }
+  }
+
+  // Complément de "Prochaines échéances" (FORM-128, commentaire Emmanuelle — print du
+  // 2026-11-27) : une tâche ouverte sans échéance ne matche ni "today" ni "fromTomorrow"
+  // (NULL n'est jamais >= une date) et restait donc invisible de la carte malgré le badge
+  // "openCount" qui, lui, la compte. Listée à part pour compléter les 3 lignes de la section
+  // quand les tâches datées n'y suffisent pas (voir /api/dashboard).
+  if (filters.dueFilter === "noDueDate") {
+    where.dueDate = null
     if (where.status === undefined) where.status = { not: "TERMINEE" }
   }
 

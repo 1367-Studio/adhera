@@ -928,6 +928,8 @@
       "title": "My tasks",
       "empty": "No open tasks",
       "openCount": "{count, plural, one {# open task} other {# Open tasks}}",
+      "overdue": "Late",
+      "seeMoreOverdue": "See the {count} overdue tasks",
       "today": "Today",
       "emptyToday": "No tasks planned today",
       "seeMoreToday": "See the {count} daily tasks",

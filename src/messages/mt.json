@@ -928,6 +928,8 @@
       "title": "It-tasks tiegħi",
       "empty": "L-ebda kompiti miftuħa",
       "openCount": "{count, plural, one {# kompitu miftuħ} other {# Kompiti miftuħa}}",
+      "overdue": "Tard",
+      "seeMoreOverdue": "Ara l- {count} Kompiti li għaddew",
       "today": "Illum",
       "emptyToday": "L-ebda xogħol ippjanat illum",
       "seeMoreToday": "Ara l- {count} Kompiti ta'' kuljum",

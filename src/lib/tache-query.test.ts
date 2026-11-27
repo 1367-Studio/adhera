@@ -64,4 +64,10 @@ describe("buildTacheWhere", () => {
     expect(where.dueDate).toEqual({ gte: tomorrowStart })
     expect(where.status).toEqual({ not: "TERMINEE" })
   })
+
+  it("noDueDate (FORM-128 'Prochaines échéances' fallback) matches an explicit null dueDate, excluding TERMINEE", () => {
+    const where = buildTacheWhere("assoc1", { membreId: "m1", dueFilter: "noDueDate" })
+    expect(where.dueDate).toBeNull()
+    expect(where.status).toEqual({ not: "TERMINEE" })
+  })
 })

@@ -80,7 +80,9 @@ type DashboardData = {
     openCount:     number
     todayCount:    number
     todayTasks:    { id: string; titre: string; status: "A_FAIRE" | "EN_COURS" | "TERMINEE" }[]
-    upcomingTasks: { id: string; titre: string; status: "A_FAIRE" | "EN_COURS" | "TERMINEE"; dueDate: string }[]
+    upcomingTasks: { id: string; titre: string; status: "A_FAIRE" | "EN_COURS" | "TERMINEE"; dueDate: string | null }[]
+    overdueCount:  number
+    overdueTasks:  { id: string; titre: string; status: "A_FAIRE" | "EN_COURS" | "TERMINEE"; dueDate: string }[]
     membreId:      string
   } | null
 }
@@ -214,6 +216,8 @@ export function TableauDeBord({ initialLayout }: Props) {
         todayCount={data?.mesTaches?.todayCount ?? 0}
         todayTasks={data?.mesTaches?.todayTasks ?? []}
         upcomingTasks={data?.mesTaches?.upcomingTasks ?? []}
+        overdueCount={data?.mesTaches?.overdueCount ?? 0}
+        overdueTasks={data?.mesTaches?.overdueTasks ?? []}
         membreId={data?.mesTaches?.membreId ?? ""}
         isLoading={isLoading}
       />

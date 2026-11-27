@@ -928,6 +928,8 @@
       "title": "Mina uppgifter",
       "empty": "Inga öppna uppgifter",
       "openCount": "{count, plural, one {# Öppen uppgift} other {# Öppna uppgifter}}",
+      "overdue": "Sent",
+      "seeMoreOverdue": "Se {count} Försenade uppgifter",
       "today": "Idag",
       "emptyToday": "Inga uppgifter planerade idag",
       "seeMoreToday": "Se {count} Dagliga uppgifter",

@@ -928,6 +928,8 @@
       "title": "Mo thascanna",
       "empty": "Gan tascanna oscailte",
       "openCount": "{count, plural, one {# Tasc oscailte} other {# Tascanna oscailte}}",
+      "overdue": "Déanach",
+      "seeMoreOverdue": "Féach ar an {count} Tascanna thar téarma",
       "today": "Inniu",
       "emptyToday": "Níl aon tascanna pleanáilte inniu",
       "seeMoreToday": "Féach ar an {count} tascanna laethúla",

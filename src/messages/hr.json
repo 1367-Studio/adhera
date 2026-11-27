@@ -928,6 +928,8 @@
       "title": "Moji zadaci",
       "empty": "Nema otvorenih zadataka",
       "openCount": "{count, plural, one {# otvoreni zadatak} other {# Otvoreni zadaci}}",
+      "overdue": "Kasni",
+      "seeMoreOverdue": "Pogledajte {count} zakašnjeli zadaci",
       "today": "Danas",
       "emptyToday": "Danas nema planiranih zadataka",
       "seeMoreToday": "Pogledajte {count} dnevni zadaci",
