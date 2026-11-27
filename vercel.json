@@ -65,6 +65,10 @@
     {
       "path": "/api/cron/stalled-signup-nudge-sweep",
       "schedule": "0 8 * * *"
+    },
+    {
+      "path": "/api/cron/churn-feedback-sweep",
+      "schedule": "0 8 * * *"
     }
   ]
 }

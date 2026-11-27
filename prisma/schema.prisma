@@ -666,6 +666,12 @@ model Association {
   // re-subscribe screens instead of the generic "Abonnement résilié"; cleared as soon as
   // the association is back on a live subscription.
   trialExpiredAt                        DateTime?
+  // Stamped by the Stripe webhook (customer.subscription.updated/deleted) whenever
+  // subscriptionStatus becomes CANCELLED for any reason OTHER than a card-free trial expiry
+  // (which has its own trialExpiredAt above) — a paid subscription cancelled via the Stripe
+  // Customer Portal or an admin's own action. Drives the FORM-132 churn-feedback sweep's
+  // "cancelled N days ago" window; cleared as soon as the association leaves CANCELLED.
+  subscriptionCancelledAt               DateTime?
   suspendedAt                           DateTime?
   cancelAtPeriodEnd                     Boolean             @default(false)
   currentPeriodEndsAt                   DateTime?
@@ -694,6 +700,7 @@ model Association {
   updatedAt                             DateTime            @updatedAt
   deletedAt                             DateTime?
 
+  churnFeedback              ChurnFeedback?
   users                      User[]
   membres                    Membre[]
   membreTypes                MembreType[]
@@ -4483,6 +4490,26 @@ model PlatformLegalValidation {
 
   @@unique([userId, documentSlug, version])
   @@index([associationId])
+}
+
+// FORM-132 — one feedback request per association, sent by the churn-feedback-sweep cron 5
+// days after Association.subscriptionCancelledAt. `token` is the unguessable public link
+// (randomBytes(20).toString("hex"), same convention as Participation.reviewToken/cancelToken)
+// — the row's mere existence is the sweep's own dedupe, no separate ActivityLog check needed.
+// `reason` is written by a plain GET on the public link (the only HTTP verb an email <a href>
+// can trigger) the instant it's clicked; `detail` is optional free text attached afterward via
+// the public page's own form (PATCH), same "revisit later to add more" shape as the event
+// review flow's PATCH.
+model ChurnFeedback {
+  id            String    @id @default(cuid())
+  associationId String    @unique
+  token         String    @unique
+  reason        String?
+  detail        String?   @db.Text
+  sentAt        DateTime  @default(now())
+  respondedAt   DateTime?
+
+  association Association @relation(fields: [associationId], references: [id], onDelete: Cascade)
 }
 
 // Azure Translator cache — keyed by content hash so identical text (even across

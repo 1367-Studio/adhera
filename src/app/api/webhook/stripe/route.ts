@@ -1357,6 +1357,11 @@ export async function POST(req: Request) {
           // Cleared as soon as the association is back on a live subscription (card added
           // and re-subscribed), kept as-is while it stays CANCELLED for another reason.
           trialExpiredAt:      newStatus === "CANCELLED" ? (trialExpired ? new Date() : undefined) : null,
+          // FORM-132 — the general-purpose counterpart to trialExpiredAt above, for every
+          // other way a subscription ends up CANCELLED (Stripe Customer Portal, admin action).
+          // Same clear-on-leaving-CANCELLED behavior.
+          subscriptionCancelledAt:
+            newStatus === "CANCELLED" ? (trialExpired ? undefined : new Date()) : null,
           cancelAtPeriodEnd:   sub.cancel_at_period_end,
           currentPeriodEndsAt: subscriptionPeriodEnd(sub),
         },
@@ -1460,7 +1465,7 @@ export async function POST(req: Request) {
           suspendedAt:         null,
           cancelAtPeriodEnd:   false,
           currentPeriodEndsAt: null,
-          ...(trialExpired ? { trialExpiredAt: new Date() } : {}),
+          ...(trialExpired ? { trialExpiredAt: new Date() } : { subscriptionCancelledAt: new Date() }),
         },
       })
       if (trialExpired) {
