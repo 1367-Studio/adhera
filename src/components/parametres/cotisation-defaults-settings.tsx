@@ -23,12 +23,15 @@ interface CotisationDefaultsSettingsProps {
   // item), instead of only ever charging it once at the first manual signup. Lives here
   // rather than its own settings block — it's a single checkbox, not a whole topic.
   includeFederativeLicenseInAutoRenewal: boolean
+  // Set when rendered as an AccordionItem's panel (see parametres-view.tsx) — the trigger
+  // already shows this section's title, so showing it again inside would duplicate it.
+  hideTitle?: boolean
 }
 
 // 0 doubles as "not configured" here — same convention as e.g. material-modal.tsx's
 // purchasePrice: CurrencyField has no empty state, so 0 is shown for null, and 0 is sent
 // back as null on save (a 0€ default wouldn't survive online payment anyway).
-export function CotisationDefaultsSettings({ canEdit, cotisationDefaultAmount, publicMembershipPaymentEnabled, includeFederativeLicenseInAutoRenewal }: CotisationDefaultsSettingsProps) {
+export function CotisationDefaultsSettings({ canEdit, cotisationDefaultAmount, publicMembershipPaymentEnabled, includeFederativeLicenseInAutoRenewal, hideTitle }: CotisationDefaultsSettingsProps) {
   const t = useTranslations("parametres.cotisationDefaultsSettings")
   const tCommon = useTranslations("common")
   const qc = useQueryClient()
@@ -86,12 +89,14 @@ export function CotisationDefaultsSettings({ canEdit, cotisationDefaultAmount, p
 
   return (
     <div className="space-y-5">
-      <div>
-        <h3 className="text-sm font-semibold">{t("title")}</h3>
-        <p className="text-xs text-muted-foreground mt-0.5">
-          {t("subtitle")}
-        </p>
-      </div>
+      {!hideTitle && (
+        <div>
+          <h3 className="text-sm font-semibold">{t("title")}</h3>
+          <p className="text-xs text-muted-foreground mt-0.5">
+            {t("subtitle")}
+          </p>
+        </div>
+      )}
 
       <div className="max-w-xs">
         <CurrencyField

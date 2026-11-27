@@ -31,12 +31,15 @@ type BrandingData = {
 }
 
 interface BrandingSettingsProps {
-  canEdit: boolean
-  canUse:  boolean
-  data:    BrandingData
+  canEdit:    boolean
+  canUse:     boolean
+  data:       BrandingData
+  // Set when rendered as an AccordionItem's panel (see parametres-view.tsx) — the trigger
+  // already shows this section's title, so showing it again inside would duplicate it.
+  hideTitle?: boolean
 }
 
-export function BrandingSettings({ canEdit, canUse, data }: BrandingSettingsProps) {
+export function BrandingSettings({ canEdit, canUse, data, hideTitle }: BrandingSettingsProps) {
   const t       = useTranslations("parametres.branding")
   const tCommon = useTranslations("common")
   const qc     = useQueryClient()
@@ -139,7 +142,7 @@ export function BrandingSettings({ canEdit, canUse, data }: BrandingSettingsProp
   if (!canUse) {
     return (
       <div className="space-y-2">
-        <h3 className="text-sm font-semibold">{t("title")}</h3>
+        {!hideTitle && <h3 className="text-sm font-semibold">{t("title")}</h3>}
         <div className="flex items-start gap-2 rounded-lg border p-4 text-xs text-muted-foreground">
           <CrownIcon className="size-3.5 shrink-0 mt-0.5 text-amber-500" />
           <span>{t("proOnlyText")}</span>
@@ -150,12 +153,14 @@ export function BrandingSettings({ canEdit, canUse, data }: BrandingSettingsProp
 
   return (
     <div className="space-y-5">
-      <div>
-        <h3 className="text-sm font-semibold">{t("title")}</h3>
-        <p className="text-xs text-muted-foreground mt-0.5">
-          {t("subtitle")}
-        </p>
-      </div>
+      {!hideTitle && (
+        <div>
+          <h3 className="text-sm font-semibold">{t("title")}</h3>
+          <p className="text-xs text-muted-foreground mt-0.5">
+            {t("subtitle")}
+          </p>
+        </div>
+      )}
 
       <div className="grid gap-6 lg:grid-cols-2">
         {/* Same "preview follows the form" placement as the member card settings screen —
