@@ -6,7 +6,7 @@ import { ClipboardIcon, CheckIcon, ArrowSquareOutIcon } from "@phosphor-icons/re
 import { Button } from "@/components/ui/button"
 import { BASE_PATH } from "@/lib/env"
 
-export function PortalLinkSettings({ slug }: { slug: string }) {
+export function PortalLinkSettings({ slug, hideTitle }: { slug: string; hideTitle?: boolean }) {
   const t = useTranslations("parametres.portalLinkSettings")
   const [copied, setCopied]       = useState(false)
   const [copyFailed, setCopyFailed] = useState(false)
@@ -35,12 +35,14 @@ export function PortalLinkSettings({ slug }: { slug: string }) {
 
   return (
     <div className="space-y-3">
-      <div>
-        <h3 className="text-sm font-medium">{t("title")}</h3>
-        <p className="text-xs text-muted-foreground mt-0.5">
-          {t("subtitle")}
-        </p>
-      </div>
+      {!hideTitle && (
+        <div>
+          <h3 className="text-sm font-medium">{t("title")}</h3>
+          <p className="text-xs text-muted-foreground mt-0.5">
+            {t("subtitle")}
+          </p>
+        </div>
+      )}
 
       <input
         ref={inputRef}

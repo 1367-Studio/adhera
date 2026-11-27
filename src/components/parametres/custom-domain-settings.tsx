@@ -22,7 +22,7 @@ type CustomDomainData = {
 // so this component only has to render whatever came back, not decide the DNS type itself.
 const DOMAIN_PATTERN = /^[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?(\.[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?)+$/i
 
-export function CustomDomainSettings({ canEdit }: { canEdit: boolean }) {
+export function CustomDomainSettings({ canEdit, hideTitle }: { canEdit: boolean; hideTitle?: boolean }) {
   const t       = useTranslations("parametres.customDomainSettings")
   const tCommon = useTranslations("common")
   const qc = useQueryClient()
@@ -93,10 +93,12 @@ export function CustomDomainSettings({ canEdit }: { canEdit: boolean }) {
 
   return (
     <div className="space-y-5">
-      <div>
-        <h3 className="text-sm font-semibold">{t("title")}</h3>
-        <p className="text-xs text-muted-foreground mt-0.5">{t("subtitle")}</p>
-      </div>
+      {!hideTitle && (
+        <div>
+          <h3 className="text-sm font-semibold">{t("title")}</h3>
+          <p className="text-xs text-muted-foreground mt-0.5">{t("subtitle")}</p>
+        </div>
+      )}
 
       {!data.customDomain ? (
         <div className="space-y-3">

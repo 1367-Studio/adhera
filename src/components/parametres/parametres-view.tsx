@@ -10,6 +10,7 @@ import { useTranslations } from "next-intl"
 import { BuildingsIcon, CreditCardIcon, InfoIcon, LightningIcon, ReceiptIcon, ShieldCheckIcon, UsersThreeIcon } from "@phosphor-icons/react/dist/ssr";
 import { associationSchema, type AssociationInput } from "@/lib/schemas"
 import { PageHeader } from "@/components/ui/page-header"
+import { Accordion, AccordionItem, AccordionTrigger, AccordionPanel } from "@/components/ui/accordion"
 import { ViewToggle } from "@/components/ui/view-toggle"
 import { FormField } from "@/components/ui/form-field"
 import { Button } from "@/components/ui/button"
@@ -100,6 +101,12 @@ function ParametresViewInner() {
     (!opt.modules || opt.modules.some(m => modules[m])) && (!opt.administratorOnly || isAdministrator),
   )
 
+  // "Général" groups several unrelated topics (identité, branding, carte de membre, coordonnées
+  // bancaires, cotisation par défaut, types de membre, livraison, domaine) — an Accordion keeps
+  // them reachable without stacking that many cards in one long scroll. Only the first section
+  // opens by default; the others are one click away.
+  const [openGeneralSections, setOpenGeneralSections] = useState<string[]>(["info"])
+
   useEffect(() => {
     if (!tabs.some(opt => opt.value === tab)) setTab("general")
   }, [tabs, tab])
@@ -151,77 +158,88 @@ function ParametresViewInner() {
 
       {/* ── Général ───────────────────────────────────────────────────── */}
       {tab === "general" && (
-        <div className="space-y-6">
-          <div className="rounded-lg border bg-card p-6">
-            <h3 className="text-sm font-semibold mb-4">{t("parametres.view.associationInfo")}</h3>
-            {isLoading ? (
-              <div className="space-y-3">
-                {[1, 2].map(i => <div key={i} className="h-10 rounded-lg bg-muted animate-pulse" />)}
-              </div>
-            ) : (
-              <form onSubmit={handleSubmit(d => updateMutation.mutate(d))} className="space-y-4" noValidate>
-                <FormField
-                  label={t("parametres.view.associationName")}
-                  required
-                  disabled={!canEdit}
-                  error={errors.name?.message}
-                  {...register("name")}
-                />
-                <div className="grid grid-cols-2 gap-4">
+        <Accordion
+          multiple
+          keepMounted
+          value={openGeneralSections}
+          onValueChange={v => setOpenGeneralSections(v as string[])}
+        >
+          <AccordionItem value="info">
+            <AccordionTrigger>{t("parametres.view.associationInfo")}</AccordionTrigger>
+            <AccordionPanel>
+              {isLoading ? (
+                <div className="space-y-3">
+                  {[1, 2].map(i => <div key={i} className="h-10 rounded-lg bg-muted animate-pulse" />)}
+                </div>
+              ) : (
+                <form onSubmit={handleSubmit(d => updateMutation.mutate(d))} className="space-y-4" noValidate>
                   <FormField
-                    label={t("parametres.view.city")}
-                    disabled={!canEdit}
-                    placeholder={t("parametres.view.cityPlaceholder")}
-                    error={errors.city?.message}
-                    {...register("city")}
-                  />
-                  <FormField
-                    label={t("parametres.view.country")}
+                    label={t("parametres.view.associationName")}
                     required
                     disabled={!canEdit}
-                    error={errors.country?.message}
-                    {...register("country")}
+                    error={errors.name?.message}
+                    {...register("name")}
                   />
-                </div>
-                <FormField
-                  label={t("parametres.view.contactEmail")}
-                  placeholder={t("parametres.view.contactEmailPlaceholder")}
-                  hint={t("parametres.view.contactEmailHint")}
-                  type="email"
-                  disabled={!canEdit}
-                  error={errors.contactEmail?.message}
-                  {...register("contactEmail")}
-                />
-                {!contactEmailValue?.trim() && (
-                  <div className="flex items-start gap-2 text-xs text-amber-700 dark:text-amber-400">
-                    <InfoIcon className="size-3.5 shrink-0 mt-0.5" />
-                    <span>{t("parametres.view.contactEmailEmptyWarning")}</span>
+                  <div className="grid grid-cols-2 gap-4">
+                    <FormField
+                      label={t("parametres.view.city")}
+                      disabled={!canEdit}
+                      placeholder={t("parametres.view.cityPlaceholder")}
+                      error={errors.city?.message}
+                      {...register("city")}
+                    />
+                    <FormField
+                      label={t("parametres.view.country")}
+                      required
+                      disabled={!canEdit}
+                      error={errors.country?.message}
+                      {...register("country")}
+                    />
                   </div>
-                )}
-                {canEdit && (
-                  <Button type="submit" size="sm" disabled={!isDirty} loading={isSubmitting || updateMutation.isPending}>
-                    {t("common.save")}
-                  </Button>
-                )}
-              </form>
-            )}
-          </div>
+                  <FormField
+                    label={t("parametres.view.contactEmail")}
+                    placeholder={t("parametres.view.contactEmailPlaceholder")}
+                    hint={t("parametres.view.contactEmailHint")}
+                    type="email"
+                    disabled={!canEdit}
+                    error={errors.contactEmail?.message}
+                    {...register("contactEmail")}
+                  />
+                  {!contactEmailValue?.trim() && (
+                    <div className="flex items-start gap-2 text-xs text-amber-700 dark:text-amber-400">
+                      <InfoIcon className="size-3.5 shrink-0 mt-0.5" />
+                      <span>{t("parametres.view.contactEmailEmptyWarning")}</span>
+                    </div>
+                  )}
+                  {canEdit && (
+                    <Button type="submit" size="sm" disabled={!isDirty} loading={isSubmitting || updateMutation.isPending}>
+                      {t("common.save")}
+                    </Button>
+                  )}
+                </form>
+              )}
+            </AccordionPanel>
+          </AccordionItem>
 
           {assoc && (
-            <div className="rounded-lg border bg-card p-6">
-              <BrandingSettings
-                canEdit={canEdit}
-                canUse={assoc.customBrandingEnabled ?? assoc.plan === "PRO"}
-                data={{
-                  logoUrl:         assoc.logoUrl,
-                  primaryColor:    assoc.primaryColor,
-                  emailSenderName:     assoc.emailSenderName,
-                  emailSignature:      assoc.emailSignature,
-                  emailFooterSettings: assoc.emailFooterSettings,
-                  associationName:     assoc.name,
-                }}
-              />
-            </div>
+            <AccordionItem value="branding">
+              <AccordionTrigger>{t("parametres.branding.title")}</AccordionTrigger>
+              <AccordionPanel>
+                <BrandingSettings
+                  canEdit={canEdit}
+                  canUse={assoc.customBrandingEnabled ?? assoc.plan === "PRO"}
+                  hideTitle
+                  data={{
+                    logoUrl:         assoc.logoUrl,
+                    primaryColor:    assoc.primaryColor,
+                    emailSenderName:     assoc.emailSenderName,
+                    emailSignature:      assoc.emailSignature,
+                    emailFooterSettings: assoc.emailFooterSettings,
+                    associationName:     assoc.name,
+                  }}
+                />
+              </AccordionPanel>
+            </AccordionItem>
           )}
 
           {/* The card itself is not Pro-gated — only its logo is, exactly like the PDFs
@@ -231,55 +249,81 @@ function ParametresViewInner() {
               a Secrétaire would be shown the *defaults* — card off, Classique, bleu — as if
               they were the association's real settings. */}
           {assoc && modules.cotisations && canEdit && (
-            <div className="rounded-lg border bg-card p-6">
-              <MemberCardSettings
-                canEdit={canEdit}
-                associationName={assoc.name}
-                logoUrl={(assoc.customBrandingEnabled ?? assoc.plan === "PRO") ? assoc.logoUrl : null}
-                associationPhone={assoc.phone}
-                associationContactEmail={assoc.contactEmail}
-              />
-            </div>
+            <AccordionItem value="memberCard">
+              <AccordionTrigger>{t("memberCard.settings.title")}</AccordionTrigger>
+              <AccordionPanel>
+                <MemberCardSettings
+                  canEdit={canEdit}
+                  hideTitle
+                  associationName={assoc.name}
+                  logoUrl={(assoc.customBrandingEnabled ?? assoc.plan === "PRO") ? assoc.logoUrl : null}
+                  associationPhone={assoc.phone}
+                  associationContactEmail={assoc.contactEmail}
+                />
+              </AccordionPanel>
+            </AccordionItem>
           )}
 
           {assoc && (
-            <div className="rounded-lg border bg-card p-6">
-              <BankSettings
-                canEdit={canEditFinance}
-                data={{ website: assoc.website, iban: assoc.iban, bic: assoc.bic, accountingRegime: assoc.accountingRegime }}
-              />
-            </div>
+            <AccordionItem value="bank">
+              <AccordionTrigger>{t("parametres.bankSettings.title")}</AccordionTrigger>
+              <AccordionPanel>
+                <BankSettings
+                  canEdit={canEditFinance}
+                  hideTitle
+                  data={{ website: assoc.website, iban: assoc.iban, bic: assoc.bic, accountingRegime: assoc.accountingRegime }}
+                />
+              </AccordionPanel>
+            </AccordionItem>
           )}
 
           {assoc && modules.cotisations && (
-            <div className="rounded-lg border bg-card p-6">
-              <CotisationDefaultsSettings
-                canEdit={canEditFinance}
-                cotisationDefaultAmount={assoc.cotisationDefaultAmount}
-                publicMembershipPaymentEnabled={assoc.publicMembershipPaymentEnabled}
-                includeFederativeLicenseInAutoRenewal={assoc.includeFederativeLicenseInAutoRenewal}
-              />
-            </div>
+            <AccordionItem value="cotisationDefaults">
+              <AccordionTrigger>{t("parametres.cotisationDefaultsSettings.title")}</AccordionTrigger>
+              <AccordionPanel>
+                <CotisationDefaultsSettings
+                  canEdit={canEditFinance}
+                  hideTitle
+                  cotisationDefaultAmount={assoc.cotisationDefaultAmount}
+                  publicMembershipPaymentEnabled={assoc.publicMembershipPaymentEnabled}
+                  includeFederativeLicenseInAutoRenewal={assoc.includeFederativeLicenseInAutoRenewal}
+                />
+              </AccordionPanel>
+            </AccordionItem>
           )}
 
-          <MembreTypesManager canEdit={canEdit} />
+          <AccordionItem value="membreTypes">
+            <AccordionTrigger>{t("parametres.membreTypes.title")}</AccordionTrigger>
+            <AccordionPanel>
+              <MembreTypesManager canEdit={canEdit} hideTitle />
+            </AccordionPanel>
+          </AccordionItem>
 
           {modules.boutique && (
-            <div className="rounded-lg border bg-card p-6">
-              <ShippingSettings canEdit={canEdit} />
-            </div>
+            <AccordionItem value="shipping">
+              <AccordionTrigger>{t("boutiqueShipping.title")}</AccordionTrigger>
+              <AccordionPanel>
+                <ShippingSettings canEdit={canEdit} hideTitle />
+              </AccordionPanel>
+            </AccordionItem>
           )}
 
           {assoc?.slug && (
-            <div className="rounded-lg border bg-card p-6">
-              <PortalLinkSettings slug={assoc.slug} />
-            </div>
+            <AccordionItem value="portalLink">
+              <AccordionTrigger>{t("parametres.portalLinkSettings.title")}</AccordionTrigger>
+              <AccordionPanel>
+                <PortalLinkSettings slug={assoc.slug} hideTitle />
+              </AccordionPanel>
+            </AccordionItem>
           )}
 
-          <div className="rounded-lg border bg-card p-6">
-            <CustomDomainSettings canEdit={canEdit} />
-          </div>
-        </div>
+          <AccordionItem value="customDomain">
+            <AccordionTrigger>{t("parametres.customDomainSettings.title")}</AccordionTrigger>
+            <AccordionPanel>
+              <CustomDomainSettings canEdit={canEdit} hideTitle />
+            </AccordionPanel>
+          </AccordionItem>
+        </Accordion>
       )}
 
       {/* ── Paiements ─────────────────────────────────────────────────── */}

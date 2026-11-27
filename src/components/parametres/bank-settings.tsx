@@ -20,11 +20,14 @@ type BankData = {
 }
 
 interface BankSettingsProps {
-  canEdit: boolean
-  data:    BankData
+  canEdit:    boolean
+  data:       BankData
+  // Set when rendered as an AccordionItem's panel (see parametres-view.tsx) — the trigger
+  // already shows this section's title, so showing it again inside would duplicate it.
+  hideTitle?: boolean
 }
 
-export function BankSettings({ canEdit, data }: BankSettingsProps) {
+export function BankSettings({ canEdit, data, hideTitle }: BankSettingsProps) {
   const t = useTranslations("parametres.bankSettings")
   const tCommon = useTranslations("common")
   const qc = useQueryClient()
@@ -69,12 +72,14 @@ export function BankSettings({ canEdit, data }: BankSettingsProps) {
 
   return (
     <div className="space-y-5">
-      <div>
-        <h3 className="text-sm font-semibold">{t("title")}</h3>
-        <p className="text-xs text-muted-foreground mt-0.5">
-          {t("subtitle")}
-        </p>
-      </div>
+      {!hideTitle && (
+        <div>
+          <h3 className="text-sm font-semibold">{t("title")}</h3>
+          <p className="text-xs text-muted-foreground mt-0.5">
+            {t("subtitle")}
+          </p>
+        </div>
+      )}
 
       <div className="space-y-4">
         <div className="space-y-1.5">

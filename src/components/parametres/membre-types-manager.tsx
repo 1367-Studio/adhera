@@ -103,7 +103,7 @@ function TypeForm({
   )
 }
 
-export function MembreTypesManager({ canEdit }: { canEdit: boolean }) {
+export function MembreTypesManager({ canEdit, hideTitle }: { canEdit: boolean; hideTitle?: boolean }) {
   const t = useTranslations("parametres.membreTypes")
   const tCommon = useTranslations("common")
   const { data: types = [], isLoading } = useMembreTypes()
@@ -136,14 +136,16 @@ export function MembreTypesManager({ canEdit }: { canEdit: boolean }) {
   }
 
   return (
-    <div className="rounded-lg border bg-card p-6 space-y-4">
+    <div className={cn(hideTitle ? "" : "rounded-lg border bg-card p-6", "space-y-4")}>
       <div className="flex items-center justify-between">
-        <div>
-          <h3 className="text-sm font-semibold">{t("title")}</h3>
-          <p className="text-xs text-muted-foreground mt-0.5">
-            {t("subtitle")}
-          </p>
-        </div>
+        {!hideTitle && (
+          <div>
+            <h3 className="text-sm font-semibold">{t("title")}</h3>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              {t("subtitle")}
+            </p>
+          </div>
+        )}
         {canEdit && !creating && !editTarget && (
           <Button size="sm" variant="outline" onClick={() => setCreating(true)}>
             <PlusIcon className="size-3.5 mr-1" /> {t("add")}

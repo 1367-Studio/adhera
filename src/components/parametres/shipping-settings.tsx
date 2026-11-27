@@ -16,10 +16,13 @@ type ShippingData = {
 }
 
 interface ShippingSettingsProps {
-  canEdit: boolean
+  canEdit:    boolean
+  // Set when rendered as an AccordionItem's panel (see parametres-view.tsx) — the trigger
+  // already shows this section's title, so showing it again inside would duplicate it.
+  hideTitle?: boolean
 }
 
-export function ShippingSettings({ canEdit }: ShippingSettingsProps) {
+export function ShippingSettings({ canEdit, hideTitle }: ShippingSettingsProps) {
   const t       = useTranslations("boutiqueShipping")
   const tCommon = useTranslations("common")
   const qc = useQueryClient()
@@ -87,10 +90,12 @@ export function ShippingSettings({ canEdit }: ShippingSettingsProps) {
 
   return (
     <div className="space-y-5">
-      <div>
-        <h3 className="text-sm font-semibold">{t("title")}</h3>
-        <p className="text-xs text-muted-foreground mt-0.5">{t("description")}</p>
-      </div>
+      {!hideTitle && (
+        <div>
+          <h3 className="text-sm font-semibold">{t("title")}</h3>
+          <p className="text-xs text-muted-foreground mt-0.5">{t("description")}</p>
+        </div>
+      )}
 
       <div className="space-y-3">
         <FormField

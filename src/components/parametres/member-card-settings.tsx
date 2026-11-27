@@ -27,7 +27,10 @@ import {
 } from "@/lib/member-card/view-model"
 
 interface MemberCardSettingsProps {
-  canEdit: boolean
+  canEdit:    boolean
+  // Set when rendered as an AccordionItem's panel (see parametres-view.tsx) — the trigger
+  // already shows this section's title, so showing it again inside would duplicate it.
+  hideTitle?: boolean
   /** Shown on the preview card, so an admin judges the layout with their own name in it. */
   associationName: string
   /** Already resolved through the plan's branding — null means "no logo on the card". */
@@ -47,6 +50,7 @@ export function MemberCardSettings({
   logoUrl,
   associationPhone,
   associationContactEmail,
+  hideTitle,
 }: MemberCardSettingsProps) {
   const t       = useTranslations("memberCard.settings")
   const tCommon = useTranslations("common")
@@ -141,10 +145,12 @@ export function MemberCardSettings({
 
   return (
     <div className="space-y-5">
-      <div>
-        <h3 className="text-sm font-semibold">{t("title")}</h3>
-        <p className="text-xs text-muted-foreground mt-0.5">{t("subtitle")}</p>
-      </div>
+      {!hideTitle && (
+        <div>
+          <h3 className="text-sm font-semibold">{t("title")}</h3>
+          <p className="text-xs text-muted-foreground mt-0.5">{t("subtitle")}</p>
+        </div>
+      )}
 
       <CheckboxField
         id="member-card-enabled"
